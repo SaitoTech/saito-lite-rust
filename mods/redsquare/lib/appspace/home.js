@@ -16,6 +16,15 @@ class RedSquareAppspaceHome {
 
     this.observed = false
 
+    app.connection.on('tweets-render-request', (tweets, appendToSelector = true) => {
+      tweets.forEach(tweet => {
+        tweet.render(app, mod, '.redsquare-list', appendToSelector)
+      })
+    })
+
+    app.connection.on("tweet-render-request", (tweet) => {
+      tweet.render(app, mod, ".redsquare-list");
+    });
 
     let options = {
       root: null,
@@ -25,23 +34,10 @@ class RedSquareAppspaceHome {
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-
+          console.log('is intersecting')
           let saitoLoader = this.saitoLoader;
           saitoLoader.render(app, mod, "redsquare-intersection", false);
-          this.prevTweetLength = mod.tweets.length;
-          let prevTweetLength = this.prevTweetLength;
-
-          const startingLimit = (mod.pageNumber - 1) * mod.resultsPerPage
-          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${mod.resultsPerPage}'`;
-          mod.fetchTweets(app, mod, sql, function (app, mod) {
-            mod.renderMainPage(app, mod);
-            if (mod.tweets.length > prevTweetLength) {
-              mod.pageNumber++;
-            }
-
-
-            saitoLoader.remove();
-          });
+          mod.fetchMoreTweets(app, mod, (app, mod) => saitoLoader.remove());
         }
 
       })
@@ -57,10 +53,6 @@ class RedSquareAppspaceHome {
       app.browser.addElementToClass(RedSquareAppspaceHomeTemplate(app, mod), "appspace");
     }
 
-
-    app.connection.on("tweet-render-request", (tweet) => {
-      tweet.render(app, mod, ".redsquare-list");
-    });
 
     mod.renderMainPage(app, mod);
 

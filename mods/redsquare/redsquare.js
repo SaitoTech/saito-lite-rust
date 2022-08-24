@@ -50,7 +50,6 @@ class RedSquare extends ModTemplate {
 
   addTweetFromTransaction(app, mod, tx) {
     let tweet = new Tweet(app, this, tx);
-
     this.addTweet(app, this, tweet);
   }
 
@@ -409,6 +408,59 @@ class RedSquare extends ModTemplate {
         mod.saitoLoader.remove(app, mod);
       }
     );
+  }
+
+  fetchMoreTweets(app, mod, post_fetch_tweets_callback) {
+    const startingLimit = (this.pageNumber - 1) * this.resultsPerPage
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${this.resultsPerPage}'`;
+    app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
+      "RedSquare",
+      sql,
+
+      async (res) => {
+
+        const tweets = [];
+
+        if (res.rows) {
+
+          res.rows.forEach(row => {
+            let new_tweet = 1;
+            if (new_tweet) {
+              let tx = new saito.default.transaction(JSON.parse(row.tx));
+              if (!tx.optional) { tx.optional = {}; }
+              tx.optional.parent_id = tx.msg.parent_id;
+              tx.optional.thread_id = tx.msg.thread_id;
+              tx.optional.num_replies = row.num_replies;
+              tx.optional.num_retweets = row.num_retweets;
+              tx.optional.num_likes = row.num_likes;
+              tx.optional.flagged = row.flagged;
+              tx.optional.link_properties = {};
+              try {
+                let x = JSON.parse(row.link_properties);
+                tx.optional.link_properties = x;
+                tweets.push(new Tweet(app, mod, tx));
+              } catch (err) { }
+            }
+          });
+          console.log(mod.pageNumber, mod.resultsPerPage)
+          // render tweets 
+          mod.broadcastTweetRenderRequest(tweets)
+          post_fetch_tweets_callback(app, mod)
+          mod.pageNumber++;
+
+        }
+
+      }
+    );
+  }
+
+  broadcastTweetRenderRequest(data, appendToSelector = true) {
+    if (Array.isArray(data)) {
+      this.app.connection.emit('tweets-render-request', data, appendToSelector)
+    } else {
+      this.app.connection.emit('tweet-render-request', appendToSelector)
+    }
+
   }
 
 

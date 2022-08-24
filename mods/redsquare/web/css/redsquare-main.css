@@ -64,7 +64,7 @@ span.redsquare-home-red-square+span {
 }
 
 #redsquare-appspace-home {
- padding-bottom: 4rem;
+ padding-bottom: 3rem;
 }
 
 #redsquare-intersection{
@@ -73,7 +73,7 @@ span.redsquare-home-red-square+span {
 }
 
 .redsquare-list {
-  min-height: 100vh;
+  min-height: 120vh;
 }
 .post-tweet-preview .redsquare-item {
   padding-left: 0rem;
