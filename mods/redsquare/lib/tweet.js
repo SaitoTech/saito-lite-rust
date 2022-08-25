@@ -3,6 +3,8 @@ const TweetTemplate = require("./tweet.template");
 const PostTweet = require("./post");
 const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoLoader = require("./../../../lib/saito/new-ui/saito-loader/saito-loader");
+const AddFrndTemplate = require("./add-frnd.template");
 
 class RedSquareTweet {
 
@@ -88,6 +90,7 @@ class RedSquareTweet {
     //
     this.generateTweetProperties(app, mod, 0);
 
+    this.saitoLoader = new SaitoLoader(app, this);
   }
 
 
@@ -171,6 +174,7 @@ class RedSquareTweet {
       }
     }
 
+    app.browser.addIdentifiersToDom();
     this.attachEvents(app, mod);
   }
 
@@ -184,6 +188,8 @@ class RedSquareTweet {
 
       //e.preventDefault();
       //e.stopImmediatePropagation();
+
+      this.saitoLoader.render(app, mod, 'redsquare-home-header', false);
 
       let el = e.currentTarget;
 
@@ -209,6 +215,8 @@ class RedSquareTweet {
         window.history.pushState({}, document.title, tweetUrl);  
       }
 
+      this.saitoLoader.remove();
+
     };
 
     //
@@ -220,22 +228,16 @@ class RedSquareTweet {
       e.preventDefault();
       e.stopImmediatePropagation();
 
+      tweet_self = this;
       let ptweet = new PostTweet(app, mod);
       ptweet.parent_id = this.tx.transaction.sig;
       ptweet.thread_id = this.thread_id;
       ptweet.render(app, mod);
 
       let html = TweetTemplate(app, mod, this, 0);
-      app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
+      app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
 
-      // increase num likes
-      sel = ".tweet-tool-comment-count-" + this.tx.transaction.sig;
-      let obj = document.querySelector(sel);
-      obj.innerHTML = parseInt(obj.innerHTML) + 1;
-      if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-        obj.parentNode.classList.remove("saito-tweet-no-activity");
-        obj.parentNode.classList.add("saito-tweet-activity");
-      }
+      app.browser.addIdentifiersToDom();
     };
 
 
@@ -378,6 +380,11 @@ class RedSquareTweet {
         window.open(url, '_blank').focus();
       }
 
+
+      if (e.target.classList.contains('saito-identicon')) {
+        let img_overlay = new SaitoOverlay(app, mod);
+        img_overlay.show(app, mod, AddFrndTemplate(app, mod));
+      }
     });
   }
 
