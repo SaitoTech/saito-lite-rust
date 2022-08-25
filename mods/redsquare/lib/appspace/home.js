@@ -37,6 +37,8 @@ class RedSquareAppspaceHome {
     document.getElementById("redsquare-new-tweet").onclick = (e) => {
       let ptweet = new PostTweet(app, mod);
       ptweet.render(app, mod);
+
+      app.browser.addIdentifiersToDom();
     }
 
     document.getElementById("redsquare-new-tweets-banner").onclick = (e) => {

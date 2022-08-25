@@ -171,6 +171,7 @@ class RedSquareTweet {
       }
     }
 
+    app.browser.addIdentifiersToDom();
     this.attachEvents(app, mod);
   }
 
@@ -227,6 +228,8 @@ class RedSquareTweet {
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
+
+      app.browser.addIdentifiersToDom();
 
       // increase num likes
       sel = ".tweet-tool-comment-count-" + this.tx.transaction.sig;
