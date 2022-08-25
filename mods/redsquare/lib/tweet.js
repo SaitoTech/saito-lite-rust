@@ -98,6 +98,7 @@ class RedSquareTweet {
     return TweetTemplate(app, mod, this, include_controls, include_header);
   }
 
+
   returnTweet(app, mod, sig) {
     if (this.tx.transaction.sig === sig) { return this; }
     for (let i = 0; i < this.children.length; i++) {
@@ -121,7 +122,7 @@ class RedSquareTweet {
     return false;
   }
 
-  render(app, mod, selector = "") {
+  render(app, mod, selector = "", appendToSelector = true) {
 
     let html = TweetTemplate(app, mod, this);
     let tweet_id = "tweet-box-" + this.tx.transaction.sig;
@@ -131,7 +132,12 @@ class RedSquareTweet {
     if (obj) {
       app.browser.replaceElementById(html, tweet_id);
     } else {
-      app.browser.addElementToSelector(html, selector);
+      if (appendToSelector) {
+        app.browser.addElementToSelector(html, selector);
+      } else {
+        app.browser.prependElementToSelector(html, selector)
+      }
+
     }
 
     if (this.critical_child != null && this.flagged != 1) {
@@ -141,7 +147,13 @@ class RedSquareTweet {
         app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
-        app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+        if (appendToSelector) {
+          app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+        } else {
+          app.browser.prependElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+        }
+
+
         this.critical_child.render(app, mod, selector);
         document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
         document.querySelector(selector).querySelector('.redsquare-ellipsis').nextElementSibling.classList.add("after-ellipsis");
