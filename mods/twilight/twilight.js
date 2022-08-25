@@ -8333,7 +8333,7 @@ playerTurnHeadlineSelected(card, player) {
 
 
     if (this.game.state.events.cancelled[cardname] == 1) {
-      html += `<img class="${cardclass}" src="/twilight/img/cancel_x.png" />`;
+      html += `<img class="${cardclass} cancel_x" src="/twilight/img/cancel_x.png" />`;
     }
 
 
