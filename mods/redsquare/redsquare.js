@@ -42,7 +42,7 @@ class RedSquare extends ModTemplate {
     if (app.BROWSER === 1) {
       setInterval(() => {
         this.fetchNewTweets(app, this)
-      }, 5000)
+      }, 30000)
     }
 
   }
@@ -241,36 +241,6 @@ class RedSquare extends ModTemplate {
   }
 
 
-  /*********************
-    installModule(app) {
-    
-      if (this.app.BROWSER == 1) { return }
-  
-      super.installModule(app);
-  
-      let dummy_content = [
-        {
-          text: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
-          img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
-        },
-        {
-          text: 'Checkout this awesome video about web3 and open source. https://www.youtube.com/watch?v=0tZFQs7qBfQ',
-        },
-        {
-          text: 'Nice tutorial. https://webdesign.tutsplus.com/articles/best-minimal-shopify-themes--cms-35081',
-        }
-      ];
-  
-      for (let i = 0; i < dummy_content.length; i++) {
-        this.sendTweetTransaction(app, this, dummy_content[i]);
-      }
-  
-    }
-  *********************/
-
-
-
-
   async fetchOpenGraphProperties(app, mod, link) {
 
     if (this.app.BROWSER == 0) {
@@ -377,6 +347,7 @@ class RedSquare extends ModTemplate {
     this.trackedTweet = tweet
   }
 
+
   fetchTweets(app, mod, sql, post_fetch_tweets_callback = null) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
@@ -408,8 +379,6 @@ class RedSquare extends ModTemplate {
 
           if (post_fetch_tweets_callback != null) {
             post_fetch_tweets_callback(app, mod);
-
-
           }
 
         }
@@ -463,7 +432,7 @@ class RedSquare extends ModTemplate {
   }
 
   fetchNewTweets(app, mod) {
-    if (!mod.trackedTweet) return;
+    if (!mod.trackedTweet) { return; }
     let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY updated_at DESC LIMIT 0,'${this.resultsPerPage}'`;
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
