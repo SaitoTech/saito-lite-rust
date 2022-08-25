@@ -14,7 +14,7 @@ class ArcadeObserver{
 	attachEvents(app, mod){
 		let ao_self = this;
 		let game_id = this.observer.game_id;
-		let invite = document.getElementById(`invite-${game_id}`);
+		let invite = document.getElementById(`observe-${game_id}`);
 		if (invite){
 			invite.querySelector(".observe-game-btn").onclick = async function (e) {
 				let game_cmd = e.currentTarget.getAttribute("data-cmd");

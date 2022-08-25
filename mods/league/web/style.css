@@ -268,6 +268,14 @@ i.link_icon.private {
   background-color: #fefefeee;
 }
 
+
+.game_option_league_wizard{
+  padding: 1em;
+  font-size: 1em;
+  background-color: #0009;
+  max-height: 90vh;
+}
+
 .league-component-admin-box-form .label {
 
   width: 80%;

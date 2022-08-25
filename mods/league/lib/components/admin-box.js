@@ -1,8 +1,11 @@
 const LeagueComponentAdminBoxTemplate = require("./admin-box.template");
 
 const getGameOptions = () => {
-  let options = {};
-  document.querySelectorAll("form input, form select").forEach((element) => {
+  let options = "";
+  document.querySelectorAll("form#game-wizard-form input, form#game-wizard-form select").forEach((element) => {
+    if (!options){
+      options = {};
+    }
     if (element.type == "checkbox") {
       if (element.checked) {
         options[element.name] = 1;
@@ -17,6 +20,23 @@ const getGameOptions = () => {
   });
   return options;
 };
+
+const players = (app, mod) => {
+  let selection = "";
+  if (mod.minPlayers === mod.maxPlayers) {
+    selection = `<input type="hidden" class="game-wizard-players-select" name="game-wizard-players-select" value="${mod.minPlayers}">`;
+    selection += mod.returnSingularGameOption(app);
+  } else {
+    selection = `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
+    for (let p = mod.minPlayers; p <= mod.maxPlayers; p++) {
+      selection += `<option value="${p}">${p} player</option>`;
+    }
+    selection += `</select>`;
+  }
+
+  return selection;
+};
+
 
 
 module.exports = AdminBox = {
@@ -50,6 +70,9 @@ module.exports = AdminBox = {
       if (leaguedesc === desc.getAttribute("data-placeholder")) {
         leaguedesc = "";
       }
+
+      let options = (e.target.fixedoptions.checked) ? JSON.stringify(getGameOptions()) : "";
+
       let newLeague = {
         game: e.target.game.value,
         type: e.target.type.value,
@@ -58,12 +81,16 @@ module.exports = AdminBox = {
         description: leaguedesc,
         ranking: e.target.ranking.value,
         starting_score: e.target.starting_score.value,
-        max_players: e.target.max_players.value
+        max_players: e.target.max_players.value,
+        options: options,
+        startdate: e.target.startdate.value,
+        enddate: e.target.enddate.value,
+        allowlate: (e.target.lateregister.checked) ? '1' : '0',
       };
 
-      console.log(e.target.startdate.value, e.target.enddate.value);
       document.getElementById("league-details").style.display = "none";
       mod.sendCreateLeagueTransaction(newLeague);
+      mod.overlay.clear();
       return false;
     }
 
@@ -109,15 +136,37 @@ module.exports = AdminBox = {
     if (optionsSelect){
       optionsSelect.onclick = (e) => {
         try{
+          document.getElementById("fixedoptions").checked = true;
+
           let gameName = selector.value;
           let gamemod = app.modules.returnModule(gameName);
           let advancedOptions = gamemod.returnGameOptionsHTML();
-          mod.overlay.show(app, mod, advancedOptions);  
+          let moreOptions = players(app, gamemod);
+          let html = `<div class="game_option_league_wizard">
+                      <form id="game-wizard-form" class="game-wizard-form">
+                      ${advancedOptions}
+                      ${moreOptions}
+                      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+                      </form>
+                      </div>
+                      `;
+          //Display Game Options
+          mod.overlay.show(app, mod, html);  
+          //Attach dynamic listeners
+          gamemod.attachAdvancedOptionsEventListeners();
+          //Hide overlay if clicking button
+          if (document.getElementById("game-wizard-advanced-return-btn")) {
+            document.querySelector(".game-wizard-advanced-return-btn").onclick = (e) => {
+              mod.overlay.hide();
+            };
+          }
         }catch(err){
           console.log(err);
         }
       }
     }
+
+
 
 
   }
