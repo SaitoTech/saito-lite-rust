@@ -186,7 +186,7 @@ class Block {
     ) {
       this.block.signature = "";
     }
-    console.debug("tx length = " + transactions_length);
+    console.log(`block.deserialize tx length = ${transactions_length}`);
     for (let i = 0; i < transactions_length; i++) {
       const inputs_len = this.app.binary.u32FromBytes(
         buffer.slice(start_of_transaction_data, start_of_transaction_data + 4)
@@ -372,9 +372,9 @@ class Block {
       }
     }
 
-    //
+    // console.log(`${typeof this.block.id} > ${typeof this.app.blockchain.returnGenesisPeriod()} + ${typeof this.app.blockchain.blockchain.genesis_period}`);
+
     // calculate automatic transaction rebroadcasts / ATR / atr
-    //
     if (this.block.id > this.app.blockchain.returnGenesisPeriod() + BigInt(1)) {
       const pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
       const pruned_block_hash =
@@ -1380,10 +1380,9 @@ class Block {
     const block_creator = this.block.creator;
     const block_signature = this.block.signature;
 
-    let transactions_length = this.app.binary.u32AsBytes(0);
-    if (this.transactions.length > 0) {
-      transactions_length = this.app.binary.u32AsBytes(this.transactions.length);
-    }
+    console.log(`block.serialize tx length = ${this.transactions.length} for ${this.hash}`);
+    let transactions_length = this.app.binary.u32AsBytes(this.transactions.length);
+
     const id = this.app.binary.u64AsBytes(this.block.id);
     const timestamp = this.app.binary.u64AsBytes(this.block.timestamp);
 

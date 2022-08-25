@@ -53,6 +53,9 @@ class Relay extends ModTemplate {
             tx.transaction.to.push(new saito.default.slip(recipients[i]));
         }
         tx.transaction.ts = new Date().getTime();
+        if (!tx.msg){
+            tx.msg = {};
+        }
         tx.msg.request = message_request;
         tx.msg.data = message_data;
         tx.presign(this.app);

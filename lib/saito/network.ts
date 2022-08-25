@@ -880,7 +880,7 @@ class Network {
               if (reconstructed_data.transaction) {
                 if (reconstructed_data.transaction.m) {
                   // backwards compatible - in case modules try the old fashioned way
-                  if (msg.data.transaction.m.length === 0) {
+                  if (msg.data.transaction.m.byteLength === 0) {
                     msg.data.transaction.msg = null;
                   } else {
                     msg.data.transaction.msg = JSON.parse(

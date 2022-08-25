@@ -303,7 +303,7 @@ class Server {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize()).toString("base64");
+          const buffer = Buffer.from(liteblock.serialize());//.toString("base64");
 
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.write(buffer, "utf8");

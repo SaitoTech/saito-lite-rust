@@ -416,7 +416,7 @@ class Transaction {
             return this.msg;
         }
         try {
-            if (this.transaction.m.length > 0) {
+            if (this.transaction.m.byteLength > 0) {
                 const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
                 this.msg = JSON.parse(reconstruct);
             } else {
@@ -574,7 +574,7 @@ class Transaction {
 
         const inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
         const outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
-        const message_len = app.binary.u32AsBytes(this.transaction.m.length);
+        const message_len = app.binary.u32AsBytes(this.transaction.m.byteLength);
         const path_len = app.binary.u32AsBytes(this.transaction.path.length);
         const signature = app.binary.hexToSizedArray(this.transaction.sig, 64);
         const timestamp = app.binary.u64AsBytes(this.transaction.ts);
@@ -607,11 +607,11 @@ class Transaction {
         const start_of_path =
             TRANSACTION_SIZE +
             (this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE +
-            this.transaction.m.length;
+            this.transaction.m.byteLength;
         const size_of_tx_data =
             TRANSACTION_SIZE +
             (this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE +
-            this.transaction.m.length +
+            this.transaction.m.byteLength +
             this.transaction.path.length * HOP_SIZE;
         const ret = new Uint8Array(size_of_tx_data);
         ret.set(
