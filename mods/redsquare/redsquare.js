@@ -20,7 +20,7 @@ class RedSquare extends ModTemplate {
     this.appname = "Red Square";
     this.name = "RedSquare";
     this.slug = "redsquare";
-    this.description = "Open Source Twitter-clone for the Saito Network";
+    this.description = "EOpen Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
     this.saitoLoader = new SaitoLoader(app, this)
     this.redsquare = {}; // where settings go, saved to options file
@@ -42,7 +42,7 @@ class RedSquare extends ModTemplate {
     if (app.BROWSER === 1) {
       setInterval(() => {
         this.fetchNewTweets(app, this)
-      }, 3000)
+      }, 5000)
     }
 
   }
@@ -54,8 +54,12 @@ class RedSquare extends ModTemplate {
   }
 
 
-  addTweetFromTransaction(app, mod, tx) {
+  addTweetFromTransaction(app, mod, tx, tracktweet = false) {
     let tweet = new Tweet(app, this, tx);
+
+    if (tracktweet) {
+      this.trackTweet(app, mod, tweet)
+    }
     this.addTweet(app, this, tweet);
   }
 
@@ -115,11 +119,9 @@ class RedSquare extends ModTemplate {
   }
 
 
-
   initializeHTML(app) {
     this.saitoLoader.render(app, this, '', true);
   }
-
   render(app, mod, selector = "") {
 
     if (this.ui_initialized == false) {
@@ -341,6 +343,7 @@ class RedSquare extends ModTemplate {
           let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.resultsPerPage}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderMainPage(app, redsquare_self); });
         }
+
       }
     }
   }
@@ -369,14 +372,19 @@ class RedSquare extends ModTemplate {
     }
   }
 
+  trackTweet(app, mod, tweet) {
+    console.log('tracking tweet', tweet)
+    this.trackedTweet = tweet
+  }
+
   fetchTweets(app, mod, sql, post_fetch_tweets_callback = null) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
       async (res) => {
         if (res.rows) {
-          console.log("first tweet ", res.rows[0])
-          mod.trackedTweet = res.rows[0];
+          console.log("tracked tweet", res.rows[0])
+          mod.trackTweet(res.rows[0]);
           res.rows.forEach(row => {
             let new_tweet = 1;
             if (new_tweet) {
@@ -455,16 +463,14 @@ class RedSquare extends ModTemplate {
   }
 
   fetchNewTweets(app, mod) {
-    console.log('tracked tweet ', mod.trackedTweet)
     if (!mod.trackedTweet) return;
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND updated_at > '${mod.trackedTweet.updated_at}' ORDER BY updated_at DESC LIMIT 0,'${this.resultsPerPage}'`;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY updated_at DESC LIMIT 0,'${this.resultsPerPage}'`;
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
       async (res) => {
         const tweets = [];
         if (res.rows) {
-          console.log("newest tweets", res.rows)
           if (res.rows[0]) {
             mod.trackedTweet = res.rows[0];
           }
