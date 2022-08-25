@@ -4,6 +4,7 @@ const PostTweet = require("./post");
 const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const SaitoLoader = require("./../../../lib/saito/new-ui/saito-loader/saito-loader");
+const AddFrndTemplate = require("./add-frnd.template");
 
 class RedSquareTweet {
 
@@ -379,6 +380,11 @@ class RedSquareTweet {
         window.open(url, '_blank').focus();
       }
 
+
+      if (e.target.classList.contains('saito-identicon')) {
+        let img_overlay = new SaitoOverlay(app, mod);
+        img_overlay.show(app, mod, AddFrndTemplate(app, mod));
+      }
     });
   }
 
