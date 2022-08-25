@@ -1588,7 +1588,7 @@ class Block {
       const cv_st = cv.staking_treasury;
       if (cv_st < BigInt(0)) {
         const x = cv_st * -1;
-        if (adjusted_staking_treasury < x) {
+        if (adjusted_staking_treasury > x) {
           adjusted_staking_treasury = adjusted_staking_treasury - BigInt(x);
         } else {
           adjusted_staking_treasury = BigInt(0);
