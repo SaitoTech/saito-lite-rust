@@ -610,7 +610,7 @@ module.exports = ArcadeMain = {
           let gamemod = app.modules.returnModule(app.options.games[i].module);
           if (gamemod) {
             this.removeGameFromList(game_id);
-            gamemod.resignGame(game_id);
+            gamemod.resignGame(game_id, "arcadeclose");
 
             //Set a fallback interval if the opponent is no longer online
             mod.game_close_interval_cnt += 5;

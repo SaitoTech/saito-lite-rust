@@ -330,18 +330,19 @@ body {
 
 .game_status_indicator{
   position: absolute;
-  top: 15px;
-  left: 15px;
+  font-size: 20px;
+  top: 17px;
+  right: 10px;
   border-radius: 100%;
   box-shadow: 0 0 0 1px black;
 }
 
 .game_status_indicator.game_live{
-  color: darkred;
+  color: crimson;
 }
 
 .game_status_indicator.game_over{
-  color: grey;
+  color: darkgrey;
 }
 
 .game-inset-img {

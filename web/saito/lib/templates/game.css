@@ -772,10 +772,10 @@ i.menu_icon_icon{
   font-size: 0.9em;
 }
 
-.play-state i.fa-pause{
+.play-state i.fa-pause, .play-state i.fa-forward{
   display: none;
 }
-.pause-state i.fa-play{
+.pause-state i.fa-play, .pause-state i.fa-step-forward{
   display: none;
 }
 

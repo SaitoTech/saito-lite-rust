@@ -727,7 +727,7 @@ class League extends ModTemplate {
 
     //All games have a grace window where if a player "quits" within X moves
     //it won't count as a win or loss for anyone
-    if (txmsg.reason == "cancellation"){
+    if (txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose"){
       return;
     }
 
