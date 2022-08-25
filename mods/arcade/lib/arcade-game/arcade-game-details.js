@@ -59,11 +59,12 @@ module.exports = ArcadeGameDetails = {
       mod.meta_overlay = new AdvancedOverlay(app, gamemod);
       mod.meta_overlay.render(app, gamemod);
       mod.meta_overlay.attachEvents(app, gamemod);
-
+      let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+      
       //Attach events to advance options button
       document.querySelector(".game-wizard-options-toggle").onclick = (e) => {
         //Requery advancedOptions on the click so it can dynamically update based on # of players
-        mod.meta_overlay.show(app, gamemod, gamemod.returnGameOptionsHTML());
+        mod.meta_overlay.show(app, gamemod, gamemod.returnGameOptionsHTML() + accept_button);
         gamemod.attachAdvancedOptionsEventListeners();
         document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
         try {

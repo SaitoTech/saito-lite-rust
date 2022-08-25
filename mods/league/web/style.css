@@ -240,6 +240,26 @@ i.link_icon.private {
   margin-bottom: 0.6em;
 }
 
+.checkrow { 
+  position: relative;
+}
+.checkrow > input{
+  width: fit-content;
+}
+.checkrow .secretebutton{
+  width: fit-content;
+  position: absolute;
+  top: 0;
+  right: 0px;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+
+.gridme{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 .tip {
   width: unset;
 }

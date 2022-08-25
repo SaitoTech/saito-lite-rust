@@ -446,7 +446,6 @@ class GameTestSuite extends GameTemplate {
     options_html += `
         </select>
       </div>
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
 
     return options_html;

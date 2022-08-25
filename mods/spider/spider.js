@@ -66,8 +66,6 @@ class Spider extends GameTemplate {
   //Single player games don't allow game-creation and options prior to join
   returnGameOptionsHTML() {
 
-    //`    <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-    //`;
 
     /* to do -- add auto play mode
             <p>Play Mode:</p>

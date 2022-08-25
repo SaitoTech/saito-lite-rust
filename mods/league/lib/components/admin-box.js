@@ -1,5 +1,23 @@
 const LeagueComponentAdminBoxTemplate = require("./admin-box.template");
 
+const getGameOptions = () => {
+  let options = {};
+  document.querySelectorAll("form input, form select").forEach((element) => {
+    if (element.type == "checkbox") {
+      if (element.checked) {
+        options[element.name] = 1;
+      }
+    } else if (element.type == "radio") {
+      if (element.checked) {
+        options[element.name] = element.value;
+      }
+    } else {
+      options[element.name] = element.value;
+    }
+  });
+  return options;
+};
+
 
 module.exports = AdminBox = {
 
@@ -42,6 +60,8 @@ module.exports = AdminBox = {
         starting_score: e.target.starting_score.value,
         max_players: e.target.max_players.value
       };
+
+      console.log(e.target.startdate.value, e.target.enddate.value);
       document.getElementById("league-details").style.display = "none";
       mod.sendCreateLeagueTransaction(newLeague);
       return false;
@@ -84,6 +104,21 @@ module.exports = AdminBox = {
         }
       };
     }
+
+    let optionsSelect = document.getElementById("selectoptions");
+    if (optionsSelect){
+      optionsSelect.onclick = (e) => {
+        try{
+          let gameName = selector.value;
+          let gamemod = app.modules.returnModule(gameName);
+          let advancedOptions = gamemod.returnGameOptionsHTML();
+          mod.overlay.show(app, mod, advancedOptions);  
+        }catch(err){
+          console.log(err);
+        }
+      }
+    }
+
 
   }
 }

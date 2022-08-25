@@ -18,7 +18,6 @@ class AdvancedOverlay {
       //
       let overlay_el = document.querySelector("#advanced-overlay");
       overlay_el.style.display = "none";
-      overlay_el.innerHTML = mod.returnGameOptionsHTML();     
 
     }
 

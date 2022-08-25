@@ -2703,10 +2703,7 @@ class Poker extends GameTemplate {
               <option value="disable" selected>disable</option>
             </select>
           </div>
-          <!--input type="hidden" id="stake" name="stake" value="0"-->
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
-    `;
+          <!--input type="hidden" id="stake" name="stake" value="0"-->`;
 
     return options_html;
   }

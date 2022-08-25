@@ -19863,8 +19863,6 @@ console.log("K: " + z[k].name);
               <option value="14">14 VP</option>
             </select>
 
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
         </div>
         <div>
 

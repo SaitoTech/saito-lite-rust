@@ -9,6 +9,8 @@ module.exports = (app, mod, games) => {
     html += `<option id="${game.modname}" value="${game.modname}" data-img="${game.img}">${game.modname}</option>`
   }
 
+  let today = new Date();
+
   html +=
       `</select>
       </div>
@@ -33,6 +35,19 @@ module.exports = (app, mod, games) => {
             <option value="elo">ELO</option>
           </select>
           <input id="starting_score" type="number" value="0" min="0" max="2000" step="50" style="display:none;"/>
+          <div>Advanced (Optional) Parameters</div>
+          <div class="gridme">
+            <div class="column">
+              <div class="label"><label for="startdate">Start:</label><div class="tip"><i class="fa fa-question-circle" aria-hidden="true"></i><div class="tiptext">Games played before this date won't count towards League rankings</div></div></div>
+              <input type="date" id="startdate" name="startdate" min="${today.getUTCFullYear()}-${today.getUTCMonth()}-${today.getUTCDate()}">
+            </div>
+            <div class="column">
+              <div class="label"><label for="enddate">End:</label><div class="tip"><i class="fa fa-question-circle" aria-hidden="true"></i><div class="tiptext">Games played after this date won't count towards League rankings</div></div></div>
+              <input type="date" id="enddate" name="enddate" min="${today.getUTCFullYear()}-${today.getUTCMonth()}-${today.getUTCDate()}">
+            </div>
+          </div>
+          <div class="checkrow"><input type="checkbox" name="lateregister" id="lateregister"><label for="lateregister">Allow users to join the League after the start date</label></div>
+          <div class="checkrow"><input type="checkbox" name="fixedoptions" id="fixedoptions"><label for="fixedoptions">Set game options for all League matches</label><div class="secretebutton" id="selectoptions">Select Options</div></div>
           <button type="submit">Create League</button>
         </form>
       </div>
