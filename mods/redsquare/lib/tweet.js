@@ -3,6 +3,7 @@ const TweetTemplate = require("./tweet.template");
 const PostTweet = require("./post");
 const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoLoader = require("./../../../lib/saito/new-ui/saito-loader/saito-loader");
 
 class RedSquareTweet {
 
@@ -88,6 +89,7 @@ class RedSquareTweet {
     //
     this.generateTweetProperties(app, mod, 0);
 
+    this.saitoLoader = new SaitoLoader(app, this);
   }
 
 
@@ -186,6 +188,8 @@ class RedSquareTweet {
       //e.preventDefault();
       //e.stopImmediatePropagation();
 
+      this.saitoLoader.render(app, mod, 'redsquare-home-header', false);
+
       let el = e.currentTarget;
 
       let tweet_sig_id = el.getAttribute("data-id");
@@ -209,6 +213,8 @@ class RedSquareTweet {
         let tweetUrl = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;      
         window.history.pushState({}, document.title, tweetUrl);  
       }
+
+      this.saitoLoader.remove();
 
     };
 
