@@ -178,7 +178,6 @@ class Twilight extends GameTemplate {
   }
 
   
-
   handleStatsMenu() {
     let twilight_self = this;
 
@@ -2980,6 +2979,17 @@ try {
         start_turn_game_state = null;
         start_turn_game_queue = null;
       }
+
+
+      // 
+      // track events which are cancelled / cancellable dynamically 
+      // 
+      if (this.game.state.defcon != 2) {
+        this.cancelEvent("wargames");
+      } else {
+        this.uncancelEvent("wargames");
+      }
+
 
 
       //
@@ -6062,6 +6072,15 @@ playerTurnHeadlineSelected(card, player) {
     }
   }
 
+  cancelEvent(card) {
+    this.game.state.events.cancelled[card] = 1;
+  }
+  uncancelEvent(card) {
+    if (this.game.state.events.cancelled[card]) {
+      delete this.game.state.events.cancelled[card];
+    }
+  }
+
 
   ////////////////////
   // Core Game Data //
@@ -6113,6 +6132,17 @@ playerTurnHeadlineSelected(card, player) {
     state.limit_spacerace = 0;
     state.limit_region = [];
     state.limit_ignoredefcon = 0;
+
+    //
+    // OPTIONS - we default to the expanded deck
+    //
+    if (this.game.options.deck != "original" ) {
+      deck['defectors']       = { img : "TNRnTS-103" ,name : "Defectors", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
+      deck['cambridge']       = { img : "TNRnTS-104" ,name : "The Cambridge Five", scoring : 0 , player : "ussr"   , recurring : 1 , ops : 2 };
+      deck['specialrelation'] = { img : "TNRnTS-105" ,name : "Special Relationship", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
+      deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
+    }
+
 
     // track as US (+) and USSR (-)
     state.vp    = 0;
@@ -6240,6 +6270,8 @@ playerTurnHeadlineSelected(card, player) {
     // events - early war
     state.events = {};
     state.events.optional = {};			// optional cards -- makes easier to search for
+    state.events.cancelled = {};		// if entry exists, event is cancelled
+    state.events.cancelled['solidarity'] = 1;   // solidarity starts cancelled
     state.events.formosan           = 0;
     state.events.redscare_player1   = 0;
     state.events.redscare_player2   = 0;
@@ -8309,6 +8341,11 @@ playerTurnHeadlineSelected(card, player) {
         html += `<img class="${cardclass}" src="/twilight/img/RemoveFromPlay.svg" />`;
       }
     }
+
+
+    //if (this.game.state.events.cancelled[card] == 1) {
+      html += `<img class="${cardclass}" src="/twilight/img/cancel_x.png" />`;
+    //}
 
     return html
   }

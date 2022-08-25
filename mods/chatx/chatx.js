@@ -61,8 +61,6 @@ class Chatx extends ModTemplate {
 
 
 
-
-
     shouldAffixCallbackToModule(modname, tx = null) {
       if (modname == this.name) { return 1; }
       if (modname == "Chat") { return 1; }
@@ -98,14 +96,13 @@ class Chatx extends ModTemplate {
 
 
         //
-        // create chatgroups from keychain
+        // create chatgroups from keychain -- friends only
         //
         let keys = this.app.keys.returnKeys();
         for (let i = 0; i < keys.length; i++) {
-            if (keys[i].aes_publickey == "") {
-                return;
+            if (keys[i].aes_publickey != "" && keys[i].aes_publickey != 'undefined' && keys[i].aes_publickey != undefined) {
+                this.createChatGroup([keys[i].publickey, this.app.wallet.returnPublicKey()], keys[i].name);
             }
-            this.createChatGroup([keys[i].publickey, this.app.wallet.returnPublicKey()], keys[i].name);
         }
 
         //
