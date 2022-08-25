@@ -1083,7 +1083,7 @@ class Network {
           }
         }
         if (this.app.mempool.canBundleBlock()) {
-          return 1;
+          return;
         }
       }
     }
