@@ -1074,7 +1074,7 @@ class Network {
             console.error("ERROR 810299: balking at propagating bad transaction");
           }
           if (this.debugging) {
-            console.error("BAD TX: " + JSON.stringify(tx.transaction));
+            console.error("BAD TX: ", tx.transaction);
           }
           return;
         } else {

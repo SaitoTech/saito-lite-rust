@@ -156,7 +156,7 @@ class Mempool {
     }
   }
 
-  addTransaction(transaction: Transaction) {
+  addTransaction(transaction: Transaction): boolean {
     //console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
       const new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
@@ -167,7 +167,7 @@ class Mempool {
       for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
         const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
         if (gt.target_hash === new_gt.target_hash) {
-          console.debug("similar golden tickets already exists");
+          console.warn("similar golden tickets already exists");
           this.app.miner.stopMining();
           return false;
         }
@@ -178,7 +178,7 @@ class Mempool {
     } else {
       for (let i = 0; i < this.mempool.transactions.length; i++) {
         if (this.mempool.transactions[i].transaction.sig === transaction.transaction.sig) {
-          console.debug("transaction already exists");
+          console.warn("transaction already exists");
           return false;
         }
       }
