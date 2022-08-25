@@ -22,7 +22,7 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "EOpen Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
-    this.saitoLoader = new SaitoLoader(app, this);
+    this.saito_loader = new SaitoLoader(app, this);
     this.redsquare = {}; // where settings go, saved to options file
 
     this.sqlcache_enabled = 1;
@@ -120,7 +120,7 @@ class RedSquare extends ModTemplate {
 
 
   initializeHTML(app) {
-    this.saitoLoader.render(app, this, '', true);
+    this.saito_loader.render(app, this, '', true);
   }
   render(app, mod, selector = "") {
 
@@ -135,7 +135,7 @@ class RedSquare extends ModTemplate {
 
     super.render(app, this);
     if (mod) {
-      mod.saitoLoader.remove(app, mod);
+      mod.saito_loader.remove(app, mod);
     }
 
 
@@ -331,7 +331,7 @@ class RedSquare extends ModTemplate {
 
     let redsquare_self = this;
     if (this.app.BROWSER == 1) {
-      this.saitoLoader.render(app, redsquare_self, 'redsquare-home-header', false);
+      this.saito_loader.render(app, redsquare_self, 'redsquare-home-header', false);
 
       let tweet_id = app.browser.returnURLParameter('tweet_id');
 
@@ -413,7 +413,7 @@ class RedSquare extends ModTemplate {
           }
 
         }
-        mod.saitoLoader.remove(app, mod);
+        mod.saito_loader.remove(app, mod);
       }
     );
   }

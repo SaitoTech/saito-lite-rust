@@ -90,7 +90,7 @@ class RedSquareTweet {
     //
     this.generateTweetProperties(app, mod, 0);
 
-    this.saitoLoader = new SaitoLoader(app, this);
+    this.saito_loader = new SaitoLoader(app, this);
   }
 
 
@@ -201,7 +201,7 @@ class RedSquareTweet {
       //e.preventDefault();
       //e.stopImmediatePropagation();
 
-      this.saitoLoader.render(app, mod, 'redsquare-home-header', false);
+      this.saito_loader.render(app, mod, 'redsquare-home-header', false);
 
       let el = e.currentTarget;
 
@@ -227,7 +227,7 @@ class RedSquareTweet {
         window.history.pushState({}, document.title, tweetUrl);  
       }
 
-      this.saitoLoader.remove();
+      this.saito_loader.remove();
 
     };
 

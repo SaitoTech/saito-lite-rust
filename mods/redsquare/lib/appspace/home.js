@@ -12,7 +12,7 @@ class RedSquareAppspaceHome {
     this.app = app;
     this.name = "RedSquareAppspaceHome";
     this.prevTweetLength = null;
-    this.saitoLoader = new SaitoLoader(app, mod);
+    this.saito_loader = new SaitoLoader(app, mod);
 
     this.observed = false
 
@@ -35,9 +35,9 @@ class RedSquareAppspaceHome {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           console.log('is intersecting')
-          let saitoLoader = this.saitoLoader;
-          saitoLoader.render(app, mod, "redsquare-intersection", false);
-          mod.fetchMoreTweets(app, mod, (app, mod) => saitoLoader.remove());
+          let saito_loader = this.saito_loader;
+          saito_loader.render(app, mod, "redsquare-intersection", false);
+          mod.fetchMoreTweets(app, mod, (app, mod) => saito_loader.remove());
         }
 
       })
