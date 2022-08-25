@@ -69,7 +69,7 @@ class Arcade extends ModTemplate {
         //this.renderSidebar();
           let chat_mod = this.app.modules.returnModule("Chat");
           if (chat_mod){
-            if (chat_mod.groups && 
+            if (chat_mod.groups &&
                 chat_mod.groups.length > 0 &&
                 this.chat_open == 0 &&
                 this.app.options.auto_open_chat_box
@@ -211,7 +211,7 @@ class Arcade extends ModTemplate {
   // load transactions into interface when the network is up
   onPeerHandshakeComplete(app, peer) {
     // fetch any usernames needed
-    if (this.app.BROWSER == 1) {
+    if (this.app.BROWSER === 1) {
       app.browser.addIdentifiersToDom();
     }
 
@@ -231,7 +231,7 @@ class Arcade extends ModTemplate {
           arcade_self.addGamesToOpenList(
             res.rows.map((row) => {
               if (arcade_self.debug) { console.log(JSON.parse(JSON.stringify(row))); };
-              if (row.status == "open" || row.status == "private") {
+              if (row.status === "open" || row.status === "private") {
                 return new saito.default.transaction(JSON.parse(row.tx));
               } else { return null; }
             })
@@ -396,7 +396,7 @@ class Arcade extends ModTemplate {
     if (this.debug) { console.log(JSON.parse(JSON.stringify(players))); }
 
     this.joinGameOnOpenList(tx); //Update Arcade hero to reflect new player
-    
+
     if (this.debug) { console.log(JSON.parse(JSON.stringify(accepted_game.returnMessage().players))); }
 
     //
@@ -407,7 +407,7 @@ class Arcade extends ModTemplate {
     //
     // in this case the last player sends an accept request which triggers
     // the start of the game automatically.
-    
+
     let number_of_willing_players = accepted_game.msg.players.length;
     let number_of_players_needed = accepted_game.msg.players_needed;
 
@@ -424,7 +424,7 @@ class Arcade extends ModTemplate {
 
       if (accepted_game.msg.players[0] == this.app.wallet.returnPublicKey()) {
         // i should send an accept request to kick this all off
-        
+
         //Creating an accepttransaction will push these back on the end of the array
         accepted_game.msg.players.splice(0, 1);
         accepted_game.msg.players_sigs.splice(0, 1);
@@ -484,7 +484,7 @@ class Arcade extends ModTemplate {
     }
 
     let gamemod = this.app.modules.returnModule(txmsg.game);
-    
+
     if (!gamemod){
       console.error("Game module not found!");
       return;
@@ -501,11 +501,11 @@ class Arcade extends ModTemplate {
       if (this.debug) { console.log("ALREADY INITED? " + this.viewing_arcade_initialization_page); }
 
       if (this.browser_active) {
-        GameLoader.render(app, this);   
+        GameLoader.render(app, this);
       }else{
         siteMessage(txmsg.module + ' invite accepted.', 20000);
       }
-      
+
       if (this.debug){
         console.info("MY CREATED GAMES: ", this.app.options.games);
         console.log("telling game module to receiveAcceptTx");
@@ -514,7 +514,7 @@ class Arcade extends ModTemplate {
 
       //Create Game Here
       let game_id = gamemod.processAcceptRequest(tx, this.app);
-      
+
       if (game_id) {
         if (this.debug) { console.log("... and launching the game"); }
 
@@ -912,7 +912,7 @@ class Arcade extends ModTemplate {
       acceptance_sig = txmsg.invite_sig;
     }
 
-    
+
     // insert into invites
     //
     let sql2 = `INSERT INTO invites (
@@ -1692,7 +1692,7 @@ class Arcade extends ModTemplate {
       }
     } catch (err) { }
 
-    //Create invite link from the game_sig 
+    //Create invite link from the game_sig
     let inviteLink = window.location.href;
     if (!inviteLink.includes("#")) {
       inviteLink += "#";
