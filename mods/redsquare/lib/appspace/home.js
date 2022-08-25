@@ -78,10 +78,10 @@ class RedSquareAppspaceHome {
       ptweet.render(app, mod);
     }
 
-    document.getElementById("redsquare-new-tweets-banner").onclick = (e) => {
-      mod.renderMainPage(app, mod);
-      document.getElementById("redsquare-new-tweets-banner").style.display = 'none';
-    }
+    // document.getElementById("redsquare-new-tweets-banner").onclick = (e) => {
+    //   mod.renderMainPage(app, mod);
+    //   document.getElementById("redsquare-new-tweets-banner").style.display = 'none';
+    // }
 
   }
 
