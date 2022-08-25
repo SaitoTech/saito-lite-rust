@@ -62,7 +62,7 @@ class Post {
           data['images'] = this.images;
         }
 
-	setTimeout(() => {
+      	setTimeout(() => {
 
           let newtx = mod.sendTweetTransaction(app, mod, data);  
           mod.addTweetFromTransaction(app, mod, newtx);
@@ -75,14 +75,28 @@ class Post {
             if (parent_id !== "") {
               console.log("RENDER WITH CHILDREN");
               mod.renderWithChildren(app, mod, parent_id);
-	    } else {
-              mod.renderMainPage(app, mod);
-	    }
+  	        } else {
+                mod.renderMainPage(app, mod);
+  	        }
       	  }
 
       	  post_self.overlay.hide();
           document.getElementById("redsquare-new-tweets-banner").style.display = 'block';
-	}, 1000);
+	      }, 1000);
+
+        // check if posting tweet from overlay (reply tweet)
+        // if yes then update reply counter
+        if (e.target.parentNode.id == 'redsquare-tweet-overlay') {
+          let sig = e.target.parentNode.querySelector('.post-tweet-preview').getAttribute('data-id');
+
+          let sel = ".tweet-tool-comment-count-" + sig;
+          let obj = document.querySelector(sel);
+          obj.innerHTML = parseInt(obj.innerHTML) + 1;
+          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+            obj.parentNode.classList.remove("saito-tweet-no-activity");
+            obj.parentNode.classList.add("saito-tweet-activity");
+          }
+        }
 
       }
 

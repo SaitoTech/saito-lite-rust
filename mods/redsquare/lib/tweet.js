@@ -221,24 +221,16 @@ class RedSquareTweet {
       e.preventDefault();
       e.stopImmediatePropagation();
 
+      tweet_self = this;
       let ptweet = new PostTweet(app, mod);
       ptweet.parent_id = this.tx.transaction.sig;
       ptweet.thread_id = this.thread_id;
       ptweet.render(app, mod);
 
       let html = TweetTemplate(app, mod, this, 0);
-      app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
+      app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
 
       app.browser.addIdentifiersToDom();
-
-      // increase num likes
-      sel = ".tweet-tool-comment-count-" + this.tx.transaction.sig;
-      let obj = document.querySelector(sel);
-      obj.innerHTML = parseInt(obj.innerHTML) + 1;
-      if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-        obj.parentNode.classList.remove("saito-tweet-no-activity");
-        obj.parentNode.classList.add("saito-tweet-activity");
-      }
     };
 
 
