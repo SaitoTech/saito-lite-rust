@@ -63,7 +63,6 @@ class Post {
       }
 
       setTimeout(() => {
-
         let newtx = mod.sendTweetTransaction(app, mod, data);
         mod.addTweetFromTransaction(app, mod, newtx, true);
 
@@ -83,6 +82,20 @@ class Post {
         post_self.overlay.hide();
         // document.getElementById("redsquare-new-tweets-banner").style.display = 'block';
       }, 1000);
+
+        // check if posting tweet from overlay (reply tweet)
+        // if yes then update reply counter
+        if (e.target.parentNode.id == 'redsquare-tweet-overlay') {
+          let sig = e.target.parentNode.querySelector('.post-tweet-preview').getAttribute('data-id');
+
+          let sel = ".tweet-tool-comment-count-" + sig;
+          let obj = document.querySelector(sel);
+          obj.innerHTML = parseInt(obj.innerHTML) + 1;
+          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+            obj.parentNode.classList.remove("saito-tweet-no-activity");
+            obj.parentNode.classList.add("saito-tweet-activity");
+          }
+        }
 
     }
 

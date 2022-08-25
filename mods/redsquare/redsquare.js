@@ -22,7 +22,7 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "EOpen Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
-    this.saitoLoader = new SaitoLoader(app, this)
+    this.saitoLoader = new SaitoLoader(app, this);
     this.redsquare = {}; // where settings go, saved to options file
 
     this.sqlcache_enabled = 1;

@@ -3,6 +3,8 @@ const TweetTemplate = require("./tweet.template");
 const PostTweet = require("./post");
 const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoLoader = require("./../../../lib/saito/new-ui/saito-loader/saito-loader");
+const AddFrndTemplate = require("./add-frnd.template");
 
 class RedSquareTweet {
 
@@ -88,6 +90,7 @@ class RedSquareTweet {
     //
     this.generateTweetProperties(app, mod, 0);
 
+    this.saitoLoader = new SaitoLoader(app, this);
   }
 
 
@@ -183,6 +186,7 @@ class RedSquareTweet {
       }
     }
 
+    app.browser.addIdentifiersToDom();
     this.attachEvents(app, mod);
   }
 
@@ -197,6 +201,8 @@ class RedSquareTweet {
       //e.preventDefault();
       //e.stopImmediatePropagation();
 
+      this.saitoLoader.render(app, mod, 'redsquare-home-header', false);
+
       let el = e.currentTarget;
 
       let tweet_sig_id = el.getAttribute("data-id");
@@ -208,12 +214,20 @@ class RedSquareTweet {
       document.querySelector(".saito-back-button").onclick = (e) => {
         app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
         mod.renderMainPage(app, mod);
+        let redsquareUrl = window.location.origin + window.location.pathname;
+        window.history.pushState({}, document.title, redsquareUrl);  
       }
 
       // // mod.fetchTweetsFromServer(app, mod, tweet_sig_id, function(app, mod) {mod.renderWithChildren(app, mod,)})
       let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
       mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, tweet_sig_id); });
 
+      if (!window.location.href.includes('type=tweet')) {
+        let tweetUrl = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;      
+        window.history.pushState({}, document.title, tweetUrl);  
+      }
+
+      this.saitoLoader.remove();
 
     };
 
@@ -226,22 +240,16 @@ class RedSquareTweet {
       e.preventDefault();
       e.stopImmediatePropagation();
 
+      tweet_self = this;
       let ptweet = new PostTweet(app, mod);
       ptweet.parent_id = this.tx.transaction.sig;
       ptweet.thread_id = this.thread_id;
       ptweet.render(app, mod);
 
       let html = TweetTemplate(app, mod, this, 0);
-      app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
+      app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
 
-      // increase num likes
-      sel = ".tweet-tool-comment-count-" + this.tx.transaction.sig;
-      let obj = document.querySelector(sel);
-      obj.innerHTML = parseInt(obj.innerHTML) + 1;
-      if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-        obj.parentNode.classList.remove("saito-tweet-no-activity");
-        obj.parentNode.classList.add("saito-tweet-activity");
-      }
+      app.browser.addIdentifiersToDom();
     };
 
 
@@ -307,7 +315,7 @@ class RedSquareTweet {
         obj.parentNode.classList.remove("saito-tweet-no-activity");
         obj.parentNode.classList.add("saito-tweet-activity");
       };
-    };
+    };  
 
 
     //
@@ -355,11 +363,39 @@ class RedSquareTweet {
         oImg.setAttribute('src', imgdata_uri);
         document.querySelector('#tweet-overlay-img-cont').appendChild(oImg);
 
+        let img_width =  oImg.width;
+        let img_height = oImg.height;
+        let aspRatio = img_width/img_height;
+
+        let winHeight = window.innerHeight;
+        let winWidth = window.innerWidth;
+
+        if (aspRatio > 1) {
+          oImg.style.width = '95vw';
+          oImg.style.height = 'auto';
+
+           if (oImg.height > winHeight) {
+            oImg.style.width = (oImg.width*0.75)+'px';
+          }
+        } else {
+          oImg.style.height = '95vh';
+          oImg.style.width = 'auto';
+
+          if (oImg.width > winWidth) {
+            oImg.height = (oImg.height*0.75)+'px';
+          }
+        }
       }
 
       if (e.target.classList.contains('tweet-link')) {
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
+      }
+
+
+      if (e.target.classList.contains('saito-identicon')) {
+        let img_overlay = new SaitoOverlay(app, mod);
+        img_overlay.show(app, mod, AddFrndTemplate(app, mod));
       }
     });
   }

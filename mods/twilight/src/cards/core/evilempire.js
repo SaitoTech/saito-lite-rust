@@ -6,6 +6,7 @@
 
       this.game.state.events.evilempire = 1;
       this.game.state.events.flowerpower = 0; //Cancel Flower Power
+      this.cancelEvent("flowerpower");
 
       this.game.state.vp += 1;
       this.updateVictoryPoints();
