@@ -2558,10 +2558,13 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["olympic", "redscare", "usjapan", "duckandcover", "fiveyearplan", "koreanwar", "marshall"];
+          this.game.deck[0].hand = ["flowerpower", "teardown", "evilempire", "northseaoil", "opec", "fiveyearplan", "koreanwar", "marshall"];
         } else {
-          this.game.deck[0].hand = ["debtcrisis", "fidel", "destalinization", "nato", "warsawpact", "vietnamrevolts", "europe", "china"];
+          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "vietnamrevolts", "wargames", "china"];
         }
+
+	this.game.state.round = 7;
+ 	this.displayBoard();
       }
 
       //
@@ -2640,6 +2643,10 @@ try {
       let card   = mv[4] || "";
 
       this.game.state.headline = 1;
+
+      //
+      //
+      this.cancelEventsDynamically();
 
       let x = this.playHeadlinePostModern(stage, hash, xor, card);
       //
@@ -2980,16 +2987,9 @@ try {
         start_turn_game_queue = null;
       }
 
-
-      // 
-      // track events which are cancelled / cancellable dynamically 
-      // 
-      if (this.game.state.defcon != 2) {
-        this.cancelEvent("wargames");
-      } else {
-        this.uncancelEvent("wargames");
-      }
-
+      //
+      // cancel events
+      this.cancelEventsDynamically();
 
 
       //
@@ -6133,17 +6133,6 @@ playerTurnHeadlineSelected(card, player) {
     state.limit_region = [];
     state.limit_ignoredefcon = 0;
 
-    //
-    // OPTIONS - we default to the expanded deck
-    //
-    if (this.game.options.deck != "original" ) {
-      deck['defectors']       = { img : "TNRnTS-103" ,name : "Defectors", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
-      deck['cambridge']       = { img : "TNRnTS-104" ,name : "The Cambridge Five", scoring : 0 , player : "ussr"   , recurring : 1 , ops : 2 };
-      deck['specialrelation'] = { img : "TNRnTS-105" ,name : "Special Relationship", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
-      deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
-    }
-
-
     // track as US (+) and USSR (-)
     state.vp    = 0;
 
@@ -8343,9 +8332,10 @@ playerTurnHeadlineSelected(card, player) {
     }
 
 
-    //if (this.game.state.events.cancelled[card] == 1) {
+    if (this.game.state.events.cancelled[cardname] == 1) {
       html += `<img class="${cardclass}" src="/twilight/img/cancel_x.png" />`;
-    //}
+    }
+
 
     return html
   }
@@ -8704,6 +8694,48 @@ playerTurnHeadlineSelected(card, player) {
   }
 
 
+  // 
+  // track events which are cancelled / cancellable dynamically 
+  // 
+  cancelEventsDynamically() {
+
+      // NATO
+      if (this.game.state.events.marshall == 1 || this.game.state.events.warsawpact == 1) {
+	this.uncancelEvent("nato");
+      } else {
+	this.cancelEvent("nato");
+      }
+
+      // cambridge-five late war
+      if (this.game.state.round >= 8) {
+        this.cancelEvent("cambridge");
+      }
+      // wargames, if decon is 2
+      if (this.game.state.defcon != 2) {
+        this.cancelEvent("wargames");
+      } else {
+        this.uncancelEvent("wargames");
+      }
+      // onesmallstep - if we are behind/ahead
+      if (this.game.player == 2) { 
+	if (this.game.state.space_race_us_counter >= this.game.state.space_race_ussr_counter) {
+	  this.cancelEvent("onesmallstep");
+        } else {
+	  this.uncancelEvent("onesmallstep");
+	}
+      } else {
+	if (this.game.state.space_race_ussr_counter >= this.game.state.space_race_us_counter) {
+	  this.cancelEvent("onesmallstep");
+        } else {
+	  this.uncancelEvent("onesmallstep");
+	}
+      }
+
+
+
+
+
+  }
 
 
   /////////////////
