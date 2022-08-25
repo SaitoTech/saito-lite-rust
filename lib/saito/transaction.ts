@@ -23,11 +23,11 @@ export enum TransactionType {
 class Transaction {
 
   public transaction = {
-    to: [],
-    from: [],
+    to: new Array<Slip>(),
+    from: new Array<Slip>(),
     ts: 0,
     sig: "",
-    path: [],
+    path: new Array<Hop>(),
     r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
     type: TransactionType.Normal,
     m: Buffer.alloc(0),
@@ -116,11 +116,11 @@ class Transaction {
         return this;
     }
 
-    addInput(slip) {
+    addInput(slip:Slip) {
         this.transaction.from.push(slip);
     }
 
-    addOutput(slip) {
+    addOutput(slip:Slip) {
         this.transaction.to.push(slip);
     }
 
@@ -147,7 +147,7 @@ class Transaction {
         return tx;
     }
 
-    decryptMessage(app) {
+    decryptMessage(app:Saito) {
         if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
             try {
                 if (this.msg === null) {
@@ -261,7 +261,7 @@ class Transaction {
         }
     }
 
-    generateRebroadcastTransaction(app, output_slip_to_rebroadcast, with_fee, with_staking_subsidy) {
+    generateRebroadcastTransaction(app:Saito, output_slip_to_rebroadcast, with_fee, with_staking_subsidy) {
         const transaction = new Transaction();
 
         let output_payment = BigInt(0);
@@ -333,7 +333,7 @@ class Transaction {
         return this.returnSlipsTo(receiverPublicKey).length > 0;
     }
 
-    onChainReorganization(app, lc, block_id) {
+    onChainReorganization(app:Saito, lc, block_id) {
         let input_slip_value = 1;
         let output_slip_value = 0;
 
@@ -395,8 +395,8 @@ class Transaction {
                 // do not count outputs in GT and FEE txs create outputs that cannot be counted.
                 //
                 if (
-                    this.transaction.to[v].type !== TransactionType.Fee &&
-                    this.transaction.to[v].type !== TransactionType.GoldenTicket
+                    this.transaction.to[v].type !== SlipType.ATR &&
+                    this.transaction.to[v].type !== SlipType.VipInput
                 ) {
                     outputs += this.transaction.to[v].returnAmount();
                 }
@@ -428,7 +428,7 @@ class Transaction {
         return this.msg;
     }
 
-    returnPaymentTo(publickey) {
+    returnPaymentTo(publickey:string) {
         const slips = this.returnSlipsToAndFrom(publickey);
         let x = BigInt(0);
         for (let v = 0; v < slips.to.length; v++) {
@@ -451,7 +451,7 @@ class Transaction {
         return uf;
     }
 
-    returnSignature(app, force = 0) {
+    returnSignature(app:Saito, force = 0) {
         if (this.transaction.sig !== "" && force != 1) {
             return this.transaction.sig;
         }
@@ -459,7 +459,7 @@ class Transaction {
         return this.transaction.sig;
     }
 
-    returnSlipsFrom(publickey) {
+    returnSlipsFrom(publickey:string) {
         const x = [];
         if (this.transaction.from != null) {
             for (let v = 0; v < this.transaction.from.length; v++) {
@@ -471,7 +471,7 @@ class Transaction {
         return x;
     }
 
-    returnSlipsToAndFrom(publickey) {
+    returnSlipsToAndFrom(publickey:string) {
         const x: any = {};
         x.from = [];
         x.to = [];
@@ -492,7 +492,7 @@ class Transaction {
         return x;
     }
 
-    returnSlipsTo(publickey) {
+    returnSlipsTo(publickey:string) {
         const x = [];
         if (this.transaction.to != null) {
             for (let v = 0; v < this.transaction.to.length; v++) {
@@ -504,7 +504,7 @@ class Transaction {
         return x;
     }
 
-    returnWinningRoutingNode(random_number) {
+    returnWinningRoutingNode(random_number:string) {
         //
         // if there are no routing paths, we return the sender of
         // the payment, as they're got all of the routing work by
@@ -668,7 +668,7 @@ class Transaction {
         return ret;
     }
 
-    serializeForSignature(app): Buffer {
+    serializeForSignature(app:Saito): Buffer {
         let buffer = Buffer.from(app.binary.u64AsBytes(this.transaction.ts));
 
         for (let i = 0; i < this.transaction.from.length; i++) {
@@ -700,7 +700,7 @@ class Transaction {
     //
     // everything but the signature
     //
-    presign(app) {
+    presign(app:Saito) {
         //
         // set slip ordinals
         //
@@ -720,7 +720,7 @@ class Transaction {
         }
     }
 
-    sign(app) {
+    sign(app:Saito) {
         //
         // everything but the signature
         //
@@ -732,7 +732,7 @@ class Transaction {
         );
     }
 
-    validate(app) {
+    validate(app:Saito) {
         //
         // Fee Transactions are validated in the block class. There can only
         // be one per block, and they are checked by ensuring the transaction hash
@@ -868,7 +868,7 @@ class Transaction {
         return true;
     }
 
-    validateRoutingPath(app) {
+    validateRoutingPath(app:Saito) {
         console.log("JS needs to validate routing paths still...");
 
         if (!this.path){
@@ -878,7 +878,7 @@ class Transaction {
             let buffer = Buffer.concat([Buffer.from(this.transaction.sig, "hex"), Buffer.from(this.path[i].to, "hex")]);
             let hash = app.crypto.hash(buffer);
 
-            if (!app.crypto.verifyHash(hash, this.path[i].sig, this.path[i].from)) {
+            if (!app.crypto.verifyHash(buffer, this.path[i].sig, this.path[i].from)) {
                 console.warn(`transaction path is not valid`);
                 return false;
             }
@@ -893,7 +893,7 @@ class Transaction {
         return true;
     }
 
-    validateSignature(app) {
+    validateSignature(app:Saito) {
         //
         // validate signature
         //
@@ -923,7 +923,7 @@ class Transaction {
         return BigInt(0);
     }
 
-    hasPublicKey(publickey) {
+    hasPublicKey(publickey:string) {
         const slips = this.returnSlipsToAndFrom(publickey);
         if (slips.to.length > 0 || slips.from.length > 0) {
             return true;
@@ -932,11 +932,11 @@ class Transaction {
     }
 
     /* stolen from app crypto to avoid including app */
-    stringToBase64(str) {
+    stringToBase64(str:string) {
         return Buffer.from(str, "utf-8").toString("base64");
     }
 
-    base64ToString(str) {
+    base64ToString(str:string) {
         return Buffer.from(str, "base64").toString("utf-8");
     }
 }

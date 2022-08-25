@@ -10,7 +10,7 @@ class Blockchain {
     last_block_hash: "",
     last_block_id: BigInt(0),
     last_timestamp: new Date().getTime(),
-    last_burnfee: 0,
+    last_burnfee: BigInt(0),
 
     // earliest in epoch
     genesis_period: BigInt(100000),
@@ -123,7 +123,7 @@ class Blockchain {
     return;
   }
 
-  async addBlockToBlockchain(block, force = 0) {
+  async addBlockToBlockchain(block:Block, force = 0) {
     //
     //
     //
@@ -226,8 +226,8 @@ class Blockchain {
     //
     // find shared ancestor
     //
-    let new_chain = [];
-    let old_chain = [];
+    let new_chain = new Array<string>();
+    let old_chain = new Array<string>();
     let shared_ancestor_found = false;
     let new_chain_hash = block_hash;
     let old_chain_hash = previous_block_hash;
@@ -302,7 +302,7 @@ class Blockchain {
 
           let disconnected_block_id = this.app.blockring.returnLatestBlockId();
 
-          for (let i = block.returnId() + 1; i < disconnected_block_id; i++) {
+          for (let i = block.returnId() + BigInt(1); i < disconnected_block_id; i++) {
             let disconnected_block_hash =
               this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
             if (disconnected_block_hash) {
@@ -314,7 +314,7 @@ class Blockchain {
             }
           }
 
-          new_chain = [];
+          new_chain = new Array<string>();
           new_chain.push(block.returnHash());
           am_i_the_longest_chain = 1;
         }
@@ -388,7 +388,7 @@ class Blockchain {
     }
   }
 
-  async addBlockSuccess(block) {
+  async addBlockSuccess(block:Block) {
     //console.log("blockchain.addBlockSuccess : ", block.returnHash());
     this.app.blockring.print();
 
@@ -506,7 +506,7 @@ class Blockchain {
     }
   }
 
-  async addBlockFailure(block) {
+  async addBlockFailure(block:Block) {
     if (this.debugging) {
       console.log("FAILURE: " + block.returnHash());
     }
@@ -680,7 +680,7 @@ class Blockchain {
     }
   }
 
-  generateLastSharedAncestor(peer_latest_block_id : bigint, fork_id) : bigint {
+  generateLastSharedAncestor(peer_latest_block_id : bigint, fork_id:string) : bigint {
     let my_latest_block_id = this.app.blockring.returnLatestBlockId();
 
     let pbid: bigint = peer_latest_block_id;
@@ -816,7 +816,7 @@ class Blockchain {
     this.app.mempool.bundling_active = false;
   }
 
-  isNewChainTheLongestChain(new_chain, old_chain) {
+  isNewChainTheLongestChain(new_chain:Array<string>, old_chain:Array<string>) {
     if (this.app.blockring.isEmpty()) {
       return true;
     }
@@ -843,7 +843,7 @@ class Blockchain {
     return old_chain.length < new_chain.length && old_bf <= new_bf;
   }
 
-  isBlockIndexed(block_hash) {
+  isBlockIndexed(block_hash:string):boolean {
     return this.blocks.has(block_hash);
   }
 
@@ -879,7 +879,7 @@ class Blockchain {
   // tracking variables updated as the chain gets new blocks. also
   // pre-loads any blocks needed to improve performance.
   //
-  async onChainReorganization(block, lc = false) {
+  async onChainReorganization(block:Block, lc = false) {
     //
     // skip out if earlier than we need to be vis-a-vis last_block_id
     //
@@ -934,7 +934,7 @@ class Blockchain {
     this.blockchain.last_block_hash = "";
     this.blockchain.last_block_id = BigInt(0);
     this.blockchain.last_timestamp = new Date().getTime();
-    this.blockchain.last_burnfee = 0;
+    this.blockchain.last_burnfee = BigInt(0);
 
     //
     // earliest in epoch
@@ -952,7 +952,7 @@ class Blockchain {
     this.saveBlockchain();
   }
 
-  returnDifficulty() {
+  returnDifficulty() :number{
     return 1;
   }
 
@@ -961,20 +961,20 @@ class Blockchain {
   }
 
   //  TODO fix
-  returnLowestSpendableBlock() {
-    return 0;
+  returnLowestSpendableBlock():bigint {
+    return BigInt(0);
   }
 
   // returns header info as indexed, txs and purged data not guaranteed
-  returnLatestBlock() {
+  returnLatestBlock() :Block|null{
     return this.app.blockring.returnLatestBlock();
   }
 
-  returnLatestBlockHash() {
+  returnLatestBlockHash():string {
     return this.app.blockring.returnLatestBlockHash();
   }
 
-  returnLatestBlockId() {
+  returnLatestBlockId() :bigint{
     return this.app.blockring.returnLatestBlockId();
   }
 
@@ -983,7 +983,7 @@ class Blockchain {
     this.app.storage.saveOptions();
   }
 
-  async unwindChain(new_chain, old_chain, current_unwind_index, wind_failure) {
+  async unwindChain(new_chain:Array<string>, old_chain:Array<string>, current_unwind_index:number, wind_failure:boolean) : Promise<boolean> {
     let block = await this.loadBlockAsync(old_chain[current_unwind_index]);
 
     // utxoset update
@@ -1018,7 +1018,7 @@ class Blockchain {
     }
   }
 
-  async updateGenesisPeriod(longest_chain_block) {
+  async updateGenesisPeriod(longest_chain_block:Block) {
     //
     // we need to make sure this is not a random block that is disconnected
     // from our previous genesis_id. If there is no connection between it
@@ -1060,7 +1060,7 @@ class Blockchain {
   }
 
   async doesChainMeetGoldenTicketRequirements(
-    previous_block_hash,
+    previous_block_hash:string,
     current_block_has_golden_ticket = false
   ) {
     //
@@ -1131,7 +1131,7 @@ class Blockchain {
     return true;
   }
 
-  async validate(new_chain, old_chain) {
+  async validate(new_chain:Array<string>, old_chain:Array<string>) {
     let block = this.blocks.get(new_chain[0]);
     let previous_block_hash = block.returnPreviousBlockHash();
 
@@ -1162,7 +1162,7 @@ class Blockchain {
     }
   }
 
-  async windChain(new_chain, old_chain, current_wind_index, wind_failure) {
+  async windChain(new_chain:Array<string>, old_chain:Array<string>, current_wind_index:number, wind_failure:boolean) :Promise<boolean>{
     //
     // if we are winding a non-existent chain with a wind_failure it
     // means our wind attempt failed and we should move directly into

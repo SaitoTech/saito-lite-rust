@@ -1,3 +1,5 @@
+import {Saito} from "../../apps/core";
+
 export enum SlipType {
   Normal = 0,
   ATR = 1,
@@ -12,7 +14,7 @@ export enum SlipType {
 
 class Slip {
   public add: string;
-  public amt: BigInt;
+  public amt: bigint;
   public type: SlipType;
   public uuid: string;
   public sid: number;
@@ -46,7 +48,7 @@ class Slip {
     this.key = ""; // index in utxoset hashmap
   }
 
-  returnAmount() {
+  returnAmount() :bigint {
     return this.amt;
   }
 
@@ -63,7 +65,7 @@ class Slip {
   // 2 = other is bigger
   // 3 = same
   //
-  compare(other_slip) {
+  compare(other_slip:Slip):number {
     const x = BigInt("0x" + this.returnPublicKey());
     const y = BigInt("0x" + other_slip.returnPublicKey());
 
@@ -97,10 +99,10 @@ class Slip {
     return new Slip(this.add, BigInt(this.amt.toString()), this.type, this.uuid, this.sid, this.lc);
   }
 
-  deserialize(app, buffer) {
+  deserialize(app:Saito, buffer) {
     this.add = app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
     this.uuid = Buffer.from(buffer.slice(33, 65)).toString("hex");
-    this.amt = app.binary.u64FromBytes(buffer.slice(65, 73)).toString();
+    this.amt = app.binary.u64FromBytes(buffer.slice(65, 73));
     this.sid = app.binary.u8FromByte(buffer[73]);
     this.type = app.binary.u8FromByte(buffer[74]);
 
@@ -115,7 +117,7 @@ class Slip {
     return 1;
   }
 
-  onChainReorganization(app, lc, slip_value) {
+  onChainReorganization(app:Saito, lc, slip_value) {
     if (this.isNonZeroAmount()) {
       app.utxoset.update(this.returnKey(), slip_value);
     }
@@ -139,7 +141,7 @@ class Slip {
    * @param app
    * @param uuid
    */
-  serialize(app, uuid = "") {
+  serialize(app:Saito, uuid = "") {
     if (uuid === "") {
       uuid = this.uuid;
     }
@@ -148,7 +150,7 @@ class Slip {
     }
 
     const publickey = app.binary.hexToSizedArray(
-      app.crypto.fromBase58(this.add).toString("hex"),
+      app.crypto.fromBase58(this.add),
       33
     );
     const uuidx = app.binary.hexToSizedArray(uuid, 32);
@@ -160,18 +162,19 @@ class Slip {
     return new Uint8Array([...publickey, ...uuidx, ...amount, slip_ordinal, ...slip_type]);
   }
 
-  serializeInputForSignature(app) {
+  serializeInputForSignature(app:Saito) : Uint8Array {
     return this.serialize(app, this.uuid);
   }
 
-  serializeOutputForSignature(app) {
+  serializeOutputForSignature(app:Saito) : Uint8Array {
     return this.serialize(app, "0");
     //(new Array(32).fill(0).toString()));
   }
 
-  validate(app) {
+  validate(app:Saito) : boolean {
     if (this.amt > BigInt(0)) {
-      return !!app.utxoset.isSpendable(this.returnKey());
+      return false; // TODO : isSpendable is not implemented. so returning false here for now just to catch bugs.
+      // return !!app.utxoset.isSpendable(this.returnKey());
     } else {
       return true;
     }

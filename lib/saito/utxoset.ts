@@ -1,23 +1,20 @@
 class UtxoSet {
-  public slips: any;
+  public slips: Map<string, number>;
 
   constructor() {
-    this.slips = [];
+    this.slips = new Map<string, number>();
   }
 
-  update(slipkey, val) {
-    this.slips[slipkey] = val;
+  update(slipkey:string, val:number) {
+    this.slips.set(slipkey, val);
   }
 
-  delete(slipkey) {
-    delete this.slips[slipkey];
+  delete(slipkey:string) {
+     this.slips.delete(slipkey);
   }
 
-  validate(slipkey) {
-    if (this.slips[slipkey] == 1) {
-      return true;
-    }
-    return false;
+  validate(slipkey:string) {
+    return this.slips.get(slipkey) === 1;
   }
 }
 

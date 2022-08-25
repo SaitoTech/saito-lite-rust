@@ -4,6 +4,7 @@ import Transaction, { HOP_SIZE, SLIP_SIZE, TRANSACTION_SIZE, TransactionType } f
 import { Saito } from "../../apps/core";
 import Goldenticket from "./goldenticket";
 import GoldenTicket from "./goldenticket";
+import UtxoSet from "./utxoset";
 
 const BLOCK_HEADER_SIZE = 245;
 
@@ -126,7 +127,7 @@ class Block {
   }
 
   // called when a block is deleted from the chain for good
-  deleteBlock(utxoset) {
+  deleteBlock(utxoset:UtxoSet) {
     // remove from disk, etc.
   }
 
