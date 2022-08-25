@@ -73,7 +73,6 @@ class RedSquareTweet {
     if (this.thread_id === "") {
       this.thread_id = tx.transaction.sig;
     }
-    // prefer server-provided updated-info as it will have context for TX-order
     if (tx.optional?.updated_at) {
       this.updated_at = tx.optional.updated_at;
     }
@@ -83,7 +82,6 @@ class RedSquareTweet {
     if (tx.optional?.num_retweets) {
       this.num_retweets = tx.optional.num_retweets;
     }
-
 
     //
     // 0 = do not fetch open graph
@@ -109,6 +107,27 @@ class RedSquareTweet {
     return null;
   }
 
+  returnKeys() {
+    let keys = [];
+    for (let i = 0; i < this.tx.transaction.to.length; i++) {
+      if (!keys.include(this.tx.transaction.to[i].add)) {
+        keys.push(this.tx.transaction.to[i].add);
+      }
+    }
+    let w = this.app.browser.extractKeys(this.text);
+ 
+    for (let i = 0; i < w.length; i++) {
+      if (w[i].length > 0) {
+	if (w[i][0] === '@') {
+	  let add = this.app.keys.returnPublicKeyByIdentifier(w[i].substring(1));
+	  if (!keys.include(add)) {
+	    keys.push(add);
+	  }
+	}
+      }
+    }
+    return keys();
+  }
 
   isCriticalChild(app, mod, tweet) {
     for (let i = 0; i < tweet.tx.transaction.to.length; i++) {
@@ -192,6 +211,8 @@ class RedSquareTweet {
 
   attachEvents(app, mod) {
 
+    tweet_self = this;
+
     //
     // render tweet with children
     //
@@ -240,8 +261,7 @@ class RedSquareTweet {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      tweet_self = this;
-      let ptweet = new PostTweet(app, mod);
+      let ptweet = new PostTweet(app, mod, tweet_self);
       ptweet.parent_id = this.tx.transaction.sig;
       ptweet.thread_id = this.thread_id;
       ptweet.render(app, mod);

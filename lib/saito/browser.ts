@@ -224,6 +224,26 @@ class Browser {
   }
 
 
+  extractKeys(text) {
+
+    let keys = [];
+
+    let w = text.split(/(\s+)/);
+    for (let i = 0; i < w.length; i++) {
+      if (w[i].length > 0) {
+        if (w[i][0] === '@') {
+          let add = this.app.keys.returnPublicKeyByIdentifier(w[i].substring(1));
+          if (!keys.include(add)) {
+            keys.push(add);
+          }
+        }
+      }
+    }
+
+    return keys;
+  }
+
+
   returnInviteLink(email = "") {
     let { protocol, host, port } = this.app.options.peers[0];
     let url_payload = encodeURIComponent(this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email))));

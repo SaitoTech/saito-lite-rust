@@ -4,17 +4,17 @@ const JSON = require('json-bigint');
 
 class Post {
 
-  constructor(app, mod) {
+  constructor(app, mod, tweet = null) {
     this.app = app;
     this.mod = mod;
     this.overlay = new SaitoOverlay(app, mod);
     this.parent_id = "";
     this.thread_id = "";
     this.images = [];
+    this.tweet = tweet;
   }
 
   render(app, mod) {
-
     this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();
@@ -30,9 +30,7 @@ class Post {
         if (this.images.length >= 4) {
           salert("Maximum 4 images allowed per tweet.");
         } else {
-
           this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
-
         }
       },
       false);
@@ -47,12 +45,23 @@ class Post {
       let thread_id = document.getElementById("thread_id").value;
 
       //
+      // extracting keys from text AND then tweet
+      //
+      let keys = app.browser.extractKeys(text);
+      if (this.tweet != null) {
+        for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
+          if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
+            keys.push(this.tweet.tx.transaction.to[i].add);
+          }
+        }
+      }
+
+      //
       // saito-loader
       //
       post_self.overlay.hide();
       post_self.overlay.closebox = false;
       post_self.overlay.show(app, mod, '<div class="saito-loader"></div>');
-
 
       let data = { text: text };
       if (parent_id !== "") {
@@ -62,17 +71,30 @@ class Post {
         data['images'] = this.images;
       }
 
+      //
+      // check if posting tweet from overlay (reply tweet)
+      // if yes then update reply counter
+      //
+      if (e.target.parentNode.id == 'redsquare-tweet-overlay') {
+        let sig = e.target.parentNode.querySelector('.post-tweet-preview').getAttribute('data-id');
+        let sel = ".tweet-tool-comment-count-" + sig;
+        let obj = document.querySelector(sel);
+        obj.innerHTML = parseInt(obj.innerHTML) + 1;
+        if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+          obj.parentNode.classList.remove("saito-tweet-no-activity");
+          obj.parentNode.classList.add("saito-tweet-activity");
+        }
+      }
+
       setTimeout(() => {
-        let newtx = mod.sendTweetTransaction(app, mod, data);
+
+        let newtx = mod.sendTweetTransaction(app, mod, data, keys);
         mod.addTweetFromTransaction(app, mod, newtx, true);
 
         if (thread_id !== "") {
-          console.log("RENDER MAIN PAGE");
           mod.renderWithChildren(app, mod, thread_id);
-          //mod.renderMainPage(app, mod);
         } else {
           if (parent_id !== "") {
-            console.log("RENDER WITH CHILDREN");
             mod.renderWithChildren(app, mod, parent_id);
           } else {
             mod.renderMainPage(app, mod);
@@ -80,22 +102,8 @@ class Post {
         }
 
         post_self.overlay.hide();
-        // document.getElementById("redsquare-new-tweets-banner").style.display = 'block';
       }, 1000);
 
-        // check if posting tweet from overlay (reply tweet)
-        // if yes then update reply counter
-        if (e.target.parentNode.id == 'redsquare-tweet-overlay') {
-          let sig = e.target.parentNode.querySelector('.post-tweet-preview').getAttribute('data-id');
-
-          let sel = ".tweet-tool-comment-count-" + sig;
-          let obj = document.querySelector(sel);
-          obj.innerHTML = parseInt(obj.innerHTML) + 1;
-          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-            obj.parentNode.classList.remove("saito-tweet-no-activity");
-            obj.parentNode.classList.add("saito-tweet-activity");
-          }
-        }
 
     }
 
@@ -105,7 +113,6 @@ class Post {
           let array_position = e.target.getAttribute("data-id");
           e.target.parentNode.remove();
           (post_self.images).splice(array_position, 1);
-          console.log(post_self.images);
           document.querySelectorAll('.post-tweet-img-preview-close').forEach(el2 => {
             let array_position2 = el2.getAttribute("data-id");
             if (array_position2 > array_position) {
@@ -117,6 +124,8 @@ class Post {
     });
 
   }
+
+
 
   resizeImg(img, dimensions, quality) {
     let post_self = this;
@@ -170,13 +179,6 @@ class Post {
         return result_img_uri;
       }
     };
-
-
-
-
-
-
-
   }
 }
 

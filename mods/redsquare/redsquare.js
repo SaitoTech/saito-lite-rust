@@ -113,11 +113,7 @@ class RedSquare extends ModTemplate {
         this.tweets[i - 1] = y;
       }
     }
-
-
-
   }
-
 
   initializeHTML(app) {
     this.saito_loader.render(app, this, '', true);
@@ -530,7 +526,7 @@ class RedSquare extends ModTemplate {
   }
 
 
-  sendTweetTransaction(app, mod, data) {
+  sendTweetTransaction(app, mod, data, keys=[]) {
 
     let redsquare_self = this;
 
@@ -545,6 +541,11 @@ class RedSquare extends ModTemplate {
 
     let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] !== app.wallet.returnPublicKey()) {
+        newtx.transaction.to.push(new saito.default.slip(keys[i]));
+      }
+    }
     newtx = redsquare_self.app.wallet.signTransaction(newtx);
     redsquare_self.app.network.propagateTransaction(newtx);
 
@@ -705,6 +706,7 @@ class RedSquare extends ModTemplate {
     return;
 
   }
+
 
 
   loadRedSquare() {
