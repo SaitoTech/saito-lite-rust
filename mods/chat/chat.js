@@ -261,10 +261,12 @@ class Chat extends ModTemplate {
                             //
                             if (this.added_identifiers_post_load == 0) {
                                 try {
-                                    setTimeout(() => {
-                                        this.app.browser.addIdentifiersToDom();
-                                        this.added_identifiers_post_load = 1;
-                                    }, 1200);
+                                    if (this.app.BROWSER === 1) {
+                                        setTimeout(() => {
+                                            this.app.browser.addIdentifiersToDom();
+                                            this.added_identifiers_post_load = 1;
+                                        }, 1200);
+                                    }
                                 } catch (err) {
                                     console.log("error adding identifiers post-chat");
                                 }
@@ -281,19 +283,19 @@ class Chat extends ModTemplate {
 
                     this.sendEvent('chat-render-request', {});
 
-		    //
-		    // check identifiers
-		    //
-		    if (this.added_identifiers_post_load == 0) {
-		      try {
-			setTimeout(()=>{
-		          this.app.browser.addIdentifiersToDom();
-		          this.added_identifiers_post_load = 1;
-			}, 1200);
-		      } catch (err) {
-			console.log("error adding identifiers post-chat");
-		      }
-		    }
+                    //
+                    // check identifiers
+                    //
+                    if (this.added_identifiers_post_load == 0) {
+                        try {
+                            setTimeout(() => {
+                                this.app.browser.addIdentifiersToDom();
+                                this.added_identifiers_post_load = 1;
+                            }, 1200);
+                        } catch (err) {
+                            console.log("error adding identifiers post-chat");
+                        }
+                    }
                 }
 
 
