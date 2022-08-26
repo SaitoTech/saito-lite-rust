@@ -907,7 +907,9 @@ class Browser {
 
       Array.from(identifiers).forEach((identifier) => {    
         identifier.addEventListener("click", (e) => {
-          
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
           let identiconUri = e.target.getAttribute("src");
           let publickey = e.target.getAttribute("data-id");
 

@@ -99,3 +99,7 @@
   margin-bottom: 1rem;
 }
 
+
+#saito-confirm-add-pubkey > .saito-contact-status {
+  text-align: center;
+}
