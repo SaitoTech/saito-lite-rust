@@ -1079,7 +1079,7 @@ class Network {
           return;
         } else {
           if (this.debugging) {
-            console.log(" ... added transaction");
+            console.log(" ... added transaction : "+tx.transaction.sig);
           }
         }
         if (this.app.mempool.canBundleBlock()) {

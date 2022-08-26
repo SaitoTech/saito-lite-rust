@@ -545,21 +545,17 @@ class Block {
       let next_random_number = this.app.crypto.hash(gt.random_hash);
       const miner_publickey = gt.creator;
 
-      //
-      // limit previous block payout to avg income
-      //
-      let previous_block_payout = previous_block.returnFeesTotal();
-      if (
-        previous_block_payout > BigInt(Number(previous_block.block.avg_income) * 1.25) &&
-        previous_block_payout > 50
-      ) {
-        previous_block_payout = BigInt(Number(previous_block.block.avg_income) * 1.24);
-      }
-
-      //
       // miner payout is fees from previous block, no staking treasury
-      //
       if (previous_block) {
+        // limit previous block payout to avg income
+        let previous_block_payout = previous_block.returnFeesTotal();
+        if (
+            previous_block_payout > BigInt(Number(previous_block.block.avg_income) * 1.25) &&
+            previous_block_payout > 50
+        ) {
+          previous_block_payout = BigInt(Number(previous_block.block.avg_income) * 1.24);
+        }
+
         const miner_payment = previous_block_payout / BigInt(2);
         const router_payment = previous_block_payout  - miner_payment;
 
