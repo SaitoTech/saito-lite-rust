@@ -28,7 +28,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
     }
 
     if (app.modules.returnActiveModule().name == "Arcade" && league.game && league.myRank > 0 && league.admin !== "saito"){
-      if (mod.checkDate(league.enddate)){
+      if (mod.checkDate(league.enddate) && mod.checkDate(league.startdate, true)){
         html += `<div><button type="button" id="game-invite-btn" class="game-invite-btn" >Create Game</button></div>`;
       }
     }

@@ -24,7 +24,7 @@ class Observer extends ModTemplate {
     this.step_speed = 2000;
     this.is_paused = true;
 
-    this.debug = true;
+    this.debug = false;
     this.controls = null;
   }
 
@@ -110,7 +110,7 @@ class Observer extends ModTemplate {
       `SELECT * FROM obgames ORDER BY ts DESC LIMIT 16`,
       (res) => {
         if (res.rows) {
-          console.log("GAMESTATES:");
+          //console.log("GAMESTATES:");
           res.rows.forEach((row) => {
             //console.log(JSON.parse(JSON.stringify(row)));
             this.addGameToObserverList(row);
@@ -352,12 +352,12 @@ class Observer extends ModTemplate {
         $ts: new Date().getTime(),
       };
 
-      console.log(JSON.stringify(params));      
+      //console.log(JSON.stringify(params));      
       await app.storage.executeDatabase(sql, params, "observer");
  
       let sql2 = `UPDATE obgames SET step = $step, ts = $ts WHERE game_id = $game_id`;
-      console.log(sql2);
-      console.log(params);
+      //console.log(sql2);
+      //console.log(params);
       params = {
         $step: txmsg.step?.game || 1,
         $game_id: txmsg.game_id,

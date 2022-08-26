@@ -38,7 +38,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
         <div class="gameShortDescription">${makeDescription(app, league)}</div>
 	      <div class="gameButtons">`;
   if (league.myRank > 0){
-    if (league.game && mod.checkDate(league.enddate)){
+    if (league.game && mod.checkDate(league.enddate) && mod.checkDate(league.startdate, true)){
       inviteHtml += `<button data-sig="${league.id}" data-cmd="play" class="button league-tile-button">PLAY</button>`;
     }
   }else{

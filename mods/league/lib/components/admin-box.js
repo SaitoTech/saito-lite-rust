@@ -38,6 +38,37 @@ const players = (app, mod) => {
 };
 
 
+const validateDate = (start, end) => {
+  let today = new Date().getTime();
+
+  if (start){
+    let startTime = Date.parse(start);
+
+    if (startTime < today){
+      salert("Invalid Start Date! Must be after today, otherwise leave blank for League to take immediate effect.");
+      return false;
+    }
+
+    if (end){
+      let endTime = Date.parse(end);
+      if (endTime < startTime){
+        salert("Invalid Date Range!");
+        return false;
+      }
+    }
+
+  }
+
+  if (end){
+    let endTime = Date.parse(end);
+    if (endTime < today){
+      salert("Invalid End Date!");
+      return false;
+    }
+  }
+
+  return true;
+};
 
 module.exports = AdminBox = {
 
@@ -65,6 +96,11 @@ module.exports = AdminBox = {
 
     box.onsubmit = (e) => {
       e.preventDefault();
+
+      if (!validateDate(e.target.startdate.value, e.target.enddate.value)){
+        return false;
+      }
+
       let leaguename = sanitize(document.getElementById("league-name")?.textContent || e.target.game.value);
       let leaguedesc = sanitize(desc?.textContent) || "";
       if (leaguedesc === desc.getAttribute("data-placeholder")) {
@@ -107,6 +143,8 @@ module.exports = AdminBox = {
             document.querySelector("#league-desc").textContent = "";
             document.querySelector("#game").value = gamename;
             document.getElementById("league-details").style.display = "block";
+            document.getElementById("fixedoptions").checked = false;
+            mod.overlay.clear();
             if (desc.innerHTML === "") {
               desc.innerHTML = desc.getAttribute("data-placeholder");
             }
@@ -166,8 +204,23 @@ module.exports = AdminBox = {
       }
     }
 
-
-
+    let optionsToggle = document.getElementById("fixedoptions");
+    if (optionsToggle){
+      optionsToggle.onchange = (e) =>{
+        if (!document.getElementById("game-wizard-form")){
+          let gameName = selector.value;
+          let gamemod = app.modules.returnModule(gameName);
+          let html = `<div class="game_option_league_wizard">
+                      <form id="game-wizard-form" class="game-wizard-form">
+                      ${gamemod.returnGameOptionsHTML()}
+                      ${players(app, gamemod)}
+                      </form>
+                      </div>`;
+          mod.overlay.show(app, mod, html);  
+          mod.overlay.hide();
+        }
+      };
+    }
 
   }
 }

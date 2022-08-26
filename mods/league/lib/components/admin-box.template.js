@@ -38,16 +38,16 @@ module.exports = (app, mod, games) => {
           <div>Advanced (Optional) Parameters</div>
           <div class="gridme">
             <div class="column">
-              <div class="label"><label for="startdate">Start:</label><div class="tip"><i class="fa fa-question-circle" aria-hidden="true"></i><div class="tiptext">Games played before this date won't count towards League rankings</div></div></div>
-              <input type="date" id="startdate" name="startdate" min="${today.getUTCFullYear()}-${today.getUTCMonth()}-${today.getUTCDate()}">
+              <div class="label"><label for="startdate">Start:</label><div class="tip"><i class="fa fa-question-circle" aria-hidden="true"></i><div class="tiptext">Games played before this date won't count towards League rankings, and players will no longer be able to join the league after this date (unless you check the option below)</div></div></div>
+              <input type="date" id="startdate" name="startdate">
             </div>
             <div class="column">
               <div class="label"><label for="enddate">End:</label><div class="tip"><i class="fa fa-question-circle" aria-hidden="true"></i><div class="tiptext">Games played after this date won't count towards League rankings</div></div></div>
-              <input type="date" id="enddate" name="enddate" min="${today.getUTCFullYear()}-${today.getUTCMonth()}-${today.getUTCDate()}">
+              <input type="date" id="enddate" name="enddate">
             </div>
           </div>
           <div class="checkrow"><input type="checkbox" name="lateregister" id="lateregister"><label for="lateregister">Allow users to join the League after the start date</label></div>
-          <div class="checkrow"><input type="checkbox" name="fixedoptions" id="fixedoptions"><label for="fixedoptions">Set game options for all League matches</label><div class="secretebutton" id="selectoptions">Select Options</div></div>
+          <div class="checkrow"><input type="checkbox" name="fixedoptions" id="fixedoptions"><label for="fixedoptions">Set game options for all League matches</label><div class="tip"><i class="fa fa-question-circle" aria-hidden="true"></i><div class="tiptext">Preselecting options for the league does two things. One, it makes it faster to create league games because league members can create a game invite with one-click. Two, it marks your league as exclusive, so that only league games will affect the leaderboard scores. In other words, even if a league player creates a game invite with the exact same options and plays against a fellow league member, that game will not count towards this league.</div></div><div class="secretbutton" id="selectoptions">Select Options</div></div>
           <button type="submit">Create League</button>
         </form>
       </div>

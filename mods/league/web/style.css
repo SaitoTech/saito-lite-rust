@@ -246,13 +246,17 @@ i.link_icon.private {
 .checkrow > input{
   width: fit-content;
 }
-.checkrow .secretebutton{
+.checkrow .secretbutton{
   width: fit-content;
   position: absolute;
   top: 0;
   right: 0px;
   text-decoration: underline dotted;
   cursor: pointer;
+}
+.checkrow .tip{
+  display: inline-block;
+  margin-left: 2em;
 }
 
 .gridme{

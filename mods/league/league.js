@@ -335,6 +335,7 @@ class League extends ModTemplate {
 
         //Keep track of how many games a player starts
         if (txmsg.request === "accept" || txmsg.request === "launch singleplayer"){
+          //console.log("On Confirm Receive Game Accept TX");
           this.receiveAcceptTransaction(blk, tx, conf, app);
         }
       }
@@ -613,11 +614,39 @@ class League extends ModTemplate {
       }
     }
 
+    let today = new Date().getTime();
+
+    //CHECK EVERY LEAGUE TO SEE IF WE WANT TO UPDATE START_GAME STATS
     for (let leag of relevantLeagues){
+      //console.log(leag);
+
+      if (leag.options){
+       if (!txmsg?.options?.league || leag.id !== txmsg.options.league){
+        //console.log("Exclusive league, skip");
+        continue;
+        }
+      }
+      if (leag.startdate){
+        let sd = Date.parse(leag.startdate);
+        if (today < sd){
+          //console.log("League hasn't begun yet.");
+          continue;
+        }
+      }
+      if (leag.enddate){
+        let ed = Date.parse(leag.enddate);
+        if (today > ed){
+          //console.log("League already finished.");
+          continue;
+        }
+      }
+
+
       if (leag.admin !== "saito"){
         if (leag.ranking == "elo"){
           //Is this a game we can rank?
           if (!await this.isELOeligible(publickeys, leag)){
+            //console.log("Not ELO Eligible");
             continue;
           }
         }
@@ -626,10 +655,8 @@ class League extends ModTemplate {
           await this.autoJoinPublicLeague(player, leag);
         }
       }
-      if (leag.options && txmsg.options.league !== leag.id){
-        continue;
-      }
       this.countGameStart(publickeys, leag);
+    
     }
   }
 
@@ -656,9 +683,9 @@ class League extends ModTemplate {
         $score: league.starting_score,
         $timestamp: new Date().getTime(),
       };
-
       await this.app.storage.executeDatabase(sql, params, "league");
     }
+    return 1;
   }
 
   async isELOeligible(players, league){
@@ -678,6 +705,8 @@ class League extends ModTemplate {
 
     if (playerStats.length !== players.length){
       console.log(`This game will not be rated because not all the players are League members: ${league.id}`);
+      console.log(playerStats);
+      console.log(players);
       return false;
     }
     return playerStats;
@@ -715,13 +744,27 @@ class League extends ModTemplate {
       txmsg.winner = txmsg.winner[0];
     }
 
-
+    let today = new Date().getTime();
     //Let's check each league
     for (let leag of relevantLeagues){
       if (leag.options && leag.id !== txmsg.league){
         console.log("Specified League ID:",txmsg.league);
         console.log(leag);
-        return;
+        continue;
+      }
+      if (leag.startdate){
+        let sd = Date.parse(leag.startdate);
+        if (today < sd){
+          console.log("League hasn't begun yet.");
+          continue;
+        }
+      }
+      if (leag.enddate){
+        let ed = Date.parse(leag.enddate);
+        if (today > ed){
+          console.log("League already finished.");
+          continue;
+        }
       }
 
       if (leag.ranking == "elo"){
@@ -1122,15 +1165,20 @@ class League extends ModTemplate {
   }
 
 
-  checkDate(date_as_string){
+  checkDate(date_as_string, after = false){
     if (date_as_string == ""){
       return true;
     }
 
     let now = new Date().getTime();
     let cutoff = Date.parse(date_as_string);
-    return now < cutoff;
+    if (after){
+      return cutoff > now;
+    }else{
+      return now < cutoff;
+    }
   }
+
 
 }
 
