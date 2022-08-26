@@ -557,6 +557,9 @@
     state.events = {};
     state.debaters = [];
 
+    // whose turn is it? (attacker)
+    state.active_player = -1;
+
     // which ones are activated
     state.minor_activated_powers = [];
 
@@ -3297,9 +3300,7 @@
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(game_mod, player) {
-
         state.events.schmalkaldic_league = 1;
-
       }
     }
     deck['014'] = { 
@@ -3443,6 +3444,37 @@
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('024')) {
+              f = his_self.game.players_info[this.game.player-1].factions[i];
+              break;
+            }
+          }
+
+          return { faction : f , event : 'arquebusiers', html : `<li class="option" id="arquebusiers">arquebusiers (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('024')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          player = game_mod.returnPlayerOfFaction(faction);
+	  player.tmp_roll_bonus = 2;
+        }
+        return 1;
+      },
     }
     deck['025'] = { 
       img : "cards/HIS-025.svg" , 
@@ -3451,6 +3483,39 @@
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('025')) {
+              f = his_self.game.players_info[this.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'field_artillery', html : `<li class="option" id="field_artillery">field artillery (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('025')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          player = game_mod.returnPlayerOfFaction(faction);
+	  player.tmp_roll_bonus = 2;
+	  if (faction === "france" || faction === "ottoman") {
+	    player.tmp_roll_bonus = 3;
+	  }
+        }
+        return 1;
+      },
     }
     deck['026'] = { 
       img : "cards/HIS-026.svg" , 
@@ -3459,6 +3524,40 @@
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('026')) {
+              f = his_self.game.players_info[this.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'mercenaries_bribed', html : `<li class="option" id="mercenaries_bribed">mercenaries bribed (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('026')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+	  alet("Mercenaries Bribed...");
+
+          //player = game_mod.returnPlayerOfFaction(faction);
+	  //if (faction === "france" || faction === "ottoman") {
+	  //  player.tmp_roll_bonus = 3;
+	  //}
+        }
+        return 1;
+      },
     }
     deck['027'] = { 
       img : "cards/HIS-027.svg" , 
@@ -3467,6 +3566,40 @@
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "assault") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('027')) {
+              f = his_self.game.players_info[this.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'mercenaries_grow_restless', html : `<li class="option" id="mercenaries_grow_restless">mercenaries grow restless (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('027')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+	  alet("Mercenaries Grow Restless...");
+
+          //player = game_mod.returnPlayerOfFaction(faction);
+	  //if (faction === "france" || faction === "ottoman") {
+	  //  player.tmp_roll_bonus = 3;
+	  //}
+        }
+        return 1;
+      },
     }
     deck['028'] = { 
       img : "cards/HIS-028.svg" , 
@@ -3475,6 +3608,38 @@
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "assault") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('028')) {
+              f = his_self.game.players_info[this.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'siege_mining', html : `<li class="option" id="siege_mining">siege mining (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "assault" && his_self.game.player === his_self.game.state.active_player) {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('028')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+          player = game_mod.returnPlayerOfFaction(faction);
+	  if (his_self.game.state.active_player === player) {
+	    player.tmp_roll_bonus = 3;
+	  }
+        }
+        return 1;
+      },
     }
     deck['029'] = { 
       img : "cards/HIS-029.svg" , 
@@ -3483,6 +3648,38 @@
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "assault") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('029')) {
+              f = his_self.game.players_info[this.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'surprise_attack', html : `<li class="option" id="surprise_attack">surprise attack (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('029')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+          player = game_mod.returnPlayerOfFaction(faction);
+	  if (his_self.game.state.active_player === player) {
+	    player.tmp_roll_first = 1;
+	  }
+        }
+        return 1;
+      },
     }
     deck['030'] = { 
       img : "cards/HIS-030.svg" , 
@@ -3491,6 +3688,35 @@
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('030')) {
+              f = his_self.game.players_info[this.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'tercois', html : `<li class="option" id="tercois">tercois (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('30')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+	  alert("tercois is complicated...");
+        }
+        return 1;
+      },
     }
     deck['031'] = { 
       img : "cards/HIS-031.svg" , 
@@ -3589,10 +3815,6 @@
 	  }
 	}
         return 0;
-      },
-      onEvent : function(game_mod, player, faction) {
-	if (this.game.player ==
-	return 0;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
@@ -3712,10 +3934,6 @@
 	  }
 	}
         return 0;
-      },
-      onEvent : function(game_mod, player, faction) {
-	if (this.game.player ==
-	return 0;
       },
       handleGameLoop : function(his_self, qe, mv) {
 

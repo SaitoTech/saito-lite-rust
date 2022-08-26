@@ -27,7 +27,11 @@ console.log("MOVE: " + mv[0]);
 	//
         if (mv[0] == "init") {
 	  this.updateLog("init game");
+console.log("INIT HAPPENED 1");
           this.game.queue.splice(qe, 1);
+console.log("INIT HAPPENED 2");
+
+	  return 1;
         }
 
         if (mv[0] === "round") {
@@ -43,6 +47,7 @@ console.log("MOVE: " + mv[0]);
 
 this.game.queue.push("is_testing");
 
+console.log("pushed is_testing");
 
 	  //
 	  // start the game with the Protestant Reformation
@@ -67,6 +72,9 @@ this.game.queue.push("is_testing");
 	    this.updateStatus("Game Over");
 	    return 0;
 	  }
+
+console.log("about to keep going!");
+
           return 1;
         }
 
@@ -136,6 +144,8 @@ if (mv[0] === "is_testing") {
 
       this.activateMinorPower("papacy", "venice");
 
+console.log("activated minor power");
+
       this.convertSpace("protestant", "graz");
       this.controlSpace("protestant", "graz");
       this.addRegular("protestant", "graz", 3);
@@ -143,10 +153,21 @@ if (mv[0] === "is_testing") {
       this.addRegular("venice", "agram", 4);
       this.game.spaces['agram'].type = "fortress";
 
+console.log("activated minor power 2");
       this.addCard("protestant", "036");
+      this.addCard("protestant", "026");
+      this.addCard("protestant", "027");
+      this.addCard("protestant", "028");
+console.log("activated minor power 3");
+      this.addCard("papacy", "029");
+      this.addCard("papacy", "030");
+      this.addCard("papacy", "024");
+      this.addCard("papacy", "025");
+console.log("activated minor power 4");
 
       this.game.queue.splice(qe, 1);
 
+      return 1;
 }
 
         if (mv[0] === "event") {
@@ -286,7 +307,6 @@ if (mv[0] === "is_testing") {
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
-console.log("FACTION LAND UNITS IN SPACE: " + f + " / " + fluis);
 	      if (fluis == 0) {
 
 		//
@@ -500,9 +520,7 @@ console.log("FACTION LAND UNITS IN SPACE: " + f + " / " + fluis);
 	  for (let i = io.length-1; i>= 0; i--) {
 	    if (io[i] !== faction) {
 	      for (let z = 0; z < neighbours.length; z++) {
-console.log("checking if " + io[i] + " has units in " + neighbours[z]);
 	        let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
-console.log("reported units: " + fluis);
 	        if (fluis > 0) {
 	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
 	        }
@@ -632,13 +650,8 @@ console.log("reported units: " + fluis);
 	    }
 
 	  } else {
-
 	    this.updateLog("Interception Failure");
-
 	  }
-
-console.log("QUEUE POST INTERCEPTION CALCULATION");
-console.log(JSON.stringify(his_self.game.queue));
 
 	  return 1;
 
@@ -1302,6 +1315,11 @@ console.log("----------------------------");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
+
+	  //
+	  // reset player/state vars and set as active player
+	  //
+	  this.resetPlayerTurn(player);
 
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);

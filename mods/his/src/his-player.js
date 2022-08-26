@@ -1,4 +1,5 @@
 
+
   returnPlayers(num = 0) {
 
     var players = [];
@@ -97,6 +98,8 @@
 
 
       players[i] = {};
+      players[i].tmp_roll_bonus = 0;
+      players[i].tmp_roll_first = 0;
       players[i].factions = [];
       players[i].factions.push(rf);
 
@@ -141,6 +144,7 @@
   }
 
   resetPlayerTurn(player_num) {
+
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
     this.game.state.tmp_protestant_reformation_bonus = 0;
@@ -148,6 +152,15 @@
     this.game.state.tmp_catholic_reformation_bonus = 0;
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      let p = this.game.players_info[i];
+      p.tmp_roll_bonus = 0;
+      p.tmp_roll_first = 0;
+    }
+
+    this.game.state.active_player = player_num;
+
   }
 
   isFactionInPlay(faction) {
@@ -440,7 +453,6 @@
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-    this.resetPlayerTurn(this.game.player, faction);
 
     this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
     this.attachCardboxEvents(function(card) {
@@ -602,7 +614,7 @@ alert("selected faction = " + selected_faction);
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + card + " for the event\tevent\tcard");
-    his_self.addMove("RESETCONFIRMSNEEDED\tall");
+    this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
 
