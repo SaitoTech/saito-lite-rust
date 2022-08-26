@@ -4,7 +4,7 @@ const PostTweet = require("./post");
 const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const SaitoLoader = require("./../../../lib/saito/new-ui/saito-loader/saito-loader");
-const AddFrndTemplate = require("./add-frnd.template");
+const ModalAddPublicKey = require("./../../../lib/saito/new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
 class RedSquareTweet {
 
@@ -179,6 +179,7 @@ class RedSquareTweet {
       }
     }
     this.attachEvents(app, mod);
+    app.browser.addModalIdentifierAddPublickey(app, mod);
   }
 
   renderWithChildren(app, mod, selector = "") {
@@ -196,7 +197,7 @@ class RedSquareTweet {
     }
 
     if (this.children.length > 0) {
-      if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
+      if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
         this.children[0].renderWithChildren(app, mod, my_selector);
       } else {
         for (let i = 0; i < this.children.length; i++) {
@@ -410,12 +411,6 @@ class RedSquareTweet {
       if (e.target.classList.contains('tweet-link')) {
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
-      }
-
-
-      if (e.target.classList.contains('saito-identicon')) {
-        let img_overlay = new SaitoOverlay(app, mod);
-        img_overlay.show(app, mod, AddFrndTemplate(app, mod));
       }
     });
   }

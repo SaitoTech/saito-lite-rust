@@ -57,13 +57,14 @@ module.exports = ArcadeGameDetails = {
     } else {
       //Create (hidden) the advanced options window
       mod.meta_overlay = new AdvancedOverlay(app, gamemod);
-      mod.meta_overlay.render(app, gamemod);
+      mod.meta_overlay.render(app, gamemod, advancedOptions);
       mod.meta_overlay.attachEvents(app, gamemod);
-
+      let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+      
       //Attach events to advance options button
       document.querySelector(".game-wizard-options-toggle").onclick = (e) => {
         //Requery advancedOptions on the click so it can dynamically update based on # of players
-        mod.meta_overlay.show(app, gamemod, gamemod.returnGameOptionsHTML());
+        mod.meta_overlay.show(app, gamemod, gamemod.returnGameOptionsHTML() + accept_button);
         gamemod.attachAdvancedOptionsEventListeners();
         document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
         try {
@@ -143,42 +144,10 @@ module.exports = ArcadeGameDetails = {
           // if crypto and stake selected, make sure creator has it
           //
           try{
-            if (options.crypto != "") {
-              if (parseFloat(options.stake) > 0) {
-                let selected_crypto_ticker = app.wallet.returnCryptoModuleByTicker(options.crypto).ticker; //is this really necessary?
-                let preferred_crypto_ticker = app.wallet.returnPreferredCrypto().ticker;
-                if (selected_crypto_ticker === preferred_crypto_ticker) {
-                  let my_address = app.wallet.returnPreferredCrypto().returnAddress();
-                  let crypto_transfer_manager = new GameCryptoTransferManager(app);
-        
-                  let current_balance = await crypto_transfer_manager.returnBalance(
-                    app,
-                    mod,
-                    my_address,
-                    options.crypto,
-                    function () { }
-                  );
-                  console.log("Current balance", current_balance);
-
-                  try {
-                    if (BigInt(current_balance) < BigInt(options.stake)) {
-                      salert("You do not have enough " + options.crypto + "! Balance: " + current_balance);
-                      return;
-                    }
-                  } catch (err) {
-                    if (parseFloat(current_balance) < parseFloat(options.stake)) {
-                      salert("You do not have enough " + options.crypto + "! Balance: " + current_balance);
-                      return;
-                    }
-                  }
-                  
-                } else {
-                  salert(
-                    `${options.crypto} must be set as your preferred crypto to create a game using ${options.crypto}`
-                  );
-                  return;
-                }
-              }
+            if (options.crypto && parseFloat(options.stake) > 0) {
+              let crypto_transfer_manager = new GameCryptoTransferManager(app);
+              let success = await crypto_transfer_manager.confirmBalance(app, mod, options.crypto, options.stake);
+              if (!success){ return; }
             }
           }catch(err){
              console.log("ERROR checking crypto: " + err);

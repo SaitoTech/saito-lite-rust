@@ -46,7 +46,6 @@ class Settlers extends GameTemplate {
               <option value="10" selected>10 VP - standard game</option>
               <option value="12">12 VP - marathon</option>
             </select>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
         </div>
     `;
 
@@ -59,7 +58,6 @@ class Settlers extends GameTemplate {
     //<option value="elements" title="Magical version of game where players cultivate the five elements (earth, fire, water, metal, and wood)">Elemental</option>
     html += `</select>
           </div>
-          <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;*/
     html += this.returnCryptoOptionsHTML();
 

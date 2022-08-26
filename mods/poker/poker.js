@@ -2696,17 +2696,7 @@ class Poker extends GameTemplate {
             <option value="100">
           </datalist>
    
-          <div class="overlay-input">
-            <label for="observer_mode">Observer Mode:</label>
-            <select name="observer">
-              <option value="enable" >enable</option>
-              <option value="disable" selected>disable</option>
-            </select>
-          </div>
-          <!--input type="hidden" id="stake" name="stake" value="0"-->
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
-    `;
+          <!--input type="hidden" id="stake" name="stake" value="0"-->`;
 
     return options_html;
   }

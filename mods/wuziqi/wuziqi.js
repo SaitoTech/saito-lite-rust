@@ -30,25 +30,17 @@ class Wuziqi extends GameTemplate {
 
     initializeHTML(app) {
 
+        console.log("HTML 1");
         if (!this.browser_active) { return; }
-        if (this.initialize_game_run) {return;} 
+        if (this.initialize_game_run) { return 0; }
 
         // Don't completly Override the game template initializeHTML function
         super.initializeHTML(app);
 
         //Define black and white so can use in menus        
         this.game.sides = ["black", "white"];
+        console.log("HTML 2");
 
-
-         // Add Menu Items to standard Menu
-        /*this.menu.addMenuOption({
-            text: "Player: " + this.formatPlayer(),
-            id: "playerno",
-            class: "playerno",
-            callback: function (app, game_mod) {
-
-            }
-        });*/
         this.menu.addMenuOption({
             text: "Game",
             id: "game-game",
@@ -165,12 +157,17 @@ class Wuziqi extends GameTemplate {
 
     initializeGame(game_id) {
 
-        // Send 'let's get started' message.
-        this.game.queue.push("READY");
+        if (this.game.initializing) {
+            // Send 'let's get started' message.
+            this.game.queue.push("READY");
+            return;
+        } 
+
     }
 
     // Create the game board data structure
     generateBoard(x) {
+        console.log("Generate board for " + x);
         // Set the board size (always a square of side length set by the user.)
         var cells = x * x;
         // Clear the board
@@ -242,6 +239,8 @@ class Wuziqi extends GameTemplate {
 
     // Iterate through the board object to draw each cell in the DOM
     drawBoard(board) {
+        console.log("DRAWING BOARD!");
+        console.log(board);
         boardElement = document.querySelector('.board');
         // Clear the board
         boardElement.innerHTML = "";
@@ -637,7 +636,7 @@ class Wuziqi extends GameTemplate {
                 
         html += this.returnCryptoOptionsHTML();
 
-      return html + `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+      return html;
 
     }
 

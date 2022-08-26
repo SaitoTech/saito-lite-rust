@@ -7,4 +7,9 @@ CREATE TABLE IF NOT EXISTS leagues (
   description TEXT,
   ranking TEXT,
   starting_score INTEGER,
-  max_players INTEGER);
+  max_players INTEGER,
+  options TEXT DEFAULT '',
+  startdate TEXT DEFAULT '',
+  enddate TEXT DEFAULT '',
+  allowlate INTEGER DEFAULT 0
+);

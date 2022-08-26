@@ -1222,8 +1222,6 @@ class Blackjack extends GameTemplate {
 
     let options_html = `<h1 class="overlay-title">Blackjack Options</h1>`;
     options_html += this.returnCryptoOptionsHTML();
-    options_html += `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
-      //margin-top:20px;padding:30px;text-align:center
 
     return options_html;
 

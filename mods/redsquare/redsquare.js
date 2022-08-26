@@ -344,6 +344,11 @@ class RedSquare extends ModTemplate {
   }
 
 
+
+
+  ///////////////////////////////////////
+  // fetching curated tweets from peer //
+  ///////////////////////////////////////
   fetchTweets(app, mod, sql, post_fetch_tweets_callback = null) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
@@ -417,7 +422,7 @@ class RedSquare extends ModTemplate {
 
           console.log(mod.pageNumber, mod.resultsPerPage)
           // render tweets 
-          mod.broadcastTweetRenderRequest(tweets)
+          mod.app.connection.emit('tweets-render-request', tweets);
           post_fetch_tweets_callback(app, mod)
           mod.pageNumber++;
 
@@ -461,7 +466,7 @@ class RedSquare extends ModTemplate {
           });
           console.log(mod.pageNumber, mod.resultsPerPage)
           // render tweets 
-          mod.broadcastTweetRenderRequest(tweets, false)
+          mod.app.connection.emit('tweets-render-request', tweets, false);
           // post_fetch_tweets_callback(app, mod)
         }
 
@@ -469,14 +474,6 @@ class RedSquare extends ModTemplate {
     );
   }
 
-  broadcastTweetRenderRequest(data, appendToSelector = true) {
-    if (Array.isArray(data)) {
-      this.app.connection.emit('tweets-render-request', data, appendToSelector)
-    } else {
-      this.app.connection.emit('tweet-render-request', appendToSelector)
-    }
-
-  }
 
 
 
@@ -562,7 +559,14 @@ class RedSquare extends ModTemplate {
     //
     if (app.BROWSER == 1) {
       let redsquare_self = app.modules.returnModule("RedSquare");
+console.log("###########");
+console.log("## TWEET ##");
+console.log("###########");
+let txmsg = tx.returnMessage();
+console.log(JSON.stringify(txmsg));
       this.addTweet(app, redsquare_self, tweet);
+      app.connection.emit("tweet-render-request", tweet);
+console.log("## should show up now ##");
       return;
     }
 
