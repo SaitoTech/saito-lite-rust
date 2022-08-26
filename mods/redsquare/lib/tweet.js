@@ -196,7 +196,7 @@ class RedSquareTweet {
     }
 
     if (this.children.length > 0) {
-      if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
+      if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
         this.children[0].renderWithChildren(app, mod, my_selector);
       } else {
         for (let i = 0; i < this.children.length; i++) {
