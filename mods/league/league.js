@@ -6,6 +6,8 @@ const ForumLeague = require('./lib/components/forum-league');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const LeagueInvite = require("./lib/overlays/league-invite");
+const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
+
 
 class League extends ModTemplate {
 
@@ -243,24 +245,9 @@ class League extends ModTemplate {
     //If following an invite link, look for the game_id in question
     let invitation = this.browser_active && this.app.browser.returnURLParameter("jid");
     if (invitation) {
-      salert("Joining league...");
+      salert("Trying to join league...");
     }
 
-    /*
-    //Check if Player is registered in Saitolicious (yes, every time we connect)
-    this.sendPeerDatabaseRequestWithFilter(
-    "League",
-    `SELECT * FROM players WHERE pkey = '${app.wallet.returnPublicKey()}' AND league_id = 'SAITOLICIOUS'`,
-    (res) =>{
-      if (res.rows){
-        if (res.rows.length > 0){
-          return;
-        }
-      }
-      console.log("Need to join Saitolicious");
-      league_self.sendJoinLeagueTransaction("SAITOLICIOUS");
-    });  
-    */
 
     //Only query the leagues if we are in an active module that will need them
     if (!this.doICare()){
@@ -276,37 +263,12 @@ class League extends ModTemplate {
 
         if (res.rows) {
           res.rows.forEach(row => {
-            league_self.updateLeague(row);
+            let stopHere = invitation && row.id === league_self.app.browser.returnURLParameter("jid");
+            league_self.updateLeague(row, stopHere);
             league_self.leagues.push(row);
           });
 
-          //We need a small delay because we are running async callbacks and can't just use an await...
-          setTimeout(async ()=>{
-            //We wait until we query the leagues before we submit a join request
-            if (invitation){
-              let leagueId = league_self.app.browser.returnURLParameter("jid");
-              for (let i = 0; i < league_self.leagues.length; i ++){
-                if (league_self.leagues[i].id == leagueId){
-                  let myLocation = window.location.href;
-                  myLocation = myLocation.substring(0, myLocation.indexOf("?")-1);
-                  myLocation = myLocation.replace("league","arcade"); 
-
-                  if (league_self.leagues[i].playerCnt < league_self.leagues[i].max_players || league_self.leagues[i].max_players == 0){
-                    league_self.sendJoinLeagueTransaction(leagueId);
-                    setTimeout(()=>{ window.location = myLocation; },1500);
-
-                  }else{
-                    if (document.getElementById("alert-wrapper")) {
-                      document.getElementById("alert-wrapper").remove();
-                    }
-                    let c = await sconfirm("League full, cannot join");
-                    window.location = myLocation;
-                  }                 
-                }
-              }          
-            }
-          },2000);
-        } else {}
+        } 
       }
     );
   }
@@ -373,6 +335,7 @@ class League extends ModTemplate {
 
         //Keep track of how many games a player starts
         if (txmsg.request === "accept" || txmsg.request === "launch singleplayer"){
+          //console.log("On Confirm Receive Game Accept TX");
           this.receiveAcceptTransaction(blk, tx, conf, app);
         }
       }
@@ -418,6 +381,8 @@ class League extends ModTemplate {
       return;
     }
 
+    console.log(leagueObj);
+
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
     tx.msg = {
@@ -443,11 +408,11 @@ class League extends ModTemplate {
     for (let i in league){
       params[`$${i}`] = league[i];
     }
-    console.log(league);
-    console.log(params);
+    //console.log(league);
+    //console.log(params);
 
-    let sql = `INSERT INTO leagues (id, game, type, admin, name, description, ranking, starting_score, max_players)
-                        VALUES ($id, $game, $type, $admin, $name, $description, $ranking, $starting_score, $max_players)`;
+    let sql = `INSERT INTO leagues (id, game, type, admin, name, description, ranking, starting_score, max_players, options, startdate, enddate, allowlate)
+                        VALUES ($id, $game, $type, $admin, $name, $description, $ranking, $starting_score, $max_players, $options, $startdate, $enddate, $allowlate)`;
 
     await app.storage.executeDatabase(sql, params, "league");
     return;
@@ -649,11 +614,39 @@ class League extends ModTemplate {
       }
     }
 
+    let today = new Date().getTime();
+
+    //CHECK EVERY LEAGUE TO SEE IF WE WANT TO UPDATE START_GAME STATS
     for (let leag of relevantLeagues){
+      //console.log(leag);
+
+      if (leag.options){
+       if (!txmsg?.options?.league || leag.id !== txmsg.options.league){
+        //console.log("Exclusive league, skip");
+        continue;
+        }
+      }
+      if (leag.startdate){
+        let sd = Date.parse(leag.startdate);
+        if (today < sd){
+          //console.log("League hasn't begun yet.");
+          continue;
+        }
+      }
+      if (leag.enddate){
+        let ed = Date.parse(leag.enddate);
+        if (today > ed){
+          //console.log("League already finished.");
+          continue;
+        }
+      }
+
+
       if (leag.admin !== "saito"){
         if (leag.ranking == "elo"){
           //Is this a game we can rank?
           if (!await this.isELOeligible(publickeys, leag)){
+            //console.log("Not ELO Eligible");
             continue;
           }
         }
@@ -663,6 +656,7 @@ class League extends ModTemplate {
         }
       }
       this.countGameStart(publickeys, leag);
+    
     }
   }
 
@@ -689,9 +683,9 @@ class League extends ModTemplate {
         $score: league.starting_score,
         $timestamp: new Date().getTime(),
       };
-
       await this.app.storage.executeDatabase(sql, params, "league");
     }
+    return 1;
   }
 
   async isELOeligible(players, league){
@@ -711,6 +705,8 @@ class League extends ModTemplate {
 
     if (playerStats.length !== players.length){
       console.log(`This game will not be rated because not all the players are League members: ${league.id}`);
+      console.log(playerStats);
+      console.log(players);
       return false;
     }
     return playerStats;
@@ -748,9 +744,28 @@ class League extends ModTemplate {
       txmsg.winner = txmsg.winner[0];
     }
 
-
+    let today = new Date().getTime();
     //Let's check each league
     for (let leag of relevantLeagues){
+      if (leag.options && leag.id !== txmsg.league){
+        console.log("Specified League ID:",txmsg.league);
+        console.log(leag);
+        continue;
+      }
+      if (leag.startdate){
+        let sd = Date.parse(leag.startdate);
+        if (today < sd){
+          console.log("League hasn't begun yet.");
+          continue;
+        }
+      }
+      if (leag.enddate){
+        let ed = Date.parse(leag.enddate);
+        if (today > ed){
+          console.log("League already finished.");
+          continue;
+        }
+      }
 
       if (leag.ranking == "elo"){
         //All players must belong to ELO league for points to change
@@ -863,7 +878,7 @@ class League extends ModTemplate {
   /**
    * 
    */ 
-  updateLeague(league){
+  updateLeague(league, invitation = false){
     let lid = league.id;
     let pid = this.app.wallet.returnPublicKey();
     league.myRank = -1;
@@ -873,7 +888,7 @@ class League extends ModTemplate {
     league.top3 = [];
     this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
 
-      (res) => {
+      async (res) => {
         if (res.rows) {
           let cnt = 0;
           for (let p of res.rows){
@@ -888,6 +903,33 @@ class League extends ModTemplate {
           }
           league.playerCnt = cnt;
         }
+
+        if (invitation){
+          let myLocation = window.location.href;
+          myLocation = myLocation.substring(0, myLocation.indexOf("?")-1);
+          myLocation = myLocation.replace("league","arcade"); 
+
+          if (league.myRank < 0){
+            if (league_self.checkDate(league.startdate) || league.allowlate){
+              if (league.playerCnt < league.max_players || league.max_players == 0){
+                league_self.sendJoinLeagueTransaction(lid);
+                setTimeout(()=>{ window.location = myLocation; },1500);
+              }else{
+                if (document.getElementById("alert-wrapper")) {
+                  document.getElementById("alert-wrapper").remove();
+                }
+                let c = await sconfirm("League full, cannot join");
+                window.location = myLocation;
+              }   
+            }else{
+              let c = await sconfirm("We are past the signup phase for the league");
+              window.location = myLocation;
+            }
+          }else{
+            let c = await sconfirm("You are already a member of the league");
+          }              
+        }
+
         //console.log(`League updated: ${league.myRank} / ${league.playerCnt}`);
         league_self.renderLeagues(league_self.app, league_self);
       }
@@ -988,6 +1030,87 @@ class League extends ModTemplate {
   }
 
 
+  /**
+   * Wrapper function to help us launch a League specific game!
+   */ 
+  async launchGame(league){
+
+    let arcade_mod = this.app.modules.returnModule("Arcade");
+
+
+    //We automatically create a game invite with the league's pre-determined options
+    if (league.options){
+      let options = JSON.parse(league.options);
+
+      //Check Crypto
+      try{
+        if (options.crypto && parseFloat(options.stake) > 0) {
+          let crypto_transfer_manager = new GameCryptoTransferManager(this.app);
+          let success = await crypto_transfer_manager.confirmBalance(this.app, this, options.crypto, options.stake);
+          if (!success){ return; }
+        }
+      }catch(err){
+         console.log("ERROR checking crypto: " + err);
+        return;
+      }
+
+      //Check League Membership
+      if (!this.isLeagueMember(league.id)){
+        salert("You need to be a member of the League to create a League-only game invite");
+        return;
+      }
+
+      let gamemod = this.app.modules.returnModule(league.game);
+      let players_needed = 0;
+      if (options["game-wizard-players-select"]) {
+        players_needed = options["game-wizard-players-select"];
+      } else {
+        //players_needed = document.querySelector(".game-wizard-players-no-select").dataset.player;
+      }
+
+      options.league = league.id;
+
+      let gamedata = {
+        ts: new Date().getTime(),
+        name: gamemod.name,
+        slug: gamemod.returnSlug(),
+        options: options,
+        players_needed: players_needed,
+        invitation_type: "public",
+      };
+
+      let newtx = arcade_mod.createOpenTransaction(gamedata);
+      this.app.network.propagateTransaction(newtx);
+  
+      //
+      // and relay open if exists
+      //
+      let peers = [];
+      for (let i = 0; i < this.app.network.peers.length; i++) {
+        peers.push(this.app.network.peers[i].returnPublicKey());
+      }
+      let relay_mod = this.app.modules.returnModule("Relay");
+      if (relay_mod != null) {
+        relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+      }
+  
+      arcade_mod.addGameToOpenList(newtx);
+
+      arcade_mod.active_tab = "arcade";
+      arcade_mod.renderArcadeMain(this.app, arcade_mod);
+
+
+    }else{  //Or we let the player select the options
+
+      let tx = new saito.default.transaction();
+      tx.msg.game = league.game;
+      if (league.admin !== "saito"){
+        tx.msg.league = league.id;
+      }
+      ArcadeGameDetails.render(this.app, arcade_mod, tx);
+      ArcadeGameDetails.attachEvents(this.app, arcade_mod, tx);
+    }
+  }
 
 
   /**
@@ -1041,6 +1164,20 @@ class League extends ModTemplate {
 //      this.app.options.saveOptions();
   }
 
+
+  checkDate(date_as_string, after = false){
+    if (date_as_string == ""){
+      return true;
+    }
+
+    let now = new Date().getTime();
+    let cutoff = Date.parse(date_as_string);
+    if (after){
+      return cutoff > now;
+    }else{
+      return now < cutoff;
+    }
+  }
 
 
 }

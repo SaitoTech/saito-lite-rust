@@ -1,6 +1,5 @@
 const ArcadeLeagueViewTemplate = require("./arcade-league-view.template");
 const SaitoOverlay = require("../../../../lib/saito/ui/saito-overlay/saito-overlay");
-const saito = require("../../../../lib/saito/saito");
 
 module.exports = ArcadeLeagueView = {
 
@@ -120,13 +119,8 @@ module.exports = ArcadeLeagueView = {
     let createGameBtn = document.getElementById("game-invite-btn");
     if (createGameBtn){
       createGameBtn.onclick = () => {
-        let tx = new saito.default.transaction();
-        tx.msg.game = this.league.game;
-        if (this.league.admin !== "saito"){
-          tx.msg.league = this.league.id;
-        }
-        ArcadeGameDetails.render(app, app.modules.returnActiveModule(), tx);
-        ArcadeGameDetails.attachEvents(app, app.modules.returnActiveModule(), tx);
+        this.overlay.hide();
+        mod.launchGame(this.league);
       }
     }
 

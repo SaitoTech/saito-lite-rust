@@ -1809,7 +1809,6 @@ initializeGame(game_id) {
           <input type="checkbox" name="second" />
           <label for"second">Use Second Edition Cards</label>
         </div>
-        <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
     return html;
   }

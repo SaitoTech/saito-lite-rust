@@ -816,8 +816,6 @@ class Chessgame extends GameTemplate {
       
     html += this.returnCryptoOptionsHTML();
 
-    html += `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
-        
     return html;
 
   }
