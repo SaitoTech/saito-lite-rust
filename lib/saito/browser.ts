@@ -2,6 +2,7 @@
 
 import screenfull from "screenfull";
 import html2canvas from "html2canvas";
+const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
 class Browser {
   public app: any;
@@ -897,6 +898,25 @@ class Browser {
       Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  addModalIdentifierAddPublickey(app, mod){
+    try {
+      const identifiers = document.getElementsByClassName(`saito-identicon`);
+
+      Array.from(identifiers).forEach((identifier) => {    
+        identifier.addEventListener("click", (e) => {
+          
+          let identiconUri = e.target.getAttribute("src");
+          let publickey = e.target.getAttribute("data-id");
+
+          let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey)
+          addPublicKeyModal.render(app, mod);
+        });
+      });
+    } catch (err) {
+      console.error("Error while adding event to identifiers: "+err);
     }
   }
 

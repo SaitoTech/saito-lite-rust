@@ -179,6 +179,7 @@ class RedSquareTweet {
       }
     }
     this.attachEvents(app, mod);
+    app.browser.addModalIdentifierAddPublickey(app, mod);
   }
 
   renderWithChildren(app, mod, selector = "") {
@@ -410,15 +411,6 @@ class RedSquareTweet {
       if (e.target.classList.contains('tweet-link')) {
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
-      }
-
-
-      if (e.target.classList.contains('saito-identicon')) {
-        let identiconUri = e.target.getAttribute("src");
-        let publickey = e.target.getAttribute("data-id");
-
-        let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey)
-        addPublicKeyModal.render(app, mod);
       }
     });
   }
