@@ -65,3 +65,37 @@
     border: 1px solid white;
 }
 
+
+#tweet-overlay-add-frnd {
+  background-color: #fff;
+  height: auto;
+  width: 30vh;
+  border-radius: 1.5rem;
+  padding: 2rem;
+}
+
+#tweet-overlay-add-frnd  .saito-identicon-box {
+  display: inline-block;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+#tweet-overlay-add-frnd  .saito-identicon-box .saito-identicon {
+  width: 8rem;
+  height: 8rem; 
+}
+
+#tweet-overlay-add-frnd > .saito-address{
+  width: 100%;
+  max-width: 100%;
+  overflow: inherit;
+  display: block;
+  height: auto;
+  word-break: break-word;
+  text-overflow: inherit;
+  white-space: break-spaces;
+  text-align: center;
+  margin-top: 5rem;
+  margin-bottom: 1rem;
+}
+
