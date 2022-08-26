@@ -519,3 +519,8 @@ span.redsquare-home-red-square+span {
 .saito-back-button {
   cursor: pointer;
 }
+
+
+.saito-friendlist .saito-user {
+  margin-bottom: 2rem;
+}
