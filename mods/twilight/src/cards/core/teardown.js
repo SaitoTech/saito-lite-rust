@@ -3,6 +3,8 @@
 
       this.game.state.events.teardown = 1;
       this.game.state.events.willybrandt = 0;
+      this.cancelEvent("willybrandt");
+
       if (this.game.state.events.nato == 1) {
         this.game.state.events.nato_westgermany = 1;
       }

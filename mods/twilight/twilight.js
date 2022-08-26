@@ -178,7 +178,6 @@ class Twilight extends GameTemplate {
   }
 
   
-
   handleStatsMenu() {
     let twilight_self = this;
 
@@ -2559,10 +2558,13 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["olympic", "redscare", "usjapan", "duckandcover", "fiveyearplan", "koreanwar", "marshall"];
+          this.game.deck[0].hand = ["flowerpower", "teardown", "evilempire", "northseaoil", "opec", "fiveyearplan", "koreanwar", "marshall"];
         } else {
-          this.game.deck[0].hand = ["debtcrisis", "fidel", "destalinization", "nato", "warsawpact", "vietnamrevolts", "europe", "china"];
+          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "vietnamrevolts", "wargames", "china"];
         }
+
+	this.game.state.round = 7;
+ 	this.displayBoard();
       }
 
       //
@@ -2641,6 +2643,10 @@ try {
       let card   = mv[4] || "";
 
       this.game.state.headline = 1;
+
+      //
+      //
+      this.cancelEventsDynamically();
 
       let x = this.playHeadlinePostModern(stage, hash, xor, card);
       //
@@ -2980,6 +2986,10 @@ try {
         start_turn_game_state = null;
         start_turn_game_queue = null;
       }
+
+      //
+      // cancel events
+      this.cancelEventsDynamically();
 
 
       //
@@ -6062,6 +6072,15 @@ playerTurnHeadlineSelected(card, player) {
     }
   }
 
+  cancelEvent(card) {
+    this.game.state.events.cancelled[card] = 1;
+  }
+  uncancelEvent(card) {
+    if (this.game.state.events.cancelled[card]) {
+      delete this.game.state.events.cancelled[card];
+    }
+  }
+
 
   ////////////////////
   // Core Game Data //
@@ -6240,6 +6259,8 @@ playerTurnHeadlineSelected(card, player) {
     // events - early war
     state.events = {};
     state.events.optional = {};			// optional cards -- makes easier to search for
+    state.events.cancelled = {};		// if entry exists, event is cancelled
+    state.events.cancelled['solidarity'] = 1;   // solidarity starts cancelled
     state.events.formosan           = 0;
     state.events.redscare_player1   = 0;
     state.events.redscare_player2   = 0;
@@ -8310,6 +8331,12 @@ playerTurnHeadlineSelected(card, player) {
       }
     }
 
+
+    if (this.game.state.events.cancelled[cardname] == 1) {
+      html += `<img class="${cardclass} cancel_x" src="/twilight/img/cancel_x.png" />`;
+    }
+
+
     return html
   }
 
@@ -8667,6 +8694,48 @@ playerTurnHeadlineSelected(card, player) {
   }
 
 
+  // 
+  // track events which are cancelled / cancellable dynamically 
+  // 
+  cancelEventsDynamically() {
+
+      // NATO
+      if (this.game.state.events.marshall == 1 || this.game.state.events.warsawpact == 1) {
+	this.uncancelEvent("nato");
+      } else {
+	this.cancelEvent("nato");
+      }
+
+      // cambridge-five late war
+      if (this.game.state.round >= 8) {
+        this.cancelEvent("cambridge");
+      }
+      // wargames, if decon is 2
+      if (this.game.state.defcon != 2) {
+        this.cancelEvent("wargames");
+      } else {
+        this.uncancelEvent("wargames");
+      }
+      // onesmallstep - if we are behind/ahead
+      if (this.game.player == 2) { 
+	if (this.game.state.space_race_us_counter >= this.game.state.space_race_ussr_counter) {
+	  this.cancelEvent("onesmallstep");
+        } else {
+	  this.uncancelEvent("onesmallstep");
+	}
+      } else {
+	if (this.game.state.space_race_ussr_counter >= this.game.state.space_race_us_counter) {
+	  this.cancelEvent("onesmallstep");
+        } else {
+	  this.uncancelEvent("onesmallstep");
+	}
+      }
+
+
+
+
+
+  }
 
 
   /////////////////
@@ -9362,6 +9431,7 @@ playerTurnHeadlineSelected(card, player) {
     if (card == "campdavid") {
 
       this.game.state.events.campdavid = 1; //Prevents Arab-Isreali War
+      this.cancelEvent("arabisraeli");
 
       this.updateLog("US gets 1 VP for Camp David Accords");
 
@@ -10164,6 +10234,7 @@ playerTurnHeadlineSelected(card, player) {
 
       this.game.state.events.evilempire = 1;
       this.game.state.events.flowerpower = 0; //Cancel Flower Power
+      this.cancelEvent("flowerpower");
 
       this.game.state.vp += 1;
       this.updateVictoryPoints();
@@ -10773,6 +10844,7 @@ playerTurnHeadlineSelected(card, player) {
       // country..
       //
       this.game.state.ironlady_before_ops = 1;
+      this.cancelEvent("socgov");
 
       this.placeInfluence("argentina", 1, "ussr");
       if (this.countries["uk"].ussr > 0) { this.removeInfluence("uk", this.countries["uk"].ussr, "ussr"); }
@@ -11633,6 +11705,7 @@ playerTurnHeadlineSelected(card, player) {
     // North Sea Oil
     //
     if (card == "northseaoil") {
+      this.cancelEvent("opec");
       this.game.state.events.northseaoil = 1; //block OPEC
       this.game.state.events.northseaoil_bonus = 1; //let US play 8 cards
       if (!i_played_the_card){
@@ -12885,6 +12958,8 @@ playerTurnHeadlineSelected(card, player) {
 
       this.game.state.events.teardown = 1;
       this.game.state.events.willybrandt = 0;
+      this.cancelEvent("willybrandt");
+
       if (this.game.state.events.nato == 1) {
         this.game.state.events.nato_westgermany = 1;
       }

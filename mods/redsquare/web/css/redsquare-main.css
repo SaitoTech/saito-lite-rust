@@ -63,6 +63,18 @@ span.redsquare-home-red-square+span {
   padding-bottom: 2rem;
 }
 
+#redsquare-appspace-home {
+ padding-bottom: 3rem;
+}
+
+#redsquare-intersection{
+  opacity: 1;
+   height: 3rem;
+}
+
+.redsquare-list {
+  min-height: 120vh;
+}
 .post-tweet-preview .redsquare-item {
   padding-left: 0rem;
   padding-top: 0rem;
@@ -506,4 +518,37 @@ span.redsquare-home-red-square+span {
 
 .saito-back-button {
   cursor: pointer;
+}
+
+#tweet-overlay-add-frnd {
+  background-color: #fff;
+  height: auto;
+  width: 30vh;
+  border-radius: 1.5rem;
+  padding: 2rem;
+}
+
+#tweet-overlay-add-frnd  .saito-identicon-box {
+  display: inline-block;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+#tweet-overlay-add-frnd  .saito-identicon-box .saito-identicon {
+  width: 8rem;
+  height: 8rem; 
+}
+
+#tweet-overlay-add-frnd > .saito-address{
+  width: 100%;
+  max-width: 100%;
+  overflow: inherit;
+  display: block;
+  height: auto;
+  word-break: break-word;
+  text-overflow: inherit;
+  white-space: break-spaces;
+  text-align: center;
+  margin-top: 5rem;
+  margin-bottom: 1rem;
 }

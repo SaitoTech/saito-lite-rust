@@ -36,7 +36,6 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
       //
       // if link properties
       //
-      tweet_text = tweet_text.replace(tweet.link, '');
 
       if (typeof tweet.link_properties != 'undefined') {
         if (tweet.link_properties['og:exists'] !== false) {
