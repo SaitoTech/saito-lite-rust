@@ -414,7 +414,10 @@ class RedSquareTweet {
 
 
       if (e.target.classList.contains('saito-identicon')) {
-        let addPublicKeyModal = new ModalAddPublicKey(app, mod)
+        let identiconUri = e.target.getAttribute("src");
+        let publickey = e.target.getAttribute("data-id");
+
+        let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey)
         addPublicKeyModal.render(app, mod);
       }
     });
