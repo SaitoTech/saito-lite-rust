@@ -378,7 +378,8 @@ class Chessgame extends GameTemplate {
       resign_icon.onclick = async () => {
         let c = await sconfirm("Do you really want to resign?");
         if (c) {
-        	this.resignGame(this.game.id);
+          this.grace_window = 0;
+        	this.resignGame(this.game.id, "resignation");
           this.lockBoard(this.game.position);
         	//window.location.href = '/arcade';
         	return;
@@ -819,8 +820,6 @@ class Chessgame extends GameTemplate {
       
     html += this.returnCryptoOptionsHTML();
 
-    html += `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
-        
     return html;
 
   }

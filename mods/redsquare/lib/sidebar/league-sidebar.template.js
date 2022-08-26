@@ -9,16 +9,32 @@ module.exports = RedSquareLeagueSidebarTemplate = (app, mod) => {
 	        <div class="saito-table">`;
 
 	  if (league_mod.leagues.length > 0){
-	    let cnt = 1;
-	    for (let l of league_mod.leagues){
-	      html += `<div class="saito-table-row ${(cnt%2 == 1)?"odd":""}">
-	                      <div class="saito-table-gamename">${l.name}</div>
-	                      <div class="saito-table-rank">${(l.myRank <= 0)?"unranked":l.myRank}</div>
-	                  </div>`;
-	      cnt++;
-	    }
+		var leagues = league_mod.leagues.sort((a,b) => a.myRank < b.myRank);
+	    leagues.forEach(l => {
+			if (l.myRank > 0) {
+				html += `<div class="saito-table-row">
+				<div class="saito-table-gamename">${l.name}</div>
+				<div class="saito-table-rank">${l.myRank}</div>
+			</div>`;
+			}
+		});
+		leagues.forEach(l => {
+			if (l.myRank <= 0) {
+				html += `<div class="saito-table-row">
+				<div class="saito-table-gamename">${l.name}</div>
+				<div class="saito-table-rank">Unranked</div>
+			</div>`;
+			}
+		});
+
 	  }
-	  html += "</div>";
+	  html += `
+	   <!--div class="saito-table-row">
+	     <div></div>
+		 <div><a href="#games">Play Now</a></div>
+	   </div--> 
+     </div>
+  `;
 	}
     return html;
 };

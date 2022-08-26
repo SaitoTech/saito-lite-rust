@@ -310,8 +310,6 @@
               <option value="tournament">1532 - tournament</option>
             </select>
 
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
 	</div>
     </div>
 

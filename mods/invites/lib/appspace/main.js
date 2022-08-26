@@ -14,15 +14,23 @@ class InvitesAppspace {
     }
 
     if (mod.invites.length > 0) {
+console.log("A - " + mod.invites?.length);
+console.log("AA - " + mod.invites.length);
       for (let i = 0; i < mod.invites.length; i++) {
+console.log("selectoring with " + i);
         app.browser.addElementToSelector(InviteTemplate(app, mod, mod.invites[i]), ".invites-list");
       }
+console.log("B");
       for (let i = 0; i < mod.invites.length; i++) {
+console.log("C");
         if (mod.invites[i].adds.includes(app.wallet.returnPublicKey())) {
+console.log("D");
           let qs = `#invites-invitation-join-${mod.invites[i].invite_id}`;
           document.querySelector(qs).style.display = "none";
         }
+console.log("E");
         if (!mod.isPendingMe(mod.invites[i], app.wallet.returnPublicKey())) {
+console.log("F");
           let qs = `#invites-invitation-accept-${mod.invites[i].invite_id}`;
           document.querySelector(qs).style.display = "none";
         }

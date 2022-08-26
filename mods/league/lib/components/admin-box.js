@@ -1,5 +1,74 @@
 const LeagueComponentAdminBoxTemplate = require("./admin-box.template");
 
+const getGameOptions = () => {
+  let options = "";
+  document.querySelectorAll("form#game-wizard-form input, form#game-wizard-form select").forEach((element) => {
+    if (!options){
+      options = {};
+    }
+    if (element.type == "checkbox") {
+      if (element.checked) {
+        options[element.name] = 1;
+      }
+    } else if (element.type == "radio") {
+      if (element.checked) {
+        options[element.name] = element.value;
+      }
+    } else {
+      options[element.name] = element.value;
+    }
+  });
+  return options;
+};
+
+const players = (app, mod) => {
+  let selection = "";
+  if (mod.minPlayers === mod.maxPlayers) {
+    selection = `<input type="hidden" class="game-wizard-players-select" name="game-wizard-players-select" value="${mod.minPlayers}">`;
+    selection += mod.returnSingularGameOption(app);
+  } else {
+    selection = `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
+    for (let p = mod.minPlayers; p <= mod.maxPlayers; p++) {
+      selection += `<option value="${p}">${p} player</option>`;
+    }
+    selection += `</select>`;
+  }
+
+  return selection;
+};
+
+
+const validateDate = (start, end) => {
+  let today = new Date().getTime();
+
+  if (start){
+    let startTime = Date.parse(start);
+
+    if (startTime < today){
+      salert("Invalid Start Date! Must be after today, otherwise leave blank for League to take immediate effect.");
+      return false;
+    }
+
+    if (end){
+      let endTime = Date.parse(end);
+      if (endTime < startTime){
+        salert("Invalid Date Range!");
+        return false;
+      }
+    }
+
+  }
+
+  if (end){
+    let endTime = Date.parse(end);
+    if (endTime < today){
+      salert("Invalid End Date!");
+      return false;
+    }
+  }
+
+  return true;
+};
 
 module.exports = AdminBox = {
 
@@ -27,11 +96,19 @@ module.exports = AdminBox = {
 
     box.onsubmit = (e) => {
       e.preventDefault();
+
+      if (!validateDate(e.target.startdate.value, e.target.enddate.value)){
+        return false;
+      }
+
       let leaguename = sanitize(document.getElementById("league-name")?.textContent || e.target.game.value);
       let leaguedesc = sanitize(desc?.textContent) || "";
       if (leaguedesc === desc.getAttribute("data-placeholder")) {
         leaguedesc = "";
       }
+
+      let options = (e.target.fixedoptions.checked) ? JSON.stringify(getGameOptions()) : "";
+
       let newLeague = {
         game: e.target.game.value,
         type: e.target.type.value,
@@ -40,10 +117,16 @@ module.exports = AdminBox = {
         description: leaguedesc,
         ranking: e.target.ranking.value,
         starting_score: e.target.starting_score.value,
-        max_players: e.target.max_players.value
+        max_players: e.target.max_players.value,
+        options: options,
+        startdate: e.target.startdate.value,
+        enddate: e.target.enddate.value,
+        allowlate: (e.target.lateregister.checked) ? '1' : '0',
       };
+
       document.getElementById("league-details").style.display = "none";
       mod.sendCreateLeagueTransaction(newLeague);
+      mod.overlay.clear();
       return false;
     }
 
@@ -60,6 +143,8 @@ module.exports = AdminBox = {
             document.querySelector("#league-desc").textContent = "";
             document.querySelector("#game").value = gamename;
             document.getElementById("league-details").style.display = "block";
+            document.getElementById("fixedoptions").checked = false;
+            mod.overlay.clear();
             if (desc.innerHTML === "") {
               desc.innerHTML = desc.getAttribute("data-placeholder");
             }
@@ -81,6 +166,58 @@ module.exports = AdminBox = {
         } else {
           startDiv.value = 0;
           startDiv.style.display = "none";
+        }
+      };
+    }
+
+    let optionsSelect = document.getElementById("selectoptions");
+    if (optionsSelect){
+      optionsSelect.onclick = (e) => {
+        try{
+          document.getElementById("fixedoptions").checked = true;
+
+          let gameName = selector.value;
+          let gamemod = app.modules.returnModule(gameName);
+          let advancedOptions = gamemod.returnGameOptionsHTML();
+          let moreOptions = players(app, gamemod);
+          let html = `<div class="game_option_league_wizard">
+                      <form id="game-wizard-form" class="game-wizard-form">
+                      ${advancedOptions}
+                      ${moreOptions}
+                      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+                      </form>
+                      </div>
+                      `;
+          //Display Game Options
+          mod.overlay.show(app, mod, html);  
+          //Attach dynamic listeners
+          gamemod.attachAdvancedOptionsEventListeners();
+          //Hide overlay if clicking button
+          if (document.getElementById("game-wizard-advanced-return-btn")) {
+            document.querySelector(".game-wizard-advanced-return-btn").onclick = (e) => {
+              mod.overlay.hide();
+            };
+          }
+        }catch(err){
+          console.log(err);
+        }
+      }
+    }
+
+    let optionsToggle = document.getElementById("fixedoptions");
+    if (optionsToggle){
+      optionsToggle.onchange = (e) =>{
+        if (!document.getElementById("game-wizard-form")){
+          let gameName = selector.value;
+          let gamemod = app.modules.returnModule(gameName);
+          let html = `<div class="game_option_league_wizard">
+                      <form id="game-wizard-form" class="game-wizard-form">
+                      ${gamemod.returnGameOptionsHTML()}
+                      ${players(app, gamemod)}
+                      </form>
+                      </div>`;
+          mod.overlay.show(app, mod, html);  
+          mod.overlay.hide();
         }
       };
     }

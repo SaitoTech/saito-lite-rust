@@ -1243,6 +1243,7 @@ class Arcade extends ModTemplate {
   }
 
   launchGame(game_id) {
+
     if (this.browser_active == 0) {
       return;
     }

@@ -21,21 +21,21 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
   let bannerBack = gameModule.respondTo("arcade-carousel")?.background || `/${slug}/img/arcade.jpg`;
   let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
 
-  let gameIndicator = `<i class="game_status_indicator game_${msg.game_status} fas fa-circle"></i>`;
+  let gameIndicator = `<i class="game_status_indicator game_${msg.game_status} fas fa-circle" title="This game is ${msg.game_status}"></i>`;
 
   let inviteHtml = `
-    <div id="invite-${msg.game_id}" class="arcade-tile" style="background-image: url('${bannerBack}');">
+    <div id="observe-${msg.game_id}" class="arcade-tile" style="background-image: url('${bannerBack}');">
       <div class="invite-tile-wrapper">
-        ${gameIndicator}
         <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
         <div class="invite-col-2">
           <div class="gameName">${gameName}</div>
-          <div class="gameName" style="font-size:0.9em">${datetime.day} ${datetime.month} ${datetime.year}, ${datetime.hours}:${datetime.minutes} (${msg.step} moves)</div>
+          <div style="font-size:0.9em">${msg.step} moves as of ${datetime.hours}:${datetime.minutes}, ${datetime.day} ${datetime.month} ${datetime.year}</div>
           ${playersHtml}
         </div>
         <div class="gameShortDescription">${makeDescription(app, msg)}</div>
-	<div class="gameButtons">
+	      <div class="gameButtons" style="position:relative;">
           <button data-sig="${msg.game_id}" data-cmd="watch" class="button observe-game-btn">WATCH</button>
+          ${gameIndicator}
         </div>
       </div>
     </div>

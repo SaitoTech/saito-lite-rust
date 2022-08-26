@@ -36,7 +36,7 @@ span.redsquare-home-red-square+span {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   font-size: 1.7rem;
-  line-height: 2.2rem;
+  line-height: 2rem;
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }
@@ -63,10 +63,27 @@ span.redsquare-home-red-square+span {
   padding-bottom: 2rem;
 }
 
+#redsquare-appspace-home {
+ padding-bottom: 3rem;
+}
+
+#redsquare-intersection{
+  opacity: 1;
+   height: 3rem;
+}
+
+.redsquare-list {
+  min-height: 120vh;
+}
 .post-tweet-preview .redsquare-item {
   padding-left: 0rem;
   padding-top: 0rem;
   padding-bottom: 1rem;
+}
+
+.post-tweet-preview .tweet-body {
+  max-height: 55vh;
+  overflow-y: auto;
 }
 
 .post-tweet-preview .redsquare-item .redsquare-item-contents .redsquare-tweet-tools {
@@ -161,7 +178,7 @@ span.redsquare-home-red-square+span {
   color: white;
   max-height: 90vh;
   max-width: 114rem;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .redsquare-create-game-list {
@@ -321,7 +338,7 @@ span.redsquare-home-red-square+span {
 
 .youtube-embed-container {
   width: 100%;
-  margin: 15px 0px;
+  margin: 0px;
 }
 
 .youtube-embed {
@@ -497,4 +514,13 @@ span.redsquare-home-red-square+span {
 
 .saito-arcade-invite-list .saito-arcade-invite {
   display: grid;
+}
+
+.saito-back-button {
+  cursor: pointer;
+}
+
+
+.saito-friendlist .saito-user {
+  margin-bottom: 2rem;
 }

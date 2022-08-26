@@ -7,6 +7,10 @@
 }*/
 
 
+.cancel_x {
+  opacity: 0.5;
+}
+
 .noncard {
   color: black;
   padding: 10px;

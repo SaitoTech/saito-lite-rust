@@ -3,6 +3,7 @@
     // North Sea Oil
     //
     if (card == "northseaoil") {
+      this.cancelEvent("opec");
       this.game.state.events.northseaoil = 1; //block OPEC
       this.game.state.events.northseaoil_bonus = 1; //let US play 8 cards
       if (!i_played_the_card){

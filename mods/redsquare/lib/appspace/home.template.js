@@ -1,8 +1,8 @@
 
 module.exports = (app, mod) => {
 
-    return `
-      <div class="redsquare-new-tweets-banner" id="redsquare-new-tweets-banner">Load New Tweets</div>
+  return `
+
       <div id="redsquare-appspace-home" class="redsquare-appspace-home">
 
         <div class="saito-page-header" id="redsquare-home-header">
@@ -17,9 +17,12 @@ module.exports = (app, mod) => {
 	  </p></p>
 	  loading...
 	</div>
-
+      <div id="redsquare-intersection">
+      </div>
       </div>
     `;
 
 }
 
+
+{/* <div class="redsquare-new-tweets-banner" id="redsquare-new-tweets-banner">Load New Tweets</div> */ }

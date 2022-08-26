@@ -2409,7 +2409,7 @@ class Wordblocks extends GameTemplate {
           </div>`;
 
     html += this.returnCryptoOptionsHTML();
-    return html + `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+    return html;
   }
 
   async animatePlay(){

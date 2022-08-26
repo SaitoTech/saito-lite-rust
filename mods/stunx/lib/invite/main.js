@@ -1,30 +1,23 @@
-const saito = require('./../../../../lib/saito/saito');
-const StunInviteTemplate = require('./main.template');
-const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
-class StunInvite {
+class StunxCreator {
 
   constructor(app, mod) {
     this.app = app;
-    this.name = "StunInvite";
-    this.overlay = new SaitoOverlay(app, mod);
+    this.name = "StunxCreator";
   }
 
   render(app, mod) {
-    this.overlay.show(app, mod, StunInviteTemplate(app, mod));
-    this.attachEvents(app, mod);
-  }
 
+    let invite_obj = mod.options;
+    mod.createOpenTransaction(invite_obj);
+
+alert("event / invitation sent");
+
+  }
   
-  attachEvents(app, mod) {
-    document.getElementById("stunx-create-invite").onclick = (e) => {
-      mod.createOpenTransaction(mod.options);
-      this.overlay.hide();
-    }
-  }
-
 }
 
 
-module.exports = StunInvite;
+module.exports = StunxCreator;
+
 
