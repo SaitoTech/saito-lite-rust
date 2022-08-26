@@ -76,13 +76,15 @@ class Post {
       // if yes then update reply counter
       //
       if (e.target.parentNode.id == 'redsquare-tweet-overlay') {
-        let sig = e.target.parentNode.querySelector('.post-tweet-preview').getAttribute('data-id');
-        let sel = ".tweet-tool-comment-count-" + sig;
-        let obj = document.querySelector(sel);
-        obj.innerHTML = parseInt(obj.innerHTML) + 1;
-        if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-          obj.parentNode.classList.remove("saito-tweet-no-activity");
-          obj.parentNode.classList.add("saito-tweet-activity");
+        if (e.target.parentNode.querySelector('.post-tweet-preview') != null) {
+          let sig = e.target.parentNode.querySelector('.post-tweet-preview').getAttribute('data-id');
+          let sel = ".tweet-tool-comment-count-" + sig;
+          let obj = document.querySelector(sel);
+          obj.innerHTML = parseInt(obj.innerHTML) + 1;
+          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+            obj.parentNode.classList.remove("saito-tweet-no-activity");
+            obj.parentNode.classList.add("saito-tweet-activity");
+          }
         }
       }
 
