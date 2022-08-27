@@ -243,13 +243,15 @@
   }
 
 
-
   returnFactionControllingSpace(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.controller != "" && space.controller != "undefined" && space.controller != 'undefined') { 
+    if (space.controller != "" && space.controller != undefined && space.controller != "undefined" && space.controller != 'undefined') { 
       // whoever had units here first
-      if (space.units[space_controller].length > 0) {
-        return space.controller; 
+      console.log("controller: " + space.controller);
+      if (space.units[space.controller]) {
+        if (space.units[space.controller].length > 0) {
+          return space.controller; 
+        }
       }
     }
     // or whoever has political control

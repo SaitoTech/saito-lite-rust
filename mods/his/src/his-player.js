@@ -523,8 +523,6 @@ console.log("OPS ARE ZERO!");
       this.updateStatusWithOptions('Spend as which Power:', html);
       this.attachCardboxEvents(function(selected_faction) {
 
-alert("selected faction = " + selected_faction);
-
 	//
 	// duplicates code below
 	//
