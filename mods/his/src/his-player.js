@@ -100,8 +100,10 @@
       players[i] = {};
       players[i].tmp_roll_bonus = 0;
       players[i].tmp_roll_first = 0;
+      players[i].tmp_roll_modifiers = [];
       players[i].factions = [];
       players[i].factions.push(rf);
+      players[i].num = i;
 
     }
 
@@ -157,6 +159,7 @@
       let p = this.game.players_info[i];
       p.tmp_roll_bonus = 0;
       p.tmp_roll_first = 0;
+      p.tmp_roll_modifiers = [];
     }
 
     this.game.state.active_player = player_num;

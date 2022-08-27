@@ -1,8 +1,4 @@
 
-
-
-
-
   initializeHTML(app) {
 
     if (this.browser_active == 0) { return; }

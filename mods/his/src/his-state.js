@@ -1,4 +1,8 @@
 
+  captureLeader(winning_faction, losing_faction, space, unit) {
+    alert("Capture Leader Not Implemented");
+  }
+
   activateMinorPower(faction, power) {
     this.setAllies(faction, power);
     this.game.state.activated_powers[faction].push(power);
@@ -68,6 +72,13 @@
 	return;
       }
     }
+  }
+
+  isLandUnit(unit) {
+    if (unit.type === "regular") { return 1; }
+    if (unit.type === "mercenary") { return 1; }
+    if (unit.type === "cavalry") { return 1; }
+    return 0;
   }
 
   addRegular(faction, space, num=1) {
