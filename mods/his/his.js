@@ -5265,7 +5265,7 @@ console.log("adding stuff!");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('024')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -5304,7 +5304,7 @@ console.log("adding stuff!");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('025')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -5345,7 +5345,7 @@ console.log("adding stuff!");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('026')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -5387,7 +5387,7 @@ console.log("adding stuff!");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('027')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -5429,7 +5429,7 @@ console.log("adding stuff!");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -5469,7 +5469,7 @@ console.log("adding stuff!");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -5509,7 +5509,7 @@ console.log("adding stuff!");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('030')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -5555,7 +5555,7 @@ console.log("adding stuff!");
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
-	      f = his_self.game.players_info[this.game.player-1].factions[i];
+	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -5566,8 +5566,8 @@ console.log("adding stuff!");
       },
       menuOptionTriggers:  function(his_self, menu, player, faction) {
         if (menu == "move") {
-	  for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
-	    if (this.game.deck[0].fhand[i].includes('032')) {
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('032')) {
 	      return 1;
 	    }
 	  }
@@ -5595,7 +5595,7 @@ console.log("adding stuff!");
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('033')) {
-	      f = his_self.game.players_info[this.game.player-1].factions[i];
+	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -5714,7 +5714,7 @@ console.log("adding stuff!");
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('036')) {
-	      f = his_self.game.players_info[this.game.player-1].factions[i];
+	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -5761,7 +5761,7 @@ console.log("adding stuff!");
 
 	  let player = his_self.returnPlayerOfFaction(faction);
 
-	  if (this.game.player == player) {
+	  if (his_self.game.player == player) {
 
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
@@ -7047,7 +7047,6 @@ console.log("activated minor power 4");
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
-console.log("FACTION LAND UNITS IN SPACE: " + f + " / " + fluis);
 	      if (fluis == 0) {
 
 		//
@@ -7261,9 +7260,7 @@ console.log("FACTION LAND UNITS IN SPACE: " + f + " / " + fluis);
 	  for (let i = io.length-1; i>= 0; i--) {
 	    if (io[i] !== faction) {
 	      for (let z = 0; z < neighbours.length; z++) {
-console.log("checking if " + io[i] + " has units in " + neighbours[z]);
 	        let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
-console.log("reported units: " + fluis);
 	        if (fluis > 0) {
 	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
 	        }
@@ -7393,13 +7390,8 @@ console.log("reported units: " + fluis);
 	    }
 
 	  } else {
-
 	    this.updateLog("Interception Failure");
-
 	  }
-
-console.log("QUEUE POST INTERCEPTION CALCULATION");
-console.log(JSON.stringify(his_self.game.queue));
 
 	  return 1;
 
@@ -9095,7 +9087,7 @@ alert("selected faction = " + selected_faction);
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + card + " for the event\tevent\tcard");
-    his_self.addMove("RESETCONFIRMSNEEDED\tall");
+    this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
 

@@ -27,9 +27,7 @@ console.log("MOVE: " + mv[0]);
 	//
         if (mv[0] == "init") {
 	  this.updateLog("init game");
-console.log("INIT HAPPENED 1");
           this.game.queue.splice(qe, 1);
-console.log("INIT HAPPENED 2");
 
 	  return 1;
         }
@@ -46,8 +44,6 @@ console.log("INIT HAPPENED 2");
 //	  this.game.queue.push("diplomacy_phase");
 
 this.game.queue.push("is_testing");
-
-console.log("pushed is_testing");
 
 	  //
 	  // start the game with the Protestant Reformation
@@ -72,8 +68,6 @@ console.log("pushed is_testing");
 	    this.updateStatus("Game Over");
 	    return 0;
 	  }
-
-console.log("about to keep going!");
 
           return 1;
         }
@@ -144,8 +138,6 @@ if (mv[0] === "is_testing") {
 
       this.activateMinorPower("papacy", "venice");
 
-console.log("activated minor power");
-
       this.convertSpace("protestant", "graz");
       this.controlSpace("protestant", "graz");
       this.addRegular("protestant", "graz", 3);
@@ -153,17 +145,14 @@ console.log("activated minor power");
       this.addRegular("venice", "agram", 4);
       this.game.spaces['agram'].type = "fortress";
 
-console.log("activated minor power 2");
       this.addCard("protestant", "036");
       this.addCard("protestant", "026");
       this.addCard("protestant", "027");
       this.addCard("protestant", "028");
-console.log("activated minor power 3");
       this.addCard("papacy", "029");
       this.addCard("papacy", "030");
       this.addCard("papacy", "024");
       this.addCard("papacy", "025");
-console.log("activated minor power 4");
 
       this.game.queue.splice(qe, 1);
 
@@ -266,7 +255,12 @@ console.log("activated minor power 4");
 	    // if this space contains two non-allies, field-battle or siege must occur
 	    //
 	    let space = this.game.spaces[destination];
+	    let anyone_else_here = 0;
+
 	    for (let f in space.units) {
+	      if (space.units[f].length > 0) {
+		anyone_else_here = 1;
+	      }
 	      if (f !== faction && space.units[f].length > 0 && !this.areAllies(f, faction)) {
 	        this.game.queue.push("field_battle\t"+space.key+"\t"+faction);
 		this.game.queue.push("counter_or_acknowledge\tField Battle is about to begin in "+destination + "\tfield_battle");
@@ -277,6 +271,11 @@ console.log("activated minor power 4");
 		}
 	        return 1;
 	      }
+	    }
+
+	    //
+	    if (anyone_else_here == 0) {
+	      space.controller = faction;
 	    }
 	  }
 
@@ -850,6 +849,92 @@ console.log("activated minor power 4");
 	  let stage = "field_battle";
 
 	  //
+	  // who the hell is here?
+	  //
+	  // an ally of a major power can intercept and fight together, complicating
+	  // how hits are assigned. so we need to know which factions are actually on 
+	  // which sides. additionally, formations can include units from allied minor
+	  // powers.
+	  //
+	  let attacker_faction = attacker;
+	  let defender_faction = his_self.returnFactionControllingSpace(space);
+ 	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
+ 	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
+
+	  //
+	  // every faction needs mapping to player
+	  //
+	  let faction_map = {};
+	  let attacking_factions = 0;
+	  let defending_factions = 0;
+
+          for (let f in space.units) {
+	    if (space.units[f].length > 0 ) {
+	      if (f == attacker_faction) {
+		faction_map[f] = attacker_faction;
+	      } else {
+	        if (f == defender_faction) {
+		  faction_map[f] = defender_faction;
+		} else {
+	          if (his_self.areAllies(f, attacker_faction)) {
+		    faction_map[f] = attacker_faction;
+		  }
+	          if (his_self.areAllies(f, defender_faction)) {
+		    faction_map[f] = defender_faction;
+		  }
+		}
+	      }
+	    }
+          }
+
+
+
+	  //
+	  // calculate rolls 
+	  //
+          let calculate_rolls = function(faction) {
+
+	    let rolls = 0;
+	    let highest_battle_ranking = 0;
+
+            for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].personage == false) {
+		rolls++;
+	      } else {
+	        if (highest_battle_ranking < space.units[faction][i].battle_ranking) {
+		  highest_battle_ranking = space.units[faction][i].battle_ranking;
+		}
+	      }
+	    }
+
+	    return rolls;
+
+          }
+
+	  //
+	  // calculate highest battle ranking
+	  //
+          let calculate_highest_battle_ranking = function(faction) {
+
+	    let highest_battle_ranking = 0;
+
+            for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].battle_ranking > 0) {
+	        if (highest_battle_ranking < space.units[faction][i].battle_ranking) {
+		  highest_battle_ranking = space.units[faction][i].battle_ranking;
+		}
+	      }
+	    }
+
+	    return highest_battle_ranking;
+
+          }
+
+
+
+
+
+	  //
 	  // some land units have just withdrawn into fortifications, so 
 	  // battle should be avoided.
 	  //
@@ -859,6 +944,11 @@ console.log("activated minor power 4");
 	    space.besieged = 1;
 	    return 1;
 	  }
+
+
+
+
+
 
 
 	  let msg = "A field battle commences in " + space.name;

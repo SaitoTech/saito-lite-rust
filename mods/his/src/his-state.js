@@ -231,7 +231,23 @@
     space.political = faction;
   }
 
-  // TODO - include friendly units not just faction units
+
+
+  returnFactionControllingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.controller != "" && space.controller != "undefined" && space.controller != 'undefined') { 
+      // whoever had units here first
+      if (space.units[space_controller].length > 0) {
+        return space.controller; 
+      }
+    }
+    // or whoever has political control
+    if (space.political != "") { return space.political; }
+    // or whoever has home control
+    if (space.owner != -1) { return space.owner; }
+    return space.home;
+  }
+
   returnFriendlyLandUnitsInSpace(faction, space) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -3449,7 +3465,7 @@
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('024')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3488,7 +3504,7 @@
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('025')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3529,7 +3545,7 @@
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('026')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3571,7 +3587,7 @@
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('027')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3613,7 +3629,7 @@
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3653,7 +3669,7 @@
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3693,7 +3709,7 @@
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('030')) {
-              f = his_self.game.players_info[this.game.player-1].factions[i];
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3739,7 +3755,7 @@
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
-	      f = his_self.game.players_info[this.game.player-1].factions[i];
+	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -3750,8 +3766,8 @@
       },
       menuOptionTriggers:  function(his_self, menu, player, faction) {
         if (menu == "move") {
-	  for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
-	    if (this.game.deck[0].fhand[i].includes('032')) {
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('032')) {
 	      return 1;
 	    }
 	  }
@@ -3779,7 +3795,7 @@
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('033')) {
-	      f = his_self.game.players_info[this.game.player-1].factions[i];
+	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -3898,7 +3914,7 @@
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('036')) {
-	      f = his_self.game.players_info[this.game.player-1].factions[i];
+	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -3945,7 +3961,7 @@
 
 	  let player = his_self.returnPlayerOfFaction(faction);
 
-	  if (this.game.player == player) {
+	  if (his_self.game.player == player) {
 
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
