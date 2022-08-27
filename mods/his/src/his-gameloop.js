@@ -398,6 +398,7 @@ if (mv[0] === "is_testing") {
 	  if (this.game.player == player) {
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
+	    this.updateStatus(faction + " considering fortification");
 	    this.updateLog(faction + " evaluating retreat into fortification");
 	  }
 
@@ -950,6 +951,7 @@ console.log("calculate hbr 2");
 	  if (space.besieged == 2) {
 	    this.updateLog("field battle avoided by withdrawing into fortifications");
 	    this.game.queue.push("counter_or_acknowledge\tField Battle avoided by defenders retreating into fortification\tsiege");
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    space.besieged = 1;
 	    return 1;
 	  }

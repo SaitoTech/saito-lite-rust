@@ -520,7 +520,10 @@ console.log("OPS ARE ZERO!");
       }
       html    += `</ul>`;
 
-      this.updateStatusWithOptions('Spend as which Power:', html);
+      let ops_text = `${ops} op`;
+      if (ops > 0) { ops_text += 's'; }
+
+      this.updateStatusWithOptions(`Which Faction: ${ops_text}`, html);
       this.attachCardboxEvents(function(selected_faction) {
 
 	//
@@ -1425,11 +1428,10 @@ console.log("faction: " + faction);
   }
 
   canPlayerAssault(his_self, player, faction) {
-console.log("can player assault: " + faction);
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) {
-        if (his_self.game.spaces[conquerable_spaces[i]].type === "fortress") {
+        if (his_self.game.spaces[conquerable_spaces[i]].besieged > 0) {
 	  return 1;
 	}
       }
@@ -1462,7 +1464,7 @@ console.log("can player assault: " + faction);
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
+      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { return 1; }

@@ -4854,6 +4854,51 @@ console.log("adding stuff!");
       type : "normal" ,
       faction : "ottoman" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle_hits_assignment") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('001')) {
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'janissaries', html : `<li class="option" id="janissaries">janissaries (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle_hits_assignment") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('001')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle_hits_assignment") {
+          his_self.addMove("janissaries");
+	  his_self.endTurn();
+	  his_self.updateStatus("acknowledge");
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "janissaries") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.updateLog("Ottoman Empire plays Janissaries");
+	  his_self.game.state.field_battle.attacker_rolls += 5;
+	  his_self.game.state.field_battle.attacker_results.push(his_self.rollDice(6));
+
+	  return 1;
+
+        }
+      },
+
     }
     deck['002'] = { 
       img : "cards/HIS-002.svg" , 
@@ -7163,6 +7208,7 @@ if (mv[0] === "is_testing") {
 	  if (this.game.player == player) {
 	    this.playerEvaluateFortification(attacker, faction, spacekey);
 	  } else {
+	    this.updateStatus(faction + " considering fortification");
 	    this.updateLog(faction + " evaluating retreat into fortification");
 	  }
 
@@ -7196,6 +7242,8 @@ console.log("fortification requires multiple factions");
 	    if (lmv[0] !== "field_battle") {
 console.log("removing: =====> " + lmv[0]);
 	      this.game.queue.splice(i, 1);
+	    } else {
+	      break;
 	    }
 	  }
 
@@ -7713,6 +7761,7 @@ console.log("calculate hbr 2");
 	  if (space.besieged == 2) {
 	    this.updateLog("field battle avoided by withdrawing into fortifications");
 	    this.game.queue.push("counter_or_acknowledge\tField Battle avoided by defenders retreating into fortification\tsiege");
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    space.besieged = 1;
 	    return 1;
 	  }
@@ -9426,7 +9475,10 @@ console.log("OPS ARE ZERO!");
       }
       html    += `</ul>`;
 
-      this.updateStatusWithOptions('Spend as which Power:', html);
+      let ops_text = `${ops} op`;
+      if (ops > 0) { ops_text += 's'; }
+
+      this.updateStatusWithOptions(`Which Faction: ${ops_text}`, html);
       this.attachCardboxEvents(function(selected_faction) {
 
 	//
@@ -10331,11 +10383,10 @@ console.log("faction: " + faction);
   }
 
   canPlayerAssault(his_self, player, faction) {
-console.log("can player assault: " + faction);
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) {
-        if (his_self.game.spaces[conquerable_spaces[i]].type === "fortress") {
+        if (his_self.game.spaces[conquerable_spaces[i]].besieged > 0) {
 	  return 1;
 	}
       }
@@ -10368,7 +10419,7 @@ console.log("can player assault: " + faction);
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
+      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { return 1; }
