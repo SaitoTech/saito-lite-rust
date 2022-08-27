@@ -154,6 +154,8 @@ if (mv[0] === "is_testing") {
       this.addCard("papacy", "024");
       this.addCard("papacy", "025");
 
+      this.game.spaces['graz'].type = 'key';
+
       this.game.queue.splice(qe, 1);
 
       return 1;
@@ -257,19 +259,28 @@ if (mv[0] === "is_testing") {
 	    let space = this.game.spaces[destination];
 	    let anyone_else_here = 0;
 
-	    for (let f in space.units) {
-	      if (space.units[f].length > 0) {
-		anyone_else_here = 1;
-	      }
-	      if (f !== faction && space.units[f].length > 0 && !this.areAllies(f, faction)) {
-	        this.game.queue.push("field_battle\t"+space.key+"\t"+faction);
-		this.game.queue.push("counter_or_acknowledge\tField Battle is about to begin in "+destination + "\tfield_battle");
-                this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-		if (skip_avoid_battle != 1) {
-	          this.game.queue.push("fortification_check\t"+faction+"\t"+destination+"\t"+source);
-	          this.game.queue.push("retreat_check\t"+faction+"\t"+destination+"\t"+source);
-		}
-	        return 1;
+	    let lqe = qe-1;
+	    if (lqe >= 0) {
+	      let lmv = this.game.queue[lqe].split("\t");
+	      if (lmv[0] == "interception_check") {
+	        for (let f in space.units) {
+	          if (space.units[f].length > 0) {
+		    anyone_else_here = 1;
+	          }
+	          if (f !== faction && space.units[f].length > 0 && !this.areAllies(f, faction)) {
+		    if (lqe-1 >= 0) {
+		      // added in reverse order
+		      if (skip_avoid_battle != 1) {
+	                this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
+	                this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
+		      }
+                      this.game.queue.splice(lqe, 0, "RESETCONFIRMSNEEDED\tall");
+	    	      this.game.queue.splice(lqe, 0, "counter_or_acknowledge\tField Battle is about to begin in "+destination + "\tfield_battle");
+	              this.game.queue.splice(lqe, 0, "field_battle\t"+space.key+"\t"+faction);
+	              return 1;
+	            }
+	          }
+	        }
 	      }
 	    }
 
@@ -403,12 +414,26 @@ if (mv[0] === "is_testing") {
 	  let spacekey = mv[3];
 	  let space = this.game.spaces[spacekey];
 
+console.log("fortification requires multiple factions");
+
 	  for (f in this.factions) {
 	    if (f !== attacker) {
 	      space.besieged_factions.push(f);
 	      space.besieged = 2; // 2 = cannot attack this round
 	    }
+	  }
 
+	  for (let i = this.game.queue.length-1; i >= 0; i--) {
+	    let lmv = this.game.queue[i].split("\t");
+	    //
+	    // remove everything before field_battle
+	    //
+	    if (lmv[0] !== "field_battle") {
+console.log("removing: =====> " + lmv[0]);
+	      this.game.queue.splice(i, 1);
+	    } else {
+	      break;
+	    }
 	  }
 
           return 1;
@@ -428,22 +453,35 @@ if (mv[0] === "is_testing") {
 	  let attacker_comes_from_this_spacekey = mv[3];
 	  let space = this.game.spaces[spacekey];
 	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+	  let attacking_player = this.returnPlayerOfFaction(attacker);
+
 
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
-	    let can_player_retreat = 0;
-	    for (let z = 0; z < neighbours.length; z++) {
-	      if (io[i] !== attacker) {
-	        let fluis = this.canFactionRetreatToSpace(io[i], neighbours[z], attacker_comes_from_this_spacekey);
-	        if (fluis > 0) {
-		  if (this.returnPlayerOfFaction(io[i]) > 0) {
-		    can_player_retreat = 1;
-		  }
+	    let can_faction_retreat = 0;
+	    let player_of_faction = this.returnPlayerOfFaction(io[i]);
+	    if (player_of_faction != attacking_player) {
+  	      if (io[i] !== attacker) {
+console.log("considering retreat options for " + io[i]);
+	        for (let z = 0; z < neighbours.length; z++) {
+	          let fluis = this.canFactionRetreatToSpace(io[i], neighbours[z], attacker_comes_from_this_spacekey);
+console.log("possible? " + fluis);
+	          if (fluis > 0) {
+	            this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
+	          }
 	        }
 	      }
 	    }
-	    if (can_player_retreat) {
-	      this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
+	    for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
+	      let ap = this.game.state.activated_powers[io[i]][z];
+	      if (ap != attacker) {
+console.log("considering retreat options for " + ap);
+	        let fluis = this.canFactionRetreatToSpace(ap, neighbours[z], attacker_comes_from_this_spacekey);
+console.log("possible? " + fluis);
+	        if (fluis > 0) {
+	          this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+ap);
+	        }
+	      }
 	    }
 	  }
 
@@ -515,16 +553,32 @@ if (mv[0] === "is_testing") {
 	  let space = this.game.spaces[spacekey];
 	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
 
+	  let attacking_player = this.returnPlayerOfFaction(faction);
+
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
-	    if (io[i] !== faction) {
-	      for (let z = 0; z < neighbours.length; z++) {
-	        let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
-	        if (fluis > 0) {
-	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
+	    let player_of_faction = this.returnPlayerOfFaction(io[i]);
+	    if (player_of_faction != attacking_player) {
+  	      if (io[i] !== faction) {
+	        for (let z = 0; z < neighbours.length; z++) {
+	          let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
+	          if (fluis > 0) {
+	            this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
+	          }
 	        }
 	      }
 	    }
+
+	    for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
+	      let ap = this.game.state.activated_powers[io[i]][z];
+	      if (ap != faction) {
+	        let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[z]);
+	        if (fluis > 0) {
+	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[z]);
+	        }
+	      }
+	    }
+
 	  }
 
           return 1;
