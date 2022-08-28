@@ -70,15 +70,4 @@
     return -1;
   }
 
-  returnFactionName(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-        if (faction === this.game.players_info[i].factions[ii]) {
-	  return this.factions[this.game.players_info[i].factions[ii]].name;
-	}
-      }
-    }
-    return faction.toUpperCase();
-  }
-
 

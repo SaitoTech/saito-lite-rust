@@ -230,9 +230,14 @@
   canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[invalid_space]; } } catch (err) {}
+console.log("retreat 1");
     if (space === attacker_comes_from_this_space) { return 0; }
+console.log("retreat 2");
     if (this.isSpaceInUnrest(space) == 1) { return 0; }
+console.log("retreat 3");
+console.log("is space " + this.returnSpaceName(space.key) + " friendly to " + faction);
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
+console.log("retreat 4");
     return 0;
   }
 
@@ -254,7 +259,7 @@
     // or -- failing that -- whichever faction is recorded as occupying the space.
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
-      let luis = returnFactionLandUnitsInSpace(f, space);
+      let luis = this.returnFactionLandUnitsInSpace(f, space);
       if (luis > 0) {
         if (!this.areAllies(attacker_faction, f)) {
 	  return f;
@@ -322,6 +327,30 @@
       }
     }
     return 0;
+  }
+
+  returnFactionMap(space, faction1, faction2) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let faction_map = {};
+    for (let f in space.units) {
+      if (this.returnFactionLandUnitsInSpace(f, space)) {
+        if (f == faction1) {
+          faction_map[f] = faction1;
+        } else {
+          if (f == faction2) {
+            faction_map[f] = faction2;
+          } else {
+            if (this.areAllies(f, faction1)) {
+              faction_map[f] = faction1;
+            }
+            if (this.areAllies(f, faction2)) {
+              faction_map[f] = faction2;
+            }
+          }
+        }
+      }
+    }
+    return faction_map;
   }
 
   returnImpulseOrder() {
@@ -483,18 +512,35 @@
   }
 
   isSpaceFriendly(space, faction) {
+console.log("isf");
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     // friendly if i control it
     if (space.owner === faction) { return 1; }
     if (space.political === faction) { return 1; }
     if (space.political === "" && space.home === faction) { return 1; }
-    if (space.religion === "protestant" && faction === "protestant") { return 1; }
     // friendly if ally controls it
     if (space.political === "") {
       if (this.areAllies(faction, space.home)) { return 1; }
     } else {
       if (this.areAllies(faction, space.political)) { return 1; }
     }
+    // friendly if we are minor power and controller controls us
+console.log("isf 1");
+    if (this.game.state.activated_powers[space.owner]) {
+console.log("isf 1");
+      if (this.game.state.activated_powers[space.owner].includes(faction)) { return 1; }
+    }
+console.log("isf 2");
+    if (this.game.state.activated_powers[space.political]) {
+console.log("isf 2");
+      if (this.game.state.activated_powers[space.political].includes(faction)) { return 1; }
+    }
+console.log("isf 3");
+    if (this.game.state.activated_powers[space.home]) {
+console.log("isf 3");
+      if (this.game.state.activated_powers[space.home].includes(faction)) { return 1; }
+    }
+console.log("isf 4");
     return 0;
   }
 

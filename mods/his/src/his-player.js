@@ -162,6 +162,8 @@
       p.tmp_roll_modifiers = [];
     }
 
+    this.game.state.field_battle = {};
+
     this.game.state.active_player = player_num;
 
   }
@@ -179,6 +181,8 @@
 console.log("checking who runs: " + faction);
     for (let i = 0; i < this.game.players_info.length; i++) {
       if (this.game.players_info[i].factions.includes(faction)) {
+console.log("found: " + (i+1));
+console.log("x: " + JSON.stringify(this.game.queue));
 	return i+1;
       }
       for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
@@ -189,6 +193,7 @@ console.log("checking who runs: " + faction);
         }
       }
     }
+console.log("did not find !");
     return 0;
   }
 
