@@ -1,5 +1,6 @@
 
   captureLeader(winning_faction, losing_faction, space, unit) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     alert("Capture Leader Not Implemented");
   }
 
@@ -26,12 +27,16 @@
   areAllies(faction1, faction2) {
     try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
     return 0;
   }
 
   areEnemies(faction1, faction2) {
     try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
     return 0;
   }
 
@@ -240,17 +245,33 @@
   controlSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.political = faction;
+    space.occupier = faction;
   }
 
 
-  returnFactionControllingSpace(space) {
+  returnDefenderFaction(attacker_faction, space) {
+    // called in combat, this finds whichever faction is there but isn't allied to the attacker
+    // or -- failing that -- whichever faction is recorded as occupying the space.
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.controller != "" && space.controller != undefined && space.controller != "undefined" && space.controller != 'undefined') { 
+    for (let f in space.units) {
+      let luis = returnFactionLandUnitsInSpace(f, space);
+      if (luis > 0) {
+        if (!this.areAllies(attacker_faction, f)) {
+	  return f;
+	}
+      }
+    }
+    return this.returnFactionOccupyingSpace(space);
+  }
+
+  returnFactionOccupyingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.occupier != "" && space.occupier != undefined && space.occupier != "undefined" && space.occupier != 'undefined') { 
       // whoever had units here first
-      console.log("controller: " + space.controller);
-      if (space.units[space.controller]) {
-        if (space.units[space.controller].length > 0) {
-          return space.controller; 
+      console.log("occupier: " + space.occupier);
+      if (space.units[space.occupier]) {
+        if (space.units[space.occupier].length > 0) {
+          return space.occupier; 
         }
       }
     }
@@ -1271,6 +1292,13 @@
     return seas;
   }
 
+  returnSpaceName(key) {
+    if (this.game.spaces[key]) { return this.game.spaces[key].name; }
+    if (this.game.navalspaces[key]) { return this.game.navalspaces[key].name; }
+    return "Unknown";
+  }
+
+
   returnSpacesInUnrest() {
     let spaces_in_unrest = [];
     for (let key in this.game.spaces) {
@@ -1467,6 +1495,7 @@
       type: "town"
     }
     spaces['stquentin'] = {
+      name: "St. Quentin",
       top: 933,
       left: 2093,
       home: "france",
@@ -1476,6 +1505,7 @@
       type: "town"
     }
     spaces['stdizier'] = {
+      name: "St. Dizier",
       top: 1043,
       left: 2205,
       home: "france",
@@ -2755,7 +2785,7 @@
       spaces[key].units['independent'] = [];
       spaces[key].unrest = 0;
       if (!spaces[key].pass) { spaces[key].pass = []; }
-      if (!spaces[key].name) { spaces[key].name = key.toUpperCase(); }
+      if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
       if (!spaces[key].besieged) { spaces[key].besieged = 0; }
       if (!spaces[key].besieged_factions) { spaces[key].besieged_factions = []; }
     }

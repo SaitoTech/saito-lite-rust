@@ -1,5 +1,12 @@
 
 
+  returnFactionName(f) {
+    if (this.factions[f]) {
+      return this.factions[f].name;
+    }
+    return "Unknown";
+  }
+
   importFaction(name, obj) {
 
     if (obj.id == null)                 { obj.id = "faction"; }
@@ -52,15 +59,6 @@
       }
     }
     return [];
-  }
-
-  returnPlayerOfFaction(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].factions.includes(faction)) {
-	return i+1;
-      }
-    }
-    return -1;
   }
 
   returnFactionHandIdx(player, faction) {

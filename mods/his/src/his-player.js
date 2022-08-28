@@ -176,9 +176,17 @@
   }
 
   returnPlayerOfFaction(faction) {
-    for (let i = 0; i < this.game.players.length; i++) {
+console.log("checking who runs: " + faction);
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      if (this.game.players_info[i].factions.includes(faction)) {
+	return i+1;
+      }
       for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-	if (this.game.players_info[i].factions[z] === faction) { return (i+1); }
+	let f = this.game.players_info[i].factions[z];
+        if (this.game.state.activated_powers[f].includes(faction)) {
+          console.log("this is an activated_power!: " + faction + " -- " + f);
+	  return (i+1);
+        }
       }
     }
     return 0;
@@ -928,7 +936,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 
 
-  playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_space, defender) {
+  playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_space="", defender) {
 
     let his_self = this;
     let retreat_destination = "";
@@ -950,7 +958,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       }
       html += "</ul>";
 
-      his_self.updateStatusWithOptions("Choose Desetination for Retreat: ", html);
+      his_self.updateStatusWithOptions("Choose Destination for Retreat: ", html);
 
       $('.option').off();
       $('.option').on('click', function () {
@@ -990,9 +998,10 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
     let his_self = this;
 
+
     let html = `<ul>`;
     html    += `<li class="card" id="fortify">withdraw into fortification</li>`;
-    html    += `<li class="card" id="battle">engage in land battle</li>`;
+    html    += `<li class="card" id="skip">skip</li>`;
     html    += `</ul>`;
 
     this.updateStatusWithOptions(`Withdraw Units into Fortification?`, html);
@@ -1002,7 +1011,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	his_self.endTurn();
         return;
       }
-      if (user_choice === "battle") {
+      if (user_choice === "skip") {
 	his_self.endTurn();
         return;
       }
