@@ -1501,6 +1501,9 @@ console.log("yes, we can retreat here...");
                   this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
                   this.game.queue.push("player_evaluate_post_field_battle_retreat\t"+f+"\t"+space.key);
                 }
+	        if (can_faction_retreat == 0) {
+                  this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
+	        }
               }
             }
           }
@@ -1543,7 +1546,9 @@ console.log("done");
 
 
 
-	if (mv[0] === "purge_units_and_capture_leader") {
+	if (mv[0] === "purge_units_and_capture_leaders") {
+
+console.log("purging units and capturing leader");
 
           this.game.queue.splice(qe, 1);
 
@@ -1551,11 +1556,10 @@ console.log("done");
           let winner = mv[2];
           let spacekey = mv[3];
 
-
 	  let space = this.game.spaces[spacekey];
 
 	  if (space.units[loser].length > 0) {
-	    this.updateLog(this.returnFactionName(loser) + " units eliminated in " + this.returnSpaceName(spacekey));
+	    this.updateLog(this.returnFactionName(loser) + " eliminated in " + this.returnSpaceName(spacekey));
 	  }
 
 	  for (let i = 0; i < space.units[loser].length; i++) {
