@@ -30,6 +30,8 @@ class RedSquare extends ModTemplate {
     this.tweets = [];
     this.notifications = [];
 
+    // "main" or sig if viewing page-specific
+    this.viewing = "main";
     this.last_viewed_notifications_ts = 0;
     this.results_per_page = 10;
     this.page_number = 1;
@@ -215,6 +217,7 @@ console.log("somehow this triggers...");
   }
 
   renderMainPage(app, mod) {
+    this.viewing = "main";
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
@@ -227,6 +230,7 @@ console.log("somehow this triggers...");
   // render with children, but loads if not parent (used for retweets)
   //
   renderParentWithChildren(app, mod, sig) {
+    this.viewing = sig;
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
@@ -254,6 +258,7 @@ console.log("somehow this triggers...");
   // renders children
   //
   renderWithChildren(app, mod, sig) {
+    this.viewing = sig;
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
@@ -377,25 +382,33 @@ console.log("somehow this triggers...");
 
       let tweet_id = app.browser.returnURLParameter('tweet_id');
 
+
       if (document.querySelector(".redsquare-list")) {
         if (tweet_id) {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
           let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-          this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderMainPage(app, redsquare_self); });
+          this.fetchTweets(app, redsquare_self, sql, function (app, mod) { 
+
+console.log("TWEETS FETCH FROM PEER!");
+mod.renderMainPage(app, redsquare_self); });
         }
 
       }
 
+/***
       this.app.storage.loadTransactions("RedSquare", 50, (txs) => {
         for (let i = 0; i < txs.length; i++) {
           txs[i].decryptMessage(app);
-          this.receiveTweetTransaction(txs[i]);
+	  new Tweet(app, mod, txs[i]);
+          redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
+          //redsquare_self.addTweetAndBroadcastRenderRequest(redsquare_self.app, redsquare_self, tweet);
         }
+	redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
       });
 
-
+***/
 
 
     }
@@ -557,9 +570,7 @@ console.log("somehow this triggers...");
 	  for (let i = 0; i < tweets.length; i++) {
 	    mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
 	  }
-          // post_fetch_tweets_callback(app, mod)
         }
-
       }
     );
   }
