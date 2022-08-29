@@ -1848,7 +1848,7 @@ class Settlers extends GameTemplate {
     let discardFunction = function (settlers_self) {
       let html = `<div class='tbd'>Select Cards to Discard (Must get rid of ${
         targetCt - cardsToDiscard.length
-      }): <ul>`;
+      }): <i id="reset" class="fas fa-undo"></i><ul>`;
       for (let i in my_resources) {
         if (my_resources[i] > 0)
           html += `<li id="${i}" class="option">${i}:`;
@@ -1862,6 +1862,7 @@ class Settlers extends GameTemplate {
 
       settlers_self.updateStatus(html, 1);
 
+      $(".option").off();
       $(".option").on("click", function () {
         $(".option").off();
         let res = $(this).attr("id");
@@ -1874,6 +1875,14 @@ class Settlers extends GameTemplate {
         } else {
           discardFunction(settlers_self);
         }
+      });
+
+      $("#reset").off();
+      $("#reset").on("click", function(){
+        $(".option").off();
+        //Reset Moves and reload interface/function
+        settlers_self.moves=["RESOLVE\t" + settlers_self.app.wallet.returnPublicKey()];
+        settlers_self.chooseCardsToDiscard();
       });
     };
 

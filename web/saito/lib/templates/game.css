@@ -515,7 +515,7 @@ ul li a {
 /*** Vertical alternate ***/
 .hud-vertical .status-header{
   width: 100%;
-  min-height: fit-content;
+  /*min-height: fit-content;*/
 }
 
 /*** Icon/pictorial (but not card) container for menu options in hud > hud-body > status ***/ 
