@@ -86,7 +86,6 @@ span.redsquare-home-red-square+span {
 }
 
 .post-tweet-textarea {
-  width: auto;
   margin-top: 1rem;
 }
 
@@ -105,6 +104,7 @@ span.redsquare-home-red-square+span {
   border-radius: 2rem;
   background-color: white;
   position: relative;
+  width: 50rem;
 }
 
 .saito-sidebar.right {
@@ -509,4 +509,67 @@ span.redsquare-home-red-square+span {
 
 .saito-arcade-invite-list .saito-arcade-invite {
   display: grid;
+}
+
+
+/*  Responsive */
+
+@media only screen and (max-width: 535px) {
+  .saito-main.appspace {
+    min-width: 0;
+   
+  }
+  .redsquare-tweet-overlay{
+    width: 40rem;
+  }
+  
+  .redsquare-tweet-tools {
+    display: flex;
+    justify-content: initial;
+    font-size: 1.5rem;
+    width: 100%;
+    margin: 2rem 0 0rem 0;
+  }
+
+  .redsquare-tweet-tools>div {
+    position: relative;
+    margin: 0 0;
+    min-width: 8%;
+    margin-right: 10%;
+  }
+  
+  .redsquare-tweet-tools span {
+    font-size: 1.3rem;
+  }
+  .redsquare-tweet-tools i {
+    font-size: 1.3rem;
+  }
+  
+}
+@media only screen and (max-width: 396px) {
+  .saito-main.appspace {
+    min-width: 0;
+   
+  }
+  .redsquare-tweet-overlay{
+    width: 30rem;
+  }
+
+
+  .redsquare-tweet-tools>div {
+    position: relative;
+    margin: 0 0;
+    min-width: 8%;
+    margin-right: 8%;
+  }
+  
+
+  .redsquare-tweet-tools span {
+    font-size: 1rem;
+  }
+  .redsquare-tweet-tools i {
+    font-size: 1rem;
+  }
+  
+  
 }
