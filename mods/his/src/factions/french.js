@@ -2,8 +2,8 @@
     this.importFaction('faction3', {
       id		:	"faction3" ,
       key		: 	"france",
-      name		: 	"French",
-      nickname		: 	"French",
+      name		: 	"France",
+      nickname		: 	"France",
       capitals          :       ["paris"],
       img		:	"france.png",
       cards_bonus	:	1,

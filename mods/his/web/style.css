@@ -754,6 +754,15 @@
   background-color: whitesmoke;
   border-radius: 10px;
   font-size: 2em;
+  padding: 1.5rem;
+}
+
+.space_faction {
+  font-size: 2rem;
+}
+
+.space_unit {
+  margin-left: 1rem;
 }
 
 
