@@ -147,11 +147,16 @@ class Storage {
   saveTransaction(tx) {
     const txmsg = tx.returnMessage();
 
+console.log("SAVING TRANSACTION");
+
     const message = "archive";
     const data: any = {};
     data.request = "save";
     data.tx = tx;
     data.type = txmsg.module;
+
+
+console.log("send request with callback...");
 
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }

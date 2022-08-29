@@ -42,7 +42,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     // newbie mode
     this.confirm_moves = 0;
@@ -3064,11 +3064,13 @@ try {
     if (mv[0] === "showhand") {
       this.game.queue.splice(qe, 1);
       let whosehand = parseInt(mv[1]);
-      let cards_to_reveal = mv[2].split(" ");
 
-      let title = (whosehand == 1)? "USSR Hand" : "US Hand";
-      if (this.game.player != whosehand){
-        this.showCardOverlay(cards_to_reveal, title);
+      if (mv[2] !== "") {
+        let cards_to_reveal = mv[2].split(" ");
+        let title = (whosehand == 1)? "USSR Hand" : "US Hand";
+        if (this.game.player != whosehand){
+          this.showCardOverlay(cards_to_reveal, title);
+        }
       }
 
       return 1;
