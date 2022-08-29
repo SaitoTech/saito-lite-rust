@@ -24,7 +24,7 @@ class RedSquareAppspaceHome {
     })
 
     app.connection.on("tweet-render-request", (tweet) => {
-console.log("ADDING TRR: " + tweet.tx.transaction.sig);
+      console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list");
     });
 
@@ -36,10 +36,12 @@ console.log("ADDING TRR: " + tweet.tx.transaction.sig);
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          console.log('is intersecting')
           let saito_loader = this.saito_loader;
           saito_loader.render(app, mod, "redsquare-intersection", false);
-          mod.fetchMoreTweets(app, mod, (app, mod) => saito_loader.remove());
+          if (mod.viewing === "main") {
+            mod.fetchMoreTweets(app, mod, (app, mod) => saito_loader.remove());
+          }
+
         }
 
       })
