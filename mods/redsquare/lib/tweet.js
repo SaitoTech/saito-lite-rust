@@ -418,7 +418,9 @@ class RedSquareTweet {
     });
   }
 
-
+  //
+  // returns 1 if tweet is added
+  //
   addTweet(app, mod, tweet) {
     //
     // maybe we have some parentless children?
@@ -435,6 +437,7 @@ class RedSquareTweet {
         }
         tweet.children.push(this.unknown_children[i]);
         this.unknown_children.splice(i, 0);
+console.log("adding to unknown children...");
       }
     }
 
@@ -442,18 +445,21 @@ class RedSquareTweet {
     if (tweet.parent_id == this.tx.transaction.sig) {
       for (let i = 0; i < this.children.length; i++) {
         if (this.children[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-          return 1;
+console.log("return without adding 1");
+          return 0;
         }
       }
       this.updated_at = tweet.updated_at;
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
         this.children.unshift(tweet);
+console.log("return with adding 1");
         return 1;
       } else {
         if (this.isCriticalChild(app, mod, tweet)) {
           this.critical_child = tweet;
         }
         this.children.push(tweet);
+console.log("return with adding 2");
         return 1;
       }
     } else {
@@ -476,6 +482,7 @@ class RedSquareTweet {
       // until we possibly add the parent (where we will check all unknown children) for
       // placement then.
       //
+console.log("return with adding 3");
       this.unknown_children.push(tweet);
 
     }
