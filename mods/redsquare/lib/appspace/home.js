@@ -12,17 +12,19 @@ class RedSquareAppspaceHome {
     this.app = app;
     this.name = "RedSquareAppspaceHome";
     this.prevTweetLength = null;
-    this.saitoLoader = new SaitoLoader(app, mod);
+    this.saito_loader = new SaitoLoader(app, mod);
 
     this.observed = false
 
     app.connection.on('tweets-render-request', (tweets, appendToSelector = true) => {
       tweets.forEach(tweet => {
+console.log("ADDING TsRR: " + tweet.tx.transaction.sig);
         tweet.render(app, mod, '.redsquare-list', appendToSelector)
       })
     })
 
     app.connection.on("tweet-render-request", (tweet) => {
+console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list");
     });
 
@@ -35,9 +37,9 @@ class RedSquareAppspaceHome {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           console.log('is intersecting')
-          let saitoLoader = this.saitoLoader;
-          saitoLoader.render(app, mod, "redsquare-intersection", false);
-          mod.fetchMoreTweets(app, mod, (app, mod) => saitoLoader.remove());
+          let saito_loader = this.saito_loader;
+          saito_loader.render(app, mod, "redsquare-intersection", false);
+          mod.fetchMoreTweets(app, mod, (app, mod) => saito_loader.remove());
         }
 
       })
@@ -76,6 +78,8 @@ class RedSquareAppspaceHome {
     document.getElementById("redsquare-new-tweet").onclick = (e) => {
       let ptweet = new PostTweet(app, mod);
       ptweet.render(app, mod);
+
+      app.browser.addIdentifiersToDom();
     }
 
     // document.getElementById("redsquare-new-tweets-banner").onclick = (e) => {

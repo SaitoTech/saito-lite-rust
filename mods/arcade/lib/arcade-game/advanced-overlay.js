@@ -10,16 +10,15 @@ class AdvancedOverlay {
       this.app = app;
     }
 
-    render(app, mod) {
+    render(app, mod, html = "") {
       if (!document.querySelector("#advanced-overlay-backdrop")) { app.browser.addElementToId(AdvancedOverlayTemplate(), "game-wizard-advanced-options-overlay"); }
 
       //
-      // advanced options loaded, even if never shown
+      // advanced options loaded, even if never shown (because the arcade reads the options from the DOM to create the game invite)
       //
       let overlay_el = document.querySelector("#advanced-overlay");
       overlay_el.style.display = "none";
-      overlay_el.innerHTML = mod.returnGameOptionsHTML();     
-
+      overlay_el.innerHTML = sanitize(html);
     }
 
     attachEvents(app, game_mod) {

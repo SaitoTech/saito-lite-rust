@@ -4,8 +4,12 @@
     // AWACS Sale to Saudis
     //
     if (card == "awacs") {
+
       this.game.state.events.awacs = 1; //Prevent Muslim Revolution
+      this.cancelEvent("muslimrevolution");
+
       this.placeInfluence("saudiarabia", 2, "us");
+
 
       if (!i_played_the_card){
         if (player == "ussr"){

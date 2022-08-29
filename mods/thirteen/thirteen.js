@@ -4402,7 +4402,6 @@ console.log("SHOULD PLACE: " + player);
               <option value="us">US</option>
             </select>
             </div>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
           `;
 
   }

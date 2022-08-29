@@ -237,7 +237,7 @@ initializeGame(game_id) {
           }
         }
         if (this.is_testing){
-          supply = ["adventurer", "merchant", "bureaucrat", "harbinger", "library", "bandit", "vassal", "moat", "spy", "thief"];
+          supply = ["chancellor", "merchant", "bureaucrat", "feast", "market", "village", "vassal", "woodcutter", "mine", "smithy"];
         }
         supply.sort((a,b) =>{
           let c_a = this.deck[a];
@@ -1809,7 +1809,6 @@ initializeGame(game_id) {
           <input type="checkbox" name="second" />
           <label for"second">Use Second Edition Cards</label>
         </div>
-        <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
     return html;
   }

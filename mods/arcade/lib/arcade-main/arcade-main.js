@@ -315,47 +315,22 @@ module.exports = ArcadeMain = {
     try {
 
       //
-      // check we have module
+      // check we have crypto module
       //
-      if (game_options.crypto != "" && game_options.crypto != undefined) {
+      if (game_options.crypto && parseFloat(game_options.stake) > 0) {
         if (game_options.crypto !== app.wallet.returnPreferredCrypto().ticker) {
           salert(`You must set ${game_options.crypto} as your preferred crypto to join this game`);
           return;
         }
-
-        let c = await sconfirm("This game requires " + game_options.crypto + " crypto to play. OK?");
+        let c = await sconfirm(`This game requires ${game_options.stake} ${game_options.crypto} to play. OK?`);
         if (!c) {
           return;
         }
-        console.log(game_options.stake);
-        //
-        // if a specific cost / stake specified
-        //
 
-        if (parseFloat(game_options.stake) > 0) {
-          let my_address = app.wallet.returnPreferredCrypto(game_options.crypto).returnAddress();
-          let crypto_transfer_manager = new GameCryptoTransferManager(app);
-          let current_balance = await crypto_transfer_manager.returnBalance(
-            app,
-            mod,
-            my_address,
-            game_options.crypto,
-            function () { }
-          );
-            console.log("Current balance", current_balance);
-
-          try {
-            if (BigInt(current_balance) < BigInt(game_options.stake)) {
-              salert("You do not have enough " + game_options.crypto + "! Balance: " + current_balance);
-              return;
-            }
-          } catch (err) {
-            if (parseFloat(current_balance) < parseFloat(game_options.stake)) {
-              salert("You do not have enough " + game_options.crypto + "! Balance: " + current_balance);
-              return;
-            }
-          }
-        }
+        let crypto_transfer_manager = new GameCryptoTransferManager(app);
+        let success = await crypto_transfer_manager.confirmBalance(app, mod, game_options.crypto, game_options.stake);
+        if (!success){ return; }
+        
       }else{
         //We move the confirmation down here, so you don't have to click twice on crypto games
         let c = confirm("Are you sure you want to join this game?");
@@ -610,7 +585,7 @@ module.exports = ArcadeMain = {
           let gamemod = app.modules.returnModule(app.options.games[i].module);
           if (gamemod) {
             this.removeGameFromList(game_id);
-            gamemod.resignGame(game_id);
+            gamemod.resignGame(game_id, "arcadeclose");
 
             //Set a fallback interval if the opponent is no longer online
             mod.game_close_interval_cnt += 5;

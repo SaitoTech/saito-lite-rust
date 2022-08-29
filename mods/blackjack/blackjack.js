@@ -415,6 +415,7 @@ class Blackjack extends GameTemplate {
         return 1;
       }
 
+      //TODO: double check that this works in all conditions both hands play through to the end, and one or the other busts out/gets dealt a blackjack
       if (mv[0] === "playsplit"){
         let player = parseInt(mv[1]);
         this.game.state.player[player-1].wager = parseFloat(mv[2]); //Restore original wager
@@ -757,7 +758,9 @@ class Blackjack extends GameTemplate {
         html += `<li class="menu_option" id="${fractions[i]*this.game.stake}">${fractions[i]*this.game.stake} ${this.game.crypto}</li>`;
     }
     //Add an all-in option when almost out of credit
-    //if (fractions.slice(-1)*stake >= myCredit) html += `<li class="menu_option" id="${myCredit}">All In!</li>`;
+    if (fractions.slice(-1)*this.game.stake > myCredit) {
+      html += `<li class="menu_option" id="${myCredit}">All In!</li>`;
+    }
     html += '</ul>';
 
     this.updateStatus(this.getLastNotice()+html, 1);
@@ -1070,15 +1073,19 @@ class Blackjack extends GameTemplate {
           }else{
             debt = this.game.state.player[i].wager * 2;
           }
+          //Don't collect more than a player has
+          debt = Math.min(debt,this.game.state.player[i].credit);
+
           //Temporarily store all chips collected from players in the dealer's "wager"
-          this.game.state.player[this.game.state.dealer-1].wager += Math.min(debt,this.game.state.player[i].credit);
+          this.game.state.player[this.game.state.dealer-1].wager += debt;
           this.game.state.player[i].credit -= debt;
+          this.game.state.player[i].wager = 0;
           playerHTML += `<h3 class="justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total} loses to blackjack.</span><span>Loss: ${debt.toFixed(this.decimal_precision)}</span></h3>`;
           playerHTML += this.handToHTML(this.game.state.player[i].hand);
 
           logMsg += `Player ${i+1} loses ${debt.toFixed(this.decimal_precision)}, `;
           //Check for bankruptcy to personalize message
-          if (this.game.state.player[i].credit < 0){
+          if (this.game.state.player[i].credit <= 0){
             logMsg += "going bankrupt, ";
           }
         
@@ -1092,8 +1099,8 @@ class Blackjack extends GameTemplate {
         }
       }
     }else{ //Otherwise, normal processing, some players win, some lose
-    //Update each player 
-    let sender, receiver;
+      //Update each player 
+      let sender, receiver;
   
       for (let i = 0; i < this.game.state.player.length; i++){
         if (i != (this.game.state.dealer-1)){ //Not the Dealer
@@ -1107,7 +1114,8 @@ class Blackjack extends GameTemplate {
               receiver = this.game.players[i];     
 
             }else{
-              this.game.state.player[this.game.state.dealer-1].wager += Math.min(debt, this.game.state.player[i].credit);
+              debt = Math.min(debt, this.game.state.player[i].credit);
+              this.game.state.player[this.game.state.dealer-1].wager += debt
               this.game.state.player[i].credit -= debt;
               
               logMsg += `Player ${i+1} loses ${debt.toFixed(this.decimal_precision)}, `
@@ -1126,6 +1134,7 @@ class Blackjack extends GameTemplate {
               let uh = this.game.dice;
               this.settlement.push(`SEND\t${sender}\t${receiver}\t${debt.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
             }
+            this.game.state.player[i].wager = 0;
           }
           //check and process secondary hands
           for (let z of this.game.state.player[i].split){
@@ -1134,13 +1143,14 @@ class Blackjack extends GameTemplate {
               playerHTML += `<h3 class="justify"><span>${this.game.state.player[i].name}: ${ts}.</span>`
               if (ts > dealerScore){
                 this.game.state.player[this.game.state.dealer-1].wager -= debt;
-                this.game.state.player[i].credit += Math.min(debt, this.game.state.player[this.game.state.dealer-1].credit);
+                this.game.state.player[i].credit += debt;
                 logMsg += `Player ${i+1} wins ${debt.toFixed(this.decimal_precision)}, `;     
                 playerHTML += `<span>Win: ${debt.toFixed(this.decimal_precision)}</span></h3>`;
                 sender = this.game.players[this.game.state.dealer-1];
                 receiver = this.game.players[i];     
               }else{
-                this.game.state.player[this.game.state.dealer-1].wager += Math.min(debt, this.game.state.player[i].credit);
+                debt = Math.min(debt, this.game.state.player[i].credit);
+                this.game.state.player[this.game.state.dealer-1].wager += debt;
                 this.game.state.player[i].credit -= debt;
                 logMsg += `Player ${i+1} loses ${debt.toFixed(this.decimal_precision)}, `
                 if (this.game.state.player[i].credit<=0){
@@ -1168,7 +1178,7 @@ class Blackjack extends GameTemplate {
     logMsg = logMsg.substring(0,logMsg.length-2); //remove comma
 
     //Update Dealer
-    let dealerEarnings = this.game.state.player[this.game.state.dealer-1].wager
+    let dealerEarnings = this.game.state.player[this.game.state.dealer-1].wager;
     this.game.state.player[this.game.state.dealer-1].credit += dealerEarnings;
   
     let dealerLog = "";
@@ -1222,8 +1232,6 @@ class Blackjack extends GameTemplate {
 
     let options_html = `<h1 class="overlay-title">Blackjack Options</h1>`;
     options_html += this.returnCryptoOptionsHTML();
-    options_html += `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
-      //margin-top:20px;padding:30px;text-align:center
 
     return options_html;
 

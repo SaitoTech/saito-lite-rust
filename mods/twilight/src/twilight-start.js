@@ -42,7 +42,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     // newbie mode
     this.confirm_moves = 0;
@@ -178,7 +178,6 @@ class Twilight extends GameTemplate {
   }
 
   
-
   handleStatsMenu() {
     let twilight_self = this;
 
@@ -840,8 +839,8 @@ initializeGame(game_id) {
 	this.game.state.vp = -4;
 	this.game.state.round = 7; // will go to 8 next round
         this.game.state.defcon = 3; // will go to 4 next round
-        this.game.state.space_race_us_counter = 6;
-        this.game.state.space_race_ussr_counter = 4;
+        this.game.state.space_race_us_counter = 3;
+        this.game.state.space_race_ussr_counter = 3;
 	this.game.state.eagle_has_landed = "us";
 	this.game.state.eagle_has_landed_bonus_taken = 1; // set to 0 on round init
 
@@ -2559,10 +2558,13 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["olympic", "redscare", "usjapan", "duckandcover", "fiveyearplan", "koreanwar", "marshall"];
+          this.game.deck[0].hand = ["aldrichames", "onesmallstep", "flowerpower", "teardown", "evilempire", "marshallplan", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["debtcrisis", "fidel", "destalinization", "nato", "warsawpact", "vietnamrevolts", "europe", "china"];
+          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "muslimrevolution", "vietnamrevolts", "wargames", "china"];
         }
+
+	this.game.state.round = 7;
+ 	this.displayBoard();
       }
 
       //
@@ -2641,6 +2643,11 @@ try {
       let card   = mv[4] || "";
 
       this.game.state.headline = 1;
+
+      //
+      // add Xs to cards - update cancelled events array
+      //
+      this.cancelEventsDynamically();
 
       let x = this.playHeadlinePostModern(stage, hash, xor, card);
       //
@@ -2981,6 +2988,9 @@ try {
         start_turn_game_queue = null;
       }
 
+      //
+      // cancel events
+      this.cancelEventsDynamically();
 
       //
       // resolve outstanding VP
@@ -2996,7 +3006,7 @@ try {
       //
       // deactivate cards
       this.game.state.events.china_card_eligible = 0;
-	    this.displayChinaCard();
+      this.displayChinaCard();
 
       //
       // back button functions again
@@ -6062,6 +6072,15 @@ playerTurnHeadlineSelected(card, player) {
     }
   }
 
+  cancelEvent(card) {
+    this.game.state.events.cancelled[card] = 1;
+  }
+  uncancelEvent(card) {
+    if (this.game.state.events.cancelled[card]) {
+      delete this.game.state.events.cancelled[card];
+    }
+  }
+
 
   ////////////////////
   // Core Game Data //
@@ -6096,6 +6115,9 @@ playerTurnHeadlineSelected(card, player) {
 
     state.space_race_us = 0;
     state.space_race_ussr = 0;
+    state.space_race_us_counter = 0;
+    state.space_race_ussr_counter = 0;
+
 
     state.animal_in_space = "";
     state.man_in_earth_orbit = "";
@@ -6103,9 +6125,6 @@ playerTurnHeadlineSelected(card, player) {
     state.eagle_has_landed_bonus_taken = 0;
     state.space_station = "";
     state.space_station_bonus_taken = 0;
-
-    state.space_race_us_counter = 0;
-    state.space_race_ussr_counter = 0;
 
     state.limit_coups = 0;
     state.limit_realignments = 0;
@@ -6240,6 +6259,8 @@ playerTurnHeadlineSelected(card, player) {
     // events - early war
     state.events = {};
     state.events.optional = {};			// optional cards -- makes easier to search for
+    state.events.cancelled = {};		// if entry exists, event is cancelled
+    state.events.cancelled['solidarity'] = 1;   // solidarity starts cancelled
     state.events.formosan           = 0;
     state.events.redscare_player1   = 0;
     state.events.redscare_player2   = 0;
@@ -7883,6 +7904,7 @@ playerTurnHeadlineSelected(card, player) {
   advanceSpaceRace(player) {
 
     this.displayModal(`${player.toUpperCase()} advances in the Space Race`);
+
     //Parameters to simplify the function
     let sr_player = "space_race_us";
     let sr_opponent = "space_race_ussr";
@@ -7927,7 +7949,7 @@ playerTurnHeadlineSelected(card, player) {
 
     if (player == "us"){
       this.game.state.vp += vp_change;  
-    }else{
+    } else {
       this.game.state.vp -= vp_change;
     }
     
@@ -8310,6 +8332,12 @@ playerTurnHeadlineSelected(card, player) {
       }
     }
 
+
+    if (this.game.state.events.cancelled[cardname] == 1) {
+      html += `<img class="${cardclass} cancel_x" src="/twilight/img/cancel_x.png" />`;
+    }
+
+
     return html
   }
 
@@ -8446,8 +8474,6 @@ playerTurnHeadlineSelected(card, player) {
               <option value="enable" >enable</option>
               <option value="disable" selected>disable</option>
             </select>
-
-	    <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 
 	</div>
 
@@ -8667,6 +8693,43 @@ playerTurnHeadlineSelected(card, player) {
   }
 
 
+  // 
+  // track events which are cancelled / cancellable dynamically 
+  // 
+  cancelEventsDynamically() {
+
+      // NATO
+      if (this.game.state.events.marshall == 1 || this.game.state.events.warsawpact == 1) {
+	this.uncancelEvent("nato");
+      } else {
+	this.cancelEvent("nato");
+      }
+
+      // cambridge-five late war
+      if (this.game.state.round >= 8) {
+        this.cancelEvent("cambridge");
+      }
+      // wargames, if decon is 2
+      if (this.game.state.defcon != 2) {
+        this.cancelEvent("wargames");
+      } else {
+        this.uncancelEvent("wargames");
+      }
+      // onesmallstep - if we are behind/ahead
+      if (this.game.player == 2) { 
+	if (this.game.state.space_race_us >= this.game.state.space_race_ussr) {
+	  this.cancelEvent("onesmallstep");
+        } else {
+	  this.uncancelEvent("onesmallstep");
+	}
+      } else {
+	if (this.game.state.space_race_ussr >= this.game.state.space_race_us) {
+	  this.cancelEvent("onesmallstep");
+        } else {
+	  this.uncancelEvent("onesmallstep");
+	}
+      }
+  }
 
 
   /////////////////

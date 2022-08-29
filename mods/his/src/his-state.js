@@ -1,4 +1,9 @@
 
+  captureLeader(winning_faction, losing_faction, space, unit) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    alert("Capture Leader Not Implemented");
+  }
+
   activateMinorPower(faction, power) {
     this.setAllies(faction, power);
     this.game.state.activated_powers[faction].push(power);
@@ -22,12 +27,16 @@
   areAllies(faction1, faction2) {
     try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
     return 0;
   }
 
   areEnemies(faction1, faction2) {
     try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
     return 0;
   }
 
@@ -58,6 +67,23 @@
   addUnit(faction, space, type) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newUnit(faction, type));
+  }
+
+  removeUnit(faction, space, type) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = space.units[faction].length - 1; i >= 0; i--) {
+      if (space.units[faction].type === type) {
+	space.units[faction].splice(i, 1);
+	return;
+      }
+    }
+  }
+
+  isLandUnit(unit) {
+    if (unit.type === "regular") { return 1; }
+    if (unit.type === "mercenary") { return 1; }
+    if (unit.type === "cavalry") { return 1; }
+    return 0;
   }
 
   addRegular(faction, space, num=1) {
@@ -186,15 +212,15 @@
     // protestant spaces
 
     // bonus vp
-//• Protestant debater burned (1 per debate rating)
-//• Papal debater disgraced (1 per debate rating)
-//• Successful voyage of exploration
-//• Successful voyage of conquest
-//• Copernicus (2 VP) or Michael Servetus (1 VP) event
-//• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
-//• War Winner marker received during Peace Segment
-//• Master of Italy VP marker received during Action Phase
-//• Bible translation completed (1 VP for each language)
+    //• Protestant debater burned (1 per debate rating)
+    //• Papal debater disgraced (1 per debate rating)
+    //• Successful voyage of exploration
+    //• Successful voyage of conquest
+    //• Copernicus (2 VP) or Michael Servetus (1 VP) event
+    //• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
+    //• War Winner marker received during Peace Segment
+    //• Master of Italy VP marker received during Action Phase
+    //• Bible translation completed (1 VP for each language)
 
     return factions;
 
@@ -204,9 +230,14 @@
   canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[invalid_space]; } } catch (err) {}
+console.log("retreat 1");
     if (space === attacker_comes_from_this_space) { return 0; }
+console.log("retreat 2");
     if (this.isSpaceInUnrest(space) == 1) { return 0; }
+console.log("retreat 3");
+console.log("is space " + this.returnSpaceName(space.key) + " friendly to " + faction);
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
+console.log("retreat 4");
     return 0;
   }
 
@@ -219,10 +250,55 @@
   controlSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.political = faction;
+    space.occupier = faction;
+  }
+
+
+  returnDefenderFaction(attacker_faction, space) {
+    // called in combat, this finds whichever faction is there but isn't allied to the attacker
+    // or -- failing that -- whichever faction is recorded as occupying the space.
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      let luis = this.returnFactionLandUnitsInSpace(f, space);
+      if (luis > 0) {
+        if (!this.areAllies(attacker_faction, f)) {
+	  return f;
+	}
+      }
+    }
+    return this.returnFactionOccupyingSpace(space);
+  }
+
+  returnFactionOccupyingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.occupier != "" && space.occupier != undefined && space.occupier != "undefined" && space.occupier != 'undefined') { 
+      // whoever had units here first
+      console.log("occupier: " + space.occupier);
+      if (space.units[space.occupier]) {
+        if (space.units[space.occupier].length > 0) {
+          return space.occupier; 
+        }
+      }
+    }
+    // or whoever has political control
+    if (space.political != "") { return space.political; }
+    // or whoever has home control
+    if (space.owner != -1) { return space.owner; }
+    return space.home;
+  }
+
+  returnFriendlyLandUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === "regular") { luis++; }
+      if (space.units[faction][i].type === "mercenary") { luis++; }
+      if (space.units[faction][i].type === "cavalry") { luis++; }
+    }
+    return luis;
   }
 
   returnFactionLandUnitsInSpace(faction, space) {
-console.log("FACTION: " + faction);
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.units[faction].length; i++) {
@@ -251,6 +327,30 @@ console.log("FACTION: " + faction);
       }
     }
     return 0;
+  }
+
+  returnFactionMap(space, faction1, faction2) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let faction_map = {};
+    for (let f in space.units) {
+      if (this.returnFactionLandUnitsInSpace(f, space)) {
+        if (f == faction1) {
+          faction_map[f] = faction1;
+        } else {
+          if (f == faction2) {
+            faction_map[f] = faction2;
+          } else {
+            if (this.areAllies(f, faction1)) {
+              faction_map[f] = faction1;
+            }
+            if (this.areAllies(f, faction2)) {
+              faction_map[f] = faction2;
+            }
+          }
+        }
+      }
+    }
+    return faction_map;
   }
 
   returnImpulseOrder() {
@@ -405,19 +505,42 @@ console.log("FACTION: " + faction);
     return false;
   }
 
+  isSpaceUnderSiege(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.beseiged > 0) { return true; }
+    return false;
+  }
+
   isSpaceFriendly(space, faction) {
+console.log("isf");
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     // friendly if i control it
     if (space.owner === faction) { return 1; }
     if (space.political === faction) { return 1; }
     if (space.political === "" && space.home === faction) { return 1; }
-    if (space.religion === "protestant" && faction === "protestant") { return 1; }
     // friendly if ally controls it
     if (space.political === "") {
       if (this.areAllies(faction, space.home)) { return 1; }
     } else {
       if (this.areAllies(faction, space.political)) { return 1; }
     }
+    // friendly if we are minor power and controller controls us
+console.log("isf 1");
+    if (this.game.state.activated_powers[space.owner]) {
+console.log("isf 1");
+      if (this.game.state.activated_powers[space.owner].includes(faction)) { return 1; }
+    }
+console.log("isf 2");
+    if (this.game.state.activated_powers[space.political]) {
+console.log("isf 2");
+      if (this.game.state.activated_powers[space.political].includes(faction)) { return 1; }
+    }
+console.log("isf 3");
+    if (this.game.state.activated_powers[space.home]) {
+console.log("isf 3");
+      if (this.game.state.activated_powers[space.home].includes(faction)) { return 1; }
+    }
+console.log("isf 4");
     return 0;
   }
 
@@ -503,6 +626,7 @@ console.log("FACTION: " + faction);
     }
     return controlled_keys;
   }
+
   returnNumberOfSpacesControlledByProtestants() {
     let controlled_spaces = 0;
     for (let key in this.game.spaces) {
@@ -528,6 +652,9 @@ console.log("FACTION: " + faction);
     state.players = [];
     state.events = {};
     state.debaters = [];
+
+    // whose turn is it? (attacker)
+    state.active_player = -1;
 
     // which ones are activated
     state.minor_activated_powers = [];
@@ -1211,6 +1338,13 @@ console.log("FACTION: " + faction);
     return seas;
   }
 
+  returnSpaceName(key) {
+    if (this.game.spaces[key]) { return this.game.spaces[key].name; }
+    if (this.game.navalspaces[key]) { return this.game.navalspaces[key].name; }
+    return "Unknown";
+  }
+
+
   returnSpacesInUnrest() {
     let spaces_in_unrest = [];
     for (let key in this.game.spaces) {
@@ -1407,6 +1541,7 @@ console.log("FACTION: " + faction);
       type: "town"
     }
     spaces['stquentin'] = {
+      name: "St. Quentin",
       top: 933,
       left: 2093,
       home: "france",
@@ -1416,6 +1551,7 @@ console.log("FACTION: " + faction);
       type: "town"
     }
     spaces['stdizier'] = {
+      name: "St. Dizier",
       top: 1043,
       left: 2205,
       home: "france",
@@ -2695,7 +2831,7 @@ console.log("FACTION: " + faction);
       spaces[key].units['independent'] = [];
       spaces[key].unrest = 0;
       if (!spaces[key].pass) { spaces[key].pass = []; }
-      if (!spaces[key].name) { spaces[key].name = key.toUpperCase(); }
+      if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
       if (!spaces[key].besieged) { spaces[key].besieged = 0; }
       if (!spaces[key].besieged_factions) { spaces[key].besieged_factions = []; }
     }
@@ -2743,6 +2879,8 @@ console.log("FACTION: " + faction);
   //
   importSpace(obj, key) {
 
+    let his_self = this;
+
     obj.key = key;
 
     if (obj.name == null)               { obj.name = "Unknown"; }
@@ -2752,11 +2890,22 @@ console.log("FACTION: " + faction);
     if (obj.returnView == null)		{ 
 
       obj.returnView = function () {
-	return `
-	  <div class="space_view" id="">
-	    This is the detailed view of the city or town.
-	  </div>
-	`;
+
+	let html = '<div class="space_view" id="">';
+
+        for (let f in this.units) {
+	  if (this.units[f].length > 0) {
+	    html += `<div class="space_faction">${his_self.returnFactionName(f)}</div>`;
+            for (let i = 0; i < this.units[f].length; i++) {
+	      html += `<div class="space_unit">1 - ${this.units[f][i].type}</div>`;
+	    }
+	  }
+	}
+
+	html += `</div>`;
+
+	return html;
+
       };
 
     }
@@ -2982,6 +3131,51 @@ console.log("FACTION: " + faction);
       type : "normal" ,
       faction : "ottoman" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle_hits_assignment") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('001')) {
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'janissaries', html : `<li class="option" id="janissaries">janissaries (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle_hits_assignment") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('001')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle_hits_assignment") {
+          his_self.addMove("janissaries");
+	  his_self.endTurn();
+	  his_self.updateStatus("acknowledge");
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "janissaries") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.updateLog("Ottoman Empire plays Janissaries");
+	  his_self.game.state.field_battle.attacker_rolls += 5;
+	  his_self.game.state.field_battle.attacker_results.push(his_self.rollDice(6));
+
+	  return 1;
+
+        }
+      },
+
     }
     deck['002'] = { 
       img : "cards/HIS-002.svg" , 
@@ -3269,9 +3463,7 @@ console.log("FACTION: " + faction);
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(game_mod, player) {
-
         state.events.schmalkaldic_league = 1;
-
       }
     }
     deck['014'] = { 
@@ -3415,6 +3607,37 @@ console.log("FACTION: " + faction);
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('024')) {
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+
+          return { faction : f , event : 'arquebusiers', html : `<li class="option" id="arquebusiers">arquebusiers (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('024')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          player = game_mod.returnPlayerOfFaction(faction);
+	  player.tmp_roll_bonus = 2;
+        }
+        return 1;
+      },
     }
     deck['025'] = { 
       img : "cards/HIS-025.svg" , 
@@ -3423,6 +3646,39 @@ console.log("FACTION: " + faction);
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('025')) {
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'field_artillery', html : `<li class="option" id="field_artillery">field artillery (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('025')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          player = game_mod.returnPlayerOfFaction(faction);
+	  player.tmp_roll_bonus = 2;
+	  if (faction === "france" || faction === "ottoman") {
+	    player.tmp_roll_bonus = 3;
+	  }
+        }
+        return 1;
+      },
     }
     deck['026'] = { 
       img : "cards/HIS-026.svg" , 
@@ -3431,6 +3687,40 @@ console.log("FACTION: " + faction);
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('026')) {
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'mercenaries_bribed', html : `<li class="option" id="mercenaries_bribed">mercenaries bribed (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('026')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+	  alet("Mercenaries Bribed...");
+
+          //player = game_mod.returnPlayerOfFaction(faction);
+	  //if (faction === "france" || faction === "ottoman") {
+	  //  player.tmp_roll_bonus = 3;
+	  //}
+        }
+        return 1;
+      },
     }
     deck['027'] = { 
       img : "cards/HIS-027.svg" , 
@@ -3439,6 +3729,40 @@ console.log("FACTION: " + faction);
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "assault") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('027')) {
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'mercenaries_grow_restless', html : `<li class="option" id="mercenaries_grow_restless">mercenaries grow restless (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('027')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+	  alet("Mercenaries Grow Restless...");
+
+          //player = game_mod.returnPlayerOfFaction(faction);
+	  //if (faction === "france" || faction === "ottoman") {
+	  //  player.tmp_roll_bonus = 3;
+	  //}
+        }
+        return 1;
+      },
     }
     deck['028'] = { 
       img : "cards/HIS-028.svg" , 
@@ -3447,6 +3771,38 @@ console.log("FACTION: " + faction);
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "assault") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('028')) {
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'siege_mining', html : `<li class="option" id="siege_mining">siege mining (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "assault" && his_self.game.player === his_self.game.state.active_player) {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('028')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+          player = game_mod.returnPlayerOfFaction(faction);
+	  if (his_self.game.state.active_player === player) {
+	    player.tmp_roll_bonus = 3;
+	  }
+        }
+        return 1;
+      },
     }
     deck['029'] = { 
       img : "cards/HIS-029.svg" , 
@@ -3455,6 +3811,38 @@ console.log("FACTION: " + faction);
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "assault") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('029')) {
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'surprise_attack', html : `<li class="option" id="surprise_attack">surprise attack (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('029')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "assault") {
+          player = game_mod.returnPlayerOfFaction(faction);
+	  if (his_self.game.state.active_player === player) {
+	    player.tmp_roll_first = 1;
+	  }
+        }
+        return 1;
+      },
     }
     deck['030'] = { 
       img : "cards/HIS-030.svg" , 
@@ -3463,6 +3851,35 @@ console.log("FACTION: " + faction);
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle") {
+          let f = "";
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('030')) {
+              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              break;
+            }
+          }
+          return { faction : f , event : 'tercois', html : `<li class="option" id="tercois">tercois (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+          for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+            if (his_self.game.deck[0].fhand[i].includes('30')) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+	  alert("tercois is complicated...");
+        }
+        return 1;
+      },
     }
     deck['031'] = { 
       img : "cards/HIS-031.svg" , 
@@ -3479,25 +3896,33 @@ console.log("FACTION: " + faction);
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      menuOption  :       function(his_self, menu, player) {
+      menuOption  :       function(his_self, menu, player, faction) {
         if (menu == "move") {
-          return { event : 'gout', html : '<li class="option" id="gout">play gout</li>' };
+	  let f = "";
+
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('032')) {
+	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
+	      break;
+	    }
+	  }
+
+          return { faction : f , event : 'gout', html : '<li class="option" id="gout">play gout</li>' };
         }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player) {
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
         if (menu == "move") {
-	  for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
-	    if (this.game.deck[0].fhand[i].includes('032')) {
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('032')) {
 	      return 1;
 	    }
 	  }
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player) {
+      menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "move") {
-alert("WE PLAYED GOUT");
           his_self.endTurn();
           his_self.updateLog("looks like someone got gout");
         }
@@ -3511,6 +3936,101 @@ alert("WE PLAYED GOUT");
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "field_battle") {
+	  let f = "";
+
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('033')) {
+	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
+	      break;
+	    }
+	  }
+
+          return { faction : f , event : 'landsknechts', html : `<li class="option" id="landsknechts">landsknechts (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('033')) {
+	      return 1;
+	    }
+	  }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+	  if (faction == "ottoman" || faction == "france") {
+	  } else {
+            his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", 4, faction, 
+	      function(space) {
+		if (!his_self.isSpaceUnderSeige(space.key)) { return 0; }
+		if (!his_self.returnFriendlyLandUnitsInSpace("france", space.key)) { return 0; }
+		if (!his_self.isSpaceFriendly(space.key)) { return 1; }
+	      } ,
+	      null ,
+	      null ,
+	      true
+	    );
+	  }
+	}
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "landsknechts") {
+
+          let faction = mv[1];
+	  let player = his_self.returnPlayerOfFaction(faction);
+
+	  if (faction === "hapsburg") {
+            his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", 4, "hapsburg",
+	      function(space) {
+		if (!his_self.isSpaceUnderSeige(space.key)) { return 0; }
+		if (!his_self.returnFriendlyLandUnitsInSpace("hapsburg", space.key)) { return 0; }
+		if (!his_self.isSpaceFriendly(space.key)) { return 1; }
+	      } ,
+	      null ,
+	      null ,
+	      true
+	    );
+	  } else {
+	    if (faction === "ottoman") {
+              his_self.playerRemoveUnitsInSpaceWithFilter("mercenary", 2, faction,
+	        function(space) {
+
+//		  if (!his_self.isSpaceUnderSeige(space.key)) { return 0; }
+//		  if (!his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 0; }
+//		  if (!his_self.isSpaceFriendly(space.key)) { return 1; }
+
+	        } ,
+	        null ,
+	        null ,
+	        true
+	      );
+
+	    } else {
+              his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", 4, faction,
+	        function(space) {
+		  if (!his_self.isSpaceUnderSeige(space.key)) { return 0; }
+		  if (!his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 0; }
+		  if (!his_self.isSpaceFriendly(space.key)) { return 1; }
+	        } ,
+	        null ,
+	        null ,
+	        true
+	      );
+	    }
+	  }
+
+          his_self.game.queue.splice(qe, 1);
+	  return 0;
+
+        }
+      },
     }
     deck['034'] = { 
       img : "cards/HIS-034.svg" , 
@@ -3535,6 +4055,75 @@ alert("WE PLAYED GOUT");
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+	  let f = "";
+
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('036')) {
+	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
+	      break;
+	    }
+	  }
+
+          return { faction : f , event : 'swiss_mercenaries', html : `<li class="option" id="swiss_mercenaries">swiss mercenaries (${f})</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('036')) {
+	      return 1;
+	    }
+	  }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "field_battle") {
+	  if (faction == "ottoman" || faction == "france") {
+	  } else {
+            his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", 4, faction, 
+	      function(space) {
+		if (!his_self.isSpaceUnderSeige(space.key)) { return 0; }
+		if (!his_self.returnFriendlyLandUnitsInSpace("france", space.key)) { return 0; }
+		if (!his_self.isSpaceFriendly(space.key)) { return 1; }
+	      } ,
+	      null ,
+	      null ,
+	      true
+	    );
+	  }
+	}
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "swiss_mercenaries") {
+
+          let faction = mv[1];
+          let num = parseInt(mv[2]);
+          his_self.game.queue.splice(qe, 1);
+
+	  let player = his_self.returnPlayerOfFaction(faction);
+
+	  if (his_self.game.player == player) {
+
+            his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
+	      function(space) {
+		if (!his_self.isSpaceUnderSeige(space.key)) { return 0; }
+		if (!his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 0; }
+		if (!his_self.isSpaceFriendly(space.key)) { return 1; }
+	      } ,
+	      null ,
+	      null ,
+	      true
+	    );
+	  }
+	  return 0;
+        }
+      },
     }
     deck['037'] = { 
       img : "cards/HIS-037.svg" , 

@@ -1,6 +1,6 @@
 module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   //console.log("ARCADEINVITETEMPLATE");
-  console.log(invite);
+  //console.log(invite);
 
   let gameModule = app.modules.returnModule(invite.msg.game);
   if (!gameModule){
@@ -14,11 +14,11 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   if (invite.isMine) { inviteTypeClass = "my-invite"; }
   if (invite.msg) {
     if (invite.msg.options['game-wizard-players-select'] <= invite.msg.players.length) {
-      console.log("Game initialized becase msg.options");
+      //console.log("Game initialized becase msg.options");
       game_initialized = 1;
     }
     if (invite.msg.players_needed <= invite.msg.players.length) {
-      console.log("Game initialized becase msg.players_needed")
+      //console.log("Game initialized becase msg.players_needed")
       game_initialized = 1;
     }
   }
@@ -33,7 +33,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
       for (let i = 0; i < app.options.games.length; i++) {
         if (app.options.games[i].id == invite.transaction.sig){
           if (app.options.games[i].initializing == 1) {
-            console.log("Game not initialized because app.options.games[i]")
+            //console.log("Game not initialized because app.options.games[i]")
             game_initialized = 0;
           }
         }

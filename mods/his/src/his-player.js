@@ -1,4 +1,5 @@
 
+
   returnPlayers(num = 0) {
 
     var players = [];
@@ -97,8 +98,12 @@
 
 
       players[i] = {};
+      players[i].tmp_roll_bonus = 0;
+      players[i].tmp_roll_first = 0;
+      players[i].tmp_roll_modifiers = [];
       players[i].factions = [];
       players[i].factions.push(rf);
+      players[i].num = i;
 
     }
 
@@ -141,6 +146,7 @@
   }
 
   resetPlayerTurn(player_num) {
+
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
     this.game.state.tmp_protestant_reformation_bonus = 0;
@@ -148,6 +154,24 @@
     this.game.state.tmp_catholic_reformation_bonus = 0;
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+
+    for (let s in this.game.spaces) {
+      if (this.game.spaces[s].besieged == 2) {
+	this.game.spaces[s].besieged = 1;
+      }
+    }
+
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      let p = this.game.players_info[i];
+      p.tmp_roll_bonus = 0;
+      p.tmp_roll_first = 0;
+      p.tmp_roll_modifiers = [];
+    }
+
+    this.game.state.field_battle = {};
+
+    this.game.state.active_player = player_num;
+
   }
 
   isFactionInPlay(faction) {
@@ -160,11 +184,22 @@
   }
 
   returnPlayerOfFaction(faction) {
-    for (let i = 0; i < this.game.players.length; i++) {
+console.log("checking who runs: " + faction);
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      if (this.game.players_info[i].factions.includes(faction)) {
+console.log("found: " + (i+1));
+console.log("x: " + JSON.stringify(this.game.queue));
+	return i+1;
+      }
       for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-	if (this.game.players_info[i].factions[z] === faction) { return (i+1); }
+	let f = this.game.players_info[i].factions[z];
+        if (this.game.state.activated_powers[f].includes(faction)) {
+          console.log("this is an activated_power!: " + faction + " -- " + f);
+	  return (i+1);
+        }
       }
     }
+console.log("did not find !");
     return 0;
   }
 
@@ -440,7 +475,6 @@
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-    this.resetPlayerTurn(this.game.player, faction);
 
     this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
     this.attachCardboxEvents(function(card) {
@@ -448,6 +482,7 @@
     });  
 
   }
+
 
   playerPlayCard(card, player, faction) {
 
@@ -504,10 +539,11 @@ console.log("OPS ARE ZERO!");
       }
       html    += `</ul>`;
 
-      this.updateStatusWithOptions('Spend as which Power:', html);
-      this.attachCardboxEvents(function(selected_faction) {
+      let ops_text = `${ops} op`;
+      if (ops > 0) { ops_text += 's'; }
 
-alert("selected faction = " + selected_faction);
+      this.updateStatusWithOptions(`Which Faction: ${ops_text}`, html);
+      this.attachCardboxEvents(function(selected_faction) {
 
 	//
 	// duplicates code below
@@ -600,8 +636,8 @@ alert("selected faction = " + selected_faction);
   }
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
-    this.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " plays " + card + " for the event\tevent\tcard");
-    his_self.addMove("RESETCONFIRMSNEEDED\tall");
+    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + card + " for the event\tevent\tcard");
+    this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
 
@@ -911,7 +947,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 
 
-  playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_space, defender) {
+  playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_space="", defender) {
 
     let his_self = this;
     let retreat_destination = "";
@@ -933,7 +969,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       }
       html += "</ul>";
 
-      his_self.updateStatusWithOptions("Choose Desetination for Retreat: ", html);
+      his_self.updateStatusWithOptions("Choose Destination for Retreat: ", html);
 
       $('.option').off();
       $('.option').on('click', function () {
@@ -973,9 +1009,10 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
     let his_self = this;
 
+
     let html = `<ul>`;
     html    += `<li class="card" id="fortify">withdraw into fortification</li>`;
-    html    += `<li class="card" id="battle">engage in land battle</li>`;
+    html    += `<li class="card" id="skip">skip</li>`;
     html    += `</ul>`;
 
     this.updateStatusWithOptions(`Withdraw Units into Fortification?`, html);
@@ -985,7 +1022,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	his_self.endTurn();
         return;
       }
-      if (user_choice === "battle") {
+      if (user_choice === "skip") {
 	his_self.endTurn();
         return;
       }
@@ -1411,11 +1448,10 @@ console.log("faction: " + faction);
   }
 
   canPlayerAssault(his_self, player, faction) {
-console.log("can player assault: " + faction);
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) {
-        if (his_self.game.spaces[conquerable_spaces[i]].type === "fortress") {
+        if (his_self.game.spaces[conquerable_spaces[i]].besieged > 0) {
 	  return 1;
 	}
       }
@@ -1448,7 +1484,7 @@ console.log("can player assault: " + faction);
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
+      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { return 1; }
@@ -1617,5 +1653,66 @@ return;
 console.log("22 treatise");
 return;
   }
+
+  playerPlaceUnitsInSpaceWithFilter(unittype, num, faction, filter_func=null, mycallback = null, cancel_func = null, board_clickable = false) {
+
+    let his_self = this;
+    let placed = 0;
+    let unit = new Unit();
+
+    his_self.playerSelectSpaceWithFilter(
+
+      `Place ${his_self.units[unittype].name} (${num})` ,
+
+      filter_func ,
+
+      function(spacekey) {
+        
+	his_self.addUnit(faction, spacekey, unittype);
+        his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);	
+
+	if (num == 1) {
+          his_self.endTurn();
+	} else {
+  	  his_self.playerPlaceUnitsInSpaceWithFilter(msg, unittype, num-1, faction, filter_func, mycallback, cancel_func, board_clickable);
+	}
+      },
+
+      cancel_func 
+
+    );
+  }
+
+
+  playerRemoveUnitsInSpaceWithFilter(unittype, num, faction, filter_func=null, mycallback = null, cancel_func = null, board_clickable = false) {
+
+    let his_self = this;
+    let placed = 0;
+    let unit = new Unit();
+
+    his_self.playerSelectSpaceWithFilter(
+
+      `Remove ${his_self.units[unittype].name} (${num})` ,
+
+      filter_func ,
+
+      function(spacekey) {
+
+	his_self.removeUnit(faction, spacekey, unittype);
+        his_self.addMove("remove\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);	
+
+	if (num == 1) {
+          his_self.endTurn();
+	} else {
+  	  his_self.playerRemoveUnitsInSpaceWithFilter(msg, unittype, num-1, faction, filter_func, mycallback, cancel_func, board_clickable);
+	}
+
+      },
+
+      cancel_func 
+
+    );
+  }
+
 
 

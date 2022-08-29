@@ -46,7 +46,6 @@ class Settlers extends GameTemplate {
               <option value="10" selected>10 VP - standard game</option>
               <option value="12">12 VP - marathon</option>
             </select>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
         </div>
     `;
 
@@ -59,7 +58,6 @@ class Settlers extends GameTemplate {
     //<option value="elements" title="Magical version of game where players cultivate the five elements (earth, fire, water, metal, and wood)">Elemental</option>
     html += `</select>
           </div>
-          <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;*/
     html += this.returnCryptoOptionsHTML();
 
@@ -1850,7 +1848,7 @@ class Settlers extends GameTemplate {
     let discardFunction = function (settlers_self) {
       let html = `<div class='tbd'>Select Cards to Discard (Must get rid of ${
         targetCt - cardsToDiscard.length
-      }): <ul>`;
+      }): <i id="reset" class="fas fa-undo"></i><ul>`;
       for (let i in my_resources) {
         if (my_resources[i] > 0)
           html += `<li id="${i}" class="option">${i}:`;
@@ -1864,6 +1862,7 @@ class Settlers extends GameTemplate {
 
       settlers_self.updateStatus(html, 1);
 
+      $(".option").off();
       $(".option").on("click", function () {
         $(".option").off();
         let res = $(this).attr("id");
@@ -1876,6 +1875,14 @@ class Settlers extends GameTemplate {
         } else {
           discardFunction(settlers_self);
         }
+      });
+
+      $("#reset").off();
+      $("#reset").on("click", function(){
+        $(".option").off();
+        //Reset Moves and reload interface/function
+        settlers_self.moves=["RESOLVE\t" + settlers_self.app.wallet.returnPublicKey()];
+        settlers_self.chooseCardsToDiscard();
       });
     };
 
