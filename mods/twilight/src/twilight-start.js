@@ -42,7 +42,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     // newbie mode
     this.confirm_moves = 0;
@@ -839,8 +839,8 @@ initializeGame(game_id) {
 	this.game.state.vp = -4;
 	this.game.state.round = 7; // will go to 8 next round
         this.game.state.defcon = 3; // will go to 4 next round
-        this.game.state.space_race_us_counter = 6;
-        this.game.state.space_race_ussr_counter = 4;
+        this.game.state.space_race_us_counter = 3;
+        this.game.state.space_race_ussr_counter = 3;
 	this.game.state.eagle_has_landed = "us";
 	this.game.state.eagle_has_landed_bonus_taken = 1; // set to 0 on round init
 
@@ -2558,9 +2558,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["flowerpower", "teardown", "evilempire", "northseaoil", "opec", "fiveyearplan", "koreanwar", "marshall"];
+          this.game.deck[0].hand = ["aldrichames", "onesmallstep", "flowerpower", "teardown", "evilempire", "marshallplan", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "muslimrevolution", "vietnamrevolts", "wargames", "china"];
         }
 
 	this.game.state.round = 7;
@@ -2645,6 +2645,7 @@ try {
       this.game.state.headline = 1;
 
       //
+      // add Xs to cards - update cancelled events array
       //
       this.cancelEventsDynamically();
 
@@ -2991,7 +2992,6 @@ try {
       // cancel events
       this.cancelEventsDynamically();
 
-
       //
       // resolve outstanding VP
       this.settleVPOutstanding();
@@ -3006,7 +3006,7 @@ try {
       //
       // deactivate cards
       this.game.state.events.china_card_eligible = 0;
-	    this.displayChinaCard();
+      this.displayChinaCard();
 
       //
       // back button functions again
@@ -6115,6 +6115,9 @@ playerTurnHeadlineSelected(card, player) {
 
     state.space_race_us = 0;
     state.space_race_ussr = 0;
+    state.space_race_us_counter = 0;
+    state.space_race_ussr_counter = 0;
+
 
     state.animal_in_space = "";
     state.man_in_earth_orbit = "";
@@ -6122,9 +6125,6 @@ playerTurnHeadlineSelected(card, player) {
     state.eagle_has_landed_bonus_taken = 0;
     state.space_station = "";
     state.space_station_bonus_taken = 0;
-
-    state.space_race_us_counter = 0;
-    state.space_race_ussr_counter = 0;
 
     state.limit_coups = 0;
     state.limit_realignments = 0;
@@ -7904,6 +7904,7 @@ playerTurnHeadlineSelected(card, player) {
   advanceSpaceRace(player) {
 
     this.displayModal(`${player.toUpperCase()} advances in the Space Race`);
+
     //Parameters to simplify the function
     let sr_player = "space_race_us";
     let sr_opponent = "space_race_ussr";
@@ -7948,7 +7949,7 @@ playerTurnHeadlineSelected(card, player) {
 
     if (player == "us"){
       this.game.state.vp += vp_change;  
-    }else{
+    } else {
       this.game.state.vp -= vp_change;
     }
     
@@ -8716,23 +8717,18 @@ playerTurnHeadlineSelected(card, player) {
       }
       // onesmallstep - if we are behind/ahead
       if (this.game.player == 2) { 
-	if (this.game.state.space_race_us_counter >= this.game.state.space_race_ussr_counter) {
+	if (this.game.state.space_race_us >= this.game.state.space_race_ussr) {
 	  this.cancelEvent("onesmallstep");
         } else {
 	  this.uncancelEvent("onesmallstep");
 	}
       } else {
-	if (this.game.state.space_race_ussr_counter >= this.game.state.space_race_us_counter) {
+	if (this.game.state.space_race_ussr >= this.game.state.space_race_us) {
 	  this.cancelEvent("onesmallstep");
         } else {
 	  this.uncancelEvent("onesmallstep");
 	}
       }
-
-
-
-
-
   }
 
 
