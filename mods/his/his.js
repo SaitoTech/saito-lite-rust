@@ -4691,6 +4691,8 @@ console.log("isf 4");
   //
   importSpace(obj, key) {
 
+    let his_self = this;
+
     obj.key = key;
 
     if (obj.name == null)               { obj.name = "Unknown"; }
@@ -4700,11 +4702,22 @@ console.log("isf 4");
     if (obj.returnView == null)		{ 
 
       obj.returnView = function () {
-	return `
-	  <div class="space_view" id="">
-	    This is the detailed view of the city or town.
-	  </div>
-	`;
+
+	let html = '<div class="space_view" id="">';
+
+        for (let f in this.units) {
+	  if (this.units[f].length > 0) {
+	    html += `<div class="space_faction">${his_self.returnFactionName(f)}</div>`;
+            for (let i = 0; i < this.units[f].length; i++) {
+	      html += `<div class="space_unit">1 - ${this.units[f][i].type}</div>`;
+	    }
+	  }
+	}
+
+	html += `</div>`;
+
+	return html;
+
       };
 
     }
@@ -9392,6 +9405,12 @@ this.updateLog("Catholics: " + c_rolls);
     this.game.state.tmp_catholic_reformation_bonus = 0;
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+
+    for (let s in this.game.spaces) {
+      if (this.game.spaces[s].besieged == 2) {
+	this.game.spaces[s].besieged = 1;
+      }
+    }
 
     for (let i = 0; i < this.game.players_info.length; i++) {
       let p = this.game.players_info[i];

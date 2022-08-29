@@ -155,6 +155,12 @@
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
 
+    for (let s in this.game.spaces) {
+      if (this.game.spaces[s].besieged == 2) {
+	this.game.spaces[s].besieged = 1;
+      }
+    }
+
     for (let i = 0; i < this.game.players_info.length; i++) {
       let p = this.game.players_info[i];
       p.tmp_roll_bonus = 0;
