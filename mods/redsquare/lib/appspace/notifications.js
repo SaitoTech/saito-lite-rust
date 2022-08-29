@@ -14,9 +14,11 @@ class RedSquareAppspaceNotifications {
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceNotificationsTemplate(app, mod), "appspace");
 
-    let tx = app.wallet.createUnsignedTransaction();
-    let notification = new Notification(app, mod, tx);
-    notification.render(app, mod, ".redsquare-list");
+    for (let i = 0; i < 10; i++) {
+      let tx = app.wallet.createUnsignedTransaction();
+      let notification = new Notification(app, mod, tx);
+      notification.render(app, mod, ".redsquare-list");
+    }
 
     this.attachEvents(app, mod);
 

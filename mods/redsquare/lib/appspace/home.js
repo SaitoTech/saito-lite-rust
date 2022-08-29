@@ -18,11 +18,13 @@ class RedSquareAppspaceHome {
 
     app.connection.on('tweets-render-request', (tweets, appendToSelector = true) => {
       tweets.forEach(tweet => {
+console.log("ADDING TsRR: " + tweet.tx.transaction.sig);
         tweet.render(app, mod, '.redsquare-list', appendToSelector)
       })
     })
 
     app.connection.on("tweet-render-request", (tweet) => {
+console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list");
     });
 

@@ -91,11 +91,9 @@ class RedSquareTweet {
     this.saito_loader = new SaitoLoader(app, this);
   }
 
-
   returnHTML(app, mod, include_controls = 0, include_header = 0) {
     return TweetTemplate(app, mod, this, include_controls, include_header);
   }
-
 
   returnTweet(app, mod, sig) {
     if (this.tx.transaction.sig === sig) { return this; }
@@ -143,8 +141,14 @@ class RedSquareTweet {
 
   render(app, mod, selector = "", appendToSelector = true) {
 
-    let html = TweetTemplate(app, mod, this);
     let tweet_id = "tweet-box-" + this.tx.transaction.sig;
+    
+    //
+    // do not double-render
+    //
+    if (document.getElementById(tweet_id)) { return; }
+
+    let html = TweetTemplate(app, mod, this);
     let tweet_div = "#" + tweet_id;
     let obj = document.getElementById(tweet_div);
 
@@ -171,7 +175,6 @@ class RedSquareTweet {
         } else {
           app.browser.prependElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
         }
-
 
         this.critical_child.render(app, mod, selector);
         document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
