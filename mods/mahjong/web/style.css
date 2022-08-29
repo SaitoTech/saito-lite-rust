@@ -1,6 +1,11 @@
 
 .gameboard {
-
+  position: relative;
+  background-image: url("img/gameboard.jpg");
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
 

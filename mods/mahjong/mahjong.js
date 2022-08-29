@@ -36,14 +36,14 @@ class Mahjong extends GameTemplate {
     // us this is the first time we have initialized this game.
     //
     if (!this.game.state) {
-      //this.game.state = this.returnState();
+
+      this.game.state = this.returnState();
 
       //
       // we can pop moves onto the queue and execute them one-by-one. this
       // is more useful in 2P++ games. all games keep their QUEUE in order
       // using the structured inputs provided by the network.
       //
-      this.game.queue.push("play");
       this.game.queue.push("READY");
       this.game.queue.push("DEAL\t1\t1\t10");
       this.game.queue.push("SHUFFLE\t1\t1");
@@ -51,6 +51,8 @@ class Mahjong extends GameTemplate {
 
     }
     
+    this.saveGame(this.game.id);
+
   }
 
   //
