@@ -42,7 +42,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     // newbie mode
     this.confirm_moves = 0;
@@ -3064,11 +3064,13 @@ try {
     if (mv[0] === "showhand") {
       this.game.queue.splice(qe, 1);
       let whosehand = parseInt(mv[1]);
-      let cards_to_reveal = mv[2].split(" ");
 
-      let title = (whosehand == 1)? "USSR Hand" : "US Hand";
-      if (this.game.player != whosehand){
-        this.showCardOverlay(cards_to_reveal, title);
+      if (mv[2] !== "") {
+        let cards_to_reveal = mv[2].split(" ");
+        let title = (whosehand == 1)? "USSR Hand" : "US Hand";
+        if (this.game.player != whosehand){
+          this.showCardOverlay(cards_to_reveal, title);
+        }
       }
 
       return 1;
@@ -8811,27 +8813,31 @@ playerTurnHeadlineSelected(card, player) {
       this.game.state.events.aldrich = 1;
 
       if (this.game.player == 2) {
-        //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Aldrich Ames</div>");
+
+        this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Aldrich Ames</div>");
+
         this.addMove("resolve\taldrichames");
 
         if (this.game.deck[0].hand.length < 1) {
-          this.addMove("NOTIFY\tUS has no cards to reveal");
+          this.addMove("NOTIFY\tUS has no more cards");
           this.endTurn();
+	  return 0;
         }
 
         let cards_to_reveal = 0;
-	      let revealed = "";
+        let revealed = "";
 
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-          if (this.game.deck[0].hand[i] !== "china" && this.game.deck[0].hand[i] !== this.game.state.headline_opponent_card && this.game.deck[0].hand[i] !== this.game.state.headline_card) {
+          if (this.game.deck[0].hand[i] != "aldrichames" && this.game.deck[0].hand[i] !== "china" && this.game.deck[0].hand[i] !== this.game.state.headline_opponent_card && this.game.deck[0].hand[i] !== this.game.state.headline_card) {
            cards_to_reveal++; 
            if (revealed != "") { revealed += ", "; }
             revealed += this.game.deck[0].cards[this.game.deck[0].hand[i]].name;
             this.addMove(this.game.deck[0].hand[i]);
           }
         }
+
         if (cards_to_reveal == 0) {
-          this.addMove("NOTIFY\tUS has no cards to reveal");
+          this.addMove("NOTIFY\tUS has no cards left");
           this.endTurn();
         } else {
           this.addMove("aldrich\tus\t"+cards_to_reveal);
