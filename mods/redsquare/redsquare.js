@@ -376,6 +376,11 @@ class RedSquare extends ModTemplate {
 
   async onPeerHandshakeComplete(app, peer) {
 
+    //
+    // avoid load in other apps
+    //
+    if (!this.browser_active) { return; }
+
     let redsquare_self = this;
     if (this.app.BROWSER == 1) {
       this.saito_loader.render(app, redsquare_self, 'redsquare-home-header', false);
