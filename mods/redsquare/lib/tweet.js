@@ -300,11 +300,13 @@ class RedSquareTweet {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      let rtweet = new RetweetTweet(app, mod);
+      let rtweet = new RetweetTweet(app, mod, tweet_self);
       rtweet.tweet_id = this.tx.transaction.sig;
       rtweet.parent_id = this.parent_id;
       rtweet.thread_id = this.thread_id;
-      rtweet.render(app, mod, this);
+      rtweet.render(app, mod, tweet_self);
+
+alert("rendered rtweet");
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
