@@ -153,3 +153,12 @@
         padding-left: 0rem;
     }
 }
+
+
+
+@media screen and (max-width: 396px) {
+    .saito-sidebar.left .hamburger {
+        left: 3rem;
+        bottom: 15rem;
+    }
+}

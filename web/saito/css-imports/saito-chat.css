@@ -86,6 +86,22 @@
 
 
 
+/*  Responsive */
 
+@media only screen and (max-width: 535px) {
+    .chat-container {
+        width: 90vw;
+        position: fixed;
+        right: 0rem;
+        bottom: 0rem;
+        height: 60vh;
+    }
+    
+
+  }
+  @media only screen and (max-width: 396px) {
+
+
+  }
 
 
