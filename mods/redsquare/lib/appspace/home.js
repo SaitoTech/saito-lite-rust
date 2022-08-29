@@ -16,9 +16,9 @@ class RedSquareAppspaceHome {
 
     this.observed = false
 
+    // not currently used, kept for flexibility for future
     app.connection.on('tweets-render-request', (tweets, appendToSelector = true) => {
       tweets.forEach(tweet => {
-console.log("ADDING TsRR: " + tweet.tx.transaction.sig);
         tweet.render(app, mod, '.redsquare-list', appendToSelector)
       })
     })
@@ -55,15 +55,11 @@ console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       app.browser.addElementToClass(RedSquareAppspaceHomeTemplate(app, mod), "appspace");
     }
 
-
     mod.renderMainPage(app, mod);
 
     this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
 
     this.attachEvents(app, mod);
-
-
-
 
   }
 

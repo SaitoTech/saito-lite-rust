@@ -1,7 +1,7 @@
 const NotificationTemplate = require("./notification.template");
-const LikeTemplate = require("./like.template");
-const ReplyTemplate = require("./reply.template");
-const RetweetTemplate = require("./retweet.template");
+const LikeNotificationTemplate = require("./like-notification.template");
+const ReplyNotificationTemplate = require("./reply-notification.template");
+const RetweetNotificationTemplate = require("./retweet-notification.template");
 
 class RedSquareNotification {
 
@@ -14,11 +14,11 @@ class RedSquareNotification {
       let html = '';
       let x = Math.random();
       if (x < 0.4) {
-	html = LikeTemplate(app, mod, this.tx);
+	html = LikeNotificationTemplate(app, mod, this.tx);
       } else if (x < 0.7) {
-	html = ReplyTemplate(app, mod, this.tx);
+	html = ReplyNotificationTemplate(app, mod, this.tx);
       } else {
-	html = RetweetTemplate(app, mod, this.tx);
+	html = RetweetNotificationTemplate(app, mod, this.tx);
       } 
       app.browser.addElementToSelector(html, ".redsquare-list");
 
