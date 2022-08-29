@@ -30,8 +30,6 @@ class RedSquare extends ModTemplate {
     this.tweets = [];
     this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
 
-console.log("NTFS LEN: " + this.ntfs.length);
-
     // "main" or sig if viewing page-specific
     this.viewing = "main";
     this.last_viewed_notifications_ts = 0;
@@ -77,10 +75,6 @@ console.log("NTFS LEN: " + this.ntfs.length);
     for (let i = 0; i < this.ntfs.length; i++) {
       if (this.ntfs[i].transaction.ts < tx.transaction.ts) {
         this.ntfs.splice(i, 0, tx);
-	for (let z = 0; z < this.ntfs.length; z++) {
-	  let txmsg = this.ntfs[z].returnMessage();
-	  console.log("z: " + JSON.stringify(txmsg.text));
-	}
         return;
       }
     }
@@ -120,7 +114,7 @@ console.log("NTFS LEN: " + this.ntfs.length);
             insertion_index++;
           }
         }
-console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
+//console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
       }
       //
@@ -130,7 +124,7 @@ console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tw
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
-console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
+//console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
           if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
 	    // we've added, stop adding
 	    break;
@@ -197,7 +191,7 @@ console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
             insertion_index++;
           }
         }
-console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
+//console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
         mod.app.connection.emit('tweet-render-request', tweet);
 
@@ -209,10 +203,10 @@ console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
-console.log("ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
+//console.log("ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
           if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
             // we've added, stop adding
-console.log("somehow this triggers...");
+//console.log("somehow this triggers...");
             mod.app.connection.emit('tweet-render-request', tweet);
             break;
           }
@@ -396,10 +390,10 @@ console.log("somehow this triggers...");
         } else {
           let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { 
-	    console.log("~~~~~~~~~~~~~~~~~~");
-	    console.log("~~~~~~~~~~~~~~~~~~");
-	    console.log("~~~~~~~~~~~~~~~~~~");
-	    console.log("1 TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
+//console.log("~~~~~~~~~~~~~~~~~~");
+//console.log("~~~~~~~~~~~~~~~~~~");
+//console.log("~~~~~~~~~~~~~~~~~~");
+//console.log("1 TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
 	    mod.renderMainPage(app, redsquare_self);
 	  });
         }
@@ -407,18 +401,15 @@ console.log("somehow this triggers...");
       }
 
       this.app.storage.loadTransactions("RedSquare", 50, (txs) => {
-	console.log("~~~~~~~~~~~~~~~~~~");
-	console.log("~~~~~~~~~~~~~~~~~~");
-	console.log("~~~~~~~~~~~~~~~~~~");
-console.log("HOW MANY DID WE LOAD? " + txs.length);
+//console.log("~~~~~~~~~~~~~~~~~~");
+//console.log("~~~~~~~~~~~~~~~~~~");
+//console.log("~~~~~~~~~~~~~~~~~~");
+//console.log("HOW MANY DID WE LOAD? " + txs.length);
         for (let i = 0; i < txs.length; i++) {
           txs[i].decryptMessage(app);
-let txmsg = txs[i].returnMessage();
-console.log("tweet content: " + JSON.stringify(txmsg));
 	  let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
           redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
         }
-	console.log("2. TWEETS LOAD TXS: " + redsquare_self.tweets.length);
 	redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
       });
 
@@ -451,7 +442,6 @@ console.log("tweet content: " + JSON.stringify(txmsg));
   }
 
   trackTweet(app, mod, tweet) {
-    console.log('tracking tweet', tweet)
     this.trackedTweet = tweet
   }
 
@@ -467,7 +457,6 @@ console.log("tweet content: " + JSON.stringify(txmsg));
       sql,
       async (res) => {
         if (res.rows) {
-          console.log("tracked tweet", res.rows[0])
           mod.trackTweet(res.rows[0]);
           res.rows.forEach(row => {
             let new_tweet = 1;
@@ -532,7 +521,6 @@ console.log("tweet content: " + JSON.stringify(txmsg));
             }
           });
 
-          console.log(mod.page_number, mod.results_per_page)
 	  for (let i = 0; i < tweets.length; i++) {
 	    mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
 	  }
@@ -577,8 +565,6 @@ console.log("tweet content: " + JSON.stringify(txmsg));
               } catch (err) { }
             }
           });
-          console.log(mod.page_number, mod.results_per_page)
-          // render tweets 
 	  for (let i = 0; i < tweets.length; i++) {
 	    mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
 	  }
@@ -630,7 +616,6 @@ console.log("tweet content: " + JSON.stringify(txmsg));
       // add notification for unviewed
       //
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
-console.log("receive like tx");
 	this.addNotification(app, this, tx);
       }
 
@@ -699,9 +684,6 @@ console.log("receive like tx");
       // add notification for unviewed
       //
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
-console.log("receive tweet tx");
-let txmsg = tx.returnMessage();
-console.log("txmsg: " + JSON.stringify(txmsg));
 	this.addNotification(app, this, tx);
       }
 
