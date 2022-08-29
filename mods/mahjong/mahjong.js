@@ -44,6 +44,7 @@ class Mahjong extends GameTemplate {
       // is more useful in 2P++ games. all games keep their QUEUE in order
       // using the structured inputs provided by the network.
       //
+      this.game.queue.push("play");
       this.game.queue.push("READY");
       this.game.queue.push("DEAL\t1\t1\t10");
       this.game.queue.push("SHUFFLE\t1\t1");
@@ -119,8 +120,19 @@ class Mahjong extends GameTemplate {
     //
     this.menu.addChatMenu(app, this);
 
+    //
+    // render menu
+    //
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
+
+    //
+    // sidebar log
+    //
+    this.log.render(this.app, this);
+    this.log.attachEvents(this.app, this);
+
+
 
     //
     // display the board?
