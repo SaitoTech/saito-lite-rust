@@ -138,8 +138,8 @@ span.redsquare-home-red-square+span {
 
 .link-preview>.redsquare-item { 
   border-bottom: none;
-  padding-right: 0px;
-  padding-bottom: 0px;
+  padding-right: 0rem;
+  padding-bottom: 0rem;
 }
 
 .redsquare-item-contents {
