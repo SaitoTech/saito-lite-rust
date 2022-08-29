@@ -1,5 +1,12 @@
 
 
+  returnFactionName(f) {
+    if (this.factions[f]) {
+      return this.factions[f].name;
+    }
+    return "Unknown";
+  }
+
   importFaction(name, obj) {
 
     if (obj.id == null)                 { obj.id = "faction"; }
@@ -54,15 +61,6 @@
     return [];
   }
 
-  returnPlayerOfFaction(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].factions.includes(faction)) {
-	return i+1;
-      }
-    }
-    return -1;
-  }
-
   returnFactionHandIdx(player, faction) {
     for (let i = 0; i < this.game.players_info[player-1].factions.length; i++) {
       if (this.game.players_info[player-1].factions[i] === faction) {
@@ -70,17 +68,6 @@
       }
     }
     return -1;
-  }
-
-  returnFactionName(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-        if (faction === this.game.players_info[i].factions[ii]) {
-	  return this.factions[this.game.players_info[i].factions[ii]].name;
-	}
-      }
-    }
-    return faction.toUpperCase();
   }
 
 

@@ -4,9 +4,9 @@ module.exports = (app, mod, tx) => {
 
     return `
        <div class="redsquare-item">
-         ${SaitoUser(app, mod, tx.transaction.from[0].add, "retweeted your tweet", new Date().getTime())}
+         ${SaitoUser(app, mod, tx.transaction.from[0].add, "replied to your tweet", new Date().getTime())}
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tx.transaction.sig}" data-id="${tx.transaction.sig}">
-	   Retweet Goes Here
+	   Tweet Content Goes Here
          </div>
        </div>
     `;
