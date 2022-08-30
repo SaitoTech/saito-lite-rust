@@ -186,9 +186,9 @@ class AppStore extends ModTemplate {
           let zip = fs.readFileSync(mod_path, { encoding: 'base64' });
 
 	  //
-	  // TODO - fix 
+	  // TODO - fix
 	  //
-	  // massive zip files bypassing tx size limits cause issues with 
+	  // massive zip files bypassing tx size limits cause issues with
 	  // some versions of NodeJS. In others they over-size and fail
 	  // elegantly. adding this check to prevent issues with server
 	  // on start, particularly with Red Imperium.
@@ -285,8 +285,8 @@ class AppStore extends ModTemplate {
             } catch (err) {
             }
           }
-          if (!tx.isTo(app.wallet.returnPublicKey())) { 
-	    return; 
+          if (!tx.isTo(app.wallet.returnPublicKey())) {
+	    return;
 	  }
           this.requestBundle(blk, tx);
           break;
@@ -362,7 +362,7 @@ class AppStore extends ModTemplate {
 
 	let found_name = 0;
 	let found_description = 0;
-	let found_categories = 0;	
+	let found_categories = 0;
 
 	for (let i = 0; i < zip_lines.length && i < 50 && (found_name == 0 || found_description == 0 || found_categories == 0); i++) {
 
@@ -386,7 +386,7 @@ class AppStore extends ModTemplate {
 	  if (/this.description/.test(zip_lines[i]) && found_description == 0) {
 	    found_description = 1;
 	    if (zip_lines[i].indexOf("=") > 0) {
-	      description = zip_lines[i].substring(zip_lines[i].indexOf("="))    
+	      description = zip_lines[i].substring(zip_lines[i].indexOf("="))
 	      description = cleanString(description);
 	      description = description.replace(/^\s+|\s+$/gm,'');
 	    }
@@ -398,7 +398,7 @@ class AppStore extends ModTemplate {
 	  if (/this.categories/.test(zip_lines[i]) && found_categories == 0) {
 	    found_categories = 1;
 	    if (zip_lines[i].indexOf("=") > 0) {
-	      categories = zip_lines[i].substring(zip_lines[i].indexOf("="))    
+	      categories = zip_lines[i].substring(zip_lines[i].indexOf("="))
 	      categories = cleanString(categories);
 	      categories = categories.replace(/^\s+|\s+$/gm,'');
 	    }
@@ -442,7 +442,7 @@ class AppStore extends ModTemplate {
 
   async submitModule(blk, tx) {
 
-    if (this.app.BROWSER == 1) { 
+    if (this.app.BROWSER == 1) {
 
 ////console.log("we are browser submit module...");
 //console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
@@ -450,6 +450,7 @@ class AppStore extends ModTemplate {
       if (tx.isFrom(this.app.wallet.returnPublicKey())) {
 
         let newtx = this.app.wallet.createUnsignedTransaction();
+        if (!newtx.msg) newtx.msg = {};
             newtx.msg.module       = "Email";
             newtx.msg.title        = "Saito Application Published";
             newtx.msg.message      = `
@@ -480,7 +481,7 @@ class AppStore extends ModTemplate {
 
       }
 
-      return; 
+      return;
 
     }
 
@@ -578,8 +579,8 @@ if (name == "Unknown") {
     let module_list = txmsg.list;
 
     //
-    // module_list consists of a list of the modules to bundle, these contain a name or 
-    // version number (or both) depending on how they were originally issued to the 
+    // module_list consists of a list of the modules to bundle, these contain a name or
+    // version number (or both) depending on how they were originally issued to the
     // client.
     //
     // module list = [
@@ -725,7 +726,7 @@ if (name == "Unknown") {
 
     let bash_script_create = `mods/compile-${ts}-${hash}-create`;
     let bash_script = `mods/compile-${ts}-${hash}`;
-    
+
     let newappdir = `${ts}-${hash}`;
 
 ////console.log("into new app dir: " + newappdir);
@@ -1048,7 +1049,7 @@ if (name == "Unknown") {
             mycallback(res.rows);
           } else {
             mycallback([]);
-	  }  
+	  }
         }
       );
 
