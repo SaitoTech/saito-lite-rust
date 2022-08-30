@@ -31,7 +31,7 @@ class Monarchy extends GameTemplate {
     this.hud.respectDocking = true;
     
     this.cards_in_play = [];
-    this.is_testing = false;
+    this.is_testing = true;
     
     this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
@@ -40,21 +40,60 @@ class Monarchy extends GameTemplate {
 
 
 
-  showCardOverlay(cards, title = ""){
+  formatDeck(cardStats, title = ""){
     let html = `
-      <div class="ts-overlay">
-      <h1>${title}</h1>
-      <div class="ts-body">
-      <div class="cardlist-container">${this.returnCardList(cards)}</div>`;
-      if (cards.length == 0) { 
-        html = `<div style="text-align:center; margin: auto;">
-                There are no cards to display
-                </div>`;
+      <div class="rules-overlay">
+        <h1>${title}</h1>
+        <div class="cardlist-container">`;
+
+    for (let cardType in this.game.state.supply){
+      if (cardStats[cardType]){
+        html += `<div class="cardlist" style="width:${80+40*cardStats[cardType]}px">`;
+        for (let i = 0; i < cardStats[cardType]; i++){
+          html += this.returnCardImage(cardType);
+        }
+        html += "</div>";   
       }
-      html += "</div></div>";
-      this.overlay.show(this.app, this, html);
+    }
+
+    html += "</div></div>";
+
+    return html;
   }
 
+  returnWelcomeOverlay(){
+   let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
+           <img src="/${this.name.toLowerCase()}/img/welcome_splash.jpg" style="width:100%;height:100%" />
+               </div>`;
+    return html;
+  }
+
+  showDecks(){
+    this.menu.addMenuOption({
+      text : "Decks",
+      id : "game-decks",
+      class : "game-decks",
+      callback : function(app, game_mod) {
+        game_mod.menu.showSubMenu("game-decks");
+      }
+    });
+    for (let i = 1; i <= this.game.players.length; i++){
+      let title = (this.game.player == i) ? "My Deck" : `Player ${i}'s Deck`;
+      this.menu.addSubMenuOption("game-decks", {
+        text : `Player ${i}${(this.game.player == i)?" (Me)":""}`,
+        id : "decks-player-"+i,
+        class : "decks-cards",
+        callback : function(app, game_mod) {
+           game_mod.menu.hideSubMenus();
+           game_mod.overlay.show(game_mod.app, game_mod, game_mod.formatDeck(game_mod.game.state.decks[i], title)); 
+        }
+      });
+    }
+    this.menu.render(this.app, this);
+    this.menu.attachEvents(this.app, this);
+
+    console.log(JSON.parse(JSON.stringify(this.game.state.decks)));
+  }
 
  
  initializeHTML(app) {
@@ -124,7 +163,7 @@ class Monarchy extends GameTemplate {
 
     let hh = document.querySelector(".hud-header");
     if (!hh.querySelector(".handy-help")){
-      this.app.browser.addElementToElement(`<i id="zoom" class="fas fa-compass hud-controls" aria-hidden="true""></i>`, hh);
+      this.app.browser.addElementToElement(`<i id="zoom" class="fas fa-search hud-controls" aria-hidden="true"" title="Toggle Zoom on Card Hover"></i>`, hh);
       this.app.browser.addElementToElement(`<i id="my_hand" class="handy-help hud-controls fas fa-fw fa-hand-paper" aria-hidden="true"></i>`, hh);  
     }
 
@@ -270,6 +309,7 @@ initializeGame(game_id) {
         let highScore = -1;
         let reason = "high score";
         
+        this.showDecks();
         //Find High Score
         for (let i = 1; i <= this.game.players.length; i++){
           let score = this.returnPlayerVP(i);
@@ -309,6 +349,16 @@ initializeGame(game_id) {
 
       if (mv[0] == "turn"){
         if (!this.browser_active) {return 0;}
+
+        //For the beginning of the game only...
+        if (this.game.state.welcome == 0) {
+          try {
+            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
+          } catch (err) {}
+          this.game.state.welcome = 1;
+        }
+
         let player = parseInt(mv[1]);
         if (this.game.player == player){
           this.playerTurn();
@@ -380,6 +430,7 @@ initializeGame(game_id) {
         if (this.gameOver()){
           this.game.queue.push("gameover");
           for (let p = 1; p <= this.game.players.length; p++){
+            this.game.queue.push(`reportdeck\t${p}`);
             this.game.queue.push(`SAFEDEAL\t${p}\t${p}\t${Object.keys(this.game.deck[p-1].discards).length + this.game.deck[p-1].crypt.length}`);
           }
           this.updateStatus("Game over, determining winner...");
@@ -405,6 +456,43 @@ initializeGame(game_id) {
           
         }
 
+      }
+
+      if (mv[0] == "reportdeck"){
+        let player = parseInt(mv[1]);
+        this.game.queue.splice(qe, 1);
+        if (this.game.player == player){
+          this.addMove("resolve");
+          let numCards = this.game.deck[player-1].hand.length;
+          for (let i = 0; i < numCards; i++){
+            this.addMove(this.game.deck[player-1].cards[this.game.deck[player-1].hand[i]]);
+          }
+          this.addMove(`mycards\t${mv[1]}\t${numCards}`);
+          this.endTurn();
+        }
+        return 0;
+      }
+
+      if (mv[0] == "mycards"){
+        let player = parseInt(mv[1]);
+        let expectedCount = parseInt(mv[2]);
+        this.game.queue.splice(qe, 1);
+        if (!this.game.state.decks){
+          this.game.state.decks = {};
+        }
+        this.game.state.decks[player] = {};
+
+        let card = this.game.queue.pop();
+        let cnt = 1;
+        while (card != "resolve"){
+          cnt++;
+          if (!this.game.state.decks[player][card]){
+            this.game.state.decks[player][card] = 0;
+          }
+          this.game.state.decks[player][card]++;
+          card = this.game.queue.pop();
+        }
+        return 1;
       }
 
       if (mv[0] == "create"){
@@ -1665,6 +1753,7 @@ initializeGame(game_id) {
     state.actions = 1;
     state.coins = 0;
 
+    state.welcome = 0;
     state.players = [];
     for (let i = 0; i < this.game.players.length; i++){
       let stats = {vp:3, gardens:0, curses:0, turns:0};
