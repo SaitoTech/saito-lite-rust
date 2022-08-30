@@ -28,7 +28,7 @@ class RedSquare extends ModTemplate {
     this.sqlcache_enabled = 1;
 
     this.tweets = [];
-    this.notifications = [];
+    this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
 
     // "main" or sig if viewing page-specific
     this.viewing = "main";
@@ -44,11 +44,7 @@ class RedSquare extends ModTemplate {
     ];
     this.ui_initialized = false;
 
-    if (app.BROWSER === 1) {
-      setInterval(() => {
-        this.fetchNewTweets(app, this)
-      }, 30000)
-    }
+    return this;
 
   }
 
@@ -56,29 +52,34 @@ class RedSquare extends ModTemplate {
   initialize(app) {
     this.loadRedSquare();
     super.initialize(app);
+
+    if (app.BROWSER === 1) {
+      if (this.browser_active == 1) {
+        setInterval(() => {
+          this.fetchNewTweets(app, this)
+        }, 30000)
+      }
+    }
   }
 
 
-  addNotification(tx) {
-    if (this.notifications.length == 0) {
-      this.notifications.push(tx);
+  addNotification(app, mod, tx) {
+    // skip notifying us of our own posts / comments
+    if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
       return;
     }
-    for (let i = 0; i < this.notifications.length; i++) {
-      if (this.notifications[i].transaction.ts < tx.transaction.ts) {
-        this.notifications.splice(i, 0, tx);
-
-
-for (let z = 0; z < this.notifications.length; z++) {
-  let txmsg = this.notifications[z].returnMessage();
-  console.log("z: " + JSON.stringify(txmsg.text));
-}
-
+console.log("ADD NOTIFICATION FOR US!");
+    if (this.ntfs.length == 0) {
+      this.ntfs.push(tx);
+      return;
+    }
+    for (let i = 0; i < this.ntfs.length; i++) {
+      if (this.ntfs[i].transaction.ts < tx.transaction.ts) {
+        this.ntfs.splice(i, 0, tx);
         return;
       }
     }
-    this.notifications.push(tx);
-
+    this.ntfs.push(tx);
 
   }
 
@@ -114,7 +115,7 @@ for (let z = 0; z < this.notifications.length; z++) {
             insertion_index++;
           }
         }
-console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
+        //console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
       }
       //
@@ -124,10 +125,10 @@ console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tw
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
-console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
+          //console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
           if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
-	    // we've added, stop adding
-	    break;
+            // we've added, stop adding
+            break;
           }
         }
       }
@@ -191,7 +192,7 @@ console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
             insertion_index++;
           }
         }
-console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
+        //console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
         mod.app.connection.emit('tweet-render-request', tweet);
 
@@ -203,10 +204,10 @@ console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
-console.log("ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
+          //console.log("ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
           if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
             // we've added, stop adding
-console.log("somehow this triggers...");
+            //console.log("somehow this triggers...");
             mod.app.connection.emit('tweet-render-request', tweet);
             break;
           }
@@ -215,6 +216,10 @@ console.log("somehow this triggers...");
 
     }
   }
+
+  // setViewing(viewing) {
+  //   this.viewing = viewing
+  // }
 
   renderMainPage(app, mod) {
     this.viewing = "main";
@@ -246,7 +251,7 @@ console.log("somehow this triggers...");
     // if we get here, we don't have this locally, try remote request
     //
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
-    mod.fetchTweets(app, mod, sql, function (app, mod) {
+    mod.etchTweets(app, mod, sql, function (app, mod) {
       mod.renderParentWithChildren(app, mod, sig);
 
     });
@@ -376,6 +381,11 @@ console.log("somehow this triggers...");
 
   async onPeerHandshakeComplete(app, peer) {
 
+    //
+    // avoid load in other apps
+    //
+    if (!this.browser_active) { return; }
+
     let redsquare_self = this;
     if (this.app.BROWSER == 1) {
       this.saito_loader.render(app, redsquare_self, 'redsquare-home-header', false);
@@ -389,26 +399,30 @@ console.log("somehow this triggers...");
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
           let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-          this.fetchTweets(app, redsquare_self, sql, function (app, mod) { 
-
-console.log("TWEETS FETCH FROM PEER!");
-mod.renderMainPage(app, redsquare_self); });
+          this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
+            //console.log("~~~~~~~~~~~~~~~~~~");
+            //console.log("~~~~~~~~~~~~~~~~~~");
+            //console.log("~~~~~~~~~~~~~~~~~~");
+            //console.log("1 TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
+            mod.renderMainPage(app, redsquare_self);
+          });
         }
 
       }
 
-/***
       this.app.storage.loadTransactions("RedSquare", 50, (txs) => {
+        //console.log("~~~~~~~~~~~~~~~~~~");
+        //console.log("~~~~~~~~~~~~~~~~~~");
+        //console.log("~~~~~~~~~~~~~~~~~~");
+        //console.log("HOW MANY DID WE LOAD? " + txs.length);
         for (let i = 0; i < txs.length; i++) {
           txs[i].decryptMessage(app);
-	  new Tweet(app, mod, txs[i]);
+          let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
           redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
-          //redsquare_self.addTweetAndBroadcastRenderRequest(redsquare_self.app, redsquare_self, tweet);
+          redsquare_self.addNotification(redsquare_self.app, redsquare_self, txs[i]);
         }
-	redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
+        redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
       });
-
-***/
 
 
     }
@@ -416,20 +430,20 @@ mod.renderMainPage(app, redsquare_self); });
 
 
   async onConfirmation(blk, tx, conf, app) {
-    let redsquare_self = this;
+
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          redsquare_self.receiveTweetTransaction(blk, tx, conf, app);
+          this.receiveTweetTransaction(blk, tx, conf, app);
           this.sqlcache = [];
         }
         if (txmsg.request === "like tweet") {
-          redsquare_self.receiveLikeTransaction(blk, tx, conf, app);
+          this.receiveLikeTransaction(blk, tx, conf, app);
           this.sqlcache = [];
         }
         if (txmsg.request === "flag tweet") {
-          redsquare_self.receiveFlagTransaction(blk, tx, conf, app);
+          this.receiveFlagTransaction(blk, tx, conf, app);
           this.sqlcache = [];
         }
       }
@@ -439,7 +453,6 @@ mod.renderMainPage(app, redsquare_self); });
   }
 
   trackTweet(app, mod, tweet) {
-    console.log('tracking tweet', tweet)
     this.trackedTweet = tweet
   }
 
@@ -455,7 +468,6 @@ mod.renderMainPage(app, redsquare_self); });
       sql,
       async (res) => {
         if (res.rows) {
-          console.log("tracked tweet", res.rows[0])
           mod.trackTweet(res.rows[0]);
           res.rows.forEach(row => {
             let new_tweet = 1;
@@ -520,10 +532,9 @@ mod.renderMainPage(app, redsquare_self); });
             }
           });
 
-          console.log(mod.page_number, mod.results_per_page)
-	  for (let i = 0; i < tweets.length; i++) {
-	    mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
-	  }
+          for (let i = 0; i < tweets.length; i++) {
+            mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
+          }
           post_fetch_tweets_callback(app, mod)
           mod.page_number++;
 
@@ -565,11 +576,9 @@ mod.renderMainPage(app, redsquare_self); });
               } catch (err) { }
             }
           });
-          console.log(mod.page_number, mod.results_per_page)
-          // render tweets 
-	  for (let i = 0; i < tweets.length; i++) {
-	    mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
-	  }
+          for (let i = 0; i < tweets.length; i++) {
+            mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
+          }
         }
       }
     );
@@ -617,8 +626,9 @@ mod.renderMainPage(app, redsquare_self); });
       //
       // add notification for unviewed
       //
-      if (tx.transaction.ts > redsquare_self.last_viewed_notifications_ts) {
-	redsquare_self.addNotification(tx);
+console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
+      if (tx.transaction.ts > this.last_viewed_notifications_ts) {
+        this.addNotification(app, this, tx);
       }
 
       return;
@@ -639,7 +649,7 @@ mod.renderMainPage(app, redsquare_self); });
   }
 
 
-  sendTweetTransaction(app, mod, data, keys=[]) {
+  sendTweetTransaction(app, mod, data, keys = []) {
 
     let redsquare_self = this;
 
@@ -674,7 +684,6 @@ mod.renderMainPage(app, redsquare_self); });
     // browsers
     //
     if (app.BROWSER == 1) {
-      let redsquare_self = app.modules.returnModule("RedSquare");
 
       //
       // save tweets addressed to me
@@ -686,11 +695,12 @@ mod.renderMainPage(app, redsquare_self); });
       //
       // add notification for unviewed
       //
-      if (tx.transaction.ts > redsquare_self.last_viewed_notifications_ts) {
-	redsquare_self.addNotification(tx);
+console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
+      if (tx.transaction.ts > this.last_viewed_notifications_ts) {
+        this.addNotification(app, this, tx);
       }
 
-      this.addTweet(app, redsquare_self, tweet);
+      this.addTweet(app, this, tweet);
       app.connection.emit("tweet-render-request", tweet);
       return;
     }

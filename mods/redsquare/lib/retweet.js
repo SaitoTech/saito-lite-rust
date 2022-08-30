@@ -4,16 +4,18 @@ const JSON = require('json-bigint');
 
 class Retweet {
 
-    constructor(app, mod) {
+    constructor(app, mod, tweet=null) {
       this.overlay = new SaitoOverlay(app, mod);
       this.images = [];
-      this.tweet = null;
+      this.tweet = tweet;
     }
 
     render(app, mod, tweet) {
       this.tweet = tweet;
       this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
+console.log("HTML TO DISPLAY: " + RetweetTemplate(app, mod, app.wallet.returnPublicKey(), tweet));
       app.browser.addElementToSelector(RetweetTemplate(app, mod, app.wallet.returnPublicKey(), tweet), "#redsquare-tweet-overlay");
+console.log("DISPLAYED");
       this.attachEvents(app, mod);
     }
 
@@ -34,7 +36,9 @@ class Retweet {
       	mod.renderMainPage(app, mod);
 
       	this.overlay.hide();
-        document.getElementById("redsquare-new-tweets-banner").style.display = 'block';
+	let obj = document.getElementById("redsquare-new-tweets-banner");
+	if (obj) { obj.style.display = 'block'; }
+
       }
     }
 

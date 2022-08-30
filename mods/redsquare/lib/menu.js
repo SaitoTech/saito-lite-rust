@@ -29,8 +29,8 @@ class RedSquareMenu {
                   <span> ${app.modules.mods[i].returnName()}</span>
                 </li>
     `;
-        if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)){
-          app.browser.addElementToSelector(html, ".saito-menu-list");          
+        if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)) {
+          app.browser.addElementToSelector(html, ".saito-menu-list");
         }
 
       }
@@ -43,28 +43,53 @@ class RedSquareMenu {
 
     this_menu = this;
 
+    const left_sidebar = document.querySelector('.saito-sidebar.left');
+    const icon = document.querySelector('.saito-sidebar.left .hamburger #icon');
+    const removeLeftSidebar = () => {
+      left_sidebar.classList.remove('mobile');
+      icon.className = "fas fa-bars";
+    }
+
+
+
+
     let obj;
 
     obj = document.querySelector('.redsquare-menu-home');
-    if (obj) { obj.onclick = (e) => {
-      this_menu.renderItem(app, mod, "home");
-    } }
+    if (obj) {
+      obj.onclick = (e) => {
+        removeLeftSidebar()
+        this_menu.renderItem(app, mod, "home");
+      }
+    }
     obj = document.querySelector('.redsquare-menu-notifications');
-    if (obj) { obj.onclick = (e) => {
-      this_menu.renderItem(app, mod, "notifications");
-    } }
+    if (obj) {
+      obj.onclick = (e) => {
+        removeLeftSidebar()
+        this_menu.renderItem(app, mod, "notifications");
+      }
+    }
     obj = document.querySelector('.redsquare-menu-settings');
-    if (obj) { obj.onclick = (e) => {
-      this_menu.renderItem(app, mod, "settings");
-    } }
+    if (obj) {
+      obj.onclick = (e) => {
+        removeLeftSidebar()
+        this_menu.renderItem(app, mod, "settings");
+      }
+    }
     obj = document.querySelector('.redsquare-menu-contacts');
-    if (obj) { obj.onclick = (e) => {
-      this_menu.renderItem(app, mod, "contacts");
-    } }
+    if (obj) {
+      obj.onclick = (e) => {
+        removeLeftSidebar()
+        this_menu.renderItem(app, mod, "contacts");
+      }
+    }
     obj = document.querySelector('.redsquare-menu-games');
-    if (obj) { obj.onclick = (e) => {
-      this_menu.renderItem(app, mod, "games");
-    } }
+    if (obj) {
+      obj.onclick = (e) => {
+        removeLeftSidebar()
+        this_menu.renderItem(app, mod, "games");
+      }
+    }
 
 
     //
@@ -76,6 +101,7 @@ class RedSquareMenu {
         let qs = ".redsquare-menu-" + app.modules.mods[i].returnSlug();
         obj = document.querySelector(qs);
         obj.onclick = (e) => {
+          removeLeftSidebar()
           this.renderItem(app, mod, app.modules.mods[i].returnSlug());
         }
       }

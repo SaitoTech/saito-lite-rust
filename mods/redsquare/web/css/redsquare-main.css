@@ -36,7 +36,7 @@ span.redsquare-home-red-square+span {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   font-size: 1.7rem;
-  line-height: 2rem;
+  line-height: 2.2rem;
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }
@@ -81,17 +81,11 @@ span.redsquare-home-red-square+span {
   padding-bottom: 1rem;
 }
 
-.post-tweet-preview .tweet-body {
-  max-height: 55vh;
-  overflow-y: auto;
-}
-
 .post-tweet-preview .redsquare-item .redsquare-item-contents .redsquare-tweet-tools {
   display: none;
 }
 
 .post-tweet-textarea {
-  width: auto;
   margin-top: 1rem;
 }
 
@@ -110,6 +104,7 @@ span.redsquare-home-red-square+span {
   border-radius: 2rem;
   background-color: white;
   position: relative;
+  width: 50rem;
 }
 
 .saito-sidebar.right {
@@ -119,6 +114,8 @@ span.redsquare-home-red-square+span {
 .saito-main.appspace {
   min-width: 50rem;
   height: 100vh;
+  position: relative;
+  z-index: -1;
 }
 
 .redsquare-appspace-contacts-list {
@@ -180,7 +177,7 @@ span.redsquare-home-red-square+span {
   color: white;
   max-height: 90vh;
   max-width: 114rem;
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 .redsquare-create-game-list {
@@ -340,7 +337,7 @@ span.redsquare-home-red-square+span {
 
 .youtube-embed-container {
   width: 100%;
-  margin: 0px;
+  margin: 15px 0px;
 }
 
 .youtube-embed {
@@ -518,15 +515,107 @@ span.redsquare-home-red-square+span {
   display: grid;
 }
 
-.saito-back-button {
-  cursor: pointer;
-}
-
-
 .saito-friendlist .saito-user {
   margin-bottom: 2rem;
 }
 
 .link-preview .redsquare-item-contents {
   display: block;
+}
+
+/*  Responsive */
+
+@media only screen and (max-width: 535px) {
+
+  .redsquare-image-container div {
+    background-size: contain !important;
+    background-position: center center;
+  }
+  .saito-main.appspace {
+    min-width: 0;
+   
+  }
+  .redsquare-tweet-overlay{
+    width: 40rem;
+  }
+  
+  .redsquare-tweet-tools {
+    display: flex;
+    justify-content: initial;
+    font-size: 1.5rem;
+    width: 100%;
+    margin: 2rem 0 0rem 0;
+  }
+
+  .redsquare-tweet-tools>div {
+    position: relative;
+    margin: 0 0;
+    min-width: 8%;
+    margin-right: 10%;
+  }
+  
+  .redsquare-tweet-tools span {
+    font-size: 1.3rem;
+  }
+  .redsquare-tweet-tools i {
+    font-size: 1.3rem;
+  }
+  
+}
+
+
+@media only screen and (max-width: 396px) {
+
+
+  .saito-main.appspace {
+    min-width: 0;
+   
+  }
+  .redsquare-tweet-overlay{
+    width: 30rem;
+  }
+
+
+
+  .redsquare-tweet-tools>div {
+    position: relative;
+    margin: 0 0;
+    min-width: 8%;
+    margin-right: 8%;
+  }
+  
+
+  .redsquare-tweet-tools span {
+    font-size: 1rem;
+  }
+  .redsquare-tweet-tools i {
+    font-size: 1rem;
+  }
+  
+
+}
+  
+.notification-item .tweet {
+  max-height: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.7rem;
+  line-height: 2rem;
+  white-space: pre-wrap;
+  color: #7a7676;
+}
+
+.notification-item > .redsquare-item-contents {
+  display: block;
+}
+
+.fa-notification {
+  color: var(--saito-primary);
+  margin-right: 0.7rem;
+}
+
+.notification-type {
+  color: #111;
 }

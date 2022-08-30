@@ -56,12 +56,16 @@
     grid-row: 1/2;
 }
 
+.saito-sidebar.right.mobile {
+    visibility: visible;
+}
+
 .saito-sidebar.left.mobile {
-    transform: translateX(0);
+    visibility: visible;
 }
 
 .saito-sidebar.left.mobile .hamburger {
-    transform: translateX(0);
+
 }
 
 .saito-sidebar.left .hamburger {
@@ -70,12 +74,12 @@
     z-index: 12;
     height: 5rem;
     border-radius: 50%;
-    background-color: red;
+    background-color: var(--saito-primary);
     display: none;
     position: fixed;
-    bottom: 3rem;
-    z-index: 4;
-    left: 4rem;
+    bottom: -1rem;
+    z-index: 10;
+    left: 1rem;
     cursor: pointer;
 }
 
@@ -87,6 +91,28 @@
     font-size: 3rem;
     color: var(--saito-white);
 }
+
+
+.saito-sidebar.right .caret {
+    content: "";
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    background-color: var(--saito-primary);
+    display: none;
+    position: fixed;
+    bottom: -1rem;
+    right: 1rem;
+    cursor: pointer;
+    z-index: 10;
+}
+
+
+.saito-sidebar.right .caret i {
+    font-size: 3rem;
+    color: var(--saito-white);
+}
+
 
 /* ----------------------------------------------------------------
  Sidebars
@@ -107,8 +133,8 @@
 
     .saito-sidebar.left {
         position: fixed;
-        transform: translateX(-4000px);
         top: calc(var(--saito-header-height));
+        visibility: hidden;
         z-index: 2;
         width: 35rem;
         height: 100vh;
@@ -118,14 +144,14 @@
     }
 
     .saito-sidebar.left .hamburger {
-        transform: translateX(4000px);
         visibility: visible;
-        left: 3rem;
+        left: 1rem;
         display: flex;
         justify-content: center;
         align-items: center;
-        bottom: 12rem;
+        bottom: -1rem;
     }
+
 
     .saito-sidebar .section>div:nth-child(2) {
         padding-left: 1rem;
@@ -133,16 +159,42 @@
 }
 
 @media screen and (max-width: 65rem) {
-    .saito-container {
-        display: flex;
-        flex-direction: column;
-    }
 
     .saito-sidebar.left,
     .saito-sidebar.right {
         left: 0;
         width: 100% !important;
     }
+
+    .saito-sidebar.right {
+        position: fixed;
+        top: 0;
+        visibility: hidden;
+        margin-top:  var(--saito-header-height);;
+        background-color: var(--saito-white);
+        height: 100vh;
+        z-index: 12;
+    }
+
+    .saito-sidebar.right .caret {
+        visibility: visible;
+        right: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .saito-container::after {
+        display: inline-block !important;
+        background: #4444;
+        height: 7rem;
+        content: " ";
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+    }
+    
 }
 
 @media screen and (max-width: 503px) {
@@ -152,5 +204,18 @@
 
     .saito-sidebar .section>div:nth-child(2) {
         padding-left: 0rem;
+    }
+}
+
+
+
+@media screen and (max-width: 396px) {
+    .saito-sidebar.left .hamburger {
+        left: 1rem;
+        bottom: -1rem;
+    }
+    .saito-sidebar.right .caret {
+        right: 1rem;
+        bottom: -1rem;
     }
 }

@@ -51,10 +51,13 @@ class Archive extends ModTemplate {
     //
     if (req.request === "archive") {
 
+console.log("Received Archive Request");
+
       if (req.data.request === "delete") {
         this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
       }
       if (req.data.request === "save") {
+console.log("SAVING TRANSACTION");
         this.saveTransaction(req.data.tx, req.data.type);
       }
       if (req.data.request === "save_key") {
