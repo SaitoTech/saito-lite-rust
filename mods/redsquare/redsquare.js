@@ -68,6 +68,7 @@ class RedSquare extends ModTemplate {
     if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
       return;
     }
+console.log("ADD NOTIFICATION FOR US!");
     if (this.ntfs.length == 0) {
       this.ntfs.push(tx);
       return;
@@ -418,6 +419,7 @@ class RedSquare extends ModTemplate {
           txs[i].decryptMessage(app);
           let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
           redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
+          redsquare_self.addNotification(redsquare_self.app, redsquare_self, txs[i]);
         }
         redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
       });
@@ -624,6 +626,7 @@ class RedSquare extends ModTemplate {
       //
       // add notification for unviewed
       //
+console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       }
@@ -692,6 +695,7 @@ class RedSquare extends ModTemplate {
       //
       // add notification for unviewed
       //
+console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       }
