@@ -569,6 +569,8 @@ class Solitrio extends GameTemplate {
   handleGameLoop(msg=null) {
     let solitrio_self = this;
 
+    console.log(this.game);
+
     this.saveGame(this.game.id);
     ///////////
     // QUEUE //

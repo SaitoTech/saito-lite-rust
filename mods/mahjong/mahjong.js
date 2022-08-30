@@ -54,14 +54,76 @@ class Mahjong extends GameTemplate {
     
     this.saveGame(this.game.id);
 
+    if (this.browser_active){
+      $('.slot').css('min-height', $('.card').css('min-height'));  
+    }
+
   }
 
-  //
-  // 
-  //
-  displayBoard() {
+  isArrayInArray(arr, item){
+    var item_as_string = JSON.stringify(item);
+  
+    var contains = arr.some(function(ele){
+      return JSON.stringify(ele) === item_as_string;
+    });
+    return contains;
   }
 
+  // displayBoard
+  async displayBoard(timeInterval = 5) {
+    var emptyCells = [
+      [1,1], [1,14],
+      [2,1], [2,2], [2,3], [2,12], [2,13], [2,14],
+      [3,1], [3,2], [3,13], [3,14],
+      [5,1], [5,14],
+      [6,1], [6,2], [6,13], [6,14],
+      [7,1], [7,2], [7,3], [7,12], [7,13], [7,14],
+      [8,1], [8,14]
+    ];
+
+    let index = 0;
+    this.game.board = {}
+    console.log("display board");
+    console.log(Object.values(this.game.deck[0].cards));
+    for (let i = 1; i <= 8; i++){
+      for (let j = 1; j <= 14; j++){
+        if (!this.isArrayInArray(emptyCells, [i,j])) {
+          let position = `row${i}_slot${j}`;
+          this.game.board[position] = Object.values(this.game.deck[0].cards)[index];
+          index++;
+        }
+      }
+    }
+    console.log(this.game);
+    if (this.browser_active == 0) { return; }
+    $(".slot").removeClass("empty");
+    index = 0;
+    try {
+      //Want to add a timed delay for animated effect
+      const timeout = ms => new Promise(res => setTimeout(res, ms));
+      for (let i = 1; i <= 8; i++){
+        for (let j = 1; j <= 14; j++){
+          if (!this.isArrayInArray(emptyCells, [i,j])) {
+            let divname = `row${i}_slot${j}`;
+            await timeout(timeInterval);
+            $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck[0].cards)[index++]));
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      console.log(this.game);
+    }
+  }
+
+  returnCardImageHTML(name) {
+    if (name[0] == 'E') { return ""; }
+    else { return '<img src="/mahjong/img/tiles/white/'+name+'.png" />'; }
+  }
+
+  returnBackgroundImageHtml() {
+    return '<img src="/mahjong/img/tiles/Export/Regular/Front.png" />';
+  }
 
   //
   // runs whenever we load the game into the browser. render()
@@ -89,7 +151,7 @@ class Mahjong extends GameTemplate {
       id : "game-new",
       class : "game-new",
       callback : function(app, game_mod) {
-	alert("New Game");
+      alert("New Game");
       }
     });
     this.menu.addSubMenuOption("game-game", {
@@ -187,9 +249,9 @@ class Mahjong extends GameTemplate {
         //
         if (!this.browser_active) { return 0; }
 
-	console.log("OUR CARDS: ");
-	console.log(JSON.stringify(this.game.deck[0].hand));
-	alert("play handleGameLoop() -- why not replace this with an init function?");
+        console.log("OUR CARDS: ");
+        console.log(JSON.stringify(this.game.deck[0].hand));
+        alert("play handleGameLoop() -- why not replace this with an init function?");
 
         this.updateLog("add notes to log");
         this.updateStatus("display in status message box");
@@ -213,38 +275,53 @@ class Mahjong extends GameTemplate {
 
   returnDeck() {
 
+    let cards = [
+      "Chun",
+      "Hatsu",
+      "Man1",
+      "Man2",
+      "Man3",
+      "Man4",
+      "Man5-Dora",
+      "Man5",
+      "Man6",
+      "Man7",
+      "Man8",
+      "Man9",
+      "Nan",
+      "Pei",
+      "Pin1",
+      "Pin2",
+      "Pin3",
+      "Pin4",
+      "Pin5-Dora",
+      "Pin5",
+      "Pin6",
+      "Pin7",
+      "Pin8",
+      "Pin9",
+      "Shaa",
+      "Sou1",
+      "Sou2",
+      "Sou3",
+      "Sou4",
+      "Sou5-Dora",
+      "Sou5",
+      "Sou6",
+      "Sou7",
+      "Sou8",
+      "Sou9",
+      "Ton"
+    ];
+
     let deck = {};
 
-    deck['001'] = { name : "001" };
-    deck['002'] = { name : "002" };
-    deck['003'] = { name : "003" };
-    deck['004'] = { name : "004" };
-    deck['005'] = { name : "005" };
-    deck['006'] = { name : "006" };
-    deck['007'] = { name : "007" };
-    deck['008'] = { name : "008" };
-    deck['009'] = { name : "009" };
-    deck['010'] = { name : "010" };
-    deck['011'] = { name : "011" };
-    deck['012'] = { name : "012" };
-    deck['013'] = { name : "013" };
-    deck['014'] = { name : "014" };
-    deck['015'] = { name : "015" };
-    deck['016'] = { name : "016" };
-    deck['017'] = { name : "017" };
-    deck['018'] = { name : "018" };
-    deck['019'] = { name : "019" };
-    deck['020'] = { name : "020" };
-    deck['021'] = { name : "021" };
-    deck['022'] = { name : "022" };
-    deck['023'] = { name : "023" };
-    deck['024'] = { name : "024" };
-    deck['025'] = { name : "025" };
-    deck['026'] = { name : "026" };
-    deck['027'] = { name : "027" };
-    deck['028'] = { name : "028" };
-    deck['029'] = { name : "029" };
-    deck['030'] = { name : "030" };
+    for (let i = 0; i<cards.length; i++) {
+      for (let j=0; j<4; j++){
+        let name = cards[i];
+        deck[`${name}_${j}`] = name;
+      }
+    }
 
     return deck;
 
