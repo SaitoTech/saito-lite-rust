@@ -109,7 +109,7 @@ console.log("ADD NOTIFICATION FOR US!");
         }
         //console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
-        this.txmap[tx.transaction.sig] = tweet;
+        this.txmap[tweet.tx.transaction.sig] = tweet;
       }
       //
       // comment-level
@@ -121,12 +121,11 @@ console.log("ADD NOTIFICATION FOR US!");
           //console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
           if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
             // we've added, stop adding
-            this.txmap[tx.transaction.sig] = tweet;
+            this.txmap[tweet.tx.transaction.sig] = tweet;
             break;
           }
         }
       }
-
     }
   }
 
@@ -401,10 +400,10 @@ console.log("ADD NOTIFICATION FOR US!");
         } else {
           let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
-            //console.log("~~~~~~~~~~~~~~~~~~");
-            //console.log("~~~~~~~~~~~~~~~~~~");
-            //console.log("~~~~~~~~~~~~~~~~~~");
-            //console.log("1 TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
+            console.log("~~~~~~~~~~~~~~~~~~");
+            console.log("~~~~~~~~~~~~~~~~~~");
+            console.log("~~~~~~~~~~~~~~~~~~");
+            console.log("1 TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
             mod.renderMainPage(app, redsquare_self);
           });
         }
@@ -412,10 +411,10 @@ console.log("ADD NOTIFICATION FOR US!");
       }
 
       this.app.storage.loadTransactions("RedSquare", 50, (txs) => {
-        //console.log("~~~~~~~~~~~~~~~~~~");
-        //console.log("~~~~~~~~~~~~~~~~~~");
-        //console.log("~~~~~~~~~~~~~~~~~~");
-        //console.log("HOW MANY DID WE LOAD? " + txs.length);
+        console.log("~~~~~~~~~~~~~~~~~~");
+        console.log("~~~~~~~~~~~~~~~~~~");
+        console.log("~~~~~~~~~~~~~~~~~~");
+        console.log("HOW MANY DID WE LOAD? " + txs.length);
         for (let i = 0; i < txs.length; i++) {
           txs[i].decryptMessage(app);
 	  let txmsg = txs[i].returnMessage();
@@ -427,6 +426,7 @@ console.log("ADD NOTIFICATION FOR US!");
           redsquare_self.addNotification(redsquare_self.app, redsquare_self, txs[i]);
         }
         redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
+        console.log("HOW MANY DID WE LOAD 2? " + txs.length);
       });
 
 
