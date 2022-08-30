@@ -516,6 +516,7 @@ class Block {
         }
       }
     } else {
+      console.debug("previous block not found");
       //
       // if there is no previous block, the difficulty is not adjusted. validation
       // rules will cause the block to fail unless it is the first block.
@@ -994,38 +995,28 @@ class Block {
         }
       }
 
-      //
       // also check the transactions for golden ticket and fees
-      //
-      switch (transaction.transaction.type) {
-        case TransactionType.Issuance:
-          has_issuance_transaction = true;
-          issuance_transaction_idx = i;
-          break;
-        case TransactionType.Fee:
-          has_fee_transaction = true;
-          fee_transaction_idx = i;
-          break;
-        case TransactionType.GoldenTicket:
-          has_golden_ticket = true;
-          golden_ticket_idx = i;
-          break;
-        case TransactionType.ATR: {
-          const bytes = Buffer.concat([
-            Buffer.from(this.rebroadcast_hash, "hex"),
-            transaction.serializeForSignature(this.app),
-          ]);
-          this.rebroadcast_hash = this.app.crypto.hash(bytes.toString("hex"));
+      if (transaction.transaction.type === TransactionType.Issuance) {
+        has_issuance_transaction = true;
+        issuance_transaction_idx = i;
+      } else if (transaction.transaction.type === TransactionType.Fee) {
+        has_fee_transaction = true;
+        fee_transaction_idx = i;
+      } else if (transaction.transaction.type === TransactionType.GoldenTicket) {
+        has_golden_ticket = true;
+        golden_ticket_idx = i;
+      } else if (transaction.transaction.type === TransactionType.ATR) {
+        const bytes = Buffer.concat([
+          Buffer.from(this.rebroadcast_hash, "hex"),
+          transaction.serializeForSignature(this.app),
+        ]);
+        this.rebroadcast_hash = this.app.crypto.hash(bytes.toString("hex"));
 
-          for (let i = 0; i < transaction.transaction.from.length; i++) {
-            const input = transaction.transaction.from[i];
-            this.total_rebroadcast_slips += 1;
-            this.total_rebroadcast_nolan += input.returnAmount();
-          }
-          break;
+        for (let i = 0; i < transaction.transaction.from.length; i++) {
+          const input = transaction.transaction.from[i];
+          this.total_rebroadcast_slips += 1;
+          this.total_rebroadcast_nolan += input.returnAmount();
         }
-        default:
-          break;
       }
     }
 
