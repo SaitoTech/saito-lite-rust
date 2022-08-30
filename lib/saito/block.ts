@@ -586,7 +586,7 @@ class Block {
         next_random_number = this.app.crypto.hash(next_random_number);
 
         // add these payouts to consensus values
-        console.debug("adding block payout : ", block_payout);
+        // console.debug("adding block payout : ", block_payout);
         cv.block_payouts.push(block_payout);
 
         // loop backwards until MAX recursion OR golden ticket
@@ -658,7 +658,7 @@ class Block {
                 next_random_number = this.app.crypto.hash(next_random_number);
                 next_random_number = this.app.crypto.hash(next_random_number);
 
-                console.debug("adding block payout : ", block_payout);
+                // console.debug("adding block payout : ", block_payout);
                 cv.block_payouts.push(block_payout);
               }
             }
