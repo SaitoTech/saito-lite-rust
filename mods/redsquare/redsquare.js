@@ -27,6 +27,7 @@ class RedSquare extends ModTemplate {
 
     this.sqlcache_enabled = 1;
 
+    this.txmap = {}; // associative array sigs => txs
     this.tweets = [];
     this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
 
@@ -68,6 +69,7 @@ class RedSquare extends ModTemplate {
     if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
       return;
     }
+console.log("ADD NOTIFICATION FOR US!");
     if (this.ntfs.length == 0) {
       this.ntfs.push(tx);
       return;
@@ -80,15 +82,6 @@ class RedSquare extends ModTemplate {
     }
     this.ntfs.push(tx);
 
-  }
-
-  addTweetFromTransaction(app, mod, tx, tracktweet = false) {
-    let tweet = new Tweet(app, this, tx);
-
-    if (tracktweet) {
-      this.trackTweet(app, mod, tweet)
-    }
-    this.addTweet(app, this, tweet);
   }
 
   addTweet(app, mod, tweet) {
@@ -116,6 +109,7 @@ class RedSquare extends ModTemplate {
         }
         //console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
+        this.txmap[tx.transaction.sig] = tweet;
       }
       //
       // comment-level
@@ -127,12 +121,71 @@ class RedSquare extends ModTemplate {
           //console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
           if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
             // we've added, stop adding
+            this.txmap[tx.transaction.sig] = tweet;
             break;
           }
         }
       }
 
     }
+  }
+
+  addTweetAndBroadcastRenderRequest(app, mod, tweet) {
+
+    //
+    // post-level
+    //
+    if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
+
+      let new_tweet = 1;
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+          new_tweet = 0;
+        }
+      }
+      if (new_tweet == 1) {
+        let insertion_index = 0;
+        for (let i = 0; i < this.tweets.length; i++) {
+          if (this.tweets[i].updated_at > tweet.updated_at) {
+            insertion_index++;
+            break;
+          } else {
+            insertion_index++;
+          }
+        }
+        //console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
+        this.tweets.splice(insertion_index, 0, tweet);
+        this.txmap[tweet.tx.transaction.sig] = tweet;
+        mod.app.connection.emit('tweet-render-request', tweet);
+
+      }
+      //
+      // comment-level
+      //
+    } else {
+
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
+          //console.log("ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
+          if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
+            // we've added, stop adding
+            //console.log("somehow this triggers...");
+            mod.app.connection.emit('tweet-render-request', tweet);
+            break;
+          }
+        }
+      }
+
+    }
+  }
+  addTweetFromTransaction(app, mod, tx, tracktweet = false) {
+    let tweet = new Tweet(app, this, tx);
+
+    if (tracktweet) {
+      this.trackTweet(app, mod, tweet)
+    }
+    this.addTweet(app, this, tweet);
+    this.txmap[tx.transaction.sig] = tweet;
   }
 
 
@@ -168,57 +221,6 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  addTweetAndBroadcastRenderRequest(app, mod, tweet) {
-
-    //
-    // post-level
-    //
-    if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
-
-      let new_tweet = 1;
-      for (let i = 0; i < this.tweets.length; i++) {
-        if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-          new_tweet = 0;
-        }
-      }
-      if (new_tweet == 1) {
-        let insertion_index = 0;
-        for (let i = 0; i < this.tweets.length; i++) {
-          if (this.tweets[i].updated_at > tweet.updated_at) {
-            insertion_index++;
-            break;
-          } else {
-            insertion_index++;
-          }
-        }
-        //console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
-        this.tweets.splice(insertion_index, 0, tweet);
-        mod.app.connection.emit('tweet-render-request', tweet);
-
-      }
-      //
-      // comment-level
-      //
-    } else {
-
-      for (let i = 0; i < this.tweets.length; i++) {
-        if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
-          //console.log("ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
-          if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
-            // we've added, stop adding
-            //console.log("somehow this triggers...");
-            mod.app.connection.emit('tweet-render-request', tweet);
-            break;
-          }
-        }
-      }
-
-    }
-  }
-
-  // setViewing(viewing) {
-  //   this.viewing = viewing
-  // }
 
   renderMainPage(app, mod) {
     this.viewing = "main";
@@ -418,6 +420,8 @@ class RedSquare extends ModTemplate {
           txs[i].decryptMessage(app);
           let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
           redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
+          redsquare_self.txmap[tweet.tx.transaction.sig] = tweet;
+          redsquare_self.addNotification(redsquare_self.app, redsquare_self, txs[i]);
         }
         redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
       });
@@ -624,6 +628,7 @@ class RedSquare extends ModTemplate {
       //
       // add notification for unviewed
       //
+console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       }
@@ -692,6 +697,7 @@ class RedSquare extends ModTemplate {
       //
       // add notification for unviewed
       //
+console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       }

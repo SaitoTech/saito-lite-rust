@@ -66,7 +66,9 @@ module.exports = (app, mod) => {
 	if (keys[i].aes_secret !== "") {
 	  security = "secure";
 	}
-        html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline, security);
+	if (keys.watched === 1 || keys.aes_publickey != "") {
+          html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline, security);
+	}
       }
 
       html += `
