@@ -5,21 +5,28 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 		super(app, mod);
 		this.boardWidth = 2730;
     this.boardHeight = 1536;
+
+    this.epidemic = { img: "alt/epidemic.png" };
+    this.actionKey = "alt/ActionKey.png";
 	}
 
   render(){
 
-	$("#gameboard").css({
-	  'background-image': 'url("/pandemic/img/alt/pandemic_map2.jpg")',
-	  'background-size': 'cover',
-	  width: this.boardWidth+'px',
-	  height: this.boardHeight+'px',
-	  "border-radius": "500px", 
-	});
+    if (!document.getElementById("gameboard")){
+      return;
+    }
 
-	if (!document.getElementById("myCanvas")){
-		this.app.browser.addElementToElement(`<canvas id="myCanvas" width="${this.boardWidth}" height="${this.boardHeight}"></canvas>`, document.getElementById("gameboard"));
-	}
+  	$("#gameboard").css({
+  	  'background-image': 'url("/pandemic/img/alt/pandemic_map2.jpg")',
+  	  'background-size': 'cover',
+  	  width: this.boardWidth+'px',
+  	  height: this.boardHeight+'px',
+  	  "border-radius": "500px", 
+  	});
+
+  	if (!document.getElementById("myCanvas")){
+  		this.app.browser.addElementToElement(`<canvas id="myCanvas" width="${this.boardWidth}" height="${this.boardHeight}"></canvas>`, document.getElementById("gameboard"));
+  	}
 
   }
 
@@ -222,7 +229,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "blue",
     };
     cities["atlanta"] = {
-      top: 525,
+      top: 515,
       left: 550,
       neighbours: ["chicago", "miami", "washington"],
       name: "Atlanta",
@@ -294,8 +301,8 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "yellow",
     };
     cities["saopaulo"] = {
-      top: 1105,
-      left: 985,
+      top: 1100,
+      left: 980,
       neighbours: ["bogota", "buenosaires", "madrid", "lagos"],
       name: "Sao Paulo",
       x: 892,
@@ -342,7 +349,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
     cities["london"] = {
       top: 315,
-      left: 1130,
+      left: 1125,
       neighbours: ["newyork", "madrid", "paris"],
       name: "London",
       virus: "blue",
@@ -351,7 +358,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
     cities["madrid"] = {
       top: 475,
-      left: 1125,
+      left: 1105,
       neighbours: ["newyork", "paris", "london", "algiers", "saopaulo"],
       name: "Madrid",
       virus: "blue",
@@ -440,7 +447,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
     cities["baghdad"] = {
       top: 550,
-      left: 1585,
+      left: 1595,
       neighbours: ["cairo", "riyadh", "karachi", "tehran", "istanbul"],
       name: "Baghdad",
       virus: "black",
@@ -458,7 +465,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
     cities["tehran"] = {
       top: 450,
-      left: 1700,
+      left: 1720,
       neighbours: ["moscow", "karachi", "baghdad", "delhi"],
       name: "Tehran",
       virus: "black",
@@ -582,8 +589,8 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       y: 680, 
     };
     cities["taipei"] = {
-      top: 585,
-      left: 2100,
+      top: 575,
+      left: 2125,
       neighbours: ["shanghai", "hongkong", "beijing"],
       name: "Chongqing",
       virus: "red",
@@ -591,7 +598,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       y: 625, 
     };
     cities["shanghai"] = {
-      top: 600,
+      top: 590,
       left: 2275,
       neighbours: ["hongkong", "taipei", "seoul", "tokyo", "osaka"],
       name: "Shanghai",
@@ -600,8 +607,8 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       y: 615, 
     };
     cities["beijing"] = {
-      top: 425,
-      left: 2070,
+      top: 430,
+      left: 2095,
       neighbours: ["seoul", "taipei"],
       name: "Beijing",
       virus: "red",
@@ -839,24 +846,24 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     //and 5 event cards
 
     deck["event1"] = {
-      img: "Special%20Event%20-%20Airlift.jpg",
-      name: "Airlift",
+      img: "alt/cards/event1.png",
+      name: "Priority Transport",
     };
     deck["event2"] = {
-      img: "Special%20Event%20-%20Resilient%20Population.jpg",
-      name: "Resilient Population",
+      img: "alt/cards/event2.png",
+      name: "Herd Immunity",
     };
     deck["event3"] = {
-      img: "Special%20Event%20-%20One%20Quiet%20Night.jpg",
-      name: "One Quiet Night",
+      img: "alt/cards/event3.png",
+      name: "Hot Vax Summer",
     };
     deck["event4"] = {
-      img: "Special%20Event%20-%20Forecast.jpg",
-      name: "Forecast",
+      img: "alt/cards/event4.png",
+      name: "Modelling",
     };
     deck["event5"] = {
-      img: "Special%20Event%20-%20Government%20Grant.jpg",
-      name: "Government Grant",
+      img: "alt/cards/event5.png",
+      name: "Research Funding",
     };
 
     return deck;
@@ -894,15 +901,24 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       let threat_level = "safe";
       if (outbreaks>2) threat_level = "caution";
       if (outbreaks>6) threat_level = "danger";
-      this.mod.scoreboard.append(`<i class="fas fa-skull"></i><div class="virus-count ${threat_level}">: ${8-outbreaks}</div>`);
+      let html = `<div class="scoreboard_virus_group tip">
+                    <i class="fas fa-skull"></i>
+                    <div class="virus-count ${threat_level}">: ${8-outbreaks}</div>
+                    <div class="tiptext">The game will end after 8 outbreaks</div>
+                  </div>`;
+      this.mod.scoreboard.append(html);
   }
 
   displayDecks() {
       let threat_level = "safe";
       if (this.mod.game.deck[1].crypt.length < 20) threat_level = "caution";
       if (this.mod.game.deck[1].crypt.length < 5) threat_level = "danger";
-  
-      this.mod.scoreboard.append(`<i class="fas fa-layer-group"></i><div class="virus-count ${threat_level}">:${this.mod.game.deck[1].crypt.length}</div>`);
+      let html = `<div class="scoreboard_virus_group tip">
+                    <i class="fas fa-layer-group"></i>
+                    <div class="virus-count ${threat_level}">: ${this.mod.game.deck[1].crypt.length}</div>
+                    <div class="tiptext">The game will end after all the player cards have been drawn</div>
+                  </div>`;
+      this.mod.scoreboard.append(html);
   }
 
   displayInfectionRate(infection_rate){

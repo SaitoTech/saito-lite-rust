@@ -22,6 +22,8 @@ class PandemicOriginalSkin {
   	this.cities = this.returnCities();
     this.cards = this.returnPlayerCards();
 
+    this.epidemic = { img: "Epidemic.jpg" };
+    this.actionKey = "ActionKey.jpg";
   }
 
   render(){

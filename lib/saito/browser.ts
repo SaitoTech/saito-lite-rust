@@ -580,7 +580,8 @@ class Browser {
       elem.appendChild(el);
       el.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582343: error in addElementToElement");
+      console.log("ERROR 582343: error in addElementToElement. Does " + elem + " exist?");
+      console.log(html);
     }
   }
 
