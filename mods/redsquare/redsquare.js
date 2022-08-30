@@ -418,9 +418,12 @@ console.log("ADD NOTIFICATION FOR US!");
         //console.log("HOW MANY DID WE LOAD? " + txs.length);
         for (let i = 0; i < txs.length; i++) {
           txs[i].decryptMessage(app);
-          let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
-          redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
-          redsquare_self.txmap[tweet.tx.transaction.sig] = tweet;
+	  let txmsg = txs[i].returnMessage();
+	  if (txmsg.request == "create tweet") {
+            let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
+            redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
+            redsquare_self.txmap[tweet.tx.transaction.sig] = tweet;
+          }
           redsquare_self.addNotification(redsquare_self.app, redsquare_self, txs[i]);
         }
         redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
