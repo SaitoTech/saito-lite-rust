@@ -12,14 +12,25 @@ class RedSquareNotification {
     render(app, mod, selector = "") {
 
       let html = '';
-      let x = Math.random();
-      if (x < 0.4) {
+      let txmsg = this.tx.returnMessage();
+ 
+      if (txmsg.request == "like tweet") {
 	html = LikeNotificationTemplate(app, mod, this.tx);
-      } else if (x < 0.7) {
-	html = ReplyNotificationTemplate(app, mod, this.tx);
-      } else {
-	html = RetweetNotificationTemplate(app, mod, this.tx);
-      } 
+      }
+      else if (txmsg.request == "create tweet") {
+        //
+	// retweet
+	//
+	if (txmsg.data.retweet_tx) {
+	  let retweet_tx = new saito.default.transaction(JSON.parse(txmsg.data.retweet_tx));
+	  html = RetweetNotificationTemplate(app, mod, retweet_tx);
+	//
+	// or reply
+	//
+	} else {
+	  html = ReplyNotificationTemplate(app, mod, this.tx);
+        }
+      }
       app.browser.addElementToSelector(html, ".redsquare-list");
 
     }
