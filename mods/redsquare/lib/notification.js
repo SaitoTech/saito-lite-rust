@@ -13,12 +13,13 @@ class RedSquareNotification {
 
       let html = '';
       let x = Math.random();
-      if (x < 0.4) {
-	html = LikeNotificationTemplate(app, mod, this.tx);
-      } else if (x < 0.7) {
-	html = ReplyNotificationTemplate(app, mod, this.tx);
+
+      if (x > 0  && x < 0.4) {
+	       html = LikeNotificationTemplate(app, mod, this.tx);
+      } else if (x > 0.4  && x < 0.7) {
+	       html = ReplyNotificationTemplate(app, mod, this.tx);
       } else {
-	html = RetweetNotificationTemplate(app, mod, this.tx);
+	     html = RetweetNotificationTemplate(app, mod, this.tx);
       } 
       app.browser.addElementToSelector(html, ".redsquare-list");
 

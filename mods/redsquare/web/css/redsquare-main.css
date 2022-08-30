@@ -530,3 +530,28 @@ span.redsquare-home-red-square+span {
 .link-preview .redsquare-item-contents {
   display: block;
 }
+
+.notification-item .tweet {
+  max-height: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.7rem;
+  line-height: 2rem;
+  white-space: pre-wrap;
+  color: #7a7676;
+}
+
+.notification-item > .redsquare-item-contents {
+  display: block;
+}
+
+.fa-notification {
+  color: var(--saito-primary);
+  margin-right: 0.7rem;
+}
+
+.notification-type {
+  color: #111;
+}
