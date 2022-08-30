@@ -79,12 +79,6 @@ class RedSquareAppspaceHome {
 
       app.browser.addIdentifiersToDom();
     }
-
-    // document.getElementById("redsquare-new-tweets-banner").onclick = (e) => {
-    //   mod.renderMainPage(app, mod);
-    //   document.getElementById("redsquare-new-tweets-banner").style.display = 'none';
-    // }
-
   }
 
 }

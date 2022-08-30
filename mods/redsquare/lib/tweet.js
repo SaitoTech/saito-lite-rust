@@ -391,6 +391,8 @@ class RedSquareTweet {
         let winHeight = window.innerHeight;
         let winWidth = window.innerWidth;
 
+console.log("test A");
+
         if (aspRatio > 1) {
           oImg.style.width = '95vw';
           oImg.style.height = 'auto';
@@ -406,6 +408,9 @@ class RedSquareTweet {
             oImg.height = (oImg.height * 0.75) + 'px';
           }
         }
+
+console.log("test B");
+
       }
 
       if (e.target.classList.contains('tweet-link')) {

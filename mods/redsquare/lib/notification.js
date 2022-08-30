@@ -5,11 +5,13 @@ const RetweetNotificationTemplate = require("./retweet-notification.template");
 
 class RedSquareNotification {
 
-    constructor(app, mod, tx) {
+    constructor(app, mod, tx=null) {
       this.tx = tx;
     }
 
     render(app, mod, selector = "") {
+
+      if (this.tx == null) { return; }
 
       let html = '';
       let txmsg = this.tx.returnMessage();
