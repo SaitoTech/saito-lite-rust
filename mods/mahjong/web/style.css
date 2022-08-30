@@ -105,11 +105,47 @@ position: relative;
 
 #row4_slot1, #row4_slot14 {
   position: relative;
-  top: 50%;
+  top: calc(50%+2.5px);
+  box-shadow: none !important;
+  -moz-box-shadow:none !important;
+  -webkit-box-shadow: none !important;
+  -o-box-shadow: none !important;
+}
+
+div[id^="row"] {
+  box-shadow: rgba(0, 0, 0, 0.4) -12px -10px 8px, rgba(0, 0, 0, 0.35) 8px -8px, rgba(0, 0, 0, 0.25) 10px 10px, rgba(0, 0, 0, 0.15) 12px 12px, rgba(0, 0, 0, 0.1) 14px 14px, rgba(0, 0, 0, 0.05) 16px 16px;
+  -moz-box-shadow:rgba(0, 0, 0, 0.4) -12px -10px 8px, rgba(0, 0, 0, 0.35) 8px -8px, rgba(0, 0, 0, 0.25) 10px 10px, rgba(0, 0, 0, 0.15) 12px 12px, rgba(0, 0, 0, 0.1) 14px 14px, rgba(0, 0, 0, 0.05) 16px 16px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.4) -12px -10px 8px, rgba(0, 0, 0, 0.35) 8px -8px, rgba(0, 0, 0, 0.25) 10px 10px, rgba(0, 0, 0, 0.15) 12px 12px, rgba(0, 0, 0, 0.1) 14px 14px, rgba(0, 0, 0, 0.05) 16px 16px;
+  -o-box-shadow:rgba(0, 0, 0, 0.4) -12px -10px 8px, rgba(0, 0, 0, 0.35) 8px -8px, rgba(0, 0, 0, 0.25) 10px 10px, rgba(0, 0, 0, 0.15) 12px 12px, rgba(0, 0, 0, 0.1) 14px 14px, rgba(0, 0, 0, 0.05) 16px 16px;
+  border-radius: 7px;
+}
+
+div[id^="row9"], div[id^="row10"], div[id^="row11"], div[id^="row12"], div[id^="row13"], div[id^="row14"] {
+  z-index: 2;
+  position: relative;
+  top: calc(-700% - 35px);
+}
+
+div[id^="row15"], div[id^="row16"], div[id^="row17"], div[id^="row18"] {
+  z-index: 4;
+  position: relative;
+  top: calc(-1200% - 60px);
+}
+
+div[id^="row19"], div[id^="row20"] {
+  z-index: 6;
+  position: relative;
+  top: calc(-1500% - 75px);
+}
+
+div[id^="row21"] {
+  z-index: 8;
+  position: relative;
+  top: calc(-1650% - 85px);
 }
 
 .slot {
- width:100%;
+  width:100%;
 }
 
 .slot img {
@@ -165,3 +201,12 @@ position: relative;
 }
 
 
+
+
+/* black shadow - remove for empty cells */
+
+/* box-shadow: rgba(0, 0, 0, 0.4) 5px 5px, 
+rgba(0, 0, 0, 0.3) 10px 10px, 
+rgba(0, 0, 0, 0.2) 15px 15px, 
+rgba(0, 0, 0, 0.1) 20px 20px, 
+rgba(0, 0, 0, 0.05) 25px 25px; */

@@ -70,7 +70,7 @@ class Mahjong extends GameTemplate {
   }
 
   // displayBoard
-  async displayBoard(timeInterval = 5) {
+  async displayBoard(timeInterval = 1) {
     var emptyCells = [
       [1,1], [1,14],
       [2,1], [2,2], [2,3], [2,12], [2,13], [2,14],
@@ -78,14 +78,31 @@ class Mahjong extends GameTemplate {
       [5,1], [5,14],
       [6,1], [6,2], [6,13], [6,14],
       [7,1], [7,2], [7,3], [7,12], [7,13], [7,14],
-      [8,1], [8,14]
+      [8,1], [8,14],
+      // 2nd layer
+      [9,1], [9,2], [9,3], [9,4], [9,11], [9,12], [9,13], [9,14],
+      [10,1], [10,2], [10,3], [10,4], [10,11], [10,12], [10,13], [10,14],
+      [11,1], [11,2], [11,3], [11,4], [11,11], [11,12], [11,13], [11,14],
+      [12,1], [12,2], [12,3], [12,4], [12,11], [12,12], [12,13], [12,14],
+      [13,1], [13,2], [13,3], [13,4], [13,11], [13,12], [13,13], [13,14],
+      [14,1], [14,2], [14,3], [14,4], [14,11], [14,12], [14,13], [14,14],
+      // 3rd layer
+      [15,1], [15,2], [15,3], [15,4], [15,5], [15,10], [15,11], [15,12], [15,13], [15,14],
+      [16,1], [16,2], [16,3], [16,4], [16,5], [16,10], [16,11], [16,12], [16,13], [16,14],
+      [17,1], [17,2], [17,3], [17,4], [17,5], [17,10], [17,11], [17,12], [17,13], [17,14],
+      [18,1], [18,2], [18,3], [18,4], [18,5], [18,10], [18,11], [18,12], [18,13], [18,14],
+      // 4th layer
+      [19,1], [19,2], [19,3], [19,4], [19,5], [19,6], [19,9], [19,10], [19,11], [19,12], [19,13], [19,14],
+      [20,1], [20,2], [20,3], [20,4], [20,5], [20,6], [20,9], [20,10], [20,11], [20,12], [20,13], [20,14],
+      //5th layer (top)
+      [21,1], [21,2], [21,3], [21,4], [21,5], [21,6], [21,9], [21,10], [21,11], [21,12], [21,13], [21,14],
     ];
 
     let index = 0;
     this.game.board = {}
     console.log("display board");
     console.log(Object.values(this.game.deck[0].cards));
-    for (let i = 1; i <= 8; i++){
+    for (let i = 1; i <= 21; i++){
       for (let j = 1; j <= 14; j++){
         if (!this.isArrayInArray(emptyCells, [i,j])) {
           let position = `row${i}_slot${j}`;
@@ -101,12 +118,17 @@ class Mahjong extends GameTemplate {
     try {
       //Want to add a timed delay for animated effect
       const timeout = ms => new Promise(res => setTimeout(res, ms));
-      for (let i = 1; i <= 8; i++){
+      for (let i = 1; i <= 21; i++){
         for (let j = 1; j <= 14; j++){
+          var divname = `row${i}_slot${j}`;
           if (!this.isArrayInArray(emptyCells, [i,j])) {
-            let divname = `row${i}_slot${j}`;
             await timeout(timeInterval);
             $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck[0].cards)[index++]));
+          } else {
+            $('#' + divname).css('box-shadow','none');
+            $('#' + divname).css('-moz-box-shadow','none');
+            $('#' + divname).css('-webkit-box-shadow','none');
+            $('#' + divname).css('-o-box-shadow','none');
           }
         }
       }
