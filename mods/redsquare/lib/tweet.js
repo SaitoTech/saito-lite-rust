@@ -19,9 +19,10 @@ class RedSquareTweet {
     this.created_at = tx.transaction.ts;
     this.updated_at = tx.transaction.ts;
 
+    this.parent_tweet = null;
     this.parent_id = "";
     this.thread_id = "";
-    this.critical_child_post = null;
+    this.critical_child = null;
     this.text = null;
     this.link = null;
     this.link_properties = null;
@@ -160,7 +161,6 @@ class RedSquareTweet {
       } else {
         app.browser.prependElementToSelector(html, selector)
       }
-
     }
 
     if (this.critical_child != null && this.flagged != 1) {
@@ -175,7 +175,6 @@ class RedSquareTweet {
         } else {
           app.browser.prependElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
         }
-
         this.critical_child.render(app, mod, selector);
         document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
         document.querySelector(selector).querySelector('.redsquare-ellipsis').nextElementSibling.classList.add("after-ellipsis");
@@ -213,6 +212,76 @@ class RedSquareTweet {
     this.attachEvents(app, mod);
   }
 
+  renderWithParents(app, mod, selector = "", num = -1) {
+
+console.log("RENDER WITH PARENT: " + this.text);
+
+    let html = TweetTemplate(app, mod, this);
+
+    //
+    // render endlessly upwards
+    //
+    if (num == -1) {
+      if (this.parent_tweet == null && this.parent_id != this.tx.transaction.sig) {
+console.log("adding parental reference 1");
+	let x = mod.returnTweet(app, mod, this.parent_id);
+        if (x != null) { this.parent_tweet = x; }
+      }
+      if (this.parent_tweet != null) {
+        this.parent_tweet.critical_child = this;
+        this.parent_tweet.renderWithParents(app, mod, selector, num);
+        return;
+      }
+    } else {
+      if (num > 0) {
+        if (this.parent_tweet == null && this.parent_id != this.tx.transaction.sig) {
+console.log("adding parental reference 2");
+	  let x = mod.returnTweet(app, mod, this.parent_id);
+          if (x != null) { this.parent_tweet = x; }
+        }
+        if (this.parent_tweet != null) {
+          this.parent_tweet.critical_child = this;
+          this.parent_tweet.renderWithParents(app, mod, selector, num-1);
+          return;
+        }
+      }
+    }
+
+    let tweet_id = "tweet-box-" + this.tx.transaction.sig;
+    let tweet_div = "#" + tweet_id;
+    let obj = document.getElementById(tweet_div);
+    let my_selector = ".redsquare-item-children-" + this.tx.transaction.sig;
+
+    if (obj) {
+      app.browser.replaceElementById(html, tweet_id);
+    } else {
+      app.browser.addElementToSelector(html, selector);
+    }
+
+    //
+    // descend back
+    //
+    if (this.critical_child != null) {
+      if (obj) {
+        obj.classList.add("before-ellipsis");
+        obj.nextSibling.classList.add("after-ellipsis");
+        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+        this.critical_child.render(app, mod, tweet_div);
+      } else {
+console.log("CRIT CHILD: " + this.critical_child.text);
+        app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+        this.critical_child.render(app, mod, my_selector);
+        try {
+          document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
+          document.querySelector(selector).querySelector('.redsquare-ellipsis').nextElementSibling.classList.add("after-ellipsis");
+        } catch (err) {
+	}
+      }
+    }
+    this.attachEvents(app, mod);
+    app.browser.addModalIdentifierAddPublickey(app, mod);
+  }
+
   attachEvents(app, mod) {
 
     tweet_self = this;
@@ -224,6 +293,9 @@ class RedSquareTweet {
     document.querySelector(sel).onclick = (e) => {
       //e.preventDefault();
       //e.stopImmediatePropagation();
+
+console.log("TWWET IS: " + tweet_self.children.length);
+
       this.saito_loader.render(app, mod, 'redsquare-home-header', false);
       let el = e.currentTarget;
       let tweet_sig_id = el.getAttribute("data-id");
@@ -231,16 +303,27 @@ class RedSquareTweet {
       let new_title = "<i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE";
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE</div>`, "saito-page-header-title");
       document.querySelector(".saito-back-button").onclick = (e) => {
-
         app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
         mod.renderMainPage(app, mod);
         let redsquareUrl = window.location.origin + window.location.pathname;
         window.history.pushState({}, document.title, redsquareUrl);
       }
 
-      // // mod.fetchTweetsFromServer(app, mod, tweet_sig_id, function(app, mod) {mod.renderWithChildren(app, mod,)})
       let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
-      mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, tweet_sig_id); });
+      mod.fetchTweets(app, mod, sql, function (app, mod) { 
+        let t = mod.returnTweet(app, mod, tweet_sig_id);
+	if (t == null) { 
+	  console.log("TWEET IS NULL OR NOT STORED");
+	  return; 
+	}
+console.log("MOD TEXT IS: " + t.text);
+console.log("MOD TEXT IS: " + t.children.length);
+	if (t.children.length > 0) {
+          mod.renderWithChildren(app, mod, tweet_sig_id); 
+        } else {
+          mod.renderWithParents(app, mod, tweet_sig_id, 1); 
+	}
+      });
 
       if (!window.location.href.includes('type=tweet')) {
         let tweetUrl = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;
@@ -437,6 +520,7 @@ console.log("test B");
           this.critical_child = this.unknown_children[i];
           this.updated_at = this.critical_child;
         }
+	this.unknown_children[i].parent_tweet = this;
         tweet.children.push(this.unknown_children[i]);
         this.unknown_children.splice(i, 0);
         console.log("adding to unknown children...");
@@ -460,6 +544,7 @@ console.log("test B");
         if (this.isCriticalChild(app, mod, tweet)) {
           this.critical_child = tweet;
         }
+	tweet.parent_tweet = this;
         this.children.push(tweet);
         console.log("return with adding 2");
         return 1;
@@ -540,11 +625,8 @@ console.log("test B");
       if (fetch_open_graph == 1) {
         let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
         if (res != '') {
-
           this.link_properties = res;
-
         }
-
       }
 
       return this;

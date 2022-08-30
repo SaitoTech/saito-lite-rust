@@ -84,6 +84,18 @@ console.log("ADD NOTIFICATION FOR US!");
 
   }
 
+
+  returnTweet(app, mod, sig) {
+
+    for (let i = 0; i < this.tweets.length; i++) {
+      let r = this.tweets[i].returnTweet(app, mod, sig);
+      if (r != null) { return r; }
+    }
+
+    return null;
+
+  }
+
   addTweet(app, mod, tweet) {
 
     //
@@ -109,19 +121,18 @@ console.log("ADD NOTIFICATION FOR US!");
         }
         //console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
-        this.txmap[tweet.tx.transaction.sig] = tweet;
+        this.txmap[tweet.tx.transaction.sig] = 1;
       }
       //
       // comment-level
       //
     } else {
-
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
           //console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
           if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
             // we've added, stop adding
-            this.txmap[tweet.tx.transaction.sig] = tweet;
+            this.txmap[tweet.tx.transaction.sig] = 1;
             break;
           }
         }
@@ -154,7 +165,7 @@ console.log("ADD NOTIFICATION FOR US!");
         }
         //console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
-        this.txmap[tweet.tx.transaction.sig] = tweet;
+        this.txmap[tweet.tx.transaction.sig] = 1;
         mod.app.connection.emit('tweet-render-request', tweet);
 
       }
@@ -183,8 +194,9 @@ console.log("ADD NOTIFICATION FOR US!");
     if (tracktweet) {
       this.trackTweet(app, mod, tweet)
     }
+
     this.addTweet(app, this, tweet);
-    this.txmap[tx.transaction.sig] = tweet;
+    this.txmap[tx.transaction.sig] = 1;
   }
 
 
@@ -259,6 +271,27 @@ console.log("ADD NOTIFICATION FOR US!");
   }
 
 
+
+  //
+  // renders tweet with parents
+  //
+  renderWithParents(app, mod, sig, num = -1) {
+    this.viewing = sig;
+    document.querySelector(".redsquare-list").innerHTML = "";
+    let tweet_shown = 0;
+    let t = this.returnTweet(app, mod, sig);
+console.log("render with parent in mod");
+console.log("children: " + t.children.length);
+    if (t != null) {
+      t.renderWithParents(app, mod, ".redsquare-list", num);
+    } else {
+      t.renderWithParents(app, mod, ".redsquare-list", 0);
+console.log("cannot render...");
+    }
+  }
+
+
+
   //
   // renders children
   //
@@ -293,9 +326,8 @@ console.log("ADD NOTIFICATION FOR US!");
       mod.renderWithChildren(app, mod, sig);
     });
 
-
-
   }
+
 
 
   //
@@ -418,10 +450,11 @@ console.log("ADD NOTIFICATION FOR US!");
         for (let i = 0; i < txs.length; i++) {
           txs[i].decryptMessage(app);
 	  let txmsg = txs[i].returnMessage();
+console.log("LOAD: " + txmsg.data.text);
 	  if (txmsg.request == "create tweet") {
             let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
             redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
-            redsquare_self.txmap[tweet.tx.transaction.sig] = tweet;
+            redsquare_self.txmap[tweet.tx.transaction.sig] = 1;
           }
           redsquare_self.addNotification(redsquare_self.app, redsquare_self, txs[i]);
         }
@@ -491,6 +524,8 @@ console.log("ADD NOTIFICATION FOR US!");
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
               } catch (err) { }
+	  let txmsg = tx.returnMessage();
+console.log("add " + txmsg.data.text + " w/ replies " + tx.optional.num_replies);
               this.addTweetFromTransaction(app, mod, tx);
             }
           });
