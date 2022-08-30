@@ -114,6 +114,8 @@ span.redsquare-home-red-square+span {
 .saito-main.appspace {
   min-width: 50rem;
   height: 100vh;
+  position: relative;
+  z-index: -1;
 }
 
 .redsquare-appspace-contacts-list {
