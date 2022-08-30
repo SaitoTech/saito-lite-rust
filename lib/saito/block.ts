@@ -1462,9 +1462,30 @@ class Block {
       return true;
     }
 
-    //
+    if (this.block_type === BlockType.Ghost) {
+      console.log("block validates as true since it is a ghost block");
+      return true;
+    }
+
+    // invalid if no transactions
+    if (this.transactions.length === 0) {
+      console.error("ERROR 582034: no transactions in blocks, thus invalid");
+      return false;
+    }
+
+    // verify creator signed
+    if (
+      !this.app.crypto.verifyHash(
+        this.serializeForSignature(),
+        this.block.signature,
+        this.block.creator
+      )
+    ) {
+      console.error("ERROR 582039: block is not signed by creator or signature does not validate");
+      return false;
+    }
+
     // if this is our first / genesis block, it is valid
-    //
     if (
       this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash ||
       this.app.blockchain.blockchain.genesis_block_hash === ""
@@ -1475,34 +1496,6 @@ class Block {
       );
       console.log(`approving ${this.returnHash()} as genesis block`);
       return true;
-    }
-
-    if (this.block_type === BlockType.Ghost) {
-      console.log("block validates as true since it is a ghost block");
-      return true;
-    }
-
-    //console.log("block::validate");
-    //
-    // invalid if no transactions
-    //
-    if (this.transactions.length === 0) {
-      console.error("ERROR 582034: no transactions in blocks, thus invalid");
-      return false;
-    }
-
-    //
-    // verify creator signed
-    //
-    if (
-      !this.app.crypto.verifyHash(
-        this.serializeForSignature(),
-        this.block.signature,
-        this.block.creator
-      )
-    ) {
-      console.error("ERROR 582039: block is not signed by creator or signature does not validate");
-      return false;
     }
 
     // generate consensus values
@@ -1518,9 +1511,7 @@ class Block {
       return false;
     }
 
-    //
     // average atr income and average atr income variance
-    //
     if (cv.avg_atr_income !== this.block.avg_atr_income) {
       console.error("ERROR 712923: block is mis-reporting its average atr income");
       return false;
@@ -1530,17 +1521,13 @@ class Block {
       return false;
     }
 
-    //
     // only block #1 can have an issuance transaction
-    //
     if (cv.it_num > 0 && this.block.id > BigInt(1)) {
       console.error("ERROR 712923: blockchain contains issuance after block 1 in chain");
       return false;
     }
 
-    //
     // checks against previous block
-    //
     const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
 
     if (previous_block) {
