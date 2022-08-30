@@ -391,25 +391,25 @@ class RedSquareTweet {
         let winHeight = window.innerHeight;
         let winWidth = window.innerWidth;
 
-console.log("test A");
+        console.log("test A");
 
-        if (aspRatio > 1) {
-          oImg.style.width = '95vw';
-          oImg.style.height = 'auto';
+        // if (aspRatio > 1) {
+        //   oImg.style.width = '80vw';
+        //   oImg.style.height = 'auto';
 
-          if (oImg.height > winHeight) {
-            oImg.style.width = (oImg.width * 0.75) + 'px';
-          }
-        } else {
-          oImg.style.height = '95vh';
-          oImg.style.width = 'auto';
+        //   if (oImg.height > winHeight) {
+        //     oImg.style.width = (oImg.width * 0.75) + 'px';
+        //   }
+        // } else {
+        //   oImg.style.height = '80vh';
+        //   oImg.style.width = 'auto';
 
-          if (oImg.width > winWidth) {
-            oImg.height = (oImg.height * 0.75) + 'px';
-          }
-        }
+        //   if (oImg.width > winWidth) {
+        //     oImg.height = (oImg.height * 0.75) + 'px';
+        //   }
+        // }
 
-console.log("test B");
+        console.log("test B");
 
       }
 

@@ -35,6 +35,18 @@ class Post {
       },
       false);
 
+    document.getElementById('post-tweet-image-select-button').onclick = (e) => {
+      console.log(e);
+    }
+
+    document.getElementById('post-tweet-select-image').onclick = (e) => {
+      console.log('clicking button')
+      e.preventDefault();
+      const imageButton = document.getElementById('post-tweet-image-select-button');
+      imageButton.click()
+    }
+
+
     document.getElementById("post-tweet-button").onclick = (e) => {
 
       document.getElementById("post-tweet-loader").style.display = 'block';

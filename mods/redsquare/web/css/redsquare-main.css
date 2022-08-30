@@ -428,6 +428,31 @@ span.redsquare-home-red-square+span {
   margin-bottom: 1rem;
 }
 
+.post-tweet-image-upload {
+  border: 1px solid var(--saito-border);
+  border-radius: .5rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: .5rem 0;
+}
+
+.post-tweet-image-upload #post-tweet-select-image {
+  cursor: pointer;
+  margin-bottom: .5rem;
+  font-size: 1.6rem;
+}
+
+.post-tweet-image-upload > #post-tweet-supports {
+    font-size: 1rem !important;
+    color: var(--saito-default-font-color);
+}
+
+.post-tweet-image-upload input {
+ opacity: 0;
+}
 .post-tweet-img-preview {
   position: relative;
   margin-right: 2rem;
@@ -503,6 +528,8 @@ span.redsquare-home-red-square+span {
 
 #tweet-overlay-img-cont img {
   height: 70vh;
+  width: 80vw;
+  background-size: cover;
 }
 
 /* Hacks to stop old arcade and chat content from ruining display */
@@ -532,7 +559,7 @@ span.redsquare-home-red-square+span {
     background-position: center center;
   }
   .saito-main.appspace {
-    min-width: 0;
+    min-width: 35rem;
    
   }
   .redsquare-tweet-overlay{
@@ -540,9 +567,8 @@ span.redsquare-home-red-square+span {
   }
   
   .redsquare-tweet-tools {
-    display: flex;
-    justify-content: initial;
-    font-size: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
     width: 100%;
     margin: 2rem 0 0rem 0;
   }
@@ -555,11 +581,19 @@ span.redsquare-home-red-square+span {
   }
   
   .redsquare-tweet-tools span {
-    font-size: 1.3rem;
+    /* font-size: 1.3rem; */
   }
   .redsquare-tweet-tools i {
-    font-size: 1.3rem;
+    /* font-size: 1.3rem; */
   }
+
+
+ 
+
+.post-tweet-button {
+  width: 10rem;
+}
+
   
 }
 
@@ -568,7 +602,7 @@ span.redsquare-home-red-square+span {
 
 
   .saito-main.appspace {
-    min-width: 0;
+    min-width: 35rem;
    
   }
   .redsquare-tweet-overlay{
@@ -585,11 +619,11 @@ span.redsquare-home-red-square+span {
   }
   
 
-  .redsquare-tweet-tools span {
+  /* .redsquare-tweet-tools span {
     font-size: 1rem;
-  }
+  } */
   .redsquare-tweet-tools i {
-    font-size: 1rem;
+    /* font-size: 1rem; */
   }
   
 
@@ -618,4 +652,20 @@ span.redsquare-home-red-square+span {
 
 .notification-type {
   color: #111;
+}
+
+
+@media screen and (max-width: 503px) {
+  #tweet-overlay-img-cont img {
+    width: 90vw;
+    height: 50vw;
+  }
+}
+
+
+
+@media screen and (max-width: 396px) {
+  #tweet-overlay-img-cont img {
+    width: 90vw;
+  }
 }
