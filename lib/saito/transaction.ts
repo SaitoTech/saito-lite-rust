@@ -83,7 +83,7 @@ class Transaction {
           }
         } catch (err) {
           console.log(this.transaction);
-          console.error(err);
+          console.error("failed converting buffer : ", err);
         }
       }
       for (let i = 0; i < this.transaction.from.length; i++) {
@@ -244,16 +244,16 @@ class Transaction {
 
     try {
       if (this.transaction.type === TransactionType.Normal) {
-        let buffer = Buffer.from(this.transaction.m);
-        if (buffer.byteLength === 0) {
+        if (this.transaction.m.byteLength === 0) {
           this.msg = null;
         } else {
-          const reconstruct = buffer.toString("utf-8");
+          const reconstruct = this.transaction.m.toString("utf-8");
           this.msg = JSON.parse(reconstruct);
         }
       }
       //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
     } catch (err) {
+      console.log("buffer length = " + this.transaction.m.byteLength);
       console.error("error trying to parse this.msg: ", err);
     }
   }
@@ -429,7 +429,7 @@ class Transaction {
       console.log(
         `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
       );
-      console.error(err);
+      console.error("error parsing return message", err);
     }
     return this.msg;
   }
