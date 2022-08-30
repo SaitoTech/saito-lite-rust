@@ -73,12 +73,12 @@
     z-index: 12;
     height: 5rem;
     border-radius: 50%;
-    background-color: var(--saito-primary);
+    background-color: red;
     display: none;
     position: fixed;
-    bottom: -1rem;
+    bottom: 3rem;
     z-index: 10;
-    left: 1rem;
+    left: 4rem;
     cursor: pointer;
 }
 
@@ -97,11 +97,11 @@
     width: 5rem;
     height: 5rem;
     border-radius: 50%;
-    background-color: var(--saito-primary);
+    background-color: brown;
     display: none;
     position: fixed;
-    bottom: -1rem;
-    right: 1rem;
+    bottom: 5rem;
+    right: 3rem;
     cursor: pointer;
     z-index: 10;
 }
@@ -111,8 +111,6 @@
     font-size: 3rem;
     color: var(--saito-white);
 }
-
-
 /* ----------------------------------------------------------------
  Sidebars
 -----------------------------------------------------------------*/
@@ -144,11 +142,11 @@
 
     .saito-sidebar.left .hamburger {
         visibility: visible;
-        left: 1rem;
+        left: 3rem;
         display: flex;
         justify-content: center;
         align-items: center;
-        bottom: -1rem;
+        bottom: 5rem;
     }
 
 
@@ -177,23 +175,11 @@
 
     .saito-sidebar.right .caret {
         visibility: visible;
-        right: 1rem;
+        right: 3rem;
         display: flex;
         justify-content: center;
         align-items: center;
     }
-    .saito-container::after {
-        display: inline-block !important;
-        background: #4444;
-        height: 7rem;
-        content: " ";
-        width: 100%;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        z-index: -100;
-    }
-    
 }
 
 @media screen and (max-width: 503px) {
@@ -210,11 +196,11 @@
 
 @media screen and (max-width: 396px) {
     .saito-sidebar.left .hamburger {
-        left: 1rem;
-        bottom: -1rem;
+        left: 3rem;
+        bottom: 5rem;
     }
     .saito-sidebar.right .caret {
-        right: 1rem;
-        bottom: -1rem;
+        right: 3rem;
+        bottom: 5rem;
     }
 }
