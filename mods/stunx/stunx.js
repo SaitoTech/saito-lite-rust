@@ -1,19 +1,18 @@
 const saito = require("../../lib/saito/saito");
-//const ModTemplate = require("../../lib/templates/modtemplate");
-const InviteTemplate = require("../../lib/templates/invitetemplate");
+const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
 const ChatManagerLarge = require('./lib/components/chat-manager-large');
 const ChatManagerSmall = require("./lib/components/chat-manager-small");
 const StunxAppspace = require('./lib/appspace/main');
 const InviteOverlay = require("./lib/components/invite-overlay");
 const StunxGameMenu = require("./lib/game-menu/main");
-const StunxInvite = require('./lib/invite/main');
 
-class Stunx extends InviteTemplate {
+
+class Stunx extends ModTemplate {
 
     constructor(app, mod) {
         super(app);
-        this.appname = "Video Call";
+        this.appname = "Stunx";
         this.name = "Stunx";
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
@@ -38,22 +37,6 @@ class Stunx extends InviteTemplate {
                 username: "guest",
                 credential: "somepassword",
             },
-            {
-                urls: "stun:stun-sg.saito.io:3478"
-            },
-            {
-                urls: "turn:stun-sg.saito.io:3478",
-                username: "guest",
-                credential: "somepassword",
-            },
-            {
-                urls: "stun:stun-de.saito.io:3478"
-            },
-            {
-                urls: "turn:stun-de.saito.io:3478",
-                username: "guest",
-                credential: "somepassword",
-            }
         ];
     }
 
@@ -61,12 +44,12 @@ class Stunx extends InviteTemplate {
 
     respondTo(type) {
         if (type === 'invite') {
-          this.styles = ['/' + this.returnSlug() + '/css/style.css',];
-          super.render(this.app, this); // for scripts + styles
-          return new StunxInvite(this.app, this);
+            this.styles = ['/stunx/css/style.css',];
+            super.render(this.app, this);
+            // return new StunInvite(this.app, this);
         }
         if (type === 'appspace') {
-            this.styles = ['/' + this.returnSlug() + '/css/style.css',];
+            this.styles = ['/stunx/css/style.css',];
             super.render(this.app, this);
             return new StunxAppspace(this.app, this);
         }
