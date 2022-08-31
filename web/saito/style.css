@@ -1772,14 +1772,13 @@ div#message-wrapper {
     height: 2.5em;
   }
   .header-mini-wallet {
-    width: 50vw;
+    width: 40vw;
     margin: 0 3px 0 0;
     text-align: right;
     padding-right: 8px;
   }
   .header-username {
-    width: 40vw;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
   }
   .header-icon-links {
     align-items: start;

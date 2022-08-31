@@ -55,10 +55,13 @@ class PandemicOriginalSkin {
       }
   }
 
-  returnDisease(color){
+  returnDiseaseImg(color){
     return `/pandemic/img/cube_${color}.png`;
   }
 
+  getVirusName(virus){
+    return virus;
+  }
 
   queryPlayer(role){
     let player = {};
@@ -952,6 +955,15 @@ class PandemicOriginalSkin {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
 
+  }
+
+  prepInfectionDeck(pandemic_self){
+    pandemic_self.defaultDeck = 0;
+    pandemic_self.card_height_ratio = 0.709;
+  }
+  resetInfectionDeck(pandemic_self){
+    pandemic_self.defaultDeck = 1;
+    pandemic_self.card_height_ratio = 1.41;
   }
 
 };

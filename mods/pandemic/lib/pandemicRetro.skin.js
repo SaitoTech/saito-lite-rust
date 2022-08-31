@@ -30,8 +30,18 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 
   }
 
-  returnDisease(color){
+  returnDiseaseImg(color){
     return `/pandemic/img/alt/cube_${color}.png`;
+  }
+
+  getVirusName(virus){
+    switch(virus){
+      case "red": return "cyan";
+      case "blue": return "red";
+      case "black": return "magenta";
+      case "yellow": return "yellow";
+    }
+    return "unknown"
   }
 
 
@@ -946,6 +956,13 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     }catch(err){
       console.log(err);
     }
+  }
+
+  prepInfectionDeck(pandemic_self){
+    pandemic_self.interface = 2;
+  }
+  resetInfectionDeck(pandemic_self){
+    pandemic_self.interface = 1;
   }
 
 
