@@ -45,6 +45,8 @@ class RedSquare extends ModTemplate {
     ];
     this.ui_initialized = false;
 
+    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg']; 
+
     return this;
 
   }

@@ -31,7 +31,13 @@ class Post {
         if (this.images.length >= 4) {
           salert("Maximum 4 images allowed per tweet.");
         } else {
-          this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
+
+          let type = file.substring(file.indexOf(":")+1, file.indexOf(";"));
+          if (mod.allowed_upload_types.includes(type)) {
+            this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
+          } else {
+            salert("Only following file types allowed: " + mod.allowed_upload_types.join(', '));
+          }
         }
       },
       true);
