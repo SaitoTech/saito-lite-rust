@@ -38,6 +38,7 @@ class StunxAppspace {
         if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
         let sql = `SELECT * FROM rooms WHERE room_code = "${roomCode}"`;
         const stunx_mod = this.app.modules.returnModule('Stunx');
+        console.log(stunx_mod)
         let requestCallback = async (res) => {
             let room = res.rows[0];
             console.log(room);
