@@ -283,7 +283,7 @@ class Pandemic extends GameTemplate {
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 
-    if (this.game.players_info){
+    if (this.game.players_info && this.game.player > 0){
       let hh = document.querySelector(".hud-header");
       let role = this.game.players_info[this.game.player-1].name;
       role = role.split(" ")[0].toLowerCase();
@@ -1619,10 +1619,11 @@ class Pandemic extends GameTemplate {
             this.playerMakeMove();
           } else {
             this.removeEvents();
+            let cards = (this.game.player > 0) ? this.game.players_info[this.game.player - 1].cards : null;
             this.updateStatusAndListCards(
               `Waiting for ${this.app.keys.returnUsername(this.game.players[player - 1])} 
               (${this.game.players_info[player - 1].name})`,
-              this.game.players_info[this.game.player - 1].cards
+              cards
             );
             this.attachCardboxEvents(pandemic_self.playFromCardFan);
           }
@@ -2584,7 +2585,7 @@ displayDisease() {
         if (i > 0) {
           cards_overview += ", ";
         }
-        cards_overview += this.skin.cities[deck[i]].name;
+        cards_overview += this.game.deck[1].cards[deck[i]].name;
       }
 
       html += `
