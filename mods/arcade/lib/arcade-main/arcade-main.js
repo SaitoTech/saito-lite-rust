@@ -72,7 +72,9 @@ module.exports = ArcadeMain = {
       }
       tabNames.forEach((tabButtonName, i) => {
         //Add click event to tab
-        document.querySelector("#tab-button-" + tabButtonName).onclick = () => {
+        let tab = document.querySelector("#tab-button-" + tabButtonName);
+        tab.style.display = "grid";
+        tab.onclick = () => {
           app.browser.logMatomoEvent(
             "Arcade",
             "ArcadeTabNavigationClick",

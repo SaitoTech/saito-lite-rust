@@ -48,7 +48,7 @@ class VideoChatManager {
 
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
 
-            this.disconnectMediaStreams()
+            this.disconnect()
 
             siteMessage("You have been disconnected", 5000);
         })

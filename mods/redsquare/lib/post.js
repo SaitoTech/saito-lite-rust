@@ -21,19 +21,39 @@ class Post {
     this.attachEvents(app, mod);
   }
 
+
   attachEvents(app, mod) {
 
     let post_self = this;
 
-    app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay",
+    app.browser.addDragAndDropFileUploadToElement("redsquare-post-tweet-image-upload",
       (file) => {
         if (this.images.length >= 4) {
           salert("Maximum 4 images allowed per tweet.");
         } else {
-          this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
+
+          let type = file.substring(file.indexOf(":")+1, file.indexOf(";"));
+          if (mod.allowed_upload_types.includes(type)) {
+            this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
+          } else {
+            salert("Only following file types allowed: " + mod.allowed_upload_types.join(', '));
+          }
         }
       },
-      false);
+      true);
+
+    /*
+    document.getElementById('post-tweet-image-select-button').onclick = (e) => {
+      console.log(e);
+    }
+
+    document.getElementById('post-tweet-select-image').onclick = (e) => {
+      console.log('clicking button')
+      e.preventDefault();
+      const imageButton = document.getElementById('post-tweet-image-select-button');
+      imageButton.click()
+    }
+    */
 
     document.getElementById("post-tweet-button").onclick = (e) => {
 
@@ -131,56 +151,70 @@ class Post {
 
   resizeImg(img, dimensions, quality) {
     let post_self = this;
-    let canvas = document.createElement("canvas");
-    let oImg = document.createElement("img");
-    oImg.setAttribute('src', img);
-    oImg.setAttribute('id', "uploaded-img");
-    document.body.appendChild(oImg);
+    let imgSize = img.length / 1024; 
 
-    let original = document.getElementById("uploaded-img");
-    let img_width = 0;
-    let img_height = 0;
-
-    let resizedImg = original.onload = function () {
-      img_width = this.width;
-      img_height = this.height;
-
-      let type = original.src.split(";")[0].split(":")[1];
+    // compress img if file size greater tan 150kb
+    if (imgSize > 150) {    
+      
       let canvas = document.createElement("canvas");
+      let oImg = document.createElement("img");
+      oImg.setAttribute('src', img);
+      oImg.setAttribute('id', "uploaded-img");
+      document.body.appendChild(oImg);
 
-      let w = 0;
-      let h = 0;
-      let r = 1;
+      let original = document.getElementById("uploaded-img");
+      let img_width = 0;
+      let img_height = 0;
 
-      w = (img_width * r) * dimensions;
-      h = (img_height * r) * dimensions;
 
-      canvas.width = w;
-      canvas.height = h;
+      let resizedImg = original.onload = function () {
+        img_width = this.width;
+        img_height = this.height;
 
-      canvas.getContext("2d").drawImage(this, 0, 0, w, h);
-      let result_img_uri = canvas.toDataURL('image/jpeg', quality);
-      let imgSize = result_img_uri.length / 1024; // in KB
+        let type = original.src.split(";")[0].split(":")[1];
+        let canvas = document.createElement("canvas");
 
-      this.remove();
+        let w = 0;
+        let h = 0;
+        let r = 1;
 
-      if (imgSize > 970) { // 1 MB 
+        w = (img_width * r) * dimensions;
+        h = (img_height * r) * dimensions;
 
-        let newDimensions = (dimensions < 0.95) ? dimensions + 0.05 : 0.95;
-        let newQuality = (quality < 0.95) ? quality + 0.05 : 0.95;
+        canvas.width = w;
+        canvas.height = h;
 
-        post_self.resizeImg(result_img_uri, newDimensions, newQuality);
+        canvas.getContext("2d").drawImage(this, 0, 0, w, h);
+        let result_img_uri = canvas.toDataURL('image/jpeg', quality);
+        let imgSize = result_img_uri.length / 1024; // in KB
 
-      } else {
+        this.remove();
 
-        post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${result_img_uri}"
-         /><i data-id="${post_self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
-         </div>`, document.getElementById("post-tweet-img-preview-container"));
+        if (imgSize > 970) {
 
-        post_self.images.push(result_img_uri);
-        return result_img_uri;
-      }
-    };
+          let newDimensions = (dimensions < 0.95) ? dimensions + 0.05 : 0.95;
+          let newQuality = (quality < 0.95) ? quality + 0.05 : 0.95;
+
+          post_self.resizeImg(result_img_uri, newDimensions, newQuality);
+
+        } else {
+
+          post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${result_img_uri}"
+           /><i data-id="${post_self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
+           </div>`, document.getElementById("post-tweet-img-preview-container"));
+
+          post_self.images.push(result_img_uri);
+          return result_img_uri;
+        }
+      };
+    } else {
+      post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${img}"
+           /><i data-id="${post_self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
+           </div>`, document.getElementById("post-tweet-img-preview-container"));
+
+      post_self.images.push(img);
+      return img;
+    }
   }
 }
 

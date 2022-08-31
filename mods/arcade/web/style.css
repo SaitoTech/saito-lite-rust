@@ -167,7 +167,7 @@ body {
   border-left: none;
   border-bottom: none;
   width: 100%;
-  display: grid;
+  display: none; /*grid */
   place-items: center;
 }
 
@@ -465,6 +465,7 @@ body {
   align-items: center;
   width: 100%;
   flex-grow: 1;
+  justify-content: end;
 }
 .button_with_icon i{
   font-size: 2em;
@@ -1574,11 +1575,12 @@ i.link_icon.private{
   }
   .saito-overlay,
   game-overlay {
-    width: 90%;
+    max-width: 90%;
   }
   .game-wizard {
     width: 100%;
     max-height: calc(100vh - 7em);
+    overflow-y: scroll;
   }
 
   /* Top sitting controls */
@@ -1642,15 +1644,16 @@ i.link_icon.private{
 
   .invite-tile-wrapper {
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 15em;
+    grid-template-columns: 1fr minmax(auto, 15em);
     font-size: 0.8em;
   }
 
   .arcade-tile .gameButtons {
     flex-direction: row;
+    justify-content: end;
   }
 
-  .invite-tile-button {
+  .invite-tile-button, .arcade-tile .button {
     min-width: unset;
     max-width: 6em;
     height: 5em;
@@ -1677,7 +1680,8 @@ i.link_icon.private{
   }
   .saito-overlay,
   .game-overlay {
-    width: 100%;
+    width: 90vw;
+    min-width: unset;
   }
   .game-wizard-controls {
     grid-template-columns: auto;
@@ -1695,10 +1699,15 @@ i.link_icon.private{
   .game-wizard-header {
     display: block;
   }
+
+  .invite-link > p {
+    inline-size: 100%;
+  }
+
 }
 
 #settings-dropdown {
-  width: 400px;
+  width: min(400px,100vw);
   right: -405px;
   position: absolute;
   background: var(--saito-nightscape);

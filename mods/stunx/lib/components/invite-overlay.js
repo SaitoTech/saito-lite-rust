@@ -33,14 +33,13 @@ class InviteOverlay {
     }
 
     attachEvents() {
-        console.log("attaching copy event");
-        document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
+        document.querySelector('#copyVideoInviteCode').addEventListener('click', (e) => {
             navigator.clipboard.writeText(`${this.roomCode}`);
-            document.querySelector("#copyVideoInviteCode").textContent = "Copied to clipboard";
+            siteMessageNew("Copied code to clipboard");
         });
-        document.querySelector('#copyVideoInviteLink i').addEventListener('click', (e) => {
+        document.querySelector('#copyVideoInviteLink').addEventListener('click', (e) => {
             navigator.clipboard.writeText(`${window.location.host}/stunx?invite_code=${this.roomCode}`);
-            document.querySelector("#copyVideoInviteLink").textContent = "Copied to clipboard";
+            siteMessageNew("Copied link to clipboard")
         });
 
         document.querySelector('#inviteCode').value = this.roomCode;
