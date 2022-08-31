@@ -95,11 +95,10 @@
     font-size: 1.2rem;
     padding: 3px;
     background-color: #fcfcfc;
-    text-align: center;
     cursor: pointer;
 }
 .saito-calendar-day > span {
-    margin-right: 1rem;
+    margin-left: .5rem;
 }
 
 .saito-calendar-days div:hover {
