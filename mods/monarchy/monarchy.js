@@ -157,6 +157,18 @@ class Monarchy extends GameTemplate {
     this.cardbox.addCardType("logcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     this.cardbox.addCardType("handy-help", "", function(){});
+
+    //Test for mobile
+    try {
+      if (app.browser.isMobileBrowser(navigator.userAgent)) {
+        this.hud.card_width = 100; //Smaller cards
+        this.cardbox.skip_card_prompt = 0;
+      } 
+    } catch (err) {
+      console.log("ERROR with Mobile: " + err);
+    }
+
+
     
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
