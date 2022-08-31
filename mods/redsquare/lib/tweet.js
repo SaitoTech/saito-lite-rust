@@ -214,8 +214,6 @@ class RedSquareTweet {
 
   renderWithParents(app, mod, selector = "", num = -1) {
 
-console.log("RENDER WITH PARENT: " + this.text);
-
     let html = TweetTemplate(app, mod, this);
 
     //
@@ -223,7 +221,6 @@ console.log("RENDER WITH PARENT: " + this.text);
     //
     if (num == -1) {
       if (this.parent_tweet == null && this.parent_id != this.tx.transaction.sig) {
-console.log("adding parental reference 1");
 	let x = mod.returnTweet(app, mod, this.parent_id);
         if (x != null) { this.parent_tweet = x; }
       }
@@ -235,7 +232,6 @@ console.log("adding parental reference 1");
     } else {
       if (num > 0) {
         if (this.parent_tweet == null && this.parent_id != this.tx.transaction.sig) {
-console.log("adding parental reference 2");
 	  let x = mod.returnTweet(app, mod, this.parent_id);
           if (x != null) { this.parent_tweet = x; }
         }
@@ -268,7 +264,6 @@ console.log("adding parental reference 2");
         app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
-console.log("CRIT CHILD: " + this.critical_child.text);
         app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
         this.critical_child.render(app, mod, my_selector);
         try {
@@ -291,10 +286,9 @@ console.log("CRIT CHILD: " + this.critical_child.text);
     //
     let sel = "#tweet-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
+
       //e.preventDefault();
       //e.stopImmediatePropagation();
-
-console.log("TWWET IS: " + tweet_self.children.length);
 
       this.saito_loader.render(app, mod, 'redsquare-home-header', false);
       let el = e.currentTarget;
@@ -316,8 +310,6 @@ console.log("TWWET IS: " + tweet_self.children.length);
 	  console.log("TWEET IS NULL OR NOT STORED");
 	  return; 
 	}
-console.log("MOD TEXT IS: " + t.text);
-console.log("MOD TEXT IS: " + t.children.length);
 	if (t.children.length > 0) {
           mod.renderWithChildren(app, mod, tweet_sig_id); 
         } else {
@@ -350,7 +342,6 @@ console.log("MOD TEXT IS: " + t.children.length);
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
-
       app.browser.addIdentifiersToDom();
     };
 
@@ -474,8 +465,6 @@ console.log("MOD TEXT IS: " + t.children.length);
         let winHeight = window.innerHeight;
         let winWidth = window.innerWidth;
 
-console.log("test A");
-
         if (aspRatio > 1) {
           oImg.style.width = '95vw';
           oImg.style.height = 'auto';
@@ -491,9 +480,6 @@ console.log("test A");
             oImg.height = (oImg.height * 0.75) + 'px';
           }
         }
-
-console.log("test B");
-
       }
 
       if (e.target.classList.contains('tweet-link')) {
@@ -523,7 +509,6 @@ console.log("test B");
 	this.unknown_children[i].parent_tweet = this;
         tweet.children.push(this.unknown_children[i]);
         this.unknown_children.splice(i, 0);
-        console.log("adding to unknown children...");
       }
     }
 
@@ -531,14 +516,12 @@ console.log("test B");
     if (tweet.parent_id == this.tx.transaction.sig) {
       for (let i = 0; i < this.children.length; i++) {
         if (this.children[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-          console.log("return without adding 1");
           return 0;
         }
       }
       this.updated_at = tweet.updated_at;
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
         this.children.unshift(tweet);
-        console.log("return with adding 1");
         return 1;
       } else {
         if (this.isCriticalChild(app, mod, tweet)) {
@@ -546,7 +529,6 @@ console.log("test B");
         }
 	tweet.parent_tweet = this;
         this.children.push(tweet);
-        console.log("return with adding 2");
         return 1;
       }
     } else {
@@ -569,7 +551,6 @@ console.log("test B");
       // until we possibly add the parent (where we will check all unknown children) for
       // placement then.
       //
-      console.log("return with adding 3");
       this.unknown_children.push(tweet);
 
     }
