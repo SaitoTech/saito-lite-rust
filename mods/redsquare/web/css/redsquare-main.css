@@ -605,6 +605,11 @@ span.redsquare-home-red-square+span {
   line-height: 2rem;
   white-space: pre-wrap;
   color: #5a5858;
+  transition: all 0.15s ease-in-out;
+}
+
+.notification-item:hover {
+  background-color: #ededed;
 }
 
 .notification-item > .redsquare-item-contents {
