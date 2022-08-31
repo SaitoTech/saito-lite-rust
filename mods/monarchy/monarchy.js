@@ -162,11 +162,14 @@ class Monarchy extends GameTemplate {
     this.hud.attachEvents(app, this);
 
     let hh = document.querySelector(".hud-header");
-    if (!hh.querySelector(".handy-help")){
-      this.app.browser.addElementToElement(`<i id="zoom" class="fas fa-search hud-controls" aria-hidden="true"" title="Toggle Zoom on Card Hover"></i>`, hh);
-      this.app.browser.addElementToElement(`<i id="my_hand" class="handy-help hud-controls fas fa-fw fa-hand-paper" aria-hidden="true"></i>`, hh);  
+    if (hh){
+      if (!document.getElementById("zoom")){
+        this.app.browser.addElementToElement(`<i id="zoom" class="fas fa-search hud-controls" aria-hidden="true"" title="Toggle Zoom on Card Hover"></i>`, hh);
+      }
+      if (!document.getElementById("my_hand") && this.game.player > 0){
+        this.app.browser.addElementToElement(`<i id="my_hand" class="handy-help hud-controls fas fa-fw fa-hand-paper" aria-hidden="true"></i>`, hh);  
+      }
     }
-
 
     this.scoreboard.render(app, this);
     this.scoreboard.attachEvents(app, this);
@@ -1235,6 +1238,8 @@ initializeGame(game_id) {
   }
 
   returnPlayerVP(player){
+    if (!this.game.deck[player-1]?.cards){return 0;}
+
     let numCards = Object.keys(this.game.deck[player-1].cards).length;
     return this.game.state.players[player-1].vp + this.game.state.players[player-1].gardens * Math.floor(numCards/10) - this.game.state.players[player-1].curses; 
   }
@@ -1845,7 +1850,7 @@ initializeGame(game_id) {
   }
 
   sortHand(){
-    
+    if (this.game.player == 0){ return; }
     this.game.deck[this.game.player-1].hand.sort((a,b) =>{
       let c_a = this.deck[this.game.deck[this.game.player-1].cards[a]];
       let c_b = this.deck[this.game.deck[this.game.player-1].cards[b]];
