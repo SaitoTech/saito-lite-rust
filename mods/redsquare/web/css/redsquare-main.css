@@ -423,6 +423,7 @@ span.redsquare-home-red-square+span {
   border: 1px solid #d7d3d3;
   height: 40rem;
   background-size: cover !important;
+  background-repeat: no-repeat;
 }
 
 .redsquare-image-container div.tweet-multiple-img {
