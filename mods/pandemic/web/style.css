@@ -540,8 +540,16 @@ body{
  top: -10px;
  left: -10px;
  color: whitesmoke;
- text-shadow: 2px 2px black;
+ text-shadow: 2px 2px 3px black;
  max-width: 150%;
  white-space: nowrap;
  overflow-x: visible;
+}
+
+.status ul li.card{
+  color: var(--saito-skyline-grey);
+}
+
+ul#status-cardbox{
+  overflow-y: scroll;
 }
