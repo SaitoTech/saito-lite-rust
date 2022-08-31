@@ -1,3 +1,7 @@
+.treated {
+  display: block;
+}
+
 .background-shim {
   background-image: url('/chess/img/arcade/arcade.jpg');
   top: 0;
@@ -439,6 +443,16 @@ span.redsquare-home-red-square+span {
   padding: .5rem 0;
 }
 
+.post-tweet-image-upload-content {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  grid-gap: 4rem;
+}
+
+.post-tweet-image-upload-content i {
+  font-size: 4rem;
+}
+
 .post-tweet-image-upload #post-tweet-select-image {
   cursor: pointer;
   margin-bottom: .5rem;
@@ -451,8 +465,15 @@ span.redsquare-home-red-square+span {
 }
 
 .post-tweet-image-upload input {
- opacity: 0;
+ opacity: 1;
 }
+
+#redsquare-post-tweet-image-upload .my-form {
+  opacity: 0;
+  position: absolute;
+  z-index: -999;
+}
+
 .post-tweet-img-preview {
   position: relative;
   margin-right: 2rem;
@@ -554,6 +575,12 @@ span.redsquare-home-red-square+span {
 
 @media only screen and (max-width: 535px) {
 
+  /* should this go to general theme? */
+  .saito-overlay-closebox {
+    top: 5px !important;
+    right: 5px !important;
+  }
+
   .redsquare-image-container div {
     background-size: contain !important;
     background-position: center center;
@@ -563,7 +590,8 @@ span.redsquare-home-red-square+span {
    
   }
   .redsquare-tweet-overlay{
-    width: 40rem;
+    width: 100vw;
+    border-radius: 0;
   }
   
   .redsquare-tweet-tools {
@@ -591,7 +619,7 @@ span.redsquare-home-red-square+span {
  
 
 .post-tweet-button {
-  width: 10rem;
+  width: 100%;
 }
 
   
@@ -605,11 +633,7 @@ span.redsquare-home-red-square+span {
     min-width: 35rem;
    
   }
-  .redsquare-tweet-overlay{
-    width: 30rem;
-  }
-
-
+  
 
   .redsquare-tweet-tools>div {
     position: relative;

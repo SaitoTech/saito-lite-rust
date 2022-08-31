@@ -21,11 +21,12 @@ class Post {
     this.attachEvents(app, mod);
   }
 
+
   attachEvents(app, mod) {
 
     let post_self = this;
 
-    app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay",
+    app.browser.addDragAndDropFileUploadToElement("redsquare-post-tweet-image-upload",
       (file) => {
         if (this.images.length >= 4) {
           salert("Maximum 4 images allowed per tweet.");
@@ -33,8 +34,9 @@ class Post {
           this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
         }
       },
-      false);
+      true);
 
+    /*
     document.getElementById('post-tweet-image-select-button').onclick = (e) => {
       console.log(e);
     }
@@ -45,7 +47,7 @@ class Post {
       const imageButton = document.getElementById('post-tweet-image-select-button');
       imageButton.click()
     }
-
+    */
 
     document.getElementById("post-tweet-button").onclick = (e) => {
 
