@@ -687,6 +687,7 @@ ul.horizontal_list li.iconoption{
 
 /* Dice display (position handled by playerbox-graphic) */
 .diceroll{
+  position: relative;
   display: flex;
   margin: 0 auto;
   border: 2px solid black;
@@ -866,6 +867,13 @@ ul.horizontal_list li.iconoption{
   left: 10px;
   top: unset;
   bottom: 1px;
+}
+
+.player-box-graphic .hand{
+  position: absolute;
+  top: 0;
+  left: -7vw;
+  z-index: -1;
 }
 
 /*Stats overlay table*/

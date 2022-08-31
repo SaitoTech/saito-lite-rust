@@ -179,10 +179,10 @@ class Settlers extends GameTemplate {
     if (this.initialize_game_run) {return;} 
 
     super.initializeHTML(app);
-    if (this.game.state.lastroll.length == 0){
-      $(".diceroll").css("display", "none");
-    }else{
+    if (this.game.state?.lastroll?.length){
       this.displayDice();  
+    }else{
+      $(".diceroll").css("display", "none");
     }
 
     this.menu.addMenuOption({
@@ -240,60 +240,60 @@ class Settlers extends GameTemplate {
         app.browser.requestFullscreen();
       },
     });
+    if (this.game.player > 0){
+      this.menu.addMenuOption({
+        text: "Trade",
+        id: "game-trade",
+        class: "game-trade",
+        callback: function (app, game_mod) {
+          game_mod.menu.showSubMenu("game-trade");
+        },
+      });
+      
+      this.menu.addSubMenuOption("game-trade", {
+        text: "Make Offer",
+        id: "game-offer",
+        class: "game-offer",
+        callback: function (app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          if (game_mod.game.state.canTrade && game_mod.game.player ===  game_mod.game.state.playerTurn) {
+              game_mod.tradeWindowOpen = true;
+              game_mod.showTradeOverlay();
+          }else{
+            salert("You cannot trade right now");
+          }
+        },
+      });
 
-    this.menu.addMenuOption({
-      text: "Trade",
-      id: "game-trade",
-      class: "game-trade",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubMenu("game-trade");
-      },
-    });
-    
-    this.menu.addSubMenuOption("game-trade", {
-      text: "Make Offer",
-      id: "game-offer",
-      class: "game-offer",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        if (game_mod.game.state.canTrade && game_mod.game.player ===  game_mod.game.state.playerTurn) {
-            game_mod.tradeWindowOpen = true;
-            game_mod.showTradeOverlay();
-        }else{
-          salert("You cannot trade right now");
-        }
-      },
-    });
+      this.menu.addSubMenuOption("game-trade", {
+        text: "Advertise",
+        id: "game-advert",
+        class: "game-advert",
+        callback: function (app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          game_mod.showResourceOverlay();
+        },
+      });
 
-    this.menu.addSubMenuOption("game-trade", {
-      text: "Advertise",
-      id: "game-advert",
-      class: "game-advert",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.showResourceOverlay();
-      },
-    });
-
-    this.menu.addSubMenuOption("game-trade", {
-      text: "Clear",
-      id: "game-rescind",
-      class: "game-rescind",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.clearAdvert();
-      },
-    });
-    this.menu.addSubMenuOption("game-trade", {
-      text: "Help",
-      id: "game-trade-help",
-      class: "game-trade-help",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnTradeHelpOverlay());
-      },
-    });
-
+      this.menu.addSubMenuOption("game-trade", {
+        text: "Clear",
+        id: "game-rescind",
+        class: "game-rescind",
+        callback: function (app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          game_mod.clearAdvert();
+        },
+      });
+      this.menu.addSubMenuOption("game-trade", {
+        text: "Help",
+        id: "game-trade-help",
+        class: "game-trade-help",
+        callback: function (app, game_mod) {
+          game_mod.menu.hideSubMenus();
+          game_mod.overlay.show(app, game_mod, game_mod.returnTradeHelpOverlay());
+        },
+      });
+    }
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
@@ -324,7 +324,8 @@ class Settlers extends GameTemplate {
           this.playerbox.addClass("notme", i);
         }
       }
-      if (this.game.players.length > 2) {
+
+      if (this.game.players.length > 2 || this.game.player == 0) {
         this.playerbox.groupOpponents();
       }
       this.playerbox.makeDraggable();
@@ -600,6 +601,9 @@ class Settlers extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.generateMap();
         this.addPortsToGameboard();
+        if (this.browser_active && this.game.player == 0){
+          this.displayBoard();
+        }
         return 1;
       }
 
@@ -2245,6 +2249,23 @@ class Settlers extends GameTemplate {
     }
   }
 
+  // Only for the game Observer
+  showPlayerResources(){
+    $(".player-box-graphic .hand").remove();
+    for (let i = 0; i < this.game.players.length; i++){
+      let hand = `<div class="hand">`;
+      for (let r of this.game.state.players[i].resources){
+        hand +=`<div class="card">
+                  <img src="${this.skin.resourceCard(r)}">
+                  <img class="icon" src="${this.skin.resourceIcon(r)}"/>
+                </div>`;
+      }
+      hand += "</div>";
+
+      this.playerbox.appendGraphic(hand, i+1);
+    }
+  }
+
   /*
     Refresh the Playerboxes with formatted information on the players
   */
@@ -2306,10 +2327,17 @@ class Settlers extends GameTemplate {
       this.playerbox.refreshInfo(newhtml, i);
       $(".player-box-info").disableSelection();
     }
+
+    if (this.game.player == 0){ 
+      this.showPlayerResources();
+      return; 
+    }
+
     //Insert tool into name
     let pbhead = document.querySelector("#player-box-head-1");
     this.app.browser.addElementToElement(`<i id="construction-costs" class="handy-help fa fa-question-circle" aria-hidden="true"></i>`, pbhead);
     this.cardbox.attachCardEvents();
+
 
     //Show player cards and add events (Doesn't need to be in for loop!)
     if (this.boughtCard) {

@@ -38,8 +38,13 @@ body{
 }
 
 .epidemic_overlay .epidemic-card{
-  margin: 2em;
+  margin: 2em auto;
 }
+
+.epidemic-card img{
+  max-height: 40vh;
+}
+
 .close_epidemic_overlay{
   background-color: var(--saito-red);
   color: #fefefe;
@@ -267,17 +272,19 @@ body{
   display: inline-flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   margin-right: 6px;
 }
 
-.virus-count+img.cube, .virus-count+i{
-  margin-left: 10px;
+.scoreboard_virus_group.i{
+  font-size: 20px;
+  width: 30px;
 }
 
 .virus-count{
-  margin: 0 2px;
+  margin-left: 2px;
   text-shadow: 0 0 2px whitesmoke;
+  width: 2em;
 }
 
 .safe{
@@ -310,6 +317,7 @@ body{
   width: 32px;
   height: 60px;
   z-index: 42;
+  pointer-events: none;
   /*width: 72px;
   height: 100px;
   background-size: cover;*/
@@ -344,11 +352,11 @@ body{
 .player.active_player .move_counter{
   display: block;
   position: absolute;
-  top: -20px;
-  right: -30px;
+  top: -43px;
+  right: -9px;
   font-size: 2em;
   color: black;
-  text-shadow: 0 5px 15px whitesmoke;
+  text-shadow: 2px 4px 8px silver;
 }
 
 /* For displaying an image */
@@ -532,8 +540,16 @@ body{
  top: -10px;
  left: -10px;
  color: whitesmoke;
- text-shadow: 2px 2px black;
+ text-shadow: 2px 2px 3px black;
  max-width: 150%;
  white-space: nowrap;
  overflow-x: visible;
+}
+
+.status ul li.card{
+  color: var(--saito-skyline-grey);
+}
+
+ul#status-cardbox{
+  overflow-y: scroll;
 }

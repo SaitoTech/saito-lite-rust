@@ -498,7 +498,7 @@ class Arcade extends ModTemplate {
 
     if (txmsg.players.includes(app.wallet.returnPublicKey())) {
 
-      if (this.debug) { console.log("ALREADY INITED? " + this.viewing_arcade_initialization_page); }
+      if (this.debug) { console.log("ALREADY SHOWING LOADER? " + this.viewing_arcade_initialization_page); }
 
       if (this.browser_active) {
         GameLoader.render(app, this);   
@@ -512,18 +512,15 @@ class Arcade extends ModTemplate {
       }
 
 
+      //Kick off game loader
+      this.launchGame(txmsg.game_id);
       //Create Game Here
-      let game_id = gamemod.processAcceptRequest(tx, this.app);
+      let game_id = await gamemod.processAcceptRequest(tx, this.app);
       
-      if (game_id) {
-        if (this.debug) { console.log("... and launching the game"); }
-
-        //Kick off game loader
-        this.launchGame(txmsg.game_id);
-
-        if (this.debug) { console.log("... and done launching the game"); }
-      } else {
-        if (this.debug) { console.log("Game template returned a null game_id"); }
+      if (!game_id) {
+        console.log("Game template returned a null game_id"); 
+        await sconfirm("Something went wrong with the game initialization, reload?");
+        window.location.reload();
       }
     }
   }

@@ -11,10 +11,10 @@ class StunxCreator {
     let invite_obj = mod.options;
     mod.createOpenTransaction(invite_obj);
 
-alert("event / invitation sent");
+    alert("event / invitation sent");
 
   }
-  
+
 }
 
 

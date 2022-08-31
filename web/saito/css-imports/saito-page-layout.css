@@ -198,6 +198,10 @@
 }
 
 @media screen and (max-width: 503px) {
+
+    .saito-container {
+        grid-column-gap: 0;
+    }
     .saito-sidebar .section>div:nth-child(1) {
         padding-left: 1rem;
     }
