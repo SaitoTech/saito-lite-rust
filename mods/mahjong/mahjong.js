@@ -8,17 +8,33 @@ var GameTemplate = require('../../lib/templates/gametemplate');
 class Mahjong extends GameTemplate {
 
   constructor(app) {
-
     super(app);
 
     this.name            = "Mahjong";
 
-    this.description     = 'Two deck solitaire card game that traps you in a web of addiction';
-    this.categories       = "Games Cardgame one-player";
+    this.description     = '144 tiles are randomly folded into a multi-layered shape.' +
+                           'The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence' +
+                           'THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
+                           'The game is finished when all pairs of tiles have been removed from the board.';
+    this.categories      = "Games Cardgame one-player";
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
     this.status          = "Beta";
+
+  }
+
+  returnGameRulesHTML(){
+    return `<div class="rules-overlay">
+            <h1>Mahjong</h1>
+            <ul>
+            <li>144 tiles are randomly folded into a multi-layered shape.</li>
+            <li>The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence</li>
+            <li>THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.</li>
+            <li>The game is finished when all pairs of tiles have been removed from the board.</li>
+            </ul>
+            </div>
+            `;
 
   }
 
@@ -190,6 +206,15 @@ class Mahjong extends GameTemplate {
       }
     });
     this.menu.addSubMenuOption("game-game", {
+      text : "How to Play",
+      id : "game-intro",
+      class : "game-intro",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
       text : "Exit",
       id : "game-exit",
       class : "game-exit",
@@ -255,6 +280,26 @@ class Mahjong extends GameTemplate {
     $('.slot').on('click', function() {
 
       let card = $(this).attr("id");
+      if (mahjong_self.game.board[card] !== "E") {
+        switch (card) {
+          case 'row19_slot7':
+          case 'row20_slot7':
+            if (!mahjong_self.game.hidden.includes('row21_slot7')) {
+              return;
+            } else {
+              break;
+            }
+          case 'row19_slot8':
+          case 'row20_slot8':
+            if (!mahjong_self.game.hidden.includes('row21_slot8')) {
+              return;
+            } else {
+              break;
+            }
+        }
+      } else {
+        return;
+      }
 
       // console.log('mahjong_self.game');
       // console.log(mahjong_self.game);
@@ -270,15 +315,11 @@ class Mahjong extends GameTemplate {
         return;
       } else {
         if (mahjong_self.game.selected === "") { // New Card
-          console.log('mahjong_self.board[card] !== "E"');
-          console.log(mahjong_self.game.board[card] !== "E");
-          if (mahjong_self.game.board[card] !== "E") {
-            console.log('mahjong_self.selected');
-            console.log(mahjong_self.game.selected);
-            mahjong_self.game.selected = card;
-            mahjong_self.toggleCard(card);
-            return;
-          } 
+          console.log('mahjong_self.selected');
+          console.log(mahjong_self.game.selected);
+          mahjong_self.game.selected = card;
+          mahjong_self.toggleCard(card);
+          return;
         } else {
           if (mahjong_self.game.board[card] === mahjong_self.game.board[mahjong_self.game.selected]) {
             mahjong_self.makeInvisible(card);
@@ -286,12 +327,17 @@ class Mahjong extends GameTemplate {
             mahjong_self.game.hidden.push(card);
             mahjong_self.game.hidden.push(mahjong_self.game.selected);
             mahjong_self.game.cardsLeft = mahjong_self.game.cardsLeft - 2;
+            if (mahjong_self.game.cardsLeft === 0) {
+              mahjong_self.game.state.wins++;
+              mahjong_self.displayModal("Congratulations!", "You won!");
+            }
             mahjong_self.game.selected = "";
             return;
           } else {
-            mahjong_self.untoggleCard(mahjong_self.game.selected);
-            mahjong_self.game.selected = "";
+            // mahjong_self.untoggleCard(mahjong_self.game.selected);
+            // mahjong_self.game.selected = "";
             // add invalid move effect
+            mahjong_self.toggleInvalidCard(card);
             return;
           }
         }
@@ -386,6 +432,19 @@ class Mahjong extends GameTemplate {
     $(divname).css('-o-box-shadow', '0px 0px 0px 3px #00ff00');
   }
 
+  toggleInvalidCard(divname) {
+    let mahjong_self = this;
+    console.log("toggleInvalidCard");
+    console.log(divname);
+    $('#' + divname).css('box-shadow', '0px 0px 0px 3px #ff0000');
+    $('#' + divname).css('-moz-box-shadow', '0px 0px 0px 3px #ff0000');
+    $('#' + divname).css('-webkit-box-shadow', '0px 0px 0px 3px #ff0000');
+    $('#' + divname).css('-o-box-shadow', '0px 0px 0px 3px #ff0000');
+    setTimeout(() => {
+      mahjong_self.untoggleCard(divname);
+    }, 1000);
+  }
+
   // untoggleAll(){
   //   $(".slot").css("opacity","1.0");
   // }
@@ -448,7 +507,7 @@ class Mahjong extends GameTemplate {
 
         console.log("OUR CARDS: ");
         console.log(JSON.stringify(this.game.deck[0].hand));
-        alert("play handleGameLoop() -- why not replace this with an init function?");
+        // alert("play handleGameLoop() -- why not replace this with an init function?");
 
         this.updateLog("add notes to log");
         this.updateStatus("display in status message box");
@@ -456,6 +515,19 @@ class Mahjong extends GameTemplate {
         this.game.queue.splice(qe, 1);
         return 1;
 
+      }
+
+      if (mv[0] === "exit_game"){
+        this.game.queue.splice(qe, 1);
+        let player = parseInt(mv[1])
+        this.saveGame(this.game.id);
+
+        if (this.game.player === player){
+          window.location.href = "/arcade";
+        }else{
+          this.updateStatus("Player has exited the building");
+        }
+        return 0;
       }
 
       return 1;

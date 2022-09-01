@@ -112,6 +112,10 @@ div[id^="row"] {
   border-radius: 7px;
 }
 
+div[id^="row"]:hover {
+  transform: translate(-4px, -4px);
+}
+
 div[id^="row9"], div[id^="row10"], div[id^="row11"], div[id^="row12"], div[id^="row13"], div[id^="row14"] {
   z-index: 2;
   position: relative;
