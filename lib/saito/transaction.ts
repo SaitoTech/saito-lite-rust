@@ -403,7 +403,7 @@ class Transaction {
   }
 
   returnPaymentTo(publickey) {
-    const slips = this.returnSlipsToAndFrom(publickey);
+    let slips = this.returnSlipsToAndFrom(publickey);
     let x = BigInt(0);
     for (let v = 0; v < slips.to.length; v++) {
       if (slips.to[v].add === publickey) {
@@ -434,7 +434,7 @@ class Transaction {
   }
 
   returnSlipsFrom(publickey) {
-    const x = [];
+    let x = [];
     if (this.transaction.from != null) {
       for (let v = 0; v < this.transaction.from.length; v++) {
         if (this.transaction.from[v].add === publickey) {
@@ -446,7 +446,7 @@ class Transaction {
   }
 
   returnSlipsToAndFrom(publickey) {
-    const x: any = {};
+    let x: any = {};
     x.from = [];
     x.to = [];
     if (this.transaction.from != null) {
@@ -467,7 +467,7 @@ class Transaction {
   }
 
   returnSlipsTo(publickey) {
-    const x = [];
+    let x = [];
     if (this.transaction.to != null) {
       for (let v = 0; v < this.transaction.to.length; v++) {
         if (this.transaction.to[v].add === publickey) {
