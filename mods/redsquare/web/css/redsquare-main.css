@@ -61,7 +61,12 @@ span.redsquare-home-red-square+span {
 }
 
 
-
+.post-tweet-img-icon {
+  margin-top: 0.5rem;
+  float: left;
+  font-size: 5rem;
+  color: #444A;
+}
 .post-tweet-preview {
   padding: 0rem;
   padding-bottom: 2rem;

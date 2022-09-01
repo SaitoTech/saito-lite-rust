@@ -26,34 +26,27 @@ class Post {
 
     let post_self = this;
 
-    app.browser.addDragAndDropFileUploadToElement("redsquare-post-tweet-image-upload",
+    app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay",
       (file) => {
         if (this.images.length >= 4) {
           salert("Maximum 4 images allowed per tweet.");
         } else {
-
           let type = file.substring(file.indexOf(":")+1, file.indexOf(";"));
           if (mod.allowed_upload_types.includes(type)) {
             this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
           } else {
-            salert("Only following file types allowed: " + mod.allowed_upload_types.join(', '));
+            salert("allowed file types: " + mod.allowed_upload_types.join(', '));
           }
         }
       },
-      true);
+      false);
 
-    /*
-    document.getElementById('post-tweet-image-select-button').onclick = (e) => {
-      console.log(e);
+    document.querySelector(".post-tweet-img-icon").onclick = (e) => {
+      document.querySelector(".hidden_file_element_redsquare-tweet-overlay").click();
     }
+    document.querySelector(".my-form").style.display = "none";
 
-    document.getElementById('post-tweet-select-image').onclick = (e) => {
-      console.log('clicking button')
-      e.preventDefault();
-      const imageButton = document.getElementById('post-tweet-image-select-button');
-      imageButton.click()
-    }
-    */
+
 
     document.getElementById("post-tweet-button").onclick = (e) => {
 
@@ -128,6 +121,7 @@ class Post {
 
 
     }
+
 
     document.addEventListener('click', function (e) {
       if (typeof (e.target.classList) != 'undefined') {

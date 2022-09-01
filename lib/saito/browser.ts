@@ -639,8 +639,8 @@ class Browser {
     const hidden_upload_form = `
       <form class="my-form">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
-        <input type="file" id="hidden_file_element_${id}" multiple accept="*" class="treated">
-        <label class="button" for="fileElem">Select some files</label>
+        <input type="file" id="hidden_file_element_${id}" multiple accept="*" class="treated hidden_file_element_${id}">
+        <label class="button" class="hidden_file_element_button_${id}" id="hidden_file_element_button_${id}" for="hidden_file_element_${id}">Select some files</label>
       </form>
     `;
 
