@@ -109,7 +109,12 @@ class RedSquareMenu {
 
   }
 
-  renderItem(app, mod, component) {
+  renderItem(app, mod, component, params = null) {
+
+    let url = component
+    if (params) {
+      url = `${component}?${params}`;
+    }
 
     let matched = 0;
 
@@ -117,12 +122,12 @@ class RedSquareMenu {
       case "home":
         mod.home.render(app, mod, ".appspace");
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
-        window.location.hash = component;
+        window.location.hash = url;
         break;
       case "notifications":
         mod.notifications.render(app, mod, ".appspace");
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
-        window.location.hash = component;
+        window.location.hash = url;
         matched = 1;
         break;
       case "settings":
@@ -133,19 +138,19 @@ class RedSquareMenu {
         document.querySelector(".appspace").innerHTML = "";
         let settings_self = app.modules.returnModule("Settings");
         settings_self.respondTo("appspace").render(settings_self.app, settings_self);
-        window.location.hash = component;
+        window.location.hash = url;
         matched = 1;
         break;
       case "contacts":
         mod.contacts.render(app, mod, ".appspace");
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
-        window.location.hash = component;
+        window.location.hash = url;
         matched = 1;
         break;
       case "games":
         mod.games.render(app, mod, ".appspace");
         mod.gsidebar.render(app, mod, ".saito-sidebar-right");
-        window.location.hash = component;
+        window.location.hash = url;
         matched = 1;
         break;
       default:
@@ -154,7 +159,7 @@ class RedSquareMenu {
         //
         for (let i = 0; i < app.modules.mods.length; i++) {
           if (app.modules.mods[i].returnSlug() == component) {
-            window.location.hash = component;
+            window.location.hash = url;
             matched = 1;
             document.querySelector(".appspace").innerHTML = "";
             let x = app.modules.mods[i].respondTo("appspace");
