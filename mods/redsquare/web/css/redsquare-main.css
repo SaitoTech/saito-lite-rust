@@ -500,16 +500,15 @@ span.redsquare-home-red-square+span {
 
 .post-tweet-img-preview img {
   top: 0px;
-  position: relative;
-  float: left;
   height: 5rem;
-  width: auto;
+  width: 104%;
   margin-left: auto;
   margin-right: auto;
   width: auto;
   margin-top: 1rem;
   margin-right: rem;
   box-shadow: 1px 1px 1px 2px #ccc;
+  object-fit: contain;
 }
 
 
@@ -553,7 +552,7 @@ span.redsquare-home-red-square+span {
 #tweet-overlay-img-cont img {
   height: 70vh;
   width: 80vw;
-  background-size: cover;
+  object-fit: contain;
 }
 
 /* Hacks to stop old arcade and chat content from ruining display */
@@ -610,6 +609,13 @@ span.redsquare-home-red-square+span {
     min-width: 8%;
     margin-right: 10%;
   }
+
+  #tweet-overlay-img-cont img {
+    height: 90vh;
+    width: 90vw;
+    object-fit: contain;
+  }
+  
   
   .redsquare-tweet-tools span {
     /* font-size: 1.3rem; */
