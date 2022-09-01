@@ -8476,7 +8476,7 @@ playerTurnHeadlineSelected(card, player) {
               <option value="enable" >enable</option>
               <option value="disable" selected>disable</option>
             </select>
-
+            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 	</div>
 
             <div id="game-wizard-advanced-box" class="game-wizard-advanced-box" style="display:block;padding-left:20px;">
