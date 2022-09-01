@@ -161,6 +161,7 @@ class Monarchy extends GameTemplate {
     //Test for mobile
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
+        console.log("Mobile user!");
         this.hud.card_width = 100; //Smaller cards
         this.cardbox.skip_card_prompt = 0;
       } 
