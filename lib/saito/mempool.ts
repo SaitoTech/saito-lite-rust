@@ -35,10 +35,11 @@ class Mempool {
     //
     // data stores
     //
-    this.mempool = {}; // contained in object so pass-by-reference
-    this.mempool.blocks = []; // in block creation -- block can remove from
-    this.mempool.transactions = []; // mempool quickly.
-    this.mempool.golden_tickets = [];
+    this.mempool = {
+      blocks: new Array<Block>(), // in block creation -- block can remove from
+      transactions: new Array<Transaction>(), // mempool quickly.
+      golden_tickets: new Array<Transaction>(),
+    }; // contained in object so pass-by-reference
 
     //
     // work in mempool
@@ -144,7 +145,9 @@ class Mempool {
         if (this.mempool.blocks.length > 0) {
           if (this.app.blockchain.indexing_active === false) {
             const block = this.mempool.blocks.shift();
-            this.app.blockchain.addBlockToBlockchain(block).then(r => {return;});
+            this.app.blockchain.addBlockToBlockchain(block).then((r) => {
+              return;
+            });
           }
         } else {
           this.processing_active = false;
@@ -481,22 +484,16 @@ class Mempool {
 
     this.clearing_active = true;
 
-    //
     // lets make some hmaps
-    //
-    const mempool_transactions = [];
-    const replacement = [];
+    const mempool_transactions = new Map<string, number>();
+    const replacement = new Array<Transaction>();
 
-    //
     // create hashmap for mempool transactions
-    //
     for (let b = 0; b < this.mempool.transactions.length; b++) {
       mempool_transactions[this.mempool.transactions[b].transaction.sig] = b;
     }
 
-    //
     // set hashmap value to -1 for all txs in block
-    //
     for (let b = 0; b < blk.transactions.length; b++) {
       const location_in_mempool = mempool_transactions[blk.transactions[b].transaction.sig];
       if (location_in_mempool !== undefined) {
@@ -505,14 +502,10 @@ class Mempool {
       }
     }
 
-    //
     // delete any old golden tickets
-    //
-    this.mempool.golden_tickets = [];
+    this.mempool.golden_tickets.length = 0; // = new Array<Transaction>();
 
-    //
     // fill our replacement array with all non -1 values
-    //
     for (let t = 0; t < this.mempool.transactions.length; t++) {
       if (mempool_transactions[this.mempool.transactions[t].transaction.sig] > -1) {
         replacement.push(this.mempool.transactions[t]);
@@ -521,9 +514,7 @@ class Mempool {
 
     this.mempool.transactions = replacement;
 
-    //
     // and delete utxo references too
-    //
     for (let b = 0; b < blk.transactions.length; b++) {
       delete this.transactions_hmap[blk.transactions[b].transaction.sig];
       for (let i = 0; i < blk.transactions[b].transaction.from.length; i++) {

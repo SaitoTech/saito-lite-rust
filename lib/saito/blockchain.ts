@@ -512,9 +512,7 @@ class Blockchain {
     if (this.debugging) {
       console.log("add block failure: " + block.returnHash());
     }
-    //
     // clean up mempool
-    //
     this.app.mempool.removeBlockAndTransactions(block);
   }
 
