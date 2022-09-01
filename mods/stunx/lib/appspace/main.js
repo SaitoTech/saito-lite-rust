@@ -12,6 +12,8 @@ class StunxAppspace {
             app.browser.addElementToSelector(StunxAppspaceTemplate(app, mod), ".appspace");
         }
         this.attachEvents(app, mod);
+
+        console.log("url parameter ", app.browser.returnURLParameter('invite_code'))
     }
 
     attachEvents(app, mod) {
