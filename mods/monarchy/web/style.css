@@ -47,11 +47,14 @@ body {
 }
 
 .passivecard{
+  width: 100%;
   filter: brightness(0.8);
 }
-
 .passivecard:hover{
  filter:  brightness(1.0); 
+}
+.passivecard.dim{
+  filter: brightness(0.35);  
 }
 
 .cardstacks{
@@ -77,19 +80,12 @@ body {
   max-width: 120px;
 }
 
-.cardpile .showcard, .cardpile .passivecard{
-  width: 100%;
-}
-
-.cardpile .showcard.dim{
-  filter: brightness(0.35);  
-}
 
 .logcard{
   font-weight: bold;
 }
 
-.showcard + .tiptext{
+.showcard .tiptext{
   display: none;
 }
 
@@ -176,6 +172,7 @@ body {
   border: solid var(--dominion-parchment) 1px;
   color: ghostwhite;
   padding: 1em;
+  min-width: min(500px,95vw);
 }
 
 .attack_overlay h1, .attack_overlay h2{

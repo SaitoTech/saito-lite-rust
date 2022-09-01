@@ -674,6 +674,18 @@ i.menu_icon_icon{
   list-style-type: none;
 }
 
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .status-header{
+    min-height: 32px;
+    margin-bottom: 5px;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+}
+
+
+
 
 /*******************/
 /** GAME LOG **/

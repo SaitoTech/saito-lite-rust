@@ -1784,6 +1784,13 @@ div#message-wrapper {
     align-items: start;
     height: 3em;
   }
+  .rules-overlay{
+    min-width: unset;
+    max-width: 100vw;
+    width: 95vw;
+    font-size: 1em;
+  }
+
 }
 
 /* modals */
