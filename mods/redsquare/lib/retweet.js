@@ -10,18 +10,20 @@ class Retweet {
       this.tweet = tweet;
     }
 
-    render(app, mod, tweet) {
-      this.tweet = tweet;
+    render(app, mod, tweet=null) {
+      if (tweet != null) {
+        this.tweet = tweet;
+      }
       this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
-console.log("HTML TO DISPLAY: " + RetweetTemplate(app, mod, app.wallet.returnPublicKey(), tweet));
-      app.browser.addElementToSelector(RetweetTemplate(app, mod, app.wallet.returnPublicKey(), tweet), "#redsquare-tweet-overlay");
-console.log("DISPLAYED");
+      app.browser.addElementToSelector(RetweetTemplate(app, mod, app.wallet.returnPublicKey(), this.tweet), "#redsquare-tweet-overlay");
       this.attachEvents(app, mod);
     }
 
     attachEvents(app, mod) { 
 
-      document.getElementById("post-tweet-button").onclick = (e) => {
+      let divid = "post-tweet-button-";
+      if (this.tweet != null) { divid += this.tweet.tx.transaction.sig; }
+      document.getElementById(divid).onclick = (e) => {
 
         e.preventDefault();
 
