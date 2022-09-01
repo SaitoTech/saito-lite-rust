@@ -76,20 +76,12 @@ position: relative;
   margin-top: 20px;
 }
 
-.selected .empty:hover{
-  background-color: rgba(240,240,240,0.7);
-  border-radius: 10px;
+.selected {
+  box-shadow: 0px 0px 0px 3px #00ff00 !important;
+  -moz-box-shadow: 0px 0px 0px 3px #00ff00 !important;
+  -webkit-box-shadow: 0px 0px 0px 3px #00ff00 !important;
+  -o-box-shadow: 0px 0px 0px 3px #00ff00 !important;
 }
-
-.selected .valid:hover{
-  background-color: rgba(160,255,160,0.85);
-  border-radius: 10px;
-}
-.selected .invalid:hover{
-  background-color: rgba(255,160,160,0.85);
-  border-radius: 10px;
-}
-
 
 .mahj-rowbox {
   order: 2;
@@ -105,18 +97,18 @@ position: relative;
 
 #row4_slot1, #row4_slot14 {
   position: relative;
-  top: calc(50%+2.5px);
-  box-shadow: none !important;
-  -moz-box-shadow:none !important;
-  -webkit-box-shadow: none !important;
-  -o-box-shadow: none !important;
+  top: 50%;
+  box-shadow: 0px 10px 12px 1px #000000;
+  -moz-box-shadow: 0px 10px 12px 1px #000000;
+  -webkit-box-shadow: 0px 10px 12px 1px #000000;
+  -o-box-shadow: 0px 10px 12px 1px #000000;
 }
 
 div[id^="row"] {
-  box-shadow: rgba(0, 0, 0, 0.4) -12px -10px 8px, rgba(0, 0, 0, 0.35) 8px -8px, rgba(0, 0, 0, 0.25) 10px 10px, rgba(0, 0, 0, 0.15) 12px 12px, rgba(0, 0, 0, 0.1) 14px 14px, rgba(0, 0, 0, 0.05) 16px 16px;
-  -moz-box-shadow:rgba(0, 0, 0, 0.4) -12px -10px 8px, rgba(0, 0, 0, 0.35) 8px -8px, rgba(0, 0, 0, 0.25) 10px 10px, rgba(0, 0, 0, 0.15) 12px 12px, rgba(0, 0, 0, 0.1) 14px 14px, rgba(0, 0, 0, 0.05) 16px 16px;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.4) -12px -10px 8px, rgba(0, 0, 0, 0.35) 8px -8px, rgba(0, 0, 0, 0.25) 10px 10px, rgba(0, 0, 0, 0.15) 12px 12px, rgba(0, 0, 0, 0.1) 14px 14px, rgba(0, 0, 0, 0.05) 16px 16px;
-  -o-box-shadow:rgba(0, 0, 0, 0.4) -12px -10px 8px, rgba(0, 0, 0, 0.35) 8px -8px, rgba(0, 0, 0, 0.25) 10px 10px, rgba(0, 0, 0, 0.15) 12px 12px, rgba(0, 0, 0, 0.1) 14px 14px, rgba(0, 0, 0, 0.05) 16px 16px;
+  box-shadow: 10px 10px 12px 1px #000000;
+  -moz-box-shadow:10px 10px 12px 1px #000000;
+  -webkit-box-shadow: 10px 10px 12px 1px #000000;
+  -o-box-shadow:10px 10px 12px 1px #000000;
   border-radius: 7px;
 }
 
@@ -199,14 +191,3 @@ div[id^="row21"] {
     order: 1;
   }
 }
-
-
-
-
-/* black shadow - remove for empty cells */
-
-/* box-shadow: rgba(0, 0, 0, 0.4) 5px 5px, 
-rgba(0, 0, 0, 0.3) 10px 10px, 
-rgba(0, 0, 0, 0.2) 15px 15px, 
-rgba(0, 0, 0, 0.1) 20px 20px, 
-rgba(0, 0, 0, 0.05) 25px 25px; */

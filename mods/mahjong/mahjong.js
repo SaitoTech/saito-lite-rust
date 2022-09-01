@@ -69,34 +69,35 @@ class Mahjong extends GameTemplate {
     return contains;
   }
 
+  emptyCells = [
+    [1,1], [1,14],
+    [2,1], [2,2], [2,3], [2,12], [2,13], [2,14],
+    [3,1], [3,2], [3,13], [3,14],
+    [5,1], [5,14],
+    [6,1], [6,2], [6,13], [6,14],
+    [7,1], [7,2], [7,3], [7,12], [7,13], [7,14],
+    [8,1], [8,14],
+    // 2nd layer
+    [9,1], [9,2], [9,3], [9,4], [9,11], [9,12], [9,13], [9,14],
+    [10,1], [10,2], [10,3], [10,4], [10,11], [10,12], [10,13], [10,14],
+    [11,1], [11,2], [11,3], [11,4], [11,11], [11,12], [11,13], [11,14],
+    [12,1], [12,2], [12,3], [12,4], [12,11], [12,12], [12,13], [12,14],
+    [13,1], [13,2], [13,3], [13,4], [13,11], [13,12], [13,13], [13,14],
+    [14,1], [14,2], [14,3], [14,4], [14,11], [14,12], [14,13], [14,14],
+    // 3rd layer
+    [15,1], [15,2], [15,3], [15,4], [15,5], [15,10], [15,11], [15,12], [15,13], [15,14],
+    [16,1], [16,2], [16,3], [16,4], [16,5], [16,10], [16,11], [16,12], [16,13], [16,14],
+    [17,1], [17,2], [17,3], [17,4], [17,5], [17,10], [17,11], [17,12], [17,13], [17,14],
+    [18,1], [18,2], [18,3], [18,4], [18,5], [18,10], [18,11], [18,12], [18,13], [18,14],
+    // 4th layer
+    [19,1], [19,2], [19,3], [19,4], [19,5], [19,6], [19,9], [19,10], [19,11], [19,12], [19,13], [19,14],
+    [20,1], [20,2], [20,3], [20,4], [20,5], [20,6], [20,9], [20,10], [20,11], [20,12], [20,13], [20,14],
+    //5th layer (top)
+    [21,1], [21,2], [21,3], [21,4], [21,5], [21,6], [21,9], [21,10], [21,11], [21,12], [21,13], [21,14],
+  ];
+
   // displayBoard
   async displayBoard(timeInterval = 1) {
-    var emptyCells = [
-      [1,1], [1,14],
-      [2,1], [2,2], [2,3], [2,12], [2,13], [2,14],
-      [3,1], [3,2], [3,13], [3,14],
-      [5,1], [5,14],
-      [6,1], [6,2], [6,13], [6,14],
-      [7,1], [7,2], [7,3], [7,12], [7,13], [7,14],
-      [8,1], [8,14],
-      // 2nd layer
-      [9,1], [9,2], [9,3], [9,4], [9,11], [9,12], [9,13], [9,14],
-      [10,1], [10,2], [10,3], [10,4], [10,11], [10,12], [10,13], [10,14],
-      [11,1], [11,2], [11,3], [11,4], [11,11], [11,12], [11,13], [11,14],
-      [12,1], [12,2], [12,3], [12,4], [12,11], [12,12], [12,13], [12,14],
-      [13,1], [13,2], [13,3], [13,4], [13,11], [13,12], [13,13], [13,14],
-      [14,1], [14,2], [14,3], [14,4], [14,11], [14,12], [14,13], [14,14],
-      // 3rd layer
-      [15,1], [15,2], [15,3], [15,4], [15,5], [15,10], [15,11], [15,12], [15,13], [15,14],
-      [16,1], [16,2], [16,3], [16,4], [16,5], [16,10], [16,11], [16,12], [16,13], [16,14],
-      [17,1], [17,2], [17,3], [17,4], [17,5], [17,10], [17,11], [17,12], [17,13], [17,14],
-      [18,1], [18,2], [18,3], [18,4], [18,5], [18,10], [18,11], [18,12], [18,13], [18,14],
-      // 4th layer
-      [19,1], [19,2], [19,3], [19,4], [19,5], [19,6], [19,9], [19,10], [19,11], [19,12], [19,13], [19,14],
-      [20,1], [20,2], [20,3], [20,4], [20,5], [20,6], [20,9], [20,10], [20,11], [20,12], [20,13], [20,14],
-      //5th layer (top)
-      [21,1], [21,2], [21,3], [21,4], [21,5], [21,6], [21,9], [21,10], [21,11], [21,12], [21,13], [21,14],
-    ];
 
     let index = 0;
     this.game.board = {}
@@ -104,13 +105,18 @@ class Mahjong extends GameTemplate {
     console.log(Object.values(this.game.deck[0].cards));
     for (let i = 1; i <= 21; i++){
       for (let j = 1; j <= 14; j++){
-        if (!this.isArrayInArray(emptyCells, [i,j])) {
-          let position = `row${i}_slot${j}`;
+        let position = `row${i}_slot${j}`;
+        if (!this.isArrayInArray(this.emptyCells, [i,j])) {
           this.game.board[position] = Object.values(this.game.deck[0].cards)[index];
           index++;
+        } else {
+          this.game.board[position] = "E";
         }
       }
     }
+    this.game.cardsLeft = index;
+    this.game.selected = "";
+    this.game.hidden=[];
     console.log(this.game);
     if (this.browser_active == 0) { return; }
     $(".slot").removeClass("empty");
@@ -121,21 +127,28 @@ class Mahjong extends GameTemplate {
       for (let i = 1; i <= 21; i++){
         for (let j = 1; j <= 14; j++){
           var divname = `row${i}_slot${j}`;
-          if (!this.isArrayInArray(emptyCells, [i,j])) {
+          if (!this.isArrayInArray(this.emptyCells, [i,j])) {
             await timeout(timeInterval);
             $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck[0].cards)[index++]));
           } else {
-            $('#' + divname).css('box-shadow','none');
-            $('#' + divname).css('-moz-box-shadow','none');
-            $('#' + divname).css('-webkit-box-shadow','none');
-            $('#' + divname).css('-o-box-shadow','none');
+            this.makeInvisible(divname);
           }
         }
       }
+      this.attachEventsToBoard();
     } catch (err) {
       console.log(err);
       console.log(this.game);
     }
+  }
+
+  makeInvisible(divname) {
+    $('#' + divname).css('box-shadow','none');
+    $('#' + divname).css('-moz-box-shadow','none');
+    $('#' + divname).css('-webkit-box-shadow','none');
+    $('#' + divname).css('-o-box-shadow','none');
+    $('#' + divname).css('opacity','0.0');
+    $('#' + divname).css('pointer-events','none');
   }
 
   returnCardImageHTML(name) {
@@ -232,6 +245,168 @@ class Mahjong extends GameTemplate {
 
   }
 
+  attachEventsToBoard() {
+
+    let mahjong_self = this;
+    console.log('mahjong_self');
+    console.log(mahjong_self);
+
+    $('.slot').off();
+    $('.slot').on('click', function() {
+
+      let card = $(this).attr("id");
+
+      // console.log('mahjong_self.game');
+      // console.log(mahjong_self.game);
+      // console.log('mahjong_self.board');
+      // console.log(mahjong_self.board);
+      // console.log('mahjong_self.game.board[card]');
+      // console.log(mahjong_self.game.board[card]);
+      // console.log('selected');
+      // console.log(mahjong_self.game.selected);
+      if (mahjong_self.game.selected === card) { //Selecting same card again
+        mahjong_self.untoggleCard(card);
+        mahjong_self.game.selected = "";
+        return;
+      } else {
+        if (mahjong_self.game.selected === "") { // New Card
+          console.log('mahjong_self.board[card] !== "E"');
+          console.log(mahjong_self.game.board[card] !== "E");
+          if (mahjong_self.game.board[card] !== "E") {
+            console.log('mahjong_self.selected');
+            console.log(mahjong_self.game.selected);
+            mahjong_self.game.selected = card;
+            mahjong_self.toggleCard(card);
+            return;
+          } 
+        } else {
+          if (mahjong_self.game.board[card] === mahjong_self.game.board[mahjong_self.game.selected]) {
+            mahjong_self.makeInvisible(card);
+            mahjong_self.makeInvisible(mahjong_self.game.selected);
+            mahjong_self.game.hidden.push(card);
+            mahjong_self.game.hidden.push(mahjong_self.game.selected);
+            mahjong_self.game.cardsLeft = mahjong_self.game.cardsLeft - 2;
+            mahjong_self.game.selected = "";
+            return;
+          } else {
+            mahjong_self.untoggleCard(mahjong_self.game.selected);
+            mahjong_self.game.selected = "";
+            // add invalid move effect
+            return;
+          }
+        }
+        //  if (!selected) { //New Card
+
+        // } else{
+        //   //Change selection
+        //   if (mahjong_self.game.board[card][0]!=="E"){ 
+        //     mahjong_self.untoggleCard(selected);
+        //     console.log('mahjong_self.game.board[0][card]');
+        //     console.log(mahjong_self.game.board[card]);
+        //     console.log('mahjong_self.game.board[0][selected]');
+        //     console.log(mahjong_self.game.board[selected]);
+        //     mahjong_self.toggleCard(card);
+        //     selected=card;
+            
+        //     return;
+        //   } 
+
+        // // Move card to empty slot if it is legal
+        // // selected must work in this context
+        // if (mahjong_self.canCardPlaceInSlot(selected, card)) {
+        //   mahjong_self.prependMove(`move\t${selected}\t${card}`);
+        //   //mahjong_self.endTurn();
+            
+        //   let x = JSON.stringify(mahjong_self.game.board[selected]);
+        //   let y = JSON.stringify(mahjong_self.game.board[card]);
+
+        //   mahjong_self.game.board[selected] = JSON.parse(y);
+        //   mahjong_self.game.board[card] = JSON.parse(x);
+          
+        //   mahjong_self.untoggleCard(card);
+        //   mahjong_self.untoggleCard(selected);
+       
+        //   $("#"+selected).html(mahjong_self.returnCardImageHTML(mahjong_self.game.board[selected]));
+        //   $("#"+card).html(mahjong_self.returnCardImageHTML(mahjong_self.game.board[card]));
+        //   $("#"+selected).toggleClass("empty");
+        //   $("#"+card).toggleClass("empty");
+        //   $("#rowbox").removeClass("selected");
+        //   selected = "";
+          
+        //   //Use recycling function to check if in winning state
+        //   mahjong_self.displayUserInterface();
+
+        //   if (mahjong_self.scanBoard(false)) {
+        //     //salert("Congratulations! You win!");
+        //     mahjong_self.displayModal("Congratulations!", "You win the deal!");
+        //     mahjong_self.prependMove("win");
+        //     mahjong_self.endTurn();
+        //   }else if (!mahjong_self.hasAvailableMoves()){
+        //     if (mahjong_self.game.state.recycles_remaining == 0){
+        //       mahjong_self.displayWarning("Game over", "There are no more available moves to make.", 9000);
+        //       //salert("No More Available Moves, you lose!");
+        //     }else{
+        //       mahjong_self.shuffleFlash();
+        //     }
+        //   }
+        //   return;
+  
+        // } else {
+        //   //SmartTip, slightly redundant with internal logic of canCardPlaceInSlot
+        //   let smartTip;
+        //   let predecessor = mahjong_self.getPredecessor(card);
+        //   if (predecessor){
+        //     let cardValue = parseInt(mahjong_self.returnCardNumber(predecessor))+1;
+        //     if (cardValue < 11)
+        //       smartTip = "Hint: Try a "+cardValue+" of "+mahjong_self.cardSuitHTML(mahjong_self.returnCardSuite(predecessor));
+        //     else smartTip = "Unfortunately, no card can go there";
+        //   }else{
+        //     smartTip = "Hint: Try a 2 of any suit";
+        //   }
+        //   //Feedback
+        //   mahjong_self.displayWarning("Invalid Move", "Sorry, "+mahjong_self.cardSuitHTML(mahjong_self.returnCardSuite(selected))+mahjong_self.returnCardNumber(selected)+" cannot go there... ");
+        //   //salert("Sorry, "+mahjong_self.cardSuitHTML(mahjong_self.returnCardSuite(selected))+mahjong_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
+        //   mahjong_self.untoggleCard(selected);
+        //   selected = "";
+        //   $("#rowbox").removeClass("selected");
+        //   return;
+        // }
+      // }
+      }
+    });
+  }
+
+  toggleCard(divname) {
+    console.log("toggleCard");
+    console.log(divname);
+    divname = '#' + divname;
+    $(divname).css('box-shadow', '0px 0px 0px 3px #00ff00');
+    $(divname).css('-moz-box-shadow', '0px 0px 0px 3px #00ff00');
+    $(divname).css('-webkit-box-shadow', '0px 0px 0px 3px #00ff00');
+    $(divname).css('-o-box-shadow', '0px 0px 0px 3px #00ff00');
+  }
+
+  // untoggleAll(){
+  //   $(".slot").css("opacity","1.0");
+  // }
+
+  untoggleCard(divname) {
+    console.log("untoggleCard");
+    console.log(divname);
+    divname = '#' + divname;
+    if (divname === "#row4_slot1" || divname === "#row4_slot14") {
+      $(divname).css('box-shadow', '0px 10px 12px 1px #000000');
+      $(divname).css('-moz-box-shadow', '0px 10px 12px 1px #000000');
+      $(divname).css('-webkit-box-shadow', '0px 10px 12px 1px #000000');
+      $(divname).css('-o-box-shadow', '0px 10px 12px 1px #000000');
+    } else {
+      $(divname).css('box-shadow', '0px 10px 12px 1px #000000');
+      $(divname).css('-moz-box-shadow', '0px 10px 12px 1px #000000');
+      $(divname).css('-webkit-box-shadow', '0px 10px 12px 1px #000000');
+      $(divname).css('-o-box-shadow', '0px 10px 12px 1px #000000');
+    }
+  }
+
 
   ////////////////////
   // VERY IMPORTANT //
@@ -253,7 +428,7 @@ class Mahjong extends GameTemplate {
   //
   handleGameLoop(msg=null) {
 
-    let mahjong_self = this;
+    // let mahjong_self = this;
 
     ///////////
     // QUEUE //
@@ -337,9 +512,10 @@ class Mahjong extends GameTemplate {
     ];
 
     let deck = {};
-
-    for (let i = 0; i<cards.length; i++) {
-      for (let j=0; j<4; j++){
+    
+    for (let j=0; j<4; j++){
+      cards.sort(() => Math.random() - 0.5);
+      for (let i = 0; i<cards.length; i++) {
         let name = cards[i];
         deck[`${name}_${j}`] = name;
       }
