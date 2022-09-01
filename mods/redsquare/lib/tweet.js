@@ -154,6 +154,7 @@ class RedSquareTweet {
     let obj = document.getElementById(tweet_div);
 
     if (obj) {
+console.log("A");
       app.browser.replaceElementById(html, tweet_id);
     } else {
       if (appendToSelector) {
@@ -193,6 +194,7 @@ class RedSquareTweet {
     let my_selector = ".redsquare-item-children-" + this.tx.transaction.sig;
 
     if (obj) {
+console.log("B");
       app.browser.replaceElementById(html, tweet_id);
     } else {
       app.browser.addElementToSelector(html, selector);
@@ -249,6 +251,7 @@ class RedSquareTweet {
     let my_selector = ".redsquare-item-children-" + this.tx.transaction.sig;
 
     if (obj) {
+console.log("C");
       app.browser.replaceElementById(html, tweet_id);
     } else {
       app.browser.addElementToSelector(html, selector);
@@ -295,8 +298,10 @@ class RedSquareTweet {
       let tweet_sig_id = el.getAttribute("data-id");
       document.querySelector(".redsquare-list").innerHTML = "";
       let new_title = "<i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE";
+console.log("D");
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE</div>`, "saito-page-header-title");
       document.querySelector(".saito-back-button").onclick = (e) => {
+console.log("E");
         app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
         mod.renderMainPage(app, mod);
         let redsquareUrl = window.location.origin + window.location.pathname;
