@@ -64,7 +64,11 @@ module.exports = ArcadeGameDetails = {
       //Attach events to advance options button
       document.querySelector(".game-wizard-options-toggle").onclick = (e) => {
         //Requery advancedOptions on the click so it can dynamically update based on # of players
-        mod.meta_overlay.show(app, gamemod, (gamemod.returnGameOptionsHTML() + accept_button));
+        let advancedOptionsHTML = gamemod.returnGameOptionsHTML();
+        if (!advancedOptionsHTML.includes(accept_button)){
+          advancedOptionsHTML += accept_button;
+        }
+        mod.meta_overlay.show(app, gamemod, advancedOptionsHTML);
         gamemod.attachAdvancedOptionsEventListeners();
         document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
         try {

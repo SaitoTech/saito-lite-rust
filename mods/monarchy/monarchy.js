@@ -31,7 +31,7 @@ class Monarchy extends GameTemplate {
     this.hud.respectDocking = true;
     
     this.cards_in_play = [];
-    this.is_testing = true;
+    this.is_testing = false;
     
     this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
@@ -155,12 +155,13 @@ class Monarchy extends GameTemplate {
     //
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("logcard", "", null);
-    this.cardbox.addCardType("card", "select", this.cardbox_callback);
+    this.cardbox.addCardType("card", "play", this.cardbox_callback);
     this.cardbox.addCardType("handy-help", "", function(){});
 
     //Test for mobile
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
+        console.log("Mobile user!");
         this.hud.card_width = 100; //Smaller cards
         this.cardbox.skip_card_prompt = 0;
       } 
@@ -1110,13 +1111,13 @@ initializeGame(game_id) {
       let available_coins = this.countMoney();
       this.updateStatusAndListCards(`You have ${available_coins} coins and ${this.game.state.buys} card${(this.game.state.buys>0)?"s":""} to buy`,[],true);
       this.filterBoardDisplay(available_coins);
-      $(".gameboard .cardpile").on("click", function(){
-        let newcard = $(this).attr("id");
+      this.cardbox.addCardType("cardpile","buy", function(newcard){
         if (we_self.game.state.supply[newcard] <= 0){
           we_self.displayModal(`No ${we_self.cardToText(newcard)} available!`);
           return;
         }
         if (we_self.deck[newcard].cost <= available_coins){
+          we_self.cardbox.removeCardType("cardpile");
           we_self.addMove(`buy\t${we_self.game.player}\t${newcard}`);
           we_self.addMove(`NOTIFY\tPlayer ${we_self.game.player} bought a ${we_self.cardToText(newcard)}.`);
           we_self.game.state.buys--;
@@ -1124,7 +1125,9 @@ initializeGame(game_id) {
           we_self.spendMoney(we_self.deck[newcard].cost);
           we_self.endTurn();
         }
-      });
+      }, false);
+      this.attachCardboxEvents();
+
       this.bindBackButtonFunction(()=>{
         we_self.game.state.buys = -1;
         we_self.endTurn();
@@ -1151,19 +1154,21 @@ initializeGame(game_id) {
     let we_self = this;
     this.updateStatus(this.formatStatusHeader(`You may select a card worth up to ${max_value}`));
     this.filterBoardDisplay(max_value);
-    $(".gameboard .cardpile").on("click", function(){
-      let newcard = $(this).attr("id");
+
+    this.cardbox.addCardType("cardpile","buy", function(newcard){
       if (we_self.game.state.supply[newcard] <= 0){
-          we_self.displayModal(`No ${we_self.cardToText(newcard)} available!`);
-          return;
-        }
+        we_self.displayModal(`No ${we_self.cardToText(newcard)} available!`);
+        return;
+      }
       if (we_self.deck[newcard].cost <= max_value){
-        $(".gameboard .cardpile").off();
+        we_self.cardbox.removeCardType("cardpile");
         we_self.addMove(`buy\t${we_self.game.player}\t${newcard}\t${target}`);
         we_self.addMove(`NOTIFY\tPlayer ${we_self.game.player} acquired a ${we_self.cardToText(newcard)}.`);
         we_self.endTurn();
       }
-    });
+    }, false);
+    this.attachCardboxEvents();
+
   }
 
   returnAttackOverlay(card){
@@ -1193,15 +1198,15 @@ initializeGame(game_id) {
 
   displayBoard(){
     let html = `<div class="cardstacks">`;
-    let cardClass = ($("#zoom").hasClass("active"))?"showcard":"passivecard";
+    let cardClass = ($("#zoom").hasClass("active"))?" showcard":"";
     for (let c in this.game.state.supply){
       if (c !== "curse"){
-        html += `<div class="cardpile tip" id="${c}">`;
+        html += `<div class="cardpile tip${cardClass}" id="${c}">`;
         if (this.game.state.supply[c] > 0){
-          html += `<img class="${cardClass}" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}">`;
+          html += `<img class="passivecard" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}">`;
           html += `<div class="tiptext">Remaining Supply: ${this.game.state.supply[c]}</div>`;
         }else{
-          html += `<img class="${cardClass}" src="/${this.name.toLowerCase()}/img/cards/blank.jpg">`;
+          html += `<img class="passivecard" src="/${this.name.toLowerCase()}/img/cards/blank.jpg">`;
           html += `<div class="tiptext">No more ${this.cardToText(c,true)}</div>`;
         }
         html += "</div>";  
@@ -1232,17 +1237,17 @@ initializeGame(game_id) {
     $("#zoom").on("click",function(){
       $("#zoom").toggleClass("active");
       if ($("#zoom").hasClass("active")){
-        $(".passivecard").addClass("showcard");
-        $(".passivecard").removeClass("passivecard");
+        $(".cardpile").addClass("showcard");
         $(".cardpile").removeClass("tip");
       }else{
         we_self.cardbox.detachCardEvents();
-        $(".showcard").addClass("passivecard");
-        $(".showcard").removeClass("showcard");
         $(".cardpile").addClass("tip");
+        $(".cardpile").removeClass("showcard");
       }
+      
+      //We don't use attachCardboxEvents because player may have events attached
+      //to the HUD that would be wiped out
       we_self.cardbox.attachCardEvents();
-      //we_self.attachCardboxEvents();
     });
 
     $(".cardstacks").draggable();
