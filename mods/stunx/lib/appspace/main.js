@@ -14,6 +14,7 @@ class StunxAppspace {
         this.attachEvents(app, mod);
         const inviteCode = app.browser.returnURLParameter('invite_code');
         this.joinVideoInvite(inviteCode);
+
     }
 
     attachEvents(app, mod) {

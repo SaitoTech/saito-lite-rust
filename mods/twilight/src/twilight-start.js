@@ -839,10 +839,10 @@ initializeGame(game_id) {
 	this.game.state.vp = -4;
 	this.game.state.round = 7; // will go to 8 next round
         this.game.state.defcon = 3; // will go to 4 next round
-        this.game.state.space_race_us_counter = 3;
-        this.game.state.space_race_ussr_counter = 3;
-	this.game.state.eagle_has_landed = "us";
-	this.game.state.eagle_has_landed_bonus_taken = 1; // set to 0 on round init
+        this.game.state.space_race_us = 8;
+        this.game.state.space_race_ussr = 6;
+	this.game.state.space_station = "us";
+	this.game.state.space_station_bonus_taken = 1; // is set to 0 on round init
 
 	this.game.state.events.usjapan = 1;
 	this.game.state.events.marshall = 1;
@@ -8476,7 +8476,7 @@ playerTurnHeadlineSelected(card, player) {
               <option value="enable" >enable</option>
               <option value="disable" selected>disable</option>
             </select>
-
+            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 	</div>
 
             <div id="game-wizard-advanced-box" class="game-wizard-advanced-box" style="display:block;padding-left:20px;">

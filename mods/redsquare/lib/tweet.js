@@ -279,7 +279,7 @@ class RedSquareTweet {
 
   attachEvents(app, mod) {
 
-    tweet_self = this;
+    let tweet_self = this;
 
     //
     // render tweet with children
@@ -462,8 +462,6 @@ class RedSquareTweet {
 
         let winHeight = window.innerHeight;
         let winWidth = window.innerWidth;
-
-        console.log("test A");
 
         // if (aspRatio > 1) {
         //   oImg.style.width = '80vw';

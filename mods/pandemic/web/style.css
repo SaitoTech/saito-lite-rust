@@ -123,9 +123,14 @@ body{
   padding: 0.26em 0.14em;
   width: 100px;
   height: 100px;
+  transition: all 0.25s; /* to match the embedded icons*/
 }
 
-.status-icon-menu i.menu_icon_icon:hover{
+.fake-border:hover{
+  background-color: whitesmoke;
+  
+}
+.fake-border:hover i.menu_icon_icon, .status-icon-menu i.menu_icon_icon:hover{
   transform: unset;
   background-color: whitesmoke;
   color: black;

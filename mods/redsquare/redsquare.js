@@ -68,7 +68,8 @@ class RedSquare extends ModTemplate {
 
   addNotification(app, mod, tx) {
     // skip notifying us of our own posts / comments
-    if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
+    if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
+console.log("from: " + JSON.stringify(tx.transaction.from) + " --- " + app.wallet.returnPublicKey());
       return;
     }
 console.log("ADD NOTIFICATION FOR US!");
@@ -731,6 +732,9 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
       // save tweets addressed to me
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
+console.log("RECEIVING TWEET TO ME AND SAVING IT");
+let txmsg = tx.returnMessage();
+console.log(JSON.stringify(txmsg));
         this.app.storage.saveTransaction(tx);
       }
 

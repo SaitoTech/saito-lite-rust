@@ -229,18 +229,18 @@ class Browser {
 
     let keys = [];
     let w = text.split(/(\s+)/);
-//console.log("LENGTH: " + w.length);
     for (let i = 0; i < w.length; i++) {
       if (w[i].length > 0) {
         if (w[i][0] === '@') {
-//console.log("LENGTH: " + w.length);
-//console.log(w[i].substring(i));
-	  let cleaner = w[i].substring(1);
-//console.log("input: " + cleaner);
-          let add = this.app.keys.returnPublicKeyByIdentifier(cleaner);
-          if (!keys.include(add)) {
-            keys.push(add);
-          }
+	  if (w.length > 1) {
+	    let cleaner = w[i].substring(1);
+            let add = this.app.keys.returnPublicKeyByIdentifier(cleaner);
+	    if (app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) { add = cleaner; }
+console.log("extracted address: " + add);
+            if (!keys.include(add)) {
+              keys.push(add);
+            }
+	  }
         }
       }
     }

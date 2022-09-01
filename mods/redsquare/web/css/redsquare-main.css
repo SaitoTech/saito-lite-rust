@@ -423,6 +423,7 @@ span.redsquare-home-red-square+span {
   border: 1px solid #d7d3d3;
   height: 40rem;
   background-size: cover !important;
+  background-repeat: no-repeat;
 }
 
 .redsquare-image-container div.tweet-multiple-img {
@@ -445,12 +446,14 @@ span.redsquare-home-red-square+span {
 
 .post-tweet-image-upload-content {
   display: grid;
-  grid-template-columns: 1fr 4fr;
-  grid-gap: 4rem;
+  grid-template-columns: 1fr 3fr;
+  grid-gap: 1rem;
+  justify-items: center;
+  align-items: center;
 }
 
 .post-tweet-image-upload-content i {
-  font-size: 4rem;
+  font-size: 3rem;
 }
 
 .post-tweet-image-upload #post-tweet-select-image {

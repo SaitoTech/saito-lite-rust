@@ -13,8 +13,7 @@ module.exports = (app, mod, publickey, parent_id = "", thread_id = "") => {
       <div class="post-tweet-image-upload-content">
         <i class="fa-solid fa-image"></i>
         <div>
-          <p id="post-tweet-select-image">Drop, Past or Browse for images</p>
-          <p id="post-tweet-supports">Supports JPG, JPEG, PNG</p>
+          <p id="post-tweet-select-image">Drop, Paste or Browse for images</p>
         </div>
       </div>
     </div>
