@@ -29,10 +29,23 @@ class Retweet {
 
         let text = document.getElementById('post-tweet-textarea').value;
 
+
+        //
+        // extracting keys from text AND then tweet
+        //
+        let keys = app.browser.extractKeys(text);
+        if (this.tweet != null) {
+          for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
+            if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
+              keys.push(this.tweet.tx.transaction.to[i].add);
+            }
+          }
+        }
+
         let retweet_tx = JSON.stringify(this.tweet.tx.transaction);
         let data = { text : text , retweet_tx : retweet_tx , retweet_link_properties : this.tweet.link_properties , retweet_link : this.tweet.link };
 
-        let newtx = mod.sendTweetTransaction(app, mod, data);  
+        let newtx = mod.sendTweetTransaction(app, mod, data, keys);  
 
       	mod.addTweetFromTransaction(app, mod, newtx);
       	mod.renderMainPage(app, mod);
