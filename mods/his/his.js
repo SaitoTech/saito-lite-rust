@@ -4705,9 +4705,14 @@ console.log("isf 4");
 
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {
+
 	    html += `<div class="space_faction">${his_self.returnFactionName(f)}</div>`;
             for (let i = 0; i < this.units[f].length; i++) {
-	      html += `<div class="space_unit">1 - ${this.units[f][i].type}</div>`;
+
+	      let b = "";
+	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
+
+	      html += `<div class="space_unit">1 - ${this.units[f][i].type} ${b}</div>`;
 	    }
 	  }
 	}
