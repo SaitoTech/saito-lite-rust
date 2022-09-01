@@ -310,7 +310,7 @@ class Pandemic extends GameTemplate {
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        this.hud.card_width = 120; //Smaller cards
+        this.hud.card_width = 100; //Smaller cards
         this.cardbox.skip_card_prompt = 0;
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, ".gameboard");
