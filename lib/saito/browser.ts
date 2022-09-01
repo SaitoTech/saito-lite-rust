@@ -235,8 +235,7 @@ class Browser {
 	  if (w.length > 1) {
 	    let cleaner = w[i].substring(1);
             let add = this.app.keys.returnPublicKeyByIdentifier(cleaner);
-	    if (app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) { add = cleaner; }
-console.log("extracted address: " + add);
+	    if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) { add = cleaner; }
             if (!keys.include(add)) {
               keys.push(add);
             }
