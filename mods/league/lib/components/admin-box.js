@@ -27,11 +27,12 @@ const players = (app, mod) => {
     selection = `<input type="hidden" class="game-wizard-players-select" name="game-wizard-players-select" value="${mod.minPlayers}">`;
     selection += mod.returnSingularGameOption(app);
   } else {
-    selection = `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
+    selection = `<div><label for="game-wizard-players-select">Number of Players:</label>
+                 <select class="game-wizard-players-select" name="game-wizard-players-select">`;
     for (let p = mod.minPlayers; p <= mod.maxPlayers; p++) {
       selection += `<option value="${p}">${p} player</option>`;
     }
-    selection += `</select>`;
+    selection += `</select></div>`;
   }
 
   return selection;
@@ -179,12 +180,18 @@ module.exports = AdminBox = {
           let gameName = selector.value;
           let gamemod = app.modules.returnModule(gameName);
           let advancedOptions = gamemod.returnGameOptionsHTML();
+          let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
           let moreOptions = players(app, gamemod);
+
+          if (advancedOptions.includes(accept_button)){
+            advancedOptions = advancedOptions.replace(accept_button, moreOptions+accept_button);
+          }else{
+            advancedOptions += moreOptions + accept_button; 
+          }
+
           let html = `<div class="game_option_league_wizard">
                       <form id="game-wizard-form" class="game-wizard-form">
                       ${advancedOptions}
-                      ${moreOptions}
-                      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
                       </form>
                       </div>
                       `;
