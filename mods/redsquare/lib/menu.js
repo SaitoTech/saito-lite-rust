@@ -121,13 +121,13 @@ class RedSquareMenu {
     switch (component) {
       case "home":
         mod.home.render(app, mod, ".appspace");
-        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         window.location.hash = url;
+        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         break;
       case "notifications":
         mod.notifications.render(app, mod, ".appspace");
-        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         window.location.hash = url;
+        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         matched = 1;
         break;
       case "settings":
@@ -137,20 +137,20 @@ class RedSquareMenu {
         // settings can render into appspace
         document.querySelector(".appspace").innerHTML = "";
         let settings_self = app.modules.returnModule("Settings");
-        settings_self.respondTo("appspace").render(settings_self.app, settings_self);
         window.location.hash = url;
+        settings_self.respondTo("appspace").render(settings_self.app, settings_self);
         matched = 1;
         break;
       case "contacts":
         mod.contacts.render(app, mod, ".appspace");
-        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         window.location.hash = url;
+        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         matched = 1;
         break;
       case "games":
         mod.games.render(app, mod, ".appspace");
-        mod.gsidebar.render(app, mod, ".saito-sidebar-right");
         window.location.hash = url;
+        mod.gsidebar.render(app, mod, ".saito-sidebar-right");
         matched = 1;
         break;
       default:
