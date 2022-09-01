@@ -118,6 +118,8 @@ body {
 }
 .arcade-games-wrapper {
   background-color: black;
+  max-height: 90vh;
+  overflow-y: scroll;
 }
 
 .arcade-navigator-bars-menu {
