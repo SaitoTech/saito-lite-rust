@@ -701,8 +701,8 @@ alert("new tweet 1!");
 alert("new tweet 2!");
           post.images.push(image);
 alert("new tweet 3!");
-          post.render(app, mod);
-alert("new tweet 3!");
+          post.render(this.app, this);
+alert("new tweet 4!");
     } catch (err) {
 console.log("error tweeting image");
     }
