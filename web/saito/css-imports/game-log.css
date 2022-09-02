@@ -1,0 +1,52 @@
+.log {
+  top: 0px;
+  right: calc(1rem - 500px);
+  position: absolute;
+  display: block;
+  width: 500px;
+  height: 100vh;
+  z-index: 500;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: #fff;
+  background: #222d;
+  transition: all 400ms;
+  font-size: 1rem;
+  font-family: "Courier New", monospace;
+  padding: 2px;
+  max-width:95vw;
+}
+
+/* Open Position */
+.log-lock {
+  right: 0;
+}
+
+.log > div{
+  padding-left: 1rem;
+  text-indent: -1rem;
+}
+
+/* For integration with game-cardbox*/
+.showcard{
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 525px) {
+  .log {
+    right: calc(1em - 95vw);
+    width: 95vw;
+    font-size: 1em;
+  }
+
+  .log-lock {
+    right: 0;
+  }
+
+  .log > div{
+    padding-left: 1em;
+    text-indent: -1em;
+  }
+
+}
