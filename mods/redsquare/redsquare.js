@@ -10,7 +10,7 @@ const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
 const GameCreator = require("./lib/appspace/arcade/game-creator");
 const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
-
+const PostTweet = require("./lib/post");
 
 class RedSquare extends ModTemplate {
 
@@ -62,6 +62,20 @@ class RedSquare extends ModTemplate {
           this.fetchNewTweets(app, this)
         }, 30000)
       }
+    }
+  }
+
+
+
+  tweetImage(image) {
+console.log("IMAGE---->"+image);
+    try {
+      let post = new PostTweet(this.app, this);
+          //post.images.push(image);
+          post.render(this.app, this);
+	  post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
+    } catch (err) {
+console.log("error tweeting image");
     }
   }
 

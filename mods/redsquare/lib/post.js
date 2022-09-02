@@ -106,16 +106,17 @@ class Post {
         let newtx = mod.sendTweetTransaction(app, mod, data, keys);
         mod.addTweetFromTransaction(app, mod, newtx, true);
 
-        if (thread_id !== "") {
-          mod.renderWithChildren(app, mod, thread_id);
-        } else {
-          if (parent_id !== "") {
-            mod.renderWithChildren(app, mod, parent_id);
+	if (post_self.browser_active == 1) {
+          if (thread_id !== "") {
+            mod.renderWithChildren(app, mod, thread_id);
           } else {
-            mod.renderMainPage(app, mod);
+            if (parent_id !== "") {
+              mod.renderWithChildren(app, mod, parent_id);
+            } else {
+              mod.renderMainPage(app, mod);
+            }
           }
-        }
-
+	}
         post_self.overlay.hide();
       }, 1000);
 
