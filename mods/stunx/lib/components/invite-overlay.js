@@ -38,7 +38,7 @@ class InviteOverlay {
             siteMessageNew("Copied code to clipboard");
         });
         document.querySelector('#copyVideoInviteLink').addEventListener('click', (e) => {
-            navigator.clipboard.writeText(`${window.location.host}/stunx?invite_code=${this.roomCode}`);
+            navigator.clipboard.writeText(`${window.location.host}/redsquare/#stunx?invite_code=${this.roomCode}`);
             siteMessageNew("Copied link to clipboard")
         });
 
