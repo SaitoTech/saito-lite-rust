@@ -556,7 +556,7 @@ span.redsquare-home-red-square+span {
 
 #tweet-overlay-img-cont img {
   height: 70vh;
-  width: 80vw;
+  width: 60vw;
   object-fit: contain;
 }
 
@@ -612,8 +612,8 @@ span.redsquare-home-red-square+span {
   }
 
   #tweet-overlay-img-cont img {
-    height: 90vh;
-    width: 90vw;
+    height: 70vh;
+    width: 80vw;
     object-fit: contain;
   }
   
@@ -961,10 +961,3 @@ span.redsquare-home-red-square+span {
   }
 }
 
-
-
-@media screen and (max-width: 396px) {
-  #tweet-overlay-img-cont img {
-    width: 90vw;
-  }
-}
