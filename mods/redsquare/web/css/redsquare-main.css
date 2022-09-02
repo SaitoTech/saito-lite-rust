@@ -588,10 +588,6 @@ span.redsquare-home-red-square+span {
     right: 5px !important;
   }
 
-  .redsquare-image-container div {
-    background-size: contain !important;
-    background-position: center center;
-  }
   .saito-main.appspace {
     min-width: 35rem;
    
