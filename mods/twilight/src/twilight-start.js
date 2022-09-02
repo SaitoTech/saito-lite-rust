@@ -15,7 +15,17 @@ var start_turn_game_queue = null;
 //
 var original_selected_card = null;
 
+/*
+  TODO: fix how card discarding is processed. Currently, processed three times in a row
+  1) in mv[0] === "event"
+  2) in mv[0] === "discard"
+  AND
+  3) in mv[0] === "resolve"
+  Every selection of a card on your turn (regardless of whether played for ops or event, yours or opponents) will
+  add (2) and (3) to the moves. Except 3 is resolve\tplay, so that isn't exactly a duplication since resolve checks for a card 
+  (not the key word play) 
 
+*/
 
 
 //////////////////
@@ -462,6 +472,7 @@ class Twilight extends GameTemplate {
       }
     });
 
+/****
     if (app.modules.returnModule("Post")) {
     this.menu.addSubMenuOption("game-game", {
       text : "Screenshot",
@@ -469,11 +480,12 @@ class Twilight extends GameTemplate {
       class : "game-post",
       callback : async function(app, game_mod) {
         await app.browser.captureScreenshot(function(image) {
-          game_mod.app.modules.returnModule("Post").postImage(image, game_mod.returnSlug());
+          game_mod.app.modules.returnModule("RedSquare").tweetImage(image);
         });
       },
     });
     }
+***/
 
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
@@ -2037,16 +2049,15 @@ try {
           if (this.game.state.round != 4 && this.game.state.round != 8) {
             console.log("Need to reshuffle: ");
 
-            // this resets discards = {} so that DECKBACKUP will not retain
-            let discarded_cards = this.returnDiscardedCards();
-
-            // shuttle diplomacy
+            // don't shuffle shuttle diplomacy back in if still in play
             if (this.game.state.events.shuttlediplomacy == 1) {
-              if (discarded_cards['shuttle'] != undefined) {
-                delete discarded_cards['shuttle'];
+              if (this.game.deck[0].discards['shuttle']) {
+                delete this.game.deck[0].discards['shuttle'];
               }
             }
 
+            // this resets discards = {} so that DECKBACKUP will not retain
+            let discarded_cards = this.returnDiscardedCards();
 
             if (Object.keys(discarded_cards).length > 0) {
 
@@ -2558,13 +2569,13 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["aldrichames", "onesmallstep", "flowerpower", "teardown", "evilempire", "marshallplan", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["aldrichames", "asia", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "muslimrevolution", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
 
-	this.game.state.round = 7;
- 	this.displayBoard();
+      	//this.game.state.round = 1;
+       	this.displayBoard();
       }
 
       //
@@ -4764,16 +4775,14 @@ playerTurnHeadlineSelected(card, player) {
       //
       if (5 > twilight_self.game.deck[0].crypt.length) {
 
-        let discarded_cards = twilight_self.returnDiscardedCards();
+        // don't shuffle shuttle diplomacy back in if still in play
+        if (this.game.state.events.shuttlediplomacy == 1) {
+          if (this.game.deck[0].discards['shuttle']) {
+            delete this.game.deck[0].discards['shuttle'];
+          }
+        }
 
-      	//
-      	// shuttle diplomacy
-      	//
-       	if (this.game.state.events.shuttlediplomacy == 1) {
-      	  if (discarded_cards['shuttle'] != undefined) {
-      	    delete discarded_cards['shuttle'];
-      	  }
-      	}
+        let discarded_cards = twilight_self.returnDiscardedCards();
 
 
         if (Object.keys(discarded_cards).length > 0) {
@@ -8271,7 +8280,9 @@ playerTurnHeadlineSelected(card, player) {
     }catch(err){
       console.log(err);
       console.log(cardname,this.game.deck[0].cards[cardname], card);
+      console.log(this.game.deck[0]);
     }
+    //img : "TNRnTS-73" , name : "Shuttle Diplomacy"
   }
 
   returnCardImage(cardname) {
