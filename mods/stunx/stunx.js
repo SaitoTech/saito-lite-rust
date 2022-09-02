@@ -17,6 +17,7 @@ class Stunx extends ModTemplate {
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
         this.app = app;
+        this.appspaceRendered = false;
         this.remoteStreamPosition = 0;
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
