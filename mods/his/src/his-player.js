@@ -184,11 +184,8 @@
   }
 
   returnPlayerOfFaction(faction) {
-console.log("checking who runs: " + faction);
     for (let i = 0; i < this.game.players_info.length; i++) {
       if (this.game.players_info[i].factions.includes(faction)) {
-console.log("found: " + (i+1));
-console.log("x: " + JSON.stringify(this.game.queue));
 	return i+1;
       }
       for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
@@ -199,7 +196,6 @@ console.log("x: " + JSON.stringify(this.game.queue));
         }
       }
     }
-console.log("did not find !");
     return 0;
   }
 
@@ -480,6 +476,84 @@ console.log("did not find !");
     this.attachCardboxEvents(function(card) {
       this.playerPlayCard(card, this.game.player, faction);
     });  
+
+  }
+
+
+  playerFortifySpace(faction, attacker, spacekey) {
+
+    let space = this.game.spaces[spacekey];
+    let faction_map = this.returnFactionMap(space, attacker, faction);
+    let player = this.returnPlayerOfFaction(faction);
+
+    let his_self = this;
+    let units_to_move = [];
+    let available_units = [];
+
+    for (f in faction_map) { 
+      if (faction_map[f] !== attacker) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          available_units.push({ faction : f , unit_idx : i });
+        }
+      }
+    }
+
+    let selectUnitsInterface = function(his_self, units_to_move, available_units, selectUnitsInterface) {
+
+      let msg = "Fortification Holds 4 Units: ";
+      let html = "<ul>";
+
+      for (let i = 0; i < available_units.length; i++) {
+	let tf = available_units[i].faction;
+	let tu = space.units[tf][available_units[i].unit_idx];
+	if (units_to_move.includes(i)) {
+          html += `<li class="option" style="font-weight:bold" id="${i}">${tu.name} - ${his_self.returnFactionName(tf)}</li>`;
+	} else {
+          html += `<li class="option" style="" id="${i}">${tu.name} - ${his_self.returnFactionName(tf)}</li>`;
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+     
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+
+	  // faction associative array
+	  let fa = {};
+	  for (let f in faction_map) { fa[f] = []; };
+
+	  // move in the units
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    let ui = units_to_move[i];
+	    let tf = units_available[ui].faction;
+	    let tu = units_available[ui].unit_idx;
+	    fa[tf].push(tu);
+	  }
+
+	  for (let f in fa) {
+	    his_self.addMove("fortify_unit\t"+spacekey+"\t"+f+"\t"+JSON.stringify(fa[f]));
+	  }
+	  his_self.endTurn();
+
+          return;
+	}
+        
+	units_to_move.push(id);
+
+        selectUnitsInterface(his_self, units_to_move, available_units, selectUnitsInterface);
+
+      });
+    };
+
+    selectUnitsInterface(his_self, units_to_move, available_units, selectUnitsInterface);
+
+    return 0;
 
   }
 
@@ -1008,7 +1082,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
   playerEvaluateFortification(attacker, faction, spacekey) {
 
     let his_self = this;
-
 
     let html = `<ul>`;
     html    += `<li class="card" id="fortify">withdraw into fortification</li>`;

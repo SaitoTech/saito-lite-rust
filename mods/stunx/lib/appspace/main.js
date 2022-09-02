@@ -4,7 +4,6 @@ class StunxAppspace {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-
     }
 
     render(app, mod) {
@@ -12,6 +11,27 @@ class StunxAppspace {
             app.browser.addElementToSelector(StunxAppspaceTemplate(app, mod), ".appspace");
         }
         this.attachEvents(app, mod);
+        const inviteCode = window.location.hash.split('=')[1];
+
+
+        const stunx_mod = app.modules.returnModule('Stunx');
+
+
+
+        if (inviteCode && stunx_mod.appspaceRendered === false) {
+            const stunxAppspace = this;
+            setTimeout(() => {
+                stunxAppspace.joinVideoInvite(inviteCode);
+                console.log('invite code ', window.location.hash.split('=')[1])
+            }, 3000)
+        }
+        stunx_mod.appspaceRendered = true;
+
+
+
+
+        this.joined = true;
+
     }
 
     attachEvents(app, mod) {
