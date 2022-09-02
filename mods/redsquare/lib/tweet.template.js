@@ -82,7 +82,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
     `;
 
   if (include_header == 1) {
-    html += SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline, tweet.tx);
+    html += SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline);
   }
   html += `
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">

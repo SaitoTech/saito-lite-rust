@@ -284,49 +284,45 @@ class RedSquareTweet {
     //
     // render tweet with children
     //
-    let sel = ("#tweet-" + this.tx.transaction.sig + ",.saito-user-" + 
-      this.tx.transaction.sig + ",#tweet-sidebar-" + this.tx.transaction.sig);
-      document.querySelectorAll(sel).forEach((tweetElement) => {
-        tweetElement.onclick = (e) => {
+    let sel = ("#tweet-" + this.tx.transaction.sig);
+      document.querySelector(sel).onclick = (e) => {
 
-        e.preventDefault();
-        e.stopImmediatePropagation();
+      // e.preventDefault();
+      // e.stopImmediatePropagation();
 
-        this.saito_loader.render(app, mod, 'redsquare-home-header', false);
-        let el = e.currentTarget;
-        let tweet_sig_id = (el.getAttribute("data-txn-id") != null) ? el.getAttribute("data-txn-id") : el.getAttribute("data-id");
+      this.saito_loader.render(app, mod, 'redsquare-home-header', false);
+      let el = e.currentTarget;
+      let tweet_sig_id = el.getAttribute("data-id");
 
-        document.querySelector(".redsquare-list").innerHTML = "";
-        let new_title = "<i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE";
-        app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE</div>`, "saito-page-header-title");
-        document.querySelector(".saito-back-button").onclick = (e) => {
-          app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
-          mod.renderMainPage(app, mod);
-          let redsquareUrl = window.location.origin + window.location.pathname;
-          window.history.pushState({}, document.title, redsquareUrl);
-        }
+      document.querySelector(".redsquare-list").innerHTML = "";
+      let new_title = "<i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE";
+      app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE</div>`, "saito-page-header-title");
+      document.querySelector(".saito-back-button").onclick = (e) => {
+        app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
+        mod.renderMainPage(app, mod);
+        let redsquareUrl = window.location.origin + window.location.pathname;
+        window.history.pushState({}, document.title, redsquareUrl);
+      }
 
-        let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
-        mod.fetchTweets(app, mod, sql, function (app, mod) { 
-          let t = mod.returnTweet(app, mod, tweet_sig_id);
-          	if (t == null) { 
-          	  console.log("TWEET IS NULL OR NOT STORED");
-          	  return; 
-          	}
-          	if (t.children.length > 0) {
-                    mod.renderWithChildren(app, mod, tweet_sig_id); 
-                  } else {
-                    mod.renderWithParents(app, mod, tweet_sig_id, 1); 
-          	}
-        });
+      let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
+      mod.fetchTweets(app, mod, sql, function (app, mod) { 
+        let t = mod.returnTweet(app, mod, tweet_sig_id);
+        	if (t == null) { 
+        	  console.log("TWEET IS NULL OR NOT STORED");
+        	  return; 
+        	}
+        	if (t.children.length > 0) {
+                  mod.renderWithChildren(app, mod, tweet_sig_id); 
+                } else {
+                  mod.renderWithParents(app, mod, tweet_sig_id, 1); 
+        	}
+      });
 
-        let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + this.tx.transaction.sig;
-        window.history.pushState({}, document.title, tweetUrl);
+      let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + this.tx.transaction.sig;
+      window.history.pushState({}, document.title, tweetUrl);
 
-        this.saito_loader.remove();
-
-      };
-    });
+      this.saito_loader.remove(); 
+    };
 
     //
     // reply to tweet
