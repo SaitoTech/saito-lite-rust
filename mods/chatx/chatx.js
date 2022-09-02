@@ -14,6 +14,7 @@ class Chatx extends ModTemplate {
 
         super(app);
         this.name = "Chat";
+	this.slug = "chat";
         this.description = "Saito instant-messaging client and application platform";
 
         this.groups = [];
@@ -690,6 +691,26 @@ class Chatx extends ModTemplate {
     //////////////////
     // UI Functions //
     //////////////////
+    openChatBox(group_id = null) {
+
+	if (this.chat_manager == null) {
+      	    this.chat_manager = new ChatManager(this.app, this);
+	}
+
+        if (group_id == null) {
+            let group = this.returnCommunityChat();
+            if (group == undefined || group == null) {
+                return;
+            }
+            if (group.id == undefined || group.id == null) {
+                return;
+            }
+            group_id = group.id;
+        }
+
+        this.app.connection.emit('chat-popup-render-request', group_id);
+    }
+
 
     ///////////////////
     // CHAT SPECIFIC //

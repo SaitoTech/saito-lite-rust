@@ -20,6 +20,12 @@ class ChatManager {
 			this.render(app, mod);
 		});
 
+		app.connection.on("chat-popup-render-request", (group_id) => {
+alert("CPRR: " + group_id);
+			let chat_popup = new ChatPopup(app, mod, group_id);
+			chat_popup.render(app, mod, group_id);
+		});
+
 	}
 
 	render(app, mod, selector = "") {
