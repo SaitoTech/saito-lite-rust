@@ -12,11 +12,11 @@ body {
 
 
 .rules-overlay ul{
-  margin-left: 25px;
+  margin-left: 8px;
 }
 
 .status-header{
-  height: 120px;
+  height: 280px;
 }
 .rules-overlay table{
   font-size: 1.5em;
@@ -31,16 +31,6 @@ body {
   text-align: center;
   width: 4em;
 }
-
-/*.connection_monitor {
-  position: fixed;
-  display: none;
-  min-height: 30px;
-  z-index: 90000;
-  background: #ef6666;
-  font-size: 1.8em;
-  padding: 15px;
-}*/
 
 .gameboard {
   position: absolute;
@@ -112,9 +102,9 @@ div[id^="row"] {
   border-radius: 7px;
 }
 
-div[id^="row"]:hover {
+/* div[id^="row"]:hover {
   transform: translate(-4px, -4px);
-}
+} */
 
 div[id^="row9"], div[id^="row10"], div[id^="row11"], div[id^="row12"], div[id^="row13"], div[id^="row14"] {
   z-index: 2;

@@ -14,7 +14,7 @@ class Mahjong extends GameTemplate {
 
     this.description     = '144 tiles are randomly folded into a multi-layered shape.' +
                            'The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence' +
-                           'THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
+                           'There are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
                            'The game is finished when all pairs of tiles have been removed from the board.';
     this.categories      = "Games Cardgame one-player";
 
@@ -30,14 +30,13 @@ class Mahjong extends GameTemplate {
             <ul>
             <li>144 tiles are randomly folded into a multi-layered shape.</li>
             <li>The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence</li>
-            <li>THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.</li>
+            <li>There are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.</li>
             <li>The game is finished when all pairs of tiles have been removed from the board.</li>
             </ul>
             </div>
             `;
 
   }
-
 
   //
   // runs the first time the game is created / initialized
@@ -74,6 +73,23 @@ class Mahjong extends GameTemplate {
       $('.slot').css('min-height', $('.card').css('min-height'));  
     }
 
+  }
+
+  newRound(){
+    //Set up queue
+    this.game.queue = [];
+    this.game.queue.push("play");
+    this.game.queue.push("DEAL\t1\t1\t40");
+    this.game.queue.push("SHUFFLE\t1\t1");
+    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
+
+    //Clear board
+    this.game.board = {};
+
+    //Reset/Increment State
+    this.game.state.round++;
+    this.game.state.recycles_remaining = 2;
+    this.displayBoard();
   }
 
   isArrayInArray(arr, item){
@@ -146,6 +162,8 @@ class Mahjong extends GameTemplate {
           if (!this.isArrayInArray(this.emptyCells, [i,j])) {
             await timeout(timeInterval);
             $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck[0].cards)[index++]));
+            $('#' + divname).css('opacity','1.0');
+            $('#' + divname).css('pointer-events','auto');
           } else {
             this.makeInvisible(divname);
           }
@@ -202,7 +220,7 @@ class Mahjong extends GameTemplate {
       id : "game-new",
       class : "game-new",
       callback : function(app, game_mod) {
-      alert("New Game");
+        game_mod.newRound();
       }
     });
     this.menu.addSubMenuOption("game-game", {
@@ -254,8 +272,6 @@ class Mahjong extends GameTemplate {
     this.log.render(this.app, this);
     this.log.attachEvents(this.app, this);
 
-
-
     //
     // display the board?
     //
@@ -301,14 +317,6 @@ class Mahjong extends GameTemplate {
         return;
       }
 
-      // console.log('mahjong_self.game');
-      // console.log(mahjong_self.game);
-      // console.log('mahjong_self.board');
-      // console.log(mahjong_self.board);
-      // console.log('mahjong_self.game.board[card]');
-      // console.log(mahjong_self.game.board[card]);
-      // console.log('selected');
-      // console.log(mahjong_self.game.selected);
       if (mahjong_self.game.selected === card) { //Selecting same card again
         mahjong_self.untoggleCard(card);
         mahjong_self.game.selected = "";
@@ -329,95 +337,16 @@ class Mahjong extends GameTemplate {
             mahjong_self.game.cardsLeft = mahjong_self.game.cardsLeft - 2;
             if (mahjong_self.game.cardsLeft === 0) {
               mahjong_self.game.state.wins++;
-              mahjong_self.displayModal("Congratulations!", "You won!");
+              mahjong_self.displayModal("Congratulations!", "You won ser!");
+              mahjong_self.newRound();
             }
             mahjong_self.game.selected = "";
             return;
-          } else {
-            // mahjong_self.untoggleCard(mahjong_self.game.selected);
-            // mahjong_self.game.selected = "";
-            // add invalid move effect
+          } else { // no match
             mahjong_self.toggleInvalidCard(card);
             return;
           }
         }
-        //  if (!selected) { //New Card
-
-        // } else{
-        //   //Change selection
-        //   if (mahjong_self.game.board[card][0]!=="E"){ 
-        //     mahjong_self.untoggleCard(selected);
-        //     console.log('mahjong_self.game.board[0][card]');
-        //     console.log(mahjong_self.game.board[card]);
-        //     console.log('mahjong_self.game.board[0][selected]');
-        //     console.log(mahjong_self.game.board[selected]);
-        //     mahjong_self.toggleCard(card);
-        //     selected=card;
-            
-        //     return;
-        //   } 
-
-        // // Move card to empty slot if it is legal
-        // // selected must work in this context
-        // if (mahjong_self.canCardPlaceInSlot(selected, card)) {
-        //   mahjong_self.prependMove(`move\t${selected}\t${card}`);
-        //   //mahjong_self.endTurn();
-            
-        //   let x = JSON.stringify(mahjong_self.game.board[selected]);
-        //   let y = JSON.stringify(mahjong_self.game.board[card]);
-
-        //   mahjong_self.game.board[selected] = JSON.parse(y);
-        //   mahjong_self.game.board[card] = JSON.parse(x);
-          
-        //   mahjong_self.untoggleCard(card);
-        //   mahjong_self.untoggleCard(selected);
-       
-        //   $("#"+selected).html(mahjong_self.returnCardImageHTML(mahjong_self.game.board[selected]));
-        //   $("#"+card).html(mahjong_self.returnCardImageHTML(mahjong_self.game.board[card]));
-        //   $("#"+selected).toggleClass("empty");
-        //   $("#"+card).toggleClass("empty");
-        //   $("#rowbox").removeClass("selected");
-        //   selected = "";
-          
-        //   //Use recycling function to check if in winning state
-        //   mahjong_self.displayUserInterface();
-
-        //   if (mahjong_self.scanBoard(false)) {
-        //     //salert("Congratulations! You win!");
-        //     mahjong_self.displayModal("Congratulations!", "You win the deal!");
-        //     mahjong_self.prependMove("win");
-        //     mahjong_self.endTurn();
-        //   }else if (!mahjong_self.hasAvailableMoves()){
-        //     if (mahjong_self.game.state.recycles_remaining == 0){
-        //       mahjong_self.displayWarning("Game over", "There are no more available moves to make.", 9000);
-        //       //salert("No More Available Moves, you lose!");
-        //     }else{
-        //       mahjong_self.shuffleFlash();
-        //     }
-        //   }
-        //   return;
-  
-        // } else {
-        //   //SmartTip, slightly redundant with internal logic of canCardPlaceInSlot
-        //   let smartTip;
-        //   let predecessor = mahjong_self.getPredecessor(card);
-        //   if (predecessor){
-        //     let cardValue = parseInt(mahjong_self.returnCardNumber(predecessor))+1;
-        //     if (cardValue < 11)
-        //       smartTip = "Hint: Try a "+cardValue+" of "+mahjong_self.cardSuitHTML(mahjong_self.returnCardSuite(predecessor));
-        //     else smartTip = "Unfortunately, no card can go there";
-        //   }else{
-        //     smartTip = "Hint: Try a 2 of any suit";
-        //   }
-        //   //Feedback
-        //   mahjong_self.displayWarning("Invalid Move", "Sorry, "+mahjong_self.cardSuitHTML(mahjong_self.returnCardSuite(selected))+mahjong_self.returnCardNumber(selected)+" cannot go there... ");
-        //   //salert("Sorry, "+mahjong_self.cardSuitHTML(mahjong_self.returnCardSuite(selected))+mahjong_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
-        //   mahjong_self.untoggleCard(selected);
-        //   selected = "";
-        //   $("#rowbox").removeClass("selected");
-        //   return;
-        // }
-      // }
       }
     });
   }
@@ -507,10 +436,45 @@ class Mahjong extends GameTemplate {
 
         console.log("OUR CARDS: ");
         console.log(JSON.stringify(this.game.deck[0].hand));
-        // alert("play handleGameLoop() -- why not replace this with an init function?");
 
         this.updateLog("add notes to log");
-        this.updateStatus("display in status message box");
+        // this.updateStatusWithOptions(this.returnGameRulesHTML());
+        
+        // return `<div class="rules-overlay">
+        // <h1>Mahjong</h1>
+        // <ul>
+        // <li>Some tiles are stacked on each other and therefore invisible.</li>
+        // <li>Remove all tiles of the same pair to clear the board and win.</li>
+        // </ul>
+        // </div>
+
+        let html = '<span class="hidable">144 tiles are randomly folded into a multi-layered shape.' + 
+                   'The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence' +
+                   'THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
+                   'The game is finished when all pairs of tiles have been removed from the board.</span>';
+
+        // TODO later - shuffle
+        // TODO later - undo
+
+        // let option = `<ul><li class="menu_option"`;
+        // if (this.game.state.recycles_remaining > 0) {
+        //   html += '<span>You may shuffle the unarranged cards ';
+        //   if (this.game.state.recycles_remaining == 2) { 
+        //    html += '<strong>two</strong> more times.'; 
+        //   }else{
+        //    html += '<strong>one</strong> more time.';  
+        //   }
+        //   html += "</span>";
+        //   option += ` id="shuffle">Shuffle cards`;
+        // } else {
+        //   option += ` id="quit">Start New Game`;
+        // }
+        // if (this.moves.length > 0){
+        //   option += `</li><li class="menu_option" id="undo">Undo`;
+        // }    
+        // option += "</li></ul>";
+        
+        this.updateStatusWithOptions(html); 
 
         this.game.queue.splice(qe, 1);
         return 1;
