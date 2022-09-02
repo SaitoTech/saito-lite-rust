@@ -22,6 +22,7 @@ class Post {
   }
 
 
+
   attachEvents(app, mod) {
 
     let post_self = this;
