@@ -419,6 +419,27 @@ console.log("OCCUPIER OF SPACE IS: " + space.occupier);
 
         }
 
+
+	if (mv[0] === "fortify_unit") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let spacekey = mv[1];
+	  let faction = mv[2];
+	  let units = JSON.parse(mv[3]);
+	  let space = this.game.spaces[spacekey];
+
+          space.besieged = 2; // 2 = cannot attack this round
+          space.besieged_factions.push(f);
+	  for (let i = 0; i < units.length; i++) {
+	    space.units[faction][units[i]].besieged = 1;
+	  }
+
+	  return 1;
+
+        }
+
+
         if (mv[0] === "fortification") {
 
 	  this.game.queue.splice(qe, 1);
@@ -428,13 +449,11 @@ console.log("OCCUPIER OF SPACE IS: " + space.occupier);
 	  let spacekey = mv[3];
 	  let space = this.game.spaces[spacekey];
 
-	  for (f in this.factions) {
-	    if (f !== attacker) {
-	      space.besieged_factions.push(f);
-	      space.besieged = 2; // 2 = cannot attack this round
-	    }
-	  }
+	  let faction_map = this.returnFactionMap(space, attacker, faction);
+	  let player = this.returnPlayerOfFaction(faction);
 
+console.log("REMOVING EVERYTHING BEFORE FIELD BATTLE");
+	  
 	  for (let i = this.game.queue.length-1; i >= 0; i--) {
 	    let lmv = this.game.queue[i].split("\t");
 	    //
@@ -447,7 +466,14 @@ console.log("OCCUPIER OF SPACE IS: " + space.occupier);
 	    }
 	  }
 
-          return 1;
+	  if (this.game.player === player) {
+console.log("this player is fortifying space!");
+	    this.playerFortifySpace(faction, attacker, spacekey);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " handling retreat into fortification");
+	  }
+	
+          return 0;
 
 	}
 
