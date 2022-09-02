@@ -696,10 +696,13 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
 
   tweetImage(image) {   
     try {
-alert("new post tweet!");
-      let post = new PostTweet(app, mod);
+alert("new tweet 1!");
+      let post = new PostTweet(this.app, this);
+alert("new tweet 2!");
           post.images.push(image);
+alert("new tweet 3!");
           post.render(app, mod);
+alert("new tweet 3!");
     } catch (err) {
 console.log("error tweeting image");
     }
