@@ -317,10 +317,8 @@ class RedSquareTweet {
 	}
       });
 
-      if (!window.location.href.includes('type=tweet')) {
-        let tweetUrl = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;
-        window.history.pushState({}, document.title, tweetUrl);
-      }
+      let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + this.tx.transaction.sig;
+      window.history.pushState({}, document.title, tweetUrl);
 
       this.saito_loader.remove();
 
@@ -437,8 +435,8 @@ class RedSquareTweet {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      let url = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;
-      navigator.clipboard.writeText(url).then(() => {
+      let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + this.tx.transaction.sig;
+      navigator.clipboard.writeText(tweetUrl).then(() => {
         siteMessageNew("Link copied to clipboard.", 2000);
       });
     };
