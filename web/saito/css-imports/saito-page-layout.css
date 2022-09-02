@@ -214,6 +214,9 @@
 
 
 @media screen and (max-width: 396px) {
+    .saito-container {
+        grid-column-gap: 0px;
+    }
     .saito-sidebar.left .hamburger {
         left: 1rem;
         bottom: -1rem;

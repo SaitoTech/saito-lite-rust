@@ -77,10 +77,24 @@ class RedSquareMain {
     // if that fails render home
 
     var hash = new URL(document.URL).hash.split('#')[1];
+    let component = hash;
+    let params = null;
+
+    if (hash) {
+      if (hash?.split("").includes("?")) {
+        component = hash.split("?")[0];
+        params = hash.split("?")[1];
+      }
+    }
+
+
+
+
+
     var hash_matched = 0;
 
-    if (hash != "") {
-      let hash_matched = mod.menu.renderItem(app, mod, hash);
+    if (component != "") {
+      let hash_matched = mod.menu.renderItem(app, mod, component, params);
       if (hash_matched == 1) {
         return 1;
       }

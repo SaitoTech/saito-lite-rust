@@ -109,20 +109,25 @@ class RedSquareMenu {
 
   }
 
-  renderItem(app, mod, component) {
+  renderItem(app, mod, component, params = null) {
+
+    let url = component
+    if (params) {
+      url = `${component}?${params}`;
+    }
 
     let matched = 0;
 
     switch (component) {
       case "home":
         mod.home.render(app, mod, ".appspace");
+        window.location.hash = url;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
-        window.location.hash = component;
         break;
       case "notifications":
         mod.notifications.render(app, mod, ".appspace");
+        window.location.hash = url;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
-        window.location.hash = component;
         matched = 1;
         break;
       case "settings":
@@ -132,20 +137,20 @@ class RedSquareMenu {
         // settings can render into appspace
         document.querySelector(".appspace").innerHTML = "";
         let settings_self = app.modules.returnModule("Settings");
+        window.location.hash = url;
         settings_self.respondTo("appspace").render(settings_self.app, settings_self);
-        window.location.hash = component;
         matched = 1;
         break;
       case "contacts":
         mod.contacts.render(app, mod, ".appspace");
+        window.location.hash = url;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
-        window.location.hash = component;
         matched = 1;
         break;
       case "games":
         mod.games.render(app, mod, ".appspace");
+        window.location.hash = url;
         mod.gsidebar.render(app, mod, ".saito-sidebar-right");
-        window.location.hash = component;
         matched = 1;
         break;
       default:
@@ -154,7 +159,7 @@ class RedSquareMenu {
         //
         for (let i = 0; i < app.modules.mods.length; i++) {
           if (app.modules.mods[i].returnSlug() == component) {
-            window.location.hash = component;
+            window.location.hash = url;
             matched = 1;
             document.querySelector(".appspace").innerHTML = "";
             let x = app.modules.mods[i].respondTo("appspace");

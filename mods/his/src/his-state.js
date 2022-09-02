@@ -512,7 +512,6 @@ console.log("retreat 4");
   }
 
   isSpaceFriendly(space, faction) {
-console.log("isf");
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     // friendly if i control it
     if (space.owner === faction) { return 1; }
@@ -525,22 +524,19 @@ console.log("isf");
       if (this.areAllies(faction, space.political)) { return 1; }
     }
     // friendly if we are minor power and controller controls us
-console.log("isf 1");
     if (this.game.state.activated_powers[space.owner]) {
-console.log("isf 1");
       if (this.game.state.activated_powers[space.owner].includes(faction)) { return 1; }
     }
-console.log("isf 2");
     if (this.game.state.activated_powers[space.political]) {
-console.log("isf 2");
       if (this.game.state.activated_powers[space.political].includes(faction)) { return 1; }
     }
-console.log("isf 3");
     if (this.game.state.activated_powers[space.home]) {
-console.log("isf 3");
       if (this.game.state.activated_powers[space.home].includes(faction)) { return 1; }
     }
-console.log("isf 4");
+    for (let i = 0; i < space.units[faction].length; i++) {
+      // we already have troops there, we must be friendly!
+      if (space.units[faction][i].besieged == false || space.units[faction][i].captured == false) { return 1; }
+    }
     return 0;
   }
 
@@ -2895,9 +2891,14 @@ console.log("isf 4");
 
         for (let f in this.units) {
 	  if (this.units[f].length > 0) {
+
 	    html += `<div class="space_faction">${his_self.returnFactionName(f)}</div>`;
             for (let i = 0; i < this.units[f].length; i++) {
-	      html += `<div class="space_unit">1 - ${this.units[f][i].type}</div>`;
+
+	      let b = "";
+	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
+
+	      html += `<div class="space_unit">1 - ${this.units[f][i].type} ${b}</div>`;
 	    }
 	  }
 	}

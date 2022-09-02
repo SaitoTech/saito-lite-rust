@@ -469,7 +469,7 @@ class Twilight extends GameTemplate {
       class : "game-post",
       callback : async function(app, game_mod) {
         await app.browser.captureScreenshot(function(image) {
-          game_mod.app.modules.returnModule("Post").postImage(image, game_mod.returnSlug());
+          game_mod.app.modules.returnModule("RedSquare").tweetImage(image);
         });
       },
     });
@@ -3978,8 +3978,6 @@ playerTurnHeadlineSelected(card, player) {
 
         let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card, player, 0);
 
-
-    
         let announcement = "";
 
         announcement += `<ul>`;
@@ -4235,6 +4233,8 @@ playerTurnHeadlineSelected(card, player) {
 
       this.startClock();
       let bind_back_button_state = true;
+
+      if (card === "missileenvy") { bind_back_button_state = false; }
       if (twilight_self.game.state.event_before_ops == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.headline == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.back_button_cancelled == 1) { bind_back_button_state = false; }

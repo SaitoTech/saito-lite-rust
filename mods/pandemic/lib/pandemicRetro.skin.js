@@ -753,7 +753,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       name: "Luanda",
     };
     deck["johannesburg"] = {
-      img: "alt/cards/Card_Luanda.png",
+      img: "alt/cards/Card_Johannesburg.png",
       name: "Johannesburg",
     };
     deck["algiers"] = {
