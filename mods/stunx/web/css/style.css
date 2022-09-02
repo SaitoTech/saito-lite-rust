@@ -259,6 +259,29 @@
 
 
 
+/*  invite overlay */
+.tunx-invite-overlay {
+    width: 20rem;
+   
+
+}
+.stunx-invite-overlay-heading {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+}
+.stunx-invite-overlay-content {
+    display: grid; 
+    grid-template-columns:2rem  max-content;
+    grid-column-gap: 1rem;
+    color: var(--saito-primary)
+}
+
+.stunx-invite-overlay-content p {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+/*  responsive */
+
 @media screen and (max-width: 503px) {
    
   }

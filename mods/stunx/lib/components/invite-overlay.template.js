@@ -1,10 +1,10 @@
 module.exports = (roomCode) => {
     return `
-    <div style="background-color: white; padding: 2rem 3rem; border-radius: 8px; display:flex; flex-direction: column; align-items: center; justify-content: center; align-items:center">
-       <p style= margin-bottom:2rem;">  Invite Created </p>
-       <div style="display: grid; align-item: center; grid-template-columns:max-content;"> 
-       <p style="margin-right: .5rem;  color: var(--saito-primary); cursor: pointer" id="copyVideoInviteCode"> Copy Room Code </p> 
-       <p style="margin-right: .5rem;  color: var(--saito-primary); cursor: pointer" id="copyVideoInviteLink"> Copy Room Link </p>  
+    <div class="stunx-invite-overlay" style="background-color: white; padding: 2rem 3rem; border-radius: 8px; ">
+       <p class="stunx-invite-overlay-heading" style= margin-bottom:2rem;"> Room Details</p>
+       <div class="stunx-invite-overlay-content" style=""> 
+       <i class="fas fa-key"></i><p style="margin-right: .5rem;  color: var(--saito-primary); cursor: pointer" id="copyVideoInviteCode">  Room Code </p>  
+       <i class="fas fa-link"></i>  <p style="margin-right: .5rem;  color: var(--saito-primary); cursor: pointer" id="copyVideoInviteLink">  Room Link </p>  
        </div>
        
     </div>
