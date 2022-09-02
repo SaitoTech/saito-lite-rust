@@ -462,6 +462,7 @@ class Twilight extends GameTemplate {
       }
     });
 
+/****
     if (app.modules.returnModule("Post")) {
     this.menu.addSubMenuOption("game-game", {
       text : "Screenshot",
@@ -474,6 +475,7 @@ class Twilight extends GameTemplate {
       },
     });
     }
+***/
 
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
