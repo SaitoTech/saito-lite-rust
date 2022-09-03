@@ -89,7 +89,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
     `;
 
   html += `
-           <div class="redsquare-tweet-sidebar" id="tweet-sidebar-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
+           <div class="redsquare-tweet-sidebar" data-id="${tweet.tx.transaction.sig}">
            </div>
       `;
 
