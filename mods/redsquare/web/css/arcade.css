@@ -275,10 +275,13 @@
   border-bottom: unset;
   height: 60px;
   width: unset;
-    position: relative;
-    display: flex;
-    line-height: 3;
-    background: #55555555;
+  position: relative;
+  display: flex;
+  line-height: 3;
+  background: #fff;
+  border: 1px solid var(--saito-primary);
+  color: var(--saito-primary);
+  margin-top: 2rem;
 }
 
 .dynamic_button_options {
@@ -332,8 +335,9 @@ option {
   min-height: 60px;
   font-weight: bold;
   margin: 0px;
-  background: linear-gradient(-45deg, #426 50%, #213 100%);
-  border: 1px solid #639;;
+  background: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
+  color: #fff;
 }
 .game-wizard-publisher-message {
   padding: 10px;
@@ -460,4 +464,16 @@ option {
 .invite-link-text {
   color: var(--saito-white);
   width: 100%;
+}
+
+
+.game-create-new-overlay {
+  display: grid;
+  max-height: 80vh;
+  height: min-content;
+  width: 80vw;
+  overflow-y: scroll;
+  grid-template-rows: min-content auto;
+  background-color: white;
+  padding: 2rem;
 }
