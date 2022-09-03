@@ -101,6 +101,9 @@ class Mahjong extends GameTemplate {
     return contains;
   }
 
+  firstColumn = 1;
+  lastColumn = 14;
+
   emptyCells = [
     [1,1], [1,14],
     [2,1], [2,2], [2,3], [2,12], [2,13], [2,14],
@@ -301,6 +304,8 @@ class Mahjong extends GameTemplate {
     $('.slot').on('click', function() {
 
       let card = $(this).attr("id");
+      let tileTokens = card.split('slot');
+      let tileColumn = parseInt(tileTokens[1]);
       if (mahjong_self.game.board[card] !== "E") {
         switch (card) {
           case 'row19_slot7':
@@ -316,6 +321,25 @@ class Mahjong extends GameTemplate {
               return;
             } else {
               break;
+            }
+          // two edge cases for the tiles being on the left/ right of two rows
+          case 'row5_slot2':
+            if (!mahjong_self.game.hidden.includes('row4_slot1')) {
+              return;
+            }
+          case 'row5_slot13':
+            if (!mahjong_self.game.hidden.includes('row4_slot14')) {
+              return;
+            }
+          default: // there must be no tile on the left or on the right for a given tile to be a valid selection
+            let leftTile = `${tileTokens[0]}slot${tileColumn - 1}`;
+            let rightTile = `${tileTokens[0]}slot${tileColumn + 1}`;
+            // if left tile is not unlocked nor empty
+            if (!((mahjong_self.game.hidden.includes(leftTile)) || mahjong_self.game.board[leftTile] === "E") &&
+              // if right tile is not unlocked nor empty
+               !((mahjong_self.game.hidden.includes(rightTile)) || mahjong_self.game.board[rightTile] === "E") &&
+               !(tileColumn === mahjong_self.firstColumn || tileColumn === mahjong_self.lastColumn)) {
+              return;
             }
         }
       } else {
