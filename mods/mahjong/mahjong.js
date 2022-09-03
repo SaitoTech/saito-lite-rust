@@ -139,14 +139,12 @@ class Mahjong extends GameTemplate {
     for (let i = 1; i <= 21; i++){
       for (let j = 1; j <= 14; j++){
         let position = `row${i}_slot${j}`;
-        if (deckSize > index) {
           if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
             this.game.board[position] = Object.values(this.game.deck[0].cards)[index];
             index++;
           } else {
             this.game.board[position] = "E";
           }
-        }
       }
     }
     this.game.cardsLeft = index;
