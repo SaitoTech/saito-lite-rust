@@ -135,14 +135,17 @@ class Mahjong extends GameTemplate {
     this.game.board = {}
     console.log("display board");
     console.log(Object.values(this.game.deck[0].cards));
+    let deckSize = Object.values(this.game.deck[0].cards).length
     for (let i = 1; i <= 21; i++){
       for (let j = 1; j <= 14; j++){
         let position = `row${i}_slot${j}`;
-        if (!this.isArrayInArray(this.emptyCells, [i,j])) {
-          this.game.board[position] = Object.values(this.game.deck[0].cards)[index];
-          index++;
-        } else {
-          this.game.board[position] = "E";
+        if (deckSize > index) {
+          if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
+            this.game.board[position] = Object.values(this.game.deck[0].cards)[index];
+            index++;
+          } else {
+            this.game.board[position] = "E";
+          }
         }
       }
     }
@@ -159,11 +162,10 @@ class Mahjong extends GameTemplate {
       for (let i = 1; i <= 21; i++){
         for (let j = 1; j <= 14; j++){
           var divname = `row${i}_slot${j}`;
-          if (!this.isArrayInArray(this.emptyCells, [i,j])) {
+          if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
             await timeout(timeInterval);
             $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck[0].cards)[index++]));
-            $('#' + divname).css('opacity','1.0');
-            $('#' + divname).css('pointer-events','auto');
+            this.untoggleCard(divname);
           } else {
             this.makeInvisible(divname);
           }
@@ -282,6 +284,11 @@ class Mahjong extends GameTemplate {
   returnState() {
 
     let state = {};
+
+    state.round = 0;
+    state.wins = 0;
+    state.recycles_remaining = 2;
+
     return state;
 
   }
@@ -340,6 +347,7 @@ class Mahjong extends GameTemplate {
               mahjong_self.displayModal("Congratulations!", "You won ser!");
               mahjong_self.newRound();
             }
+            mahjong_self.displayUserInterface();
             mahjong_self.game.selected = "";
             return;
           } else { // no match
@@ -382,6 +390,8 @@ class Mahjong extends GameTemplate {
     console.log("untoggleCard");
     console.log(divname);
     divname = '#' + divname;
+    $(divname).css('opacity','1.0');
+    $(divname).css('pointer-events','auto');
     if (divname === "#row4_slot1" || divname === "#row4_slot14") {
       $(divname).css('box-shadow', '0px 10px 12px 1px #000000');
       $(divname).css('-moz-box-shadow', '0px 10px 12px 1px #000000');
@@ -395,6 +405,67 @@ class Mahjong extends GameTemplate {
     }
   }
 
+  displayUserInterface() {
+    let mahjong_self = this;
+
+    let html = '<span class="hidable">144 tiles are randomly folded into a multi-layered shape.' + 
+                   'The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence' +
+                   'THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
+                   'The game is finished when all pairs of tiles have been removed from the board.</span>';
+
+    // TODO later - shuffle
+
+    let option = `<ul><li class="menu_option"`;
+    if (this.game.state.recycles_remaining > 0) {
+      html += '<span>You may shuffle the unlocked tiles ';
+      if (this.game.state.recycles_remaining == 2) { 
+        html += '<strong>two</strong> more times.'; 
+      }else{
+        html += '<strong>one</strong> more time.';  
+      }
+      html += "</span>";
+      option += ` id="shuffle">Shuffle cards`;
+    } else {
+      option += ` id="quit">Start New Game`;
+    }
+    if (this.game.hidden.length > 0){
+      option += `</li><li class="menu_option" id="undo">Undo`;
+    }    
+    option += "</li></ul>";
+    
+    this.updateStatusWithOptions(html,option); 
+
+    $('.menu_option').off();
+    $('.menu_option').on('click', function() {
+      let action = $(this).attr("id");
+
+      // if (action == "shuffle"){
+      //   mahjong_self.updateStatusWithOptions("shuffle cards...");
+      //   mahjong_self.prependMove("shuffle");
+      //   mahjong_self.endTurn();
+      //   return;
+      // }
+      // if (action == "quit"){
+      //   mahjong_self.endGame();
+      //   mahjong_self.newRound();
+      //   mahjong_self.endTurn();
+      //   return;
+      // }
+      if (action == "undo"){
+        mahjong_self.undoMove();
+        return;
+      }
+    });
+  }
+
+  undoMove() {
+    this.untoggleCard(this.game.hidden[this.game.hidden.length - 1]);
+    this.untoggleCard(this.game.hidden[this.game.hidden.length - 2]);
+    this.game.hidden.splice(this.game.hidden.length - 2, 2);
+    this.game.cardsLeft = this.game.cardsLeft + 2;
+    this.displayUserInterface();
+    console.log(this.game);
+  }
 
   ////////////////////
   // VERY IMPORTANT //
@@ -434,51 +505,13 @@ class Mahjong extends GameTemplate {
         //
         if (!this.browser_active) { return 0; }
 
-        console.log("OUR CARDS: ");
-        console.log(JSON.stringify(this.game.deck[0].hand));
-
-        this.updateLog("add notes to log");
-        // this.updateStatusWithOptions(this.returnGameRulesHTML());
-        
-        // return `<div class="rules-overlay">
-        // <h1>Mahjong</h1>
-        // <ul>
-        // <li>Some tiles are stacked on each other and therefore invisible.</li>
-        // <li>Remove all tiles of the same pair to clear the board and win.</li>
-        // </ul>
-        // </div>
-
-        let html = '<span class="hidable">144 tiles are randomly folded into a multi-layered shape.' + 
-                   'The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence' +
-                   'THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
-                   'The game is finished when all pairs of tiles have been removed from the board.</span>';
-
-        // TODO later - shuffle
-        // TODO later - undo
-
-        // let option = `<ul><li class="menu_option"`;
-        // if (this.game.state.recycles_remaining > 0) {
-        //   html += '<span>You may shuffle the unarranged cards ';
-        //   if (this.game.state.recycles_remaining == 2) { 
-        //    html += '<strong>two</strong> more times.'; 
-        //   }else{
-        //    html += '<strong>one</strong> more time.';  
-        //   }
-        //   html += "</span>";
-        //   option += ` id="shuffle">Shuffle cards`;
-        // } else {
-        //   option += ` id="quit">Start New Game`;
-        // }
-        // if (this.moves.length > 0){
-        //   option += `</li><li class="menu_option" id="undo">Undo`;
-        // }    
-        // option += "</li></ul>";
-        
-        this.updateStatusWithOptions(html); 
-
-        this.game.queue.splice(qe, 1);
+        this.displayUserInterface();
         return 1;
 
+      }
+
+      if (mv[0] === "round") {
+        this.newRound();
       }
 
       if (mv[0] === "exit_game"){
@@ -546,6 +579,13 @@ class Mahjong extends GameTemplate {
       "Sou9",
       "Ton"
     ];
+
+    // TODO - remove (use for testing)
+
+    // let cards = [
+    //   "Chun",
+    //   "Hatsu"
+    // ];
 
     let deck = {};
     
