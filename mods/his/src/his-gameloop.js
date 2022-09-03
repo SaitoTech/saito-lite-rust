@@ -1528,6 +1528,9 @@ console.log("yes, we can retreat here...");
                     can_faction_retreat = 1;
                   }
                 }
+
+console.log("can the attackers retreat: " + can_faction_retreat);
+
                 if (can_faction_retreat == 1) {
                   this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
                   this.game.queue.push("player_evaluate_post_field_battle_retreat\t"+f+"\t"+space.key);
@@ -1861,11 +1864,8 @@ console.log("done");
 		}
 	      }
 
-	      while (hits_to_assign >= number_of_targets && hits_to_assign > 0) {
+	      while (hits_to_assign >= number_of_targets && hits_to_assign > 0 && number_of_targets > 0) {
 
-		//
-		// assign hits to allies
-		//
 	        for (let f in faction_map) {
 	          if (faction_map[f] === faction) { 
 		    if (his_self.returnFactionLandUnitsInSpace(f, space) > 0) {
@@ -1876,12 +1876,15 @@ console.log("done");
 		        if (zzz == 1) { cannon_fodder = "mercenary"; }
 		        if (zzz == 2) { cannon_fodder = "regular"; }
 
-  	     	        for (let i = 0; i < space.units[f].length; i++) {
+			let units_len = space.units[f].length;
+
+  	     	        for (let i = 0; i < units_len; i++) {
 	   	          if (space.units[f][i].type === cannon_fodder) {
-		  	    space.units[f].splice(i, 0);
+console.log("removing which unit: " + cannon_fodder + " from " + f);
+		  	    space.units[f].splice(i, 1);
 			    hits_to_assign--;
 		            zzz = 1000000;
-		            i   = 1000000;
+		            i   = units_len + 1;
 			  }
 			}
 		      }
@@ -1908,6 +1911,8 @@ console.log("done");
 	      //
 	      while (hits_to_assign > 0) {
 
+console.log("removing secondarily!");
+
 		let targets = [];
 	        for (let f in faction_map) { targets.push(f); }
 		targets.sort();
@@ -1930,7 +1935,7 @@ console.log("done");
                     for (let ii = 0; ii < space.units[selected_faction].length; ii++) {
                       if (space.units[selected_faction][ii].type === cannon_fodder) {
 			his_self.updateLog(this.returnFactionName(f) + " " + space.units[selected_faction][ii].name + " killed");
-                        space.units[selected_faction].splice(ii, 0);
+                        space.units[selected_faction].splice(ii, 1);
                         hits_to_assign--;
                         zzz = 1000000;
                         ii  = 1000000;
@@ -2194,6 +2199,10 @@ console.log("purging units and capturing leader");
 
 
         if (mv[0] === "player_evaluate_post_field_battle_retreat") {
+
+console.log("PLAYER EVALUATE POST FIELD BATTLE RETREAT!");
+console.log("loser: " + loser);
+console.log("space: " + spacekey);
 
           this.game.queue.splice(qe, 1);
 

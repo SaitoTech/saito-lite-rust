@@ -15,7 +15,8 @@
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)          { obj.besieged = false; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
 
     //obj = this.addEvents(obj);
     this.units[name] = obj;
