@@ -20,7 +20,9 @@ class ChatPopup {
 
     app.connection.on("chat-render-request", (message) => {
       let divid = "chat-container-" + group_id;
+console.log("group_id: " + group_id);
       app.browser.replaceElementById(ChatPopupTemplate(app, mod, group_id), divid);
+console.log("group_id 2: " + group_id);
       app.browser.makeDraggable(`chat-container-${group_id}`);
       this.attachEvents(app, mod, group_id);
     });

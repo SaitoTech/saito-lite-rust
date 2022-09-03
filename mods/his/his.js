@@ -2294,8 +2294,7 @@ console.log("retreat 4");
 
   isSpaceControlledByFaction(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.home === faction && faction !== "protestant") { return true; }
-    if (space.religion === "protestant" && faction !== "protestant") { return true; }
+    if (space.home === faction) { return true; }
     if (space.political === faction) { return true; }
     return false;
   }
@@ -7226,7 +7225,7 @@ console.log("OCCUPIER OF SPACE IS: " + space.occupier);
 	  //
 	  for (f in this.factions) {
 
-	    if (f !== attacker) {
+	    if (f !== attacker && this.isSpaceControlledByFaction(spacekey, f)) {
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
@@ -10418,6 +10417,8 @@ this.updateLog("Catholics: " + c_rolls);
           return;
 	}
         
+	units_to_move.push(id);
+
         selectUnitsInterface(his_self, units_to_move, available_units, selectUnitsInterface);
 
       });

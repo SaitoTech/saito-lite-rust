@@ -484,8 +484,7 @@ console.log("retreat 4");
 
   isSpaceControlledByFaction(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.home === faction && faction !== "protestant") { return true; }
-    if (space.religion === "protestant" && faction !== "protestant") { return true; }
+    if (space.home === faction) { return true; }
     if (space.political === faction) { return true; }
     return false;
   }

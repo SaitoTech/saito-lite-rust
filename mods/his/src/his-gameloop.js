@@ -324,7 +324,7 @@ console.log("OCCUPIER OF SPACE IS: " + space.occupier);
 	  //
 	  for (f in this.factions) {
 
-	    if (f !== attacker) {
+	    if (f !== attacker && this.isSpaceControlledByFaction(spacekey, f)) {
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
