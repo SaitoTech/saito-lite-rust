@@ -49,6 +49,7 @@
 .chat-body > .saito-user {
     padding-bottom: 1rem;
     cursor: default;
+    grid-template-rows: min-content 1fr;
 }
 
 .chat-footer {
