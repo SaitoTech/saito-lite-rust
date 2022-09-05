@@ -342,10 +342,8 @@ class RedSquareTweet {
     //
     sel = ".tweet-reply-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
-
       e.preventDefault();
       e.stopImmediatePropagation();
-
       let ptweet = new PostTweet(app, mod, tweet_self);
       ptweet.parent_id = this.tx.transaction.sig;
       ptweet.thread_id = this.thread_id;
@@ -425,12 +423,9 @@ class RedSquareTweet {
     //
     sel = ".tweet-flag-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
-
       e.preventDefault();
       e.stopImmediatePropagation();
-
       mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig });
-
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");
       document.querySelector('#tweet-box-' + this.tx.transaction.sig).style.display = 'none';
