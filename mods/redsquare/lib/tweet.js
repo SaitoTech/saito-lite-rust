@@ -499,10 +499,6 @@ class RedSquareTweet {
     })
 
     document.onclick = function (e) {
-      // if (e.target && e.target.classList.contains('tweet-img-expand-container')) {
-
-
-      // }
       if (e.target.classList.contains('tweet-link')) {
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
