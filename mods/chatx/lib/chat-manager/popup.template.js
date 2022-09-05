@@ -21,11 +21,8 @@ module.exports = (app, mod, group_id) => {
         <div class="chat-body">
     `;
 
-console.log("MESSAGE BLOCKS: ");
-console.log(JSON.stringify(message_blocks));
 
     for (let i = 0; i < message_blocks.length; i++) {
-console.log("blocks i: " + i);
       let block = message_blocks[i];
       if (block.length > 0) {
         let sender = "";
@@ -34,7 +31,6 @@ console.log("blocks i: " + i);
           if (z > 0) { msg += '<br/>'; }
           let txmsg = block[z].returnMessage();
 	  sender = block[z].transaction.from[0].add;
-console.log("message blocks msg: " + txmsg.message);
           msg += txmsg.message;       
         }
         html +=`${SaitoUserSmallTemplate(app, mod, sender, msg)}`;

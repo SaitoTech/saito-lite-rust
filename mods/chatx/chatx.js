@@ -115,7 +115,6 @@ class Chatx extends ModTemplate {
         }
 
 
-console.log("CRR 2");
         app.connection.emit('chat-render-request', {});
 
     }
@@ -195,7 +194,6 @@ console.log("CRR 2");
                                     return a.transaction.ts - b.transaction.ts;
                                 })
                             }
-console.log("CRR 3");
         		    app.connection.emit('chat-render-request', {});
 
                             //
@@ -221,7 +219,6 @@ console.log("CRR 3");
                         return 1;
                     }
 
-console.log("CRR 3");
 		    //app.connection.emit('chat-render-request', {});
 
 		    //
@@ -314,7 +311,6 @@ console.log("CRR 3");
         //
         // render loaded messages
         //
-console.log("CRR 4");
         app.connection.emit('chat-render-request', {});
 
     }
@@ -656,7 +652,6 @@ console.log("CRR 4");
 		if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { return; }
 	      }
   	      this.addTransactionToGroup(this.groups[i], tx);
-console.log("CRR 5");
               app.connection.emit('chat-render-request', {});
 	      return;
 	    }
@@ -689,7 +684,6 @@ console.log("CRR 5");
             }
 	    if (proper_group) {
 	        this.addTransactionToGroup(proper_group, tx);
-console.log("CRR 6");
                 app.connection.emit('chat-render-request', {});
 	    }
 
