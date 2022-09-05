@@ -80,7 +80,6 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
   let html = `
        <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
     `;
-
   if (include_header == 1) {
     html += SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline);
   }
