@@ -12,20 +12,20 @@ class ChatPopup {
   render(app, mod, group_id = "") {
 
     if (!document.getElementById(`chat-container-${group_id}`)) {
+console.log("RENDER POPUP 1");
       app.browser.addElementToDom(ChatPopupTemplate(app, mod, group_id));
       app.browser.makeDraggable(`chat-container-${group_id}`);
-    }
 
-    this.attachEvents(app, mod, group_id);
-
-    app.connection.on("chat-render-request", (message) => {
-      let divid = "chat-container-" + group_id;
-console.log("group_id: " + group_id);
-      app.browser.replaceElementById(ChatPopupTemplate(app, mod, group_id), divid);
-console.log("group_id 2: " + group_id);
-      app.browser.makeDraggable(`chat-container-${group_id}`);
       this.attachEvents(app, mod, group_id);
-    });
+
+      app.connection.on("chat-render-request", (message) => {
+        let divid = "chat-container-" + group_id;
+console.log("RENDER POPUP 2");
+        app.browser.replaceElementById(ChatPopupTemplate(app, mod, group_id), divid);
+        app.browser.makeDraggable(`chat-container-${group_id}`);
+        this.attachEvents(app, mod, group_id);
+      });
+    }
 
   }
 

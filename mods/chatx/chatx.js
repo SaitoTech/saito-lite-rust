@@ -115,6 +115,7 @@ class Chatx extends ModTemplate {
         }
 
 
+console.log("CRR 2");
         app.connection.emit('chat-render-request', {});
 
     }
@@ -194,6 +195,7 @@ class Chatx extends ModTemplate {
                                     return a.transaction.ts - b.transaction.ts;
                                 })
                             }
+console.log("CRR 3");
         		    app.connection.emit('chat-render-request', {});
 
                             //
@@ -219,11 +221,13 @@ class Chatx extends ModTemplate {
                         return 1;
                     }
 
-		    app.connection.emit('chat-render-request', {});
+console.log("CRR 3");
+		    //app.connection.emit('chat-render-request', {});
 
 		    //
 		    // check identifiers
 		    //
+/*
 		    if (this.added_identifiers_post_load == 0) {
 		      try {
 			setTimeout(()=>{
@@ -234,6 +238,8 @@ class Chatx extends ModTemplate {
 			console.log("error adding identifiers post-chat");
 		      }
 		    }
+*/
+
                 }
 
 
@@ -308,6 +314,7 @@ class Chatx extends ModTemplate {
         //
         // render loaded messages
         //
+console.log("CRR 4");
         app.connection.emit('chat-render-request', {});
 
     }
@@ -645,7 +652,11 @@ class Chatx extends ModTemplate {
         if (txmsg.group_id) {
  	  for (let i = 0; i < this.groups.length; i++) {
 	    if (this.groups[i].id === txmsg.group_id) {
-	      this.addTransactionToGroup(this.groups[i], tx);
+	      for (let z = 0; z < this.groups[i].txs; z++) {
+		if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { return; }
+	      }
+  	      this.addTransactionToGroup(this.groups[i], tx);
+console.log("CRR 5");
               app.connection.emit('chat-render-request', {});
 	      return;
 	    }
@@ -678,6 +689,7 @@ class Chatx extends ModTemplate {
             }
 	    if (proper_group) {
 	        this.addTransactionToGroup(proper_group, tx);
+console.log("CRR 6");
                 app.connection.emit('chat-render-request', {});
 	    }
 
@@ -756,6 +768,7 @@ class Chatx extends ModTemplate {
       let x = JSON.stringify(tx.returnMessage());
       for (let i = 0; i < group.txs.length; i++) {
 	if (JSON.stringify(group.txs[i].returnMessage()) === x) {
+console.log("CHAT MSG: " + x);
 	  return;
 	}
       }
@@ -831,6 +844,11 @@ class Chatx extends ModTemplate {
     async chatRequestMessages(app, tx) {
     }
 
+
+    saveChat() {
+        this.app.options.chat = Object.assign({}, this.app.options.chat);
+        this.app.storage.saveOptions();
+    }
 
 }
 

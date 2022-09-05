@@ -22,8 +22,14 @@ class ChatManager {
 
 		app.connection.on("chat-popup-render-request", (group_id) => {
 alert("CPRR: " + group_id);
-			let chat_popup = new ChatPopup(app, mod, group_id);
-			chat_popup.render(app, mod, group_id);
+			let psq = "#chat-container-"+group_id;
+			let obj = document.querySelector(psq);
+			if (!obj) {
+			  let chat_popup = new ChatPopup(app, mod, group_id);
+			  chat_popup.render(app, mod, group_id);
+			} else {
+			  console.log("Chat Popup Exists");
+			}
 		});
 
 	}
@@ -91,6 +97,7 @@ alert("CPRR: " + group_id);
 			if (mod.groups.length > 0) {
 				let gid = mod.groups[0].id;
 				let chat_popup = new ChatPopup(app, mod, gid);
+alert("rendering first chat in main.js");
 				chat_popup.render(app, mod, gid);
 			}
 		}
