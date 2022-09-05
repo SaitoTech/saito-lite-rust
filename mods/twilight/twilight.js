@@ -468,7 +468,11 @@ class Twilight extends GameTemplate {
       id : "game-post",
       class : "game-post",
       callback : async function(app, game_mod) {
+	let log = document.querySelector(".log");
+	let log_lock = document.querySelector(".log_lock");
+	if (!log_lock && log) { log.style.display = "none"; }
         await app.browser.captureScreenshot(function(image) {
+	  if (!log_lock && log) { log.style.display = "block"; }
 	  let m = game_mod.app.modules.returnModule("RedSquare");
 	  if (m) { m.tweetImage(image); }
         });
