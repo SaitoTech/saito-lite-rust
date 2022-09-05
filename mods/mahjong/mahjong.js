@@ -54,16 +54,9 @@ class Mahjong extends GameTemplate {
 
       this.game.state = this.returnState();
 
-      //
-      // we can pop moves onto the queue and execute them one-by-one. this
-      // is more useful in 2P++ games. all games keep their QUEUE in order
-      // using the structured inputs provided by the network.
-      //
+      this.game.queue = [];
       this.game.queue.push("play");
       this.game.queue.push("READY");
-      this.game.queue.push("DEAL\t1\t1\t10");
-      this.game.queue.push("SHUFFLE\t1\t1");
-      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
 
     }
     
@@ -79,9 +72,6 @@ class Mahjong extends GameTemplate {
     //Set up queue
     this.game.queue = [];
     this.game.queue.push("play");
-    this.game.queue.push("DEAL\t1\t1\t40");
-    this.game.queue.push("SHUFFLE\t1\t1");
-    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
 
     //Clear board
     this.game.board = {};
@@ -90,6 +80,7 @@ class Mahjong extends GameTemplate {
     this.game.state.round++;
     this.game.state.recycles_remaining = 2;
     this.displayBoard();
+    this.displayUserInterface();
   }
 
   isArrayInArray(arr, item){
@@ -134,16 +125,19 @@ class Mahjong extends GameTemplate {
   // displayBoard
   async displayBoard(timeInterval = 1) {
 
+    console.log('this.game');
+    console.log(this.game);
+
+    this.game.deck.cards = this.returnDeck();
+
     let index = 0;
     this.game.board = {}
-    console.log("display board");
-    console.log(Object.values(this.game.deck[0].cards));
-    let deckSize = Object.values(this.game.deck[0].cards).length
+    let deckSize = Object.values(this.game.deck.cards).length
     for (let i = 1; i <= 21; i++){
       for (let j = 1; j <= 14; j++){
         let position = `row${i}_slot${j}`;
           if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
-            this.game.board[position] = Object.values(this.game.deck[0].cards)[index];
+            this.game.board[position] = Object.values(this.game.deck.cards)[index];
             index++;
           } else {
             this.game.board[position] = "E";
@@ -153,7 +147,6 @@ class Mahjong extends GameTemplate {
     this.game.cardsLeft = index;
     this.game.selected = "";
     this.game.hidden=[];
-    console.log(this.game);
     if (this.browser_active == 0) { return; }
     $(".slot").removeClass("empty");
     index = 0;
@@ -165,7 +158,7 @@ class Mahjong extends GameTemplate {
           var divname = `row${i}_slot${j}`;
           if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
             await timeout(timeInterval);
-            $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck[0].cards)[index++]));
+            $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck.cards)[index++]));
             this.untoggleCard(divname);
           } else {
             this.makeInvisible(divname);
@@ -205,7 +198,6 @@ class Mahjong extends GameTemplate {
     if (!this.browser_active) { return; }
     
     super.initializeHTML(app);
-
 
     //
     // Want Menus ?
@@ -288,7 +280,7 @@ class Mahjong extends GameTemplate {
 
     state.round = 0;
     state.wins = 0;
-    state.recycles_remaining = 2;
+    state.recycles_remaining = 2; // to be used for shuffle later
 
     return state;
 
@@ -297,8 +289,6 @@ class Mahjong extends GameTemplate {
   attachEventsToBoard() {
 
     let mahjong_self = this;
-    console.log('mahjong_self');
-    console.log(mahjong_self);
 
     $('.slot').off();
     $('.slot').on('click', function() {
@@ -352,8 +342,6 @@ class Mahjong extends GameTemplate {
         return;
       } else {
         if (mahjong_self.game.selected === "") { // New Card
-          console.log('mahjong_self.selected');
-          console.log(mahjong_self.game.selected);
           mahjong_self.game.selected = card;
           mahjong_self.toggleCard(card);
           return;
@@ -382,8 +370,6 @@ class Mahjong extends GameTemplate {
   }
 
   toggleCard(divname) {
-    console.log("toggleCard");
-    console.log(divname);
     divname = '#' + divname;
     $(divname).css('box-shadow', '0px 0px 0px 3px #00ff00');
     $(divname).css('-moz-box-shadow', '0px 0px 0px 3px #00ff00');
@@ -393,8 +379,6 @@ class Mahjong extends GameTemplate {
 
   toggleInvalidCard(divname) {
     let mahjong_self = this;
-    console.log("toggleInvalidCard");
-    console.log(divname);
     $('#' + divname).css('box-shadow', '0px 0px 0px 3px #ff0000');
     $('#' + divname).css('-moz-box-shadow', '0px 0px 0px 3px #ff0000');
     $('#' + divname).css('-webkit-box-shadow', '0px 0px 0px 3px #ff0000');
@@ -404,13 +388,7 @@ class Mahjong extends GameTemplate {
     }, 1000);
   }
 
-  // untoggleAll(){
-  //   $(".slot").css("opacity","1.0");
-  // }
-
   untoggleCard(divname) {
-    console.log("untoggleCard");
-    console.log(divname);
     divname = '#' + divname;
     $(divname).css('opacity','1.0');
     $(divname).css('pointer-events','auto');
@@ -420,10 +398,10 @@ class Mahjong extends GameTemplate {
       $(divname).css('-webkit-box-shadow', '0px 10px 12px 1px #000000');
       $(divname).css('-o-box-shadow', '0px 10px 12px 1px #000000');
     } else {
-      $(divname).css('box-shadow', '0px 10px 12px 1px #000000');
-      $(divname).css('-moz-box-shadow', '0px 10px 12px 1px #000000');
-      $(divname).css('-webkit-box-shadow', '0px 10px 12px 1px #000000');
-      $(divname).css('-o-box-shadow', '0px 10px 12px 1px #000000');
+      $(divname).css('box-shadow', '12px 10px 12px 1px #000000');
+      $(divname).css('-moz-box-shadow', '12px 10px 12px 1px #000000');
+      $(divname).css('-webkit-box-shadow', '12px 10px 12px 1px #000000');
+      $(divname).css('-o-box-shadow', '12px 10px 12px 1px #000000');
     }
   }
 
@@ -431,29 +409,29 @@ class Mahjong extends GameTemplate {
     let mahjong_self = this;
 
     let html = '<span class="hidable">144 tiles are randomly folded into a multi-layered shape.' + 
-                   'The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence' +
-                   'THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
-                   'The game is finished when all pairs of tiles have been removed from the board.</span>';
+               'The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence' +
+               'THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
+               'The game is finished when all pairs of tiles have been removed from the board.</span>';
 
     // TODO later - shuffle
-
-    let option = `<ul><li class="menu_option"`;
-    if (this.game.state.recycles_remaining > 0) {
-      html += '<span>You may shuffle the unlocked tiles ';
-      if (this.game.state.recycles_remaining == 2) { 
-        html += '<strong>two</strong> more times.'; 
-      }else{
-        html += '<strong>one</strong> more time.';  
-      }
-      html += "</span>";
-      option += ` id="shuffle">Shuffle cards`;
-    } else {
-      option += ` id="quit">Start New Game`;
-    }
+    let option = '';
+    // if (this.game.state.recycles_remaining > 0) {
+    //   html += '<span>You may shuffle the unlocked tiles ';
+    //   if (this.game.state.recycles_remaining == 2) { 
+    //     html += '<strong>two</strong> more times.'; 
+    //   }else{
+    //     html += '<strong>one</strong> more time.';  
+    //   }
+    //   html += "</span>";
+    //   option += ` id="shuffle">Shuffle cards`;
+    // } else {
+    //   option += ` id="quit">Start New Game`;
+    // }
     if (this.game.hidden.length > 0){
+      option += `<ul><li class="menu_option"`;
       option += `</li><li class="menu_option" id="undo">Undo`;
+      option += "</li></ul>";
     }    
-    option += "</li></ul>";
     
     this.updateStatusWithOptions(html,option); 
 
@@ -486,7 +464,6 @@ class Mahjong extends GameTemplate {
     this.game.hidden.splice(this.game.hidden.length - 2, 2);
     this.game.cardsLeft = this.game.cardsLeft + 2;
     this.displayUserInterface();
-    console.log(this.game);
   }
 
   ////////////////////
@@ -518,7 +495,6 @@ class Mahjong extends GameTemplate {
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
-      let shd_continue = 1;
 
       if (mv[0] === "play"){
 
@@ -537,7 +513,7 @@ class Mahjong extends GameTemplate {
       }
 
       if (mv[0] === "exit_game"){
-        this.game.queue.splice(qe, 1);
+        this.game.queue = [];
         let player = parseInt(mv[1])
         this.saveGame(this.game.id);
 

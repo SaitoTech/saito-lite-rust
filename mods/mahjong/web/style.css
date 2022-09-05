@@ -95,10 +95,10 @@ position: relative;
 }
 
 div[id^="row"] {
-  box-shadow: 10px 10px 12px 1px #000000;
-  -moz-box-shadow:10px 10px 12px 1px #000000;
-  -webkit-box-shadow: 10px 10px 12px 1px #000000;
-  -o-box-shadow:10px 10px 12px 1px #000000;
+  box-shadow: 12px 10px 12px 1px #000000;
+  -moz-box-shadow:12px 10px 12px 1px #000000;
+  -webkit-box-shadow: 12px 10px 12px 1px #000000;
+  -o-box-shadow:12px 10px 12px 1px #000000;
   border-radius: 7px;
 }
 
@@ -109,25 +109,29 @@ div[id^="row"] {
 div[id^="row9"], div[id^="row10"], div[id^="row11"], div[id^="row12"], div[id^="row13"], div[id^="row14"] {
   z-index: 2;
   position: relative;
-  top: calc(-700% - 35px);
+  top: calc(-707% - 35px);
+  left: 3%;
 }
 
 div[id^="row15"], div[id^="row16"], div[id^="row17"], div[id^="row18"] {
   z-index: 4;
   position: relative;
-  top: calc(-1200% - 60px);
+  top: calc(-1214% - 60px);
+  left: 6%;
 }
 
 div[id^="row19"], div[id^="row20"] {
   z-index: 6;
   position: relative;
-  top: calc(-1500% - 75px);
+  top: calc(-1520% - 75px);
+  left: 10%;
 }
 
 div[id^="row21"] {
   z-index: 8;
   position: relative;
-  top: calc(-1650% - 85px);
+  top: calc(-1672% - 85px);
+  left: 12%;
 }
 
 .slot {
