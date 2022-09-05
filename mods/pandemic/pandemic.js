@@ -1585,6 +1585,7 @@ class Pandemic extends GameTemplate {
             break;
           }
         }
+        this.updateLog(`${this.game.deck[1].cards["event2"].name}: The people of ${this.skin.cities[mv[1]].name} are protected`);
         this.game.queue.splice(qe, 1);
       }
 
