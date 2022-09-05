@@ -228,6 +228,15 @@ class Mahjong extends GameTemplate {
       }
     });
     this.menu.addSubMenuOption("game-game", {
+      text : "Stats",
+      id : "game-stats",
+      class : "game-stats",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.overlay.show(app, game_mod, game_mod.returnStatsHTML());
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
       text : "Exit",
       id : "game-exit",
       class : "game-exit",
@@ -284,6 +293,20 @@ class Mahjong extends GameTemplate {
 
     return state;
 
+  }
+
+  returnStatsHTML(){
+    let html = `<div class="rules-overlay">
+    <h1>Game Stats</h1>
+    <table>
+    <tbody>
+    <tr><th>Games Played:</th><td>${this.game.state.round}</td></tr>
+    <tr><th>Games Won:</th><td>${this.game.state.wins}</td></tr>
+    <tr><th>Win Percentage:</th><td>${(this.game.state.round>0)? Math.round(1000* this.game.state.wins / (this.game.state.round))/10 : 0}%</td></tr>
+    </tbody>
+    </table>
+    </div>`;
+    return html;
   }
 
   attachEventsToBoard() {
