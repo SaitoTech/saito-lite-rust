@@ -17,8 +17,8 @@ class GameCreateNew {
 
   
   attachEvents(app, mod) {
-    if (document.querySelector(".dynamic_button")){
-      document.querySelector(".dynamic_button").addEventListener("click", (e) => {
+    if (document.querySelector(".saito-multi-select_btn")){
+      document.querySelector(".saito-multi-select_btn").addEventListener("click", (e) => {
       e.currentTarget.classList.toggle("showAll");
       });  
     }

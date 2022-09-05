@@ -267,11 +267,11 @@
   justify-content: space-between;
 }
 
-.dynamic_button {
+.saito-multi-select_btn {
   overflow: hidden;
 }
 
-.dynamic_button.saito-select {
+.saito-multi-select_btn.saito-select {
   border-bottom: unset;
   height: 60px;
   width: unset;
@@ -283,15 +283,15 @@
   margin-top: 2rem;
 }
 
-.dynamic_button_options {
+.saito-multi-select_btn_options {
   width: calc(100% - 60px);
 }
 
-.dynamic_button_options button{
+.saito-multi-select_btn_options button{
   border-radius: 5px 0px 0px 5px;
 }
 
-.dynamic_button.showAll {
+.saito-multi-select_btn.showAll {
   overflow: visible;
 }
 
@@ -308,7 +308,7 @@
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
 }
-.dynamic_button.saito-select::after {
+.saito-multi-select_btn.saito-select::after {
   box-sizing: border-box;
   border: 1px solid var(--saito-primary);
   background-color: #fff;
@@ -328,7 +328,7 @@ option {
 }
 
 
-.game-invite-btn {
+.saito-multi-btn {
   width: 100%;
   min-height: 60px;
   font-weight: bold;
