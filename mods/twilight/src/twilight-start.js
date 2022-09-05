@@ -462,7 +462,7 @@ class Twilight extends GameTemplate {
       }
     });
 
-    if (app.modules.returnModule("Post")) {
+    if (app.modules.returnModule("RedSquare")) {
     this.menu.addSubMenuOption("game-game", {
       text : "Screenshot",
       id : "game-post",
