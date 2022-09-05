@@ -280,7 +280,7 @@ span.redsquare-home-red-square+span {
   font-weight: bold;
   z-index: 1;
   float: left;
-  margin-right: 1rem;
+  margin-right: .2rem;
   color: rgba(83, 100, 113, 0.8);
   font-size: 1.5rem;
 }
@@ -363,6 +363,24 @@ span.redsquare-home-red-square+span {
   text-align: center;
 }
 
+.tweet-img {
+  position: relative;
+}
+
+.tweet-img-expand-container {
+  z-index: 20;
+  color: white;
+  position: absolute;
+  bottom: 1rem;
+  right: 2rem;
+  width: 1rem;
+  font-size: 2.5rem;
+  transition: .2s;
+}
+
+.tweet-img-expand-container:hover {
+  transform: scale(1.2);
+} 
 
 #redsquare-reply-tweet-overlay {
   background-color: #fff;
@@ -556,7 +574,7 @@ span.redsquare-home-red-square+span {
 
 #tweet-overlay-img-cont img {
   height: 70vh;
-  width: 80vw;
+  width: 60vw;
   object-fit: contain;
 }
 
@@ -588,10 +606,6 @@ span.redsquare-home-red-square+span {
     right: 5px !important;
   }
 
-  .redsquare-image-container div {
-    background-size: contain !important;
-    background-position: center center;
-  }
   .saito-main.appspace {
     min-width: 35rem;
    
@@ -616,8 +630,8 @@ span.redsquare-home-red-square+span {
   }
 
   #tweet-overlay-img-cont img {
-    height: 90vh;
-    width: 90vw;
+    height: 70vh;
+    width: 80vw;
     object-fit: contain;
   }
   
@@ -965,10 +979,3 @@ span.redsquare-home-red-square+span {
   }
 }
 
-
-
-@media screen and (max-width: 396px) {
-  #tweet-overlay-img-cont img {
-    width: 90vw;
-  }
-}

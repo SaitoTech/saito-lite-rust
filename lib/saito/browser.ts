@@ -236,7 +236,7 @@ class Browser {
 	    let cleaner = w[i].substring(1);
             let add = this.app.keys.returnPublicKeyByIdentifier(cleaner);
 	    if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) { add = cleaner; }
-            if (!keys.include(add)) {
+            if (!keys.includes(add)) {
               keys.push(add);
             }
 	  }

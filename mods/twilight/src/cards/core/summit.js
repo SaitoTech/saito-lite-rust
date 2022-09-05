@@ -16,7 +16,6 @@
       if (this.doesPlayerDominateRegion("ussr", "africa") == 1)   { ussr_roll++; }
       if (this.doesPlayerDominateRegion("ussr", "camerica") == 1) { ussr_roll++; }
       if (this.doesPlayerDominateRegion("ussr", "samerica") == 1) { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "seasia") == 1) { ussr_roll++; }
 
       if (this.doesPlayerDominateRegion("us", "europe") == 1)   { us_roll++; }
       if (this.doesPlayerDominateRegion("us", "mideast") == 1)  { us_roll++; }
@@ -24,7 +23,6 @@
       if (this.doesPlayerDominateRegion("us", "africa") == 1)   { us_roll++; }
       if (this.doesPlayerDominateRegion("us", "camerica") == 1) { us_roll++; }
       if (this.doesPlayerDominateRegion("us", "samerica") == 1) { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "seasia") == 1)   { us_roll++; }
 
       this.updateLog(`${this.cardToText(card)}: US rolls ${usbase} (${(us_roll - usbase)}) and USSR rolls ${ussrbase} (${(ussr_roll-ussrbase)})`);
 
