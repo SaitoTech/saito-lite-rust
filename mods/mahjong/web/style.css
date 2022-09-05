@@ -82,7 +82,7 @@ position: relative;
   display: grid;
   grid-template-columns: repeat(14,1fr) !important;
   grid-template-rows: 1fr 1fr 1fr 1fr;
-  max-width: 1000px;
+  max-width: min(90vw,120vh);
   grid-gap: min(5px,1vh);
   height: fit-content;
 }
