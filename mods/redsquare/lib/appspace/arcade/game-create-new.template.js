@@ -3,11 +3,28 @@ const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/sa
 
 module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod) => {
 
-  var unixtime = new Date(game_mod.unixtime);
+  console.log('game_mod');
+  console.log(game_mod);
 
   let html = `<div class="game-create-new-overlay">`;
   let slug = (game_mod.returnSlug())? game_mod.slug: game_mod.name.toLowerCase();
   let image = `/${slug}/img/arcade/arcade.jpg`;
+
+  const players = (min, max) => {
+    let selection = "";
+    if (min === max) {
+      selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${min}">${min} player</div>`;
+      selection += mod.returnSingularGameOption(app);
+    } else {
+      selection = `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
+      for (let p = min; p <= max; p++) {
+        selection += `<option value="${p}">${p} player</option>`;
+      }
+      selection += `</select>`;
+    }
+
+    return selection;
+  };
 
   html += `
 
@@ -17,23 +34,21 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod) => {
 
   html += `
 
-    <div class="appstore-appbox-details">
+    <div class="game-create-new-details">
       <div class="saito-table">
         <div class="saito-table-row odd">
-	  <div>date</div>
-	  <div>${unixtime.toUTCString()}</div>
+  `;
+
+      if (mod.maxPlayers > 1) {
+        players(mod.minPlayers, mod.maxPlayers);
+      }
+
+  html += `    	   
+
         </div>
         <div class="saito-table-row">
-	  <div>publisher</div>
-	  <div>${game_mod.publickey}</div>
-        </div>
-        <div class="saito-table-row odd">
-	  <div>version</div>
-	  <div>${game_mod.version}</div>
-        </div>
-        <div class="saito-table-row">
-	  <div>block hash</div>
-	  <div>${game_mod.bsh}</div>
+      	  <div>Advanced Options</div>
+      	  <div>How to play?</div>
         </div>
       </div>
     </div>
