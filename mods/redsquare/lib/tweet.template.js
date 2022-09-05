@@ -15,7 +15,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
     tweet_img += `<div class="redsquare-image-container">`;
     let img_class = (imgs.length > 1) ? 'tweet-multiple-img' : '';
     for (let i = 0; i < imgs.length; i++) {
-      tweet_img += `<div class='${img_class} tweet-img' style="background-image: url(${imgs[i]});"></div>`;
+      tweet_img += `<div  data-id='${tweet.tx.transaction.sig}' id='tweet-img-${tweet.tx.transaction.sig}' class='${img_class} tweet-img' style="background-image: url(${imgs[i]});"> <i class="tweet-img-expand-container fa-solid fa-expand"></i> </div>`;
     }
     tweet_img += `</div>`;
   }
