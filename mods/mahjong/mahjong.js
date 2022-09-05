@@ -428,8 +428,7 @@ class Mahjong extends GameTemplate {
     //   option += ` id="quit">Start New Game`;
     // }
     if (this.game.hidden.length > 0){
-      option += `<ul><li class="menu_option"`;
-      option += `</li><li class="menu_option" id="undo">Undo`;
+      option += `<ul><li class="menu_option" id="undo">Undo`;
       option += "</li></ul>";
     }    
     

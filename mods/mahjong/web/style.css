@@ -76,11 +76,13 @@ position: relative;
 .mahj-rowbox {
   order: 2;
   margin-top: 25px;
+  margin-left: auto;
+  margin-right: auto;
   padding: 25px;
   display: grid;
   grid-template-columns: repeat(14,1fr) !important;
   grid-template-rows: 1fr 1fr 1fr 1fr;
-  max-width: 1200px;
+  max-width: 1000px;
   grid-gap: min(5px,1vh);
   height: fit-content;
 }
@@ -181,11 +183,15 @@ div[id^="row21"] {
   .hidable{
     display: none;
   }
-  .logobox .status, .logobox .status-header, .logobox .status-text-menu{
+  .logobox .status, .logobox .status-text-menu{
     width: min(500px, 90vw);
   }
   .rowbox{
     max-width: 100vw;
     order: 1;
+  }
+
+  .logobox .status-header {
+    display: none;  
   }
 }
