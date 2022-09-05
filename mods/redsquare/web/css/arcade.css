@@ -469,7 +469,7 @@ option {
   display: grid;
   max-height: 80vh;
   height: min-content;
-  width: 80vw;
+  width: 65vw;
   overflow-y: scroll;
   grid-template-rows: min-content auto;
   background-color: white;
