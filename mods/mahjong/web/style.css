@@ -161,6 +161,10 @@ div[id^="row21"] {
     order: 2;
   }
 
+  .status-header {
+    display: none;
+  }
+
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
@@ -193,5 +197,5 @@ div[id^="row21"] {
 
   .logobox .status-header {
     display: none;  
-  }
+  } 
 }
