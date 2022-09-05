@@ -279,7 +279,6 @@
   display: flex;
   line-height: 3;
   background: #fff;
-  border: 1px solid var(--saito-primary);
   color: var(--saito-primary);
   margin-top: 2rem;
 }
@@ -308,12 +307,11 @@
   -webkit-transition: 0.25s all ease;
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
-  visibility: hidden;
 }
 .dynamic_button.saito-select::after {
   box-sizing: border-box;
-  border: 1px solid var(--saito-red);
-  background-color: #324;
+  border: 1px solid var(--saito-primary);
+  background-color: #fff;
   border-radius: 0 5px 5px 0;
   height: 60px;
   line-height: 60px;
@@ -334,7 +332,7 @@ option {
   width: 100%;
   min-height: 60px;
   font-weight: bold;
-  margin: 0px;
+  margin: 0.1rem;
   background: var(--saito-primary);
   border: 1px solid var(--saito-primary);
   color: #fff;
