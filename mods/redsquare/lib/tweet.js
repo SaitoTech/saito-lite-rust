@@ -221,7 +221,7 @@ class RedSquareTweet {
     //
     if (num == -1) {
       if (this.parent_tweet == null && this.parent_id != this.tx.transaction.sig) {
-	let x = mod.returnTweet(app, mod, this.parent_id);
+        let x = mod.returnTweet(app, mod, this.parent_id);
         if (x != null) { this.parent_tweet = x; }
       }
       if (this.parent_tweet != null) {
@@ -232,12 +232,12 @@ class RedSquareTweet {
     } else {
       if (num > 0) {
         if (this.parent_tweet == null && this.parent_id != this.tx.transaction.sig) {
-	  let x = mod.returnTweet(app, mod, this.parent_id);
+          let x = mod.returnTweet(app, mod, this.parent_id);
           if (x != null) { this.parent_tweet = x; }
         }
         if (this.parent_tweet != null) {
           this.parent_tweet.critical_child = this;
-          this.parent_tweet.renderWithParents(app, mod, selector, num-1);
+          this.parent_tweet.renderWithParents(app, mod, selector, num - 1);
           return;
         }
       }
@@ -270,7 +270,7 @@ class RedSquareTweet {
           document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
           document.querySelector(selector).querySelector('.redsquare-ellipsis').nextElementSibling.classList.add("after-ellipsis");
         } catch (err) {
-	}
+        }
       }
     }
     this.attachEvents(app, mod);
@@ -284,12 +284,9 @@ class RedSquareTweet {
     //
     // render tweet with children
     //
-    let sel = "#tweet-" + this.tx.transaction.sig;
-    document.querySelector(sel).onclick = (e) => {
-
+    const openTweet = (e) => {
       //e.preventDefault();
-      //e.stopImmediatePropagation();
-
+      e.stopImmediatePropagation();
       this.saito_loader.render(app, mod, 'redsquare-home-header', false);
       let el = e.currentTarget;
       let tweet_sig_id = el.getAttribute("data-id");
@@ -304,27 +301,43 @@ class RedSquareTweet {
       }
 
       let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
-      mod.fetchTweets(app, mod, sql, function (app, mod) { 
+      mod.fetchTweets(app, mod, sql, function (app, mod) {
         let t = mod.returnTweet(app, mod, tweet_sig_id);
-	if (t == null) { 
-	  console.log("TWEET IS NULL OR NOT STORED");
-	  return; 
-	}
-	if (t.children.length > 0) {
-          mod.renderWithChildren(app, mod, tweet_sig_id); 
+        if (t == null) {
+          console.log("TWEET IS NULL OR NOT STORED");
+          return;
+        }
+        if (t.children.length > 0) {
+          mod.renderWithChildren(app, mod, tweet_sig_id);
         } else {
-          mod.renderWithParents(app, mod, tweet_sig_id, 1); 
-	}
+          mod.renderWithParents(app, mod, tweet_sig_id, 1);
+        }
       });
 
       let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + this.tx.transaction.sig;
       window.history.pushState({}, document.title, tweetUrl);
 
       this.saito_loader.remove();
+    }
 
+
+    let sel = "#tweet-" + this.tx.transaction.sig;
+    document.querySelector(sel).onclick = (e) => {
+      openTweet(e);
     };
 
-    //
+    sel = `#tweet-img-${this.tx.transaction.sig}`;
+    if (document.querySelector(sel)) {
+      document.querySelector(sel).onclick = (e) => {
+        if (e.target.classList.contains('tweet-img-expand-container')) return;
+        openTweet(e)
+      }
+    }
+
+
+
+
+    // 
     // reply to tweet
     //
     sel = ".tweet-reply-" + this.tx.transaction.sig;
@@ -392,10 +405,8 @@ class RedSquareTweet {
     //
     sel = ".tweet-like-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
-
       e.preventDefault();
       e.stopImmediatePropagation();
-
       mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig });
 
       // increase num likes
@@ -442,16 +453,18 @@ class RedSquareTweet {
     };
 
 
-    document.addEventListener('click', function (e) {
-
-      if (e.target && e.target.classList.contains('tweet-img')) {
-
-	// don't stop propagation for all clicks or we stop
-	// inputs from functioning if added to the DOM / DIV
+    document.querySelectorAll('.tweet-img-expand-container').forEach(item => {
+      item.onclick = (e) => {
+        // don't stop propagation for all clicks or we stop
+        // inputs from functioning if added to the DOM / DIV
         e.preventDefault();
-        e.stopImmediatePropagation();
+        // e.stopImmediatePropagation();
 
-        let imgdata_uri = e.target.style.backgroundImage.slice(4, -1).replace(/"/g, "");
+        let img = e.target.parentElement
+
+        console.log("parent ", img, e);
+
+        let imgdata_uri = img.style.backgroundImage.slice(4, -1).replace(/"/g, "");
         let img_overlay = new SaitoOverlay(app, mod);
         img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont'></div>");
 
@@ -476,22 +489,27 @@ class RedSquareTweet {
         // } else {
         //   oImg.style.height = '80vh';
         //   oImg.style.width = 'auto';
-        
+
         //   if (oImg.width > winWidth) {
         //     oImg.height = (oImg.height * 0.75) + 'px';
         //   }
         // }
-
       }
 
+    })
+
+    document.onclick = function (e) {
+      // if (e.target && e.target.classList.contains('tweet-img-expand-container')) {
+
+
+      // }
       if (e.target.classList.contains('tweet-link')) {
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
-
         e.preventDefault();
         e.stopImmediatePropagation();
       }
-    });
+    }
 
 
   }
@@ -513,7 +531,7 @@ class RedSquareTweet {
           this.critical_child = this.unknown_children[i];
           this.updated_at = this.critical_child;
         }
-	this.unknown_children[i].parent_tweet = this;
+        this.unknown_children[i].parent_tweet = this;
         tweet.children.push(this.unknown_children[i]);
         this.unknown_children.splice(i, 0);
       }
@@ -534,7 +552,7 @@ class RedSquareTweet {
         if (this.isCriticalChild(app, mod, tweet)) {
           this.critical_child = tweet;
         }
-	tweet.parent_tweet = this;
+        tweet.parent_tweet = this;
         this.children.push(tweet);
         return 1;
       }
