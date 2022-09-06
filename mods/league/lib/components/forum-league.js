@@ -33,7 +33,8 @@ class ForumLeague {
         let game_sig = e.currentTarget.getAttribute("data-sig");
         console.log(game_sig);
         if (game_sig == league.id){
-          ArcadeLeagueView.render(app, mod, league);
+          let bs = new ArcadeLeagueView(app);
+          bs.render(app, mod, league);
         }
       }
       elem.querySelector("a").setAttribute("href","");

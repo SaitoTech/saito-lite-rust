@@ -1,7 +1,10 @@
 const ArcadeLeagueViewTemplate = require("./arcade-league-view.template");
 const SaitoOverlay = require("../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
-module.exports = ArcadeLeagueView = {
+class ArcadeLeagueView {
+  constructor(app){
+    this.app = app;
+  }
 
   render(app, mod, league) {
   	this.league = league;
@@ -11,7 +14,7 @@ module.exports = ArcadeLeagueView = {
     this.overlay.show(app, mod, ArcadeLeagueViewTemplate(app, mod, league));
     this.loadLeaderboard(app, mod, league);
     
-  },
+  }
 
   /**
   * Query the league for the latest stats
@@ -44,7 +47,7 @@ module.exports = ArcadeLeagueView = {
           mod.renderLeagues(app, mod);
         }
       );
-  },
+  }
 
   /**
    * Replace the loader with formatted html of the stats
@@ -90,7 +93,7 @@ module.exports = ArcadeLeagueView = {
    		}else{
    			app.browser.addElementToId(`<div class="league-error">No Stats for the league</div>`, "league-leaderboard");
    		}
-   },
+   }
 
   /*
   We call attachEvents after we load all the players, so we can attach functionality all in one place
@@ -167,5 +170,7 @@ module.exports = ArcadeLeagueView = {
         }
       }
     });
-  },
+  }
 }
+
+module.exports = ArcadeLeagueView;

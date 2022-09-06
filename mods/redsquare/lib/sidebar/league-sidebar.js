@@ -1,5 +1,3 @@
-const ArcadeLeagueView = require("../../../league/lib/overlays/arcade-league-view");
-
 
 module.exports = RedSquareLeagueSidebar = {
 	
@@ -19,7 +17,7 @@ module.exports = RedSquareLeagueSidebar = {
 	        if (league_mod){
 				for (let league of league_mod.leagues){
 			        if (league.id == league_id){
-			          ArcadeLeagueView.render(app, league_mod, league);
+			          league_mod.respondTo("view-league-details").render(app, league_mod, league);
 			          return;
 			        }
 				}        	

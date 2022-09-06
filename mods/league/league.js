@@ -5,6 +5,7 @@ const ArcadeLeague = require('./lib/components/arcade-league');
 const ForumLeague = require('./lib/components/forum-league');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const ArcadeLeagueView = require("./lib/overlays/arcade-league-view");
 const LeagueInvite = require("./lib/overlays/league-invite");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
@@ -40,6 +41,13 @@ class League extends ModTemplate {
 
   }
 
+
+  respondTo(type){
+    if (type == "view-league-details"){
+      return new ArcadeLeagueView(this.app);
+    }
+    return super.respondTo(type);
+  }
 
   initialize(app) {
 
