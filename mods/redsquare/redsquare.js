@@ -48,6 +48,23 @@ class RedSquare extends ModTemplate {
 
     this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
 
+    this.vote_bonuses = {
+      like: 5,
+      comment: 7,
+      retweet: 6,
+      has_link: 3,
+      has_image: 4
+    }
+
+    this.vote_dividers = {
+      "1": 1,
+      "2": 10,
+      "3": 100,
+      "4": 1000,
+      "5": 10000,
+      "6": 100000
+    }
+
     return this;
 
   }
@@ -436,7 +453,7 @@ class RedSquare extends ModTemplate {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
-          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY srank DESC LIMIT 0,'${this.results_per_page}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
             console.log("~~~~~~~~~~~~~~~~~~");
             console.log("~~~~~~~~~~~~~~~~~~");
@@ -549,7 +566,7 @@ class RedSquare extends ModTemplate {
 
   fetchMoreTweets(app, mod, post_fetch_tweets_callback) {
     const startingLimit = (this.page_number - 1) * this.results_per_page
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY srank DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -558,7 +575,7 @@ class RedSquare extends ModTemplate {
         const tweets = [];
 
         if (res.rows) {
-
+          console.log("more tweets ".res.rows)
           res.rows.forEach(row => {
             let new_tweet = 1;
             if (new_tweet) {
@@ -600,7 +617,9 @@ class RedSquare extends ModTemplate {
       async (res) => {
         const tweets = [];
         if (res.rows) {
+          console.log(' new tweets ', res.rows);
           if (res.rows[0]) {
+
             mod.trackedTweet = res.rows[0];
           }
 
@@ -685,6 +704,7 @@ class RedSquare extends ModTemplate {
     // servers
     //
     let txmsg = tx.returnMessage();
+
     let sql = `UPDATE tweets SET num_likes = num_likes + 1 WHERE sig = $sig`;
     let params = {
       $sig: txmsg.data.sig,
@@ -692,17 +712,26 @@ class RedSquare extends ModTemplate {
     app.storage.executeDatabase(sql, params, "redsquare");
 
 
-    // Update srank
-    let current_time = new Date().getTime();
-    let vote_bonus = 1000000;
-    let sql_rank = "UPDATE tweets SET srank = cast((srank + ($vote_bonus * (2000000/($current_time-created_at)))) as INTEGER) WHERE sig = $sig";
-    let params_rank = { $sig: txmsg.data.sig, $vote_bonus: vote_bonus, $current_time: current_time };
-
-    await this.app.storage.executeDatabase(sql_rank, params_rank, "redsquare");
-
-
+    // // Update srank
+    let creation_date = txmsg.data.created_at;
+    await this.updateTweetRank(app, this, creation_date, txmsg.data.sig, 'like');
     return;
 
+  }
+
+
+  getDivider(number, vote_dividers) {
+    let string_number = String(Math.floor(number));
+    console.log(string_number, "string number");
+    let length = string_number.length;
+    if (length >= 5) {
+      return vote_dividers[4]
+    }
+    if (length === 4) {
+      return vote_dividers[3];
+    }
+
+    return vote_dividers[length];
   }
 
 
@@ -735,6 +764,9 @@ class RedSquare extends ModTemplate {
     for (let key in data) {
       obj.data[key] = data[key];
     }
+
+    console.log('obj ', obj)
+    // update rank of parent tweet
 
     let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
@@ -854,7 +886,6 @@ class RedSquare extends ModTemplate {
     };
 
     app.storage.executeDatabase(sql, params, "redsquare");
-
     let ts = new Date().getTime();
     let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
     let params2 = {
@@ -864,8 +895,9 @@ class RedSquare extends ModTemplate {
     app.storage.executeDatabase(sql2, params2, "redsquare");
 
 
-    if (tweet.retweet_tx != null) {
+    const txmsg = tx.returnMessage();
 
+    if (tweet.retweet_tx != null) {
       let ts = new Date().getTime();
       let sql3 = "UPDATE tweets SET num_retweets = num_retweets + 1 WHERE sig = $sig";
       let params3 = {
@@ -873,11 +905,29 @@ class RedSquare extends ModTemplate {
       }
       app.storage.executeDatabase(sql3, params3, "redsquare");
 
+
+      // Update srank of thread;
+      let creation_date = txmsg.data.thread_creation_date;
+      let sig = txmsg.data.thread_id;
+      await this.updateTweetRank(app, this, creation_date, sig, "retweet");
+      this.sqlcache = [];
+      return;
     }
 
-    this.sqlcache = [];
+    if (txmsg.data.type === "comment") {
+      // Update srank of thread;
+      let creation_date = txmsg.data.thread_creation_date;
+      let sig = txmsg.data.thread_id;
+      await this.updateTweetRank(app, this, creation_date, sig, "comment");
+      this.sqlcache = [];
+      return;
+    }
 
-    return;
+
+
+
+
+
 
   }
 
@@ -943,6 +993,20 @@ class RedSquare extends ModTemplate {
   saveStun() {
     this.app.options.redsquare = this.redsquare;
     this.app.options.saveOptions();
+  }
+
+  async updateTweetRank(app, mod, creation_date, sig, type) {
+    let current_time = new Date().getTime();
+    console.log('current time ', current_time);
+    let vote_bonus = mod.vote_bonuses[type];
+    let number = 604800000 / (current_time - creation_date);
+    let divider = mod.getDivider(number, mod.vote_dividers);
+    const score = vote_bonus * (number / divider);
+    console.log('divider ', divider);
+    console.log('score ', score);
+    let sql_rank = "UPDATE tweets SET srank = cast((srank + $score) as INTEGER) WHERE sig = $sig";
+    let params_rank = { $sig: sig, $score: score };
+    await app.storage.executeDatabase(sql_rank, params_rank, "redsquare");
   }
 
 }

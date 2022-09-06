@@ -14,10 +14,10 @@ class RedSquareTweet {
     // store tx
     //
     this.tx = tx;
-
     this.sender = tx.transaction.from[0].add;
     this.created_at = tx.transaction.ts;
     this.updated_at = tx.transaction.ts;
+
 
     this.parent_tweet = null;
     this.parent_id = "";
@@ -347,6 +347,7 @@ class RedSquareTweet {
       let ptweet = new PostTweet(app, mod, tweet_self);
       ptweet.parent_id = this.tx.transaction.sig;
       ptweet.thread_id = this.thread_id;
+      ptweet.tweet_creation_date = this.tx.transaction.ts
       ptweet.render(app, mod);
 
       let html = TweetTemplate(app, mod, this, 0);
@@ -382,6 +383,7 @@ class RedSquareTweet {
       rtweet.tweet_id = this.tx.transaction.sig;
       rtweet.parent_id = this.parent_id;
       rtweet.thread_id = this.thread_id;
+      rtweet.tweet_creation_date = this.tx.transaction.ts
       rtweet.render(app, mod, tweet_self);
 
       let html = TweetTemplate(app, mod, this, 0);
@@ -405,7 +407,7 @@ class RedSquareTweet {
     document.querySelector(sel).onclick = (e) => {
       e.preventDefault();
       e.stopImmediatePropagation();
-      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig });
+      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig, created_at: this.created_at });
 
       // increase num likes
       sel = ".tweet-tool-like-count-" + this.tx.transaction.sig;
