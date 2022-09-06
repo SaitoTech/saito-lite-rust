@@ -73,7 +73,7 @@ class RedSquare extends ModTemplate {
           post.render(this.app, this);
 	  post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
     } catch (err) {
-console.log("error tweeting image");
+//console.log("error tweeting image");
     }
   }
 
@@ -81,10 +81,8 @@ console.log("error tweeting image");
   addNotification(app, mod, tx) {
     // skip notifying us of our own posts / comments
     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
-console.log("from: " + JSON.stringify(tx.transaction.from) + " --- " + app.wallet.returnPublicKey());
       return;
     }
-console.log("ADD NOTIFICATION FOR US!");
     if (this.ntfs.length == 0) {
       this.ntfs.push(tx);
       return;
@@ -134,7 +132,6 @@ console.log("ADD NOTIFICATION FOR US!");
             insertion_index++;
           }
         }
-        //console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
         this.txmap[tweet.tx.transaction.sig] = 1;
       }
@@ -297,13 +294,10 @@ console.log("ADD NOTIFICATION FOR US!");
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     let t = this.returnTweet(app, mod, sig);
-console.log("render with parent in mod");
-console.log("children: " + t.children.length);
     if (t != null) {
       t.renderWithParents(app, mod, ".redsquare-list", num);
     } else {
       t.renderWithParents(app, mod, ".redsquare-list", 0);
-console.log("cannot render...");
     }
   }
 
@@ -441,13 +435,12 @@ console.log("cannot render...");
 
       let tweet_id = app.browser.returnURLParameter('tweet_id');
 
-
       if (document.querySelector(".redsquare-list")) {
         if (tweet_id) {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
-          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND parent_id == sig && tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
             console.log("~~~~~~~~~~~~~~~~~~");
             console.log("~~~~~~~~~~~~~~~~~~");
@@ -467,7 +460,6 @@ console.log("cannot render...");
         for (let i = 0; i < txs.length; i++) {
           txs[i].decryptMessage(app);
 	  let txmsg = txs[i].returnMessage();
-console.log("LOAD: " + txmsg.data.text);
 	  if (txmsg.request == "create tweet") {
             let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
             redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
