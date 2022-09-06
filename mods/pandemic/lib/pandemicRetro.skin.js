@@ -17,7 +17,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     }
 
   	$("#gameboard").css({
-  	  'background-image': 'url("/pandemic/img/alt/pandemic_map2.jpg")',
+  	  'background-image': `url("/${this.mod.name.toLowerCase()}/img/alt/pandemic_map2.jpg")`,
   	  'background-size': 'cover',
   	  width: this.boardWidth+'px',
   	  height: this.boardHeight+'px',
@@ -31,7 +31,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
   }
 
   returnDiseaseImg(color){
-    return `/pandemic/img/alt/cube_${color}.png`;
+    return `/${this.mod.name.toLowerCase()}/img/alt/cube_${color}.png`;
   }
 
   getVirusName(virus){
@@ -51,7 +51,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
         if (role === "generalist") {
         player.name = "Pantologist";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn1.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn1.png"/>`;
         player.card = "alt/role1.png";
         player.desc =
           "The Pantologist may take an extra move every turn, performing 5 actions instead of 4";
@@ -60,7 +60,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "scientist") {
         player.name = "Experimenter";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn2.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn2.png"/>`;
         player.card = "alt/role2.png";
         player.desc =
           "The Experimenter may research a vaccine with only 4 cards instead of 5";
@@ -68,7 +68,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "medic") {
         player.name = "Physician";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn3.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn3.png"/>`;
         player.card = "alt/role3.png";
         player.desc =
           "The Physician may remove all disease cubes in a city when they treat disease. Once a disease has been cured, the medic removes cubes of that color merely by being in the city.";
@@ -76,7 +76,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "operationsexpert") {
         player.name = "Field Expert";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn4.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn4.png"/>`;
         player.card = "alt/role4.png";
         player.desc =
           "The Field Expert may build a research center in their current city as an action, or may discard a card to move from a research center to any other city.";
@@ -84,7 +84,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "quarantinespecialist"){
         player.name = "Contamination Specialist";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn5.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn5.png"/>`;
         player.card = "alt/role5.png";
         player.desc =
           "The Contamination Specialist prevents both the placement of disease cubes and outbreaks in her present city and all neighboring cities. Initial placement of disease cubes is not affected by the Quarantine Specialist.";
@@ -92,7 +92,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "researcher"){
         player.name = "Investigator";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn6.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn6.png"/>`;
         player.card = "alt/role6.png";
         player.desc = "The Investigator may give any City card to another player in the same city as them. The transfer must go from the Researcher to the other player.";
         player.type = 6;
@@ -125,7 +125,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
         city.style.height = "80px";
         city.style.top = this.mod.scale(cities[i].top) + "px";
   			city.style.left = this.mod.scale(cities[i].left) + "px";        
-        city.style.backgroundImage = `url("/pandemic/img/alt/city-${cities[i].virus}.png")`;
+        city.style.backgroundImage = `url("/${this.mod.name.toLowerCase()}/img/alt/city-${cities[i].virus}.png")`;
 
         let label = city.querySelector(".name");
         if (!label){
@@ -897,7 +897,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       if (this.mod.game.state.cures[v]){
         for (let c in this.cities){
           if (this.cities[c].virus == v){
-            $(`#${c}`).css("background-image",`url("/pandemic/img/alt/cure-${v}.png")`);
+            $(`#${c}`).css("background-image",`url("/${this.mod.name.toLowerCase()}/img/alt/cure-${v}.png")`);
           }
         }
         if (this.mod.isEradicated(v)){

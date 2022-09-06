@@ -44,8 +44,8 @@ class Post {
 
     document.querySelector('.redsquare-tweet-overlay').onclick = (e) => {
 
-      if (e.target.classList.contains('post-tweet-img-icon')) {
-        document.querySelector(".hidden_file_element_redsquare-tweet-overlay").click();
+      if (e.target.classList.contains("fa-image")) {
+        document.querySelector("#hidden_file_element_redsquare-tweet-overlay").click();
       }
 
       if (e.target.id === "post-tweet-button") {

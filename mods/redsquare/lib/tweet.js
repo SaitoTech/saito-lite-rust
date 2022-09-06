@@ -89,6 +89,8 @@ class RedSquareTweet {
     //
     this.generateTweetProperties(app, mod, 0);
 
+
+    this.img_overlay = new SaitoOverlay(app, mod);
     this.saito_loader = new SaitoLoader(app, this);
   }
 
@@ -466,13 +468,11 @@ class RedSquareTweet {
         e.preventDefault();
         // e.stopImmediatePropagation();
 
-        let img = e.target.parentElement
-
-        console.log("parent ", img, e);
+        let img = e.target.parentElement;
 
         let imgdata_uri = img.style.backgroundImage.slice(4, -1).replace(/"/g, "");
-        let img_overlay = new SaitoOverlay(app, mod);
-        img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont'></div>");
+        tweet_self.img_overlay.clear();
+        tweet_self.img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont'></div>");
 
         let oImg = document.createElement("img");
         oImg.setAttribute('src', imgdata_uri);

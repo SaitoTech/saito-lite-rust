@@ -18,6 +18,7 @@ class ChatPopup {
       this.attachEvents(app, mod, group_id);
 
       app.connection.on("chat-render-request", (message) => {
+console.log("RENDER REQ 3");
         let divid = "chat-container-" + group_id;
         app.browser.replaceElementById(ChatPopupTemplate(app, mod, group_id), divid);
         app.browser.makeDraggable(`chat-container-${group_id}`);

@@ -12,9 +12,9 @@ class Pandemic extends GameTemplate {
   constructor(app) {
     super(app);
 
-    this.name = "Pandemic";
-    this.appname = "Epidemic";
-    this.description = `Epidemic is a cooperative multiplayer board game in which players work together to try and fend off a global epidemic.`;
+    this.name = "CDC";
+    this.gamename = "Centers for Disease Control"
+    this.description = `${this.gamename} is a cooperative multiplayer board game in which players work together to try and fend off a global <em>pandemic</em>.`;
     this.categories = "Games Boardgame Strategy Cooperative";
     this.maxPlayers = 4;
     this.minPlayers = 2;
@@ -129,7 +129,10 @@ class Pandemic extends GameTemplate {
   initializeHTML(app) {
 
     super.initializeHTML(app);
-      
+    
+    //Dynamically update index.html 
+    //$('head').append(`<link rel="stylesheet" type="text/css" href="/${this.name.toLowerCase()}/style.css" />`);
+
     if (!this.skin){
       switch(this.game.options.theme){
         case "classic": this.skin = new PandemicOriginalSkin(this.app, this); break;
@@ -138,7 +141,11 @@ class Pandemic extends GameTemplate {
         default: this.skin = new PandemicRetroSkin(this.app, this);
       }
     }
+
     this.skin.render();
+
+    document.title = this.gamename || this.name;
+
     this.boardWidth = this.skin.boardWidth;
     this.card_height_ratio = this.skin.card_height_ratio;
 
@@ -592,11 +599,11 @@ class Pandemic extends GameTemplate {
 
     let html = `<div class="status-message">${statMsg}</div>
        <div class='status-icon-menu'>
-       <div class="menu_icon tip" id="move"><img class="menu_icon_icon" src="/pandemic/img/icons/MOVE.png" /><div class="menu-text">Move</div><div class="tiptext">Move to new city</div></div>
-       <div class="menu_icon tip" id="treat" style="opacity:${treat_opacity}" ><img class="menu_icon_icon" src="/pandemic/img/icons/TREAT.png" /><div class="menu-text">Treat</div><div class="tiptext">Treat disease in this city (remove cubes)</div></div>
-       <div class="menu_icon tip" id="build" style="opacity:${build_opacity}" ><img class="menu_icon_icon" src="/pandemic/img/icons/BUILD.png" /><div class="menu-text">Build</div><div class="tiptext">Build an operations center in this city</div></div>
-       <div class="menu_icon tip" id="discover_cure" style="opacity:${discover_cure_opacity}" ><img class="menu_icon_icon" src="/pandemic/img/icons/CURE.png" /><div class="menu-text">Discover</div><div class="tiptext">Discover cure to a disease</div></div>
-       <div class="menu_icon tip" id="cards" style="opacity:${cards_opacity}"><img class="menu_icon_icon" src="/pandemic/img/icons/CARDS.png" /><div class="menu-text">Cards</div><div class="tiptext">Play event card or share knowledge (give another player a card)</div></div>
+       <div class="menu_icon tip" id="move"><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/MOVE.png" /><div class="menu-text">Move</div><div class="tiptext">Move to new city</div></div>
+       <div class="menu_icon tip" id="treat" style="opacity:${treat_opacity}" ><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/TREAT.png" /><div class="menu-text">Treat</div><div class="tiptext">Treat disease in this city (remove cubes)</div></div>
+       <div class="menu_icon tip" id="build" style="opacity:${build_opacity}" ><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/BUILD.png" /><div class="menu-text">Build</div><div class="tiptext">Build an operations center in this city</div></div>
+       <div class="menu_icon tip" id="discover_cure" style="opacity:${discover_cure_opacity}" ><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/CURE.png" /><div class="menu-text">Discover</div><div class="tiptext">Discover cure to a disease</div></div>
+       <div class="menu_icon tip" id="cards" style="opacity:${cards_opacity}"><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/CARDS.png" /><div class="menu-text">Cards</div><div class="tiptext">Play event card or share knowledge (give another player a card)</div></div>
        </div>`;
 
     $(".menu_icon").off();
@@ -2446,11 +2453,11 @@ displayDisease() {
 
   returnCardImage(cardname, ctype = this.defaultDeck) {
     if (cardname === "action_help"){
-      return `<img class="cardimg" src="/pandemic/img/${this.skin.actionKey}" />`;
+      return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/${this.skin.actionKey}" />`;
     }
     if (cardname === "player_role"){
       let player = this.game.players_info[this.game.player - 1];
-      return `<img class="cardimg" src="/pandemic/img/${player.card}" />`;
+      return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/${player.card}" />`;
     }
 
     //console.log(cardname,ctype);
@@ -2460,7 +2467,7 @@ displayDisease() {
       return null;
     }
     let img = (ctype == 1) ? this.skin.cards[cardname].img : c.img;
-    return `<img class="cardimg" src="/pandemic/img/${img}" />`;
+    return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/${img}" />`;
   }
 
   /* Remove the specified card from the specified player's hand*/
@@ -2588,7 +2595,7 @@ displayDisease() {
       <div class="epidemic_overlay">
         <h1>Epidemic in ${this.skin.cities[city].name}!!!</h1>
         <div class="epidemic-card">
-          <img src="/pandemic/img/${this.skin.epidemic.img}"/>
+          <img src="/${this.name.toLowerCase()}/img/${this.skin.epidemic.img}"/>
         </div>
         <div class="button close_epidemic_overlay" id="close_epidemic_overlay">close</div>
       </div>
@@ -2616,7 +2623,7 @@ displayDisease() {
       html += `
         <div class="player_info_box">
           <div class="player_role_card">
-            <img src="/pandemic/img/${player.card}" />
+            <img src="/${this.name.toLowerCase()}/img/${player.card}" />
           </div>
           <div class="player_role_description">
             <table>
