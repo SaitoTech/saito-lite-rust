@@ -13,7 +13,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod) => {
       selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${min}">${min} player</div>`;
       selection += game_mod.returnSingularGameOption(app);
     } else {
-      selection = `<select class="saito-new-select arcade-select-players" name="game-wizard-players-select">`;
+      selection = `<select class="arcade-select-players" name="game-wizard-players-select">`;
       for (let p = min; p <= max; p++) {
         selection += `<option value="${p}">${p} player</option>`;
       }
