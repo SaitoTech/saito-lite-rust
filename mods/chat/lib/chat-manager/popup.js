@@ -20,12 +20,6 @@ class ChatPopup {
       let obj = document.getElementById(`chat-popup-${this.group_id}`).remove(); 
     }
 
-//    app.connection.on("chat-render-request", (message) => {
-//    listen for chat re-render requests affecting this popup
-//    app.connection.on("chat-render-request", (message) => {
-//        console.log('inside chat popup listener');
-//    });
-
   }
 
 }

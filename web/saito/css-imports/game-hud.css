@@ -57,7 +57,6 @@
   background-color: transparent;
 }
 
-
 ul li a {
   color: black;
 }
@@ -119,8 +118,6 @@ ul li a {
 .status-header i {
   float: left;
 }
-
-
 
 #back_button {
   font-size: 1.2em;
@@ -223,39 +220,6 @@ i.menu_icon_icon{
   overflow-y: auto;
 }
 
-
-
-.status-cardbox {
-  display: grid;
-  width: 100%;     /*Fit the status, fit the hud*/
-  overflow-y: auto;
-  overflow-x: clip;
-  user-select: none;
-}
-
-.status-cardbox li {
-  list-style-type: none;
-}
-.status-cardbox ul li {
-  list-style-type: none;
-}
-
-@media screen and (orientation: portrait) and (max-width: 600px) {
-  .status-header{
-    min-height: 32px;
-    margin-bottom: 5px;
-  }
-}
-
-@media screen and (orientation: landscape) and (max-height: 600px) {
-  .status-header{
-    min-height: 32px;
-    margin-bottom: 5px;
-  }
-}
-
-
-
 .status-text-menu ul {
   background-color: whitesmoke;
   list-style-type: none;
@@ -300,6 +264,35 @@ i.menu_icon_icon{
 }
 .player-box .textchoice:hover{
   color: black;
+}
+
+.status-cardbox {
+  display: grid;
+  width: 100%;     /*Fit the status, fit the hud*/
+  overflow-y: auto;
+  overflow-x: clip;
+  user-select: none;
+}
+
+.status-cardbox li {
+  list-style-type: none;
+}
+.status-cardbox ul li {
+  list-style-type: none;
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .status-header{
+    min-height: 32px;
+    margin-bottom: 5px;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .status-header{
+    min-height: 32px;
+    margin-bottom: 5px;
+  }
 }
 
 .hud-square {
@@ -373,6 +366,7 @@ i.menu_icon_icon{
   margin-left: auto;
   margin-right: auto;
 }
+
 
 
 

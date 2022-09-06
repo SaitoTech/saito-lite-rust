@@ -61,7 +61,7 @@ class Chat extends ModTemplate {
 
             let newgroup = this.createChatGroup(data.members);
 
-            this.sendEvent('chat-render-request', {});
+            this.sendEvent('old-chat-render-request', {});
             this.saveChat();
             this.render(this.app);
         }
@@ -191,7 +191,7 @@ class Chat extends ModTemplate {
         //
         // note that this may run before initializeHTML
         //
-        this.sendEvent('chat-render-request', {});
+        this.sendEvent('old-chat-render-request', {});
     }
 
     binaryInsert(list, item, compare, search) {
@@ -254,7 +254,8 @@ class Chat extends ModTemplate {
                                     return a.transaction.ts - b.transaction.ts;
                                 })
                             }
-                            this.sendEvent('chat-render-request', {});
+			    //
+                            this.sendEvent('old-chat-render-request', {});
 
                             //
                             // check identifiers
@@ -279,7 +280,7 @@ class Chat extends ModTemplate {
                         return 1;
                     }
 
-                    this.sendEvent('chat-render-request', {});
+                    this.sendEvent('old-chat-render-request', {});
 
 		    //
 		    // check identifiers
@@ -368,7 +369,7 @@ class Chat extends ModTemplate {
         //
         // render loaded messages
         //
-        this.sendEvent('chat-render-request', {});
+        this.sendEvent('old-chat-render-request', {});
         this.sendEvent('chat-render-box-request', {});
 
         this.render(this.app);
@@ -711,7 +712,7 @@ return;
 
         if (app.BROWSER == 1) {
             let m = app.modules.returnActiveModule();
-            if (!m.events.includes("chat-render-request")) {
+            if (!m.events.includes("old-chat-render-request")) {
                 this.showAlert();
             }
         }
@@ -815,7 +816,7 @@ return;
         this.sendEvent('chat_receive_message', message);
         this.render(this.app, renderMode);
 
-	//this.app.emit('chat-render-request', {});
+	//this.app.emit('old-chat-render-request', {});
 
         this.saveChat();
 

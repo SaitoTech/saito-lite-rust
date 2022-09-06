@@ -35,7 +35,6 @@
   left: 0px;
 }
 
-
 .cardfan>.card:nth-child(2) {
   transform: rotate(-10deg);
   left: 3vh;
@@ -55,7 +54,6 @@
   transform: rotate(20deg);
   left: 12vh;
 }
-
 
 .hand>.card:nth-child(1) {
   transform: rotate(-20deg);
@@ -126,8 +124,6 @@
 .bighand>.card:nth-child(n+22) {
   top: 13vh;
 }
-
-
 
 .staggered-hand>.card:nth-child(2){
   top: 4vh;
