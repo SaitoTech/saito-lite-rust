@@ -52,6 +52,10 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod) => {
       </div>
       <!- ***Game desc & title end*** -->
 
+      <form>
+        <input type="hidden" name="game" value="${game_mod.name}" />
+      </form>
+
     </div>
 
   `;

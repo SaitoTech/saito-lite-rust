@@ -69,9 +69,36 @@ class GameCreateNew {
         }
       } catch (err) { }
     };
+
+    document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
+       let options = this.getOptions();
+       let gamemod = app.modules.returnModule(options.game);
+       gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
+    });
   
   }
 
+
+  getOptions() {
+    let options = {};
+    document.querySelectorAll("form input, form select").forEach((element) => {
+      if (element.type == "checkbox") {
+        if (element.checked) {
+          options[element.name] = 1;
+        }
+      } else if (element.type == "radio") {
+        if (element.checked) {
+          options[element.name] = element.value;
+        }
+      } else {
+        options[element.name] = element.value;
+      }
+    });
+    return options;
+  }
 }
+
+
+
 
 module.exports = GameCreateNew;

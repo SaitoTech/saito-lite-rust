@@ -116,10 +116,9 @@
 }
 
 .rules-overlay{
-  background: var(--saito-nightscape);
+  background: #fff;
   padding: 1em;
   font-size: 20px;
-  border: 2px white solid;
   border-radius: 10px;
   max-width: 80vw;
   min-width: 600px;
