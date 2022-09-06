@@ -482,7 +482,7 @@ option {
   cursor: pointer;
 }
 
-.saito-module-intro-image > .saito-select-wrapper, .arcade-game-thumbnail {
+.arcade-game-thumbnail {
   margin-bottom: 1rem;
 }
 
@@ -497,4 +497,8 @@ option {
 
 .arcade-game-publisher-message span {
   font-weight: bold;
+}
+
+.arcade-advance-opt {
+  margin-top: 1rem;
 }
