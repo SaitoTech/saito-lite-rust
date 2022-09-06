@@ -466,9 +466,12 @@ class RedSquareTweet {
         e.preventDefault();
         // e.stopImmediatePropagation();
 
-        let img = e.target.parentElement
+        if (document.querySelector('.saito-overlay') != null) {
+          document.querySelector('.saito-overlay').remove();
+          document.querySelector('.saito-overlay-backdrop').remove();
+        }
 
-        console.log("parent ", img, e);
+        let img = e.target.parentElement
 
         let imgdata_uri = img.style.backgroundImage.slice(4, -1).replace(/"/g, "");
         let img_overlay = new SaitoOverlay(app, mod);
