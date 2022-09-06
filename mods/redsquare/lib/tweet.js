@@ -94,6 +94,8 @@ class RedSquareTweet {
     //
     this.generateTweetProperties(app, mod, 0);
 
+
+    this.img_overlay = new SaitoOverlay(app, mod);
     this.saito_loader = new SaitoLoader(app, this);
   }
 
@@ -289,12 +291,15 @@ class RedSquareTweet {
     //
     // render tweet with children
     //
+
     const openTweet = (e) => {
       //e.preventDefault();
       e.stopImmediatePropagation();
+
       this.saito_loader.render(app, mod, 'redsquare-home-header', false);
       let el = e.currentTarget;
       let tweet_sig_id = el.getAttribute("data-id");
+
       document.querySelector(".redsquare-list").innerHTML = "";
       let new_title = "<i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE";
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE</div>`, "saito-page-header-title");
@@ -308,6 +313,7 @@ class RedSquareTweet {
       let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
       mod.fetchTweets(app, mod, sql, function (app, mod) {
         let t = mod.returnTweet(app, mod, tweet_sig_id);
+
         if (t == null) {
           console.log("TWEET IS NULL OR NOT STORED");
           return;
@@ -317,6 +323,7 @@ class RedSquareTweet {
         } else {
           mod.renderWithParents(app, mod, tweet_sig_id, 1);
         }
+
       });
 
       let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + this.tx.transaction.sig;
@@ -329,6 +336,7 @@ class RedSquareTweet {
     let sel = "#tweet-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
       openTweet(e);
+
     };
 
     sel = `#tweet-img-${this.tx.transaction.sig}`;
@@ -461,18 +469,18 @@ class RedSquareTweet {
         // inputs from functioning if added to the DOM / DIV
         e.preventDefault();
         // e.stopImmediatePropagation();
+        tweet_self.img_overlay.clear();
 
-        let img = e.target.parentElement
-
-        console.log("parent ", img, e);
+        let img = e.target.parentElement;
 
         let imgdata_uri = img.style.backgroundImage.slice(4, -1).replace(/"/g, "");
-        let img_overlay = new SaitoOverlay(app, mod);
-        img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont'></div>");
+        
+        let imgId = Math.floor(Math.random()*10000);
+        tweet_self.img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont-"+imgId+"'></div>");
 
         let oImg = document.createElement("img");
         oImg.setAttribute('src', imgdata_uri);
-        document.querySelector('#tweet-overlay-img-cont').appendChild(oImg);
+        document.querySelector("#tweet-overlay-img-cont-"+imgId).appendChild(oImg);
 
         let img_width = oImg.width;
         let img_height = oImg.height;

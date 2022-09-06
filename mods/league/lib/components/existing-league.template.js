@@ -15,7 +15,9 @@ module.exports = (app, mod, league) => {
     }
     html +=`<button class="league-component-existing-league" data-cmd="view" data-league-id="${league.id}">View</button>`;
     if (app.wallet.returnPublicKey() == league.admin) { 
-     html += `<button class="league-component-existing-league" data-cmd="invite" data-league-id="${league.id}">Invite</button>`;
+      if (league.max_players == 0 || league?.playerCnt < league.max_players){
+       html += `<button class="league-component-existing-league" data-cmd="invite" data-league-id="${league.id}">Invite</button>`;
+      }
      html += `<button class="league-component-existing-league" data-cmd="delete" data-league-id="${league.id}">Delete</button>`;
     }
 

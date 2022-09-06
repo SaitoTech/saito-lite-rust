@@ -16,6 +16,9 @@ class Post {
   }
 
   render(app, mod) {
+    if (document.querySelector('#redsquare-tweet-overlay') != null) {
+      document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
+    }
     this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();
@@ -44,11 +47,13 @@ class Post {
       false);
 
     document.querySelector('.redsquare-tweet-overlay').onclick = (e) => {
-      if (e.target.classList.contains('post-tweet-img-icon')) {
-        document.querySelector(".hidden_file_element_redsquare-tweet-overlay").click();
+
+      if (e.target.classList.contains("fa-image")) {
+        document.querySelector("#hidden_file_element_redsquare-tweet-overlay").click();
       }
 
       if (e.target.id === "post-tweet-button") {
+
         document.getElementById("post-tweet-loader").style.display = 'block';
         e.preventDefault();
 
@@ -57,7 +62,7 @@ class Post {
         let thread_id = document.getElementById("thread_id").value;
 
         //
-        // extracting keys from text AND then tweet
+        // extract keys from text AND then tweet
         //
         let keys = app.browser.extractKeys(text);
         if (this.tweet != null) {
@@ -75,6 +80,9 @@ class Post {
         post_self.overlay.closebox = false;
         post_self.overlay.show(app, mod, '<div class="saito-loader"></div>');
 
+	//
+	// tweet data
+	//
         let data = { text: text };
         if (parent_id !== "") {
 
@@ -85,7 +93,7 @@ class Post {
           data['images'] = this.images;
         }
 
-        //
+	//
         // check if posting tweet from overlay (reply tweet)
         // if yes then update reply counter
         //
@@ -102,22 +110,26 @@ class Post {
           }
         }
 
-        setTimeout(() => {
 
+        setTimeout(() => {
+ 
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
           mod.addTweetFromTransaction(app, mod, newtx, true);
 
-          if (thread_id !== "") {
-            mod.renderWithChildren(app, mod, thread_id);
-          } else {
-            if (parent_id !== "") {
-              mod.renderWithChildren(app, mod, parent_id);
+	  if (post_self.browser_active == 1) {
+            if (thread_id !== "") {
+              mod.renderWithChildren(app, mod, thread_id);
             } else {
-              mod.renderMainPage(app, mod);
+              if (parent_id !== "") {
+                mod.renderWithChildren(app, mod, parent_id);
+              } else {
+                mod.renderMainPage(app, mod);
+              }
             }
-          }
+	  }
 
           post_self.overlay.hide();
+
         }, 1000);
 
       }

@@ -21,15 +21,15 @@ class PandemicOriginalSkin {
    	this.card_height_ratio = 1.41;
   	this.cities = this.returnCities();
     this.cards = this.returnPlayerCards();
-
     this.epidemic = { img: "Epidemic.jpg" };
     this.actionKey = "ActionKey.jpg";
   }
 
   render(){
+  this.mod.gamename = "Pandemic";
 
 	$("#gameboard").css({
-	  'background-image': 'url("/pandemic/img/Board.jpg")',
+	  'background-image': `url("/${this.mod.name.toLowerCase()}/img/Board.jpg")`,
 	  'background-size': 'cover',
 	  width: '2602px',
 	  height: '1812px',
@@ -56,7 +56,7 @@ class PandemicOriginalSkin {
   }
 
   returnDiseaseImg(color){
-    return `/pandemic/img/cube_${color}.png`;
+    return `/${this.mod.name.toLowerCase()}/img/cube_${color}.png`;
   }
 
   getVirusName(virus){
@@ -67,7 +67,7 @@ class PandemicOriginalSkin {
     let player = {};
         if (role === "generalist") {
         player.name = "Generalist";
-        player.pawn = `<img src="/pandemic/img/Pawn%20Generalist.png"/>`;
+        player.pawn = `<img src="/${this.mod.name.toLowerCase()}/img/Pawn%20Generalist.png"/>`;
         player.card = "Role%20-%20Generalist.jpg";
         player.desc =
           "The Generalist may take an extra move every turn, performing 5 actions instead of 4";
@@ -76,7 +76,7 @@ class PandemicOriginalSkin {
       }
       if (role === "scientist") {
         player.name = "Scientist";
-        player.pawn = `<img src="/pandemic/img/Pawn%20Scientist.png"/>`;
+        player.pawn = `<img src="/${this.mod.name.toLowerCase()}/img/Pawn%20Scientist.png"/>`;
         player.card = "Role%20-%20Scientist.jpg";
         player.desc =
           "The Scientist may research a vaccine with only 4 cards instead of 5";
@@ -84,7 +84,7 @@ class PandemicOriginalSkin {
       }
       if (role === "medic") {
         player.name = "Medic";
-        player.pawn = `<img src="/pandemic/img/Pawn%20Medic.png"/>`;
+        player.pawn = `<img src="/${this.mod.name.toLowerCase()}/img/Pawn%20Medic.png"/>`;
         player.card = "Role%20-%20Medic.jpg";
         player.desc =
           "The Medic may remove all disease cubes in a city when they treat disease. Once a disease has been cured, the medic removes cubes of that color merely by being in the city.";
@@ -92,7 +92,7 @@ class PandemicOriginalSkin {
       }
       if (role === "operationsexpert") {
         player.name = "Operations Expert";
-        player.pawn = `<img src="/pandemic/img/Pawn%20Operations%20Expert.png"/>`;
+        player.pawn = `<img src="/${this.mod.name.toLowerCase()}/img/Pawn%20Operations%20Expert.png"/>`;
         player.card = "Role%20-%20Operations%20Expert.jpg";
         player.desc =
           "The Operations Expert may build a research center in their current city as an action, or may discard a card to move from a research center to any other city.";
@@ -100,7 +100,7 @@ class PandemicOriginalSkin {
       }
       if (role === "quarantinespecialist"){
         player.name = "Quarantine Specialist";
-        player.pawn = `<img src="/pandemic/img/Pawn%20Quarantine%20Specialist.png"/>`;
+        player.pawn = `<img src="/${this.mod.name.toLowerCase()}/img/Pawn%20Quarantine%20Specialist.png"/>`;
         player.card = "Role%20-%20Quarantine%20Specialist.jpg";
         player.desc =
           "The Quarantine Specialist prevents both the placement of disease cubes and outbreaks in her present city and all neighboring cities. Initial placement of disease cubes is not affected by the Quarantine Specialist.";
@@ -108,7 +108,7 @@ class PandemicOriginalSkin {
       }
       if (role === "researcher"){
         player.name = "Researcher";
-        player.pawn = `<img src="/pandemic/img/Pawn%20Researcher.png"/>`;
+        player.pawn = `<img src="/${this.mod.name.toLowerCase()}/img/Pawn%20Researcher.png"/>`;
         player.card = "Role%20-%20Researcher.jpg";
         player.desc = "The Researcher may give any City card to another player in the same city as them. The transfer must go from the Researcher to the other player.";
         player.type = 6;
@@ -777,7 +777,7 @@ class PandemicOriginalSkin {
   	try{
 		let marker = document.getElementById("marker_outbreak");
 		if (!marker){
-			this.app.browser.addElementToElement(`<div id="marker_outbreak"></div>`, document.getElementById('gameboard'))
+			this.app.browser.addElementToElement(`<div id="marker_outbreak" class="marker_outbreak"></div>`, document.getElementById('gameboard'))
        	  	marker = document.getElementById('marker_outbreak');	
 		}
 	    let t = 982 + 80 * outbreaks;
@@ -797,7 +797,7 @@ class PandemicOriginalSkin {
     let board = document.getElementById("gameboard");
 
     for (let i = 0; i < this.mod.game.deck[0].discards.length; i++){
-      html += `<img style="bottom:${2*i}px; right:${2*i}px;" src="/pandemic/img/${this.mod.game.deck[0].cards[this.mod.game.deck[0].discards[i]].img}" />`;
+      html += `<img style="bottom:${2*i}px; right:${2*i}px;" src="/${this.mod.name.toLowerCase()}/img/${this.mod.game.deck[0].cards[this.mod.game.deck[0].discards[i]].img}" />`;
     }
     if (document.querySelector(".infection_discard_pile")){
       document.querySelector(".infection_discard_pile").innerHTML = html;
@@ -807,7 +807,7 @@ class PandemicOriginalSkin {
 
     html = "";
     for (let i = 0; i < this.mod.game.deck[1].discards.length; i++){
-      html += `<img style="bottom:${2*i}px; right:${2*i}px;" src="/pandemic/img/${this.mod.game.deck[1].cards[this.mod.game.deck[1].discards[i]].img}" />`;
+      html += `<img style="bottom:${2*i}px; right:${2*i}px;" src="/${this.mod.name.toLowerCase()}/img/${this.mod.game.deck[1].cards[this.mod.game.deck[1].discards[i]].img}" />`;
     }
     if (document.querySelector(".player_discard_pile")){
       document.querySelector(".player_discard_pile").innerHTML = html;
@@ -817,7 +817,7 @@ class PandemicOriginalSkin {
 
     html = "";    
     for (let i = 0; i < this.mod.game.deck[0].crypt.length; i++){
-      html += `<img src="/pandemic/img/Back%20Infection.gif" style="bottom:${i}px;right:${i}px"/>`;
+      html += `<img src="/${this.mod.name.toLowerCase()}/img/Back%20Infection.gif" style="bottom:${i}px;right:${i}px"/>`;
     }
     if (document.querySelector(".back_infection_card")){
       document.querySelector(".back_infection_card").innerHTML = html;
@@ -827,7 +827,7 @@ class PandemicOriginalSkin {
 
     html = "";
     for (let i = 0; i < this.mod.game.deck[1].crypt.length; i++){
-      html += `<img src="/pandemic/img/Back%20Player%20Card.gif" style="bottom:${i}px;right:${i}px"/>`;
+      html += `<img src="/${this.mod.name.toLowerCase()}/img/Back%20Player%20Card.gif" style="bottom:${i}px;right:${i}px"/>`;
     }
     if (document.querySelector(".back_player_card")){
       document.querySelector(".back_player_card").innerHTML = html;    
@@ -851,7 +851,7 @@ class PandemicOriginalSkin {
         div.style.opacity = "1";
         if (this.mod.isEradicated(v)){
           let virus_string = v.charAt(0).toUpperCase()+v.slice(1);
-          div.style.backgroundImage = `url("/pandemic/img/Vial%20${virus_string}%20Eradicated.png")`;
+          div.style.backgroundImage = `url("/${this.mod.name.toLowerCase()}/img/Vial%20${virus_string}%20Eradicated.png")`;
         }
       }else{
         div.style.top = this.mod.scale(1703) + "px";
@@ -894,7 +894,7 @@ class PandemicOriginalSkin {
     	let marker = document.getElementById('marker_infection_rate');
 
        if (!marker){
-       	  this.app.browser.addElementToElement(`<div id="marker_infection_rate"></div>`, document.getElementById('gameboard'))
+       	  this.app.browser.addElementToElement(`<div id="marker_infection_rate" class="marker_infection_rate"></div>`, document.getElementById('gameboard'))
        	  marker = document.getElementById('marker_infection_rate');
    	   }
 
@@ -911,7 +911,7 @@ class PandemicOriginalSkin {
     
   }
 
-  animateInfection(city, msg, mycallback){
+  animateInfection(city, msg, dontplace, mycallback){
     let pandemic_self = this.mod;
 
     let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;

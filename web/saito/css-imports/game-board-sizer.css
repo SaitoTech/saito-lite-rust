@@ -1,0 +1,34 @@
+
+#game_board_sizer{
+  position: absolute;
+  top: 0px;
+  right: 40px;
+  z-index: 45;
+  display: flex;
+  flex-direction: row;
+  width: 300px;
+  align-items: center;
+  justify-content: space-evenly;
+}
+#game_board_sizer i {
+  font-size: 24px;
+  text-shadow: 0 0 2px var(--saito-red), 0 0 5px whitesmoke;
+}
+#game_board_sizer input {
+  width: 250px;
+  background: #0004;
+  -webkit-appearance: none;
+  width: 100%;
+  border: 1px solid var(--saito-primary);
+  border-radius: 5px;
+  margin: 1.25rem;
+  z-index: 99999;
+  padding: 1rem;
+  margin-left: 1rem;
+  padding-left: 1px;
+  padding-right: 1px;
+  margin-right: 1rem;
+}
+
+
+

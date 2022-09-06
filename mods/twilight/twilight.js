@@ -472,20 +472,24 @@ class Twilight extends GameTemplate {
       }
     });
 
-/****
-    if (app.modules.returnModule("Post")) {
+    if (app.modules.returnModule("RedSquare")) {
     this.menu.addSubMenuOption("game-game", {
       text : "Screenshot",
       id : "game-post",
       class : "game-post",
       callback : async function(app, game_mod) {
+	let log = document.querySelector(".log");
+	let log_lock = document.querySelector(".log_lock");
+	if (!log_lock && log) { log.style.display = "none"; }
         await app.browser.captureScreenshot(function(image) {
-          game_mod.app.modules.returnModule("RedSquare").tweetImage(image);
+	  if (!log_lock && log) { log.style.display = "block"; }
+	  let m = game_mod.app.modules.returnModule("RedSquare");
+	  if (m) { m.tweetImage(image); }
         });
       },
     });
     }
-***/
+
 
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
@@ -12887,7 +12891,6 @@ playerTurnHeadlineSelected(card, player) {
       if (this.doesPlayerDominateRegion("ussr", "africa") == 1)   { ussr_roll++; }
       if (this.doesPlayerDominateRegion("ussr", "camerica") == 1) { ussr_roll++; }
       if (this.doesPlayerDominateRegion("ussr", "samerica") == 1) { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "seasia") == 1) { ussr_roll++; }
 
       if (this.doesPlayerDominateRegion("us", "europe") == 1)   { us_roll++; }
       if (this.doesPlayerDominateRegion("us", "mideast") == 1)  { us_roll++; }
@@ -12895,7 +12898,6 @@ playerTurnHeadlineSelected(card, player) {
       if (this.doesPlayerDominateRegion("us", "africa") == 1)   { us_roll++; }
       if (this.doesPlayerDominateRegion("us", "camerica") == 1) { us_roll++; }
       if (this.doesPlayerDominateRegion("us", "samerica") == 1) { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "seasia") == 1)   { us_roll++; }
 
       this.updateLog(`${this.cardToText(card)}: US rolls ${usbase} (${(us_roll - usbase)}) and USSR rolls ${ussrbase} (${(ussr_roll-ussrbase)})`);
 

@@ -8,7 +8,7 @@ class ChatManager {
         this.name = "ChatManager";
 	this.rendered = 0;
 
-        app.connection.on("chat-render-request", (tx) => {
+        app.connection.on("old-chat-render-request", (tx) => {
           this.render(app, mod);
         });
         app.connection.on("encrypt-key-exchange-confirm", (tx) => {

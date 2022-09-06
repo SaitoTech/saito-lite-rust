@@ -14,12 +14,13 @@ module.exports = (app, mod, group_id) => {
 
         <div class="chat-header">
           <i class="far fa-comment-dots"></i>
-          <h6>Community Chat</h6>
+          <h6>${group.name}</h6>
           <i id="chat-container-close-${group_id}" class="chat-container-close fas fa-times"></i>
         </div>
 
         <div class="chat-body">
     `;
+
 
     for (let i = 0; i < message_blocks.length; i++) {
       let block = message_blocks[i];
@@ -30,6 +31,7 @@ module.exports = (app, mod, group_id) => {
           if (z > 0) { msg += '<br/>'; }
           let txmsg = block[z].returnMessage();
 	  sender = block[z].transaction.from[0].add;
+console.log("add: "+txmsg.message + " - " + z);
           msg += txmsg.message;       
         }
         html +=`${SaitoUserSmallTemplate(app, mod, sender, msg)}`;

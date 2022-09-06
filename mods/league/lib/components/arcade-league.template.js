@@ -4,6 +4,8 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
     return "";
   }
 
+  console.log("Render Arcade League: ",league.myRank, league.playerCnt);
+  console.log(JSON.stringify(league));
   let game = league.game;
   let gameModule = app.modules.returnModule(game);
   let slug, bannerBack, gameBack;
@@ -42,7 +44,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
       inviteHtml += `<button data-sig="${league.id}" data-cmd="play" class="button league-tile-button">PLAY</button>`;
     }
   }else{
-    if (league.max_players == 0 || league.playerCnt < league.max_players){
+    if (league.max_players == 0 || league?.playerCnt < league.max_players){
       if (mod.checkDate(league.startdate) || league.allowlate){
         inviteHtml += `<button data-sig="${league.id}" data-cmd="join" class="button league-tile-button">JOIN</button>`;
       }

@@ -1,0 +1,72 @@
+
+.game-cardbox {
+  position:absolute;
+  left: 50%;
+  top: 13vh;
+  height: auto;
+  width: calc(55vh * 0.730);
+  transform: translateX(-50%);
+  z-index: -10; /* start behind the board, toggles between -10 and 250 */
+  font-size: max(1.5vh,8px);
+  color: white;
+  pointer-events: none;
+}
+
+.cardbox-card {
+ position: relative;
+ width: 100%;
+ height: 100%;
+}
+
+.cardbox-card .cardimg{
+  width: 100%;
+}
+
+.cardbox-exit-background {
+  position: absolute;
+  top: -2%;
+  right: -2%;
+  width: 5vh;
+  height: 5vh;
+  max-width: 50px;
+  max-height: 50px;
+  border: 3px black solid;
+  border-radius: 100px;
+  background: #eb2d2d;
+  z-index: 260;
+  display: none;
+}
+
+.cardbox-exit {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 5vh;
+  z-index: inherit;
+  cursor: pointer;
+  display: none;
+  line-height: 4.5vh;
+}
+
+.cardbox-menu {
+  position: absolute;
+  width: 85%;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -6%;
+  font-size: 2em;
+  background-color: #eb2d2d;
+  border: 2px solid #111311;
+  cursor: pointer;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  border-radius: 10px;
+  z-index: 260;
+  text-align: center;
+  display: none;
+}
+
+.cardbox-menu:hover, .cardbox-exit:hover{
+  font-weight: bold;
+}

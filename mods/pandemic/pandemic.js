@@ -12,8 +12,9 @@ class Pandemic extends GameTemplate {
   constructor(app) {
     super(app);
 
-    this.name = "Pandemic";
-    this.description = `Pandemic is a cooperative multiplayer board game in which players work together to try and fend off a global epidemic.`;
+    this.name = "CDC";
+    this.gamename = "Centers for Disease Control"
+    this.description = `${this.gamename} is a cooperative multiplayer board game in which players work together to try and fend off a global <em>pandemic</em>.`;
     this.categories = "Games Boardgame Strategy Cooperative";
     this.maxPlayers = 4;
     this.minPlayers = 2;
@@ -128,7 +129,10 @@ class Pandemic extends GameTemplate {
   initializeHTML(app) {
 
     super.initializeHTML(app);
-      
+    
+    //Dynamically update index.html 
+    //$('head').append(`<link rel="stylesheet" type="text/css" href="/${this.name.toLowerCase()}/style.css" />`);
+
     if (!this.skin){
       switch(this.game.options.theme){
         case "classic": this.skin = new PandemicOriginalSkin(this.app, this); break;
@@ -137,7 +141,11 @@ class Pandemic extends GameTemplate {
         default: this.skin = new PandemicRetroSkin(this.app, this);
       }
     }
+
     this.skin.render();
+
+    document.title = this.gamename || this.name;
+
     this.boardWidth = this.skin.boardWidth;
     this.card_height_ratio = this.skin.card_height_ratio;
 
@@ -591,11 +599,11 @@ class Pandemic extends GameTemplate {
 
     let html = `<div class="status-message">${statMsg}</div>
        <div class='status-icon-menu'>
-       <div class="menu_icon tip" id="move"><img class="menu_icon_icon" src="/pandemic/img/icons/MOVE.png" /><div class="menu-text">Move</div><div class="tiptext">Move to new city</div></div>
-       <div class="menu_icon tip" id="treat" style="opacity:${treat_opacity}" ><img class="menu_icon_icon" src="/pandemic/img/icons/TREAT.png" /><div class="menu-text">Treat</div><div class="tiptext">Treat disease in this city (remove cubes)</div></div>
-       <div class="menu_icon tip" id="build" style="opacity:${build_opacity}" ><img class="menu_icon_icon" src="/pandemic/img/icons/BUILD.png" /><div class="menu-text">Build</div><div class="tiptext">Build an operations center in this city</div></div>
-       <div class="menu_icon tip" id="discover_cure" style="opacity:${discover_cure_opacity}" ><img class="menu_icon_icon" src="/pandemic/img/icons/CURE.png" /><div class="menu-text">Discover</div><div class="tiptext">Discover cure to a disease</div></div>
-       <div class="menu_icon tip" id="cards" style="opacity:${cards_opacity}"><img class="menu_icon_icon" src="/pandemic/img/icons/CARDS.png" /><div class="menu-text">Cards</div><div class="tiptext">Play event card or share knowledge (give another player a card)</div></div>
+       <div class="menu_icon tip" id="move"><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/MOVE.png" /><div class="menu-text">Move</div><div class="tiptext">Move to new city</div></div>
+       <div class="menu_icon tip" id="treat" style="opacity:${treat_opacity}" ><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/TREAT.png" /><div class="menu-text">Treat</div><div class="tiptext">Treat disease in this city (remove cubes)</div></div>
+       <div class="menu_icon tip" id="build" style="opacity:${build_opacity}" ><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/BUILD.png" /><div class="menu-text">Build</div><div class="tiptext">Build an operations center in this city</div></div>
+       <div class="menu_icon tip" id="discover_cure" style="opacity:${discover_cure_opacity}" ><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/CURE.png" /><div class="menu-text">Discover</div><div class="tiptext">Discover cure to a disease</div></div>
+       <div class="menu_icon tip" id="cards" style="opacity:${cards_opacity}"><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/CARDS.png" /><div class="menu-text">Cards</div><div class="tiptext">Play event card or share knowledge (give another player a card)</div></div>
        </div>`;
 
     $(".menu_icon").off();
@@ -1493,25 +1501,31 @@ class Pandemic extends GameTemplate {
   }
 
 
-  acknowledgeInfectionCard(city, actionType, mycallback) {
+  acknowledgeInfectionCard(city, mycallback) {
     let pandemic_self = this;
     let virus = this.skin.cities[city].virus;
-    let msg;
+    let msg  = `Infection: 1 ${this.skin.getVirusName(virus)} added to ${this.skin.cities[city].name}`;
+    let blocked = 0;
+
     this.outbreaks = [];
-    switch (actionType){
-      case 1: 
+
+    if (this.isEradicated(virus)) { 
+      msg = `Eradicated disease prevents infection in ${this.skin.cities[city].name}`;
+      this.updateLog(`Eradicated disease prevents infection in ${this.skin.cities[city].name}`); 
+      blocked = 1;
+    }else{
+      if (this.quarantine && (this.quarantine === city || this.skin.cities[city].neighbours.includes(this.quarantine))){
         this.updateLog(`Quarantine Specialist blocks new infection in ${this.skin.cities[city].name}`); 
         msg = `Quarantine Specialist blocks new infection in ${this.skin.cities[city].name}`;
-        break;
-      case 2: this.updateLog(`Eradicated disease prevents infection in ${this.skin.cities[city].name}`); 
-        msg = `Eradicated disease prevents infection in ${this.skin.cities[city].name}`;
-        break;
-      default:
-        this.addDiseaseCube(city, virus);
-        msg = `Infection: 1 ${this.skin.getVirusName(virus)} added to ${this.skin.cities[city].name}`
-    } 
+        blocked = 1;
+      }
+    }
     
-    pandemic_self.skin.animateInfection(city, msg, mycallback);
+    if (blocked == 0){
+      this.addDiseaseCube(city, virus);
+    }
+    
+    pandemic_self.skin.animateInfection(city, msg, blocked, mycallback);
 
     return 0;
   }
@@ -1579,6 +1593,7 @@ class Pandemic extends GameTemplate {
             break;
           }
         }
+        this.updateLog(`${this.game.deck[1].cards["event2"].name}: The people of ${this.skin.cities[mv[1]].name} are protected`);
         this.game.queue.splice(qe, 1);
       }
 
@@ -1726,7 +1741,7 @@ class Pandemic extends GameTemplate {
         this.outbreaks = [];
         let city = this.drawInfectionCardFromBottomOfDeck();
         let virus = this.skin.cities[city].virus;
-        this.updateLog(`Epidemic in ${this.skin.cities[city].name}`);
+        this.updateLog(`Epidemic in ${this.skin.cities[city].name}!!!`.toUpperCase());
         if (this.isEradicated(virus)){
           this.displayModal("Epidemic Averted",`${this.skin.getVirusName(virus)} virus already eradicated`);
           this.updateLog(`No new infections because ${this.skin.getVirusName(virus)} already eradicated!`);
@@ -1791,16 +1806,7 @@ class Pandemic extends GameTemplate {
 
           for (let i = 0; i < infection_cards; i++) {
             let city = this.drawInfectionCard();
-            let virus = this.skin.cities[city].virus;
-            let outcome = 0;
-            if (this.isEradicated(virus)) { 
-              outcome = 2;
-            }else{
-              if (this.quarantine && (this.quarantine === city || this.skin.cities[city].neighbours.includes(this.quarantine))){
-                outcome = 1;
-              }
-            }
-            this.prependMove(`infectcity\t${city}\t${outcome}`); 
+            this.prependMove(`infectcity\t${city}`); 
           }
          console.log(JSON.parse(JSON.stringify(this.moves)));
          for (let m of this.moves){
@@ -1863,7 +1869,7 @@ class Pandemic extends GameTemplate {
       if (mv[0] === "infectcity"){
         pandemic_self.game.halted = 1;
 
-        pandemic_self.acknowledgeInfectionCard(mv[1], parseInt(mv[2]), function () {
+        pandemic_self.acknowledgeInfectionCard(mv[1], function () {
           console.log("Acknowledgeing...");
           console.log(JSON.stringify(pandemic_self.game.queue));
           console.log(JSON.stringify(pandemic_self.moves));
@@ -2143,7 +2149,7 @@ class Pandemic extends GameTemplate {
       if (!this.outbreaks.includes(this.skin.cities[city].neighbours[i])) {
         msg += this.skin.cities[this.skin.cities[city].neighbours[i]].name + ", ";
         this.addDiseaseCube(this.skin.cities[city].neighbours[i], virus);
-        this.skin.animateInfection(this.skin.cities[city].neighbours[i], msg, ()=>{});
+        this.skin.animateInfection(this.skin.cities[city].neighbours[i], msg, 0, ()=>{});
       }
     }
     msg = msg.substr(0, msg.length-2);
@@ -2447,21 +2453,21 @@ displayDisease() {
 
   returnCardImage(cardname, ctype = this.defaultDeck) {
     if (cardname === "action_help"){
-      return `<img class="cardimg" src="/pandemic/img/${this.skin.actionKey}" />`;
+      return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/${this.skin.actionKey}" />`;
     }
     if (cardname === "player_role"){
       let player = this.game.players_info[this.game.player - 1];
-      return `<img class="cardimg" src="/pandemic/img/${player.card}" />`;
+      return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/${player.card}" />`;
     }
 
-    console.log(cardname,ctype);
-    console.log(this.game.deck)
+    //console.log(cardname,ctype);
+    //console.log(this.game.deck)
     let c = this.game.deck[ctype].cards[cardname];
     if (c == undefined || c == null || c === "") {
       return null;
     }
     let img = (ctype == 1) ? this.skin.cards[cardname].img : c.img;
-    return `<img class="cardimg" src="/pandemic/img/${img}" />`;
+    return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/${img}" />`;
   }
 
   /* Remove the specified card from the specified player's hand*/
@@ -2589,7 +2595,7 @@ displayDisease() {
       <div class="epidemic_overlay">
         <h1>Epidemic in ${this.skin.cities[city].name}!!!</h1>
         <div class="epidemic-card">
-          <img src="/pandemic/img/${this.skin.epidemic.img}"/>
+          <img src="/${this.name.toLowerCase()}/img/${this.skin.epidemic.img}"/>
         </div>
         <div class="button close_epidemic_overlay" id="close_epidemic_overlay">close</div>
       </div>
@@ -2617,7 +2623,7 @@ displayDisease() {
       html += `
         <div class="player_info_box">
           <div class="player_role_card">
-            <img src="/pandemic/img/${player.card}" />
+            <img src="/${this.name.toLowerCase()}/img/${player.card}" />
           </div>
           <div class="player_role_description">
             <table>
