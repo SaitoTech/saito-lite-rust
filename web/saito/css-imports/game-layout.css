@@ -1,0 +1,69 @@
+
+
+
+/*********************/
+/*** PORTRAIT MODE ***/
+/*********************/
+@media screen and (orientation:portrait) and (max-width: 400px) {
+
+  .hud-card {
+    width: calc(18vw * 0.811);
+    /*height: 18vw;*/
+  }
+
+  .hud-long .status-cardbox {
+    grid-template-columns: repeat( auto-fit, minmax(18vw, 1fr) );
+  }
+
+  .game-menu ul li {
+    max-width: 75px;
+    font-size: 0.9rem;
+  }
+
+}
+
+@media screen and (orientation:portrait) and (min-width: 400px) and (max-width: 600px) {
+
+  .hud-card {
+    width: calc(13vw * 0.811);
+    /*height: 13vw;*/
+  }
+  .hud-long .status-cardbox {
+    grid-template-columns: repeat( auto-fit, minmax(15vw, 1fr) );
+  }
+  .game-menu ul li {
+    max-width: 100px;
+    width: 100px;
+  }
+}
+
+@media screen and (orientation:portrait) and (min-width: 600px) {
+
+  .hud-card {
+    width: calc(10vw * 0.811);
+    /*height: 10vw;*/
+  }
+  .status-cardbox {
+    /*grid-template-columns: repeat( auto-fit, minmax(11vw, 1fr) );*/
+    /*grid-template-rows: repeat(auto-fit, 14vw);*/
+  }
+  .game-menu ul li {
+    max-width: 125px;
+    font-size: 1rem;
+  }
+
+}
+
+
+/*****************/
+/*** LANDSCAPE ***/
+/*****************/
+@media screen and (orientation: landscape) and (max-height: 650px) {
+
+  .game-overlay-menu {
+    font-size: 1.4em;
+  }
+
+}
+
+
