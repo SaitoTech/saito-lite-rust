@@ -1,7 +1,7 @@
 const Saitogame_modIntroTemplate = require('./../../../../../lib/saito/new-ui/templates/saito-module-intro.template');
 const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
-module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod) => {
+module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
 
   let html = `<div class="game-create-new-overlay">`;
   let slug = (game_mod.returnSlug())? game_mod.slug: game_mod.name.toLowerCase();
@@ -42,18 +42,27 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod) => {
         <div>${game_mod.name}</div>
         <div>${game_mod.description}</div>
         <div id="game-rules-btn" class="game-help-link arcade-game-help info-item-wrapper">How to play?</div>
+  `;
 
+  if (mod.maxPlayers == 1){
+    html += `<button type="button" id="game-invite-btn" class="game-invite-btn" >Play</button>`;
+  }else{
+    html += `
         <div class="saito-multi-select_btn saito-select">
          <div class="saito-multi-select_btn_options saito-slct">
             <button type="button" class="saito-multi-btn game-invite-btn" data-type="open">Create Open Game</button>
             <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private Game</button>
          </div>
-        </div>
+        </div>`;
+  }
+        
+  html += `
       </div>
       <!- ***Game desc & title end*** -->
 
       <form>
         <input type="hidden" name="game" value="${game_mod.name}" />
+        ${(invite.msg.league)? `<input type="hidden" name="league" value="${invite.msg.league}" />` : ""}
       </form>
 
     </div>

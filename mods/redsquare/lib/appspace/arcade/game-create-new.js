@@ -4,15 +4,15 @@ const AdvancedOverlay = require("./game-create-advance-options");
 
 class GameCreateNew {
 
-  constructor(app, mod, game_mod) {
+  constructor(app, mod, game_mod, invite) {
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app, mod);
   }
 
-  render(app, mod) {
-    this.overlay.show(app, mod, GameCreateNewTemplate(app, mod, this.game_mod));
+  render(app, mod, invite) {
+    this.overlay.show(app, mod, GameCreateNewTemplate(app, mod, this.game_mod, invite));
     
     let advancedOptions = this.game_mod.returnGameOptionsHTML();
     if (!advancedOptions) {
@@ -55,12 +55,12 @@ class GameCreateNew {
     document.querySelector(".arcade-advance-opt").onclick = (e) => {
       //Requery advancedOptions on the click so it can dynamically update based on # of players
       let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small" style="float: right;">Accept</div>`;
-      let advancedOptionsHTML = this.game_mod.returnGameOptionsHTML();
+      let advancedOptionsHTML = gamecreate_self.game_mod.returnGameOptionsHTML();
       if (!advancedOptionsHTML.includes(accept_button)){
         advancedOptionsHTML += accept_button;
       }
-      mod.meta_overlay.show(app, this.game_mod, advancedOptionsHTML);
-      this.game_mod.attachAdvancedOptionsEventListeners();
+      mod.meta_overlay.show(app, gamecreate_self.game_mod, advancedOptionsHTML);
+      gamecreate_self.game_mod.attachAdvancedOptionsEventListeners();
       document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
       try {
         if (document.getElementById("game-wizard-advanced-return-btn")) {
@@ -72,7 +72,7 @@ class GameCreateNew {
     };
 
     document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
-       let options = this.getOptions();
+       let options = gamecreate_self.getOptions();
        let gamemod = app.modules.returnModule(options.game);
        gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
     });
@@ -82,7 +82,6 @@ class GameCreateNew {
     //
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
       gameButton.addEventListener("click", async (e) => {
-        mod.active_tab = "arcade"; //So it refreshes to show the new game invite
         e.stopPropagation();
         try {
           let mod = app.modules.returnModule('Arcade');   
