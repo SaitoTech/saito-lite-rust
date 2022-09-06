@@ -74,7 +74,7 @@ class VideoChatManager {
     }
 
     disconnect() {
-        let stunx_mod = this.app.modules.returnModule("Stunx");
+        let stunx_mod = this.app.modules.returnModule("Videocall");
         console.log("peer connections ", stunx_mod.peer_connections);
         for (let i in stunx_mod.peer_connections) {
             if (stunx_mod.peer_connections[i]) {

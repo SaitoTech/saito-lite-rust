@@ -14,7 +14,7 @@ class StunxAppspace {
         const inviteCode = window.location.hash.split('=')[1];
 
 
-        const stunx_mod = app.modules.returnModule('Stunx');
+        const stunx_mod = app.modules.returnModule('Videocall');
 
 
 
@@ -43,7 +43,7 @@ class StunxAppspace {
                 stun_mod.addListeners(listeners);
             }
             if (e.target.id === "createInvite") {
-                let stunx_mod = app.modules.returnModule("Stunx");
+                let stunx_mod = app.modules.returnModule("Videocall");
                 stunx_mod.sendCreateRoomTransaction();
             }
             if (e.target.id === "joinInvite") {
@@ -57,7 +57,7 @@ class StunxAppspace {
     joinVideoInvite(roomCode) {
         if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
         let sql = `SELECT * FROM rooms WHERE room_code = "${roomCode}"`;
-        const stunx_mod = this.app.modules.returnModule('Stunx');
+        const stunx_mod = this.app.modules.returnModule('Videocall');
         console.log(stunx_mod)
         let requestCallback = async (res) => {
             let room = res.rows[0];
@@ -126,7 +126,7 @@ class StunxAppspace {
                 });
             }
         }
-        stunx_mod.sendPeerDatabaseRequestWithFilter('Stunx', sql, requestCallback)
+        stunx_mod.sendPeerDatabaseRequestWithFilter('Videocall', sql, requestCallback)
     }
 }
 
