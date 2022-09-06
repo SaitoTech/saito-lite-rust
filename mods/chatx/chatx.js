@@ -403,6 +403,7 @@ console.log("RECEIVE ONCHAIN");
 
 
     async handlePeerRequest(app, req, peer, mycallback) {
+
         if (req.request == null) {
             return;
         }
@@ -447,8 +448,8 @@ console.log("RECEIVE P2P");
                     // this might be a message for us! process if so
                     //
                     if (routed_tx.isTo(app.wallet.returnPublicKey())) {
-console.log("RECEIVE OP2P 2");
                         this.receiveChatTransaction(app, routed_tx);
+			// save when we receive onchain
                         //this.app.storage.saveTransaction(routed_tx);
                     }
 
