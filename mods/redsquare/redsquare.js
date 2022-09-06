@@ -81,8 +81,10 @@ console.log("error tweeting image");
   addNotification(app, mod, tx) {
     // skip notifying us of our own posts / comments
     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
+console.log("from: " + JSON.stringify(tx.transaction.from) + " --- " + app.wallet.returnPublicKey());
       return;
     }
+console.log("ADD NOTIFICATION FOR US!");
     if (this.ntfs.length == 0) {
       this.ntfs.push(tx);
       return;
