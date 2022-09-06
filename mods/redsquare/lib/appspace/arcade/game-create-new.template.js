@@ -13,7 +13,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${min}">${min} player</div>`;
       selection += game_mod.returnSingularGameOption(app);
     } else {
-      selection = `<select class="arcade-select-players" name="game-wizard-players-select">`;
+      selection = `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
       for (let p = min; p <= max; p++) {
         selection += `<option value="${p}">${p} player</option>`;
       }
@@ -24,8 +24,9 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
   };
 
   html += `
+    <form>
     <div class="saito-module-intro">
-      
+    
       <!- ***Game thumbnail & options start*** -->
       <div class="saito-module-intro-image">
         <img class="game-image arcade-game-thumbnail" src="${image}">
@@ -60,13 +61,13 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       </div>
       <!- ***Game desc & title end*** -->
 
-      <form>
+      
         <input type="hidden" name="game" value="${game_mod.name}" />
         ${(invite.msg.league)? `<input type="hidden" name="league" value="${invite.msg.league}" />` : ""}
-      </form>
+      
 
     </div>
-
+  </form>
   `;
   
   // message for licensed games

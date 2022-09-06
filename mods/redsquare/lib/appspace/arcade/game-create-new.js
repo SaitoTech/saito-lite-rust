@@ -120,8 +120,8 @@ class GameCreateNew {
 
           let gamemod = app.modules.returnModule(options.game);
           let players_needed = 0;
-          if (document.querySelector(".arcade-select-players")) {
-            players_needed = document.querySelector(".arcade-select-players").value;
+          if (document.querySelector(".game-wizard-players-select")) {
+            players_needed = document.querySelector(".game-wizard-players-select").value;
           } else {
             players_needed = document.querySelector(".game-wizard-players-no-select").dataset.player;
           }
@@ -134,6 +134,11 @@ class GameCreateNew {
             players_needed: players_needed,
             invitation_type: "public",
           };
+
+
+          console.log("Gamedata options");
+          console.log(gamedata);
+
           if (players_needed === 0) {
             console.error("Create Game Error");
             console.log(gamedata);
@@ -170,8 +175,6 @@ class GameCreateNew {
             }
         
             mod.addGameToOpenList(newtx);
-
-            mod.renderArcadeMain(app, mod);
 
             if (isPrivateGame == "private") {
               console.log(newtx);
