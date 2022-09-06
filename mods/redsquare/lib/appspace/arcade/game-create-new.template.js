@@ -45,8 +45,8 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod) => {
 
         <div class="saito-multi-select_btn saito-select">
          <div class="saito-multi-select_btn_options saito-slct">
-            <button type="button" class="saito-multi-btn" data-type="open">Create Open Game</button>
-            <button type="button" class="saito-multi-btn" data-type="private">Create Private Game</button>
+            <button type="button" class="saito-multi-btn game-invite-btn" data-type="open">Create Open Game</button>
+            <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private Game</button>
          </div>
         </div>
       </div>
