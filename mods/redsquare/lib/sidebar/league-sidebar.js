@@ -1,5 +1,3 @@
-//const ArcadeLeagueView = require("./../../../league/lib/overlays/arcade-league-view");
-
 module.exports = RedSquareLeagueSidebar = {
 	
 	render(app, mod){
@@ -10,7 +8,6 @@ module.exports = RedSquareLeagueSidebar = {
 	},
 
 	attachEvents(app, mod){
-/*
 	    document.querySelectorAll(`.rs-league-sidebar-ranking`).forEach((el) =>{
 	        el.onclick = function (e) {
 	        let league_id = e.currentTarget.getAttribute("id").replace("league_", "");
@@ -19,14 +16,13 @@ module.exports = RedSquareLeagueSidebar = {
 	        if (league_mod){
 				for (let league of league_mod.leagues){
 			        if (league.id == league_id){
-			          ArcadeLeagueView.render(app, league_mod, league);
+			          league_mod.respondTo("view-league-details").render(app, league_mod, league);
 			          return;
 			        }
 				}        	
 	        }
 	      }
 	    });
-*/
 	},
 
 };
