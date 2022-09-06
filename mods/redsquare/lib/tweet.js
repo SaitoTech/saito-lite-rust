@@ -13,11 +13,16 @@ class RedSquareTweet {
     //
     // store tx
     //
+    console.log(tx)
     this.tx = tx;
     this.sender = tx.transaction.from[0].add;
     this.created_at = tx.transaction.ts;
     this.updated_at = tx.transaction.ts;
-
+    if (tx?.optional?.rank) {
+      this.rank = tx.optional.rank;
+    } else {
+      this.rank = 0;
+    }
 
     this.parent_tweet = null;
     this.parent_id = "";

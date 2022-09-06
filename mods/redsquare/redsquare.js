@@ -25,7 +25,6 @@ class RedSquare extends ModTemplate {
     this.categories = "Social Entertainment";
     this.saito_loader = new SaitoLoader(app, this);
     this.redsquare = {}; // where settings go, saved to options file
-
     this.sqlcache_enabled = 1;
 
     this.txmap = {}; // associative array sigs => txs
@@ -35,7 +34,7 @@ class RedSquare extends ModTemplate {
     // "main" or sig if viewing page-specific
     this.viewing = "main";
     this.last_viewed_notifications_ts = 0;
-    this.results_per_page = 10;
+    this.results_per_page = 3;
     this.page_number = 1;
 
     this.styles = [
@@ -52,8 +51,8 @@ class RedSquare extends ModTemplate {
       like: 5,
       comment: 7,
       retweet: 6,
-      has_link: 3,
-      has_image: 4
+      has_link: 3000,
+      has_image: 4000
     }
 
     this.vote_dividers = {
@@ -221,15 +220,31 @@ class RedSquare extends ModTemplate {
   }
 
 
-  reorganizeTweets(app, mod) {
-    for (let i = this.tweets.length - 1; i >= 1; i--) {
-      if (this.tweets[i - 1].updated_at < this.tweets[i].updated_at) {
-        let x = this.tweets[i - 1];
-        let y = this.tweets[i];
-        this.tweets[i] = x;
-        this.tweets[i - 1] = y;
+  reorganizeTweets(app, mod, type = "chronological") {
+    if (type === "chronological") {
+      for (let i = this.tweets.length - 1; i >= 1; i--) {
+        if (this.tweets[i - 1].updated_at < this.tweets[i].updated_at) {
+          let x = this.tweets[i - 1];
+          let y = this.tweets[i];
+          this.tweets[i] = x;
+          this.tweets[i - 1] = y;
+        }
+      }
+    } else if (type === "rank") {
+      for (let i = this.tweets.length - 1; i >= 1; i--) {
+        console.log(this.tweets[i].rank)
+        if (this.tweets[i - 1].rank < this.tweets[i].rank) {
+          let x = this.tweets[i];
+          let y = this.tweets[i - 1];
+          this.tweets[i] = y;
+          this.tweets[i - 1] = x;
+        }
       }
     }
+
+    console.log('algorithm type ', type);
+    console.log(this.tweets, "reorganized tweet")
+
   }
 
   initializeHTML(app) {
@@ -255,9 +270,8 @@ class RedSquare extends ModTemplate {
 
 
   renderMainPage(app, mod) {
-
     this.viewing = "main";
-    this.reorganizeTweets(app, mod);
+    this.reorganizeTweets(app, mod, this.redsquare.algorithm);
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
@@ -271,6 +285,7 @@ class RedSquare extends ModTemplate {
   renderParentWithChildren(app, mod, sig) {
     this.viewing = sig;
     this.reorganizeTweets(app, mod);
+    console.log(this.tweets)
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
 
@@ -321,6 +336,7 @@ class RedSquare extends ModTemplate {
   renderWithChildren(app, mod, sig) {
     this.viewing = sig;
     this.reorganizeTweets(app, mod);
+    console.log('tweets , render with children', this.tweets)
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     for (let i = 0; i < this.tweets.length; i++) {
@@ -453,7 +469,8 @@ class RedSquare extends ModTemplate {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
-          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY srank DESC LIMIT 0,'${this.results_per_page}'`;
+          let ORDER_BY = this.redsquare.ORDER_BY;
+          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY '${ORDER_BY}' DESC LIMIT 0,'${this.results_per_page}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
             console.log("~~~~~~~~~~~~~~~~~~");
             console.log("~~~~~~~~~~~~~~~~~~");
@@ -543,6 +560,7 @@ class RedSquare extends ModTemplate {
               tx.optional.num_likes = row.num_likes;
               tx.optional.flagged = row.flagged;
               tx.optional.link_properties = {};
+              tx.optional.rank = row.rank;
 
               try {
                 let x = JSON.parse(row.link_properties);
@@ -566,7 +584,8 @@ class RedSquare extends ModTemplate {
 
   fetchMoreTweets(app, mod, post_fetch_tweets_callback) {
     const startingLimit = (this.page_number - 1) * this.results_per_page
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY srank DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
+    let ORDER_BY = this.redsquare.ORDER_BY;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY '${ORDER_BY}' DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -575,7 +594,7 @@ class RedSquare extends ModTemplate {
         const tweets = [];
 
         if (res.rows) {
-          console.log("more tweets ".res.rows)
+          console.log("more tweets ", res.rows)
           res.rows.forEach(row => {
             let new_tweet = 1;
             if (new_tweet) {
@@ -588,6 +607,7 @@ class RedSquare extends ModTemplate {
               tx.optional.num_likes = row.num_likes;
               tx.optional.flagged = row.flagged;
               tx.optional.link_properties = {};
+              tx.optional.rank = row.rank;
               try {
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
@@ -610,7 +630,8 @@ class RedSquare extends ModTemplate {
 
   fetchNewTweets(app, mod) {
     if (!mod.trackedTweet) { return; }
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+    let ORDER_BY = this.redsquare.ORDER_BY;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY '${ORDER_BY}' DESC LIMIT 0,'${this.results_per_page}'`;
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -635,6 +656,7 @@ class RedSquare extends ModTemplate {
               tx.optional.num_likes = row.num_likes;
               tx.optional.flagged = row.flagged;
               tx.optional.link_properties = {};
+              tx.optional.rank = row.rank;
               try {
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
@@ -712,7 +734,7 @@ class RedSquare extends ModTemplate {
     app.storage.executeDatabase(sql, params, "redsquare");
 
 
-    // // Update srank
+    // // Update rank
     let creation_date = txmsg.data.created_at;
     await this.updateTweetRank(app, this, creation_date, txmsg.data.sig, 'like');
     return;
@@ -720,19 +742,6 @@ class RedSquare extends ModTemplate {
   }
 
 
-  getDivider(number, vote_dividers) {
-    let string_number = String(Math.floor(number));
-    console.log(string_number, "string number");
-    let length = string_number.length;
-    if (length >= 5) {
-      return vote_dividers[4]
-    }
-    if (length === 4) {
-      return vote_dividers[3];
-    }
-
-    return vote_dividers[length];
-  }
 
 
 
@@ -825,7 +834,9 @@ class RedSquare extends ModTemplate {
 
     let created_at = tx.transaction.ts;
     let updated_at = tx.transaction.ts;
-    let srank = 0
+
+
+
 
 
     //
@@ -834,7 +845,7 @@ class RedSquare extends ModTemplate {
     let sql = `INSERT INTO tweets (
                 tx,
                 sig,
-                srank,
+                rank,
             	created_at,
             	updated_at,
             	parent_id,
@@ -850,7 +861,7 @@ class RedSquare extends ModTemplate {
               ) VALUES (
                 $txjson,
                 $sig,
-                $srank,
+                $rank,
             	$created_at,
             	$updated_at,
             	$parent_id,
@@ -869,11 +880,12 @@ class RedSquare extends ModTemplate {
     if (typeof (tweet.images) != "undefined") { has_images = 1; }
     let txjson = JSON.stringify(tx.transaction);
     let tx_size = txjson.length;
-
+    let rank = this.calculateInitialRank(has_images, tweet.link_properties);
+    console.log('rank ', rank);
     let params = {
       $txjson: txjson,
       $sig: tx.transaction.sig,
-      $srank: srank,
+      $rank: rank,
       $created_at: created_at,
       $updated_at: updated_at,
       $parent_id: tweet.parent_id,
@@ -906,7 +918,7 @@ class RedSquare extends ModTemplate {
       app.storage.executeDatabase(sql3, params3, "redsquare");
 
 
-      // Update srank of thread;
+      // Update rank of thread;
       let creation_date = txmsg.data.thread_creation_date;
       let sig = txmsg.data.thread_id;
       await this.updateTweetRank(app, this, creation_date, sig, "retweet");
@@ -915,7 +927,7 @@ class RedSquare extends ModTemplate {
     }
 
     if (txmsg.data.type === "comment") {
-      // Update srank of thread;
+      // Update rank of thread;
       let creation_date = txmsg.data.thread_creation_date;
       let sig = txmsg.data.thread_id;
       await this.updateTweetRank(app, this, creation_date, sig, "comment");
@@ -982,32 +994,73 @@ class RedSquare extends ModTemplate {
 
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;
+      this.redsquare.algorithm = "rank"
       return;
     }
 
     this.redsquare = {};
+    this.redsquare.algorithm = "rank"
+    this.redsquare.ORDER_BY = "rank"
     this.redsquare.last_checked_notifications_timestamp = new Date().getTime();
     this.redsquare.last_liked_tweets = [];
   }
 
-  saveStun() {
+  saveRedsquare() {
     this.app.options.redsquare = this.redsquare;
     this.app.options.saveOptions();
   }
 
+
+  toggleRankingAlgorithm(app, mod) {
+    if (this.redsquare.algorithm === "rank") {
+      this.redsquare.algorithm === "chronological";
+      this.redsquare.ORDER_BY = "updated_at"
+    }
+    else {
+      this.redsquare.algorithm = "rank";
+      this.redsquare.ORDER_BY = "rank"
+    }
+    this.saveRedsquare();
+  }
+
   async updateTweetRank(app, mod, creation_date, sig, type) {
     let current_time = new Date().getTime();
-    console.log('current time ', current_time);
     let vote_bonus = mod.vote_bonuses[type];
     let number = 604800000 / (current_time - creation_date);
     let divider = mod.getDivider(number, mod.vote_dividers);
     const score = vote_bonus * (number / divider);
     console.log('divider ', divider);
     console.log('score ', score);
-    let sql_rank = "UPDATE tweets SET srank = cast((srank + $score) as INTEGER) WHERE sig = $sig";
+    let sql_rank = "UPDATE tweets SET rank = cast((rank + $score) as INTEGER) WHERE sig = $sig";
     let params_rank = { $sig: sig, $score: score };
     await app.storage.executeDatabase(sql_rank, params_rank, "redsquare");
   }
+
+  calculateInitialRank = (has_images, link_properties) => {
+    let rank = 0;
+    if (has_images) { rank += this.vote_bonuses['has_image']; }
+    if (link_properties) { rank += this.vote_bonuses['has_link'] }
+    return rank;
+  }
+
+  getDivider(number, vote_dividers) {
+    let string_number = String(Math.floor(number));
+    console.log(string_number, "string number");
+    let length = string_number.length;
+    if (length >= 5) {
+      return vote_dividers[4]
+    }
+    if (length === 4) {
+      return vote_dividers[3];
+    }
+
+    if (length === 3) {
+      return vote_dividers[2];
+    }
+
+    return vote_dividers[length];
+  }
+
 
 }
 
