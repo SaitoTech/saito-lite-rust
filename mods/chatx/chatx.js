@@ -296,7 +296,7 @@ console.log("DDD");
 		    let ins = true;
 		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
 			// why does ts differ slightly?
-			if (Math.abs(this.groups[z].txs[zz].transaction.ts - tx.transaction.ts) < 100 && this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) { ins = false; }
+			if (Math.abs(this.groups[z].txs[zz].transaction.ts - txs[i].transaction.ts) < 100 && this.groups[z].txs[zz].transaction.sig === txs[i].transaction.sig) { ins = false; }
 		    }
 		    if (ins) {
                         this.binaryInsert(this.groups[z].txs, txs[i], (a, b) => {
