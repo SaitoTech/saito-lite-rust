@@ -46,7 +46,7 @@ class RedSquare extends ModTemplate {
     ];
     this.ui_initialized = false;
 
-    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg']; 
+    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
 
     return this;
 
@@ -70,10 +70,10 @@ class RedSquare extends ModTemplate {
   addNotification(app, mod, tx) {
     // skip notifying us of our own posts / comments
     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
-console.log("from: " + JSON.stringify(tx.transaction.from) + " --- " + app.wallet.returnPublicKey());
+      console.log("from: " + JSON.stringify(tx.transaction.from) + " --- " + app.wallet.returnPublicKey());
       return;
     }
-console.log("ADD NOTIFICATION FOR US!");
+    console.log("ADD NOTIFICATION FOR US!");
     if (this.ntfs.length == 0) {
       this.ntfs.push(tx);
       return;
@@ -238,6 +238,7 @@ console.log("ADD NOTIFICATION FOR US!");
 
 
   renderMainPage(app, mod) {
+
     this.viewing = "main";
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
@@ -255,6 +256,7 @@ console.log("ADD NOTIFICATION FOR US!");
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
+
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].tx.transaction.sig === sig) {
         tweet_shown = 1;
@@ -267,7 +269,7 @@ console.log("ADD NOTIFICATION FOR US!");
     // if we get here, we don't have this locally, try remote request
     //
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
-    mod.etchTweets(app, mod, sql, function (app, mod) {
+    mod.fetchTweets(app, mod, sql, function (app, mod) {
       mod.renderParentWithChildren(app, mod, sig);
 
     });
@@ -284,13 +286,13 @@ console.log("ADD NOTIFICATION FOR US!");
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     let t = this.returnTweet(app, mod, sig);
-console.log("render with parent in mod");
-console.log("children: " + t.children.length);
+    console.log("render with parent in mod");
+    console.log("children: " + t.children.length);
     if (t != null) {
       t.renderWithParents(app, mod, ".redsquare-list", num);
     } else {
       t.renderWithParents(app, mod, ".redsquare-list", 0);
-console.log("cannot render...");
+      console.log("cannot render...");
     }
   }
 
@@ -453,9 +455,9 @@ console.log("cannot render...");
         console.log("HOW MANY DID WE LOAD? " + txs.length);
         for (let i = 0; i < txs.length; i++) {
           txs[i].decryptMessage(app);
-	  let txmsg = txs[i].returnMessage();
-console.log("LOAD: " + txmsg.data.text);
-	  if (txmsg.request == "create tweet") {
+          let txmsg = txs[i].returnMessage();
+          console.log("LOAD: " + txmsg.data.text);
+          if (txmsg.request == "create tweet") {
             let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
             redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
             redsquare_self.txmap[tweet.tx.transaction.sig] = 1;
@@ -510,6 +512,7 @@ console.log("LOAD: " + txmsg.data.text);
       sql,
       async (res) => {
         if (res.rows) {
+          console.log(res.rows);
           mod.trackTweet(res.rows[0]);
           res.rows.forEach(row => {
             let new_tweet = 1;
@@ -528,8 +531,8 @@ console.log("LOAD: " + txmsg.data.text);
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
               } catch (err) { }
-	  let txmsg = tx.returnMessage();
-console.log("add " + txmsg.data.text + " w/ replies " + tx.optional.num_replies);
+              let txmsg = tx.returnMessage();
+              console.log("add " + txmsg.data.text + " w/ replies " + tx.optional.num_replies);
               this.addTweetFromTransaction(app, mod, tx);
             }
           });
@@ -670,7 +673,7 @@ console.log("add " + txmsg.data.text + " w/ replies " + tx.optional.num_replies)
       //
       // add notification for unviewed
       //
-console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
+      console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       }
@@ -688,23 +691,33 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
     };
     app.storage.executeDatabase(sql, params, "redsquare");
 
+
+    // Update srank
+    let current_time = new Date().getTime();
+    let vote_bonus = 1000000;
+    let sql_rank = "UPDATE tweets SET srank = cast((srank + ($vote_bonus * (2000000/($current_time-created_at)))) as INTEGER) WHERE sig = $sig";
+    let params_rank = { $sig: txmsg.data.sig, $vote_bonus: vote_bonus, $current_time: current_time };
+
+    await this.app.storage.executeDatabase(sql_rank, params_rank, "redsquare");
+
+
     return;
 
   }
 
 
 
-  tweetImage(image) {   
+  tweetImage(image) {
     try {
-alert("new tweet 1!");
+      alert("new tweet 1!");
       let post = new PostTweet(this.app, this);
-alert("new tweet 2!");
-          post.images.push(image);
-alert("new tweet 3!");
-          post.render(this.app, this);
-alert("new tweet 4!");
+      alert("new tweet 2!");
+      post.images.push(image);
+      alert("new tweet 3!");
+      post.render(this.app, this);
+      alert("new tweet 4!");
     } catch (err) {
-console.log("error tweeting image");
+      console.log("error tweeting image");
     }
   }
 
@@ -750,16 +763,16 @@ console.log("error tweeting image");
       // save tweets addressed to me
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
-console.log("RECEIVING TWEET TO ME AND SAVING IT");
-let txmsg = tx.returnMessage();
-console.log(JSON.stringify(txmsg));
+        console.log("RECEIVING TWEET TO ME AND SAVING IT");
+        let txmsg = tx.returnMessage();
+        console.log(JSON.stringify(txmsg));
         this.app.storage.saveTransaction(tx);
       }
 
       //
       // add notification for unviewed
       //
-console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
+      console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       }
@@ -780,13 +793,16 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
 
     let created_at = tx.transaction.ts;
     let updated_at = tx.transaction.ts;
+    let srank = 0
+
 
     //
     // insert the basic information
-    //
+    // 
     let sql = `INSERT INTO tweets (
                 tx,
                 sig,
+                srank,
             	created_at,
             	updated_at,
             	parent_id,
@@ -802,6 +818,7 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
               ) VALUES (
                 $txjson,
                 $sig,
+                $srank,
             	$created_at,
             	$updated_at,
             	$parent_id,
@@ -824,6 +841,7 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
     let params = {
       $txjson: txjson,
       $sig: tx.transaction.sig,
+      $srank: srank,
       $created_at: created_at,
       $updated_at: updated_at,
       $parent_id: tweet.parent_id,
