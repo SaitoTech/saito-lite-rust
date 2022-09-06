@@ -192,6 +192,7 @@ console.log("DDD");
                             for (let i = 0; i < res.rows.length; i++) {
                                 let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
                                 let txmsg = tx.returnMessage();
+				let ins = true;
 		    		for (let z = 0; z < this.groups.length; z++) {
 		    		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
 			  	        if (this.groups[z].txs[zz].transaction.ts === tx.transaction.ts && this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) { ins = false; }
