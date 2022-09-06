@@ -467,16 +467,18 @@ class RedSquareTweet {
         // inputs from functioning if added to the DOM / DIV
         e.preventDefault();
         // e.stopImmediatePropagation();
+        tweet_self.img_overlay.clear();
 
         let img = e.target.parentElement;
 
         let imgdata_uri = img.style.backgroundImage.slice(4, -1).replace(/"/g, "");
-        tweet_self.img_overlay.clear();
-        tweet_self.img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont'></div>");
+        
+        let imgId = Math.floor(Math.random()*10000);
+        tweet_self.img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont-"+imgId+"'></div>");
 
         let oImg = document.createElement("img");
         oImg.setAttribute('src', imgdata_uri);
-        document.querySelector('#tweet-overlay-img-cont').appendChild(oImg);
+        document.querySelector("#tweet-overlay-img-cont-"+imgId).appendChild(oImg);
 
         let img_width = oImg.width;
         let img_height = oImg.height;
