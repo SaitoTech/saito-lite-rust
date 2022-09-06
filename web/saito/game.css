@@ -4,6 +4,11 @@ game-overlay -- saito-overlay still references game-overlay classes
 @import url("./css-imports/game-overlay.css");
 
 /* ----------------------------------------------------------------
+game-popups
+-----------------------------------------------------------------*/
+@import url("./css-imports/game-popups.css");
+
+/* ----------------------------------------------------------------
 game-menu
 -----------------------------------------------------------------*/
 @import url("./css-imports/game-menu.css");

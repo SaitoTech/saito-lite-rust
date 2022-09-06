@@ -19,7 +19,7 @@ Saito User
     display: grid;
     cursor: pointer;
     grid-template-columns: min-content 1fr min-content;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: min-content 1fr;
     justify-items: start;
     margin-bottom: 1px;
     width: 100%;
