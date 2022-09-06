@@ -216,8 +216,6 @@ i.menu_icon_icon{
 
 .status-text-menu {
   width: min(500px,100%); /*I think 350px looks better*/
-  /*height: 100%;
-  max-height: 100%;*/
   overflow-y: auto;
   font-size: 1.6rem;
 }
@@ -230,6 +228,7 @@ i.menu_icon_icon{
   margin-inline-start: 0px;
   margin-inline-end: 0px;
   padding-inline-start: 0px;
+  font-size: 1.6rem;
 }
 
 .status-text-menu ul li {
