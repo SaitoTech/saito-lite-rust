@@ -1,5 +1,6 @@
 const RedSquareSidebarTemplate = require("./sidebar.template");
 const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/saito-calendar");
+const RedSquareLeagueSidebar = require("./league-sidebar");
 
 class RedSquareSidebar {
 
@@ -35,6 +36,7 @@ class RedSquareSidebar {
   }
 
   attachEvents(app, mod) {
+    RedSquareLeagueSidebar.attachEvents(app, mod);
 
   } 
 
