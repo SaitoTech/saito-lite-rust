@@ -777,7 +777,7 @@ class PandemicOriginalSkin {
   	try{
 		let marker = document.getElementById("marker_outbreak");
 		if (!marker){
-			this.app.browser.addElementToElement(`<div id="marker_outbreak"></div>`, document.getElementById('gameboard'))
+			this.app.browser.addElementToElement(`<div id="marker_outbreak" class="marker_outbreak"></div>`, document.getElementById('gameboard'))
        	  	marker = document.getElementById('marker_outbreak');	
 		}
 	    let t = 982 + 80 * outbreaks;
@@ -894,7 +894,7 @@ class PandemicOriginalSkin {
     	let marker = document.getElementById('marker_infection_rate');
 
        if (!marker){
-       	  this.app.browser.addElementToElement(`<div id="marker_infection_rate"></div>`, document.getElementById('gameboard'))
+       	  this.app.browser.addElementToElement(`<div id="marker_infection_rate" class="marker_infection_rate"></div>`, document.getElementById('gameboard'))
        	  marker = document.getElementById('marker_infection_rate');
    	   }
 
@@ -911,7 +911,7 @@ class PandemicOriginalSkin {
     
   }
 
-  animateInfection(city, msg, mycallback){
+  animateInfection(city, msg, dontplace, mycallback){
     let pandemic_self = this.mod;
 
     let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;

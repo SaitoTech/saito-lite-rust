@@ -10,8 +10,7 @@ const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
 const GameCreator = require("./lib/appspace/arcade/game-creator");
 const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
-const PostTweet = require('./lib/post');
-
+const PostTweet = require("./lib/post");
 
 class RedSquare extends ModTemplate {
 
@@ -67,13 +66,23 @@ class RedSquare extends ModTemplate {
   }
 
 
+
+  tweetImage(image) {
+    try {
+      let post = new PostTweet(this.app, this);
+          post.render(this.app, this);
+	  post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
+    } catch (err) {
+console.log("error tweeting image");
+    }
+  }
+
+
   addNotification(app, mod, tx) {
     // skip notifying us of our own posts / comments
     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
-console.log("from: " + JSON.stringify(tx.transaction.from) + " --- " + app.wallet.returnPublicKey());
       return;
     }
-console.log("ADD NOTIFICATION FOR US!");
     if (this.ntfs.length == 0) {
       this.ntfs.push(tx);
       return;

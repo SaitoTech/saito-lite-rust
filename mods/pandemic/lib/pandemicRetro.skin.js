@@ -935,13 +935,13 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 
   }
 
-  animateInfection(city, msg, mycallback){
+  animateInfection(city, msg, dontplace, mycallback){
     let pandemic_self = this.mod;
 
     let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;
 
     try {
-      this.app.browser.addElementToElement(`<div class="infection_highlight" style="top: ${this.mod.scale(this.cities[city].top+40)}px; left: ${this.mod.scale(this.cities[city].left+40)}px;"></div>`,document.getElementById("gameboard"));
+      this.app.browser.addElementToElement(`<div class="infection_highlight${(dontplace)?" blocked":""}" style="top: ${this.mod.scale(this.cities[city].top+40)}px; left: ${this.mod.scale(this.cities[city].left+40)}px;"></div>`,document.getElementById("gameboard"));
       $(".confirmit").off();
       pandemic_self.updateStatusWithOptions(msg, html);
       $(".confirmit").on("click", async (e) => {

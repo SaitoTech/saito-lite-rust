@@ -2,7 +2,7 @@ const saito = require('./../../../../../lib/saito/saito');
 const GameCreatorTemplate = require('./game-creator.template');
 const ArcadeGameDetails = require('./../../../../arcade/lib/arcade-game/arcade-game-details');
 const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
-
+const GameCreateNew = require('./game-create-new');
 
 class GameCreator {
 
@@ -29,16 +29,13 @@ class GameCreator {
         let tx = new saito.default.transaction();
         tx.msg.game = modname;
 
-        //
-        // DEPRECATED -- 
-        //
-
         this.overlay.hide();
 
-        let arcade_mod = app.modules.returnModule("Arcade");
-        arcade_mod.invite = mod.invite;
-        ArcadeGameDetails.render(app, arcade_mod, tx);
-        ArcadeGameDetails.attachEvents(app, arcade_mod, tx);
+        let game_mod = app.modules.returnModule(modname);
+
+        let GameCreate = new GameCreateNew(app, mod, game_mod, tx);
+        GameCreate.render(app, mod, tx);
+
       };
     });
   }

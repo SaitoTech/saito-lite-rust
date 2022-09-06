@@ -20,6 +20,17 @@ class ChatManager {
 			this.render(app, mod);
 		});
 
+		app.connection.on("chat-popup-render-request", (group_id) => {
+			let psq = "#chat-container-"+group_id;
+			let obj = document.querySelector(psq);
+			if (!obj) {
+			  let chat_popup = new ChatPopup(app, mod, group_id);
+			  chat_popup.render(app, mod, group_id);
+			} else {
+			  console.log("Chat Popup Exists");
+			}
+		});
+
 	}
 
 	render(app, mod, selector = "") {

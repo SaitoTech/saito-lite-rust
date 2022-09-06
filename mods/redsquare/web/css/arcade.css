@@ -87,6 +87,9 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  display: block;
+  background-color: rgb(17, 17, 17, 0.5);
+
 }
 
 .saito-overlay-menu {
@@ -113,10 +116,9 @@
 }
 
 .rules-overlay{
-  background: var(--saito-nightscape);
+  background: #fff;
   padding: 1em;
   font-size: 20px;
-  border: 2px white solid;
   border-radius: 10px;
   max-width: 80vw;
   min-width: 600px;
@@ -129,7 +131,7 @@
 }
 .game-overlay {
   min-width: 320px;
-  padding: 1rem;
+  padding: 2rem;
   position: fixed;
   background-color: var(--saito-white);
 }
@@ -267,29 +269,31 @@
   justify-content: space-between;
 }
 
-.dynamic_button {
+.saito-multi-select_btn {
   overflow: hidden;
 }
 
-.dynamic_button.saito-select {
+.saito-multi-select_btn.saito-select {
   border-bottom: unset;
   height: 60px;
   width: unset;
-    position: relative;
-    display: flex;
-    line-height: 3;
-    background: #55555555;
+  position: relative;
+  display: flex;
+  line-height: 3;
+  background: #fff;
+  color: var(--saito-primary);
+  margin-top: 2rem;
 }
 
-.dynamic_button_options {
+.saito-multi-select_btn_options {
   width: calc(100% - 60px);
 }
 
-.dynamic_button_options button{
+.saito-multi-select_btn_options button{
   border-radius: 5px 0px 0px 5px;
 }
 
-.dynamic_button.showAll {
+.saito-multi-select_btn.showAll {
   overflow: visible;
 }
 
@@ -305,12 +309,11 @@
   -webkit-transition: 0.25s all ease;
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
-  visibility: hidden;
 }
-.dynamic_button.saito-select::after {
+.saito-multi-select_btn.saito-select::after {
   box-sizing: border-box;
-  border: 1px solid var(--saito-red);
-  background-color: #324;
+  border: 1px solid var(--saito-primary);
+  background-color: #fff;
   border-radius: 0 5px 5px 0;
   height: 60px;
   line-height: 60px;
@@ -327,19 +330,16 @@ option {
 }
 
 
-.game-invite-btn {
+.saito-multi-btn {
   width: 100%;
   min-height: 60px;
   font-weight: bold;
-  margin: 0px;
-  background: linear-gradient(-45deg, #426 50%, #213 100%);
-  border: 1px solid #639;;
+  margin: 0.1rem;
+  background: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
+  color: #fff;
 }
-.game-wizard-publisher-message {
-  padding: 10px;
-  margin-top: 10px;
-  font-size: 0.9em;
-}
+
 .game-wizard-advanced-options {
   display: none;
 }
@@ -460,4 +460,44 @@ option {
 .invite-link-text {
   color: var(--saito-white);
   width: 100%;
+}
+
+
+.game-create-new-overlay {
+  display: grid;
+  max-height: 80vh;
+  height: min-content;
+  width: 60vw;
+  overflow-y: visible;
+  grid-template-rows: min-content auto;
+  background-color: white;
+  padding: 2rem;
+}
+
+
+.info-item-wrapper {
+  border-bottom: 2px dotted #b5b5b5;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.arcade-game-thumbnail {
+  margin-bottom: 1rem;
+}
+
+.saito-module-intro-image .saito-select-content {
+  width: 100%;
+}
+
+.arcade-game-publisher-message {
+  margin-top: 10px;
+  font-size: 1em;
+}
+
+.arcade-game-publisher-message span {
+  font-weight: bold;
+}
+
+.arcade-advance-opt {
+  margin-top: 1rem;
 }

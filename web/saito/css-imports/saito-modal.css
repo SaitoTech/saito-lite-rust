@@ -66,7 +66,7 @@
 }
 
 
-#saito-confirm-add-pubkey {
+#saito-confirm-add-publickey {
   background-color: #fff;
   height: auto;
   width: 30vh;
@@ -74,18 +74,18 @@
   padding: 2rem;
 }
 
-#saito-confirm-add-pubkey  .saito-identicon-box {
+#saito-confirm-add-publickey  .saito-identicon-box {
   display: inline-block;
   margin-left: 50%;
   transform: translateX(-50%);
 }
 
-#saito-confirm-add-pubkey  .saito-identicon-box .saito-identicon {
+#saito-confirm-add-publickey  .saito-identicon-box .saito-identicon {
   width: 8rem;
   height: 8rem; 
 }
 
-#saito-confirm-add-pubkey > .saito-address{
+#saito-confirm-add-publickey > .saito-address{
   width: 100%;
   max-width: 100%;
   overflow: inherit;
@@ -100,6 +100,6 @@
 }
 
 
-#saito-confirm-add-pubkey > .saito-contact-status {
+#saito-confirm-add-publickey > .saito-contact-status {
   text-align: center;
 }

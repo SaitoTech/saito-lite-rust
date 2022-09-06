@@ -14,6 +14,8 @@ class Chatx extends ModTemplate {
 
         super(app);
         this.name = "Chat";
+	this.slug = "chat";
+	this.gamesmenufilter = "chatx"; // once chat is purged, remove in games-menu
         this.description = "Saito instant-messaging client and application platform";
 
         this.groups = [];
@@ -218,11 +220,12 @@ class Chatx extends ModTemplate {
                         return 1;
                     }
 
-		    app.connection.emit('chat-render-request', {});
+		    //app.connection.emit('chat-render-request', {});
 
 		    //
 		    // check identifiers
 		    //
+/*
 		    if (this.added_identifiers_post_load == 0) {
 		      try {
 			setTimeout(()=>{
@@ -233,6 +236,8 @@ class Chatx extends ModTemplate {
 			console.log("error adding identifiers post-chat");
 		      }
 		    }
+*/
+
                 }
 
 
@@ -644,7 +649,10 @@ class Chatx extends ModTemplate {
         if (txmsg.group_id) {
  	  for (let i = 0; i < this.groups.length; i++) {
 	    if (this.groups[i].id === txmsg.group_id) {
-	      this.addTransactionToGroup(this.groups[i], tx);
+	      for (let z = 0; z < this.groups[i].txs; z++) {
+		if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { return; }
+	      }
+  	      this.addTransactionToGroup(this.groups[i], tx);
               app.connection.emit('chat-render-request', {});
 	      return;
 	    }
@@ -690,6 +698,26 @@ class Chatx extends ModTemplate {
     //////////////////
     // UI Functions //
     //////////////////
+    openChatBox(group_id = null) {
+
+	if (this.chat_manager == null) {
+      	    this.chat_manager = new ChatManager(this.app, this);
+	}
+
+        if (group_id == null) {
+            let group = this.returnCommunityChat();
+            if (group == undefined || group == null) {
+                return;
+            }
+            if (group.id == undefined || group.id == null) {
+                return;
+            }
+            group_id = group.id;
+        }
+
+        this.app.connection.emit('chat-popup-render-request', group_id);
+    }
+
 
     ///////////////////
     // CHAT SPECIFIC //
@@ -735,6 +763,7 @@ class Chatx extends ModTemplate {
       let x = JSON.stringify(tx.returnMessage());
       for (let i = 0; i < group.txs.length; i++) {
 	if (JSON.stringify(group.txs[i].returnMessage()) === x) {
+console.log("CHAT MSG: " + x);
 	  return;
 	}
       }
@@ -810,6 +839,11 @@ class Chatx extends ModTemplate {
     async chatRequestMessages(app, tx) {
     }
 
+
+    saveChat() {
+        this.app.options.chat = Object.assign({}, this.app.options.chat);
+        this.app.storage.saveOptions();
+    }
 
 }
 

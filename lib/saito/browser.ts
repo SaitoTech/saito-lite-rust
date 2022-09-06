@@ -236,7 +236,7 @@ class Browser {
 	    let cleaner = w[i].substring(1);
             let add = this.app.keys.returnPublicKeyByIdentifier(cleaner);
 	    if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) { add = cleaner; }
-            if (!keys.include(add)) {
+            if (!keys.includes(add)) {
               keys.push(add);
             }
 	  }
@@ -1069,6 +1069,16 @@ class Browser {
   //////////////////////////////////////////////////////////////////////////////
 
   async captureScreenshot(callback = null) {
+
+    // svg needs converstion
+    var svgElements = document.body.querySelectorAll('svg');
+    svgElements.forEach(function(item) {
+      item.setAttribute("width", item.getBoundingClientRect().width);
+      item.setAttribute("height", item.getBoundingClientRect().height);
+      item.style.width = null;
+      item.style.height= null;
+    });
+
     html2canvas(document.body).then(function (canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
       if (callback != null) {
