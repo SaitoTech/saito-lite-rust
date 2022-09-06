@@ -31,6 +31,7 @@ module.exports = (app, mod, group_id) => {
           if (z > 0) { msg += '<br/>'; }
           let txmsg = block[z].returnMessage();
 	  sender = block[z].transaction.from[0].add;
+console.log("add: "+txmsg.message + " - " + z);
           msg += txmsg.message;       
         }
         html +=`${SaitoUserSmallTemplate(app, mod, sender, msg)}`;

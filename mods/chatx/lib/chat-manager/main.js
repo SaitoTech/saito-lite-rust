@@ -92,14 +92,19 @@ console.log("RENDER REQUEST 2");
 
 		}
 
+
 		//
 		// open community chat if new load
 		//
 		if (this.rendered == 0) {
 			if (mod.groups.length > 0) {
 				let gid = mod.groups[0].id;
-				let chat_popup = new ChatPopup(app, mod, gid);
-				chat_popup.render(app, mod, gid);
+			        //let psq = "#chat-container-"+gid;
+				//if (!document.querySelector(psq)) {
+console.log("rendering chat popup in chat-mananger/main.js");
+				      let chat_popup = new ChatPopup(app, mod, gid);
+				      chat_popup.render(app, mod, gid);
+			        //}
 			}
 		}
 

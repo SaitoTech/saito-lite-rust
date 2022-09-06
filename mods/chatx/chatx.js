@@ -166,6 +166,7 @@ console.log("DDD");
         let loaded_txs = 0;
         let community_chat_group_id = "";
 
+
         //
         // create mastodon server
         //
@@ -195,7 +196,8 @@ console.log("DDD");
 				let ins = true;
 		    		for (let z = 0; z < this.groups.length; z++) {
 		    		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
-			  	        if (this.groups[z].txs[zz].transaction.ts === tx.transaction.ts && this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) { ins = false; }
+					// no idea why ts differs so slightly
+			  	        if (Math.abs(this.groups[z].txs[zz].transaction.ts - tx.transaction.ts) < 100 && this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) { ins = false; }
 		    		    }
 		    		}
 				if (ins) {
@@ -204,7 +206,6 @@ console.log("DDD");
                                     })
 				}
                             }
-console.log("EEE");
         		    app.connection.emit('chat-render-request', {});
 
                             //
@@ -294,7 +295,8 @@ console.log("EEE");
                 if (this.groups[z].id === txmsg.group_id) {
 		    let ins = true;
 		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
-			if (this.groups[z].txs[zz].transaction.ts === txs[i].transaction.ts && this.groups[z].txs[zz].transaction.sig === txs[i].transaction.sig) { ins = false; }
+			// why does ts differ slightly?
+			if (Math.abs(this.groups[z].txs[zz].transaction.ts - tx.transaction.ts) < 100 && this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) { ins = false; }
 		    }
 		    if (ins) {
                         this.binaryInsert(this.groups[z].txs, txs[i], (a, b) => {
@@ -430,6 +432,7 @@ console.log("RECEIVE ONCHAIN");
                     tx2.decryptMessage(app);
 console.log("RECEIVE P2P");
                     this.receiveChatTransaction(app, tx2);
+		    // only save onchain
                     //this.app.storage.saveTransaction(modified_tx);
 
                     if (mycallback) {
@@ -650,6 +653,8 @@ console.log("RECEIVE P2P");
         }
 
         let txmsg = tx.returnMessage();
+
+console.log("receiveChatTrans: " + JSON.stringify(txmsg));
 
         //
         // if to someone else and encrypted
