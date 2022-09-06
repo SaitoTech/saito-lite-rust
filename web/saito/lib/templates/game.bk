@@ -92,32 +92,6 @@ game-overlay-cardlist-button {
   opacity: 0.4;
 }
 
-/** For various common overlays**/
-
-.rules-overlay {
-  background-color: whitesmoke;
-  border-color: black;
-}
-
-.shim-notice {
-  background: #222b;
-  color: #fff;
-  padding: min(5vh,5vw);
-  min-width: min(400px,85vw);
-  max-width: 95vw;
-  overflow-y: auto;
-}
-
-.shim-notice  .htmlCards{
-  display: flex;
-}
-.shim-notice .card {
-  width: 10vw;
-  max-width: 12vh;
-  min-width: 55px;
-  margin: 0;
-}
-
 .game_warning_overlay{
   background: #222b;
   color: #fff;
