@@ -29,24 +29,13 @@ class GameCreator {
         let tx = new saito.default.transaction();
         tx.msg.game = modname;
 
-        //
-        // DEPRECATED -- 
-        //
-
         this.overlay.hide();
 
         let game_mod = app.modules.returnModule(modname);
-        console.log('module game i want to play: ');
-        console.log(game_mod);        
 
-        let GameCreate = new GameCreateNew(app, mod, game_mod);
-        GameCreate.render(app, mod);
+        let GameCreate = new GameCreateNew(app, mod, game_mod, tx);
+        GameCreate.render(app, mod, tx);
 
-
-        // let arcade_mod = app.modules.returnModule("Arcade");
-        // arcade_mod.invite = mod.invite;
-        // ArcadeGameDetails.render(app, arcade_mod, tx);
-        // ArcadeGameDetails.attachEvents(app, arcade_mod, tx);
       };
     });
   }
