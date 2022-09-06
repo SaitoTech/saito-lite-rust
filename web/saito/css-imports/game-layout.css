@@ -1,5 +1,17 @@
 
+.tip .tiptext {
+  visibility: hidden;
+  color: #444 !important;
+}
 
+.tip:hover .tiptext {
+  visibility: visible;
+}
+  
+.tiptext {
+   width: 90%;
+   min-width: 400px;
+}
 
 /*********************/
 /*** PORTRAIT MODE ***/
