@@ -251,7 +251,9 @@ console.log("ADD NOTIFICATION FOR US!");
   renderMainPage(app, mod) {
     this.viewing = "main";
     this.reorganizeTweets(app, mod);
-    document.querySelector(".redsquare-list").innerHTML = "";
+    try{ //This causes a crash when reloading on redsquare/#games -- someone should fix it!
+      document.querySelector(".redsquare-list").innerHTML = "";
+    }catch(err){}
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
     }

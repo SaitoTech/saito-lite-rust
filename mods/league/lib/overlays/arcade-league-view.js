@@ -23,10 +23,10 @@ module.exports = ArcadeLeagueView = {
     //Recompute league stats
     let pid = app.wallet.returnPublicKey();
     league.myRank = -1;
-    league.playerCnt = 0;
 
     mod.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${league.id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
         (res) => {
+          league.playerCnt = 0;
           if (res.rows) {
             let cnt = 0;
             for (let p of res.rows){
