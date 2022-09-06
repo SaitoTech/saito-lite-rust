@@ -46,7 +46,7 @@ class RedSquare extends ModTemplate {
 
     this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
 
-    this.vote_bonuses = {
+    this.vote_weight = {
       like: 5,
       comment: 7,
       retweet: 6,
@@ -86,10 +86,10 @@ class RedSquare extends ModTemplate {
   tweetImage(image) {
     try {
       let post = new PostTweet(this.app, this);
-          post.render(this.app, this);
-	  post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
+      post.render(this.app, this);
+      post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
     } catch (err) {
-console.log("error tweeting image");
+      console.log("error tweeting image");
     }
   }
 
@@ -253,8 +253,8 @@ console.log("error tweeting image");
       }
     }
 
-    console.log('algorithm type ', type);
-    console.log(this.tweets, "reorganized tweet")
+    // console.log('algorithm type ', type);
+    // console.log(this.tweets, "reorganized tweet")
 
   }
 
@@ -296,7 +296,7 @@ console.log("error tweeting image");
   renderParentWithChildren(app, mod, sig) {
     this.viewing = sig;
     this.reorganizeTweets(app, mod);
-    console.log(this.tweets)
+    // console.log(this.tweets)
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
 
@@ -605,7 +605,7 @@ console.log("error tweeting image");
         const tweets = [];
 
         if (res.rows) {
-          console.log("more tweets ", res.rows)
+          // console.log("more tweets ", res.rows)
           res.rows.forEach(row => {
             let new_tweet = 1;
             if (new_tweet) {
@@ -649,7 +649,7 @@ console.log("error tweeting image");
       async (res) => {
         const tweets = [];
         if (res.rows) {
-          console.log(' new tweets ', res.rows);
+          // console.log(' new tweets ', res.rows);
           if (res.rows[0]) {
 
             mod.trackedTweet = res.rows[0];
@@ -785,7 +785,7 @@ console.log("error tweeting image");
       obj.data[key] = data[key];
     }
 
-    console.log('obj ', obj)
+    // console.log('obj ', obj)
     // update rank of parent tweet
 
     let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
@@ -1036,37 +1036,31 @@ console.log("error tweeting image");
 
   async updateTweetRank(app, mod, creation_date, sig, type) {
     let current_time = new Date().getTime();
-    let vote_bonus = mod.vote_bonuses[type];
+    let vote_weight = mod.vote_weight[type];
     let number = 604800000 / (current_time - creation_date);
     let divider = mod.getDivider(number, mod.vote_dividers);
-    const score = vote_bonus * (number / divider);
-    console.log('divider ', divider);
-    console.log('score ', score);
+    const score = vote_weight * (number / divider);
+    // console.log('divider ', divider);
+    // console.log('score ', score);
     let sql_rank = "UPDATE tweets SET rank = cast((rank + $score) as INTEGER) WHERE sig = $sig";
     let params_rank = { $sig: sig, $score: score };
     await app.storage.executeDatabase(sql_rank, params_rank, "redsquare");
   }
-
   calculateInitialRank = (has_images, link_properties) => {
     let rank = 0;
-    if (has_images) { rank += this.vote_bonuses['has_image']; }
-    if (link_properties) { rank += this.vote_bonuses['has_link'] }
+    if (has_images) { rank += this.vote_weight['has_image']; }
+    if (link_properties) { rank += this.vote_weight['has_link'] }
     return rank;
   }
 
   getDivider(number, vote_dividers) {
     let string_number = String(Math.floor(number));
-    console.log(string_number, "string number");
     let length = string_number.length;
     if (length >= 5) {
       return vote_dividers[4]
     }
     if (length === 4) {
       return vote_dividers[3];
-    }
-
-    if (length === 3) {
-      return vote_dividers[2];
     }
 
     return vote_dividers[length];
