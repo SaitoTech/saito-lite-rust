@@ -72,7 +72,6 @@ class RedSquare extends ModTemplate {
       let post = new PostTweet(this.app, this);
           post.render(this.app, this);
 	  post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
-console.log("IMAGES IN TWEET: " + post.images.length);
     } catch (err) {
 console.log("error tweeting image");
     }
