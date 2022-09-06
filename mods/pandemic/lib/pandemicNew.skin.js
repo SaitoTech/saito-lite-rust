@@ -11,7 +11,7 @@ class PandemicNewSkin extends PandemicRetroSkin {
   	render(){
 
 		$("#gameboard").css({
-		  'background-image': 'url("/pandemic/img/alt/worldmap_pandemic2.jpg")',
+		  'background-image': `url("/${this.mod.name.toLowerCase()}/img/alt/worldmap_pandemic2.jpg")`,
 		  'background-size': 'cover',
 		  width: this.boardWidth+'px',
 		  height: this.boardHeight+'px',
