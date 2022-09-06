@@ -1,5 +1,73 @@
+::-webkit-scrollbar { width: 8px; height: 3px;}
+::-webkit-scrollbar-button {  background-color: #c9c9c9; }
+::-webkit-scrollbar-track {  background-color: #c9c9c9;}
+::-webkit-scrollbar-track-piece { background-color: #ddd;}
+::-webkit-scrollbar-thumb { height: 50px; background-color: #c9c9c9; border-radius: 3px;}
+::-webkit-scrollbar-corner { background-color: #c9c9c9;}
+::-webkit-resizer { background-color: #ddd;}
 
 
+body {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
+  background-color: #4e4e4e !important;
+
+  overflow: hidden;
+  position: fixed;
+  width: 100vw;
+
+  height: 100vh;
+}
+
+.main {
+  margin-top: unset;
+  padding: unset;
+}
+
+.gameboard {
+  /*transform-origin: left top; /* For resizing game boards */
+  user-select: none;
+ }
+
+.rules-overlay {
+  background-color: whitesmoke;
+  border-color: black;
+}
+
+.shim-notice {
+  background: #222b;
+  color: #fff;
+  padding: min(5vh,5vw);
+  min-width: min(400px,85vw);
+  max-width: 95vw;
+  overflow-y: auto;
+}
+
+.shim-notice  .htmlCards{
+  display: flex;
+}
+.shim-notice .card {
+  width: 10vw;
+  max-width: 12vh;
+  min-width: 55px;
+  margin: 0;
+}
+
+.tip .tiptext {
+  visibility: hidden;
+  color: #444 !important;
+}
+
+.tip:hover .tiptext {
+  visibility: visible;
+}
+  
+.tiptext {
+   width: 90%;
+   min-width: 400px;
+}
 
 /*********************/
 /*** PORTRAIT MODE ***/

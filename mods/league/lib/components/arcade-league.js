@@ -31,7 +31,8 @@ class ArcadeLeague {
         }
 
         if (game_cmd == "view" && game_sig == league.id){
-          ArcadeLeagueView.render(app, mod, league);
+          let bs = new ArcadeLeagueView(app);
+          bs.render(app, mod, league);
         }
         if (game_cmd == "join" && game_sig == league.id){
           mod.sendJoinLeagueTransaction(league.id);

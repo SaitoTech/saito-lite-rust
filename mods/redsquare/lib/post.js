@@ -15,6 +15,9 @@ class Post {
   }
 
   render(app, mod) {
+    if (document.querySelector('#redsquare-tweet-overlay') != null) {
+      document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
+    }
     this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();

@@ -28,7 +28,8 @@ module.exports = ExistingLeague = {
         if (cmd == "view") {
           for (let league of mod.leagues) {
             if (league.id == league_id) {
-              ArcadeLeagueView.render(app, mod, league);
+              let bs = new ArcadeLeagueView(app);
+              bs.render(app, mod, league);
               return;
             }
           }
