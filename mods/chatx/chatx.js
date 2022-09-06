@@ -15,6 +15,7 @@ class Chatx extends ModTemplate {
         super(app);
         this.name = "Chat";
 	this.slug = "chat";
+	this.gamesmenufilter = "chatx"; // once chat is purged, remove in games-menu
         this.description = "Saito instant-messaging client and application platform";
 
         this.groups = [];
