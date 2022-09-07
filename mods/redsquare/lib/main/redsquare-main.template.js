@@ -1,7 +1,7 @@
 
 module.exports = (app, mod) => {
 
-    return `
+  return `
 
 <div class="saito-main appspace">
   <div id="redsquare-container">

@@ -17,20 +17,27 @@ class ChatManager {
 		}
 
 		app.connection.on("chat-render-request", (emptymsg) => {
-		    if (!document.querySelector(".chat-manager")) {
-			this.render(app, mod);
-		    }
+			if (!document.querySelector(".chat-manager")) {
+				this.render(app, mod);
+			}
 		});
 
 		app.connection.on("chat-popup-render-request", (group_id) => {
-			let psq = "#chat-container-"+group_id;
+
+
+			if (!document.querySelector(".chat-manager")) {
+				app.browser.addElementToSelector(ChatManagerTemplate(app, mod), "");
+				app.browser.makeDraggable("#chat-manager");
+			}
+
+			let psq = "#chat-container-" + group_id;
 			let obj = document.querySelector(psq);
 			if (!obj) {
-console.log("RENDER REQUEST 2");
-			  let chat_popup = new ChatPopup(app, mod, group_id);
-			  chat_popup.render(app, mod, group_id);
+				console.log("RENDER REQUEST 2");
+				let chat_popup = new ChatPopup(app, mod, group_id);
+				chat_popup.render(app, mod, group_id);
 			} else {
-			  console.log("Chat Popup Exists");
+				console.log("Chat Popup Exists");
 			}
 		});
 
@@ -99,12 +106,12 @@ console.log("RENDER REQUEST 2");
 		if (this.rendered == 0) {
 			if (mod.groups.length > 0) {
 				let gid = mod.groups[0].id;
-			        //let psq = "#chat-container-"+gid;
+				//let psq = "#chat-container-"+gid;
 				//if (!document.querySelector(psq)) {
-console.log("rendering chat popup in chat-mananger/main.js");
-				      let chat_popup = new ChatPopup(app, mod, gid);
-				      chat_popup.render(app, mod, gid);
-			        //}
+				console.log("rendering chat popup in chat-mananger/main.js");
+				let chat_popup = new ChatPopup(app, mod, gid);
+				chat_popup.render(app, mod, gid);
+				//}
 			}
 		}
 

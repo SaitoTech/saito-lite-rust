@@ -28,6 +28,11 @@
     margin-top: var(--saito-header-height);
 }
 
+.saito-chat-main {
+    display: flex;
+    
+}
+
 .saito-sidebar {
     min-width: 26rem;
     margin-bottom: 1.5rem;
