@@ -12,6 +12,7 @@ class Post {
     this.thread_id = "";
     this.images = [];
     this.tweet = tweet;
+    this.tweet_creation_date = "";
   }
 
   render(app, mod) {
@@ -84,7 +85,9 @@ class Post {
 	//
         let data = { text: text };
         if (parent_id !== "") {
-          data = { text: text, parent_id: parent_id, thread_id: thread_id };
+
+          data = { text: text, parent_id: parent_id, thread_id: thread_id, thread_creation_date: this.tweet_creation_date, type: "comment" };
+
         }
         if (this.images.length > 0) {
           data['images'] = this.images;
