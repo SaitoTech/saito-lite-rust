@@ -48,7 +48,10 @@ class ChatPopup {
     // submit
     //
     let idiv = "chat-input-" + group_id;
-    msg_input = document.getElementById(idiv);
+
+    let msg_input = document.getElementById(idiv);
+
+    console.log(idiv, msg_input.value)
     msg_input.addEventListener("keydown", (e) => {
 
       if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
