@@ -12,16 +12,16 @@ class ChatPopup {
   render(app, mod, group_id = "") {
 
     if (!document.getElementById(`chat-container-${group_id}`)) {
-      app.browser.addElementToDom(ChatPopupTemplate(app, mod, group_id));
-      app.browser.makeDraggable(`chat-container-${group_id}`);
+      app.browser.addElementToSelector(ChatPopupTemplate(app, mod, group_id), ".chat-popup-list");
+      // app.browser.makeDraggable(`chat-container-${group_id}`);
 
       this.attachEvents(app, mod, group_id);
 
       app.connection.on("chat-render-request", (message) => {
-console.log("RENDER REQ 3");
+        console.log("RENDER REQ 3");
         let divid = "chat-container-" + group_id;
         app.browser.replaceElementById(ChatPopupTemplate(app, mod, group_id), divid);
-        app.browser.makeDraggable(`chat-container-${group_id}`);
+        // app.browser.makeDraggable(`chat-container-${group_id}`);
         this.attachEvents(app, mod, group_id);
       });
     }
@@ -48,7 +48,10 @@ console.log("RENDER REQ 3");
     // submit
     //
     let idiv = "chat-input-" + group_id;
-    msg_input = document.getElementById(idiv);
+
+    let msg_input = document.getElementById(idiv);
+
+
     msg_input.addEventListener("keydown", (e) => {
 
       if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {

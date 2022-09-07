@@ -1,14 +1,24 @@
 
+.chat-popup-list {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    display: flex;
+}
 .chat-container {
+    margin-right: 1rem;
     width: 44rem;
     border: 1px solid var(--saito-border);
     position: fixed;
     right: 1rem;
-    bottom: 1rem;
+    bottom: 0;
     background-color: var(--saito-white);
     border-radius: .4rem;
-    z-index:10;
+    z-index:1000;
+    position: relative;
 }
+
+
 
 .chat-header {
     padding: 1rem;
