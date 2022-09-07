@@ -96,6 +96,7 @@ class Mahjong extends GameTemplate {
   lastColumn = 14;
 
   emptyCells = [
+    // bottom layer
     [1,1], [1,14],
     [2,1], [2,2], [2,3], [2,12], [2,13], [2,14],
     [3,1], [3,2], [3,13], [3,14],
@@ -172,13 +173,45 @@ class Mahjong extends GameTemplate {
     }
   }
 
+  boxShadowProperties = ['box-shadow', '-moz-box-shadow', '-webkit-box-shadow', '-o-box-shadow'];
+
   makeInvisible(divname) {
-    $('#' + divname).css('box-shadow','none');
-    $('#' + divname).css('-moz-box-shadow','none');
-    $('#' + divname).css('-webkit-box-shadow','none');
-    $('#' + divname).css('-o-box-shadow','none');
-    $('#' + divname).css('opacity','0.0');
-    $('#' + divname).css('pointer-events','none');
+    let noShadowBox = 'none';
+    this.applyShadowBox(divname, noShadowBox);
+    $(`#${divname}`).css('opacity','0.0');
+    $(`#${divname}`).css('pointer-events','none');
+  }
+
+  toggleCard(divname) {
+    let highlighted = '0px 0px 0px 3px #00ff00';
+    this.applyShadowBox(divname, highlighted);
+  }
+
+  toggleInvalidCard(divname) {
+    let mahjong_self = this;
+    let invalidHighlight = '0px 0px 0px 3px #ff0000'
+    this.applyShadowBox(divname, invalidHighlight);
+    setTimeout(() => {
+      mahjong_self.untoggleCard(divname);
+    }, 1000);
+  }
+
+  untoggleCard(divname) {
+    $(`#${divname}`).css('opacity','1.0');
+    $(`#${divname}`).css('pointer-events','auto');
+    let outermostBoxShadow = '0px 10px 12px 1px #000000';
+    let boxShadow = '12px 10px 12px 1px #000000';
+    if (`#${divname}` === "#row4_slot1" || `#${divname}` === "#row4_slot14") {
+      this.applyShadowBox(divname, outermostBoxShadow);
+    } else {
+      this.applyShadowBox(divname, boxShadow);
+    }
+  }
+
+  applyShadowBox(divname, property) {
+    for (let i = 0; i < this.boxShadowProperties.length; i++) {
+      $(`#${divname}`).css(this.boxShadowProperties[i],property);
+    }
   }
 
   returnCardImageHTML(name) {
@@ -319,8 +352,34 @@ class Mahjong extends GameTemplate {
       let card = $(this).attr("id");
       let tileTokens = card.split('slot');
       let tileColumn = parseInt(tileTokens[1]);
+      let tileRow = parseInt(card.split('_')[0].substring(3));
+      console.log('tileRow');
+      console.log(tileRow);
       if (mahjong_self.game.board[card] !== "E") {
+
+        // layer 1 tile can't be unlocked if layer 2 tile overlays it
+        if (tileRow >= 2 && tileRow <= 7 && tileColumn >= 5 && tileColumn <= 10) {
+          if (!mahjong_self.game.hidden.includes(`row${tileRow + 7}_slot${tileColumn}`)) {
+          return;
+          }
+        }
+
+        // layer 2 tile can be can't be unlocked if layer 3 tile overlays it
+        if (tileRow >= 10 && tileRow <= 13 && tileColumn >= 6 && tileColumn <= 9) {
+          if (!mahjong_self.game.hidden.includes(`row${tileRow + 5}_slot${tileColumn}`)) {
+          return;
+          }
+        }
+
+        // layer 3 tile can be can't be unlocked if layer 4 tile overlays it
+        if (tileRow >= 16 && tileRow <= 17 && tileColumn >= 7 && tileColumn <= 8) {
+          if (!mahjong_self.game.hidden.includes(`row${tileRow + 3}_slot${tileColumn}`)) {
+          return;
+          }
+        }
+
         switch (card) {
+          // \/\/ layer 4 tile can't be unlocked when layer 5 tile overlays it
           case 'row19_slot7':
           case 'row20_slot7':
             if (!mahjong_self.game.hidden.includes('row21_slot7')) {
@@ -335,6 +394,8 @@ class Mahjong extends GameTemplate {
             } else {
               break;
             }
+          // /\/\ layer 4 tile can't be unlocked when layer 5 tile overlays it
+
           // two edge cases for the tiles being on the left/ right of two rows
           case 'row5_slot2':
             if (!mahjong_self.game.hidden.includes('row4_slot1')) {
@@ -390,42 +451,6 @@ class Mahjong extends GameTemplate {
         }
       }
     });
-  }
-
-  toggleCard(divname) {
-    divname = '#' + divname;
-    $(divname).css('box-shadow', '0px 0px 0px 3px #00ff00');
-    $(divname).css('-moz-box-shadow', '0px 0px 0px 3px #00ff00');
-    $(divname).css('-webkit-box-shadow', '0px 0px 0px 3px #00ff00');
-    $(divname).css('-o-box-shadow', '0px 0px 0px 3px #00ff00');
-  }
-
-  toggleInvalidCard(divname) {
-    let mahjong_self = this;
-    $('#' + divname).css('box-shadow', '0px 0px 0px 3px #ff0000');
-    $('#' + divname).css('-moz-box-shadow', '0px 0px 0px 3px #ff0000');
-    $('#' + divname).css('-webkit-box-shadow', '0px 0px 0px 3px #ff0000');
-    $('#' + divname).css('-o-box-shadow', '0px 0px 0px 3px #ff0000');
-    setTimeout(() => {
-      mahjong_self.untoggleCard(divname);
-    }, 1000);
-  }
-
-  untoggleCard(divname) {
-    divname = '#' + divname;
-    $(divname).css('opacity','1.0');
-    $(divname).css('pointer-events','auto');
-    if (divname === "#row4_slot1" || divname === "#row4_slot14") {
-      $(divname).css('box-shadow', '0px 10px 12px 1px #000000');
-      $(divname).css('-moz-box-shadow', '0px 10px 12px 1px #000000');
-      $(divname).css('-webkit-box-shadow', '0px 10px 12px 1px #000000');
-      $(divname).css('-o-box-shadow', '0px 10px 12px 1px #000000');
-    } else {
-      $(divname).css('box-shadow', '12px 10px 12px 1px #000000');
-      $(divname).css('-moz-box-shadow', '12px 10px 12px 1px #000000');
-      $(divname).css('-webkit-box-shadow', '12px 10px 12px 1px #000000');
-      $(divname).css('-o-box-shadow', '12px 10px 12px 1px #000000');
-    }
   }
 
   displayUserInterface() {
