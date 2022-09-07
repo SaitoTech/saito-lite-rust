@@ -92,6 +92,7 @@ class Chatx extends ModTemplate {
         // service. TODO - fix later
         //
         if (app.options?.peers?.length >= 1) {
+            console.log('creating community chat ', app.options.peers);
             let peer = app.options.peers[0];
             this.createChatGroup([peer.publickey], "Saito Community Chat");
         }
@@ -112,7 +113,7 @@ class Chatx extends ModTemplate {
         //
         let g = this.app.keys.returnGroups();
         for (let i = 0; i < g.length; i++) {
-            newgroup = this.createChatGroup(g[i].members, g[i].name);
+            let newgroup = this.createChatGroup(g[i].members, g[i].name);
         }
 
         app.connection.emit('chat-render-request', "");
@@ -770,6 +771,8 @@ return;
     ///////////////////
     createChatGroup(members = null, name = null) {
 
+
+        console.log('creating chat groups ', name , members)
         if (members == null) {
             return null;
         }

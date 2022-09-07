@@ -25,7 +25,7 @@ class ChatPopup {
     if (group_id != "" && this.group_id == "") { this.group_id = group_id; }
 
     if (!document.getElementById(`chat-container-${this.group_id}`)) {
-      app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
+      app.browser.addElementToSelector(ChatPopupTemplate(app, mod, this.group_id), '.chat-popup-list');
       app.browser.makeDraggable(`chat-container-${this.group_id}`);
       this.attachEvents(app, mod, this.group_id);
     }

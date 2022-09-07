@@ -17,19 +17,28 @@ class ChatManager {
 		}
 
 		app.connection.on("chat-render-request", (group_id = "") => {
-		    if (group_id != "") {
-			let psq = "#chat-container-"+group_id;
-			let obj = document.querySelector(psq);
-			if (!obj) {
-			  let chat_popup = new ChatPopup(app, mod, group_id);
-			  chat_popup.render(app, mod, group_id);
-			} else {
-			  console.log("Chat Popup Exists");
+		    // if (group_id != "") {
+			// let psq = "#chat-container-"+group_id;
+			// let obj = document.querySelector(psq);
+			// if (!obj) {
+			//   let chat_popup = new ChatPopup(app, mod, group_id);
+			//   chat_popup.render(app, mod, group_id);
+			// } else {
+			//   console.log("Chat Popup Exists");
+			// }
+		    // }
+
+			if (!document.querySelector(".chat-manager")) {
+				this.render(app, mod, "")
+				"rendering chat manager"
 			}
-		    }
 		});
 
 		app.connection.on("chat-popup-render-request", (group_id="") => {
+			if (!document.querySelector(".chat-manager")) {
+				app.browser.addElementToSelector(ChatManagerTemplate(app, mod), "");
+				app.browser.makeDraggable("#chat-manager");
+			}
 		    if (group_id != "") {
 			let psq = "#chat-container-"+group_id;
 			let obj = document.querySelector(psq);
@@ -106,6 +115,7 @@ class ChatManager {
 		//
 		if (this.rendered == 0) {
 			if (mod.groups.length > 0) {
+				console.log(mod.groups, 'chat mod groups');
 				let gid = mod.groups[0].id;
 				//let psq = "#chat-container-"+gid;
 				//if (!document.querySelector(psq)) {
