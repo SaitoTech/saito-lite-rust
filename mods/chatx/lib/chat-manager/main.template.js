@@ -6,6 +6,9 @@ module.exports = ChatManagerTemplate = (app, mod) => {
       <div class="saito-list saito-white-background chat-manager-list">
       </div>
   </div>
+  <div class="chat-popup-list">
+  
+  </div>
 </div>
     `
 

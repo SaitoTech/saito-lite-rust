@@ -14,8 +14,8 @@ class Chatx extends ModTemplate {
 
         super(app);
         this.name = "Chat";
-	this.slug = "chat";
-	this.gamesmenufilter = "chatx"; // once chat is purged, remove in games-menu
+        this.slug = "chat";
+        this.gamesmenufilter = "chatx"; // once chat is purged, remove in games-menu
         this.description = "Saito instant-messaging client and application platform";
 
         this.groups = [];
@@ -32,7 +32,7 @@ class Chatx extends ModTemplate {
         this.inTransitImageMsgSig = null;
 
         this.added_identifiers_post_load = 0;
-	this.chat_manager = null;
+        this.chat_manager = null;
 
     }
 
@@ -52,10 +52,10 @@ class Chatx extends ModTemplate {
     respondTo(type) {
         switch (type) {
             case 'chat-manager':
-            	this.scripts['/chat/css/style.css'];
-      		super.render(this.app, this); // add scripts + styles
-      		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
-		return this.chat_manager;
+                this.scripts['/chat/css/style.css'];
+                super.render(this.app, this); // add scripts + styles
+                if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
+                return this.chat_manager;
             default:
                 return null;
         }
@@ -64,9 +64,9 @@ class Chatx extends ModTemplate {
 
 
     shouldAffixCallbackToModule(modname, tx = null) {
-      if (modname == this.name) { return 1; }
-      if (modname == "Chat") { return 1; }
-      return 0;
+        if (modname == this.name) { return 1; }
+        if (modname == "Chat") { return 1; }
+        return 0;
     }
 
 
@@ -76,25 +76,25 @@ class Chatx extends ModTemplate {
 
         app.connection.on("encrypt-key-exchange-confirm", (data) => {
 
-          if (data.members === undefined) {
-            return;
-          }
-          let newgroup = this.createChatGroup(data.members);
-console.log("CCC");
-          app.connection.emit('chat-render-request', {});
+            if (data.members === undefined) {
+                return;
+            }
+            let newgroup = this.createChatGroup(data.members);
+            console.log("CCC");
+            app.connection.emit('chat-render-request', {});
 
         });
 
 
         //
-	// note - we read this from the options file directly as
-	// the peers will not have yet initialized and thus will 
-	// not be able to inform us whether they support the chat
-	// service. TODO - fix later
-	//
- 	if (app.options?.peers?.length >= 1) {
-	  let peer = app.options.peers[0];
-          this.createChatGroup([peer.publickey], "Saito Community Chat");
+        // note - we read this from the options file directly as
+        // the peers will not have yet initialized and thus will 
+        // not be able to inform us whether they support the chat
+        // service. TODO - fix later
+        //
+        if (app.options?.peers?.length >= 1) {
+            let peer = app.options.peers[0];
+            this.createChatGroup([peer.publickey], "Saito Community Chat");
         }
 
 
@@ -116,20 +116,20 @@ console.log("CCC");
             this.createChatGroup(g[i].members, g[i].name);
         }
 
-console.log("DDD");
+        console.log("DDD");
         app.connection.emit('chat-render-request', {});
 
     }
 
     returnGroup(group_id) {
 
-      for (let i = 0; i < this.groups.length; i++) {
-        if (group_id === this.groups[i].id) {
-	  return this.groups[i];
+        for (let i = 0; i < this.groups.length; i++) {
+            if (group_id === this.groups[i].id) {
+                return this.groups[i];
+            }
         }
-      }
 
-      return null;
+        return null;
 
     }
 
@@ -173,9 +173,9 @@ console.log("DDD");
         if (peer.isMainPeer()) {
 
             for (let z = 0; z < this.groups.length; z++) {
-              if (this.groups[z].name === "Saito Community Chat") {
-		community_chat_group_id = this.groups[z].id;
-	      }
+                if (this.groups[z].name === "Saito Community Chat") {
+                    community_chat_group_id = this.groups[z].id;
+                }
             }
 
             // not a publickey but group_id gets archived as if it were one
@@ -193,28 +193,28 @@ console.log("DDD");
                             for (let i = 0; i < res.rows.length; i++) {
                                 let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
                                 let txmsg = tx.returnMessage();
-				let ins = true;
-		    		for (let z = 0; z < this.groups.length; z++) {
-		    		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
-					// no idea why ts differs so slightly
-			  	        if (this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) {
-console.log("potential double");
-					    let oldtxmsg = this.groups[z].txs[zz].returnMessage();
-console.log(oldtxmsg.timestamp + " --- vs --- " + txmsg.timestamp);
-					    if (txmsg.timestamp === oldtxmsg.timestamp) {
-console.log("confirmed duplicate");
-						ins = false;
-					    }
-					}
-		    		    }
-		    		}
-				if (ins) {
+                                let ins = true;
+                                for (let z = 0; z < this.groups.length; z++) {
+                                    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
+                                        // no idea why ts differs so slightly
+                                        if (this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) {
+                                            console.log("potential double");
+                                            let oldtxmsg = this.groups[z].txs[zz].returnMessage();
+                                            console.log(oldtxmsg.timestamp + " --- vs --- " + txmsg.timestamp);
+                                            if (txmsg.timestamp === oldtxmsg.timestamp) {
+                                                console.log("confirmed duplicate");
+                                                ins = false;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (ins) {
                                     this.binaryInsert(this.groups[this.groups.length - 1].txs, tx, (a, b) => {
                                         return a.transaction.ts - b.transaction.ts;
                                     })
-				}
+                                }
                             }
-        		    app.connection.emit('chat-render-request', {});
+                            app.connection.emit('chat-render-request', {});
 
                             //
                             // check identifiers
@@ -239,23 +239,23 @@ console.log("confirmed duplicate");
                         return 1;
                     }
 
-		    //app.connection.emit('chat-render-request', {});
+                    //app.connection.emit('chat-render-request', {});
 
-		    //
-		    // check identifiers
-		    //
-/*
-		    if (this.added_identifiers_post_load == 0) {
-		      try {
-			setTimeout(()=>{
-		          this.app.browser.addIdentifiersToDom();
-		          this.added_identifiers_post_load = 1;
-			}, 1200);
-		      } catch (err) {
-			console.log("error adding identifiers post-chat");
-		      }
-		    }
-*/
+                    //
+                    // check identifiers
+                    //
+                    /*
+                                if (this.added_identifiers_post_load == 0) {
+                                  try {
+                                setTimeout(()=>{
+                                      this.app.browser.addIdentifiersToDom();
+                                      this.added_identifiers_post_load = 1;
+                                }, 1200);
+                                  } catch (err) {
+                                console.log("error adding identifiers post-chat");
+                                  }
+                                }
+                    */
 
                 }
 
@@ -301,20 +301,20 @@ console.log("confirmed duplicate");
             let txmsg = txs[i].returnMessage();
             for (let z = 0; z < this.groups.length; z++) {
                 if (this.groups[z].id === txmsg.group_id) {
-		    let ins = true;
-		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
-			// why does ts differ slightly?
-			if (this.groups[z].txs[zz].transaction.sig === txs[i].transaction.sig) {
-console.log("potential dupe 2");
-			    let oldtxmsg = this.groups[z].txs[zz].returnMessage();
-console.log(oldtxmsg.timestamp + " --- vs --- " + txmsg.timestamp);
-			    if (txmsg.timestamp === oldtxmsg.timestamp) {
-console.log("confirmed duplicate");
-				ins = false;
-		            }
-		        }
-		    }
-		    if (ins) {
+                    let ins = true;
+                    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
+                        // why does ts differ slightly?
+                        if (this.groups[z].txs[zz].transaction.sig === txs[i].transaction.sig) {
+                            console.log("potential dupe 2");
+                            let oldtxmsg = this.groups[z].txs[zz].returnMessage();
+                            console.log(oldtxmsg.timestamp + " --- vs --- " + txmsg.timestamp);
+                            if (txmsg.timestamp === oldtxmsg.timestamp) {
+                                console.log("confirmed duplicate");
+                                ins = false;
+                            }
+                        }
+                    }
+                    if (ins) {
                         this.binaryInsert(this.groups[z].txs, txs[i], (a, b) => {
                             return a.transaction.ts - b.transaction.ts;
                         })
@@ -346,20 +346,20 @@ console.log("confirmed duplicate");
         //
         // render loaded messages
         //
-console.log("FFF");
+        console.log("FFF");
         app.connection.emit('chat-render-request', {});
 
     }
 
 
-    parseMsg(txs){
+    parseMsg(txs) {
         let msg = {};
         msg.message = "";
         try {
-          const reconstruct = Buffer.from((Buffer.from(txs.transaction.m).toString()), "base64").toString("utf-8");
-          msg = JSON.parse(reconstruct);
+            const reconstruct = Buffer.from((Buffer.from(txs.transaction.m).toString()), "base64").toString("utf-8");
+            msg = JSON.parse(reconstruct);
         } catch (err) {
-          console.error(err);
+            console.error(err);
         }
         return msg.message;
     }
@@ -413,7 +413,7 @@ console.log("FFF");
                 let modified_tx = new saito.default.transaction(modified_tx_obj);
                 modified_tx.transaction.ts = new Date().getTime();
 
-console.log("RECEIVE ONCHAIN");
+                console.log("RECEIVE ONCHAIN");
                 this.receiveChatTransaction(app, tx);
                 app.storage.saveTransactionByKey(txmsg.group_id, modified_tx);
             }
@@ -446,9 +446,9 @@ console.log("RECEIVE ONCHAIN");
                     // decrypt if needed
                     let tx2 = new saito.default.transaction(tx.transaction);
                     tx2.decryptMessage(app);
-console.log("RECEIVE P2P");
+                    console.log("RECEIVE P2P");
                     this.receiveChatTransaction(app, tx2);
-		    // only save onchain
+                    // only save onchain
                     //this.app.storage.saveTransaction(modified_tx);
 
                     if (mycallback) {
@@ -469,7 +469,7 @@ console.log("RECEIVE P2P");
                     //
                     if (routed_tx.isTo(app.wallet.returnPublicKey())) {
                         this.receiveChatTransaction(app, routed_tx);
-			// save when we receive onchain
+                        // save when we receive onchain
                         //this.app.storage.saveTransaction(routed_tx);
                     }
 
@@ -584,13 +584,13 @@ console.log("RECEIVE P2P");
     msgIsFrom(txs, publickey) {
         const x = [];
         if (txs.transaction.from != null) {
-          for (let v = 0; v < txs.transaction.from.length; v++) {
-            if (txs.transaction.from[v].add === publickey) {
-              x.push(txs.transaction.from[v]);
+            for (let v = 0; v < txs.transaction.from.length; v++) {
+                if (txs.transaction.from[v].add === publickey) {
+                    x.push(txs.transaction.from[v]);
+                }
             }
-          }
         }
-        return (x.length !==0);
+        return (x.length !== 0);
     }
 
 
@@ -670,7 +670,7 @@ console.log("RECEIVE P2P");
 
         let txmsg = tx.returnMessage();
 
-console.log("receiveChatTrans: " + JSON.stringify(txmsg));
+        console.log("receiveChatTrans: " + JSON.stringify(txmsg));
 
         //
         // if to someone else and encrypted
@@ -682,23 +682,23 @@ console.log("receiveChatTrans: " + JSON.stringify(txmsg));
             }
         }
 
-	//
-	//
-	//
+        //
+        //
+        //
         if (txmsg.group_id) {
- 	  for (let i = 0; i < this.groups.length; i++) {
-	    if (this.groups[i].id === txmsg.group_id) {
-console.log("found group at: " + i);
-	      for (let z = 0; z < this.groups[i].txs.length; z++) {
-		if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { return; }
-	      }
-  	      this.addTransactionToGroup(this.groups[i], tx);
-console.log("AAA");
-              app.connection.emit('chat-render-request', {});
-	      return;
-	    }
-	  }
-	}
+            for (let i = 0; i < this.groups.length; i++) {
+                if (this.groups[i].id === txmsg.group_id) {
+                    console.log("found group at: " + i);
+                    for (let z = 0; z < this.groups[i].txs.length; z++) {
+                        if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { return; }
+                    }
+                    this.addTransactionToGroup(this.groups[i], tx);
+                    console.log("AAA");
+                    app.connection.emit('chat-render-request', {});
+                    return;
+                }
+            }
+        }
 
 
         //
@@ -718,20 +718,20 @@ console.log("AAA");
             for (let i = 0; i < this.groups.length; i++) {
                 if (this.groups[i].id == group_id) {
                     add_new_group = 0;
-		    proper_group = this.groups[i];
+                    proper_group = this.groups[i];
                 }
             }
             if (add_new_group == 1) {
                 proper_group = this.createChatGroup(members);
             }
-	    if (proper_group) {
-	        this.addTransactionToGroup(proper_group, tx);
-console.log("BBB")
+            if (proper_group) {
+                this.addTransactionToGroup(proper_group, tx);
+                console.log("BBB")
                 app.connection.emit('chat-render-request', {});
-	    }
+            }
 
             return;
-	    
+
         }
 
     }
@@ -742,9 +742,9 @@ console.log("BBB")
     //////////////////
     openChatBox(group_id = null) {
 
-	if (this.chat_manager == null) {
-      	    this.chat_manager = new ChatManager(this.app, this);
-	}
+        if (this.chat_manager == null) {
+            this.chat_manager = new ChatManager(this.app, this);
+        }
 
         if (group_id == null) {
             let group = this.returnCommunityChat();
@@ -796,18 +796,18 @@ console.log("BBB")
             txs: [],
         });
 
-	return this.groups[this.groups.length-1];
+        return this.groups[this.groups.length - 1];
 
     }
 
 
     addTransactionToGroup(group, tx) {
-      for (let i = 0; i < group.txs.length; i++) {
-	if (group.txs[i].transaction.sig === tx.transaction.sig && group.txs[i].transaction.ts === tx.transaction.ts) {
-	  return;
-	}
-      }
-      group.txs.push(tx);
+        for (let i = 0; i < group.txs.length; i++) {
+            if (group.txs[i].transaction.sig === tx.transaction.sig && group.txs[i].transaction.ts === tx.transaction.ts) {
+                return;
+            }
+        }
+        group.txs.push(tx);
     }
 
     returnCommunityChat() {
