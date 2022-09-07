@@ -16,13 +16,28 @@ class ChatManager {
 			this.messages_in_groups[z] = this.mod.groups[z].txs.length;
 		}
 
-		app.connection.on("chat-render-request", (emptymsg) => {
-		    if (!document.querySelector(".chat-manager")) {
-			this.render(app, mod);
+		app.connection.on("chat-render-request", (group_id = "") => {
+console.log("RENDER REQUEST 2: " + group_id);
+		    if (group_id != "") {
+			let psq = "#chat-container-"+group_id;
+			let obj = document.querySelector(psq);
+console.log("does this exist? " + psq);
+			if (!obj) {
+console.log("creating a new popup...");
+alert("PRE POPUP CREATION AND RENDER");
+			  let chat_popup = new ChatPopup(app, mod, group_id);
+			  // but avoid render ?
+alert("STOPPING HERE 1");
+			  chat_popup.render(app, mod, group_id);
+alert("STOPPING HERE 2");
+			} else {
+			  console.log("Chat Popup Exists");
+			}
 		    }
 		});
 
-		app.connection.on("chat-popup-render-request", (group_id) => {
+		app.connection.on("chat-popup-render-request", (group_id="") => {
+		    if (group_id != "") {
 			let psq = "#chat-container-"+group_id;
 			let obj = document.querySelector(psq);
 			if (!obj) {
@@ -32,11 +47,14 @@ console.log("RENDER REQUEST 2");
 			} else {
 			  console.log("Chat Popup Exists");
 			}
+		    }
 		});
 
 	}
 
 	render(app, mod, selector = "") {
+
+console.log("CHAT MANAGER RENDER: !");
 
 		if (!document.querySelector(".chat-manager")) {
 			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
@@ -73,9 +91,12 @@ console.log("RENDER REQUEST 2");
 			let obj = document.getElementById(divid);
 
 			if (obj) {
+console.log("ZZZ REBI: "  + divid);
 				app.browser.replaceElementById(html, divid);
+alert("TESTING A");
 			} else {
 				app.browser.addElementToSelector(html, ".chat-manager-list");
+alert("TESTING B");
 			}
 
 			//
@@ -117,6 +138,7 @@ console.log("rendering chat popup in chat-mananger/main.js");
 		document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 			item.onclick = (e) => {
 				let group_id = e.currentTarget.getAttribute("data-id");
+console.log("CLICK X: " + group_id);
 				let chat_popup = new ChatPopup(app, mod, group_id);
 				chat_popup.render(app, mod, group_id);
 			}
