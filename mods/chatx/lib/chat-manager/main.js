@@ -30,7 +30,6 @@ class ChatManager {
 
 			if (!document.querySelector(".chat-manager")) {
 				this.render(app, mod, "")
-				"rendering chat manager"
 			}
 		});
 

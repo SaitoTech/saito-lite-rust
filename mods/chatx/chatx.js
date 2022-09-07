@@ -80,7 +80,7 @@ class Chatx extends ModTemplate {
             return;
           }
           let newgroup = this.createChatGroup(data.members);
-          app.connection.emit('chat-popup-render-request', newgroup.id);
+          app.connection.emit('chat-render-request', newgroup.id);
 
         });
 
@@ -699,7 +699,7 @@ return;
 	      if (ins) {
     	        this.addTransactionToGroup(this.groups[i], tx);
                 inserted = true;
-                app.connection.emit('chat-popup-render-request', txmsg.group_id);
+                app.connection.emit('chat-render-request', txmsg.group_id);
 	      }
 	    }
 	  }
@@ -731,7 +731,7 @@ return;
             }
 	    if (proper_group) {
 	        this.addTransactionToGroup(proper_group, tx);
-                app.connection.emit('chat-popup-render-request', proper_group.id);
+                app.connection.emit('chat-render-request', proper_group.id);
 	    }
 
             return;
@@ -769,6 +769,8 @@ return;
     // CHAT SPECIFIC //
     ///////////////////
     createChatGroup(members = null, name = null) {
+
+
 
         if (members == null) {
             return null;
