@@ -7,27 +7,23 @@ class ChatPopup {
     this.mod = mod;
     this.name = "ChatPopup";
     this.group_id = group_id;
-
-    app.connection.on("chat-render-request", (gid = "") => {
-      if (gid === this.group_id && gid != "" && this.group_id != "") {
-        let divid = "chat-container-" + gid;
-        app.browser.replaceElementById(ChatPopupTemplate(app, mod, gid), divid);
-        app.browser.makeDraggable(`chat-container-${gid}`);
-        this.attachEvents(app, mod, gid);
-      }	
-    });
-
-
   }
 
   render(app, mod, group_id = "") {
 
-    if (group_id != "" && this.group_id == "") { this.group_id = group_id; }
+    if (!document.getElementById(`chat-container-${group_id}`)) {
+      app.browser.addElementToSelector(ChatPopupTemplate(app, mod, group_id), ".chat-popup-list");
+      // app.browser.makeDraggable(`chat-container-${group_id}`);
 
-    if (!document.getElementById(`chat-container-${this.group_id}`)) {
-      app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
-      app.browser.makeDraggable(`chat-container-${this.group_id}`);
-      this.attachEvents(app, mod, this.group_id);
+      this.attachEvents(app, mod, group_id);
+
+      app.connection.on("chat-render-request", (message) => {
+        console.log("RENDER REQ 3");
+        let divid = "chat-container-" + group_id;
+        app.browser.replaceElementById(ChatPopupTemplate(app, mod, group_id), divid);
+        // app.browser.makeDraggable(`chat-container-${group_id}`);
+        this.attachEvents(app, mod, group_id);
+      });
     }
 
   }
@@ -52,10 +48,7 @@ class ChatPopup {
     // submit
     //
     let idiv = "chat-input-" + group_id;
-
     let msg_input = document.getElementById(idiv);
-
-
     msg_input.addEventListener("keydown", (e) => {
 
       if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
