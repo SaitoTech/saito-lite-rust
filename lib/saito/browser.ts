@@ -446,13 +446,17 @@ class Browser {
   }
 
   replaceElementById(html, id = null) {
+console.log("replace element by id: " + id);
     if (id == null) {
       this.app.browser.addElementToDom(html);
     } else {
+console.log("trying to get element by id: " + id);
       let obj = document.getElementById(id);
       if (obj) {
+console.log("can find so replacing");
         obj.outerHTML = html;
       } else {
+console.log("cannot find so adding");
 	this.app.browser.addElementToDom(html, id);
       }
     }
@@ -464,8 +468,10 @@ class Browser {
     } else {
       let obj = document.getElementById(id);
       if (obj) {
+console.log("add element by id 2: " + id);
 	this.app.browser.addElementToDom(html, obj);
       } else {
+console.log("NOT FOUND add element by id 2: " + id);
 	this.app.browser.addElementToDom(html);
       }
     }

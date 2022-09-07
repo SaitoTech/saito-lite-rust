@@ -5,6 +5,7 @@ module.exports = (app, mod, group_id) => {
 
     let group = mod.returnGroup(group_id);
     if (!group) { return ""; }
+    if (!group.name) { group.name = ""; }
 
     let message_blocks = mod.createMessageBlocks(group);
     

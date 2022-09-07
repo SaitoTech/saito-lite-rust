@@ -76,12 +76,11 @@ class Chatx extends ModTemplate {
 
         app.connection.on("encrypt-key-exchange-confirm", (data) => {
 
-            if (data.members === undefined) {
-                return;
-            }
-            let newgroup = this.createChatGroup(data.members);
-            console.log("CCC");
-            app.connection.emit('chat-render-request', {});
+          if (data.members === undefined) {
+            return;
+          }
+          let newgroup = this.createChatGroup(data.members);
+          app.connection.emit('chat-render-request', newgroup.id);
 
         });
 
@@ -113,11 +112,10 @@ class Chatx extends ModTemplate {
         //
         let g = this.app.keys.returnGroups();
         for (let i = 0; i < g.length; i++) {
-            this.createChatGroup(g[i].members, g[i].name);
+            newgroup = this.createChatGroup(g[i].members, g[i].name);
         }
 
-        console.log("DDD");
-        app.connection.emit('chat-render-request', {});
+        app.connection.emit('chat-render-request', "");
 
     }
 
@@ -193,28 +191,26 @@ class Chatx extends ModTemplate {
                             for (let i = 0; i < res.rows.length; i++) {
                                 let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
                                 let txmsg = tx.returnMessage();
-                                let ins = true;
-                                for (let z = 0; z < this.groups.length; z++) {
-                                    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
-                                        // no idea why ts differs so slightly
-                                        if (this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) {
-                                            console.log("potential double");
-                                            let oldtxmsg = this.groups[z].txs[zz].returnMessage();
-                                            console.log(oldtxmsg.timestamp + " --- vs --- " + txmsg.timestamp);
-                                            if (txmsg.timestamp === oldtxmsg.timestamp) {
-                                                console.log("confirmed duplicate");
-                                                ins = false;
-                                            }
-                                        }
-                                    }
-                                }
-                                if (ins) {
+				let ins = true;
+				let group_id = "";
+		    		for (let z = 0; z < this.groups.length; z++) {
+		    		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
+					// no idea why ts differs so slightly
+			  	        if (this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) {
+					    let oldtxmsg = this.groups[z].txs[zz].returnMessage();
+					    if (txmsg.timestamp === oldtxmsg.timestamp) {
+						ins = false;
+					    }
+					}
+		    		    }
+		    		}
+				if (ins) {
                                     this.binaryInsert(this.groups[this.groups.length - 1].txs, tx, (a, b) => {
                                         return a.transaction.ts - b.transaction.ts;
                                     })
                                 }
                             }
-                            app.connection.emit('chat-render-request', {});
+        		    app.connection.emit('chat-render-request', "");
 
                             //
                             // check identifiers
@@ -239,7 +235,7 @@ class Chatx extends ModTemplate {
                         return 1;
                     }
 
-                    //app.connection.emit('chat-render-request', {});
+		    //app.connection.emit('chat-render-request', "");
 
                     //
                     // check identifiers
@@ -346,8 +342,7 @@ class Chatx extends ModTemplate {
         //
         // render loaded messages
         //
-        console.log("FFF");
-        app.connection.emit('chat-render-request', {});
+        app.connection.emit('chat-render-request', "");
 
     }
 
@@ -394,6 +389,8 @@ class Chatx extends ModTemplate {
     // onchain messages --> eeceiveMessage()
     //
     onConfirmation(blk, tx, conf, app) {
+
+return;
 
         tx.decryptMessage(app);
         let txmsg = tx.returnMessage();
@@ -446,7 +443,6 @@ class Chatx extends ModTemplate {
                     // decrypt if needed
                     let tx2 = new saito.default.transaction(tx.transaction);
                     tx2.decryptMessage(app);
-                    console.log("RECEIVE P2P");
                     this.receiveChatTransaction(app, tx2);
                     // only save onchain
                     //this.app.storage.saveTransaction(modified_tx);
@@ -664,6 +660,13 @@ class Chatx extends ModTemplate {
 
     receiveChatTransaction(app, tx) {
 
+	//
+	// allows us to open popup windows on chat-render-request
+	//
+	// create but don't render
+	//
+        if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
+
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
         }
@@ -682,29 +685,31 @@ class Chatx extends ModTemplate {
             }
         }
 
-        //
-        //
-        //
+	//
+	// insert?
+	//
+        let inserted = false;
         if (txmsg.group_id) {
-            for (let i = 0; i < this.groups.length; i++) {
-                if (this.groups[i].id === txmsg.group_id) {
-                    console.log("found group at: " + i);
-                    for (let z = 0; z < this.groups[i].txs.length; z++) {
-                        if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { return; }
-                    }
-                    this.addTransactionToGroup(this.groups[i], tx);
-                    console.log("AAA");
-                    app.connection.emit('chat-render-request', {});
-                    return;
-                }
-            }
-        }
+	  let ins = true;
+ 	  for (let i = 0; i < this.groups.length; i++) {
+	    if (this.groups[i].id === txmsg.group_id) {
+	      for (let z = 0; z < this.groups[i].txs.length; z++) {
+		if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { return; }
+	      }
+	      if (ins) {
+    	        this.addTransactionToGroup(this.groups[i], tx);
+                inserted = true;
+                app.connection.emit('chat-render-request', txmsg.group_id);
+	      }
+	    }
+	  }
+	}
 
 
         //
         // no match on groups -- direct message
         //
-        if (tx.isTo(app.wallet.returnPublicKey())) {
+        if (tx.isTo(app.wallet.returnPublicKey()) && inserted == false) {
             let proper_group = null;
             let add_new_group = 1;
             let members = [];
@@ -724,11 +729,10 @@ class Chatx extends ModTemplate {
             if (add_new_group == 1) {
                 proper_group = this.createChatGroup(members);
             }
-            if (proper_group) {
-                this.addTransactionToGroup(proper_group, tx);
-                console.log("BBB")
-                app.connection.emit('chat-render-request', {});
-            }
+	    if (proper_group) {
+	        this.addTransactionToGroup(proper_group, tx);
+                app.connection.emit('chat-render-request', proper_group.id);
+	    }
 
             return;
 
@@ -785,7 +789,7 @@ class Chatx extends ModTemplate {
 
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i].id == id) {
-                return null;
+		return this.groups[i];
             }
         }
 
@@ -808,6 +812,17 @@ class Chatx extends ModTemplate {
             }
         }
         group.txs.push(tx);
+    }
+
+    returnChatByName(name="") {
+        for (let i = 0; i < this.groups.length; i++) {
+            if (this.app.options.peers.length > 0) {
+                if (this.groups[i].name === name) {
+                    return this.groups[i];
+                }
+            }
+        }
+        return this.groups[0];
     }
 
     returnCommunityChat() {

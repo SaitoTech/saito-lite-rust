@@ -43,6 +43,8 @@ span.redsquare-home-red-square+span {
   line-height: 2.2rem;
   white-space: pre-wrap;
   overflow-wrap: break-word;
+  max-height: 30rem;
+  overflow: auto;
 }
 
 .tweet a {
@@ -114,6 +116,8 @@ span.redsquare-home-red-square+span {
   background-color: white;
   position: relative;
   width: 50rem;
+  max-height: 95vh;
+  overflow-y: scroll;
 }
 
 .saito-sidebar.right {
