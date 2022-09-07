@@ -14,7 +14,7 @@
     bottom: 0;
     background-color: var(--saito-white);
     border-radius: .4rem;
-    z-index:10;
+    z-index:1000;
     position: relative;
 }
 
