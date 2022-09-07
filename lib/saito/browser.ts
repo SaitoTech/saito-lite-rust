@@ -468,10 +468,10 @@ console.log("cannot find so adding");
     } else {
       let obj = document.getElementById(id);
       if (obj) {
-consoe.log("add element by id 2: " + id);
+console.log("add element by id 2: " + id);
 	this.app.browser.addElementToDom(html, obj);
       } else {
-consoe.log("NOT FOUND add element by id 2: " + id);
+console.log("NOT FOUND add element by id 2: " + id);
 	this.app.browser.addElementToDom(html);
       }
     }
