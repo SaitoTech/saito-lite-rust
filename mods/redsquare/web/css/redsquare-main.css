@@ -280,7 +280,7 @@ span.redsquare-home-red-square+span {
   font-weight: bold;
   z-index: 1;
   float: left;
-  margin-right: .2rem;
+  margin-right: 0.6rem;
   color: rgba(83, 100, 113, 0.8);
   font-size: 1.5rem;
 }
