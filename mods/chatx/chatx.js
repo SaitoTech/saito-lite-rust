@@ -197,7 +197,15 @@ console.log("DDD");
 		    		for (let z = 0; z < this.groups.length; z++) {
 		    		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
 					// no idea why ts differs so slightly
-			  	        if (Math.abs(this.groups[z].txs[zz].transaction.ts - tx.transaction.ts) < 100 && this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) { ins = false; }
+			  	        if (this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) {
+console.log("potential double");
+					    let oldtxmsg = this.groups[z].txs[zz].returnMessage();
+console.log(oldtxmsg.timestamp + " --- vs --- " + txmsg.timestamp);
+					    if (txmsg.timestamp === oldtxmsg.timestamp) {
+console.log("confirmed duplicate");
+						ins = false;
+					    }
+					}
 		    		    }
 		    		}
 				if (ins) {
@@ -296,7 +304,15 @@ console.log("DDD");
 		    let ins = true;
 		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
 			// why does ts differ slightly?
-			if (Math.abs(this.groups[z].txs[zz].transaction.ts - txs[i].transaction.ts) < 100 && this.groups[z].txs[zz].transaction.sig === txs[i].transaction.sig) { ins = false; }
+			if (this.groups[z].txs[zz].transaction.sig === txs[i].transaction.sig) {
+console.log("potential dupe 2");
+			    let oldtxmsg = this.groups[z].txs[zz].returnMessage();
+console.log(oldtxmsg.timestamp + " --- vs --- " + txmsg.timestamp);
+			    if (txmsg.timestamp === oldtxmsg.timestamp) {
+console.log("confirmed duplicate");
+				ins = false;
+		            }
+		        }
 		    }
 		    if (ins) {
                         this.binaryInsert(this.groups[z].txs, txs[i], (a, b) => {
