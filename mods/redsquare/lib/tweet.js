@@ -13,16 +13,11 @@ class RedSquareTweet {
     //
     // store tx
     //
-    console.log(tx)
     this.tx = tx;
+
     this.sender = tx.transaction.from[0].add;
     this.created_at = tx.transaction.ts;
     this.updated_at = tx.transaction.ts;
-    if (tx?.optional?.rank) {
-      this.rank = tx.optional.rank;
-    } else {
-      this.rank = 0;
-    }
 
     this.parent_tweet = null;
     this.parent_id = "";
@@ -355,12 +350,13 @@ class RedSquareTweet {
     //
     sel = ".tweet-reply-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
+
       e.preventDefault();
       e.stopImmediatePropagation();
+
       let ptweet = new PostTweet(app, mod, tweet_self);
       ptweet.parent_id = this.tx.transaction.sig;
       ptweet.thread_id = this.thread_id;
-      ptweet.tweet_creation_date = this.tx.transaction.ts
       ptweet.render(app, mod);
 
       let html = TweetTemplate(app, mod, this, 0);
@@ -396,7 +392,6 @@ class RedSquareTweet {
       rtweet.tweet_id = this.tx.transaction.sig;
       rtweet.parent_id = this.parent_id;
       rtweet.thread_id = this.thread_id;
-      rtweet.tweet_creation_date = this.tx.transaction.ts
       rtweet.render(app, mod, tweet_self);
 
       let html = TweetTemplate(app, mod, this, 0);
@@ -420,7 +415,7 @@ class RedSquareTweet {
     document.querySelector(sel).onclick = (e) => {
       e.preventDefault();
       e.stopImmediatePropagation();
-      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig, created_at: this.created_at });
+      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig });
 
       // increase num likes
       sel = ".tweet-tool-like-count-" + this.tx.transaction.sig;
@@ -438,9 +433,12 @@ class RedSquareTweet {
     //
     sel = ".tweet-flag-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
+
       e.preventDefault();
       e.stopImmediatePropagation();
+
       mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig });
+
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");
       document.querySelector('#tweet-box-' + this.tx.transaction.sig).style.display = 'none';
