@@ -30,7 +30,6 @@ console.log("RENDERING IN POPUP w: " + gid);
 
 console.log("RENDER in lib/popup.js triggered for group_id: " + this.group_id);
       app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
-alert("ADDED AND HALT");
       app.browser.makeDraggable(`chat-container-${this.group_id}`);
 
       this.attachEvents(app, mod, this.group_id);

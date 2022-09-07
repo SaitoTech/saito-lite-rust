@@ -24,12 +24,9 @@ console.log("RENDER REQUEST 2: " + group_id);
 console.log("does this exist? " + psq);
 			if (!obj) {
 console.log("creating a new popup...");
-alert("PRE POPUP CREATION AND RENDER");
 			  let chat_popup = new ChatPopup(app, mod, group_id);
 			  // but avoid render ?
-alert("STOPPING HERE 1");
 			  chat_popup.render(app, mod, group_id);
-alert("STOPPING HERE 2");
 			} else {
 			  console.log("Chat Popup Exists");
 			}
@@ -93,10 +90,8 @@ console.log("CHAT MANAGER RENDER: !");
 			if (obj) {
 console.log("ZZZ REBI: "  + divid);
 				app.browser.replaceElementById(html, divid);
-alert("TESTING A");
 			} else {
 				app.browser.addElementToSelector(html, ".chat-manager-list");
-alert("TESTING B");
 			}
 
 			//
