@@ -17,13 +17,10 @@ class ChatManager {
 		}
 
 		app.connection.on("chat-render-request", (group_id = "") => {
-console.log("RENDER REQUEST 2: " + group_id);
 		    if (group_id != "") {
 			let psq = "#chat-container-"+group_id;
 			let obj = document.querySelector(psq);
-console.log("does this exist? " + psq);
 			if (!obj) {
-console.log("creating a new popup...");
 			  let chat_popup = new ChatPopup(app, mod, group_id);
 			  // but avoid render ?
 			  chat_popup.render(app, mod, group_id);
@@ -38,7 +35,6 @@ console.log("creating a new popup...");
 			let psq = "#chat-container-"+group_id;
 			let obj = document.querySelector(psq);
 			if (!obj) {
-console.log("RENDER REQUEST 2");
 			  let chat_popup = new ChatPopup(app, mod, group_id);
 			  chat_popup.render(app, mod, group_id);
 			} else {
@@ -50,8 +46,6 @@ console.log("RENDER REQUEST 2");
 	}
 
 	render(app, mod, selector = "") {
-
-console.log("CHAT MANAGER RENDER: !");
 
 		if (!document.querySelector(".chat-manager")) {
 			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
@@ -88,7 +82,6 @@ console.log("CHAT MANAGER RENDER: !");
 			let obj = document.getElementById(divid);
 
 			if (obj) {
-console.log("ZZZ REBI: "  + divid);
 				app.browser.replaceElementById(html, divid);
 			} else {
 				app.browser.addElementToSelector(html, ".chat-manager-list");
@@ -117,7 +110,6 @@ console.log("ZZZ REBI: "  + divid);
 				let gid = mod.groups[0].id;
 			        //let psq = "#chat-container-"+gid;
 				//if (!document.querySelector(psq)) {
-console.log("rendering chat popup in chat-mananger/main.js");
 				      let chat_popup = new ChatPopup(app, mod, gid);
 				      chat_popup.render(app, mod, gid);
 			        //}
@@ -133,7 +125,6 @@ console.log("rendering chat popup in chat-mananger/main.js");
 		document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 			item.onclick = (e) => {
 				let group_id = e.currentTarget.getAttribute("data-id");
-console.log("CLICK X: " + group_id);
 				let chat_popup = new ChatPopup(app, mod, group_id);
 				chat_popup.render(app, mod, group_id);
 			}

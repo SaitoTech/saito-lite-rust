@@ -420,6 +420,9 @@ class Chat extends ModTemplate {
     //
     onConfirmation(blk, tx, conf, app) {
 
+	// 
+	// CHAT mod deprecated by CHATX
+	//
 return;
 
         tx.decryptMessage(app);
@@ -454,6 +457,14 @@ return;
     // peer messages --> receiveMessage()
     //
     async handlePeerRequest(app, req, peer, mycallback) {
+
+	// 
+	// CHAT mod deprecated
+	//
+	let arcade_mod = app.modules.returnModule("Arcade");
+	if (!arcade_mod.browser_active) { return; }
+
+
         if (req.request == null) {
             return;
         }
