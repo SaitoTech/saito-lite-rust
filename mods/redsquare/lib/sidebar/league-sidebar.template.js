@@ -12,16 +12,33 @@ module.exports = RedSquareLeagueSidebarTemplate = (app, mod) => {
 		var leagues = league_mod.leagues.sort((a,b) => a.myRank < b.myRank);
 		let cnt = 0;
 
-        for (let l of league_mod.leagues){
-          html += `<div id="league_${l.id}" class="saito-table-row rs-league-sidebar-ranking${(cnt%2 == 1)?" odd":""}">
-                          <div class="saito-table-gamename">${l.name}</div>
-                          <div class="saito-table-rank">${(l.myRank <= 0)?"Unranked":l.myRank}</div>
-                      </div>`;
-          cnt++;
-        }
+		//Show leagues with a ranking then list leagues without
+		 
+		if (league_mod.leagues.length > 0){
+			var leagues = league_mod.leagues.sort((a,b) => a.myRank < b.myRank);
+			leagues.forEach(l => {
+				if (l.myRank > 0) {
+					html += `<div class="saito-table-row">
+					<div class="saito-table-gamename">${l.name}</div>
+					<div class="saito-table-rank">${l.myRank}</div>
+				</div>`;
+				}
+			});
+			leagues.forEach(l => {
+				if (l.myRank <= 0) {
+					html += `<div class="saito-table-row">
+					<div class="saito-table-gamename">${l.name}</div>
+					<div class="saito-table-rank saito-deemphasize">Unranked</div>
+				</div>`;
+				}
+			});
+	
+		  }
 
 	  }
 	  //What's this for???
+	  //Call to action (to get folks to play) - when games supports it.
+
 	  html += `
 	   <!--div class="saito-table-row">
 	     <div></div>

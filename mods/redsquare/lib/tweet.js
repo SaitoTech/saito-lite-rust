@@ -351,7 +351,7 @@ class RedSquareTweet {
       //
       // trap links in tweets
       //
-      if (e.target.classList.contains('tweet-link')) {
+      if (e.target.classList.contains('saito-treated-link')) {
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
         e.preventDefault();
@@ -390,7 +390,7 @@ console.log("OPEN TWEET: " + JSON.stringify(e.target.classList));
         let imgdata_uri = img.style.backgroundImage.slice(4, -1).replace(/"/g, "");
         
         let imgId = Math.floor(Math.random()*10000);
-        tweet_self.img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont-"+imgId+"'></div>");
+        tweet_self.img_overlay.show(app, mod, "<div class='tweet-overlay-img-cont' id='tweet-overlay-img-cont-"+imgId+"'></div>");
 
         let oImg = document.createElement("img");
         oImg.setAttribute('src', imgdata_uri);

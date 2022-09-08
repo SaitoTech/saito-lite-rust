@@ -576,10 +576,11 @@ span.redsquare-home-red-square+span {
 }
 
 
-#tweet-overlay-img-cont img {
-  height: 70vh;
+.tweet-overlay-img-cont img {
+  height: 60vh;
   width: 60vw;
   object-fit: contain;
+  margin:2rem;
 }
 
 /* Hacks to stop old arcade and chat content from ruining display */
