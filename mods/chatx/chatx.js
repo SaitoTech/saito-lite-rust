@@ -112,7 +112,7 @@ class Chatx extends ModTemplate {
         //
         let g = this.app.keys.returnGroups();
         for (let i = 0; i < g.length; i++) {
-            newgroup = this.createChatGroup(g[i].members, g[i].name);
+            let newgroup = this.createChatGroup(g[i].members, g[i].name);
         }
 
         app.connection.emit('chat-render-request', "");
@@ -699,6 +699,7 @@ return;
 	      if (ins) {
     	        this.addTransactionToGroup(this.groups[i], tx);
                 inserted = true;
+console.log("emitting render request with group id: " + txmsg.group_id);
                 app.connection.emit('chat-render-request', txmsg.group_id);
 	      }
 	    }
@@ -731,6 +732,7 @@ return;
             }
 	    if (proper_group) {
 	        this.addTransactionToGroup(proper_group, tx);
+console.log("emitting render request 2 with group id: " + proper_group.id);
                 app.connection.emit('chat-render-request', proper_group.id);
 	    }
 
@@ -828,7 +830,7 @@ return;
     returnCommunityChat() {
         for (let i = 0; i < this.groups.length; i++) {
             if (this.app.options.peers.length > 0) {
-                if (this.groups[i].name === "Community Chat") {
+                if (this.groups[i].name === "Saito Community Chat") {
                     return this.groups[i];
                 }
             }
