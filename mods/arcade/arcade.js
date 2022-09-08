@@ -418,7 +418,7 @@ class Arcade extends ModTemplate {
     }
 
     //We only nope out for service-nodes here because we want those to process joinGameOnOpenList
-    if (this.app.BROWSER == 0){
+    if (this.app.BROWSER == 0 || !accepted_game.msg.players.includes(app.wallet.returnPublicKey())){
       return;
     }
 
@@ -891,7 +891,7 @@ class Arcade extends ModTemplate {
     let expires_at = created_at + 60000 * parseInt(valid_for_minutes);
     let acceptance_sig = "/";
     if (txmsg.players_sigs.length > 0) {
-      acceptance_sig = txmsg.players_sigs[0];
+      acceptance_sig += txmsg.players_sigs[0];
     }
     players_array += acceptance_sig;
 

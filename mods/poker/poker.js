@@ -1,10 +1,10 @@
-const GameTemplate = require("../../lib/templates/gametemplate");
+const GameTableTemplate = require("../../lib/templates/gametabletemplate");
 const JSON = require("json-bigint");
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Poker extends GameTemplate {
+class Poker extends GameTableTemplate {
   constructor(app) {
     super(app);
 
