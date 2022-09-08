@@ -699,6 +699,7 @@ return;
 	      if (ins) {
     	        this.addTransactionToGroup(this.groups[i], tx);
                 inserted = true;
+console.log("emitting render request with group id: " + txmsg.group_id);
                 app.connection.emit('chat-render-request', txmsg.group_id);
 	      }
 	    }
@@ -731,6 +732,7 @@ return;
             }
 	    if (proper_group) {
 	        this.addTransactionToGroup(proper_group, tx);
+console.log("emitting render request 2 with group id: " + proper_group.id);
                 app.connection.emit('chat-render-request', proper_group.id);
 	    }
 
@@ -769,8 +771,6 @@ return;
     // CHAT SPECIFIC //
     ///////////////////
     createChatGroup(members = null, name = null) {
-
-
 
         if (members == null) {
             return null;

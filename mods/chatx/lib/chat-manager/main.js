@@ -17,27 +17,23 @@ class ChatManager {
 		}
 
 		app.connection.on("chat-render-request", (group_id = "") => {
-		    // if (group_id != "") {
-			// let psq = "#chat-container-"+group_id;
-			// let obj = document.querySelector(psq);
-			// if (!obj) {
-			//   let chat_popup = new ChatPopup(app, mod, group_id);
-			//   chat_popup.render(app, mod, group_id);
-			// } else {
-			//   console.log("Chat Popup Exists");
-			// }
-		    // }
-
-			if (!document.querySelector(".chat-manager")) {
-				this.render(app, mod, "")
-			}
+		     if (group_id != "") {
+		         let psq = "#chat-container-"+group_id;
+		         let obj = document.querySelector(psq);
+			 if (!obj) {
+			   let chat_popup = new ChatPopup(app, mod, group_id);
+			   chat_popup.render(app, mod, group_id);
+			 } else {
+			   console.log("Chat Popup Exists");
+			 }
+		     }
 		});
 
 		app.connection.on("chat-popup-render-request", (group_id="") => {
-			if (!document.querySelector(".chat-manager")) {
-				app.browser.addElementToSelector(ChatManagerTemplate(app, mod), "");
-				app.browser.makeDraggable("#chat-manager");
-			}
+		    if (!document.querySelector(".chat-manager")) {
+			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), "");
+			app.browser.makeDraggable("#chat-manager");
+		    }
 		    if (group_id != "") {
 			let psq = "#chat-container-"+group_id;
 			let obj = document.querySelector(psq);
@@ -84,7 +80,6 @@ class ChatManager {
 			}
 
 			let html = SaitoUserWithTime(app, mod, group.name, last_msg, "12:00", group.id);
-
 			let divid = "saito-user-" + group.id;
 			let obj = document.getElementById(divid);
 
@@ -99,11 +94,6 @@ class ChatManager {
 			//
 			if (z > this.messages_in_groups.length) {
 				this.messages_in_groups[z] = 0;
-			}
-			if (group.txs.length > this.messages_in_groups[z]) {
-				//  let group_id = group.id;
-				//  let chat_popup = new ChatPopup(app, mod, group_id);
-				//  chat_popup.render(app, mod, group_id);
 			}
 
 		}
