@@ -770,6 +770,51 @@ initializeGame(game_id) {
       this.game.options.poliovaccine = 1;
       this.game.options.communistrevolution = 1;
 
+      this.placeInfluence("mexico", 2, "us");
+      this.placeInfluence("cuba", 3, "ussr");
+      this.placeInfluence("panama", 4, "ussr");
+      this.placeInfluence("costarica", 3, "us");
+
+      this.placeInfluence("venezuela", 2, "us");
+      this.placeInfluence("brazil", 2, "us");
+      this.placeInfluence("chile", 3, "ussr");
+      this.placeInfluence("argentina", 2, "ussr");
+
+      this.placeInfluence("algeria", 2, "us");
+      this.placeInfluence("nigeria", 2, "us");
+      this.placeInfluence("zaire", 2, "ussr");
+      this.placeInfluence("angola", 2, "us");
+      this.placeInfluence("southafrica", 5, "us");
+      this.placeInfluence("botswana", 2, "us");
+      this.placeInfluence("seafricanstates", 2, "ussr");
+
+      this.placeInfluence("libya", 2, "us");
+      this.placeInfluence("egypt", 2, "us");
+      this.placeInfluence("israel", 5, "us");
+      this.placeInfluence("lebanon", 2, "us");
+      this.placeInfluence("jordan", 2, "us");
+      this.placeInfluence("iran", 3, "ussr");
+      this.placeInfluence("iraq", 3, "ussr");
+      this.placeInfluence("saudiarabia", 3, "ussr");
+      this.placeInfluence("syria", 3, "ussr");
+
+      this.placeInfluence("pakistan", 2, "ussr");
+      this.placeInfluence("india", 3, "ussr");
+      this.placeInfluence("northkorea", 3, "ussr");
+      this.placeInfluence("vietnam", 3, "ussr");
+      this.placeInfluence("afghanistan", 5, "us");
+      this.placeInfluence("burma", 2, "ussr");
+      this.placeInfluence("laos", 2, "ussr");
+      this.placeInfluence("thailand", 4, "us");
+      this.placeInfluence("malaysia", 3, "us");
+      this.placeInfluence("indonesia", 3, "us");
+      this.placeInfluence("philippines", 3, "us");
+      this.placeInfluence("japan", 4, "us");
+      this.placeInfluence("southkorea", 3, "us");
+      this.placeInfluence("taiwan", 3, "us");
+
+
+
       this.game.options.deck = "endofhistory";
       let a = this.returnEarlyWarCards();
       let b = this.returnMidWarCards();
@@ -1418,7 +1463,7 @@ try {
           let valid_targets = 0;
           for (let c in twilight_self.countries) {
         
-            if ( twilight_self.countries[c].bg == 0 && (twilight_self.countries[c].region == "africa" || twilight_self.countries[c].region == "camerica" || twilight_self.countries[c].region == "samerica") && twilight_self.countries[c].us > 0 ) {
+            if ( twilight_self.countries[c].bg == 0 && (twilight_self.countries[c].region === "africa" || twilight_self.countries[c].region === "camerica" || twilight_self.countries[c].region === "samerica") && twilight_self.countries[c].us > 0 ) {
               //Must be a new target for second attempt
               if (c !== target1){
                 valid_targets++;
@@ -2573,7 +2618,7 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["aldrichames", "asia", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["summit", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
@@ -7322,9 +7367,9 @@ playerTurnHeadlineSelected(card, player) {
 
 
   /*
-  Necessary for summit card
+  Necessary for summit card -- note formosan revolution adjacency not counted
   */
-  doesPlayerDominateRegion(player, region) {
+  doesPlayerDominateRegionForSummit(player, region) {
 
     let total_us = 0;
     let total_ussr = 0;
@@ -7337,7 +7382,7 @@ playerTurnHeadlineSelected(card, player) {
     ////////////
     // EUROPE //
     ////////////
-    if (region == "europe") {
+    if (region === "europe") {
 
       if (this.isControlled("us", "italy") == 1) { bg_us++; }
       if (this.isControlled("ussr", "italy") == 1) { bg_ussr++; }
@@ -7392,8 +7437,8 @@ playerTurnHeadlineSelected(card, player) {
       if (bg_us > bg_ussr && total_us > bg_us && total_us > total_ussr) { vp_us = 7; }
       if (bg_ussr > bg_us && total_ussr > bg_ussr && total_ussr > total_us) { vp_ussr = 7; }
 
-      if (total_us == 6 && total_us > total_ussr) { vp_us = 10000; }
-      if (total_ussr == 6 && total_us > total_ussr) { vp_ussr = 10000; }
+      if (bg_us > bg_ussr && total_us == 6 && total_us > total_ussr) { vp_us = 10000; }
+      if (bg_ussr > bg_us && total_ussr == 6 && total_us > total_ussr) { vp_ussr = 10000; }
 
       vp_us = vp_us + bg_us;
       vp_ussr = vp_ussr + bg_ussr;
@@ -7413,7 +7458,7 @@ playerTurnHeadlineSelected(card, player) {
     /////////////////
     // MIDDLE EAST //
     /////////////////
-    if (region == "mideast") {
+    if (region === "mideast") {
 
       if (this.isControlled("us", "libya") == 1) { bg_us++; }
       if (this.isControlled("ussr", "libya") == 1) { bg_ussr++; }
@@ -7446,8 +7491,8 @@ playerTurnHeadlineSelected(card, player) {
       if (bg_us > bg_ussr && total_us > bg_us && total_us > total_ussr) { vp_us = 5; }
       if (bg_ussr > bg_us && total_ussr > bg_ussr && total_ussr > total_us) { vp_ussr = 5; }
 
-      if (total_us == 7 && total_us > total_ussr) { vp_us = 7; }
-      if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 7; }
+      if (bg_us > bg_ussr && total_us == 7 && total_us > total_ussr) { vp_us = 7; }
+      if (bg_ussr > bg_us && total_ussr == 7 && total_us > total_ussr) { vp_ussr = 7; }
 
       vp_us = vp_us + bg_us;
       vp_ussr = vp_ussr + bg_ussr;
@@ -7467,7 +7512,7 @@ playerTurnHeadlineSelected(card, player) {
     ////////////
     // AFRICA //
     ////////////
-    if (region == "africa") {
+    if (region === "africa") {
 
       if (this.isControlled("us", "algeria") == 1) { bg_us++; }
       if (this.isControlled("ussr", "algeria") == 1) { bg_ussr++; }
@@ -7516,8 +7561,8 @@ playerTurnHeadlineSelected(card, player) {
       if (bg_us > bg_ussr && total_us > bg_us && total_us > total_ussr) { vp_us = 4; }
       if (bg_ussr > bg_us && total_ussr > bg_ussr && total_ussr > total_us) { vp_ussr = 4; }
 
-      if (total_us == 7 && total_us > total_ussr) { vp_us = 6; }
-      if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 6; }
+      if (bg_us > bg_ussr && total_us == 7 && total_us > total_ussr) { vp_us = 6; }
+      if (bg_ussr > bg_us && total_ussr == 7 && total_us > total_ussr) { vp_ussr = 6; }
 
       vp_us = vp_us + bg_us;
       vp_ussr = vp_ussr + bg_ussr;
@@ -7537,7 +7582,7 @@ playerTurnHeadlineSelected(card, player) {
     /////////////////////
     // CENTRAL AMERICA //
     /////////////////////
-    if (region == "camerica") {
+    if (region === "camerica") {
 
       if (this.isControlled("us", "mexico") == 1) { bg_us++; }
       if (this.isControlled("ussr", "mexico") == 1) { bg_ussr++; }
@@ -7570,8 +7615,8 @@ playerTurnHeadlineSelected(card, player) {
       if (bg_us > bg_ussr && total_us > bg_us && total_us > total_ussr) { vp_us = 3; }
       if (bg_ussr > bg_us && total_ussr > bg_ussr && total_ussr > total_us) { vp_ussr = 3; }
 
-      if (total_us == 7 && total_us > total_ussr) { vp_us = 5; }
-      if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 5; }
+      if (bg_us > bg_ussr && total_us == 7 && total_us > total_ussr) { vp_us = 5; }
+      if (bg_ussr > bg_us && total_ussr == 7 && total_us > total_ussr) { vp_ussr = 5; }
 
       vp_us = vp_us + bg_us;
       vp_ussr = vp_ussr + bg_ussr;
@@ -7591,7 +7636,7 @@ playerTurnHeadlineSelected(card, player) {
     ///////////////////
     // SOUTH AMERICA //
     ///////////////////
-    if (region == "samerica") {
+    if (region === "samerica") {
 
       if (this.isControlled("us", "venezuela") == 1) { bg_us++; }
       if (this.isControlled("ussr", "venezuela") == 1) { bg_ussr++; }
@@ -7624,8 +7669,8 @@ playerTurnHeadlineSelected(card, player) {
       if (bg_us > bg_ussr && total_us > bg_us && total_us > total_ussr) { vp_us = 5; }
       if (bg_ussr > bg_us && total_ussr > bg_ussr && total_ussr > total_us) { vp_ussr = 5; }
 
-      if (total_us == 7 && total_us > total_ussr) { vp_us = 6; }
-      if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 6; }
+      if (bg_us > bg_ussr && total_us == 7 && total_us > total_ussr) { vp_us = 6; }
+      if (bg_ussr > bg_us && total_ussr == 7 && total_us > total_ussr) { vp_ussr = 6; }
 
       vp_us = vp_us + bg_us;
       vp_ussr = vp_ussr + bg_ussr;
@@ -7647,7 +7692,7 @@ playerTurnHeadlineSelected(card, player) {
     //////////
     // ASIA //
     //////////
-    if (region == "asia") {
+    if (region === "asia") {
 
       if (this.isControlled("us", "northkorea") == 1) { bg_us++; }
       if (this.isControlled("ussr", "northkorea") == 1) { bg_ussr++; }
@@ -7661,9 +7706,6 @@ playerTurnHeadlineSelected(card, player) {
       if (this.isControlled("ussr", "india") == 1) { bg_ussr++; }
       if (this.isControlled("us", "pakistan") == 1) { bg_us++; }
       if (this.isControlled("ussr", "pakistan") == 1) { bg_ussr++; }
-      if (this.game.state.events.formosan == 1) {
-        if (this.isControlled("us", "taiwan") == 1) { bg_us++; }
-      }
 
       total_us = bg_us;
       total_ussr = bg_ussr;
@@ -7686,24 +7728,18 @@ playerTurnHeadlineSelected(card, player) {
       if (this.isControlled("ussr", "philippines") == 1) { total_ussr++; }
 
       if (total_us > 0) { vp_us = 3; }
-      if (total_ussr> 0) { vp_ussr = 3; }
+      if (total_ussr > 0) { vp_ussr = 3; }
 
       if (bg_us > bg_ussr && total_us > bg_us && total_us > total_ussr) { vp_us = 7; }
       if (bg_ussr > bg_us && total_ussr > bg_ussr && total_ussr > total_us) { vp_ussr = 7; }
 
-      if (this.game.state.events.formosan == 1) {
-        if (total_us == 7 && total_us > total_ussr) { vp_us = 9; }
-        if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 9; }
-      } else {
-        if (total_us == 6 && total_us > total_ussr) { vp_us = 9; }
-        if (total_ussr == 6 && total_us > total_ussr) { vp_ussr = 9; }
-      }
+      if (bg_us > bg_ussr && total_us == 6 && total_us > total_ussr) { vp_us = 9; }
+      if (bg_ussr > bg_us && total_ussr == 6 && total_us > total_ussr) { vp_ussr = 9; }
 
       vp_us = vp_us + bg_us;
       vp_ussr = vp_ussr + bg_ussr;
 
       if ((vp_us > vp_ussr+2 && total_us > bg_us && bg_us > 0) || (bg_us >= 6 && total_us > total_ussr)) {
-      	if (bg_us == 6 && this.isControlled("us", "taiwan") == 1 && this.game.state.events.formosan == 1) { return 0; }
         if (player == "us") { return 1; }
         if (player == "ussr") { return 0; }
       }
@@ -12882,25 +12918,65 @@ playerTurnHeadlineSelected(card, player) {
 
       let us_roll = this.rollDice(6);
       let ussr_roll = this.rollDice(6);
+
+      this.updateLog(`${this.cardToText(card)}: US rolls ${us_roll}`);
+      this.updateLog(`${this.cardToText(card)}: USSR rolls ${ussr_roll}`); 
+
       let usbase = us_roll;
       let ussrbase = ussr_roll;
 
-      if (this.doesPlayerDominateRegion("ussr", "europe") == 1)   { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "mideast") == 1)  { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "asia") == 1)     { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "africa") == 1)   { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "camerica") == 1) { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "samerica") == 1) { ussr_roll++; }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "europe") == 1)   { 
+	this.updateLog("Europe: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "mideast") == 1)  {
+	this.updateLog("Middle-East: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "asia") == 1)     {
+	this.updateLog("Asia: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "africa") == 1)   {
+	this.updateLog("Africa: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "camerica") == 1) {
+	this.updateLog("Central America: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "samerica") == 1) {
+	this.updateLog("South America: USSR +1 bonus");
+	ussr_roll++; 
+      }
 
-      if (this.doesPlayerDominateRegion("us", "europe") == 1)   { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "mideast") == 1)  { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "asia") == 1)     { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "africa") == 1)   { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "camerica") == 1) { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "samerica") == 1) { us_roll++; }
+      if (this.doesPlayerDominateRegionForSummit("us", "europe") == 1)   { 
+	this.updateLog("Europe: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "mideast") == 1)  {
+	this.updateLog("Middle-East: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "asia") == 1)     {
+	this.updateLog("Asia: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "africa") == 1)   {
+	this.updateLog("Africa: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "camerica") == 1) {
+	this.updateLog("Central America: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "samerica") == 1) {
+	this.updateLog("South America: US +1 bonus");
+	us_roll++;
+      }
 
-      this.updateLog(`${this.cardToText(card)}: US rolls ${usbase} (${(us_roll - usbase)}) and USSR rolls ${ussrbase} (${(ussr_roll-ussrbase)})`);
-
+      this.updateLog(`${this.cardToText(card)}: US result ${us_roll} (+${(us_roll - usbase)} bonus)`);
+      this.updateLog(`${this.cardToText(card)}: USSR result ${ussr_roll} (+${(ussr_roll - ussrbase)} bonus)`);
 
       if (us_roll === ussr_roll) {
         this.updateLog(`${this.cardToText(card)}: no winner`);
@@ -12918,7 +12994,6 @@ playerTurnHeadlineSelected(card, player) {
 
         if (this.game.player === winner) {
 
-          //If the event card has a UI component, run the clock for the player we are waiting on
           this.startClock();
 
           let twilight_self = this;
