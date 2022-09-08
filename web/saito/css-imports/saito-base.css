@@ -44,7 +44,8 @@ pre {
 }
 
 .saito-treated-link {
-  max-width: 50rem;
+  width: 50rem;
+  max-width: 80vw;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
