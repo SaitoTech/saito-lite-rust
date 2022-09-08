@@ -117,7 +117,7 @@ span.redsquare-home-red-square+span {
   position: relative;
   width: 50rem;
   max-height: 95vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .saito-sidebar.right {
@@ -190,7 +190,7 @@ span.redsquare-home-red-square+span {
   color: white;
   max-height: 90vh;
   max-width: 114rem;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .redsquare-create-game-list {
