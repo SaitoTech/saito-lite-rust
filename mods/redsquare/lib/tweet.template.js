@@ -43,7 +43,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
           if (d['og:url'] != '' && d['og:image'] != '') {
             let link = new URL(d['og:url']);
             link_preview = `
-                        <a target="_blank" href="${d['og:url']}">
+                        <a target="_blank" class="saito-og-link" href="${d['og:url']}">
                         <div class="preview-container">
                             <div class='preview-img' style="background: url(${d['og:image']})"></div>
                             <div class="preview-info">  
