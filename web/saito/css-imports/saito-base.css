@@ -43,6 +43,14 @@ pre {
   opacity: 0.66;
 }
 
+.saito-treated-link {
+  max-width: 50rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
 /* ----------------------------------------------------------------
  Link
 -----------------------------------------------------------------*/
