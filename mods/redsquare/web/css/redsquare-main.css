@@ -12,6 +12,7 @@
   z-index: 10;
 }
 
+
 .saito-menu i::before {
   -webkit-text-stroke: var(--saito-default-font-color) 1px;
   color: transparent;
@@ -650,25 +651,25 @@ span.redsquare-home-red-square+span {
   }
 
 
- 
+  .saito-page-header .saito-button-secondary {
+    padding: 0.5rem 0.5rem 0.4rem 0.5rem;
+    margin-top: 0rem;
+  }
 
-.post-tweet-button {
-  width: 100%;
-}
-
+  .post-tweet-button {
+    width: 100%;
+  }
   
 }
 
 
 @media only screen and (max-width: 396px) {
 
-
   .saito-main.appspace {
     min-width: 35rem;
    
   }
   
-
   .redsquare-tweet-tools>div {
     position: relative;
     margin: 0 0;
