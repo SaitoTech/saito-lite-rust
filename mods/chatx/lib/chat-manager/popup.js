@@ -12,7 +12,7 @@ class ChatPopup {
       if (gid === this.group_id && gid != "" && this.group_id != "") {
         let divid = "chat-container-" + gid;
         app.browser.replaceElementById(ChatPopupTemplate(app, mod, gid), divid);
-        app.browser.makeDraggable(`chat-container-${gid}`);
+        // app.browser.makeDraggable(`chat-container-${gid}`);
         this.attachEvents(app, mod, gid);
       }	
     });
@@ -25,8 +25,11 @@ class ChatPopup {
     if (group_id != "" && this.group_id == "") { this.group_id = group_id; }
 
     if (!document.getElementById(`chat-container-${this.group_id}`)) {
-      app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
-      app.browser.makeDraggable(`chat-container-${this.group_id}`);
+      if(!document.querySelector(".chat-popup-list")){
+        app.browser.addElementToDom(`<div class="chat-popup-list"> </div>`)
+      }
+      app.browser.addElementToSelector(ChatPopupTemplate(app, mod, this.group_id), '.chat-popup-list');
+      // app.browser.makeDraggable(`chat-container-${this.group_id}`);
       this.attachEvents(app, mod, this.group_id);
     }
 

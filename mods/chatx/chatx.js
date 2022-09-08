@@ -112,7 +112,7 @@ class Chatx extends ModTemplate {
         //
         let g = this.app.keys.returnGroups();
         for (let i = 0; i < g.length; i++) {
-            newgroup = this.createChatGroup(g[i].members, g[i].name);
+            let newgroup = this.createChatGroup(g[i].members, g[i].name);
         }
 
         app.connection.emit('chat-render-request', "");
@@ -770,6 +770,8 @@ return;
     ///////////////////
     createChatGroup(members = null, name = null) {
 
+
+
         if (members == null) {
             return null;
         }
@@ -828,7 +830,7 @@ return;
     returnCommunityChat() {
         for (let i = 0; i < this.groups.length; i++) {
             if (this.app.options.peers.length > 0) {
-                if (this.groups[i].name === "Community Chat") {
+                if (this.groups[i].name === "Saito Community Chat") {
                     return this.groups[i];
                 }
             }
