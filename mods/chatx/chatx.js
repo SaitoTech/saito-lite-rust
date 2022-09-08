@@ -898,9 +898,21 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
 
 
     saveChat() {
+
         this.app.options.chat = Object.assign({}, this.app.options.chat);
         this.app.storage.saveOptions();
     }
+
+    deactivatePopup(app, mod, group_id) {
+       let active_popups =   mod.chat_manager.active_popups.filter(gid => gid !== group_id);
+       mod.chat_manager.active_popups = active_popups
+    }
+
+    activatePopup(app, mod, group_id){
+        mod.chat_manager.active_popups.push(group_id);
+    }
+
+
 
 }
 
