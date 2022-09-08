@@ -21,7 +21,6 @@ export enum TransactionType {
 }
 
 class Transaction {
-
   public transaction = {
     to: [],
     from: [],
