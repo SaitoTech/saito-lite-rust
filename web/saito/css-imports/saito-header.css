@@ -213,5 +213,8 @@
         bottom: 0.15rem;
         margin-left: 2rem;
     }
+    .saito-header-logo {
+        max-width: 12rem;
+    }
 }
 
