@@ -351,12 +351,12 @@ class RedSquareTweet {
       //
       // trap links in tweets
       //
-      if (e.target.classList.contains('saito-treated-link')) {
+      if (e.target.classList.contains('saito-treated-link') || e.target.classList.contains('saito-og-link')) {
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
         e.preventDefault();
         e.stopImmediatePropagation();
-	return;
+	      return;
       }
       
       //
@@ -367,9 +367,10 @@ class RedSquareTweet {
 	!e.target.classList.contains("tweet-tool") &&   // buttons
 	!e.target.classList.contains("far")        &&   // icons
 	!e.target.classList.contains("fa")         &&   // icons
-	!e.target.classList.contains("fas")             // icons
+	!e.target.classList.contains("fas")        &&   // icons
+  !e.target.tagName == "A"
       ) {
-console.log("OPEN TWEET: " + JSON.stringify(e.target.classList));
+//console.log("OPEN TWEET: " + JSON.stringify(e.target.classList));
         openTweet(e);
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -381,6 +382,7 @@ console.log("OPEN TWEET: " + JSON.stringify(e.target.classList));
     //
     // view image
     //
+    //sel = `#tweet-img-${this.tx.transaction.sig}`;
     sel = `#tweet-img-${this.tx.transaction.sig}`;
     if (document.querySelector(sel)) {
       document.querySelector(sel).onclick = (e) => {

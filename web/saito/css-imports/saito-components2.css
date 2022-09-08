@@ -94,14 +94,21 @@ Saito Page Header
 -----------------------------------------------------------------*/
 .saito-page-header {
     padding-bottom: 1rem;
-    padding-right: 1.5rem;
+    padding-right: 0rem;
+    padding-top: 0rem;
     cursor: pointer;
+}
+
+@media only screen and (max-width: 535px) {
+  .saito-page-header {
+    padding-top: 1rem;
+  }
 }
 
 .saito-page-header-title {
     color: #222;
     font-size: 2.5rem;
-    padding-top: 1rem;
+    padding-top: 0rem;
     text-transform: uppercase;
 }
 
@@ -315,7 +322,10 @@ Saito Module Boxes
 }
 
 
-
+.saito-page-header .saito-button-secondary {
+    margin-top: 0px;
+    padding: 0.5rem 0.7rem 0.4rem  0.7rem;
+}
 
 .saito-button-secondary .small .saito-module-install-button {
     width: min-content;
