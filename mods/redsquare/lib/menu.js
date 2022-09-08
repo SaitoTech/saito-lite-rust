@@ -121,7 +121,7 @@ class RedSquareMenu {
     switch (component) {
       case "home":
         mod.home.render(app, mod, ".appspace");
-        window.location.hash = url;
+        window.location.hash = component;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         break;
       case "notifications":
