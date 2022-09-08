@@ -35,7 +35,7 @@ class ChatPopup {
     
         app.browser.replaceElementBySelector(`<div class="chat-body"> ${ChatMessageTemplate(app, mod, gid)} </div> ,`,  ".chat-body");
         document.querySelector(".chat-body").scroll(0, 1000000000);
-        // app.browser.makeDraggable(`chat-container-${gid}`);
+        app.browser.makeDraggable(`chat-container-${gid}`);
         this.attachEvents(app, mod, gid);
       }	
     });
@@ -50,7 +50,7 @@ class ChatPopup {
         app.browser.addElementToDom(`<div class="chat-popup-list"> </div>`)
       }
       app.browser.addElementToSelector(ChatPopupTemplate(app, mod, this.group_id), '.chat-popup-list');
-      // app.browser.makeDraggable(`chat-container-${this.group_id}`);
+      app.browser.makeDraggable(`chat-container-${this.group_id}`);
       this.attachEvents(app, mod, this.group_id);
     }
 
