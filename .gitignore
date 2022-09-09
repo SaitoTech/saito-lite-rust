@@ -59,6 +59,8 @@ mods/covid/bundler/
 
 mods/popup
 mods/popup/*
+mods/labyrinth
+mods/labyrinth/*
 mods/appstore/mods/*
 mods/appstore/bundler
 mods/appstore/bundler/*
