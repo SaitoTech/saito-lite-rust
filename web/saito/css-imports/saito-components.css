@@ -492,26 +492,24 @@ Saito Alert
     top: 0;
     background: rgba(0, 0, 0, .1);
     z-index: 20;
-    display: flex;
     justify-content: center;
     align-items: center;
+    padding: 10vh;
 }
 
 #alert-shim-new {
     margin: auto;
-    min-height: 20rem;
+    height: 20rem;
     width: 40rem;
 }
 
 #alert-box-new {
-    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1rem;
     background-color: var(--saito-white);
-    min-height: 20rem;
     border-radius: .5rem;
 }
 
@@ -525,7 +523,8 @@ Saito Alert
     align-self: center;
     justify-self: center;
     font-size: 2.5rem;
-    margin-top: 2rem;
+    margin: 1rem;
+    text-align: center;
 }
 
 .alert-message-new.prompt {
@@ -541,7 +540,6 @@ Saito Alert
 #alert-buttons-new {
     display: flex;
     justify-content: center;
-    margin-top: 2rem;
 }
 
 /* ----------------------------------------------------------------
