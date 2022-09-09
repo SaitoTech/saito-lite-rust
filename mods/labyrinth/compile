@@ -1,11 +1,10 @@
 
 rm ../../web/saito/saito.js
 
-
 #
 # class constructor
 #
-cat ./src/labyrinth-init.js >> ./labyrinth.js
+cat ./src/labyrinth-init.js > ./labyrinth.js
 
 for file in ./src/cards/*
 do

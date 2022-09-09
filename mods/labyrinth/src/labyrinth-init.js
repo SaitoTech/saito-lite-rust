@@ -104,8 +104,8 @@ console.log("\n\n\n\n");
     // add initial units
     //
     if (first_time_running == 1) {
-
 console.log("is first tiem running: " + this.game.state.scenario);
+    }
 
     //
     // and show the board
