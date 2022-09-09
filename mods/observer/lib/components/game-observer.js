@@ -42,9 +42,23 @@ class GameObserver {
 
     if (!document.getElementById("game-observer-hud")) {
       app.browser.addElementToDom(GameObserverTemplate(step));
+    }else{
+      document.getElementById("game-observer-hud").style.display="block";
     }
 
     this.attachEvents(app, mod);
+  }
+
+  hide(){
+    if (document.getElementById("game-observer-hud")){
+      document.getElementById("game-observer-hud").style.display="none";
+    }
+  }
+
+  remove(){
+    if (document.getElementById("game-observer-hud")){
+      document.getElementById("game-observer-hud").remove();
+    }
   }
 
   /**

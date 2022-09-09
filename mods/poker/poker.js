@@ -18,11 +18,12 @@ class Poker extends GameTableTemplate {
 
     this.minPlayers = 2;
     this.maxPlayers = 6;
-    this.decimal_precision = 0; /*Default, since default is 15/30 blinds*/
+    this.decimal_precision = 0; /*Default, since default is 1/2 chip blinds*/
     this.settlement = [];
     this.updateHTML = "";
     this.useGraphics = true;
-    return this;
+    this.scoreFrame = `<div class="scoreitem" id="round"></div><div class="scoreitem" id="dealer"></div>`;
+
   }
 
   // Opt out of letting League create a default
@@ -37,6 +38,7 @@ class Poker extends GameTableTemplate {
   initializeHTML(app) {
 
     if (!this.browser_active) { return; }
+    if (this.initialize_game_run) { return; }
     
     super.initializeHTML(app);
 
@@ -187,6 +189,8 @@ class Poker extends GameTableTemplate {
     }
 
     //Parse game options
+    this.maxPlayers = this.game.options.max_players;
+
     this.game.crypto = (this.game.options.crypto)? this.game.options.crypto: "";
     this.game.stake =  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 0;
     this.game.chipValue = this.game.stake / parseInt(this.game.options.num_chips);
@@ -202,169 +206,39 @@ class Poker extends GameTableTemplate {
   }
 
 
-  /*
-  Call be "turn", "reveal", "fold" if any of them lead to end of round conditions
-  */
-  startNextRound() {
-
-    console.log("--------- SNR ---------");
-
-    this.game.state.round++;
-    this.game.state.preflop = true;
-    
-    //Shift dealer, small blind, and big blind
-    this.game.state.big_blind_player--;
-    this.game.state.small_blind_player--;
-    this.game.state.button_player--; //dealer
-    
-    if (this.game.state.big_blind_player < 1) {
-      this.game.state.big_blind_player = this.game.players.length;
-    }
-    if (this.game.state.small_blind_player < 1) {
-      this.game.state.small_blind_player = this.game.players.length;
-    }
-    if (this.game.state.button_player < 1) {
-      this.game.state.button_player = this.game.players.length;
-    }
-
-    //Adjust blind levels if necessary
-    if (this.game.tournamentBlinds && this.game.state.round % 5 == 0) { //TODO: parameterize num_rounds between increases
-      this.game.state.small_blind++;
-      this.game.state.big_blind = 2 * this.game.state.big_blind;
-      this.updateLog(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);
-      salert(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);  
-    }
-
-    this.game.state.flipped = 0;
-    this.game.state.plays_since_last_raise = 0;
-    this.game.state.pot = 0.0;
-    this.game.state.last_raise = this.game.state.big_blind;
-    this.game.state.required_pot = this.game.state.big_blind;
-
-    for (let i = 0; i < this.game.players.length; i++) {
-      this.game.state.passed[i] = 0;
-      this.game.state.player_pot[i] = 0;
-      this.game.stats[this.game.players[i]].handsPlayed++;
-    }
-
-    //Check for end of game -- everyone except 1 player has zero credit...
-    let alive_players = 0;
-    let winner = -1;
-     for (let i = 0; i < this.game.state.player_credit.length; i++) {
-        if (this.game.state.player_credit[i] > 0) {
-            alive_players++;
-            winner = i;
-        } 
-     }
-
-    if (this.browser_active){
-      this.displayPlayers(true); //to update chips before game_over
-    }
-    this.game.state.all_in = false; //we are stupidly testing for all_in on the display players
-     
-
-    //Catch that only one player is standing at the start of the new round
-    if (alive_players == 1) {
-      this.game.queue = [];
-      this.game.queue.push("winner\t" + winner);
-      this.settleLastRound();
-      return 1;
-    }
-
-
-    //
-    // only remove if there are more than two players
-    // if two players - let victory play out.
-    //
-    let removal = false;
-
-    if (alive_players < this.game.state.player_credit.length) {
-      console.log("Need to remove a player");
-      console.log(JSON.parse(JSON.stringify(this.game.players)));
-      for (let i = this.game.state.player_credit.length-1; i >= 0 ; i--) {
-        if (this.game.state.player_credit[i] <= 0) {
-          this.updateLog(`Player ${i+1} has been removed from the game.`);
-          removal = true;
-          //
-          // remove any players who are missing
-          this.game.state.player_names.splice(i, 1);
-          this.game.state.player_pot.splice(i, 1);
-          this.game.state.player_credit.splice(i, 1);
-          this.game.state.passed.splice(i, 1);
-          this.removePlayer(this.game.players[i]);
-
-          //Adjust dealer for each removed player
-          if (i < this.game.state.button_player){
-            this.game.state.button_player--;
-          }
-        }
-      }
-    }
-
-    this.startRound();
-
-    if (removal){
-      //Save game with fewer players
-      this.saveGame(this.game.id);
-
-      this.cardfan.hide(); //hide everyone's cards at first
-      
-      //Update DOM -- re-render the playerboxes
-      try{
-        let boxes = document.querySelectorAll(".player-box");
-        for (let box of boxes){
-          box.remove();
-        }
-        //this.playerbox.render(this.app,this);
-        //this.playerbox.addClassAll("poker-seat-", true);
-        //this.playerbox.addStatus(); //enable update Status to display in playerbox
-
-      } catch(err) {
-        console.log("ERROR reRendering Playerboxes",err);
-      }
-
-      //Fix dealer and blinds Dealer -> Small -> Big
-      //if (this.game.state.button_player < 1) {
-      //  this.game.state.button_player = this.game.players.length;
-      //} 
-      //this.game.state.small_blind_player = this.game.state.button_player - 1;     
-      //if (this.game.state.small_blind_player < 1) {
-      //  this.game.state.small_blind_player = this.game.players.length;
-     // }
-      //this.game.state.big_blind_player = this.game.state.small_blind_player - 1;     
-      //if (this.game.state.big_blind_player < 1) {
-      //  this.game.state.big_blind_player = this.game.players.length;
-     // }
-
-      this.initialize_game_run = 0;
-      this.initializeGameFeeder(this.game.id);
-      return 0;
-    }
-
-  }
 
   settleLastRound() {
     /*
     We want these at the end of the queue so they get processed first, but if 
     any players got removed, there will be some issues....
     */
+    let msg = "Clearing the table";
+    this.game.queue.push("newround");   
+    this.game.queue.push("checkplayers");     
+    this.game.queue.push("PLAYERS");
+
     if (this.game.crypto) {
+      msg += (this.game.crypto)? " and settling bets..." : "...";
+
       console.log("PROCESSING THE SETTLEMENT NOW!");
       console.log(JSON.stringify(this.settlement));
       for (let i = 0; i < this.settlement.length; i++) {
         this.game.queue.push(this.settlement[i]);
       }
-      console.log("new queue: " + JSON.stringify(this.game.queue));    
     }
+    console.log("new queue: " + JSON.stringify(this.game.queue));    
+
+    this.updateStatus(msg);
+    this.cardfan.hide();
+
     this.settlement = [];
+
+
   }
 
 
   startRound(){
 
-    console.log("START ROUND");
-    
-    
     this.updateLog("Round: " + this.game.state.round);
     this.updateLog(`Table ${this.game.id.substring(0, 10)}, Player ${this.game.state.button_player} is the button`);
 
@@ -372,17 +246,18 @@ class Poker extends GameTableTemplate {
       this.updateLog(`Player ${(i + 1)}: ${this.game.state.player_names[i]} (${this.game.state.player_credit[i]})`);
     }
     
-    /*
-    //this.displayBoard();  
-    document.querySelector(".round").innerHTML = `Round : ${this.game.state.round}`;
-    document.querySelector(".dealer").innerHTML = `Button : Player ${this.game.state.button_player}`;
-    */
+    if (this.browser_active){
+      //this.displayBoard();  
+      document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
+      document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+    }
+
     this.initializeQueue();
 
   }
 
    /*
-  Called by initializeGame and startNextRound
+  Called by initializeGame 
   */
   initializeQueue() {
 
@@ -390,19 +265,12 @@ class Poker extends GameTableTemplate {
 
     this.game.queue.push("round");
     this.game.queue.push("READY");
-    this.game.queue.push("POOL\t1"); // CREATE pool for cards on table
+    this.game.queue.push("POOL\t1"); // CREATE or RESET pool for cards on table
 
     //Deal two cards to everyone
     this.game.queue.push(`SIMPLEDEAL\t2\t1\t`+ JSON.stringify(this.returnDeck()));
-
-    // adds any outstanding settlement to queue (if not already processed)
-    this.settleLastRound();
-    let msg = "Clearing the table";
-        msg += (this.game.crypto)? " and settling bets..." : "...";
-    this.updateStatus(msg);
-
-
   }
+
 
   handleGameLoop() {
     ///////////
@@ -430,6 +298,54 @@ class Poker extends GameTableTemplate {
         return 0;
       }
 
+      if (mv[0] === "newround"){
+        console.log("--------- SNR ---------");
+
+        this.game.state.round++;
+        this.game.state.preflop = true;
+
+        //Shift dealer, small blind, and big blind
+
+        this.game.state.button_player--; //dealer
+        if (this.game.state.button_player < 1) {
+          this.game.state.button_player = this.game.players.length;
+        }
+
+        this.game.state.small_blind_player = this.game.state.button_player - 1;
+        if (this.game.state.small_blind_player < 1) {
+          this.game.state.small_blind_player = this.game.players.length;
+        }
+        
+        this.game.state.big_blind_player = this.game.state.small_blind_player - 1;
+        if (this.game.state.big_blind_player < 1) {
+          this.game.state.big_blind_player = this.game.players.length;
+        }
+
+        //Adjust blind levels if necessary
+        if (this.game.tournamentBlinds && this.game.state.round % 5 == 0) { //TODO: parameterize num_rounds between increases
+          this.game.state.small_blind++;
+          this.game.state.big_blind = 2 * this.game.state.big_blind;
+          this.updateLog(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);
+          salert(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);  
+        }
+
+        this.game.state.flipped = 0;
+        this.game.state.plays_since_last_raise = 0;
+        this.game.state.pot = 0.0;
+        this.game.state.last_raise = this.game.state.big_blind;
+        this.game.state.required_pot = this.game.state.big_blind;
+        this.game.state.all_in = false; //we are stupidly testing for all_in on the display players
+
+        for (let i = 0; i < this.game.players.length; i++) {
+          this.game.state.passed[i] = 0;
+          this.game.state.player_pot[i] = 0;
+          this.game.stats[this.game.players[i]].handsPlayed++;
+        }
+
+        this.startRound();
+        return 1;
+      }
+
       //
       // turns "resolve"
       //
@@ -442,6 +358,71 @@ class Poker extends GameTableTemplate {
           this.game.queue.splice(qe, 1);
         }
         return 1;
+      }
+
+
+      if (mv[0] === "checkplayers"){
+        this.game.queue.splice(qe, 1);
+
+        //Check for end of game -- everyone except 1 player has zero credit...
+        let alive_players = 0;
+        let winner = -1;
+         for (let i = 0; i < this.game.state.player_credit.length; i++) {
+            if (this.game.state.player_credit[i] > 0) {
+                alive_players++;
+                winner = i;
+            } 
+         }
+
+        if (this.browser_active){
+          this.displayPlayers(true); //to update chips before game_over
+        }
+     
+        //Catch that only one player is standing at the start of the new round
+        if (alive_players == 1) {
+          this.game.queue = [];
+          this.game.queue.push("winner\t" + winner);
+          return 1;
+        }
+
+
+        //
+        // only remove if there are more than two players
+        // if two players - let victory play out.
+        //
+        let removal = false;
+
+        if (alive_players < this.game.state.player_credit.length) {
+          console.log("Need to remove a player");
+          console.log(JSON.parse(JSON.stringify(this.game.players)));
+          for (let i = this.game.state.player_credit.length-1; i >= 0 ; i--) {
+            if (this.game.state.player_credit[i] <= 0) {
+              this.updateLog(`Player ${i+1} (${this.game.state.player_names[i]}) has been eliminated from the game.`);
+              removal = true;
+              //
+              // remove any players who are missing
+              this.removePlayerFromState(i);
+              this.removePlayer(this.game.players[i]);
+
+              //Adjust dealer for each removed player
+              if (i < this.game.state.button_player){
+                this.game.state.button_player--;
+              }
+            }
+          }
+        }
+
+        if (removal){
+          //Save game with fewer players
+          this.saveGame(this.game.id);
+          //Reload game to rebuild the html
+          this.initialize_game_run = 0;
+          this.initializeGameFeeder(this.game.id);
+          return 0;
+        }
+
+
+          return 1;
       }
 
       //Player's turn to fold,check,call,raise
@@ -496,7 +477,7 @@ class Poker extends GameTableTemplate {
 
           // if everyone has folded - start a new round
           console.log("everyone has folded... start next round");
-          this.startNextRound();
+          this.settleLastRound();
 
           return 1;
         }
@@ -768,7 +749,7 @@ class Poker extends GameTableTemplate {
             });
             this.game.halted = 1;
           }
-          this.startNextRound();
+          this.settleLastRound();
 
           return 0;
         }
@@ -1210,16 +1191,25 @@ class Poker extends GameTableTemplate {
     return state;
   }
 
-  getShortNames(publicKey){
-    let name = this.app.keys.returnUsername(publicKey);
-      if (name.indexOf("@") > 0) {
-        name = name.substring(0, name.indexOf("@"));
-      }
-      if (name === publicKey) {
-        name = publicKey.substring(0, 10) + "...";
-      } 
-    return name;
+  removePlayerFromState(index){
+    this.game.state.player_names.splice(index, 1);
+    this.game.state.player_pot.splice(index, 1);
+    this.game.state.player_credit.splice(index, 1);
+    this.game.state.passed.splice(index, 1);
   }
+
+  addPlayerToState(address){
+    this.game.state.player_names.push(this.getShortNames(address));
+    this.game.state.player_pot.push(0);
+    this.game.state.player_credit.push(this.game.options.num_chips);
+    this.game.state.passed.push(0);
+  
+    this.game.stats[address] = {};
+    this.game.stats[address].handsPlayed = 0;
+    this.game.stats[address].handsWon = 0;
+    this.game.stats[address].handsFolded = 0;
+  }
+
 
   returnCardFromDeck(idx) {
     let deck = this.returnDeck();

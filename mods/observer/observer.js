@@ -82,6 +82,13 @@ class Observer extends ModTemplate {
   	this.controls.render(app, game_mod);
   }
 
+  removeControls(){
+    if (this.controls){
+      this.controls.hide();
+      //this.controls = null;
+    }
+  }
+
   attachEvents(app, mod) {
   }
 

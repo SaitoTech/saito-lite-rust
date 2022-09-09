@@ -240,6 +240,11 @@ module.exports = ArcadeMain = {
                   return;
               }
 
+              if (game_cmd === "watch"){
+                arcade_main_self.watchGame(app, mod, game_sig);
+                return;
+              }
+
               if (game_cmd === "continue") {
                 arcade_main_self.continueGame(app, mod, game_sig);
                 return;
