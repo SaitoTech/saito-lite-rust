@@ -54,7 +54,7 @@ class ChatManager {
 
 		if (!document.querySelector(".chat-manager")) {
 			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
-			app.browser.makeDraggable("#chat-manager");
+			//app.browser.makeDraggable("#chat-manager");
 		}
 
 		//
