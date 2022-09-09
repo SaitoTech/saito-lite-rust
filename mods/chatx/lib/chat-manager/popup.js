@@ -1,5 +1,4 @@
 const ChatPopupTemplate = require("./popup.template");
-const ChatMessageTemplate = require('../templates/chat-body-message.template');
 class ChatPopup {
 
   constructor(app, mod, group_id = "") {
