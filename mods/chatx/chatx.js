@@ -1,3 +1,4 @@
+const SaitoUserSmallTemplate = require('./../../lib/saito/new-ui/templates/saito-user-small.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
@@ -590,6 +591,31 @@ return;
     }
 
 
+    returnChatBody(group_id) {
+
+      let html = '';
+      let group = this.returnGroup(group_id);
+      let message_blocks = this.createMessageBlocks(group);
+    
+      for (let i = 0; i < message_blocks.length; i++) {
+        let block = message_blocks[i];
+        if (block.length > 0) {
+          let sender = "";
+          let msg = "";
+          for (let z = 0; z < block.length; z++) {
+            if (z > 0) { msg += '<br/>'; }
+            let txmsg = block[z].returnMessage();
+  	    sender = block[z].transaction.from[0].add;
+            msg += txmsg.message;       
+          }
+          html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg)}`;
+        }
+      }
+
+      return html;
+
+    }
+
     createMessageBlocks(group) {
 
         let idx = 0;
@@ -753,6 +779,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
         }
 
         if (group_id == null) {
+console.log("opening chat w group id: " + group_id);
             let group = this.returnCommunityChat();
             if (group == undefined || group == null) {
                 return;
@@ -763,7 +790,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
             group_id = group.id;
         }
 
-        this.app.connection.emit('chat-popup-render-request', group_id);
+        this.app.connection.emit('chat-render-request', group_id);
     }
 
 
@@ -898,6 +925,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
 
 
     saveChat() {
+
         this.app.options.chat = Object.assign({}, this.app.options.chat);
         this.app.storage.saveOptions();
     }

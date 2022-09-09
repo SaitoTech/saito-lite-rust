@@ -29,6 +29,7 @@ class ChatManager {
 		     }
 		});
 
+/*****
 		app.connection.on("chat-popup-render-request", (group_id="") => {
 		    if (!document.querySelector(".chat-manager")) {
 			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), "");
@@ -40,12 +41,13 @@ class ChatManager {
 			if (!obj) {
 			  let chat_popup = new ChatPopup(app, mod, group_id);
 			  chat_popup.render(app, mod, group_id);
+			  
 			} else {
 				console.log("Chat Popup Exists");
 			}
 		    }
 		});
-
+****/
 	}
 
 	render(app, mod, selector = "") {
@@ -123,7 +125,7 @@ class ChatManager {
 			item.onclick = (e) => {
 				let group_id = e.currentTarget.getAttribute("data-id");
 				let chat_popup = new ChatPopup(app, mod, group_id);
-				chat_popup.render(app, mod, group_id);
+				app.connection.emit('chat-render-request', group_id);
 			}
 		})
 	}
