@@ -10,9 +10,7 @@
     margin-right: 1rem;
     width: 44rem;
     border: 1px solid var(--saito-border);
-    position: fixed;
-    right: 1rem;
-    bottom: 0;
+    /* position: fixed; */
     background-color: var(--saito-white);
     border-radius: .4rem;
     z-index:1000;
