@@ -11,7 +11,6 @@ const prettify = require('html-prettify');
 const GameCreator = require("./lib/appspace/arcade/game-creator");
 const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
 const PostTweet = require("./lib/post");
-const ObserverSidebarDetails = require("./lib/sidebar/observer-sidebar-details.template");
 
 class RedSquare extends ModTemplate {
 
@@ -62,15 +61,6 @@ class RedSquare extends ModTemplate {
         setInterval(() => {
           this.fetchNewTweets(app, this)
         }, 30000)
-
-  console.log("Turn on listener");      
-        app.connection.on("observer-list-update-request", (games)=>{
-          console.log("Receive message");
-          let handle = document.getElementById("rs_sidebar_observer");
-          if (handle){
-            handle.innerHTML = ObserverSidebarDetails(app, this, games);
-          }
-        });
       }
     }
   }

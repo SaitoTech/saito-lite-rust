@@ -3,7 +3,8 @@ const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/sai
 const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const GameInvite = require("./../game");
 const GameInviteDetails = require("./../appspace/arcade/game-invite-details");
-const RedSquareLeagueSidebar = require("./league-sidebar");
+const RedSquareLeagueSidebar = require("./league/league-sidebar");
+const RedSquareObserverSidebar = require("./observer/observer-sidebar");
 
 class RedSquareGamesSidebar {
 
@@ -19,7 +20,11 @@ class RedSquareGamesSidebar {
         this.attachEvents(app, mod);
     });
 
-
+    app.connection.on("observer-list-update-request", (games)=>{
+      let observer_sidebar = new RedSquareObserverSidebar(app, mod);
+      observer_sidebar.games = games;
+      observer_sidebar.render(app, mod, ".redsquare-sidebar-observer");
+    });
   }
 
   render(app, mod, selector="") {
@@ -48,6 +53,12 @@ class RedSquareGamesSidebar {
       }
     }
 
+    let league_sidebar = new RedSquareLeagueSidebar(app, mod);
+    league_sidebar.render(app, mod, ".redsquare-sidebar-league");
+
+    let observer_sidebar = new RedSquareObserverSidebar(app, mod);
+    observer_sidebar.render(app, mod, ".redsquare-sidebar-observer");
+
     this.attachEvents(app, mod);
   }
 
@@ -71,7 +82,6 @@ class RedSquareGamesSidebar {
       };
 
     }); 
-    RedSquareLeagueSidebar.attachEvents(app, mod);
   }
 }
 
