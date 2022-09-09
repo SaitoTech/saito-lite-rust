@@ -261,7 +261,7 @@ span.redsquare-home-red-square+span {
 
 .redsquare-tweet-tools {
   display: flex;
-  justify-content: initial;
+  justify-content: space-between;
   font-size: 1.5rem;
   width: 100%;
   margin: 2rem 0 0rem 0;
@@ -270,9 +270,14 @@ span.redsquare-home-red-square+span {
 
 .redsquare-tweet-tools>div {
   position: relative;
-  margin: 0 0;
-  min-width: 8%;
-  margin-right: 15%;
+  margin: 0 1rem 0 0;
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 2fr 1fr;
+}
+
+.tweet-tool-like-count, .tweet-tool-retweet-count, .tweet-tool-comment-count {
+  text-align: right;
 }
 
 .redsquare-tweet-tools>div:hover {
@@ -284,8 +289,6 @@ span.redsquare-home-red-square+span {
   display: inline-block;
   font-weight: bold;
   z-index: 1;
-  float: left;
-  margin-right: 0.6rem;
   color: rgba(83, 100, 113, 0.8);
   font-size: 1.5rem;
 }
@@ -362,11 +365,6 @@ span.redsquare-home-red-square+span {
 
 .tweet-tool-like {
   cursor: pointer;
-}
-
-.tweet-tool-comment-count {
-  width: 1rem;
-  text-align: center;
 }
 
 .tweet-img {
@@ -758,12 +756,11 @@ span.redsquare-home-red-square+span {
 }
 
 .stunx-chatbox .video-box {
-  border-radius: 0.1rem;
+  border-radius: 1rem;
   width: 100%;
   height: 100%;
   object-fit: cover;
   border: 1px solid var(--saito-cyber-black-wash);
-
 }
 
 #localStream {
