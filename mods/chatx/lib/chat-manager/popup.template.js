@@ -1,4 +1,3 @@
-const SaitoUserSmallTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user-small.template.js');
 const JSON = require('json-bigint');
 
 module.exports = (app, mod, group_id) => {
@@ -20,6 +19,8 @@ module.exports = (app, mod, group_id) => {
 
         <div class="chat-body">
     `;
+
+    html += mod.returnChatBody(group_id);
 
     html += `
 

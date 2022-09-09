@@ -11,7 +11,6 @@ class ChatManager {
 		this.mod = mod;
 		this.messages_in_groups = [];
 		this.rendered = 0;
-		this.active_popups = [];
 
 		for (let z = 0; z < this.mod.groups.length; z++) {
 			this.messages_in_groups[z] = this.mod.groups[z].txs.length;
@@ -23,15 +22,14 @@ class ChatManager {
 		         let obj = document.querySelector(psq);
 			 if (!obj) {
 			   let chat_popup = new ChatPopup(app, mod, group_id);
-			   if(!this.active_popups.includes(group_id)) return;
 			   chat_popup.render(app, mod, group_id);
-			   
 			 } else {
 			   console.log("Chat Popup Exists");
 			 }
 		     }
 		});
 
+/*****
 		app.connection.on("chat-popup-render-request", (group_id="") => {
 		    if (!document.querySelector(".chat-manager")) {
 			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), "");
@@ -42,7 +40,6 @@ class ChatManager {
 			let obj = document.querySelector(psq);
 			if (!obj) {
 			  let chat_popup = new ChatPopup(app, mod, group_id);
-			  if(!this.active_popups.includes(group_id)) return;
 			  chat_popup.render(app, mod, group_id);
 			  
 			} else {
@@ -50,7 +47,7 @@ class ChatManager {
 			}
 		    }
 		});
-
+****/
 	}
 
 	render(app, mod, selector = "") {
@@ -114,7 +111,6 @@ class ChatManager {
 				//if (!document.querySelector(psq)) {
 				      let chat_popup = new ChatPopup(app, mod, gid);
 				      chat_popup.render(app, mod, gid);
-					  this.active_popups.push(gid);
 			        //}
 			}
 		}
@@ -129,12 +125,7 @@ class ChatManager {
 			item.onclick = (e) => {
 				let group_id = e.currentTarget.getAttribute("data-id");
 				let chat_popup = new ChatPopup(app, mod, group_id);
-				this.active_popups.push(group_id);
 				app.connection.emit('chat-render-request', group_id);
-				
-
-				
-				// chat_popup.render(app, mod, group_id);
 			}
 		})
 	}
