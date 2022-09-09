@@ -931,6 +931,7 @@ console.log("opening chat w group id: " + group_id);
 
     deactivatePopup(group_id) {
        // add 
+       
     }
 
 }

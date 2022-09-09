@@ -21,7 +21,7 @@ class ChatPopup {
           this.hasRendered = true;
         }
 
-        app.browser.replaceElementBySelector(`<div class="chat-body">${mod.returnChatBody(gid)} </div> ,`,  ".chat-body");
+        app.browser.replaceElementBySelector(`<div class="chat-body-${gid}">${mod.returnChatBody(gid)} </div> ,`,  ".chat-body");
         document.querySelector(".chat-body").scroll(0, 1000000000);
         app.browser.makeDraggable(`chat-container-${gid}`);
         this.attachEvents(app, mod, gid);
