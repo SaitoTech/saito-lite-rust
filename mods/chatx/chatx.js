@@ -925,9 +925,12 @@ console.log("opening chat w group id: " + group_id);
 
 
     saveChat() {
-
         this.app.options.chat = Object.assign({}, this.app.options.chat);
         this.app.storage.saveOptions();
+    }
+
+    deactivatePopup(group_id) {
+       // add 
     }
 
 }
