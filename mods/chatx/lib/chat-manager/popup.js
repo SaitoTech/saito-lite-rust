@@ -52,7 +52,7 @@ class ChatPopup {
     // close
     //
     document.querySelector(`#chat-container-close-${group_id}`).onclick = (e) => {
-      mod.deactivatePopup(app, mod, group_id);
+      mod.deactivatePopup(group_id);
       let obj = document.getElementById(`chat-container-${group_id}`).remove();
     }
 
