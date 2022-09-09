@@ -39,6 +39,19 @@ pre {
   display: none;
 }
 
+.saito-deemphasize {
+  opacity: 0.66;
+}
+
+.saito-treated-link {
+  width: 50rem;
+  max-width: 80vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
 /* ----------------------------------------------------------------
  Link
 -----------------------------------------------------------------*/
@@ -127,7 +140,22 @@ hr {
   margin: 2.5rem;
 }
 
+/*-----------------------------------------------------------------
+Scrollbars
+-----------------------------------------------------------------*/
+::-webkit-scrollbar {
+  width: 6px;
+}
 
+::-webkit-scrollbar-track {
+  background: transparent;
+  background: linear-gradient(90deg, transparent 0 45%, var(--saito-border) 45% 55%, transparent 55% 100%);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--saito-thumbBG);
+  border-radius: 1rem;
+}
 
 /* ----------------------------------------------------------------
 Media Queries

@@ -59,6 +59,7 @@ class RedSquareMenu {
     if (obj) {
       obj.onclick = (e) => {
         removeLeftSidebar()
+        window.history.replaceState({}, "Saito RedSquare", "/redsquare/");
         this_menu.renderItem(app, mod, "home");
       }
     }

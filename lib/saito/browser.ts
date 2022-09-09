@@ -59,7 +59,7 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-/******
+        /******
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {
@@ -82,7 +82,6 @@ class Browser {
           }
         };
 *****/
-
 
         document.addEventListener(
           "visibilitychange",
@@ -224,32 +223,33 @@ class Browser {
     }
   }
 
-
-  extractKeys(text="") {
-
+  extractKeys(text = "") {
     let keys = [];
     let w = text.split(/(\s+)/);
     for (let i = 0; i < w.length; i++) {
       if (w[i].length > 0) {
-        if (w[i][0] === '@') {
-	  if (w.length > 1) {
-	    let cleaner = w[i].substring(1);
+        if (w[i][0] === "@") {
+          if (w.length > 1) {
+            let cleaner = w[i].substring(1);
             let add = this.app.keys.returnPublicKeyByIdentifier(cleaner);
-	    if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) { add = cleaner; }
+            if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
+              add = cleaner;
+            }
             if (!keys.includes(add)) {
               keys.push(add);
             }
-	  }
+          }
         }
       }
     }
     return keys;
   }
 
-
   returnInviteLink(email = "") {
     let { protocol, host, port } = this.app.options.peers[0];
-    let url_payload = encodeURIComponent(this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email))));
+    let url_payload = encodeURIComponent(
+      this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email)))
+    );
     return `${protocol}://${host}:${port}/r?i=${url_payload}`;
   }
 
@@ -409,13 +409,9 @@ class Browser {
   // Browser and Helper Functions //
   //////////////////////////////////
   generateQRCode(data) {
-    const QRCode = require('./../helpers/qrcode');
-    return new QRCode(
-      document.getElementById("qrcode"),
-      data
-    );
+    const QRCode = require("./../helpers/qrcode");
+    return new QRCode(document.getElementById("qrcode"), data);
   }
-
 
   // https://github.com/sindresorhus/screenfull.js
   requestFullscreen() {
@@ -446,14 +442,18 @@ class Browser {
   }
 
   replaceElementById(html, id = null) {
+    console.log("replace element by id: " + id);
     if (id == null) {
       this.app.browser.addElementToDom(html);
     } else {
+      console.log("trying to get element by id: " + id);
       let obj = document.getElementById(id);
       if (obj) {
+        console.log("can find so replacing");
         obj.outerHTML = html;
       } else {
-	this.app.browser.addElementToDom(html, id);
+        console.log("cannot find so adding");
+        this.app.browser.addElementToDom(html, id);
       }
     }
   }
@@ -464,9 +464,11 @@ class Browser {
     } else {
       let obj = document.getElementById(id);
       if (obj) {
-	this.app.browser.addElementToDom(html, obj);
+        console.log("add element by id 2: " + id);
+        this.app.browser.addElementToDom(html, obj);
       } else {
-	this.app.browser.addElementToDom(html);
+        console.log("NOT FOUND add element by id 2: " + id);
+        this.app.browser.addElementToDom(html);
       }
     }
   }
@@ -477,14 +479,14 @@ class Browser {
     } else {
       let obj = document.getElementById(id);
       if (obj) {
-	this.app.browser.prependElementToDom(html, obj);
+        this.app.browser.prependElementToDom(html, obj);
       } else {
-	this.app.browser.prependElementToDom(html);
+        this.app.browser.prependElementToDom(html);
       }
     }
   }
 
-  replaceElementBySelector(html, selector="") {
+  replaceElementBySelector(html, selector = "") {
     if (selector === "") {
       this.app.browser.addElementToDom(html);
     } else {
@@ -492,12 +494,12 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
-	this.app.browser.addElementToDom(html);
+        this.app.browser.addElementToDom(html);
       }
     }
   }
 
-  addElementToSelector(html, selector="") {
+  addElementToSelector(html, selector = "") {
     if (selector === "") {
       this.app.browser.addElementToDom(html);
     } else {
@@ -508,11 +510,9 @@ class Browser {
         this.app.browser.addElementToDom(html);
       }
     }
-
   }
 
-  prependElementToSelector(html, selector="") {
-
+  prependElementToSelector(html, selector = "") {
     if (selector === "") {
       this.app.browser.prependElementToDom(html);
     } else {
@@ -523,11 +523,9 @@ class Browser {
         this.app.browser.prependElementToDom(html);
       }
     }
-
   }
 
-
-  replaceElementByClass(html, classname="") {
+  replaceElementByClass(html, classname = "") {
     if (classname === "") {
       this.app.browser.addElementToDom(html);
     } else {
@@ -536,13 +534,12 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
-	this.app.browser.addElementToDom(html);
+        this.app.browser.addElementToDom(html);
       }
     }
   }
 
-  addElementToClass(html, classname="") {
-
+  addElementToClass(html, classname = "") {
     if (classname === "") {
       this.app.browser.addElementToDom(html);
     } else {
@@ -554,11 +551,9 @@ class Browser {
         this.app.browser.addElementToDom(html);
       }
     }
-
   }
 
-  prependElementToClass(html, classname="") {
-
+  prependElementToClass(html, classname = "") {
     if (classname === "") {
       this.app.browser.prependElementToDom(html);
     } else {
@@ -570,7 +565,6 @@ class Browser {
         this.app.browser.prependElementToDom(html);
       }
     }
-
   }
 
   addElementToElement(html, elem = document.body) {
@@ -609,7 +603,7 @@ class Browser {
 
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
-    
+
     const hours = datetime.getHours();
     let minutes = datetime.getMinutes();
     const months = [12];
@@ -627,7 +621,7 @@ class Browser {
     months[11] = "December";
     const month = months[datetime.getMonth()];
     //getDay = Day of the Week, getDate = day of the month
-    const day = datetime.getDate(); 
+    const day = datetime.getDate();
     const year = datetime.getFullYear();
 
     minutes = minutes.toString().length == 1 ? `0${minutes}` : `${minutes}`;
@@ -905,11 +899,11 @@ class Browser {
     }
   }
 
-  addModalIdentifierAddPublickey(app, mod){
+  addModalIdentifierAddPublickey(app, mod) {
     try {
       const identifiers = document.getElementsByClassName(`saito-identicon`);
 
-      Array.from(identifiers).forEach((identifier) => {    
+      Array.from(identifiers).forEach((identifier) => {
         identifier.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -917,12 +911,12 @@ class Browser {
           let identiconUri = e.target.getAttribute("src");
           let publickey = e.target.getAttribute("data-id");
 
-          let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey)
+          let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey);
           addPublicKeyModal.render(app, mod);
         });
       });
     } catch (err) {
-      console.error("Error while adding event to identifiers: "+err);
+      console.error("Error while adding event to identifiers: " + err);
     }
   }
 
@@ -1069,14 +1063,13 @@ class Browser {
   //////////////////////////////////////////////////////////////////////////////
 
   async captureScreenshot(callback = null) {
-
     // svg needs converstion
-    var svgElements = document.body.querySelectorAll('svg');
-    svgElements.forEach(function(item) {
+    var svgElements = document.body.querySelectorAll("svg");
+    svgElements.forEach(function (item) {
       item.setAttribute("width", item.getBoundingClientRect().width);
       item.setAttribute("height", item.getBoundingClientRect().height);
       item.style.width = null;
-      item.style.height= null;
+      item.style.height = null;
     });
 
     html2canvas(document.body).then(function (canvas) {
@@ -1089,28 +1082,25 @@ class Browser {
 
   sanitize(text) {
     try {
-
-      if (text !== '') {
-     
+      if (text !== "") {
         // sanitize html tags
-        const decoder = document.createElement('div');
+        const decoder = document.createElement("div");
         decoder.innerText = text;
         text = decoder.innerHTML;
 
         //trim trailing line breaks
-        text = text.replace(/[\r<br>]+$/, '');
+        text = text.replace(/[\r<br>]+$/, "");
 
         // wrap link in <a> tag
         let urlPattern = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/ig;       
         text = text.replace(urlPattern, function(url){ 
-            return `<a target="_blank" class="tweet-link" href="${url.trim()}">${url.trim()}</a>`; 
+            return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`; 
         }); 
-      
       }
 
       return text;
-    } catch(err) {
-      console.log("Err in sanitizing: "+err);
+    } catch (err) {
+      console.log("Err in sanitizing: " + err);
       return text;
     }
   }

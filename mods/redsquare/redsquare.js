@@ -226,6 +226,7 @@ console.log("ADD NOTIFICATION FOR US!");
 
 
   reorganizeTweets(app, mod) {
+    // sort chronologically
     for (let i = this.tweets.length - 1; i >= 1; i--) {
       if (this.tweets[i - 1].updated_at < this.tweets[i].updated_at) {
         let x = this.tweets[i - 1];
@@ -234,6 +235,19 @@ console.log("ADD NOTIFICATION FOR US!");
         this.tweets[i - 1] = y;
       }
     }
+    // and pull image to top
+    for (let i = 0; i < this.tweets.length; i++) {
+      if (this.tweets[i].has_image == true) {
+	if (i > 0) {
+          let x = this.tweets[i];
+          let y = this.tweets[0];
+          this.tweets[i] = y;
+          this.tweets[0] = x;
+	}
+	return;
+      }
+    }
+    return;
   }
 
   initializeHTML(app) {

@@ -147,7 +147,7 @@ class Storage {
   saveTransaction(tx) {
     const txmsg = tx.returnMessage();
 
-console.log("SAVING TRANSACTION");
+    console.log("SAVING TRANSACTION");
 
     const message = "archive";
     const data: any = {};
@@ -155,8 +155,7 @@ console.log("SAVING TRANSACTION");
     data.tx = tx;
     data.type = txmsg.module;
 
-
-console.log("send request with callback...");
+    console.log("send request with callback...");
 
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
@@ -223,8 +222,7 @@ console.log("send request with callback...");
 
   async queryDatabase(sql, params, database) {}
 
-  async executeDatabase(sql, params, database, mycallback = null) {
-  }
+  async executeDatabase(sql, params, database, mycallback = null) {}
 
   generateBlockFilename(block: Block): string {
     return ""; // empty

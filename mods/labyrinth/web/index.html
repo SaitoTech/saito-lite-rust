@@ -1,0 +1,328 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Here I Stand</title>
+
+  <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="/saito/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/saito/lib/jquery/jquery-ui.min.js"></script>
+
+  <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/fontawesome.min.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/all.css" type="text/css" media="screen" />
+
+  <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
+  <link rel="stylesheet" type="text/css" href="/saito/game.css" /> 
+  <link rel="stylesheet" type="text/css" href="/his/style.css" />
+
+  <script type="text/javascript" src="/saito/lib/hammer/hammer.min.js"></script>
+
+  <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
+
+</head>
+<body>
+
+  <div class="gameboard" id="gameboard">
+
+    <!--- NAVAL SPACES --->
+    <div class="navalspace" id="irish"></div>
+    <div class="navalspace" id="channel"></div>
+    <div class="navalspace" id="north"></div>
+    <div class="navalspace" id="baltic"></div>
+    <div class="navalspace" id="biscay"></div>
+    <div class="navalspace" id="atlantic"></div>
+    <div class="navalspace" id="gulflyon"></div>
+    <div class="navalspace" id="barbary"></div>
+    <div class="navalspace" id="tyrrhenian"></div>
+    <div class="navalspace" id="africa"></div>
+    <div class="navalspace" id="adriatic"></div>
+    <div class="navalspace" id="ionian"></div>
+    <div class="navalspace" id="aegean"></div>
+    <div class="navalspace" id="black"></div>
+
+    <!--- FORTRESSES, TOWNS, KEYS etc. --->
+    <div class="space" id="stirling"></div>
+    <div class="space" id="glasgow"></div>
+    <div class="space" id="edinburgh"></div>
+
+    <div class="space" id="berwick"></div>
+    <div class="space" id="carlisle"></div>
+    <div class="space" id="york"></div>
+    <div class="space" id="shrewsbury"></div>
+    <div class="space" id="lincoln"></div>
+    <div class="space" id="norwich"></div>
+    <div class="space" id="wales"></div>
+    <div class="space" id="bristol"></div>
+    <div class="space" id="london"></div>
+    <div class="space" id="plymouth"></div>
+    <div class="space" id="portsmouth"></div>
+    <div class="space" id="calais"></div>
+    <div class="space" id="boulogne"></div>
+    <div class="space" id="rouen"></div>
+    <div class="space" id="brest"></div>
+    <div class="space" id="stquentin"></div>
+    <div class="space" id="paris"></div>
+    <div class="space" id="stdizier"></div>
+    <div class="space" id="dijon"></div>
+    <div class="space" id="orleans"></div>
+    <div class="space" id="tours"></div>
+    <div class="space" id="nantes"></div>
+    <div class="space" id="limoges"></div>
+    <div class="space" id="bordeaux"></div>
+    <div class="space" id="toulouse"></div>
+    <div class="space" id="avignon"></div>
+    <div class="space" id="lyon"></div>
+    <div class="space" id="grenoble"></div>
+    <div class="space" id="marseille"></div>
+    <div class="space" id="navarre"></div>
+    <div class="space" id="bilbao"></div>
+    <div class="space" id="corunna"></div>
+    <div class="space" id="valladolid"></div>
+    <div class="space" id="zaragoza"></div>
+    <div class="space" id="madrid"></div>
+    <div class="space" id="cordoba"></div>
+    <div class="space" id="seville"></div>
+    <div class="space" id="granada"></div>
+    <div class="space" id="gibraltar"></div>
+    <div class="space" id="cartagena"></div>
+    <div class="space" id="valencia"></div>
+    <div class="space" id="barcelona"></div>
+    <div class="space" id="palma"></div>
+    <div class="space" id="oran"></div>
+    <div class="space" id="algiers"></div>
+    <div class="space" id="cagliari"></div>
+    <div class="space" id="tunis"></div>
+    <div class="space" id="cerignola"></div>
+    <div class="space" id="naples"></div>
+    <div class="space" id="taranto"></div>
+    <div class="space" id="messina"></div>
+    <div class="space" id="palermo"></div>
+    <div class="space" id="malta"></div>
+    <div class="space" id="tripoli"></div>
+    <div class="space" id="candia"></div>
+    <div class="space" id="rhodes"></div>
+    <div class="space" id="corfu"></div>
+    <div class="space" id="ragusa"></div>
+    <div class="space" id="zara"></div>
+    <div class="space" id="venice"></div>
+    <div class="space" id="rome"></div>
+    <div class="space" id="ancona"></div>
+    <div class="space" id="ravenna"></div>
+    <div class="space" id="siena"></div>
+    <div class="space" id="florence"></div>
+    <div class="space" id="modena"></div>
+    <div class="space" id="trent"></div>
+    <div class="space" id="zurich"></div>
+    <div class="space" id="basel"></div>
+    <div class="space" id="geneva"></div>
+    <div class="space" id="turin"></div>
+    <div class="space" id="nice"></div>
+    <div class="space" id="bastia"></div>
+    <div class="space" id="genoa"></div>
+    <div class="space" id="pavia"></div>
+    <div class="space" id="milan"></div>
+    <div class="space" id="innsbruck"></div>
+    <div class="space" id="trieste"></div>
+    <div class="space" id="graz"></div>
+    <div class="space" id="linz"></div>
+    <div class="space" id="vienna"></div>
+    <div class="space" id="besancon"></div>
+    <div class="space" id="metz"></div>
+    <div class="space" id="liege"></div>
+    <div class="space" id="brussels"></div>
+    <div class="space" id="antwerp"></div>
+    <div class="space" id="amsterdam"></div>
+    <div class="space" id="lubeck"></div>
+    <div class="space" id="stettin"></div>
+    <div class="space" id="hamburg"></div>
+    <div class="space" id="bremen"></div>
+    <div class="space" id="munster"></div>
+    <div class="space" id="brunswick"></div>
+    <div class="space" id="magdeburg"></div>
+    <div class="space" id="brandenburg"></div>
+    <div class="space" id="wittenberg"></div>
+    <div class="space" id="leipzig"></div>
+    <div class="space" id="erfurt"></div>
+    <div class="space" id="kassel"></div>
+    <div class="space" id="cologne"></div>
+    <div class="space" id="trier"></div>
+    <div class="space" id="mainz"></div>
+    <div class="space" id="nuremberg"></div>
+    <div class="space" id="strasburg"></div>
+    <div class="space" id="worms"></div>
+    <div class="space" id="augsburg"></div>
+    <div class="space" id="regensburg"></div>
+    <div class="space" id="salzburg"></div>
+    <div class="space" id="prague"></div>
+    <div class="space" id="breslau"></div>
+    <div class="space" id="brunn"></div>
+    <div class="space" id="pressburg"></div>
+    <div class="space" id="buda"></div>
+    <div class="space" id="szegedin"></div>
+    <div class="space" id="agram"></div>
+    <div class="space" id="mohacs"></div>
+    <div class="space" id="belgrade"></div>
+    <div class="space" id="istanbul"></div>
+    <div class="space" id="varna"></div>
+    <div class="space" id="edirne"></div>
+    <div class="space" id="bucharest"></div>
+    <div class="space" id="nicopolis"></div>
+    <div class="space" id="sofia"></div>
+    <div class="space" id="nezh"></div>
+    <div class="space" id="scutari"></div>
+    <div class="space" id="durazzo"></div>
+    <div class="space" id="salonika"></div>
+    <div class="space" id="larissa"></div>
+    <div class="space" id="lepanto"></div>
+    <div class="space" id="coron"></div>
+    <div class="space" id="athens"></div>
+
+    <!--- COLONIES --->
+    <div class="colony" id="colony1"></div>
+    <div class="colony" id="colony2"></div>
+    <div class="colony" id="colony3"></div>
+    <div class="colony" id="colony4"></div>
+    <div class="colony" id="colony5"></div>
+    <div class="colony" id="colony6"></div>
+    <div class="colony" id="colony7"></div>
+
+    <!--- FOREIGN WAR CARDS --->
+    <div class="revolt_in_egypt" id="revolt_in_egypt"></div>
+    <div class="revolt_in_ireland" id="revolt_in_ireland"></div>
+    <div class="war_in_persia" id="war_in_persia"></div>
+
+    <!--- CONQUESTS --->
+    <div class="conquest" id="conquest1"></div>
+    <div class="conquest" id="conquest2"></div>
+    <div class="conquest" id="conquest3"></div>
+    <div class="conquest" id="conquest4"></div>
+    <div class="conquest" id="conquest5"></div>
+    <div class="conquest" id="conquest6"></div>
+    <div class="conquest" id="conquest7"></div>
+
+    <!--- ELECTORATE DISPLAY --->
+    <div class="electorate_display" id="ed_augsburg"></div>
+    <div class="electorate_display" id="ed_trier"></div>
+    <div class="electorate_display" id="ed_cologne"></div>
+    <div class="electorate_display" id="ed_wittenberg"></div>
+    <div class="electorate_display" id="ed_mainz"></div>
+    <div class="electorate_display" id="ed_brandenburg"></div>
+
+    <!--- WAR TABLE --->
+    <div class="warbox" id="ottoman_hapsburg"></div>
+    <div class="warbox" id="ottoman_england"></div>
+    <div class="warbox" id="ottoman_france"></div>
+    <div class="warbox" id="ottoman_papacy"></div>
+    <div class="warbox" id="ottoman_protestant"></div>
+    <div class="warbox" id="ottoman_genoa"></div>
+    <div class="warbox" id="ottoman_hungary"></div>
+    <div class="warbox" id="ottoman_scotland"></div>
+    <div class="warbox" id="ottoman_venice"></div>
+
+    <div class="warbox" id="hapsburg_ottoman"></div>
+    <div class="warbox" id="hapsburg_england"></div>
+    <div class="warbox" id="hapsburg_france"></div>
+    <div class="warbox" id="hapsburg_papacy"></div>
+    <div class="warbox" id="hapsburg_protestant"></div>
+    <div class="warbox" id="hapsburg_genoa"></div>
+    <div class="warbox" id="hapsburg_hungary"></div>
+    <div class="warbox" id="hapsburg_scotland"></div>
+    <div class="warbox" id="hapsburg_venice"></div>
+
+    <div class="warbox" id="england_ottoman"></div>
+    <div class="warbox" id="england_hapsburg"></div>
+    <div class="warbox" id="england_france"></div>
+    <div class="warbox" id="england_papacy"></div>
+    <div class="warbox" id="england_protestant"></div>
+    <div class="warbox" id="england_genoa"></div>
+    <div class="warbox" id="england_hungary"></div>
+    <div class="warbox" id="england_scotland"></div>
+    <div class="warbox" id="england_venice"></div>
+
+    <div class="warbox" id="france_ottoman"></div>
+    <div class="warbox" id="france_hapsburg"></div>
+    <div class="warbox" id="france_england"></div>
+    <div class="warbox" id="france_papacy"></div>
+    <div class="warbox" id="france_protestant"></div>
+    <div class="warbox" id="france_genoa"></div>
+    <div class="warbox" id="france_hungary"></div>
+    <div class="warbox" id="france_scotland"></div>
+    <div class="warbox" id="france_venice"></div>
+
+    <div class="warbox" id="papacy_ottoman"></div>
+    <div class="warbox" id="papacy_hapsburg"></div>
+    <div class="warbox" id="papacy_england"></div>
+    <div class="warbox" id="papacy_france"></div>
+    <div class="warbox" id="papacy_protestant"></div>
+    <div class="warbox" id="papacy_genoa"></div>
+    <div class="warbox" id="papacy_scotland"></div>
+    <div class="warbox" id="papacy_hungary"></div>
+    <div class="warbox" id="papacy_venice"></div>
+
+    <div class="warbox" id="protestant_ottoman"></div>
+    <div class="warbox" id="protestant_hapsburg"></div>
+    <div class="warbox" id="protestant_england"></div>
+    <div class="warbox" id="protestant_france"></div>
+    <div class="warbox" id="protestant_papacy"></div>
+    <div class="warbox" id="protestant_genoa"></div>
+    <div class="warbox" id="protestant_scotland"></div>
+    <div class="warbox" id="protestant_hungary"></div>
+    <div class="warbox" id="protestant_venice"></div>
+
+    <!--- PREGNANCY CHART --->
+    <div class="pregnancy" id="pregnancy1"></div>
+    <div class="pregnancy" id="pregnancy2"></div>
+    <div class="pregnancy" id="pregnancy3"></div>
+    <div class="pregnancy" id="pregnancy4"></div>
+    <div class="pregnancy" id="pregnancy5"></div>
+    <div class="pregnancy" id="pregnancy6"></div>
+
+    <!--- VICTORY POINTS --->
+    <div class="vp" id="vp1"></div>
+    <div class="vp" id="vp2"></div>
+    <div class="vp" id="vp3"></div>
+    <div class="vp" id="vp4"></div>
+    <div class="vp" id="vp5"></div>
+    <div class="vp" id="vp6"></div>
+    <div class="vp" id="vp7"></div>
+    <div class="vp" id="vp8"></div>
+    <div class="vp" id="vp9"></div>
+    <div class="vp" id="vp10"></div>
+    <div class="vp" id="vp11"></div>
+    <div class="vp" id="vp12"></div>
+    <div class="vp" id="vp13"></div>
+    <div class="vp" id="vp14"></div>
+    <div class="vp" id="vp15"></div>
+    <div class="vp" id="vp16"></div>
+    <div class="vp" id="vp17"></div>
+    <div class="vp" id="vp18"></div>
+    <div class="vp" id="vp19"></div>
+    <div class="vp" id="vp20"></div>
+    <div class="vp" id="vp21"></div>
+    <div class="vp" id="vp22"></div>
+    <div class="vp" id="vp23"></div>
+    <div class="vp" id="vp24"></div>
+    <div class="vp" id="vp25"></div>
+    <div class="vp" id="vp26"></div>
+    <div class="vp" id="vp27"></div>
+    <div class="vp" id="vp28"></div>
+    <div class="vp" id="vp29"></div>
+
+    <div class="vp_tile" id="hapsburg_vp_tile" alt="Hapsburg"></div>
+    <div class="vp_tile" id="ottoman_vp_tile" alt="Ottoman"></div>
+    <div class="vp_tile" id="england_vp_tile" alt="England"></div>
+    <div class="vp_tile" id="france_vp_tile" alt="France"></div>
+    <div class="vp_tile" id="papacy_vp_tile" alt="Papacy"></div>
+    <div class="vp_tile" id="protestant_vp_tile" alt="Protestant"></div>
+
+  </div>
+
+  <script id="saito" src="/saito/saito.js"></script>
+
+</body>
+</html>
+

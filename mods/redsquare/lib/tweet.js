@@ -29,6 +29,8 @@ class RedSquareTweet {
     this.youtube_id = null;
     this.flagged = null;
 
+    this.has_image = false;
+
     //
     // retweet
     //
@@ -83,6 +85,15 @@ class RedSquareTweet {
     if (tx.optional?.num_retweets) {
       this.num_retweets = tx.optional.num_retweets;
     }
+
+    // do ew have an image
+    try {
+      let txmsg = this.tx.returnMessage();
+      if (typeof txmsg.data.images != 'undefined' && txmsg.data.images.length > 0) {
+	this.has_image = true;
+      }
+    } catch (err) {}
+
 
     //
     // 0 = do not fetch open graph
@@ -286,8 +297,8 @@ class RedSquareTweet {
     //
     // render tweet with children
     //
-
     const openTweet = (e) => {
+
       //e.preventDefault();
       e.stopImmediatePropagation();
 
@@ -295,6 +306,9 @@ class RedSquareTweet {
       let el = e.currentTarget;
       let tweet_sig_id = el.getAttribute("data-id");
 
+      //
+      // add back button
+      //
       document.querySelector(".redsquare-list").innerHTML = "";
       let new_title = "<i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE";
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE</div>`, "saito-page-header-title");
@@ -328,25 +342,74 @@ class RedSquareTweet {
     }
 
 
-    let sel = "#tweet-" + this.tx.transaction.sig;
+    //
+    // view tweet ( + children )
+    //
+    let sel = "#tweet-box-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
-      openTweet(e);
+
+      //
+      // trap links in tweets
+      //
+      if (e.target.classList.contains('saito-treated-link') || e.target.classList.contains('saito-og-link')) {
+        let url = e.target.getAttribute('href');
+        window.open(url, '_blank').focus();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+	      return;
+      }
+      
+      //
+      // avoid other clickable elements
+      //
+      if (
+	!e.target.classList.contains("tweet-img")  &&   // images
+	!e.target.classList.contains("tweet-tool") &&   // buttons
+	!e.target.classList.contains("far")        &&   // icons
+	!e.target.classList.contains("fa")         &&   // icons
+	!e.target.classList.contains("fas")        &&   // icons
+  !e.target.tagName == "A"
+      ) {
+//console.log("OPEN TWEET: " + JSON.stringify(e.target.classList));
+        openTweet(e);
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
 
     };
 
+
+    //
+    // view image
+    //
+    //sel = `#tweet-img-${this.tx.transaction.sig}`;
     sel = `#tweet-img-${this.tx.transaction.sig}`;
     if (document.querySelector(sel)) {
       document.querySelector(sel).onclick = (e) => {
-        if (e.target.classList.contains('tweet-img-expand-container')) return;
-        openTweet(e)
+
+        let img = e.target;
+
+        let imgdata_uri = img.style.backgroundImage.slice(4, -1).replace(/"/g, "");
+        
+        let imgId = Math.floor(Math.random()*10000);
+        tweet_self.img_overlay.show(app, mod, "<div class='tweet-overlay-img-cont' id='tweet-overlay-img-cont-"+imgId+"'></div>");
+
+        let oImg = document.createElement("img");
+        oImg.setAttribute('src', imgdata_uri);
+        document.querySelector("#tweet-overlay-img-cont-"+imgId).appendChild(oImg);
+
+        let img_width = oImg.width;
+        let img_height = oImg.height;
+        let aspRatio = img_width / img_height;
+
+        let winHeight = window.innerHeight;
+        let winWidth = window.innerWidth;
       }
     }
 
 
-
-
     // 
-    // reply to tweet
+    // reply
     //
     sel = ".tweet-reply-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
@@ -460,60 +523,6 @@ class RedSquareTweet {
       });
     };
 
-
-    document.querySelectorAll('.tweet-img-expand-container').forEach(item => {
-      item.onclick = (e) => {
-        // don't stop propagation for all clicks or we stop
-        // inputs from functioning if added to the DOM / DIV
-        e.preventDefault();
-        // e.stopImmediatePropagation();
-        tweet_self.img_overlay.clear();
-
-        let img = e.target.parentElement;
-
-        let imgdata_uri = img.style.backgroundImage.slice(4, -1).replace(/"/g, "");
-        
-        let imgId = Math.floor(Math.random()*10000);
-        tweet_self.img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont-"+imgId+"'></div>");
-
-        let oImg = document.createElement("img");
-        oImg.setAttribute('src', imgdata_uri);
-        document.querySelector("#tweet-overlay-img-cont-"+imgId).appendChild(oImg);
-
-        let img_width = oImg.width;
-        let img_height = oImg.height;
-        let aspRatio = img_width / img_height;
-
-        let winHeight = window.innerHeight;
-        let winWidth = window.innerWidth;
-
-        // if (aspRatio > 1) {
-        //   oImg.style.width = '80vw';
-        //   oImg.style.height = 'auto';
-
-        //   if (oImg.height > winHeight) {
-        //     oImg.style.width = (oImg.width * 0.75) + 'px';
-        //   }
-        // } else {
-        //   oImg.style.height = '80vh';
-        //   oImg.style.width = 'auto';
-
-        //   if (oImg.width > winWidth) {
-        //     oImg.height = (oImg.height * 0.75) + 'px';
-        //   }
-        // }
-      }
-
-    })
-
-    document.onclick = function (e) {
-      if (e.target.classList.contains('tweet-link')) {
-        let url = e.target.getAttribute('href');
-        window.open(url, '_blank').focus();
-        e.preventDefault();
-        e.stopImmediatePropagation();
-      }
-    }
 
 
   }
@@ -646,6 +655,13 @@ class RedSquareTweet {
     return this;
 
   }
+
+
+  ///////////////
+  // functions //
+  ///////////////
+
+
 
 
 }
