@@ -822,7 +822,7 @@ return;
         this.sendEvent('chat_receive_message', message);
         this.render(this.app, renderMode);
 
-	this.app.emit('old-chat-render-request', {});
+	//this.app.emit('old-chat-render-request', {});
 
         this.saveChat();
 
