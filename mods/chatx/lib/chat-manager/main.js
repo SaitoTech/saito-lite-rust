@@ -17,6 +17,7 @@ class ChatManager {
 		}
 
 		app.connection.on("chat-render-request", (group_id = "") => {
+		  if (app.BROWSER) {
 		     if (group_id != "") {
 		         let psq = "#chat-container-"+group_id;
 		         let obj = document.querySelector(psq);
@@ -27,6 +28,7 @@ class ChatManager {
 			   console.log("Chat Popup Exists");
 			 }
 		     }
+		   }
 		});
 
 /*****
@@ -54,7 +56,7 @@ class ChatManager {
 
 		if (!document.querySelector(".chat-manager")) {
 			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
-			app.browser.makeDraggable("#chat-manager");
+			//app.browser.makeDraggable("#chat-manager");
 		}
 
 		//

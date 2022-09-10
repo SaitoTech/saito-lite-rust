@@ -71,11 +71,6 @@ class Chat extends ModTemplate {
 
     respondTo(type) {
         switch (type) {
-//            case 'chat-manager':
-//            	this.scripts['/chat/css/style.css'];
-//      		super.render(this.app, this); // add scripts + styles
-//      		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
-//		return this.chat_manager;
             case 'email-chat':
                 return {
                     render: this.renderEmailChat,
@@ -827,7 +822,7 @@ return;
         this.sendEvent('chat_receive_message', message);
         this.render(this.app, renderMode);
 
-	//this.app.emit('old-chat-render-request', {});
+	this.app.emit('old-chat-render-request', {});
 
         this.saveChat();
 
