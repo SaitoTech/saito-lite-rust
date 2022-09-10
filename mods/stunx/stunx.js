@@ -12,7 +12,7 @@ class Stunx extends ModTemplate {
 
     constructor(app, mod) {
         super(app);
-        this.appname = "Video Calls";
+        this.appname = "Stunx";
         this.name = "Stunx";
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
