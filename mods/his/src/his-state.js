@@ -1,7 +1,13 @@
 
   captureLeader(winning_faction, losing_faction, space, unit) {
+    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    alert("Capture Leader Not Implemented");
+    let p = this.returnPlayerOfFaction(winning_faction);
+    let unitjson = JSON.stringify(unit);
+    for (let z = 0; z < p.captured.length; z++) {
+      if (JSON.stringify(p.captured[z]) === unitjson) { return; }
+    }
+    p.captured.push(unit);
   }
 
   activateMinorPower(faction, power) {
@@ -154,12 +160,16 @@
       }
     }
 
+    //
     // let factions calculate their VP
+    //
     for (let f in factions) {
       factions[f].vp = this.factions[f].calculateVictoryPoints(this);
     }
 
+    //
     // calculate keys controlled
+    //
     for (let f in factions) {
       factions[f].keys = this.returnNumberOfKeysControlledByFaction(f);
       if (f === "protestant") {
@@ -167,44 +177,46 @@
       }
     }
 
+    //
     // military victory
+    //
     if (factions['hapsburg']) {
-    if (factions['hapsburg'].keys >= this.game.state.autowin_hapsburg_keys_controlled) {
-      factions['hapsburg'].victory = 1;
-      factions['hapsburg'].details = "military victory";
-    }
+      if (factions['hapsburg'].keys >= this.game.state.autowin_hapsburg_keys_controlled) {
+        factions['hapsburg'].victory = 1;
+        factions['hapsburg'].details = "military victory";
+      }
     }
     if (factions['ottoman']) {
-    if (factions['ottoman'].keys >= this.game.state.autowin_ottoman_keys_controlled) {
-      factions['ottoman'].victory = 1;
-      factions['ottoman'].details = "military victory";
-    }
+      if (factions['ottoman'].keys >= this.game.state.autowin_ottoman_keys_controlled) {
+        factions['ottoman'].victory = 1;
+        factions['ottoman'].details = "military victory";
+      }
     }
     if (factions['france']) {
-    if (factions['france'].keys >= this.game.state.autowin_france_keys_controlled) {
-      factions['france'].victory = 1;
-      factions['france'].details = "military victory";
-    }
+      if (factions['france'].keys >= this.game.state.autowin_france_keys_controlled) {
+        factions['france'].victory = 1;
+        factions['france'].details = "military victory";
+      }
     }
     if (factions['england']) {
-    if (factions['england'].keys >= this.game.state.autowin_england_keys_controlled) {
-      factions['england'].victory = 1;
-      factions['england'].details = "military victory";
-    }
+      if (factions['england'].keys >= this.game.state.autowin_england_keys_controlled) {
+        factions['england'].victory = 1;
+        factions['england'].details = "military victory";
+      }
     }
     if (factions['papacy']) {
-    if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
-      factions['papacy'].victory = 1;
-      factions['papacy'].details = "military victory";
-    }
+      if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
+        factions['papacy'].victory = 1;
+        factions['papacy'].details = "military victory";
+      }
     }
 
     // religious victory
     if (factions['protestant']) {
-    if (factions['protestant'].religious >= 50) {
-      factions['papacy'].victory = 1;
-      factions['papacy'].details = "religious victory";
-    }
+      if (factions['protestant'].religious >= 50) {
+        factions['papacy'].victory = 1;
+        factions['papacy'].details = "religious victory";
+      }
     }
 
     // base

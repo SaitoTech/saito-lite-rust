@@ -103,6 +103,7 @@
       players[i].tmp_roll_modifiers = [];
       players[i].factions = [];
       players[i].factions.push(rf);
+      players[i].captured = [];
       players[i].num = i;
 
     }
