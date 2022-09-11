@@ -1,4 +1,4 @@
-module.exports = RedSquareLeagueSidebarTemplate = (app, mod, league_mod) => {
+module.exports = RedSquareLeagueTemplate = (app, mod, league_mod) => {
 	let html = "";
 
 	if (league_mod){

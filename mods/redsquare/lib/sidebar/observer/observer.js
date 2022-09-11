@@ -12,8 +12,10 @@ class RedSquareObserverSidebar {
 		let observer_mod = app.modules.returnModule("Observer");
 
 		if (selector != "") {
+		  document.querySelector(selector).innerHTML = "";
 	      app.browser.addElementToSelector(RedSquareObserverSidebarTemplate(app, mod, observer_mod, this.games), selector);
 	    } else {
+	      document.querySelector(this.selector).innerHTML = "";
 	      app.browser.addElementToSelector(RedSquareObserverSidebarTemplate(app, mod, observer_mod, this.games), this.selector);
 	    }
 

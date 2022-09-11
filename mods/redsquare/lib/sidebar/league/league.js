@@ -1,6 +1,6 @@
-const RedSquareLeagueSidebarTemplate = require("./league-sidebar.template");
+const RedSquareLeagueTemplate = require("./league.template");
 
-class RedSquareLeagueSidebar {
+class RedSquareLeague {
 	
 	constructor(app, mod, selector="") {
 	    this.mod = mod;
@@ -11,9 +11,9 @@ class RedSquareLeagueSidebar {
 		let league_mod = app.modules.returnModule("League");
 		
 		if (selector != "") {
-	      app.browser.addElementToSelector(RedSquareLeagueSidebarTemplate(app, mod, league_mod), selector);
+	      app.browser.addElementToSelector(RedSquareLeagueTemplate(app, mod, league_mod), selector);
 	    } else {
-	      app.browser.addElementToSelector(RedSquareLeagueSidebarTemplate(app, mod, league_mod), this.selector);
+	      app.browser.addElementToSelector(RedSquareLeagueTemplate(app, mod, league_mod), this.selector);
 	    }
 
 	    this.attachEvents(app, mod);
@@ -39,5 +39,5 @@ class RedSquareLeagueSidebar {
 
 };
 
-module.exports = RedSquareLeagueSidebar;
+module.exports = RedSquareLeague;
 

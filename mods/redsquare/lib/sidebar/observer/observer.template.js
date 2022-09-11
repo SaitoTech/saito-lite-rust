@@ -1,4 +1,4 @@
-module.exports = RedSquareObserverSidebarTemplate = (app, mod, obs_mod, games) => {
+module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 	let html = "";
 
 	console.log('before games');

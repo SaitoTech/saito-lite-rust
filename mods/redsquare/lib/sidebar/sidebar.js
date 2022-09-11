@@ -1,7 +1,7 @@
 const RedSquareSidebarTemplate = require("./sidebar.template");
 const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/saito-calendar");
-const RedSquareLeagueSidebar = require("./league/league-sidebar");
-const RedSquareObserverSidebar = require("./observer/observer-sidebar");
+const RedSquareLeague = require("./league/league");
+const RedSquareObserver = require("./observer/observer");
 
 class RedSquareSidebar {
 
@@ -11,7 +11,7 @@ class RedSquareSidebar {
     this.selector = selector;
 
     app.connection.on("observer-list-update-request", (games)=>{   
-      let observer_sidebar = new RedSquareObserverSidebar(app, mod);
+      let observer_sidebar = new RedSquareObserver(app, mod);
       observer_sidebar.games = games;
       observer_sidebar.render(app, mod, ".redsquare-sidebar-observer");
     });
@@ -38,10 +38,10 @@ class RedSquareSidebar {
     let sidebar_calendar = new SaitoCalendar(app, mod);
     sidebar_calendar.render(app, mod, ".redsquare-sidebar-calendar");
 
-    let league_sidebar = new RedSquareLeagueSidebar(app, mod);
+    let league_sidebar = new RedSquareLeague(app, mod);
     league_sidebar.render(app, mod, ".redsquare-sidebar-league");
 
-    let observer_sidebar = new RedSquareObserverSidebar(app, mod, []);
+    let observer_sidebar = new RedSquareObserver(app, mod, []);
     observer_sidebar.render(app, mod, ".redsquare-sidebar-observer");
 
 
