@@ -10,18 +10,21 @@ class ChatPopup {
     this.hasRendered = true;
 
     app.connection.on("chat-render-request", (gid = "") => {
-
+      if(mod.chat_manager.inactive_popups.includes(group_id)) return;
       if (gid === this.group_id && gid != "" && this.group_id != "") {
 
         let divid = "chat-container-" + gid;
-        this.input_value = document.querySelector(`#chat-input-${group_id}`).value
-
+      
         if (!this.hasRendered){
-          app.browser.replaceElementById(ChatPopupTemplate(app, mod, gid, this.input_value), divid);
+          app.browser.replaceElementById(ChatPopupTemplate(app, mod, gid), divid);
           this.hasRendered = true;
+          console.log('returning chat body 1;' , mod.returnChatBody(gid))
+          app.browser.addElementToSelector(`${mod.returnChatBody(gid)}`,  `.chat-body-${gid}`);
         }
 
-        app.browser.replaceElementBySelector(`<div class="chat-body">${mod.returnChatBody(gid)} </div> ,`,  ".chat-body");
+        console.log('returning chat body 2;' , mod.returnChatBody(gid))
+        app.browser.replaceElementBySelector(`<div class="chat-body chat-body-${gid}">${mod.returnChatBody(gid)} </div> ,`,  `.chat-body-${gid}`);
+
         document.querySelector(".chat-body").scroll(0, 1000000000);
         app.browser.makeDraggable(`chat-container-${gid}`);
         this.attachEvents(app, mod, gid);
@@ -32,18 +35,22 @@ class ChatPopup {
   }
 
   render(app, mod, group_id = "") {
+    if(mod.chat_manager.inactive_popups.includes(group_id)) return;
     if (group_id != "" && this.group_id == "") { this.group_id = group_id; }
     if (!document.getElementById(`chat-container-${this.group_id}`)) {
       if(!document.querySelector(".chat-popup-list")){
         app.browser.addElementToDom(`<div class="chat-popup-list"> </div>`)
       }
-      app.browser.addElementToSelector(ChatPopupTemplate(app, mod, this.group_id), '.chat-popup-list');
+      app.browser.prependElementToSelector(ChatPopupTemplate(app, mod, this.group_id), '.chat-popup-list');
       app.browser.makeDraggable(`chat-container-${this.group_id}`);
       this.attachEvents(app, mod, this.group_id);
     } else {
       // we've been told to render, but the container exists, so update the chat-body
-      app.browser.replaceElementBySelector(`<div class="chat-body">${mod.returnChatBody(group_id)} </div> ,`,  ".chat-body");
+     
     }
+
+    console.log('returning chat body')
+    app.browser.addElementToSelector(`${mod.returnChatBody(group_id)}`,  `.chat-body`);
   }
 
   attachEvents(app, mod, group_id) {

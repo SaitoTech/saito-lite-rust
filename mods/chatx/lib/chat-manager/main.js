@@ -11,13 +11,16 @@ class ChatManager {
 		this.mod = mod;
 		this.messages_in_groups = [];
 		this.rendered = 0;
+		this.inactive_popups = [];
 
 		for (let z = 0; z < this.mod.groups.length; z++) {
 			this.messages_in_groups[z] = this.mod.groups[z].txs.length;
 		}
 
 		app.connection.on("chat-render-request", (group_id = "") => {
+
 		  if (app.BROWSER) {
+
 		     if (group_id != "") {
 		         let psq = "#chat-container-"+group_id;
 		         let obj = document.querySelector(psq);
@@ -126,6 +129,7 @@ class ChatManager {
 		document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 			item.onclick = (e) => {
 				let group_id = e.currentTarget.getAttribute("data-id");
+		        mod.removePopupFromInactiveList(group_id);
 				let chat_popup = new ChatPopup(app, mod, group_id);
 				app.connection.emit('chat-render-request', group_id);
 			}

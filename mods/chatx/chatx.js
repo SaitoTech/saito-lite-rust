@@ -941,7 +941,17 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
 
     deactivatePopup(group_id) {
        // add 
+       this.chat_manager.inactive_popups.push(group_id);
     }
+
+    removePopupFromInactiveList(gid){
+        if(this.chat_manager){
+            this.chat_manager.inactive_popups = this.chat_manager.inactive_popups.filter(group_id => group_id !== gid);
+        }
+      
+    }
+
+    
 
 }
 
