@@ -20,7 +20,6 @@ class ChatManager {
 		app.connection.on("chat-render-request", (group_id = "") => {
 
 		  if (app.BROWSER) {
-
 		     if (group_id != "") {
 		         let psq = "#chat-container-"+group_id;
 		         let obj = document.querySelector(psq);
@@ -33,26 +32,6 @@ class ChatManager {
 		     }
 		   }
 		});
-
-/*****
-		app.connection.on("chat-popup-render-request", (group_id="") => {
-		    if (!document.querySelector(".chat-manager")) {
-			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), "");
-			app.browser.makeDraggable("#chat-manager");
-		    }
-		    if (group_id != "") {
-			let psq = "#chat-container-"+group_id;
-			let obj = document.querySelector(psq);
-			if (!obj) {
-			  let chat_popup = new ChatPopup(app, mod, group_id);
-			  chat_popup.render(app, mod, group_id);
-			  
-			} else {
-				console.log("Chat Popup Exists");
-			}
-		    }
-		});
-****/
 	}
 
 	render(app, mod, selector = "") {
@@ -129,7 +108,7 @@ class ChatManager {
 		document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 			item.onclick = (e) => {
 				let group_id = e.currentTarget.getAttribute("data-id");
-		        mod.removePopupFromInactiveList(group_id);
+		        	mod.activatePopup(group_id);
 				let chat_popup = new ChatPopup(app, mod, group_id);
 				app.connection.emit('chat-render-request', group_id);
 			}
