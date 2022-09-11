@@ -19,7 +19,7 @@ Saito User
     display: grid;
     cursor: pointer;
     grid-template-columns: min-content 1fr min-content;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: min-content 1fr;
     justify-items: start;
     margin-bottom: 1px;
     width: 100%;
@@ -94,13 +94,21 @@ Saito Page Header
 -----------------------------------------------------------------*/
 .saito-page-header {
     padding-bottom: 1rem;
-    padding-right: 1.5rem;
+    padding-right: 0rem;
+    padding-top: 0rem;
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 535px) {
+  .saito-page-header {
+    padding-top: 1rem;
+  }
 }
 
 .saito-page-header-title {
     color: #222;
     font-size: 2.5rem;
-    padding-top: 1rem;
+    padding-top: 0rem;
     text-transform: uppercase;
 }
 
@@ -116,10 +124,24 @@ Saito Page Header
     font-size: 1.6rem;
     line-height: 2.1rem;
     clear: both;
-    padding-top: 1rem;
+    position: absolute;
+    background: var(--saito-white);
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+    transition: min-height 0.3s ease-in-out;
+    height: 0;
+    overflow: hidden;
+    padding: 0;
+    border: none;
+    z-index: 9;
 }
 
-
+.saito-page-header:hover .saito-page-header-text {
+    min-height: 3rem;
+    height: auto;
+    border: 1px solid var(--saito-border);
+    padding: 1rem;
+}
 
 /* ----------------------------------------------------------------
 Saito Table
@@ -154,11 +176,15 @@ Saito Leaderboard
     padding-right: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-    background: #fafafa;
+    /* Setting background here overrides the alternating row shading in the table */
+    /* Please inform Daniel if we want all the rows to be same color, so he can delete code that generates unused css classes */
+    /*background: #fafafa;*/
     border-width: 2px 0;
     border-color: #fff;
     border-style: solid;
+    cursor: pointer;
 }
+
 
 .saito-leaderboard-gamename {
     width: 100%;
@@ -296,7 +322,10 @@ Saito Module Boxes
 }
 
 
-
+.saito-page-header .saito-button-secondary {
+    margin-top: 0px;
+    padding: 0.5rem 0.7rem 0.4rem  0.7rem;
+}
 
 .saito-button-secondary .small .saito-module-install-button {
     width: min-content;

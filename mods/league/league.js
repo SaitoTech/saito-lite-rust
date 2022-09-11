@@ -5,6 +5,7 @@ const ArcadeLeague = require('./lib/components/arcade-league');
 const ForumLeague = require('./lib/components/forum-league');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const ArcadeLeagueView = require("./lib/overlays/arcade-league-view");
 const LeagueInvite = require("./lib/overlays/league-invite");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
@@ -25,7 +26,7 @@ class League extends ModTemplate {
     // i like simpler names, but /lib contains this.leagues[] as well
     //
     this.leagues = [];
-
+    this.leagueCount = 0;
 
     //
     // used in onPeerHandshakeComplete
@@ -40,6 +41,13 @@ class League extends ModTemplate {
 
   }
 
+
+  respondTo(type){
+    if (type == "view-league-details"){
+      return new ArcadeLeagueView(this.app);
+    }
+    return super.respondTo(type);
+  }
 
   initialize(app) {
 
@@ -147,15 +155,12 @@ class League extends ModTemplate {
     let leagues_to_display = [];
     //filter leagues to display
     for (let le of this.leagues){
-      if (le.type == "public"){
+      if (le.admin == app.wallet.returnPublicKey() || le.myRank > 0){
+        leagues_to_display.push(le);
+      }else if (le.type == "public"){
         //Only show public leagues if there are available slots or I am a member
-        if (le.myRank > 0 || le.max_players == 0 || le.playerCnt < le.max_players){
+        if (le.max_players == 0 || le?.playerCnt < le.max_players){
           leagues_to_display.push(le);
-        }
-      }else{
-        //Only show private leagues if I am a member or I am the admin
-        if (le.myRank > 0 || le.admin == app.wallet.returnPublicKey()){
-          leagues_to_display.push(le); 
         }
       }
     }
@@ -219,6 +224,7 @@ class League extends ModTemplate {
 
   resetLeagues(){
     this.leagues = [];
+    this.leagueCount = 0;
   }
 
   doICare(){
@@ -567,7 +573,7 @@ class League extends ModTemplate {
     tx.msg = {
       module:  "League",
       request: "remove league",
-      league:    league_id,
+      league:   league_id,
     };
 
     let newtx = this.app.wallet.signTransaction(tx);
@@ -584,15 +590,12 @@ class League extends ModTemplate {
 
     let txmsg = tx.returnMessage();
 
-    let params = {
-      $league : txmsg.league
-    }
-
-    let sql1 = `DELETE FROM leagues WHERE id=$league`;
-    await this.app.storage.executeDatabase(sql1, params, "league");
-
-    let sql2 = `DELETE FROM players WHERE id=$league`;
-    await this.app.storage.executeDatabase(sql2, params, "league");
+    let sql1 = `DELETE FROM leagues WHERE id='${txmsg.league}'`;
+    await this.app.storage.executeDatabase(sql1, {}, "league");
+    console.log(sql1);
+    let sql2 = `DELETE FROM players WHERE league_id='${txmsg.league}'`;
+    await this.app.storage.executeDatabase(sql2, {}, "league");
+    console.log(sql2);
   }
 
 
@@ -882,13 +885,17 @@ class League extends ModTemplate {
     let lid = league.id;
     let pid = this.app.wallet.returnPublicKey();
     league.myRank = -1;
-    league.playerCnt = 0;
     let league_self = this;
     league.players = [];
     league.top3 = [];
     this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
 
       async (res) => {
+        //A little trick to use league.playerCnt == undefined to flag that the database query hasn't come back yet
+        league.playerCnt = 0;
+        //Keep track of the number of updated leagues
+        league_self.leagueCount++;
+
         if (res.rows) {
           let cnt = 0;
           for (let p of res.rows){
@@ -931,7 +938,9 @@ class League extends ModTemplate {
         }
 
         //console.log(`League updated: ${league.myRank} / ${league.playerCnt}`);
-        league_self.renderLeagues(league_self.app, league_self);
+        if (league_self.leagueCount >= league_self.leagues.length){
+          league_self.renderLeagues(league_self.app, league_self);
+        }
       }
 
     );

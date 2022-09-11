@@ -61,7 +61,7 @@ class Chat extends ModTemplate {
 
             let newgroup = this.createChatGroup(data.members);
 
-            this.sendEvent('chat-render-request', {});
+            this.sendEvent('old-chat-render-request', {});
             this.saveChat();
             this.render(this.app);
         }
@@ -71,11 +71,6 @@ class Chat extends ModTemplate {
 
     respondTo(type) {
         switch (type) {
-//            case 'chat-manager':
-//            	this.scripts['/chat/css/style.css'];
-//      		super.render(this.app, this); // add scripts + styles
-//      		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
-//		return this.chat_manager;
             case 'email-chat':
                 return {
                     render: this.renderEmailChat,
@@ -191,7 +186,7 @@ class Chat extends ModTemplate {
         //
         // note that this may run before initializeHTML
         //
-        this.sendEvent('chat-render-request', {});
+        this.sendEvent('old-chat-render-request', {});
     }
 
     binaryInsert(list, item, compare, search) {
@@ -254,7 +249,8 @@ class Chat extends ModTemplate {
                                     return a.transaction.ts - b.transaction.ts;
                                 })
                             }
-                            this.sendEvent('chat-render-request', {});
+			    //
+                            this.sendEvent('old-chat-render-request', {});
 
                             //
                             // check identifiers
@@ -279,7 +275,7 @@ class Chat extends ModTemplate {
                         return 1;
                     }
 
-                    this.sendEvent('chat-render-request', {});
+                    this.sendEvent('old-chat-render-request', {});
 
 		    //
 		    // check identifiers
@@ -368,7 +364,7 @@ class Chat extends ModTemplate {
         //
         // render loaded messages
         //
-        this.sendEvent('chat-render-request', {});
+        this.sendEvent('old-chat-render-request', {});
         this.sendEvent('chat-render-box-request', {});
 
         this.render(this.app);
@@ -419,6 +415,9 @@ class Chat extends ModTemplate {
     //
     onConfirmation(blk, tx, conf, app) {
 
+	// 
+	// CHAT mod deprecated by CHATX
+	//
 return;
 
         tx.decryptMessage(app);
@@ -453,6 +452,14 @@ return;
     // peer messages --> receiveMessage()
     //
     async handlePeerRequest(app, req, peer, mycallback) {
+
+	// 
+	// CHAT mod deprecated
+	//
+	let arcade_mod = app.modules.returnModule("Arcade");
+	if (!arcade_mod.browser_active) { return; }
+
+
         if (req.request == null) {
             return;
         }
@@ -711,7 +718,7 @@ return;
 
         if (app.BROWSER == 1) {
             let m = app.modules.returnActiveModule();
-            if (!m.events.includes("chat-render-request")) {
+            if (!m.events.includes("old-chat-render-request")) {
                 this.showAlert();
             }
         }
@@ -815,7 +822,7 @@ return;
         this.sendEvent('chat_receive_message', message);
         this.render(this.app, renderMode);
 
-	//this.app.emit('chat-render-request', {});
+	//this.app.emit('old-chat-render-request', {});
 
         this.saveChat();
 

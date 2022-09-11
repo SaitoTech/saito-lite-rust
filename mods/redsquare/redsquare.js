@@ -10,8 +10,7 @@ const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
 const GameCreator = require("./lib/appspace/arcade/game-creator");
 const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
-const PostTweet = require('./lib/post');
-
+const PostTweet = require("./lib/post");
 
 class RedSquare extends ModTemplate {
 
@@ -63,6 +62,18 @@ class RedSquare extends ModTemplate {
           this.fetchNewTweets(app, this)
         }, 30000)
       }
+    }
+  }
+
+
+
+  tweetImage(image) {
+    try {
+      let post = new PostTweet(this.app, this);
+          post.render(this.app, this);
+	  post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
+    } catch (err) {
+console.log("error tweeting image");
     }
   }
 
@@ -205,6 +216,7 @@ console.log("ADD NOTIFICATION FOR US!");
 
 
   reorganizeTweets(app, mod) {
+    // sort chronologically
     for (let i = this.tweets.length - 1; i >= 1; i--) {
       if (this.tweets[i - 1].updated_at < this.tweets[i].updated_at) {
         let x = this.tweets[i - 1];
@@ -213,6 +225,19 @@ console.log("ADD NOTIFICATION FOR US!");
         this.tweets[i - 1] = y;
       }
     }
+    // and pull image to top
+    for (let i = 0; i < this.tweets.length; i++) {
+      if (this.tweets[i].has_image == true) {
+	if (i > 0) {
+          let x = this.tweets[i];
+          let y = this.tweets[0];
+          this.tweets[i] = y;
+          this.tweets[0] = x;
+	}
+	return;
+      }
+    }
+    return;
   }
 
   initializeHTML(app) {
@@ -701,8 +726,8 @@ alert("new tweet 1!");
 alert("new tweet 2!");
           post.images.push(image);
 alert("new tweet 3!");
-          post.render(app, mod);
-alert("new tweet 3!");
+          post.render(this.app, this);
+alert("new tweet 4!");
     } catch (err) {
 console.log("error tweeting image");
     }

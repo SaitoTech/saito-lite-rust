@@ -69,7 +69,7 @@ async function initCLI() {
   function count(what, dir) {
     var x = 0;
     const files = fs.readdirSync(dir);
-    if(what =="blocks") {
+    if (what == "blocks") {
       x = files.length;
       console.log(x + " " + what + " on disk.");
     } else {
@@ -79,15 +79,15 @@ async function initCLI() {
             app.storage.loadBlockByFilename(dir + file).then((blk) => {
               x += blk.transactions.length;
               console.log("another: " + blk.transactions.length + " for " + x + " total.");
-              if (file == files[files.length-1]) {
+              if (file == files[files.length - 1]) {
                 console.log(x + " " + what + " on disk.");
-              }    
+              }
             });
           }
         } catch (err) {
           console.error(err);
         }
-      });  
+      });
     }
   }
 
@@ -161,8 +161,8 @@ async function initCLI() {
                 $tx_from: blk.transactions[i].transaction.from[0].add,
                 $tx_to: blk.transactions[i].transaction.to[ii].add,
                 $name: tname,
-                $module: tmodule
-              }
+                $module: tmodule,
+              };
               await app.storage.executeDatabase(sql, params, "warehouse");
             }
           }
@@ -172,9 +172,7 @@ async function initCLI() {
     } catch (err) {
       console.error(err);
     }
-
   }
-
 
   function printHelp() {
     var help = `

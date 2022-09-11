@@ -221,6 +221,27 @@ class Settlers extends GameTemplate {
         game_mod.log.toggleLog();
       },
     });
+
+    if (app.modules.returnModule("RedSquare")) {
+    this.menu.addSubMenuOption("game-game", {
+      text : "Screenshot",
+      id : "game-post",
+      class : "game-post",
+      callback : async function(app, game_mod) {
+        let log = document.querySelector(".log");
+        let log_lock = document.querySelector(".log_lock");
+        if (!log_lock && log) { log.style.display = "none"; }
+        await app.browser.captureScreenshot(function(image) {
+          if (!log_lock && log) { log.style.display = "block"; }
+          let m = game_mod.app.modules.returnModule("RedSquare");
+          if (m) { m.tweetImage(image); }
+        });
+      },
+    });
+    }
+
+
+
     this.menu.addSubMenuOption("game-game", {
       text: "Exit",
       id: "game-exit",
@@ -2437,6 +2458,12 @@ class Settlers extends GameTemplate {
       if (canBackUp){
         this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div><ul><li class="undo">don't build ${this.skin.c1.name}</li></ul>`);
         $(".undo").on("click",function(){
+          //Make sure the confirm popup goes away
+          $(".action").off();
+          $(".popup-confirm-menu").remove();
+          $(".rhover").off();
+          $(".rhover").removeClass("rhover");
+
           settlers_self.addMove("undo_build");
           settlers_self.endTurn();
         });
@@ -2567,6 +2594,13 @@ class Settlers extends GameTemplate {
     if (canBackUp){
       this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div><ul><li class="undo">don't build ${this.skin.c2.name}</li></ul>`);
       $(".undo").on("click",function(){
+        //Make sure the confirm popup goes away
+        $(".action").off();
+        $(".popup-confirm-menu").remove();
+        //Disable board event selection
+        $(".chover").off();
+        $(".chover").removeClass("chover");
+
         settlers_self.addMove("undo_build");
         settlers_self.endTurn();
       });
@@ -2650,6 +2684,13 @@ class Settlers extends GameTemplate {
       if (canBackUp){
         this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div><ul><li class="undo">don't build ${this.skin.r.name}</li></ul>`);
         $(".undo").on("click",function(){
+          //Make sure the confirm popup goes away
+          $(".action").off();
+          $(".popup-confirm-menu").remove();
+          $(".road.empty").off();
+          $(".rhover").removeClass("rhover");
+          $(".road.empty").removeAttr("style");
+
           settlers_self.addMove(`undo_build`);
           settlers_self.endTurn();
         });

@@ -19,9 +19,9 @@ class StunxAppspace {
 
 
         if (inviteCode && stunx_mod.appspaceRendered === false) {
-            const stunxAppspace = this;
+      
             setTimeout(() => {
-                stunxAppspace.joinVideoInvite(inviteCode);
+                stunxAppspace.joinVideoInvite(app, mod, inviteCode);
                 console.log('invite code ', window.location.hash.split('=')[1])
             }, 3000)
         }
@@ -48,17 +48,17 @@ class StunxAppspace {
             }
             if (e.target.id === "joinInvite") {
                 const inviteCode = document.querySelector("#inviteCode").value;
-                this.joinVideoInvite(inviteCode.trim());
+                this.joinVideoInvite(app, mod ,inviteCode.trim());
             }
         })
     }
 
 
-    joinVideoInvite(roomCode) {
+    joinVideoInvite(app, mod , roomCode) {
         if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
         let sql = `SELECT * FROM rooms WHERE room_code = "${roomCode}"`;
-        const stunx_mod = this.app.modules.returnModule('Stunx');
-        console.log(stunx_mod)
+        // const stunx_mod = app.modules.returnModule('Stunx');
+        // console.log(stunx_mod)
         let requestCallback = async (res) => {
             let room = res.rows[0];
             console.log(room);
@@ -77,7 +77,7 @@ class StunxAppspace {
             }
 
             const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            stunx_mod.setLocalStream(localStream);
+            mod.setLocalStream(localStream);
             let my_public_key = this.app.wallet.returnPublicKey();
             let peers_in_room = JSON.parse(room.peers);
 
@@ -93,8 +93,8 @@ class StunxAppspace {
                     peer_count,
                     is_max_capacity
                 }
-                stunx_mod.sendUpdateRoomTransaction(roomCode, data);
-                this.app.connection.emit('show-video-chat-request', this.app, this, 'large');
+                mod.sendUpdateRoomTransaction(roomCode, data);
+                this.app.connection.emit('show-video-chat-request', app, this, 'large');
                 this.app.connection.emit('render-local-stream-request', localStream, 'large');
                 siteMessageNew("You are the only participant in this room");
                 return;
@@ -114,19 +114,19 @@ class StunxAppspace {
                     is_max_capacity
                 }
 
-                stunx_mod.sendUpdateRoomTransaction(roomCode, data);
+                mod.sendUpdateRoomTransaction(roomCode, data);
 
                 // filter my public key
                 peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
-                stunx_mod.createStunConnectionWithPeers(peers_in_room, 'large');
-                this.app.connection.emit('show-video-chat-request', this.app, this, 'large');
+                mod.createStunConnectionWithPeers(peers_in_room, 'large');
+                this.app.connection.emit('show-video-chat-request', app, this, 'large');
                 this.app.connection.emit('render-local-stream-request', localStream, 'large');
                 peers_in_room.forEach(peer => {
                     this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
                 });
             }
         }
-        stunx_mod.sendPeerDatabaseRequestWithFilter('Stunx', sql, requestCallback)
+        mod.sendPeerDatabaseRequestWithFilter('Stunx', sql, requestCallback)
     }
 }
 

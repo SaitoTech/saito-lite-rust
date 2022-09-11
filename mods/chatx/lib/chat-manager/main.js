@@ -11,22 +11,55 @@ class ChatManager {
 		this.mod = mod;
 		this.messages_in_groups = [];
 		this.rendered = 0;
+		this.inactive_popups = [];
 
 		for (let z = 0; z < this.mod.groups.length; z++) {
 			this.messages_in_groups[z] = this.mod.groups[z].txs.length;
 		}
 
-		app.connection.on("chat-render-request", (emptymsg) => {
-			this.render(app, mod);
+		app.connection.on("chat-render-request", (group_id = "") => {
+
+		  if (app.BROWSER) {
+
+		     if (group_id != "") {
+		         let psq = "#chat-container-"+group_id;
+		         let obj = document.querySelector(psq);
+			 if (!obj) {
+			   let chat_popup = new ChatPopup(app, mod, group_id);
+			   chat_popup.render(app, mod, group_id);
+			 } else {
+			   console.log("Chat Popup Exists");
+			 }
+		     }
+		   }
 		});
 
+/*****
+		app.connection.on("chat-popup-render-request", (group_id="") => {
+		    if (!document.querySelector(".chat-manager")) {
+			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), "");
+			app.browser.makeDraggable("#chat-manager");
+		    }
+		    if (group_id != "") {
+			let psq = "#chat-container-"+group_id;
+			let obj = document.querySelector(psq);
+			if (!obj) {
+			  let chat_popup = new ChatPopup(app, mod, group_id);
+			  chat_popup.render(app, mod, group_id);
+			  
+			} else {
+				console.log("Chat Popup Exists");
+			}
+		    }
+		});
+****/
 	}
 
 	render(app, mod, selector = "") {
 
 		if (!document.querySelector(".chat-manager")) {
 			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
-			app.browser.makeDraggable("#chat-manager");
+			//app.browser.makeDraggable("#chat-manager");
 		}
 
 		//
@@ -54,7 +87,6 @@ class ChatManager {
 			}
 
 			let html = SaitoUserWithTime(app, mod, group.name, last_msg, "12:00", group.id);
-
 			let divid = "saito-user-" + group.id;
 			let obj = document.getElementById(divid);
 
@@ -70,13 +102,9 @@ class ChatManager {
 			if (z > this.messages_in_groups.length) {
 				this.messages_in_groups[z] = 0;
 			}
-			if (group.txs.length > this.messages_in_groups[z]) {
-				//  let group_id = group.id;
-				//  let chat_popup = new ChatPopup(app, mod, group_id);
-				//  chat_popup.render(app, mod, group_id);
-			}
 
 		}
+
 
 		//
 		// open community chat if new load
@@ -84,8 +112,11 @@ class ChatManager {
 		if (this.rendered == 0) {
 			if (mod.groups.length > 0) {
 				let gid = mod.groups[0].id;
-				let chat_popup = new ChatPopup(app, mod, gid);
-				chat_popup.render(app, mod, gid);
+				//let psq = "#chat-container-"+gid;
+				//if (!document.querySelector(psq)) {
+				      let chat_popup = new ChatPopup(app, mod, gid);
+				      chat_popup.render(app, mod, gid);
+			        //}
 			}
 		}
 
@@ -98,8 +129,9 @@ class ChatManager {
 		document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 			item.onclick = (e) => {
 				let group_id = e.currentTarget.getAttribute("data-id");
+		        mod.removePopupFromInactiveList(group_id);
 				let chat_popup = new ChatPopup(app, mod, group_id);
-				chat_popup.render(app, mod, group_id);
+				app.connection.emit('chat-render-request', group_id);
 			}
 		})
 	}

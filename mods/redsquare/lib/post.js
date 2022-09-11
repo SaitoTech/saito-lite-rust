@@ -15,6 +15,9 @@ class Post {
   }
 
   render(app, mod) {
+    if (document.querySelector('#redsquare-tweet-overlay') != null) {
+      document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
+    }
     this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();
@@ -32,7 +35,7 @@ class Post {
         if (this.images.length >= 4) {
           salert("Maximum 4 images allowed per tweet.");
         } else {
-          let type = file.substring(file.indexOf(":")+1, file.indexOf(";"));
+          let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
           if (mod.allowed_upload_types.includes(type)) {
             this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
           } else {
@@ -42,89 +45,95 @@ class Post {
       },
       false);
 
-    document.querySelector(".post-tweet-img-icon").onclick = (e) => {
-      document.querySelector(".hidden_file_element_redsquare-tweet-overlay").click();
-    }
-    document.querySelector(".my-form").style.display = "none";
+    document.querySelector('.redsquare-tweet-overlay').onclick = (e) => {
 
-
-
-    document.getElementById("post-tweet-button").onclick = (e) => {
-
-      document.getElementById("post-tweet-loader").style.display = 'block';
-      e.preventDefault();
-
-      let text = document.getElementById('post-tweet-textarea').value;
-      let parent_id = document.getElementById("parent_id").value;
-      let thread_id = document.getElementById("thread_id").value;
-
-      //
-      // extracting keys from text AND then tweet
-      //
-      let keys = app.browser.extractKeys(text);
-      if (this.tweet != null) {
-        for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-          if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-            keys.push(this.tweet.tx.transaction.to[i].add);
-          }
-        }
+      if (e.target.classList.contains("fa-image")) {
+        document.querySelector("#hidden_file_element_redsquare-tweet-overlay").click();
       }
 
-      //
-      // saito-loader
-      //
-      post_self.overlay.hide();
-      post_self.overlay.closebox = false;
-      post_self.overlay.show(app, mod, '<div class="saito-loader"></div>');
+      if (e.target.id === "post-tweet-button") {
 
-      let data = { text: text };
-      if (parent_id !== "") {
-        data = { text: text, parent_id: parent_id, thread_id: thread_id };
-      }
-      if (this.images.length > 0) {
-        data['images'] = this.images;
-      }
+        document.getElementById("post-tweet-loader").style.display = 'block';
+        e.preventDefault();
 
-      //
-      // check if posting tweet from overlay (reply tweet)
-      // if yes then update reply counter
-      //
-      if (e.target.parentNode.id == 'redsquare-tweet-overlay') {
-        if (e.target.parentNode.querySelector('.post-tweet-preview') != null) {
-          let sig = e.target.parentNode.querySelector('.post-tweet-preview').getAttribute('data-id');
-          let sel = ".tweet-tool-comment-count-" + sig;
-          let obj = document.querySelector(sel);
-          obj.innerHTML = parseInt(obj.innerHTML) + 1;
-          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-            obj.parentNode.classList.remove("saito-tweet-no-activity");
-            obj.parentNode.classList.add("saito-tweet-activity");
-          }
-        }
-      }
+        let text = document.getElementById('post-tweet-textarea').value;
+        let parent_id = document.getElementById("parent_id").value;
+        let thread_id = document.getElementById("thread_id").value;
 
-      setTimeout(() => {
-
-        let newtx = mod.sendTweetTransaction(app, mod, data, keys);
-        mod.addTweetFromTransaction(app, mod, newtx, true);
-
-        if (thread_id !== "") {
-          mod.renderWithChildren(app, mod, thread_id);
-        } else {
-          if (parent_id !== "") {
-            mod.renderWithChildren(app, mod, parent_id);
-          } else {
-            mod.renderMainPage(app, mod);
+        //
+        // extract keys from text AND then tweet
+        //
+        let keys = app.browser.extractKeys(text);
+        if (this.tweet != null) {
+          for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
+            if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
+              keys.push(this.tweet.tx.transaction.to[i].add);
+            }
           }
         }
 
+        //
+        // saito-loader
+        //
         post_self.overlay.hide();
-      }, 1000);
+        post_self.overlay.closebox = false;
+        post_self.overlay.show(app, mod, '<div class="saito-loader"></div>');
+
+	//
+	// tweet data
+	//
+        let data = { text: text };
+        if (parent_id !== "") {
+          data = { text: text, parent_id: parent_id, thread_id: thread_id };
+        }
+        if (this.images.length > 0) {
+          data['images'] = this.images;
+        }
+
+	//
+        // check if posting tweet from overlay (reply tweet)
+        // if yes then update reply counter
+        //
+        if (e.target.parentNode.id == 'redsquare-tweet-overlay') {
+          if (e.target.parentNode.querySelector('.post-tweet-preview') != null) {
+            let sig = e.target.parentNode.querySelector('.post-tweet-preview').getAttribute('data-id');
+            let sel = ".tweet-tool-comment-count-" + sig;
+            let obj = document.querySelector(sel);
+            obj.innerHTML = parseInt(obj.innerHTML) + 1;
+            if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+              obj.parentNode.classList.remove("saito-tweet-no-activity");
+              obj.parentNode.classList.add("saito-tweet-activity");
+            }
+          }
+        }
 
 
+        setTimeout(() => {
+ 
+          let newtx = mod.sendTweetTransaction(app, mod, data, keys);
+          mod.addTweetFromTransaction(app, mod, newtx, true);
+
+	  if (post_self.browser_active == 1) {
+            if (thread_id !== "") {
+              mod.renderWithChildren(app, mod, thread_id);
+            } else {
+              if (parent_id !== "") {
+                mod.renderWithChildren(app, mod, parent_id);
+              } else {
+                mod.renderMainPage(app, mod);
+              }
+            }
+	  }
+
+          post_self.overlay.hide();
+
+        }, 1000);
+
+      }
     }
 
-
-    document.addEventListener('click', function (e) {
+    document.querySelector(".my-form").style.display = "none";
+    document.onclick = function (e) {
       if (typeof (e.target.classList) != 'undefined') {
         if (e.target.classList.contains('post-tweet-img-preview-close')) {
           let array_position = e.target.getAttribute("data-id");
@@ -138,7 +147,7 @@ class Post {
           });
         }
       }
-    });
+    };
 
   }
 
@@ -146,11 +155,11 @@ class Post {
 
   resizeImg(img, dimensions, quality) {
     let post_self = this;
-    let imgSize = img.length / 1024; 
+    let imgSize = img.length / 1024;
 
     // compress img if file size greater tan 150kb
-    if (imgSize > 150) {    
-      
+    if (imgSize > 150) {
+
       let canvas = document.createElement("canvas");
       let oImg = document.createElement("img");
       oImg.setAttribute('src', img);

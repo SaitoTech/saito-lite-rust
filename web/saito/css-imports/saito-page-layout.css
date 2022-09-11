@@ -198,16 +198,17 @@
 }
 
 @media screen and (max-width: 503px) {
-
     .saito-container {
         grid-column-gap: 0;
     }
     .saito-sidebar .section>div:nth-child(1) {
         padding-left: 1rem;
     }
-
     .saito-sidebar .section>div:nth-child(2) {
         padding-left: 0rem;
+    }
+    .saito-main {
+      padding-top: 0rem;
     }
 }
 
@@ -224,5 +225,8 @@
     .saito-sidebar.right .caret {
         right: 1rem;
         bottom: -1rem;
+    }
+    .saito-main {
+      padding-top: 0rem;
     }
 }

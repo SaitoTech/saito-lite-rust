@@ -534,6 +534,10 @@ body{
   transform: translate(-50%,-50%);
 }
 
+.infection_highlight.blocked{
+  background-color: rgb(100,100,100);
+}
+
 .infection_highlight.animateit{
   width: 50px;
   height: 50px;

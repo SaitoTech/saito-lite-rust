@@ -1539,6 +1539,28 @@ console.log("adding stuff!");
     if (this.confirm_moves == 1) {
       initial_confirm_moves = "Expert Mode"; 
     }
+
+
+    if (app.modules.returnModule("RedSquare")) {
+    this.menu.addSubMenuOption("game-game", {
+      text : "Screenshot",
+      id : "game-post",
+      class : "game-post",
+      callback : async function(app, game_mod) {
+        let log = document.querySelector(".log");
+        let log_lock = document.querySelector(".log_lock");
+        if (!log_lock && log) { log.style.display = "none"; }
+        await app.browser.captureScreenshot(function(image) {
+          if (!log_lock && log) { log.style.display = "block"; }
+          let m = game_mod.app.modules.returnModule("RedSquare");
+          if (m) { m.tweetImage(image); }
+        });
+      },
+    });
+    }
+
+
+
     this.menu.addSubMenuOption("game-game", {
       text : initial_confirm_moves,
       id : "game-confirm",
@@ -2294,8 +2316,7 @@ console.log("retreat 4");
 
   isSpaceControlledByFaction(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.home === faction && faction !== "protestant") { return true; }
-    if (space.religion === "protestant" && faction !== "protestant") { return true; }
+    if (space.home === faction) { return true; }
     if (space.political === faction) { return true; }
     return false;
   }
@@ -7222,7 +7243,7 @@ console.log("OCCUPIER OF SPACE IS: " + space.occupier);
 	  //
 	  for (f in this.factions) {
 
-	    if (f !== attacker) {
+	    if (f !== attacker && this.isSpaceControlledByFaction(spacekey, f)) {
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
