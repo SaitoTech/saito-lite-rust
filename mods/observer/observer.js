@@ -112,7 +112,7 @@ class Observer extends ModTemplate {
         if (res.rows) {
           //console.log("GAMESTATES:");
           res.rows.forEach((row) => {
-            //console.log(JSON.parse(JSON.stringify(row)));
+            console.log(JSON.parse(JSON.stringify(row)));
             this.addGameToObserverList(row);
           });
         }
@@ -235,9 +235,12 @@ class Observer extends ModTemplate {
     this.games.push(msg);
 
     if (this.app.BROWSER){
+      console.log("Send message");
+      this.app.connection.emit("observer-add-game-render-request",this.games);
       let arcade = this.app.modules.returnModule("Arcade");
       if (arcade){
-        arcade.renderArcadeMain();  
+        arcade.renderArcadeMain();
+        return;  
       }
     }
   }
@@ -251,10 +254,14 @@ class Observer extends ModTemplate {
         if (msg.request == "gameover" || msg.request == "stopgame"){
           this.games[i].game_status = "over";
         }
+
+        console.log("Send update message");
+        this.app.connection.emit("observer-add-game-render-request",this.games);
         
         let arcade = this.app.modules.returnModule("Arcade");
         if (arcade){
-          arcade.renderArcadeMain();  
+          arcade.renderArcadeMain();
+          return;  
         }        
       }
     }

@@ -1,6 +1,3 @@
-const RedSquareLeagueSidebarTemplate = require('./league-sidebar.template');
-const RedSquareObserverSidebarTemplate = require('./observer-sidebar.template');
-
 module.exports = RedSquareSidebarTemplate = (app, mod) => {
 
   return `
@@ -11,9 +8,13 @@ module.exports = RedSquareSidebarTemplate = (app, mod) => {
   </div>
     <div class="redsquare-sidebar-calendar">
     </div>
-    ${RedSquareObserverSidebarTemplate(app, mod)}
-    ${RedSquareLeagueSidebarTemplate(app, mod)}
+    
+    <div class="redsquare-sidebar-observer">
+    </div>
 
+    <div class="redsquare-sidebar-league">
+    </div>
+  
   </div>
 
   `;
