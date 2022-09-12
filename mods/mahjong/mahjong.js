@@ -85,7 +85,6 @@ class Mahjong extends GameTemplate {
 
     //Reset/Increment State
     this.game.state.round++;
-    this.game.state.recycles_remaining = 2;
     this.displayBoard();
     this.displayUserInterface();
   }
@@ -125,7 +124,7 @@ class Mahjong extends GameTemplate {
     [18,1], [18,2], [18,3], [18,4], [18,5], [18,10], [18,11], [18,12], [18,13], [18,14],
     // 4th layer
     [19,1], [19,2], [19,3], [19,4], [19,5], [19,6], [19,9], [19,10], [19,11], [19,12], [19,13], [19,14],
-    [20,1], [20,2], [20,3], [20,4], [20,5], [20,6], [20.9], [20,10], [20,11], [20,12], [20,13], [20,14],
+    [20,1], [20,2], [20,3], [20,4], [20,5], [20,6], [20,9], [20,10], [20,11], [20,12], [20,13], [20,14],
     //5th layer (top)
     [21,1], [21,2], [21,3], [21,4], [21,5], [21,6], [21,9], [21,10], [21,11], [21,12], [21,13], [21,14],
   ];
@@ -145,6 +144,7 @@ class Mahjong extends GameTemplate {
             this.game.board[position] = Object.values(this.game.deck.cards)[index];
             index++;
           } else {
+console.log("i + j : " + i + " + " + j);
             this.game.board[position] = "E";
           }
       }
@@ -164,6 +164,7 @@ class Mahjong extends GameTemplate {
           if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
             await timeout(timeInterval);
             $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck.cards)[index++]));
+console.log("untoggle: " + divname);
             this.untoggleCard(divname);
           } else {
             this.makeInvisible(divname);
@@ -388,7 +389,6 @@ class Mahjong extends GameTemplate {
 
     state.round = 0;
     state.wins = 0;
-    state.recycles_remaining = 2; // to be used for shuffle later
 
     return state;
 
@@ -411,8 +411,6 @@ class Mahjong extends GameTemplate {
   attachEventsToBoard() {
 
     let mahjong_self = this;
-
-console.log("attach events to board");
 
     $('.slot').off();
     $('.slot').on('click', function() {
@@ -518,7 +516,6 @@ console.log("attach events to board");
       }
     });
 
-console.log("row highlight action starting");
     $('.row1').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function() { mahjong_self.unhighlightRows()});
     $('.row2').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row3').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
@@ -527,25 +524,19 @@ console.log("row highlight action starting");
     $('.row6').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row7').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row8').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
-
     $('.row9').mouseover(function() { mahjong_self.highlightRow(2)  }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row10').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row11').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row12').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row13').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row14').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
-
     $('.row15').mouseover(function() { mahjong_self.highlightRow(3) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row16').mouseover(function() { mahjong_self.highlightRow(3) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row17').mouseover(function() { mahjong_self.highlightRow(3) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row18').mouseover(function() { mahjong_self.highlightRow(3) }).mouseout(function () { mahjong_self.unhighlightRows() });
-
     $('.row19').mouseover(function() { mahjong_self.highlightRow(4) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row20').mouseover(function() { mahjong_self.highlightRow(4) }).mouseout(function () { mahjong_self.unhighlightRows() });
-
     $('.row21').mouseover(function() { mahjong_self.highlightRow(5) }).mouseout(function () { mahjong_self.unhighlightRows() });
-
-console.log("row highlight action over");
 
   }
 
@@ -559,18 +550,6 @@ console.log("row highlight action over");
 
     // TODO later - shuffle
     let option = '';
-    // if (this.game.state.recycles_remaining > 0) {
-    //   html += '<span>You may shuffle the unlocked tiles ';
-    //   if (this.game.state.recycles_remaining == 2) { 
-    //     html += '<strong>two</strong> more times.'; 
-    //   }else{
-    //     html += '<strong>one</strong> more time.';  
-    //   }
-    //   html += "</span>";
-    //   option += ` id="shuffle">Shuffle cards`;
-    // } else {
-    //   option += ` id="quit">Start New Game`;
-    // }
     if (this.game.hidden.length > 0){
       option += `<ul><li class="menu_option" id="undo">Undo`;
       option += "</li></ul>";
