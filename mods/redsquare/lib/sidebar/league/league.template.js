@@ -16,7 +16,7 @@ module.exports = RedSquareLeagueTemplate = (app, mod, league_mod) => {
 			var leagues = league_mod.leagues.sort((a,b) => a.myRank < b.myRank);
 			leagues.forEach(l => {
 				if (l.myRank > 0) {
-					html += `<div class="saito-table-row">
+					html += `<div id="league_${l.id}" class="saito-table-row rs-league-sidebar-ranking${(cnt%2 == 1)?" odd":""}">
 					<div class="saito-table-gamename">${l.name}</div>
 					<div class="saito-table-rank">${l.myRank}</div>
 				</div>`;
