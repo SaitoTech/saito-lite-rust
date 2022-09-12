@@ -228,7 +228,7 @@ module.exports = ArcadeMain = {
               app.browser.logMatomoEvent("Arcade", "ArcadeAcceptInviteButtonClick", game_cmd);
 
               if (game_cmd === "cancel") {
-            	  let c = confirm("Are you sure you want to cancel this game?");
+            	  let c = true;//confirm("Are you sure you want to cancel this game?");
               	if (c) {
                     arcade_main_self.cancelGame(app, mod, game_sig);
                     return;
@@ -238,6 +238,11 @@ module.exports = ArcadeMain = {
               if (game_cmd === "join") {
                   arcade_main_self.joinGame(app, mod, game_sig);
                   return;
+              }
+
+              if (game_cmd === "watch"){
+                arcade_main_self.watchGame(app, mod, game_sig);
+                return;
               }
 
               if (game_cmd === "continue") {
@@ -335,7 +340,7 @@ module.exports = ArcadeMain = {
         
       }else{
         //We move the confirmation down here, so you don't have to click twice on crypto games
-        let c = confirm("Are you sure you want to join this game?");
+        let c = true; //confirm("Are you sure you want to join this game?");
         if (!c) {
           return;
         }
@@ -371,7 +376,7 @@ module.exports = ArcadeMain = {
       peers.push(app.network.peers[i].returnPublicKey());
     }
 
-    if (players_needed > players_available + 1) {
+    //if (players_needed > players_available + 1) {
       let newtx = mod.createJoinTransaction(accepted_game);
       app.network.propagateTransaction(newtx);
 
@@ -384,11 +389,11 @@ module.exports = ArcadeMain = {
       }
       if (mod.debug){console.log(JSON.parse(JSON.stringify(newtx)));}
 
-      mod.joinGameOnOpenList(newtx);
+      //mod.joinGameOnOpenList(newtx);
       salert("Joining game! Please wait a moment");
       return;
-    }
-
+    //}
+    /*
     console.log("I create the game with this JOIN!!!");
 
     //
@@ -492,7 +497,7 @@ module.exports = ArcadeMain = {
 
         }
       );
-    }
+    }*/
   },
 
   continueGame(app, mod, game_id) {
@@ -538,6 +543,14 @@ module.exports = ArcadeMain = {
       }
     }
   },
+
+  /**
+   * This partially duplicates functionality of Observer Module
+   */ 
+  watchGame(app, mod, game_id){
+    app.connection.emit("arcade-observer-join-table", game_id);
+  },
+
 
   cancelGame(app, mod, game_id) {
     var testsig = "";

@@ -1,6 +1,6 @@
 
 module.exports = ObserverLoader = {
-  render(app, mod, slug = "") {
+  render(app, mod, slug = "", game_status = false) {
 
     if (!slug){
       document.getElementById("arcade-main").innerHTML = `  
@@ -12,8 +12,8 @@ module.exports = ObserverLoader = {
     }else{
       document.getElementById("arcade-main").innerHTML =` 
         <div class="arcade-initialize-game-container">
-          <center>You are ready to watch the game!</center>
-          <button class="start-game-btn">watch game</button>
+          <center>You are ready to ${(game_status)?"follow":"watch"} the game!</center>
+          <button class="start-game-btn">enter game</button>
         </div>
       `;
       this.attachEvents(app, mod, slug);
