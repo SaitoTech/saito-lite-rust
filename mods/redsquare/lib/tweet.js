@@ -367,8 +367,7 @@ class RedSquareTweet {
 	!e.target.classList.contains("tweet-tool") &&   // buttons
 	!e.target.classList.contains("far")        &&   // icons
 	!e.target.classList.contains("fa")         &&   // icons
-	!e.target.classList.contains("fas")        &&   // icons
-  !e.target.tagName == "A"
+	!e.target.classList.contains("fas")  
       ) {
 //console.log("OPEN TWEET: " + JSON.stringify(e.target.classList));
         openTweet(e);

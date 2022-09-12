@@ -725,6 +725,10 @@ class Browser {
   }
 
   makeDraggable(id_to_move, id_to_drag = "", mycallback = null) {
+
+console.log("make draggable: " + id_to_drag);
+console.log(" and move? " + id_to_move);
+
     try {
       const element_to_move = document.getElementById(id_to_move);
       let element_to_drag = element_to_move;
@@ -743,6 +747,8 @@ class Browser {
 
       element_to_drag.onmousedown = function (e) {
         e = e || window.event;
+
+console.log("DRAG MOUSEDOWN");
 
         if (
           !e.currentTarget.id ||
@@ -775,6 +781,9 @@ class Browser {
         };
 
         document.onmousemove = function (e) {
+
+console.log("MOVE MOUSEDOWN");
+
           e = e || window.event;
           e.preventDefault();
 

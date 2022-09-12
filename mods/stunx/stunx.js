@@ -12,7 +12,7 @@ class Stunx extends ModTemplate {
 
     constructor(app, mod) {
         super(app);
-        this.appname = "Video Calls";
+        this.appname = "Video Call";
         this.name = "Stunx";
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
@@ -38,6 +38,22 @@ class Stunx extends ModTemplate {
                 username: "guest",
                 credential: "somepassword",
             },
+            {
+                urls: "stun:stun-sg.saito.io:3478"
+            },
+            {
+                urls: "turn:stun-sg.saito.io:3478",
+                username: "guest",
+                credential: "somepassword",
+            },
+            {
+                urls: "stun:stun-de.saito.io:3478"
+            },
+            {
+                urls: "turn:stun-de.saito.io:3478",
+                username: "guest",
+                credential: "somepassword",
+            }
         ];
     }
 

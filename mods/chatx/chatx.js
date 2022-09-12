@@ -211,7 +211,18 @@ class Chatx extends ModTemplate {
                                     })
                                 }
                             }
-        		    app.connection.emit('chat-render-request', "");
+
+
+			    //
+			    // show community chat
+			    //
+			    let active_mod = this.app.modules.returnActiveModule();
+ 			    if (active_mod) {
+				if (active_mod.name != "Arcade") {
+			    	    if (app.BROWSER) { this.openChatBox(); }
+				}
+			    }
+
 
                             //
                             // check identifiers
@@ -237,7 +248,7 @@ class Chatx extends ModTemplate {
                     }
 
 		    //app.connection.emit('chat-render-request', "");
-
+		    
                     //
                     // check identifiers
                     //
@@ -779,7 +790,6 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
         }
 
         if (group_id == null) {
-console.log("opening chat w group id: " + group_id);
             let group = this.returnCommunityChat();
             if (group == undefined || group == null) {
                 return;
@@ -925,10 +935,22 @@ console.log("opening chat w group id: " + group_id);
 
 
     saveChat() {
-
         this.app.options.chat = Object.assign({}, this.app.options.chat);
         this.app.storage.saveOptions();
     }
+
+    deactivatePopup(group_id) {
+       this.chat_manager.inactive_popups.push(group_id);
+    }
+
+    activatePopup(gid){
+        if (this.chat_manager) {
+            this.chat_manager.inactive_popups = this.chat_manager.inactive_popups.filter(group_id => group_id !== gid);
+        }
+      
+    }
+
+    
 
 }
 

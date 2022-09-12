@@ -11,13 +11,13 @@ module.exports = (app, mod, group_id) => {
 
       <div class="chat-container chat-container-${group_id}" id="chat-container-${group_id}">
 
-        <div class="chat-header">
+        <div class="chat-header" id="chat-header-${group_id}">
           <i class="far fa-comment-dots"></i>
           <h6>${group.name}</h6>
           <i id="chat-container-close-${group_id}" class="chat-container-close fas fa-times"></i>
         </div>
 
-        <div class="chat-body">
+        <div class="chat-body chat-body-${group_id}">
     `;
 
     html += mod.returnChatBody(group_id);
