@@ -10,11 +10,11 @@ class RedSquareSidebar {
     this.mod = mod;
     this.selector = selector;
 
-    app.connection.on("observer-add-game-render-request", (games)=>{   
-      let observer_sidebar = new RedSquareObserver(app, mod);
-      observer_sidebar.games = games;
-      observer_sidebar.render(app, mod, ".redsquare-sidebar-observer");
-    });
+    // app.connection.on("observer-add-game-render-request", (games)=>{   
+    //   let observer_sidebar = new RedSquareObserver(app, mod);
+    //   observer_sidebar.games = games;
+    //   observer_sidebar.render(app, mod, ".redsquare-sidebar-observer");
+    // });
   }
 
   render(app, mod, selector="") {

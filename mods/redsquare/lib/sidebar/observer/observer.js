@@ -6,6 +6,12 @@ class RedSquareObserver {
 	    this.mod = mod;
 	    this.selector = selector;
 	    this.games = [];   
+	    observer_self = this;
+
+	    app.connection.on("observer-add-game-render-request", (games)=>{   
+	      observer_self.games = games;
+	      observer_self.render(app, mod, ".redsquare-sidebar-observer");
+	    });
   	}
 
 	render(app, mod, selector=""){
