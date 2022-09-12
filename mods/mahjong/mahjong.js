@@ -441,21 +441,21 @@ console.log("untoggle: " + divname);
         // layer 1 tile can't be unlocked if layer 2 tile overlays it
         if (tileRow >= 2 && tileRow <= 7 && tileColumn >= 5 && tileColumn <= 10) {
           if (!mahjong_self.game.hidden.includes(`row${tileRow + 7}_slot${tileColumn}`)) {
-          return;
+            return;
           }
         }
 
         // layer 2 tile can be can't be unlocked if layer 3 tile overlays it
         if (tileRow >= 10 && tileRow <= 13 && tileColumn >= 6 && tileColumn <= 9) {
           if (!mahjong_self.game.hidden.includes(`row${tileRow + 5}_slot${tileColumn}`)) {
-          return;
+            return;
           }
         }
 
         // layer 3 tile can be can't be unlocked if layer 4 tile overlays it
         if (tileRow >= 16 && tileRow <= 17 && tileColumn >= 7 && tileColumn <= 8) {
           if (!mahjong_self.game.hidden.includes(`row${tileRow + 3}_slot${tileColumn}`)) {
-          return;
+            return;
           }
         }
 
@@ -481,10 +481,14 @@ console.log("untoggle: " + divname);
           case 'row5_slot2':
             if (!mahjong_self.game.hidden.includes('row4_slot1')) {
               return;
+            } else {
+              break;
             }
           case 'row5_slot13':
             if (!mahjong_self.game.hidden.includes('row4_slot14')) {
               return;
+            } else {
+              break;
             }
           default: // there must be no tile on the left or on the right for a given tile to be a valid selection
             let leftTile = `${tileTokens[0]}slot${tileColumn - 1}`;
