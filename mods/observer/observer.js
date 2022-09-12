@@ -236,7 +236,7 @@ class Observer extends ModTemplate {
 
     if (this.app.BROWSER){
       console.log("Send message");
-      this.app.connection.emit("observer-list-update-request",this.games);
+      this.app.connection.emit("observer-add-game-render-request",this.games);
       let arcade = this.app.modules.returnModule("Arcade");
       if (arcade){
         arcade.renderArcadeMain();
@@ -256,7 +256,7 @@ class Observer extends ModTemplate {
         }
 
         console.log("Send update message");
-        this.app.connection.emit("observer-list-update-request",this.games);
+        this.app.connection.emit("observer-add-game-render-request",this.games);
         
         let arcade = this.app.modules.returnModule("Arcade");
         if (arcade){
