@@ -550,3 +550,36 @@ option {
 .observer-action a {
   color: var(--saito-primary);
 }
+
+.league-details-overlay {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 60vh;
+}
+
+.league-overview-box {
+  margin: 2rem 0rem;
+}
+
+.league-overview-box .info-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr max-content;
+  text-align: center;
+}
+
+.league-overview-box .info-item div:first-child {
+  font-weight: bold;
+}
+
+.league-leaderboard {
+  margin: 2rem 0rem;
+}
+
+.league-leaderboard table {
+  width: 100%;
+}
+
+.league-leaderboard table tr td {
+  text-align: center;
+}
