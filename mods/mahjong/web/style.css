@@ -10,6 +10,16 @@ body {
   padding: 0 0 0 0 ;
 }
 
+.slot {
+  background-color: blue;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+}
+
+.row > img {
+  opacity: 1;
+}
 
 .rules-overlay ul{
   margin-left: 8px;
