@@ -15,9 +15,6 @@ class Retweet {
         this.tweet = tweet;
       }
 
-      console.log('inside retweet overlay');
-      console.log("#redsquare-tweet-overlay-"+this.tweet.tx.transaction.sig);
-
       if (document.querySelector("#redsquare-tweet-overlay-"+this.tweet.tx.transaction.sig) != null) {
         document.querySelector("#redsquare-tweet-overlay-"+this.tweet.tx.transaction.sig).parentNode.remove();
       } 
