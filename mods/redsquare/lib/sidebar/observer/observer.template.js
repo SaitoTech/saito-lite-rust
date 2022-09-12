@@ -1,34 +1,22 @@
 module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 	let html = "";
-
-	console.log('before games');
-	console.log(games);
-
 	if (games.length < 1) {
 		games = obs_mod.games;
 	}
-
-	console.log('after games');
-	console.log(games);
 
 	if (obs_mod){
 		html = `<div id="rs_sidebar_observer" class="observer_sidebar">`;
 
 			html += `<h6>Live Games:</h6>`;
+			html += `<div class="saito-table">`;
 			let cnt = 0;
 
 			for (let g of games){
 				//We will only display live games
 				if (g.game_status !== "over"){
-					cnt++;
-
-					console.log('inside loop g');
-					console.log(g);
+				 cnt++;
 
 					let gameModule = app.modules.returnModule(g.module);
-
-					console.log('game module');
-					console.log(gameModule);
 		  		    let slug = gameModule.returnSlug();
 
 				    let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${g.players_array.split("_").length}, 1fr);">`;
@@ -45,21 +33,16 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 
 				    let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
 
-				    
-				  let inviteHtml = `
-				    <div id="observe-${g.game_id}" class="arcade-tile">
-				      <div class="invite-tile-wrapper">
-				        <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
-				        <div class="invite-col-2">
-				          <div class="gameName">${gameName}</div>
-				          <div style="font-size:0.9em">${g.step} moves as of ${datetime.hours}:${datetime.minutes}, ${datetime.day} ${datetime.month} ${datetime.year}</div>
-				          ${playersHtml}
-				        </div>
-				        <div class="gameButtons" style="position:relative;">
-			              <button data-sig="${g.game_id}" data-cmd="watch" class="button observe-game-btn">WATCH</button>
-				        </div>
-				      </div>
-				    </div>`;
+					let inviteHtml = `
+					    <div class="saito-table-row">
+					        <div class="saito-table-gamename observer-info">
+					            <div>${gameName}</div>
+					            ${playersHtml}
+					        </div>
+					        <div class="observer-details saito-deemphasize">${g.step} moves as of ${datetime.hours}:${datetime.minutes}, ${datetime.day} ${datetime.month} ${datetime.year}</div>
+					        <div class="observer-action"><a href="#" data-sig="${g.game_id}" data-cmd="watch" class="button observe-game-btn">Watch</a></div>
+					    </div>
+					`;
 
 					html += inviteHtml;
 				}
@@ -67,6 +50,7 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 
 
 		html +=  `
+			</div>
 		</div>`;
 
 		//IF there are no games, we want this to be invisible
@@ -77,4 +61,3 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
   	
   	return html;
 };
-
