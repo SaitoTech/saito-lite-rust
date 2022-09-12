@@ -99,7 +99,7 @@ class RedSquareMenu {
     for (let i = 0; i < app.modules.mods.length; i++) {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
-	let mod_notifications = app.modules.mods[i].returnNumberOfNotifications();
+	    let mod_notifications = app.modules.mods[i].returnNumberOfNotifications();
         let qs = ".redsquare-menu-" + app.modules.mods[i].returnSlug();
         obj = document.querySelector(qs);
         obj.onclick = (e) => {
@@ -119,7 +119,6 @@ class RedSquareMenu {
     }
 
     let matched = 0;
-
     switch (component) {
       case "home":
         mod.home.render(app, mod, ".appspace");
