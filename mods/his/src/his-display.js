@@ -124,7 +124,13 @@ console.log("DEBATER IS: " + d.owner);
       let total_keys = 11;
       let remaining_keys = total_keys - controlled_keys;
       for (let i = 0; i <= 6; i++) {
-          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}"></div>`;
+	  let box_inserts = "";
+	  if (this.game.state.translations['german'] == 0) {
+            box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
+	  }
+          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">
+
+	  </div>`;
       }
       for (let i = 1; i <= 11; i++) {
         if (i > (11-remaining_keys)) {
