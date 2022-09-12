@@ -959,7 +959,7 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
     this.redsquare.last_liked_tweets = [];
   }
 
-  saveStun() {
+  saveRedSquare() {
     this.app.options.redsquare = this.redsquare;
     this.app.options.saveOptions();
   }
