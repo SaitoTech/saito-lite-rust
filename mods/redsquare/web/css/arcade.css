@@ -507,8 +507,6 @@ option {
 .redsquare-sidebar-observer .saito-table .saito-table-row {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr min-content;
-    padding-left: 1rem;
-    padding-right: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     border-width: 2px 0;
@@ -541,10 +539,16 @@ option {
 
 .redsquare-sidebar-observer .saito-table .observer-action {
   text-align: center;
+  padding-right: 1rem;
 }
 
 .redsquare-sidebar-observer .saito-table .observer-details {
   font-size: 1.5rem;
+  text-align: center;
+}
+
+.observer-action {
+  text-align: right;
 }
 
 .observer-action a {
@@ -560,6 +564,8 @@ option {
 
 .league-overview-box {
   margin: 2rem 0rem;
+  max-height: 35vh;
+  overflow-y: scroll;
 }
 
 .league-overview-box .info-item {

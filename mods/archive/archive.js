@@ -50,9 +50,6 @@ class Archive extends ModTemplate {
     // only handle archive request
     //
     if (req.request === "archive") {
-
-console.log("Received Archive Request");
-
       if (req.data.request === "delete") {
         this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
       }

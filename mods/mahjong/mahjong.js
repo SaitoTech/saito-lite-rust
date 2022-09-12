@@ -32,7 +32,7 @@ class Mahjong extends GameTemplate {
   }
 
   returnGameRulesHTML(){
-    return `<div class="rules-overlay">
+    return `<div class="rules-overlay" style="background-color:whitesmoke">
             <h1>Mahjong</h1>
             <ul>
             <li>144 tiles are randomly folded into a multi-layered shape.</li>
@@ -264,7 +264,7 @@ console.log("untoggle: " + divname);
   }
 
   untoggleCard(divname) {
-    $(`#${divname}`).css('opacity','0.9');
+    $(`#${divname}`).css('opacity','1.0');
     $(`#${divname}`).css('pointer-events','auto');
     let outermostBoxShadow = '0px 10px 12px 1px #000000';
     let boxShadow = '12px 10px 12px 1px #000000';
@@ -327,6 +327,23 @@ console.log("untoggle: " + divname);
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       }
     });
+    if (app.modules.returnModule("RedSquare")) {
+    this.menu.addSubMenuOption("game-game", {
+      text : "Screenshot",
+      id : "game-post",
+      class : "game-post",
+      callback : async function(app, game_mod) {
+        let log = document.querySelector(".log");
+        let log_lock = document.querySelector(".log_lock");
+        if (!log_lock && log) { log.style.display = "none"; }
+        await app.browser.captureScreenshot(function(image) {
+          if (!log_lock && log) { log.style.display = "block"; }
+          let m = game_mod.app.modules.returnModule("RedSquare");
+          if (m) { m.tweetImage(image); }
+        });
+      },
+    });
+    }
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
@@ -424,21 +441,21 @@ console.log("untoggle: " + divname);
         // layer 1 tile can't be unlocked if layer 2 tile overlays it
         if (tileRow >= 2 && tileRow <= 7 && tileColumn >= 5 && tileColumn <= 10) {
           if (!mahjong_self.game.hidden.includes(`row${tileRow + 7}_slot${tileColumn}`)) {
-          return;
+            return;
           }
         }
 
         // layer 2 tile can be can't be unlocked if layer 3 tile overlays it
         if (tileRow >= 10 && tileRow <= 13 && tileColumn >= 6 && tileColumn <= 9) {
           if (!mahjong_self.game.hidden.includes(`row${tileRow + 5}_slot${tileColumn}`)) {
-          return;
+            return;
           }
         }
 
         // layer 3 tile can be can't be unlocked if layer 4 tile overlays it
         if (tileRow >= 16 && tileRow <= 17 && tileColumn >= 7 && tileColumn <= 8) {
           if (!mahjong_self.game.hidden.includes(`row${tileRow + 3}_slot${tileColumn}`)) {
-          return;
+            return;
           }
         }
 
@@ -464,10 +481,14 @@ console.log("untoggle: " + divname);
           case 'row5_slot2':
             if (!mahjong_self.game.hidden.includes('row4_slot1')) {
               return;
+            } else {
+              break;
             }
           case 'row5_slot13':
             if (!mahjong_self.game.hidden.includes('row4_slot14')) {
               return;
+            } else {
+              break;
             }
           default: // there must be no tile on the left or on the right for a given tile to be a valid selection
             let leftTile = `${tileTokens[0]}slot${tileColumn - 1}`;
@@ -543,10 +564,7 @@ console.log("untoggle: " + divname);
   displayUserInterface() {
     let mahjong_self = this;
 
-    let html = '<span class="hidable">144 tiles are randomly folded into a multi-layered shape.' + 
-               'The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence' +
-               'THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
-               'The game is finished when all pairs of tiles have been removed from the board.</span>';
+    let html = '<span class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.</span>';
 
     // TODO later - shuffle
     let option = '';

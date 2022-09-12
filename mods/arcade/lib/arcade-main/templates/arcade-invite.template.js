@@ -1,6 +1,12 @@
 module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
-  //console.log("ARCADEINVITETEMPLATE");
-  //console.log(invite);
+  if (mod.debug){
+    //console.log("ARCADEINVITETEMPLATE");
+    //console.log(invite);
+  }
+
+  if (!invite || !invite.msg){
+    return "ERROR -- NO INVITE";
+  }
 
   let gameModule = app.modules.returnModule(invite.msg.game);
   if (!gameModule){
@@ -12,57 +18,45 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
 
   let game_initialized = 0;
   if (invite.isMine) { inviteTypeClass = "my-invite"; }
-  if (invite.msg) {
-    if (invite.msg.options['game-wizard-players-select'] <= invite.msg.players.length) {
-      //console.log("Game initialized becase msg.options");
-      game_initialized = 1;
-    }
-    if (invite.msg.players_needed <= invite.msg.players.length) {
-      //console.log("Game initialized becase msg.players_needed")
-      game_initialized = 1;
-    }
+  if (invite.msg.options['game-wizard-players-select'] <= invite.msg.players.length) {
+    //console.log("Game initialized becase msg.options");
+    game_initialized = 1;
   }
+  if (invite.msg.players_needed <= invite.msg.players.length) {
+    //console.log("Game initialized becase msg.players_needed")
+    game_initialized = 1;
+  }
+  let numPlayerSlots = Math.max(invite.msg.options['game-wizard-players-select'] || 0, invite.msg.players_needed);
 
   //console.log("Game_initialized: " + game_initialized);
   //
   // trying to stop games from continue / cancel on load
   //
   //console.log(app.options.games);
-  if (app.options) {
-    if (app.options.games) {
-      for (let i = 0; i < app.options.games.length; i++) {
-        if (app.options.games[i].id == invite.transaction.sig){
-          if (app.options.games[i].initializing == 1) {
-            //console.log("Game not initialized because app.options.games[i]")
-            game_initialized = 0;
-          }
-        }
+  for (let i = 0; i < app.options?.games?.length; i++) {
+    if (app.options.games[i].id == invite.transaction.sig){
+      if (app.options.games[i].initializing == 1) {
+        //console.log("Game not initialized because app.options.games[i]")
+        game_initialized = 0;
       }
     }
   }
   //console.log("Game_initialized: " + game_initialized);
-  let playersNeeded = invite.msg.players_needed > 4 ? 5: invite.msg.players_needed;
   let playersHtml = `<div class="playerInfo" style="">`;
-  if (invite.msg.players.length > invite.msg.players_needed) {
-    for (let i = 0; i < invite.msg.players.length; i++) {
-      let identicon = app.keys.returnIdenticon(invite.msg.players[i]);
-      playersHtml += `<div class="player-slot tip id-${invite.msg.players[i]}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(invite.msg.players[i])}</div></div>`;
-    }
-  } else {
-    for (let i = 0; i < invite.msg.players_needed; i++) {
-      //if (i < 4) {
-        if (i < invite.msg.players.length) {
-          let identicon = app.keys.returnIdenticon(invite.msg.players[i]);
-          playersHtml += `<div class="player-slot tip id-${invite.msg.players[i]}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(invite.msg.players[i])}</div></div>`;
-        } else {
-          playersHtml += `<div class="player-slot identicon-empty"></div>`;  
-        }
-      /*} else {
-        playersHtml += `<div style="color:#f5f5f59c;margin-left:0.2em;" class="player-slot-ellipsis fas fa-ellipsis-h"></div>`;  
-        break;
-      }*/
-    }
+  for (let i = 0; i < numPlayerSlots; i++) {
+    //if (i < 4) {
+      if (i < invite.msg.players.length) {
+        let identicon = app.keys.returnIdenticon(invite.msg.players[i]);
+        playersHtml += `<div class="player-slot tip id-${invite.msg.players[i]}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(invite.msg.players[i])}</div></div>`;
+      } else {
+        playersHtml += `<div class="player-slot identicon-empty"></div>`;  
+      }
+    /*} else {
+      playersHtml += `<div style="color:#f5f5f59c;margin-left:0.2em;" class="player-slot-ellipsis fas fa-ellipsis-h"></div>`;  
+      break;
+    }*/
   }
+
   playersHtml += '</div>';
 
   if (document.getElementById(`invite-${invite.transaction.sig}`)) { return ''; }
@@ -78,7 +72,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
           <div class="gamePlayers">${playersHtml}</div>
         </div>
         <div class="gameShortDescription">${makeDescription(app, invite)}</div>
-	      <div class="gameButtons">
+	      <div class="gameButtons" style="position:relative;">
     `;
      if (invite.isMine) {
        if (game_initialized == 1) { 
@@ -92,7 +86,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
        inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
      } else {
        if (game_initialized == 1) {
-         inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="continue" class="button invite-tile-button">WATCH</button>`;
+         inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="watch" class="button invite-tile-button">JOIN</button><i class="game_status_indicator game_live fas fa-circle"></i>`;
          //inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
        } else {
          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="join" class="button invite-tile-button invite-tile-button-join">JOIN</button>`;

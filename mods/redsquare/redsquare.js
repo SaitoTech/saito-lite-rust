@@ -46,6 +46,7 @@ class RedSquare extends ModTemplate {
     this.ui_initialized = false;
 
     this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg']; 
+    this.icon_fa = "fas fa-square-full";
 
     return this;
 
@@ -65,7 +66,21 @@ class RedSquare extends ModTemplate {
     }
   }
 
-
+ //
+ // Easy Navigation from Arcade (with old saito/ui) to RedSquare
+ //
+ respondTo(type){
+    if (type == 'header-dropdown'){
+      return {
+          name: this.appname ? this.appname : this.name,
+          icon_fa: this.icon_fa,
+          browser_active: this.browser_active,
+          slug: this.returnSlug()
+      };
+    }
+      
+    return super.respondTo(type);
+  }
 
   tweetImage(image) {
     try {
@@ -959,7 +974,7 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
     this.redsquare.last_liked_tweets = [];
   }
 
-  saveStun() {
+  saveRedSquare() {
     this.app.options.redsquare = this.redsquare;
     this.app.options.saveOptions();
   }

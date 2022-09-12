@@ -39,6 +39,8 @@ class League extends ModTemplate {
     this.main = null;
     this.header = null;
 
+    this.icon_fa = "fas fa-user-friends";
+
   }
 
 
@@ -46,6 +48,15 @@ class League extends ModTemplate {
     if (type == "view-league-details"){
       return new ArcadeLeagueView(this.app);
     }
+    if (type == 'header-dropdown'){
+      return {
+          name: this.appname ? this.appname : this.name,
+          icon_fa: this.icon_fa,
+          browser_active: this.browser_active,
+          slug: this.returnSlug()
+      };
+    }
+      
     return super.respondTo(type);
   }
 
