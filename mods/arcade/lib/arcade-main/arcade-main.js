@@ -228,7 +228,7 @@ module.exports = ArcadeMain = {
               app.browser.logMatomoEvent("Arcade", "ArcadeAcceptInviteButtonClick", game_cmd);
 
               if (game_cmd === "cancel") {
-            	  let c = true;//confirm("Are you sure you want to cancel this game?");
+            	  let c = confirm("Are you sure you want to cancel this game?");
               	if (c) {
                     arcade_main_self.cancelGame(app, mod, game_sig);
                     return;
@@ -340,7 +340,7 @@ module.exports = ArcadeMain = {
         
       }else{
         //We move the confirmation down here, so you don't have to click twice on crypto games
-        let c = true; //confirm("Are you sure you want to join this game?");
+        let c = confirm("Are you sure you want to join this game?");
         if (!c) {
           return;
         }
