@@ -456,8 +456,12 @@ class RedSquareTweet {
       rtweet.thread_id = this.thread_id;
       rtweet.render(app, mod, tweet_self);
 
+
+      console.log('inside post overlay');
+      console.log("#redsquare-tweet-overlay-"+this.tx.transaction.sig);
+
       let html = TweetTemplate(app, mod, this, 0);
-      app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
+      app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, "#redsquare-tweet-overlay-"+this.tx.transaction.sig);
 
       // increase num likes
       sel = ".tweet-tool-retweet-count-" + this.tx.transaction.sig;
