@@ -1,6 +1,6 @@
-const RedSquareObserverSidebarTemplate = require("./observer-sidebar.template");
+const RedSquareObserverTemplate = require("./observer.template");
 
-class RedSquareObserverSidebar {
+class RedSquareObserver {
 	
 	constructor(app, mod, selector="") {
 	    this.mod = mod;
@@ -13,10 +13,10 @@ class RedSquareObserverSidebar {
 
 		if (selector != "") {
 		  document.querySelector(selector).innerHTML = "";
-	      app.browser.addElementToSelector(RedSquareObserverSidebarTemplate(app, mod, observer_mod, this.games), selector);
+	      app.browser.addElementToSelector(RedSquareObserverTemplate(app, mod, observer_mod, this.games), selector);
 	    } else {
 	      document.querySelector(this.selector).innerHTML = "";
-	      app.browser.addElementToSelector(RedSquareObserverSidebarTemplate(app, mod, observer_mod, this.games), this.selector);
+	      app.browser.addElementToSelector(RedSquareObserverTemplate(app, mod, observer_mod, this.games), this.selector);
 	    }
 
 	    this.attachEvents(app, mod);
@@ -28,6 +28,6 @@ class RedSquareObserverSidebar {
 
 };
 
-module.exports = RedSquareObserverSidebar;
+module.exports = RedSquareObserver;
 
 
