@@ -544,6 +544,14 @@ module.exports = ArcadeMain = {
     }
   },
 
+  /**
+   * This partially duplicates functionality of Observer Module
+   */ 
+  watchGame(app, mod, game_id){
+    app.connection.emit("arcade-observer-join-table", game_id);
+  },
+
+
   cancelGame(app, mod, game_id) {
     var testsig = "";
     let players = [];

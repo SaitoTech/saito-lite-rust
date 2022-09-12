@@ -203,6 +203,9 @@ class Poker extends GameTableTemplate {
     if (this.browser_active) {
       this.displayBoard();
     }
+
+    //If reloading, make sure we can refresh the queue operations
+    this.game.halted = 0;
   }
 
 
@@ -214,6 +217,9 @@ class Poker extends GameTableTemplate {
     */
     let msg = "Clearing the table";
     this.game.queue.push("newround");   
+    //Have to do twice because want to add players before checking for end of game condition,
+    //but if too many players want to join they may want to take the seat of an eliminated player
+    this.game.queue.push("PLAYERS");
     this.game.queue.push("checkplayers");     
     this.game.queue.push("PLAYERS");
 
@@ -413,11 +419,14 @@ class Poker extends GameTableTemplate {
         }
 
         if (removal){
+          this.game.halted = 1;
           //Save game with fewer players
           this.saveGame(this.game.id);
           //Reload game to rebuild the html
-          this.initialize_game_run = 0;
-          this.initializeGameFeeder(this.game.id);
+          setTimeout(()=>{
+            this.initialize_game_run = 0;
+            this.initializeGameFeeder(this.game.id);
+          }, 1000);
           return 0;
         }
 
@@ -1493,23 +1502,12 @@ class Poker extends GameTableTemplate {
     return 0;
   }
 
+
+
   processResignation(resigning_player, txmsg){
-    //if (this.game.players.length == 2){
-      super.processResignation(resigning_player, txmsg);
-      return;
-   // }
-   
-    if (!this.game.players.includes(resigning_player)){ 
-      console.log(resigning_player+" not in "+ JSON.stringify(this.game.players));
-    //Player already not an active player, make sure they are also removed from accepted to stop receiving messages
-      for (let i = this.game.accepted.length; i>=0; i--){
-        if (this.game.accepted[i] == player_key){
-          this.game.accepted.splice(i,1);
-        }
-      }
-      return;
-    }
-    
+
+    super.processResignation(resigning_player, txmsg);
+
     if (this.browser_active){
       if (this.app.wallet.returnPublicKey() !== resigning_player) {
         this.refreshPlayerStack(txmsg.loser, false); //Here we want to hide cards
@@ -1528,7 +1526,6 @@ class Poker extends GameTableTemplate {
       this.startQueue();
     }
   }
-
 
   endTurn(nextTarget = 0) {
     if (this.browser_active){

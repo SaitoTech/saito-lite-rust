@@ -1,11 +1,11 @@
-const GameTemplate = require('../../lib/templates/gametemplate');
+const GameTableTemplate = require('../../lib/templates/gametabletemplate');
 const saito = require('../../lib/saito/saito');
 
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Blackjack extends GameTemplate {
+class Blackjack extends GameTableTemplate {
 
   constructor(app) {
 
@@ -170,6 +170,10 @@ class Blackjack extends GameTemplate {
     if (this.browser_active) {
       this.displayBoard();
     }
+
+    //If reloading, make sure we can refresh the queue operations
+    this.game.halted = 0;
+
   }
 
  /*
@@ -206,6 +210,33 @@ class Blackjack extends GameTemplate {
     return state;
 
   }
+
+
+  removePlayerFromState(index){
+    this.game.state.player.splice(index, 1);
+  }
+
+  addPlayerToState(address){
+    let new_player = {
+                          credit : this.game.stake,
+                          name : this.app.keys.returnIdentifierByPublicKey(address, 1),
+                          wager : 0,
+                          payout : 1,
+                          hand : [],
+                          total : 0,
+                          winner : null,
+                          split : []
+    };
+
+    if (new_player.name.indexOf("@") > 0) {
+        new_player.name = new_player.name.substring(0, new_player.name.indexOf("@"));
+      }
+    if (new_player.name === address) {
+      new_player.name = address.substring(0, 10) + "...";
+    }
+    this.game.state.player.push(new_player);
+  }
+
 
 
   /*
@@ -252,7 +283,6 @@ class Blackjack extends GameTemplate {
     this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnPokerDeck()));
     //this.game.queue.push("BALANCE\t0\t"+this.app.wallet.returnPublicKey()+"\t"+"SAITO");
     
-    this.settleLastRound();
   }
 
   /*
@@ -273,12 +303,28 @@ class Blackjack extends GameTemplate {
     We want these at the end of the queue so they get processed first, but if 
     any players got removed, there will be some issues....
     */
+    let msg = "Clearing the table";
+    this.game.queue.push("newround");   
+    //Have to do twice because want to add players before checking for end of game condition,
+    //but if too many players want to join they may want to take the seat of an eliminated player
+    this.game.queue.push("PLAYERS");
+    this.game.queue.push("checkplayers");     
+    this.game.queue.push("PLAYERS");
+
     if (this.game.crypto) {
+      msg += (this.game.crypto)? " and settling bets..." : "...";
+
+      console.log("PROCESSING THE SETTLEMENT NOW!");
+      console.log(JSON.stringify(this.settlement));
       for (let i = 0; i < this.settlement.length; i++) {
         this.game.queue.push(this.settlement[i]);
       }
-      this.updateStatus("Waiting for payments to be settled...");
     }
+    console.log("new queue: " + JSON.stringify(this.game.queue));    
+
+    this.updateStatus(msg);
+    this.cardfan.hide();
+
     this.settlement = [];
   }
 
@@ -287,50 +333,6 @@ class Blackjack extends GameTemplate {
   Updates game stats  and calls initializeQueue
   */
   newRound() {
-    //How many players still have credit
-    let removal = false;
-    let solventPlayers = this.countActivePlayers(); 
-    if (solventPlayers === 1 ){ //Clear winner 
-      this.game.queue.push(`winner\t${this.firstActivePlayer()}`);
-      this.settleLastRound();
-      return 1;
-    }else if (this.game.state.player.length > 2){ //if more than 2, remove extras
-        for (let i = this.game.state.player.length - 1; i >=0 ; i--){
-          if (this.game.state.player[i].credit<=0){
-              removal = true;
-              console.log(`*** Removing Player ${i+1}`);
-              this.game.state.player.splice(i,1);  //Remove player from game state
-              this.removePlayer(this.game.players[i]); //Remove player in gamemodule
-            }      
-        } 
-    }
-
-    if (removal){
-      //Save game with fewer players
-      this.saveGame(this.game.id);
-
-      //Update DOM 
-      try{
-        //Remove playerboxes
-        let boxes = document.querySelectorAll(".player-box");
-        for (let box of boxes){
-          box.remove();
-        }
-        //this.playerbox.render(this.app,this);
-
-        //Hide cardfan
-        this.cardfan.hide();
-
-      }catch(err){
-        console.error(err);
-      }
-
-      //Let's just try reloading the game
-      this.initialize_game_run = 0;
-      this.initializeGameFeeder(this.game.id);
-      return 0;
-    }
-    
     //
     // advance and reset variables
     this.game.state.turn = 0;
@@ -366,6 +368,41 @@ class Blackjack extends GameTemplate {
         //Otherwise return 1, and run through the initialized queue commands
         return this.newRound(); 
       }
+
+
+      if (mv[0] == "checkplayers"){
+        this.game.queue.splice(qe, 1);
+        //How many players still have credit
+        let removal = false;
+        let solventPlayers = this.countActivePlayers(); 
+        if (solventPlayers === 1 ){ //Clear winner 
+          this.game.queue.push(`winner\t${this.firstActivePlayer()}`);
+          return 1;
+        }else if (this.game.state.player.length > 2){ //if more than 2, remove extras
+            for (let i = this.game.state.player.length - 1; i >=0 ; i--){
+              if (this.game.state.player[i].credit<=0){
+                  removal = true;
+                  console.log(`*** Removing Player ${i+1}`);
+                  this.removePlayerFromState(i);  //Remove player from game state
+                  this.removePlayer(this.game.players[i]); //Remove player in gamemodule
+                }      
+            } 
+        }
+
+        if (removal){
+          //Save game with fewer players
+          this.saveGame(this.game.id);
+
+          //Let's just try reloading the game
+          setTimeout(()=>{
+            this.initialize_game_run = 0;
+            this.initializeGameFeeder(this.game.id);
+          }, 1000);
+          return 0;
+        }else{
+          return 1;
+        }
+      }        
 
       //Player takes their turn
       if (mv[0] === "play") {
@@ -678,8 +715,6 @@ class Blackjack extends GameTemplate {
 
       if (mv[0] === "pickwinner") {
         this.game.queue.splice(qe, 1);
-        this.game.queue.push("newround"); // move to next round when done
-        
         return this.pickWinner();       
       }
 
@@ -930,7 +965,7 @@ class Blackjack extends GameTemplate {
         
 
         //Make Image Content       
-        if (this.game.state.player[i].hand) {
+        if (this.game.state.player[i].hand && this.game.player !== i+1) {
             newhtml = "";
 
             for (let y = this.game.state.player[i].hand.length; y< 2; y++){
@@ -1223,6 +1258,7 @@ class Blackjack extends GameTemplate {
     //Consolidated log message
     this.updateLog(logMsg);
 
+    this.settleLastRound();
     if (this.settlement.length > 0){
       this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, ()=>{
         this.restartQueue();
@@ -1281,10 +1317,7 @@ class Blackjack extends GameTemplate {
 
 
   processResignation(resigning_player, txmsg){
-    //if (this.game.players.length == 2){
-      super.processResignation(resigning_player, txmsg);
-      return;
-   // }
+    super.processResignation(resigning_player, txmsg);
 
     let player = parseInt(txmsg.loser);
     if (player != this.game.state.dealer){ //Player, not dealer

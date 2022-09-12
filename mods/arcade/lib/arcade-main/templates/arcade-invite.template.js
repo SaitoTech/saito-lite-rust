@@ -72,7 +72,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
           <div class="gamePlayers">${playersHtml}</div>
         </div>
         <div class="gameShortDescription">${makeDescription(app, invite)}</div>
-	      <div class="gameButtons">
+	      <div class="gameButtons" style="position:relative;">
     `;
      if (invite.isMine) {
        if (game_initialized == 1) { 
@@ -86,7 +86,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
        inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
      } else {
        if (game_initialized == 1) {
-         inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="watch" class="button invite-tile-button">WATCH</button>`;
+         inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="watch" class="button invite-tile-button">JOIN</button><i class="game_status_indicator game_live fas fa-circle"></i>`;
          //inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
        } else {
          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="join" class="button invite-tile-button invite-tile-button-join">JOIN</button>`;
