@@ -76,13 +76,14 @@ class Chat extends ModTemplate {
                     render: this.renderEmailChat,
                     attachEvents: this.attachEventsEmailChat,
                 }
-            case 'header-dropdown':
+            /*case 'header-dropdown':
                 return {
                     name: this.appname ? this.appname : this.name,
                     icon_fa: this.icon_fa,
                     browser_active: this.browser_active,
                     slug: this.returnSlug()
                 };
+            */
             default:
                 return null;
         }
