@@ -316,7 +316,7 @@
     });
     menu.push({
       factions : ['england','protestant'],
-      cost : [1,1,1,1,1,1],
+      cost : [3,2],
       name : "Publish treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -1678,11 +1678,54 @@ console.log("16");
 return;
   }
   canPlayerPublishTreatise(his_self, player, faction) {
+    if (faction === "protestant") { return 1; }
+    if (faction === "england") {
+      if (his_self.isPersonageOnMap("england", "cranmer") != null) {
+	return 1;
+      }
+    }
     return 0;
   }
   async playerPublishTreatise(his_self, player, faction) {
-console.log("17");
-return;
+
+    if (faction === "protestant") {
+
+      let msg = "Select Language Zone for Reformation Attempts:";
+      let html = '<ul>';
+          html += '<li class="option" style="" id="german">German</li>';
+          html += '<li class="option" style="" id="english">English</li>';
+          html += '<li class="option" style="" id="french">French</li>';
+          html += '<li class="option" style="" id="spanish">Spanish</li>';
+          html += '<li class="option" style="" id="italian">Italian</li>';
+          html += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.endTurn();
+
+      });
+
+    }
+
+
+    if (faction === "england") {
+
+      let id = "england";
+alert("selected ... " + id);
+      his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+      his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+      his_self.endTurn();
+
+    }
+
+    return 0;
   }
   canPlayerCallTheologicalDebate(his_self, player, faction) {
     return 0;

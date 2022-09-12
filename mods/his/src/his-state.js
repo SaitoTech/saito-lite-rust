@@ -10,6 +10,18 @@
     p.captured.push(unit);
   }
 
+  isPersonageOnMap(faction, personage) {
+    for (let s in this.game.spaces) {
+      if (this.game.spaces[s].units[faction].length > 0) {
+	for (let i = 0; i < this.game.spaces[s].units[faction].length; i++) {
+	  let unit = this.game.spaces[s].units[faction][i];
+	  if (unit.key === personage) { return unit; }
+	}
+      }
+    }
+    return null;
+  }
+
   activateMinorPower(faction, power) {
     this.setAllies(faction, power);
     this.game.state.activated_powers[faction].push(power);
@@ -3335,6 +3347,8 @@ console.log("retreat 4");
         if (mv[0] == "protestant_reformation") {
 
           let player = parseInt(mv[1]);
+          let language_zone = "german";
+	  if (mv[2]) { language_zone = mv[2]; }
           game_mod.game.queue.splice(qe, 1);
 
 	  if (game_mod.game.player == player) {
@@ -3349,6 +3363,7 @@ console.log("retreat 4");
 		if (
 		  space.religion === "catholic" &&
 		  !game_mod.game.state.tmp_reformations_this_turn.includes(space.key) &&
+		  space.language === language_zone &&
 		  game_mod.isSpaceAdjacentToReligion(space, "protestant")
 	        ) {
 		  return 1;
