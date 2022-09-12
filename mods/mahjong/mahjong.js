@@ -32,7 +32,7 @@ class Mahjong extends GameTemplate {
   }
 
   returnGameRulesHTML(){
-    return `<div class="rules-overlay">
+    return `<div class="rules-overlay" style="background-color:whitesmoke">
             <h1>Mahjong</h1>
             <ul>
             <li>144 tiles are randomly folded into a multi-layered shape.</li>
@@ -264,7 +264,7 @@ console.log("untoggle: " + divname);
   }
 
   untoggleCard(divname) {
-    $(`#${divname}`).css('opacity','0.9');
+    $(`#${divname}`).css('opacity','1.0');
     $(`#${divname}`).css('pointer-events','auto');
     let outermostBoxShadow = '0px 10px 12px 1px #000000';
     let boxShadow = '12px 10px 12px 1px #000000';
@@ -327,6 +327,23 @@ console.log("untoggle: " + divname);
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       }
     });
+    if (app.modules.returnModule("RedSquare")) {
+    this.menu.addSubMenuOption("game-game", {
+      text : "Screenshot",
+      id : "game-post",
+      class : "game-post",
+      callback : async function(app, game_mod) {
+        let log = document.querySelector(".log");
+        let log_lock = document.querySelector(".log_lock");
+        if (!log_lock && log) { log.style.display = "none"; }
+        await app.browser.captureScreenshot(function(image) {
+          if (!log_lock && log) { log.style.display = "block"; }
+          let m = game_mod.app.modules.returnModule("RedSquare");
+          if (m) { m.tweetImage(image); }
+        });
+      },
+    });
+    }
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
@@ -543,10 +560,7 @@ console.log("untoggle: " + divname);
   displayUserInterface() {
     let mahjong_self = this;
 
-    let html = '<span class="hidable">144 tiles are randomly folded into a multi-layered shape.' + 
-               'The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence' +
-               'THere are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.' +
-               'The game is finished when all pairs of tiles have been removed from the board.</span>';
+    let html = '<span class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.</span>';
 
     // TODO later - shuffle
     let option = '';
