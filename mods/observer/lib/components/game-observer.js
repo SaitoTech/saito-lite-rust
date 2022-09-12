@@ -265,7 +265,7 @@ class GameObserver {
       nextMoveBtn.classList.remove("flashit");
       if (nextMoveBtn.style.display !== "none"){
         nextMoveBtn.style.display = "none";
-        salert("No Moves Yet Available Beyond this Point");
+        //salert("No Moves Yet Available Beyond this Point");
       }
     }
   }

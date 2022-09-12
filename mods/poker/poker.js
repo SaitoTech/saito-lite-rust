@@ -189,7 +189,7 @@ class Poker extends GameTableTemplate {
     }
 
     //Parse game options
-    this.maxPlayers = this.game.options.max_players;
+    this.maxPlayers = this.game.options.max_players || this.maxPlayers;
 
     this.game.crypto = (this.game.options.crypto)? this.game.options.crypto: "";
     this.game.stake =  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 0;

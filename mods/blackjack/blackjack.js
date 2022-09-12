@@ -149,6 +149,9 @@ class Blackjack extends GameTableTemplate {
       this.game.crypto = "";
     }
 
+    //Parse game options
+    this.maxPlayers = this.game.options.max_players || this.maxPlayers;
+
     if (this.game.deck.length == 0) {
 
       this.game.state = this.returnInitialState(this.game.players.length);
