@@ -46,6 +46,7 @@ class RedSquare extends ModTemplate {
     this.ui_initialized = false;
 
     this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg']; 
+    this.icon_fa = "fas fa-square-full";
 
     return this;
 
@@ -65,7 +66,21 @@ class RedSquare extends ModTemplate {
     }
   }
 
-
+ //
+ // Easy Navigation from Arcade (with old saito/ui) to RedSquare
+ //
+ respondTo(type){
+    if (type == 'header-dropdown'){
+      return {
+          name: this.appname ? this.appname : this.name,
+          icon_fa: this.icon_fa,
+          browser_active: this.browser_active,
+          slug: this.returnSlug()
+      };
+    }
+      
+    return super.respondTo(type);
+  }
 
   tweetImage(image) {
     try {
@@ -81,10 +96,8 @@ console.log("error tweeting image");
   addNotification(app, mod, tx) {
     // skip notifying us of our own posts / comments
     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
-console.log("from: " + JSON.stringify(tx.transaction.from) + " --- " + app.wallet.returnPublicKey());
       return;
     }
-console.log("ADD NOTIFICATION FOR US!");
     if (this.ntfs.length == 0) {
       this.ntfs.push(tx);
       return;
@@ -453,9 +466,10 @@ console.log("cannot render...");
 
       let tweet_id = app.browser.returnURLParameter('tweet_id');
 
+console.log("TESTING FOR TWEET_ID: " + tweet_id);
 
       if (document.querySelector(".redsquare-list")) {
-        if (tweet_id) {
+        if (tweet_id != "") {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
@@ -487,8 +501,10 @@ console.log("LOAD: " + txmsg.data.text);
           }
           redsquare_self.addNotification(redsquare_self.app, redsquare_self, txs[i]);
         }
-        redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
-        console.log("HOW MANY DID WE LOAD 2? " + txs.length);
+	if (tweet_id != "") {
+          console.log("HOW MANY DID WE LOAD 2? " + txs.length);
+          redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
+	}
       });
 
 
@@ -570,6 +586,9 @@ console.log("add " + txmsg.data.text + " w/ replies " + tx.optional.num_replies)
   }
 
   fetchMoreTweets(app, mod, post_fetch_tweets_callback) {
+
+console.log("TESTING HERE!");
+
     const startingLimit = (this.page_number - 1) * this.results_per_page
     let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
@@ -872,14 +891,22 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
 
 
     if (tweet.retweet_tx != null) {
-
       let ts = new Date().getTime();
       let sql3 = "UPDATE tweets SET num_retweets = num_retweets + 1 WHERE sig = $sig";
       let params3 = {
         $sig: tweet.thread_id,
       }
       app.storage.executeDatabase(sql3, params3, "redsquare");
+    }
 
+
+    if (tweet.parent_id !== tweet.tx.transaction.sig && tweet.parent_id !== "") {
+      let ts = new Date().getTime();
+      let sql4 = "UPDATE tweets SET num_replies = num_replies + 1 WHERE sig = $sig";
+      let params4 = {
+        $sig: tweet.parent_id,
+      }
+      app.storage.executeDatabase(sql4, params4, "redsquare");
     }
 
     this.sqlcache = [];
@@ -947,7 +974,7 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
     this.redsquare.last_liked_tweets = [];
   }
 
-  saveStun() {
+  saveRedSquare() {
     this.app.options.redsquare = this.redsquare;
     this.app.options.saveOptions();
   }

@@ -4464,6 +4464,7 @@ playerTurnHeadlineSelected(card, player) {
 
 
         if (action2 == "realign") {
+
           let alignment_rolls = ops;
           let header_msg = `Pick a target to realign (${alignment_rolls} rolls), or:`;
           let html = `<ul><li class="card" id="cancelrealign">end turn without rolling</li></ul>`;
@@ -4478,10 +4479,6 @@ playerTurnHeadlineSelected(card, player) {
           });
 
 
-          ///////////////
-          //playerRealign(player, card, mycallback=null) {
-
- 
           $(".country").off();
           $(".country").on('click', async function() {
             
@@ -4516,7 +4513,6 @@ playerTurnHeadlineSelected(card, player) {
             }
 
             /* Though DEFCON is sufficient reason to stop a coup, it may be more interesting to the player to fail in more specific ways, if possible*/
-
             if (twilight_self.game.state.events.usjapan == 1 && c == "japan" && player == "ussr") {
               failureReason = "US / Japan Alliance prevents realignments in Japan";
             }
@@ -4542,7 +4538,8 @@ playerTurnHeadlineSelected(card, player) {
             
               twilight_self.displayModal(coupHeader, failureReason);
             
-            }else{ //No reason to fail, go ahead and launch coup   
+            } else {
+
               //
               // vietnam revolts and china card bonuses
               //
@@ -4577,13 +4574,9 @@ playerTurnHeadlineSelected(card, player) {
                   return;
                 }
               }
-
             }
-          
           });
-
         }
-            
 
         twilight_self.bindBackButtonFunction(() => {
           twilight_self.playOps(player, ops, card);

@@ -725,6 +725,9 @@ class Browser {
   }
 
   makeDraggable(id_to_move, id_to_drag = "", mycallback = null) {
+    console.log("make draggable: " + id_to_drag);
+    console.log(" and move? " + id_to_move);
+
     try {
       const element_to_move = document.getElementById(id_to_move);
       let element_to_drag = element_to_move;
@@ -743,6 +746,8 @@ class Browser {
 
       element_to_drag.onmousedown = function (e) {
         e = e || window.event;
+
+        console.log("DRAG MOUSEDOWN");
 
         if (
           !e.currentTarget.id ||
@@ -775,6 +780,8 @@ class Browser {
         };
 
         document.onmousemove = function (e) {
+          console.log("MOVE MOUSEDOWN");
+
           e = e || window.event;
           e.preventDefault();
 
@@ -1092,10 +1099,11 @@ class Browser {
         text = text.replace(/[\r<br>]+$/, "");
 
         // wrap link in <a> tag
-        let urlPattern = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/ig;       
-        text = text.replace(urlPattern, function(url){ 
-            return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`; 
-        }); 
+        let urlPattern =
+          /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
+        text = text.replace(urlPattern, function (url) {
+          return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
+        });
       }
 
       return text;

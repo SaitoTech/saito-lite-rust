@@ -10,7 +10,9 @@ class ChatPopup {
     this.hasRendered = true;
 
     app.connection.on("chat-render-request", (gid = "") => {
-      if(mod.chat_manager.inactive_popups.includes(group_id)) return;
+
+      if (mod.chat_manager.inactive_popups.includes(group_id)) { return; }
+
       if (gid === this.group_id && gid != "" && this.group_id != "") {
 
         let divid = "chat-container-" + gid;
@@ -26,7 +28,7 @@ class ChatPopup {
         app.browser.replaceElementBySelector(`<div class="chat-body chat-body-${gid}">${mod.returnChatBody(gid)} </div> ,`,  `.chat-body-${gid}`);
 
         document.querySelector(".chat-body").scroll(0, 1000000000);
-        app.browser.makeDraggable(`chat-container-${gid}`);
+        app.browser.makeDraggable(`chat-container-${gid}`, `chat-header-${gid}`);
         this.attachEvents(app, mod, gid);
       }	
     });
@@ -35,21 +37,44 @@ class ChatPopup {
   }
 
   render(app, mod, group_id = "") {
-    if(mod.chat_manager.inactive_popups.includes(group_id)) return;
-    if (group_id != "" && this.group_id == "") { this.group_id = group_id; }
-    if (!document.getElementById(`chat-container-${this.group_id}`)) {
-      if(!document.querySelector(".chat-popup-list")){
-        app.browser.addElementToDom(`<div class="chat-popup-list"> </div>`)
+
+    let chatboxen_open = 0;
+    let pixen_consumed = 0;
+    let right_orientation = "0px";
+
+    for (let i = 0; i < mod.groups.length; i++) {
+      if (document.getElementById(`chat-container-${mod.groups[i].id}`)) {
+        chatboxen_open++;
+        pixen_consumed += document
+          .getElementById(`chat-container-${mod.groups[i].id}`)
+          .getBoundingClientRect().width;
       }
-      app.browser.prependElementToSelector(ChatPopupTemplate(app, mod, this.group_id), '.chat-popup-list');
-      app.browser.makeDraggable(`chat-container-${this.group_id}`);
-      this.attachEvents(app, mod, this.group_id);
-    } else {
-      // we've been told to render, but the container exists, so update the chat-body
-     
+
+console.log("SET WIDTH AS: " + pixen_consumed);
     }
 
-    console.log('returning chat body')
+console.log(pixen_consumed + " ~~~~ " + chatboxen_open);
+
+    right_orientation = pixen_consumed + (20 * chatboxen_open) + "px";
+
+
+    if (mod.chat_manager.inactive_popups.includes(group_id)) { return; }
+
+    if (group_id != "" && this.group_id == "") { this.group_id = group_id; }
+    if (!document.getElementById(`chat-container-${this.group_id}`)) {
+      app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
+      app.browser.makeDraggable(`chat-header-${this.group_id}`, `chat-header-${this.group_id}`);
+      this.attachEvents(app, mod, this.group_id);
+    } else {
+      // we've been told to render, but the container exists, so update the chat-body     
+    }
+
+    //
+    // update right-alignment
+    //
+    let obj = document.querySelector(`.chat-container-${this.group_id}`);
+    if (obj) { obj.style.right = right_orientation; }
+
     app.browser.addElementToSelector(`${mod.returnChatBody(group_id)}`,  `.chat-body`);
   }
 
@@ -69,7 +94,6 @@ class ChatPopup {
     let iobj = "chat-input-" + group_id;
     document.getElementById(iobj).focus();
 
-
     //
     // submit
     //
@@ -77,9 +101,7 @@ class ChatPopup {
 
     let msg_input = document.getElementById(idiv);
 
-
     msg_input.addEventListener("keydown", (e) => {
-
       if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
         e.preventDefault();
         if (msg_input.value == "") { return; }
@@ -88,7 +110,6 @@ class ChatPopup {
         mod.receiveChatTransaction(app, newtx);
         msg_input.value = "";
       }
-
     });
 
     //

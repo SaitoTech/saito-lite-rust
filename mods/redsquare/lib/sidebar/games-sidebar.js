@@ -3,7 +3,8 @@ const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/sai
 const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const GameInvite = require("./../game");
 const GameInviteDetails = require("./../appspace/arcade/game-invite-details");
-const RedSquareLeagueSidebar = require("./league-sidebar");
+const RedSquareLeague = require("./league/league");
+const RedSquareObserver = require("./observer/observer");
 
 class RedSquareGamesSidebar {
 
@@ -18,8 +19,6 @@ class RedSquareGamesSidebar {
         gi.render(app, mod, ".saito-arcade-invite-list");
         this.attachEvents(app, mod);
     });
-
-
   }
 
   render(app, mod, selector="") {
@@ -48,6 +47,12 @@ class RedSquareGamesSidebar {
       }
     }
 
+    let league_sidebar = new RedSquareLeague(app, mod);
+    league_sidebar.render(app, mod, ".redsquare-sidebar-league");
+
+    let observer_sidebar = new RedSquareObserver(app, mod);
+    observer_sidebar.render(app, mod, ".redsquare-sidebar-observer");
+
     this.attachEvents(app, mod);
   }
 
@@ -71,7 +76,6 @@ class RedSquareGamesSidebar {
       };
 
     }); 
-    RedSquareLeagueSidebar.attachEvents(app, mod);
   }
 }
 
