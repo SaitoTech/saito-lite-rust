@@ -82,7 +82,7 @@ class Post extends ModTemplate {
 
     if (type == "header-dropdown") {
       return {
-        name: this.appname ? this.appname : this.name,
+        name: "Forums",//this.appname ? this.appname : this.name,
         icon_fa: this.icon_fa,
         browser_active: this.browser_active,
         slug: this.returnSlug(),

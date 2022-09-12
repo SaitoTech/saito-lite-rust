@@ -9,6 +9,10 @@ body {
   height: 100vh;
 }
 
+.hidden {
+  display: none !important;
+}
+
 
 .gameboard{
   /* Default fill the background with image */
