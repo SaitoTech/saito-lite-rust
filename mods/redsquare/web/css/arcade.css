@@ -501,3 +501,85 @@ option {
 .arcade-advance-opt {
   margin-top: 1rem;
 }
+
+
+
+.redsquare-sidebar-observer .saito-table .saito-table-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr min-content;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-width: 2px 0;
+    border-color: #fff;
+    border-style: solid;
+    cursor: pointer;
+}
+
+
+.observer-info .playerInfo {
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 0.5rem;
+}
+
+
+.observer-info .playerInfo .player-slot {
+  display: inline-block;
+  float: left;
+  margin-right: 0.5em;
+}
+
+
+.observer-info .playerInfo .player-slot .identicon {
+  order: 1px solid indigo;
+  width: 100%;
+  height: 100%;
+  max-width: 2rem;
+  min-width: 1rem;
+}
+
+.redsquare-sidebar-observer .saito-table .observer-action {
+  text-align: center;
+}
+
+.redsquare-sidebar-observer .saito-table .observer-details {
+  font-size: 1.5rem;
+}
+
+.observer-action a {
+  color: var(--saito-primary);
+}
+
+.league-details-overlay {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 60vh;
+}
+
+.league-overview-box {
+  margin: 2rem 0rem;
+}
+
+.league-overview-box .info-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr max-content;
+  text-align: center;
+}
+
+.league-overview-box .info-item div:first-child {
+  font-weight: bold;
+}
+
+.league-leaderboard {
+  margin: 2rem 0rem;
+}
+
+.league-leaderboard table {
+  width: 100%;
+}
+
+.league-leaderboard table tr td {
+  text-align: center;
+}
