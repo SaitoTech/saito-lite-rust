@@ -1539,28 +1539,6 @@ console.log("adding stuff!");
     if (this.confirm_moves == 1) {
       initial_confirm_moves = "Expert Mode"; 
     }
-
-
-    if (app.modules.returnModule("RedSquare")) {
-    this.menu.addSubMenuOption("game-game", {
-      text : "Screenshot",
-      id : "game-post",
-      class : "game-post",
-      callback : async function(app, game_mod) {
-        let log = document.querySelector(".log");
-        let log_lock = document.querySelector(".log_lock");
-        if (!log_lock && log) { log.style.display = "none"; }
-        await app.browser.captureScreenshot(function(image) {
-          if (!log_lock && log) { log.style.display = "block"; }
-          let m = game_mod.app.modules.returnModule("RedSquare");
-          if (m) { m.tweetImage(image); }
-        });
-      },
-    });
-    }
-
-
-
     this.menu.addSubMenuOption("game-game", {
       text : initial_confirm_moves,
       id : "game-confirm",
@@ -1832,8 +1810,26 @@ console.log("adding stuff!");
 
 
   captureLeader(winning_faction, losing_faction, space, unit) {
+    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    alert("Capture Leader Not Implemented");
+    let p = this.returnPlayerOfFaction(winning_faction);
+    let unitjson = JSON.stringify(unit);
+    for (let z = 0; z < p.captured.length; z++) {
+      if (JSON.stringify(p.captured[z]) === unitjson) { return; }
+    }
+    p.captured.push(unit);
+  }
+
+  isPersonageOnMap(faction, personage) {
+    for (let s in this.game.spaces) {
+      if (this.game.spaces[s].units[faction].length > 0) {
+	for (let i = 0; i < this.game.spaces[s].units[faction].length; i++) {
+	  let unit = this.game.spaces[s].units[faction][i];
+	  if (unit.key === personage) { return unit; }
+	}
+      }
+    }
+    return null;
   }
 
   activateMinorPower(faction, power) {
@@ -1986,12 +1982,16 @@ console.log("adding stuff!");
       }
     }
 
+    //
     // let factions calculate their VP
+    //
     for (let f in factions) {
       factions[f].vp = this.factions[f].calculateVictoryPoints(this);
     }
 
+    //
     // calculate keys controlled
+    //
     for (let f in factions) {
       factions[f].keys = this.returnNumberOfKeysControlledByFaction(f);
       if (f === "protestant") {
@@ -1999,44 +1999,46 @@ console.log("adding stuff!");
       }
     }
 
+    //
     // military victory
+    //
     if (factions['hapsburg']) {
-    if (factions['hapsburg'].keys >= this.game.state.autowin_hapsburg_keys_controlled) {
-      factions['hapsburg'].victory = 1;
-      factions['hapsburg'].details = "military victory";
-    }
+      if (factions['hapsburg'].keys >= this.game.state.autowin_hapsburg_keys_controlled) {
+        factions['hapsburg'].victory = 1;
+        factions['hapsburg'].details = "military victory";
+      }
     }
     if (factions['ottoman']) {
-    if (factions['ottoman'].keys >= this.game.state.autowin_ottoman_keys_controlled) {
-      factions['ottoman'].victory = 1;
-      factions['ottoman'].details = "military victory";
-    }
+      if (factions['ottoman'].keys >= this.game.state.autowin_ottoman_keys_controlled) {
+        factions['ottoman'].victory = 1;
+        factions['ottoman'].details = "military victory";
+      }
     }
     if (factions['france']) {
-    if (factions['france'].keys >= this.game.state.autowin_france_keys_controlled) {
-      factions['france'].victory = 1;
-      factions['france'].details = "military victory";
-    }
+      if (factions['france'].keys >= this.game.state.autowin_france_keys_controlled) {
+        factions['france'].victory = 1;
+        factions['france'].details = "military victory";
+      }
     }
     if (factions['england']) {
-    if (factions['england'].keys >= this.game.state.autowin_england_keys_controlled) {
-      factions['england'].victory = 1;
-      factions['england'].details = "military victory";
-    }
+      if (factions['england'].keys >= this.game.state.autowin_england_keys_controlled) {
+        factions['england'].victory = 1;
+        factions['england'].details = "military victory";
+      }
     }
     if (factions['papacy']) {
-    if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
-      factions['papacy'].victory = 1;
-      factions['papacy'].details = "military victory";
-    }
+      if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
+        factions['papacy'].victory = 1;
+        factions['papacy'].details = "military victory";
+      }
     }
 
     // religious victory
     if (factions['protestant']) {
-    if (factions['protestant'].religious >= 50) {
-      factions['papacy'].victory = 1;
-      factions['papacy'].details = "religious victory";
-    }
+      if (factions['protestant'].religious >= 50) {
+        factions['papacy'].victory = 1;
+        factions['papacy'].details = "religious victory";
+      }
     }
 
     // base
@@ -2493,6 +2495,21 @@ console.log("retreat 4");
     state.activated_powers['england'] = [];
     state.activated_powers['papacy'] = [];
     state.activated_powers['protestant'] = [];
+
+    state.translations = {};
+    state.translations['new'] = {};
+    state.translations['full'] = {};
+    state.translations['new']['german'] = 0;
+    state.translations['new']['french'] = 0;
+    state.translations['new']['english'] = 0;
+    state.translations['full']['german'] = 0;
+    state.translations['full']['french'] = 0;
+    state.translations['full']['english'] = 0;
+
+    state.saint_peters_cathedral = {};
+    state.saint_peters_cathedral['state'] = 0;
+    state.saint_peters_cathedral['vp'] = 0;    
+
 
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
@@ -5113,6 +5130,8 @@ console.log("retreat 4");
         if (mv[0] == "catholic_counter_reformation") {
 
           let player = parseInt(mv[1]);
+          let language_zone = "german";
+	  if (mv[2]) { language_zone = mv[2]; }
           game_mod.game.queue.splice(qe, 1);
 
 	  if (game_mod.game.player == player) {
@@ -5126,6 +5145,7 @@ console.log("retreat 4");
 	      function(space) {
 		if (
 		  space.religion === "protestant" &&
+		  space.language === language_zone &&
 		  !game_mod.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
 		  game_mod.isSpaceAdjacentToReligion(space, "catholic")
 	        ) {
@@ -5155,6 +5175,8 @@ console.log("retreat 4");
         if (mv[0] == "protestant_reformation") {
 
           let player = parseInt(mv[1]);
+          let language_zone = "german";
+	  if (mv[2]) { language_zone = mv[2]; }
           game_mod.game.queue.splice(qe, 1);
 
 	  if (game_mod.game.player == player) {
@@ -5169,6 +5191,7 @@ console.log("retreat 4");
 		if (
 		  space.religion === "catholic" &&
 		  !game_mod.game.state.tmp_reformations_this_turn.includes(space.key) &&
+		  space.language === language_zone &&
 		  game_mod.isSpaceAdjacentToReligion(space, "protestant")
 	        ) {
 		  return 1;
@@ -9158,7 +9181,20 @@ console.log("space: " + spacekey);
 
 
 
+        if (mv[0] === "build_saint_peters") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.state.saint_peters_cathedral['vp'] < 5) {
+	    this.updateLog("Papacy progresses with construction of St. Peter's Basilica");
+	    this.game.state.saint_peters_cathedral['state'] += 1;
+	    this.game.state.saint_peters_cathedral['vp'] += 1;
+	    this.game.state.saint_peters_cathedral['state'] = 0;
+	  }
+
+	  return 1;
+
+	}
 
         if (mv[0] === "victory_determination_phase") {
 
@@ -9871,10 +9907,6 @@ this.updateLog("Catholics: " + c_rolls);
 
 	}
 
-
-
-
-
 	//
 	// objects and cards can add commands
 	//
@@ -10003,6 +10035,7 @@ this.updateLog("Catholics: " + c_rolls);
       players[i].tmp_roll_modifiers = [];
       players[i].factions = [];
       players[i].factions.push(rf);
+      players[i].captured = [];
       players[i].num = i;
 
     }
@@ -10215,7 +10248,7 @@ this.updateLog("Catholics: " + c_rolls);
     });
     menu.push({
       factions : ['england','protestant'],
-      cost : [1,1,1,1,1,1],
+      cost : [3,2],
       name : "Publish treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -10901,7 +10934,16 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
   		units_to_move.splice(idx, 1);
 	      }
 	    } else {
-	      units_to_move.push(parseInt(id));
+	      if (!units_to_move.includes(parseInt(id))) {
+	        units_to_move.push(parseInt(id));
+	      } else {
+		for (let i = 0; i < units_to_move.length; i++) {
+		  if (units_to_move[i] === parseInt(id)) {
+		    units_to_move.splice(i, 1);
+		    break;
+		  }
+		}
+	      }
 	    }
 
 	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
@@ -11561,6 +11603,7 @@ return;
     );
   }
   canPlayerTranslateScripture(his_self, player, faction) {
+    if (faction === "protestant") { return 1; }
     return 0;
   }
   async playerTranslateScripture(his_self, player, faction) {
@@ -11568,13 +11611,57 @@ console.log("16");
 return;
   }
   canPlayerPublishTreatise(his_self, player, faction) {
+    if (faction === "protestant") { return 1; }
+    if (faction === "england") {
+      if (his_self.isPersonageOnMap("england", "cranmer") != null) {
+	return 1;
+      }
+    }
     return 0;
   }
   async playerPublishTreatise(his_self, player, faction) {
-console.log("17");
-return;
+
+    if (faction === "protestant") {
+
+      let msg = "Select Language Zone for Reformation Attempts:";
+      let html = '<ul>';
+          html += '<li class="option" style="" id="german">German</li>';
+          html += '<li class="option" style="" id="english">English</li>';
+          html += '<li class="option" style="" id="french">French</li>';
+          html += '<li class="option" style="" id="spanish">Spanish</li>';
+          html += '<li class="option" style="" id="italian">Italian</li>';
+          html += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let id = $(this).attr("id");
+	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.endTurn();
+      });
+
+    }
+
+
+    if (faction === "england") {
+      let id = "england";
+      his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+      his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+      his_self.endTurn();
+    }
+
+    return 0;
   }
   canPlayerCallTheologicalDebate(his_self, player, faction) {
+//
+// TODO
+//
+// If all Protestant debaters in a language zone are committed, the Protestant player may not initiate debates in that language zone. Similarly, if all Papal debaters are committed, the Papal player may not initiate debates in any language zone. If none of the Protestant debaters for a language zone have entered the game (or all of them have been burnt at the stake, excommuni- cated, or removed from play), neither player may call a debate in that zone. 
+//
+    if (faction === "protestant") { return 1; }
+    if (faction === "papacy") { return 1; }
     return 0;
   }
   async playerCallTheologicalDebate(his_self, player, faction) {
@@ -11582,18 +11669,42 @@ console.log("18");
 return;
   }
   canPlayerBuildSaintPeters(his_self, player, faction) {
+    if (faction === "papacy") {
+      if (his_self.game.state.saint_peters_cathedral['vp'] < 5) { return 1; }
+    }
     return 0;
   }
   async playerBuildSaintPeters(his_self, player, faction) {
-console.log("19");
-return;
+    his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
+    his_self.endTurn();
+    return 0;
   }
   canPlayerBurnBooks(his_self, player, faction) {
+    if (faction === "papacy") { return 1; }
     return 0;
   }
   async playerBurnBooks(his_self, player, faction) {
-console.log("20");
-return;
+
+    let msg = "Select Language Zone for Reformation Attempts:";
+    let html = '<ul>';
+        html += '<li class="option" style="" id="german">German</li>';
+        html += '<li class="option" style="" id="english">English</li>';
+        html += '<li class="option" style="" id="french">French</li>';
+        html += '<li class="option" style="" id="spanish">Spanish</li>';
+        html += '<li class="option" style="" id="italian">Italian</li>';
+        html += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+      let id = $(this).attr("id");
+      his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.endTurn();
+    });
+
+    return 0;
   }
   canPlayerFoundJesuitUniversity(his_self, player, faction) {
     if (faction === "papacy" && his_self.game.state.events.papacy_may_found_jesuit_universities == 1) { return 1; }
@@ -11615,16 +11726,6 @@ return;
       },
 
     );
-  }
-  canPlayerTranslateScripture(his_self, player, faction) {
-    return 0;
-  }
-  canPlayerPublishTreatise(his_self, player, faction) {
-    return 0;
-  }
-  async playerPublishTreatise(his_self, player, faction) {
-console.log("22 treatise");
-return;
   }
 
   playerPlaceUnitsInSpaceWithFilter(unittype, num, faction, filter_func=null, mycallback = null, cancel_func = null, board_clickable = false) {
@@ -11781,6 +11882,7 @@ return;
     if (obj.committed == null)          { obj.committed = 0; }
     if (obj.besieged == null)           { obj.besieged = false; }
     if (obj.captured == null)           { obj.captured = false; }
+    if (obj.key == null)		{ obj.key = name; }
 
     //obj = this.addEvents(obj);
     this.units[name] = obj;

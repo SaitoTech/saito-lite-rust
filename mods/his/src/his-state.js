@@ -686,6 +686,21 @@ console.log("retreat 4");
     state.activated_powers['papacy'] = [];
     state.activated_powers['protestant'] = [];
 
+    state.translations = {};
+    state.translations['new'] = {};
+    state.translations['full'] = {};
+    state.translations['new']['german'] = 0;
+    state.translations['new']['french'] = 0;
+    state.translations['new']['english'] = 0;
+    state.translations['full']['german'] = 0;
+    state.translations['full']['french'] = 0;
+    state.translations['full']['english'] = 0;
+
+    state.saint_peters_cathedral = {};
+    state.saint_peters_cathedral['state'] = 0;
+    state.saint_peters_cathedral['vp'] = 0;    
+
+
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
 
@@ -3305,6 +3320,8 @@ console.log("retreat 4");
         if (mv[0] == "catholic_counter_reformation") {
 
           let player = parseInt(mv[1]);
+          let language_zone = "german";
+	  if (mv[2]) { language_zone = mv[2]; }
           game_mod.game.queue.splice(qe, 1);
 
 	  if (game_mod.game.player == player) {
@@ -3318,6 +3335,7 @@ console.log("retreat 4");
 	      function(space) {
 		if (
 		  space.religion === "protestant" &&
+		  space.language === language_zone &&
 		  !game_mod.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
 		  game_mod.isSpaceAdjacentToReligion(space, "catholic")
 	        ) {

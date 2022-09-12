@@ -2239,7 +2239,20 @@ console.log("space: " + spacekey);
 
 
 
+        if (mv[0] === "build_saint_peters") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.state.saint_peters_cathedral['vp'] < 5) {
+	    this.updateLog("Papacy progresses with construction of St. Peter's Basilica");
+	    this.game.state.saint_peters_cathedral['state'] += 1;
+	    this.game.state.saint_peters_cathedral['vp'] += 1;
+	    this.game.state.saint_peters_cathedral['state'] = 0;
+	  }
+
+	  return 1;
+
+	}
 
         if (mv[0] === "victory_determination_phase") {
 
@@ -2951,10 +2964,6 @@ this.updateLog("Catholics: " + c_rolls);
 	  return 1;
 
 	}
-
-
-
-
 
 	//
 	// objects and cards can add commands
