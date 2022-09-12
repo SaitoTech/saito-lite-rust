@@ -24,6 +24,16 @@ class Mahjong extends GameTemplate {
 
   }
 
+
+  respondTo(type){
+    if (type == "default-league") {
+      let obj = super.respondTo(type);
+      obj.type = "exp";
+      return obj;
+    }
+    return super.respondTo(type);
+  }
+
   returnGameRulesHTML(){
     return `<div class="rules-overlay">
             <h1>Mahjong</h1>
@@ -126,9 +136,6 @@ class Mahjong extends GameTemplate {
   // displayBoard
   async displayBoard(timeInterval = 1) {
 
-    console.log('this.game');
-    console.log(this.game);
-
     this.game.deck.cards = this.returnDeck();
 
     let index = 0;
@@ -169,7 +176,6 @@ class Mahjong extends GameTemplate {
       this.attachEventsToBoard();
     } catch (err) {
       console.log(err);
-      console.log(this.game);
     }
   }
 
@@ -353,8 +359,6 @@ class Mahjong extends GameTemplate {
       let tileTokens = card.split('slot');
       let tileColumn = parseInt(tileTokens[1]);
       let tileRow = parseInt(card.split('_')[0].substring(3));
-      console.log('tileRow');
-      console.log(tileRow);
       if (mahjong_self.game.board[card] !== "E") {
 
         // layer 1 tile can't be unlocked if layer 2 tile overlays it
