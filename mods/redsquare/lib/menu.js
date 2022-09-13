@@ -13,8 +13,8 @@ class RedSquareMenu {
     this.name = "RedSquareMenu";
     this.numberOfNotifications = 1
 
-    app.connection.on('show-notification-request', (menu, notifications)=> {
-     this.displayNotification(menu, notifications)
+    app.connection.on('show-notification-request', (menu_item, notifications)=> {
+     this.displayNotification(app, menu_item, notifications)
     })  
   }
 
@@ -199,12 +199,11 @@ class RedSquareMenu {
   }
 
 
-  displayNotification(menu, notifications=Math.floor(Math.random()*20)){
-    let obj =  `.redsquare-menu-${menu}`
-   let menu_self = this;
+  displayNotification(app, menu_item, notifications=Math.floor(Math.random()*20)){
+    let obj =  `.redsquare-menu-${menu_item}`
     if(document.querySelector(obj)) {
       if(!document.querySelector( `${obj} .saito-notification-dot`)) {
-      menu_self.app.browser.addElementToSelector(`<p class="saito-notification-dot">${notifications}</p>`, obj );
+      app.browser.addElementToSelector(`<p class="saito-notification-dot">${notifications}</p>`, obj );
       }
     }
   }
