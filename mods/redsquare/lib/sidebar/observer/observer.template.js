@@ -5,6 +5,8 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 	}
 
 	if (obs_mod){
+		let cutoff = new Date().getTime() - 5 * 60 * 1000;
+
 		html = `<div id="rs_sidebar_observer" class="observer_sidebar">`;
 
 			html += `<h6>Live Games:</h6>`;
@@ -13,7 +15,7 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 
 			for (let g of games){
 				//We will only display live games
-				if (g.game_status !== "over"){
+				if (g.game_status !== "over" && g.ts > cutoff){
 				 cnt++;
 
 					let gameModule = app.modules.returnModule(g.module);
