@@ -2,6 +2,9 @@
 module.exports = ObserverLoader = {
   render(app, mod, slug = "", game_status = false) {
 
+    let arcade = app.modules.returnModule("Arcade");
+    if (!arcade.browser_active){ return;}
+    
     if (!slug){
       document.getElementById("arcade-main").innerHTML = `  
       <div id="arcade-initialize-game-container" class="arcade-initialize-game-container">

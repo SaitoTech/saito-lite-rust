@@ -184,6 +184,10 @@ class Arcade extends ModTemplate {
     this.app.modules.respondTo("arcade-games").forEach((mod) => {
       this.affix_callbacks_to.push(mod.name);
     });
+
+    app.connection.on("join-game", (game_id)=>{
+      ArcadeMain.joinGame(app, this, game_id);
+    });
   }
 
   initializeHTML(app) {
@@ -528,6 +532,7 @@ class Arcade extends ModTemplate {
       if (this.browser_active) {
         GameLoader.render(app, this);   
       }else{
+        app.connection.emit("arcade-game-loading");
         siteMessage(txmsg.module + ' invite accepted.', 20000);
       }
       
@@ -1251,7 +1256,7 @@ class Arcade extends ModTemplate {
             }
           }
         }
-      }, 1000);
+      }, 500);
     }
   }
 
