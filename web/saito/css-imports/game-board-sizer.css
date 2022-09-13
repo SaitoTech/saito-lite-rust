@@ -12,7 +12,8 @@
 }
 #game_board_sizer i {
   font-size: 24px;
-  text-shadow: 0 0 2px var(--saito-red), 0 0 5px whitesmoke;
+  color: var(--saito-white);
+  text-shadow: 0 0 2px var(--saito-black), 0 0 3px var(--saito-primary);
 }
 #game_board_sizer input {
   width: 250px;
