@@ -7,18 +7,16 @@ const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
 
 class RedSquareMenu {
 
-
-
-  constructor(app) {
+  constructor(app, mod) {
     this.name = "RedSquareMenu";
-    this.numberOfNotifications = 1
+    this.numberOfNotifications = 0;
   }
 
   render(app, mod, container = "") {
 
     if (!document.querySelector(".redsquare-menu")) {
       app.browser.addElementToSelector(RedSquareMenuTemplate(app, mod), container);
-       if(this.numberOfNotifications > 0){
+       if (this.numberOfNotifications > 0){
           if(document.querySelector(`.redsquare-menu-notifications`)) {
             app.browser.addElementToSelector(`<p class="redsquare-menu-alert"> </p>`, `.redsquare-menu-notifications` );
           }
