@@ -7,14 +7,22 @@ const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
 
 class RedSquareMenu {
 
+
+
   constructor(app) {
     this.name = "RedSquareMenu";
+    this.numberOfNotifications = 1
   }
 
   render(app, mod, container = "") {
 
     if (!document.querySelector(".redsquare-menu")) {
       app.browser.addElementToSelector(RedSquareMenuTemplate(app, mod), container);
+       if(this.numberOfNotifications > 0){
+          if(document.querySelector(`.redsquare-menu-notifications`)) {
+            app.browser.addElementToSelector(`<p class="redsquare-menu-alert"> </p>`, `.redsquare-menu-notifications` );
+          }
+        }
     }
 
     //
@@ -23,10 +31,12 @@ class RedSquareMenu {
     for (let i = 0; i < app.modules.mods.length; i++) {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
+    
         let html = `
                 <li class="redsquare-menu-${app.modules.mods[i].returnSlug()}" data-id="${i}">
                   <i class="${app.modules.mods[i].icon}"></i>
                   <span> ${app.modules.mods[i].returnName()}</span>
+             
                 </li>
     `;
         if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)) {
@@ -40,18 +50,13 @@ class RedSquareMenu {
 
 
   attachEvents(app, mod) {
-
     this_menu = this;
-
     const left_sidebar = document.querySelector('.saito-sidebar.left');
     const icon = document.querySelector('.saito-sidebar.left .hamburger #icon');
     const removeLeftSidebar = () => {
       left_sidebar.classList.remove('mobile');
       icon.className = "fas fa-bars";
     }
-
-
-
 
     let obj;
 
@@ -99,7 +104,13 @@ class RedSquareMenu {
     for (let i = 0; i < app.modules.mods.length; i++) {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
-	let mod_notifications = app.modules.mods[i].returnNumberOfNotifications();
+	    let mod_notifications = app.modules.mods[i].returnNumberOfNotifications();
+        if(mod_notifications > 0){
+          if(!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()} .redsquare-menu-alert`)) {
+            app.browser.addElementToSelector(`<p class="redsquare-menu-alert"> </p>`, `.redsquare-menu-${app.modules.mods[i].returnSlug()}` );
+          }
+        }
+      
         let qs = ".redsquare-menu-" + app.modules.mods[i].returnSlug();
         obj = document.querySelector(qs);
         obj.onclick = (e) => {
@@ -108,18 +119,15 @@ class RedSquareMenu {
         }
       }
     }
-
   }
 
   renderItem(app, mod, component, params = null) {
-
     let url = component
     if (params) {
       url = `${component}?${params}`;
     }
 
     let matched = 0;
-
     switch (component) {
       case "home":
         mod.home.render(app, mod, ".appspace");

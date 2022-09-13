@@ -15,6 +15,9 @@ Saito User
     color: #888;
 }
 
+.saito-userline-timestamp {
+}
+
 .saito-user {
     display: grid;
     cursor: pointer;
@@ -23,6 +26,7 @@ Saito User
     justify-items: start;
     margin-bottom: 1px;
     width: 100%;
+    position: relative;
 }
 .saito-user.small {
     grid-template-rows: min-content min-content;

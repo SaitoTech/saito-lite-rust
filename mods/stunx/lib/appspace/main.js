@@ -48,6 +48,7 @@ class StunxAppspace {
             }
             if (e.target.id === "joinInvite") {
                 const inviteCode = document.querySelector("#inviteCode").value;
+                console.log(inviteCode, 'invite code'), 
                 this.joinVideoInvite(app, mod ,inviteCode.trim());
             }
         })
@@ -55,13 +56,14 @@ class StunxAppspace {
 
 
     joinVideoInvite(app, mod , roomCode) {
+        console.log(roomCode)
         if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
         let sql = `SELECT * FROM rooms WHERE room_code = "${roomCode}"`;
         // const stunx_mod = app.modules.returnModule('Stunx');
         // console.log(stunx_mod)
         let requestCallback = async (res) => {
             let room = res.rows[0];
-            console.log(room);
+            console.log(res, 'res')
             if (!room) {
                 console.log('Invite code is invalid');
                 return siteMessageNew("Invite code is invalid");
