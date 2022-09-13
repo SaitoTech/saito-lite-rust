@@ -1,7 +1,25 @@
 
   captureLeader(winning_faction, losing_faction, space, unit) {
+    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    alert("Capture Leader Not Implemented");
+    let p = this.returnPlayerOfFaction(winning_faction);
+    let unitjson = JSON.stringify(unit);
+    for (let z = 0; z < p.captured.length; z++) {
+      if (JSON.stringify(p.captured[z]) === unitjson) { return; }
+    }
+    p.captured.push(unit);
+  }
+
+  isPersonageOnMap(faction, personage) {
+    for (let s in this.game.spaces) {
+      if (this.game.spaces[s].units[faction].length > 0) {
+	for (let i = 0; i < this.game.spaces[s].units[faction].length; i++) {
+	  let unit = this.game.spaces[s].units[faction][i];
+	  if (unit.key === personage) { return unit; }
+	}
+      }
+    }
+    return null;
   }
 
   activateMinorPower(faction, power) {
@@ -154,12 +172,16 @@
       }
     }
 
+    //
     // let factions calculate their VP
+    //
     for (let f in factions) {
       factions[f].vp = this.factions[f].calculateVictoryPoints(this);
     }
 
+    //
     // calculate keys controlled
+    //
     for (let f in factions) {
       factions[f].keys = this.returnNumberOfKeysControlledByFaction(f);
       if (f === "protestant") {
@@ -167,44 +189,46 @@
       }
     }
 
+    //
     // military victory
+    //
     if (factions['hapsburg']) {
-    if (factions['hapsburg'].keys >= this.game.state.autowin_hapsburg_keys_controlled) {
-      factions['hapsburg'].victory = 1;
-      factions['hapsburg'].details = "military victory";
-    }
+      if (factions['hapsburg'].keys >= this.game.state.autowin_hapsburg_keys_controlled) {
+        factions['hapsburg'].victory = 1;
+        factions['hapsburg'].details = "military victory";
+      }
     }
     if (factions['ottoman']) {
-    if (factions['ottoman'].keys >= this.game.state.autowin_ottoman_keys_controlled) {
-      factions['ottoman'].victory = 1;
-      factions['ottoman'].details = "military victory";
-    }
+      if (factions['ottoman'].keys >= this.game.state.autowin_ottoman_keys_controlled) {
+        factions['ottoman'].victory = 1;
+        factions['ottoman'].details = "military victory";
+      }
     }
     if (factions['france']) {
-    if (factions['france'].keys >= this.game.state.autowin_france_keys_controlled) {
-      factions['france'].victory = 1;
-      factions['france'].details = "military victory";
-    }
+      if (factions['france'].keys >= this.game.state.autowin_france_keys_controlled) {
+        factions['france'].victory = 1;
+        factions['france'].details = "military victory";
+      }
     }
     if (factions['england']) {
-    if (factions['england'].keys >= this.game.state.autowin_england_keys_controlled) {
-      factions['england'].victory = 1;
-      factions['england'].details = "military victory";
-    }
+      if (factions['england'].keys >= this.game.state.autowin_england_keys_controlled) {
+        factions['england'].victory = 1;
+        factions['england'].details = "military victory";
+      }
     }
     if (factions['papacy']) {
-    if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
-      factions['papacy'].victory = 1;
-      factions['papacy'].details = "military victory";
-    }
+      if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
+        factions['papacy'].victory = 1;
+        factions['papacy'].details = "military victory";
+      }
     }
 
     // religious victory
     if (factions['protestant']) {
-    if (factions['protestant'].religious >= 50) {
-      factions['papacy'].victory = 1;
-      factions['papacy'].details = "religious victory";
-    }
+      if (factions['protestant'].religious >= 50) {
+        factions['papacy'].victory = 1;
+        factions['papacy'].details = "religious victory";
+      }
     }
 
     // base
@@ -661,6 +685,21 @@ console.log("retreat 4");
     state.activated_powers['england'] = [];
     state.activated_powers['papacy'] = [];
     state.activated_powers['protestant'] = [];
+
+    state.translations = {};
+    state.translations['new'] = {};
+    state.translations['new']['german'] = 0;
+    state.translations['new']['french'] = 0;
+    state.translations['new']['english'] = 0;
+    state.translations['full'] = {};
+    state.translations['full']['german'] = 0;
+    state.translations['full']['french'] = 0;
+    state.translations['full']['english'] = 0;
+
+    state.saint_peters_cathedral = {};
+    state.saint_peters_cathedral['state'] = 0;
+    state.saint_peters_cathedral['vp'] = 0;    
+
 
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
@@ -2824,6 +2863,7 @@ console.log("retreat 4");
       spaces[key].units['hungary'] = [];
       spaces[key].units['scotland'] = [];
       spaces[key].units['independent'] = [];
+      spaces[key].university = 0;
       spaces[key].unrest = 0;
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
@@ -3281,6 +3321,8 @@ console.log("retreat 4");
         if (mv[0] == "catholic_counter_reformation") {
 
           let player = parseInt(mv[1]);
+          let language_zone = "german";
+	  if (mv[2]) { language_zone = mv[2]; }
           game_mod.game.queue.splice(qe, 1);
 
 	  if (game_mod.game.player == player) {
@@ -3294,6 +3336,7 @@ console.log("retreat 4");
 	      function(space) {
 		if (
 		  space.religion === "protestant" &&
+		  space.language === language_zone &&
 		  !game_mod.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
 		  game_mod.isSpaceAdjacentToReligion(space, "catholic")
 	        ) {
@@ -3323,6 +3366,8 @@ console.log("retreat 4");
         if (mv[0] == "protestant_reformation") {
 
           let player = parseInt(mv[1]);
+          let language_zone = "german";
+	  if (mv[2]) { language_zone = mv[2]; }
           game_mod.game.queue.splice(qe, 1);
 
 	  if (game_mod.game.player == player) {
@@ -3337,6 +3382,7 @@ console.log("retreat 4");
 		if (
 		  space.religion === "catholic" &&
 		  !game_mod.game.state.tmp_reformations_this_turn.includes(space.key) &&
+		  space.language === language_zone &&
 		  game_mod.isSpaceAdjacentToReligion(space, "protestant")
 	        ) {
 		  return 1;

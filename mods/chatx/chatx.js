@@ -619,7 +619,9 @@ return;
   	    sender = block[z].transaction.from[0].add;
             msg += txmsg.message;       
           }
-          html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg)}`;
+          let date = new Date(block[block.length - 1].msg.timestamp)
+          let timestamp = `${date.getHours()}:${date.getMinutes()}`
+          html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg, timestamp)}`;
         }
       }
 
@@ -669,7 +671,6 @@ return;
 
 
     formatMessage(msg) {
-
         msg = linkifyHtml(msg, { target: { url: '_self' } });
         msg = marked(msg);
         msg = sanitizeHtml(msg, {
