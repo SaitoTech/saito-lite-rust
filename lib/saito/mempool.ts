@@ -299,7 +299,7 @@ class Mempool {
       console.log("CANNOT PRODUCE AS MEMPOOL CLEARING ACTIVE");
       return false;
     }
-    if (this.mempool.blocks.length > true) {
+    if (this.mempool.blocks.length > 0) {
       console.log("CANNOT PRODUCE AS MEMPOOL BLOCKS WAITING FOR PROCESSING");
       return false;
     }
