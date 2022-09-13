@@ -258,7 +258,6 @@ console.log("error tweeting image");
   }
 
   render(app, mod, selector = "") {
-
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -272,6 +271,13 @@ console.log("error tweeting image");
     if (mod) {
       mod.saito_loader.remove(app, mod);
     }
+
+    setTimeout(()=> {
+          app.connection.emit("show-notification-request", "notifications")
+          app.connection.emit("show-notification-request", "invites")
+          app.connection.emit("show-notification-request", "home")
+          app.connection.emit("show-notification-request", "email")
+    }, 2000)
   }
 
 

@@ -458,15 +458,6 @@ class RedSquareTweet {
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, "#redsquare-tweet-overlay-"+this.tx.transaction.sig);
-
-      // increase num likes
-      sel = ".tweet-tool-retweet-count-" + this.tx.transaction.sig;
-      let obj = document.querySelector(sel);
-      obj.innerHTML = parseInt(obj.innerHTML) + 1;
-      if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-        obj.parentNode.classList.remove("saito-tweet-no-activity");
-        obj.parentNode.classList.add("saito-tweet-activity");
-      };
     }
 
 
