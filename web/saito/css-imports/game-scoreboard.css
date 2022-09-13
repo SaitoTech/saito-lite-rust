@@ -19,3 +19,20 @@
 
 
 
+
+.scoreitem{
+  padding: 0 10px;
+}
+
+.table_ctrl{
+  font-weight: bold;
+  cursor: pointer;
+  background-color: whitesmoke;
+  border: 2px solid whitesmoke;
+  padding: 0 10px;
+}
+
+.table_ctrl:hover{
+  background-color: #EEE;
+  color: whitesmoke;  
+}
