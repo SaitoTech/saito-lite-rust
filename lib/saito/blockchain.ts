@@ -123,7 +123,7 @@ class Blockchain {
     return;
   }
 
-  async addBlockToBlockchain(block:Block, force = 0) {
+  async addBlockToBlockchain(block: Block, force = 0) {
     //
     //
     //
@@ -388,7 +388,7 @@ class Blockchain {
     }
   }
 
-  async addBlockSuccess(block:Block) {
+  async addBlockSuccess(block: Block) {
     //console.log("blockchain.addBlockSuccess : ", block.returnHash());
     this.app.blockring.print();
 
@@ -443,8 +443,10 @@ class Blockchain {
       // don't run callbacks if reloading (force!)
       //
       if (block.lc === 1 && block.force !== 1) {
-        let block_id_from_which_to_run_callbacks = block.returnId() - BigInt(this.callback_limit + 1);
-        let block_id_in_which_to_delete_callbacks = block.returnId() - BigInt(this.prune_after_blocks);
+        let block_id_from_which_to_run_callbacks =
+          block.returnId() - BigInt(this.callback_limit + 1);
+        let block_id_in_which_to_delete_callbacks =
+          block.returnId() - BigInt(this.prune_after_blocks);
         if (block_id_from_which_to_run_callbacks <= 0) {
           block_id_from_which_to_run_callbacks = BigInt(1);
         }
@@ -506,13 +508,11 @@ class Blockchain {
     }
   }
 
-  async addBlockFailure(block:Block) {
+  async addBlockFailure(block: Block) {
     if (this.debugging) {
-      console.log("FAILURE: " + block.returnHash());
+      console.log("add block failure: " + block.returnHash());
     }
-    //
     // clean up mempool
-    //
     this.app.mempool.removeBlockAndTransactions(block);
   }
 
@@ -572,12 +572,12 @@ class Blockchain {
     }
   }
 
-  generateForkId(block_id:bigint) {
+  generateForkId(block_id: bigint) {
     let fork_id = [];
     for (let i = 0; i < 32; i++) {
       fork_id[i] = "0";
     }
-    let current_block_id:bigint = block_id;
+    let current_block_id: bigint = block_id;
 
     //
     // roll back to last even 10 blocks
@@ -604,7 +604,8 @@ class Blockchain {
       BigInt(10000),
       BigInt(20000),
       BigInt(50000),
-      BigInt(100000)];
+      BigInt(100000),
+    ];
 
     //
     // loop backwards through blockchain
@@ -680,7 +681,7 @@ class Blockchain {
     }
   }
 
-  generateLastSharedAncestor(peer_latest_block_id : bigint, fork_id:string) : bigint {
+  generateLastSharedAncestor(peer_latest_block_id: bigint, fork_id: string): bigint {
     let my_latest_block_id = this.app.blockring.returnLatestBlockId();
 
     let pbid: bigint = peer_latest_block_id;
@@ -701,7 +702,8 @@ class Blockchain {
       BigInt(10000),
       BigInt(20000),
       BigInt(50000),
-      BigInt(100000)];
+      BigInt(100000),
+    ];
 
     //
     // peer is further ahead
@@ -719,7 +721,7 @@ class Blockchain {
         }
       }
 
-      let current_block_id :bigint = pbid;
+      let current_block_id: bigint = pbid;
 
       //
       // loop backwards through blockchain
@@ -816,7 +818,7 @@ class Blockchain {
     this.app.mempool.bundling_active = false;
   }
 
-  isNewChainTheLongestChain(new_chain:Array<string>, old_chain:Array<string>) {
+  isNewChainTheLongestChain(new_chain: Array<string>, old_chain: Array<string>) {
     if (this.app.blockring.isEmpty()) {
       return true;
     }
@@ -843,14 +845,17 @@ class Blockchain {
     return old_chain.length < new_chain.length && old_bf <= new_bf;
   }
 
-  isBlockIndexed(block_hash:string):boolean {
+  isBlockIndexed(block_hash: string): boolean {
     return this.blocks.has(block_hash);
   }
 
-  async loadBlockAsync(block_hash: string):Promise<Block | null> {
+  async loadBlockAsync(block_hash: string): Promise<Block | null> {
     if (!block_hash) return null;
     if (typeof window === "undefined") {
-      if (this.blocks.has(block_hash) && this.blocks.get(block_hash).block_type === BlockType.Full) {
+      if (
+        this.blocks.has(block_hash) &&
+        this.blocks.get(block_hash).block_type === BlockType.Full
+      ) {
         return this.blocks.get(block_hash);
       }
       if (this.debugging) {
@@ -879,7 +884,7 @@ class Blockchain {
   // tracking variables updated as the chain gets new blocks. also
   // pre-loads any blocks needed to improve performance.
   //
-  async onChainReorganization(block:Block, lc = false) {
+  async onChainReorganization(block: Block, lc = false) {
     //
     // skip out if earlier than we need to be vis-a-vis last_block_id
     //
@@ -952,29 +957,29 @@ class Blockchain {
     this.saveBlockchain();
   }
 
-  returnDifficulty() :number{
+  returnDifficulty(): number {
     return 1;
   }
 
-  returnGenesisPeriod() : bigint {
+  returnGenesisPeriod(): bigint {
     return BigInt(this.blockchain.genesis_period);
   }
 
   //  TODO fix
-  returnLowestSpendableBlock():bigint {
+  returnLowestSpendableBlock(): bigint {
     return BigInt(0);
   }
 
   // returns header info as indexed, txs and purged data not guaranteed
-  returnLatestBlock() :Block|null{
+  returnLatestBlock(): Block | null {
     return this.app.blockring.returnLatestBlock();
   }
 
-  returnLatestBlockHash():string {
+  returnLatestBlockHash(): string {
     return this.app.blockring.returnLatestBlockHash();
   }
 
-  returnLatestBlockId() :bigint{
+  returnLatestBlockId(): bigint {
     return this.app.blockring.returnLatestBlockId();
   }
 
@@ -983,7 +988,12 @@ class Blockchain {
     this.app.storage.saveOptions();
   }
 
-  async unwindChain(new_chain:Array<string>, old_chain:Array<string>, current_unwind_index:number, wind_failure:boolean) : Promise<boolean> {
+  async unwindChain(
+    new_chain: Array<string>,
+    old_chain: Array<string>,
+    current_unwind_index: number,
+    wind_failure: boolean
+  ): Promise<boolean> {
     let block = await this.loadBlockAsync(old_chain[current_unwind_index]);
 
     // utxoset update
@@ -1018,7 +1028,7 @@ class Blockchain {
     }
   }
 
-  async updateGenesisPeriod(longest_chain_block:Block) {
+  async updateGenesisPeriod(longest_chain_block: Block) {
     //
     // we need to make sure this is not a random block that is disconnected
     // from our previous genesis_id. If there is no connection between it
@@ -1060,7 +1070,7 @@ class Blockchain {
   }
 
   async doesChainMeetGoldenTicketRequirements(
-    previous_block_hash:string,
+    previous_block_hash: string,
     current_block_has_golden_ticket = false
   ) {
     //
@@ -1131,7 +1141,7 @@ class Blockchain {
     return true;
   }
 
-  async validate(new_chain:Array<string>, old_chain:Array<string>) {
+  async validate(new_chain: Array<string>, old_chain: Array<string>) {
     let block = this.blocks.get(new_chain[0]);
     let previous_block_hash = block.returnPreviousBlockHash();
 
@@ -1162,7 +1172,12 @@ class Blockchain {
     }
   }
 
-  async windChain(new_chain:Array<string>, old_chain:Array<string>, current_wind_index:number, wind_failure:boolean) :Promise<boolean>{
+  async windChain(
+    new_chain: Array<string>,
+    old_chain: Array<string>,
+    current_wind_index: number,
+    wind_failure: boolean
+  ): Promise<boolean> {
     //
     // if we are winding a non-existent chain with a wind_failure it
     // means our wind attempt failed and we should move directly into

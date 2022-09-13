@@ -114,7 +114,7 @@ class Block {
     for (let z = 0; z < this.transactions.length; z++) {
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
         const txmsg = this.transactions[z].returnMessage();
-        // console.log("EXAMINE: " + JSON.stringify(txmsg));
+        // console.log("txmsg length: ", txmsg ? JSON.stringify(txmsg).length : txmsg);
         this.app.modules.affixCallbacks(
           this.transactions[z],
           z,
@@ -127,7 +127,7 @@ class Block {
   }
 
   // called when a block is deleted from the chain for good
-  deleteBlock(utxoset:UtxoSet) {
+  deleteBlock(utxoset: UtxoSet) {
     // remove from disk, etc.
   }
 
@@ -306,7 +306,7 @@ class Block {
   }
 
   async generateConsensusValues() {
-    console.debug("generating consensus values");
+    console.log("generating consensus values for block : ", this.hash);
     // this is the number of blocks we will recurse backwards to issue the
     // staker payout. if this permits strings of blocks that are less than
     // the theoretical maximum number of golden-ticket free blocks that can
@@ -317,8 +317,7 @@ class Block {
     //
     // return obj w/ default values
     //
-    const cv: any = {
-    };
+    const cv: any = {};
 
     cv.total_fees = BigInt(0);
     cv.ft_num = 0;
@@ -368,8 +367,8 @@ class Block {
           this.has_issuance_transaction = true;
         }
       } catch (err) {
-        console.error("ERROR: " + err);
-        console.error("ERROR W/: " + JSON.stringify(this.transactions[i]));
+        console.error(err);
+        console.error("ERROR W/: ", this.transactions[i]);
       }
     }
 
@@ -390,9 +389,7 @@ class Block {
       // determine which should be rebroadcast.
       //
       if (pruned_block) {
-        //
         // only unspent UTXO eligible
-        //
         for (let i = 0; i < pruned_block.transactions.length; i++) {
           const tx = pruned_block.transactions[i];
 
@@ -433,11 +430,12 @@ class Block {
                   STAKING_SUBSIDY
                 );
 
-
                 // update cryptographic hash of all ATRs
                 cv.rebroadcast_hash = this.app.crypto.hash(
-                  Buffer.concat([Buffer.from(cv.rebroadcast_hash,"hex") ,
-                    rebroadcast_transaction.serializeForSignature(this.app)])
+                  Buffer.concat([
+                    Buffer.from(cv.rebroadcast_hash, "hex"),
+                    rebroadcast_transaction.serializeForSignature(this.app),
+                  ])
                 );
               } else {
                 //
@@ -483,7 +481,7 @@ class Block {
 
       if (previous_block.block.avg_income > cv.total_fees) {
         let adjustment =
-            (previous_block.block.avg_income - cv.total_fees) /
+          (previous_block.block.avg_income - cv.total_fees) /
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_income -= adjustment;
@@ -491,7 +489,7 @@ class Block {
       }
       if (previous_block.block.avg_income < cv.total_fees) {
         let adjustment =
-            (cv.total_fees - previous_block.block.avg_income )/
+          (cv.total_fees - previous_block.block.avg_income) /
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_income += adjustment;
@@ -518,6 +516,7 @@ class Block {
         }
       }
     } else {
+      console.debug("previous block not found");
       //
       // if there is no previous block, the difficulty is not adjusted. validation
       // rules will cause the block to fail unless it is the first block.
@@ -539,6 +538,7 @@ class Block {
     // calculate payments to miners / routers
     //
     if (cv.gt_num > 0) {
+      console.debug("golden ticket found at index : " + cv.gt_idx);
       const golden_ticket_transaction = this.transactions[cv.gt_idx];
       const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
@@ -547,17 +547,18 @@ class Block {
 
       // miner payout is fees from previous block, no staking treasury
       if (previous_block) {
+        console.debug("checking fees from previous block : " + previous_block.hash);
         // limit previous block payout to avg income
         let previous_block_payout = previous_block.returnFeesTotal();
         if (
-            previous_block_payout > BigInt(Number(previous_block.block.avg_income) * 1.25) &&
-            previous_block_payout > 50
+          previous_block_payout > BigInt(Number(previous_block.block.avg_income) * 1.25) &&
+          previous_block_payout > 50
         ) {
           previous_block_payout = BigInt(Number(previous_block.block.avg_income) * 1.24);
         }
 
         const miner_payment = previous_block_payout / BigInt(2);
-        const router_payment = previous_block_payout  - miner_payment;
+        const router_payment = previous_block_payout - miner_payment;
 
         //
         // calculate miner and router payments
@@ -580,24 +581,19 @@ class Block {
         block_payout.miner_payout = miner_payment;
         block_payout.router_payout = router_payment;
 
-        //
         // these two from find_winning_router - 3, 4
-        //
         next_random_number = this.app.crypto.hash(next_random_number);
         next_random_number = this.app.crypto.hash(next_random_number);
 
-        //
         // add these payouts to consensus values
-        //
+        // console.debug("adding block payout : ", block_payout);
         cv.block_payouts.push(block_payout);
 
-        //
         // loop backwards until MAX recursion OR golden ticket
-        //
         let cont = 1;
         let loop_idx = 0;
         let did_the_block_before_our_staking_block_have_a_golden_ticket =
-            previous_block.hasGoldenTicket();
+          previous_block.hasGoldenTicket();
 
         //
         // staking block hash is 3 back, pre
@@ -623,21 +619,20 @@ class Block {
               staking_block_hash = staking_block.returnPreviousBlockHash();
 
               if (!did_the_block_before_our_staking_block_have_a_golden_ticket) {
-                //
                 // update with this block info in case of next loop
-                //
                 did_the_block_before_our_staking_block_have_a_golden_ticket =
-                    staking_block.hasGoldenTicket();
+                  staking_block.hasGoldenTicket();
 
-                //
                 // calculate staker block payments
-                //
                 let previous_staking_block_payout = staking_block.returnFeesTotal();
                 if (
-                    previous_staking_block_payout > BigInt(Number(staking_block.block.avg_income) *1.25) &&
-                    previous_staking_block_payout > 50
+                  previous_staking_block_payout >
+                    BigInt(Number(staking_block.block.avg_income) * 1.25) &&
+                  previous_staking_block_payout > 50
                 ) {
-                  previous_staking_block_payout =BigInt(Number( staking_block.block.avg_income) * 1.24);
+                  previous_staking_block_payout = BigInt(
+                    Number(staking_block.block.avg_income) * 1.24
+                  );
                 }
 
                 const sp = previous_staking_block_payout / BigInt(2);
@@ -663,6 +658,7 @@ class Block {
                 next_random_number = this.app.crypto.hash(next_random_number);
                 next_random_number = this.app.crypto.hash(next_random_number);
 
+                // console.debug("adding block payout : ", block_payout);
                 cv.block_payouts.push(block_payout);
               }
             }
@@ -700,6 +696,8 @@ class Block {
       }
 
       cv.fee_transaction = transaction;
+    } else {
+      console.log("no GTs in block");
     }
 
     //
@@ -720,7 +718,7 @@ class Block {
           break;
         }
 
-        const bid:bigint = this.returnId() - BigInt(i);
+        const bid: bigint = this.returnId() - BigInt(i);
         const previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
         if (previous_block_hash !== "") {
           const previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
@@ -997,38 +995,28 @@ class Block {
         }
       }
 
-      //
       // also check the transactions for golden ticket and fees
-      //
-      switch (transaction.transaction.type) {
-        case TransactionType.Issuance:
-          has_issuance_transaction = true;
-          issuance_transaction_idx = i;
-          break;
-        case TransactionType.Fee:
-          has_fee_transaction = true;
-          fee_transaction_idx = i;
-          break;
-        case TransactionType.GoldenTicket:
-          has_golden_ticket = true;
-          golden_ticket_idx = i;
-          break;
-        case TransactionType.ATR: {
-          const bytes = Buffer.concat([
-            Buffer.from(this.rebroadcast_hash, "hex"),
-            transaction.serializeForSignature(this.app),
-          ]);
-          this.rebroadcast_hash = this.app.crypto.hash(bytes.toString("hex"));
+      if (transaction.transaction.type === TransactionType.Issuance) {
+        has_issuance_transaction = true;
+        issuance_transaction_idx = i;
+      } else if (transaction.transaction.type === TransactionType.Fee) {
+        has_fee_transaction = true;
+        fee_transaction_idx = i;
+      } else if (transaction.transaction.type === TransactionType.GoldenTicket) {
+        has_golden_ticket = true;
+        golden_ticket_idx = i;
+      } else if (transaction.transaction.type === TransactionType.ATR) {
+        const bytes = Buffer.concat([
+          Buffer.from(this.rebroadcast_hash, "hex"),
+          transaction.serializeForSignature(this.app),
+        ]);
+        this.rebroadcast_hash = this.app.crypto.hash(bytes.toString("hex"));
 
-          for (let i = 0; i < transaction.transaction.from.length; i++) {
-            const input = transaction.transaction.from[i];
-            this.total_rebroadcast_slips += 1;
-            this.total_rebroadcast_nolan += input.returnAmount();
-          }
-          break;
+        for (let i = 0; i < transaction.transaction.from.length; i++) {
+          const input = transaction.transaction.from[i];
+          this.total_rebroadcast_slips += 1;
+          this.total_rebroadcast_nolan += input.returnAmount();
         }
-        default:
-          break;
       }
     }
 
@@ -1088,7 +1076,7 @@ class Block {
     return this.has_issuance_transaction;
   }
 
-  hasKeylistTransactions(keylist) :boolean {
+  hasKeylistTransactions(keylist): boolean {
     if (!this.txs_hmap_generated) {
       console.log("generating tx hashmap for " + JSON.stringify(keylist));
       this.generateTransactionsHashmap();
@@ -1176,14 +1164,14 @@ class Block {
       return this.hash;
     }
     this.prehash = this.app.crypto.hash(this.serializeForSignature());
-    let previous = this.app.binary.hexToSizedArray(this.block.previous_block_hash,32);
-    let prehash = this.app.binary.hexToSizedArray(this.prehash,32);
-    let hashed_buffer = Buffer.concat([previous,prehash]);
+    let previous = this.app.binary.hexToSizedArray(this.block.previous_block_hash, 32);
+    let prehash = this.app.binary.hexToSizedArray(this.prehash, 32);
+    let hashed_buffer = Buffer.concat([previous, prehash]);
     this.hash = this.app.crypto.hash(hashed_buffer);
     return this.hash;
   }
 
-  returnId() :bigint {
+  returnId(): bigint {
     return this.block.id;
   }
 
@@ -1208,7 +1196,7 @@ class Block {
     this.confirmations = conf;
   }
 
-  generateMerkleRoot() : string {
+  generateMerkleRoot(): string {
     console.log("generating merkle root of block : " + this.hash);
     //
     // if we are lite-client and have been given a block without transactions
@@ -1229,9 +1217,7 @@ class Block {
       if (this.transactions[i].transaction.type === TransactionType.SPV) {
         txs.push(this.transactions[i].transaction.sig);
       } else {
-        txs.push(
-            this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app))
-        );
+        txs.push(this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app)));
       }
     }
 
@@ -1468,17 +1454,38 @@ class Block {
   }
 
   async validate() {
-    //
+    this.generateMetadata();
+
     // TODO - lite-client validation
-    //
     if (this.app.BROWSER == 1) {
       const cv = await this.generateConsensusValues();
       return true;
     }
 
-    //
+    if (this.block_type === BlockType.Ghost) {
+      console.log("block validates as true since it is a ghost block");
+      return true;
+    }
+
+    // invalid if no transactions
+    if (this.transactions.length === 0) {
+      console.error("ERROR 582034: no transactions in blocks, thus invalid");
+      return false;
+    }
+
+    // verify creator signed
+    if (
+      !this.app.crypto.verifyHash(
+        this.serializeForSignature(),
+        this.block.signature,
+        this.block.creator
+      )
+    ) {
+      console.error("ERROR 582039: block is not signed by creator or signature does not validate");
+      return false;
+    }
+
     // if this is our first / genesis block, it is valid
-    //
     if (
       this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash ||
       this.app.blockchain.blockchain.genesis_block_hash === ""
@@ -1491,42 +1498,10 @@ class Block {
       return true;
     }
 
-    if (this.block_type === BlockType.Ghost) {
-      console.log("block validates as true since it is a ghost block");
-      return true;
-    }
-
-    //console.log("block::validate");
-    //
-    // invalid if no transactions
-    //
-    if (this.transactions.length === 0) {
-      console.error("ERROR 582034: no transactions in blocks, thus invalid");
-      return false;
-    }
-
-    //
-    // verify creator signed
-    //
-    if (
-      !this.app.crypto.verifyHash(
-        this.serializeForSignature(),
-        this.block.signature,
-        this.block.creator
-      )
-    ) {
-      console.error("ERROR 582039: block is not signed by creator or signature does not validate");
-      return false;
-    }
-
-    //
     // generate consensus values
-    //
     const cv = await this.generateConsensusValues();
 
-    //
     // average income and average income variance
-    //
     if (cv.avg_income !== this.block.avg_income) {
       console.error("ERROR 712923: block is mis-reporting its average income");
       return false;
@@ -1536,9 +1511,7 @@ class Block {
       return false;
     }
 
-    //
     // average atr income and average atr income variance
-    //
     if (cv.avg_atr_income !== this.block.avg_atr_income) {
       console.error("ERROR 712923: block is mis-reporting its average atr income");
       return false;
@@ -1548,17 +1521,13 @@ class Block {
       return false;
     }
 
-    //
     // only block #1 can have an issuance transaction
-    //
     if (cv.it_num > 0 && this.block.id > BigInt(1)) {
       console.error("ERROR 712923: blockchain contains issuance after block 1 in chain");
       return false;
     }
 
-    //
     // checks against previous block
-    //
     const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
 
     if (previous_block) {
@@ -1638,22 +1607,22 @@ class Block {
       // which was generated using this solution. If the solution is invalid
       // we find that out now, and it invalidates the block.
       //
-      if (cv.gt_idx > 0) {
+      if (cv.gt_num > 0) {
         const golden_ticket_transaction = this.transactions[cv.gt_idx];
         const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
         const solution = new GoldenTicket(this.app);
-        if (!solution.validate(previous_block.returnHash(),
+        if (
+          !solution.validate(
+            previous_block.returnHash(),
             gt.random_hash,
             gt.creator,
-            previous_block.returnDifficulty())
-        )
-        {
-            console.error(
-              "ERROR 801923: golden ticket included in block is invalid"
-            );
-            return false;
-          }
+            previous_block.returnDifficulty()
+          )
+        ) {
+          console.error("ERROR 801923: golden ticket included in block is invalid");
+          return false;
+        }
 
         // const solution = this.app.goldenticket.generateSolution(
         //   previous_block.returnHash(),
@@ -1710,7 +1679,9 @@ class Block {
     let generated_merkle_root = this.generateMerkleRoot();
     // validate merkle root
     if (this.block.merkle !== generated_merkle_root) {
-      console.log(`merkle root : ${this.block.merkle} is different from expected : ${generated_merkle_root}`);
+      console.log(
+        `merkle root : ${this.block.merkle} is different from expected : ${generated_merkle_root}`
+      );
       return false;
     }
 
@@ -1742,9 +1713,16 @@ class Block {
       const hash2 = this.app.crypto.hash(cv.fee_transaction.serializeForSignature(this.app));
 
       if (hash1 !== hash2) {
-        console.error(`ERROR 892032: block ${this.hash} fee transaction doesn't match cv fee transaction`);
-        console.log("expected: ",cv.fee_transaction);
-        console.log("actual: ",fee_transaction);
+        console.error(
+          `ERROR 892032: block ${this.hash} fee transaction doesn't match cv fee transaction`
+        );
+        console.log("expected: ", cv.fee_transaction);
+        console.log("actual: ", fee_transaction);
+        console.log(
+          `gt count = ${cv.gt_num} gt index = ${
+            cv.gt_idx
+          } has gt = ${this.hasGoldenTicket()} index from block = ${this.golden_ticket_idx}`
+        );
         return false;
       }
     }

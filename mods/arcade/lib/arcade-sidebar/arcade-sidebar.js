@@ -47,9 +47,9 @@ module.exports = ArcadeSidebar = {
 
   },
 
-  
+
   attachEvents(app, mod) {
-  
+
       let addGames = document.getElementById("games-add-game");
       let appstore_mod = app.modules.returnModule("AppStore");
       if (addGames){
@@ -62,13 +62,14 @@ module.exports = ArcadeSidebar = {
           addGames.remove();
         }
       }
-          
+
     Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
       game.addEventListener('click', (e) => {
         let gameName = e.currentTarget.id;
         app.browser.logMatomoEvent("Arcade", "GameListArcadeSidebarClick", gameName);
         let doGameDetails = () => {
           let tx = new saito.default.transaction();
+          if (!tx.msg) tx.msg = {};
           tx.msg.game = gameName;
           ArcadeGameDetails.render(app, mod, tx);
           ArcadeGameDetails.attachEvents(app, mod, tx);
