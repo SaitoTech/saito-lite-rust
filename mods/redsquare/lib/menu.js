@@ -7,14 +7,22 @@ const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
 
 class RedSquareMenu {
 
+
+
   constructor(app) {
     this.name = "RedSquareMenu";
+    this.numberOfNotifications = 1
   }
 
   render(app, mod, container = "") {
 
     if (!document.querySelector(".redsquare-menu")) {
       app.browser.addElementToSelector(RedSquareMenuTemplate(app, mod), container);
+       if(this.numberOfNotifications > 0){
+          if(document.querySelector(`.redsquare-menu-notifications`)) {
+            app.browser.addElementToSelector(`<p class="redsquare-menu-alert"> </p>`, `.redsquare-menu-notifications` );
+          }
+        }
     }
 
     //
@@ -23,10 +31,12 @@ class RedSquareMenu {
     for (let i = 0; i < app.modules.mods.length; i++) {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
+    
         let html = `
                 <li class="redsquare-menu-${app.modules.mods[i].returnSlug()}" data-id="${i}">
                   <i class="${app.modules.mods[i].icon}"></i>
                   <span> ${app.modules.mods[i].returnName()}</span>
+             
                 </li>
     `;
         if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)) {
@@ -95,9 +105,11 @@ class RedSquareMenu {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
 	    let mod_notifications = app.modules.mods[i].returnNumberOfNotifications();
-        // if(mod_notifications){
-        //   app.browser.replaceElementBySelector(`<p class="redsquare-menu-alert"> </p>`, ".redsquare-menu-" + app.modules.mods[i].returnSlug() );
-        // }
+        if(mod_notifications > 0){
+          if(!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()} .redsquare-menu-alert`)) {
+            app.browser.addElementToSelector(`<p class="redsquare-menu-alert"> </p>`, `.redsquare-menu-${app.modules.mods[i].returnSlug()}` );
+          }
+        }
       
         let qs = ".redsquare-menu-" + app.modules.mods[i].returnSlug();
         obj = document.querySelector(qs);
