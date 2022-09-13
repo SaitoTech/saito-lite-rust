@@ -13,7 +13,11 @@ module.exports = RedSquareLeagueTemplate = (app, mod, league_mod) => {
 		//Show leagues with a ranking then list leagues without
 		 
 		if (league_mod.leagues.length > 0){
-			var leagues = league_mod.leagues.sort((a,b) => a.myRank < b.myRank);
+			var leagues = league_mod.leagues.sort(function (a,b) {
+				if (a.myRank < b.myRank) {return -1}
+				if (a.myRank == b.myRank) {return 0}
+				if (a.myRank > b.myRank) {return 1}
+			});
 			leagues.forEach(l => {
 				if (l.myRank > 0) {
 					html += `<div id="league_${l.id}" class="saito-table-row rs-league-sidebar-ranking${(cnt%2 == 1)?" odd":""}">
