@@ -131,6 +131,14 @@ class Poker extends GameTableTemplate {
     this.playerbox.addClassAll("poker-seat-", true);
     this.playerbox.addStatus(); //enable update Status to display in playerbox
  
+    try{
+      document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
+      document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+    }catch(err){
+      console.log("Error initializing scoreboard",err);
+    }
+
+
     if (this.game.crypto){
       if (this.game.crypto == "TRX"){
         try{
@@ -253,7 +261,6 @@ class Poker extends GameTableTemplate {
     }
     
     if (this.browser_active){
-      //this.displayBoard();  
       document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
       document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
     }
