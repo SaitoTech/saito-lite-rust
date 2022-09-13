@@ -40,18 +40,13 @@ class RedSquareMenu {
 
 
   attachEvents(app, mod) {
-
     this_menu = this;
-
     const left_sidebar = document.querySelector('.saito-sidebar.left');
     const icon = document.querySelector('.saito-sidebar.left .hamburger #icon');
     const removeLeftSidebar = () => {
       left_sidebar.classList.remove('mobile');
       icon.className = "fas fa-bars";
     }
-
-
-
 
     let obj;
 
@@ -100,6 +95,10 @@ class RedSquareMenu {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
 	    let mod_notifications = app.modules.mods[i].returnNumberOfNotifications();
+        // if(mod_notifications){
+        //   app.browser.replaceElementBySelector(`<p class="redsquare-menu-alert"> </p>`, ".redsquare-menu-" + app.modules.mods[i].returnSlug() );
+        // }
+      
         let qs = ".redsquare-menu-" + app.modules.mods[i].returnSlug();
         obj = document.querySelector(qs);
         obj.onclick = (e) => {
@@ -108,11 +107,9 @@ class RedSquareMenu {
         }
       }
     }
-
   }
 
   renderItem(app, mod, component, params = null) {
-
     let url = component
     if (params) {
       url = `${component}?${params}`;

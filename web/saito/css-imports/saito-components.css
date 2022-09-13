@@ -113,9 +113,13 @@ Saito Menu
 }
 
 .saito-menu>ul>li:hover,
-.saito-menu>ul>li:hover>i {
+.saito-menu>ul>li:hover>i{
     background-color: var(--saito-primary);
     color: var(--saito-white);
+}
+
+.saito-menu>ul>li:hover p  {
+    background-color: var(--saito-white);
 }
 
 .saito-menu>ul>li>i {
@@ -126,6 +130,16 @@ Saito Menu
 
 .saito-menu>ul>li>span {
     font-size: 1.92rem;
+    margin-right: 1rem;
+}
+
+/*  alert  */
+.saito-menu>ul>li>p {
+       width: 20px;
+       left: 0;
+       height: 20px;
+       border-radius: 50%;
+       background-color: var(--saito-primary);
 }
 
 .saito-menu>ul>li>i+span {
