@@ -9,7 +9,7 @@ class RedSquareMenu {
 
   constructor(app, mod) {
     this.name = "RedSquareMenu";
-    this.numberOfNotifications = 1;
+    this.numberOfNotifications = 0;
   }
 
   render(app, mod, container = "") {
