@@ -1,4 +1,18 @@
 
+.theological_debate_sheet {
+  background-image: url('/his/img/backgrounds/theological-debate2.jpeg
+  background-size: cover;
+  width: 80vw;
+  height: auto;
+  overflow-y: auto;
+}
+.attacker_debater {
+  
+}
+.defender_debater {
+  
+}
+
 .protestant_debaters {
     left: 68px;
     top: 295px;
@@ -42,6 +56,32 @@
   left: 100px;
   display: none;
 }
+
+.bible_german_tile {
+  background-image: url('/his/img/factions/BibleGerman.svg');
+  background-size: cover;
+  width: 50px;
+  height: auto;
+  position: absolute;
+  margin-top: 0rem; 
+}
+.bible_french_tile {
+  background-image: url('/his/img/factions/BibleFrench.svg');
+  background-size: cover;
+  width: 50px;
+  height: auto;
+  position: absolute;
+  margin-top: 1rem; 
+}
+.bible_english_tile {
+  background-image: url('/his/img/factions/BibleEnglish.svg');
+  background-size: cover;
+  width: 50px;
+  height: auto;
+  position: absolute;
+  margin-top: 2rem; 
+}
+
 
 #hapsburg_vp_tile {
   background-image: url('/his/img/vp/VP_Hapsburg.svg');
