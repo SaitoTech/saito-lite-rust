@@ -1,5 +1,4 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-const GameScoreboard = require("../../lib/saito/ui/game-scoreboard/game-scoreboard");
 
 
 //////////////////
@@ -18,7 +17,6 @@ class Monarchy extends GameTemplate {
     this.status          = "Alpha";
     this.card_height_ratio = 1.6; // height is 1.6x width
 
-    this.scoreboard      = new GameScoreboard(app);
     this.interface     = 1; //Display card graphics
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 4;
