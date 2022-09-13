@@ -99,9 +99,13 @@ game-overlay-cardlist-button {
 .rules-overlay {
   background-color: whitesmoke;
   border-color: black;
+  min-width: 600px;
+  max-width: 90vw;
+  padding: 2rem;
 }
 
 .shim-notice {
+  font-size: 20px;
   background: #222b;
   color: #fff;
   padding: min(5vh,5vw);
