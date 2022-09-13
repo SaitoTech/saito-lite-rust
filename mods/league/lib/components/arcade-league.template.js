@@ -4,8 +4,8 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
     return "";
   }
 
-  console.log("Render Arcade League: ",league.myRank, league.playerCnt);
-  console.log(JSON.stringify(league));
+  //console.log("Render Arcade League: ",league.myRank, league.playerCnt);
+  //console.log(JSON.stringify(league));
   let game = league.game;
   let gameModule = app.modules.returnModule(game);
   let slug, bannerBack, gameBack;

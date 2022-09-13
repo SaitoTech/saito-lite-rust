@@ -35,8 +35,12 @@ class Observer extends ModTemplate {
     //
     // listen for txs from arcade-supporting games
     //
-    this.app.modules.respondTo("arcade-games").forEach((mod) => {
+    app.modules.respondTo("arcade-games").forEach((mod) => {
       this.affix_callbacks_to.push(mod.name);
+    });
+
+    app.connection.on("arcade-observer-join-table", (game_id)=>{
+      this.observeGame(game_id, true);
     });
 
     if (this.app.BROWSER){
@@ -80,6 +84,13 @@ class Observer extends ModTemplate {
 	    this.controls = new GameObserver(app);
   	}
   	this.controls.render(app, game_mod);
+  }
+
+  removeControls(){
+    if (this.controls){
+      this.controls.hide();
+      //this.controls = null;
+    }
   }
 
   attachEvents(app, mod) {
@@ -668,13 +679,16 @@ class Observer extends ModTemplate {
 
           console.log(JSON.parse(JSON.stringify(first_tx)));
 
+          //game_mod.saveFutureMoves(game_mod.game.id);
+          //game_mod.saveGame(game_mod.game.id);
+
           arcade_self.app.storage.saveOptions();
 
           //
           // move into game
           //
           let slug = arcade_self.app.modules.returnModule(first_tx.module).returnSlug();
-          ObserverLoader.render(arcade_self.app, arcade_self, slug); //Stop spinner, move into game
+          ObserverLoader.render(arcade_self.app, arcade_self, slug, watch_live); //Stop spinner, move into game
         });
       })
       .catch((err) =>
