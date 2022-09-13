@@ -12,8 +12,13 @@ class GameCreateNew {
   }
 
   render(app, mod, invite) {
+
+    let slug = (this.game_mod.returnSlug())? this.game_mod.slug: this.game_mod.name.toLowerCase();
+    let image = `/${slug}/img/arcade/arcade.jpg`;
+
     this.overlay.show(app, mod, GameCreateNewTemplate(app, mod, this.game_mod, invite));
-    
+    this.overlay.setBackground(image);
+
     let advancedOptions = this.game_mod.returnGameOptionsHTML();
     if (!advancedOptions) {
       document.querySelector(".arcade-advance-opt").style.display = "none";

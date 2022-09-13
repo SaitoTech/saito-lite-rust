@@ -1,6 +1,6 @@
 const GameTableTemplate = require('../../lib/templates/gametabletemplate');
 const saito = require('../../lib/saito/saito');
-con BlackjackGameRulesTemplate = require('./lib/blackjack-game-rules.template');
+const BlackjackGameRulesTemplate = require('./lib/blackjack-game-rules.template');
 
 
 //////////////////
