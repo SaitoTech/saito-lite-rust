@@ -131,6 +131,14 @@ class Poker extends GameTableTemplate {
     this.playerbox.addClassAll("poker-seat-", true);
     this.playerbox.addStatus(); //enable update Status to display in playerbox
  
+    try{
+      document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
+      document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+    }catch(err){
+      console.log("Error initializing scoreboard",err);
+    }
+
+
     if (this.game.crypto){
       if (this.game.crypto == "TRX"){
         try{
@@ -253,7 +261,6 @@ class Poker extends GameTableTemplate {
     }
     
     if (this.browser_active){
-      //this.displayBoard();  
       document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
       document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
     }
@@ -686,18 +693,18 @@ class Poker extends GameTableTemplate {
           console.log(winners.length+ " WINNERS: ",winners);
 
           // update logs and splash!
-          let winner_html = "<h2>" + winnerStr;
+          let winner_html = `<div class="h2">` + winnerStr;
 
           if (winners.length == 1) {
-            winner_html += " takes the pot!</h2>";
+            winner_html += " takes the pot!</div>";
           } else {
-            winner_html += " split the pot!</h2>";
+            winner_html += " split the pot!</div>";
           }
 
           winlist.forEach((pl) => {
             this.updateLog(`${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description} <br>${ this.toHuman(pl.player_hand.cards_to_score)}`);
             updateHTML = this.handToHTML(pl.player_hand.cards_to_score) + updateHTML;
-            updateHTML = `<h3>${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</h3>${updateHTML}`;
+            updateHTML = `<div class="h3">${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</div>${updateHTML}`;
           });
 
           this.updateHTML = updateHTML;
@@ -2620,13 +2627,13 @@ class Poker extends GameTableTemplate {
 
   returnGameRulesHTML(){
     return `<div class="rules-overlay">
-    <h1>Texas Hold'em</h1>
+    <div class="h1">Texas Hold'em</div>
     <p>This is a standard implementation of the popular poker game.</p>
     <p>Each player attempts to form the best hand with their two private cards (called "the hole") and the five public cards.</p>
     <p>Players are initially dealt their two secret cards and betting begins. The player to the left (clockwise) of the dealer is called the small blind and must bet the small blind, the player to his/her left (clockwise) is the big blind and must also bet. Any other players must fold, call the big blind, or raise the pot. Once all bets are called, the three public cards are flipped over (the "flop").</p>
     <p>Another round of betting then commences from the player to the left of the dealer. Players can fold, check (i.e. not increase the pot), raise, or call (i.e. match a raise). Another card (the "turn") is revealed followed by another round of betting, and the final card (the "river") is revealed with another round of betting. </p> 
     <p>Any remaining players after the final round of betting go into the showdown and the highest hand wins the pot.</p>
-    <h2>Poker Hands</h2>
+    <div class="h2">Poker Hands</div>
     <ul>
     <li><em>Straight Flush</em> is the best possible hand, where all the cards are of the same suit and continuous, with Ace high. A straight flush of A, K, Q, J, 10 is called a royal flush.</li>
     <li><em>Four of a Kind</em></li>
@@ -2854,7 +2861,7 @@ class Poker extends GameTableTemplate {
     let stats = ["handsPlayed", "handsWon","handsFolded"];
     let html = `
       <div class="rules-overlay" id="game-stats-overlay">
-        <h1>Game Statistics:</h1>
+        <div class="h1">Game Statistics:</div>
         <table><thead><tr><th></th>
        `; 
     for (let p in this.game.stats){
