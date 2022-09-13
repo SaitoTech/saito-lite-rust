@@ -1,7 +1,7 @@
 module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 	let html = "";
 	if (games.length < 1) {
-		// games = obs_mod.games;
+		games = obs_mod.games;
 	}
 
 	if (obs_mod){
