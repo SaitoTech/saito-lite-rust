@@ -861,7 +861,6 @@ console.log(JSON.stringify(mv));
 	    return;
 	  }
 
-
 	  let msg = mv[1];
 	  let stage = mv[2];
 
@@ -2236,6 +2235,77 @@ console.log("space: " + spacekey);
           return 0;
 
         }
+
+
+
+        if (mv[0] === "found_jesuit_university") {
+
+	  let spacekey = mv[1];
+
+	  this.game.queue.splice(qe, 1);
+
+	  this.updateLog("Jesuit University founded in " + this.game.spaces[spacekey].name);
+	  this.game.spaces[spacekey].university = 1;
+
+	  return 1;
+
+	}
+
+
+        if (mv[0] === "theological_debate") {
+
+	  let attacker = mv[1];
+	  let defender = mv[2];
+	  let language_zone = mv[3];
+
+	  this.game.queue.splice(qe, 1);
+
+	  //
+	  // attacker picks debater at random
+	  //
+	  this.game.queue.push();
+
+
+	  //
+	  // attacker specifies if commited or uncommitted debater on defense
+	  //
+
+	  //
+	  // some wrangling lets defender switch up if Protestant
+	  //
+
+	  let attacker_rolls = 0 + 3; // power of debater + 3;
+	  let defender_rolls = 0 + 1; // power of debater + 1; // or 2 if uncommitted
+
+	  let attacker_hits = 0;
+	  let defender_hits = 0;
+
+	  for (let i = 0; i < attacker_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog(attacker + " rolls " + x);
+	    if (x >= 5) { attacker_hits++; }
+	  }
+	  for (let i = 0; i < defender_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog(defender + " rolls " + x);
+	    if (x >= 5) { defender_hits++; }
+	  }
+	
+	  if (attacker_hits == defender_hits) {
+	    // first round of debate moves into second
+	    this.updateLog("TIE - skipping second round for now");
+	  } else {
+	    if (attacker_hits > defender_hits) {
+	      this.updateLog("Attacker Wins");
+	    } else {
+	      this.updateLog("Defender Wins");
+	    }
+	  }
+
+	  return 1;
+
+	}
+
 
 
 

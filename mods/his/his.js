@@ -2498,10 +2498,10 @@ console.log("retreat 4");
 
     state.translations = {};
     state.translations['new'] = {};
-    state.translations['full'] = {};
     state.translations['new']['german'] = 0;
     state.translations['new']['french'] = 0;
     state.translations['new']['english'] = 0;
+    state.translations['full'] = {};
     state.translations['full']['german'] = 0;
     state.translations['full']['french'] = 0;
     state.translations['full']['english'] = 0;
@@ -4673,6 +4673,7 @@ console.log("retreat 4");
       spaces[key].units['hungary'] = [];
       spaces[key].units['scotland'] = [];
       spaces[key].units['independent'] = [];
+      spaces[key].university = 0;
       spaces[key].unrest = 0;
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
@@ -7803,7 +7804,6 @@ console.log(JSON.stringify(mv));
 	    return;
 	  }
 
-
 	  let msg = mv[1];
 	  let stage = mv[2];
 
@@ -9178,6 +9178,77 @@ console.log("space: " + spacekey);
           return 0;
 
         }
+
+
+
+        if (mv[0] === "found_jesuit_university") {
+
+	  let spacekey = mv[1];
+
+	  this.game.queue.splice(qe, 1);
+
+	  this.updateLog("Jesuit University founded in " + this.game.spaces[spacekey].name);
+	  this.game.spaces[spacekey].university = 1;
+
+	  return 1;
+
+	}
+
+
+        if (mv[0] === "theological_debate") {
+
+	  let attacker = mv[1];
+	  let defender = mv[2];
+	  let language_zone = mv[3];
+
+	  this.game.queue.splice(qe, 1);
+
+	  //
+	  // attacker picks debater at random
+	  //
+	  this.game.queue.push();
+
+
+	  //
+	  // attacker specifies if commited or uncommitted debater on defense
+	  //
+
+	  //
+	  // some wrangling lets defender switch up if Protestant
+	  //
+
+	  let attacker_rolls = 0 + 3; // power of debater + 3;
+	  let defender_rolls = 0 + 1; // power of debater + 1; // or 2 if uncommitted
+
+	  let attacker_hits = 0;
+	  let defender_hits = 0;
+
+	  for (let i = 0; i < attacker_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog(attacker + " rolls " + x);
+	    if (x >= 5) { attacker_hits++; }
+	  }
+	  for (let i = 0; i < defender_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog(defender + " rolls " + x);
+	    if (x >= 5) { defender_hits++; }
+	  }
+	
+	  if (attacker_hits == defender_hits) {
+	    // first round of debate moves into second
+	    this.updateLog("TIE - skipping second round for now");
+	  } else {
+	    if (attacker_hits > defender_hits) {
+	      this.updateLog("Attacker Wins");
+	    } else {
+	      this.updateLog("Defender Wins");
+	    }
+	  }
+
+	  return 1;
+
+	}
+
 
 
 
@@ -11665,8 +11736,31 @@ return;
     return 0;
   }
   async playerCallTheologicalDebate(his_self, player, faction) {
-console.log("18");
-return;
+
+    let msg = "Select Language Zone for Theological Debate:";
+    let html = '<ul>';
+        html += '<li class="option" style="" id="german">German</li>';
+        html += '<li class="option" style="" id="french">French</li>';
+        html += '<li class="option" style="" id="english">English</li>';
+        html += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+      let id = $(this).attr("id");
+      if (faction === "papacy") {
+	his_self.addMove("theological_debate\tpapacy\tprotestant\t"+id);
+      } else {
+	his_self.addMove("theological_debate\tprotestant\tpapacy\t"+id);
+      }
+      this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+      this.addMove("RESETCONFIRMSNEEDED\tall");
+      his_self.endTurn();
+    });
+
+    return 0;
+
   }
   canPlayerBuildSaintPeters(his_self, player, faction) {
     if (faction === "papacy") {
@@ -11717,15 +11811,19 @@ return;
       "Select Catholic-Controlled Space for Jesuit University",
 
       function(space) {
-        if (space.religion === "catholic") { return 1; }
+        if (space.religion === "catholic" &&
+            space.university != 1) { return 1; }
 	return 0;
       },
 
       function(destination_spacekey) {
-	alert("JESUIT UNIVERSITY FOUNDED: " + destination_spacekey);
+        his_self.addMove("found_jesuit_university\t"+destination_spacekey);
+	his_self.endTurn();
       },
 
     );
+
+    return 0;
   }
 
   playerPlaceUnitsInSpaceWithFilter(unittype, num, faction, filter_func=null, mycallback = null, cancel_func = null, board_clickable = false) {
@@ -12055,13 +12153,32 @@ console.log("DEBATER IS: " + d.owner);
     }
     // PROTESTANTS
     if (this.factions[faction].key === "protestant") {
+
+console.log("TRANS: " + JSON.stringify(this.game.state.translations));
+
       let total_keys = 11;
       let remaining_keys = total_keys - controlled_keys;
       for (let i = 0; i <= 6; i++) {
-          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}"></div>`;
+	  let box_inserts = "";
+console.log("A");
+console.log("A: " + this.game.state.translations['new']["german"]);
+console.log("B: " + this.game.state.translations['new']['french']);
+console.log("C: " + this.game.state.translations['new']['english']);
+console.log("D");
+	  if (this.game.state.translations['new']['german'] == i) {
+            box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
+	  }
+	  if (this.game.state.translations['new']['french'] == i) {
+            box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
+	  }
+	  if (this.game.state.translations['new']['english'] == i) {
+            box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
+	  }
+          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
       }
       for (let i = 1; i <= 11; i++) {
         if (i > (11-remaining_keys)) {
+	  let box_inserts = "";
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
         }
       }
@@ -12071,6 +12188,15 @@ console.log("DEBATER IS: " + d.owner);
       let total_keys = 14;
       let remaining_keys = total_keys - controlled_keys;
       for (let i = 1; i <= 14; i++) {
+	if (this.game.state.translations['german']['full'] == i) {
+          box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
+	}
+	if (this.game.state.translations['french']['full'] == i) {
+          box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
+	}
+	if (this.game.state.translations['english']['full'] == i) {
+          box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
+	}
         if (i > (14-remaining_keys)) {
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
         }

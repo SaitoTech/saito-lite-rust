@@ -1,4 +1,42 @@
 
+  displayReligiousConflictUI(attacker, defender) {
+
+    let html = `
+      <div class="theological_debate_sheet" id="theological_debate_sheet" style="background-image: url('/his/img/backgrounds/theological-debate2.jpeg')">
+	<div class="attacker_debater"></div>
+	<div class="defender_debater"></div>
+	<div class="status" id="status"></div>
+      </div>
+    `;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    //
+    // list all debaters
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      let d = this.game.state.debaters[i];
+      let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
+      if (d.owner === "papacy") {
+	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
+      }
+      if (d.owner === "england") {
+	this.app.browser.addElementToSelector(dtile, '.anglican_debaters');
+      }
+      if (d.owner === "hapsburg") {
+	this.app.browser.addElementToSelector(dtile, '.calvinist_debaters');
+      }
+      if (d.owner === "protestant") {
+	this.app.browser.addElementToSelector(dtile, '.protestant_debaters');
+      }
+    }
+
+    let obj = document.getElementById("religious_conflict_sheet_tile");
+    obj.style.top = rcc[cid].top;
+    obj.style.left = rcc[cid].left;
+
+  }
+
   displayReligiousConflictSheet() {
 
     let num_protestant_spaces = 0;
@@ -30,7 +68,6 @@
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let d = this.game.state.debaters[i];
       let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
-console.log("DEBATER IS: " + d.owner);
       if (d.owner === "papacy") {
 	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
       }
@@ -121,19 +158,32 @@ console.log("DEBATER IS: " + d.owner);
     }
     // PROTESTANTS
     if (this.factions[faction].key === "protestant") {
+
+console.log("TRANS: " + JSON.stringify(this.game.state.translations));
+
       let total_keys = 11;
       let remaining_keys = total_keys - controlled_keys;
       for (let i = 0; i <= 6; i++) {
 	  let box_inserts = "";
-	  if (this.game.state.translations['german'] == 0) {
+console.log("A");
+console.log("A: " + this.game.state.translations['new']["german"]);
+console.log("B: " + this.game.state.translations['new']['french']);
+console.log("C: " + this.game.state.translations['new']['english']);
+console.log("D");
+	  if (this.game.state.translations['new']['german'] == i) {
             box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
 	  }
-          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">
-
-	  </div>`;
+	  if (this.game.state.translations['new']['french'] == i) {
+            box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
+	  }
+	  if (this.game.state.translations['new']['english'] == i) {
+            box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
+	  }
+          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
       }
       for (let i = 1; i <= 11; i++) {
         if (i > (11-remaining_keys)) {
+	  let box_inserts = "";
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
         }
       }
@@ -143,6 +193,15 @@ console.log("DEBATER IS: " + d.owner);
       let total_keys = 14;
       let remaining_keys = total_keys - controlled_keys;
       for (let i = 1; i <= 14; i++) {
+	if (this.game.state.translations['german']['full'] == i) {
+          box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
+	}
+	if (this.game.state.translations['french']['full'] == i) {
+          box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
+	}
+	if (this.game.state.translations['english']['full'] == i) {
+          box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
+	}
         if (i > (14-remaining_keys)) {
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
         }

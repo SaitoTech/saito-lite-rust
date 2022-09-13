@@ -1733,8 +1733,31 @@ return;
     return 0;
   }
   async playerCallTheologicalDebate(his_self, player, faction) {
-console.log("18");
-return;
+
+    let msg = "Select Language Zone for Theological Debate:";
+    let html = '<ul>';
+        html += '<li class="option" style="" id="german">German</li>';
+        html += '<li class="option" style="" id="french">French</li>';
+        html += '<li class="option" style="" id="english">English</li>';
+        html += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+      let id = $(this).attr("id");
+      if (faction === "papacy") {
+	his_self.addMove("theological_debate\tpapacy\tprotestant\t"+id);
+      } else {
+	his_self.addMove("theological_debate\tprotestant\tpapacy\t"+id);
+      }
+      this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+      this.addMove("RESETCONFIRMSNEEDED\tall");
+      his_self.endTurn();
+    });
+
+    return 0;
+
   }
   canPlayerBuildSaintPeters(his_self, player, faction) {
     if (faction === "papacy") {
@@ -1785,15 +1808,19 @@ return;
       "Select Catholic-Controlled Space for Jesuit University",
 
       function(space) {
-        if (space.religion === "catholic") { return 1; }
+        if (space.religion === "catholic" &&
+            space.university != 1) { return 1; }
 	return 0;
       },
 
       function(destination_spacekey) {
-	alert("JESUIT UNIVERSITY FOUNDED: " + destination_spacekey);
+        his_self.addMove("found_jesuit_university\t"+destination_spacekey);
+	his_self.endTurn();
       },
 
     );
+
+    return 0;
   }
 
   playerPlaceUnitsInSpaceWithFilter(unittype, num, faction, filter_func=null, mycallback = null, cancel_func = null, board_clickable = false) {

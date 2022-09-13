@@ -688,10 +688,10 @@ console.log("retreat 4");
 
     state.translations = {};
     state.translations['new'] = {};
-    state.translations['full'] = {};
     state.translations['new']['german'] = 0;
     state.translations['new']['french'] = 0;
     state.translations['new']['english'] = 0;
+    state.translations['full'] = {};
     state.translations['full']['german'] = 0;
     state.translations['full']['french'] = 0;
     state.translations['full']['english'] = 0;
@@ -2863,6 +2863,7 @@ console.log("retreat 4");
       spaces[key].units['hungary'] = [];
       spaces[key].units['scotland'] = [];
       spaces[key].units['independent'] = [];
+      spaces[key].university = 0;
       spaces[key].unrest = 0;
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
