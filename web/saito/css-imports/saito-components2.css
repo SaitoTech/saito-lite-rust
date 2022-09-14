@@ -592,3 +592,11 @@ div#message-wrapper p {
     font-size: 3rem;
     color: #fff !important;
 }
+
+@media only screen and (max-width: 600px) {
+  div#message-wrapper {
+    min-width: min(450px, 95vw);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

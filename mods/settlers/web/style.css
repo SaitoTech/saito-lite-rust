@@ -571,15 +571,6 @@ input[type="checkbox"]{
   width: 3em;
 }
 
-.splash_overlay {
-  padding: 2px;
-  width: auto;
-  height: auto;
-  max-height: 90vh;
-  max-width: 95%;
-  min-width: 800px;
-}
-
 .noselect .icon{
   filter: grayscale(100%);
 }
@@ -982,26 +973,6 @@ ul.horizontal_list li.iconoption{
   }
 }
 
-@media screen and (orientation: landscape) and (max-width: 800px) {
-  .splash_overlay {
-    padding: 2px;
-    width: auto;
-    height: auto;
-    max-height: 90vh;
-    max-width: 95%;
-    min-width: 600px;
-  }
-}
-@media screen and (orientation: portrait) and (max-width: 800px) {
-  .splash_overlay {
-    padding: 2px;
-    width: auto;
-    height: auto;
-    max-height: 90vh;
-    max-width: 95%;
-    min-width: 400px;
-  }
-}
 
 
 

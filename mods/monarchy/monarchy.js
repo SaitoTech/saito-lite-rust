@@ -61,7 +61,7 @@ class Monarchy extends GameTemplate {
 
   returnWelcomeOverlay(){
    let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
-           <img src="/${this.name.toLowerCase()}/img/welcome_splash.jpg" style="width:100%;height:100%" />
+           <img src="/${this.name.toLowerCase()}/img/welcome_splash.jpg"/>
                </div>`;
     return html;
   }

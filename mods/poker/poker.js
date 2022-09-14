@@ -1010,6 +1010,7 @@ class Poker extends GameTableTemplate {
 
     let poker_self = this;
     let html = "";
+    let mobileToggle = (window.matchMedia("(orientation: landscape)").matches && window.innerHeight <= 600);
 
     //
     // cancel raise kicks us back
@@ -1102,7 +1103,7 @@ class Poker extends GameTableTemplate {
           html += "Please select an option below: ";
         }
 
-        html += `</div><ul><li class="menu_option" id="0">cancel raise</li>`;
+        html += `</div><ul><li class="menu_option" id="0">${(mobileToggle)? "nope":"cancel raise"}</li>`;
         let max_raise = Math.min(credit_remaining, smallest_stack);
 
         console.log("last raise: " + poker_self.game.state.last_raise);
@@ -1116,7 +1117,7 @@ class Poker extends GameTableTemplate {
           console.log("id is: " + (this_raise + match_required));
 
           if (max_raise > this_raise) {
-            html += `<li class="menu_option" id="${this_raise + match_required}">raise ${this_raise}</li>`;
+            html += `<li class="menu_option" id="${this_raise + match_required}">${(mobileToggle)? " ":"raise "}${this_raise}</li>`;
           } else {
             i = 6; //Stop for-loop
             html += `<li class="menu_option" id="${max_raise + match_required}">

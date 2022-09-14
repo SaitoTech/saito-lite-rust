@@ -105,7 +105,7 @@ class Settlers extends GameTemplate {
   }
 
   returnWelcomeOverlay(){
-   let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay trade_overlay">
+   let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
 	         <img src="/settlers/img/welcome.jpg" style="width:100%;height:100%" />
                </div>`;
     return html;

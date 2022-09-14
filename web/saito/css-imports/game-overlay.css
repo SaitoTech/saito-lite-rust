@@ -165,3 +165,54 @@ game-overlay-cardlist-button {
 }
 
 
+/*******************/
+/* A welcome image  */
+/*******************/
+.splash_overlay {
+  padding: 2px;
+  width: auto;
+  height: auto;
+  max-height: 90vh;
+  max-width: 95%;
+  min-width: 800px;
+}
+.splash_overlay img{
+    width: 100%;
+    height: auto;
+  }
+
+@media screen and (max-width: 800px) {
+  .splash_overlay {
+    padding: 2px;
+    width: auto;
+    height: auto;
+    min-width: 600px;
+    max-height: 90vh;
+    max-width: 95vh;
+  }
+}
+@media screen and (max-width: 600px) {
+  .splash_overlay {
+    padding: 2px;
+    width: 95vw;
+    height: auto;
+    min-width: unset;
+    max-height: 90vh;
+    max-width: 95vw;
+  }
+}
+
+@media screen and (max-width: 800px) and (orientation: landscape) {
+  .splash_overlay {
+    padding: 2px;
+    height: 85vh;
+    width: auto;
+    min-width: unset;
+    max-width: 95vw;
+    max-height: 50vw;
+  }
+  .splash_overlay img{
+    height: 100%;
+    width: auto;
+  }
+}

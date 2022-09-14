@@ -1130,7 +1130,7 @@ label.treated {
 
 div#message-wrapper {
   border: 2px solid var(--saito-red);
-  min-width: 500px;
+  min-width: min(500px,100vw);
   padding: 1em;
   font-size: 2em;
   background: var(--saito-red);
@@ -1140,6 +1140,7 @@ div#message-wrapper {
   color: #fff;
   z-index: 200;
 }
+
 
 .promptval {
   margin: 0 0 1em 0;
@@ -1791,6 +1792,11 @@ div#message-wrapper {
     font-size: 1em;
   }
 
+  div#message-wrapper {
+    min-width: min(450px, 95vw);
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 /* modals */
