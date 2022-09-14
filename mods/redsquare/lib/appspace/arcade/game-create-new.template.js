@@ -40,20 +40,21 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
 
       <!- ***Game desc & title start*** -->
       <div class="saito-module-intro-details">
-        <div>${game_mod.name}</div>
-        <div>${game_mod.description}</div>
-        <div id="game-rules-btn" class="game-help-link arcade-game-help info-item-wrapper">How to play?</div>
+        <div>
+          <span><b>${game_mod.name}</b></span>
+          <div id="game-rules-btn" class="game-help-link arcade-game-help info-item-wrapper">How to play?</div>
+        </div>
+        <div class="rs-create-game-desc">${game_mod.description}</div>
+        
   `;
 
   if (mod.maxPlayers == 1){
     html += `<button type="button" id="game-invite-btn" class="game-invite-btn" >Play</button>`;
   }else{
     html += `
-        <div class="saito-multi-select_btn saito-select">
-         <div class="saito-multi-select_btn_options saito-slct">
+        <div class="rs-btn-create-game-wrapper">
             <button type="button" class="saito-multi-btn game-invite-btn" data-type="open">Create Open Game</button>
             <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private Game</button>
-         </div>
         </div>`;
   }
         

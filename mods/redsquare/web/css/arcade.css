@@ -472,6 +472,7 @@ option {
   grid-template-rows: min-content auto;
   background-color: white;
   padding: 2rem;
+  border-radius: 1rem;
 }
 
 
@@ -588,4 +589,20 @@ option {
 
 .league-leaderboard table tr td {
   text-align: center;
+}
+
+.game-help-link {
+  position: absolute;
+  right: 2rem;
+  font-size: 2rem;
+  color: var(--saito-primary);
+}
+
+.rs-btn-create-game-wrapper {
+  display: flex;
+  margin-top: 2rem;
+}
+
+.rs-create-game-desc {
+  font-size: 1.9rem;
 }
