@@ -613,3 +613,7 @@ option {
 .rs-create-game-desc-wrapper {
   margin-left: 1rem;
 }
+
+.rs-create-game-players select {
+  border-color: var(--saito-primary);
+}
