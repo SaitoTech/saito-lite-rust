@@ -9,9 +9,12 @@ class RedSquareMenu {
 
   constructor(app, mod) {
     this.name = "RedSquareMenu";
-    this.numberOfNotifications = 1
+    this.numberOfNotifications = 0;
 
-    app.connection.on('show-notification-request', (menu_item, notifications) => {
+    app.connection.on('redsquare-menu-notification-request', (obj) => {
+      let menu_item = obj.menu;
+      let notifications = obj.num;
+console.log(menu_item + " -- " + notifications);
       this.displayNotification(app, menu_item, notifications)
     })
 
@@ -34,14 +37,13 @@ class RedSquareMenu {
     for (let i = 0; i < app.modules.mods.length; i++) {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
-
         let html = `
                 <li class="redsquare-menu-${app.modules.mods[i].returnSlug()}" data-id="${i}">
                   <i class="${app.modules.mods[i].icon}"></i>
                   <span> ${app.modules.mods[i].returnName()}</span>
              
                 </li>
-    `;
+        `;
         if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)) {
           app.browser.addElementToSelector(html, ".saito-menu-list");
         }
