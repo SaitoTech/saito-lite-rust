@@ -76,11 +76,22 @@ class GameCreateNew {
       } catch (err) { }
     };
 
-    document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
-       let options = gamecreate_self.getOptions();
-       let gamemod = app.modules.returnModule(options.game);
-       gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
-    });
+    try {
+      const identifiers = document.getElementsByClassName(`game-help-link`);
+
+      Array.from(identifiers).forEach((identifier) => {
+        identifier.addEventListener("click", (e) => {
+
+          let options = gamecreate_self.getOptions();
+          let gamemod = app.modules.returnModule(options.game);
+          let rules_overlay = new SaitoOverlay(app, mod);
+          rules_overlay.show(app, mod, gamemod.returnGameRulesHTML());
+
+        });
+      });
+    } catch (err) {
+      console.error("Error while adding event to game rules: " + err);
+    }
 
     //
     // create game
