@@ -1657,7 +1657,7 @@ i.link_icon.private{
 
   .invite-tile-button, .arcade-tile .button {
     min-width: unset;
-    max-width: 6em;
+    max-width: 7em;
     height: 5em;
     font-size: 0.8em;
   }

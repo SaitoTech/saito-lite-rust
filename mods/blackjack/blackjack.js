@@ -812,7 +812,7 @@ class Blackjack extends GameTableTemplate {
     let fractions = [0.01, 0.05, 0.1];
     let myCredit = this.game.state.player[blackjack_self.game.player-1].credit
 
-    let html = `<div class="status-info">How much would you like to wager? (Available credit: ${myCredit.toFixed(this.decimal_precision)})</div>`;
+    let html = `<div class="status-info">Select a wager: (credit: ${myCredit.toFixed(this.decimal_precision)})</div>`;
     html += '<ul>';
     for (let i = 0; i < fractions.length; i++){
       if (fractions[i]*this.game.stake<myCredit)
@@ -1015,9 +1015,9 @@ class Blackjack extends GameTableTemplate {
           newhtml += "</div>";
        }
        this.playerbox.refreshGraphic(newhtml);
-       $("#player-box-graphic-1").removeClass("hidden");
+       $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
       }else{
-        $("#player-box-graphic-1").addClass("hidden");
+        $("#player-box-graphic-1").addClass("hidden-playerbox-element");
       }
     } catch (err) {
      console.error("Display Hand err: " + err);
