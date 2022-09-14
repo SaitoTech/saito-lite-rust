@@ -1,3 +1,5 @@
+const Moment = require("moment");
+
 module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 	let html = "";
 	if (games.length < 1) {
@@ -41,7 +43,7 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 					            <div>${gameName}</div>
 					            ${playersHtml}
 					        </div>
-					        <div class="observer-details saito-deemphasize">${g.step} moves</div>
+					        <div class="observer-details saito-deemphasize"><p>${g.step} moves</p><p>Started ${Moment(g.ts).fromNow()}</p></div>
 					        <div class="observer-action"><a href="#" data-sig="${g.game_id}" data-cmd="watch" class="button observe-game-btn">Watch</a></div>
 					    </div>
 					`;
