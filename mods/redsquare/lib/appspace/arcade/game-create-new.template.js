@@ -30,16 +30,12 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       <!- ***Game thumbnail & options start*** -->
       <div class="saito-module-intro-image">
         <img class="game-image arcade-game-thumbnail" src="${image}">
-        
-        ${players(game_mod.minPlayers, game_mod.maxPlayers)}
-
-        <div class="info-item-wrapper arcade-advance-opt">Advanced Options</div>
       </div>
       <!- ***Game thumbnail & options end*** -->
 
 
       <!- ***Game desc & title start*** -->
-      <div class="saito-module-intro-details">
+      <div class="saito-module-intro-details rs-create-game-desc-wrapper">
         <div>
           <span><b>${game_mod.name}</b></span>
           <div id="game-rules-btn" class="game-help-link arcade-game-help info-item-wrapper">How to play?</div>
@@ -47,16 +43,6 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
         <div class="rs-create-game-desc">${game_mod.description}</div>
         
   `;
-
-  if (mod.maxPlayers == 1){
-    html += `<button type="button" id="game-invite-btn" class="game-invite-btn" >Play</button>`;
-  }else{
-    html += `
-        <div class="rs-btn-create-game-wrapper">
-            <button type="button" class="saito-multi-btn game-invite-btn" data-type="open">Create Open Game</button>
-            <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private Game</button>
-        </div>`;
-  }
         
   html += `
       </div>
@@ -68,6 +54,36 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       
 
     </div>
+
+
+    <div class="game-wizard-controls">
+  
+      <div class="rs-create-game-players">
+        ${players(game_mod.minPlayers, game_mod.maxPlayers)}
+        <div class="info-item-wrapper arcade-advance-opt">Advanced Options</div>
+      </div>
+
+      <div class="game-wizard-invite">
+  `;
+
+    if (mod.maxPlayers == 1){
+      html += `<button type="button" id="game-invite-btn" class="game-invite-btn" >Play</button>`;
+    }else{
+      html += `
+          <div class="saito-multi-select_btn saito-select">
+           <div class="saito-multi-select_btn_options saito-slct">
+              <button type="button" class="saito-multi-btn game-invite-btn" data-type="open">Create Open Game</button>
+              <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private Game</button>
+           </div>
+          </div>`;
+    }
+
+
+  html += `
+      </div>
+
+    </div>
+
   </form>
   `;
   

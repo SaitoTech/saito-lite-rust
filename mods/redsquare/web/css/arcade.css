@@ -282,7 +282,6 @@
   line-height: 3;
   background: #fff;
   color: var(--saito-primary);
-  margin-top: 2rem;
 }
 
 .saito-multi-select_btn_options {
@@ -605,4 +604,12 @@ option {
 
 .rs-create-game-desc {
   font-size: 1.9rem;
+}
+
+.rs-create-game-players { 
+  padding-right: 1rem;
+} 
+
+.rs-create-game-desc-wrapper {
+  margin-left: 1rem;
 }
