@@ -182,7 +182,7 @@ class League extends ModTemplate {
       if (b.id === "SAITOLICIOUS") { return 1};
       if (a.myRank < 0) {return 1;}
       if (b.myRank < 0) {return -1;}
-      return b.myRank - a.myRank
+      return a.myRank - b.myRank
     });
     return leagues_to_display;
   }
