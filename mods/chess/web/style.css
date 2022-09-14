@@ -397,10 +397,10 @@ transform: translate(-50%, -50%);
     #status_opponent {
         font-size: 20px;
     }
-    .controls {
+    /*.controls {
         overflow-y: scroll;
         overflow-x: hidden;
-    }
+    }*/
     #opponent_id {
         font-size: inherit;
     }
@@ -541,7 +541,6 @@ transform: translate(-50%, -50%);
     .controls {
         width: 95%;
         max-height: 240px;
-        overflow-y: scroll;
     }
 
     .button_row {
@@ -559,10 +558,8 @@ transform: translate(-50%, -50%);
 
     .tool-cont {
         width: 98%;
-    }
-
-    #captured-cont {
-        width: 64%;
+        margin-top: 4px;
+        min-height: unset;
     }
 
     #resign-cont {

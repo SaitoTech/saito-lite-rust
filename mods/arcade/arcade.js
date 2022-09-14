@@ -307,7 +307,7 @@ class Arcade extends ModTemplate {
   //
   // this function runs "connect" event
   onConnectionStable(app, peer) {
-    siteMessage("Connection Restored", 1000);
+    siteMessage("Connection Restored", 1500);
   }
 
   //
@@ -316,7 +316,7 @@ class Arcade extends ModTemplate {
   //
   // this function runs "disconnect" event
   onConnectionUnstable(app, peer) {
-    siteMessage("Connection Unstable", 5000);
+    siteMessage("Connection Unstable", 3000);
   }
 
   async render(app) {

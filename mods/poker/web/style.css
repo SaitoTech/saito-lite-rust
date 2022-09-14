@@ -123,7 +123,8 @@ body {
   left: 50vw;
   transform: translateX(-50%);
   font-size: 5vh;
-  height: 7vh;
+  height: max(7vh,7vw);
+  max-height: 50px;
   display: flex;
   flex-direction: row;
   
@@ -191,7 +192,7 @@ body {
 .tip{
   width: unset;
 }
-.tiptext{
+.tip .tiptext{
   font-size: 20px;
   min-width: 100px;
   text-align: center;
@@ -224,6 +225,33 @@ body {
     display: none;
   }
 
+  .game-scoreboard{
+    top: unset;
+    left: unset;
+    transform: unset;
+    bottom: 0;
+    right: 0;
+    flex-direction: column;
+    padding: 4px;
+    max-width: 30vw;
+  }
+  .scoreitem{
+    width: calc(100% - 8px);
+    padding: unset;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .menu-player{
+    font-size: 0.9em;
+    font-weight: normal;
+    margin: 0.3vh auto;
+  }
+  .poker-seat-1 .player-box-info{
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
  
 }
 
@@ -256,4 +284,22 @@ body {
   }*/
 
 
+  .game-scoreboard{
+    top: unset;
+    left: unset;
+    transform: unset;
+    bottom: 0;
+    right: 0;
+    flex-direction: column;
+    padding: 4px;
+    max-width: 20vw;
+  }
+  .scoreitem{
+    width: calc(100% - 8px);
+    padding: unset;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+ 
 }

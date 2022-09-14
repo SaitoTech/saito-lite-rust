@@ -35,7 +35,7 @@
 }
 
 .player-box-head .player-identicon{
-    width: 3vh;
+    width: max(1.5em, 3vh);
     box-shadow: 0px 3px 6px #00000029;
 }
 
@@ -51,6 +51,10 @@
 
 .player-box-info{
   padding: 0.5em;
+}
+
+.hidden-playerbox-element {
+  display: none !important;
 }
 
 .player-info-chips, .player-box-info .chips {
@@ -148,6 +152,12 @@
 /*** SCREEN SIZE MODIFICATIONS ***/
 /*********************************/
 @media screen and (orientation: landscape) and (max-height: 600px) {
+  /*Hide backs of other player cards*/
+  .other-player-hand .card {
+    display: none;
+  }
+
+
   /*Fit Other players*/
   .poker-seat-3{
     right: 15vw;
@@ -177,7 +187,8 @@
 
   /*Maximize my space to play*/
   #player-box-1{
-    min-width: 45vw;
+    max-width: unset;
+    width: min(45vw,400px);
     font-size: 18px;
   }
   .plog.status ul{
@@ -185,7 +196,7 @@
   }
   .plog.status ul .menu_option{
     font-size: 1.5em;
-    border-left: 1px solid var(--saito-skyline-grey);
+    border-left: 1px solid rgb(234, 234, 239);
     line-height: min(3em,15vh);
   }
   .plog.status ul li:first-child{
@@ -210,7 +221,11 @@
 
   /* Adjust sizing of text menu options*/
   .status ul .menu_option {
-    line-height: 3.5em;
+    line-height: 3em;
+  }
+
+  .poker-seat-1{
+    max-height: 40vh;
   }
 
   .player-box{

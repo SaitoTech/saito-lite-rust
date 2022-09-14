@@ -143,18 +143,18 @@
   .cardfan{
     left: 10vw;
   }
-   .cardfan .card {
+  /* .cardfan .card {
     width: min(100px,25vw);
-  }
+  }*/
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
   .cardfan {
     left: 5vw;
   }
-  /*Have minimum size of my cards*/
+  /*Have minimum size of my cards
   .cardfan .card {
     width: min(100px,25vw);
-  }
+  }*/
 }
 

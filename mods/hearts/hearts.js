@@ -20,6 +20,7 @@ class Hearts extends GameTemplate {
 
     this.minPlayers = 4;
     this.maxPlayers = 4;
+    this.app = app;
 
     return this;
 
