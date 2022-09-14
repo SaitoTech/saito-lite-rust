@@ -17,6 +17,7 @@ class Midnight extends GameTemplate {
     this.categories = "Games Roleplaying Fiction one-player";
     this.maxPlayers = 1;
     this.minPlayers = 1;
+    this.app = app;
   }
 
   /* Opt out of letting League create a default*/

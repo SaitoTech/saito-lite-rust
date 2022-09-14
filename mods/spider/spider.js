@@ -22,6 +22,7 @@ class Spider extends GameTemplate {
     this.minPlayers      = 1;
     this.status          = "Beta";
     this.difficulty      = 2; //default medium, 1 = easy, 4 = hard
+    this.app = app;
   }
 
   // Create an exp league by default

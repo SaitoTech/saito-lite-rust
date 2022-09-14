@@ -18,6 +18,7 @@ class Mahjong extends GameTemplate {
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
     this.status          = "Beta";
+    this.app = app;
 
   }
 

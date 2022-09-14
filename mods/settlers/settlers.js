@@ -1,7 +1,7 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const GameHexGrid = require("../../lib/saito/ui/game-hexgrid/game-hexgrid");
 const SettlersSkin = require("./lib/settlers.skin.js");
-const SettlersGameRulesTemplate = require("./lib/settlers-game-rules.template");
+const SettlersGameoptionsTemplate = require("./lib/settlers-game-options.template");
 const SettlersTradeHelpOverlayTemplate = require("./lib/settlers-trade-help-overlay.template");
 
 //////////////////
@@ -39,7 +39,7 @@ class Settlers extends GameTemplate {
   Advanced Game options for Arcade
   */
   returnGameOptionsHTML() {
-    return SettlersGameRulesTemplate(app, this);
+    return SettlersGameoptionsTemplate(app, this);
   }
 
 

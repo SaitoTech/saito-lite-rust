@@ -4,7 +4,6 @@ const SolitrioGameRulesTemplate = require("./lib/solitrio-game-rules.template");
 const SolitrioGameOptionsTemplate = require("./lib/solitrio-game-options.template");
 
 
-
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -22,7 +21,7 @@ class Solitrio extends GameTemplate {
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
-    
+    this.app = app;
   }
 
 
@@ -38,14 +37,14 @@ class Solitrio extends GameTemplate {
 
 
   returnGameRulesHTML(){
-    return SolitrioGameRulesTemplate(app, this);
+    return SolitrioGameRulesTemplate(this.app, this);
   }
 
 
   
   //Single player games don't allow game-creation and options prior to join
   returnGameOptionsHTML() {
-    return return SolitrioGameOptionsTemplate(app, this);
+    return SolitrioGameOptionsTemplate(this.app, this);
   }
 
 

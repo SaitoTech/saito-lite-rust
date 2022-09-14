@@ -41,6 +41,7 @@ class Pandemic extends GameTemplate {
     this.initialized = 0;
 
     this.skin = null;
+    this.app = app;
     return this;
   }
 
@@ -2494,11 +2495,11 @@ displayDisease() {
   }
 
   returnGameRulesHTML() {
-    return PandemicGameRulesTemplate(app, this);
+    return PandemicGameRulesTemplate(this.app, this);
   }
 
   returnGameOptionsHTML() {
-    return PandemicGameOptionsTemplate(app, this); 
+    return PandemicGameOptionsTemplate(this.app, this); 
   }
 
   returnQuickLinkGameOptions(options) {
