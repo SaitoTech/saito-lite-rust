@@ -349,6 +349,14 @@ class RedSquareTweet {
     document.querySelector(sel).onclick = (e) => {
 
       //
+      // check we are not already viewing this
+      //
+      if (this.tx.transaction.sig === mod.viewing) {
+	alert("Already Viewing Tweet");
+	return;
+      }
+
+      //
       // trap links in tweets
       //
       if (e.target.classList.contains('saito-treated-link') || e.target.classList.contains('saito-og-link')) {

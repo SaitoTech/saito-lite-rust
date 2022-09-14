@@ -31,6 +31,7 @@ class RedSquare extends ModTemplate {
     this.tweets = [];
     this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
 
+    this.viewing = "main";
     // "main" or sig if viewing page-specific
     this.viewing = "main";
     this.last_viewed_notifications_ts = 0;
@@ -232,6 +233,12 @@ console.log("error tweeting image");
     }
     this.addTweet(app, this, tweet, 1);
     this.txmap[tx.transaction.sig] = 1;
+
+    if (this.viewing === "main") {
+      this.renderMainPage(app, mod);
+    } else {
+      app.connection.emit('tweet-render-request', tweet);
+    }
   }
   addTweetFromTransaction(app, mod, tx, tracktweet = false) {
     let tweet = new Tweet(app, this, tx);
