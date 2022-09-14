@@ -86,17 +86,6 @@ class Chatx extends ModTemplate {
         });
 
 
-        //
-        // note - we read this from the options file directly as
-        // the peers will not have yet initialized and thus will 
-        // not be able to inform us whether they support the chat
-        // service. TODO - fix later
-        //
-        if (app.options?.peers?.length >= 1) {
-            let peer = app.options.peers[0];
-            this.createChatGroup([peer.publickey], "Saito Community Chat");
-        }
-
 
         //
         // create chatgroups from keychain -- friends only
@@ -171,11 +160,22 @@ class Chatx extends ModTemplate {
         //
         if (peer.isMainPeer()) {
 
-            for (let z = 0; z < this.groups.length; z++) {
-                if (this.groups[z].name === "Saito Community Chat") {
-                    community_chat_group_id = this.groups[z].id;
-                }
-            }
+            //
+            // note - we read this from the options file directly as
+            // the peers will not have yet initialized and thus will 
+            // not be able to inform us whether they support the chat
+            // service. TODO - fix later
+            //
+console.log("CREATING COMMUNITY CHAT NEW W/: " + peer.peer.publickey);
+            this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
+	    if (this.chat_manager != null) { this.chat_manager.render(this.app, this, ".chat-manager"); }
+
+
+            //for (let z = 0; z < this.groups.length; z++) {
+            //    if (this.groups[z].name === "Saito Community Chat") {
+            //        community_chat_group_id = this.groups[z].id;
+            //    }
+            //}
 
             // not a publickey but group_id gets archived as if it were one
             let sql = `SELECT id, tx FROM txs WHERE publickey = "${community_chat_group_id}" ORDER BY ts DESC LIMIT 25`;
@@ -705,6 +705,13 @@ return;
 	//
         if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
 
+        //
+        // TODO - remove when Arcade is purged
+        //
+        let am = app.modules.returnActiveModule();
+        if (am?.name === "Arcade") { return; }
+
+
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
         }
@@ -825,7 +832,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
             }
         }
 
-        let id = this.app.crypto.hash(`${members.join('_')}`)
+        let id = this.app.crypto.hash(`${members.join('_')}`);
 
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i].id == id) {
