@@ -111,7 +111,7 @@ class Post {
         setTimeout(() => {
  
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
-          mod.addTweetFromTransaction(app, mod, newtx, true);
+          mod.prependTweetFromTransaction(app, mod, newtx, true);
 
 	  if (post_self.browser_active == 1) {
             if (thread_id !== "") {

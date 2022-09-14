@@ -129,13 +129,12 @@ console.log("error tweeting image");
 
   }
 
-  addTweet(app, mod, tweet) {
+  addTweet(app, mod, tweet, prepend=0) {
 
     //
     // post-level
     //
     if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
-
       let new_tweet = 1;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
@@ -152,8 +151,13 @@ console.log("error tweeting image");
             insertion_index++;
           }
         }
+
         //console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
-        this.tweets.splice(insertion_index, 0, tweet);
+	if (prepend == 0) {
+           this.tweets.splice(insertion_index, 0, tweet);
+	} else {
+           this.tweets.splice(0, 0, tweet);
+	}
         this.txmap[tweet.tx.transaction.sig] = 1;
       }
       //
@@ -220,6 +224,14 @@ console.log("error tweeting image");
       }
 
     }
+  }
+  prependTweetFromTransaction(app, mod, tx, tracktweet = false) {
+    let tweet = new Tweet(app, this, tx);
+    if (tracktweet) {
+      this.trackTweet(app, mod, tweet)
+    }
+    this.addTweet(app, this, tweet, 1);
+    this.txmap[tx.transaction.sig] = 1;
   }
   addTweetFromTransaction(app, mod, tx, tracktweet = false) {
     let tweet = new Tweet(app, this, tx);
