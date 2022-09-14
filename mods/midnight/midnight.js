@@ -29,7 +29,7 @@ class Midnight extends GameTemplate {
   }
 
   returnGameRulesHTML(){
-    return MidnightGameRulesTemplate(app, this);
+    return MidnightGameRulesTemplate(this.app, this);
   }
 
 

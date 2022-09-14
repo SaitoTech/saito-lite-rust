@@ -1,9 +1,9 @@
 const { timingSafeEqual } = require('crypto');
 const saito = require('../../lib/saito/saito');
 const GameTemplate = require('../../lib/templates/gametemplate');
-const WazuqiGameRulesTemplate = require("./lib/wazuqi-game-rules.template");
-const WazuqiGameOptionsTemplate = require("./lib/wazuqi-game-options.template");
-const WazuqiSingularGameOptionsTemplate = require("./lib/wazuqi-singular-game-options.template");
+const WuziqiGameRulesTemplate = require("./lib/wuziqi-game-rules.template");
+const WuziqiGameOptionsTemplate = require("./lib/wuziqi-game-options.template");
+const WuziqiSingularGameOptionsTemplate = require("./lib/wuziqi-singular-game-options.template");
 
 class Wuziqi extends GameTemplate {
 
@@ -171,7 +171,7 @@ class Wuziqi extends GameTemplate {
 
     //html for game intro/rules
     returnGameRulesHTML() {
-        return WazuqiGameRulesTemplate(app, this);
+        return WuziqiGameRulesTemplate(this.app, this);
     }
 
     initializeGame(game_id) {
@@ -621,11 +621,11 @@ class Wuziqi extends GameTemplate {
     }
 
     returnSingularGameOption(){
-        return WazuqiSingularGameOptionsTemplate(app, this);
+        return WuziqiSingularGameOptionsTemplate(this.app, this);
     }
     // Add options to the game start wizard for different game parameters
     returnGameOptionsHTML() {
-        return WazuqiGameOptionsTemplate(app, this);
+        return WuziqiGameOptionsTemplate(this.app, this);
     }
 
 

@@ -79,7 +79,7 @@ class Scotland extends GameTemplate {
 
 
   returnGameRulesHTML(){
-    return ScotlandGameRulesTemplate(app, this);
+    return ScotlandGameRulesTemplate(this.app, this);
   }
 
   handleCluesMenuItem() {

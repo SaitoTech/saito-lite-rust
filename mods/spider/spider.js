@@ -37,12 +37,12 @@ class Spider extends GameTemplate {
   
 
   returnGameRulesHTML(){
-    return SpiderGameRulesTemplate(app, this);
+    return SpiderGameRulesTemplate(this.app, this);
   }
 
 
   returnSingularGameOption(app){
-    return SpiderGameOptionsTemplate(app, this);
+    return SpiderGameOptionsTemplate(this.app, this);
   }
     
   //Single player games don't allow game-creation and options prior to join

@@ -1891,11 +1891,11 @@ initializeGame(game_id) {
 
 
   returnGameRulesHTML(){
-    return MonarchyGameRulesTemplate(app, this);
+    return MonarchyGameRulesTemplate(this.app, this);
   }
 
   returnGameOptionsHTML(){
-    return MonarchyGameOptionsTemplate(app, this);
+    return MonarchyGameOptionsTemplate(this.app, this);
   }
 
 

@@ -29,14 +29,14 @@ module.exports = (app, mod) => {
     `;
 
     let listed = [];
-    for (let i = 0; i < tapp.modules.mods.length; i++) {
+    for (let i = 0; i < app.modules.mods.length; i++) {
       if (
-        tapp.modules.mods[i].ticker != "" &&
-        tapp.modules.mods[i].ticker != undefined &&
-  !listed.includes(tapp.modules.mods[i].ticker)
+        app.modules.mods[i].ticker != "" &&
+        app.modules.mods[i].ticker != undefined &&
+  !listed.includes(app.modules.mods[i].ticker)
       ) {
-        options_html += `<option value="${tapp.modules.mods[i].ticker}">${tapp.modules.mods[i].ticker}</option>`;
-  listed.push(tapp.modules.mods[i].ticker);
+        options_html += `<option value="${app.modules.mods[i].ticker}">${app.modules.mods[i].ticker}</option>`;
+  listed.push(app.modules.mods[i].ticker);
       }
     }
 

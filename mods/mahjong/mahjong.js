@@ -33,7 +33,7 @@ class Mahjong extends GameTemplate {
   }
 
   returnGameRulesHTML(){
-    return MahjongGameRulesTemplate(app, this);
+    return MahjongGameRulesTemplate(this.app, this);
 
   }
 

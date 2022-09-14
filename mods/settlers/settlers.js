@@ -39,12 +39,12 @@ class Settlers extends GameTemplate {
   Advanced Game options for Arcade
   */
   returnGameOptionsHTML() {
-    return SettlersGameoptionsTemplate(app, this);
+    return SettlersGameoptionsTemplate(this.app, this);
   }
 
 
   returnTradeHelpOverlay(){
-    return SettlersTradeHelpOverlayTemplate(app, this);
+    return SettlersTradeHelpOverlayTemplate(this.app, this);
   }
 
   returnWelcomeOverlay(){

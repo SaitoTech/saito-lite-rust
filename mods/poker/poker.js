@@ -2628,7 +2628,7 @@ class Poker extends GameTableTemplate {
   
 
   returnGameRulesHTML(){
-    return PokerGameRulesTemplate(app, this);
+    return PokerGameRulesTemplate(this.app, this);
   }
 
   /**
@@ -2636,7 +2636,7 @@ class Poker extends GameTableTemplate {
    * We can't let users independently select starting blinds and stakes
    */ 
   returnGameOptionsHTML() {
-    return PokerGameOptionsTemplate(app, this);
+    return PokerGameOptionsTemplate(this.app, this);
   }
 
   attachAdvancedOptionsEventListeners(){

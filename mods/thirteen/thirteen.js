@@ -4400,11 +4400,11 @@ console.log("SHOULD PLACE: " + player);
 
 
   returnGameRulesHTML(){
-    return ThirteenGameRulesTemplate(app, this);
+    return ThirteenGameRulesTemplate(this.app, this);
   }
 
   returnGameOptionsHTML() {
-    return ThirteenGameOptionsTemplate(app, this);
+    return ThirteenGameOptionsTemplate(this.app, this);
   }
 
   returnUnplayedCards() {

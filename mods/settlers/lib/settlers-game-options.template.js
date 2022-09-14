@@ -21,7 +21,7 @@ module.exports = (app, mod) => {
     html += `</select>
           </div>
     `;*/
-    html += this.returnCryptoOptionsHTML();
+    html += mod.returnCryptoOptionsHTML();
 
     return html;
 

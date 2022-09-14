@@ -8437,16 +8437,16 @@ playerTurnHeadlineSelected(card, player) {
 
 
   returnSingularGameOption(){
-    return TwilightSingularGameOptionsTemplate(app, this);
+    return TwilightSingularGameOptionsTemplate(this.app, this);
   }
 
   returnGameOptionsHTML() {
-    return TwilightGameOptionsTemplate(app, this);
+    return TwilightGameOptionsTemplate(this.app, this);
   }
 
 
   returnGameRulesHTML(){
-    return TwilightGameRulesTemplate(app, this);
+    return TwilightGameRulesTemplate(this.app, this);
   }
 
   settleVPOutstanding() {

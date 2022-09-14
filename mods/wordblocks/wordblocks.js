@@ -180,7 +180,7 @@ class Wordblocks extends GameTemplate {
   }
 
   returnGameRulesHTML() {
-    return WordblocksGameRulesTemplate(app, this);
+    return WordblocksGameRulesTemplate(this.app, this);
   }
 
   returnMath(play) {
@@ -2398,7 +2398,7 @@ class Wordblocks extends GameTemplate {
   }
 
   returnGameOptionsHTML() {
-    return WordblocksGameOptionsTemplate(app, this);
+    return WordblocksGameOptionsTemplate(this.app, this);
   }
 
   async animatePlay(){
