@@ -7071,6 +7071,9 @@ alert("removing unit not implement for sea");
 
 	if (mv[0] === "is_testing") {
 
+
+	  this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+
     	  //
     	  // IS_TESTING -- TEMPORARY
     	  //
@@ -7101,6 +7104,7 @@ alert("removing unit not implement for sea");
     	  this.game.spaces['graz'].occupier = 'protestant';
 
     	  this.game.queue.splice(qe, 1);
+
 
 	  return 1;
 	}
@@ -9200,19 +9204,23 @@ console.log("space: " + spacekey);
 	  let attacker = mv[1];
 	  let defender = mv[2];
 	  let language_zone = mv[3];
+	  let committed_or_uncommitted = mv[4];
 
 	  this.game.queue.splice(qe, 1);
+
+	  this.game.state.theological_debate = {};
+	  this.game.state.theological_debate.attacker = mv[1];
+	  this.game.state.theological_debate.defender = mv[2];
+	  this.game.state.theological_debate.language_zone = mv[3];
+	  this.game.state.theological_debate.committed = mv[4];
+	  this.game.state.theological_debate.round = 1;
 
 	  //
 	  // attacker picks debater at random
 	  //
-	  this.game.queue.push();
+	  this.displayTheologicalDebate();
 
-
-	  //
-	  // attacker specifies if commited or uncommitted debater on defense
-	  //
-
+	  
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
@@ -9245,7 +9253,7 @@ console.log("space: " + spacekey);
 	    }
 	  }
 
-	  return 1;
+	  return 0;
 
 	}
 
@@ -11748,15 +11756,32 @@ return;
 
     $('.option').off();
     $('.option').on('click', function () {
-      let id = $(this).attr("id");
-      if (faction === "papacy") {
-	his_self.addMove("theological_debate\tpapacy\tprotestant\t"+id);
-      } else {
-	his_self.addMove("theological_debate\tprotestant\tpapacy\t"+id);
-      }
-      this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-      this.addMove("RESETCONFIRMSNEEDED\tall");
-      his_self.endTurn();
+
+      let language_zone = $(this).attr("id");
+
+      let msg = "Against Comitted or Uncommited Debater?";
+      let html = '<ul>';
+          html += '<li class="option" id="committed">Committed</li>';
+          html += '<li class="option" id="uncommitted">Uncommitted</li>';
+          html += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let committed = $(this).attr("id");
+
+        if (faction === "papacy") {
+	  his_self.addMove("theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+        } else {
+    	  his_self.addMove("theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
+        }
+        this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+        this.addMove("RESETCONFIRMSNEEDED\tall");
+        his_self.endTurn();
+
+      });
     });
 
     return 0;
@@ -12031,6 +12056,20 @@ return;
   }
 
 
+  displayTheologicalDebate(attacker, defender) {
+
+    let html = `
+      <div class="theological_debate_sheet" id="theological_debate_sheet">
+	<div class="attacker_debater"></div>
+	<div class="defender_debater"></div>
+	<div class="status" id="status"></div>
+      </div>
+    `;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+  }
+
   displayReligiousConflictSheet() {
 
     let num_protestant_spaces = 0;
@@ -12062,7 +12101,6 @@ return;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let d = this.game.state.debaters[i];
       let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
-console.log("DEBATER IS: " + d.owner);
       if (d.owner === "papacy") {
 	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
       }

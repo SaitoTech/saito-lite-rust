@@ -1745,15 +1745,32 @@ return;
 
     $('.option').off();
     $('.option').on('click', function () {
-      let id = $(this).attr("id");
-      if (faction === "papacy") {
-	his_self.addMove("theological_debate\tpapacy\tprotestant\t"+id);
-      } else {
-	his_self.addMove("theological_debate\tprotestant\tpapacy\t"+id);
-      }
-      this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-      this.addMove("RESETCONFIRMSNEEDED\tall");
-      his_self.endTurn();
+
+      let language_zone = $(this).attr("id");
+
+      let msg = "Against Comitted or Uncommited Debater?";
+      let html = '<ul>';
+          html += '<li class="option" id="committed">Committed</li>';
+          html += '<li class="option" id="uncommitted">Uncommitted</li>';
+          html += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let committed = $(this).attr("id");
+
+        if (faction === "papacy") {
+	  his_self.addMove("theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+        } else {
+    	  his_self.addMove("theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
+        }
+        this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+        this.addMove("RESETCONFIRMSNEEDED\tall");
+        his_self.endTurn();
+
+      });
     });
 
     return 0;

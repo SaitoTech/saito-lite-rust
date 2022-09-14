@@ -128,6 +128,9 @@ alert("removing unit not implement for sea");
 
 	if (mv[0] === "is_testing") {
 
+
+	  this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+
     	  //
     	  // IS_TESTING -- TEMPORARY
     	  //
@@ -158,6 +161,7 @@ alert("removing unit not implement for sea");
     	  this.game.spaces['graz'].occupier = 'protestant';
 
     	  this.game.queue.splice(qe, 1);
+
 
 	  return 1;
 	}
@@ -2257,19 +2261,23 @@ console.log("space: " + spacekey);
 	  let attacker = mv[1];
 	  let defender = mv[2];
 	  let language_zone = mv[3];
+	  let committed_or_uncommitted = mv[4];
 
 	  this.game.queue.splice(qe, 1);
+
+	  this.game.state.theological_debate = {};
+	  this.game.state.theological_debate.attacker = mv[1];
+	  this.game.state.theological_debate.defender = mv[2];
+	  this.game.state.theological_debate.language_zone = mv[3];
+	  this.game.state.theological_debate.committed = mv[4];
+	  this.game.state.theological_debate.round = 1;
 
 	  //
 	  // attacker picks debater at random
 	  //
-	  this.game.queue.push();
+	  this.displayTheologicalDebate();
 
-
-	  //
-	  // attacker specifies if commited or uncommitted debater on defense
-	  //
-
+	  
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
@@ -2302,7 +2310,7 @@ console.log("space: " + spacekey);
 	    }
 	  }
 
-	  return 1;
+	  return 0;
 
 	}
 
