@@ -110,13 +110,6 @@ class RedSquareMenu {
     for (let i = 0; i < app.modules.mods.length; i++) {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
-        // let mod_notifications = app.modules.mods[i].returnNumberOfNotifications();
-        //   if(mod_notifications > 0){
-        //     if(!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()} .saito-notification-dot`)) {
-        //       app.browser.addElementToSelector(`<p class="saito-notification-dot"> </p>`, `.redsquare-menu-${app.modules.mods[i].returnSlug()}` );
-        //     }
-        //   }
-
         let qs = ".redsquare-menu-" + app.modules.mods[i].returnSlug();
         obj = document.querySelector(qs);
         obj.onclick = (e) => {
@@ -204,6 +197,9 @@ class RedSquareMenu {
     if (document.querySelector(obj)) {
       if (!document.querySelector(`${obj} .saito-notification-dot`)) {
         app.browser.addElementToSelector(`<p class="saito-notification-dot">${notifications}</p>`, obj);
+      }else {
+        obj = `.redsquare-menu-${menu_item} .saito-notification-dot`
+        app.browser.replaceElementBySelector(`<p class="saito-notification-dot">${notifications}</p>`, obj)
       }
     }
   }

@@ -278,6 +278,12 @@ console.log("error tweeting image");
           app.connection.emit("show-notification-request", "home")
           app.connection.emit("show-notification-request", "email")
     }, 2000)
+    setTimeout(()=> {
+          app.connection.emit("show-notification-request", "notifications")
+          app.connection.emit("show-notification-request", "invites")
+          app.connection.emit("show-notification-request", "home")
+          app.connection.emit("show-notification-request", "email")
+    }, 5000)
   }
 
 
