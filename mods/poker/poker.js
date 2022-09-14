@@ -1,5 +1,7 @@
 const GameTableTemplate = require("../../lib/templates/gametabletemplate");
 const JSON = require("json-bigint");
+const PokerGameRulesTemplate = require("./lib/poker-game-rules.template");
+const PokerGameOptionsTemplate = require("./lib/poker-game-options.template");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -2626,26 +2628,7 @@ class Poker extends GameTableTemplate {
   
 
   returnGameRulesHTML(){
-    return `<div class="rules-overlay">
-    <div class="h1">Texas Hold'em</div>
-    <p>This is a standard implementation of the popular poker game.</p>
-    <p>Each player attempts to form the best hand with their two private cards (called "the hole") and the five public cards.</p>
-    <p>Players are initially dealt their two secret cards and betting begins. The player to the left (clockwise) of the dealer is called the small blind and must bet the small blind, the player to his/her left (clockwise) is the big blind and must also bet. Any other players must fold, call the big blind, or raise the pot. Once all bets are called, the three public cards are flipped over (the "flop").</p>
-    <p>Another round of betting then commences from the player to the left of the dealer. Players can fold, check (i.e. not increase the pot), raise, or call (i.e. match a raise). Another card (the "turn") is revealed followed by another round of betting, and the final card (the "river") is revealed with another round of betting. </p> 
-    <p>Any remaining players after the final round of betting go into the showdown and the highest hand wins the pot.</p>
-    <div class="h2">Poker Hands</div>
-    <ul>
-    <li><em>Straight Flush</em> is the best possible hand, where all the cards are of the same suit and continuous, with Ace high. A straight flush of A, K, Q, J, 10 is called a royal flush.</li>
-    <li><em>Four of a Kind</em></li>
-    <li><em>Full House</em>--three of a kind and a pair.</li>
-    <li><em>Flush</em>--All five cards of of the same suit</li>
-    <li><em>Straight</em>--the five cards are sequential in order (but not of the same suit)</li>
-    <li><em>Three of a Kind</em></li>
-    <li><em>Two Pair</em></li>
-    <li><em>One Pair</em></li>
-    <li><em>No Pair</em></li>
-    </ul>
-    </div>`;
+    return PokerGameRulesTemplate(app, this);
   }
 
   /**
@@ -2653,67 +2636,7 @@ class Poker extends GameTableTemplate {
    * We can't let users independently select starting blinds and stakes
    */ 
   returnGameOptionsHTML() {
-    let options_html = `
-      <h1 class="overlay-title">Poker Options</h1>
-          <div class="overlay-input">
-            <label for="blind_mode">Mode:</label>
-            <select id="blind_mode" name="blind_mode">
-              <option value="static">static blinds</option>
-              <option value="increase">increasing blinds</option>
-            </select>
-          </div>
-          <div class="options_notice" id="blind_explainer">Small blind is one chip, big blind is two chips throughout the game</div>
-          <div class="overlay-input">
-            <label for="num_chips">Num chips:</label>
-            <select id="num_chips" name="num_chips">
-              <option value="40">40</option>
-              <option value="100" selected>100</option>
-              <option value="250">250</option>
-            </select>
-          </div>
-          <div class="overlay-input">
-            <input type="checkbox" name="chip_graphics" />
-            <label for="chip_graphics">Use visual chips</label>
-          </div>
-          <div class="overlay-input">
-            <label for="crypto">Crypto:</label>
-            <select id="crypto" name="crypto">
-              <option value="" selected>None</option>
-    `;
-
-    let listed = [];
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (
-        this.app.modules.mods[i].ticker != "" &&
-        this.app.modules.mods[i].ticker != undefined &&
-  !listed.includes(this.app.modules.mods[i].ticker)
-      ) {
-        options_html += `<option value="${this.app.modules.mods[i].ticker}">${this.app.modules.mods[i].ticker}</option>`;
-  listed.push(this.app.modules.mods[i].ticker);
-      }
-    }
-
-    options_html += `
-            </select>
-          </div>
-          <div id="chip_wrapper" class="overlay-input" style="display:none;">
-            <label for="stake">Game stake:</label>
-            
-            <input type="number" id="stake" list="suggestedChipValues" name="stake" min="0" value="0" step="1">
-          </div>
-          <datalist id="suggestedChipValues">
-            <option value="0.01">
-            <option value="0.1">
-            <option value="1">
-            <option value="5">
-            <option value="20">
-            <option value="50">
-            <option value="100">
-          </datalist>
-   
-          <!--input type="hidden" id="stake" name="stake" value="0"-->`;
-
-    return options_html;
+    return PokerGameOptionsTemplate(app, this);
   }
 
   attachAdvancedOptionsEventListeners(){
