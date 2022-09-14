@@ -295,8 +295,6 @@ console.log("error tweeting image");
       mod.saito_loader.remove(app, mod);
     }
 
-   
- 
   }
 
 
@@ -305,7 +303,6 @@ console.log("error tweeting image");
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
-console.log("rendering: " + i);
       this.tweets[i].render(app, mod, ".redsquare-list");
     }
     app.browser.addIdentifiersToDom();

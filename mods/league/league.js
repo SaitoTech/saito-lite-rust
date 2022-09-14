@@ -215,7 +215,7 @@ class League extends ModTemplate {
 
     if (this.browser_active){
       this.main.render(app, this);
-    }else{
+    } else {
       let arcade = app.modules.returnModule("Arcade");
       if (arcade && arcade.browser_active){
         let elem = document.querySelector("#league-hero");
@@ -271,6 +271,7 @@ class League extends ModTemplate {
       return;
     }
 
+/****
     this.sendPeerDatabaseRequestWithFilter(
       "League" ,
       `SELECT * FROM leagues DESC LIMIT 100` ,
@@ -288,6 +289,7 @@ class League extends ModTemplate {
         } 
       }
     );
+****/
   }
 
 

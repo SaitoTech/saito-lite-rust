@@ -278,7 +278,9 @@ class Chatx extends ModTemplate {
             if (loaded_txs == 1) {
                 return;
             }
+
         }
+
 
         //
         // load transactions from server, but not group chat again

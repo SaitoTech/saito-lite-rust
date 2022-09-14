@@ -18,6 +18,9 @@ class RedSquareMain {
     this.app = app;
     this.name = "RedSquareMain";
 
+    // TODO -- HACK TO AVOID LEAGUES PROBLEM
+    this.left_sidebar_rendered = 0;
+
     //
     // left sidebar
     //
@@ -68,7 +71,12 @@ class RedSquareMain {
       app.browser.addElementToDom(RedSquareMainTemplate(app, mod));
     }
 
-    mod.lsidebar.render(app, mod, ".saito-sidebar-left");
+    // TODO - remove when refactored
+    if (this.left_sidebar_rendered === 0) {
+      mod.lsidebar.render(app, mod, ".saito-sidebar-left");
+      this.left_sidebar_rendered = 1;
+    }
+
     mod.home.render(app, mod, ".appspace");
     mod.rsidebar.render(app, mod, ".saito-sidebar-right");
 
