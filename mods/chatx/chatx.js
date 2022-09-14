@@ -166,7 +166,6 @@ class Chatx extends ModTemplate {
             // not be able to inform us whether they support the chat
             // service. TODO - fix later
             //
-console.log("CREATING COMMUNITY CHAT NEW W/: " + peer.peer.publickey);
             this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
 	    if (this.chat_manager != null) { this.chat_manager.render(this.app, this, ".chat-manager"); }
 
