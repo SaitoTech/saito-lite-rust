@@ -591,6 +591,10 @@ console.log("untoggle: " + divname);
   }
 
   undoMove() {
+    if (this.game.selected !== "") {
+      this.untoggleCard(this.game.selected);
+      this.game.selected = "";
+    }
     this.untoggleCard(this.game.hidden[this.game.hidden.length - 1]);
     this.untoggleCard(this.game.hidden[this.game.hidden.length - 2]);
     this.game.hidden.splice(this.game.hidden.length - 2, 2);
