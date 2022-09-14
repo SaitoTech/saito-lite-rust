@@ -192,6 +192,7 @@ class RedSquareMenu {
 
 
   displayNotification(app, menu_item, notifications = Math.floor(Math.random() * 20)) {
+    console.log(notifications)
     let obj = `.redsquare-menu-${menu_item}`
     if (document.querySelector(obj)) {
       if (!document.querySelector(`${obj} .saito-notification-dot`)) {

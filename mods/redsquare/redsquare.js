@@ -265,6 +265,14 @@ console.log("error tweeting image");
       this.addComponent(this.header);
       this.ui_initialized = true;
 
+      setTimeout(()=> {
+        app.connection.emit("show-notification-request", "notifications")
+        app.connection.emit("show-notification-request", "invites")
+        app.connection.emit("show-notification-request", "home")
+        app.connection.emit("show-notification-request", "email")
+  }, 2000)
+  
+
     }
 
     super.render(app, this);
@@ -272,18 +280,8 @@ console.log("error tweeting image");
       mod.saito_loader.remove(app, mod);
     }
 
-    setTimeout(()=> {
-          app.connection.emit("show-notification-request", "notifications")
-          app.connection.emit("show-notification-request", "invites")
-          app.connection.emit("show-notification-request", "home")
-          app.connection.emit("show-notification-request", "email")
-    }, 2000)
-    setTimeout(()=> {
-          app.connection.emit("show-notification-request", "notifications")
-          app.connection.emit("show-notification-request", "invites")
-          app.connection.emit("show-notification-request", "home")
-          app.connection.emit("show-notification-request", "email")
-    }, 5000)
+   
+ 
   }
 
 
