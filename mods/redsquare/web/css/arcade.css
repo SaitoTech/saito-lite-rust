@@ -229,6 +229,8 @@
 .game-wizard-controls {
   display: grid;
   grid-template-columns: 3fr 7fr;
+  grid-gap: 1rem;
+  margin: 2rem 0;
 }
 .game-wizard-players {
   padding: 10px;
@@ -255,12 +257,11 @@
   cursor: pointer;
 }
 .game-wizard-invite {
-  padding: 10px;
+  padding: 0 1rem;
   width: 100%;
-  min-height: 70px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 .game-wizard-other-btns {
   display: none;
@@ -275,7 +276,7 @@
 
 .saito-multi-select_btn.saito-select {
   border-bottom: unset;
-  height: 60px;
+  height: 4.8rem;
   width: unset;
   position: relative;
   display: flex;
@@ -286,6 +287,8 @@
 
 .saito-multi-select_btn_options {
   width: calc(100% - 60px);
+  padding: 0;
+  border: none;
 }
 
 .saito-multi-select_btn_options button{
@@ -296,7 +299,7 @@
   overflow: visible;
 }
 
-.saito-select::after {
+.game-wizard-invite .saito-select::after {
   content: "\25BC";
   position: absolute;
   top: 0;
@@ -308,17 +311,23 @@
   -webkit-transition: 0.25s all ease;
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
+  height: 4.8rem;
+  line-height: 4.8rem;
 }
-.saito-multi-select_btn.saito-select::after {
+
+.game-wizard-invite .saito-multi-select_btn.saito-select::after {
   box-sizing: border-box;
   border: 1px solid var(--saito-primary);
   background-color: #fff;
+  color: var(--saito-primary);
   border-radius: 0 5px 5px 0;
-  height: 60px;
-  line-height: 60px;
+  height: 4.8rem;
+  line-height: 4.8rem;
   width: 60px;
   text-align: center;
 }
+
+
 
 /* Transition */
 .saito-select:hover::after {
@@ -331,7 +340,7 @@ option {
 
 .saito-multi-btn {
   width: 100%;
-  min-height: 60px;
+  min-height: 4.8rem;
   font-weight: bold;
   margin: 0.1rem;
   background: var(--saito-primary);
@@ -612,8 +621,4 @@ option {
 
 .rs-create-game-desc-wrapper {
   margin-left: 1rem;
-}
-
-.rs-create-game-players select {
-  border-color: var(--saito-primary);
 }
