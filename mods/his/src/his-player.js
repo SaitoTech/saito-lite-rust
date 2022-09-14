@@ -103,6 +103,7 @@
       players[i].tmp_roll_modifiers = [];
       players[i].factions = [];
       players[i].factions.push(rf);
+      players[i].captured = [];
       players[i].num = i;
 
     }
@@ -315,7 +316,7 @@
     });
     menu.push({
       factions : ['england','protestant'],
-      cost : [1,1,1,1,1,1],
+      cost : [3,2],
       name : "Publish treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -1670,6 +1671,7 @@ return;
     );
   }
   canPlayerTranslateScripture(his_self, player, faction) {
+    if (faction === "protestant") { return 1; }
     return 0;
   }
   async playerTranslateScripture(his_self, player, faction) {
@@ -1677,32 +1679,123 @@ console.log("16");
 return;
   }
   canPlayerPublishTreatise(his_self, player, faction) {
+    if (faction === "protestant") { return 1; }
+    if (faction === "england") {
+      if (his_self.isPersonageOnMap("england", "cranmer") != null) {
+	return 1;
+      }
+    }
     return 0;
   }
   async playerPublishTreatise(his_self, player, faction) {
-console.log("17");
-return;
+
+    if (faction === "protestant") {
+
+      let msg = "Select Language Zone for Reformation Attempts:";
+      let html = '<ul>';
+          html += '<li class="option" style="" id="german">German</li>';
+          html += '<li class="option" style="" id="english">English</li>';
+          html += '<li class="option" style="" id="french">French</li>';
+          html += '<li class="option" style="" id="spanish">Spanish</li>';
+          html += '<li class="option" style="" id="italian">Italian</li>';
+          html += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let id = $(this).attr("id");
+	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+	his_self.endTurn();
+      });
+
+    }
+
+
+    if (faction === "england") {
+      let id = "england";
+      his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+      his_self.addMove("protestant_reformation\t"+player+"\t"+id);
+      his_self.endTurn();
+    }
+
+    return 0;
   }
   canPlayerCallTheologicalDebate(his_self, player, faction) {
+//
+// TODO
+//
+// If all Protestant debaters in a language zone are committed, the Protestant player may not initiate debates in that language zone. Similarly, if all Papal debaters are committed, the Papal player may not initiate debates in any language zone. If none of the Protestant debaters for a language zone have entered the game (or all of them have been burnt at the stake, excommuni- cated, or removed from play), neither player may call a debate in that zone. 
+//
+    if (faction === "protestant") { return 1; }
+    if (faction === "papacy") { return 1; }
     return 0;
   }
   async playerCallTheologicalDebate(his_self, player, faction) {
-console.log("18");
-return;
+
+    let msg = "Select Language Zone for Theological Debate:";
+    let html = '<ul>';
+        html += '<li class="option" style="" id="german">German</li>';
+        html += '<li class="option" style="" id="french">French</li>';
+        html += '<li class="option" style="" id="english">English</li>';
+        html += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+      let id = $(this).attr("id");
+      if (faction === "papacy") {
+	his_self.addMove("theological_debate\tpapacy\tprotestant\t"+id);
+      } else {
+	his_self.addMove("theological_debate\tprotestant\tpapacy\t"+id);
+      }
+      this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+      this.addMove("RESETCONFIRMSNEEDED\tall");
+      his_self.endTurn();
+    });
+
+    return 0;
+
   }
   canPlayerBuildSaintPeters(his_self, player, faction) {
+    if (faction === "papacy") {
+      if (his_self.game.state.saint_peters_cathedral['vp'] < 5) { return 1; }
+    }
     return 0;
   }
   async playerBuildSaintPeters(his_self, player, faction) {
-console.log("19");
-return;
+    his_self.addMove("build_saint_peters\t"+player+"\t"+faction);
+    his_self.endTurn();
+    return 0;
   }
   canPlayerBurnBooks(his_self, player, faction) {
+    if (faction === "papacy") { return 1; }
     return 0;
   }
   async playerBurnBooks(his_self, player, faction) {
-console.log("20");
-return;
+
+    let msg = "Select Language Zone for Reformation Attempts:";
+    let html = '<ul>';
+        html += '<li class="option" style="" id="german">German</li>';
+        html += '<li class="option" style="" id="english">English</li>';
+        html += '<li class="option" style="" id="french">French</li>';
+        html += '<li class="option" style="" id="spanish">Spanish</li>';
+        html += '<li class="option" style="" id="italian">Italian</li>';
+        html += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+      let id = $(this).attr("id");
+      his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+      his_self.endTurn();
+    });
+
+    return 0;
   }
   canPlayerFoundJesuitUniversity(his_self, player, faction) {
     if (faction === "papacy" && his_self.game.state.events.papacy_may_found_jesuit_universities == 1) { return 1; }
@@ -1715,25 +1808,19 @@ return;
       "Select Catholic-Controlled Space for Jesuit University",
 
       function(space) {
-        if (space.religion === "catholic") { return 1; }
+        if (space.religion === "catholic" &&
+            space.university != 1) { return 1; }
 	return 0;
       },
 
       function(destination_spacekey) {
-	alert("JESUIT UNIVERSITY FOUNDED: " + destination_spacekey);
+        his_self.addMove("found_jesuit_university\t"+destination_spacekey);
+	his_self.endTurn();
       },
 
     );
-  }
-  canPlayerTranslateScripture(his_self, player, faction) {
+
     return 0;
-  }
-  canPlayerPublishTreatise(his_self, player, faction) {
-    return 0;
-  }
-  async playerPublishTreatise(his_self, player, faction) {
-console.log("22 treatise");
-return;
   }
 
   playerPlaceUnitsInSpaceWithFilter(unittype, num, faction, filter_func=null, mycallback = null, cancel_func = null, board_clickable = false) {

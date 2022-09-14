@@ -118,16 +118,10 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
 
   html += `
       </div>
-
-
-          <div></div>
-           <div class="redsquare-item-children redsquare-item-children-${tweet.tx.transaction.sig}"></div>
-        </div>
-
     </div>
-
-    
-    `;
+  </div>
+  <div class="redsquare-item-children redsquare-item-children-${tweet.tx.transaction.sig}"></div>
+       `;
 
   return html;
 

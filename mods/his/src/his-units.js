@@ -17,6 +17,7 @@
     if (obj.committed == null)          { obj.committed = 0; }
     if (obj.besieged == null)           { obj.besieged = false; }
     if (obj.captured == null)           { obj.captured = false; }
+    if (obj.key == null)		{ obj.key = name; }
 
     //obj = this.addEvents(obj);
     this.units[name] = obj;

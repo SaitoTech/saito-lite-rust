@@ -32,6 +32,7 @@ class Blackjack extends GameTableTemplate {
 
   initializeHTML(app) {
     if (!this.browser_active) { return; }
+    if (this.initialize_game_run) { return; }
    
     super.initializeHTML(app);
    
@@ -125,7 +126,7 @@ class Blackjack extends GameTableTemplate {
     this.playerbox.addGraphicClass("hand");   
     this.playerbox.addGraphicClass("tinyhand");   
     this.playerbox.addStatus(); //enable update Status to display in playerbox
-    
+    this.updateStatus("Waiting for other players to sit down to start playing");
   }
 
   /* Opt out of letting League create a default*/
@@ -526,7 +527,7 @@ class Blackjack extends GameTableTemplate {
           this.updateStatus(`<div class="persistent">Blackjack! You win double your bet (${wager}x2)</div>`);
         }
 
-        this.updateHTML += `<h3 class="justify"><span>${this.game.state.player[player-1].name}: Blackjack!</span><span>Win:${wager*2}</span></h3>`;
+        this.updateHTML += `<div class="h3 justify"><span>${this.game.state.player[player-1].name}: Blackjack!</span><span>Win:${wager*2}</span></div>`;
         this.updateHTML += this.handToHTML(this.game.state.player[player-1].hand);
 
         if (this.game.crypto){
@@ -562,7 +563,7 @@ class Blackjack extends GameTableTemplate {
             this.updateStatus(`<div class="persistent">You have gone bust. You lose your bet of ${wager}</div>`);
           }
         
-          this.updateHTML += `<h3 class="justify"><span>${this.game.state.player[player-1].name}: Bust!</span><span>Loss:${wager}</span></h3>`;
+          this.updateHTML += `<div class="h3 justify"><span>${this.game.state.player[player-1].name}: Bust!</span><span>Loss:${wager}</span></div>`;
           this.updateHTML += this.handToHTML(this.game.state.player[player-1].hand);
     
           if (this.game.crypto){
@@ -1140,7 +1141,7 @@ class Blackjack extends GameTableTemplate {
           this.game.state.player[this.game.state.dealer-1].wager += debt;
           this.game.state.player[i].credit -= debt;
           this.game.state.player[i].wager = 0;
-          playerHTML += `<h3 class="justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total} loses to blackjack.</span><span>Loss: ${debt.toFixed(this.decimal_precision)}</span></h3>`;
+          playerHTML += `<div class="h3 justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total} loses to blackjack.</span><span>Loss: ${debt.toFixed(this.decimal_precision)}</span></div>`;
           playerHTML += this.handToHTML(this.game.state.player[i].hand);
 
           logMsg += `Player ${i+1} loses ${debt.toFixed(this.decimal_precision)}, `;
@@ -1186,7 +1187,7 @@ class Blackjack extends GameTableTemplate {
               sender = this.game.players[i];     
 
             }
-            playerHTML += `<h3 class="justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total}.</span><span>${(this.game.state.player[i].winner)?"Win":"Loss"}: ${Math.abs(debt).toFixed(this.decimal_precision)}</span></h3>`;
+            playerHTML += `<div class="h3 justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total}.</span><span>${(this.game.state.player[i].winner)?"Win":"Loss"}: ${Math.abs(debt).toFixed(this.decimal_precision)}</span></div>`;
             playerHTML += this.handToHTML(this.game.state.player[i].hand);
             if (this.game.crypto){
               let ts = new Date().getTime();
@@ -1200,12 +1201,12 @@ class Blackjack extends GameTableTemplate {
           for (let z of this.game.state.player[i].split){
             let ts = this.scoreArrayOfCards(z);
             if (ts > 0 && (z.length > 2 || ts<21) ){ //Busts & blackjacks get ignored
-              playerHTML += `<h3 class="justify"><span>${this.game.state.player[i].name}: ${ts}.</span>`
+              playerHTML += `<div class="h3 justify"><span>${this.game.state.player[i].name}: ${ts}.</span>`
               if (ts > dealerScore){
                 this.game.state.player[this.game.state.dealer-1].wager -= debt;
                 this.game.state.player[i].credit += debt;
                 logMsg += `Player ${i+1} wins ${debt.toFixed(this.decimal_precision)}, `;     
-                playerHTML += `<span>Win: ${debt.toFixed(this.decimal_precision)}</span></h3>`;
+                playerHTML += `<span>Win: ${debt.toFixed(this.decimal_precision)}</span></div>`;
                 sender = this.game.players[this.game.state.dealer-1];
                 receiver = this.game.players[i];     
               }else{
@@ -1216,7 +1217,7 @@ class Blackjack extends GameTableTemplate {
                 if (this.game.state.player[i].credit<=0){
                   logMsg += "going bankrupt, ";       
                 }
-                playerHTML += `<span>Loss: ${debt.toFixed(this.decimal_precision)}</span></h3>`;
+                playerHTML += `<span>Loss: ${debt.toFixed(this.decimal_precision)}</span></div>`;
                 receiver = this.game.players[this.game.state.dealer-1];
                 sender = this.game.players[i];     
               }
@@ -1250,8 +1251,8 @@ class Blackjack extends GameTableTemplate {
       dealerLog = `Dealer has no change in credits.`;
     } 
     logMsg += `${(logMsg)?". ":""}${dealerLog}`;
-    dealerHTML += `<h2>${dealerLog}</h2>`;
-    dealerHTML += `<h3>${this.game.state.player[this.game.state.dealer-1].name} (Dealer): ${(dealerScore>0)?dealerScore:"Bust"}</h3>`;
+    dealerHTML += `<div class="h2">${dealerLog}</div>`;
+    dealerHTML += `<div class="h3">${this.game.state.player[this.game.state.dealer-1].name} (Dealer): ${(dealerScore>0)?dealerScore:"Bust"}</div>`;
     dealerHTML += this.handToHTML(this.game.state.player[this.game.state.dealer-1].hand);
     //Bankruptcy Check
     if (this.game.state.player[this.game.state.dealer-1].credit <= 0){
@@ -1277,7 +1278,7 @@ class Blackjack extends GameTableTemplate {
 
   returnGameRulesHTML() {
     return `<div class="rules-overlay">
-    <h1>Homestyle Blackjack</h1>
+    <div class="h1">Homestyle Blackjack</div>
     <p><strong>Homestyle Blackjack is quite different from Casino Blackjack. </strong></p>
     <p>The game is played with a single deck (shuffled between each round) and <strong>each player takes turns as dealer</strong>, acting as the house against the other players. This means the dealer stakes the bets of all the other players. <strong>Each player is dealt a single card and given the chance to place a bet.</strong> After all the players (excluding the dealer) have placed their bets, one more card is dealt face up and gameplay begins.</p>
     <p>Beginning to the left of the dealer, each player takes a turn, at which time all other players may view their full hand. Players may hit (take another card) or stand (end their turn). Players may hit as many times as they like, but they lose if they exceed 21 points (bust).
@@ -1331,7 +1332,7 @@ class Blackjack extends GameTableTemplate {
         this.game.state.player[player-1].credit = 0;
       }
 
-      this.updateHTML += `<h3 class="justify"><span>${this.game.state.player[player-1].name}: Quit the game!</span><span>Loss:${wager}</span></h3>`;
+      this.updateHTML += `<div class="h3 justify"><span>${this.game.state.player[player-1].name}: Quit the game!</span><span>Loss:${wager}</span></div>`;
       this.updateHTML += this.handToHTML(this.game.state.player[player-1].hand);
 
       if (this.game.crypto){

@@ -1,5 +1,4 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-const GameScoreboard = require("../../lib/saito/ui/game-scoreboard/game-scoreboard");
 const saito = require('../../lib/saito/saito');
 const JSON = require('json-bigint');
 
@@ -26,7 +25,6 @@ class GameTestSuite extends GameTemplate {
     this.minPlayers = 1; //2;
     this.maxPlayers = 1; //6;
 
-    this.scoreboard = new GameScoreboard(app);
     this.game_cardfan_visible = 0;
     this.game_menu_visible = 1;
     this.game_hud_visible = 0;

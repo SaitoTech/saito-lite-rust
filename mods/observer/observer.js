@@ -417,11 +417,9 @@ class Observer extends ModTemplate {
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade.browser_active){
       arcade.viewing_arcade_initialization_page = 1;
-    }else{
-      return;
+      ObserverLoader.render(this.app, this); //Start Spinner
     }
-    ObserverLoader.render(this.app, this); //Start Spinner
-    
+
     //let address_to_watch = msgobj.player;
 
     if (!this.app.options.games) {
@@ -689,6 +687,7 @@ class Observer extends ModTemplate {
           //
           let slug = arcade_self.app.modules.returnModule(first_tx.module).returnSlug();
           ObserverLoader.render(arcade_self.app, arcade_self, slug, watch_live); //Stop spinner, move into game
+          arcade_self.app.connection.emit("arcade-game-ready",slug);
         });
       })
       .catch((err) =>

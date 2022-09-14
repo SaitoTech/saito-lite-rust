@@ -7,15 +7,14 @@ const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
 
 class RedSquareMenu {
 
-
-
-  constructor(app) {
+  constructor(app, mod) {
     this.name = "RedSquareMenu";
     this.numberOfNotifications = 1
 
     app.connection.on('show-notification-request', (menu_item, notifications) => {
       this.displayNotification(app, menu_item, notifications)
     })
+
   }
 
 
