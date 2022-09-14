@@ -1,5 +1,4 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
-const GameScoreboard = require("../../lib/saito/ui/game-scoreboard/game-scoreboard");
 const PandemicOriginalSkin = require("./lib/pandemicOriginal.skin.js");
 const PandemicRetroSkin = require("./lib/pandemicRetro.skin.js");
 const PandemicNewSkin = require("./lib/pandemicNew.skin.js");
@@ -31,8 +30,6 @@ class Pandemic extends GameTemplate {
     this.hud.mode = 0;
     this.hud.card_width = 120;
     this.hud.enable_mode_change = 1;
-
-    this.scoreboard = new GameScoreboard(app);
 
     let temp_self = this;
     this.menu_backup_callback = function(){temp_self.playerMakeMove();};

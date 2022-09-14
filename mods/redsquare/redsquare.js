@@ -292,6 +292,7 @@ console.log("error tweeting image");
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
+console.log("rendering: " + i);
       this.tweets[i].render(app, mod, ".redsquare-list");
     }
     app.browser.addIdentifiersToDom();
@@ -483,9 +484,11 @@ console.log("TESTING FOR TWEET_ID: " + tweet_id);
       if (document.querySelector(".redsquare-list")) {
         if (tweet_id != "") {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
+console.log("REMOTE FETCH: " + sql);
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
-          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND parent_id == thread_id AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+console.log("REMOTE FETCH 2: " + sql);
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
             console.log("~~~~~~~~~~~~~~~~~~");
             console.log("~~~~~~~~~~~~~~~~~~");
@@ -581,7 +584,7 @@ console.log("LOAD: " + txmsg.data.text);
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
               } catch (err) { }
-	  let txmsg = tx.returnMessage();
+  	      let txmsg = tx.returnMessage();
 console.log("add " + txmsg.data.text + " w/ replies " + tx.optional.num_replies);
               this.addTweetFromTransaction(app, mod, tx);
             }
@@ -599,10 +602,8 @@ console.log("add " + txmsg.data.text + " w/ replies " + tx.optional.num_replies)
 
   fetchMoreTweets(app, mod, post_fetch_tweets_callback) {
 
-console.log("TESTING HERE!");
-
     const startingLimit = (this.page_number - 1) * this.results_per_page
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND parent_id != thread_id AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,

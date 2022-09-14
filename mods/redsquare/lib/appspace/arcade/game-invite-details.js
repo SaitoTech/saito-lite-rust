@@ -6,25 +6,27 @@ const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/sa
 
 class GameInviteDetails {
 
-  constructor(app, mod, invite = null) {
+  constructor(app, mod) {
     this.app = app;
     this.mod = mod;
     this.name = "GameInviteDetails";
     this.overlay = new SaitoOverlay(app, mod);
-    this.invite = invite;
   }
 
   render(app, mod, invite = null) {
     this.overlay.show(this.app, this.mod, GameInviteDetailsTemplate(app, mod, invite));
-    this.attachEvents(app, mod);
+    this.attachEvents(app, mod, invite);
   }
 
   
-  attachEvents(app, mod) {
+  attachEvents(app, mod, invite) {
     let btn = document.querySelector(".game-invite-join-btn");
+    let classSelf = this;
     if (btn){
-      btn.onclick = () => {
-        salert("Please visit the Arcade to play a game :P");
+      btn.onclick = (e) => {
+        //salert("Please visit the Arcade to play a game :P");
+        app.connection.emit("join-game", invite.transaction.sig);
+        classSelf.overlay.hide();
       }
     }
   }

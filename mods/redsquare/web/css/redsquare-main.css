@@ -56,14 +56,6 @@ span.redsquare-home-red-square+span {
   cursor: pointer;
 }
 
-.redsquare-item-children>.redsquare-item {
-  border-bottom: 0px;
-  margin-left: 0rem;
-  padding-left: 0rem;
-  padding-top: 3rem;
-}
-
-
 .post-tweet-img-icon {
   margin-top: 0.5rem;
   float: left;
