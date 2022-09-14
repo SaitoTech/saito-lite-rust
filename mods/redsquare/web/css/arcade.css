@@ -282,7 +282,6 @@
   line-height: 3;
   background: #fff;
   color: var(--saito-primary);
-  margin-top: 2rem;
 }
 
 .saito-multi-select_btn_options {
@@ -472,6 +471,7 @@ option {
   grid-template-rows: min-content auto;
   background-color: white;
   padding: 2rem;
+  border-radius: 1rem;
 }
 
 
@@ -588,4 +588,32 @@ option {
 
 .league-leaderboard table tr td {
   text-align: center;
+}
+
+.game-help-link {
+  position: absolute;
+  right: 2rem;
+  font-size: 2rem;
+  color: var(--saito-primary);
+}
+
+.rs-btn-create-game-wrapper {
+  display: flex;
+  margin-top: 2rem;
+}
+
+.rs-create-game-desc {
+  font-size: 1.9rem;
+}
+
+.rs-create-game-players { 
+  padding-right: 1rem;
+} 
+
+.rs-create-game-desc-wrapper {
+  margin-left: 1rem;
+}
+
+.rs-create-game-players select {
+  border-color: var(--saito-primary);
 }

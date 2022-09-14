@@ -717,7 +717,7 @@ class Observer extends ModTemplate {
         let games = await app.storage.queryDatabase(sql, params, "observer");
 
         //Fetch all the moves 
-        sql = "SELECT * FROM gamestate WHERE game_id = $game_id AND step > $step ORDER BY step ASC";
+        sql = "SELECT * FROM gamestate WHERE game_id = $game_id AND step > $step ORDER BY step ASC LIMIT 100";
         params = { $game_id: game_id, $step: lm };
         let more_games = await app.storage.queryDatabase(sql, params, "observer");
 

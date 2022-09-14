@@ -1,6 +1,6 @@
 var saito = require('../../lib/saito/saito');
 var GameTemplate = require('../../lib/templates/gametemplate');
-
+const MahjongGameRulesTemplate = require('./lib/mahjong-game-rules.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -18,6 +18,7 @@ class Mahjong extends GameTemplate {
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
     this.status          = "Beta";
+    this.app = app;
 
   }
 
@@ -32,16 +33,7 @@ class Mahjong extends GameTemplate {
   }
 
   returnGameRulesHTML(){
-    return `<div class="rules-overlay" style="background-color:whitesmoke">
-            <h1>Mahjong</h1>
-            <ul>
-            <li>144 tiles are randomly folded into a multi-layered shape.</li>
-            <li>The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence</li>
-            <li>There are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.</li>
-            <li>The game is finished when all pairs of tiles have been removed from the board.</li>
-            </ul>
-            </div>
-            `;
+    return MahjongGameRulesTemplate(this.app, this);
 
   }
 

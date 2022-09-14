@@ -1,6 +1,9 @@
 const { timingSafeEqual } = require('crypto');
 const saito = require('../../lib/saito/saito');
 const GameTemplate = require('../../lib/templates/gametemplate');
+const WuziqiGameRulesTemplate = require("./lib/wuziqi-game-rules.template");
+const WuziqiGameOptionsTemplate = require("./lib/wuziqi-game-options.template");
+const WuziqiSingularGameOptionsTemplate = require("./lib/wuziqi-singular-game-options.template");
 
 class Wuziqi extends GameTemplate {
 
@@ -23,6 +26,7 @@ class Wuziqi extends GameTemplate {
         this.bestof = 1;
 
         this.seats = [2,5];
+        this.app   = app;
 
         return this;
     }
@@ -167,14 +171,7 @@ class Wuziqi extends GameTemplate {
 
     //html for game intro/rules
     returnGameRulesHTML() {
-
-        let overlay_html = `<div class="rules-overlay intro">
-          <h2>Wuziqi （五子棋）</h2>
-           <p> Wuziqi, also known as Gokomu and Gobang, is a simple two player game played on a Go board. It is similar to <abbr title="also known as Naughts and Crosses">Tic-Tac-Toe</abbr> or Connect Four in that players alternately place tokens in an attempt to create a line of five consecutive tokens of their color. Tokens may be placed anywhere on the board not already occupied.</p>
-           <p> The first player to place five of their own tokens in a continuous line--vertical, horizontal or diagonally--wins the round. The player who wins the most rounds, wins the match.</p><p> Matches are best out of three by default, but you can change this in the advanced options in the arcade. You may also specify the size of the board for added challenge.</p>
-          </div>`;
-        return overlay_html;
-
+        return WuziqiGameRulesTemplate(this.app, this);
     }
 
     initializeGame(game_id) {
@@ -624,42 +621,11 @@ class Wuziqi extends GameTemplate {
     }
 
     returnSingularGameOption(){
-        return `<div class="overlay-input">
-        <label for="best_of">Best of:</label>
-        <select name="best_of">
-          <option value="1">1</>
-          <option value="3" selected>3</>
-          <option value="5">5</>
-          <option value="7">7</>
-          <option value="9">9</>
-          <option value="11">11</>
-          <option value="13">13</>
-          <option value="15">15</>
-        </select></div>`;
+        return WuziqiSingularGameOptionsTemplate(this.app, this);
     }
     // Add options to the game start wizard for different game parameters
     returnGameOptionsHTML() {
-        let html =  `<h1 class="overlay-title">Wuziqi Options</h1>`;
-        
-        html += `<div class="overlay-input">
-                    <label for="board_size">Board Size:</label>
-                    <select name="board_size">
-                        <option value="9">9</>
-                        <option value="11">11</>
-                        <option value="13" selected>13</>
-                        <option value="15">15</>
-                        <option value="17">17</>
-                        <option value="19">19</>
-                        <option value="21">21</>
-                        <option value="23">23</>
-                        <option value="25">25</>
-                    </select>
-                </div>`;
-                
-        html += this.returnCryptoOptionsHTML();
-
-      return html;
-
+        return WuziqiGameOptionsTemplate(this.app, this);
     }
 
 

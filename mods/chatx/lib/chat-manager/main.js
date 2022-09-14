@@ -14,11 +14,10 @@ class ChatManager {
 		this.inactive_popups = [];
 
 		for (let z = 0; z < this.mod.groups.length; z++) {
-			this.messages_in_groups[z] = this.mod.groups[z].txs.length;
+		  this.messages_in_groups[z] = this.mod.groups[z].txs.length;
 		}
 
 		app.connection.on("chat-render-request", (group_id = "") => {
-
 		  if (app.BROWSER) {
 		     if (group_id != "") {
 		         let psq = "#chat-container-"+group_id;
@@ -36,10 +35,13 @@ class ChatManager {
 
 	render(app, mod, selector = "") {
 
+		console.log("RENDERING CHAT MANAGER!");
+
 		if (!document.querySelector(".chat-manager")) {
-			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
-			//app.browser.makeDraggable("#chat-manager");
-		}
+		  app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
+		} else {
+		  app.browser.replaceElementBySelector(ChatManagerTemplate(app, mod), selector);
+ 		}
 
 		//
 		// make sure chat mod
