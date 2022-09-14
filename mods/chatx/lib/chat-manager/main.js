@@ -40,6 +40,7 @@ class ChatManager {
 		if (!document.querySelector(".chat-manager")) {
 		  app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
 		} else {
+console.log("REPLACING WITH: " + selector);
 		  app.browser.replaceElementBySelector(ChatManagerTemplate(app, mod), selector);
  		}
 

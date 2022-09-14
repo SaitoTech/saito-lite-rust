@@ -34,6 +34,8 @@ class RedSquare extends ModTemplate {
     // "main" or sig if viewing page-specific
     this.viewing = "main";
     this.last_viewed_notifications_ts = 0;
+    this.unviewed_notifications = 0;
+
     this.results_per_page = 10;
     this.page_number = 1;
 
@@ -98,6 +100,10 @@ console.log("error tweeting image");
     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
       return;
     }
+    if (tx.transaction.ts > this.last_viewed_notifications_ts) {
+      this.unviewed_notifications++;
+      this.app.connection.emit("redsquare-menu-notification-request", { menu : "notifications", num : this.unviewed_notifications});
+    }
     if (this.ntfs.length == 0) {
       this.ntfs.push(tx);
       return;
@@ -109,7 +115,6 @@ console.log("error tweeting image");
       }
     }
     this.ntfs.push(tx);
-
   }
 
 
@@ -264,15 +269,6 @@ console.log("error tweeting image");
       this.addComponent(this.main);
       this.addComponent(this.header);
       this.ui_initialized = true;
-
-      setTimeout(()=> {
-        app.connection.emit("show-notification-request", "notifications")
-        app.connection.emit("show-notification-request", "invites")
-        app.connection.emit("show-notification-request", "home")
-        app.connection.emit("show-notification-request", "email")
-  }, 2000)
-  
-
     }
 
     super.render(app, this);
@@ -477,16 +473,12 @@ console.log("cannot render...");
 
       let tweet_id = app.browser.returnURLParameter('tweet_id');
 
-console.log("TESTING FOR TWEET_ID: " + tweet_id);
-
       if (document.querySelector(".redsquare-list")) {
         if (tweet_id != "") {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-console.log("REMOTE FETCH: " + sql);
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
           let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND parent_id == thread_id AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-console.log("REMOTE FETCH 2: " + sql);
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
             console.log("~~~~~~~~~~~~~~~~~~");
             console.log("~~~~~~~~~~~~~~~~~~");
@@ -506,7 +498,6 @@ console.log("REMOTE FETCH 2: " + sql);
         for (let i = 0; i < txs.length; i++) {
           txs[i].decryptMessage(app);
 	  let txmsg = txs[i].returnMessage();
-console.log("LOAD: " + txmsg.data.text);
 	  if (txmsg.request == "create tweet") {
             let tweet = new Tweet(redsquare_self.app, redsquare_self, txs[i]);
             redsquare_self.addTweet(redsquare_self.app, redsquare_self, tweet);
@@ -987,7 +978,7 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
 
   saveRedSquare() {
     this.app.options.redsquare = this.redsquare;
-    this.app.options.saveOptions();
+    this.app.storage.saveOptions();
   }
 
 }
