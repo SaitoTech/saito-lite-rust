@@ -23,10 +23,15 @@ class GameCreateNew {
     if (!advancedOptions) {
       document.querySelector(".arcade-advance-opt").style.display = "none";
     } else {
+
+      // if (document.querySelector('#game-wizard-advanced-options-overlay') != null) {
+      //   document.querySelector('#game-wizard-advanced-options-overlay').remove();
+      // }
+
       //Create (hidden) the advanced options window
-      mod.meta_overlay = new AdvancedOverlay(app, this.game_mod);
-      mod.meta_overlay.render(app, this.game_mod, advancedOptions);
-      mod.meta_overlay.attachEvents(app, this.game_mod);
+      this.meta_overlay = new AdvancedOverlay(app, this.game_mod);
+      this.meta_overlay.render(app, this.game_mod, advancedOptions);
+      this.meta_overlay.attachEvents(app, this.game_mod);
       
 
       //
@@ -57,24 +62,34 @@ class GameCreateNew {
 
 
     //Attach events to advance options button
-    document.querySelector(".arcade-advance-opt").onclick = (e) => {
-      //Requery advancedOptions on the click so it can dynamically update based on # of players
-      let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small" style="float: right;">Accept</div>`;
-      let advancedOptionsHTML = gamecreate_self.game_mod.returnGameOptionsHTML();
-      if (!advancedOptionsHTML.includes(accept_button)){
-        advancedOptionsHTML += accept_button;
-      }
-      mod.meta_overlay.show(app, gamecreate_self.game_mod, advancedOptionsHTML);
-      gamecreate_self.game_mod.attachAdvancedOptionsEventListeners();
-      document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
-      try {
-        if (document.getElementById("game-wizard-advanced-return-btn")) {
-          document.querySelector(".game-wizard-advanced-return-btn").onclick = (e) => {
-            mod.meta_overlay.hide();
-          };
-        }
-      } catch (err) { }
-    };
+
+    try {
+      const identifiers = document.getElementsByClassName(`arcade-advance-opt`);
+
+      Array.from(identifiers).forEach((identifier) => {
+        identifier.addEventListener("click", (e) => {
+
+          //Requery advancedOptions on the click so it can dynamically update based on # of players
+          let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small" style="float: right;">Accept</div>`;
+          let advancedOptionsHTML = gamecreate_self.game_mod.returnGameOptionsHTML();
+          if (!advancedOptionsHTML.includes(accept_button)){
+            advancedOptionsHTML += accept_button;
+          }
+          gamecreate_self.meta_overlay.show(app, gamecreate_self.game_mod, advancedOptionsHTML);
+          gamecreate_self.game_mod.attachAdvancedOptionsEventListeners();
+          document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
+          try {
+            if (document.getElementById("game-wizard-advanced-return-btn")) {
+              document.querySelector(".game-wizard-advanced-return-btn").onclick = (e) => {
+                gamecreate_self.meta_overlay.hide();
+              };
+            }
+          } catch (err) { }
+        });
+      });
+    } catch (err) {
+      console.error("Error while adding event to game advance options: " + err);
+    }
 
     try {
       const identifiers = document.getElementsByClassName(`game-help-link`);
