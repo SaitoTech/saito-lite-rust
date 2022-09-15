@@ -35,8 +35,6 @@ class ChatManager {
 
 	render(app, mod, selector = "") {
 
-		console.log("RENDERING CHAT MANAGER!");
-
 		if (!document.querySelector(".chat-manager")) {
 		  app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
 		} else {
@@ -93,15 +91,16 @@ class ChatManager {
 		if (this.rendered == 0) {
 			if (mod.groups.length > 0) {
 				let gid = mod.groups[0].id;
-				//let psq = "#chat-container-"+gid;
-				//if (!document.querySelector(psq)) {
+				let psq = "#chat-container-"+gid;
+				if (!document.querySelector(psq)) {
 				      let chat_popup = new ChatPopup(app, mod, gid);
 				      chat_popup.render(app, mod, gid);
-			        //}
+			        }
 			}
 		}
 
-		this.rendered = 1;
+		// TODO - possibly remove
+		//this.rendered = 1;
 		this.attachEvents(app, mod);
 
 	}

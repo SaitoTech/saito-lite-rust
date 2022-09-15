@@ -8,6 +8,7 @@ class RedSquareLeague {
   	}
 
 	render(app, mod, selector="") {
+
 	  let league_mod = app.modules.returnModule("League");
 	  if (selector != "") {
 	    app.browser.addElementToSelector(RedSquareLeagueTemplate(app, mod, league_mod), selector);
@@ -15,6 +16,7 @@ class RedSquareLeague {
 	    app.browser.addElementToSelector(RedSquareLeagueTemplate(app, mod, league_mod), this.selector);
 	  }
 	  this.attachEvents(app, mod);
+
 	}
 
 	attachEvents(app, mod){

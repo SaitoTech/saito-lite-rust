@@ -14,7 +14,6 @@ class RedSquareMenu {
     app.connection.on('redsquare-menu-notification-request', (obj) => {
       let menu_item = obj.menu;
       let notifications = obj.num;
-console.log(menu_item + " -- " + notifications);
       this.displayNotification(app, menu_item, notifications)
     })
 
@@ -29,6 +28,8 @@ console.log(menu_item + " -- " + notifications);
 
     if (!document.querySelector(".redsquare-menu")) {
       app.browser.addElementToSelector(RedSquareMenuTemplate(app, mod), container);
+    } else {
+      app.browser.replaceElementBySelector(RedSquareMenuTemplate(app, mod), container);
     }
 
     //

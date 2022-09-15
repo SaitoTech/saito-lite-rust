@@ -57,6 +57,7 @@ class RedSquare extends ModTemplate {
 
 
   initialize(app) {
+
     this.loadRedSquare();
     super.initialize(app);
 
@@ -282,6 +283,7 @@ console.log("error tweeting image");
   }
 
   render(app, mod, selector = "") {
+
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
