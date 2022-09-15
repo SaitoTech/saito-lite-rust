@@ -515,7 +515,7 @@ option {
 
 .redsquare-sidebar-observer .saito-table .saito-table-row {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr min-content;
+    grid-template-columns: 12rem 1fr min-content;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     border-width: 2px 0;
@@ -526,24 +526,24 @@ option {
 
 
 .observer-info .playerInfo {
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
   margin-top: 0.5rem;
 }
 
 
 .observer-info .playerInfo .player-slot {
   display: inline-block;
-  float: left;
   margin-right: 0.5em;
 }
 
-
 .observer-info .playerInfo .player-slot .identicon {
-  order: 1px solid indigo;
+  border: 0px;
+  border-radius: 0.33rem;
   width: 100%;
   height: 100%;
-  max-width: 2rem;
-  min-width: 1rem;
+  width: 2rem;
+  min-width: 2rem;
+  height: 2rem;
 }
 
 .redsquare-sidebar-observer .saito-table .observer-action {
@@ -553,7 +553,6 @@ option {
 
 .redsquare-sidebar-observer .saito-table .observer-details {
   font-size: 1.5rem;
-  text-align: center;
 }
 
 .observer-action {
