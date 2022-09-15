@@ -265,6 +265,16 @@
   background: var(--saito-purple);
 }
 
+.rs-create-game-players.dark .saito-select::after {
+  background: var(--saito-purple);
+}
+
+.rs-create-game-players.dark .saito-select select {
+  border-color: var(--saito-purple);
+  background: var(--saito-light-dark-transparent);
+  color: #fff;
+}
+
 .game-wizard-players-select.dark option {
   background: var(--saito-black);
   color: var(--saito-white);
