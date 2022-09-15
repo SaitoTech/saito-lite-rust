@@ -78,7 +78,6 @@ class Mahjong extends GameTemplate {
     //Reset/Increment State
     this.game.state.round++;
     this.displayBoard();
-    this.displayUserInterface();
   }
 
   isArrayInArray(arr, item){
@@ -128,17 +127,17 @@ class Mahjong extends GameTemplate {
 
     let index = 0;
     this.game.board = {}
+    this.game.availableMoves = [];
     let deckSize = Object.values(this.game.deck.cards).length
-    for (let i = 1; i <= 21; i++){
-      for (let j = 1; j <= 14; j++){
-        let position = `row${i}_slot${j}`;
-          if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
-            this.game.board[position] = Object.values(this.game.deck.cards)[index];
-            index++;
-          } else {
-console.log("i + j : " + i + " + " + j);
-            this.game.board[position] = "E";
-          }
+    for (let row = 1; row <= 21; row++){
+      for (let column = 1; column <= 14; column++){
+        let position = `row${row}_slot${column}`;
+        if (!this.isArrayInArray(this.emptyCells, [row,column]) && deckSize > index) {
+          this.game.board[position] = Object.values(this.game.deck.cards)[index];
+          index++;
+        } else {
+          this.game.board[position] = "E";
+        }
       }
     }
     this.game.cardsLeft = index;
@@ -150,13 +149,12 @@ console.log("i + j : " + i + " + " + j);
     try {
       //Want to add a timed delay for animated effect
       const timeout = ms => new Promise(res => setTimeout(res, ms));
-      for (let i = 1; i <= 21; i++){
-        for (let j = 1; j <= 14; j++){
-          var divname = `row${i}_slot${j}`;
-          if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
+      for (let row = 1; row <= 21; row++){
+        for (let column = 1; column <= 14; column++){
+          var divname = `row${row}_slot${column}`;
+          if (!this.isArrayInArray(this.emptyCells, [row,column]) && deckSize > index) {
             await timeout(timeInterval);
             $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck.cards)[index++]));
-console.log("untoggle: " + divname);
             this.untoggleCard(divname);
           } else {
             this.makeInvisible(divname);
@@ -164,6 +162,7 @@ console.log("untoggle: " + divname);
         }
       }
       this.attachEventsToBoard();
+      this.displayUserInterface();
     } catch (err) {
       console.log(err);
     }
@@ -425,75 +424,9 @@ console.log("untoggle: " + divname);
     $('.slot').on('click', function() {
 
       let card = $(this).attr("id");
-      let tileTokens = card.split('slot');
-      let tileColumn = parseInt(tileTokens[1]);
-      let tileRow = parseInt(card.split('_')[0].substring(3));
-      if (mahjong_self.game.board[card] !== "E") {
-
-        // layer 1 tile can't be unlocked if layer 2 tile overlays it
-        if (tileRow >= 2 && tileRow <= 7 && tileColumn >= 5 && tileColumn <= 10) {
-          if (!mahjong_self.game.hidden.includes(`row${tileRow + 7}_slot${tileColumn}`)) {
-            return;
-          }
-        }
-
-        // layer 2 tile can be can't be unlocked if layer 3 tile overlays it
-        if (tileRow >= 10 && tileRow <= 13 && tileColumn >= 6 && tileColumn <= 9) {
-          if (!mahjong_self.game.hidden.includes(`row${tileRow + 5}_slot${tileColumn}`)) {
-            return;
-          }
-        }
-
-        // layer 3 tile can be can't be unlocked if layer 4 tile overlays it
-        if (tileRow >= 16 && tileRow <= 17 && tileColumn >= 7 && tileColumn <= 8) {
-          if (!mahjong_self.game.hidden.includes(`row${tileRow + 3}_slot${tileColumn}`)) {
-            return;
-          }
-        }
-
-        switch (card) {
-          // \/\/ layer 4 tile can't be unlocked when layer 5 tile overlays it
-          case 'row19_slot7':
-          case 'row20_slot7':
-            if (!mahjong_self.game.hidden.includes('row21_slot7')) {
-              return;
-            } else {
-              break;
-            }
-          case 'row19_slot8':
-          case 'row20_slot8':
-            if (!mahjong_self.game.hidden.includes('row21_slot8')) {
-              return;
-            } else {
-              break;
-            }
-          // /\/\ layer 4 tile can't be unlocked when layer 5 tile overlays it
-
-          // two edge cases for the tiles being on the left/ right of two rows
-          case 'row5_slot2':
-            if (!mahjong_self.game.hidden.includes('row4_slot1')) {
-              return;
-            } else {
-              break;
-            }
-          case 'row5_slot13':
-            if (!mahjong_self.game.hidden.includes('row4_slot14')) {
-              return;
-            } else {
-              break;
-            }
-          default: // there must be no tile on the left or on the right for a given tile to be a valid selection
-            let leftTile = `${tileTokens[0]}slot${tileColumn - 1}`;
-            let rightTile = `${tileTokens[0]}slot${tileColumn + 1}`;
-            // if left tile is not unlocked nor empty
-            if (!((mahjong_self.game.hidden.includes(leftTile)) || mahjong_self.game.board[leftTile] === "E") &&
-              // if right tile is not unlocked nor empty
-               !((mahjong_self.game.hidden.includes(rightTile)) || mahjong_self.game.board[rightTile] === "E") &&
-               !(tileColumn === mahjong_self.firstColumn || tileColumn === mahjong_self.lastColumn)) {
-              return;
-            }
-        }
-      } else {
+      console.log('card');
+      console.log(card);
+      if(!mahjong_self.game.availableMoves.includes(card)) {
         return;
       }
 
@@ -553,12 +486,83 @@ console.log("untoggle: " + divname);
 
   }
 
+  getAvailableTiles() {
+    let mahjong_self = this;
+    let availableTiles = new Map([]);
+    for (let row = 1; row <= 21; row++){
+      for (let column = 1; column <= 14; column++){
+        if ((row === 5 && column === 2 && !mahjong_self.game.hidden.includes('row4_slot1')) || 
+          (row === 5 && column === 13 && !mahjong_self.game.hidden.includes('row4_slot14'))) {
+            continue;
+        }
+        if (row >= 2 && row <= 7 && column >= 5 && column <= 10) {
+          if (!mahjong_self.game.hidden.includes(`row${row + 7}_slot${column}`)) {
+            continue;
+          }
+        }
+        if (row >= 10 && row <= 13 && column >= 6 && column <= 9) {
+          if (!mahjong_self.game.hidden.includes(`row${row + 5}_slot${column}`)) {
+            continue;
+          }
+        }
+        if (row >= 16 && row <= 17 && column >= 7 && column <= 8) {
+          if (!mahjong_self.game.hidden.includes(`row${row + 3}_slot${column}`)) {
+            continue;
+          }
+        }
+        if (row >= 19 && row <= 20 && column >= 7 && column <= 8) {
+          if (!mahjong_self.game.hidden.includes(`row21_slot${column}`)) {
+            continue;
+          }
+        }
+        if ( // \/ checking if right or left tile is unlocked or empty
+          ((mahjong_self.game.hidden.includes(`row${row}_slot${column - 1}`) || 
+          mahjong_self.game.board[`row${row}_slot${column - 1}`] === "E" ||
+          mahjong_self.game.hidden.includes(`row${row}_slot${column + 1}`) || 
+          mahjong_self.game.board[`row${row}_slot${column + 1}`] === "E") && 
+          mahjong_self.game.board[`row${row}_slot${column}`] !== "E" && 
+          !mahjong_self.game.hidden.includes(`row${row}_slot${column}`)) ||
+          // /\ checking if right or left tile is unlocked or empty
+          // \/ checking two outermost rows
+            (row === 4 && column === 1 && !mahjong_self.game.hidden.includes('row4_slot1')) ||
+            (row === 4 && column === 14 && !mahjong_self.game.hidden.includes('row4_slot14'))
+          ) { // /\ checking two outermost rows
+            if (availableTiles.get(mahjong_self.game.board[`row${row}_slot${column}`]) !== undefined) {
+              availableTiles.set(mahjong_self.game.board[`row${row}_slot${column}`], availableTiles.get(mahjong_self.game.board[`row${row}_slot${column}`]) + 1);
+            } else {
+              availableTiles.set(mahjong_self.game.board[`row${row}_slot${column}`], 1);
+            }
+            mahjong_self.game.availableMoves.push(`row${row}_slot${column}`)
+        }
+      }
+    }
+    let unlockableTiles = 0;
+    // console.log("available pairs:");
+    for (const k of availableTiles.keys()) {
+      if (availableTiles.get(k) >= 2 && availableTiles.get(k) < 4) {
+        unlockableTiles += 2;
+        // console.log(`Available tile pair: ${k} (tiles: ${availableTiles.get(k)})`);
+      } else if (availableTiles.get(k) === 4) {
+        unlockableTiles += 4;
+        // console.log(`Available tile pair: ${k} (tiles: ${availableTiles.get(k)})`);
+      }
+    }
+    return unlockableTiles;
+  }
+
   displayUserInterface() {
+    let tilesLeftToUnlock = this.getAvailableTiles();
+    if (tilesLeftToUnlock === 0) {
+      this.displayWarning("Game over", "There are no more available moves to make.", 9000);
+      this.newRound();
+      return;
+    }
+    let pairsLeftToUnlock = tilesLeftToUnlock / 2;
     let mahjong_self = this;
 
-    let html = '<span class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.</span>';
+    let html = `<span class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.<br>` + 
+    `Available tile pairs to unlock: <em>${pairsLeftToUnlock}</em></span>`;
 
-    // TODO later - shuffle
     let option = '';
     if (this.game.hidden.length > 0){
       option += `<ul><li class="menu_option" id="undo">Undo`;
@@ -571,12 +575,6 @@ console.log("untoggle: " + divname);
     $('.menu_option').on('click', function() {
       let action = $(this).attr("id");
 
-      // if (action == "shuffle"){
-      //   mahjong_self.updateStatusWithOptions("shuffle cards...");
-      //   mahjong_self.prependMove("shuffle");
-      //   mahjong_self.endTurn();
-      //   return;
-      // }
       // if (action == "quit"){
       //   mahjong_self.endGame();
       //   mahjong_self.newRound();
