@@ -2,6 +2,7 @@ const GameTemplate = require('../../lib/templates/gametemplate');
 const saito = require("../../lib/saito/saito");
 const ChessGameRulesTemplate = require("./lib/chess-game-rules.template");
 const ChessGameOptions = require("./lib/chess-game-options.template");
+const ChessSingularGameOptions = require("./lib/chess-singular-game-options.template");
 
 var this_chess = null;
 var chess = null;
@@ -781,34 +782,11 @@ class Chessgame extends GameTemplate {
   }
 
   returnSingularGameOption(){
-    return ChessGameOptions(this.app, this);
+    return ChessSingularGameOptions(this.app, this);
   }
 
   returnGameOptionsHTML() {
-
-    let html = `<h1 class="overlay-title">Chess Options</h1>`;
-      
-    html   +=  `<div class="overlay-input">   
-                  <label for="player1">Pick Your Color:</label>
-                  <select name="player1">
-                    <option value="random" default>Random</option>
-                    <option value="black">Black</option>
-                    <option value="white">White</option>
-                  </select>
-                </div>`;
-
-    /*html   +=  `<div class="overlay-input">
-                  <label for="observer_mode">Observer Mode:</label>
-                  <select name="observer">
-                    <option value="enable" >enable</option>
-                    <option value="disable" selected>disable</option>
-                  </select>
-                </div>`;*/
-      
-    html += this.returnCryptoOptionsHTML();
-
-    return html;
-
+    return ChessGameOptions(this.app, this);
   }
 
 
