@@ -9,6 +9,9 @@ module.exports = RedSquareSidebarTemplate = (app, mod) => {
     <div class="redsquare-sidebar-calendar">
     </div>
     
+    <div class="redsquare-sidebar-arcade">
+    </div>
+
     <div class="redsquare-sidebar-observer">
     </div>
 

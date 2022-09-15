@@ -100,6 +100,12 @@ class Arcade extends ModTemplate {
           ArcadeGameSidebar.attachEvents(this.app, this);
         }
       }
+    }else{
+      //
+      // red square wanna render?
+      //
+      this.app.connection.emit('game-invite-render-request');
+
     }
   }
 
@@ -1598,10 +1604,6 @@ class Arcade extends ModTemplate {
       if (for_us || removed_game) {
         this.renderArcadeMain(this.app, this);
       }
-      //
-      // maybe someone else wants to render this (red square?)
-      //
-      this.app.connection.emit('game-invite-render-request', tx);
     }
     console.log("Add Game:" + valid_game + for_us);
 
@@ -1619,11 +1621,6 @@ class Arcade extends ModTemplate {
         }
         for_us = for_us || this_game_is_for_us;
       }
-
-      //
-      // red square wanna render?
-      //
-      this.app.connection.emit('game-invite-render-request', tx);
     });
 
     //let removed_game = this.removeOldGames();

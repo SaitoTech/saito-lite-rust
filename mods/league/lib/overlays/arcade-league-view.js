@@ -44,7 +44,7 @@ class ArcadeLeagueView {
           al.overlay.show(app, mod, ArcadeLeagueViewTemplate(app, mod, league));
           al.injectLeaderboard(app, mod, leaderboard);
           al.attachEvents(app, mod);    
-          mod.renderLeagues(app, mod);
+          //mod.renderLeagues(app, mod);
         }
       );
   }
