@@ -7,7 +7,7 @@ class RedSquareGames {
     this.mod = mod;
     this.selector = selector;
 
-    app.connection.on("game-invite-render-request", () => {
+    app.connection.on("game-invite-list-update", () => {
         //console.log("Arcade update received");
         this.render(app, mod);
     });
