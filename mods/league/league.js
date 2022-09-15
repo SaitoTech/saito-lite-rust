@@ -224,11 +224,12 @@ class League extends ModTemplate {
           this.renderArcade(app, arcade, elem);  
         }
       }else{
-        let redsquare = app.modules.returnModule("RedSquare");
+        app.connection.emit("league-update", {});
+        /*let redsquare = app.modules.returnModule("RedSquare");
         if (redsquare && redsquare.browser_active){
           console.log("Leagues telling Redsquare to Render");
           redsquare.render(app, redsquare);
-        }
+        }*/
       }
     }
   }

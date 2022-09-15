@@ -5,6 +5,10 @@ class RedSquareLeague {
 	constructor(app, mod, selector="") {
 	    this.mod = mod;
 	    this.selector = selector;
+	    app.connection.on("league-update", ()=>{
+	    	this.render(app, mod);
+	    });
+
   	}
 
 	render(app, mod, selector="") {
