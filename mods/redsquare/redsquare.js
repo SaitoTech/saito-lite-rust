@@ -57,6 +57,19 @@ class RedSquare extends ModTemplate {
 
 
   initialize(app) {
+
+    let redsquare_self = this;
+
+    setTimeout(function() {
+try {
+alert("Timeout");
+      redsquare_self.render(redsquare_self.app, redsquare_self);
+} catch (err) {
+  console.log("err rerendering RS");
+}
+    
+    }, 5000);
+
     this.loadRedSquare();
     super.initialize(app);
 
@@ -282,6 +295,7 @@ console.log("error tweeting image");
   }
 
   render(app, mod, selector = "") {
+
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);

@@ -227,7 +227,7 @@ class League extends ModTemplate {
         let redsquare = app.modules.returnModule("RedSquare");
         if (redsquare && redsquare.browser_active){
           console.log("Leagues telling Redsquare to Render");
-          redsquare.render(app);
+          redsquare.render(app, redsquare);
         }
       }
     }

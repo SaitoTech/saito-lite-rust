@@ -72,10 +72,10 @@ class RedSquareMain {
     }
 
     // TODO - remove when refactored
-    if (this.left_sidebar_rendered === 0) {
+    //if (this.left_sidebar_rendered === 0) {
       mod.lsidebar.render(app, mod, ".saito-sidebar-left");
       this.left_sidebar_rendered = 1;
-    }
+    //}
 
     mod.home.render(app, mod, ".appspace");
     mod.rsidebar.render(app, mod, ".saito-sidebar-right");

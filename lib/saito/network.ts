@@ -513,6 +513,15 @@ class Network {
     }, this.peer_monitor_timer_speed);
   }
 
+  isNetworkUp() {
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].isConnected()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   isPrivateNetwork() {
     for (let i = 0; i < this.peers.length; i++) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

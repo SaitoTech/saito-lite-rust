@@ -87,6 +87,15 @@ class Peer {
     return 0;
   }
 
+  isConnected() {
+    if (this.socket) {
+      if (this.socket.readyState === this.socket.OPEN) {
+	return true;
+      }
+    }
+    return false;
+  }
+
   //
   // returns true if we are the first listed peer in the options file
   // TODO -- isFirstPeer
@@ -232,7 +241,6 @@ class Peer {
       this.app.networkApi
         .sendAPICall(this.socket, "SENDMESG", buffer)
         .then((response: Buffer) => {
-          //console.log("RESPONSE RECEIVED: ", response);
           if (callback) {
             let content = Buffer.from(response).toString("utf-8");
             content = JSON.parse(content);
@@ -247,7 +255,6 @@ class Peer {
         });
     } else {
       if (loop) {
-        //console.log("send request with callback and retry!");
         this.sendRequestWithCallbackAndRetry(message, data, callback);
       } else {
         if (callback) {
