@@ -13,6 +13,28 @@
 
   }
 
+  displayTheologicalDebater(debater, attacker=true) {
+
+    let tile_f = "/his/img/tiles/debaters/" + this.units[debater].img;
+    let tile_b = tile_f.replace('.svg', '_back.svg');
+
+    if (attacker) {
+      $('.attacker_debater').css('background-image', `url('${tile_f}')`);
+      $('.attacker_debater').mouseover(function() { 
+	$('.attacker_debater').css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$('.attacker_debater').css('background-image', `url('${tile_f}')`);
+      });
+    } else {
+      $('.defender_debater').css('background-image', `url('${tile_f}')`);
+      $('.defender_debater').mouseover(function() { 
+	$('.defender_debater').css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$('.defender_debater').css('background-image', `url('${tile_f}')`);
+      });
+    }
+  }
+
   displayReligiousConflictSheet() {
 
     let num_protestant_spaces = 0;

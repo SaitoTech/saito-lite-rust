@@ -2277,6 +2277,8 @@ console.log("space: " + spacekey);
 	  //
 	  this.displayTheologicalDebate();
 
+	  this.displayTheologicalDebater("luther", true);
+	  this.displayTheologicalDebater("aleander", false);
 	  
 	  //
 	  // some wrangling lets defender switch up if Protestant
