@@ -35,8 +35,6 @@ class ChatManager {
 
 	render(app, mod, selector = "") {
 
-		console.log("RENDERING CHAT MANAGER!");
-
 		if (!document.querySelector(".chat-manager")) {
 		  app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
 		} else {
@@ -101,7 +99,8 @@ class ChatManager {
 			}
 		}
 
-		this.rendered = 1;
+		// TODO - possibly remove
+		//this.rendered = 1;
 		this.attachEvents(app, mod);
 
 	}
