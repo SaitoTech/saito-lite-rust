@@ -11,8 +11,16 @@ module.exports = (app, mod) => {
     <div class="redsquare-appspace-games">
 
       <div class="saito-page-header">
-        <div id="redsquare-schedule-game" class="saito-button-secondary small" style="float: right;">Schedule for Later</div>
-        <div id="redsquare-create-game" class="saito-button-secondary small" style="float: right;">Create New Game</div>
+     <div class="redsquare-mobile-actions">
+     <div class="redsquare-mobile-actions-icon">
+     <i id="icon" class="fas fa-plus"></i>
+     </div>
+      <div class="redsquare-actions-container"> 
+      <div id="redsquare-schedule-game" class="saito-button-secondary small" style="float: right;">Schedule for Later</div>
+      <div id="redsquare-create-game" class="saito-button-secondary small" style="float: right;">Create New Game</div>
+      </div>
+     </div>
+
         <div class="saito-page-header-title">SAITO ARCADE</div>
         <div class="saito-page-header-text">
           Welcome to the Saito Arcade, where all games are open source, provably-fair and can be played directly in your browser. Create a game today, or join our developer community in porting more great games to the platform.

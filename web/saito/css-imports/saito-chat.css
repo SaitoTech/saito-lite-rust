@@ -96,18 +96,28 @@
 
 @media only screen and (max-width: 535px) {
     .chat-container {
-        width: 90vw;
-        position: fixed;
-        right: 0rem;
-        bottom: 0rem;
-        height: 60vh;
+        height: 85vh;
+            width: 100vw;
+            position: fixed;
+            right: 0rem;
+            top: var(--saito-header-height);
+            bottom: 0rem;
+            left: .1rem;
     }
     
 
   }
-  @media only screen and (max-width: 396px) {
+  @media only screen and (max-width: 415px) {
+            .chat-container {
+            height: 85vh;
+            width: 100vw;
+            position: fixed;
+            right: 0rem;
+            top: var(--saito-header-height);
+            bottom: 0rem;
+            }
+    }
 
-
-  }
+  
 
 

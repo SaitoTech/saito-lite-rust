@@ -121,7 +121,6 @@ span.redsquare-home-red-square+span {
   min-width: 50rem;
   height: 100vh;
   position: relative;
-  z-index: -1;
 }
 
 .redsquare-appspace-contacts-list {
@@ -970,10 +969,79 @@ span.redsquare-home-red-square+span {
   min-width: 25rem;
 }
 
+
+.redsquare-mobile-actions-icon i {
+ display: none;
+}
+
+
 @media screen and (max-width: 503px) {
   #tweet-overlay-img-cont img {
     width: 90vw;
     height: 50vw;
   }
 }
+
+@media screen and (max-width: 415px) { 
+
+  .redsquare-mobile-actions {
+    z-index: 10;
+    bottom: 1rem;
+    position: fixed;
+    margin-left: 10rem;
+  }
+  
+  .redsquare-mobile-actions-icon {
+  
+    content: "";
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    background-color: var(--saito-primary);
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 1rem;
+    display: flex;
+ 
+  }
+  .redsquare-mobile-actions-icon i {
+    font-size: 3rem;
+    color: var(--saito-white);
+    display: block;
+  }
+  
+  .redsquare-mobile-actions:hover {
+    height: 15rem;
+    width: 10rem;
+  }
+  .redsquare-mobile-actions:hover  .redsquare-actions-container   {
+    display: grid;
+  }
+  
+
+  .redsquare-actions-container {
+    position: fixed;
+    bottom: 8rem;
+    left: 7rem;
+    display: none;
+    background: var(--saito-white);
+    grid-template-columns: 1fr;
+    grid-gap: 1rem;
+    border: 0.5rem;
+    padding: .5rem;
+    
+  }
+  
+  .redsquare-mobile-actions .saito-button-secondary {
+    display: block;
+  } 
+
+}
+/* @media screen and (max-width: 396px) {
+
+  
+
+} */
 
