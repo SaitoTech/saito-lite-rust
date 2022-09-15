@@ -128,7 +128,8 @@
 }
 
 
-.rules-overlay p, .rules-overlay h1, .rules-overlay h2 {
+.rules-overlay p, .rules-overlay h1, .rules-overlay h2,
+.rules-overlay h3, .rules-overlay h4 {
   color: #fff;
 }
 
@@ -266,7 +267,7 @@
 }
 
 .rs-create-game-players.dark .saito-select::after {
-  background: var(--saito-purple);
+  background: none;
 }
 
 .rs-create-game-players.dark .saito-select select {
@@ -322,6 +323,12 @@
   border: none;
 }
 
+.saito-multi-select_btn_options.dark {
+  background: none;
+  border: 1px solid var(--saito-purple);
+  margin-left: 0.5rem;
+}
+
 .saito-multi-select_btn_options button{
   border-radius: 5px 0px 0px 5px;
 }
@@ -336,7 +343,7 @@
 
 
 .saito-multi-select_btn_options.dark button{
-  background: var(--saito-purple);
+  background: var(--saito-dark-purple);
   border-color: var(--saito-purple);
 }
 
@@ -370,7 +377,7 @@
 
 
 .game-wizard-invite .saito-multi-select_btn.saito-select.dark::after {
-  background: none;
+  background: var(--saito-purple);
   border-color: var(--saito-purple);
   color: var(--saito-white);
 }
@@ -561,9 +568,8 @@ option {
 
 .arcade-advance-opt {
   margin-top: 1rem;
+  text-transform: lowercase;
 }
-
-
 
 .redsquare-sidebar-observer .saito-table .saito-table-row {
     display: grid;

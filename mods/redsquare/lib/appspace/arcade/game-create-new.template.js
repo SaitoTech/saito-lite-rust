@@ -60,7 +60,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
   
       <div class="rs-create-game-players dark">
         ${players(game_mod.minPlayers, game_mod.maxPlayers)}
-        <div class="info-item-wrapper arcade-advance-opt">Advanced Options</div>
+        <div class="info-item-wrapper arcade-advance-opt">advanced options...</div>
       </div>
 
       <div class="game-wizard-invite">
