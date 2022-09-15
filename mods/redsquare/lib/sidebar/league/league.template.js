@@ -1,9 +1,15 @@
-module.exports = RedSquareLeagueTemplate = (app, mod, league_mod) => {
+module.exports = RedSquareLeagueTemplate = (app, mod) => {
 	let html = "";
-
+    let league_mod = app.modules.returnModule("League");
+    //console.log("Rendering leagues");
 	if (league_mod){
 
+	  //console.log(JSON.parse(JSON.stringify(league_mod.leagues)));
+
 	  let leagues = league_mod.filterLeagues(app);
+
+	  //console.log("Filtered Leagues:");
+	  //console.log(JSON.parse(JSON.stringify(leagues)));
 
 	  if (leagues.length > 0){
 	  	html += `<div class="saito-leaderboard">

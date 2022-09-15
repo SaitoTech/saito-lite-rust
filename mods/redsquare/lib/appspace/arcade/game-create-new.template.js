@@ -3,7 +3,7 @@ const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/sa
 
 module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
 
-  let html = `<div class="game-create-new-overlay">`;
+  let html = `<div class="game-create-new-overlay dark">`;
   let slug = (game_mod.returnSlug())? game_mod.slug: game_mod.name.toLowerCase();
   let image = `/${slug}/img/arcade/arcade.jpg`;
 
@@ -13,7 +13,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${min}">${min} player</div>`;
       selection += game_mod.returnSingularGameOption(app);
     } else {
-      selection = `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
+      selection = `<select class="game-wizard-players-select dark" name="game-wizard-players-select">`;
       for (let p = min; p <= max; p++) {
         selection += `<option value="${p}">${p} player</option>`;
       }
@@ -58,9 +58,9 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
 
     <div class="game-wizard-controls">
   
-      <div class="rs-create-game-players">
+      <div class="rs-create-game-players dark">
         ${players(game_mod.minPlayers, game_mod.maxPlayers)}
-        <div class="info-item-wrapper arcade-advance-opt">Advanced Options</div>
+        <div class="info-item-wrapper arcade-advance-opt">advanced options...</div>
       </div>
 
       <div class="game-wizard-invite">
@@ -70,8 +70,8 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       html += `<button type="button" id="game-invite-btn" class="game-invite-btn" >Play</button>`;
     }else{
       html += `
-          <div class="saito-multi-select_btn saito-select">
-           <div class="saito-multi-select_btn_options saito-slct">
+          <div class="saito-multi-select_btn saito-select dark">
+           <div class="saito-multi-select_btn_options dark saito-slct">
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="open">Create Open Game</button>
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private Game</button>
            </div>

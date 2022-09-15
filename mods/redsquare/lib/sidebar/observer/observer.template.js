@@ -1,3 +1,5 @@
+const Moment = require("moment");
+
 module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 	let html = "";
 	if (games.length < 1) {
@@ -34,6 +36,14 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 				    playersHtml += '</div>';
 
 				    let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
+				    let isMyGame = false;
+				   	for (let local_game of app.options.games) {
+	    				if (local_game.id === g.game_id) {
+	    					if (local_game.player !== 0){
+	    						isMyGame = true;	
+	    					}
+	    				}
+	    			}
 
 					let inviteHtml = `
 					    <div class="saito-table-row">
@@ -41,8 +51,8 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 					            <div>${gameName}</div>
 					            ${playersHtml}
 					        </div>
-					        <div class="observer-details saito-deemphasize">${g.step} moves</div>
-					        <div class="observer-action"><a href="#" data-sig="${g.game_id}" data-cmd="watch" class="button observe-game-btn">Watch</a></div>
+					        <div class="observer-details saito-deemphasize"><p>${g.step} moves</p><p>Started ${Moment(g.ts).fromNow()}</p></div>
+					        <div class="observer-action"><a href="#" data-sig="${g.game_id}" data-cmd="watch" class="button observe-game-btn">${(isMyGame)?"Play":"Watch"}</a></div>
 					    </div>
 					`;
 

@@ -28,11 +28,16 @@ class RedSquareObserver {
 		if (selector != "") {
 			this.selector = selector;  
 		}
-    	
-    	document.querySelector(this.selector).innerHTML = "";
-      	app.browser.addElementToSelector(RedSquareObserverTemplate(app, mod, observer_mod, this.games), this.selector);
+    
+    let div = document.querySelector(this.selector);
+    if (div){
+      div.innerHTML = RedSquareObserverTemplate(app, mod, observer_mod, this.games);
+      this.attachEvents(app, mod);
+    }
+	
+  	//app.browser.replaceElementBySelector(RedSquareObserverTemplate(app, mod, observer_mod, this.games), this.selector);
 	    
-	    this.attachEvents(app, mod);
+   // this.attachEvents(app, mod);
 	}
 
 	attachEvents(app, mod){

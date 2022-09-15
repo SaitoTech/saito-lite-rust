@@ -1,6 +1,5 @@
 const RedSquareMenuTemplate = require("./menu.template");
 const RedSquareWideSidebar = require("./sidebar/sidebar");
-const RedSquareGamesSidebar = require("./sidebar/games-sidebar");
 const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
 
 
@@ -161,7 +160,7 @@ class RedSquareMenu {
       case "games":
         mod.games.render(app, mod, ".appspace");
         window.location.hash = url;
-        mod.gsidebar.render(app, mod, ".saito-sidebar-right");
+        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         matched = 1;
         break;
       default:

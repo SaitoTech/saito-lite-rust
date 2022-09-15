@@ -1,7 +1,7 @@
 const RedSquareSettingsSidebarTemplate = require("./settings-sidebar.template");
 const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/saito-calendar");
 
-class RedSquareGamesSidebar {
+class RedSquareSettingsSidebar {
 
   constructor(app, mod, selector = "") {
     this.app = app;
@@ -37,5 +37,5 @@ class RedSquareGamesSidebar {
 
 }
 
-module.exports = RedSquareGamesSidebar;
+module.exports = RedSquareSettingsSidebar;
 
