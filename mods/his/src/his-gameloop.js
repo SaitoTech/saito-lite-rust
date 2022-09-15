@@ -125,11 +125,80 @@ alert("removing unit not implement for sea");
 
 	}
 
+	if (mv[0] === "retreat_to_winter_spaces") {
+
+	  let moves = [];
+
+	  this.game.queue.splice(qe, 1);
+
+	  for (let i in this.game.spaces) {
+	    for (let key in this.game.spaces[i].units) {
+	      if (this.game.spaces[i].units[key].length > 0) {
+	        let space = this.game.spaces[i];
+		if (!this.isSpaceFortified(space)) {
+		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
+		  moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+		}
+	      }
+	    }
+	  }
+
+	  //
+	  // prevents in-memory differences in processing resulting in a different
+	  // queue order, resulting in divergent game processing.
+	  //
+	  moves.sort();
+	  for (let i = 0; i < moves.length; i++) {
+	    this.game.queue.push(moves[i]);
+	  }
+
+	  return 1;
+        }
+
+
+	if (mv[0] === "retreat_to_winter_spaces_player_select") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let x = this.returnPlayerOfFaction(mv[1]);
+
+	  if (this.game.player === x) {
+	    this.playerResolveWinterRetreat(mv[1], mv[2]);
+	  } else {
+	    this.updateStatus(mv[1] + " is selecting winter retreat options from " + mv[2]);
+	  }
+
+	  return 0;
+
+        }
+
+
+
+	if (mv[0] === "retreat_to_winter_spaces_resolve") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let from = mv[2];
+	  let to = mv[3];
+
+          for (let i = this.game.spaces[from].units[faction].length-1; i >= 0; i--) {
+	    this.game.spaces[to].units[faction].push(this.game.spaces[from].units[faction][i]);
+	    this.game.spaces[from].units[faction].splice(i, 1);
+	  }
+
+	  return 1;
+
+        }
+
+
 
 	if (mv[0] === "is_testing") {
 
 
+
 	  this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+	  this.game.queue.push("retreat_to_winter_spaces");
 
     	  //
     	  // IS_TESTING -- TEMPORARY
@@ -2271,15 +2340,91 @@ console.log("space: " + spacekey);
 	  this.game.state.theological_debate.language_zone = mv[3];
 	  this.game.state.theological_debate.committed = mv[4];
 	  this.game.state.theological_debate.round = 1;
+	  this.game.state.theological_debate.attacker_debater = "";
+	  this.game.state.theological_debate.defender_debater = "";
+
+console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
+
+	  //if (this.returnNumberOfUncommittedDebaters(faction));
+	  //if (this.returnNumberOfCommittedDebaters(faction));
+
+	  let x = 0;
 
 	  //
 	  // attacker picks debater at random
 	  //
+          let ad = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	      ad++;
+	    }
+	  }
+	  x = this.rollDice(ad) - 1;
+	  ad = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	      if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	      ad++;
+	    } else {
+	      if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	      ad++;
+	    }
+	  }
+	  
+
+	  //
+	  // defender chosen from type 
+	  //
+	  let dd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.theological_debate.committed == "committed") {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
+	        dd++;
+	      } else {
+	        dd++;
+	      }
+	    }
+	  }
+	  x = this.rollDice(ad) - 1;
+	  dd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.theological_debate.committed == "committed") {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	        if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	        dd++;
+	      } else {
+	        if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+		dd++;
+	      }
+	    }
+	  }
+	  
+
+	  //
+	  // commit debaters if uncommitted
+	  //
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.attacker_debater) {
+	      if (this.game.state.debaters[i].committed == 0) {
+		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
+	      }
+	    }
+	  }
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
+	      if (this.game.state.debaters[i].committed == 0) {
+		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater);
+	      }
+	    }
+	  }
+
+
 	  this.displayTheologicalDebate();
 
-	  this.displayTheologicalDebater("luther", true);
-	  this.displayTheologicalDebater("aleander", false);
+	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
+	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
 	  
+
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
@@ -2312,7 +2457,9 @@ console.log("space: " + spacekey);
 	    }
 	  }
 
-	  return 0;
+	  this.game.queue.push("counter_or_acknowledge\tThe Debate is Over\tdebate_finished");
+
+	  return 1;
 
 	}
 
@@ -2385,6 +2532,8 @@ console.log("NEW WORLD PHASE!");
 	  console.log("Winter Phase!");
 
 	  // Remove loaned naval squadron markers
+	  this.returnLoanedUnits();
+
 	  // Remove the Renegade Leader if in play
 	  // Return naval units to the nearest port
 	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
@@ -3044,6 +3193,7 @@ this.updateLog("Catholics: " + c_rolls);
 	  return 1;
 
 	}
+
 
 	//
 	// objects and cards can add commands

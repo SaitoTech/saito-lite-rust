@@ -21,7 +21,6 @@
 .attacker_debater {
     height: 300px;
     width: 300px;
-    background-color: blue;
     position: absolute;
     left: 10vw;
     bottom: 0px;
@@ -33,7 +32,6 @@
 .defender_debater {
     height: 300px;
     width: 300px;
-    background-color: blue;
     position: absolute;
     bottom: 0px;
     right: 0px;

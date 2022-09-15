@@ -1,4 +1,81 @@
 
+
+  returnLoanedUnits() {
+    for (let i in this.game.spaces) {
+      space = this.game.spaces[i];
+      for (let f in space.units) {
+        for (let z = space.units[f].length-1;  z >= 0; z--) {
+	  let unit = space.units[f][z];
+	  if (unit.loaned != false) {
+	    let lender = unit.loaned;
+	    space.units[f].splice(z, 1);
+	    space.units[lender].push(unit);
+	  }
+        }
+      }
+    }
+    for (let i in this.game.navalspaces) {
+      space = this.game.navalspaces[i];
+      for (let f in space.units) {
+        for (let z = space.units[f].length-1;  z >= 0; z--) {
+	  let unit = space.units[f][z];
+	  if (unit.loaned != false) {
+	    let lender = unit.loaned;
+	    space.units[f].splice(z, 1);
+	    space.units[lender].push(unit);
+	  }
+        }
+      }
+    }
+  }
+
+  isSpaceFortified(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.type === "key" || space.type === "fortress") { return 1; }
+    return 0;
+  }
+
+
+  returnNearestFriendlyFortifiedSpaces(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let already_routed_through = {};
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // fortified spaces
+      function(spacekey) {
+        if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
+	  if (his_self.isSpaceControlledByFaction(space, faction)) {
+	    return 1;
+	  }
+	  if (his_self.isSpaceFriendly(space, faction)) {
+	    return 1;
+	  }
+	}
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      }
+    );
+
+    return res;
+
+  }
+
+
+
+
+
   captureLeader(winning_faction, losing_faction, space, unit) {
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -600,6 +677,26 @@ console.log("retreat 4");
       }
     }
     return false;
+  }
+
+  returnNumberOfUncommittedDebaters(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 0) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfCommittedDebaters(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 1) {
+	num++;
+      }
+    }
+    return num;
   }
 
   returnNumberOfElectoratesControlledByCatholics() {

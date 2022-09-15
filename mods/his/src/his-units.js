@@ -16,9 +16,12 @@
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
     if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.key == null)		{ obj.key = name; }
-
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
     //obj = this.addEvents(obj);
     this.units[name] = obj;
 
@@ -55,6 +58,15 @@
       }
     }
     return null;
+  }
+  commitDebater(faction, debater) {
+    let his_self = this;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key == debater) {
+	this.game.state.debaters[i].committed = 1;
+	this.units[debater].onCommitted(his_self, this.game.state.debaters[i].owner);
+      }
+    }
   }
   newPersonage(faction, personage) {
     for (let key in this.units) {

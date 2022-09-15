@@ -1809,6 +1809,54 @@ console.log("adding stuff!");
 
 
 
+
+  isSpaceFortified(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.type === "key" || space.type === "fortress") { return 1; }
+    return 0;
+  }
+
+
+  returnNearestFriendlyFortifiedSpaces(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let already_routed_through = {};
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // fortified spaces
+      function(spacekey) {
+        if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
+	  if (his_self.isSpaceControlledByFaction(space, faction)) {
+	    return 1;
+	  }
+	  if (his_self.isSpaceFriendly(space, faction)) {
+	    return 1;
+	  }
+	}
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      }
+    );
+
+    return res;
+
+  }
+
+
+
+
+
   captureLeader(winning_faction, losing_faction, space, unit) {
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -2410,6 +2458,26 @@ console.log("retreat 4");
       }
     }
     return false;
+  }
+
+  returnNumberOfUncommittedDebaters(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 0) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfCommittedDebaters(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 1) {
+	num++;
+      }
+    }
+    return num;
   }
 
   returnNumberOfElectoratesControlledByCatholics() {
@@ -7068,11 +7136,80 @@ alert("removing unit not implement for sea");
 
 	}
 
+	if (mv[0] === "retreat_to_winter_spaces") {
+
+	  let moves = [];
+
+	  this.game.queue.splice(qe, 1);
+
+	  for (let i in this.game.spaces) {
+	    for (let key in this.game.spaces[i].units) {
+	      if (this.game.spaces[i].units[key].length > 0) {
+	        let space = this.game.spaces[i];
+		if (!this.isSpaceFortified(space)) {
+		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
+		  moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+		}
+	      }
+	    }
+	  }
+
+	  //
+	  // prevents in-memory differences in processing resulting in a different
+	  // queue order, resulting in divergent game processing.
+	  //
+	  moves.sort();
+	  for (let i = 0; i < moves.length; i++) {
+	    this.game.queue.push(moves[i]);
+	  }
+
+	  return 1;
+        }
+
+
+	if (mv[0] === "retreat_to_winter_spaces_player_select") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let x = this.returnPlayerOfFaction(mv[1]);
+
+	  if (this.game.player === x) {
+	    this.playerResolveWinterRetreat(mv[1], mv[2]);
+	  } else {
+	    this.updateStatus(mv[1] + " is selecting winter retreat options from " + mv[2]);
+	  }
+
+	  return 0;
+
+        }
+
+
+
+	if (mv[0] === "retreat_to_winter_spaces_resolve") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let from = mv[2];
+	  let to = mv[3];
+
+          for (let i = this.game.spaces[from].units[faction].length-1; i >= 0; i--) {
+	    this.game.spaces[to].units[faction].push(this.game.spaces[from].units[faction][i]);
+	    this.game.spaces[from].units[faction].splice(i, 1);
+	  }
+
+	  return 1;
+
+        }
+
+
 
 	if (mv[0] === "is_testing") {
 
 
+
 	  this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+	  this.game.queue.push("retreat_to_winter_spaces");
 
     	  //
     	  // IS_TESTING -- TEMPORARY
@@ -9214,15 +9351,91 @@ console.log("space: " + spacekey);
 	  this.game.state.theological_debate.language_zone = mv[3];
 	  this.game.state.theological_debate.committed = mv[4];
 	  this.game.state.theological_debate.round = 1;
+	  this.game.state.theological_debate.attacker_debater = "";
+	  this.game.state.theological_debate.defender_debater = "";
+
+console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
+
+	  //if (this.returnNumberOfUncommittedDebaters(faction));
+	  //if (this.returnNumberOfCommittedDebaters(faction));
+
+	  let x = 0;
 
 	  //
 	  // attacker picks debater at random
 	  //
+          let ad = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	      ad++;
+	    }
+	  }
+	  x = this.rollDice(ad) - 1;
+	  ad = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	      if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	      ad++;
+	    } else {
+	      if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	      ad++;
+	    }
+	  }
+	  
+
+	  //
+	  // defender chosen from type 
+	  //
+	  let dd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.theological_debate.committed == "committed") {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
+	        dd++;
+	      } else {
+	        dd++;
+	      }
+	    }
+	  }
+	  x = this.rollDice(ad) - 1;
+	  dd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.theological_debate.committed == "committed") {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	        if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	        dd++;
+	      } else {
+	        if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+		dd++;
+	      }
+	    }
+	  }
+	  
+
+	  //
+	  // commit debaters if uncommitted
+	  //
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.attacker_debater) {
+	      if (this.game.state.debaters[i].committed == 0) {
+		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
+	      }
+	    }
+	  }
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
+	      if (this.game.state.debaters[i].committed == 0) {
+		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater);
+	      }
+	    }
+	  }
+
+
 	  this.displayTheologicalDebate();
 
-	  this.displayTheologicalDebater("luther", true);
-	  this.displayTheologicalDebater("aleander", false);
+	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
+	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
 	  
+
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
@@ -9255,7 +9468,9 @@ console.log("space: " + spacekey);
 	    }
 	  }
 
-	  return 0;
+	  this.game.queue.push("counter_or_acknowledge\tThe Debate is Over\tdebate_finished");
+
+	  return 1;
 
 	}
 
@@ -10212,6 +10427,38 @@ this.updateLog("Catholics: " + c_rolls);
     }
     return 0;
   }
+
+
+  playerResolveWinterRetreat(faction, spacekey) {
+
+    let res = this.returnNearestFriendlyFortifiedSpaces(faction, space);
+
+    let msg = "Select Winter Location for Units in "+space.name;
+    let opt = "";
+    for (let i = 0; i < res.length; i++) {
+      opt += `<li class="option" id="${res[i].key}">${res[i].key}</li>`;
+    }
+
+    if (res.length == 0) {
+      this.endTurn();
+      return 0;
+    }
+
+    this.updateStatusWithOptions(msg, opt);
+
+    $(".option").off();
+    $(".option").on('click', function() {
+
+      let id = $(this).attr('id');
+      $(".option").off();
+
+      this.addMove("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+id);
+      this.endTurn();
+
+    });
+
+  }
+
 
 
   returnPlayerFactions(player) {
@@ -12008,7 +12255,9 @@ return;
     if (obj.besieged == null)           { obj.besieged = false; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.key == null)		{ obj.key = name; }
-
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
     //obj = this.addEvents(obj);
     this.units[name] = obj;
 
@@ -12045,6 +12294,15 @@ return;
       }
     }
     return null;
+  }
+  commitDebater(faction, debater) {
+    let his_self = this;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key == debater) {
+	this.game.state.debaters[i].committed = 1;
+	this.units[debater].onCommitted(his_self, this.game.state.debaters[i].owner);
+      }
+    }
   }
   newPersonage(faction, personage) {
     for (let key in this.units) {
