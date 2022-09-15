@@ -20,19 +20,6 @@ module.exports = ArcadeMain = {
     }
 
 
-    // put active games first
-    let whereTo = 0;
-    for (let i = 0; i < mod.games.length; i++) {
-      if (mod.isMyGame(mod.games[i], app)) {
-        mod.games[i].isMine = true;
-        let replacedGame = mod.games[whereTo];
-        mod.games[whereTo] = mod.games[i];
-        mod.games[i] = replacedGame;
-        whereTo++;
-      } else {
-        mod.games[i].isMine = false;
-      }
-    }
 
     // purge existing content
     if (document.getElementById("arcade-main")) {
@@ -121,8 +108,83 @@ module.exports = ArcadeMain = {
     //
     // add games
     //
+    this.renderArcadeTab(app, mod);
+
+    //insert leagues into hidden tab
+    if (league){
+      league.renderArcadeTab(app, mod); 
+    }
+
+    //insert observables
+    if (observer){
+      observer.renderArcadeTab(app, mod);
+    }
+
+
+    if (mod.viewing_game_homepage) { //Add game-specific posts
+      ArcadePosts.render(app, mod);
+      ArcadePosts.attachEvents(app, mod);
+    } else {  //Add summary of game pages with latest post teaser
+      ArcadeForums.render(app, mod);
+      ArcadeForums.attachEvents(app, mod);
+    }
+
+
+    // Insert Posts
+    let post = app.modules.returnModule("Post");
+    if (post){
+      post.renderMethod = "arcade";
+      post.render();
+    }
+
+    //ArcadeInfobox.render(app, mod); //Not doing anything right now
+
+
+    try {
+
+      //What is this?
+      if (app.browser.isSupportedBrowser(navigator.userAgent) == 0) {
+        document.querySelector(".alert-banner").style.display = "block";
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+
+  renderArcadeTab(app, mod){
+    if (!app.BROWSER){ return; }
+    if (mod.browser_active == 0 || mod.viewing_arcade_initialization_page == 1) {
+
+      //so any function in Arcade that triggers a refresh of the invite list
+      //will notify the active module that maybe you want to update the DOM
+      app.connection.emit('game-invite-list-update');
+      return;
+    }
+
+    // put active games first
+    let whereTo = 0;
+    for (let i = 0; i < mod.games.length; i++) {
+      if (mod.isMyGame(mod.games[i], app)) {
+        mod.games[i].isMine = true;
+        let replacedGame = mod.games[whereTo];
+        mod.games[whereTo] = mod.games[i];
+        mod.games[i] = replacedGame;
+        whereTo++;
+      } else {
+        mod.games[i].isMine = false;
+      }
+    }
+
+
     let numGamesDisplayed = 0;
-    if (document.querySelector("#arcade-hero")) {
+    let tab = document.getElementById("arcade-hero");
+    let league = app.modules.returnModule("League");
+
+    if (tab) {
+      tab.innerHTML = "";
+
+
       //On initial load of Arcade, it takes a while for Leagues array to get populated
       //so need some way to refresh the arcade game invites...
       let visibleLeagues = (league) ? league.filterLeagues(app) : "";
@@ -144,71 +206,36 @@ module.exports = ArcadeMain = {
               }
             }
           }
-          //console.log("ARCADE_MAIN");
-          //console.log(JSON.parse(JSON.stringify(invite.msg)));
-          //console.log("Include for display? "+includeGame);
-          //console.log(JSON.parse(JSON.stringify(visibleLeagues)));
 
           //isMyGame is a decent safety catch for ongoing games
           if (includeGame || mod.isMyGame(invite, app)){
             numGamesDisplayed++;
-            app.browser.addElementToElement(ArcadeInviteTemplate(app, mod, invite, i), document.querySelector("#arcade-hero"));    
+            app.browser.addElementToElement(ArcadeInviteTemplate(app, mod, invite, i), tab);    
           }
         }
       });
 
-      //insert leagues into hidden tab
-      if (league){
-        league.renderArcade(app, mod, document.querySelector("#league-hero")); 
-      }
-
-      if (observer){
-        observer.renderArcade(app, mod, "observer-hero");
-      }
-
-    }
-
-
-    if (mod.viewing_game_homepage) { //Add game-specific posts
-      ArcadePosts.render(app, mod);
-    } else {  //Add summary of game pages with latest post teaser
-      ArcadeForums.render(app, mod);
-    }
-    // Insert Posts
-    let post = app.modules.returnModule("Post");
-    if (post){
-      post.renderMethod = "arcade";
-      post.render();
-    }
-
-    //ArcadeInfobox.render(app, mod); //Not doing anything right now
-
-    if (numGamesDisplayed == 0) {
-      let carousel = new SaitoCarousel(app);
-      carousel.render(app, mod, "arcade", "arcade-hero");
-      carousel.attachEvents(app, mod);
-      if (mod.viewing_game_homepage) { //Overwrite the carousel to only show the relevant game
-        let gamemod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
-        let cdiv = document.getElementById("saito-carousel");
-        if (cdiv) {
-          let name = gamemod.gamename || gamemod.name;
-          cdiv.innerHTML = `<div class="big">${name}</div>`;
-          cdiv.style.backgroundImage = `url('${gamemod.respondTo("arcade-carousel")?.background}')`;
-          cdiv.style.backgroundSize = "cover";
+      if (numGamesDisplayed == 0) {
+        let carousel = new SaitoCarousel(app);
+        carousel.render(app, mod, "arcade", "arcade-hero");
+        carousel.attachEvents(app, mod);
+        if (mod.viewing_game_homepage) { //Overwrite the carousel to only show the relevant game
+          let gamemod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
+          let cdiv = document.getElementById("saito-carousel");
+          if (cdiv) {
+            let name = gamemod.gamename || gamemod.name;
+            cdiv.innerHTML = `<div class="big">${name}</div>`;
+            cdiv.style.backgroundImage = `url('${gamemod.respondTo("arcade-carousel")?.background}')`;
+            cdiv.style.backgroundSize = "cover";
+          }
         }
+
       }
 
     }
+    
 
-    try {
-
-      //What is this?
-      if (app.browser.isSupportedBrowser(navigator.userAgent) == 0) {
-        document.querySelector(".alert-banner").style.display = "block";
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    this.attachEvents(app, mod);
   },
 
   attachEvents(app, mod) {
@@ -281,17 +308,6 @@ module.exports = ArcadeMain = {
         }
     });
     
-
-
-    //Attach events for arcade-sub
-    if (mod.viewing_game_homepage) {
-      ArcadePosts.attachEvents(app, mod);
-    } else {
-      ArcadeForums.attachEvents(app, mod);
-    }
-
-
-
   },
 
   async joinGame(app, mod, game_id) {

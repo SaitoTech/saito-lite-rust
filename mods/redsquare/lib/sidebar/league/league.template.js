@@ -29,7 +29,7 @@ module.exports = RedSquareLeagueTemplate = (app, mod) => {
 			if (l.myRank <= 0) {
 				html += `<div <div id="league_${l.id}" class="saito-table-row rs-league-sidebar-ranking${(cnt%2 == 1)?" odd":""}">
 				<div class="saito-table-gamename">${l.name}</div>
-				<div class="saito-table-rank saito-deemphasize"></div>
+				<div class="saito-table-rank saito-deemphasize">&#8230;</div>
 			</div>`;
 			}
 		});
