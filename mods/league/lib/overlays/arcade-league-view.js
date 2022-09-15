@@ -59,34 +59,44 @@ class ArcadeLeagueView {
 
 
    		if (leaderboard.length > 0){
-   			let html = `<table><thead><tr><th>Rank</th><th>Player</th><th>Score</th><th>Games</th><th>Wins</th><th>Ties</th>`;
+        //create wrapper grid div 
+        //add admin class if we are admin
+        //add saitolicious class if this is saitolicious league
+        let html = "";
+        html = `<div class="league-leaderboard-table${(this.league.admin == myKey)?" admin":""}${(this.league.id == "SAITOLICIOUS")?" saitolicious":""}">`
+        html += `<div><b>Rank</b></div><div><b>Player</b></div><div><b>Score</b></div><div><b>Games</b></div><div><b>Wins</b></div><div><b>Ties</b></div>`;
         if (this.league.admin == myKey){
-          html += `<th>Games Started</th><th></th><th></th>`;
+          html += `<div><b>Games Started</b></div><div></div><div></div>`;
         }
-        html += `<th></th></tr></thead><tbody>`;
+        // if league isn't Saitolicious add col for challenge button
+        if (this.league.id !== "SAITOLICIOUS"){
+          html += `<div></div>`
+        }
+        //add content
    			let cnt = 1;
    			for (let r of leaderboard){
-   				html += `<tr class="${(r.pkey == myKey)?"mystats":""}">
-                    <th>${cnt++}</th>
-                    <td id="${r.pkey}" class="${(r.pkey !== myKey)?"newfriend":""}">${app.keys.returnUsername(r.pkey)}</td>
-                    <td>${Math.round(r.score)}</td>
-                    <td>${r.games_finished}</td>
-                    <td>${r.games_won}</td>
-                    <td>${r.games_tied}</td>`;
+   				html += `<div>${cnt++}</div>
+                   <div id="${r.pkey}" class="${(r.pkey == myKey)?"mystats":""} ${(r.pkey !== myKey)?"newfriend":""}">${app.keys.returnIdentifierByPublicKey(r.pkey, true)}</div>
+                   <div class="${(r.pkey == myKey)?"mystats":""}">${Math.round(r.score)}</div>
+                   <div class="${(r.pkey == myKey)?"mystats":""}">${r.games_finished}</div>
+                   <div class="${(r.pkey == myKey)?"mystats":""}">${r.games_won}</div>
+                   <div class="${(r.pkey == myKey)?"mystats":""}">${r.games_tied}</div>`;
           if (this.league.admin == myKey){
-            html += `<td>${r.games_started}</td>`;
-            html += `<td class="edit_player" data-id="${r.pkey}"><i class="fas fa-edit"></i></td>`;
-            html += `<td class="delete_player" data-id="${r.pkey}"><i class="fa fa-trash"></i></td>`;
+            html += `<div class="${(r.pkey == myKey)?"mystats":""}">${r.games_started}</div>`;
+            html += `<div class="edit_player" data-id="${r.pkey}"><i class="fas fa-edit"></i></div>`;
+            html += `<div class="delete_player" data-id="${r.pkey}"><i class="fa fa-trash"></i></div>`;
           }
 
-          html += `<td>`;
-          if (r.pkey !== myKey && r.league_id !== "SAITOLICIOUS"){
-            html += `<button class="button challenge-btn" data-id="${r.pkey}" style="display:none">CHALLENGE</button>`;
+          if (this.league.id !== "SAITOLICIOUS"){
+            html += `<div>`
+            if (r.pkey !== myKey) {
+              html +=  `<button class="button challenge-btn" data-id="${r.pkey}" style="display:none">CHALLENGE</button>`
+            }
+            html += `</div>`;
           }
-          html += "</td></tr>";
    			}
 
-   			html += `</tbody></table>`;
+   			html += `</div>`;
    			app.browser.addElementToId(html, "league-leaderboard");
 
 

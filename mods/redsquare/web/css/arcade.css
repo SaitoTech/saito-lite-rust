@@ -573,7 +573,7 @@ option {
 
 .redsquare-sidebar-observer .saito-table .saito-table-row {
     display: grid;
-    grid-template-columns: 12rem 1fr min-content;
+    grid-template-columns: 15rem 1fr min-content;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     border-width: 2px 0;
