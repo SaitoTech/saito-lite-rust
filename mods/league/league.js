@@ -267,12 +267,6 @@ class League extends ModTemplate {
     }
 
 
-    //Only query the leagues if we are in an active module that will need them
-    if (!this.doICare()){
-      return;
-    }
-
-/****
     this.sendPeerDatabaseRequestWithFilter(
       "League" ,
       `SELECT * FROM leagues DESC LIMIT 100` ,
@@ -290,7 +284,6 @@ class League extends ModTemplate {
         } 
       }
     );
-****/
   }
 
 

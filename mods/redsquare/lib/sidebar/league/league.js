@@ -6,6 +6,7 @@ class RedSquareLeague {
 	    this.mod = mod;
 	    this.selector = selector;
 	    app.connection.on("league-update", ()=>{
+	    	console.log("Receive League Update");
 	    	this.render(app, mod);
 	    });
 
@@ -13,13 +14,18 @@ class RedSquareLeague {
 
 	render(app, mod, selector="") {
 
-	  let league_mod = app.modules.returnModule("League");
-	  if (selector != "") {
-	    app.browser.addElementToSelector(RedSquareLeagueTemplate(app, mod, league_mod), selector);
-	  } else {
-	    app.browser.addElementToSelector(RedSquareLeagueTemplate(app, mod, league_mod), this.selector);
+	  if (selector) {
+	  	this.selector = selector;
 	  }
-	  this.attachEvents(app, mod);
+	  
+      let div = document.querySelector(this.selector);
+      if (div){
+        div.innerHTML = RedSquareLeagueTemplate(app, mod);
+        this.attachEvents(app, mod);
+      }
+
+	  //app.browser.replaceElementBySelector(RedSquareLeagueTemplate(app, mod, league_mod), this.selector);
+	  //this.attachEvents(app, mod);
 
 	}
 

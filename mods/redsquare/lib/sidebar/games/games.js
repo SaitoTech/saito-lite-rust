@@ -1,46 +1,32 @@
-const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-const GameInvite = require("./../game");
-const GameInviteDetails = require("./../appspace/arcade/game-invite-details");
-const RedSquareLeague = require("./league/league");
-const RedSquareObserver = require("./observer/observer");
+const RedSquareGamesTemplate = require("./games.template");
 
-class RedSquareGamesSidebar {
+class RedSquareGames {
 
   constructor(app, mod, selector = "") {
     this.app = app;
-    this.name = "RedSquareGamesSidebar";
     this.mod = mod;
     this.selector = selector;
 
-    app.connection.on("game-invite-render-request", (tx) => {
-        let gi = new GameInvite(app, mod, tx);
-        gi.render(app, mod, ".saito-arcade-invite-list");
-        this.attachEvents(app, mod);
+    app.connection.on("game-invite-render-request", () => {
+        //console.log("Arcade update received");
+        this.render(app, mod);
     });
   }
 
   render(app, mod, selector="") {
 
-
     if (selector != "") {
-      app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), selector);
-    } else {
-      app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), this.selector);
+      this.selector = selector;
     }
 
-
-    //
-    // render existing arcade games
-    //
-    let arcade_mod = app.modules.returnModule("Arcade");
-    if (arcade_mod) {
-      for (let i = 0; i < arcade_mod.games.length; i++) {
-        console.log("EMITTING INVITE: "+ arcade_mod.games[i]?.msg.game);
-        app.connection.emit('game-invite-render-request', arcade_mod.games[i]);
-      }
+    let div = document.querySelector(this.selector);
+    if (div){
+      div.innerHTML = RedSquareGamesTemplate(app, mod);
+      this.attachEvents(app, mod);
     }
+    //app.browser.replaceElementBySelector(RedSquareGamesTemplate(app, mod), this.selector);
 
-    this.attachEvents(app, mod);
+    //this.attachEvents(app, mod);
   }
 
 
@@ -66,5 +52,5 @@ class RedSquareGamesSidebar {
   }
 }
 
-module.exports = RedSquareGamesSidebar;
+module.exports = RedSquareGames;
 

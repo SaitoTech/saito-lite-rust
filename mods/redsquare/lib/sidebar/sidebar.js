@@ -12,11 +12,6 @@ class RedSquareSidebar {
     this.mod = mod;
     this.selector = selector;
 
-    // app.connection.on("observer-add-game-render-request", (games)=>{   
-    //   let observer_sidebar = new RedSquareObserver(app, mod);
-    //   observer_sidebar.games = games;
-    //   observer_sidebar.render(app, mod, ".redsquare-sidebar-observer");
-    // });
   }
 
   render(app, mod, selector="") {
@@ -41,7 +36,7 @@ class RedSquareSidebar {
     sidebar_calendar.render(app, mod, ".redsquare-sidebar-calendar");
 
     let game_sidebar = new RedSquareGames(app, mod);
-    game_sidebar.render(app, mod, ".saito-arcade-invite-list");
+    game_sidebar.render(app, mod, ".redsquare-sidebar-arcade");
 
     let league_sidebar = new RedSquareLeague(app, mod);
     league_sidebar.render(app, mod, ".redsquare-sidebar-league");
