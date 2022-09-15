@@ -267,7 +267,7 @@
 }
 
 .rs-create-game-players.dark .saito-select::after {
-  background: var(--saito-purple);
+  background: none;
 }
 
 .rs-create-game-players.dark .saito-select select {
