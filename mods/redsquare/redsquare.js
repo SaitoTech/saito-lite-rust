@@ -58,18 +58,6 @@ class RedSquare extends ModTemplate {
 
   initialize(app) {
 
-    let redsquare_self = this;
-
-    setTimeout(function() {
-try {
-alert("Timeout");
-      redsquare_self.render(redsquare_self.app, redsquare_self);
-} catch (err) {
-  console.log("err rerendering RS");
-}
-    
-    }, 5000);
-
     this.loadRedSquare();
     super.initialize(app);
 
