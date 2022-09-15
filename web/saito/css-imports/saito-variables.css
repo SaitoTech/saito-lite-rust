@@ -58,4 +58,8 @@ font imports
   --saito-secondary-black: #626161;
   --saito-thumbBG: #f71f3d;
   --saito-scrollbarBG: #444;
+  --saito-dark-transparent: rgba(0,0,0,0.5);
+  --saito-light-dark-transparent: rgba(0,0,0,0.1);
+  --saito-purple:  #639;
+  --saito-dark-purple:  #47226c;
 }
