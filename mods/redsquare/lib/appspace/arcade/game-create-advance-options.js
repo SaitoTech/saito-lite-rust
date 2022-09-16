@@ -15,6 +15,10 @@ class AdvancedOverlay {
         document.querySelector("#game-wizard-advanced-options-overlay").innerHTML = "";
       }
 
+      if (document.getElementsByClassName('game-wizard-advanced-options-overlay').length > 1) {
+        document.getElementsByClassName('game-wizard-advanced-options-overlay')[0].remove();
+      }
+
       app.browser.addElementToId(AdvancedOverlayTemplate(), "game-wizard-advanced-options-overlay");
 
       //

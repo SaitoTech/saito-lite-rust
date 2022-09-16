@@ -19,14 +19,11 @@ class GameCreateNew {
     this.overlay.show(app, mod, GameCreateNewTemplate(app, mod, this.game_mod, invite));
     this.overlay.setBackground(image);
 
+
     let advancedOptions = this.game_mod.returnGameOptionsHTML();
     if (!advancedOptions) {
       document.querySelector(".arcade-advance-opt").style.display = "none";
     } else {
-
-      // if (document.querySelector('#game-wizard-advanced-options-overlay') != null) {
-      //   document.querySelector('#game-wizard-advanced-options-overlay').remove();
-      // }
 
       //Create (hidden) the advanced options window
       this.meta_overlay = new AdvancedOverlay(app, this.game_mod);
