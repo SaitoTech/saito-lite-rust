@@ -157,25 +157,18 @@
     // PROTESTANTS
     if (this.factions[faction].key === "protestant") {
 
-console.log("TRANS: " + JSON.stringify(this.game.state.translations));
-
       let total_keys = 11;
       let remaining_keys = total_keys - controlled_keys;
       for (let i = 0; i <= 6; i++) {
 	  let box_inserts = "";
-console.log("A");
-console.log("A: " + this.game.state.translations['new']["german"]);
-console.log("B: " + this.game.state.translations['new']['french']);
-console.log("C: " + this.game.state.translations['new']['english']);
-console.log("D");
 	  if (this.game.state.translations['new']['german'] == i) {
-            box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
+            box_inserts += `<div class="new_testament_german_tile" id="new_testament_german_tile"></div>`;
 	  }
 	  if (this.game.state.translations['new']['french'] == i) {
-            box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
+            box_inserts += `<div class="new_testament_french_tile" id="new_testament_french_tile"></div>`;
 	  }
 	  if (this.game.state.translations['new']['english'] == i) {
-            box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
+            box_inserts += `<div class="new_testament_english_tile" id="new_testament_english_tile"></div>`;
 	  }
           keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
       }

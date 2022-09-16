@@ -203,12 +203,37 @@
 
   playerResolveNavalWinterRetreat(faction, spacekey) {
 
+    let res = this.returnNearestFactionControlledPort(faction, spacekey);
+
+    let msg = "Select Winter Port for Naval Units in "+space.name;
+    let opt = "";
+    for (let i = 0; i < res.length; i++) {
+      opt += `<li class="option" id="${res[i].key}">${res[i].key}</li>`;
+    }
+
+    if (res.length == 0) {
+      this.endTurn();
+      return 0;
+    }
+
+    this.updateStatusWithOptions(msg, opt);
+
+    $(".option").off();
+    $(".option").on('click', function() {
+
+      let id = $(this).attr('id');
+      $(".option").off();
+
+      this.addMove("retreat_to_winter_port_resolve\t"+faction+"\t"+spacekey+"\t"+id);
+      this.endTurn();
+
+    });
 
   }
 
   playerResolveWinterRetreat(faction, spacekey) {
 
-    let res = this.returnNearestFriendlyFortifiedSpaces(faction, space);
+    let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
 
     let msg = "Select Winter Location for Units in "+space.name;
     let opt = "";

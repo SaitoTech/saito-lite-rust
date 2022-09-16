@@ -173,7 +173,6 @@ alert("removing unit not implement for sea");
         }
 
 
-
 	if (mv[0] === "retreat_to_winter_spaces_resolve") {
 
 	  this.game.queue.splice(qe, 1);
@@ -185,6 +184,72 @@ alert("removing unit not implement for sea");
           for (let i = this.game.spaces[from].units[faction].length-1; i >= 0; i--) {
 	    this.game.spaces[to].units[faction].push(this.game.spaces[from].units[faction][i]);
 	    this.game.spaces[from].units[faction].splice(i, 1);
+	  }
+
+	  return 1;
+
+        }
+
+
+
+
+	if (mv[0] === "retreat_to_winter_ports") {
+
+	  let moves = [];
+
+	  this.game.queue.splice(qe, 1);
+
+	  for (let i in this.game.navalspaces) {
+	    for (let key in this.game.navalspaces[i].units) {
+	      if (this.game.navalspaces[i].units[key].length > 0) {
+	        let space = this.game.navalspaces[i];
+		let res = this.returnNearestFactionControlledPorts(key, space);
+		moves.push("retreat_to_winter_ports_player_select\t"+key+"\t"+space.key);
+	      }
+	    }
+	  }
+
+	  //
+	  // prevents in-memory differences in processing resulting in a different
+	  // queue order, resulting in divergent game processing.
+	  //
+	  moves.sort();
+	  for (let i = 0; i < moves.length; i++) {
+	    this.game.queue.push(moves[i]);
+	  }
+
+	  return 1;
+        }
+
+
+	if (mv[0] === "retreat_to_winter_ports_player_select") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let x = this.returnPlayerOfFaction(mv[1]);
+
+	  if (this.game.player === x) {
+	    this.playerResolvePortsWinterRetreat(mv[1], mv[2]);
+	  } else {
+	    this.updateStatus(mv[1] + " is selecting winter port retreat options from " + mv[2]);
+	  }
+
+	  return 0;
+
+        }
+
+
+	if (mv[0] === "retreat_to_winter_ports_resolve") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let from = mv[2];
+	  let to = mv[3];
+
+          for (let i = this.game.navalspaces[from].units[faction].length-1; i >= 0; i--) {
+	    this.game.spaces[to].units[faction].push(this.game.navalspaces[from].units[faction][i]);
+	    this.game.navalspaces[from].units[faction].splice(i, 1);
 	  }
 
 	  return 1;

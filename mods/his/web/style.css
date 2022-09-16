@@ -85,6 +85,31 @@
   display: none;
 }
 
+.new_testament_german_tile {
+  background-image: url('/his/img/factions/NewTestament_German.svg');
+  background-size: cover;
+  width: 50px;
+  height: auto;
+  position: absolute;
+  margin-top: 0rem; 
+}
+.new_testament_french_tile {
+  background-image: url('/his/img/factions/NewTestament_French.svg');
+  background-size: cover;
+  width: 50px;
+  height: auto;
+  position: absolute;
+  margin-top: 1rem; 
+}
+.new_testament_english_tile {
+  background-image: url('/his/img/factions/NewTestament_English.svg');
+  background-size: cover;
+  width: 50px;
+  height: auto;
+  position: absolute;
+  margin-top: 2rem; 
+}
+
 .bible_german_tile {
   background-image: url('/his/img/factions/BibleGerman.svg');
   background-size: cover;

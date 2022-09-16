@@ -1810,6 +1810,35 @@ console.log("adding stuff!");
 
 
 
+  returnLoanedUnits() {
+    for (let i in this.game.spaces) {
+      space = this.game.spaces[i];
+      for (let f in space.units) {
+        for (let z = space.units[f].length-1;  z >= 0; z--) {
+	  let unit = space.units[f][z];
+	  if (unit.loaned != false) {
+	    let lender = unit.loaned;
+	    space.units[f].splice(z, 1);
+	    space.units[lender].push(unit);
+	  }
+        }
+      }
+    }
+    for (let i in this.game.navalspaces) {
+      space = this.game.navalspaces[i];
+      for (let f in space.units) {
+        for (let z = space.units[f].length-1;  z >= 0; z--) {
+	  let unit = space.units[f][z];
+	  if (unit.loaned != false) {
+	    let lender = unit.loaned;
+	    space.units[f].splice(z, 1);
+	    space.units[lender].push(unit);
+	  }
+        }
+      }
+    }
+  }
+
   isSpaceFortified(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.type === "key" || space.type === "fortress") { return 1; }
@@ -1846,6 +1875,40 @@ console.log("adding stuff!");
         already_routed_through[spacekey] = 1;
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
 	return 0;
+      }
+    );
+
+    return res;
+
+  }
+
+
+  returnNearestFactionControlledPorts(faction, space) {
+    try { if (this.game.navelspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let already_routed_through = {};
+
+    let res = this.returnNearestNavalSpaceOrPortWithFilter(
+
+      space.key,
+
+      // ports
+      function(spacekey) {
+        if (his_self.game.spaces[spacekey]) {
+	  if (his_self.isSpaceControlledByFaction(space, faction)) {
+	    return 1;
+	  }
+	}
+        return 0;
+      },
+
+      // route through this
+      function(spacekey) {	
+        if (his_self.game.spaces[spacekey]) { return 0; }
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	return 1;
       }
     );
 
@@ -2266,6 +2329,97 @@ console.log("retreat 4");
     return neighbours;
   }
 
+
+  returnNavalNeighbours(space, transit_passes=1) {
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    let neighbours = [];
+    for (let i = 0; i < space.ports.length; i++) {
+      let x = space.ports[i];
+      neighbours.push(x);
+    }
+    for (let i = 0; i < space.neighbours.length; i++) {
+      let x = space.neighbours[i];
+      neighbours.push(x);
+    }
+
+    return neighbours;
+  }
+
+
+
+
+  //
+  // find the nearest destination.
+  //
+  returnNearestNavalSpaceOrPortWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1) {
+
+    //
+    // return array with results + hops distance
+    //
+    let results = [];
+    let searched_spaces = {};
+    let pending_spaces = {};
+
+    //
+    // if the source matches our destination, return it
+    //
+    if (include_source == 1) {
+      if (destination_filter(sourcekey)) {
+        results.push({ space : sourcekey , hops : 0 });
+        return results;
+      }
+    }
+
+    //
+    // put the neighbours into pending
+    //
+    let n = this.returnNavalNeighbours(sourcekey);
+
+    for (let i = 0; i < n.length; i++) {
+      pending_spaces[n[i]] = { hops : 0 , key : n[i] };
+    }
+
+    //
+    // otherwise propagate outwards searching pending
+    //
+    let continue_searching = 1;
+    while (continue_searching) {
+
+      let count = 0;
+      for (let key in pending_spaces) {
+
+	count++;
+	let hops = pending_spaces[key].hops;
+
+	if (destination_filter(key)) {
+	  // found results? this is last pass
+	  results.push({ hops : (hops+1) , key : key });	
+	  continue_searching = 0;
+	} else {
+	  if (propagation_filter(key)) {
+    	    for (let i = 0; i < this.game.navalspaces[key].neighbours.length; i++) {
+	      if (!searched_spaces.hasOwnProperty[this.game.navalspaces[key].neighbours[i]]) {
+		// don't add to pending as we've transversed before
+	      } else {
+      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+	      }
+    	    }
+	  }
+	  searched_spaces[key] = { hops : (hops+1) , key : key };
+	}
+	delete pending_spaces[key];
+
+      }
+      if (count == 0) { continue_searching = 0; }
+    }
+
+    //
+    // at this point we have results or not 
+    //
+    return results;
+
+  }
+
   //
   // find the nearest destination.
   //
@@ -2292,8 +2446,6 @@ console.log("retreat 4");
     // put the neighbours into pending
     //
     let n = this.returnNeighbours(sourcekey, transit_passes);
-
-
 
     for (let i = 0; i < n.length; i++) {
       pending_spaces[n[i]] = { hops : 0 , key : n[i] };
@@ -2325,7 +2477,6 @@ console.log("retreat 4");
 	      }
     	    }
 	  }
-
 	  searched_spaces[key] = { hops : (hops+1) , key : key };
 	}
 	delete pending_spaces[key];
@@ -2333,7 +2484,6 @@ console.log("retreat 4");
       }
       if (count == 0) { continue_searching = 0; }
     }
-    
 
     //
     // at this point we have results or not 
@@ -3151,84 +3301,98 @@ console.log("retreat 4");
       top : 875 ,
       left : 900 ,
       name : "Irish Sea" ,
+      ports : ["glasgow"] ,
       neighbours : ["biscay","north","channel"] ,
     }
     seas['biscay'] = {
       top : 1500 ,
       left : 1400 ,
       name : "Bay of Biscay" ,
+      ports : ["brest", "nantes", "bordeaux", "corunna" ] ,
       neighbours : ["irish","channel","atlantic"] ,
     }
     seas['atlantic'] = {
       top : 2700 ,
       left : 850 ,
       name : "Atlantic Ocean" ,
+      ports : ["gibraltar" , "seville" , "corunna"] ,
       neighbours : ["biscay"] ,
     }
     seas['channel'] = {
       top : 1020 ,
       left : 1450 ,
       name : "English Channel" ,
+      ports : ["brest", "plymouth", "portsmouth", "rouen", "bolougne", "calais" ] ,
       neighbours : ["irish","biscay","north"] ,
     }
     seas['north'] = {
       top : 200 ,
       left : 2350 ,
       name : "North Sea" ,
+      ports : ["london", "norwich", "berwick", "edinburgh", "calais", "antwerp", "amsterdam", "bremen", "hamburg" ] ,
       neighbours : ["irish","channel","baltic"] ,
     }
     seas['baltic'] = {
       top : 50 ,
       left : 3150 ,
       name : "Baltic Sea" ,
+      ports : ["lubeck", "stettin" ] ,
       neighbours : ["north"] ,
     }
     seas['gulflyon'] = {
       top : 1930 ,
       left : 2430 ,
       name : "Gulf of Lyon" ,
+      ports : ["cartagena", "valencia", "palma", "barcelona" , "marseille", "nice" , "genoa", "bastia" ] ,
       neighbours : ["barbary","tyrrhenian"] ,
     }
     seas['barbary'] = {
       top : 2330 ,
       left : 2430 ,
       name : "Barbary Coast" ,
+      ports : ["gibraltar", "oran", "cartagena", "algiers" , "tunis", "cagliari" , "palma" ] ,
       neighbours : ["gulflyon","tyrrhenian","ionian","african"] ,
     }
     seas['tyrrhenian'] = {
       top : 2260 ,
       left : 3300 ,
       name : "Tyrrhenian Sea" ,
+      ports : ["genoa" , "bastia" , "rome" , "naples" , "palermo" , "caliari" , "messina" ] ,
       neighbours : ["barbary","gulflyon"] ,
     }
     seas['africa'] = {
       top : 2770 ,
       left : 4200 ,
       name : "North African Coast" ,
+      ports : ["tunis" , "tripoli" , "malta" , "candia" , "rhodes" ] ,
       neighbours : ["ionian","barbary","aegean"] ,
     }
     seas['aegean'] = {
       top : 2470 ,
       left : 4450 ,
       name : "Aegean Sea" ,
+      ports : ["rhodes" , "candia" , "coron" , "athens" , "salonika" , "istanbul" ] ,
       neighbours : ["black","african","ionian"] ,
     }
     seas['ionian'] = {
       top : 2390 ,
       left : 3750 ,
       name : "Ionian Sea" ,
+      ports : ["malta" , "messina" , "coron", "lepanto" , "corfu" , "taranto" ] ,
       neighbours : ["black","aegean","adriatic"] ,
     }
     seas['adriatic'] = {
       top : 1790 ,
       left : 3400 ,
       name : "Adriatic Sea" ,
+      ports : ["corfu" , "durazzo" , "scutari" , "ragusa" , "trieste" , "venice" , "ravenna" , "ancona" ] ,
       neighbours : ["ionian"] ,
     }
     seas['black'] = {
       top : 1450 ,
       left : 4750 ,
       name : "Black Sea" ,
+      ports : ["istanbul" , "varna" ] ,
       neighbours : ["aegean"] ,
     }
 
@@ -7184,7 +7348,6 @@ alert("removing unit not implement for sea");
         }
 
 
-
 	if (mv[0] === "retreat_to_winter_spaces_resolve") {
 
 	  this.game.queue.splice(qe, 1);
@@ -7196,6 +7359,72 @@ alert("removing unit not implement for sea");
           for (let i = this.game.spaces[from].units[faction].length-1; i >= 0; i--) {
 	    this.game.spaces[to].units[faction].push(this.game.spaces[from].units[faction][i]);
 	    this.game.spaces[from].units[faction].splice(i, 1);
+	  }
+
+	  return 1;
+
+        }
+
+
+
+
+	if (mv[0] === "retreat_to_winter_ports") {
+
+	  let moves = [];
+
+	  this.game.queue.splice(qe, 1);
+
+	  for (let i in this.game.navalspaces) {
+	    for (let key in this.game.navalspaces[i].units) {
+	      if (this.game.navalspaces[i].units[key].length > 0) {
+	        let space = this.game.navalspaces[i];
+		let res = this.returnNearestFactionControlledPorts(key, space);
+		moves.push("retreat_to_winter_ports_player_select\t"+key+"\t"+space.key);
+	      }
+	    }
+	  }
+
+	  //
+	  // prevents in-memory differences in processing resulting in a different
+	  // queue order, resulting in divergent game processing.
+	  //
+	  moves.sort();
+	  for (let i = 0; i < moves.length; i++) {
+	    this.game.queue.push(moves[i]);
+	  }
+
+	  return 1;
+        }
+
+
+	if (mv[0] === "retreat_to_winter_ports_player_select") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let x = this.returnPlayerOfFaction(mv[1]);
+
+	  if (this.game.player === x) {
+	    this.playerResolvePortsWinterRetreat(mv[1], mv[2]);
+	  } else {
+	    this.updateStatus(mv[1] + " is selecting winter port retreat options from " + mv[2]);
+	  }
+
+	  return 0;
+
+        }
+
+
+	if (mv[0] === "retreat_to_winter_ports_resolve") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let from = mv[2];
+	  let to = mv[3];
+
+          for (let i = this.game.navalspaces[from].units[faction].length-1; i >= 0; i--) {
+	    this.game.spaces[to].units[faction].push(this.game.navalspaces[from].units[faction][i]);
+	    this.game.navalspaces[from].units[faction].splice(i, 1);
 	  }
 
 	  return 1;
@@ -9543,6 +9772,8 @@ console.log("NEW WORLD PHASE!");
 	  console.log("Winter Phase!");
 
 	  // Remove loaned naval squadron markers
+	  this.returnLoanedUnits();
+
 	  // Remove the Renegade Leader if in play
 	  // Return naval units to the nearest port
 	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
@@ -10203,6 +10434,7 @@ this.updateLog("Catholics: " + c_rolls);
 
 	}
 
+
 	//
 	// objects and cards can add commands
 	//
@@ -10429,9 +10661,39 @@ this.updateLog("Catholics: " + c_rolls);
   }
 
 
+  playerResolveNavalWinterRetreat(faction, spacekey) {
+
+    let res = this.returnNearestFactionControlledPort(faction, spacekey);
+
+    let msg = "Select Winter Port for Naval Units in "+space.name;
+    let opt = "";
+    for (let i = 0; i < res.length; i++) {
+      opt += `<li class="option" id="${res[i].key}">${res[i].key}</li>`;
+    }
+
+    if (res.length == 0) {
+      this.endTurn();
+      return 0;
+    }
+
+    this.updateStatusWithOptions(msg, opt);
+
+    $(".option").off();
+    $(".option").on('click', function() {
+
+      let id = $(this).attr('id');
+      $(".option").off();
+
+      this.addMove("retreat_to_winter_port_resolve\t"+faction+"\t"+spacekey+"\t"+id);
+      this.endTurn();
+
+    });
+
+  }
+
   playerResolveWinterRetreat(faction, spacekey) {
 
-    let res = this.returnNearestFriendlyFortifiedSpaces(faction, space);
+    let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
 
     let msg = "Select Winter Location for Units in "+space.name;
     let opt = "";
@@ -12253,6 +12515,7 @@ return;
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
     if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.key == null)		{ obj.key = name; }
     if (obj.onCommitted == null) {
@@ -12474,25 +12737,18 @@ return;
     // PROTESTANTS
     if (this.factions[faction].key === "protestant") {
 
-console.log("TRANS: " + JSON.stringify(this.game.state.translations));
-
       let total_keys = 11;
       let remaining_keys = total_keys - controlled_keys;
       for (let i = 0; i <= 6; i++) {
 	  let box_inserts = "";
-console.log("A");
-console.log("A: " + this.game.state.translations['new']["german"]);
-console.log("B: " + this.game.state.translations['new']['french']);
-console.log("C: " + this.game.state.translations['new']['english']);
-console.log("D");
 	  if (this.game.state.translations['new']['german'] == i) {
-            box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
+            box_inserts += `<div class="new_testament_german_tile" id="new_testament_german_tile"></div>`;
 	  }
 	  if (this.game.state.translations['new']['french'] == i) {
-            box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
+            box_inserts += `<div class="new_testament_french_tile" id="new_testament_french_tile"></div>`;
 	  }
 	  if (this.game.state.translations['new']['english'] == i) {
-            box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
+            box_inserts += `<div class="new_testament_english_tile" id="new_testament_english_tile"></div>`;
 	  }
           keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
       }
