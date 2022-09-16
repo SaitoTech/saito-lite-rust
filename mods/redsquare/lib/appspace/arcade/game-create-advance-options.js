@@ -38,7 +38,7 @@ class AdvancedOverlay {
       overlay_el.innerHTML = html;
       overlay_el.style.display = "block";
       overlay_backdrop_el.style.display = "block";
-      overlay_backdrop_el.style.opacity = 0.5;
+      overlay_backdrop_el.style.opacity = 0.95;
       overlay_backdrop_el.style.backgroundColor = "#111";
 
       //This should be a blocking overlay by default
