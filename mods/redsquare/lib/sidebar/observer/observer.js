@@ -15,7 +15,7 @@ class RedSquareObserver {
 	    });
 	    app.connection.on("arcade-game-ready", (slug)=>{
 	    	let spinner = new GameLoader(app, mod);
-	    	spinner.render(app, mod, "#rs_sidebar_observer", "Game Moves Loaded", slug, "Watch Game");
+	    	spinner.render(app, mod, "#rs-sidebar-observer", "Game Moves Loaded", slug, "Watch Game");
 	    });
   	}
 
@@ -48,7 +48,7 @@ class RedSquareObserver {
               let game_sig = e.currentTarget.getAttribute("data-sig");
               let spinner = new GameLoader(app, mod);
               widget.blockRender = true;
-              spinner.render(app, mod, "#rs_sidebar_observer", "Loading Game Moves");
+              spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
             
               app.connection.emit("arcade-observer-join-table",game_sig);
             }

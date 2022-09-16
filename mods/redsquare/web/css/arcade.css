@@ -636,6 +636,7 @@ option {
     border-color: #fff;
     border-style: solid;
     cursor: pointer;
+    background-color: var(--saito-gray);
 }
 
 
@@ -656,8 +657,12 @@ option {
   width: 100%;
   height: 100%;
   width: 2rem;
-  min-width: 2rem;
-  height: 2rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+}
+
+.observer-info div {
+  font-size: 1.8rem;
 }
 
 .redsquare-sidebar-observer .saito-table .observer-action {
@@ -675,6 +680,10 @@ option {
 
 .observer-action a {
   color: var(--saito-primary);
+}
+
+.observer-sidebar h6 {
+  margin: 3rem 0 2rem;
 }
 
 /*------*/
