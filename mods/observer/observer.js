@@ -68,8 +68,14 @@ class Observer extends ModTemplate {
     }, 24*60*60*1000);
   }
 
-  renderArcade(app, mod, elem_id){
-  	 try{
+  renderArcadeTab(app, mod){
+    if (!app.BROWSER) { return; }
+    
+    let elem_id = "observer-hero";
+    let tab = document.getElementById(elem_id);
+    if (tab){
+      tab.innerHTML = "";
+      try{
         this.games.forEach((observe) => {
           let ob = new ArcadeObserver(app, observe);
           ob.render(app, this, elem_id);
@@ -77,6 +83,10 @@ class Observer extends ModTemplate {
       }catch(err){
         console.log(err);
       }
+
+    }else{
+      console.error("Observer cannot render in Arcade");
+    }
   }
 
   renderControls(app, game_mod){
@@ -243,16 +253,16 @@ class Observer extends ModTemplate {
       }
     }
   
+    msg.created_at = msg.ts;
     this.games.push(msg);
 
     if (this.app.BROWSER){
-      console.log("Send message");
       this.app.connection.emit("observer-add-game-render-request",this.games);
-      let arcade = this.app.modules.returnModule("Arcade");
-      if (arcade){
-        arcade.renderArcadeMain();
-        return;  
-      }
+      //let arcade = this.app.modules.returnModule("Arcade");
+      //if (arcade){
+      // arcade.renderArcadeMain();
+      //  return;  
+      //}
     }
   }
 
@@ -265,15 +275,17 @@ class Observer extends ModTemplate {
         if (msg.request == "gameover" || msg.request == "stopgame"){
           this.games[i].game_status = "over";
         }
+        if (msg.ts){
+          this.games[i].latest_move = msg.ts;
+        }
 
-        console.log("Send update message");
         this.app.connection.emit("observer-add-game-render-request",this.games);
         
-        let arcade = this.app.modules.returnModule("Arcade");
-        if (arcade){
-          arcade.renderArcadeMain();
-          return;  
-        }        
+        //let arcade = this.app.modules.returnModule("Arcade");
+        //if (arcade){
+        //  arcade.renderArcadeMain();
+        //  return;  
+        //}        
       }
     }
 

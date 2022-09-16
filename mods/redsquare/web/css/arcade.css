@@ -273,12 +273,69 @@
 .rs-create-game-players.dark .saito-select select {
   border-color: var(--saito-purple);
   background: var(--saito-light-dark-transparent);
-  color: #fff;
+  color: var(--saito-white);
 }
 
 .game-wizard-players-select.dark option {
   background: var(--saito-black);
   color: var(--saito-white);
+}
+
+.game-create-new-overlay.dark .game-overlay {
+  background: none;
+  color: var(--saito-white);
+}
+
+.game-create-new-overlay.dark .game-overlay select {
+  background: none;
+  color: var(--saito-white);;
+  border: 2px solid var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .game-overlay select::focus-visible {
+  border: 2px solid var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .game-overlay input {
+  border-color: var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .game-overlay input::after {
+  background: var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .game-overlay .saito-select {
+  margin: 1.5rem 0rem;
+}
+
+.game-create-new-overlay.dark .game-overlay .saito-select::after {
+  background: none;
+}
+
+.game-create-new-overlay.dark .game-overlay select option {
+  background: var(--saito-black);
+}
+
+.game-create-new-overlay.dark .game-overlay .game-wizard-advanced-return-btn {
+  background: var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .game-overlay .game-wizard-advanced-return-btn:hover {
+  color: #fff;
+  border: none;
+}
+
+.game-create-new-overlay.dark .game-overlay h1,
+.game-create-new-overlay.dark .game-overlay h2,
+.game-create-new-overlay.dark .game-overlay h3, 
+.game-create-new-overlay.dark .game-overlay h4,
+.game-create-new-overlay.dark .game-overlay p {
+  color: var(--saito-white);
+  margin: 1.5rem 0rem;
+}
+
+.game-create-new-overlay.dark .game-overlay p {
+  line-height: 2rem;
 }
 
 .game-wizard-options-toggle {
@@ -325,7 +382,6 @@
 
 .saito-multi-select_btn_options.dark {
   background: none;
-  border: 1px solid var(--saito-purple);
   margin-left: 0.5rem;
 }
 
@@ -573,7 +629,7 @@ option {
 
 .redsquare-sidebar-observer .saito-table .saito-table-row {
     display: grid;
-    grid-template-columns: 12rem 1fr min-content;
+    grid-template-columns: 15rem 1fr min-content;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     border-width: 2px 0;
@@ -621,40 +677,84 @@ option {
   color: var(--saito-primary);
 }
 
+/*------*/
 .league-details-overlay {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 1rem;
-  width: 60vh;
+  width: 100%;
+  min-width: min(600px, 100vw);
+  border: 1px solid var(--saito-border);
+  border-radius: 5px;
+  background: var(--saito-white);
+  padding: 10px;
+  user-select: none;
+  cursor: default;
 }
 
-.league-overview-box {
-  margin: 2rem 0rem;
-  max-height: 35vh;
-  overflow-y: scroll;
-}
-
-.league-overview-box .info-item {
-  display: grid;
-  grid-template-columns: 1fr 1fr max-content;
+.league-details-overlay h2 {
   text-align: center;
 }
 
-.league-overview-box .info-item div:first-child {
+.league-details-overlay p {
+  padding: 1rem;
+}
+
+.league-details-overlay .league-overview-box {
+  margin: auto;
+  width: 100%;
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 8rem auto;
+}
+
+.league-leaderboard-table {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto;
+  width: 100%;
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.league-leaderboard-table.saitolicious {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem;
+}
+
+.league-leaderboard-table.admin {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto 4fr 4fr auto;
+}
+
+.league-leaderboard-table.admin.saitolicious {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem  4fr 4fr auto;
+}
+
+.league-overview-box div:nth-child(odd) {
   font-weight: bold;
 }
 
-.league-leaderboard {
-  margin: 2rem 0rem;
+.mystats {
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.league-leaderboard table {
-  width: 100%;
+.newfriend {
+  cursor: crosshair;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.league-leaderboard table tr td {
-  text-align: center;
+.league-overview-box .info-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
+/*----*/
 
 .game-help-link {
   position: absolute;

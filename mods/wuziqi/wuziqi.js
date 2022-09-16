@@ -63,52 +63,11 @@ class Wuziqi extends GameTemplate {
             }
         });
 
-
-    if (app.modules.returnModule("RedSquare")) {
-    this.menu.addSubMenuOption("game-game", {
-      text : "Screenshot",
-      id : "game-post",
-      class : "game-post",
-      callback : async function(app, game_mod) {
-        let log = document.querySelector(".log");
-        let log_lock = document.querySelector(".log_lock");
-        if (!log_lock && log) { log.style.display = "none"; }
-        await app.browser.captureScreenshot(function(image) {
-          if (!log_lock && log) { log.style.display = "block"; }
-          let m = game_mod.app.modules.returnModule("RedSquare");
-          if (m) { m.tweetImage(image); }
-        });
-      },
-    });
-    }
-
-
-
-        this.menu.addSubMenuOption("game-game", {
-            text: "Exit",
-            id: "game-exit",
-            class: "game-exit",
-            callback: function (app, game_mod) {
-                window.location.href = "/arcade";
-            }
-        });
-
         // Add Chat Features to Menu
         this.menu.addChatMenu(app, this, this.game.sides);
         
-        // Add icon to switch to full screen mode
-        this.menu.addMenuIcon({
-            text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-            id: "game-menu-fullscreen",
-            callback: function (app, game_mod) {
-                game_mod.menu.hideSubMenus();
-                app.browser.requestFullscreen();
-            }
-        });
-
         // Render menu and attach events
         this.menu.render(app, this);
-        this.menu.attachEvents(app, this);
 
         // Initialize our game
         this.game.score = [0, 0];
