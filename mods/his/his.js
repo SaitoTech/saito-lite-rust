@@ -1565,14 +1565,6 @@ console.log("adding stuff!");
         game_mod.handleStatsMenu();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        window.location.href = "/arcade";
-      }
-    });
     this.menu.addMenuOption({
       text : "Info",
       id : "game-cards",
@@ -1652,17 +1644,8 @@ console.log("adding stuff!");
 
 
     this.menu.addChatMenu(app, this);
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
 
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);

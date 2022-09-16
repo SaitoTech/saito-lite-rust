@@ -211,7 +211,7 @@ class Pandemic extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-theme",{
+    /*this.menu.addSubMenuOption("game-theme",{
       text: `Modern ${(this.game.options.theme=="modern")?"✔":""}`,
       id:"game-confirm-hard",
       class:"game-confirm-hard",
@@ -220,9 +220,7 @@ class Pandemic extends GameTemplate {
         game_mod.saveGame(game_mod.game.id);
         setTimeout(()=>{window.location.reload();},1000);
       }
-    });
-
-
+    });*/
 
     this.menu.addSubMenuOption("game-game", {
       text: "Log",
@@ -231,14 +229,6 @@ class Pandemic extends GameTemplate {
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.log.toggleLog();
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Exit",
-      id: "game-exit",
-      class: "game-exit",
-      callback: function (app, game_mod) {
-        window.location.href = "/arcade";
       },
     });
     this.menu.addMenuOption({
@@ -264,18 +254,8 @@ class Pandemic extends GameTemplate {
       });
     }
 
-    this.menu.addMenuIcon({
-      text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id: "game-menu-fullscreen",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      },
-    });
-
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.restoreLog(); //from gameTemplate
     this.log.render(app, this);
