@@ -621,40 +621,84 @@ option {
   color: var(--saito-primary);
 }
 
+/*------*/
 .league-details-overlay {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 1rem;
-  width: 60vh;
+  width: 100%;
+  min-width: min(600px, 100vw);
+  border: 1px solid var(--saito-border);
+  border-radius: 5px;
+  background: var(--saito-white);
+  padding: 10px;
+  user-select: none;
+  cursor: default;
 }
 
-.league-overview-box {
-  margin: 2rem 0rem;
-  max-height: 35vh;
-  overflow-y: scroll;
-}
-
-.league-overview-box .info-item {
-  display: grid;
-  grid-template-columns: 1fr 1fr max-content;
+.league-details-overlay h2 {
   text-align: center;
 }
 
-.league-overview-box .info-item div:first-child {
+.league-details-overlay p {
+  padding: 1rem;
+}
+
+.league-details-overlay .league-overview-box {
+  margin: auto;
+  width: 100%;
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 8rem auto;
+}
+
+.league-leaderboard-table {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto;
+  width: 100%;
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.league-leaderboard-table.saitolicious {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem;
+}
+
+.league-leaderboard-table.admin {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto 4fr 4fr auto;
+}
+
+.league-leaderboard-table.admin.saitolicious {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem  4fr 4fr auto;
+}
+
+.league-overview-box div:nth-child(odd) {
   font-weight: bold;
 }
 
-.league-leaderboard {
-  margin: 2rem 0rem;
+.mystats {
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.league-leaderboard table {
-  width: 100%;
+.newfriend {
+  cursor: crosshair;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.league-leaderboard table tr td {
-  text-align: center;
+.league-overview-box .info-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
+/*----*/
 
 .game-help-link {
   position: absolute;
