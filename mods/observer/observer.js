@@ -2,7 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeObserver = require("./lib/appspace/arcade-observer");
 const GameObserver = require("./lib/components/game-observer");
-const ObserverLoader = require("./lib/components/observer-loader");
+const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const JSON = require("json-bigint");
 
 
@@ -429,7 +429,8 @@ class Observer extends ModTemplate {
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade.browser_active){
       arcade.viewing_arcade_initialization_page = 1;
-      ObserverLoader.render(this.app, this); //Start Spinner
+      let gameLoader = new GameLoader(this.app, this);
+      gameLoader.render(this.app, this, "#arcade-main", "Loading Game Moves"); //Start Spinner
     }
 
     //let address_to_watch = msgobj.player;
@@ -698,7 +699,10 @@ class Observer extends ModTemplate {
           // move into game
           //
           let slug = arcade_self.app.modules.returnModule(first_tx.module).returnSlug();
-          ObserverLoader.render(arcade_self.app, arcade_self, slug, watch_live); //Stop spinner, move into game
+          let gameLoader = new GameLoader(arcade_self.app, arcade_self, first_tx.id);
+          let msg = `You are ready to ${(watch_live)?"follow":"watch"} the game!` 
+          gameLoader.render(arcade_self.app, arcade_self, "#arcade-main", msg, "enter game");
+          
           arcade_self.app.connection.emit("arcade-game-ready",slug);
         });
       })
