@@ -292,6 +292,10 @@
   border: 2px solid var(--saito-purple);
 }
 
+.game-create-new-overlay.dark .game-overlay select::focus-visible {
+  border: 2px solid var(--saito-purple);
+}
+
 .game-create-new-overlay.dark .game-overlay input {
   border-color: var(--saito-purple);
 }
@@ -378,7 +382,6 @@
 
 .saito-multi-select_btn_options.dark {
   background: none;
-  border: 1px solid var(--saito-purple);
   margin-left: 0.5rem;
 }
 
