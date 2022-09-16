@@ -319,23 +319,6 @@ console.log("untoggle: " + divname);
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       }
     });
-    if (app.modules.returnModule("RedSquare")) {
-    this.menu.addSubMenuOption("game-game", {
-      text : "Screenshot",
-      id : "game-post",
-      class : "game-post",
-      callback : async function(app, game_mod) {
-        let log = document.querySelector(".log");
-        let log_lock = document.querySelector(".log_lock");
-        if (!log_lock && log) { log.style.display = "none"; }
-        await app.browser.captureScreenshot(function(image) {
-          if (!log_lock && log) { log.style.display = "block"; }
-          let m = game_mod.app.modules.returnModule("RedSquare");
-          if (m) { m.tweetImage(image); }
-        });
-      },
-    });
-    }
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
@@ -343,28 +326,6 @@ console.log("untoggle: " + divname);
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(app, game_mod, game_mod.returnStatsHTML());
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        game_mod.updateStatusWithOptions("Saving game to the blockchain...");
-        game_mod.prependMove("exit_game\t"+game_mod.game.player);
-        game_mod.endTurn();
-      }
-    });
-
-    //
-    // fullscren toggle?
-    //
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
       }
     });
 
@@ -377,7 +338,6 @@ console.log("untoggle: " + divname);
     // render menu
     //
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     //
     // sidebar log
@@ -401,6 +361,12 @@ console.log("untoggle: " + divname);
 
     return state;
 
+  }
+
+  exitGame(){
+    this.updateStatusWithOptions("Saving game to the blockchain...");
+    this.prependMove("exit_game\t"+this.game.player);
+    this.endTurn();
   }
 
   returnStatsHTML(){
@@ -654,7 +620,8 @@ console.log("untoggle: " + divname);
         this.saveGame(this.game.id);
 
         if (this.game.player === player){
-          window.location.href = "/arcade";
+          super.exitGame();
+          //window.location.href = "/arcade";
         }else{
           this.updateStatus("Player has exited the building");
         }
