@@ -453,7 +453,7 @@ class Browser {
         obj.outerHTML = html;
       } else {
         console.log("cannot find so adding");
-        this.app.browser.addElementToDom(html, id);
+        this.app.browser.addElementToDom(html);
       }
     }
   }

@@ -91,7 +91,6 @@ class Monarchy extends GameTemplate {
       });
     }
     this.menu.render(this.app, this);
-    this.menu.attachEvents(this.app, this);
 
     console.log(JSON.parse(JSON.stringify(this.game.state.decks)));
   }
@@ -122,23 +121,6 @@ class Monarchy extends GameTemplate {
       }
     });
 
-     this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        window.location.href = "/arcade";
-      }
-    });
-
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-	      game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
 
     this.menu.addChatMenu(app, this);
 
