@@ -164,7 +164,7 @@ class GameCreateNew {
           };
 
 
-          console.log("Gamedata options");
+          console.log("RS game options");
           console.log(gamedata);
 
           if (players_needed === 0) {
