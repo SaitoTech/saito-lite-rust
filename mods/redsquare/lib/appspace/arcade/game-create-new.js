@@ -123,6 +123,8 @@ class GameCreateNew {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
+
+
           //
           // if crypto and stake selected, make sure creator has it
           //
@@ -154,6 +156,16 @@ class GameCreateNew {
             players_needed = document.querySelector(".game-wizard-players-no-select").dataset.player;
           }
 
+          console.log("RS game options before");
+          console.log({
+            ts: new Date().getTime(),
+            name: gamemod.name,
+            slug: gamemod.returnSlug(),
+            options: options,
+            players_needed: players_needed,
+            invitation_type: "public",
+          });
+
           let gamedata = {
             ts: new Date().getTime(),
             name: gamemod.name,
@@ -164,7 +176,7 @@ class GameCreateNew {
           };
 
 
-          console.log("RS game options");
+          console.log("RS game options after");
           console.log(gamedata);
 
           if (players_needed === 0) {
