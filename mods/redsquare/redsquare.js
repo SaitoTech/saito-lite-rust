@@ -92,7 +92,6 @@ class RedSquare extends ModTemplate {
           post.render(this.app, this);
 	  post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
     } catch (err) {
-console.log("error tweeting image");
     }
   }
 
@@ -154,7 +153,6 @@ console.log("error tweeting image");
           }
         }
 
-        //console.log("1. ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
 	if (prepend == 0) {
            this.tweets.splice(insertion_index, 0, tweet);
 	} else {
@@ -168,7 +166,6 @@ console.log("error tweeting image");
     } else {
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
-          //console.log("1. ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
           if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
             // we've added, stop adding
             this.txmap[tweet.tx.transaction.sig] = 1;
@@ -202,7 +199,6 @@ console.log("error tweeting image");
             insertion_index++;
           }
         }
-        //console.log("ADDING TWEET AS POST: " + tweet.tx.transaction.sig + " -- " + tweet.parent_id + " -- " + tweet.thread_id);
         this.tweets.splice(insertion_index, 0, tweet);
         this.txmap[tweet.tx.transaction.sig] = 1;
         mod.app.connection.emit('tweet-render-request', tweet);
@@ -215,10 +211,8 @@ console.log("error tweeting image");
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
-          //console.log("ADDING TWEET AS COMMENT: " + tweet.tx.transaction.sig);
           if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
             // we've added, stop adding
-            //console.log("somehow this triggers...");
             mod.app.connection.emit('tweet-render-request', tweet);
             break;
           }
@@ -589,7 +583,6 @@ console.log("error tweeting image");
                 tx.optional.link_properties = x;
               } catch (err) { }
   	      let txmsg = tx.returnMessage();
-console.log("add " + txmsg.data.text + " w/ replies " + tx.optional.num_replies);
               this.addTweetFromTransaction(app, mod, tx);
             }
           });
@@ -980,15 +973,20 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
 
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;
+      if (this.redsquare.last_viewed_notifications_ts) {
+        this.last_viewed_notifications_ts = this.redsquare.last_viewed_notifications_ts;
+      }
       return;
     }
 
     this.redsquare = {};
     this.redsquare.last_checked_notifications_timestamp = new Date().getTime();
+    this.redsquare.last_viewed_notifications_ts = 0;
     this.redsquare.last_liked_tweets = [];
   }
 
   saveRedSquare() {
+    this.redsquare.last_viewed_notifications_ts = this.last_viewed_notifications_ts;
     this.app.options.redsquare = this.redsquare;
     this.app.storage.saveOptions();
   }

@@ -198,24 +198,20 @@ class RedSquareMenu {
 
   displayNotification(app, menu_item, notifications = Math.floor(Math.random() * 20)) {
 
-console.log("displayNotification: " + notifications);
-
     let qs = `.redsquare-menu-${menu_item}`;
     if (document.querySelector(qs)) {
-      qs = `redsquare-menu-${menu_item} .saito-notification-dot`;
+      qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
       let obj = document.querySelector(qs);
       if (!obj) {
-console.log(qs + " does not exist");
         if (notifications > 0) {
           app.browser.addElementToSelector(`<p class="saito-notification-dot">${notifications}</p>`, `.redsquare-menu-${menu_item}`);
         } 
       } else {
-console.log("obj exists");
         if (notifications == 0) {
 	  obj.style.display = "none";
 	} else {
 	  obj.style.display = "block";
-          obj.innerHTML = `<p class="saito-notification-dot">${notifications}</p>`;
+          obj.innerHTML = `${notifications}`;
         }
       }
     }
