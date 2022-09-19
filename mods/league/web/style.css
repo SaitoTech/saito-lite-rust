@@ -100,39 +100,80 @@ body {
   overflow: hidden;
 }
 
-.league-details-overlay {
+/** Leaderboards 
+ *  duplicated to arcade and redsquare
+ * **/
+
+ .league-details-overlay {
   width: 100%;
   min-width: min(600px, 100vw);
-  border: whitesmoke 2px dotted;
+  border: 1px solid var(--saito-cyber-grey);
   border-radius: 5px;
-  background: black;
+  background: var(--saito-cyber-black);
   padding: 10px;
+  user-select: none;
+  cursor: default;
 }
 
 .league-details-overlay h2 {
   text-align: center;
 }
 
-.league-details-overlay .league-overview-box,
-.league-details-overlay .league-leaderboard {
+.league-details-overlay p {
+  padding: 1rem;
+}
+
+.league-details-overlay .league-overview-box {
   margin: auto;
   width: 100%;
-  padding: 1em;
+  padding: 1rem;
   max-height: 60vh;
-  overflow-y: scroll;
-
+  overflow-y: auto;
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 8rem auto;
 }
 
-.league-leaderboard table {
+.league-leaderboard-table {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto;
   width: 100%;
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
-.league-leaderboard table td {
-  text-align: center;
+.league-leaderboard-table.saitolicious {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem;
 }
 
-.league-leaderboard table tr {
-  height: 42px;
+.league-leaderboard-table.admin {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto 4fr 4fr auto;
+}
+
+.league-leaderboard-table.admin.saitolicious {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem  4fr 4fr auto;
+}
+
+.league-overview-box div:nth-child(odd) {
+  font-weight: bold;
+}
+
+
+*/
+.mystats {
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.newfriend {
+  cursor: crosshair;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .league-overview-box .info-item {
