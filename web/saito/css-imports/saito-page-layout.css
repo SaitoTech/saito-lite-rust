@@ -218,10 +218,12 @@
         justify-content: center;
         align-items: center;
     }
-    .saito-container::after {
+ 
+
+    .saito-mobile-controls {
         display: inline-block 
         !important;
-        background: #4444;
+        background: transparent;
         z-index: 1;
         height: 7rem;
         content: " ";

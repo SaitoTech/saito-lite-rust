@@ -638,6 +638,7 @@ span.redsquare-home-red-square+span {
   }
 
 
+
   .saito-page-header .saito-button-secondary {
     padding: 0.5rem 0.5rem 0.4rem 0.5rem;
     margin-top: 0rem;
@@ -970,7 +971,7 @@ span.redsquare-home-red-square+span {
 }
 
 
-.redsquare-mobile-actions-icon i {
+.saito-redsquare-actions-buttons-icon i {
  display: none;
 }
 
@@ -984,14 +985,14 @@ span.redsquare-home-red-square+span {
 
 @media screen and (max-width: 415px) { 
 
-  .redsquare-mobile-actions {
+  .saito-redsquare-actions-buttons {
     z-index: 10;
     bottom: 1rem;
     position: fixed;
     margin-left: 10rem;
   }
   
-  .redsquare-mobile-actions-icon {
+  .saito-redsquare-actions-buttons-icon {
   
     content: "";
     width: 5rem;
@@ -1006,17 +1007,22 @@ span.redsquare-home-red-square+span {
     display: flex;
  
   }
-  .redsquare-mobile-actions-icon i {
+  .saito-redsquare-actions-buttons-icon i {
     font-size: 3rem;
     color: var(--saito-white);
     display: block;
   }
   
-  .redsquare-mobile-actions:hover {
+
+  .saito-redsquare-actions-buttons:hover {
     height: 15rem;
     width: 10rem;
   }
-  .redsquare-mobile-actions:hover  .redsquare-actions-container   {
+
+  .saito-redsquare-actions-buttons:hover i::before {
+   content:  "\f068";
+  }
+  .saito-redsquare-actions-buttons:hover  .redsquare-actions-container   {
     display: grid;
   }
   
@@ -1026,7 +1032,7 @@ span.redsquare-home-red-square+span {
     bottom: 8rem;
     left: 7rem;
     display: none;
-    background: var(--saito-white);
+    background: #44444444;
     grid-template-columns: 1fr;
     grid-gap: 1rem;
     border: 0.5rem;
@@ -1034,7 +1040,7 @@ span.redsquare-home-red-square+span {
     
   }
   
-  .redsquare-mobile-actions .saito-button-secondary {
+  .saito-redsquare-actions-buttons .saito-button-secondary {
     display: block;
   } 
 
