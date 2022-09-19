@@ -310,7 +310,7 @@ module.exports = ArcadeMain = {
     
   },
 
-  async joinGame(app, mod, game_id) {
+  async joinGame(app, mod, game_id, confirm_join = true) {
     let accepted_game = null;
     let relay_mod = app.modules.returnModule("Relay");
 
@@ -355,10 +355,12 @@ module.exports = ArcadeMain = {
         if (!success){ return; }
         
       }else{
-        //We move the confirmation down here, so you don't have to click twice on crypto games
-        let c = confirm("Are you sure you want to join this game?");
-        if (!c) {
-          return;
+        if (confirm_join){
+          //We move the confirmation down here, so you don't have to click twice on crypto games
+          let c = confirm("Are you sure you want to join this game?");
+          if (!c) {
+            return;
+          }
         }
       }
     } catch (err) {
@@ -514,7 +516,7 @@ module.exports = ArcadeMain = {
           let gamemod = app.modules.returnModule(app.options.games[i].module);
           if (gamemod) {
             this.removeGameFromList(game_id);
-            gamemod.resignGame(game_id, "arcadeclose");
+            gamemod.resignGame(game_id, "cancellation");
 
             //Set a fallback interval if the opponent is no longer online
             mod.game_close_interval_cnt += 5;
