@@ -347,13 +347,10 @@ console.log("error tweeting image");
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     let t = this.returnTweet(app, mod, sig);
-console.log("render with parent in mod");
-console.log("children: " + t.children.length);
     if (t != null) {
       t.renderWithParents(app, mod, ".redsquare-list", num);
     } else {
       t.renderWithParents(app, mod, ".redsquare-list", 0);
-console.log("cannot render...");
     }
   }
 
@@ -814,9 +811,6 @@ console.log("error tweeting image");
       // save tweets addressed to me
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
-console.log("RECEIVING TWEET TO ME AND SAVING IT");
-let txmsg = tx.returnMessage();
-console.log(JSON.stringify(txmsg));
         this.app.storage.saveTransaction(tx);
       }
 

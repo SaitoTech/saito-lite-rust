@@ -12014,6 +12014,44 @@ return;
   }
 
 
+  displayReligiousConflictUI(attacker, defender) {
+
+    let html = `
+      <div class="theological_debate_sheet" id="theological_debate_sheet" style="background-image: url('/his/img/backgrounds/theological-debate2.jpeg')">
+	<div class="attacker_debater"></div>
+	<div class="defender_debater"></div>
+	<div class="status" id="status"></div>
+      </div>
+    `;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    //
+    // list all debaters
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      let d = this.game.state.debaters[i];
+      let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
+      if (d.owner === "papacy") {
+	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
+      }
+      if (d.owner === "england") {
+	this.app.browser.addElementToSelector(dtile, '.anglican_debaters');
+      }
+      if (d.owner === "hapsburg") {
+	this.app.browser.addElementToSelector(dtile, '.calvinist_debaters');
+      }
+      if (d.owner === "protestant") {
+	this.app.browser.addElementToSelector(dtile, '.protestant_debaters');
+      }
+    }
+
+    let obj = document.getElementById("religious_conflict_sheet_tile");
+    obj.style.top = rcc[cid].top;
+    obj.style.left = rcc[cid].left;
+
+  }
+
   displayReligiousConflictSheet() {
 
     let num_protestant_spaces = 0;
@@ -12045,7 +12083,6 @@ return;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       let d = this.game.state.debaters[i];
       let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
-console.log("DEBATER IS: " + d.owner);
       if (d.owner === "papacy") {
 	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
       }
