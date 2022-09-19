@@ -9,6 +9,7 @@ class GameCreateNew {
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app, mod);
+    this.overlay.removeOnClose = true;
   }
 
   render(app, mod, invite) {
@@ -18,7 +19,6 @@ class GameCreateNew {
 
     this.overlay.show(app, mod, GameCreateNewTemplate(app, mod, this.game_mod, invite));
     this.overlay.setBackground(image);
-    this.overlay.removeOnClose = true;
 
 
     let advancedOptions = this.game_mod.returnGameOptionsHTML();
