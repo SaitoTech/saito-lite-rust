@@ -223,7 +223,7 @@
     .saito-mobile-controls {
         display: inline-block 
         !important;
-        background: transparent;
+        background: #4444;
         z-index: 1;
         height: 7rem;
         content: " ";

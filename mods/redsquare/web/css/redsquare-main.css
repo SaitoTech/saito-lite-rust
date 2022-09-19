@@ -1014,16 +1014,20 @@ span.redsquare-home-red-square+span {
   }
   
 
-  .saito-redsquare-actions-buttons:hover {
+  /* .saito-redsquare-actions-buttons:hover {
     height: 15rem;
     width: 10rem;
-  }
+  } */
 
-  .saito-redsquare-actions-buttons:hover i::before {
+  /* .saito-redsquare-actions-buttons:hover i::before {
    content:  "\f068";
-  }
-  .saito-redsquare-actions-buttons:hover  .redsquare-actions-container   {
+  } */
+  /* .saito-redsquare-actions-buttons:hover  .redsquare-actions-container   {
     display: grid;
+  } */
+
+  .display-actions {
+    display: grid !important;
   }
   
 
