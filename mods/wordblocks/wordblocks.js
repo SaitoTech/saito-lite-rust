@@ -1076,7 +1076,7 @@ class Wordblocks extends GameTemplate {
         this.drawTiles();
 
         if (this.checkForEndGame() == 1) {
-          return;
+          this.prependMove("gameover");
         }
 
         this.endTurn();
@@ -2224,11 +2224,13 @@ class Wordblocks extends GameTemplate {
           return;
         }
 
-        if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
-          if (wordblocks_self.checkForEndGame() == 1) {
-            return;
-          }
+        this.game.queue.splice(this.game.queue.length - 1, 1);
 
+        if (this.game.queue.includes("gameover")){
+          return 1;
+        }
+
+        if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
           wordblocks_self.updateStatusWithTiles(
             "YOUR GO: " + wordblocks_self.defaultMsg
           );
@@ -2244,7 +2246,6 @@ class Wordblocks extends GameTemplate {
           wordblocks_self.returnNextPlayer(player)
         );
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
-        this.game.queue.splice(this.game.queue.length - 1, 1);
         console.log("New Queue:",JSON.stringify(this.game.queue));
         return 0; // remove word and wait for next
       }
@@ -2264,11 +2265,13 @@ class Wordblocks extends GameTemplate {
         //  return 1;
         //}
 
-        if (this.game.player !== 0){
-          if (wordblocks_self.checkForEndGame() == 1) {
-            return;
-          }
+        this.game.queue.splice(this.game.queue.length - 1, 1);
+
+        
+        if (this.game.queue.includes("gameover")) {
+          return 1;
         }
+        
 
         let player = mv[1];
         let discardedTiles = mv[2];
@@ -2313,7 +2316,6 @@ class Wordblocks extends GameTemplate {
         $("player-box").removeClass("active");
         this.playerbox.addClass("active", wordblocks_self.returnNextPlayer(player));
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
-        this.game.queue.splice(this.game.queue.length - 1, 1);
         console.log("New Queue:",JSON.stringify(this.game.queue));
         return 0;
       }
@@ -2331,8 +2333,7 @@ class Wordblocks extends GameTemplate {
       this.game.deck[0].hand.length == 0 &&
       this.game.deck[0].crypt.length == 0
     ) {
-      this.addMove("gameover");
-      this.endTurn();
+      return 1;
     }
 
     return 0;

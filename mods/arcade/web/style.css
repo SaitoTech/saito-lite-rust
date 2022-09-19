@@ -1404,12 +1404,23 @@ option {
 }
 
 /** ARCADE INIT **/
-.arcade-initialize-game-container {
+.arcade-initialize-game-container{
   display: grid;
   grid-gap: 1em;
   padding: 2em;
   font-size: 1.3em;
 }
+.game-loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2em;
+  font-size: 1.3em;
+}
+.game-loader-container .game-loader-title{
+  margin: 14% 0;
+}
+
 
 /** ARCADE INVITATION **/
 .arcade-invite-container {
