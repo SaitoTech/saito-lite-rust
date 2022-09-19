@@ -18,6 +18,7 @@ class GameCreateNew {
 
     this.overlay.show(app, mod, GameCreateNewTemplate(app, mod, this.game_mod, invite));
     this.overlay.setBackground(image);
+    this.overlay.removeOnClose = true;
 
 
     let advancedOptions = this.game_mod.returnGameOptionsHTML();
@@ -171,7 +172,7 @@ class GameCreateNew {
           }
           
           //Close the overlay
-          gamecreate_self.overlay.hide();
+          gamecreate_self.overlay.remove();
 
           if (players_needed == 1) {
 
