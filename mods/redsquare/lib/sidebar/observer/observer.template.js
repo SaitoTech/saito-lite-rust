@@ -15,9 +15,14 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 			html += `<div class="saito-table">`;
 			let cnt = 0;
 
+			/*
+				So each game (should) have a created_at for the ts of the initial game state
+				and a latest_move with is the ts of the last game step.
+			*/
+
 			for (let g of games){
 				//We will only display live games
-				if (g.game_status !== "over" && g.ts > cutoff){
+				if (g.game_status !== "over" && !(g?.lastest_move < cutoff)){
 				 cnt++;
 
 					let gameModule = app.modules.returnModule(g.module);
@@ -26,7 +31,7 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 				    let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${g.players_array.split("_").length}, 1fr);">`;
 				    let gameName= gameModule.gamename || gameModule.name;
 				  
-				    let gametime = g.ts;
+				    let gametime = g.created_at || g.ts;
 				    let datetime = app.browser.formatDate(gametime);
 
 				    g.players_array.split("_").forEach((player) => {

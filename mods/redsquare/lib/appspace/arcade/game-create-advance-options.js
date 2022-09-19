@@ -15,6 +15,10 @@ class AdvancedOverlay {
         document.querySelector("#game-wizard-advanced-options-overlay").innerHTML = "";
       }
 
+      if (document.getElementsByClassName('game-wizard-advanced-options-overlay').length > 1) {
+        document.getElementsByClassName('game-wizard-advanced-options-overlay')[0].remove();
+      }
+
       app.browser.addElementToId(AdvancedOverlayTemplate(), "game-wizard-advanced-options-overlay");
 
       //
@@ -38,7 +42,7 @@ class AdvancedOverlay {
       overlay_el.innerHTML = html;
       overlay_el.style.display = "block";
       overlay_backdrop_el.style.display = "block";
-      overlay_backdrop_el.style.opacity = 0.5;
+      overlay_backdrop_el.style.opacity = 0.95;
       overlay_backdrop_el.style.backgroundColor = "#111";
 
       //This should be a blocking overlay by default

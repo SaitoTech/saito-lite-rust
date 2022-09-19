@@ -84,14 +84,6 @@ class Midnight extends GameTemplate {
               game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML());
           }
       });
-      this.menu.addSubMenuOption("game-game", {
-          text: "Exit",
-          id: "game-exit",
-          class: "game-exit",
-          callback: function (app, game_mod) {
-              window.location.href = "/arcade";
-          }
-      });
 
       // Add Chat Features to Menu
       this.menu.addChatMenu(app, this, this.game.sides);
@@ -99,7 +91,6 @@ class Midnight extends GameTemplate {
 
      // Render menu and attach events
       this.menu.render(app, this);
-      this.menu.attachEvents(app, this);
 
       this.playerbox.render(app, this);
       this.playerbox.attachEvents(app, this);

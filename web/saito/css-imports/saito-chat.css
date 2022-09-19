@@ -41,6 +41,10 @@
 
 .chat-header > h6 {
     color: var(--saito-default-font-color);
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .chat-body {

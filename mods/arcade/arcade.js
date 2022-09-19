@@ -95,17 +95,10 @@ class Arcade extends ModTemplate {
     if (this.browser_active == 1) {
       if (this.viewing_arcade_initialization_page == 0) {
         ArcadeMain.render(this.app, this);
-        ArcadeMain.attachEvents(this.app, this);
         if (this.viewing_game_homepage) {
           ArcadeGameSidebar.attachEvents(this.app, this);
         }
       }
-    }else{
-      //
-      // red square wanna render?
-      //
-      this.app.connection.emit('game-invite-render-request');
-
     }
   }
 
@@ -191,9 +184,33 @@ class Arcade extends ModTemplate {
       this.affix_callbacks_to.push(mod.name);
     });
 
+    if (!app.BROWSER){return;}
+
     app.connection.on("join-game", (game_id)=>{
       ArcadeMain.joinGame(app, this, game_id);
     });
+
+    app.connection.on("observer-add-game-render-request",(observerable_games)=>{
+      if (this.browser_active){
+        let observer = app.modules.returnModule("Observer");
+        if (observer){
+          observer.renderArcadeTab(app, this);
+        }
+      }
+    });
+
+    app.connection.on("league-update", ()=>{
+      if (this.browser_active){
+        let league = app.modules.returnModule("League");
+        if (league){
+          league.renderArcadeTab(app, this);
+        }
+
+      }
+    });
+
+      
+
   }
 
   initializeHTML(app) {
@@ -856,9 +873,7 @@ class Arcade extends ModTemplate {
     });
 
     //Refresh Arcade Main
-    if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
-      this.renderArcadeMain();
-    }
+    ArcadeMain.renderArcadeTab(app, this);
     if (this.debug) {
       this.checkGameDatabase();
     }
@@ -1038,7 +1053,7 @@ class Arcade extends ModTemplate {
           if (this.debug) { console.log("I sent the message"); }
         } else {
           if (this.isMyGame(tx, app)) {
-            this.renderArcadeMain();
+            ArcadeMain.renderArcadeTab(app, this);
           } else {
             if (this.debug) { console.log("I need to update my browser"); }
             if (new_status == "private") {
@@ -1408,7 +1423,7 @@ class Arcade extends ModTemplate {
       }
     });
 
-    this.renderArcadeMain();
+    ArcadeMain.renderArcadeTab(this.app, this);
   }
 
   isForUs(tx) {
@@ -1502,10 +1517,8 @@ class Arcade extends ModTemplate {
 
 
     try {
-      if (this.browser_active) {
-        if (this.debug) { console.log("Player should get added to arcade hero"); }
-        this.renderArcadeMain(this.app, this);
-      }
+      if (this.debug) { console.log("Player should get added to arcade hero"); }
+      ArcadeMain.renderArcadeTab(this.app, this);
     } catch (err) {
       console.log("Non-fatal error rendering open game list");
     }
@@ -1535,10 +1548,8 @@ class Arcade extends ModTemplate {
     }
 
     try {
-      if (this.browser_active) {
-        console.log("Player should get removed from arcade hero");
-        this.renderArcadeMain(this.app, this);
-      }
+      if (this.debug){ console.log("Player should get removed from arcade hero"); }
+      ArcadeMain.renderArcadeTab(this.app, this);
     } catch (err) {
       console.log("Non-fatal error rendering open game list");
     }
@@ -1602,7 +1613,7 @@ class Arcade extends ModTemplate {
       }
       let removed_game = this.removeOldGames();
       if (for_us || removed_game) {
-        this.renderArcadeMain(this.app, this);
+        ArcadeMain.renderArcadeTab(this.app, this);
       }
     }
     console.log("Add Game:" + valid_game + for_us);
@@ -1626,7 +1637,7 @@ class Arcade extends ModTemplate {
     //let removed_game = this.removeOldGames();
     //if (for_us || removed_game){
     if (for_us) {
-      this.renderArcadeMain(this.app, this);
+      ArcadeMain.renderArcadeTab(this.app, this);
     }
   }
 
