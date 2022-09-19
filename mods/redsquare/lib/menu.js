@@ -122,6 +122,9 @@ class RedSquareMenu {
   }
 
   renderItem(app, mod, component, params = null) {
+
+    this.displayNotification(app, component, 0);
+
     let url = component
     if (params) {
       url = `${component}?${params}`;
@@ -194,13 +197,22 @@ class RedSquareMenu {
 
 
   displayNotification(app, menu_item, notifications = Math.floor(Math.random() * 20)) {
-    let obj = `.redsquare-menu-${menu_item}`
-    if (document.querySelector(obj)) {
-      if (!document.querySelector(`${obj} .saito-notification-dot`)) {
-        app.browser.addElementToSelector(`<p class="saito-notification-dot">${notifications}</p>`, obj);
-      }else {
-        obj = `.redsquare-menu-${menu_item} .saito-notification-dot`
-        app.browser.replaceElementBySelector(`<p class="saito-notification-dot">${notifications}</p>`, obj)
+
+    let qs = `.redsquare-menu-${menu_item}`;
+    if (document.querySelector(qs)) {
+      qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
+      let obj = document.querySelector(qs);
+      if (!obj) {
+        if (notifications > 0) {
+          app.browser.addElementToSelector(`<p class="saito-notification-dot">${notifications}</p>`, `.redsquare-menu-${menu_item}`);
+        } 
+      } else {
+        if (notifications == 0) {
+	  obj.style.display = "none";
+	} else {
+	  obj.style.display = "block";
+          obj.innerHTML = `${notifications}`;
+        }
       }
     }
   }
