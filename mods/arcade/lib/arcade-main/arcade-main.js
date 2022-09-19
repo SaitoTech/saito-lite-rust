@@ -4,7 +4,7 @@ const ArcadeMobileHelper = require("./templates/arcade-mobile-helper.template");
 const ArcadeForums = require("./arcade-forums");
 const ArcadePosts = require("./arcade-posts");
 const ArcadeInfobox = require("./arcade-infobox");
-const GameLoader = require("./../arcade-game/game-loader");
+const GameLoader = require("./../../../../lib/saito/new-ui/game-loader/game-loader");
 const SaitoCarousel = require("./../../../../lib/saito/ui/saito-carousel/saito-carousel");
 const ArcadeInviteTemplate = require("./templates/arcade-invite.template");
 const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
@@ -392,7 +392,6 @@ module.exports = ArcadeMain = {
       peers.push(app.network.peers[i].returnPublicKey());
     }
 
-    //if (players_needed > players_available + 1) {
       let newtx = mod.createJoinTransaction(accepted_game);
       app.network.propagateTransaction(newtx);
 
@@ -405,115 +404,8 @@ module.exports = ArcadeMain = {
       }
       if (mod.debug){console.log(JSON.parse(JSON.stringify(newtx)));}
 
-      //mod.joinGameOnOpenList(newtx);
       salert("Joining game! Please wait a moment");
-      return;
-    //}
-    /*
-    console.log("I create the game with this JOIN!!!");
 
-    //
-    // enough players, so "accept" to kick off
-    //
-    if (accepted_game.transaction.from[0].add == app.wallet.returnPublicKey()) {
-      if (players.length > 1) {
-        salert(`You created this game! Waiting for enough players to join we can start...`);
-      }
-    } else {
-      //
-      // we are going to send a message to accept this game, but first check if we have
-      // already done this, in which case we will have the game loaded in our local games list
-      //
-      if (app.options.games) {
-        let existing_game = app.options.games.find((g) => g.id == game_id);
-
-        if (existing_game) {
-          if (existing_game.initializing == 1) {
-            salert("Accepted Game! It may take a minute for your browser to update -- please be patient!");
-            GameLoader.render(app, mod);
-            GameLoader.attachEvents(app, mod);
-
-          } else { // game exists and is no longer initializing, so "continue" not "join"
-            
-            existing_game.ts = new Date().getTime();
-            existing_game.initialize_game_run = 0;
-            app.storage.saveOptions();
-            //Have to search list of modules in Saito to get the existing_game's slug (i.e. directory)
-            for (let z = 0; z < app.modules.mods.length; z++) {
-              if (app.modules.mods[z].name == existing_game.module) {
-                window.location = "/" + app.modules.mods[z].returnSlug();
-                return;
-              }
-            }
-          }
-          return; //Stop processing if the game already exists
-        }
-      }
-
-      //
-      // ready to go? Still, need check with server game is not taken
-      //
-      GameLoader.render(app, mod);
-      GameLoader.attachEvents(app, mod);
-
-      mod.sendPeerRequestWithFilter(
-        () => {
-          let msg = {};
-          msg.request = "rawSQL";
-          msg.data = {};
-          msg.data.module = "Arcade";
-          msg.data.sql = `SELECT is_game_already_accepted FROM games WHERE game_id = "${game_id}"`;
-          msg.data.game_id = game_id;
-          return msg;
-        },
-
-        async (res) => {
-          console.log("callback",res);
-          if (res.rows) {
-            if (res.rows.length > 0) {
-              if (res.rows[0].game_still_open == 1 || (res.rows[0].game_still_open == 0 && players_needed > 2)) {
-                if (mod.debug){
-                  console.log("We meet the accept conditions");
-                  console.log(app.wallet.returnPublicKey()+" sends the accept message from arcade-main");
-                }
-
-                //
-                // data re: game in form of tx
-                //
-                let { transaction } = accepted_game;
-                let game_tx = Object.assign({ msg: { players_array: null } }, transaction);
-
-                let newtx = mod.createAcceptTransaction(accepted_game);
-                mod.app.network.propagateTransaction(newtx);
-
-                //
-                // try fast accept
-                //
-                if (relay_mod != null) {
-                  relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
-                  relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
-                }
-
-                return;
-              } else {
-                await sconfirm("Sorry, this game has been accepted already!");
-              }
-            } else {
-              await sconfirm("Sorry, this game has already been accepted!");
-            }
-          } else {
-            console.log("ERROR 458103: cannot fetch information on whether game already accepted!");
-          }
-          mod.viewing_arcade_initialization_page = 0;
-          if (app.browser.returnURLParameter("jid")) {
-            window.location = "/arcade";  //redirect and reconnect to pull the list of open games    
-          } else {
-            mod.renderArcadeMain(); //Reset to default view (undo game loader)  
-          }
-
-        }
-      );
-    }*/
   },
 
   continueGame(app, mod, game_id) {
@@ -534,13 +426,19 @@ module.exports = ArcadeMain = {
     }
 
     if (existing_game && existing_game !== -1) {
+      //
+      //I'm not sure this safety catch does anything
+      //I've never seen it come up
+      //
       if (existing_game.initializing == 1) {
         salert(
           "Accepted Game! It may take a minute for your browser to update -- please be patient!"
         );
 
-        GameLoader.render(app, mod);
-        GameLoader.attachEvents(app, mod);
+        //Make a spinner
+        let gameLoader = new GameLoader(app, mod);
+        mod.viewing_arcade_initialization_page = 1;
+        gameLoader.render(app, mod, "#arcade-main");
 
         return;
       } else {
