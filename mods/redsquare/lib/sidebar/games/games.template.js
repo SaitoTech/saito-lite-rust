@@ -1,7 +1,8 @@
 const SaitoArcadeInviteTemplate = require('./../../../../../lib/saito/new-ui/templates/saito-arcade-invite.template');
 
 module.exports = RedSquareGamesTemplate = (app, mod) => {
-	let html = `<div class="saito-arcade-invite-list">`;
+	let html = `<h6>Games Looking for a Player:</h6>
+            <div class="saito-arcade-invite-list">`;
 
     //
     // render existing arcade games
@@ -33,10 +34,14 @@ module.exports = RedSquareGamesTemplate = (app, mod) => {
       html += `</div>`;
 
       //So if no open invites, make a stub prompting user to create a game
-      
       //TODO Make this better
-      if (games.length == 0){
-      	html = `<h3>Create a New Game</h3>`;
+      if (games.length == 0) {
+        html = ""
+        if (window.location.hash !== "#games"){
+      	   html += `<div id="redsquare-schedule-game" class="saito-button-secondary small" style="float: right;">Schedule for Later</div>
+                <div id="redsquare-create-game" class="saito-button-secondary small" style="float: right;">Create New Game</div>
+              `;
+        }
       }
 
 

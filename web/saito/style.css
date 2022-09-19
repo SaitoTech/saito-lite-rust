@@ -1688,7 +1688,7 @@ div#message-wrapper {
   padding: 0px;
 }
 
-.loader {
+.loader, .game-loader-spinner {
   border: 16px solid var(--saito-skyline-grey);
   border-top: 16px solid var(--saito-red);
   border-radius: 50%;

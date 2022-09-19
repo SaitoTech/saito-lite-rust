@@ -2,6 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/arcade-main/arcade-main");
+const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
 const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
 const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
@@ -27,7 +28,6 @@ class Arcade extends ModTemplate {
     this.games = []; //Game Invites
     //this.observer = [];
     this.old_game_removal_delay = 2000000;
-    this.initialization_timer = null;
     this.services = [{ service: "arcade", domain: "saito" }];
 
     this.viewing_arcade_initialization_page = 0;
@@ -47,7 +47,7 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = true;
+    this.debug = false;
 
     //So we can keep track of games which we want to close but are waiting on game engine to process
     this.game_close_interval_cnt = 0;
@@ -191,7 +191,7 @@ class Arcade extends ModTemplate {
     });
 
     app.connection.on("observer-add-game-render-request",(observerable_games)=>{
-      if (this.browser_active){
+      if (this.browser_active && !this.viewing_arcade_initialization_page){
         let observer = app.modules.returnModule("Observer");
         if (observer){
           observer.renderArcadeTab(app, this);
@@ -200,7 +200,7 @@ class Arcade extends ModTemplate {
     });
 
     app.connection.on("league-update", ()=>{
-      if (this.browser_active){
+      if (this.browser_active && !this.viewing_arcade_initialization_page){
         let league = app.modules.returnModule("League");
         if (league){
           league.renderArcadeTab(app, this);
@@ -208,7 +208,10 @@ class Arcade extends ModTemplate {
 
       }
     });
-
+    app.connection.on("game-ready", (gameid)=>{
+      console.log("GAME READY received:" + gameid);
+      this.launchGame(gameid);
+    });
       
 
   }
@@ -220,7 +223,7 @@ class Arcade extends ModTemplate {
   checkGameDatabase(){
     if (!this.app.BROWSER){return;}
 
-    let cutoff = new Date().getTime() - this.old_game_removal_delay;
+    /*let cutoff = new Date().getTime() - this.old_game_removal_delay;
     let sql = `SELECT * FROM games WHERE created_at > ${cutoff}`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
       if (res.rows) {
@@ -231,7 +234,7 @@ class Arcade extends ModTemplate {
         console.log("No games in the database");
       }
     }
-    );
+    );*/
   }
 
   //
@@ -275,7 +278,7 @@ class Arcade extends ModTemplate {
               } else { return null; }
             })
           );
-          ArcadeMain.joinGame(arcade_self.app, arcade_self, gameId);
+          ArcadeMain.joinGame(arcade_self.app, arcade_self, gameId, false);
         }
       });
     }
@@ -437,7 +440,11 @@ class Arcade extends ModTemplate {
 
     if (this.debug) { console.log(JSON.parse(JSON.stringify(players))); }
 
-    this.joinGameOnOpenList(tx); //Update Arcade hero to reflect new player
+    //Update Arcade hero to reflect new player
+    if (!this.joinGameOnOpenList(tx)){
+      console.log("Player cannot join game (already joined)");
+      return;
+    } 
     
     if (this.debug) { 
       console.log(JSON.parse(JSON.stringify(players))); 
@@ -488,18 +495,20 @@ class Arcade extends ModTemplate {
 
         console.log(this.app.wallet.returnPublicKey()+" sends the accept message from arcade");
         let newtx = this.createAcceptTransaction(accepted_game);
+
+        console.log(JSON.parse(JSON.stringify(newtx)));
         this.app.network.propagateTransaction(newtx);
 
         // try fast accept
         if (relay_mod != null) {
           relay_mod.sendRelayMessage(accepted_game.msg.players, "arcade spv update", newtx);
-          relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+          //relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
         }
       }
       //
       // launch init
       //
-      this.launchGame(txmsg.game_id);
+      this.launchGame(/*txmsg.game_id*/);
       return;
     }
 
@@ -510,6 +519,7 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let gamemod = this.app.modules.returnModule(txmsg.game);
+    console.log(JSON.parse(JSON.stringify(txmsg)));
     
     if (!gamemod){
       console.error("Game module not found!");
@@ -529,7 +539,8 @@ class Arcade extends ModTemplate {
     }
 
     // do not process if transaction is not for us
-    if (!tx.isTo(app.wallet.returnPublicKey()) || this.app.BROWSER == 0) {
+    if (!tx.isTo(app.wallet.returnPublicKey()) || app.BROWSER == 0) {
+      console.log("TX not for me");
       return;
     }
 
@@ -540,20 +551,24 @@ class Arcade extends ModTemplate {
         if (this.app.options.games[i].initializing == 0) { //Is that right, I don't know if this condition can be true
           let currentTime = new Date().getTime();
           if (currentTime - this.app.options.games[i].ts > 5000) {
+            console.log("nope out of old game");
             return;
           }
         }
+        console.log(`game (${txmsg.game_id}) already exists`);
+        console.info("MY CREATED GAMES: ", this.app?.options?.games);
         return;
       }
     }
 
 
     if (txmsg.players.includes(app.wallet.returnPublicKey())) {
-
-      if (this.debug) { console.log("ALREADY SHOWING LOADER? " + this.viewing_arcade_initialization_page); }
+      console.log("Accept game for real");
 
       if (this.browser_active) {
-        GameLoader.render(app, this);   
+        if (!this.viewing_arcade_initialization_page){
+          this.launchGame(null);
+        }
       }else{
         app.connection.emit("arcade-game-loading");
         siteMessage(txmsg.module + ' invite accepted.', 20000);
@@ -564,9 +579,6 @@ class Arcade extends ModTemplate {
         console.log("telling game module to receiveAcceptTx");
       }
 
-
-      //Kick off game loader
-      this.launchGame(txmsg.game_id);
       //Create Game Here
       let game_id = await gamemod.processAcceptRequest(tx, this.app);
       
@@ -778,51 +790,6 @@ class Arcade extends ModTemplate {
       }
 
     } // end message.request == "arcade spv update"
-
-
-    /*if (message.request == "rawSQL" && app.BROWSER == 0 && message.data.module == "Arcade") {
-      //
-      // intercept a very particular query
-      //
-      if (message.data.sql.indexOf("is_game_already_accepted") > -1) {
-        if (this.debug) { console.log("DOING a pseudo SQL query"); }
-        let game_id = message.data.game_id;
-
-        let res = {};
-        res.rows = [];
-        console.log("ACCEPTED PROPERTY:");
-        console.log(this.accepted);
-        if (this.accepted[game_id] > 0) {
-          if (this.accepted[game_id] > 2) {
-            //
-            // check required of players_needed vs. players_accepted
-            //
-            let sql3 = `SELECT status FROM games WHERE game_id = $game_id`;
-            let params3 = { $game_id: game_id };
-            let rows3 = await this.app.storage.queryDatabase(sql3, params3, "arcade");
-            if (rows3) {
-              if (rows3.length > 0) {
-                if (rows3[0].status === "open" || rows3[0].status === "private") {
-                  this.accepted[game_id] = 0;
-                  res.rows.push({ game_still_open: 1 });
-                  mycallback(res);
-                  return;
-                }
-              }
-            }
-          }
-
-          this.accepted[game_id]++;
-          res.rows.push({ game_still_open: 0 });
-        } else {
-          this.accepted[game_id] = 1;
-          res.rows.push({ game_still_open: 1 });
-        }
-
-        mycallback(res);
-        return;
-      }
-    }*/
 
     super.handlePeerRequest(app, message, peer, mycallback);
   }
@@ -1174,8 +1141,7 @@ class Arcade extends ModTemplate {
   async launchSinglePlayerGame(app, gameobj) {
     try {
 
-      let arcade_self = this;
-      GameLoader.render(app, arcade_self);
+      this.launchGame();
 
       let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
       tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
@@ -1189,76 +1155,60 @@ class Arcade extends ModTemplate {
       let gameMod = app.modules.returnModule(gameobj.name);
       let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
 
-      GameLoader.render(app, arcade_self, game_id);
-      GameLoader.attachEvents(app, arcade_self);
+      this.launchGame(game_id);
 
     } catch (err) {
       console.log(err);
       return;
     }
 
-    //window.location = "/" + gameobj.slug;
-    //return;
   }
 
   launchGame(game_id) {
 
-    if (this.browser_active == 0) {
+    if (this.debug) { console.log("ALREADY SHOWING LOADER? " + this.viewing_arcade_initialization_page); }
+
+    if (!game_id && !this.viewing_arcade_initialization_page){
+      if (this.browser_active){
+        let gameLoader = new GameLoader(this.app, this);
+        gameLoader.render(this.app, this, "#arcade-main");
+      }
+      this.viewing_arcade_initialization_page = 1;
+      console.log("Set up spinner and stop");
       return;
     }
 
-    let arcade_self = this;
-    if (arcade_self.initialization_timer == null) { //In case accepting player runs launchGame twice
-      arcade_self.initialization_timer = setInterval(() => {
-        console.log("in init timer!");
+    if (this.app.options?.games) {
+      for (let i = 0; i < this.app.options.games.length; i++) {
+        if (this.app.options.games[i].id == game_id) {
+          console.log("Game exists, and " + this.app.options.games[i].initializing)
+         if (this.app.options.games[i].initializing == 0) {
 
-        let game_idx = -1;
-        if (arcade_self.app.options?.games) {
-          for (let i = 0; i < arcade_self.app.options.games.length; i++) {
-            if (arcade_self.app.options.games[i].id == game_id) {
-              game_idx = i;
-            }
-          }
-
-          //
-          // we hit this if we have the sufficient number of joins but
-          // are waiting for the original creator to hit the accept tx
-          //
-          if (game_idx == -1) {
-            console.log("keep loading game!");
-            GameLoader.render(arcade_self.app, arcade_self, -1);
-            return;
-          }
-
-          if (arcade_self.app.options?.games[game_idx].initializing == 0) {
-            //
-            // check we don't have a pending TX for this game...
-            //
             let ready_to_go = 1;
 
-            if (arcade_self.app.wallet.wallet.pending.length > 0) {
-              for (let i = 0; i < arcade_self.app.wallet.wallet.pending.length; i++) {
-                let thistx = new saito.default.transaction(JSON.parse(arcade_self.app.wallet.wallet.pending[i]));
+            if (this.app.wallet.wallet.pending.length > 0) {
+              console.log("Pending Messages!?!");
+              for (let j = 0; j < this.app.wallet.wallet.pending.length; j++) {
+                let thistx = new saito.default.transaction(JSON.parse(this.app.wallet.wallet.pending[j]));
                 let thistxmsg = thistx.returnMessage();
 
-                if (thistxmsg.module == arcade_self.app.options.games[game_idx].module && thistxmsg.game_id == arcade_self.app.options.games[game_idx].id) {
+                if (thistxmsg.module == this.app.options.games[i].module && thistxmsg.game_id == game_id && thistxmsg?.step?.game) {
                   console.log("message is: " + JSON.stringify(thistxmsg));
                   ready_to_go = 0;
-                  if (thistxmsg?.step?.game <= arcade_self.app.options.games[game_idx].step.game) {
+                  if (thistxmsg?.step?.game <= this.app.options.games[i].step.game) {
+                    console.log("never mind, old move");
                     ready_to_go = 1;
                   }
                 }
               }
             }
 
-            if (ready_to_go == 0) {
-              console.log("transaction for this game still pending...");
-              return;
-            } else {
-              clearInterval(arcade_self.initialization_timer);
-              arcade_self.initialization_timer = null;
-              GameLoader.render(arcade_self.app, arcade_self, game_id);
-              GameLoader.attachEvents(arcade_self.app, arcade_self);
+            if (ready_to_go){
+
+              if (this.browser_active){
+                let gameLoader = new GameLoader(this.app, this, game_id);
+                gameLoader.render(this.app, this, "#arcade-main", "Your game is ready to start!");
+              }
 
               let hidden = "hidden";
               if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
@@ -1269,17 +1219,18 @@ class Arcade extends ModTemplate {
                 hiddenTab = "webkitHidden";
               }
 
-              arcade_self.startNotification("Game ready!", arcade_self.app.options.games[game_idx].module);
+              this.startNotification("Game ready!", this.app.options.games[i].module);
 
               if (document[hidden]) {
-                arcade_self.ringTone();
+                this.ringTone();
               }
             }
           }
         }
-      }, 500);
+      }
     }
   }
+
 
   ringTone() {
     var context = new AudioContext(),
@@ -1489,12 +1440,11 @@ class Arcade extends ModTemplate {
   }
 
   /*
-    Called both in arcade and arcade-main
     Adds player to list of players for the multiplayer game
   */
   joinGameOnOpenList(tx) {
     if (!tx.transaction || !tx.transaction.sig || !tx.msg || tx.msg.over == 1) {
-      return;
+      return false;
     }
 
     let txmsg = tx.returnMessage();
@@ -1511,17 +1461,16 @@ class Arcade extends ModTemplate {
           this.games[i].msg.players_sigs.push(txmsg.invite_sig);
 
           this.updatePlayerList(txmsg.game_id, this.games[i].msg.players, this.games[i].msg.players_sigs);
+     
+          if (this.debug) { console.log("Player should get added to arcade hero"); }
+          ArcadeMain.renderArcadeTab(this.app, this);
+          return true;
         }
       }
     }
 
-
-    try {
-      if (this.debug) { console.log("Player should get added to arcade hero"); }
-      ArcadeMain.renderArcadeTab(this.app, this);
-    } catch (err) {
-      console.log("Non-fatal error rendering open game list");
-    }
+    return false;
+    
   }
 
   leaveGameOnOpenList(tx) {
@@ -1616,7 +1565,7 @@ class Arcade extends ModTemplate {
         ArcadeMain.renderArcadeTab(this.app, this);
       }
     }
-    console.log("Add Game:" + valid_game + for_us);
+    console.log("Add Game: (valid)" + valid_game + " (for us)" +for_us);
 
   }
   addGamesToOpenList(txs) {

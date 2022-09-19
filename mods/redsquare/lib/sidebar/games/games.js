@@ -1,4 +1,7 @@
 const RedSquareGamesTemplate = require("./games.template");
+const GameCreator = require("./../../appspace/arcade/game-creator");
+const GameInviteDetails = require("./../../appspace/arcade/game-invite-details");
+const SaitoScheduler = require("./../../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler");
 
 class RedSquareGames {
 
@@ -49,6 +52,27 @@ class RedSquareGames {
       };
 
     }); 
+  
+    //Copied from lib/appspace/games.js
+    if (document.getElementById("redsquare-schedule-game")){
+      document.getElementById("redsquare-schedule-game").onclick = (e) => {
+        let sc = new SaitoScheduler(app, mod);
+        // callback is on submit
+        sc.render(app, mod, function(options) {
+          let gc = new GameCreator(app, mod);
+          gc.render(app, mod);
+        });
+      }
+
+    }
+    if (document.getElementById("redsquare-create-game")){
+      document.getElementById("redsquare-create-game").onclick = (e) => {
+        let gc = new GameCreator(app, mod);
+        gc.render(app, mod);
+      }
+    }
+
+
   }
 }
 

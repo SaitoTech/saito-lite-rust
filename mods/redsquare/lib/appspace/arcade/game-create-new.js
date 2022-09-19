@@ -9,6 +9,7 @@ class GameCreateNew {
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app, mod);
+    this.overlay.removeOnClose = true;
   }
 
   render(app, mod, invite) {
@@ -114,6 +115,7 @@ class GameCreateNew {
         try {
           let mod = app.modules.returnModule('Arcade');   
           let options = this.getOptions();
+
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
           if (isPrivateGame == "private") {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
@@ -163,10 +165,6 @@ class GameCreateNew {
             invitation_type: "public",
           };
 
-
-          console.log("Gamedata options");
-          console.log(gamedata);
-
           if (players_needed === 0) {
             console.error("Create Game Error");
             console.log(gamedata);
@@ -174,7 +172,7 @@ class GameCreateNew {
           }
           
           //Close the overlay
-          gamecreate_self.overlay.hide();
+          gamecreate_self.overlay.remove();
 
           if (players_needed == 1) {
 

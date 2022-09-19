@@ -9,7 +9,7 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 	if (obs_mod){
 		let cutoff = new Date().getTime() - 5 * 60 * 1000;
 
-		html = `<div id="rs_sidebar_observer" class="observer_sidebar">`;
+		html = `<div id="rs-sidebar-observer" class="observer-sidebar">`;
 
 			html += `<h6>Live Games:</h6>`;
 			html += `<div class="saito-table">`;
@@ -56,7 +56,7 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 					            <div>${gameName}</div>
 					            ${playersHtml}
 					        </div>
-					        <div class="observer-details saito-deemphasize"><p>${g.step} moves</p><p>Started ${Moment(g.ts).fromNow()}</p></div>
+					        <div class="observer-details saito-deemphasize"><p>${g.step} moves</p><p>Last move ${Moment(g.ts).fromNow()}</p><p>Started ${Moment(g.created_at).fromNow()}</p></div>
 					        <div class="observer-action"><a href="#" data-sig="${g.game_id}" data-cmd="watch" class="button observe-game-btn">${(isMyGame)?"Play":"Watch"}</a></div>
 					    </div>
 					`;

@@ -84,6 +84,8 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
 
     </div>
 
+    <div id="game-wizard-advanced-options-overlay" class="game-wizard-advanced-options-overlay" style="display:none"></div>
+
   </form>
   `;
   
@@ -93,7 +95,6 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       <span>NOTE: </span>${game_mod.publisher_message}</div>`;
   }
 
-  html += `<div id="game-wizard-advanced-options-overlay" class="game-wizard-advanced-options-overlay" style="display:none"></div>`;
   html += `</div>`; // overlay closing
 
   return html;
