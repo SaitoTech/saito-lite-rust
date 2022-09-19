@@ -11,6 +11,7 @@ class Mahjong extends GameTemplate {
     super(app);
 
     this.name            = "Mahjong";
+    this.gamename         = "Mahjong Solitaire";
 
     this.description     = `Remove tiles in pairs: you win when all tiles have been removed from the board.`;
     this.categories      = "Games Cardgame one-player";
@@ -24,7 +25,7 @@ class Mahjong extends GameTemplate {
 
   // adds league support
   respondTo(type){
-    if (type == "default-league") {
+    if (type === "default-league") {
       let obj = super.respondTo(type);
       obj.type = "exp";
       return obj;
@@ -143,7 +144,7 @@ class Mahjong extends GameTemplate {
     this.game.cardsLeft = index;
     this.game.selected = "";
     this.game.hidden=[];
-    if (this.browser_active == 0) { return; }
+    if (this.browser_active === 0) { return; }
     $(".slot").removeClass("empty");
     index = 0;
     try {
@@ -172,36 +173,36 @@ class Mahjong extends GameTemplate {
 
   highlightRow(num=0) {
 
-    if (num == 1) {
-      $('.row1 > img').css('opacity', 0.9);
-      $('.row2 > img').css('opacity', 0.9);
-      $('.row3 > img').css('opacity', 0.9);
-      $('.row4 > img').css('opacity', 0.9);
-      $('.row5 > img').css('opacity', 0.9);
-      $('.row6 > img').css('opacity', 0.9);
-      $('.row7 > img').css('opacity', 0.9);
-      $('.row8 > img').css('opacity', 0.9);
+    if (num === 1) {
+      $('.row1 > img').css('opacity', 0.85);
+      $('.row2 > img').css('opacity', 0.85);
+      $('.row3 > img').css('opacity', 0.85);
+      $('.row4 > img').css('opacity', 0.85);
+      $('.row5 > img').css('opacity', 0.85);
+      $('.row6 > img').css('opacity', 0.85);
+      $('.row7 > img').css('opacity', 0.85);
+      $('.row8 > img').css('opacity', 0.85);
     }
-    if (num == 2) {
-      $('.row9 > img').css('opacity', 0.9);
-      $('.row10 > img').css('opacity', 0.9);
-      $('.row11 > img').css('opacity', 0.9);
-      $('.row12 > img').css('opacity', 0.9);
-      $('.row13 > img').css('opacity', 0.9);
-      $('.row14 > img').css('opacity', 0.9);
+    if (num === 2) {
+      $('.row9 > img').css('opacity', 0.8);
+      $('.row10 > img').css('opacity', 0.8);
+      $('.row11 > img').css('opacity', 0.8);
+      $('.row12 > img').css('opacity', 0.8);
+      $('.row13 > img').css('opacity', 0.8);
+      $('.row14 > img').css('opacity', 0.8);
     }
-    if (num == 3) {
-      $('.row15 > img').css('opacity', 0.9);
-      $('.row16 > img').css('opacity', 0.9);
-      $('.row17 > img').css('opacity', 0.9);
-      $('.row18 > img').css('opacity', 0.9);
+    if (num === 3) {
+      $('.row15 > img').css('opacity', 0.75);
+      $('.row16 > img').css('opacity', 0.75);
+      $('.row17 > img').css('opacity', 0.75);
+      $('.row18 > img').css('opacity', 0.75);
     }
-    if (num == 4) {
-      $('.row19 > img').css('opacity', 0.9);
-      $('.row20 > img').css('opacity', 0.9);
+    if (num === 4) {
+      $('.row19 > img').css('opacity', 0.7);
+      $('.row20 > img').css('opacity', 0.7);
     }
-    if (num == 5) {
-      $('.row21 > img').css('opacity', 0.9);
+    if (num === 5) {
+      $('.row21 > img').css('opacity', 0.65);
     }
 
   }
@@ -257,7 +258,7 @@ class Mahjong extends GameTemplate {
   untoggleCard(divname) {
     $(`#${divname}`).css('opacity','1.0');
     $(`#${divname}`).css('pointer-events','auto');
-    let outermostBoxShadow = '0px 10px 12px 1px #000000';
+    let outermostBoxShadow = '0px 4px 2px 1px #000000';
     let boxShadow = '12px 10px 12px 1px #000000';
     if (`#${divname}` === "#row4_slot1" || `#${divname}` === "#row4_slot14") {
       this.applyShadowBox(divname, outermostBoxShadow);
@@ -273,7 +274,7 @@ class Mahjong extends GameTemplate {
   }
 
   returnCardImageHTML(name) {
-    if (name[0] == 'E') { return ""; }
+    if (name[0] === 'E') { return ""; }
     else { return '<img src="/mahjong/img/tiles/white/'+name+'.png" />'; }
   }
 
@@ -526,7 +527,7 @@ class Mahjong extends GameTemplate {
     let pairsLeftToUnlock = tilesLeftToUnlock / 2;
     let mahjong_self = this;
 
-    let html = `<span class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.<br>` + 
+    let html = `<span class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.<br><br>` + 
     `Available tile pairs to unlock: <em>${pairsLeftToUnlock}</em></span>`;
 
     let option = '';
@@ -540,14 +541,7 @@ class Mahjong extends GameTemplate {
     $('.menu_option').off();
     $('.menu_option').on('click', function() {
       let action = $(this).attr("id");
-
-      // if (action == "quit"){
-      //   mahjong_self.endGame();
-      //   mahjong_self.newRound();
-      //   mahjong_self.endTurn();
-      //   return;
-      // }
-      if (action == "undo"){
+      if (action === "undo"){
         mahjong_self.undoMove();
         return;
       }
