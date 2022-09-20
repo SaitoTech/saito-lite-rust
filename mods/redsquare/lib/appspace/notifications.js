@@ -28,6 +28,7 @@ class RedSquareAppspaceNotifications {
     notificationSelf = this;
 
     sel = ".tweet";
+
     if (document.querySelector(sel) != null) {
       document.querySelector(sel).onclick = (e) => {
         e.preventDefault();
@@ -44,7 +45,7 @@ class RedSquareAppspaceNotifications {
         mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, tweet_sig_id); });
 
         if (!window.location.href.includes('type=tweet')) {
-          let tweetUrl = window.location.href + '?type=tweet&id=' + tweet_sig_id;      
+          let tweetUrl = window.location.href + '?tweet_id=' + tweet_sig_id;      
           window.history.pushState({}, document.title, tweetUrl);  
         }
 
