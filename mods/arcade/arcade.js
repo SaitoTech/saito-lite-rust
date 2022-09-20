@@ -1164,7 +1164,7 @@ class Arcade extends ModTemplate {
 
   }
 
-  launchGame(game_id) {
+  async launchGame(game_id) {
 
     if (this.debug) { console.log("ALREADY SHOWING LOADER? " + this.viewing_arcade_initialization_page); }
 
@@ -1208,6 +1208,16 @@ class Arcade extends ModTemplate {
               if (this.browser_active){
                 let gameLoader = new GameLoader(this.app, this, game_id);
                 gameLoader.render(this.app, this, "#arcade-main", "Your game is ready to start!");
+              }else{
+                let gm = this.app.modules.returnModule(this.app.options.games[i].module);
+                if (gm){
+                  let game_name = gm.gamename || gm.name;
+                  let go = await sconfirm(`${game_name} is ready. Join now?`);
+                  if (go){
+                    this.app.browser.logMatomoEvent("Arcade", "SaitoConfirmStartGame", this.app.options.games[i].module);
+                    window.location = "/" + gm.returnSlug();
+                  }
+                }
               }
 
               let hidden = "hidden";
