@@ -13,15 +13,21 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${min}">${min} player</div>`;
       selection += game_mod.returnSingularGameOption(app);
     } else {
-      selection = `<select class="game-wizard-players-select dark" name="game-wizard-players-select">`;
+      let defaultPlayers = min;
+      if (game_mod.opengame){
+        defaultPlayers = max;
+        selection = `<label for="game-wizard-players-select">Max Number of Players:</label>`;
+      }
+      selection += `<select class="game-wizard-players-select dark" name="game-wizard-players-select">`;
       for (let p = min; p <= max; p++) {
-        selection += `<option value="${p}">${p} player</option>`;
+        selection += `<option value="${p}" ${(p===defaultPlayers)?"selected default":""}>${p} player</option>`;
       }
       selection += `</select>`;
     }
 
     return selection;
   };
+
 
   html += `
     <form>
@@ -83,8 +89,6 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       </div>
 
     </div>
-
-    <div id="game-wizard-advanced-options-overlay" class="game-wizard-advanced-options-overlay" style="display:none"></div>
 
   </form>
   `;
