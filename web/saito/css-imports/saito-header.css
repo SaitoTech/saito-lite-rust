@@ -24,23 +24,36 @@
     width: 15rem;
 }
 
-#header-menu-toggle {
+.saito-header-identicon {
+    width: 4.5rem;
+    height: 4.5rem;
+    padding: 1px;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.saito-header-identicon > .saito-identicon {
+    height: 100%;
+    width: 100%;
+}
+
+#saito-header-menu-toggle {
     margin-right: auto;
     cursor: pointer;
     transition: all 0.2s;
     position: relative;
 }
 
-#header-menu-toggle:hover {
+#saito-header-menu-toggle:hover {
     opacity: 0.9;
     transform: scale(1.2);
 }
 
-#header-menu-toggle:active {
+#saito-header-menu-toggle:active {
     transform: scale(0.9);
 }
 
-#header-menu-toggle span {
+#saito-header-menu-toggle span {
     display: block;
     width: 33px;
     height: 4px;
@@ -55,15 +68,17 @@
     margin-left: auto;
 }
 
-#header-menu-toggle span:first-child {
+#saito-header-menu-toggle span:first-child {
     transform-origin: 0% 0%;
 }
 
-#header-menu-toggle span:nth-last-child(2) {
+#saito-header-menu-toggle span:nth-last-child(2) {
     transform-origin: 0% 100%;
 }
 
-.header-hamburger-contents {
+
+
+.saito-header-contents {
     display: block;
     pointer-events: none;
     color: var(--saito-default-font-color);
@@ -83,42 +98,25 @@
     overflow: auto;
 }
 
-.header-profile {
-    background-color: var(--header-profile-background);
-    padding: 1.4rem 0.5rem;
-    border-radius: 8px;
-    display: grid;
-    column-gap: 1rem;
-    grid-template-rows: min-content min-content;
-    grid-template-columns: min-content 1fr;
-    border-bottom: 1px solid var(--saito-border);
+
+
+
+
+
+
+
+.saito-header-token-select {
+    width: 28rem;
 }
 
-.header-profile-identicon {
-    grid-column-start: 1;
-    grid-column-end: 2;    
-    grid-row-start: 1;
-    grid-row-end: 2;    
-    cursor: pointer;
-}
 
-.header-profile-balance {
-    grid-column-start: 2;
-    grid-column-end: 3;   
-    grid-row-start: 1;
-    grid-row-end: 2;    
-}
 
-.header-profile-balance > .saito-select-wrapper > div {
-  width: 28rem;
-}
 
-.header-profile-identicon .saito-identicon {
-    width: 4.5rem;
-    height: 4.5rem;
-    padding: 1px;
-    border-radius: 0;
-}
+
+
+
+
+
 
 .header-profile-address {
     grid-column-start: 1;
@@ -216,5 +214,18 @@
     .saito-header-logo {
         max-width: 12rem;
     }
+}
+
+
+
+.header-profile {
+    background-color: var(--header-profile-background);
+    padding: 1.4rem 0.5rem;
+    border-radius: 8px;
+    display: grid;
+    column-gap: 1rem;
+    grid-template-rows: min-content min-content;
+    grid-template-columns: min-content 1fr;
+    border-bottom: 1px solid var(--saito-border);
 }
 
