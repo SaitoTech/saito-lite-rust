@@ -1,6 +1,6 @@
 const GameCreateNewTemplate = require('./game-create-new.template.js');
 const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
-const AdvancedOverlay = require("./game-create-advance-options");
+//const AdvancedOverlay = require("./game-create-advance-options");
 
 class GameCreateNew {
 
@@ -8,7 +8,7 @@ class GameCreateNew {
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app, true);
     this.overlay.removeOnClose = true;
   }
 
@@ -27,22 +27,25 @@ class GameCreateNew {
     } else {
 
       //Create (hidden) the advanced options window
-      this.meta_overlay = new AdvancedOverlay(app, this.game_mod);
-      this.meta_overlay.render(app, this.game_mod, advancedOptions);
-      this.meta_overlay.attachEvents(app, this.game_mod);
-      
+      this.meta_overlay = new SaitoOverlay(app, false);
+      this.meta_overlay.show(app, mod, advancedOptions);
+      this.meta_overlay.setBackground();
+      //overlay_backdrop_el.style.opacity = 0.95;
+      //overlay_backdrop_el.style.backgroundColor = "#111";
+
+      this.meta_overlay.hide();      
 
       //
       // move advanced options into game details form
-      let advanced1 = document.querySelector(".game-wizard-advanced-box");
-      let overlay1 = document.querySelector(".game-overlay");
-      let overlay2 = document.querySelector(".game-overlay-backdrop");
-      let overlaybox = document.querySelector(".game-wizard-advanced-options-overlay");
-      overlaybox.appendChild(overlay1);
-      overlaybox.appendChild(overlay2);
-      if (advanced1) {
-        overlaybox.appendChild(advanced1);
-      }
+      //let advanced1 = document.querySelector(".game-wizard-advanced-box");
+      //let overlay1 = document.querySelector(".game-overlay");
+      //let overlay2 = document.querySelector(".game-overlay-backdrop");
+      //let overlaybox = document.querySelector(".game-wizard-advanced-options-overlay");
+      //overlaybox.appendChild(overlay1);
+      //overlaybox.appendChild(overlay2);
+      //if (advanced1) {
+      //  overlaybox.appendChild(advanced1);
+      //}
     }
 
     this.attachEvents(app, mod);
@@ -69,13 +72,14 @@ class GameCreateNew {
 
           //Requery advancedOptions on the click so it can dynamically update based on # of players
           let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small" style="float: right;">Accept</div>`;
-          let advancedOptionsHTML = gamecreate_self.game_mod.returnGameOptionsHTML();
+          let advancedOptionsHTML = "<form>"+gamecreate_self.game_mod.returnGameOptionsHTML()+"</form>";
           if (!advancedOptionsHTML.includes(accept_button)){
             advancedOptionsHTML += accept_button;
           }
           gamecreate_self.meta_overlay.show(app, gamecreate_self.game_mod, advancedOptionsHTML);
           gamecreate_self.game_mod.attachAdvancedOptionsEventListeners();
-          document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
+          gamecreate_self.meta_overlay.blockClose();
+
           try {
             if (document.getElementById("game-wizard-advanced-return-btn")) {
               document.querySelector(".game-wizard-advanced-return-btn").onclick = (e) => {
@@ -94,12 +98,8 @@ class GameCreateNew {
 
       Array.from(identifiers).forEach((identifier) => {
         identifier.addEventListener("click", (e) => {
-
-          let options = gamecreate_self.getOptions();
-          let gamemod = app.modules.returnModule(options.game);
           let rules_overlay = new SaitoOverlay(app, mod);
-          rules_overlay.show(app, mod, gamemod.returnGameRulesHTML());
-
+          rules_overlay.show(app, mod, gamecreate_self.gamemod.returnGameRulesHTML());
         });
       });
     } catch (err) {
