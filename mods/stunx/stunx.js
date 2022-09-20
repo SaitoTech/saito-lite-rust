@@ -12,7 +12,7 @@ class Stunx extends ModTemplate {
 
     constructor(app, mod) {
         super(app);
-        this.appname = "Video Call";
+        this.appname = "Stunx";
         this.name = "Stunx";
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
@@ -20,6 +20,7 @@ class Stunx extends ModTemplate {
         this.appspaceRendered = false;
         this.remoteStreamPosition = 0;
         this.peer_connections = {};
+        this.peer_datachannel_connections = {}
         this.videoMaxCapacity = 5;
         this.ChatManagerLarge = new ChatManagerLarge(app, this);
         this.ChatManagerSmall = new ChatManagerSmall(app, this);
@@ -121,8 +122,14 @@ class Stunx extends ModTemplate {
                 if (tx.msg.request === "answer") {
                     this.receiveAnswerTransaction(blk, tx, conf, app)
                 }
+                if (tx.msg.request === "datachannel_answer") {
+                    this.receiveDataChannelAnswerTransaction(blk, tx, conf, app)
+                }
                 if (tx.msg.request === "offer") {
                     this.receiveOfferTransaction(blk, tx, conf, app)
+                }
+                if (tx.msg.request === "datachannel_offer") {
+                    this.receiveDataChannelOfferTransaction(blk, tx, conf, app)
                 }
                 if (tx.msg.request === "open video chat") {
                     this.receiveOpenVideoChatTransaction(blk, tx, conf, app)
@@ -271,13 +278,18 @@ class Stunx extends ModTemplate {
             this.app.connection.emit('game-receive-video-call', app, offer_creator, offer);
             return
         }
-
-
         this.acceptPeerConnectionOffer(app, offer_creator, offer, 'large');
 
 
 
 
+
+    }
+    acceptDataChannelOfferAndBroadcastAnswer(app, offer_creator, offer) {
+
+        console.log('accepting offer');
+        console.log('from:', offer_creator, offer);
+        this.acceptDataChannelPeerConnectionOffer(app, offer_creator, offer);
 
     }
 
@@ -342,7 +354,6 @@ class Stunx extends ModTemplate {
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, type);
 
                     });
-
                     const data_channel = pc.createDataChannel('channel');
                     pc.dc = data_channel;
                     pc.dc.onmessage = (e) => {
@@ -355,23 +366,62 @@ class Stunx extends ModTemplate {
                 } catch (error) {
                     console.log(error);
                 }
-
             }
             execute(type);
-
         })
-
         return createPeerConnection;
+    }
+    
 
 
+    createDataChannlePeerConnectionOffer(publicKey) {
+        const createPeerConnection = new Promise((resolve, reject) => {
+            let ice_candidates = [];
+            const execute = async () => {
+                try {
+                    const pc = new RTCPeerConnection({
+                        iceServers: this.servers,
+                    });
 
+                    pc.onicecandidate = (ice) => {
+                        if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                            let offer_sdp = pc.localDescription;
+                            resolve({ recipient: publicKey, offer_sdp, ice_candidates, pc });
+                            return;
+                        } else {
+                            ice_candidates.push(ice.candidate);
+                        }
+                    };
+                    pc.onconnectionstatechange = e => {
+                        console.log("connection state ", pc.connectionState)
+                    }
+
+                
+                    const data_channel = pc.createDataChannel('channel');
+                    pc.dc = data_channel;
+                    pc.dc.onmessage = (e) => {
+                        console.log('new message from client : ', e.data);
+                    };
+                    pc.dc.onopen = (e) => {
+                        console.log("datachannel connection opened")
+                        pc.dc.send("New message")
+                    };
+
+                    const offer = await pc.createOffer();
+                    pc.setLocalDescription(offer);
+
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+            execute();
+        })
+        return createPeerConnection;
     }
 
 
     acceptPeerConnectionOffer(app, offer_creator, offer, type) {
-
         this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, type);
-
         const createPeerConnection = async () => {
             let reply = {
                 answer: "",
@@ -416,9 +466,7 @@ class Stunx extends ModTemplate {
                 const data_channel = pc.createDataChannel('channel');
                 pc.dc = data_channel;
                 pc.dc.onmessage = (e) => {
-
                     console.log('new message from client : ', e.data);
-
                 };
                 pc.dc.open = (e) => {
                     console.log('connection opened');
@@ -436,16 +484,74 @@ class Stunx extends ModTemplate {
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
                     });
-
                     this.app.connection.emit('add-remote-stream-request', offer_creator, remoteStream, pc, type);
-
-
                 });
                 await pc.setRemoteDescription(offer.offer_sdp);
                 const offer_ice_candidates = offer.ice_candidates;
                 // console.log('peer ice candidates', offer_ice_candidates);
                 if (offer_ice_candidates.length > 0) {
                     console.log('adding offer icecandidates');
+                    for (let i = 0; i < offer_ice_candidates.length; i++) {
+                        pc.addIceCandidate(offer_ice_candidates[i]);
+                    }
+                }
+                console.log('remote description  is set');
+                reply.answer = await pc.createAnswer();
+                console.log("answer ", reply.answer);
+                pc.setLocalDescription(reply.answer);
+            } catch (error) {
+                console.log("error", error);
+            }
+        }
+        createPeerConnection();
+    }
+
+    acceptDataChannelPeerConnectionOffer(app, offer_creator, offer) {
+        const createPeerConnection = async () => {
+            let reply = {
+                answer: "",
+                ice_candidates: []
+            }
+            const pc = new RTCPeerConnection({
+                iceServers: this.servers,
+            });
+            try {
+                pc.onicecandidate = (ice) => {
+                    if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                        console.log('ice candidate check closed');
+                        let stunx_mod = app.modules.returnModule("Stunx");
+                        stunx_mod.peer_datachannel_connections[offer_creator] = pc;
+                        stunx_mod.sendDataChannelAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
+                        return;
+                    };
+                    reply.ice_candidates.push(ice.candidate);
+                }
+
+                pc.onconnectionstatechange = e => {
+                    console.log("connection state ", pc.connectionState)
+                 
+                }
+
+
+                // add data channels 
+                pc.ondatachannel= (e) => {
+                    pc.dc = e.channel
+
+                    pc.dc.onopen = (e) => {
+                        pc.dc.send("New message")
+                        console.log('datachannel connection opened');
+                    }
+                    pc.dc.onmessage = (e) => {
+                        console.log('new message from client : ', e.data);
+                    };
+                }
+              
+
+                await pc.setRemoteDescription(offer.offer_sdp);
+                const offer_ice_candidates = offer.ice_candidates;
+                // console.log('peer ice candidates', offer_ice_candidates);
+                if (offer_ice_candidates.length > 0) {
+                    console.log('adding datachannel offer icecandidates');
                     for (let i = 0; i < offer_ice_candidates.length; i++) {
                         pc.addIceCandidate(offer_ice_candidates[i]);
                     }
@@ -502,6 +608,44 @@ class Stunx extends ModTemplate {
     }
 
 
+
+    async createDataChannelConnectionWithPeers(public_keys){
+        let peerConnectionOffers = [];
+        if (public_keys.length > 0) {
+            // send connection to other peers if they exit
+            for (let i = 0; i < public_keys.length; i++) {
+                console.log('public key ', public_keys[i], ' type ');
+                peerConnectionOffers.push(this.createDataChannlePeerConnectionOffer(public_keys[i]));
+            }
+        }
+
+
+        try {
+            peerConnectionOffers = await Promise.all(peerConnectionOffers);
+            if (peerConnectionOffers.length > 0) {
+                const offers = [];
+                peerConnectionOffers.forEach((offer) => {
+                    // map key to pc
+                    console.log('offer :', offer)
+                    this.peer_datachannel_connections[offer.recipient] = offer.pc
+                    offers.push({
+                        ice_candidates: offer.ice_candidates,
+                        offer_sdp: offer.offer_sdp,
+                        recipient: offer.recipient,
+                    })
+                })
+                // const offers = peerConnectionOffers.map(item => item.offer_sdp);
+                this.sendDataChannelOfferTransaction(this.app.wallet.returnPublicKey(), offers);
+            }
+
+        } catch (error) {
+            console.log('an error occurred with peer connection creation', error);
+        }
+        console.log("peer connections ", this.peer_connections);
+        siteMessageNew("Starting video connection", 5000);
+    }
+
+
     setLocalStream(localStream) {
         this.localStream = localStream;
     }
@@ -515,6 +659,24 @@ class Stunx extends ModTemplate {
         }
         newtx.msg.module = "Stunx";
         newtx.msg.request = "offer"
+        newtx.msg.offers = {
+            offer_creator,
+            offers
+        }
+        newtx = this.app.wallet.signTransaction(newtx);
+        console.log(this.app.network);
+        this.app.network.propagateTransaction(newtx);
+    }
+
+
+    sendDataChannelOfferTransaction(offer_creator, offers) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        console.log('broadcasting Datachannel offers');
+        for (let i = 0; i < offers.length; i++) {
+            newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
+        }
+        newtx.msg.module = "Stunx";
+        newtx.msg.request = "datachannel_offer"
         newtx.msg.offers = {
             offer_creator,
             offers
@@ -541,6 +703,21 @@ class Stunx extends ModTemplate {
         console.log(this.app.network);
         this.app.network.propagateTransaction(newtx);
     }
+    sendDataChannelAnswerTransaction(answer_creator, offer_creator, reply) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        console.log('broadcasting answer to ', offer_creator);
+        newtx.transaction.to.push(new saito.default.slip(offer_creator));
+        newtx.msg.module = "Stunx";
+        newtx.msg.request = "datachannel_answer"
+        newtx.msg.answer = {
+            answer_creator,
+            offer_creator,
+            reply: reply
+        };
+        newtx = this.app.wallet.signTransaction(newtx);
+        console.log(this.app.network);
+        this.app.network.propagateTransaction(newtx);
+    }
 
     receiveOfferTransaction(blk, tx, conf, app) {
         if (app.BROWSER !== 1) return;
@@ -555,6 +732,21 @@ class Stunx extends ModTemplate {
         const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
         if (index !== -1) {
             stunx_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
+        }
+    }
+    receiveDataChannelOfferTransaction(blk, tx, conf, app) {
+        if (app.BROWSER !== 1) return;
+        let stunx_self = app.modules.returnModule("Stunx");
+        let my_pubkey = app.wallet.returnPublicKey();
+        const offer_creator = tx.msg.offers.offer_creator;
+
+        // offer creator should not respond
+        if (my_pubkey === offer_creator) return;
+        console.log("datachannel offer received from ", tx.msg.offers.offer_creator);
+        // check if current instance is a recipent
+        const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
+        if (index !== -1) {
+            stunx_self.acceptDataChannelOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
         }
     }
 
@@ -575,6 +767,30 @@ class Stunx extends ModTemplate {
                     console.log("Adding answer candidates");
                     for (let i = 0; i < reply.ice_candidates.length; i++) {
                         stunx_self.peer_connections[tx.msg.answer.answer_creator].addIceCandidate(reply.ice_candidates[i]);
+                    }
+                }
+            } else {
+                console.log("peer connection not found");
+            }
+        }
+    }
+    receiveDataChannelAnswerTransaction(blk, tx, conf, app) {
+        let stunx_self = app.modules.returnModule("Stunx");
+        let my_pubkey = app.wallet.returnPublicKey();
+        if (my_pubkey === tx.msg.answer.offer_creator) {
+            if (app.BROWSER !== 1) return;
+            console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.answer);
+            console.log("peer data connections: ", stunx_self.peer_datachannel_connections);
+            const reply = tx.msg.answer.reply;
+            if (stunx_self.peer_datachannel_connections[tx.msg.answer.answer_creator]) {
+                stunx_self.peer_datachannel_connections[tx.msg.answer.answer_creator].setRemoteDescription(reply.answer).then(result => {
+                    console.log('setting remote description of ', stunx_self.peer_datachannel_connections[tx.msg.answer.answer_creator]);
+
+                }).catch(error => console.log(" An error occured with setting remote description for :", stunx_self.peer_datachannel_connections[tx.msg.answer.answer_creator], error));
+                if (reply.ice_candidates.length > 0) {
+                    console.log("Adding answer candidates");
+                    for (let i = 0; i < reply.ice_candidates.length; i++) {
+                        stunx_self.peer_datachannel_connections[tx.msg.answer.answer_creator].addIceCandidate(reply.ice_candidates[i]);
                     }
                 }
             } else {

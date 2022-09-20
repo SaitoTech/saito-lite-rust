@@ -51,6 +51,16 @@ class StunxAppspace {
                 console.log(inviteCode, 'invite code'), 
                 this.joinVideoInvite(app, mod ,inviteCode.trim());
             }
+            if (e.target.id === "createDataChannel") {
+                const pubkey = document.querySelector("#publicKey").value;
+                console.log(pubkey, 'pubkey'), 
+                this.public_key = pubkey
+                this.createDataChannelWithPeer(app, mod ,pubkey);
+            }
+            if (e.target.id === "sendMessage") {
+                const message = document.querySelector("#message").value;
+                this.sendMessageToPeer(app, mod ,message);
+            }
         })
     }
 
@@ -129,6 +139,17 @@ class StunxAppspace {
             }
         }
         mod.sendPeerDatabaseRequestWithFilter('Stunx', sql, requestCallback)
+    }
+
+
+    createDataChannelWithPeer(app, mod, pubkey){
+        mod.createDataChannelConnectionWithPeers([pubkey]);
+    }
+
+    sendMessageToPeer(app, mod, message){
+        console.log( mod.peer_datachannel_connections[this.public_key], message, this.public_key)
+        mod.peer_datachannel_connections[this.public_key].dc.send(message)
+        console.log(mod.peer_datachannel_connections[this.public_key].dc.send)
     }
 }
 
