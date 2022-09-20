@@ -106,12 +106,10 @@ class RedSquareMain {
     //    tweet.render(app, mod); 
     //});
 
-    this.attachEvents(app, mod)
+
   }
 
-  // attachEvents(app, mod) {
-
-  // }
+  
 
 }
 
