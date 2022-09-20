@@ -239,6 +239,12 @@
   grid-gap: 1rem;
   margin: 2rem 0;
 }
+
+.game-wizard-controls option {
+  background: var(--saito-black);
+  color: var(--saito-white);
+}
+
 .game-wizard-players {
   padding: 10px;
   width: 100%;

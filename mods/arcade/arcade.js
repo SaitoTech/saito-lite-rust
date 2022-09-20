@@ -47,7 +47,7 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = true;
+    this.debug = false;
 
     //So we can keep track of games which we want to close but are waiting on game engine to process
     this.game_close_interval_cnt = 0;
@@ -223,7 +223,7 @@ class Arcade extends ModTemplate {
   checkGameDatabase(){
     if (!this.app.BROWSER){return;}
 
-    let cutoff = new Date().getTime() - this.old_game_removal_delay;
+    /*let cutoff = new Date().getTime() - this.old_game_removal_delay;
     let sql = `SELECT * FROM games WHERE created_at > ${cutoff}`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
       if (res.rows) {
@@ -234,7 +234,7 @@ class Arcade extends ModTemplate {
         console.log("No games in the database");
       }
     }
-    );
+    );*/
   }
 
   //
@@ -278,7 +278,7 @@ class Arcade extends ModTemplate {
               } else { return null; }
             })
           );
-          ArcadeMain.joinGame(arcade_self.app, arcade_self, gameId);
+          ArcadeMain.joinGame(arcade_self.app, arcade_self, gameId, false);
         }
       });
     }
@@ -440,7 +440,11 @@ class Arcade extends ModTemplate {
 
     if (this.debug) { console.log(JSON.parse(JSON.stringify(players))); }
 
-    this.joinGameOnOpenList(tx); //Update Arcade hero to reflect new player
+    //Update Arcade hero to reflect new player
+    if (!this.joinGameOnOpenList(tx)){
+      console.log("Player cannot join game (already joined)");
+      return;
+    } 
     
     if (this.debug) { 
       console.log(JSON.parse(JSON.stringify(players))); 
@@ -498,7 +502,7 @@ class Arcade extends ModTemplate {
         // try fast accept
         if (relay_mod != null) {
           relay_mod.sendRelayMessage(accepted_game.msg.players, "arcade spv update", newtx);
-          relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+          //relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
         }
       }
       //
@@ -515,6 +519,7 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     let gamemod = this.app.modules.returnModule(txmsg.game);
+    console.log(JSON.parse(JSON.stringify(txmsg)));
     
     if (!gamemod){
       console.error("Game module not found!");
@@ -550,13 +555,15 @@ class Arcade extends ModTemplate {
             return;
           }
         }
-        console.log("game already initializing");
+        console.log(`game (${txmsg.game_id}) already exists`);
+        console.info("MY CREATED GAMES: ", this.app?.options?.games);
         return;
       }
     }
 
 
     if (txmsg.players.includes(app.wallet.returnPublicKey())) {
+      console.log("Accept game for real");
 
       if (this.browser_active) {
         if (!this.viewing_arcade_initialization_page){
@@ -1157,7 +1164,7 @@ class Arcade extends ModTemplate {
 
   }
 
-  launchGame(game_id) {
+  async launchGame(game_id) {
 
     if (this.debug) { console.log("ALREADY SHOWING LOADER? " + this.viewing_arcade_initialization_page); }
 
@@ -1201,6 +1208,16 @@ class Arcade extends ModTemplate {
               if (this.browser_active){
                 let gameLoader = new GameLoader(this.app, this, game_id);
                 gameLoader.render(this.app, this, "#arcade-main", "Your game is ready to start!");
+              }else{
+                let gm = this.app.modules.returnModule(this.app.options.games[i].module);
+                if (gm){
+                  let game_name = gm.gamename || gm.name;
+                  let go = await sconfirm(`${game_name} is ready. Join now?`);
+                  if (go){
+                    this.app.browser.logMatomoEvent("Arcade", "SaitoConfirmStartGame", this.app.options.games[i].module);
+                    window.location = "/" + gm.returnSlug();
+                  }
+                }
               }
 
               let hidden = "hidden";
@@ -1433,12 +1450,11 @@ class Arcade extends ModTemplate {
   }
 
   /*
-    Called both in arcade and arcade-main
     Adds player to list of players for the multiplayer game
   */
   joinGameOnOpenList(tx) {
     if (!tx.transaction || !tx.transaction.sig || !tx.msg || tx.msg.over == 1) {
-      return;
+      return false;
     }
 
     let txmsg = tx.returnMessage();
@@ -1455,17 +1471,16 @@ class Arcade extends ModTemplate {
           this.games[i].msg.players_sigs.push(txmsg.invite_sig);
 
           this.updatePlayerList(txmsg.game_id, this.games[i].msg.players, this.games[i].msg.players_sigs);
+     
+          if (this.debug) { console.log("Player should get added to arcade hero"); }
+          ArcadeMain.renderArcadeTab(this.app, this);
+          return true;
         }
       }
     }
 
-
-    try {
-      if (this.debug) { console.log("Player should get added to arcade hero"); }
-      ArcadeMain.renderArcadeTab(this.app, this);
-    } catch (err) {
-      console.log("Non-fatal error rendering open game list");
-    }
+    return false;
+    
   }
 
   leaveGameOnOpenList(tx) {
@@ -1560,7 +1575,7 @@ class Arcade extends ModTemplate {
         ArcadeMain.renderArcadeTab(this.app, this);
       }
     }
-    console.log("Add Game:" + valid_game + for_us);
+    console.log("Add Game: (valid)" + valid_game + " (for us)" +for_us);
 
   }
   addGamesToOpenList(txs) {

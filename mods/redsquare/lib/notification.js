@@ -37,6 +37,7 @@ class RedSquareNotification {
       }
 
       if (this.tx.transaction.ts > mod.last_viewed_notifications_ts) {
+console.log("rendering notifications and updating last viewed to : " + this.tx.transaction.ts);
 	mod.last_viewed_notifications_ts = this.tx.transaction.ts;
 	mod.saveRedSquare();
       }

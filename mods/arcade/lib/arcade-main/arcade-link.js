@@ -1,13 +1,19 @@
 const ArcadeLinkTemplate = require('./templates/arcade-link.template');
+const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 module.exports = ArcadeLink = {
     
     render(app, mod, data = {}) {
-       mod.overlay.show(app, mod, ArcadeLinkTemplate(app, mod, data));
-       if (data.invite_link){
-        this.invite_link = data.invite_link;
-       }
-       console.log("ARCADE LINK:",this.invite_link);
+        if (mod.overlay == null) {
+            mod.overlay = new SaitoOverlay(app);
+        }
+        
+        mod.overlay.show(app, mod, ArcadeLinkTemplate(app, mod, data));
+        
+        if (data.invite_link){
+            this.invite_link = data.invite_link;
+        }
+        console.log("ARCADE LINK:",this.invite_link);
     },
 
     attachEvents(app, game_mod) {
