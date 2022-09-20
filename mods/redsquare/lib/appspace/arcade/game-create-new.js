@@ -156,6 +156,12 @@ class GameCreateNew {
             players_needed = document.querySelector(".game-wizard-players-no-select").dataset.player;
           }
 
+          if (gamemod.opengame){
+            options = Object.assign(options, {max_players: players_needed});
+            console.log(JSON.parse(JSON.stringify(options)));
+            players_needed = gamemod.minPlayers;
+          }
+
           let gamedata = {
             ts: new Date().getTime(),
             name: gamemod.name,
