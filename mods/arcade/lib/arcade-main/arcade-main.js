@@ -7,7 +7,7 @@ const ArcadeInfobox = require("./arcade-infobox");
 const GameLoader = require("./../../../../lib/saito/new-ui/game-loader/game-loader");
 const SaitoCarousel = require("./../../../../lib/saito/ui/saito-carousel/saito-carousel");
 const ArcadeInviteTemplate = require("./templates/arcade-invite.template");
-const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
+const GameCryptoTransferManager = require("./../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const JSON = require("json-bigint");
 const saito = require("../../../../lib/saito/saito");
 

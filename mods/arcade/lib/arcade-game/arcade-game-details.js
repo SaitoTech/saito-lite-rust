@@ -1,7 +1,7 @@
 const ArcadeGameDetailsTemplate = require("./arcade-game-details.template");
 const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const AdvancedOverlay = require("./advanced-overlay"); // game-overlay
-const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
+const GameCryptoTransferManager = require("./../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
 /**
  * Convert the text (html) options (returned by the game module) in to an object data structure

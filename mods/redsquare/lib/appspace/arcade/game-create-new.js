@@ -1,6 +1,6 @@
 const GameCreateNewTemplate = require('./game-create-new.template.js');
+const GameCryptoTransferManager = require('./../../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
 const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
-//const AdvancedOverlay = require("./game-create-advance-options");
 
 class GameCreateNew {
 
@@ -97,7 +97,7 @@ class GameCreateNew {
       if (document.getElementById('game-rules-btn')){
         document.getElementById('game-rules-btn').onclick = function(){
           let rules_overlay = new SaitoOverlay(app);
-          rules_overlay.show(app, mod, gamecreate_self.gamemod.returnGameRulesHTML());
+          rules_overlay.show(app, mod, gamecreate_self.game_mod.returnGameRulesHTML());
         }
       }
     } catch (err) {
@@ -146,7 +146,6 @@ class GameCreateNew {
             }
           }
 
-          let gamemod = app.modules.returnModule(options.game);
           let players_needed = 0;
           if (document.querySelector(".game-wizard-players-select")) {
             players_needed = document.querySelector(".game-wizard-players-select").value;
@@ -154,16 +153,16 @@ class GameCreateNew {
             players_needed = document.querySelector(".game-wizard-players-no-select").dataset.player;
           }
 
-          if (gamemod.opengame){
+          if (gamecreate_self.game_mod.opengame){
             options = Object.assign(options, {max_players: players_needed});
             console.log(JSON.parse(JSON.stringify(options)));
-            players_needed = gamemod.minPlayers;
+            players_needed = gamecreate_self.game_mod.minPlayers;
           }
 
           let gamedata = {
             ts: new Date().getTime(),
-            name: gamemod.name,
-            slug: gamemod.returnSlug(),
+            name: gamecreate_self.game_mod.name,
+            slug: gamecreate_self.game_mod.returnSlug(),
             options: options,
             players_needed: players_needed,
             invitation_type: "public",
