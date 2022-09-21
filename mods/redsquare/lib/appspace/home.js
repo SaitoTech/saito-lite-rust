@@ -68,7 +68,7 @@ class RedSquareAppspaceHome {
 
   attachEvents(app, mod) {
 
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app);
 
     //
     // if PostTweet was a template file, we could write it directly into the overlay

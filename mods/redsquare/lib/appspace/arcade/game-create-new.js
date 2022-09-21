@@ -8,7 +8,7 @@ class GameCreateNew {
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
-    this.overlay = new SaitoOverlay(app, true);
+    this.overlay = new SaitoOverlay(app);
     this.overlay.removeOnClose = true;
   }
 
@@ -27,7 +27,7 @@ class GameCreateNew {
     } else {
 
       //Create (hidden) the advanced options window
-      this.meta_overlay = new SaitoOverlay(app, false);
+      this.meta_overlay = new SaitoOverlay(app, false, false);
       this.meta_overlay.show(app, mod, advancedOptions);
       this.meta_overlay.setBackground();
       //overlay_backdrop_el.style.opacity = 0.95;
@@ -94,14 +94,12 @@ class GameCreateNew {
     }
 
     try {
-      const identifiers = document.getElementsByClassName(`game-help-link`);
-
-      Array.from(identifiers).forEach((identifier) => {
-        identifier.addEventListener("click", (e) => {
-          let rules_overlay = new SaitoOverlay(app, mod);
+      if (document.getElementById('game-rules-btn')){
+        document.getElementById('game-rules-btn').onclick = function(){
+          let rules_overlay = new SaitoOverlay(app);
           rules_overlay.show(app, mod, gamecreate_self.gamemod.returnGameRulesHTML());
-        });
-      });
+        }
+      }
     } catch (err) {
       console.error("Error while adding event to game rules: " + err);
     }
@@ -177,8 +175,8 @@ class GameCreateNew {
             return;
           }
           
-          //Close the overlay
-          gamecreate_self.overlay.remove();
+          //Destroy persistent advanced options overlay
+          gamecreate_self.meta_overlay.remove();
 
           if (players_needed == 1) {
 
