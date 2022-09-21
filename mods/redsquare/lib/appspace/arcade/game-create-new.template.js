@@ -88,7 +88,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       </div>
 
     </div>
-
+    <div id="advanced-options-overlay-container"></div>
   </form>
   `;
   

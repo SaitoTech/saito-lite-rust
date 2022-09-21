@@ -28,21 +28,23 @@ class GameCreateNew {
 
       //Create (hidden) the advanced options window
       this.meta_overlay = new SaitoOverlay(app, false, false);
+      this.meta_overlay.class = "game-overlay";
       this.meta_overlay.show(app, mod, advancedOptions);
-      this.meta_overlay.setBackground();
-      //overlay_backdrop_el.style.opacity = 0.95;
-      //overlay_backdrop_el.style.backgroundColor = "#111";
 
       this.meta_overlay.hide();      
 
       //
       // move advanced options into game details form
+      let overlay1 = document.querySelector(".game-overlay");
+      let overlay_backdrop_el = document.querySelector(`#saito-overlay-backdrop${this.meta_overlay.ordinal}`);
+      let overlaybox = document.querySelector("#advanced-options-overlay-container");
+      overlaybox.appendChild(overlay1);
+      overlaybox.appendChild(overlay_backdrop_el);
+
+      overlay_backdrop_el.style.opacity = 0.95;
+      overlay_backdrop_el.style.backgroundColor = "#111";
+
       //let advanced1 = document.querySelector(".game-wizard-advanced-box");
-      //let overlay1 = document.querySelector(".game-overlay");
-      //let overlay2 = document.querySelector(".game-overlay-backdrop");
-      //let overlaybox = document.querySelector(".game-wizard-advanced-options-overlay");
-      //overlaybox.appendChild(overlay1);
-      //overlaybox.appendChild(overlay2);
       //if (advanced1) {
       //  overlaybox.appendChild(advanced1);
       //}
@@ -72,7 +74,7 @@ class GameCreateNew {
 
           //Requery advancedOptions on the click so it can dynamically update based on # of players
           let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small" style="float: right;">Accept</div>`;
-          let advancedOptionsHTML = "<form>"+gamecreate_self.game_mod.returnGameOptionsHTML()+"</form>";
+          let advancedOptionsHTML = gamecreate_self.game_mod.returnGameOptionsHTML();
           if (!advancedOptionsHTML.includes(accept_button)){
             advancedOptionsHTML += accept_button;
           }
@@ -177,7 +179,7 @@ class GameCreateNew {
           //Destroy persistent advanced options overlay
           gamecreate_self.meta_overlay.remove();
           gamecreate_self.overlay.remove();
-          
+
           if (players_needed == 1) {
 
             mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
