@@ -655,7 +655,7 @@ span.redsquare-home-red-square+span {
 }
 
 
-@media only screen and (max-width: 396px) {
+@media only screen and (max-width: 515px) {
 
   .saito-main.appspace {
     min-width: 35rem;
@@ -983,7 +983,7 @@ span.redsquare-home-red-square+span {
   }
 }
 
-@media screen and (max-width: 415px) { 
+@media screen and (max-width: 515px) { 
 
   .saito-redsquare-actions-buttons {
     z-index: 10;
@@ -1014,18 +1014,6 @@ span.redsquare-home-red-square+span {
   }
   
 
-  /* .saito-redsquare-actions-buttons:hover {
-    height: 15rem;
-    width: 10rem;
-  } */
-
-  /* .saito-redsquare-actions-buttons:hover i::before {
-   content:  "\f068";
-  } */
-  /* .saito-redsquare-actions-buttons:hover  .redsquare-actions-container   {
-    display: grid;
-  } */
-
   .display-actions {
     display: grid !important;
   }
@@ -1033,15 +1021,19 @@ span.redsquare-home-red-square+span {
 
   .redsquare-actions-container {
     position: fixed;
-    bottom: 8rem;
-    left: 7rem;
+    bottom: 7rem;
+    left: 0;
+    width: 100vw;
     display: none;
     background: #44444444;
     grid-template-columns: 1fr;
     grid-gap: 1rem;
     border: 0.5rem;
     padding: .5rem;
-    
+  }
+
+  .redsquare-actions-container .saito-button-secondary { 
+    background-color: var(--saito-white);
   }
   
   .saito-redsquare-actions-buttons .saito-button-secondary {
