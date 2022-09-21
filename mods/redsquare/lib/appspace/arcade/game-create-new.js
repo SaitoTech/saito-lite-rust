@@ -176,7 +176,8 @@ class GameCreateNew {
           
           //Destroy persistent advanced options overlay
           gamecreate_self.meta_overlay.remove();
-
+          gamecreate_self.overlay.remove();
+          
           if (players_needed == 1) {
 
             mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
