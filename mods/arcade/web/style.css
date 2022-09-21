@@ -2031,17 +2031,7 @@ i.link_icon.private {
   font-weight: bold;
 }
 
-/*
-.league-leaderboard table td {
-  text-align: center;
-  overflow-x: clip;
-  max-width: 5em;
-  text-overflow: ellipsis;
-}
 
-.league-leaderboard table tr {
-  height: 42px;
-}
 */
 .mystats {
   font-weight: bold;

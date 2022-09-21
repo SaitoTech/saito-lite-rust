@@ -101,7 +101,7 @@ class RedSquareTweet {
     this.generateTweetProperties(app, mod, 0);
 
 
-    this.img_overlay = new SaitoOverlay(app, mod);
+    this.img_overlay = new SaitoOverlay(app);
     this.saito_loader = new SaitoLoader(app, this);
   }
 
@@ -352,8 +352,8 @@ class RedSquareTweet {
       // check we are not already viewing this
       //
       if (this.tx.transaction.sig === mod.viewing) {
-	alert("Already Viewing Tweet");
-	return;
+        console.log("Already Viewing Tweet");
+	      return;
       }
 
       //

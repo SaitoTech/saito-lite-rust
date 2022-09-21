@@ -8,7 +8,7 @@ class AppStoreOverlay {
 
   constructor(app, mod) {
     this.app = app;
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app);
     mod.overlay = this.overlay;
   }
 

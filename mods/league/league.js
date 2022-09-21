@@ -7,7 +7,7 @@ const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const ArcadeLeagueView = require("./lib/overlays/arcade-league-view");
 const LeagueInvite = require("./lib/overlays/league-invite");
-const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
+const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
 
 class League extends ModTemplate {

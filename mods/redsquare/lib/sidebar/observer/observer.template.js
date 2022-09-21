@@ -7,7 +7,7 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 	}
 
 	if (obs_mod){
-		let cutoff = new Date().getTime() - 5 * 60 * 1000;
+		let cutoff = new Date().getTime() - 20 * 60 * 1000;
 
 		html = `<div id="rs-sidebar-observer" class="observer-sidebar">`;
 
@@ -16,14 +16,15 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 			let cnt = 0;
 
 			/*
-				So each game (should) have a created_at for the ts of the initial game state
+				So each game (should) have a ts (initial creation time) of the initial game state
 				and a latest_move with is the ts of the last game step.
 			*/
 
 			for (let g of games){
 				//We will only display live games
-				if (g.game_status !== "over" && !(g?.lastest_move < cutoff)){
-				 cnt++;
+
+				if (g.game_status !== "over" && g.latest_move > cutoff){
+					cnt++;
 
 					let gameModule = app.modules.returnModule(g.module);
 		  		    let slug = gameModule.returnSlug();
@@ -31,9 +32,6 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 				    let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${g.players_array.split("_").length}, 1fr);">`;
 				    let gameName= gameModule.gamename || gameModule.name;
 				  
-				    let gametime = g.created_at || g.ts;
-				    let datetime = app.browser.formatDate(gametime);
-
 				    g.players_array.split("_").forEach((player) => {
 				      let identicon = app.keys.returnIdenticon(player);
 				      playersHtml += `<div class="player-slot tip id-${player}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(player)}</div></div>`;
@@ -56,7 +54,7 @@ module.exports = RedSquareObserverTemplate = (app, mod, obs_mod, games) => {
 					            <div>${gameName}</div>
 					            ${playersHtml}
 					        </div>
-					        <div class="observer-details saito-deemphasize"><p>${g.step} moves</p><p>Last move ${Moment(g.ts).fromNow()}</p><p>Started ${Moment(g.created_at).fromNow()}</p></div>
+					        <div class="observer-details saito-deemphasize"><p>${g.step} moves</p><p>Last move ${Moment(g.latest_move).fromNow()}</p><p>Started ${Moment(g.ts).fromNow()}</p></div>
 					        <div class="observer-action"><a href="#" data-sig="${g.game_id}" data-cmd="watch" class="button observe-game-btn">${(isMyGame)?"Play":"Watch"}</a></div>
 					    </div>
 					`;
