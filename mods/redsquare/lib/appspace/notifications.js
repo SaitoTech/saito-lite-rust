@@ -41,7 +41,7 @@ class RedSquareAppspaceNotifications {
 
         document.querySelector(".redsquare-list").innerHTML = "";
 
-        let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}' OR parent_id = '${tweet_sig_id}'`;
+        let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
         mod.fetchTweets(app, mod, sql, function (app, mod) { 
           let t = mod.returnTweet(app, mod, tweet_sig_id);
 
