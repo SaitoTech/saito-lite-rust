@@ -130,7 +130,7 @@ class StunxAppspace {
 
                 // filter my public key
                 peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
-                mod.createStunConnectionWithPeers(peers_in_room, 'large');
+                mod.createVideoConnectionWithPeers(peers_in_room, 'large');
                 this.app.connection.emit('show-video-chat-request', app, this, 'large');
                 this.app.connection.emit('render-local-stream-request', localStream, 'large');
                 peers_in_room.forEach(peer => {

@@ -120,13 +120,13 @@ class Stunx extends ModTemplate {
         if (conf === 0) {
             if (txmsg.module === 'Stunx') {
                 if (tx.msg.request === "answer") {
-                    this.receiveAnswerTransaction(blk, tx, conf, app)
+                    this.receiveVideoAnswerTransaction(blk, tx, conf, app)
                 }
                 if (tx.msg.request === "datachannel_answer") {
                     this.receiveDataChannelAnswerTransaction(blk, tx, conf, app)
                 }
                 if (tx.msg.request === "offer") {
-                    this.receiveOfferTransaction(blk, tx, conf, app)
+                    this.receiveVideoOfferTransaction(blk, tx, conf, app)
                 }
                 if (tx.msg.request === "datachannel_offer") {
                     this.receiveDataChannelOfferTransaction(blk, tx, conf, app)
@@ -268,7 +268,7 @@ class Stunx extends ModTemplate {
 
     }
 
-    acceptOfferAndBroadcastAnswer(app, offer_creator, offer) {
+    acceptVideoOfferAndBroadcastAnswer(app, offer_creator, offer) {
 
         console.log('accepting offer');
         console.log('from:', offer_creator, offer);
@@ -293,7 +293,7 @@ class Stunx extends ModTemplate {
 
     }
 
-    createPeerConnectionOffer(publicKey, type) {
+    createVideoPeerConnectionOffer(publicKey, type) {
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async (type) => {
@@ -570,14 +570,14 @@ class Stunx extends ModTemplate {
 
 
 
-    async createStunConnectionWithPeers(public_keys, type) {
+    async createVideoConnectionWithPeers(public_keys, type) {
 
         let peerConnectionOffers = [];
         if (public_keys.length > 0) {
             // send connection to other peers if they exit
             for (let i = 0; i < public_keys.length; i++) {
                 console.log('public key ', public_keys[i], ' type ', type);
-                peerConnectionOffers.push(this.createPeerConnectionOffer(public_keys[i], type));
+                peerConnectionOffers.push(this.createVideoPeerConnectionOffer(public_keys[i], type));
             }
         }
 
@@ -719,7 +719,7 @@ class Stunx extends ModTemplate {
         this.app.network.propagateTransaction(newtx);
     }
 
-    receiveOfferTransaction(blk, tx, conf, app) {
+    receiveVideoOfferTransaction(blk, tx, conf, app) {
         if (app.BROWSER !== 1) return;
         let stunx_self = app.modules.returnModule("Stunx");
         let my_pubkey = app.wallet.returnPublicKey();
@@ -731,7 +731,7 @@ class Stunx extends ModTemplate {
         // check if current instance is a recipent
         const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
         if (index !== -1) {
-            stunx_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
+            stunx_self.acceptVideoOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
         }
     }
     receiveDataChannelOfferTransaction(blk, tx, conf, app) {
@@ -750,7 +750,7 @@ class Stunx extends ModTemplate {
         }
     }
 
-    receiveAnswerTransaction(blk, tx, conf, app) {
+    receiveVideoAnswerTransaction(blk, tx, conf, app) {
         let stunx_self = app.modules.returnModule("Stunx");
         let my_pubkey = app.wallet.returnPublicKey();
         if (my_pubkey === tx.msg.answer.offer_creator) {
