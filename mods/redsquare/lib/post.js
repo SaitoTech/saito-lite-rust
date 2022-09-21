@@ -12,7 +12,7 @@ class Post {
     this.thread_id = "";
     this.images = [];
     this.tweet = tweet;
-    this.localRender = 1; 
+    this.render_after_submit = 1; 
   }
 
   render(app, mod) {
@@ -20,7 +20,7 @@ class Post {
       document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
     }
 
-    let div = '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay" data-local-render="'+this.localRender+'"></div>';
+    let div = '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>';
     this.overlay.show(app, mod, div);
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();
@@ -108,12 +108,10 @@ class Post {
           }
         }
 
-        let isLocalRender = e.target.parentNode.dataset.localRender;
-
         setTimeout(() => {
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
 
-          if (isLocalRender == 1) {
+          if (post_self.render_after_submit == 1) {
             // if post tweet overlay is inside RS then render tweet else skip
             mod.prependTweetFromTransaction(app, mod, newtx, true);
 

@@ -70,10 +70,10 @@ class RedSquare extends ModTemplate {
     }
   }
 
- //
- // Easy Navigation from Arcade (with old saito/ui) to RedSquare
- //
- respondTo(type){
+  //
+  // Easy Navigation from Arcade (with old saito/ui) to RedSquare
+  //
+  respondTo(type){
     if (type == 'header-dropdown'){
       return {
           name: this.appname ? this.appname : this.name,
@@ -86,12 +86,13 @@ class RedSquare extends ModTemplate {
     return super.respondTo(type);
   }
 
-  tweetImage(image, localRender) {
+  tweetImage(image, render_after_submit) {
     try {
       let post = new PostTweet(this.app, this);
-      post.localRender = localRender;
+      post.render_after_submit = render_after_submit;
+      post.images.push(image);
+	    //post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
       post.render(this.app, this);
-	    post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
     } catch (err) {
     }
   }
@@ -746,20 +747,6 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
     return;
 
   }
-
-
-
-  tweetImage(image, localRender) {   
-    try {
-      let post = new PostTweet(this.app, this);
-      post.localRender = localRender;
-      post.images.push(image);
-      post.render(this.app, this);
-    } catch (err) {
-      console.log("error tweeting image");
-    }
-  }
-
 
 
   sendTweetTransaction(app, mod, data, keys = []) {
