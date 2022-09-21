@@ -1819,8 +1819,10 @@ console.log("adding stuff!");
     //
     let fip = [];
         fip.push(faction);
-    for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
-      fip.push(this.game.state.activated_powers[faction][i]);
+    if (this.game.state.activated_powers[faction]) {
+      for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
+        fip.push(this.game.state.activated_powers[faction][i]);
+      }
     }
 
     //
@@ -1832,6 +1834,7 @@ console.log("adding stuff!");
 	//
 	// we only care about units in ports
 	//
+	if (this.game.spaces[key].ports) {
 	if (this.game.spaces[key].ports.length > 0) {
 	  let ships = [];
 	  let leaders = [];
@@ -1850,17 +1853,25 @@ console.log("adding stuff!");
 	    }
 	  }
 
+	  //
+	  // add and include location
+	  //
 	  if (ships.length > 0) {
 	    for (let y = 0; y < ships.length; y++) {
+	      ships[y].spacekey = key;
 	      units.push(ships[y]);
 	    }
 	    for (let y = 0; y < leaders.length; y++) {
+	      leaders[y].spacekey = key;
 	      units.push(leaders[y]);
 	    }
 	  }
 	}
+        }
       }
     }
+
+console.log("A2 ");
 
     //
     // add ships and leaders out-of-port
@@ -1868,6 +1879,7 @@ console.log("adding stuff!");
     for (let i = 0; i < fip.length; i++) {
       for (let key in this.game.navalspaces) {
 	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
+	  this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
 	  units.push(this.game.navalspaces[key].units[fip[i]][z]);
 	}
       }
@@ -7407,11 +7419,16 @@ alert("removing unit not implement for sea");
 
 	  if (this.game.player === x) {
 	    this.playerResolveWinterRetreat(mv[1], mv[2]);
+	    return 0;
 	  } else {
 	    this.updateStatus(mv[1] + " is selecting winter retreat options from " + mv[2]);
+	    if (x > 0) { return 0; }
 	  }
 
-	  return 0;
+	  //
+	  // non-player controlled factions skip winter retreat
+	  //
+	  return 1;
 
         }
 
@@ -11795,7 +11812,7 @@ console.log("units length: " + space.units[defender].length);
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_units.length; i++) {
-      if (this.game.spaces[spaces_with_units[i]].pass.length > 0) { return 1; }
+      if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) { return 1; }
     }
     return 0;
   }
@@ -11922,15 +11939,18 @@ console.log("units length: " + space.units[defender].length);
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
 
+console.log("UA: " + JSON.stringify(units_available));
+
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 
       let msg = "Select Unit to Move";
       let html = "<ul>";
       for (let i = 0; i < units_available.length; i++) {
+	let spacekey = units_available[i].spacekey;
         if (units_to_move.includes(parseInt(i))) {
-          html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
         } else {
-          html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+          html += `<li class="option" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
         }
       }
       html += `<li class="option" id="end">finish</li>`;
@@ -11956,7 +11976,7 @@ console.log("units length: " + space.units[defender].length);
 	}
 
 	//
-	//
+	// add unit to units available
 	//
         if (units_to_move.includes(id)) {
           let idx = units_to_move.indexOf(id);

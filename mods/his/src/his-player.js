@@ -1267,7 +1267,7 @@ console.log("units length: " + space.units[defender].length);
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_units.length; i++) {
-      if (this.game.spaces[spaces_with_units[i]].pass.length > 0) { return 1; }
+      if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) { return 1; }
     }
     return 0;
   }
@@ -1394,15 +1394,18 @@ console.log("units length: " + space.units[defender].length);
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
 
+console.log("UA: " + JSON.stringify(units_available));
+
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 
       let msg = "Select Unit to Move";
       let html = "<ul>";
       for (let i = 0; i < units_available.length; i++) {
+	let spacekey = units_available[i].spacekey;
         if (units_to_move.includes(parseInt(i))) {
-          html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
         } else {
-          html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+          html += `<li class="option" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
         }
       }
       html += `<li class="option" id="end">finish</li>`;
@@ -1428,7 +1431,7 @@ console.log("units length: " + space.units[defender].length);
 	}
 
 	//
-	//
+	// add unit to units available
 	//
         if (units_to_move.includes(id)) {
           let idx = units_to_move.indexOf(id);
