@@ -1,5 +1,4 @@
 const RedSquareAppspaceNotificationsTemplate = require("./notifications.template");
-const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const Notification = require("./../notification");
 const SaitoLoader = require("./../../../../lib/saito/new-ui/saito-loader/saito-loader");
 
@@ -28,6 +27,7 @@ class RedSquareAppspaceNotifications {
     notificationSelf = this;
 
     sel = ".tweet";
+
     if (document.querySelector(sel) != null) {
       document.querySelector(sel).onclick = (e) => {
         e.preventDefault();
@@ -41,10 +41,22 @@ class RedSquareAppspaceNotifications {
         document.querySelector(".redsquare-list").innerHTML = "";
 
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
-        mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, tweet_sig_id); });
+        mod.fetchTweets(app, mod, sql, function (app, mod) { 
+          let t = mod.returnTweet(app, mod, tweet_sig_id);
+
+          if (t == null) {
+            console.log("TWEET IS NULL OR NOT STORED");
+            return;
+          }
+          if (t.children.length > 0) {
+            mod.renderWithChildren(app, mod, tweet_sig_id);
+          } else {
+            mod.renderWithParents(app, mod, tweet_sig_id, 1);
+          }
+        });
 
         if (!window.location.href.includes('type=tweet')) {
-          let tweetUrl = window.location.href + '?type=tweet&id=' + tweet_sig_id;      
+          let tweetUrl = window.location.href + '?tweet_id=' + tweet_sig_id;      
           window.history.pushState({}, document.title, tweetUrl);  
         }
 

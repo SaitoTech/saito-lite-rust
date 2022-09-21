@@ -7,7 +7,7 @@ class Post {
   constructor(app, mod, tweet = null) {
     this.app = app;
     this.mod = mod;
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app);
     this.parent_id = "";
     this.thread_id = "";
     this.images = [];

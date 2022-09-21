@@ -1,5 +1,4 @@
-const Saitogame_modIntroTemplate = require('./../../../../../lib/saito/new-ui/templates/saito-module-intro.template');
-const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
+//const Saitogame_modIntroTemplate = require('./../../../../../lib/saito/new-ui/templates/saito-module-intro.template');
 
 module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
 
@@ -89,7 +88,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       </div>
 
     </div>
-
+    <div id="advanced-options-overlay-container"></div>
   </form>
   `;
   

@@ -1,4 +1,4 @@
-const SaitoOverlay = require("../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const InviteOverlayTemplate = require("./invite-overlay.template");
 
 
@@ -11,12 +11,14 @@ class InviteOverlay {
     my_pc = [];
     peer_connection = "";
     peer_connections = []
-    overlay = new SaitoOverlay(this.app, true);
 
 
     constructor(app, mod) {
         this.app = app
         this.mod = mod
+        this.overlay = new SaitoOverlay(app, true);
+
+
         this.app.connection.on('show-invite-overlay-request', (roomCode) => {
             this.roomCode = roomCode;
             this.render(app, mod);

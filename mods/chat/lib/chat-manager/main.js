@@ -35,14 +35,14 @@ class ChatManager {
 	  this.rendered = 1;
 	}
 	
-        for (let i = 0; i < app.keys.keys.length; i++) {
+       for (let i = 0; i < app.keys.keys.length; i++) {
 	  if (app.keys.keys[i].publickey != app.wallet.returnPublicKey()) {
 	    let divid = `saito-user-${app.keys.keys[i].publickey}`;
 	    if (document.getElementById(divid)) {
               let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey, "", "3.45");
 	      app.browser.replaceElementById(html, divid);
 	    } else {
-              let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey, "", "3.45");
+         let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey, "", "3.45");
 	      app.browser.addElementToSelector(html, ".chat-manager-list");
 	    }
 	  }
@@ -52,7 +52,6 @@ class ChatManager {
     }
 
     attachEvents(app, mod) {
-
         document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
             item.onclick = (e) => {
 	        alert("clicked to create!");

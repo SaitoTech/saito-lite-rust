@@ -247,26 +247,23 @@ class Observer extends ModTemplate {
   }
 
   addGameToObserverList(msg) {
+    if (!this.app.BROWSER){ return; }
     for (let i = 0; i < this.games.length; i++) {
       if (msg.game_id == this.games[i].game_id) {
         return;
       }
     }
   
-    msg.created_at = msg.ts;
+    //msg.ts is the time stamp of game creation
+    msg.latest_move = new Date().getTime();
     this.games.push(msg);
-
-    if (this.app.BROWSER){
-      this.app.connection.emit("observer-add-game-render-request",this.games);
-      //let arcade = this.app.modules.returnModule("Arcade");
-      //if (arcade){
-      // arcade.renderArcadeMain();
-      //  return;  
-      //}
-    }
+    
+    this.app.connection.emit("observer-add-game-render-request",this.games);
+    
   }
 
   updateGameOnObserverList(msg){
+    if (!this.app.BROWSER){ return; }
     for (let i = 0; i < this.games.length; i++) {
       if (msg.game_id == this.games[i].game_id) {
         if (msg.step){
@@ -275,21 +272,14 @@ class Observer extends ModTemplate {
         if (msg.request == "gameover" || msg.request == "stopgame"){
           this.games[i].game_status = "over";
         }
-        if (msg.ts){
-          this.games[i].latest_move = msg.ts;
-        }
+        // msg.step.ts is the timestamp for when message was sent
+        // but we might as well just mark when it arrived
+        this.games[i].latest_move = new Date().getTime();
 
         this.app.connection.emit("observer-add-game-render-request",this.games);
-        
-        //let arcade = this.app.modules.returnModule("Arcade");
-        //if (arcade){
-        //  arcade.renderArcadeMain();
-        //  return;  
-        //}        
+        return;
       }
     }
-
-
   }
 
   doesGameExistLocally(game_id){

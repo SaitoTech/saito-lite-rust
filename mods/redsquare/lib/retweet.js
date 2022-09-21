@@ -5,7 +5,7 @@ const JSON = require('json-bigint');
 class Retweet {
 
     constructor(app, mod, tweet=null) {
-      this.overlay = new SaitoOverlay(app, mod);
+      this.overlay = new SaitoOverlay(app);
       this.images = [];
       this.tweet = tweet;
     }

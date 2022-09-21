@@ -8,7 +8,7 @@ class GameCreator {
   constructor(app, mod) {
     this.app = app;
     this.name = "GameCreator";
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app);
   }
 
   render(app, mod) {

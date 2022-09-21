@@ -1,7 +1,7 @@
 module.exports = (app, mod) => {
 
   let html = `
-      <h1 class="overlay-title">Pandemic Options</h1>
+      <h1 class="overlay-title">${mod.name} Options</h1>
         <div class="overlay-input">
           <label for="difficulty">Difficulty:</label>
           <select name="difficulty">

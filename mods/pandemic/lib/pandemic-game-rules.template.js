@@ -1,7 +1,7 @@
 module.exports = (app, mod) => {
 
   let html = `<div class="rules-overlay">
-            <h1>Pandemic</h1>
+            <h1>${mod.gamename}</h1>
             <p>Four novel viruses are quickly spreading throughout the world and it is up to you and your teammates to find the cure in this fast paced cooperative board game.</p>
             <h2>Roles</h2>
             <p>Each player has a role, which gives them a special ability: </p>

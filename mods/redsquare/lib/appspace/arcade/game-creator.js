@@ -9,7 +9,7 @@ class GameCreator {
   constructor(app, mod) {
     this.app = app;
     this.name = "GameCreator";
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app);
   }
 
   render(app, mod) {
@@ -29,7 +29,7 @@ class GameCreator {
         let tx = new saito.default.transaction();
         tx.msg.game = modname;
 
-        this.overlay.hide();
+        this.overlay.remove();
 
         let game_mod = app.modules.returnModule(modname);
 
