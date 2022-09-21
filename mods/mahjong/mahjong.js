@@ -35,7 +35,6 @@ class Mahjong extends GameTemplate {
 
   returnGameRulesHTML(){
     return MahjongGameRulesTemplate(this.app, this);
-
   }
 
   //
@@ -55,7 +54,6 @@ class Mahjong extends GameTemplate {
       this.game.state = this.returnState();
 
       this.game.queue = [];
-      this.game.queue.push("play");
       this.game.queue.push("READY");
 
     }
@@ -71,7 +69,6 @@ class Mahjong extends GameTemplate {
   newRound(){
     //Set up queue
     this.game.queue = [];
-    this.game.queue.push("play");
 
     //Clear board
     this.game.board = {};
@@ -123,27 +120,33 @@ class Mahjong extends GameTemplate {
 
   // displayBoard
   async displayBoard(timeInterval = 1) {
-
-    this.game.deck.cards = this.returnDeck();
-
     let index = 0;
-    this.game.board = {}
+
+    let deckSize = 0;
+
     this.game.availableMoves = [];
-    let deckSize = Object.values(this.game.deck.cards).length
-    for (let row = 1; row <= 21; row++){
-      for (let column = 1; column <= 14; column++){
-        let position = `row${row}_slot${column}`;
-        if (!this.isArrayInArray(this.emptyCells, [row,column]) && deckSize > index) {
-          this.game.board[position] = Object.values(this.game.deck.cards)[index];
-          index++;
-        } else {
-          this.game.board[position] = "E";
+    if (!('board' in this.game) || Object.values(this.game.board).length === 0) {
+      this.game.deck.cards = this.returnDeck();
+      this.game.board = {}
+      deckSize = Object.values(this.game.deck.cards).length;
+      this.game.hidden = [];
+      for (let row = 1; row <= 21; row++){
+        for (let column = 1; column <= 14; column++){
+          let position = `row${row}_slot${column}`;
+          if (!this.isArrayInArray(this.emptyCells, [row,column]) && deckSize > index) {
+            this.game.board[position] = Object.values(this.game.deck.cards)[index];
+            index++;
+          } else {
+            this.game.board[position] = "E";
+          }
         }
       }
+    } else {
+      deckSize = Object.values(this.returnDeck()).length;
     }
-    this.game.cardsLeft = index;
+
+    this.game.cardsLeft = deckSize - this.game.hidden.length;
     this.game.selected = "";
-    this.game.hidden=[];
     if (this.browser_active === 0) { return; }
     $(".slot").removeClass("empty");
     index = 0;
@@ -155,8 +158,11 @@ class Mahjong extends GameTemplate {
           var divname = `row${row}_slot${column}`;
           if (!this.isArrayInArray(this.emptyCells, [row,column]) && deckSize > index) {
             await timeout(timeInterval);
-            $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck.cards)[index++]));
+            $('#' + divname).html(this.returnCardImageHTML(this.game.board[divname]));
             this.untoggleCard(divname);
+            if (this.game.hidden.includes(divname)) {
+              this.makeInvisible(divname);
+            }
           } else {
             this.makeInvisible(divname);
           }
@@ -286,7 +292,6 @@ class Mahjong extends GameTemplate {
   // runs whenever we load the game into the browser. render()
   //
   initializeHTML(app) {
-
     if (!this.browser_active) { return; }
     
     super.initializeHTML(app);
@@ -307,6 +312,7 @@ class Mahjong extends GameTemplate {
       id : "game-new",
       class : "game-new",
       callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
         game_mod.newRound();
       }
     });
@@ -365,6 +371,8 @@ class Mahjong extends GameTemplate {
 
   exitGame(){
     this.updateStatusWithOptions("Saving game to the blockchain...");
+    this.gaming_active = 0;
+    this.saveGame(this.game.id);
     this.prependMove("exit_game\t"+this.game.player);
     this.endTurn();
   }
@@ -391,8 +399,6 @@ class Mahjong extends GameTemplate {
     $('.slot').on('click', function() {
 
       let card = $(this).attr("id");
-      console.log('card');
-      console.log(card);
       if(!mahjong_self.game.availableMoves.includes(card)) {
         return;
       }
@@ -456,6 +462,7 @@ class Mahjong extends GameTemplate {
   getAvailableTiles() {
     let mahjong_self = this;
     let availableTiles = new Map([]);
+    mahjong_self.game.availableMoves = [];
     for (let row = 1; row <= 21; row++){
       for (let column = 1; column <= 14; column++){
         if ((row === 5 && column === 2 && !mahjong_self.game.hidden.includes('row4_slot1')) || 
@@ -579,9 +586,6 @@ class Mahjong extends GameTemplate {
   // being to execute again the next time a move is received over the network.
   //
   handleGameLoop(msg=null) {
-
-    // let mahjong_self = this;
-
     ///////////
     // QUEUE //
     ///////////
@@ -589,25 +593,13 @@ class Mahjong extends GameTemplate {
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
-
-      if (mv[0] === "play"){
-
-        //
-        // perhaps wait until game is being viewed to execute?
-        //
-        if (!this.browser_active) { return 0; }
-
-        this.displayUserInterface();
-        return 1;
-
-      }
-
       if (mv[0] === "round") {
         this.newRound();
       }
 
       if (mv[0] === "exit_game"){
         this.game.queue = [];
+        this.gaming_active = 0;
         let player = parseInt(mv[1])
         this.saveGame(this.game.id);
 
