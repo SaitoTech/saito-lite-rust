@@ -403,8 +403,9 @@ class Stunx extends ModTemplate {
                         console.log('new message from client : ', e.data);
                     };
                     pc.dc.onopen = (e) => {
-                        console.log("datachannel connection opened")
-                        pc.dc.send("New message")
+                        this.app.connection.emit('stun-data-channel-open', publicKey)
+                        // console.log("datachannel connection opened")
+                        // pc.dc.send("New message")
                     };
 
                     const offer = await pc.createOffer();
@@ -536,10 +537,9 @@ class Stunx extends ModTemplate {
                 // add data channels 
                 pc.ondatachannel= (e) => {
                     pc.dc = e.channel
-
                     pc.dc.onopen = (e) => {
-                        pc.dc.send("New message")
-                        console.log('datachannel connection opened');
+                        // pc.dc.send("New message")
+                        app.connection.emit('stun-data-channel-open', offer_creator)
                     }
                     pc.dc.onmessage = (e) => {
                         console.log('new message from client : ', e.data);
@@ -820,6 +820,10 @@ class Stunx extends ModTemplate {
             // open video chat
             this.app.connection.emit('show-video-chat-request', this.app, this, tx.msg.data.type);
         }
+    }
+
+    returnDataChannel(public_key){
+        return this.peer_datachannel_connections[public_key].dc
     }
 
 

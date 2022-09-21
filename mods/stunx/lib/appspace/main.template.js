@@ -26,6 +26,10 @@ module.exports = StunxAppspaceTemplate = (app) => {
              <input style="width: 15rem; margin-right: 2rem" type="text" placeholder="Public key" id="publicKey" />
             <div class="saito-button-secondary" id="createDataChannel">Create Channel</div>
     </card>
+     <card style="margin-top: 2rem; display: flex;">
+             <input style="width: 15rem; margin-right: 2rem" type="text" placeholder="Public key" id="message" />
+            <div class="saito-button-secondary" id="sendMessage">Send Message</div>
+    </card>
 
   
      </div>`

@@ -1,9 +1,24 @@
+const DataChannel = require('../../data-channel.js');
 const StunxAppspaceTemplate = require('./main.template.js');
 
 class StunxAppspace {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
+        
+
+        app.connection.on('stun-data-channel-open', (public_key)=> {
+            let stunx_mod = app.modules.returnModule('Stunx');
+            let dc =  stunx_mod.returnDataChannel(public_key);
+            if(dc){
+                let data_channel = new DataChannel(app, mod, dc, public_key )
+                data_channel.receiveMessage((e)=> {
+                    console.log(e.data)
+                })
+                this.data_channel = data_channel;
+            }
+        
+        })
     }
 
     render(app, mod) {
@@ -147,9 +162,10 @@ class StunxAppspace {
     }
 
     sendMessageToPeer(app, mod, message){
-        console.log( mod.peer_datachannel_connections[this.public_key], message, this.public_key)
-        mod.peer_datachannel_connections[this.public_key].dc.send(message)
-        console.log(mod.peer_datachannel_connections[this.public_key].dc.send)
+        if(this.data_channel){
+            this.data_channel.sendMessage(message);
+        }
+
     }
 }
 
