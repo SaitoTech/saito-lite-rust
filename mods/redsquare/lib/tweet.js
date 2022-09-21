@@ -101,7 +101,7 @@ class RedSquareTweet {
     this.generateTweetProperties(app, mod, 0);
 
 
-    this.img_overlay = new SaitoOverlay(app, mod);
+    this.img_overlay = new SaitoOverlay(app);
     this.saito_loader = new SaitoLoader(app, this);
   }
 

@@ -1,5 +1,4 @@
 const RedSquareAppspaceNotificationsTemplate = require("./notifications.template");
-const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const Notification = require("./../notification");
 const SaitoLoader = require("./../../../../lib/saito/new-ui/saito-loader/saito-loader");
 

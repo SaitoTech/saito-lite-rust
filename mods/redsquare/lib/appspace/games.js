@@ -23,7 +23,7 @@ class RedSquareAppspaceGames {
 
   attachEvents(app, mod) {
 
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app);
 
     document.getElementById("redsquare-schedule-game").onclick = (e) => {
 
