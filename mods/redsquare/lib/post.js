@@ -114,18 +114,16 @@ class Post {
             // if post tweet overlay is inside RS then render tweet else skip
             mod.prependTweetFromTransaction(app, mod, newtx, true);
 
-  	        if (post_self.browser_active == 1) {
-              if (thread_id !== "") {
-                mod.renderWithChildren(app, mod, thread_id);
+            if (thread_id !== "") {
+              mod.renderWithChildren(app, mod, thread_id);
+            } else {
+              if (parent_id !== "") {
+                mod.renderWithChildren(app, mod, parent_id);
               } else {
-                if (parent_id !== "") {
-                  mod.renderWithChildren(app, mod, parent_id);
-                } else {
-                  mod.renderMainPage(app, mod);
-                }
+                mod.renderMainPage(app, mod);
               }
-  	        }
-          }
+            }
+	        }
 
           post_self.overlay.hide();
 

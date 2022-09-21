@@ -91,8 +91,7 @@ class RedSquare extends ModTemplate {
       let post = new PostTweet(this.app, this);
       post.render_after_submit = render_after_submit;
       post.images.push(image);
-	    //post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
-      post.render(this.app, this);
+	    post.render(this.app, this);
     } catch (err) {
     }
   }
