@@ -111,7 +111,6 @@ class Post {
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
 
           if (post_self.render_after_submit == 1) {
-            // if post tweet overlay is inside RS then render tweet else skip
             mod.prependTweetFromTransaction(app, mod, newtx, true);
 
             if (thread_id !== "") {
