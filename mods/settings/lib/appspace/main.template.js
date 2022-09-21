@@ -63,9 +63,17 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
   <div class="saito-page-header">
 
-    <div class="saito-button-secondary small" style="float: right;" id="restore-privatekey-btn">Import Key</div>
-    <div class="saito-button-secondary small" style="float: right;" id="restore-account-btn">Restore Wallet</div>
-    <div class="saito-button-secondary small" style="float: right;" id="backup-account-btn">Backup Wallet</div>
+        <div class="saito-redsquare-actions-buttons">
+        <div class="saito-redsquare-actions-buttons-icon">
+          <i id="icon" class="fas fa-plus"></i>
+        </div>
+        <div class="redsquare-actions-container"> 
+        <div class="saito-button-secondary small" style="float: right;" id="restore-privatekey-btn">Import Key</div>
+        <div class="saito-button-secondary small" style="float: right;" id="restore-account-btn">Restore Wallet</div>
+        <div class="saito-button-secondary small" style="float: right;" id="backup-account-btn">Backup Wallet</div>
+        </div>
+        </div>
+        
     <div class="saito-page-header-title">SETTINGS</div>
     <div class="saito-page-header-text">
       Configure and personalise your Saito experience. Add/remove modules, setup wallet. 
