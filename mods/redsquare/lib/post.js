@@ -12,19 +12,20 @@ class Post {
     this.thread_id = "";
     this.images = [];
     this.tweet = tweet;
+    this.localRender = 1; 
   }
 
   render(app, mod) {
     if (document.querySelector('#redsquare-tweet-overlay') != null) {
       document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
     }
-    this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
+
+    let div = '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay" data-local-render="'+this.localRender+'"></div>';
+    this.overlay.show(app, mod, div);
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();
     this.attachEvents(app, mod);
   }
-
-
 
   attachEvents(app, mod) {
 
@@ -107,23 +108,27 @@ class Post {
           }
         }
 
+        let isLocalRender = e.target.parentNode.dataset.localRender;
 
         setTimeout(() => {
- 
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
-          mod.prependTweetFromTransaction(app, mod, newtx, true);
 
-	  if (post_self.browser_active == 1) {
-            if (thread_id !== "") {
-              mod.renderWithChildren(app, mod, thread_id);
-            } else {
-              if (parent_id !== "") {
-                mod.renderWithChildren(app, mod, parent_id);
+          if (isLocalRender == 1) {
+            // if post tweet overlay is inside RS then render tweet else skip
+            mod.prependTweetFromTransaction(app, mod, newtx, true);
+
+  	        if (post_self.browser_active == 1) {
+              if (thread_id !== "") {
+                mod.renderWithChildren(app, mod, thread_id);
               } else {
-                mod.renderMainPage(app, mod);
+                if (parent_id !== "") {
+                  mod.renderWithChildren(app, mod, parent_id);
+                } else {
+                  mod.renderMainPage(app, mod);
+                }
               }
-            }
-	  }
+  	        }
+          }
 
           post_self.overlay.hide();
 

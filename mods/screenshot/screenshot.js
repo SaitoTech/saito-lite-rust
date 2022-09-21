@@ -33,7 +33,7 @@ class Screenshot extends ModTemplate {
             callback : async function(app, game_mod) {
               await app.browser.captureScreenshot(function(image) {
                 let m = game_mod.app.modules.returnModule("RedSquare");
-	        if (m) { m.tweetImage(image); }
+	        if (m) { m.tweetImage(image, 0); }
               });
             }
 	  },

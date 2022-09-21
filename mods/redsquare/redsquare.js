@@ -86,11 +86,12 @@ class RedSquare extends ModTemplate {
     return super.respondTo(type);
   }
 
-  tweetImage(image) {
+  tweetImage(image, localRender) {
     try {
       let post = new PostTweet(this.app, this);
-          post.render(this.app, this);
-	  post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
+      post.localRender = localRender;
+      post.render(this.app, this);
+	    post.resizeImg(image, 0.75, 0.75); // (img, dimensions, quality)
     } catch (err) {
     }
   }
@@ -748,17 +749,14 @@ console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifica
 
 
 
-  tweetImage(image) {   
+  tweetImage(image, localRender) {   
     try {
-alert("new tweet 1!");
       let post = new PostTweet(this.app, this);
-alert("new tweet 2!");
-          post.images.push(image);
-alert("new tweet 3!");
-          post.render(this.app, this);
-alert("new tweet 4!");
+      post.localRender = localRender;
+      post.images.push(image);
+      post.render(this.app, this);
     } catch (err) {
-console.log("error tweeting image");
+      console.log("error tweeting image");
     }
   }
 
