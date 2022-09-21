@@ -124,7 +124,7 @@ class Hearts extends GameTemplate {
         await app.browser.captureScreenshot(function(image) {
           if (!log_lock && log) { log.style.display = "block"; }
           let m = game_mod.app.modules.returnModule("RedSquare");
-          if (m) { m.tweetImage(image, 0); }
+          if (m) { m.tweetImage(image); }
         });
       },
     });
