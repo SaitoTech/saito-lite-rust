@@ -117,6 +117,10 @@ span.redsquare-home-red-square+span {
   width: 51rem;
 }
 
+.redsquare-sidebar-arcade #redsquare-create-game {
+  transform: translateY(-25%);
+}
+
 .saito-main.appspace {
   min-width: 50rem;
   height: 100vh;
