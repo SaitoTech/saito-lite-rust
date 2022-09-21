@@ -1,5 +1,73 @@
 
 
+  returnFactionNavalUnitsToMove(faction) {
+
+    let units = [];
+
+    //
+    // include minor-activated factions
+    //
+    let fip = [];
+        fip.push(faction);
+    for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
+      fip.push(this.game.state.activated_powers[faction][i]);
+    }
+
+    //
+    // find units
+    //
+    for (let i = 0; i < fip.length; i++) {
+      for (let key in this.game.spaces) {
+
+	//
+	// we only care about units in ports
+	//
+	if (this.game.spaces[key].ports.length > 0) {
+	  let ships = [];
+	  let leaders = [];
+	  for (let z = 0; z < this.game.spaces[key].units[fip[i]].length; z++) {
+
+	    //
+	    // only add leaders if there is a ship in port
+	    //
+	    let u = this.game.spaces[key].units[fip[i]][z];
+	    if (u.land_or_sea === "sea") {
+	      if (u.navy_leader == true) {
+		leaders.push(u);
+	      } else {
+		ships.push(u);
+	      }
+	    }
+	  }
+
+	  if (ships.length > 0) {
+	    for (let y = 0; y < ships.length; y++) {
+	      units.push(ships[y]);
+	    }
+	    for (let y = 0; y < leaders.length; y++) {
+	      units.push(leaders[y]);
+	    }
+	  }
+	}
+      }
+    }
+
+    //
+    // add ships and leaders out-of-port
+    //
+    for (let i = 0; i < fip.length; i++) {
+      for (let key in this.game.navalspaces) {
+	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
+	  units.push(this.game.navalspaces[key].units[fip[i]][z]);
+	}
+      }
+    }
+
+    return units;
+  }
+
+
+
   returnLoanedUnits() {
     for (let i in this.game.spaces) {
       space = this.game.spaces[i];

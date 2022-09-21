@@ -164,11 +164,16 @@ alert("removing unit not implement for sea");
 
 	  if (this.game.player === x) {
 	    this.playerResolveWinterRetreat(mv[1], mv[2]);
+	    return 0;
 	  } else {
 	    this.updateStatus(mv[1] + " is selecting winter retreat options from " + mv[2]);
+	    if (x > 0) { return 0; }
 	  }
 
-	  return 0;
+	  //
+	  // non-player controlled factions skip winter retreat
+	  //
+	  return 1;
 
         }
 
@@ -261,7 +266,6 @@ alert("removing unit not implement for sea");
 	if (mv[0] === "is_testing") {
 
 
-
 	  this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
 	  this.game.queue.push("retreat_to_winter_spaces");
 
@@ -272,6 +276,7 @@ alert("removing unit not implement for sea");
     	  this.addDebater("hapsburg", "aleander");
     	  this.addDebater("england", "bullinger");
     	  this.addDebater("protestant", "campeggio");
+
 
     	  this.activateMinorPower("papacy", "venice");
 
