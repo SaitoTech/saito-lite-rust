@@ -1402,8 +1402,9 @@ console.log("UA: " + JSON.stringify(units_available));
       let html = "<ul>";
       for (let i = 0; i < units_available.length; i++) {
 	let spacekey = units_available[i].spacekey;
+	let unit = units_available[i];
         if (units_to_move.includes(parseInt(i))) {
-          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
+          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
         } else {
           html += `<li class="option" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
         }
@@ -1422,7 +1423,8 @@ console.log("UA: " + JSON.stringify(units_available));
 
 	  his_self.addMove("naval_interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
 	  for (let i = 0; i < units_to_move.length; i++) {
-            his_self.addMove("move\t"+faction+"\tsea\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
+	    let unit = units_available[units_to_move[i]];
+            his_self.addMove("move\t"+faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+units_to_move[i]);
 	  }
           his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" shifting naval forces\tnavalmove");
 	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -1456,7 +1458,38 @@ console.log("UA: " + JSON.stringify(units_available));
     }
 
     let selectDestinationInterface = function(his_self, unit_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
-      console.log("SELECT DESTINATION INTERFACE");
+
+      //
+      // unit selected will always be last in array
+      //
+      let unit = units_available[unit_to_move[unit_to_move.length-1]];
+
+console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
+
+      let destinations = his_self.returnNavalMoveOptions(unit.spacekey);
+
+      console.log("SELECT DESTINATION INTERFACE: " + JSON.stringify(destinations));
+
+      let msg = "Select Destination";
+      let html = "<ul>";
+      for (let i = 0; i < destinations.length; i++) {
+	let spacekey = destinations[i];
+        html += `<li class="option" style="font-weight:bold" id="${spacekey}">${spacekey}</li>`;
+      }
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+	unit.destination = id;
+        selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+
+      });
+
     }
 
     selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);

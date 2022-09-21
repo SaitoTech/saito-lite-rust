@@ -2410,6 +2410,9 @@ console.log("retreat 4");
   }
 
 
+  //
+  // only calculates moves from naval spaces, not outbound from ports
+  //
   returnNavalNeighbours(space, transit_passes=1) {
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let neighbours = [];
@@ -2426,6 +2429,31 @@ console.log("retreat 4");
   }
 
 
+  //
+  // returns both naval and port movement options
+  //
+  returnNavalMoveOptions(spacekey) {
+
+    let neighbours = [];
+
+    if (this.game.navalspaces[spacekey]) {
+      for (let i = 0; i < this.game.navalspaces[spacekey].neighbours.length; i++) {
+	neighbours.push(this.game.navalspaces[spacekey].neighbours[i]);
+      }
+      for (let i = 0; i < this.game.navalspaces[spacekey].ports.length; i++) {
+	neighbours.push(this.game.navalspaces[spacekey].ports[i]);
+      }
+    } else {
+      if (this.game.spaces[spacekey]) {
+console.log("this is a space: " + spacekey)
+        for (let i = 0; i < this.game.spaces[spacekey].ports.length; i++) {
+	  neighbours.push(this.game.spaces[spacekey].ports[i]);
+        }
+      }
+    }
+
+    return neighbours;
+  }
 
 
   //
@@ -11947,8 +11975,9 @@ console.log("UA: " + JSON.stringify(units_available));
       let html = "<ul>";
       for (let i = 0; i < units_available.length; i++) {
 	let spacekey = units_available[i].spacekey;
+	let unit = units_available[i];
         if (units_to_move.includes(parseInt(i))) {
-          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
+          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
         } else {
           html += `<li class="option" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
         }
@@ -12001,7 +12030,38 @@ console.log("UA: " + JSON.stringify(units_available));
     }
 
     let selectDestinationInterface = function(his_self, unit_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
-      console.log("SELECT DESTINATION INTERFACE");
+
+      //
+      // unit selected will always be last in array
+      //
+      let unit = units_available[unit_to_move[unit_to_move.length-1]];
+
+console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
+
+      let destinations = his_self.returnNavalMoveOptions(unit.spacekey);
+
+      console.log("SELECT DESTINATION INTERFACE: " + JSON.stringify(destinations));
+
+      let msg = "Select Destination";
+      let html = "<ul>";
+      for (let i = 0; i < destinations.length; i++) {
+	let spacekey = destinations[i];
+        html += `<li class="option" style="font-weight:bold" id="${spacekey}">${spacekey}</li>`;
+      }
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+	unit.destination = id;
+        selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+
+      });
+
     }
 
     selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
