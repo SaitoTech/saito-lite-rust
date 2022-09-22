@@ -117,14 +117,31 @@ span.redsquare-home-red-square+span {
   width: 51rem;
 }
 
+.saito-sidebar-left {
+  position: fixed;
+  top: calc(var(--saito-header-height) + 1rem);
+}
+
+.saito-sidebar-right {
+  left: calc(var(--saito-left-sidebar-width) + var(--saito-main-appspace-width) + 20rem);
+  position: fixed;
+  top: calc(var(--saito-header-height) + 1rem);
+}
+
+.sidebar-scrollable {
+  position: relative;
+  left: unset;
+}
+
 .redsquare-sidebar-arcade #redsquare-create-game {
   transform: translateY(-25%);
 }
 
 .saito-main.appspace {
-  min-width: 50rem;
+  min-width: var(--saito-main-appspace-width);
   height: 100vh;
   position: relative;
+  margin-left: calc(var(--saito-left-sidebar-width) + 1rem);
 }
 
 .redsquare-appspace-contacts-list {
@@ -984,6 +1001,18 @@ span.redsquare-home-red-square+span {
   #tweet-overlay-img-cont img {
     width: 90vw;
     height: 50vw;
+  }
+
+  .saito-sidebar-left {
+    position: relative;
+  }
+
+  .saito-main.appspace {
+    margin-left: 0px;
+  }
+
+  .saito-sidebar-right {
+    position: relative;
   }
 }
 
