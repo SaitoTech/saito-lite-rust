@@ -184,6 +184,8 @@ class RedSquare extends ModTemplate {
     //
     if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
 
+console.log("is new post-level tweet");
+
       let new_tweet = 1;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
@@ -209,6 +211,8 @@ class RedSquare extends ModTemplate {
       // comment-level
       //
     } else {
+
+console.log("is new comment-level tweet");
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
@@ -601,7 +605,8 @@ class RedSquare extends ModTemplate {
   fetchMoreTweets(app, mod, post_fetch_tweets_callback) {
 
     const startingLimit = (this.page_number - 1) * this.results_per_page
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND parent_id != thread_id AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND parent_id == thread_id AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
+
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -626,12 +631,14 @@ class RedSquare extends ModTemplate {
               try {
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
-                tweets.push(new Tweet(app, mod, tx));
+		let tweet = new Tweet(app, mod, tx);
+                tweets.push(tweet);
               } catch (err) { }
             }
           });
 
           for (let i = 0; i < tweets.length; i++) {
+console.log("ADDING TWEET AND BROADCASTING RENDER REQUEST");
             mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
           }
           post_fetch_tweets_callback(app, mod)
