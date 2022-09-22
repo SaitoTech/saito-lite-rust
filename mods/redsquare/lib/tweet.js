@@ -178,7 +178,7 @@ class RedSquareTweet {
 
     if (this.critical_child != null && this.flagged != 1) {
       if (obj) {
-        obj.classList.add("before-ellipsis");
+        obj.previousElementSibling.classList.add("before-ellipsis");
         obj.nextSibling.classList.add("after-ellipsis");
         app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
@@ -189,7 +189,7 @@ class RedSquareTweet {
           app.browser.prependElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
         }
         this.critical_child.render(app, mod, selector);
-        document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
+        document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.previousElementSibling.classList.add("before-ellipsis");
         document.querySelector(selector).querySelector('.redsquare-ellipsis').nextElementSibling.classList.add("after-ellipsis");
       }
     }

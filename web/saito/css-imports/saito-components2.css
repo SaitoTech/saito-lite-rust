@@ -184,13 +184,11 @@ Saito Leaderboard
     padding-right: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-    /* Setting background here overrides the alternating row shading in the table */
-    /* Please inform Daniel if we want all the rows to be same color, so he can delete code that generates unused css classes */
-    /*background: #fafafa;*/
     border-width: 2px 0;
     border-color: #fff;
     border-style: solid;
     cursor: pointer;
+    background-color: var(--saito-gray);
 }
 
 
