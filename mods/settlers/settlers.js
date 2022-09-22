@@ -2157,7 +2157,6 @@ class Settlers extends GameTemplate {
           this.cardfan.addClass("bighand");  
           this.cardfan.removeClass("staggered-hand");
         }
-        this.cardfan.attachEvents(this.app, this);  
       }
     } catch (err) {
       //console.log(err);
