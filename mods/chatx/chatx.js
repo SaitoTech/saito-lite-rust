@@ -602,20 +602,12 @@ class Chatx extends ModTemplate {
 
     returnChatBody(group_id) {
 
-console.log("returning chat body!");
-
       let html = '';
       let group = this.returnGroup(group_id);
       let message_blocks = this.createMessageBlocks(group);
 
-console.log("message blocks len: " + message_blocks.length);    
-console.log(JSON.stringify(message_blocks));
-
       for (let i = 0; i < message_blocks.length; i++) {
         let block = message_blocks[i];
-
-console.log("B: " + JSON.stringify(block));
-
         if (block.length > 0) {
           let sender = "";
           let msg = "";
@@ -625,13 +617,12 @@ console.log("B: " + JSON.stringify(block));
   	    sender = block[z].transaction.from[0].add;
             msg += txmsg.message;       
           }
-          let date = new Date(block[block.length - 1].msg.timestamp)
-          let timestamp = `${date.getHours()}:${date.getMinutes()}`
-          html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg, timestamp)}`;
+          let datets = new Date(block[block.length - 1].msg.timestamp)
+          let x = this.app.browser.formatDate(datets);
+          let last_update = x.hours + ":" + x.minutes;
+          html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg, last_update)}`;
         }
       }
-
-console.log("returning HTML: " + html);
 
       return html;
 
