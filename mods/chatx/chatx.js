@@ -154,7 +154,6 @@ class Chatx extends ModTemplate {
         let loaded_txs = 0;
         let community_chat_group_id = "";
 
-
         //
         // create mastodon server
         //
@@ -166,15 +165,14 @@ class Chatx extends ModTemplate {
             // not be able to inform us whether they support the chat
             // service. TODO - fix later
             //
-            this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
+            let newgroup = this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
 	    if (this.chat_manager != null) { this.chat_manager.render(this.app, this, ".chat-manager"); }
 
-
-            //for (let z = 0; z < this.groups.length; z++) {
-            //    if (this.groups[z].name === "Saito Community Chat") {
-            //        community_chat_group_id = this.groups[z].id;
-            //    }
-            //}
+            for (let z = 0; z < this.groups.length; z++) {
+                if (this.groups[z].name === "Saito Community Chat") {
+                    community_chat_group_id = this.groups[z].id;
+                }
+            }
 
             // not a publickey but group_id gets archived as if it were one
             let sql = `SELECT id, tx FROM txs WHERE publickey = "${community_chat_group_id}" ORDER BY ts DESC LIMIT 25`;
@@ -186,6 +184,7 @@ class Chatx extends ModTemplate {
                 sql,
 
                 (res) => {
+
                     if (res) {
                         if (res.rows) {
                             for (let i = 0; i < res.rows.length; i++) {
@@ -195,7 +194,6 @@ class Chatx extends ModTemplate {
 				let group_id = "";
 		    		for (let z = 0; z < this.groups.length; z++) {
 		    		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
-					// no idea why ts differs so slightly
 			  	        if (this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) {
 					    let oldtxmsg = this.groups[z].txs[zz].returnMessage();
 					    if (txmsg.timestamp === oldtxmsg.timestamp) {
@@ -208,7 +206,8 @@ class Chatx extends ModTemplate {
                                     this.binaryInsert(this.groups[this.groups.length - 1].txs, tx, (a, b) => {
                                         return a.transaction.ts - b.transaction.ts;
                                     })
-                                }
+                                } else {
+				}
                             }
 
 
@@ -222,6 +221,10 @@ class Chatx extends ModTemplate {
 				}
 			    }
 
+			    //
+			    // render community chat
+			    //
+		    	    app.connection.emit('chat-render-request', );
 
                             //
                             // check identifiers
@@ -246,8 +249,7 @@ class Chatx extends ModTemplate {
                         return 1;
                     }
 
-		    //app.connection.emit('chat-render-request', "");
-		    
+
                     //
                     // check identifiers
                     //
@@ -314,9 +316,7 @@ class Chatx extends ModTemplate {
                     for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
                         // why does ts differ slightly?
                         if (this.groups[z].txs[zz].transaction.sig === txs[i].transaction.sig) {
-                            console.log("potential dupe 2");
                             let oldtxmsg = this.groups[z].txs[zz].returnMessage();
-                            console.log(oldtxmsg.timestamp + " --- vs --- " + txmsg.timestamp);
                             if (txmsg.timestamp === oldtxmsg.timestamp) {
                                 console.log("confirmed duplicate");
                                 ins = false;
@@ -403,8 +403,6 @@ class Chatx extends ModTemplate {
     //
     onConfirmation(blk, tx, conf, app) {
 
-return;
-
         tx.decryptMessage(app);
         let txmsg = tx.returnMessage();
         if (conf == 0) {
@@ -423,7 +421,6 @@ return;
                 let modified_tx = new saito.default.transaction(modified_tx_obj);
                 modified_tx.transaction.ts = new Date().getTime();
 
-                console.log("RECEIVE ONCHAIN");
                 this.receiveChatTransaction(app, tx);
                 app.storage.saveTransactionByKey(txmsg.group_id, modified_tx);
             }
@@ -605,12 +602,20 @@ return;
 
     returnChatBody(group_id) {
 
+console.log("returning chat body!");
+
       let html = '';
       let group = this.returnGroup(group_id);
       let message_blocks = this.createMessageBlocks(group);
-    
+
+console.log("message blocks len: " + message_blocks.length);    
+console.log(JSON.stringify(message_blocks));
+
       for (let i = 0; i < message_blocks.length; i++) {
         let block = message_blocks[i];
+
+console.log("B: " + JSON.stringify(block));
+
         if (block.length > 0) {
           let sender = "";
           let msg = "";
@@ -625,6 +630,8 @@ return;
           html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg, timestamp)}`;
         }
       }
+
+console.log("returning HTML: " + html);
 
       return html;
 
@@ -808,6 +815,8 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
             }
             group_id = group.id;
         }
+
+console.log("RENDERING CRR: " + group_id);
 
         this.app.connection.emit('chat-render-request', group_id);
     }

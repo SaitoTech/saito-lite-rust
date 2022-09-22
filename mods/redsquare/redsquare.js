@@ -184,8 +184,6 @@ class RedSquare extends ModTemplate {
     //
     if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
 
-console.log("is new post-level tweet");
-
       let new_tweet = 1;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
@@ -211,8 +209,6 @@ console.log("is new post-level tweet");
       // comment-level
       //
     } else {
-
-console.log("is new comment-level tweet");
 
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
@@ -638,7 +634,6 @@ console.log("is new comment-level tweet");
           });
 
           for (let i = 0; i < tweets.length; i++) {
-console.log("ADDING TWEET AND BROADCASTING RENDER REQUEST");
             mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
           }
           post_fetch_tweets_callback(app, mod)
