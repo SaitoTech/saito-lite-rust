@@ -37,7 +37,7 @@ class RedSquare extends ModTemplate {
     this.last_viewed_notifications_ts = 0;
     this.unviewed_notifications = 0;
 
-    this.results_per_page = 3;
+    this.results_per_page = 10;
     this.page_number = 1;
 
     this.styles = [
