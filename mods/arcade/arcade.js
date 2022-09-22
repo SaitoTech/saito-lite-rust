@@ -240,11 +240,11 @@ class Arcade extends ModTemplate {
   //
   // load transactions into interface when the network is up
   onPeerHandshakeComplete(app, peer) {
-    // fetch any usernames needed
-    if (this.app.BROWSER) {
-      app.browser.addIdentifiersToDom();
+    if (!app.BROWSER) {
+      return; 
     }
-
+    // fetch any usernames needed
+    app.browser.addIdentifiersToDom();
 
     let arcade_self = this;
     let cutoff = new Date().getTime() - this.old_game_removal_delay;
@@ -502,7 +502,7 @@ class Arcade extends ModTemplate {
         // try fast accept
         if (relay_mod != null) {
           relay_mod.sendRelayMessage(accepted_game.msg.players, "arcade spv update", newtx);
-          //relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+          relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
         }
       }
       //
@@ -1563,6 +1563,7 @@ class Arcade extends ModTemplate {
 
 
   addGameToOpenList(tx) {
+    if (!this.app.BROWSER){return;}
     let valid_game = this.validateGame(tx);
     let for_us = this.isForUs(tx);
 
