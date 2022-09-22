@@ -124,7 +124,6 @@ span.redsquare-home-red-square+span {
 
 .saito-sidebar-right {
   left: calc(var(--saito-left-sidebar-width) + var(--saito-main-appspace-width) + 20rem);
-  position: fixed;
   top: calc(var(--saito-header-height) + 1rem);
 }
 
