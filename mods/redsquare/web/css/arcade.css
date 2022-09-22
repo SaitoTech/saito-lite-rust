@@ -754,7 +754,7 @@ option {
 .league-leaderboard-table {
   display: grid;
   grid-gap: 0.5rem;
-  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto;
+  grid-template-columns: 4rem auto 5rem 5.5rem 4rem 4rem auto;
   width: 100%;
   padding: 1rem;
   max-height: 60vh;
