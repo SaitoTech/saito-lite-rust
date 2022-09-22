@@ -634,15 +634,14 @@ option {
 }
 
 .redsquare-sidebar-observer .saito-table .saito-table-row {
-    display: grid;
-    grid-template-columns: 15rem 1fr min-content;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    border-width: 2px 0;
-    border-color: #fff;
-    border-style: solid;
-    cursor: pointer;
-    background-color: var(--saito-gray);
+  display: grid;
+  grid-template-columns: 15rem 1fr min-content;
+  border-width: 2px 0;
+  border-color: #fff;
+  border-style: solid;
+  cursor: pointer;
+  background-color: var(--saito-gray);
+  padding: 0.5rem 1rem;
 }
 
 
@@ -673,7 +672,6 @@ option {
 
 .redsquare-sidebar-observer .saito-table .observer-action {
   text-align: center;
-  padding-right: 1rem;
 }
 
 .redsquare-sidebar-observer .saito-table .observer-details {
@@ -688,14 +686,11 @@ option {
   color: var(--saito-primary);
 }
 
-.observer-sidebar h6 {
-  margin: 3rem 0 2rem;
-}
 
 /*------*/
 .league-details-overlay {
   width: 100%;
-  min-width: min(600px, 100vw);
+  min-width: min(70rem, 100vw);
   border: 1px solid var(--saito-border);
   border-radius: 5px;
   background: var(--saito-white);
@@ -734,7 +729,7 @@ option {
 }
 
 .league-leaderboard-table.saitolicious {
-  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem;
+  grid-template-columns: 4rem auto 5rem 5.5rem 4rem 4rem;
 }
 
 .league-leaderboard-table.admin {
