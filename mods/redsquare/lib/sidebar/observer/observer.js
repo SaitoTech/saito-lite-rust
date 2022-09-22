@@ -6,12 +6,10 @@ class RedSquareObserver {
 	constructor(app, mod, selector="") {
 	    this.mod = mod;
 	    this.selector = selector;
-	    this.games = [];   
-	    observer_self = this;
+	    this.blockRender = false;
 
 	    app.connection.on("observer-add-game-render-request", (games)=>{   
-	      observer_self.games = games;
-	      observer_self.render(app, mod, ".redsquare-sidebar-observer");
+	      this.render(app, mod, ".redsquare-sidebar-observer");
 	    });
 	    app.connection.on("arcade-game-ready", (slug)=>{
 	    	let spinner = new GameLoader(app, mod);
@@ -22,22 +20,17 @@ class RedSquareObserver {
 	render(app, mod, selector=""){
 		if (this.blockRender) { return; }
 
-		let observer_mod = app.modules.returnModule("Observer");
-
-
 		if (selector != "") {
 			this.selector = selector;  
 		}
     
     let div = document.querySelector(this.selector);
+    
     if (div){
-      div.innerHTML = RedSquareObserverTemplate(app, mod, observer_mod, this.games);
+      div.innerHTML = RedSquareObserverTemplate(app, mod);
       this.attachEvents(app, mod);
     }
 	
-  	//app.browser.replaceElementBySelector(RedSquareObserverTemplate(app, mod, observer_mod, this.games), this.selector);
-	    
-   // this.attachEvents(app, mod);
 	}
 
 	attachEvents(app, mod){

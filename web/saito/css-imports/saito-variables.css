@@ -62,4 +62,6 @@ font imports
   --saito-light-dark-transparent: rgba(0,0,0,0.1);
   --saito-purple:  #639;
   --saito-dark-purple:  #47226c;
+  --saito-left-sidebar-width: 26rem;
+  --saito-main-appspace-width: 70rem;
 }

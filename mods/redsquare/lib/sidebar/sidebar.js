@@ -45,6 +45,18 @@ class RedSquareSidebar {
     observer_sidebar.render(app, mod, ".redsquare-sidebar-observer");
 
 
+    // make right sidebar scrollable if its height is greater than window height
+    if (document.querySelector('.saito-sidebar-right') != null) {
+      let r_sidebar_height = document.querySelector('.saito-sidebar-right').offsetHeight;
+      let win_height = window.innerHeight;
+
+      if (r_sidebar_height > win_height) {
+        document.querySelector('.saito-sidebar-right').classList.add("sidebar-scrollable");
+      } else {
+        document.querySelector('.saito-sidebar-right').classList.remove("sidebar-scrollable");
+      }
+    }
+
     this.attachEvents(app, mod);
 
   }
