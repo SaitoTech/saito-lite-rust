@@ -615,6 +615,39 @@ option {
   margin-bottom: 1rem;
 }
 
+.saito-module-intro {
+  display: grid;
+  grid-template-columns: 3fr 7fr;
+}
+.saito-module-intro-image {
+  padding-top: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+}
+.saito-module-intro-details > div:nth-child(1) {
+  border-bottom: 1px dashed var(--saito-default-font-color);
+  font-size: 2.5rem;
+  width: min-content;
+  white-space: nowrap;
+  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+.saito-module-intro > div:nth-child(2) {
+  font-size: 1.8rem;
+  line-height: 2.8rem;
+  margin-top: 0.5rem;
+}
+.saito-module-intro-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  position: relative;
+}
+.saito-module-intro-description {
+  font-size: 1.2em;
+  line-height: 1.3em;
+  margin: 0.45em 0;
+}
+
 .saito-module-intro-image .saito-select-content {
   width: 100%;
 }
