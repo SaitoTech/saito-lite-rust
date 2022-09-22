@@ -9,8 +9,7 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
   let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${msg.players_array.split("_").length}, 1fr);">`;
   let gameName= gameModule.gamename || gameModule.name;
   
-  let gametime = msg.ts;
-  let datetime = app.browser.formatDate(gametime);
+  let datetime = app.browser.formatDate(msg.latest_move);
 
   msg.players_array.split("_").forEach((player) => {
     let identicon = app.keys.returnIdenticon(player);

@@ -120,10 +120,10 @@ class Observer extends ModTemplate {
   //
   // load transactions into interface when the network is up
   onPeerHandshakeComplete(app, peer) {
+    if (!app.BROWSER) { return; }
+    
     // fetch any usernames needed
-    if (this.app.BROWSER == 1) {
-      app.browser.addIdentifiersToDom();
-    }
+    app.browser.addIdentifiersToDom();
 
     // load observer games (active)
     this.sendPeerDatabaseRequestWithFilter(
@@ -131,10 +131,26 @@ class Observer extends ModTemplate {
       `SELECT * FROM obgames ORDER BY ts DESC LIMIT 16`,
       (res) => {
         if (res.rows) {
-          //console.log("GAMESTATES:");
           res.rows.forEach((row) => {
-            console.log(JSON.parse(JSON.stringify(row)));
             this.addGameToObserverList(row);
+            this.updateGame(row.game_id);
+          });
+        }
+      }
+    );
+
+  }
+
+
+  async updateGame(game_id){
+    this.sendPeerDatabaseRequestWithFilter(
+      "Observer", 
+      `SELECT * FROM gamestate WHERE game_id = '${game_id}' ORDER BY step DESC LIMIT 1`,
+      (res) => {
+        if (res.rows) {
+          res.rows.forEach((row) => {
+            let latest_tx = new saito.default.transaction(JSON.parse(row.tx));
+            this.updateGameOnObserverList(latest_tx.msg);
           });
         }
       }
@@ -240,8 +256,8 @@ class Observer extends ModTemplate {
     newtx.game_status = (txmsg.game_state.over) ? "over" : "live";
     newtx.players_array = txmsg.game_state.players.join("_");;
     newtx.module = txmsg.module;
+    newtx.ts = txmsg.game_state.step.ts || new Date().getTime();
     newtx.game_state = JSON.stringify(txmsg.game_state);
-    newtx.ts = new Date().getTime();
 
     return newtx;
   }
@@ -254,8 +270,7 @@ class Observer extends ModTemplate {
       }
     }
   
-    //msg.ts is the time stamp of game creation
-    msg.latest_move = new Date().getTime();
+    msg.latest_move = msg.ts;
     this.games.push(msg);
     
     this.app.connection.emit("observer-add-game-render-request",this.games);
@@ -264,17 +279,16 @@ class Observer extends ModTemplate {
 
   updateGameOnObserverList(msg){
     if (!this.app.BROWSER){ return; }
+
     for (let i = 0; i < this.games.length; i++) {
       if (msg.game_id == this.games[i].game_id) {
         if (msg.step){
           this.games[i].step = msg.step.game;
+          this.games[i].latest_move = msg.step.ts;
         }
         if (msg.request == "gameover" || msg.request == "stopgame"){
           this.games[i].game_status = "over";
         }
-        // msg.step.ts is the timestamp for when message was sent
-        // but we might as well just mark when it arrived
-        this.games[i].latest_move = new Date().getTime();
 
         this.app.connection.emit("observer-add-game-render-request",this.games);
         return;
@@ -282,14 +296,6 @@ class Observer extends ModTemplate {
     }
   }
 
-  doesGameExistLocally(game_id){
-    for (let i = 0; i < this.games.length; i++) {
-      if (game_id == this.games[i].game_id) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   async saveGameState(blk, tx, conf, app) {
     if (this.app.BROWSER) { return; }
@@ -332,7 +338,7 @@ class Observer extends ModTemplate {
         $game_id: txmsg.game_id,
         $players_array: players_array,
         $module: txmsg.module,
-        $ts: new Date().getTime(),
+        $ts: game_state.step.ts || new Date().getTime(),
         $game_state: JSON.stringify(game_state),
       };
 
@@ -341,13 +347,8 @@ class Observer extends ModTemplate {
 
     }
 
-    if (!this.doesGameExistLocally(txmsg.game_id)){
-      return;
-    }
-
     //Otherwise, we have an update to the game
     if (txmsg.request == "game"){
-
 
       //New Step
       sql = `INSERT OR REPLACE INTO gamestate (
@@ -369,12 +370,12 @@ class Observer extends ModTemplate {
         $game_id: txmsg.game_id,
         $player: tx.transaction.from[0].add,
         $tx: JSON.stringify(tx.transaction),
-        $ts: new Date().getTime(),
+        $ts: txmsg.step?.ts || new Date().getTime(),
       };
 
-      //console.log(JSON.stringify(params));      
       await app.storage.executeDatabase(sql, params, "observer");
  
+    /*
       let sql2 = `UPDATE obgames SET step = $step, ts = $ts WHERE game_id = $game_id`;
       //console.log(sql2);
       //console.log(params);
@@ -384,15 +385,14 @@ class Observer extends ModTemplate {
         $ts: new Date().getTime(),
       }
       await app.storage.executeDatabase(sql2, params, "observer");
-
+    */
 
     }else{
       if (txmsg.request == "stopgame" || txmsg.request == "gameover"){
         //We have a game over request
-        let sql2 = `UPDATE obgames SET game_status = "over", ts = $ts WHERE game_id = $game_id`;
+        let sql2 = `UPDATE obgames SET game_status = "over" WHERE game_id = $game_id`;
         params = {
           $game_id: txmsg.game_id,
-          $ts: new Date().getTime(),
         }
 
         await app.storage.executeDatabase(sql2, params, "observer");
@@ -480,7 +480,6 @@ class Observer extends ModTemplate {
 	    tx.transaction.to.push(new saito.default.slip(p, 0.0));   	
     }
 
-    console.log(JSON.parse(JSON.stringify(tx)));
     tx = this.app.wallet.signTransaction(tx);
 
     this.app.network.propagateTransaction(tx);
