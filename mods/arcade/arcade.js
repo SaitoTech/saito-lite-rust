@@ -1205,6 +1205,7 @@ class Arcade extends ModTemplate {
                 let gm = this.app.modules.returnModule(this.app.options.games[i].module);
                 if (gm){
                   let game_name = gm.gamename || gm.name;
+                  this.app.connection.emit("arcade-game-ready-play", {game_id, game_name});
                   let go = await sconfirm(`${game_name} is ready. Join now?`);
                   if (go){
                     this.app.browser.logMatomoEvent("Arcade", "SaitoConfirmStartGame", this.app.options.games[i].module);
