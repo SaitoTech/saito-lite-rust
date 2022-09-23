@@ -85,7 +85,8 @@ class Observer extends ModTemplate {
       }
 
     }else{
-      console.error("Observer cannot render in Arcade");
+      //Probably on game_initialization screen
+      //console.error("Observer cannot render in Arcade");
     }
   }
 

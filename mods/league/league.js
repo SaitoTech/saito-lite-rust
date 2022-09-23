@@ -213,7 +213,8 @@ class League extends ModTemplate {
         }
       }
     }else{
-      console.error("League cannot render in Arcade");
+      //Probably on initialization screen
+      //console.error("League cannot render in Arcade");
     }
   }
 

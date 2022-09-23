@@ -153,9 +153,11 @@ module.exports = ArcadeMain = {
 
 
   renderArcadeTab(app, mod){
+    //No Service modules
     if (!app.BROWSER){ return; }
-    if (mod.browser_active == 0 || mod.viewing_arcade_initialization_page == 1) {
 
+    //Announce to active module
+    if (mod.browser_active == 0 || mod.viewing_arcade_initialization_page == 1) {
       //so any function in Arcade that triggers a refresh of the invite list
       //will notify the active module that maybe you want to update the DOM
       app.connection.emit('game-invite-list-update');
