@@ -27,13 +27,13 @@ module.exports = (app, mod, publickey, parent_id = "", thread_id = "") => {
 
       .redsquare-tweet-overlay {
         padding: 2rem;
-        padding-bottom: 1rem;
+        padding-bottom: 0.5rem;
         border-radius: 2rem;
         background-color: white;
         position: relative;
         width: 50rem;
         max-height: 95vh;
-        overflow-y: auto; 
+        overflow-y: auto;
       }
 
       .post-tweet-img-preview {
@@ -84,6 +84,19 @@ module.exports = (app, mod, publickey, parent_id = "", thread_id = "") => {
         float: left;
         font-size: 5rem;
         color: #444A;
+      }
+
+      .redsquare-tweet-overlay textarea {
+        background-color: white;
+        border: 1px solid var(--saito-border);
+        display: block;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        width: 100%;
+        outline: none;
+        font-size: 1.6rem;
+        margin-bottom: 0rem;
+        margin-top: 0.5rem;
       }
     </style>
 
