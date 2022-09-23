@@ -257,11 +257,14 @@ module.exports = ArcadeMain = {
               app.browser.logMatomoEvent("Arcade", "ArcadeAcceptInviteButtonClick", game_cmd);
 
               if (game_cmd === "cancel") {
-            	  let c = confirm("Are you sure you want to cancel this game?");
-              	if (c) {
-                    arcade_main_self.cancelGame(app, mod, game_sig);
-                    return;
-  		          }
+                if (app.wallet.returnPublicKey() !== invite.msg.originator || invite.msg.players.length >= invite.msg.players_needed){
+                  let c = confirm("Are you sure you want to cancel this game?");
+                  if (c) {
+                      arcade_main_self.cancelGame(app, mod, game_sig);
+                      return;
+                  }
+                }
+
               }
 
               if (game_cmd === "join") {

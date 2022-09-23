@@ -13,7 +13,7 @@ module.exports = RedSquareLeagueTemplate = (app, mod) => {
 
 	  if (leagues.length > 0){
 	  	html += `<div class="saito-leaderboard">
-	        <h6>Your Rankings:</h6>
+	        <h6>Your Leaderboard Rankings:</h6>
 	        <div class="saito-table">`;
 
 		let cnt = 0;

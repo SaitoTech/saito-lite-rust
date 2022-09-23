@@ -13,7 +13,7 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 
 		html = `<div id="rs-sidebar-observer" class="observer-sidebar">`;
 
-		html += `<h6>Live Games:</h6>`;
+		html += `<h6>Live Games You Can Watch:</h6>`;
 		html += `<div class="saito-table">`;
 		let cnt = 0;
 
@@ -24,31 +24,37 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 
 		for (let g of games){
 			//We will only display live games
+			let players = g.players_array.split("_");
 
-			if (g.game_status !== "over" && g.latest_move > cutoff){
+			//Only list recent (last move within 20 minutes), ongoing (not over) games for which I am NOT a player
+			if (g.game_status !== "over" && g.latest_move > cutoff && !players.includes(app.wallet.returnPublicKey())){
 				cnt++;
 
 				let gameModule = app.modules.returnModule(g.module);
 	  		    let slug = gameModule.returnSlug();
 
-			    let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${g.players_array.split("_").length}, 1fr);">`;
+			    let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${players.length}, 1fr);">`;
 			    let gameName= gameModule.gamename || gameModule.name;
 			  
-			    g.players_array.split("_").forEach((player) => {
+			    players.forEach((player) => {
 			      let identicon = app.keys.returnIdenticon(player);
 			      playersHtml += `<div class="player-slot tip id-${player}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(player)}</div></div>`;
 			    });
 			    playersHtml += '</div>';
+			    //TODO: show extra spaces for poker
 
-			    let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
+
+			    //No graphics at the moment
+			    //let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
+			    
 			    let isMyGame = false;
-			   	for (let local_game of app.options.games) {
+			   	/*for (let local_game of app.options.games) {
     				if (local_game.id === g.game_id) {
     					if (local_game.player !== 0){
     						isMyGame = true;	
     					}
     				}
-    			}
+    			}*/
 
 				let inviteHtml = `
 				    <div class="saito-table-row">
