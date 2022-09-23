@@ -23,7 +23,7 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 		*/
 
 		for (let g of games){
-			//We will only display live games
+
 			let players = g.players_array.split("_");
 
 			//Only list recent (last move within 20 minutes), ongoing (not over) games for which I am NOT a player
@@ -36,13 +36,26 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 			    let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${players.length}, 1fr);">`;
 			    let gameName= gameModule.gamename || gameModule.name;
 			  
-			    players.forEach((player) => {
-			      let identicon = app.keys.returnIdenticon(player);
-			      playersHtml += `<div class="player-slot tip id-${player}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(player)}</div></div>`;
-			    });
-			    playersHtml += '</div>';
-			    //TODO: show extra spaces for poker
+			  	let gameState = JSON.parse(g.game_state)
+			    let numSeats = gameState?.options?.max_players || players.length;
+			    console.log(JSON.parse(JSON.stringify(gameState)));
+			    console.log(numSeats);
 
+			    for (let i = 0; i < 4; i++){
+			    	if (i == 3 && numSeats > 4){
+			    		playersHtml += `<div class="player-slot-ellipsis fas fa-ellipsis-h"></div>`;  
+			    	}else{
+			    		if (players[i]){
+					      let identicon = app.keys.returnIdenticon(players[i]);
+					      playersHtml += `<div class="player-slot tip id-${players[i]}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(players[i])}</div></div>`;
+			    		}else{
+			    			if (i < numSeats){
+			    				playersHtml += `<div class="saito-arcade-invite-slot identicon-empty"></div>`;			
+			    			}
+			    		}
+			    	}
+			    }
+			    playersHtml += '</div>';
 
 			    //No graphics at the moment
 			    //let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
