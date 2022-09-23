@@ -63,6 +63,14 @@ class RedSquare extends ModTemplate {
 
     if (app.BROWSER === 1) {
       if (this.browser_active == 1) {
+        //Leave a cookie trail to return to Redsquare when you enter a game
+        if (app.options.homeModule !== this.returnSlug()){
+          console.log("Update homepage to " + this.returnSlug());
+          app.options.homeModule = this.returnSlug();
+          app.storage.saveOptions();
+        }
+
+        //Query tweets every 30 seconds
         setInterval(() => {
           this.fetchNewTweets(app, this)
         }, 30000)
