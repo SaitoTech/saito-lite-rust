@@ -1,0 +1,173 @@
+
+body {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden; 
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+.gameboard{
+  /* Default fill the background with image */
+  position: absolute;
+  background-image: url("img/gameboard.jpg");
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.jaipur_board{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  max-height: 60vh;
+  max-width: 100vw;
+  position: absolute;
+  top: 20vh;
+}
+
+.jaipur_board div{
+  margin: 20px;
+}
+
+.pb_sub_info{
+  font-size: 0.8em;
+}
+
+.tbd{
+  font-size: 1.2em;
+  font-style: italic;
+}
+.bonus_tokens{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(50px, 1fr));
+  grid-template-rows: repeat(3, minmax(50px, 1fr));
+  width: fit-content;
+  height: fit-content;
+}
+
+.token{
+  max-width: 70px;
+}
+
+.card_count{
+  width: 106px;
+  height: 146px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-size: 96px;
+  line-height: 146px;
+  text-align: center;
+  text-shadow: 1px 1px 2px black;  
+  position: relative;
+}
+
+.card_count.disabled{
+  filter: brightness(0.35);  
+}
+
+#draw{
+  background-image: url("/jaipur/img/card_back.png");
+  color: maroon;
+}
+
+#discard{
+  width: 106px;
+}
+
+#discard .card{
+  width: 100%;
+}
+
+.market{
+  display: grid;
+  grid-template-columns: repeat(5, minmax(50px, 1fr));
+  max-width: 700px;
+}
+
+.market .card{
+  width: 100%;
+}
+
+.player-box-graphic{
+  position: absolute;
+  left: 100%;
+
+}
+
+.score{
+  margin: 0.25em 0.5em;
+}
+
+.camel_train{
+  background-image: url("/jaipur/img/camel.png");
+  color: cadetblue;
+}
+
+.camel_bonus{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+}
+
+.tip .tiptext{
+  min-width: unset;
+}
+
+.player-box-info{
+  font-size: 32px;
+  text-align: center;
+}
+
+.trade_overlay{
+  width: fit-content;
+  min-width: 600px;
+  max-width: 80vw;
+  max-height: 90vh;
+  background-color: whitesmoke;
+  border: 2px tan solid;
+  border-radius: 5px;
+}
+
+.grid_display{
+  width: 100%;
+  height: 400px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.trade_overlay_buttons{
+  width: 100%;
+  background-color: lightgrey;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.saito-button-primary.disabled{
+  background-color: darkgray;
+  opacity: 60%;
+}
+
+.take_overlay .card_group, .give_overlay .card_group{
+  justify-content: flex-end;
+}
+
+.card_group{
+  display: flex;
+  flex-direction: row;
+}
+
+.card_group img.card{
+  width: 106px;
+  margin: unset;
+}
