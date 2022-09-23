@@ -85,7 +85,8 @@ class Observer extends ModTemplate {
       }
 
     }else{
-      console.error("Observer cannot render in Arcade");
+      //Probably on game_initialization screen
+      //console.error("Observer cannot render in Arcade");
     }
   }
 
@@ -692,7 +693,7 @@ class Observer extends ModTemplate {
           let msg = `You are ready to ${(watch_live)?"follow":"watch"} the game!` 
           gameLoader.render(arcade_self.app, arcade_self, "#arcade-main", msg, "enter game");
           
-          arcade_self.app.connection.emit("arcade-game-ready",slug);
+          arcade_self.app.connection.emit("arcade-game-ready-observer", first_tx.id);
         });
       })
       .catch((err) =>

@@ -2,6 +2,7 @@ const RedSquareGamesTemplate = require("./games.template");
 const GameCreator = require("./../../appspace/arcade/game-creator");
 const GameInviteDetails = require("./../../appspace/arcade/game-invite-details");
 const SaitoScheduler = require("./../../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler");
+const GameLoader = require("../../../../../lib/saito/new-ui/game-loader/game-loader");
 
 class RedSquareGames {
 
@@ -9,14 +10,30 @@ class RedSquareGames {
     this.app = app;
     this.mod = mod;
     this.selector = selector;
+    this.blockRender = false;
+
 
     app.connection.on("game-invite-list-update", () => {
         //console.log("Arcade update received");
         this.render(app, mod);
     });
+
+    app.connection.on("arcade-game-loading" , () =>{
+      this.blockRender = true;
+      let gameLoader = new GameLoader(this.app, this);
+      gameLoader.render(this.app, this, this.selector);
+    });
+
+    app.connection.on("arcade-game-ready-play" , (game) =>{
+      this.blockRender = true;
+      let gameLoader = new GameLoader(this.app, this, game.game_id);
+      gameLoader.render(this.app, this, this.selector, `${game.game_name} is ready to start!`);
+    });
+
   }
 
   render(app, mod, selector="") {
+    if (this.blockRender) { return; }
 
     if (selector != "") {
       this.selector = selector;
