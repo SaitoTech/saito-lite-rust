@@ -2,6 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const InviteTemplate = require('../../lib/templates/invitetemplate');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
+const SaitoMobileBar = require('../../lib/saito/new-ui/saito-mobile-bar/saito-mobile-bar')
 const RedSquareMain = require('./lib/main');
 const Tweet = require('./lib/tweet');
 const JSON = require("json-bigint");
@@ -282,8 +283,10 @@ class RedSquare extends ModTemplate {
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
+      this.mobileBar = new SaitoMobileBar(this.app, this);
       this.addComponent(this.main);
       this.addComponent(this.header);
+      this.addComponent(this.mobileBar);
       this.ui_initialized = true;
     }
 
