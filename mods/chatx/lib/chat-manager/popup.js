@@ -11,7 +11,7 @@ class ChatPopup {
 
     app.connection.on("chat-render-request", (gid = "") => {
 
-      if (mod.chat_manager.inactive_popups.includes(group_id)) { return; }
+      if (mod.chat_manager.inactive_popups.includes(gid)) { return; }
 
       if (gid === this.group_id && gid != "" && this.group_id != "") {
 
@@ -20,13 +20,10 @@ class ChatPopup {
         if (!this.hasRendered){
           app.browser.replaceElementById(ChatPopupTemplate(app, mod, gid), divid);
           this.hasRendered = true;
-          console.log('returning chat body 1;' , mod.returnChatBody(gid))
           app.browser.addElementToSelector(`${mod.returnChatBody(gid)}`,  `.chat-body-${gid}`);
         }
 
-        console.log('returning chat body 2;' , mod.returnChatBody(gid))
         app.browser.replaceElementBySelector(`<div class="chat-body chat-body-${gid}">${mod.returnChatBody(gid)} </div> ,`,  `.chat-body-${gid}`);
-
         document.querySelector(".chat-body").scroll(0, 1000000000);
         app.browser.makeDraggable(`chat-container-${gid}`, `chat-header-${gid}`);
         this.attachEvents(app, mod, gid);
@@ -49,17 +46,11 @@ class ChatPopup {
           .getElementById(`chat-container-${mod.groups[i].id}`)
           .getBoundingClientRect().width;
       }
-
-console.log("SET WIDTH AS: " + pixen_consumed);
     }
-
-console.log(pixen_consumed + " ~~~~ " + chatboxen_open);
 
     right_orientation = pixen_consumed + (20 * chatboxen_open) + "px";
 
-
     if (mod.chat_manager.inactive_popups.includes(group_id)) { return; }
-
     if (group_id != "" && this.group_id == "") { this.group_id = group_id; }
     if (!document.getElementById(`chat-container-${this.group_id}`)) {
       app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));

@@ -1,6 +1,6 @@
 module.exports = (app, mod) => {
 
-    let html = `<div class="rules-overlay" style="background-color:whitesmoke">
+    let html = `<div class="rules-overlay">
             <h1>Mahjong Solitaire</h1>
               <ul>
                 <li>144 tiles are randomly folded into a multi-layered shape.</li>

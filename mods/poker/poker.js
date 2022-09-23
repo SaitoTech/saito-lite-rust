@@ -1325,7 +1325,6 @@ class Poker extends GameTableTemplate {
       this.cardfan.hide();
     }else{
       this.cardfan.render(this.app, this);
-      this.cardfan.attachEvents(this.app, this);  
     }
   }
 

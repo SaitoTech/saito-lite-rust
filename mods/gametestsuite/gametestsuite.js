@@ -957,7 +957,6 @@ class GameTestSuite extends GameTemplate {
   display_cardfan_test(app) {
     if (this.game_cardfan_visible == 0) {
       this.cardfan.render(this.app, this);
-      this.cardfan.attachEvents(this.app, this);
       this.game_cardfan_visible = 1;
     } else {
       this.cardfan.hide();

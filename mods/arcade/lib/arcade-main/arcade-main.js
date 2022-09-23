@@ -153,9 +153,11 @@ module.exports = ArcadeMain = {
 
 
   renderArcadeTab(app, mod){
+    //No Service modules
     if (!app.BROWSER){ return; }
-    if (mod.browser_active == 0 || mod.viewing_arcade_initialization_page == 1) {
 
+    //Announce to active module
+    if (mod.browser_active == 0 || mod.viewing_arcade_initialization_page == 1) {
       //so any function in Arcade that triggers a refresh of the invite list
       //will notify the active module that maybe you want to update the DOM
       app.connection.emit('game-invite-list-update');
@@ -255,11 +257,14 @@ module.exports = ArcadeMain = {
               app.browser.logMatomoEvent("Arcade", "ArcadeAcceptInviteButtonClick", game_cmd);
 
               if (game_cmd === "cancel") {
-            	  let c = confirm("Are you sure you want to cancel this game?");
-              	if (c) {
-                    arcade_main_self.cancelGame(app, mod, game_sig);
-                    return;
-  		          }
+                if (app.wallet.returnPublicKey() !== invite.msg.originator || invite.msg.players.length >= invite.msg.players_needed){
+                  let c = confirm("Are you sure you want to cancel this game?");
+                  if (c) {
+                      arcade_main_self.cancelGame(app, mod, game_sig);
+                      return;
+                  }
+                }
+
               }
 
               if (game_cmd === "join") {

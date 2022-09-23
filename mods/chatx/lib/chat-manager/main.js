@@ -63,9 +63,16 @@ class ChatManager {
 				let tx = group.txs[group.txs.length - 1];
 				let txmsg = tx.returnMessage();
 				last_msg = txmsg.message;
+				last_ts = txmsg.timestamp;
 			}
 
-			let html = SaitoUserWithTime(app, mod, group.name, last_msg, "12:00", group.id);
+			//
+			// 
+			//
+			let x = app.browser.formatDate(last_ts);
+			let last_update = x.hours + ":" + x.minutes;
+
+			let html = SaitoUserWithTime(app, mod, group.name, last_msg, last_update, group.id);
 			let divid = "saito-user-" + group.id;
 			let obj = document.getElementById(divid);
 

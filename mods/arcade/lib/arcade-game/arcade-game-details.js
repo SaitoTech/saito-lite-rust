@@ -25,6 +25,14 @@ const getOptions = () => {
   return options;
 };
 
+const closeGameDetails = (mod) => {
+    //Close the overlay
+    mod.overlay.hide();
+    if (document.getElementById("background-shim")){
+      document.getElementById("background-shim").destroy();
+    }
+}
+
 module.exports = ArcadeGameDetails = {
   /**
    *
@@ -144,6 +152,23 @@ module.exports = ArcadeGameDetails = {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
+          for (let game of mod.games){
+            if (mod.isMyGame(game, app)){
+              let c = await sconfirm(`You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`);
+              if (!c){
+                closeGameDetails(mod);
+                return;
+              }
+            }
+            if (game.msg.game === options.game){
+              let c = await sconfirm(`There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`);
+              if (!c){
+                closeGameDetails(mod);
+                return;
+              } 
+            }
+          }
+
           //
           // if crypto and stake selected, make sure creator has it
           //
@@ -151,7 +176,10 @@ module.exports = ArcadeGameDetails = {
             if (options.crypto && parseFloat(options.stake) > 0) {
               let crypto_transfer_manager = new GameCryptoTransferManager(app);
               let success = await crypto_transfer_manager.confirmBalance(app, mod, options.crypto, options.stake);
-              if (!success){ return; }
+              if (!success){ 
+                closeGameDetails(mod);
+                return; 
+              }
             }
           }catch(err){
              console.log("ERROR checking crypto: " + err);
@@ -162,10 +190,13 @@ module.exports = ArcadeGameDetails = {
           if (options.league){
             let leag = app.modules.returnModule("League");
             if (!leag.isLeagueMember(options.league)){
-              salert("You need to be a member of the League to create a League-only game invite");
+              await sconfirm("You need to be a member of the League to create a League-only game invite");
+              closeGameDetails(mod);
               return;
             }
           }
+
+          closeGameDetails(mod);
 
           let gamemod = app.modules.returnModule(options.game);
           let players_needed = 0;
@@ -195,9 +226,6 @@ module.exports = ArcadeGameDetails = {
             return;
           }
           
-          //Close the overlay
-          mod.overlay.hide();
-          document.getElementById("background-shim").destroy();
 
           if (players_needed == 1) {
 
