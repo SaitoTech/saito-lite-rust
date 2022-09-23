@@ -114,18 +114,20 @@ span.redsquare-home-red-square+span {
 }
 
 .saito-sidebar.right {
-  width: 51rem;
+  position: fixed;
+  width: inherit;
+  height: inherit;
+  overflow-y: auto;
 }
 
 .saito-sidebar-left {
-  position: fixed;
-  top: calc(var(--saito-header-height) + 1rem);
+  width: 250px;
 }
 
 .saito-sidebar-right {
-  left: calc(var(--saito-left-sidebar-width) + var(--saito-main-appspace-width) + 20rem);
-  position: fixed;
-  top: calc(var(--saito-header-height) + 1rem);
+  width: 50rem;
+  overflow-y: scroll;
+  height: inherit;
 }
 
 .sidebar-scrollable {
@@ -138,10 +140,10 @@ span.redsquare-home-red-square+span {
 }
 
 .saito-main.appspace {
-  min-width: var(--saito-main-appspace-width);
-  height: 100vh;
-  position: relative;
-  margin-left: calc(var(--saito-left-sidebar-width) + 1rem);
+  height: 5000px;
+  overflow-y: hidden;
+  width: 92.5%;
+  margin-left: 5%;
 }
 
 .redsquare-appspace-contacts-list {
@@ -1017,6 +1019,14 @@ span.redsquare-home-red-square+span {
 }
 
 @media screen and (max-width: 515px) { 
+
+  .saito-container {
+    padding: 0 1rem;
+  }
+
+  .saito-main.appspace {
+    width: 100vw;
+  }
 
   .saito-redsquare-actions-buttons {
     z-index: 10;
