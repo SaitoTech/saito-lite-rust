@@ -13,7 +13,7 @@ module.exports = (app, mod) => {
       <div class="saito-page-header">
      <div class="saito-redsquare-actions-buttons">
      <div class="saito-redsquare-actions-buttons-icon">
-     <i id="icon" class="fas fa-plus"></i>
+     <i id="action-icon" class="fas fa-plus"></i>
      </div>
       <div class="redsquare-actions-container"> 
       <div id="redsquare-schedule-game" class="saito-button-secondary small" style="float: right;">Schedule for Later</div>
