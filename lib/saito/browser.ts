@@ -279,6 +279,7 @@ class Browser {
     return "en";
   }
 
+  
   isMobileBrowser(user_agent) {
     let check = false;
     (function (user_agent) {
