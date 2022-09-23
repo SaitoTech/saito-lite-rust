@@ -91,8 +91,8 @@ class RedSquare extends ModTemplate {
     try {
       let post = new PostTweet(this.app, this);
       post.render_after_submit = render_after_submit;
-      post.images.push(image);
 	    post.render(this.app, this);
+      post.resizeImg(image, 0.75, 0.75);
     } catch (err) {
     }
   }
@@ -604,7 +604,8 @@ class RedSquare extends ModTemplate {
   fetchMoreTweets(app, mod, post_fetch_tweets_callback) {
 
     const startingLimit = (this.page_number - 1) * this.results_per_page
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND parent_id != thread_id AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND parent_id == thread_id AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT '${startingLimit}','${this.results_per_page}'`;
+
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -629,7 +630,8 @@ class RedSquare extends ModTemplate {
               try {
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
-                tweets.push(new Tweet(app, mod, tx));
+		let tweet = new Tweet(app, mod, tx);
+                tweets.push(tweet);
               } catch (err) { }
             }
           });

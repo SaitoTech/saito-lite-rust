@@ -13,7 +13,7 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 
 		html = `<div id="rs-sidebar-observer" class="observer-sidebar">`;
 
-		html += `<h6>Live Games:</h6>`;
+		html += `<h6>Live Games You Can Watch:</h6>`;
 		html += `<div class="saito-table">`;
 		let cnt = 0;
 
@@ -23,32 +23,51 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 		*/
 
 		for (let g of games){
-			//We will only display live games
 
-			if (g.game_status !== "over" && g.latest_move > cutoff){
+			let players = g.players_array.split("_");
+
+			//Only list recent (last move within 20 minutes), ongoing (not over) games for which I am NOT a player
+			if (g.game_status !== "over" && g.latest_move > cutoff && !players.includes(app.wallet.returnPublicKey())){
 				cnt++;
 
 				let gameModule = app.modules.returnModule(g.module);
 	  		    let slug = gameModule.returnSlug();
 
-			    let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${g.players_array.split("_").length}, 1fr);">`;
+			    let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${players.length}, 1fr);">`;
 			    let gameName= gameModule.gamename || gameModule.name;
 			  
-			    g.players_array.split("_").forEach((player) => {
-			      let identicon = app.keys.returnIdenticon(player);
-			      playersHtml += `<div class="player-slot tip id-${player}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(player)}</div></div>`;
-			    });
+			  	let gameState = JSON.parse(g.game_state)
+			    let numSeats = gameState?.options?.max_players || players.length;
+			    console.log(JSON.parse(JSON.stringify(gameState)));
+			    console.log(numSeats);
+
+			    for (let i = 0; i < 4; i++){
+			    	if (i == 3 && numSeats > 4){
+			    		playersHtml += `<div class="player-slot-ellipsis fas fa-ellipsis-h"></div>`;  
+			    	}else{
+			    		if (players[i]){
+					      let identicon = app.keys.returnIdenticon(players[i]);
+					      playersHtml += `<div class="player-slot tip id-${players[i]}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(players[i])}</div></div>`;
+			    		}else{
+			    			if (i < numSeats){
+			    				playersHtml += `<div class="saito-arcade-invite-slot identicon-empty"></div>`;			
+			    			}
+			    		}
+			    	}
+			    }
 			    playersHtml += '</div>';
 
-			    let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
+			    //No graphics at the moment
+			    //let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
+			    
 			    let isMyGame = false;
-			   	for (let local_game of app.options.games) {
+			   	/*for (let local_game of app.options.games) {
     				if (local_game.id === g.game_id) {
     					if (local_game.player !== 0){
     						isMyGame = true;	
     					}
     				}
-    			}
+    			}*/
 
 				let inviteHtml = `
 				    <div class="saito-table-row">
