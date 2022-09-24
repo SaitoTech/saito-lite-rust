@@ -1,6 +1,5 @@
 const RedSquareMenuTemplate = require("./menu.template");
 const RedSquareWideSidebar = require("./sidebar/sidebar");
-const RedSquareGamesSidebar = require("./sidebar/games-sidebar");
 const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
 
 
@@ -10,17 +9,26 @@ class RedSquareMenu {
   constructor(app, mod) {
     this.name = "RedSquareMenu";
     this.numberOfNotifications = 0;
+
+    app.connection.on('redsquare-menu-notification-request', (obj) => {
+      let menu_item = obj.menu;
+      let notifications = obj.num;
+      this.displayNotification(app, menu_item, notifications)
+    })
+
   }
+
+
+
+
+
 
   render(app, mod, container = "") {
 
     if (!document.querySelector(".redsquare-menu")) {
       app.browser.addElementToSelector(RedSquareMenuTemplate(app, mod), container);
-       if (this.numberOfNotifications > 0){
-          if(document.querySelector(`.redsquare-menu-notifications`)) {
-            app.browser.addElementToSelector(`<p class="redsquare-menu-alert"> </p>`, `.redsquare-menu-notifications` );
-          }
-        }
+    } else {
+      app.browser.replaceElementBySelector(RedSquareMenuTemplate(app, mod), container);
     }
 
     //
@@ -29,14 +37,13 @@ class RedSquareMenu {
     for (let i = 0; i < app.modules.mods.length; i++) {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
-    
         let html = `
                 <li class="redsquare-menu-${app.modules.mods[i].returnSlug()}" data-id="${i}">
                   <i class="${app.modules.mods[i].icon}"></i>
                   <span> ${app.modules.mods[i].returnName()}</span>
              
                 </li>
-    `;
+        `;
         if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)) {
           app.browser.addElementToSelector(html, ".saito-menu-list");
         }
@@ -45,6 +52,8 @@ class RedSquareMenu {
     }
     this.attachEvents(app, mod);
   }
+
+
 
 
   attachEvents(app, mod) {
@@ -102,13 +111,6 @@ class RedSquareMenu {
     for (let i = 0; i < app.modules.mods.length; i++) {
       let x = app.modules.mods[i].respondTo("appspace");
       if (x) {
-	    let mod_notifications = app.modules.mods[i].returnNumberOfNotifications();
-        if(mod_notifications > 0){
-          if(!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()} .redsquare-menu-alert`)) {
-            app.browser.addElementToSelector(`<p class="redsquare-menu-alert"> </p>`, `.redsquare-menu-${app.modules.mods[i].returnSlug()}` );
-          }
-        }
-      
         let qs = ".redsquare-menu-" + app.modules.mods[i].returnSlug();
         obj = document.querySelector(qs);
         obj.onclick = (e) => {
@@ -120,6 +122,9 @@ class RedSquareMenu {
   }
 
   renderItem(app, mod, component, params = null) {
+
+    this.displayNotification(app, component, 0);
+
     let url = component
     if (params) {
       url = `${component}?${params}`;
@@ -158,7 +163,7 @@ class RedSquareMenu {
       case "games":
         mod.games.render(app, mod, ".appspace");
         window.location.hash = url;
-        mod.gsidebar.render(app, mod, ".saito-sidebar-right");
+        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         matched = 1;
         break;
       default:
@@ -190,6 +195,27 @@ class RedSquareMenu {
     return matched;
   }
 
+
+  displayNotification(app, menu_item, notifications = Math.floor(Math.random() * 20)) {
+
+    let qs = `.redsquare-menu-${menu_item}`;
+    if (document.querySelector(qs)) {
+      qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
+      let obj = document.querySelector(qs);
+      if (!obj) {
+        if (notifications > 0) {
+          app.browser.addElementToSelector(`<p class="saito-notification-dot">${notifications}</p>`, `.redsquare-menu-${menu_item}`);
+        } 
+      } else {
+        if (notifications == 0) {
+	  obj.style.display = "none";
+	} else {
+	  obj.style.display = "block";
+          obj.innerHTML = `${notifications}`;
+        }
+      }
+    }
+  }
 
 
 }

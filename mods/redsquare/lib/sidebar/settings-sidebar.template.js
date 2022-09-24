@@ -1,4 +1,4 @@
-module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
+module.exports = RedSquareSettingsSidebarTemplate = (app, mod) => {
 
   return `
 

@@ -7,24 +7,24 @@ class Post {
   constructor(app, mod, tweet = null) {
     this.app = app;
     this.mod = mod;
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app);
     this.parent_id = "";
     this.thread_id = "";
     this.images = [];
     this.tweet = tweet;
+    this.render_after_submit = 1; 
   }
 
   render(app, mod) {
     if (document.querySelector('#redsquare-tweet-overlay') != null) {
       document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
     }
+
     this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();
     this.attachEvents(app, mod);
   }
-
-
 
   attachEvents(app, mod) {
 
@@ -107,13 +107,12 @@ class Post {
           }
         }
 
-
         setTimeout(() => {
- 
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
-          mod.addTweetFromTransaction(app, mod, newtx, true);
 
-	  if (post_self.browser_active == 1) {
+          if (post_self.render_after_submit == 1) {
+            mod.prependTweetFromTransaction(app, mod, newtx, true);
+
             if (thread_id !== "") {
               mod.renderWithChildren(app, mod, thread_id);
             } else {
@@ -123,7 +122,7 @@ class Post {
                 mod.renderMainPage(app, mod);
               }
             }
-	  }
+	        }
 
           post_self.overlay.hide();
 

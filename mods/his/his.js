@@ -1565,14 +1565,6 @@ console.log("adding stuff!");
         game_mod.handleStatsMenu();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        window.location.href = "/arcade";
-      }
-    });
     this.menu.addMenuOption({
       text : "Info",
       id : "game-cards",
@@ -1652,17 +1644,8 @@ console.log("adding stuff!");
 
 
     this.menu.addChatMenu(app, this);
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
 
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
@@ -2011,6 +1994,11 @@ console.log("A2 ");
     p.captured.push(unit);
   }
 
+  captureNavalLeader(winning_faction, losing_faction, space, unit) {
+    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
+    this.game.state.naval_leaders_lost_at_sea.push(unit);
+  }
+
   isPersonageOnMap(faction, personage) {
     for (let s in this.game.spaces) {
       if (this.game.spaces[s].units[faction].length > 0) {
@@ -2255,15 +2243,17 @@ console.log("A2 ");
   canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[invalid_space]; } } catch (err) {}
-console.log("retreat 1");
     if (space === attacker_comes_from_this_space) { return 0; }
-console.log("retreat 2");
     if (this.isSpaceInUnrest(space) == 1) { return 0; }
-console.log("retreat 3");
-console.log("is space " + this.returnSpaceName(space.key) + " friendly to " + faction);
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
-console.log("retreat 4");
     return 0;
+  }
+
+  canFactionRetreatToNavalSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports AND open sea");
+    return 1;
   }
 
   convertSpace(religion, space) {
@@ -2334,6 +2324,17 @@ console.log("retreat 4");
     return luis;
   }
 
+  returnFactionSeaUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === "squadron") { luis++; }
+      if (space.units[faction][i].type === "corsair") { luis++; }
+    }
+    return luis;
+  }
+
   doesFactionHaveNavalUnitsOnBoard(faction) {
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key].units[faction]) {
@@ -2356,6 +2357,7 @@ console.log("retreat 4");
 
   returnFactionMap(space, faction1, faction2) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let faction_map = {};
     for (let f in space.units) {
       if (this.returnFactionLandUnitsInSpace(f, space)) {
@@ -2427,6 +2429,45 @@ console.log("retreat 4");
 
     return neighbours;
   }
+
+
+  //
+  // returns adjacent naval and port spaces
+  //
+  returnNavalAndPortNeighbours(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+
+    let key = space.key;
+    let neighbours = [];
+
+    //
+    // ports add only naval spaces
+    //
+    if (this.game.spaces[key]) {
+      for (let i = 0; i < space.ports.length; i++) {
+        let x = space.ports[i];
+        neighbours.push(x);
+      }
+    }
+
+    //
+    // naval spaces add ports
+    //
+    if (this.game.navalspaces[key]) {
+      for (let i = 0; i < space.ports.length; i++) {
+        let x = space.ports[i];
+        neighbours.push(x);
+      }
+      for (let i = 0; i < space.neighbours.length; i++) {
+        let x = space.neighbours[i];
+        neighbours.push(x);
+      }
+    }
+
+    return neighbours;
+  }
+
 
 
   //
@@ -2813,6 +2854,8 @@ console.log("this is a space: " + spacekey)
 
     // which ones are activated
     state.minor_activated_powers = [];
+
+    state.naval_leaders_lost_at_sea = [];
 
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];
@@ -7670,7 +7713,53 @@ alert("removing unit not implement for sea");
 	      this.displaySpace(destination);
 	    }
 
+	    //
+	    // do we have a jolly sea battle?
+	    //
+            let space;
+	    if (this.game.spaces[destination]) {
+	      space = this.game.spaces[destination];
+	    }
+	    if (this.game.navalspaces[destination]) {
+	      space = this.game.navalspaces[destination];
+	    }
+
+            let anyone_else_here = 0;
+
+            let lqe = qe-1;
+            if (lqe >= 0) {
+              let lmv = this.game.queue[lqe].split("\t");
+              if (lmv[0] == "naval_interception_check") {
+                for (let f in space.units) {
+                  if (space.units[f].length > 0 && f != faction) {
+                    anyone_else_here = 1;
+                  }
+                  if (f !== faction && space.units[f].length > 0 && !this.areAllies(f, faction)) {
+                    if (lqe-1 >= 0) {
+                      // added in reverse order
+                      if (skip_avoid_battle != 1) {
+                        this.game.queue.splice(lqe, 0, "naval_retreat_check\t"+faction+"\t"+destination+"\t"+source);
+                      }
+                      this.game.queue.splice(lqe, 0, "RESETCONFIRMSNEEDED\tall");
+                      this.game.queue.splice(lqe, 0, "counter_or_acknowledge\tNaval Battle is about to begin in "+destination + "\tnaval_battle");
+                      this.game.queue.splice(lqe, 0, "naval_battle\t"+space.key+"\t"+faction);
+                    }
+                  }
+                }
+              } else {
+                //
+                // we only update the occupier of the space if the next move is not a "move"
+                // as we require interception check to find out if there are units here already.
+                //
+                if (lmv[0] !== "move") {
+                  if (anyone_else_here == 0) {
+                    space.occupier = faction;
+                  }
+                }
+              }
+            }
 	  }
+
 
 	  if (movetype === "land") {
 
@@ -7686,8 +7775,6 @@ alert("removing unit not implement for sea");
 	    //
 	    let space = this.game.spaces[destination];
 	    let anyone_else_here = 0;
-
-console.log("OCCUPIER OF SPACE IS: " + space.occupier);
 
 	    let lqe = qe-1;
 	    if (lqe >= 0) {
@@ -7979,6 +8066,39 @@ console.log(JSON.stringify(mv));
 
 	}
 
+
+	if (mv[0] === "naval_retreat") {
+
+	  let faction = mv[1];
+	  let source_spacekey = mv[2];
+	  let destination_spacekey = mv[3];
+
+	  let source;
+	  if (this.game.spaces[source_spacekey]) { source = this.game.spaces[source_spacekey]; }
+	  if (this.game.navalspaces[source_spacekey]) { source = this.game.navalspaces[source_spacekey]; }
+
+	  let destination;
+	  if (this.game.spaces[destination_spacekey]) { source = this.game.spaces[destination_spacekey]; }
+	  if (this.game.navalspaces[destination_spacekey]) { source = this.game.navalspaces[destination_spacekey]; }
+
+	  for (let i = source.units[faction].length-1; i >= 0; i--) {
+	    if (source.units[faction][i].land_or_sea == "sea" || source.units[faction][i].land_or_sea == "both") {
+	      destination.units[faction].push(source.units[faction][i]);
+	      source.units[faction].splice(i, 1);
+	    }
+	  }
+
+	  this.displaySpace(source_spacekey);
+	  this.displayNavalSpace(source_spacekey);
+	  this.displaySpace(destination_spacekey);
+	  this.displayNavalSpace(destination_spacekey);
+	  
+	  return 1;
+
+	}
+
+
+
         if (mv[0] === "retreat") {
 
 	  this.game.queue.splice(qe, 1);
@@ -8004,7 +8124,27 @@ console.log(JSON.stringify(mv));
 	}
 
 
+        if (mv[0] === "naval_battle_hits_assignment") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let hits_to_assign = parseInt(mv[2]);
+	  let space = mv[3];
+
+	  let player = this.returnPlayerOfFaction(faction);
+	  if (player > 0) {
+	    if (this.game.player === player) {
+	      this.playerAssignNavalHits(faction, space, hits_to_assign);
+	    } else {
+	      this.updateStatus(faction + " assigning hits [ " + hits_to_assigns + " ]");
+	    }
+	  } else {
+	    return 1;
+	  }
+
+	  return 0;
+	}
 
 
 
@@ -8045,30 +8185,81 @@ console.log(JSON.stringify(mv));
 	        }
 	      }
 	    }
-
 	  }
-
           return 1;
-
 	}
 
 
-        if (mv[0] === "player_evaluate_interception_opportunity") {
+        if (mv[0] === "naval_interception_check") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+
+	  let neighbours = this.returnNavalAndPortNeighbours(spacekey);
+	  let attacking_player = this.returnPlayerOfFaction(faction);
+
+	  //
+	  // interception at port is not possible
+	  //
+	  if (this.game.spaces[spacekey]) {
+	    console.log("INTERCEPTIONS INVOLVING PORTS NOT SUPPORTED YET");
+	  }
+
+	  //
+	  //
+	  //
+	  if (this.game.navalspaces[spacekey]) {
+
+	    let io = this.returnImpulseOrder();
+	    for (let i = io.length-1; i>= 0; i--) {
+	      let player_of_faction = this.returnPlayerOfFaction(io[i]);
+	      if (player_of_faction != attacking_player && player_of_faction != 0) {
+  	        if (io[i] !== faction) {
+	          for (let z = 0; z < neighbours.length; z++) {
+	            let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[z]);
+	            if (fluis > 0) {
+	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+io[i]+"\t"+neighbours[z]);
+	            }
+	          }
+	        }
+	      }
+
+	      for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
+	        let ap = this.game.state.activated_powers[io[i]][z];
+	        if (ap != faction) {
+	          let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[z]);
+	          if (fluis > 0) {
+	            this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+ap+"\t"+neighbours[z]);
+	          }
+	        }
+	      }
+	    }
+	  }
+          return 1;
+	}
+
+
+
+
+
+
+        if (mv[0] === "player_evaluate_naval_interception_opportunity") {
 
 	  this.game.queue.splice(qe, 1);
 
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
-	  let attacker_includes_cavalry = parseInt(mv[3]);
-	  let defender = mv[4];
-	  let defender_spacekey = mv[5];
+	  let defender = mv[3];
+	  let defender_spacekey = mv[4];
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
 	  if (player_factions.includes(defender)) {
-	    this.playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey);
+	    this.playerEvaluateNavalInterceptionOpportunity(attacker, spacekey, defender, defender_spacekey);
 	  } else {
-	    this.updateStatus(this.returnFactionName(defender) + " considering interception from " + this.returnSpaceName(defender_spacekey));
+	    this.updateStatus(this.returnFactionName(defender) + " considering naval interception from " + this.returnSpaceName(defender_spacekey));
 	  }
 
 	  return 0;
@@ -8148,11 +8339,11 @@ console.log(JSON.stringify(mv));
 	    for (let i = this.game.queue.length-1; i >= 0; i--) {
 	      let lqe = this.game.queue[i];
 	      let lmv = lqe.split("\t");
-	      if (lmv[0] !== "player_evaluate_interception_opportunity") {
+	      if (lmv[0] !== "player_evaluate_navel_interception_opportunity") {
 	        index_to_insert_moves = i;
 		break;
 	      } else {
-	        if (lmv[4] !== defender) {
+	        if (lmv[3] !== defender) {
 		  this.game.queue.splice(i, 1); // remove 1 at i
 		  i--; // queue is 1 shorter
 		}
@@ -8165,6 +8356,111 @@ console.log(JSON.stringify(mv));
 	    //
 	    for (let i = 0; i < units_to_move_idx.length; i++) {
 	      let m = "move\t"+defender+"\tland\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i+"\t"+1]; // 1 = skip avoid battle
+	      his_self.game.queue.splice(index_to_insert_moves, 0, m);
+	    }
+
+	  } else {
+	    this.updateLog("FAILURE");
+	  }
+
+	  return 1;
+
+	}
+
+
+
+
+        if (mv[0] === "naval_intercept") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let defender = mv[3];
+	  let defender_spacekey = mv[4];
+	  let units_to_move_idx = JSON.parse(mv[5]);
+	  let units_to_move = [];
+
+	  //
+	  // load actual units to examine them for squadrons, corsairs, navy leaders
+	  //
+	  let s;
+	  if (this.game.spaces[defender_spacekey]) {
+	    s = this.game.spaces[defender_spacekey];
+	  }
+	  if (this.game.navalspaces[defender_spacekey]) {
+	    s = this.game.navalspaces[defender_spacekey];
+	  }
+
+          for (let i = 0; i < units_to_move_idx.length; i++) {
+	    units_to_move.push(s.units[defender][units_to_move_idx[i]]);
+	  }
+
+	  if (units_to_move.length == 0) {
+	    this.updateLog("no units sent to intercept...");
+	    return 1;
+	  }
+
+	  let hits_on = 9;
+	  let defender_highest_battle_rating = 0;
+
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    if (units_to_move[i].battle_rating > defender_highest_battle_rating) {
+	      defender_highest_battle_rating = units_to_move[i].battle_rating;
+	    }
+	  }
+
+	  this.updateLog(this.returnFactionName(defender) + " navy moves to intercept from " + this.returnSpaceName(defender_spacekey));
+	  if (defender_highest_battle_rating > 0) {
+	    this.updateLog(this.returnFactionName(defender) + " gains " + defender_highest_battle_rating + " bonus from navy leader");
+	  }
+
+	  let d1 = this.rollDice(6);
+	  let d2 = this.rollDice(6);
+	  let dsum = d1+d2;
+
+	  this.updateLog("Interception roll #1: " + d1);
+	  this.updateLog("Interception roll #2: " + d2);
+
+	  // IS_TESTING
+	  if (dsum >= hits_on) {
+
+	    this.updateLog("SUCCESS");
+
+	    //
+	    // insert at end of queue by default
+	    //
+	    let index_to_insert_moves = this.game.queue.length-1;
+
+	    //
+	    // BUT NO OTHER POWER CAN INTERCEPT, SO CLEAN OUT GAME QUEUE FOR THIS DESTINATION
+	    //
+	    for (let i = this.game.queue.length-1; i >= 0; i--) {
+	      let lqe = this.game.queue[i];
+	      let lmv = lqe.split("\t");
+	      if (lmv[0] !== "player_evaluate_naval_interception_opportunity") {
+	        index_to_insert_moves = i;
+		break;
+	      } else {
+	        if (lmv[2] != spacekey) {
+		  this.game.queue.splice(i, 1); // remove 1 at i
+		  i--; // queue is 1 shorter
+	          index_to_insert_moves = i;
+		  break;
+		}
+	        if (lmv[3] !== defender) {
+		  this.game.queue.splice(i, 1); // remove 1 at i
+		  i--; // queue is 1 shorter
+	        } 
+	      }
+	    }
+
+
+	    //
+	    // SUCCESS - move and continue to evaluate interception opportunities
+	    //
+	    for (let i = 0; i < units_to_move_idx.length; i++) {
+	      let m = "move\t"+defender+"\tsea\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i+"\t"+1]; // 1 = skip avoid battle
 	      his_self.game.queue.splice(index_to_insert_moves, 0, m);
 	    }
 
@@ -8357,6 +8653,225 @@ console.log(JSON.stringify(mv));
 	  return 0;
 
 	}
+
+
+
+	if (mv[0] === "naval_battle") {
+
+          this.game.queue.splice(qe, 1);
+
+	  this.game.state.naval_battle = {};
+
+	  //
+	  // count units
+	  //
+          let calculate_units = function(faction) {
+	    let rolls = 0;
+            for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].type === "squadron") { rolls += 1; }
+	      if (space.units[faction][i].type === "corsair") { rolls += 1; }
+	    }
+	    return rolls;
+          }
+	  //
+	  // calculate rolls
+	  //
+          let calculate_rolls = function(faction) {
+	    let rolls = 0;
+            for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].type === "squadron") { rolls += 2; }
+	      if (space.units[faction][i].type === "corsair") { rolls += 1; }
+	    }
+	    return rolls;
+          }
+	  //
+	  // calculate highest battle ranking
+	  //
+          let calculate_highest_battle_ranking = function(faction) {
+	    let highest_battle_ranking = 0;
+            for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].battle_ranking > 0) {
+	        if (highest_battle_ranking < space.units[faction][i].battle_ranking) {
+		  highest_battle_ranking = space.units[faction][i].battle_ranking;
+		}
+	      }
+	    }
+	    return highest_battle_ranking;
+          }
+
+
+	  //
+	  // this is run when a naval battle starts. players have by now 
+	  // interceded or played cards that allow them to respond to the 
+	  // movement, including retreat into a fortress if available. as
+	  // such, this handles the conflict.
+	  //
+	  let his_self = this;
+	  let space;
+	  if (this.game.spaces[mv[1]]) { space = this.game.spaces[mv[1]]; }
+	  if (this.game.navalspaces[mv[1]]) { space = this.game.navalspaces[mv[1]]; }
+	  let attacker = mv[2];
+	  let stage = "naval_battle";
+
+	  //
+	  // ok -- who the hell is here?
+	  //
+	  // an ally of a major power can intercept and fight together, complicating
+	  // how hits are assigned. so we need to know which factions are actually on 
+	  // which sides. additionally, formations can include units from allied minor
+	  // powers.
+	  //
+	  let attacker_faction = attacker;
+	  let defender_faction = his_self.returnDefenderFaction(attacker_faction, space);
+
+ 	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
+ 	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
+
+
+	  //
+	  // map every faction in space to attacker or defender
+	  //
+	  let attacking_factions = 0;
+	  let defending_factions = 0;
+	  let faction_map = this.returnFactionMap(space, attacker_faction, defender_faction);
+
+	  //
+	  // migrate any bonuses to attacker or defender
+	  //
+          for (let f in space.units) {
+	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
+	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      let ap = his_self.game.players_info[attacker_player-1];
+	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
+	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
+	      if (p.tmp_roll_modifiers.length > 0) { 
+		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
+	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	        } 
+	      } 
+	    }
+	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
+	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	      let dp = his_self.game.players_info[defender_player-1];
+	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
+	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
+	      if (p.tmp_roll_modifiers.length > 0) { 
+		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
+	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	        } 
+	      } 
+	    }
+          }
+
+	  //
+	  // we now have a mapping of all factions to the two main factions that
+	  // will make any strategic decisions for hits assignment, etc. and any 
+	  // bonuses that affect combat will have been copied over to those players
+	  //
+
+	  //
+	  // calculate the total rolls each faction gets to make. the defender starts
+	  // with +1 roll bonus because they have control over the space.
+	  //
+	  let attacker_rolls = 0;
+	  let defender_rolls = 1;
+	  let attacker_units = 0;
+          let defender_units = 0;
+	  let defender_port_bonus = 0;
+	  if (this.game.spaces[mv[1]]) { defender_port_bonus++; defender_rolls++; }
+
+	  let attacker_highest_battle_ranking = 0;
+	  let defender_highest_battle_ranking = 0;
+
+
+	  for (let f in faction_map) {
+	    if (faction_map[f] === attacker_faction) {
+	      attacker_units += calculate_units(f);
+	      attacker_rolls += calculate_rolls(f);
+	      if (calculate_highest_battle_ranking(f) > attacker_highest_battle_ranking) {
+		attacker_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      }
+	    }
+	    if (faction_map[f] === defender_faction) {
+	      defender_units += calculate_units(f);
+	      defender_rolls += calculate_rolls(f);
+	      if (calculate_highest_battle_ranking(f) > defender_highest_battle_ranking) {
+		defender_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      }
+	    }  
+	  }
+	  if (attacker_player.tmp_roll_bonus) {
+  	    attacker_rolls += parseInt(attacker_player.tmp_roll_bonus);
+	  }
+	  if (defender_player.tmp_roll_bonus) {
+            defender_rolls += parseInt(defender_player.tmp_roll_bonus);
+	  }
+
+
+
+	  //
+	  // "professional rowers" may be played after dice are rolled, so we roll the dice
+	  // now and break ("naval_battle_continued" afterwards...
+	  //
+	  let attacker_results = [];
+	  let defender_results = [];
+	  let attacker_hits = 0;
+	  let defender_hits = 0;
+
+	  for (let i = 0; i < attacker_rolls; i++) {
+	    let res = this.rollDice(6);
+	    attacker_results.push(res);
+	    if (res >= 5) { attacker_hits++; }
+	  }
+	  for (let i = 0; i < defender_rolls; i++) {
+	    let res = this.rollDice(6);
+	    defender_results.push(res);
+	    if (res >= 5) { defender_hits++; }
+	  }
+
+	  //
+	  // PRINT OUT INFO TO LOG
+	  //
+	  this.updateLog("Attackers: " + attacker_rolls + " in total rolls");
+	  for (let i = 0; i < attacker_results.length; i++) {
+	    this.updateLog(" ... rolls: " + attacker_results[i]);
+          }
+	  this.updateLog("Defenders: " + defender_rolls + " in total rolls");
+	  for (let i = 0; i < defender_results.length; i++) {
+	    this.updateLog(" ... rolls: " + defender_results[i]);
+          }
+
+	  //
+	  // things get messy and conditional now, because Professional Rowers may 
+	  // be played to modify dice rolls.
+	  //
+	  // we handle this by saving the "state" of the battle and pushing 
+	  // execution back to the game queue.
+	  //
+
+
+	  //
+	  // save battle state
+	  //
+	  his_self.game.state.naval_battle.attacker_units = attacker_units;
+	  his_self.game.state.naval_battle.defender_units = defender_units;
+	  his_self.game.state.naval_battle.attacker_rolls = attacker_rolls;
+	  his_self.game.state.naval_battle.defender_rolls = defender_rolls;
+	  his_self.game.state.naval_battle.attacker_results = attacker_results;
+	  his_self.game.state.naval_battle.defender_results = defender_results;
+	  his_self.game.state.naval_battle.attacker_faction = attacker_faction;
+	  his_self.game.state.naval_battle.defender_faction = defender_faction;
+	  his_self.game.state.naval_battle.faction_map = faction_map;
+
+	  his_self.game.queue.push(`field_battle_continue\t${mv[1]}`);
+	  his_self.game.queue.push(`counter_or_acknowledge\tNaval Battle Hits Assigmentt\tnaval_battle_hits_assignment`);
+	  his_self.game.queue.push(`RESETCONFIRMSNEEDED\tall`);
+
+	  return 1;
+
+        }
+
+
 
 
 
@@ -9005,6 +9520,343 @@ console.log("done");
 
 
 
+ 	if (mv[0] === "destroy_naval_units") {
+
+          this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let units_to_destroy = JSON.parse(mv[3]);
+
+	  let space;
+
+	  if (this.game.space[spacekey]) { space = this.game.space[spacekey]; }
+	  if (this.game.navalspace[spacekey]) { space = this.game.navalspace[spacekey]; }
+
+	  units_to_destroy.sort();
+	  if (units_to_destroy[0] < units_to_destroy[units_to_destroy.length-1]) {
+	    units_to_destroy.reverse();
+	  }
+
+	  //
+	  // remove from max to minimum to avoid index-out-of-array errors
+	  //
+	  for (let i = 0; i < units_to_destroy.length; i++) {
+	    space.units[faction].splice(i, 1);
+	  }
+
+	  return 1;
+
+	}
+
+
+	if (mv[0] === "naval_battle_continue") {
+
+          this.game.queue.splice(qe, 1);
+
+	  let his_self = this;
+	  let space;
+	  if (this.game.spaces[mv[1]]) {
+	    space = this.game.spaces[mv[1]];
+	  }
+	  if (this.game.navalspaces[mv[1]]) {
+	    space = this.game.navalspaces[mv[1]];
+	  }
+
+
+	  //
+	  // calculate hits
+	  //
+          let modify_rolls = function(player, roll_array) {
+	    let modified_rolls = [];
+            for (let i = 0; i < roll_array.length; i++) {
+              if (player.tmp_roll_modifiers.length > i) {
+                let modded_roll = roll_array[i] + player.tmp_roll_modifiers[i];
+                if (modded_roll >= 5) {
+                  modified_rolls.push(modded_roll);
+                }
+              } else {
+                if (roll_array[i] >= 5) {
+                  modified_rolls.push(roll_array[i]);
+                }
+              }
+            }
+	    return modified_rolls;
+          }
+          let calculate_hits = function(player, roll_array) {
+            let hits = 0;
+            for (let i = 0; i < roll_array.length; i++) {
+              if (roll_array[i] >= 5) {
+                hits++;
+              }
+            }
+            return hits;
+          }
+	  let assign_hits = function(faction, hits) {
+
+	    //
+	    // hits are spread out over units
+	    //
+	    let are_hits_all_assigned = 0;
+	    let hits_to_assign = hits;
+	    let max_possible_hits_assignable = 0;
+
+	    //
+	    // max hits to assign are the faction land units
+	    //
+	    for (let f in faction_map) {
+	      if (faction_map[f] === faction) { 
+	    	max_possible_hits_assignable += his_self.returnFactionSeaUnitsInSpace(f, space);
+	      }
+	    }
+
+	    //
+	    //
+	    //
+	    if (max_possible_hits_assignable < hits_to_assign) {
+	      hits_to_assign = max_possible_hits_assignable;
+	    }
+
+
+	    while (are_hits_all_assigned == 0 && hits_to_assign > 0) {
+
+	      //
+	      // first we calculate starting faction targets
+	      //
+	      let number_of_targets = 0;
+	      for (let f in faction_map) {
+	        if (faction_map[f] === faction) { 
+		  if (his_self.returnFactionSeaUnitsInSpace(f, space) > 0) {
+		    number_of_targets++;
+		  }
+		}
+	      }
+
+	      while (hits_to_assign >= number_of_targets && hits_to_assign > 0) {
+
+		//
+		// assign hits to allies
+		//
+	        for (let f in faction_map) {
+	          if (faction_map[f] === faction) { 
+		    if (his_self.returnFactionSeaUnitsInSpace(f, space) > 0) {
+	 	      for (let zzz = 0; zzz < 2; zzz++) {
+
+		        let cannon_fodder = "";
+		        if (zzz == 0) { cannon_fodder = "corsair"; }
+		        if (zzz == 1) { cannon_fodder = "squadron"; }
+
+  	     	        for (let i = 0; i < space.units[f].length; i++) {
+	   	          if (space.units[f][i].type === cannon_fodder) {
+		  	    space.units[f].splice(i, 0);
+			    hits_to_assign--;
+		            zzz = 1000000;
+		            i   = 1000000;
+			  }
+			}
+		      }
+		    }
+		  }
+		}
+
+	        //
+	        // recalculate num targets
+	        //
+	        number_of_targets = 0;
+	        for (let f in faction_map) {
+	          if (faction_map[f] === faction) { 
+		    if (his_self.returnFactionSeaUnitsInSpace(f, space) > 0) {
+		      number_of_targets++;
+		    }
+		  }
+	        }
+	      }
+
+	      //
+	      // we now have fewer hits to assign than there are factions available
+	      // to share the damage, so we pick randomly by rolling a dice.
+	      //
+	      while (hits_to_assign > 0) {
+
+		let targets = [];
+	        for (let f in faction_map) { targets.push(f); }
+		targets.sort();
+		
+		for (let i = hits_to_assign; i > 0; i--) {
+		  let selected_target = his_self.rollDice(targets.length);
+		  let selected_faction = targets[selected_target-1];
+		  his_self.updateLog("Random Target: " + selected_faction);
+		
+		  //
+		  // again, survival of the fittest
+		  //
+		  for (let zzz = 0; zzz < 2; zzz++) {
+
+                    let cannon_fodder = "";
+                    if (zzz == 0) { cannon_fodder = "corsair"; }
+                    if (zzz == 1) { cannon_fodder = "squadron"; }
+
+                    for (let ii = 0; ii < space.units[selected_faction].length; ii++) {
+                      if (space.units[selected_faction][ii].type === cannon_fodder) {
+			his_self.updateLog(this.returnFactionName(f) + " " + space.units[selected_faction][ii].name + " sunk");
+                        space.units[selected_faction].splice(ii, 0);
+                        hits_to_assign--;
+                        zzz = 1000000;
+                        ii  = 1000000;
+                      }
+                    }
+                  }
+
+		  //
+		  // remove other faction sea units next
+		  //
+		  targets.splice(selected_target-1, 0);
+		}
+	      }
+
+	      are_hits_all_assigned = 1;
+
+	    }
+	  }
+
+	  let faction_map      = his_self.game.state.naval_battle.faction_map;
+	  let attacker_faction = his_self.game.state.naval_battle.attacker_faction;
+	  let defender_faction = his_self.game.state.naval_battle.defender_faction;
+          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	  let attacker_results = his_self.game.state.naval_battle.attacker_results;
+	  let defender_results = his_self.game.state.naval_battle.defender_results;
+	  let attacker_rolls   = his_self.game.state.naval_battle.attacker_rolls;
+	  let defender_rolls   = his_self.game.state.naval_battle.defender_rolls;
+	  let attacker_units   = his_self.game.state.naval_battle.attacker_units;
+	  let defender_units   = his_self.game.state.naval_battle.defender_units;
+
+	  let winner	       = defender_faction;
+	  let attacker_hits    = 0;
+	  let defender_hits    = 0;
+
+	  //
+	  // assign hits simultaneously
+	  //
+	  his_self.game.state.naval_battle.attacker_modified_rolls = modify_rolls(attacker_player, attacker_results);
+	  his_self.game.state.naval_battle.defender_modified_rolls = modify_rolls(defender_player, defender_results);
+	  attacker_hits = calculate_hits(attacker_player, attacker_results);
+	  defender_hits = calculate_hits(defender_player, defender_results);
+	  assign_hits(defender_player, attacker_hits);
+	  assign_hits(attacker_player, defender_hits);
+
+	  his_self.game.state.naval_battle.attacker_hits = attacker_hits;
+	  his_self.game.state.naval_battle.defender_hits = defender_hits;
+
+	  his_self.updateLog("Attacker Modified: " + JSON.stringify(his_self.game.state.naval_battle.attacker_modified_rolls));
+	  his_self.updateLog("Defender Modified: " + JSON.stringify(his_self.game.state.naval_battle.defender_modified_rolls));
+	  his_self.updateLog("Attacker Hits: " + attacker_hits);
+	  his_self.updateLog("Defender Hits: " + defender_hits);
+
+	  //
+	  // who won?
+	  //
+	  if (attacker_hits > defender_hits) {
+	    winner = attacker_faction;
+	  }
+
+	  //
+	  // calculate units remaining
+	  //
+	  let attacker_sea_units_remaining = attacker_units - defender_hits;
+	  let defender_sea_units_remaining = defender_units - attacker_hits;
+
+          his_self.game.state.naval_battle.attacker_sea_units_remaining = attacker_sea_units_remaining;
+          his_self.game.state.naval_battle.defender_sea_units_remaining = defender_sea_units_remaining;
+
+	  if (attacker_sea_units_remaining <= 0 && defender_sea_units_remaining <= 0) {
+	    if (attacker_rolls > defender_rolls) {
+	      his_self.updateLog("Attacker adds 1 squadron");
+	      his_self.addSquadron(attacker_faction, space);
+	    } else {
+	      his_self.updateLog("Defender adds 1 squadron");
+	      his_self.addSquadron(defender_faction, space);
+	    }
+	  }
+
+
+	  //
+	  // capture stranded leaders
+	  //
+	  if (attacker_sea_units_remaining <= 0) {
+	    for (let f in faction_map) {
+	      if (faction_map[f] === attacker_faction) {
+	        for (let i = 0; i < space.units[f].length; i++) {
+	          his_self.captureLeader(defender_faction, attacker_faction, mv[1], space.units[f][i]);
+		  space.units[f].splice(i, 1);
+		  i--;
+		}
+	      }
+	    }
+	  }
+	  if (defender_sea_units_remaining <= 0) {
+	    for (let f in faction_map) {
+	      if (faction_map[f] === defender_faction) {
+	        for (let i = 0; i < space.units[f].length; i++) {
+	          his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
+		  space.units[f].splice(i, 1);
+		  i--;
+		}
+	      }
+	    }
+	  }
+
+	  this.updateLog("Winner: "+this.returnFactionName(winner));
+
+	  this.updateLog("Attacker Units Remaining: "+attacker_land_units_remaining);
+	  this.updateLog("Defender Units Remaining: "+defender_land_units_remaining);
+
+console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
+
+          this.game.queue.push("purge_naval_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
+
+          //
+          // conduct retreats
+          //
+	  if (this.game.spaces[space.key]) {
+
+	    //
+	    // attacker always retreats from ports
+	    //
+            this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+attacker_faction+"\t"+space.key);
+
+	  } else {
+
+	    //
+	    // loser retreats on open seas
+	    //
+            if (winner === defender_faction) {
+              this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+attacker_faction+"\t"+space.key);
+	    } else {
+              this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+defender_faction+"\t"+space.key);
+	    }
+
+	  }
+
+          this.game.queue.push("naval_battle_hits_assignment\t"+defender_faction+"\t"+attacker_hits+"\t"+space.key);
+          this.game.queue.push("naval_battle_hits_assignment\t"+attacker_faction+"\t"+defender_hits+"\t"+space.key);
+
+
+          //
+          // redisplay
+          //
+	  if (this.game.spaces[space.key]) {
+            his_self.displaySpace(space.key);
+	  } else {
+            his_self.displayNavalSpace(space.key);
+	  }
+
+          return 1;
+
+        }
+
+
+
 	if (mv[0] === "assault") {
 
           this.game.queue.splice(qe, 1);
@@ -9497,7 +10349,7 @@ console.log("removing secondarily!");
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
 
 
-	  if (attacker_land_units_remaining == 0 && defender_land_units_remaining == 0) {
+	  if (attacker_land_units_remaining <= 0 && defender_land_units_remaining <= 0) {
 	    if (attacker_rolls > defender_rolls) {
 	      his_self.updateLog("Attacker adds 1 regular");
 	      his_self.addRegular(attacker_faction, space);
@@ -9510,7 +10362,7 @@ console.log("removing secondarily!");
 	  //
 	  // capture stranded leaders
 	  //
-	  if (attacker_land_units_remaining == 0) {
+	  if (attacker_land_units_remaining <= 0) {
 	    for (let f in faction_map) {
 	      if (faction_map[f] === attacker_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
@@ -9521,7 +10373,7 @@ console.log("removing secondarily!");
 	      }
 	    }
 	  }
-	  if (defender_land_units_remaining == 0) {
+	  if (defender_land_units_remaining <= 0) {
 	    for (let f in faction_map) {
 	      if (faction_map[f] === defender_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
@@ -9621,6 +10473,63 @@ console.log("purging units and capturing leader");
 	  return 1;
 
 	}
+
+
+	if (mv[0] === "purge_naval_units_and_capture_leaders") {
+
+console.log("purging naval units and capturing leader");
+
+          this.game.queue.splice(qe, 1);
+
+          let loser = mv[1];
+          let winner = mv[2];
+          let spacekey = mv[3];
+
+	  let space;
+	  if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
+	  if (this.game.navalspaces[spacekey]) { space = this.game.navalspaces[spacekey]; }
+
+	  if (space.units[loser].length > 0) {
+	    this.updateLog(this.returnFactionName(loser) + " eliminated in " + this.returnSpaceName(spacekey));
+	  }
+
+	  for (let i = 0; i < space.units[loser].length; i++) {
+	    this.captureNavalLeader(loser, winner, spacekey, space.units[f][i]);
+	  }
+
+	  space.units[loser] = [];
+
+	  return 1;
+
+	}
+
+
+        if (mv[0] === "player_evaluate_post_naval_battle_retreat") {
+
+console.log("PLAYER EVALUATE POST FIELD BATTLE RETREAT!");
+console.log("loser: " + loser);
+console.log("space: " + spacekey);
+
+          this.game.queue.splice(qe, 1);
+
+          let loser = mv[1];
+          let spacekey = mv[2];
+
+          let faction_map = his_self.game.state.naval_battle.faction_map;
+          let attacker_faction = his_self.game.state.naval_battle.attacker_faction;
+          let defender_faction = his_self.game.state.naval_battle.defender_faction;
+          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+
+          if (this.game.player == this.returnPlayerOfFaction(loser)) {
+            this.playerEvaluateNavalRetreatOpportunity(loser, spacekey);
+          } else {
+            this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat at sea");
+          }
+
+          return 0;
+
+        }
 
 
         if (mv[0] === "player_evaluate_post_field_battle_retreat") {
@@ -10774,6 +11683,66 @@ this.updateLog("Catholics: " + c_rolls);
   }
 
 
+
+  playerAssignNavalHits(faction, hits_to_assign, spacekey) {
+
+    let space;
+
+    if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
+    if (this.game.navalspaces[spacekey]) { space = this.game.navalspaces[spacekey]; }
+
+    let units_available = space.units[faction];
+    let units_to_destroy = [];
+
+    let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
+
+      let msg = "Hits Remaining: " + hits_to_assign;
+      let html = "<ul>";
+      let targets = 0;
+      for (let i = 0; i < space.units[faction].length; i++) {
+        if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
+          if (!units_to_destroy.includes(parseInt(i))) {
+	    targets++;
+            html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+          }
+          html += "</ul>";
+        }
+      }
+
+
+      if (targets <= 0 || hits_to_assign <= 0) {
+	this.addMove("destroy_naval_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
+	this.endTurn();
+	return;
+      }
+
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (!units_to_destroy.includes(id)) {
+          units_to_destroy.push(parseInt(id));
+        }
+
+	if (units_available[id].type == "squadron") { hits_to_assign -= 2; }
+	if (units_available[id].type == "corsair") { hits_to_assign -= 1; }
+
+        selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
+
+      });
+    }
+
+    selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
+
+    return 0;
+
+  }
+
+
   playerResolveNavalWinterRetreat(faction, spacekey) {
 
     let his_self = this;
@@ -11669,6 +12638,72 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 
 
+  playerEvaluateNavalRetreatOpportunity(faction, spacekey) {
+
+    let his_self = this;
+    let retreat_destination = "";
+
+    let space;
+    if (his_self.game.spaces[spacekey]) { space = his_self.game.spaces[spacekey]; }
+    if (his_self.game.navalspaces[spacekey]) { space = his_self.game.navalspaces[spacekey]; }
+
+    let neighbours = this.returnNavalAndPortNeighbours(spacekey);
+    let retreat_options = 0;
+    for (let i = 0; i < neighbours.length; i++) {
+      if (this.canFactionRetreatToNavalSpace(faction, neighbours[i])) {
+	retreat_options++;
+      }
+    }
+
+    if (retreat_options == 0) {
+      his_self.updateLog("Naval retreat not possible...");
+      his_self.endTurn();
+      return 0;
+    }
+
+    let onFinishSelect = function(his_self, destination_spacekey) {
+      his_self.addMove("naval_retreat"+"\t"+faction+"\t"+spacekey+"\t"+"\t"+destination_spacekey);
+      his_self.endTurn();
+    };
+
+    let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
+      let html = "<ul>";
+      for (let i = 0; i < neighbours.length; i++) {
+        if (this.canFactionNavalRetreatToSpace(defender, neighbours[i])) {
+          html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
+	}
+      }
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions("Choose Destination for Naval Retreat: ", html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let id = $(this).attr("id");
+        onFinishSelect(his_self, id);
+      });
+    };
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="retreat">retreat</li>`;
+    html    += `<li class="card" id="skip">do not retreat</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Retreat from ${spacekey}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "retreat") {
+	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
   playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender) {
 
     let his_self = this;
@@ -11780,6 +12815,94 @@ console.log("units length: " + space.units[defender].length);
 
       for (let i = 0; i < space.units[defender].length; i++) {
         if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
+          if (units_to_move.includes(parseInt(i))) {
+            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
+          } else {
+            html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+          }
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+          onFinishSelect(his_self, units_to_move);
+          return;
+        }
+
+        if (units_to_move.includes(id)) {
+          let idx = units_to_move.indexOf(id);
+          if (idx > -1) {
+            units_to_move.splice(idx, 1);
+          }
+        } else {
+          units_to_move.push(parseInt(id));
+        }
+
+        selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+      });
+    };
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="intercept">intercept</li>`;
+    html    += `<li class="card" id="skip">skip</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Intercept from ${defender_spacekey}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "intercept") {
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
+
+
+
+
+
+  playerEvaluateNavalInterceptionOpportunity(attacker, spacekey, defender, defender_spacekey) {
+
+    let his_self = this;
+
+    let units_to_move = [];
+
+    let onFinishSelect = function(his_self, units_to_move) {
+      his_self.addMove("naval_intercept"+"\t"+attacker+"\t"+spacekey+"\t"+"\t"+defender+"\t"+defender_spacekey+"\t"+JSON.stringify(units_to_move));
+      his_self.endTurn();
+    };
+
+    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
+
+      let msg = "Select Units to Intercept: ";
+      let space;
+      if (his_self.game.spaces[defender_spacekey]) {
+        space = his_self.game.spaces[defender_spacekey];
+      }
+      if (his_self.game.navalspaces[defender_spacekey]) {
+        space = his_self.game.navalspaces[defender_spacekey];
+      }
+
+      let html = "<ul>";
+
+console.log("units length: " + space.units[defender].length);
+
+      for (let i = 0; i < space.units[defender].length; i++) {
+        if (space.units[defender][i].land_or_sea === "sea" || space.units[defender][i].land_or_sea === "both") {
           if (units_to_move.includes(parseInt(i))) {
             html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
           } else {
@@ -11994,9 +13117,18 @@ console.log("UA: " + JSON.stringify(units_available));
 
         if (id === "end") {
 
-	  his_self.addMove("naval_interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	  let destinations = {};
+
 	  for (let i = 0; i < units_to_move.length; i++) {
-            his_self.addMove("move\t"+faction+"\tsea\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
+	    let unit = units_available[units_to_move[i]];
+	    if (!destinations[unit.destination]) {
+	      his_self.addMove("naval_interception_check\t"+faction+"\t"+unit.destination);
+	      destinations[unit.destination] = 1;
+	    }
+	  }
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    let unit = units_available[units_to_move[i]];
+            his_self.addMove("move\t"+faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+units_to_move[i]);
 	  }
           his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" shifting naval forces\tnavalmove");
 	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -13530,6 +14662,8 @@ return;
 
   displaySpace(key) {
 
+    if (!this.game.spaces[key]) { return; }
+
     let obj = document.getElementById(key);
     let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
@@ -13588,8 +14722,10 @@ return;
 
   displayNavalSpace(key) {
 
+    if (!this.game.navalspaces[key]) { return; }
+
     let obj = document.getElementById(key);
-    let space = this.navalspaces[key];
+    let space = this.game.navalspaces[key];
 
     //
     // should we show the tile?
@@ -13612,8 +14748,8 @@ return;
     //
     // add tiles
     //
-    for (let key in this.navalspaces) {
-      if (this.navalspaces.hasOwnProperty(key)) {
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces.hasOwnProperty(key)) {
 	this.displayNavalSpace(key);
         document.getElementById(key).onclick = (e) => {
 	  this.displayNavalSpaceDetailedView(key);

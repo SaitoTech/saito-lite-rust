@@ -7,7 +7,7 @@ const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const ArcadeLeagueView = require("./lib/overlays/arcade-league-view");
 const LeagueInvite = require("./lib/overlays/league-invite");
-const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
+const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
 
 class League extends ModTemplate {
@@ -182,7 +182,7 @@ class League extends ModTemplate {
       if (b.id === "SAITOLICIOUS") { return 1};
       if (a.myRank < 0) {return 1;}
       if (b.myRank < 0) {return -1;}
-      return b.myRank - a.myRank
+      return a.myRank - b.myRank
     });
     return leagues_to_display;
   }
@@ -191,22 +191,29 @@ class League extends ModTemplate {
     Create the html for an arcade-style list of my leagues and open leagues,
     inserted into elem
   */
-  renderArcade(app, mod, elem){
-    if (!this.doICare()) { return; }
-    //console.log("Rendering Leagues for Arcade");
-    let leagues_to_display = this.filterLeagues(app);
+  renderArcadeTab(app, mod){
+    if (!app.BROWSER) { return; }
 
-    for (let le of leagues_to_display){
-      if (le.admin === "saito"){
-        let altElm = document.getElementById(`forum-topic-${le.id.toLowerCase()}`);
-        let al = new ForumLeague(app, this, le);
-        al.render(app, this, altElm);
-      }
+    let tab = document.getElementById("league-hero");
 
-      if (le.myRank > 0 || le.admin !== "saito"){
-        let al = new ArcadeLeague(app, this, le);
-        al.render(app, this, elem);
+    if (tab){
+      tab.innerHTML = "";
+
+      let leagues_to_display = this.filterLeagues(app);
+      for (let le of leagues_to_display){
+        if (le.admin === "saito"){
+          let altElm = document.getElementById(`forum-topic-${le.id.toLowerCase()}`);
+          let al = new ForumLeague(app, this, le);
+          al.render(app, this, altElm);
+        }
+
+        if (le.myRank > 0 || le.admin !== "saito"){
+          let al = new ArcadeLeague(app, this, le);
+          al.render(app, this, tab);
+        }
       }
+    }else{
+      console.error("League cannot render in Arcade");
     }
   }
 
@@ -215,21 +222,8 @@ class League extends ModTemplate {
 
     if (this.browser_active){
       this.main.render(app, this);
-    }else{
-      let arcade = app.modules.returnModule("Arcade");
-      if (arcade && arcade.browser_active){
-        let elem = document.querySelector("#league-hero");
-        if (elem){
-          elem.innerHTML = "";
-          this.renderArcade(app, arcade, elem);  
-        }
-      }else{
-        let redsquare = app.modules.returnModule("RedSquare");
-        if (redsquare && redsquare.browser_active){
-          console.log("Leagues telling Redsquare to Render");
-          redsquare.render(app);
-        }
-      }
+    } else {
+      app.connection.emit("league-update", {});
     }
   }
 
@@ -238,20 +232,6 @@ class League extends ModTemplate {
     this.leagueCount = 0;
   }
 
-  doICare(){
-    if (this.app.BROWSER == 0){
-      return false;
-    }
-    if (this.browser_active){
-      return true;
-    }
-    let am = this.app.modules.returnActiveModule().name;
-
-    if (am == "Arcade" || am == "RedSquare"){
-      return true;
-    }
-    return false;
-  }
 
   //Lite clients only
   onPeerHandshakeComplete(app, peer) {
@@ -265,11 +245,6 @@ class League extends ModTemplate {
       salert("Trying to join league...");
     }
 
-
-    //Only query the leagues if we are in an active module that will need them
-    if (!this.doICare()){
-      return;
-    }
 
     this.sendPeerDatabaseRequestWithFilter(
       "League" ,
@@ -307,7 +282,7 @@ class League extends ModTemplate {
           //Perform db ops
           this.receiveCreateLeagueTransaction(blk, tx, conf, app);
           //Update saito-lite, refresh UI
-          if (this.doICare()){
+          if (app.BROWSER){
             console.log("Receive League Create Request");
             this.addLeague(tx);
           } 
@@ -317,7 +292,7 @@ class League extends ModTemplate {
           //Perform db ops
           this.receiveJoinLeagueTransaction(blk, tx, conf, app);
           //Update saito-lite, refresh UI
-          if (this.doICare()){
+          if (app.BROWSER){
             console.log("Receive League Join Request");
             this.addPlayer(tx);  
           }
@@ -328,7 +303,7 @@ class League extends ModTemplate {
           //Perform db ops
           this.receiveDisbandLeagueTransaction(blk, tx, conf, app);
           //Update saito-lite, refresh UI
-          if (this.doICare()){
+          if (app.BROWSER){
             console.log("Receive League Removal Request");
             this.removeLeague(txmsg.request.league);  
           }
@@ -339,7 +314,7 @@ class League extends ModTemplate {
           //Perform db ops
           this.receiveQuitLeagueTransaction(blk, tx, conf, app);
           //Update saito-lite, refresh UI
-          if (this.doICare()){
+          if (app.BROWSER){
             console.log("Receive Quit Request");
             this.removePlayer(tx);  
           }

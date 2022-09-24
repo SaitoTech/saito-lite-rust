@@ -146,14 +146,6 @@ class GameTestSuite extends GameTemplate {
       });
 
 
-    this.menu.addSubMenuOption("game-game", {
-          text : "Exit",
-          id : "game-exit",
-          class : "game-exit",
-          callback : function(app, game_mod) {
-            window.location.href = "/arcade";
-          },
-      });
 
     /* Simulate different numbers of players*/
     this.menu.addMenuOption({
@@ -339,7 +331,6 @@ class GameTestSuite extends GameTemplate {
 
 
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
@@ -966,7 +957,6 @@ class GameTestSuite extends GameTemplate {
   display_cardfan_test(app) {
     if (this.game_cardfan_visible == 0) {
       this.cardfan.render(this.app, this);
-      this.cardfan.attachEvents(this.app, this);
       this.game_cardfan_visible = 1;
     } else {
       this.cardfan.hide();

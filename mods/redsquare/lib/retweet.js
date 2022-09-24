@@ -5,7 +5,7 @@ const JSON = require('json-bigint');
 class Retweet {
 
     constructor(app, mod, tweet=null) {
-      this.overlay = new SaitoOverlay(app, mod);
+      this.overlay = new SaitoOverlay(app);
       this.images = [];
       this.tweet = tweet;
     }
@@ -53,12 +53,24 @@ class Retweet {
 
         let newtx = mod.sendTweetTransaction(app, mod, data, keys);  
 
+           // increase num retweets for base tweet
+          let sel = ".tweet-tool-retweet-count-" + this.tweet.tx.transaction.sig;
+          console.log(sel, 'selector')
+          let  obj = document.querySelector(sel);
+          obj.innerHTML = parseInt(obj.innerHTML) + 1;
+          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+            obj.parentNode.classList.remove("saito-tweet-no-activity");
+            obj.parentNode.classList.add("saito-tweet-activity");
+          };
+
       	mod.addTweetFromTransaction(app, mod, newtx);
       	mod.renderMainPage(app, mod);
-
       	this.overlay.hide();
-	let obj = document.getElementById("redsquare-new-tweets-banner");
-	if (obj) { obj.style.display = 'block'; }
+
+
+
+     obj = document.getElementById("redsquare-new-tweets-banner");
+      if (obj) { obj.style.display = 'block'; }
 
       }
     }

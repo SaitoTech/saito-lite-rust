@@ -1,5 +1,7 @@
 var saito = require('../../lib/saito/saito');
 var GameTemplate = require('../../lib/templates/gametemplate');
+const SpiderGameRulesTemplate = require("./lib/spider-game-rules.template");
+const SpiderGameOptionsTemplate = require("./lib/spider-game-options.template");
 
 
 //////////////////
@@ -20,6 +22,7 @@ class Spider extends GameTemplate {
     this.minPlayers      = 1;
     this.status          = "Beta";
     this.difficulty      = 2; //default medium, 1 = easy, 4 = hard
+    this.app = app;
   }
 
   // Create an exp league by default
@@ -34,31 +37,12 @@ class Spider extends GameTemplate {
   
 
   returnGameRulesHTML(){
-    return `<div class="rules-overlay">
-            <h1>Spider Saitolaire</h1>
-            <ul>
-            <li>You have ten slots in which to arrange two decks of playing cards. </li>
-            <li>Only half the cards are dealt at the beginning, and additional draws place a new card on each stack</li>
-            <li>Cards must be placed in numerical order, e.g. only a 3 can be placed on top of a 4.</li>
-            <li>Sequences of arranged cards of a single suit may be moved as a unit to another pile.</li>
-            <li>Any card may be placed on an open slot.</li>
-            <li>When you complete a set from A to K, it is immediately removed from gameplay</li>
-            </ul>
-            </div>
-            `;
-
+    return SpiderGameRulesTemplate(this.app, this);
   }
 
 
   returnSingularGameOption(app){
-    let saved_dif = app?.options?.gameprefs?.spider_difficulty || "medium";
-    console.log(saved_dif);
-    let html = `<select name="difficulty">
-              <option value="easy">Easy (1 suit) </option>
-              <option value="medium">Medium (2 suits) </option>
-              <option value="hard">Hard (4 suits) </option>
-            </select>`;
-    return html.replace(`${saved_dif}"`,`${saved_dif}" selected`);
+    return SpiderGameOptionsTemplate(this.app, this);
   }
     
   //Single player games don't allow game-creation and options prior to join
@@ -264,27 +248,6 @@ class Spider extends GameTemplate {
       }
     });
 
-
-    if (app.modules.returnModule("RedSquare")) {
-    this.menu.addSubMenuOption("game-game", {
-      text : "Screenshot",
-      id : "game-post",
-      class : "game-post",
-      callback : async function(app, game_mod) {
-        let log = document.querySelector(".log");
-        let log_lock = document.querySelector(".log_lock");
-        if (!log_lock && log) { log.style.display = "none"; }
-        await app.browser.captureScreenshot(function(image) {
-          if (!log_lock && log) { log.style.display = "block"; }
-          let m = game_mod.app.modules.returnModule("RedSquare");
-          if (m) { m.tweetImage(image); }
-        });
-      },
-    });
-    }
-
-
-
     this.menu.addSubMenuOption("game-play",{
       text: `Auto ${(this.game.options.play_mode=="auto")?"✔":""}`,
       id:"game-confirm-newbie",
@@ -373,29 +336,15 @@ class Spider extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        game_mod.updateStatusWithOptions("Saving game to the blockchain...");
-        game_mod.prependMove("exit_game\t"+game_mod.game.player);
-        game_mod.endTurn();
-      }
-    });
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
+  }
 
+  exitGame(){
+    this.updateStatusWithOptions("Saving game to the blockchain...");
+    this.prependMove("exit_game\t"+this.game.player);
+    this.endTurn();
   }
 
   updateScore(change = -1){
@@ -912,7 +861,8 @@ class Spider extends GameTemplate {
         this.saveGame(this.game.id);
 
         if (this.game.player === player){
-          window.location.href = "/arcade";
+          super.exitGame();
+          //window.location.href = "/arcade";
         }else{
           this.updateStatus("Player has exited the building");
         }

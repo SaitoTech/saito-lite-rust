@@ -10,7 +10,7 @@ class GameInviteDetails {
     this.app = app;
     this.mod = mod;
     this.name = "GameInviteDetails";
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app);
   }
 
   render(app, mod, invite = null) {

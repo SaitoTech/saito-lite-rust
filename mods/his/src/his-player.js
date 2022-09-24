@@ -201,6 +201,66 @@
   }
 
 
+
+  playerAssignNavalHits(faction, hits_to_assign, spacekey) {
+
+    let space;
+
+    if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
+    if (this.game.navalspaces[spacekey]) { space = this.game.navalspaces[spacekey]; }
+
+    let units_available = space.units[faction];
+    let units_to_destroy = [];
+
+    let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
+
+      let msg = "Hits Remaining: " + hits_to_assign;
+      let html = "<ul>";
+      let targets = 0;
+      for (let i = 0; i < space.units[faction].length; i++) {
+        if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
+          if (!units_to_destroy.includes(parseInt(i))) {
+	    targets++;
+            html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+          }
+          html += "</ul>";
+        }
+      }
+
+
+      if (targets <= 0 || hits_to_assign <= 0) {
+	this.addMove("destroy_naval_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
+	this.endTurn();
+	return;
+      }
+
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (!units_to_destroy.includes(id)) {
+          units_to_destroy.push(parseInt(id));
+        }
+
+	if (units_available[id].type == "squadron") { hits_to_assign -= 2; }
+	if (units_available[id].type == "corsair") { hits_to_assign -= 1; }
+
+        selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
+
+      });
+    }
+
+    selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
+
+    return 0;
+
+  }
+
+
   playerResolveNavalWinterRetreat(faction, spacekey) {
 
     let his_self = this;
@@ -1096,6 +1156,72 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 
 
+  playerEvaluateNavalRetreatOpportunity(faction, spacekey) {
+
+    let his_self = this;
+    let retreat_destination = "";
+
+    let space;
+    if (his_self.game.spaces[spacekey]) { space = his_self.game.spaces[spacekey]; }
+    if (his_self.game.navalspaces[spacekey]) { space = his_self.game.navalspaces[spacekey]; }
+
+    let neighbours = this.returnNavalAndPortNeighbours(spacekey);
+    let retreat_options = 0;
+    for (let i = 0; i < neighbours.length; i++) {
+      if (this.canFactionRetreatToNavalSpace(faction, neighbours[i])) {
+	retreat_options++;
+      }
+    }
+
+    if (retreat_options == 0) {
+      his_self.updateLog("Naval retreat not possible...");
+      his_self.endTurn();
+      return 0;
+    }
+
+    let onFinishSelect = function(his_self, destination_spacekey) {
+      his_self.addMove("naval_retreat"+"\t"+faction+"\t"+spacekey+"\t"+"\t"+destination_spacekey);
+      his_self.endTurn();
+    };
+
+    let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
+      let html = "<ul>";
+      for (let i = 0; i < neighbours.length; i++) {
+        if (this.canFactionNavalRetreatToSpace(defender, neighbours[i])) {
+          html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
+	}
+      }
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions("Choose Destination for Naval Retreat: ", html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let id = $(this).attr("id");
+        onFinishSelect(his_self, id);
+      });
+    };
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="retreat">retreat</li>`;
+    html    += `<li class="card" id="skip">do not retreat</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Retreat from ${spacekey}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "retreat") {
+	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
   playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender) {
 
     let his_self = this;
@@ -1207,6 +1333,94 @@ console.log("units length: " + space.units[defender].length);
 
       for (let i = 0; i < space.units[defender].length; i++) {
         if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
+          if (units_to_move.includes(parseInt(i))) {
+            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
+          } else {
+            html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+          }
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+          onFinishSelect(his_self, units_to_move);
+          return;
+        }
+
+        if (units_to_move.includes(id)) {
+          let idx = units_to_move.indexOf(id);
+          if (idx > -1) {
+            units_to_move.splice(idx, 1);
+          }
+        } else {
+          units_to_move.push(parseInt(id));
+        }
+
+        selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+      });
+    };
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="intercept">intercept</li>`;
+    html    += `<li class="card" id="skip">skip</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Intercept from ${defender_spacekey}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "intercept") {
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
+
+
+
+
+
+  playerEvaluateNavalInterceptionOpportunity(attacker, spacekey, defender, defender_spacekey) {
+
+    let his_self = this;
+
+    let units_to_move = [];
+
+    let onFinishSelect = function(his_self, units_to_move) {
+      his_self.addMove("naval_intercept"+"\t"+attacker+"\t"+spacekey+"\t"+"\t"+defender+"\t"+defender_spacekey+"\t"+JSON.stringify(units_to_move));
+      his_self.endTurn();
+    };
+
+    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
+
+      let msg = "Select Units to Intercept: ";
+      let space;
+      if (his_self.game.spaces[defender_spacekey]) {
+        space = his_self.game.spaces[defender_spacekey];
+      }
+      if (his_self.game.navalspaces[defender_spacekey]) {
+        space = his_self.game.navalspaces[defender_spacekey];
+      }
+
+      let html = "<ul>";
+
+console.log("units length: " + space.units[defender].length);
+
+      for (let i = 0; i < space.units[defender].length; i++) {
+        if (space.units[defender][i].land_or_sea === "sea" || space.units[defender][i].land_or_sea === "both") {
           if (units_to_move.includes(parseInt(i))) {
             html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
           } else {
@@ -1421,7 +1635,15 @@ console.log("UA: " + JSON.stringify(units_available));
 
         if (id === "end") {
 
-	  his_self.addMove("naval_interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	  let destinations = {};
+
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    let unit = units_available[units_to_move[i]];
+	    if (!destinations[unit.destination]) {
+	      his_self.addMove("naval_interception_check\t"+faction+"\t"+unit.destination);
+	      destinations[unit.destination] = 1;
+	    }
+	  }
 	  for (let i = 0; i < units_to_move.length; i++) {
 	    let unit = units_available[units_to_move[i]];
             his_self.addMove("move\t"+faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+units_to_move[i]);

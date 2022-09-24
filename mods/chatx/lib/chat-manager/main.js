@@ -14,11 +14,10 @@ class ChatManager {
 		this.inactive_popups = [];
 
 		for (let z = 0; z < this.mod.groups.length; z++) {
-			this.messages_in_groups[z] = this.mod.groups[z].txs.length;
+		  this.messages_in_groups[z] = this.mod.groups[z].txs.length;
 		}
 
 		app.connection.on("chat-render-request", (group_id = "") => {
-
 		  if (app.BROWSER) {
 		     if (group_id != "") {
 		         let psq = "#chat-container-"+group_id;
@@ -37,9 +36,10 @@ class ChatManager {
 	render(app, mod, selector = "") {
 
 		if (!document.querySelector(".chat-manager")) {
-			app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
-			//app.browser.makeDraggable("#chat-manager");
-		}
+		  app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
+		} else {
+		  app.browser.replaceElementBySelector(ChatManagerTemplate(app, mod), selector);
+ 		}
 
 		//
 		// make sure chat mod
@@ -63,9 +63,16 @@ class ChatManager {
 				let tx = group.txs[group.txs.length - 1];
 				let txmsg = tx.returnMessage();
 				last_msg = txmsg.message;
+				last_ts = txmsg.timestamp;
 			}
 
-			let html = SaitoUserWithTime(app, mod, group.name, last_msg, "12:00", group.id);
+			//
+			// 
+			//
+			let x = app.browser.formatDate(last_ts);
+			let last_update = x.hours + ":" + x.minutes;
+
+			let html = SaitoUserWithTime(app, mod, group.name, last_msg, last_update, group.id);
 			let divid = "saito-user-" + group.id;
 			let obj = document.getElementById(divid);
 
@@ -91,15 +98,16 @@ class ChatManager {
 		if (this.rendered == 0) {
 			if (mod.groups.length > 0) {
 				let gid = mod.groups[0].id;
-				//let psq = "#chat-container-"+gid;
-				//if (!document.querySelector(psq)) {
+				let psq = "#chat-container-"+gid;
+				if (!document.querySelector(psq)) {
 				      let chat_popup = new ChatPopup(app, mod, gid);
 				      chat_popup.render(app, mod, gid);
-			        //}
+			        }
 			}
 		}
 
-		this.rendered = 1;
+		// TODO - possibly remove
+		//this.rendered = 1;
 		this.attachEvents(app, mod);
 
 	}

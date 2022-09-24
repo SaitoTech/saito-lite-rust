@@ -4,6 +4,7 @@ const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-o
 const GameCreator = require("./arcade/game-creator");
 const GameScheduler = require("./arcade/game-scheduler");
 const SaitoScheduler = require("../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler");
+const GameCreateNew = require('./arcade/game-create-new');
 
 class RedSquareAppspaceGames {
 
@@ -22,7 +23,7 @@ class RedSquareAppspaceGames {
 
   attachEvents(app, mod) {
 
-    this.overlay = new SaitoOverlay(app, mod);
+    this.overlay = new SaitoOverlay(app);
 
     document.getElementById("redsquare-schedule-game").onclick = (e) => {
 
@@ -51,13 +52,9 @@ class RedSquareAppspaceGames {
         let tx = new saito.default.transaction();
         tx.msg.game = modname;
 
-        //
-        // DEPRECATED --
-        //
-        let arcade_mod = app.modules.returnModule("Arcade");
-        ArcadeGameDetails.render(app, arcade_mod, tx);
-        ArcadeGameDetails.attachEvents(app, arcade_mod, tx);
-
+        let game_mod = app.modules.returnModule(modname);
+        let GameCreate = new GameCreateNew(app, mod, game_mod, tx);
+        GameCreate.render(app, mod, tx);
       };
 
     });

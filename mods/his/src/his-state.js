@@ -201,6 +201,11 @@ console.log("A2 ");
     p.captured.push(unit);
   }
 
+  captureNavalLeader(winning_faction, losing_faction, space, unit) {
+    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
+    this.game.state.naval_leaders_lost_at_sea.push(unit);
+  }
+
   isPersonageOnMap(faction, personage) {
     for (let s in this.game.spaces) {
       if (this.game.spaces[s].units[faction].length > 0) {
@@ -445,15 +450,17 @@ console.log("A2 ");
   canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[invalid_space]; } } catch (err) {}
-console.log("retreat 1");
     if (space === attacker_comes_from_this_space) { return 0; }
-console.log("retreat 2");
     if (this.isSpaceInUnrest(space) == 1) { return 0; }
-console.log("retreat 3");
-console.log("is space " + this.returnSpaceName(space.key) + " friendly to " + faction);
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
-console.log("retreat 4");
     return 0;
+  }
+
+  canFactionRetreatToNavalSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports AND open sea");
+    return 1;
   }
 
   convertSpace(religion, space) {
@@ -524,6 +531,17 @@ console.log("retreat 4");
     return luis;
   }
 
+  returnFactionSeaUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === "squadron") { luis++; }
+      if (space.units[faction][i].type === "corsair") { luis++; }
+    }
+    return luis;
+  }
+
   doesFactionHaveNavalUnitsOnBoard(faction) {
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key].units[faction]) {
@@ -546,6 +564,7 @@ console.log("retreat 4");
 
   returnFactionMap(space, faction1, faction2) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let faction_map = {};
     for (let f in space.units) {
       if (this.returnFactionLandUnitsInSpace(f, space)) {
@@ -617,6 +636,45 @@ console.log("retreat 4");
 
     return neighbours;
   }
+
+
+  //
+  // returns adjacent naval and port spaces
+  //
+  returnNavalAndPortNeighbours(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+
+    let key = space.key;
+    let neighbours = [];
+
+    //
+    // ports add only naval spaces
+    //
+    if (this.game.spaces[key]) {
+      for (let i = 0; i < space.ports.length; i++) {
+        let x = space.ports[i];
+        neighbours.push(x);
+      }
+    }
+
+    //
+    // naval spaces add ports
+    //
+    if (this.game.navalspaces[key]) {
+      for (let i = 0; i < space.ports.length; i++) {
+        let x = space.ports[i];
+        neighbours.push(x);
+      }
+      for (let i = 0; i < space.neighbours.length; i++) {
+        let x = space.neighbours[i];
+        neighbours.push(x);
+      }
+    }
+
+    return neighbours;
+  }
+
 
 
   //
@@ -1003,6 +1061,8 @@ console.log("this is a space: " + spacekey)
 
     // which ones are activated
     state.minor_activated_powers = [];
+
+    state.naval_leaders_lost_at_sea = [];
 
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];

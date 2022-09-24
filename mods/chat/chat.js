@@ -227,6 +227,9 @@ class Chat extends ModTemplate {
         // create mastodon server
         //
         if (peer.isMainPeer()) {
+
+console.log("CREATING COMMUNITY CHAT OLD W/: " + peer.peer.publickey);
+
             console.log("peer handshake complete with: " + peer.peer.publickey);
             this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
             community_chat_group_id = this.groups[this.groups.length - 1].id;

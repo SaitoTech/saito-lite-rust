@@ -4,10 +4,10 @@ const ArcadeMobileHelper = require("./templates/arcade-mobile-helper.template");
 const ArcadeForums = require("./arcade-forums");
 const ArcadePosts = require("./arcade-posts");
 const ArcadeInfobox = require("./arcade-infobox");
-const GameLoader = require("./../arcade-game/game-loader");
+const GameLoader = require("./../../../../lib/saito/new-ui/game-loader/game-loader");
 const SaitoCarousel = require("./../../../../lib/saito/ui/saito-carousel/saito-carousel");
 const ArcadeInviteTemplate = require("./templates/arcade-invite.template");
-const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
+const GameCryptoTransferManager = require("./../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const JSON = require("json-bigint");
 const saito = require("../../../../lib/saito/saito");
 
@@ -20,19 +20,6 @@ module.exports = ArcadeMain = {
     }
 
 
-    // put active games first
-    let whereTo = 0;
-    for (let i = 0; i < mod.games.length; i++) {
-      if (mod.isMyGame(mod.games[i], app)) {
-        mod.games[i].isMine = true;
-        let replacedGame = mod.games[whereTo];
-        mod.games[whereTo] = mod.games[i];
-        mod.games[i] = replacedGame;
-        whereTo++;
-      } else {
-        mod.games[i].isMine = false;
-      }
-    }
 
     // purge existing content
     if (document.getElementById("arcade-main")) {
@@ -121,8 +108,83 @@ module.exports = ArcadeMain = {
     //
     // add games
     //
+    this.renderArcadeTab(app, mod);
+
+    //insert leagues into hidden tab
+    if (league){
+      league.renderArcadeTab(app, mod); 
+    }
+
+    //insert observables
+    if (observer){
+      observer.renderArcadeTab(app, mod);
+    }
+
+
+    if (mod.viewing_game_homepage) { //Add game-specific posts
+      ArcadePosts.render(app, mod);
+      ArcadePosts.attachEvents(app, mod);
+    } else {  //Add summary of game pages with latest post teaser
+      ArcadeForums.render(app, mod);
+      ArcadeForums.attachEvents(app, mod);
+    }
+
+
+    // Insert Posts
+    let post = app.modules.returnModule("Post");
+    if (post){
+      post.renderMethod = "arcade";
+      post.render();
+    }
+
+    //ArcadeInfobox.render(app, mod); //Not doing anything right now
+
+
+    try {
+
+      //What is this?
+      if (app.browser.isSupportedBrowser(navigator.userAgent) == 0) {
+        document.querySelector(".alert-banner").style.display = "block";
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+
+  renderArcadeTab(app, mod){
+    if (!app.BROWSER){ return; }
+    if (mod.browser_active == 0 || mod.viewing_arcade_initialization_page == 1) {
+
+      //so any function in Arcade that triggers a refresh of the invite list
+      //will notify the active module that maybe you want to update the DOM
+      app.connection.emit('game-invite-list-update');
+      return;
+    }
+
+    // put active games first
+    let whereTo = 0;
+    for (let i = 0; i < mod.games.length; i++) {
+      if (mod.isMyGame(mod.games[i], app)) {
+        mod.games[i].isMine = true;
+        let replacedGame = mod.games[whereTo];
+        mod.games[whereTo] = mod.games[i];
+        mod.games[i] = replacedGame;
+        whereTo++;
+      } else {
+        mod.games[i].isMine = false;
+      }
+    }
+
+
     let numGamesDisplayed = 0;
-    if (document.querySelector("#arcade-hero")) {
+    let tab = document.getElementById("arcade-hero");
+    let league = app.modules.returnModule("League");
+
+    if (tab) {
+      tab.innerHTML = "";
+
+
       //On initial load of Arcade, it takes a while for Leagues array to get populated
       //so need some way to refresh the arcade game invites...
       let visibleLeagues = (league) ? league.filterLeagues(app) : "";
@@ -144,71 +206,36 @@ module.exports = ArcadeMain = {
               }
             }
           }
-          //console.log("ARCADE_MAIN");
-          //console.log(JSON.parse(JSON.stringify(invite.msg)));
-          //console.log("Include for display? "+includeGame);
-          //console.log(JSON.parse(JSON.stringify(visibleLeagues)));
 
           //isMyGame is a decent safety catch for ongoing games
           if (includeGame || mod.isMyGame(invite, app)){
             numGamesDisplayed++;
-            app.browser.addElementToElement(ArcadeInviteTemplate(app, mod, invite, i), document.querySelector("#arcade-hero"));    
+            app.browser.addElementToElement(ArcadeInviteTemplate(app, mod, invite, i), tab);    
           }
         }
       });
 
-      //insert leagues into hidden tab
-      if (league){
-        league.renderArcade(app, mod, document.querySelector("#league-hero")); 
-      }
-
-      if (observer){
-        observer.renderArcade(app, mod, "observer-hero");
-      }
-
-    }
-
-
-    if (mod.viewing_game_homepage) { //Add game-specific posts
-      ArcadePosts.render(app, mod);
-    } else {  //Add summary of game pages with latest post teaser
-      ArcadeForums.render(app, mod);
-    }
-    // Insert Posts
-    let post = app.modules.returnModule("Post");
-    if (post){
-      post.renderMethod = "arcade";
-      post.render();
-    }
-
-    //ArcadeInfobox.render(app, mod); //Not doing anything right now
-
-    if (numGamesDisplayed == 0) {
-      let carousel = new SaitoCarousel(app);
-      carousel.render(app, mod, "arcade", "arcade-hero");
-      carousel.attachEvents(app, mod);
-      if (mod.viewing_game_homepage) { //Overwrite the carousel to only show the relevant game
-        let gamemod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
-        let cdiv = document.getElementById("saito-carousel");
-        if (cdiv) {
-          let name = gamemod.gamename || gamemod.name;
-          cdiv.innerHTML = `<div class="big">${name}</div>`;
-          cdiv.style.backgroundImage = `url('${gamemod.respondTo("arcade-carousel")?.background}')`;
-          cdiv.style.backgroundSize = "cover";
+      if (numGamesDisplayed == 0) {
+        let carousel = new SaitoCarousel(app);
+        carousel.render(app, mod, "arcade", "arcade-hero");
+        carousel.attachEvents(app, mod);
+        if (mod.viewing_game_homepage) { //Overwrite the carousel to only show the relevant game
+          let gamemod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
+          let cdiv = document.getElementById("saito-carousel");
+          if (cdiv) {
+            let name = gamemod.gamename || gamemod.name;
+            cdiv.innerHTML = `<div class="big">${name}</div>`;
+            cdiv.style.backgroundImage = `url('${gamemod.respondTo("arcade-carousel")?.background}')`;
+            cdiv.style.backgroundSize = "cover";
+          }
         }
+
       }
 
     }
+    
 
-    try {
-
-      //What is this?
-      if (app.browser.isSupportedBrowser(navigator.userAgent) == 0) {
-        document.querySelector(".alert-banner").style.display = "block";
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    this.attachEvents(app, mod);
   },
 
   attachEvents(app, mod) {
@@ -281,20 +308,9 @@ module.exports = ArcadeMain = {
         }
     });
     
-
-
-    //Attach events for arcade-sub
-    if (mod.viewing_game_homepage) {
-      ArcadePosts.attachEvents(app, mod);
-    } else {
-      ArcadeForums.attachEvents(app, mod);
-    }
-
-
-
   },
 
-  async joinGame(app, mod, game_id) {
+  async joinGame(app, mod, game_id, confirm_join = true) {
     let accepted_game = null;
     let relay_mod = app.modules.returnModule("Relay");
 
@@ -339,10 +355,12 @@ module.exports = ArcadeMain = {
         if (!success){ return; }
         
       }else{
-        //We move the confirmation down here, so you don't have to click twice on crypto games
-        let c = confirm("Are you sure you want to join this game?");
-        if (!c) {
-          return;
+        if (confirm_join){
+          //We move the confirmation down here, so you don't have to click twice on crypto games
+          let c = confirm("Are you sure you want to join this game?");
+          if (!c) {
+            return;
+          }
         }
       }
     } catch (err) {
@@ -376,7 +394,6 @@ module.exports = ArcadeMain = {
       peers.push(app.network.peers[i].returnPublicKey());
     }
 
-    //if (players_needed > players_available + 1) {
       let newtx = mod.createJoinTransaction(accepted_game);
       app.network.propagateTransaction(newtx);
 
@@ -389,115 +406,8 @@ module.exports = ArcadeMain = {
       }
       if (mod.debug){console.log(JSON.parse(JSON.stringify(newtx)));}
 
-      //mod.joinGameOnOpenList(newtx);
       salert("Joining game! Please wait a moment");
-      return;
-    //}
-    /*
-    console.log("I create the game with this JOIN!!!");
 
-    //
-    // enough players, so "accept" to kick off
-    //
-    if (accepted_game.transaction.from[0].add == app.wallet.returnPublicKey()) {
-      if (players.length > 1) {
-        salert(`You created this game! Waiting for enough players to join we can start...`);
-      }
-    } else {
-      //
-      // we are going to send a message to accept this game, but first check if we have
-      // already done this, in which case we will have the game loaded in our local games list
-      //
-      if (app.options.games) {
-        let existing_game = app.options.games.find((g) => g.id == game_id);
-
-        if (existing_game) {
-          if (existing_game.initializing == 1) {
-            salert("Accepted Game! It may take a minute for your browser to update -- please be patient!");
-            GameLoader.render(app, mod);
-            GameLoader.attachEvents(app, mod);
-
-          } else { // game exists and is no longer initializing, so "continue" not "join"
-            
-            existing_game.ts = new Date().getTime();
-            existing_game.initialize_game_run = 0;
-            app.storage.saveOptions();
-            //Have to search list of modules in Saito to get the existing_game's slug (i.e. directory)
-            for (let z = 0; z < app.modules.mods.length; z++) {
-              if (app.modules.mods[z].name == existing_game.module) {
-                window.location = "/" + app.modules.mods[z].returnSlug();
-                return;
-              }
-            }
-          }
-          return; //Stop processing if the game already exists
-        }
-      }
-
-      //
-      // ready to go? Still, need check with server game is not taken
-      //
-      GameLoader.render(app, mod);
-      GameLoader.attachEvents(app, mod);
-
-      mod.sendPeerRequestWithFilter(
-        () => {
-          let msg = {};
-          msg.request = "rawSQL";
-          msg.data = {};
-          msg.data.module = "Arcade";
-          msg.data.sql = `SELECT is_game_already_accepted FROM games WHERE game_id = "${game_id}"`;
-          msg.data.game_id = game_id;
-          return msg;
-        },
-
-        async (res) => {
-          console.log("callback",res);
-          if (res.rows) {
-            if (res.rows.length > 0) {
-              if (res.rows[0].game_still_open == 1 || (res.rows[0].game_still_open == 0 && players_needed > 2)) {
-                if (mod.debug){
-                  console.log("We meet the accept conditions");
-                  console.log(app.wallet.returnPublicKey()+" sends the accept message from arcade-main");
-                }
-
-                //
-                // data re: game in form of tx
-                //
-                let { transaction } = accepted_game;
-                let game_tx = Object.assign({ msg: { players_array: null } }, transaction);
-
-                let newtx = mod.createAcceptTransaction(accepted_game);
-                mod.app.network.propagateTransaction(newtx);
-
-                //
-                // try fast accept
-                //
-                if (relay_mod != null) {
-                  relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
-                  relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
-                }
-
-                return;
-              } else {
-                await sconfirm("Sorry, this game has been accepted already!");
-              }
-            } else {
-              await sconfirm("Sorry, this game has already been accepted!");
-            }
-          } else {
-            console.log("ERROR 458103: cannot fetch information on whether game already accepted!");
-          }
-          mod.viewing_arcade_initialization_page = 0;
-          if (app.browser.returnURLParameter("jid")) {
-            window.location = "/arcade";  //redirect and reconnect to pull the list of open games    
-          } else {
-            mod.renderArcadeMain(); //Reset to default view (undo game loader)  
-          }
-
-        }
-      );
-    }*/
   },
 
   continueGame(app, mod, game_id) {
@@ -518,13 +428,19 @@ module.exports = ArcadeMain = {
     }
 
     if (existing_game && existing_game !== -1) {
+      //
+      //I'm not sure this safety catch does anything
+      //I've never seen it come up
+      //
       if (existing_game.initializing == 1) {
         salert(
           "Accepted Game! It may take a minute for your browser to update -- please be patient!"
         );
 
-        GameLoader.render(app, mod);
-        GameLoader.attachEvents(app, mod);
+        //Make a spinner
+        let gameLoader = new GameLoader(app, mod);
+        mod.viewing_arcade_initialization_page = 1;
+        gameLoader.render(app, mod, "#arcade-main");
 
         return;
       } else {
@@ -600,7 +516,7 @@ module.exports = ArcadeMain = {
           let gamemod = app.modules.returnModule(app.options.games[i].module);
           if (gamemod) {
             this.removeGameFromList(game_id);
-            gamemod.resignGame(game_id, "arcadeclose");
+            gamemod.resignGame(game_id, "cancellation");
 
             //Set a fallback interval if the opponent is no longer online
             mod.game_close_interval_cnt += 5;

@@ -2,7 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeObserver = require("./lib/appspace/arcade-observer");
 const GameObserver = require("./lib/components/game-observer");
-const ObserverLoader = require("./lib/components/observer-loader");
+const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const JSON = require("json-bigint");
 
 
@@ -68,8 +68,14 @@ class Observer extends ModTemplate {
     }, 24*60*60*1000);
   }
 
-  renderArcade(app, mod, elem_id){
-  	 try{
+  renderArcadeTab(app, mod){
+    if (!app.BROWSER) { return; }
+    
+    let elem_id = "observer-hero";
+    let tab = document.getElementById(elem_id);
+    if (tab){
+      tab.innerHTML = "";
+      try{
         this.games.forEach((observe) => {
           let ob = new ArcadeObserver(app, observe);
           ob.render(app, this, elem_id);
@@ -77,6 +83,10 @@ class Observer extends ModTemplate {
       }catch(err){
         console.log(err);
       }
+
+    }else{
+      console.error("Observer cannot render in Arcade");
+    }
   }
 
   renderControls(app, game_mod){
@@ -110,10 +120,10 @@ class Observer extends ModTemplate {
   //
   // load transactions into interface when the network is up
   onPeerHandshakeComplete(app, peer) {
+    if (!app.BROWSER) { return; }
+    
     // fetch any usernames needed
-    if (this.app.BROWSER == 1) {
-      app.browser.addIdentifiersToDom();
-    }
+    app.browser.addIdentifiersToDom();
 
     // load observer games (active)
     this.sendPeerDatabaseRequestWithFilter(
@@ -121,10 +131,26 @@ class Observer extends ModTemplate {
       `SELECT * FROM obgames ORDER BY ts DESC LIMIT 16`,
       (res) => {
         if (res.rows) {
-          //console.log("GAMESTATES:");
           res.rows.forEach((row) => {
-            console.log(JSON.parse(JSON.stringify(row)));
             this.addGameToObserverList(row);
+            this.updateGame(row.game_id);
+          });
+        }
+      }
+    );
+
+  }
+
+
+  async updateGame(game_id){
+    this.sendPeerDatabaseRequestWithFilter(
+      "Observer", 
+      `SELECT * FROM gamestate WHERE game_id = '${game_id}' ORDER BY step DESC LIMIT 1`,
+      (res) => {
+        if (res.rows) {
+          res.rows.forEach((row) => {
+            let latest_tx = new saito.default.transaction(JSON.parse(row.tx));
+            this.updateGameOnObserverList(latest_tx.msg);
           });
         }
       }
@@ -230,64 +256,46 @@ class Observer extends ModTemplate {
     newtx.game_status = (txmsg.game_state.over) ? "over" : "live";
     newtx.players_array = txmsg.game_state.players.join("_");;
     newtx.module = txmsg.module;
+    newtx.ts = txmsg.game_state.step.ts || new Date().getTime();
     newtx.game_state = JSON.stringify(txmsg.game_state);
-    newtx.ts = new Date().getTime();
 
     return newtx;
   }
 
   addGameToObserverList(msg) {
+    if (!this.app.BROWSER){ return; }
     for (let i = 0; i < this.games.length; i++) {
       if (msg.game_id == this.games[i].game_id) {
         return;
       }
     }
   
+    msg.latest_move = msg.ts;
     this.games.push(msg);
-
-    if (this.app.BROWSER){
-      console.log("Send message");
-      this.app.connection.emit("observer-add-game-render-request",this.games);
-      let arcade = this.app.modules.returnModule("Arcade");
-      if (arcade){
-        arcade.renderArcadeMain();
-        return;  
-      }
-    }
+    
+    this.app.connection.emit("observer-add-game-render-request",this.games);
+    
   }
 
   updateGameOnObserverList(msg){
+    if (!this.app.BROWSER){ return; }
+
     for (let i = 0; i < this.games.length; i++) {
       if (msg.game_id == this.games[i].game_id) {
         if (msg.step){
           this.games[i].step = msg.step.game;
+          this.games[i].latest_move = msg.step.ts;
         }
         if (msg.request == "gameover" || msg.request == "stopgame"){
           this.games[i].game_status = "over";
         }
 
-        console.log("Send update message");
         this.app.connection.emit("observer-add-game-render-request",this.games);
-        
-        let arcade = this.app.modules.returnModule("Arcade");
-        if (arcade){
-          arcade.renderArcadeMain();
-          return;  
-        }        
+        return;
       }
     }
-
-
   }
 
-  doesGameExistLocally(game_id){
-    for (let i = 0; i < this.games.length; i++) {
-      if (game_id == this.games[i].game_id) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   async saveGameState(blk, tx, conf, app) {
     if (this.app.BROWSER) { return; }
@@ -330,7 +338,7 @@ class Observer extends ModTemplate {
         $game_id: txmsg.game_id,
         $players_array: players_array,
         $module: txmsg.module,
-        $ts: new Date().getTime(),
+        $ts: game_state.step.ts || new Date().getTime(),
         $game_state: JSON.stringify(game_state),
       };
 
@@ -339,13 +347,8 @@ class Observer extends ModTemplate {
 
     }
 
-    if (!this.doesGameExistLocally(txmsg.game_id)){
-      return;
-    }
-
     //Otherwise, we have an update to the game
     if (txmsg.request == "game"){
-
 
       //New Step
       sql = `INSERT OR REPLACE INTO gamestate (
@@ -367,12 +370,12 @@ class Observer extends ModTemplate {
         $game_id: txmsg.game_id,
         $player: tx.transaction.from[0].add,
         $tx: JSON.stringify(tx.transaction),
-        $ts: new Date().getTime(),
+        $ts: txmsg.step?.ts || new Date().getTime(),
       };
 
-      //console.log(JSON.stringify(params));      
       await app.storage.executeDatabase(sql, params, "observer");
  
+    /*
       let sql2 = `UPDATE obgames SET step = $step, ts = $ts WHERE game_id = $game_id`;
       //console.log(sql2);
       //console.log(params);
@@ -382,15 +385,14 @@ class Observer extends ModTemplate {
         $ts: new Date().getTime(),
       }
       await app.storage.executeDatabase(sql2, params, "observer");
-
+    */
 
     }else{
       if (txmsg.request == "stopgame" || txmsg.request == "gameover"){
         //We have a game over request
-        let sql2 = `UPDATE obgames SET game_status = "over", ts = $ts WHERE game_id = $game_id`;
+        let sql2 = `UPDATE obgames SET game_status = "over" WHERE game_id = $game_id`;
         params = {
           $game_id: txmsg.game_id,
-          $ts: new Date().getTime(),
         }
 
         await app.storage.executeDatabase(sql2, params, "observer");
@@ -417,7 +419,8 @@ class Observer extends ModTemplate {
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade.browser_active){
       arcade.viewing_arcade_initialization_page = 1;
-      ObserverLoader.render(this.app, this); //Start Spinner
+      let gameLoader = new GameLoader(this.app, this);
+      gameLoader.render(this.app, this, "#arcade-main", "Loading Game Moves"); //Start Spinner
     }
 
     //let address_to_watch = msgobj.player;
@@ -477,7 +480,6 @@ class Observer extends ModTemplate {
 	    tx.transaction.to.push(new saito.default.slip(p, 0.0));   	
     }
 
-    console.log(JSON.parse(JSON.stringify(tx)));
     tx = this.app.wallet.signTransaction(tx);
 
     this.app.network.propagateTransaction(tx);
@@ -686,7 +688,10 @@ class Observer extends ModTemplate {
           // move into game
           //
           let slug = arcade_self.app.modules.returnModule(first_tx.module).returnSlug();
-          ObserverLoader.render(arcade_self.app, arcade_self, slug, watch_live); //Stop spinner, move into game
+          let gameLoader = new GameLoader(arcade_self.app, arcade_self, first_tx.id);
+          let msg = `You are ready to ${(watch_live)?"follow":"watch"} the game!` 
+          gameLoader.render(arcade_self.app, arcade_self, "#arcade-main", msg, "enter game");
+          
           arcade_self.app.connection.emit("arcade-game-ready",slug);
         });
       })
@@ -717,7 +722,7 @@ class Observer extends ModTemplate {
         let games = await app.storage.queryDatabase(sql, params, "observer");
 
         //Fetch all the moves 
-        sql = "SELECT * FROM gamestate WHERE game_id = $game_id AND step > $step ORDER BY step ASC";
+        sql = "SELECT * FROM gamestate WHERE game_id = $game_id AND step > $step ORDER BY step ASC LIMIT 100";
         params = { $game_id: game_id, $step: lm };
         let more_games = await app.storage.queryDatabase(sql, params, "observer");
 

@@ -86,17 +86,6 @@ class Chatx extends ModTemplate {
         });
 
 
-        //
-        // note - we read this from the options file directly as
-        // the peers will not have yet initialized and thus will 
-        // not be able to inform us whether they support the chat
-        // service. TODO - fix later
-        //
-        if (app.options?.peers?.length >= 1) {
-            let peer = app.options.peers[0];
-            this.createChatGroup([peer.publickey], "Saito Community Chat");
-        }
-
 
         //
         // create chatgroups from keychain -- friends only
@@ -165,11 +154,19 @@ class Chatx extends ModTemplate {
         let loaded_txs = 0;
         let community_chat_group_id = "";
 
-
         //
         // create mastodon server
         //
         if (peer.isMainPeer()) {
+
+            //
+            // note - we read this from the options file directly as
+            // the peers will not have yet initialized and thus will 
+            // not be able to inform us whether they support the chat
+            // service. TODO - fix later
+            //
+            let newgroup = this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
+	    if (this.chat_manager != null) { this.chat_manager.render(this.app, this, ".chat-manager"); }
 
             for (let z = 0; z < this.groups.length; z++) {
                 if (this.groups[z].name === "Saito Community Chat") {
@@ -187,6 +184,7 @@ class Chatx extends ModTemplate {
                 sql,
 
                 (res) => {
+
                     if (res) {
                         if (res.rows) {
                             for (let i = 0; i < res.rows.length; i++) {
@@ -196,7 +194,6 @@ class Chatx extends ModTemplate {
 				let group_id = "";
 		    		for (let z = 0; z < this.groups.length; z++) {
 		    		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
-					// no idea why ts differs so slightly
 			  	        if (this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) {
 					    let oldtxmsg = this.groups[z].txs[zz].returnMessage();
 					    if (txmsg.timestamp === oldtxmsg.timestamp) {
@@ -209,7 +206,8 @@ class Chatx extends ModTemplate {
                                     this.binaryInsert(this.groups[this.groups.length - 1].txs, tx, (a, b) => {
                                         return a.transaction.ts - b.transaction.ts;
                                     })
-                                }
+                                } else {
+				}
                             }
 
 
@@ -223,6 +221,10 @@ class Chatx extends ModTemplate {
 				}
 			    }
 
+			    //
+			    // render community chat
+			    //
+		    	    app.connection.emit('chat-render-request', );
 
                             //
                             // check identifiers
@@ -247,8 +249,7 @@ class Chatx extends ModTemplate {
                         return 1;
                     }
 
-		    //app.connection.emit('chat-render-request', "");
-		    
+
                     //
                     // check identifiers
                     //
@@ -279,7 +280,9 @@ class Chatx extends ModTemplate {
             if (loaded_txs == 1) {
                 return;
             }
+
         }
+
 
         //
         // load transactions from server, but not group chat again
@@ -313,9 +316,7 @@ class Chatx extends ModTemplate {
                     for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
                         // why does ts differ slightly?
                         if (this.groups[z].txs[zz].transaction.sig === txs[i].transaction.sig) {
-                            console.log("potential dupe 2");
                             let oldtxmsg = this.groups[z].txs[zz].returnMessage();
-                            console.log(oldtxmsg.timestamp + " --- vs --- " + txmsg.timestamp);
                             if (txmsg.timestamp === oldtxmsg.timestamp) {
                                 console.log("confirmed duplicate");
                                 ins = false;
@@ -402,8 +403,6 @@ class Chatx extends ModTemplate {
     //
     onConfirmation(blk, tx, conf, app) {
 
-return;
-
         tx.decryptMessage(app);
         let txmsg = tx.returnMessage();
         if (conf == 0) {
@@ -422,7 +421,6 @@ return;
                 let modified_tx = new saito.default.transaction(modified_tx_obj);
                 modified_tx.transaction.ts = new Date().getTime();
 
-                console.log("RECEIVE ONCHAIN");
                 this.receiveChatTransaction(app, tx);
                 app.storage.saveTransactionByKey(txmsg.group_id, modified_tx);
             }
@@ -607,7 +605,7 @@ return;
       let html = '';
       let group = this.returnGroup(group_id);
       let message_blocks = this.createMessageBlocks(group);
-    
+
       for (let i = 0; i < message_blocks.length; i++) {
         let block = message_blocks[i];
         if (block.length > 0) {
@@ -619,9 +617,10 @@ return;
   	    sender = block[z].transaction.from[0].add;
             msg += txmsg.message;       
           }
-          let date = new Date(block[block.length - 1].msg.timestamp)
-          let timestamp = `${date.getHours()}:${date.getMinutes()}`
-          html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg, timestamp)}`;
+          let datets = new Date(block[block.length - 1].msg.timestamp)
+          let x = this.app.browser.formatDate(datets);
+          let last_update = x.hours + ":" + x.minutes;
+          html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg, last_update)}`;
         }
       }
 
@@ -704,6 +703,13 @@ return;
 	// create but don't render
 	//
         if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
+
+        //
+        // TODO - remove when Arcade is purged
+        //
+        let am = app.modules.returnActiveModule();
+        if (am?.name === "Arcade") { return; }
+
 
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
@@ -801,6 +807,8 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
             group_id = group.id;
         }
 
+console.log("RENDERING CRR: " + group_id);
+
         this.app.connection.emit('chat-render-request', group_id);
     }
 
@@ -825,7 +833,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
             }
         }
 
-        let id = this.app.crypto.hash(`${members.join('_')}`)
+        let id = this.app.crypto.hash(`${members.join('_')}`);
 
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i].id == id) {

@@ -2,6 +2,8 @@ const GameTemplate = require("../../lib/templates/gametemplate");
 const PandemicOriginalSkin = require("./lib/pandemicOriginal.skin.js");
 const PandemicRetroSkin = require("./lib/pandemicRetro.skin.js");
 const PandemicNewSkin = require("./lib/pandemicNew.skin.js");
+const PandemicGameRulesTemplate = require("./lib/pandemic-game-rules.template");
+const PandemicGameOptionsTemplate = require("./lib/pandemic-game-options.template");
 
 class Pandemic extends GameTemplate {
 
@@ -39,6 +41,7 @@ class Pandemic extends GameTemplate {
     this.initialized = 0;
 
     this.skin = null;
+    this.app = app;
     return this;
   }
 
@@ -78,6 +81,9 @@ class Pandemic extends GameTemplate {
       //
       this.game.queue = [];
       this.game.queue.push("start");
+
+      this.game.queue.push("place_initial_infection");
+
       this.game.queue.push("READY");
 
       //Insert Epidemics into player deck
@@ -90,9 +96,6 @@ class Pandemic extends GameTemplate {
       for (let i = 1; i <= this.game.players.length; i++) {
         this.game.queue.push(`draw_player_card\t${i}\t${cards_to_deal}`);
       }
-
-      this.game.queue.push("place_initial_infection");
-
 
       this.game.queue.push("SHUFFLE\t2");
       this.game.queue.push("DECK\t2\t" + JSON.stringify(this.skin.returnPlayerCards()));
@@ -172,7 +175,7 @@ class Pandemic extends GameTemplate {
           game_mod,
           game_mod.returnWelcomeOverlay()
         );
-        document.querySelector(".close_welcome_overlay").onclick = (e) => {
+        document.querySelector("#close_welcome_overlay").onclick = (e) => {
           game_mod.overlay.hide();
         };
       },
@@ -208,7 +211,7 @@ class Pandemic extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-theme",{
+    /*this.menu.addSubMenuOption("game-theme",{
       text: `Modern ${(this.game.options.theme=="modern")?"✔":""}`,
       id:"game-confirm-hard",
       class:"game-confirm-hard",
@@ -217,9 +220,7 @@ class Pandemic extends GameTemplate {
         game_mod.saveGame(game_mod.game.id);
         setTimeout(()=>{window.location.reload();},1000);
       }
-    });
-
-
+    });*/
 
     this.menu.addSubMenuOption("game-game", {
       text: "Log",
@@ -228,14 +229,6 @@ class Pandemic extends GameTemplate {
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.log.toggleLog();
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Exit",
-      id: "game-exit",
-      class: "game-exit",
-      callback: function (app, game_mod) {
-        window.location.href = "/arcade";
       },
     });
     this.menu.addMenuOption({
@@ -255,24 +248,14 @@ class Pandemic extends GameTemplate {
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
           let html = game_mod.returnPlayerCardHTML(i + 1);
-          game_mod.overlay.show(app, game_mod, `<div class=" bighand">${html}</div>`);
+          game_mod.overlay.show(app, game_mod, `<div class="giant_cards bighand">${html}</div>`);
           game_mod.attachCardboxEvents(); //Don't do anything on click
         },
       });
     }
 
-    this.menu.addMenuIcon({
-      text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id: "game-menu-fullscreen",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      },
-    });
-
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.restoreLog(); //from gameTemplate
     this.log.render(app, this);
@@ -287,6 +270,8 @@ class Pandemic extends GameTemplate {
     
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
+
+    this.cardfan.addClass("bighand");
 
     if (this.game.players_info && this.game.player > 0){
       let hh = document.querySelector(".hud-header");
@@ -303,8 +288,6 @@ class Pandemic extends GameTemplate {
           pandemic_self.cardfan.hide();
         }else{
           pandemic_self.cardfan.render(app, pandemic_self, pandemic_self.returnPlayerCardHTML(pandemic_self.game.player));  
-          document.getElementById("cardfan").classList.add("bighand");
-          pandemic_self.cardfan.attachEvents(app, pandemic_self);
           pandemic_self.attachCardboxEvents(pandemic_self.playFromCardFan);
         }
       }
@@ -312,6 +295,7 @@ class Pandemic extends GameTemplate {
 
     this.attachCardboxEvents(); //Add hover action to restored Log tags and set this.cardbox_callback to dummy function
 
+    $("#hud").disableSelection();
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -376,6 +360,7 @@ class Pandemic extends GameTemplate {
       $(".city").off();
       $(".research_station").css("z-index", "");
       $(".research_station").off();
+      $(".popup-confirm-menu").remove();
     } catch (err) {
       console.log("ERROR: removing events",err);
     }
@@ -1646,14 +1631,17 @@ class Pandemic extends GameTemplate {
           $(`#player${player}`).addClass("active_player");
            
           $(".player.active_player .move_counter").html(this.game.state.active_moves);
+
           if (this.game.state.welcome == 0) {
             this.overlay.show(this.app, this, this.returnWelcomeOverlay());
-            document.querySelector(".close_welcome_overlay").onclick = (e) => {
+            document.querySelector("#close_welcome_overlay").onclick = (e) => {
               this.overlay.hide();
+              this.animateInitial();
             };
             this.game.state.welcome = 1;
           }
           if (player == this.game.player) {
+            this.cardfan.render(this.app, this, this.returnPlayerCardHTML(this.game.player));  
             this.playerMakeMove();
           } else {
             this.removeEvents();
@@ -1761,7 +1749,7 @@ class Pandemic extends GameTemplate {
         // show overlay
         //
         this.overlay.show(this.app, this, this.returnEpidemicOverlay(city));
-        document.querySelector(".close_epidemic_overlay").onclick = (e) => {
+        document.querySelector("#close_epidemic_overlay").onclick = (e) => {
           pandemic_self.overlay.hide();
         };
         this.overlay.blockClose();
@@ -1832,11 +1820,14 @@ class Pandemic extends GameTemplate {
             let virus = this.skin.cities[newcard].virus;
             this.game.state.cities[newcard].virus[virus] = i;
             this.game.state.active[virus] += i;
+            this.skin.animateInfection(newcard, "Initial infection...", 0, ()=>{this.restartQueue();});
             //console.log(this.game.state.cities[newcard].virus);
             this.updateLog(`${this.skin.cities[newcard].name} infected with ${i} ${this.skin.getVirusName(virus)}`);
           }
         }
         this.game.queue.splice(qe, 1);
+        this.showBoard();
+        return 0;
       }
 
       //Insert Epidemics into player deck
@@ -1867,15 +1858,15 @@ class Pandemic extends GameTemplate {
         pandemic_self.game.halted = 1;
 
         pandemic_self.acknowledgeInfectionCard(mv[1], function () {
-          console.log("Acknowledgeing...");
-          console.log(JSON.stringify(pandemic_self.game.queue));
-          console.log(JSON.stringify(pandemic_self.moves));
+          //console.log("Acknowledgeing...");
+          //console.log(JSON.stringify(pandemic_self.game.queue));
+          //console.log(JSON.stringify(pandemic_self.moves));
           pandemic_self.game.queue.splice(pandemic_self.game.queue.length - 1, 1);
           pandemic_self.game.queue = pandemic_self.game.queue.concat(pandemic_self.moves);
           pandemic_self.moves = [];
-          console.log("continuing...");
-          console.log(JSON.stringify(pandemic_self.game.queue));
-          console.log(JSON.stringify(pandemic_self.moves));
+          //console.log("continuing...");
+          //console.log(JSON.stringify(pandemic_self.game.queue));
+          //console.log(JSON.stringify(pandemic_self.moves));
 
           pandemic_self.restartQueue();
           return 1;
@@ -2128,7 +2119,6 @@ class Pandemic extends GameTemplate {
     this.moves = [];
     this.saveGame(this.game.id);
   }
-
 
 
   triggerOutbreak(city, virus) {
@@ -2492,76 +2482,11 @@ displayDisease() {
   }
 
   returnGameRulesHTML() {
-    return `<div class="rules-overlay">
-            <h1>Pandemic</h1>
-            <p>Four novel viruses are quickly spreading throughout the world and it is up to you and your teammates to find the cure in this fast paced cooperative board game.</p>
-            <h2>Roles</h2>
-            <p>Each player has a role, which gives them a special ability: </p>
-            <table>
-            <tbody>
-            <tr><th>Medic</th><td>The medic removes <em>all</em> cubes of one color. When a cure has been found, the Medic removes cubes simply by being in the city, without using an action.</td></tr>
-            <tr><th>Operations Expert</th><td>The operations expert may build a research station in the current city without discarding a card -or- discard any card when in a city with a research station to move anywhere in the world.</td></tr>
-            <tr><th>Scientist</th><td>The scientist only needs four cards of the same color to discover the cure for a disease.</td></tr>
-            </tbody></table>
-            <h2>Game Play</h2>
-            <p>Each player has four actions per turn, which may be used to MOVE to a new city, CURE diseases in the current city, RESEARCH a cure for a disease, BUILD a research station, or SHARE knowledge</p>
-            <table>
-            <tr><th>Move</th><td><ul>
-                  <li><strong>Drive/Ferry</strong> -- Players can move from city to city by ground transportation by following the connecting lines on the board map. Each segment requires one action.</li>
-                  <li><strong>Shuttle Flight</strong> -- Players may move from one city with a research station to another city with a research station as an action</li>
-                  <li><strong>Direct Flight</strong> -- Players may discard a card from their hand to move to the city listed on the card</li>
-                  <li><strong>Charter Flight</strong> -- A player may discard the card with the city matching their current location to move to any city on the board</li>
-                  </ul></td></tr>
-            <tr><th>Cure disease</th><td>A player may remove one cube of any color in their current city as an action. Once a cure for the disease has been discovered, they may remove all cubes of that color with one action.</td></tr>
-            <tr><th>Reseach a cure</th><td>At a city with a research station, players may discard five cards of the same color to discover the cure for that disease.</td></tr>
-            <tr><th>Build a research station</th><td>Players may discard the card matching the city of their current location in order to build a new research station in that city. Only six research stations may exist in the globe, so if the limit is reached, the player may chose an old station to remove.</td></tr>
-            <tr><th>Share knowldge</th><td>If two players are in the same city and one of them holds the card matching that city, they may share knowledge. In which case, the player may give or receive the card (as appropriate) as an action.</td></tr>
-            </table>
-            <p>After the player finishes their four actions, they draw two additional player cards. Players may not have more than 7 cards in their hand at any time and must immediately discard any extra cards. Most cards are city cards, though some are EVENT cards which may be played at any time and do not count as an action. There are also EPIDEMIC cards shuffled into the deck. EPIDEMICS increase the virulence of the diseases</p>
-            <h2>Infection and Outbreaks</h2>
-            <p>Before then next player goes, 2-4 additional cities are infected with new disease cubes. Cites can hold up to 3 disease cubes (of a given color), afterwhich an OUTBREAK occurs. During an outbreak, all neigboring cities get one cube of that disease's color. This can lead to chain reactions of outbreaks.</p>
-            <h2>Victory and Defeat</h2>
-            <p>If the players discover the cures to all four diseases, then they are victorious. However, they are in a race against time. The players lose upon the 8th OUTBREAK, if the deck of player cards runs out, or if any disease exceeds more than 24 cubes on the board.</p>
-            </div>`;
+    return PandemicGameRulesTemplate(this.app, this);
   }
 
   returnGameOptionsHTML() {
-
-    let html = `
-      <h1 class="overlay-title">Pandemic Options</h1>
-        <div class="overlay-input">
-          <label for="difficulty">Difficulty:</label>
-          <select name="difficulty">
-            <option value="4">easy</option>
-            <option value="5" selected default>not so easy</option>
-            <option value="6">damn hard</option>
-          </select>
-        </div>
-      
-    `;
-
-    //With checkbox
-    html+=  `<ul style="list-style: none;">
-              <li><input type="checkbox" name="generalist" selected/>Generalist</li>
-              <li><input type="checkbox" name="scientist" selected/>Scientist</li>
-              <li><input type="checkbox" name="medic" selected/>Medic</li>
-              <li><input type="checkbox" name="operationsexpert" selected/>Operations Expert</li>
-              <li><input type="checkbox" name="quarantinespecialist" selected/>Quarantine Specialist</li>
-              <li><input type="checkbox" name="researcher" selected/>Researcher</li>
-            </ul><p>Player roles will be selected at random from the checked boxes. If there are more players than selected roles, player roles will be assigned at random from any available option</p>`;
-    
-
-    html += ` <div class="overlay-input">
-          <label for="theme">Theme:</label>
-          <select name="theme">
-            <option value="retro" selected default>Retro</option>
-            <option value="classic" >Classic</option>
-    
-          </select>
-        </div>`;
-        //<option value="modern">Modern</option>
-
-    return html;
+    return PandemicGameOptionsTemplate(this.app, this); 
   }
 
   returnQuickLinkGameOptions(options) {
@@ -2594,7 +2519,7 @@ displayDisease() {
         <div class="epidemic-card">
           <img src="/${this.name.toLowerCase()}/img/${this.skin.epidemic.img}"/>
         </div>
-        <div class="button close_epidemic_overlay" id="close_epidemic_overlay">close</div>
+        <div class="button saito-button-primary" id="close_epidemic_overlay">close</div>
       </div>
     `;
 
@@ -2618,7 +2543,7 @@ displayDisease() {
       }
 
       html += `
-        <div class="player_info_box">
+        <div class="player_info_box ${(i+1 == this.game.player)?"myrole":""}">
           <div class="player_role_card">
             <img src="/${this.name.toLowerCase()}/img/${player.card}" />
           </div>
@@ -2649,7 +2574,7 @@ displayDisease() {
     }
 
     html += `
-        <div class="button close_welcome_overlay" id="close_welcome_overlay">Start Playing</div>
+        <div class="button saito-button-primary" id="close_welcome_overlay">Start Playing</div>
       </div>`;
 
     return html;

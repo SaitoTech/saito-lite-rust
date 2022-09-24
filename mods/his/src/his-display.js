@@ -857,6 +857,8 @@
 
   displaySpace(key) {
 
+    if (!this.game.spaces[key]) { return; }
+
     let obj = document.getElementById(key);
     let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
@@ -915,8 +917,10 @@
 
   displayNavalSpace(key) {
 
+    if (!this.game.navalspaces[key]) { return; }
+
     let obj = document.getElementById(key);
-    let space = this.navalspaces[key];
+    let space = this.game.navalspaces[key];
 
     //
     // should we show the tile?
@@ -939,8 +943,8 @@
     //
     // add tiles
     //
-    for (let key in this.navalspaces) {
-      if (this.navalspaces.hasOwnProperty(key)) {
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces.hasOwnProperty(key)) {
 	this.displayNavalSpace(key);
         document.getElementById(key).onclick = (e) => {
 	  this.displayNavalSpaceDetailedView(key);

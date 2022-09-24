@@ -10,10 +10,6 @@ body {
   padding: 0 0 0 0 ;
 }
 
-.hidable {
-  color: whitesmoke;
-}
-
 .slot {
   background-color: blue;
   width: 100%;
@@ -30,8 +26,9 @@ body {
 }
 
 .status-header{
-  height: 280px;
+  height: 140px;
 }
+
 .rules-overlay table{
   font-size: 1.5em;
   margin: 0 auto;
@@ -97,17 +94,17 @@ position: relative;
   grid-template-columns: repeat(14,1fr) !important;
   grid-template-rows: 1fr 1fr 1fr 1fr;
   max-width: min(90vw,120vh);
-  grid-gap: min(5px,1vh);
+  grid-gap: min(0px,1vh);
   height: fit-content;
 }
 
 #row4_slot1, #row4_slot14 {
   position: relative;
   top: 50%;
-  box-shadow: 0px 10px 12px 1px #000000;
-  -moz-box-shadow: 0px 10px 12px 1px #000000;
-  -webkit-box-shadow: 0px 10px 12px 1px #000000;
-  -o-box-shadow: 0px 10px 12px 1px #000000;
+  box-shadow: 0px 4px 2px 1px #000000;
+  -moz-box-shadow: 0px 4px 2px 1px #000000;
+  -webkit-box-shadow: 0px 4px 2px 1px #000000;
+  -o-box-shadow: 0px 4px 2px 1px #000000;
 }
 
 div[id^="row"] {
@@ -125,28 +122,28 @@ div[id^="row"] {
 div[id^="row9"], div[id^="row10"], div[id^="row11"], div[id^="row12"], div[id^="row13"], div[id^="row14"] {
   z-index: 2;
   position: relative;
-  top: calc(-707% - 35px);
+  top: -708%;
   left: 3%;
 }
 
 div[id^="row15"], div[id^="row16"], div[id^="row17"], div[id^="row18"] {
   z-index: 4;
   position: relative;
-  top: calc(-1214% - 60px);
+  top: -1216%;
   left: 6%;
 }
 
 div[id^="row19"], div[id^="row20"] {
   z-index: 6;
   position: relative;
-  top: calc(-1520% - 75px);
+  top: -1524%;
   left: 10%;
 }
 
 div[id^="row21"] {
   z-index: 8;
   position: relative;
-  top: calc(-1672% - 85px);
+  top: -1676%;
   left: 12%;
 }
 

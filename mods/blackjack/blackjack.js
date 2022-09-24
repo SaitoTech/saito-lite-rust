@@ -1,5 +1,6 @@
 const GameTableTemplate = require('../../lib/templates/gametabletemplate');
 const saito = require('../../lib/saito/saito');
+const BlackjackGameRulesTemplate = require('./lib/blackjack-game-rules.template');
 
 
 //////////////////
@@ -63,27 +64,6 @@ class Blackjack extends GameTableTemplate {
       }
     });
 
-
-    if (app.modules.returnModule("RedSquare")) {
-    this.menu.addSubMenuOption("game-game", {
-      text : "Screenshot",
-      id : "game-post",
-      class : "game-post",
-      callback : async function(app, game_mod) {
-        let log = document.querySelector(".log");
-        let log_lock = document.querySelector(".log_lock");
-        if (!log_lock && log) { log.style.display = "none"; }
-        await app.browser.captureScreenshot(function(image) {
-          if (!log_lock && log) { log.style.display = "block"; }
-          let m = game_mod.app.modules.returnModule("RedSquare");
-          if (m) { m.tweetImage(image); }
-        });
-      },
-    });
-    }
-
-
-
 /***
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
@@ -95,27 +75,10 @@ class Blackjack extends GameTableTemplate {
       }
     });
 ****/
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        window.location.href = "/arcade";
-      }
-    });
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
 
     this.menu.addChatMenu(app, this);
 
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.restoreLog();
     this.log.render(app, this);
@@ -812,7 +775,7 @@ class Blackjack extends GameTableTemplate {
     let fractions = [0.01, 0.05, 0.1];
     let myCredit = this.game.state.player[blackjack_self.game.player-1].credit
 
-    let html = `<div class="status-info">How much would you like to wager? (Available credit: ${myCredit.toFixed(this.decimal_precision)})</div>`;
+    let html = `<div class="status-info">Select a wager: (credit: ${myCredit.toFixed(this.decimal_precision)})</div>`;
     html += '<ul>';
     for (let i = 0; i < fractions.length; i++){
       if (fractions[i]*this.game.stake<myCredit)
@@ -1000,7 +963,6 @@ class Blackjack extends GameTableTemplate {
       }
 
       this.cardfan.render(this.app, this, cardhtml);
-      this.cardfan.attachEvents(this.app, this);
 
       //Add split hands
       if (this.game.state.player[this.game.player-1].split.length>0){
@@ -1015,9 +977,9 @@ class Blackjack extends GameTableTemplate {
           newhtml += "</div>";
        }
        this.playerbox.refreshGraphic(newhtml);
-       $("#player-box-graphic-1").removeClass("hidden");
+       $("#player-box-graphic-1").removeClass("hidden-playerbox-element");
       }else{
-        $("#player-box-graphic-1").addClass("hidden");
+        $("#player-box-graphic-1").addClass("hidden-playerbox-element");
       }
     } catch (err) {
      console.error("Display Hand err: " + err);
@@ -1277,17 +1239,8 @@ class Blackjack extends GameTableTemplate {
 
 
   returnGameRulesHTML() {
-    return `<div class="rules-overlay">
-    <div class="h1">Homestyle Blackjack</div>
-    <p><strong>Homestyle Blackjack is quite different from Casino Blackjack. </strong></p>
-    <p>The game is played with a single deck (shuffled between each round) and <strong>each player takes turns as dealer</strong>, acting as the house against the other players. This means the dealer stakes the bets of all the other players. <strong>Each player is dealt a single card and given the chance to place a bet.</strong> After all the players (excluding the dealer) have placed their bets, one more card is dealt face up and gameplay begins.</p>
-    <p>Beginning to the left of the dealer, each player takes a turn, at which time all other players may view their full hand. Players may hit (take another card) or stand (end their turn). Players may hit as many times as they like, but they lose if they exceed 21 points (bust).
-    Cards are scored as usual per the number value and with J, Q, and K counting as 10. Aces count as either 1 or 11. If the player busts, the dealer immediately collects their bet and the player loses. The dealer is the last to play and may use their discretion, i.e. no mandatory casino rule of hitting below 17. If the dealer busts, remaining players win automatically. Any player with a higher score than the dealer wins their bet. <strong>The dealer wins all ties.</strong></p>
-    <p>Blackjacks--21 points with two cards--<strong>pay 2:1!</strong></p>
-    </div>`;
+    return BlackjackGameRulesTemplate(this.app, this);
   }
-
-
 
 
   returnGameOptionsHTML() {

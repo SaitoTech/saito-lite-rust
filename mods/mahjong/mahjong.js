@@ -1,6 +1,6 @@
 var saito = require('../../lib/saito/saito');
 var GameTemplate = require('../../lib/templates/gametemplate');
-
+const MahjongGameRulesTemplate = require('./lib/mahjong-game-rules.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -11,6 +11,7 @@ class Mahjong extends GameTemplate {
     super(app);
 
     this.name            = "Mahjong";
+    this.gamename         = "Mahjong Solitaire";
 
     this.description     = `Remove tiles in pairs: you win when all tiles have been removed from the board.`;
     this.categories      = "Games Cardgame one-player";
@@ -18,12 +19,13 @@ class Mahjong extends GameTemplate {
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
     this.status          = "Beta";
+    this.app = app;
 
   }
 
   // adds league support
   respondTo(type){
-    if (type == "default-league") {
+    if (type === "default-league") {
       let obj = super.respondTo(type);
       obj.type = "exp";
       return obj;
@@ -32,17 +34,7 @@ class Mahjong extends GameTemplate {
   }
 
   returnGameRulesHTML(){
-    return `<div class="rules-overlay" style="background-color:whitesmoke">
-            <h1>Mahjong</h1>
-            <ul>
-            <li>144 tiles are randomly folded into a multi-layered shape.</li>
-            <li>The goal of this game is to remove all tiles of the same pair by matching the pairs and clicking at them in sequence</li>
-            <li>There are layers of tiles and tiles stacked on top of other tiles make these tiles underneath invisible.</li>
-            <li>The game is finished when all pairs of tiles have been removed from the board.</li>
-            </ul>
-            </div>
-            `;
-
+    return MahjongGameRulesTemplate(this.app, this);
   }
 
   //
@@ -62,7 +54,6 @@ class Mahjong extends GameTemplate {
       this.game.state = this.returnState();
 
       this.game.queue = [];
-      this.game.queue.push("play");
       this.game.queue.push("READY");
 
     }
@@ -78,7 +69,6 @@ class Mahjong extends GameTemplate {
   newRound(){
     //Set up queue
     this.game.queue = [];
-    this.game.queue.push("play");
 
     //Clear board
     this.game.board = {};
@@ -86,7 +76,6 @@ class Mahjong extends GameTemplate {
     //Reset/Increment State
     this.game.state.round++;
     this.displayBoard();
-    this.displayUserInterface();
   }
 
   isArrayInArray(arr, item){
@@ -131,47 +120,56 @@ class Mahjong extends GameTemplate {
 
   // displayBoard
   async displayBoard(timeInterval = 1) {
-
-    this.game.deck.cards = this.returnDeck();
-
     let index = 0;
-    this.game.board = {}
-    let deckSize = Object.values(this.game.deck.cards).length
-    for (let i = 1; i <= 21; i++){
-      for (let j = 1; j <= 14; j++){
-        let position = `row${i}_slot${j}`;
-          if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
+
+    let deckSize = 0;
+
+    this.game.availableMoves = [];
+    if (!('board' in this.game) || Object.values(this.game.board).length === 0) {
+      this.game.deck.cards = this.returnDeck();
+      this.game.board = {}
+      deckSize = Object.values(this.game.deck.cards).length;
+      this.game.hidden = [];
+      for (let row = 1; row <= 21; row++){
+        for (let column = 1; column <= 14; column++){
+          let position = `row${row}_slot${column}`;
+          if (!this.isArrayInArray(this.emptyCells, [row,column]) && deckSize > index) {
             this.game.board[position] = Object.values(this.game.deck.cards)[index];
             index++;
           } else {
-console.log("i + j : " + i + " + " + j);
             this.game.board[position] = "E";
           }
+        }
       }
+    } else {
+      deckSize = Object.values(this.returnDeck()).length;
     }
-    this.game.cardsLeft = index;
+
+    this.game.cardsLeft = deckSize - this.game.hidden.length;
     this.game.selected = "";
-    this.game.hidden=[];
-    if (this.browser_active == 0) { return; }
+    if (this.browser_active === 0) { return; }
     $(".slot").removeClass("empty");
     index = 0;
     try {
       //Want to add a timed delay for animated effect
       const timeout = ms => new Promise(res => setTimeout(res, ms));
-      for (let i = 1; i <= 21; i++){
-        for (let j = 1; j <= 14; j++){
-          var divname = `row${i}_slot${j}`;
-          if (!this.isArrayInArray(this.emptyCells, [i,j]) && deckSize > index) {
+      for (let row = 1; row <= 21; row++){
+        for (let column = 1; column <= 14; column++){
+          var divname = `row${row}_slot${column}`;
+          if (!this.isArrayInArray(this.emptyCells, [row,column]) && deckSize > index) {
             await timeout(timeInterval);
-            $('#' + divname).html(this.returnCardImageHTML(Object.values(this.game.deck.cards)[index++]));
-console.log("untoggle: " + divname);
+            $('#' + divname).html(this.returnCardImageHTML(this.game.board[divname]));
             this.untoggleCard(divname);
+            if (this.game.hidden.includes(divname)) {
+              this.makeInvisible(divname);
+            }
           } else {
             this.makeInvisible(divname);
           }
         }
       }
       this.attachEventsToBoard();
+      this.displayUserInterface();
     } catch (err) {
       console.log(err);
     }
@@ -181,36 +179,36 @@ console.log("untoggle: " + divname);
 
   highlightRow(num=0) {
 
-    if (num == 1) {
-      $('.row1 > img').css('opacity', 0.9);
-      $('.row2 > img').css('opacity', 0.9);
-      $('.row3 > img').css('opacity', 0.9);
-      $('.row4 > img').css('opacity', 0.9);
-      $('.row5 > img').css('opacity', 0.9);
-      $('.row6 > img').css('opacity', 0.9);
-      $('.row7 > img').css('opacity', 0.9);
-      $('.row8 > img').css('opacity', 0.9);
+    if (num === 1) {
+      $('.row1 > img').css('opacity', 0.85);
+      $('.row2 > img').css('opacity', 0.85);
+      $('.row3 > img').css('opacity', 0.85);
+      $('.row4 > img').css('opacity', 0.85);
+      $('.row5 > img').css('opacity', 0.85);
+      $('.row6 > img').css('opacity', 0.85);
+      $('.row7 > img').css('opacity', 0.85);
+      $('.row8 > img').css('opacity', 0.85);
     }
-    if (num == 2) {
-      $('.row9 > img').css('opacity', 0.9);
-      $('.row10 > img').css('opacity', 0.9);
-      $('.row11 > img').css('opacity', 0.9);
-      $('.row12 > img').css('opacity', 0.9);
-      $('.row13 > img').css('opacity', 0.9);
-      $('.row14 > img').css('opacity', 0.9);
+    if (num === 2) {
+      $('.row9 > img').css('opacity', 0.8);
+      $('.row10 > img').css('opacity', 0.8);
+      $('.row11 > img').css('opacity', 0.8);
+      $('.row12 > img').css('opacity', 0.8);
+      $('.row13 > img').css('opacity', 0.8);
+      $('.row14 > img').css('opacity', 0.8);
     }
-    if (num == 3) {
-      $('.row15 > img').css('opacity', 0.9);
-      $('.row16 > img').css('opacity', 0.9);
-      $('.row17 > img').css('opacity', 0.9);
-      $('.row18 > img').css('opacity', 0.9);
+    if (num === 3) {
+      $('.row15 > img').css('opacity', 0.75);
+      $('.row16 > img').css('opacity', 0.75);
+      $('.row17 > img').css('opacity', 0.75);
+      $('.row18 > img').css('opacity', 0.75);
     }
-    if (num == 4) {
-      $('.row19 > img').css('opacity', 0.9);
-      $('.row20 > img').css('opacity', 0.9);
+    if (num === 4) {
+      $('.row19 > img').css('opacity', 0.7);
+      $('.row20 > img').css('opacity', 0.7);
     }
-    if (num == 5) {
-      $('.row21 > img').css('opacity', 0.9);
+    if (num === 5) {
+      $('.row21 > img').css('opacity', 0.65);
     }
 
   }
@@ -266,7 +264,7 @@ console.log("untoggle: " + divname);
   untoggleCard(divname) {
     $(`#${divname}`).css('opacity','1.0');
     $(`#${divname}`).css('pointer-events','auto');
-    let outermostBoxShadow = '0px 10px 12px 1px #000000';
+    let outermostBoxShadow = '0px 4px 2px 1px #000000';
     let boxShadow = '12px 10px 12px 1px #000000';
     if (`#${divname}` === "#row4_slot1" || `#${divname}` === "#row4_slot14") {
       this.applyShadowBox(divname, outermostBoxShadow);
@@ -282,7 +280,7 @@ console.log("untoggle: " + divname);
   }
 
   returnCardImageHTML(name) {
-    if (name[0] == 'E') { return ""; }
+    if (name[0] === 'E') { return ""; }
     else { return '<img src="/mahjong/img/tiles/white/'+name+'.png" />'; }
   }
 
@@ -294,7 +292,6 @@ console.log("untoggle: " + divname);
   // runs whenever we load the game into the browser. render()
   //
   initializeHTML(app) {
-
     if (!this.browser_active) { return; }
     
     super.initializeHTML(app);
@@ -315,6 +312,7 @@ console.log("untoggle: " + divname);
       id : "game-new",
       class : "game-new",
       callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
         game_mod.newRound();
       }
     });
@@ -327,23 +325,6 @@ console.log("untoggle: " + divname);
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       }
     });
-    if (app.modules.returnModule("RedSquare")) {
-    this.menu.addSubMenuOption("game-game", {
-      text : "Screenshot",
-      id : "game-post",
-      class : "game-post",
-      callback : async function(app, game_mod) {
-        let log = document.querySelector(".log");
-        let log_lock = document.querySelector(".log_lock");
-        if (!log_lock && log) { log.style.display = "none"; }
-        await app.browser.captureScreenshot(function(image) {
-          if (!log_lock && log) { log.style.display = "block"; }
-          let m = game_mod.app.modules.returnModule("RedSquare");
-          if (m) { m.tweetImage(image); }
-        });
-      },
-    });
-    }
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
@@ -351,28 +332,6 @@ console.log("untoggle: " + divname);
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(app, game_mod, game_mod.returnStatsHTML());
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        game_mod.updateStatusWithOptions("Saving game to the blockchain...");
-        game_mod.prependMove("exit_game\t"+game_mod.game.player);
-        game_mod.endTurn();
-      }
-    });
-
-    //
-    // fullscren toggle?
-    //
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
       }
     });
 
@@ -385,7 +344,6 @@ console.log("untoggle: " + divname);
     // render menu
     //
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     //
     // sidebar log
@@ -411,6 +369,14 @@ console.log("untoggle: " + divname);
 
   }
 
+  exitGame(){
+    this.updateStatusWithOptions("Saving game to the blockchain...");
+    this.gaming_active = 0;
+    this.saveGame(this.game.id);
+    this.prependMove("exit_game\t"+this.game.player);
+    this.endTurn();
+  }
+
   returnStatsHTML(){
     let html = `<div class="rules-overlay">
     <h1>Game Stats</h1>
@@ -433,75 +399,7 @@ console.log("untoggle: " + divname);
     $('.slot').on('click', function() {
 
       let card = $(this).attr("id");
-      let tileTokens = card.split('slot');
-      let tileColumn = parseInt(tileTokens[1]);
-      let tileRow = parseInt(card.split('_')[0].substring(3));
-      if (mahjong_self.game.board[card] !== "E") {
-
-        // layer 1 tile can't be unlocked if layer 2 tile overlays it
-        if (tileRow >= 2 && tileRow <= 7 && tileColumn >= 5 && tileColumn <= 10) {
-          if (!mahjong_self.game.hidden.includes(`row${tileRow + 7}_slot${tileColumn}`)) {
-            return;
-          }
-        }
-
-        // layer 2 tile can be can't be unlocked if layer 3 tile overlays it
-        if (tileRow >= 10 && tileRow <= 13 && tileColumn >= 6 && tileColumn <= 9) {
-          if (!mahjong_self.game.hidden.includes(`row${tileRow + 5}_slot${tileColumn}`)) {
-            return;
-          }
-        }
-
-        // layer 3 tile can be can't be unlocked if layer 4 tile overlays it
-        if (tileRow >= 16 && tileRow <= 17 && tileColumn >= 7 && tileColumn <= 8) {
-          if (!mahjong_self.game.hidden.includes(`row${tileRow + 3}_slot${tileColumn}`)) {
-            return;
-          }
-        }
-
-        switch (card) {
-          // \/\/ layer 4 tile can't be unlocked when layer 5 tile overlays it
-          case 'row19_slot7':
-          case 'row20_slot7':
-            if (!mahjong_self.game.hidden.includes('row21_slot7')) {
-              return;
-            } else {
-              break;
-            }
-          case 'row19_slot8':
-          case 'row20_slot8':
-            if (!mahjong_self.game.hidden.includes('row21_slot8')) {
-              return;
-            } else {
-              break;
-            }
-          // /\/\ layer 4 tile can't be unlocked when layer 5 tile overlays it
-
-          // two edge cases for the tiles being on the left/ right of two rows
-          case 'row5_slot2':
-            if (!mahjong_self.game.hidden.includes('row4_slot1')) {
-              return;
-            } else {
-              break;
-            }
-          case 'row5_slot13':
-            if (!mahjong_self.game.hidden.includes('row4_slot14')) {
-              return;
-            } else {
-              break;
-            }
-          default: // there must be no tile on the left or on the right for a given tile to be a valid selection
-            let leftTile = `${tileTokens[0]}slot${tileColumn - 1}`;
-            let rightTile = `${tileTokens[0]}slot${tileColumn + 1}`;
-            // if left tile is not unlocked nor empty
-            if (!((mahjong_self.game.hidden.includes(leftTile)) || mahjong_self.game.board[leftTile] === "E") &&
-              // if right tile is not unlocked nor empty
-               !((mahjong_self.game.hidden.includes(rightTile)) || mahjong_self.game.board[rightTile] === "E") &&
-               !(tileColumn === mahjong_self.firstColumn || tileColumn === mahjong_self.lastColumn)) {
-              return;
-            }
-        }
-      } else {
+      if(!mahjong_self.game.availableMoves.includes(card)) {
         return;
       }
 
@@ -561,12 +459,84 @@ console.log("untoggle: " + divname);
 
   }
 
+  getAvailableTiles() {
+    let mahjong_self = this;
+    let availableTiles = new Map([]);
+    mahjong_self.game.availableMoves = [];
+    for (let row = 1; row <= 21; row++){
+      for (let column = 1; column <= 14; column++){
+        if ((row === 5 && column === 2 && !mahjong_self.game.hidden.includes('row4_slot1')) || 
+          (row === 5 && column === 13 && !mahjong_self.game.hidden.includes('row4_slot14'))) {
+            continue;
+        }
+        if (row >= 2 && row <= 7 && column >= 5 && column <= 10) {
+          if (!mahjong_self.game.hidden.includes(`row${row + 7}_slot${column}`)) {
+            continue;
+          }
+        }
+        if (row >= 10 && row <= 13 && column >= 6 && column <= 9) {
+          if (!mahjong_self.game.hidden.includes(`row${row + 5}_slot${column}`)) {
+            continue;
+          }
+        }
+        if (row >= 16 && row <= 17 && column >= 7 && column <= 8) {
+          if (!mahjong_self.game.hidden.includes(`row${row + 3}_slot${column}`)) {
+            continue;
+          }
+        }
+        if (row >= 19 && row <= 20 && column >= 7 && column <= 8) {
+          if (!mahjong_self.game.hidden.includes(`row21_slot${column}`)) {
+            continue;
+          }
+        }
+        if ( // \/ checking if right or left tile is unlocked or empty
+          ((mahjong_self.game.hidden.includes(`row${row}_slot${column - 1}`) || 
+          mahjong_self.game.board[`row${row}_slot${column - 1}`] === "E" ||
+          mahjong_self.game.hidden.includes(`row${row}_slot${column + 1}`) || 
+          mahjong_self.game.board[`row${row}_slot${column + 1}`] === "E") && 
+          mahjong_self.game.board[`row${row}_slot${column}`] !== "E" && 
+          !mahjong_self.game.hidden.includes(`row${row}_slot${column}`)) ||
+          // /\ checking if right or left tile is unlocked or empty
+          // \/ checking two outermost rows
+            (row === 4 && column === 1 && !mahjong_self.game.hidden.includes('row4_slot1')) ||
+            (row === 4 && column === 14 && !mahjong_self.game.hidden.includes('row4_slot14'))
+          ) { // /\ checking two outermost rows
+            if (availableTiles.get(mahjong_self.game.board[`row${row}_slot${column}`]) !== undefined) {
+              availableTiles.set(mahjong_self.game.board[`row${row}_slot${column}`], availableTiles.get(mahjong_self.game.board[`row${row}_slot${column}`]) + 1);
+            } else {
+              availableTiles.set(mahjong_self.game.board[`row${row}_slot${column}`], 1);
+            }
+            mahjong_self.game.availableMoves.push(`row${row}_slot${column}`)
+        }
+      }
+    }
+    let unlockableTiles = 0;
+    // console.log("available pairs:");
+    for (const k of availableTiles.keys()) {
+      if (availableTiles.get(k) >= 2 && availableTiles.get(k) < 4) {
+        unlockableTiles += 2;
+        // console.log(`Available tile pair: ${k} (tiles: ${availableTiles.get(k)})`);
+      } else if (availableTiles.get(k) === 4) {
+        unlockableTiles += 4;
+        // console.log(`Available tile pair: ${k} (tiles: ${availableTiles.get(k)})`);
+      }
+    }
+    return unlockableTiles;
+  }
+
   displayUserInterface() {
+    let tilesLeftToUnlock = this.getAvailableTiles();
+    if (tilesLeftToUnlock === 0) {
+      this.displayWarning("Game over", "There are no more available moves to make.", 9000);
+      this.newRound();
+      return;
+    }
+    let pairsLeftToUnlock = tilesLeftToUnlock / 2;
     let mahjong_self = this;
 
-    let html = '<span class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.</span>';
+    let html = `<span class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.<br><br>` + 
+    `Available tile pairs to unlock: <em>${pairsLeftToUnlock}</em></span>`;
 
-    // TODO later - shuffle
     let option = '';
     if (this.game.hidden.length > 0){
       option += `<ul><li class="menu_option" id="undo">Undo`;
@@ -578,20 +548,7 @@ console.log("untoggle: " + divname);
     $('.menu_option').off();
     $('.menu_option').on('click', function() {
       let action = $(this).attr("id");
-
-      // if (action == "shuffle"){
-      //   mahjong_self.updateStatusWithOptions("shuffle cards...");
-      //   mahjong_self.prependMove("shuffle");
-      //   mahjong_self.endTurn();
-      //   return;
-      // }
-      // if (action == "quit"){
-      //   mahjong_self.endGame();
-      //   mahjong_self.newRound();
-      //   mahjong_self.endTurn();
-      //   return;
-      // }
-      if (action == "undo"){
+      if (action === "undo"){
         mahjong_self.undoMove();
         return;
       }
@@ -599,6 +556,10 @@ console.log("untoggle: " + divname);
   }
 
   undoMove() {
+    if (this.game.selected !== "") {
+      this.untoggleCard(this.game.selected);
+      this.game.selected = "";
+    }
     this.untoggleCard(this.game.hidden[this.game.hidden.length - 1]);
     this.untoggleCard(this.game.hidden[this.game.hidden.length - 2]);
     this.game.hidden.splice(this.game.hidden.length - 2, 2);
@@ -625,9 +586,6 @@ console.log("untoggle: " + divname);
   // being to execute again the next time a move is received over the network.
   //
   handleGameLoop(msg=null) {
-
-    // let mahjong_self = this;
-
     ///////////
     // QUEUE //
     ///////////
@@ -635,30 +593,19 @@ console.log("untoggle: " + divname);
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
-
-      if (mv[0] === "play"){
-
-        //
-        // perhaps wait until game is being viewed to execute?
-        //
-        if (!this.browser_active) { return 0; }
-
-        this.displayUserInterface();
-        return 1;
-
-      }
-
       if (mv[0] === "round") {
         this.newRound();
       }
 
       if (mv[0] === "exit_game"){
         this.game.queue = [];
+        this.gaming_active = 0;
         let player = parseInt(mv[1])
         this.saveGame(this.game.id);
 
         if (this.game.player === player){
-          window.location.href = "/arcade";
+          super.exitGame();
+          //window.location.href = "/arcade";
         }else{
           this.updateStatus("Player has exited the building");
         }

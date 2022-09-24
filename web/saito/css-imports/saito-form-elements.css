@@ -288,7 +288,32 @@ textarea::placeholder {
 /* ----------------------------------------------------------------
 Selects
 -----------------------------------------------------------------*/
+/*
+select {
+  background-color: var(--saito-white);
+  outline: 1px solid var(--saito-border);
+  border-radius: 0.5rem;
+  line-height: 3rem;
+  padding: 0.5rem 3.5rem 0.5rem 1rem;
+  margin: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(60deg, transparent 50%, var(--saito-primary) 50%), linear-gradient(120deg, var(--saito-primary) 50%, transparent 50%), linear-gradient(to right, var(--saito-white), var(--saito-white));
+  background-position: calc(100% - 20px) calc(1em + 2px), calc(100% - 15px) calc(1em + 2px), 100% 0;
+  background-size: 7px 7px, 7px 7px, 2.5em 2.5em;
+  background-repeat: no-repeat;
+}
 
+select:focus {
+  background-image: linear-gradient(120deg, transparent 50%, var(--saito-primary) 50%), linear-gradient(60deg, var(--saito-primary) 50%, transparent 50%), linear-gradient(to right, var(--saito-white), var(--saito-white));
+  outline: 1px solid var(--saito-border);
+}
+
+select:focus-visible {
+  outline: 1px solid var(--saito-border);
+}
+*/
+/* Artificial Selects */
 .saito-select-wrapper {
   width: 100%;
   position: relative;
@@ -354,7 +379,6 @@ Selects
   list-style: none;
   cursor: pointer;
   width: 100%;
-  /* padding: .5rem 1.5rem; */
   color: var(--saito-black);
   display: flex;
   justify-content: center;
@@ -387,4 +411,44 @@ Selects
 .flip-carret {
   transition: all 0.3s;
   transform: rotateX(180deg);
+}
+
+.saito-select {
+  position: relative;
+  display: flex;
+  width: 20em;
+  height: 3em;
+  line-height: 3;
+  background-color: transparent;
+  overflow: hidden;
+  width: 100%;
+}
+
+.saito-select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 1em;
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-transition: 0.25s all ease;
+  -o-transition: 0.25s all ease;
+  transition: 0.25s all ease;
+  border-radius: 0 1rem 1rem 0;
+}
+
+.saito-select:hover::after {
+  color: var(--saito-white) !important;
+}
+
+.saito-slct {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: var(--saito-white);
+  border: 1px solid var(--saito-primary);
+  border-radius: 1rem;
+  padding: 0 1rem;
 }

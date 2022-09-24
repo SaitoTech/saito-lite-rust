@@ -62,7 +62,7 @@ body {
   grid-gap: 5px;
   grid-template-columns: repeat(30, minmax(auto, 20px));
   width: fit-content;
-  max-width: min(70vw,65vh);
+  max-width: min(80vw,65vh);
   margin: 60px auto;
   box-shadow: 0 0 10px 5px black;
   background-color: #f5f5f555;
@@ -89,7 +89,7 @@ body {
   display: none;
 }
 
-.tiptext{
+.tip .tiptext{
   width: calc(100% + 30px);
   min-width: unset;
   color: black;
@@ -220,6 +220,7 @@ body {
   .cardstacks{
     grid-gap: 3px;
     max-width: 90vw;
+    grid-template-columns: repeat(30, auto);
   }
 
 }
