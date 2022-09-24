@@ -636,6 +636,107 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
 
+    this.importUnit('maurice-of-saxony', {
+      type              :       "maurice-of-saxony" ,
+      name              :       "Maurice of Saxony",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "Maurice_Hapsburg.svg",
+      battle_rating     :       1,
+      command_value     :       6,
+    });
+
+
+
+/************************
+
+Habsburg conquistadores:
+1. Pizarro 3
+2. Montejo 2
+3. Cortez 4
+4. Cordova 1
+5. Coronado 1
+
+************************/
+
+      this.importUnit('orellana', {
+           type              :       "orellana",
+           name              :       "Hector Rodrigo Enriquez Orellana",
+           personage         :       true,
+           img               :       "Orellana.svg",
+      });
+
+      this.importUnit('magellan', {
+           type              :       "magellan" ,
+           name              :       "Ferdinand Magellan",
+           personage         :       true,
+           img               :       "Magellan.svg",
+      });
+
+      this.importUnit('leon', {
+           type              :       "leon" ,
+           name              :       "Leon",
+           personage         :       true,
+           img               :       "Leon.svg",
+      });
+
+      this.importUnit('narvaez', {
+           type              :       "narvaez" ,
+           name              :       "Sofia Narvaez",
+           personage         :       true,
+           img               :       "Narvaez.svg",
+      });
+
+      this.importUnit('de-vaca', {
+           type              :       "de-vaca" ,
+           name              :       "Cabeza De Vaca",
+           personage         :       true,
+           img               :       "De_Vaca.svg",
+      });
+
+      this.importUnit('de-soto', {
+           type              :       "de-soto" ,
+           name              :       "DeSoto",
+           personage         :       true,
+           img               :       "DeSoto.svg",
+      });
+
+
+
+
+
+      /***** Hapsburg Conquistadors *****/
+
+      this.importUnit('pizarro', {
+           type              :       "pizarro" ,
+           name              :       "Francisco Pizarro",
+           personage         :       true,
+           img               :       "Pizarro.svg",
+      });
+
+      // Montejo
+
+      this.importUnit('cordova', {
+           type              :       "cordova" ,
+           name              :       "Neisa Cordova",
+           personage         :       true,
+           img               :       "Cordova.svg",
+      });
+
+      this.importUnit('coronado', {
+           type              :       "coronado" ,
+           name              :       "Francisco Vázquez de Coronado",
+           personage         :       true,
+           img               :       "Coronado.svg",
+      });
+
+      this.importUnit('cortez', {
+           type              :       "cortez" ,
+           name              :       "Hernan Cortes",
+           personage         :       true,
+           img               :       "Cortez.svg",
+      });
+
 
 
     this.importUnit('luther', {
@@ -901,6 +1002,116 @@ class HereIStand extends GameTemplate {
 
 
 
+/************************
+
+English explorers:
+1. Chancellor 1
+2. Rur 1 (John Rut?)
+3. Willoughby 0
+
+French explorers:
+1. Cartier 3
+2. Roberval 0
+3. Verrazano 2
+
+Habsburg explorers:
+1. Orellana 3
+2. Magellan 4
+3. Leon 1
+4. Narvaez -1
+5. De Vaca 0
+6. DeSoto 2
+
+************************/
+
+
+      /***** English Explorers *****/
+
+      this.importUnit('chancellor', {
+           type              :       "chancellor" ,
+           name              :       "Chancellor",
+           personage         :       true,
+           img               :       "Chancellor.svg",
+      });
+
+      // RUR
+
+      this.importUnit('willoughby', {
+           type              :       "willoughby" ,
+           name              :       "Katherine Willoughby",
+           personage         :       true,
+           img               :       "Willoughby.svg",
+      });
+
+
+
+      /***** French Explorers *****/
+
+      this.importUnit('cartier', {
+           type              :       "cartier" ,
+           name              :       "Jacques Cartier",
+           personage         :       true,
+           img               :       "Cartier.svg",
+      });
+
+      this.importUnit('roberval', {
+           type              :       "roberval" ,
+           name              :       "Jean-François de La Rocque de Roberval",
+           personage         :       true,
+           img               :       "Roberval.svg",
+      });
+
+      // VERRAZANO
+
+
+
+
+      /***** Hapsburg Explorers *****/
+
+      this.importUnit('orellana', {
+           type              :       "orellana",
+           name              :       "Hector Rodrigo Enriquez Orellana",
+           personage         :       true,
+           img               :       "Orellana.svg",
+      });
+
+      this.importUnit('magellan', {
+           type              :       "magellan" ,
+           name              :       "Ferdinand Magellan",
+           personage         :       true,
+           img               :       "Magellan.svg",
+      });
+
+      this.importUnit('leon', {
+           type              :       "leon" ,
+           name              :       "Leon",
+           personage         :       true,
+           img               :       "Leon.svg",
+      });
+
+      this.importUnit('narvaez', {
+           type              :       "narvaez" ,
+           name              :       "Sofia Narvaez",
+           personage         :       true,
+           img               :       "Narvaez.svg",
+      });
+
+      this.importUnit('de-vaca', {
+           type              :       "de-vaca" ,
+           name              :       "Cabeza De Vaca",
+           personage         :       true,
+           img               :       "De_Vaca.svg",
+      });
+
+      this.importUnit('de-soto', {
+           type              :       "de-soto" ,
+           name              :       "DeSoto",
+           personage         :       true,
+           img               :       "DeSoto.svg",
+      });
+
+
+
     this.importUnit('barbarossa', {
       type		:	"barbarossa" ,
       name		: 	"Barbarossa",
@@ -979,14 +1190,6 @@ class HereIStand extends GameTemplate {
            img               :       "Cabot_Hapsburg.svg",
       });
 
-
-      this.importUnit('cartier', {
-           type              :       "cartier" ,
-           name              :       "Jacques Cartier",
-           personage         :       true,
-           img               :       "Cartier.svg",
-      });
-
       this.importUnit('aragon', {
            type              :       "aragon" ,
            name              :       "CatherineAragon",
@@ -994,53 +1197,11 @@ class HereIStand extends GameTemplate {
            img               :       "CatherineAragon.svg",
       });
 
-      this.importUnit('chancellor', {
-           type              :       "chancellor" ,
-           name              :       "Chancellor",
-           personage         :       true,
-           img               :       "Chancellor.svg",
-      });
-
       this.importUnit('charles-v', {
            type              :       "charles-v" ,
            name              :       "Charles V",
            personage         :       true,
            img               :       "Charles_V.svg",
-      });
-
-      this.importUnit('cordova', {
-           type              :       "cordova" ,
-           name              :       "Neisa Cordova",
-           personage         :       true,
-           img               :       "Cordova.svg",
-      });
-
-      this.importUnit('Coronado', {
-           type              :       "Coronado" ,
-           name              :       "Francisco Vázquez de Coronado",
-           personage         :       true,
-           img               :       "Coronado.svg",
-      });
-
-      this.importUnit('cortez', {
-           type              :       "cortez" ,
-           name              :       "Hernan Cortes",
-           personage         :       true,
-           img               :       "Cortez.svg",
-      });
-
-      this.importUnit('de-vaca', {
-           type              :       "de-vaca" ,
-           name              :       "Cabeza De Vaca",
-           personage         :       true,
-           img               :       "De_Vaca.svg",
-      });
-
-      this.importUnit('de-soto', {
-           type              :       "de-soto" ,
-           name              :       "DeSoto",
-           personage         :       true,
-           img               :       "DeSoto.svg",
       });
 
        this.importUnit('dragut', {
@@ -1055,13 +1216,6 @@ class HereIStand extends GameTemplate {
            name              :       "John Dudley",
            personage         :       true,
            img               :       "Dudley.svg",
-      });
-
-      this.importUnit('duke-of-alva', {
-           type              :       "duke-of-alva" ,
-           name              :       "Duke_of_Alva",
-           personage         :       true,
-           img               :       "Duke_of_Alva.svg",
       });
 
       this.importUnit('ferdinand-ii', {
@@ -1083,20 +1237,6 @@ class HereIStand extends GameTemplate {
            name              :       "Henry_II",
            personage         :       true,
            img               :       "Henry_II.svg",
-      });
-
-      this.importUnit('henry-viii', {
-           type              :       "henry-viii" ,
-           name              :       "Henry_VIII",
-           personage         :       true,
-           img               :       "Henry_VIII.svg",
-      });
-
-      this.importUnit('ibrahim', {
-           type              :       "ibrahim" ,
-           name              :       "Raymond Ibrahim",
-           personage         :       true,
-           img               :       "Ibrahim.svg",
       });
 
       this.importUnit('seymour', {
@@ -1127,34 +1267,6 @@ class HereIStand extends GameTemplate {
            img               :       "KathrynHoward.svg",
       });
 
-      this.importUnit('leon', {
-           type              :       "leon" ,
-           name              :       "Leon",
-           personage         :       true,
-           img               :       "Leon.svg",
-      });
-
-      this.importUnit('magellan', {
-           type              :       "magellan" ,
-           name              :       "Ferdinand Magellan",
-           personage         :       true,
-           img               :       "Magellan.svg",
-      });
-
-      this.importUnit('Maurice', {
-           type              :       "Maurice" ,
-           name              :       "Maurice of Sax",
-           personage         :       true,
-           img               :       "Maurice_Hapsburg.svg",
-      });
-
-      this.importUnit('Maurice', {
-           type              :       "maurice" ,
-           name              :       "Maurice of Sax",
-           personage         :       true,
-           img               :       "Maurice_Protestant.svg",
-      });
-
       this.importUnit('montejo', {
            type              :       "montejo" ,
            name              :       "Victor Montejo",
@@ -1169,32 +1281,11 @@ class HereIStand extends GameTemplate {
            img               :       "Montmorency.svg",
       });
 
-      this.importUnit('narvaez', {
-           type              :       "narvaez" ,
-           name              :       "Sofia Narvaez",
-           personage         :       true,
-           img               :       "Narvaez.svg",
-      });
-
-      this.importUnit('orellana', {
-           type              :       "orellana",
-           name              :       "Hector Rodrigo Enriquez Orellana",
-           personage         :       true,
-           img               :       "Orellana.svg",
-      });
-
       this.importUnit('philip-i', {
            type              :       "philip-i" ,
            name              :       "Philip_I",
            personage         :       true,
            img               :       "Philip_Hesse.svg",
-      });
-
-      this.importUnit('pizarro', {
-           type              :       "pizarro" ,
-           name              :       "Francisco Pizarro",
-           personage         :       true,
-           img               :       "Pizarro.svg",
       });
 
       this.importUnit('', {
@@ -1204,45 +1295,12 @@ class HereIStand extends GameTemplate {
            img               :       "Renegade.svg",
       });
 
-      this.importUnit('roberval', {
-           type              :       "roberval" ,
-           name              :       "Jean-François de La Rocque de Roberval",
-           personage         :       true,
-           img               :       "Roberval.svg",
-      });
-
       this.importUnit('more', {
            type              :       "more" ,
            name              :       "Thomas More",
            personage         :       true,
            img               :       "ThomasMore.svg",
       });
-
-      this.importUnit('verrazano', {
-           type              :       "verrazano" ,
-           name              :       "Giovanni da Verrazano",
-           personage         :       true,
-           img               :       "Verrazano.svg",
-      });
-
-      this.importUnit('willoughby', {
-           type              :       "willoughby" ,
-           name              :       "Katherine Willoughby",
-           personage         :       true,
-           img               :       "Willoughby.svg",
-      });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1581,6 +1639,33 @@ console.log("adding stuff!");
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
         game_mod.displayReligiousConflictSheet();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Debaters",
+      id : "game-debaters",
+      class : "game-debaters",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayDebaters();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Explorers",
+      id : "game-explorers",
+      class : "game-explorers",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayExplorers();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Conquistadors",
+      id : "game-conquistadors",
+      class : "game-conquistadors",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayConquistadors();
       }
     });
 
@@ -2136,6 +2221,16 @@ console.log("A2 ");
   addDebater(faction, debater) {
     let d = this.newDebater(faction, debater);
     this.game.state.debaters.push(d);
+  }
+
+  addExplorer(faction, explorer) {
+    let d = this.newExplorer(faction, explorer);
+    this.game.state.explorers.push(d);
+  }
+
+  addConquistador(faction, explorer) {
+    let d = this.newConquistador(faction, explorer);
+    this.game.state.conquistador.push(d);
   }
 
   addPersonage(faction, space, personage) {
@@ -2713,10 +2808,6 @@ console.log("this is a space: " + spacekey)
     if (this.game.state.activated_powers[space.home]) {
       if (this.game.state.activated_powers[space.home].includes(faction)) { return 1; }
     }
-    for (let i = 0; i < space.units[faction].length; i++) {
-      // we already have troops there, we must be friendly!
-      if (space.units[faction][i].besieged == false || space.units[faction][i].captured == false) { return 1; }
-    }
     return 0;
   }
 
@@ -2773,6 +2864,26 @@ console.log("this is a space: " + spacekey)
     let num = 0;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 1) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfUncommittedExplorers(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 0) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfCommittedExplorers(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 1) {
 	num++;
       }
     }
@@ -2848,6 +2959,8 @@ console.log("this is a space: " + spacekey)
     state.players = [];
     state.events = {};
     state.debaters = [];
+    state.explorers = [];
+    state.conquistadors = [];
 
     // whose turn is it? (attacker)
     state.active_player = -1;
@@ -7469,6 +7582,7 @@ alert("removing unit not implement for sea");
 	    }
 	  }
 
+
 	  //
 	  // prevents in-memory differences in processing resulting in a different
 	  // queue order, resulting in divergent game processing.
@@ -7591,8 +7705,10 @@ alert("removing unit not implement for sea");
 
 	if (mv[0] === "is_testing") {
 
-
+/*****
 	  this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+****/
+
 	  this.game.queue.push("retreat_to_winter_spaces");
 
     	  //
@@ -11638,6 +11754,7 @@ this.updateLog("Catholics: " + c_rolls);
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
 
+
     for (let s in this.game.spaces) {
       if (this.game.spaces[s].besieged == 2) {
 	this.game.spaces[s].besieged = 1;
@@ -11649,6 +11766,9 @@ this.updateLog("Catholics: " + c_rolls);
       p.tmp_roll_bonus = 0;
       p.tmp_roll_first = 0;
       p.tmp_roll_modifiers = [];
+      p.has_colonized = 0;
+      p.has_explored = 0;
+      p.has_conquered = 0;
     }
 
     this.game.state.field_battle = {};
@@ -13314,24 +13434,55 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
+      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
+	for (let z = 0; z < neighbours.length; z++) {
+	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
+	    console.log("SPACE IS: " + neighbours[z]);
+	    return 1;
+	  } 
+	}
+	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) {
+	  console.log("SPACE IS: " + spaces_in_unrest[i]);
+	  return 1;
+	} 
+      }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { return 1; }
-    }
+      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { 
+	console.log("SPACE IS: " + conquerable_spaces[i]);
+	return 1;
+      } 
+   }
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
+    let pacifiable_spaces_in_unrest = [];
+    for (let i = 0; i < spaces_in_unrest.length; i++) {
+      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
+	for (let z = 0; z < neighbours.length; z++) {
+	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
+	}
+	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
+      }
+    }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      if (his_self.isSpaceControlledByFaction(conquerable_spaces[i], faction)) {
+	conquerable_spaces.splice(i, 1);
+	i--;
+      }
+    }
 
     his_self.playerSelectSpaceWithFilter(
 
       "Select Space to Pacify:",
 
       function(space) {
-        if (spaces_in_unrest.includes(space.key)) { return 1; }
-        if (conquerable_spaces.includes(space.key)) { return 1; }
+        if (pacifiable_spaces_in_unrest.includes(space.key)) { return 1; }
+        if (conquerable_spaces.includes(space.key) && !his_self.isSpaceControlledByFaction(space.key, faction) && !his_self.isSpaceFriendly(space.key, faction)) { return 1; }
 	return 0;
       },
 
@@ -13344,23 +13495,29 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     return 0;
   }
   canPlayerExplore(his_self, player, faction) {
+    if (this.game.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
   async playerExplore(his_self, player, faction) {
+    this.game.players_info[player-1].has_explored = 1;
 console.log("10");
 return;
   }
   canPlayerColonize(his_self, player, faction) {
+    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerColonize(his_self, player, faction) {
+    this.game.players_info[player-1].has_colonized = 1;
 console.log("11");
 return;
   }
   canPlayerConquer(his_self, player, faction) {
+    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerConquer(his_self, player, faction) {
+    this.game.players_info[player-1].has_conquered = 1;
 console.log("12");
 return;
   }
@@ -13792,6 +13949,53 @@ return;
       }
     }
   }
+
+
+  newExplorer(faction, explorer) {
+    for (let key in this.units) {
+      if (this.units[key].type === explorer) {
+	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
+	new_unit.owner = faction;
+	new_unit.committed = 0;
+	return new_unit;
+      }
+    }
+    return null;
+  }
+  commitExplorer(faction, explorer) {
+    let his_self = this;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].key == explorer) {
+	this.game.state.explorer[i].committed = 1;
+	this.units[explorer].onCommitted(his_self, this.game.state.explorers[i].owner);
+      }
+    }
+  }
+
+
+  newConquistador(faction, explorer) {
+    for (let key in this.units) {
+      if (this.units[key].type === explorer) {
+	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
+	new_unit.owner = faction;
+	new_unit.committed = 0;
+	return new_unit;
+      }
+    }
+    return null;
+  }
+  commitConquistador(faction, explorer) {
+    let his_self = this;
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      if (this.game.state.conquistadors[i].key == explorer) {
+	this.game.state.conquistadors[i].committed = 1;
+	this.units[explorer].onCommitted(his_self, this.game.state.conquistadors[i].owner);
+      }
+    }
+  }
+
+
+
   newPersonage(faction, personage) {
     for (let key in this.units) {
       if (this.units[key].type === personage) {
@@ -13804,15 +14008,72 @@ return;
   }
 
 
-  displayTheologicalDebate(attacker, defender) {
 
-    let html = `
-      <div class="theological_debate_sheet" id="theological_debate_sheet">
-	<div class="attacker_debater"></div>
-	<div class="defender_debater"></div>
-	<div class="status" id="status"></div>
-      </div>
-    `;
+
+  displayDebaters() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
+    }
+    html += `</div>`;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.debaters[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
+      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+
+    }
+  }
+
+  displayExplorers() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      html += `	<div class="personage_tile${i}" data-id="${this.game.state.explorers[i].img}" style="background-image:url('/his/img/tiles/explorers/${this.game.state.explorers[i].img}')"></div>`;
+    }
+    html += `</div>`;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.explorers[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
+      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+
+    }
+
+  }
+
+  displayConquistadors() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      html += `	<div class="personage_tile_wrapper" data-id="${this.game.state.debaters[i].img}"><img class="personage_tile" src="/his/img/tiles/conquistadors/${this.game.state.conquistadors[i].img}" /></div>`;
+    }
+    html += `</div>`;
 
     this.overlay.showOverlay(this.app, this, html);
 

@@ -68,6 +68,53 @@
       }
     }
   }
+
+
+  newExplorer(faction, explorer) {
+    for (let key in this.units) {
+      if (this.units[key].type === explorer) {
+	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
+	new_unit.owner = faction;
+	new_unit.committed = 0;
+	return new_unit;
+      }
+    }
+    return null;
+  }
+  commitExplorer(faction, explorer) {
+    let his_self = this;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].key == explorer) {
+	this.game.state.explorer[i].committed = 1;
+	this.units[explorer].onCommitted(his_self, this.game.state.explorers[i].owner);
+      }
+    }
+  }
+
+
+  newConquistador(faction, explorer) {
+    for (let key in this.units) {
+      if (this.units[key].type === explorer) {
+	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
+	new_unit.owner = faction;
+	new_unit.committed = 0;
+	return new_unit;
+      }
+    }
+    return null;
+  }
+  commitConquistador(faction, explorer) {
+    let his_self = this;
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      if (this.game.state.conquistadors[i].key == explorer) {
+	this.game.state.conquistadors[i].committed = 1;
+	this.units[explorer].onCommitted(his_self, this.game.state.conquistadors[i].owner);
+      }
+    }
+  }
+
+
+
   newPersonage(faction, personage) {
     for (let key in this.units) {
       if (this.units[key].type === personage) {
@@ -78,4 +125,6 @@
     }
     return null;
   }
+
+
 

@@ -345,6 +345,16 @@ console.log("A2 ");
     this.game.state.debaters.push(d);
   }
 
+  addExplorer(faction, explorer) {
+    let d = this.newExplorer(faction, explorer);
+    this.game.state.explorers.push(d);
+  }
+
+  addConquistador(faction, explorer) {
+    let d = this.newConquistador(faction, explorer);
+    this.game.state.conquistador.push(d);
+  }
+
   addPersonage(faction, space, personage) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newPersonage(faction, personage));
@@ -920,10 +930,6 @@ console.log("this is a space: " + spacekey)
     if (this.game.state.activated_powers[space.home]) {
       if (this.game.state.activated_powers[space.home].includes(faction)) { return 1; }
     }
-    for (let i = 0; i < space.units[faction].length; i++) {
-      // we already have troops there, we must be friendly!
-      if (space.units[faction][i].besieged == false || space.units[faction][i].captured == false) { return 1; }
-    }
     return 0;
   }
 
@@ -980,6 +986,26 @@ console.log("this is a space: " + spacekey)
     let num = 0;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 1) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfUncommittedExplorers(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 0) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfCommittedExplorers(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 1) {
 	num++;
       }
     }
@@ -1055,6 +1081,8 @@ console.log("this is a space: " + spacekey)
     state.players = [];
     state.events = {};
     state.debaters = [];
+    state.explorers = [];
+    state.conquistadors = [];
 
     // whose turn is it? (attacker)
     state.active_player = -1;

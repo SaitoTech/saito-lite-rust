@@ -1,4 +1,15 @@
 
+.personage_tile {
+  height: 25rem;
+  width: 25rem;
+  background-size: cover;
+}
+
+.personage_overlay {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    display: grid;
+}
+
 .theological_debate_sheet {
   background-image: url('/his/img/backgrounds/theological-debate2.jpg');
   background-size: cover;

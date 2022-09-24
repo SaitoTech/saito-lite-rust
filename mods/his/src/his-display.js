@@ -1,16 +1,84 @@
 
-  displayTheologicalDebate(attacker, defender) {
+  displayDebaters() {
 
-    let html = `
-      <div class="theological_debate_sheet" id="theological_debate_sheet">
-	<div class="attacker_debater"></div>
-	<div class="defender_debater"></div>
-	<div class="status" id="status"></div>
-      </div>
-    `;
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
+    }
+    html += `</div>`;
 
     this.overlay.showOverlay(this.app, this, html);
 
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.debaters[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
+      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+    }
+  }
+
+  displayExplorers() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      html += `	<div class="personage_tile${i}" data-id="${this.game.state.explorers[i].img}" style="background-image:url('/his/img/tiles/explorers/${this.game.state.explorers[i].img}')"></div>`;
+    }
+    html += `</div>`;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.explorers[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
+      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+    }
+
+  }
+
+  displayConquistadors() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.conquistadors[i].img}" style="background-image:url('/his/img/tiles/conquistadors/${this.game.state.conquistadors[i].img}')"></div>`;
+    }
+    html += `</div>`;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      let tile_f = "/his/img/tiles/conquistadors/" + this.game.state.conquistadors[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.conquistadors[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
+      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+    }
   }
 
   displayTheologicalDebater(debater, attacker=true) {

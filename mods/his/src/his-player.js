@@ -156,6 +156,7 @@
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
 
+
     for (let s in this.game.spaces) {
       if (this.game.spaces[s].besieged == 2) {
 	this.game.spaces[s].besieged = 1;
@@ -167,6 +168,9 @@
       p.tmp_roll_bonus = 0;
       p.tmp_roll_first = 0;
       p.tmp_roll_modifiers = [];
+      p.has_colonized = 0;
+      p.has_explored = 0;
+      p.has_conquered = 0;
     }
 
     this.game.state.field_battle = {};
@@ -1832,24 +1836,55 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
+      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
+	for (let z = 0; z < neighbours.length; z++) {
+	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
+	    console.log("SPACE IS: " + neighbours[z]);
+	    return 1;
+	  } 
+	}
+	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) {
+	  console.log("SPACE IS: " + spaces_in_unrest[i]);
+	  return 1;
+	} 
+      }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { return 1; }
-    }
+      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { 
+	console.log("SPACE IS: " + conquerable_spaces[i]);
+	return 1;
+      } 
+   }
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
+    let pacifiable_spaces_in_unrest = [];
+    for (let i = 0; i < spaces_in_unrest.length; i++) {
+      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
+	for (let z = 0; z < neighbours.length; z++) {
+	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
+	}
+	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
+      }
+    }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      if (his_self.isSpaceControlledByFaction(conquerable_spaces[i], faction)) {
+	conquerable_spaces.splice(i, 1);
+	i--;
+      }
+    }
 
     his_self.playerSelectSpaceWithFilter(
 
       "Select Space to Pacify:",
 
       function(space) {
-        if (spaces_in_unrest.includes(space.key)) { return 1; }
-        if (conquerable_spaces.includes(space.key)) { return 1; }
+        if (pacifiable_spaces_in_unrest.includes(space.key)) { return 1; }
+        if (conquerable_spaces.includes(space.key) && !his_self.isSpaceControlledByFaction(space.key, faction) && !his_self.isSpaceFriendly(space.key, faction)) { return 1; }
 	return 0;
       },
 
@@ -1862,23 +1897,29 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     return 0;
   }
   canPlayerExplore(his_self, player, faction) {
+    if (this.game.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
   async playerExplore(his_self, player, faction) {
+    this.game.players_info[player-1].has_explored = 1;
 console.log("10");
 return;
   }
   canPlayerColonize(his_self, player, faction) {
+    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerColonize(his_self, player, faction) {
+    this.game.players_info[player-1].has_colonized = 1;
 console.log("11");
 return;
   }
   canPlayerConquer(his_self, player, faction) {
+    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerConquer(his_self, player, faction) {
+    this.game.players_info[player-1].has_conquered = 1;
 console.log("12");
 return;
   }

@@ -143,6 +143,7 @@ alert("removing unit not implement for sea");
 	    }
 	  }
 
+
 	  //
 	  // prevents in-memory differences in processing resulting in a different
 	  // queue order, resulting in divergent game processing.
@@ -265,8 +266,10 @@ alert("removing unit not implement for sea");
 
 	if (mv[0] === "is_testing") {
 
-
+/*****
 	  this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+****/
+
 	  this.game.queue.push("retreat_to_winter_spaces");
 
     	  //
