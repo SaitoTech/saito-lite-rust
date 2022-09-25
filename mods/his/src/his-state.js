@@ -1132,6 +1132,7 @@ console.log("this is a space: " + spacekey)
     state.saint_peters_cathedral['state'] = 0;
     state.saint_peters_cathedral['vp'] = 0;    
 
+    state.french_chateaux_vp = 0;
 
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
@@ -2582,7 +2583,7 @@ console.log("this is a space: " + spacekey)
     spaces['algiers'] = {
       top: 2656,
       left: 2275,
-      home: "ottoman independent",
+      home: "independent",
       political: "",
       religion: "catholic",
       ports: ["barbary"],
@@ -3765,6 +3766,38 @@ console.log("this is a space: " + spacekey)
       type : "normal" ,
       faction : "french" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.queue.push("patron-of-the-arts");
+	return 1;
+      },
+      handleGameLoop : function(game_mod, qe, mv) {
+
+        if (mv[0] == "patron-of-the-arts") {
+
+	  let roll = game_mod.rollDice(6);
+
+	  game_mod.updateLog("France rolls " + roll + " for Patron of the Arts");
+
+	  if (game_mod.isSpaceControlledByFaction("milan", "france")) {
+	    game_mod.updateLog("French control Milan - roll adjusted to 6");
+	    roll = 6;
+	  };
+
+	  //
+	  // France wins 1 VP
+	  //
+	  if (roll >= 3) {
+	    if (game_mod.game.state.french_chateaux_vp < 6) {
+	      game_mod.updateLog("SUCCESS: France gains 1VP from Patron of the Arts");
+	      game_mod.game.state.french_chateaux_vp++;
+              game_mod.gainVP("france", 1);
+	    }
+	  }
+
+          return 1;
+
+        }
+      },
     }
     if (this.game.players.length == 2) {
       deck['005'] = { 
@@ -3795,6 +3828,19 @@ console.log("this is a space: " + spacekey)
       type : "normal" , 
       faction : "papacy" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+
+	let p = game_mod.returnPlayerOfFaction("papacy");
+
+	if (this.game.player === p) {
+	  game_mod.addTurn("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+	  game_mod.endTurn();
+	} else {
+	  game_mod.updateStatus("Papacy calling a Theological Debate");
+	}
+
+	return 0;
+      },
     }
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
@@ -3943,6 +3989,7 @@ console.log("this is a space: " + spacekey)
       onEvent : function(game_mod, player) {
 
 	// algiers space is now in play
+	game_mod.game.spaces['algiers'].home = "ottoman";
 	game_mod.game.spaces['algiers'].political = "ottoman";
 	game_mod.addRegular("ottoman", "algiers", 2);
 	game_mod.addCorsair("ottoman", "algiers", 2);
@@ -4023,15 +4070,30 @@ console.log("this is a space: " + spacekey)
 
       }
     }
-    deck['013'] = { 
-      img : "cards/HIS-013.svg" , 
-      name : "Schmalkaldic League" ,
-      ops : 2 ,
-      turn : 1 ,
-      type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, player) {
-        state.events.schmalkaldic_league = 1;
+    if (this.game.players.length == 2) {
+      deck['013'] = { 
+        img : "cards/HIS-013-2P.svg" , 
+        name : "Schmalkaldic League" ,
+        ops : 2 ,
+        turn : 1 ,
+        type : "mandatory" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+        onEvent : function(game_mod, player) {
+          state.events.schmalkaldic_league = 1;
+          game_mod.game.state.activated_powers["papacy"].push("hapsburg");
+        }
+      }
+    } else {
+      deck['013'] = { 
+        img : "cards/HIS-013.svg" , 
+        name : "Schmalkaldic League" ,
+        ops : 2 ,
+        turn : 1 ,
+        type : "mandatory" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+        onEvent : function(game_mod, player) {
+          state.events.schmalkaldic_league = 1;
+        }
       }
     }
     deck['014'] = { 
