@@ -356,31 +356,6 @@ console.log("A2 ");
     }
   }
 
-  addReformer(faction, space, reformer) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.units[faction].push(this.newReformer(faction, reformer));
-  }
-
-  addDebater(faction, debater) {
-    let d = this.newDebater(faction, debater);
-    this.game.state.debaters.push(d);
-  }
-
-  addExplorer(faction, explorer) {
-    let d = this.newExplorer(faction, explorer);
-    this.game.state.explorers.push(d);
-  }
-
-  addConquistador(faction, explorer) {
-    let d = this.newConquistador(faction, explorer);
-    this.game.state.conquistador.push(d);
-  }
-
-  addPersonage(faction, space, personage) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.units[faction].push(this.newPersonage(faction, personage));
-  }
-
   // figure out how many points people have
   calculateVictoryPoints() {
 

@@ -69,7 +69,15 @@ class HereIStand extends GameTemplate {
     // initialize game objects
     //
     this.factions = {};
-    this.units = {};
+
+    this.army = {};
+    this.navy = {};
+    this.reformers = {};
+    this.debaters = {};
+    this.explorers = {};
+    this.conquistadors = {};
+    this.wives = {};
+
     this.deck = this.returnDeck();
 
 
@@ -525,7 +533,7 @@ class HereIStand extends GameTemplate {
 
 
 
-    this.importUnit('suleiman', {
+    this.importArmyLeader('suleiman', {
       type		:	"suleiman" ,
       name		: 	"Suleiman",
       personage		:	true,
@@ -535,7 +543,7 @@ class HereIStand extends GameTemplate {
       command_value	:	10,
     });
  
-    this.importUnit('ibrahim-pasha', {
+    this.importArmyLeader('ibrahim-pasha', {
       type		:	"ibrahim-pasha" ,
       name		: 	"Ibrahim Pasha",
       personage		:	true,
@@ -546,7 +554,7 @@ class HereIStand extends GameTemplate {
     });
  
   
-    this.importUnit('charles-v', {
+    this.importArmyLeader('charles-v', {
       type		:	"charles-v" ,
       name		: 	"Charles V",
       personage		:	true,
@@ -556,7 +564,7 @@ class HereIStand extends GameTemplate {
       command_value	:	10,
     });
  
-    this.importUnit('duke-of-alva', {
+    this.importArmyLeader('duke-of-alva', {
       type		:	"duke-of-alva" ,
       name		: 	"Duke of Alva",
       personage		:	true,
@@ -566,7 +574,7 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
  
-    this.importUnit('ferdinand', {
+    this.importArmyLeader('ferdinand', {
       type		:	"ferdinand" ,
       name		: 	"Ferdinand",
       personage		:	true,
@@ -576,7 +584,7 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
  
-    this.importUnit('henry-viii', {
+    this.importArmyLeader('henry-viii', {
       type		:	"henry-viii" ,
       name		: 	"Henry VIII",
       personage		:	true,
@@ -586,7 +594,7 @@ class HereIStand extends GameTemplate {
       command_value	:	8,
     });
  
-    this.importUnit('charles-brandon', {
+    this.importArmyLeader('charles-brandon', {
       type		:	"charles-brandon" ,
       name		: 	"Charles Brandon",
       personage		:	true,
@@ -596,7 +604,7 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
  
-    this.importUnit('francis-i', {
+    this.importArmyLeader('francis-i', {
       type		:	"francis-i" ,
       name		: 	"Francis I",
       personage		:	true,
@@ -606,7 +614,7 @@ class HereIStand extends GameTemplate {
       command_value	:	8,
     });
  
-    this.importUnit('montmorency', {
+    this.importArmyLeader('montmorency', {
       type		:	"montmorency" ,
       name		: 	"Montmorency",
       personage		:	true,
@@ -616,7 +624,7 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
  
-    this.importUnit('andrea-doria', {
+    this.importArmyLeader('andrea-doria', {
       type		:	"andrea-doria" ,
       name		: 	"Andrea Doria",
       personage		:	true,
@@ -626,7 +634,7 @@ class HereIStand extends GameTemplate {
       command_value	:	0,
     });
 
-    this.importUnit('maurice-of-saxony', {
+    this.importArmyLeader('maurice-of-saxony', {
       type		:	"maurice-of-saxony" ,
       name		: 	"Maurice of Saxony",
       personage		:	true,
@@ -636,7 +644,7 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
 
-    this.importUnit('maurice-of-saxony', {
+    this.importArmyLeader('maurice-of-saxony', {
       type              :       "maurice-of-saxony" ,
       name              :       "Maurice of Saxony",
       personage         :       true,
@@ -659,42 +667,42 @@ Habsburg conquistadores:
 
 ************************/
 
-      this.importUnit('orellana', {
+      this.importConquistador('orellana', {
            type              :       "orellana",
            name              :       "Hector Rodrigo Enriquez Orellana",
            personage         :       true,
            img               :       "Orellana.svg",
       });
 
-      this.importUnit('magellan', {
+      this.importConquistador('magellan', {
            type              :       "magellan" ,
            name              :       "Ferdinand Magellan",
            personage         :       true,
            img               :       "Magellan.svg",
       });
 
-      this.importUnit('leon', {
+      this.importConquistador('leon', {
            type              :       "leon" ,
            name              :       "Leon",
            personage         :       true,
            img               :       "Leon.svg",
       });
 
-      this.importUnit('narvaez', {
+      this.importConquistador('narvaez', {
            type              :       "narvaez" ,
            name              :       "Sofia Narvaez",
            personage         :       true,
            img               :       "Narvaez.svg",
       });
 
-      this.importUnit('de-vaca', {
+      this.importConquistador('de-vaca', {
            type              :       "de-vaca" ,
            name              :       "Cabeza De Vaca",
            personage         :       true,
            img               :       "De_Vaca.svg",
       });
 
-      this.importUnit('de-soto', {
+      this.importConquistador('de-soto', {
            type              :       "de-soto" ,
            name              :       "DeSoto",
            personage         :       true,
@@ -707,7 +715,7 @@ Habsburg conquistadores:
 
       /***** Hapsburg Conquistadors *****/
 
-      this.importUnit('pizarro', {
+      this.importConquistador('pizarro', {
            type              :       "pizarro" ,
            name              :       "Francisco Pizarro",
            personage         :       true,
@@ -716,21 +724,21 @@ Habsburg conquistadores:
 
       // Montejo
 
-      this.importUnit('cordova', {
+      this.importConquistador('cordova', {
            type              :       "cordova" ,
            name              :       "Neisa Cordova",
            personage         :       true,
            img               :       "Cordova.svg",
       });
 
-      this.importUnit('coronado', {
+      this.importConquistador('coronado', {
            type              :       "coronado" ,
            name              :       "Francisco Vázquez de Coronado",
            personage         :       true,
            img               :       "Coronado.svg",
       });
 
-      this.importUnit('cortez', {
+      this.importConquistador('cortez', {
            type              :       "cortez" ,
            name              :       "Hernan Cortes",
            personage         :       true,
@@ -739,8 +747,12 @@ Habsburg conquistadores:
 
 
 
-    this.importUnit('luther', {
-      type		:	"luther" ,
+    ////////////////
+    // PROTESTANT //
+    ////////////////
+
+    this.importDebater('luther-debater', {
+      type		:	"luther-debater" ,
       name		: 	"Martin Luther",
       personage		:	false,
       debater		:	true,
@@ -748,8 +760,8 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importUnit('zwingli', {
-      type		:	"zwingli" ,
+    this.importDebater('zwingli-debater', {
+      type		:	"zwingli-debater" ,
       name		: 	"Ulrich Zwingli",
       personage		:	false,
       debater		:	true,
@@ -757,35 +769,8 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importUnit('cranmer', {
-      type		:	"cranmer" ,
-      name		: 	"Thomas Cranmer",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CranmerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('calvin', {
-      type		:	"calvin" ,
-      name		: 	"John Calvin",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CalvinDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('aleander', {
-      type		:	"aleander" ,
-      name		: 	"Hieronymus Aleander",
-      personage		:	false,
-      debater		:	true,
-      img		:       "AleanderDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('bucer', {
-      type		:	"bucer" ,
+    this.importDebater('bucer-debater', {
+      type		:	"bucer-debater" ,
       name		: 	"Martin Bucer",
       personage		:	false,
       debater		:	true,
@@ -793,8 +778,8 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importUnit('bullinger', {
-      type		:	"bullinger" ,
+    this.importDebater('bullinger-debater', {
+      type		:	"bullinger-debater" ,
       name		: 	"Heinrich Bullinger",
       personage		:	false,
       debater		:	true,
@@ -802,44 +787,8 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importUnit('cajetan', {
-      type		:	"cajetan" ,
-      name		: 	"Thomas Cajetan",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CajetanDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('campeggio', {
-      type		:	"campeggio" ,
-      name		: 	"Lorenzo Campeggio",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CampeggioDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('canisius', {
-      type		:	"canisius" ,
-      name		: 	"Peter Canisius",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CanisiusDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('carafa', {
-      type		:	"carafa" ,
-      name		: 	"Carlo Carafa",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CarafaDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('carlstadt', {
-      type		:	"carlstadt" ,
+    this.importDebater('carlstadt-debater', {
+      type		:	"carlstadt-debater" ,
       name		: 	"Andreas Carlstadt",
       personage		:	false,
       debater		:	true,
@@ -847,98 +796,8 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importUnit('contarini', {
-      type		:	"contarini" ,
-      name		: 	"Gasparo Contarini",
-      personage		:	false,
-      debater		:	true,
-      img		:	"ContariniDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('cop', {
-      type		:	"cop" ,
-      name		: 	"Nicolas Cop",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CopDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('coverdale', {
-      type		:	"coverdale" ,
-      name		: 	"Myles Coverdale",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CoverdaleDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('cranmer', {
-      type		:	"cranmer" ,
-      name		: 	"Thomas Cranmer",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CranmerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('faber', {
-      type		:	"faber" ,
-      name		: 	"Peter Faber",
-      personage		:	false,
-      debater		:	true,
-      img		:	"FaberDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('farel', {
-      type		:	"farel" ,
-      name		: 	"William Farel",
-      personage		:	false,
-      debater		:	true,
-      img		:	"FarelDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('gardiner', {
-      type		:	"gardiner" ,
-      name		: 	"Stephen Gardiner",
-      personage		:	false,
-      debater		:	true,
-      img		:	"GardinerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('knox', {
-      type		:	"knox" ,
-      name		: 	"John Knox",
-      personage		:	false,
-      debater		:	true,
-      img		:	"KnoxDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('latimer', {
-      type		:	"latimer" ,
-      name		: 	"Hugh Latimer",
-      personage		:	false,
-      debater		:	true,
-      img		:	"LatimerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('loyola', {
-      type		:	"loyola" ,
-      name		: 	"Ignatius Loyola",
-      personage		:	false,
-      debater		:	true,
-      img		:	"LoyolaDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('melanchthon', {
-      type		:	"melanchthon" ,
+    this.importDebater('melanchthon-debater', {
+      type		:	"melanchthon-debater" ,
       name		: 	"Philip Melanchthon",
       personage		:	false,
       debater		:	true,
@@ -946,8 +805,8 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importUnit('oekolampadius', {
-      type		:	"oekolampadius" ,
+    this.importDebater('oekolampadius-debater', {
+      type		:	"oekolampadius-debater" ,
       name		: 	"Johannes Oekolampadius",
       personage		:	false,
       debater		:	true,
@@ -955,17 +814,94 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importUnit('olivetan', {
-      type		:	"olivetan" ,
-      name		: 	"Pierre Robert Olivetan",
+
+    ////////////
+    // PAPACY //
+    ////////////
+
+    this.importDebater('aleander-debater', {
+      type		:	"aleander-debater" ,
+      name		: 	"Hieronymus Aleander",
       personage		:	false,
       debater		:	true,
-      img		:	"OlivetanDebater.svg",
+      img		:       "AleanderDebater.svg",
       committed		: 	0,
     });
 
-    this.importUnit('pole', {
-      type		:	"pole" ,
+    this.importDebater('cajetan-debater', {
+      type		:	"cajetan-debater" ,
+      name		: 	"Thomas Cajetan",
+      personage		:	false,
+      debater		:	true,
+      img		:	"CajetanDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('campeggio-debater', {
+      type		:	"campeggio-debater" ,
+      name		: 	"Lorenzo Campeggio",
+      personage		:	false,
+      debater		:	true,
+      img		:	"CampeggioDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('canisius-debater', {
+      type		:	"canisius-debater" ,
+      name		: 	"Peter Canisius",
+      personage		:	false,
+      debater		:	true,
+      img		:	"CanisiusDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('carafa-debater', {
+      type		:	"carafa-debater" ,
+      name		: 	"Carlo Carafa",
+      personage		:	false,
+      debater		:	true,
+      img		:	"CarafaDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('contarini-debater', {
+      type		:	"contarini-debater" ,
+      name		: 	"Gasparo Contarini",
+      personage		:	false,
+      debater		:	true,
+      img		:	"ContariniDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('faber-debater', {
+      type		:	"faber-debater" ,
+      name		: 	"Peter Faber",
+      personage		:	false,
+      debater		:	true,
+      img		:	"FaberDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('gardiner-debater', {
+      type		:	"gardiner-debater" ,
+      name		: 	"Stephen Gardiner",
+      personage		:	false,
+      debater		:	true,
+      img		:	"GardinerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('loyola-debater', {
+      type		:	"loyola-debater" ,
+      name		: 	"Ignatius Loyola",
+      personage		:	false,
+      debater		:	true,
+      img		:	"LoyolaDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('pole-debater', {
+      type		:	"pole-debater" ,
       name		: 	"Reginald Pole",
       personage		:	false,
       debater		:	true,
@@ -973,8 +909,8 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importUnit('tetzel', {
-      type		:	"tetzel" ,
+    this.importDebater('tetzel-debater', {
+      type		:	"tetzel-debater" ,
       name		: 	"Johann Tetzel ",
       personage		:	false,
       debater		:	true,
@@ -982,17 +918,63 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
-    this.importUnit('tyndalex', {
-      type		:	"tyndale" ,
-      name		: 	"William Tyndale",
+
+    ////////////
+    // FRENCH //
+    ////////////
+
+    this.importDebater('calvin-debater', {
+      type		:	"calvin-debater" ,
+      name		: 	"John Calvin",
       personage		:	false,
       debater		:	true,
-      img		:	"TyndaleDebater.svg",
+      img		:	"CalvinDebater.svg",
       committed		: 	0,
     });
 
-    this.importUnit('wishart', {
-      type		:	"wishart" ,
+    this.importDebater('cop-debater', {
+      type		:	"cop-debater" , 
+     name		: 	"Nicolas Cop",
+      personage		:	false,
+      debater		:	true,
+      img		:	"CopDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('farel-debater', {
+      type		:	"farel-debater" ,
+      name		: 	"William Farel",
+      personage		:	false,
+      debater		:	true,
+      img		:	"FarelDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('olivetan-debater', {
+      type		:	"olivetan-debater" ,
+      name		: 	"Pierre Robert Olivetan",
+      personage		:	false,
+      debater		:	true,
+      img		:	"OlivetanDebater.svg",
+      committed		: 	0,
+    });
+
+
+    /////////////
+    // ENGLISH //
+    /////////////
+
+    this.importDebater('cranmer-debater', {
+      type		:	"cranmer-debater" ,
+      name		: 	"Thomas Cranmer",
+      personage		:	false,
+      debater		:	true,
+      img		:	"CranmerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importDebater('wishart-debater', {
+      type		:	"wishart-debater" ,
       name		: 	"George Wishart",
       personage		:	false,
       debater		:	true,
@@ -1000,110 +982,140 @@ Habsburg conquistadores:
       committed		: 	0,
     });
 
+    this.importDebater('tyndalex-debater', {
+      type		:	"tyndale-debater" ,
+      name		: 	"William Tyndale",
+      personage		:	false,
+      debater		:	true,
+      img		:	"TyndaleDebater.svg",
+      committed		: 	0,
+    });
 
+    this.importDebater('latimer-debater', {
+      type		:	"latimer-debater" ,
+      name		: 	"Hugh Latimer",
+      personage		:	false,
+      debater		:	true,
+      img		:	"LatimerDebater.svg",
+      committed		: 	0,
+    });
 
-/************************
+    this.importDebater('knox-debater', {
+      type		:	"knox-debater" ,
+      name		: 	"John Knox",
+      personage		:	false,
+      debater		:	true,
+      img		:	"KnoxDebater.svg",
+      committed		: 	0,
+    });
 
-English explorers:
-1. Chancellor 1
-2. Rur 1 (John Rut?)
-3. Willoughby 0
+    this.importDebater('coverdale-debater', {
+      type		:	"coverdale-debater" ,
+      name		: 	"Myles Coverdale",
+      personage		:	false,
+      debater		:	true,
+      img		:	"CoverdaleDebater.svg",
+      committed		: 	0,
+    });
 
-French explorers:
-1. Cartier 3
-2. Roberval 0
-3. Verrazano 2
-
-Habsburg explorers:
-1. Orellana 3
-2. Magellan 4
-3. Leon 1
-4. Narvaez -1
-5. De Vaca 0
-6. DeSoto 2
-
-************************/
+    this.importDebater('cranmer-debater', {
+      type		:	"cranmer-debater" ,
+      name		: 	"Thomas Cranmer",
+      personage		:	false,
+      debater		:	true,
+      img		:	"CranmerDebater.svg",
+      committed		: 	0,
+    });
 
 
       /***** English Explorers *****/
 
-      this.importUnit('chancellor', {
+      this.importExplorer('chancellor', {
            type              :       "chancellor" ,
            name              :       "Chancellor",
            personage         :       true,
            img               :       "Chancellor.svg",
       });
 
-      // RUR
-
-      this.importUnit('willoughby', {
+      this.importExplorer('willoughby', {
            type              :       "willoughby" ,
            name              :       "Katherine Willoughby",
            personage         :       true,
            img               :       "Willoughby.svg",
       });
 
+      this.importExplorer('rut', {
+           type              :       "rut" ,
+           name              :       "John Rut",
+           personage         :       true,
+           img               :       "Rut.svg",
+      });
+
 
 
       /***** French Explorers *****/
 
-      this.importUnit('cartier', {
+      this.importExplorer('cartier', {
            type              :       "cartier" ,
            name              :       "Jacques Cartier",
            personage         :       true,
            img               :       "Cartier.svg",
       });
 
-      this.importUnit('roberval', {
+      this.importExplorer('roberval', {
            type              :       "roberval" ,
            name              :       "Jean-François de La Rocque de Roberval",
            personage         :       true,
            img               :       "Roberval.svg",
       });
 
-      // VERRAZANO
-
+      this.importExplorer('verrazano', {
+           type              :       "verrazano" ,
+           name              :       "Giovanni da Verrazano" ,
+           personage         :       true,
+           img               :       "Verrazano.svg",
+      });
 
 
 
       /***** Hapsburg Explorers *****/
 
-      this.importUnit('orellana', {
+      this.importExplorer('orellana', {
            type              :       "orellana",
            name              :       "Hector Rodrigo Enriquez Orellana",
            personage         :       true,
            img               :       "Orellana.svg",
       });
 
-      this.importUnit('magellan', {
+      this.importExplorer('magellan', {
            type              :       "magellan" ,
            name              :       "Ferdinand Magellan",
            personage         :       true,
            img               :       "Magellan.svg",
       });
 
-      this.importUnit('leon', {
+      this.importExplorer('leon', {
            type              :       "leon" ,
            name              :       "Leon",
            personage         :       true,
            img               :       "Leon.svg",
       });
 
-      this.importUnit('narvaez', {
+      this.importExplorer('narvaez', {
            type              :       "narvaez" ,
            name              :       "Sofia Narvaez",
            personage         :       true,
            img               :       "Narvaez.svg",
       });
 
-      this.importUnit('de-vaca', {
+      this.importExplorer('de-vaca', {
            type              :       "de-vaca" ,
            name              :       "Cabeza De Vaca",
            personage         :       true,
            img               :       "De_Vaca.svg",
       });
 
-      this.importUnit('de-soto', {
+      this.importExplorer('de-soto', {
            type              :       "de-soto" ,
            name              :       "DeSoto",
            personage         :       true,
@@ -1112,7 +1124,7 @@ Habsburg explorers:
 
 
 
-    this.importUnit('barbarossa', {
+    this.importNavyLeader('barbarossa', {
       type		:	"barbarossa" ,
       name		: 	"Barbarossa",
       personage		:	true,
@@ -1122,7 +1134,7 @@ Habsburg explorers:
       piracy_rating	:	1,
     });
  
-    this.importUnit('dragut', {
+    this.importNavyLeader('dragut', {
       type		:	"dragut" ,
       name		: 	"Dragut",
       personage		:	true,
@@ -1132,206 +1144,48 @@ Habsburg explorers:
       piracy_rating	:	2,
     });
  
+    this.importNavyLeader('andrea-dorea', {
+      type		:	"andrea-dorea" ,
+      name		: 	"Andrea Dorea",
+      personage		:	true,
+      navy_leader	:	true,
+      img		:	"Andrea_Dorea.svg",
+      battle_rating	:	2,
+      piracy_rating	:	0,
+    });
+ 
 
 
-      this.importUnit('doria', {
-           type              :       "doria" ,
-           name              :       "Andrea Doria",
-           personage         :       true,
-           img               :       "Andrea_Doria.svg",
-      });
-
-      this.importUnit('boleyn', {
-           type              :       "boleyn" ,
-           name              :       "Anne Boleyn",
-           personage         :       true,
-           img               :       "AnneBoleyn.svg",
-      });
-
-      this.importUnit('cleves', {
-           type              :       "cleves" ,
-           name              :       "Anne Cleves",
-           personage         :       true,
-           img               :       "AnneCleves.svg",
-      });
-
-      this.importUnit('barbarossa', {
-           type              :       "barbarossa" ,
-           name              :       "Frederick Barbarossa",
-           personage         :       true,
-           img               :       "Barbarossa.svg",
-      });
-
-      this.importUnit('Brandon', {
-           type              :       "Brandon" ,
-           name              :       "Katherine Brandon",
-           personage         :       true,
-           img               :       "Brandon.svg",
-      });
-
-      this.importUnit('cabot', {
-           type              :       "cabot" ,
-           name              :       "John Cabot",
-           personage         :       true,
-           img               :       "Cabot_English.svg",
-      });
-
-      this.importUnit('cabot', {
-           type              :       "cabot" ,
-           name              :       "John Cabot",
-           personage         :       true,
-           img               :       "Cabot_French.svg",
-      });
-
-      this.importUnit('cabot', {
-           type              :       "cabot" ,
-           name              :       "John Cabot",
-           personage         :       true,
-           img               :       "Cabot_Hapsburg.svg",
-      });
-
-      this.importUnit('aragon', {
-           type              :       "aragon" ,
-           name              :       "CatherineAragon",
-           personage         :       true,
-           img               :       "CatherineAragon.svg",
-      });
-
-      this.importUnit('charles-v', {
-           type              :       "charles-v" ,
-           name              :       "Charles V",
-           personage         :       true,
-           img               :       "Charles_V.svg",
-      });
-
-       this.importUnit('dragut', {
-           type              :       "dragut" ,
-           name              :       "Alexandra Dragut",
-           personage         :       true,
-           img               :       "Dragut.svg",
-      });
-
-      this.importUnit('dudley', {
-           type              :       "dudley" ,
-           name              :       "John Dudley",
-           personage         :       true,
-           img               :       "Dudley.svg",
-      });
-
-      this.importUnit('ferdinand-ii', {
-           type              :       "ferdinand-ii" ,
-           name              :       "Ferdinand_II",
-           personage         :       true,
-           img               :       "Ferdinand.svg",
-      });
-
-      this.importUnit('francis-i', {
-           type              :       "francis-i" ,
-           name              :       "Francis_I",
-           personage         :       true,
-           img               :       "Francis_I.svg",
-      });
-
-      this.importUnit('henry-ii', {
-           type              :       "henry-ii" ,
-           name              :       "Henry_II",
-           personage         :       true,
-           img               :       "Henry_II.svg",
-      });
-
-      this.importUnit('seymour', {
-           type              :       "seymour" ,
-           name              :       "Jane Seymour",
-           personage         :       true,
-           img               :       "JaneSeymour.svg",
-      });
-
-      this.importUnit('frederick', {
-           type              :       "frederick" ,
-           name              :       "John_Frederick",
-           personage         :       true,
-           img               :       "John_Frederick.svg",
-      });
-
-       this.importUnit('parr', {
-           type              :       "parr" ,
-           name              :       "Katherine Parr",
-           personage         :       true,
-           img               :       "KatherineParr.svg",
-      });
-
-      this.importUnit('howard', {
-           type              :       "howard" ,
-           name              :       "Kathryn Howard",
-           personage         :       true,
-           img               :       "KathrynHoward.svg",
-      });
-
-      this.importUnit('montejo', {
-           type              :       "montejo" ,
-           name              :       "Victor Montejo",
-           personage         :       true,
-           img               :       "Montejo.svg",
-      });
-
-      this.importUnit('montmorency', {
-           type              :       "montmorency" ,
-           name              :       "François de Montmorency",
-           personage         :       true,
-           img               :       "Montmorency.svg",
-      });
-
-      this.importUnit('philip-i', {
-           type              :       "philip-i" ,
-           name              :       "Philip_I",
-           personage         :       true,
-           img               :       "Philip_Hesse.svg",
-      });
-
-      this.importUnit('', {
-           type              :       "" ,
-           name              :       "",
-           personage         :       true,
-           img               :       "Renegade.svg",
-      });
-
-      this.importUnit('more', {
-           type              :       "more" ,
-           name              :       "Thomas More",
-           personage         :       true,
-           img               :       "ThomasMore.svg",
-      });
-
-
-
-      this.importUnit('calvin-reformer', {
+      this.importReformer('calvin-reformer', {
            type              :       "calvin-reformer" ,
            name              :       "John Calvin",
            reformer          :       true,
            img               :       "CalvinReformer.svg",
+	   spacekey	     :	     "geneva",
       });
 
-
-      this.importUnit('cranmer-reformer', {
+      this.importReformer('cranmer-reformer', {
            type              :       "cranmer-reformer" ,
            name              :       "Thomas Cranmer ",
            reformer          :       true,
            img               :       "CranmerReformer.svg",
+	   spacekey	     :	     "london",
       });
 
-
-      this.importUnit('luther-reformer', {
+      this.importReformer('luther-reformer', {
            type              :       "luther-reformer" ,
            name              :       "Martin Luther",
            reformer          :       true,
            img               :       "LutherReformer.svg",
+	   spacekey	     :	     "wittenberg",
       });
 
-      this.importUnit('zwingli-reformer', {
+      this.importReformer('zwingli-reformer', {
            type              :       "zwingli-reformer" ,
            name              :       "Huldrych Zwingli",
            reformer          :       true,
            img               :       "ZwingliReformer.svg",
+	   spacekey	     :	     "zurich",
       });
 
 
@@ -1377,6 +1231,49 @@ Habsburg explorers:
 
 
 
+
+
+    this.importWife('anne-boleyn', {
+      type		:	"anne-boleyn" ,
+      name		: 	"Anne Boleyn",
+      personage		:	true,
+      img		:	"AnneBoleyn.svg",
+    });
+
+    this.importWife('anne-cleves', {
+      type		:	"anne-cleves" ,
+      name		: 	"Anne Cleves",
+      personage		:	true,
+      img		:	"AnneCleves.svg",
+    });
+
+    this.importWife('catherine-aragon', {
+      type		:	"catherine-aragon" ,
+      name		: 	"Catherine Aragon",
+      personage		:	true,
+      img		:	"CatherinAragon.svg",
+    });
+
+    this.importWife('jane-seymour', {
+      type		:	"jane-seymour" ,
+      name		: 	"Jane Seymour",
+      personage		:	true,
+      img		:	"JaneSeymour.svg",
+    });
+
+    this.importWife('katherine-parr', {
+      type		:	"katherine-parr" ,
+      name		: 	"Katherine Parr",
+      personage		:	true,
+      img		:	"KatherineParr.svg",
+    });
+
+    this.importWife('kathryn-howard', {
+      type		:	"kathryn-howard" ,
+      name		: 	"Kathryn Howard",
+      personage		:	true,
+      img		:	"KathrynHoward.svg",
+    });
 
 
     let first_time_running = 0;
@@ -1447,8 +1344,8 @@ console.log("is first tiem running: " + this.game.state.scenario);
 console.log("adding stuff!");
 
 	// OTTOMAN
-        this.addPersonage("ottoman", "istanbul", "suleiman");
-        this.addPersonage("ottoman", "istanbul", "ibrahim-pasha");
+        this.addArmyLeader("ottoman", "istanbul", "suleiman");
+        this.addArmyLeader("ottoman", "istanbul", "ibrahim-pasha");
         this.addRegular("ottoman", "istanbul", 7);
         this.addCavalry("ottoman", "istanbul", 1);
         this.addNavalSquadron("ottoman", "istanbul", 1);
@@ -1459,8 +1356,8 @@ console.log("adding stuff!");
         this.addNavalSquadron("ottoman", "athens", 1);
 
 	// HAPSBURG
-	this.addPersonage("hapsburg", "valladolid", "charles-v");
-	this.addPersonage("hapsburg", "valladolid", "duke-of-alva");
+	this.addArmyLeader("hapsburg", "valladolid", "charles-v");
+	this.addArmyLeader("hapsburg", "valladolid", "duke-of-alva");
         this.addRegular("hapsburg", "seville", 1);
         this.addNavalSquadron("hapsburg", "seville", 1);
         this.addRegular("hapsburg", "barcelona", 1);
@@ -1471,13 +1368,13 @@ console.log("adding stuff!");
         this.addNavalSquadron("hapsburg", "naples", 2);
         this.addRegular("hapsburg", "besancon", 1);
         this.addRegular("hapsburg", "brussels", 1);
-	this.addPersonage("hapsburg", "vienna", "ferdinand");
+	this.addArmyLeader("hapsburg", "vienna", "ferdinand");
         this.addRegular("hapsburg", "vienna", 4);
         this.addRegular("hapsburg", "antwerp", 3);
 
 	// ENGLAND
-        this.addPersonage("england", "london", "henry-viii");
-        this.addPersonage("england", "london", "charles-brandon");
+        this.addArmyLeader("england", "london", "henry-viii");
+        this.addArmyLeader("england", "london", "charles-brandon");
         this.addRegular("england", "london", 3);
         this.addNavalSquadron("england", "london", 1);
         this.addNavalSquadron("england", "portsmouth", 1);
@@ -1486,8 +1383,8 @@ console.log("adding stuff!");
         this.addRegular("england", "bristol", 1);
 
 	// FRANCE
-        this.addPersonage("france", "paris", "francis-i");
-        this.addPersonage("france", "paris", "montmorency");
+        this.addArmyLeader("france", "paris", "francis-i");
+        this.addArmyLeader("france", "paris", "montmorency");
         this.addRegular("france", "paris", 4);
         this.addRegular("france", "rouen", 1);
         this.addNavalSquadron("france", "rouen", 1);
@@ -1514,7 +1411,7 @@ console.log("adding stuff!");
         this.addRegular("venice", "candia", 1);
 	
 	// GENOA
-        this.addPersonage("genoa", "genoa", "andrea-doria");
+        this.addNavyLeader("genoa", "genoa", "andrea-doria");
         this.addNavalSquadron("genoa", "genoa", 1);
         this.addRegular("genoa", "genoa", 2);
 	
@@ -1527,6 +1424,17 @@ console.log("adding stuff!");
         this.addRegular("independent", "metz", 1);
         this.addRegular("independent", "florence", 1);
 	
+	// DEBATERS
+	this.addDebater("papacy", "eck-debater");
+	this.addDebater("papacy", "campeggio-debater");
+	this.addDebater("papacy", "aleander-debater");
+	this.addDebater("papacy", "tetzel-debater");
+	this.addDebater("papacy", "cajetan-debater");
+
+	this.addDebater("protestant", "luther-debater");
+	this.addDebater("protestant", "melanchthon-debater");
+	this.addDebater("protestant", "bucer-debater");
+	this.addDebater("protestant", "carlstadt-debater");
       }
 
       
@@ -2232,31 +2140,6 @@ console.log("A2 ");
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "corsair"));
     }
-  }
-
-  addReformer(faction, space, reformer) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.units[faction].push(this.newReformer(faction, reformer));
-  }
-
-  addDebater(faction, debater) {
-    let d = this.newDebater(faction, debater);
-    this.game.state.debaters.push(d);
-  }
-
-  addExplorer(faction, explorer) {
-    let d = this.newExplorer(faction, explorer);
-    this.game.state.explorers.push(d);
-  }
-
-  addConquistador(faction, explorer) {
-    let d = this.newConquistador(faction, explorer);
-    this.game.state.conquistador.push(d);
-  }
-
-  addPersonage(faction, space, personage) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.units[faction].push(this.newPersonage(faction, personage));
   }
 
   // figure out how many points people have
@@ -3039,13 +2922,14 @@ console.log("this is a space: " + spacekey)
     state.explorers = [];
     state.conquistadors = [];
 
+
     state.leaders = {};
     state.leaders.francis_i = 1;
     state.leaders.henry_viii = 1;
     state.leaders.charles_v = 1;
     state.leaders.suleiman = 1;
     state.leaders.leo_x = 1;
-    state.leaders.martin_luther = 1
+    state.leaders.luther = 1
     state.leaders.clement_vii = 0;
     state.leaders.paul_iii = 0;
     state.leaders.edward_vi = 0;
@@ -3053,6 +2937,7 @@ console.log("this is a space: " + spacekey)
     state.leaders.mary_i = 0;
     state.leaders.julius_iii = 0;
     state.leaders.elizabeth_i = 0;
+    state.leaders.calvin = 0;
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
@@ -6017,6 +5902,28 @@ console.log("this is a space: " + spacekey)
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+
+	game_mod.game.state.leaders['luther'] = 0;
+	game_mod.game.state.leaders['calvin'] = 1;
+
+	let x = game_mod.returnSpaceOfPersonage("luther-reformer");
+	let y = game_mod.returnIndexOfPersonageInSpace("luther-reformer");
+
+	if (y > -1) {
+	  game_mod.game.spaces[x].units["protestant"].splice(y, 1);
+	}
+
+	for (let i = 0; i < game_mod.game.state.debaters.length; i++) {
+	  if (game_mod.game.state.debaters[i].type === "luther-debater") {
+	    game_mod.game.state.debaters.splice(i, 1);
+	  }
+	}
+
+	game_mod.updateLog("Luther dies and is replaced by Calvin");
+
+	return 0;
+      }
     }
     deck['017'] = { 
       img : "cards/HIS-017.svg" , 
@@ -14067,10 +13974,10 @@ return;
 
 
 
-  importUnit(name, obj) {
-
+  importArmyLeader(name, obj) {
     if (obj.type == null)               { obj.type = "unit"; }
     if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
     if (obj.personage == null)          { obj.personage = false; }
     if (obj.debater == null)            { obj.debater = false; }
     if (obj.reformer == null)           { obj.reformer = false; }
@@ -14089,108 +13996,277 @@ return;
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    //obj = this.addEvents(obj);
-    this.units[name] = obj;
+    this.army[name] = obj;
+  }
+
+  importNavyLeader(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.navy[name] = obj;
+  }
+
+  importWife(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.wives[name] = obj;
+  }
+
+  importReformer(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.reformers[name] = obj;
+  }
+
+  importDebater(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.debaters[name] = obj;
+  }
+
+  importExplorer(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.explorers[name] = obj;
+  }
+
+  importConquistador(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.conquistadors[name] = obj;
+  }
+
+  addArmyLeader(faction, space, leader) {
+
+    if (!this.army[leader]) {
+      console.log("ARMY LEADER: " + leader + " not found");
+      return;
+    }
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.units[faction].push(this.army[leader]);
+    space.units[faction][space.units[faction].length-1].owner = faction; 
 
   }
 
-  newUnit(faction, type) {
-    for (let key in this.units) {
-      if (this.units[key].type === type) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	return new_unit;
-      }
+
+  addNavyLeader(faction, space, leader) {
+
+    if (!this.navy[leader]) {
+      console.log("NAVY LEADER: " + leader + " not found");
+      return;
     }
-    return null;
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    space.units[faction].push(this.navy[leader]);
+    space.units[faction][space.units[faction].length-1].owner = faction; 
+
   }
 
-  newReformer(faction, reformer) {
-    for (let key in this.units) {
-      if (this.units[key].type === reformer) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	return new_unit;
-      }
+
+  addReformer(faction, space, reformer) {
+
+    if (!this.reformer[reformer]) {
+      console.log("REFORMER: " + reformer + " not found");
+      return;
     }
-    return null;
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.units[faction].push(this.reformers[reformer]);
+    space.units[faction][space.units[faction].length-1].owner = faction; 
+
   }
-  newDebater(faction, debater) {
-    for (let key in this.units) {
-      if (this.units[key].type === debater) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	new_unit.committed = 0;
-	return new_unit;
-      }
+
+  addWife(faction, wife) {
+
+    if (!this.wives[wife]) {
+      console.log("WIFE: " + wife + " not found");
+      return;
     }
-    return null;
+
+    this.game.state.wives.push(this.wives[wife]);
+    this.game.state.wives[this.game.state.wives.length-1].owner = faction; 
+
   }
+
+  addDebater(faction, debater) {
+
+    if (!this.debaters[debater]) {
+      console.log("DEBATER: " + debater + " not found");
+      return;
+    }
+
+    this.game.state.debaters.push(this.debaters[debater]);
+    this.game.state.debaters[this.game.state.debaters.length-1].owner = faction; 
+    this.game.state.debaters[this.game.state.debaters.length-1].committed = 0; 
+
+  }
+
+  addExplorer(faction, explorer) {
+
+    if (!this.explorers[explorer]) {
+      console.log("EXPLORER: " + explorer + " not found");
+      return;
+    }
+
+    this.game.state.explorers.push(this.explorers[explorer]);
+  }
+
+  addConquistador(faction, conquistador) {
+
+    if (!this.conquistadors[conquistador]) {
+      console.log("CONQUISTADOR: " + conquistador + " not found");
+      return;
+    }
+
+    this.game.state.conquistador.push(this.conquistadors[conquistador]);
+
+  }
+
+
+
   commitDebater(faction, debater) {
     let his_self = this;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
 	this.game.state.debaters[i].committed = 1;
-	this.units[debater].onCommitted(his_self, this.game.state.debaters[i].owner);
+	this.debaters[debater].onCommitted(his_self, this.game.state.debaters[i].owner);
       }
     }
   }
 
-
-  newExplorer(faction, explorer) {
-    for (let key in this.units) {
-      if (this.units[key].type === explorer) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	new_unit.committed = 0;
-	return new_unit;
-      }
-    }
-    return null;
-  }
   commitExplorer(faction, explorer) {
     let his_self = this;
     for (let i = 0; i < this.game.state.explorers.length; i++) {
       if (this.game.state.explorers[i].key == explorer) {
 	this.game.state.explorer[i].committed = 1;
-	this.units[explorer].onCommitted(his_self, this.game.state.explorers[i].owner);
+	this.explorers[explorer].onCommitted(his_self, this.game.state.explorers[i].owner);
       }
     }
   }
 
-
-  newConquistador(faction, explorer) {
-    for (let key in this.units) {
-      if (this.units[key].type === explorer) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	new_unit.committed = 0;
-	return new_unit;
-      }
-    }
-    return null;
-  }
   commitConquistador(faction, explorer) {
     let his_self = this;
     for (let i = 0; i < this.game.state.conquistadors.length; i++) {
       if (this.game.state.conquistadors[i].key == explorer) {
 	this.game.state.conquistadors[i].committed = 1;
-	this.units[explorer].onCommitted(his_self, this.game.state.conquistadors[i].owner);
+	this.conquistadors[conquistador].onCommitted(his_self, this.game.state.conquistadors[i].owner);
       }
     }
-  }
-
-
-
-  newPersonage(faction, personage) {
-    for (let key in this.units) {
-      if (this.units[key].type === personage) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	return new_unit;
-      }
-    }
-    return null;
   }
 
 

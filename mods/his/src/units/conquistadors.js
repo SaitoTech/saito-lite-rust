@@ -10,42 +10,42 @@ Habsburg conquistadores:
 
 ************************/
 
-      this.importUnit('orellana', {
+      this.importConquistador('orellana', {
            type              :       "orellana",
            name              :       "Hector Rodrigo Enriquez Orellana",
            personage         :       true,
            img               :       "Orellana.svg",
       });
 
-      this.importUnit('magellan', {
+      this.importConquistador('magellan', {
            type              :       "magellan" ,
            name              :       "Ferdinand Magellan",
            personage         :       true,
            img               :       "Magellan.svg",
       });
 
-      this.importUnit('leon', {
+      this.importConquistador('leon', {
            type              :       "leon" ,
            name              :       "Leon",
            personage         :       true,
            img               :       "Leon.svg",
       });
 
-      this.importUnit('narvaez', {
+      this.importConquistador('narvaez', {
            type              :       "narvaez" ,
            name              :       "Sofia Narvaez",
            personage         :       true,
            img               :       "Narvaez.svg",
       });
 
-      this.importUnit('de-vaca', {
+      this.importConquistador('de-vaca', {
            type              :       "de-vaca" ,
            name              :       "Cabeza De Vaca",
            personage         :       true,
            img               :       "De_Vaca.svg",
       });
 
-      this.importUnit('de-soto', {
+      this.importConquistador('de-soto', {
            type              :       "de-soto" ,
            name              :       "DeSoto",
            personage         :       true,
@@ -58,7 +58,7 @@ Habsburg conquistadores:
 
       /***** Hapsburg Conquistadors *****/
 
-      this.importUnit('pizarro', {
+      this.importConquistador('pizarro', {
            type              :       "pizarro" ,
            name              :       "Francisco Pizarro",
            personage         :       true,
@@ -67,21 +67,21 @@ Habsburg conquistadores:
 
       // Montejo
 
-      this.importUnit('cordova', {
+      this.importConquistador('cordova', {
            type              :       "cordova" ,
            name              :       "Neisa Cordova",
            personage         :       true,
            img               :       "Cordova.svg",
       });
 
-      this.importUnit('coronado', {
+      this.importConquistador('coronado', {
            type              :       "coronado" ,
            name              :       "Francisco Vázquez de Coronado",
            personage         :       true,
            img               :       "Coronado.svg",
       });
 
-      this.importUnit('cortez', {
+      this.importConquistador('cortez', {
            type              :       "cortez" ,
            name              :       "Hernan Cortes",
            personage         :       true,

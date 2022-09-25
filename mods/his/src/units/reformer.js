@@ -1,5 +1,5 @@
 
-      this.importUnit('calvin-reformer', {
+      this.importReformer('calvin-reformer', {
            type              :       "calvin-reformer" ,
            name              :       "John Calvin",
            reformer          :       true,
@@ -7,7 +7,7 @@
 	   spacekey	     :	     "geneva",
       });
 
-      this.importUnit('cranmer-reformer', {
+      this.importReformer('cranmer-reformer', {
            type              :       "cranmer-reformer" ,
            name              :       "Thomas Cranmer ",
            reformer          :       true,
@@ -15,7 +15,7 @@
 	   spacekey	     :	     "london",
       });
 
-      this.importUnit('luther-reformer', {
+      this.importReformer('luther-reformer', {
            type              :       "luther-reformer" ,
            name              :       "Martin Luther",
            reformer          :       true,
@@ -23,7 +23,7 @@
 	   spacekey	     :	     "wittenberg",
       });
 
-      this.importUnit('zwingli-reformer', {
+      this.importReformer('zwingli-reformer', {
            type              :       "zwingli-reformer" ,
            name              :       "Huldrych Zwingli",
            reformer          :       true,

@@ -1,21 +1,21 @@
 
       /***** English Explorers *****/
 
-      this.importUnit('chancellor', {
+      this.importExplorer('chancellor', {
            type              :       "chancellor" ,
            name              :       "Chancellor",
            personage         :       true,
            img               :       "Chancellor.svg",
       });
 
-      this.importUnit('willoughby', {
+      this.importExplorer('willoughby', {
            type              :       "willoughby" ,
            name              :       "Katherine Willoughby",
            personage         :       true,
            img               :       "Willoughby.svg",
       });
 
-      this.importUnit('rut', {
+      this.importExplorer('rut', {
            type              :       "rut" ,
            name              :       "John Rut",
            personage         :       true,
@@ -26,21 +26,21 @@
 
       /***** French Explorers *****/
 
-      this.importUnit('cartier', {
+      this.importExplorer('cartier', {
            type              :       "cartier" ,
            name              :       "Jacques Cartier",
            personage         :       true,
            img               :       "Cartier.svg",
       });
 
-      this.importUnit('roberval', {
+      this.importExplorer('roberval', {
            type              :       "roberval" ,
            name              :       "Jean-François de La Rocque de Roberval",
            personage         :       true,
            img               :       "Roberval.svg",
       });
 
-      this.importUnit('verrazano', {
+      this.importExplorer('verrazano', {
            type              :       "verrazano" ,
            name              :       "Giovanni da Verrazano" ,
            personage         :       true,
@@ -51,42 +51,42 @@
 
       /***** Hapsburg Explorers *****/
 
-      this.importUnit('orellana', {
+      this.importExplorer('orellana', {
            type              :       "orellana",
            name              :       "Hector Rodrigo Enriquez Orellana",
            personage         :       true,
            img               :       "Orellana.svg",
       });
 
-      this.importUnit('magellan', {
+      this.importExplorer('magellan', {
            type              :       "magellan" ,
            name              :       "Ferdinand Magellan",
            personage         :       true,
            img               :       "Magellan.svg",
       });
 
-      this.importUnit('leon', {
+      this.importExplorer('leon', {
            type              :       "leon" ,
            name              :       "Leon",
            personage         :       true,
            img               :       "Leon.svg",
       });
 
-      this.importUnit('narvaez', {
+      this.importExplorer('narvaez', {
            type              :       "narvaez" ,
            name              :       "Sofia Narvaez",
            personage         :       true,
            img               :       "Narvaez.svg",
       });
 
-      this.importUnit('de-vaca', {
+      this.importExplorer('de-vaca', {
            type              :       "de-vaca" ,
            name              :       "Cabeza De Vaca",
            personage         :       true,
            img               :       "De_Vaca.svg",
       });
 
-      this.importUnit('de-soto', {
+      this.importExplorer('de-soto', {
            type              :       "de-soto" ,
            name              :       "DeSoto",
            personage         :       true,

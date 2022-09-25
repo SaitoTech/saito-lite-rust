@@ -3,7 +3,7 @@
     // PROTESTANT //
     ////////////////
 
-    this.importUnit('luther-debater', {
+    this.importDebater('luther-debater', {
       type		:	"luther-debater" ,
       name		: 	"Martin Luther",
       personage		:	false,
@@ -12,7 +12,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('zwingli-debater', {
+    this.importDebater('zwingli-debater', {
       type		:	"zwingli-debater" ,
       name		: 	"Ulrich Zwingli",
       personage		:	false,
@@ -21,7 +21,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('bucer-debater', {
+    this.importDebater('bucer-debater', {
       type		:	"bucer-debater" ,
       name		: 	"Martin Bucer",
       personage		:	false,
@@ -30,7 +30,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('bullinger-debater', {
+    this.importDebater('bullinger-debater', {
       type		:	"bullinger-debater" ,
       name		: 	"Heinrich Bullinger",
       personage		:	false,
@@ -39,7 +39,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('carlstadt-debater', {
+    this.importDebater('carlstadt-debater', {
       type		:	"carlstadt-debater" ,
       name		: 	"Andreas Carlstadt",
       personage		:	false,
@@ -48,7 +48,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('melanchthon-debater', {
+    this.importDebater('melanchthon-debater', {
       type		:	"melanchthon-debater" ,
       name		: 	"Philip Melanchthon",
       personage		:	false,
@@ -57,7 +57,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('oekolampadius-debater', {
+    this.importDebater('oekolampadius-debater', {
       type		:	"oekolampadius-debater" ,
       name		: 	"Johannes Oekolampadius",
       personage		:	false,
@@ -71,7 +71,7 @@
     // PAPACY //
     ////////////
 
-    this.importUnit('aleander-debater', {
+    this.importDebater('aleander-debater', {
       type		:	"aleander-debater" ,
       name		: 	"Hieronymus Aleander",
       personage		:	false,
@@ -80,7 +80,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('cajetan-debater', {
+    this.importDebater('cajetan-debater', {
       type		:	"cajetan-debater" ,
       name		: 	"Thomas Cajetan",
       personage		:	false,
@@ -89,7 +89,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('campeggio-debater', {
+    this.importDebater('campeggio-debater', {
       type		:	"campeggio-debater" ,
       name		: 	"Lorenzo Campeggio",
       personage		:	false,
@@ -98,7 +98,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('canisius-debater', {
+    this.importDebater('canisius-debater', {
       type		:	"canisius-debater" ,
       name		: 	"Peter Canisius",
       personage		:	false,
@@ -107,7 +107,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('carafa-debater', {
+    this.importDebater('carafa-debater', {
       type		:	"carafa-debater" ,
       name		: 	"Carlo Carafa",
       personage		:	false,
@@ -116,7 +116,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('contarini-debater', {
+    this.importDebater('contarini-debater', {
       type		:	"contarini-debater" ,
       name		: 	"Gasparo Contarini",
       personage		:	false,
@@ -125,7 +125,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('faber-debater', {
+    this.importDebater('faber-debater', {
       type		:	"faber-debater" ,
       name		: 	"Peter Faber",
       personage		:	false,
@@ -134,7 +134,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('gardiner-debater', {
+    this.importDebater('gardiner-debater', {
       type		:	"gardiner-debater" ,
       name		: 	"Stephen Gardiner",
       personage		:	false,
@@ -143,7 +143,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('loyola-debater', {
+    this.importDebater('loyola-debater', {
       type		:	"loyola-debater" ,
       name		: 	"Ignatius Loyola",
       personage		:	false,
@@ -152,7 +152,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('pole-debater', {
+    this.importDebater('pole-debater', {
       type		:	"pole-debater" ,
       name		: 	"Reginald Pole",
       personage		:	false,
@@ -161,7 +161,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('tetzel-debater', {
+    this.importDebater('tetzel-debater', {
       type		:	"tetzel-debater" ,
       name		: 	"Johann Tetzel ",
       personage		:	false,
@@ -175,7 +175,7 @@
     // FRENCH //
     ////////////
 
-    this.importUnit('calvin-debater', {
+    this.importDebater('calvin-debater', {
       type		:	"calvin-debater" ,
       name		: 	"John Calvin",
       personage		:	false,
@@ -184,7 +184,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('cop-debater', {
+    this.importDebater('cop-debater', {
       type		:	"cop-debater" , 
      name		: 	"Nicolas Cop",
       personage		:	false,
@@ -193,7 +193,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('farel-debater', {
+    this.importDebater('farel-debater', {
       type		:	"farel-debater" ,
       name		: 	"William Farel",
       personage		:	false,
@@ -202,7 +202,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('olivetan-debater', {
+    this.importDebater('olivetan-debater', {
       type		:	"olivetan-debater" ,
       name		: 	"Pierre Robert Olivetan",
       personage		:	false,
@@ -216,7 +216,7 @@
     // ENGLISH //
     /////////////
 
-    this.importUnit('cranmer-debater', {
+    this.importDebater('cranmer-debater', {
       type		:	"cranmer-debater" ,
       name		: 	"Thomas Cranmer",
       personage		:	false,
@@ -225,7 +225,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('wishart-debater', {
+    this.importDebater('wishart-debater', {
       type		:	"wishart-debater" ,
       name		: 	"George Wishart",
       personage		:	false,
@@ -234,7 +234,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('tyndalex-debater', {
+    this.importDebater('tyndalex-debater', {
       type		:	"tyndale-debater" ,
       name		: 	"William Tyndale",
       personage		:	false,
@@ -243,7 +243,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('latimer-debater', {
+    this.importDebater('latimer-debater', {
       type		:	"latimer-debater" ,
       name		: 	"Hugh Latimer",
       personage		:	false,
@@ -252,7 +252,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('knox-debater', {
+    this.importDebater('knox-debater', {
       type		:	"knox-debater" ,
       name		: 	"John Knox",
       personage		:	false,
@@ -261,7 +261,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('coverdale-debater', {
+    this.importDebater('coverdale-debater', {
       type		:	"coverdale-debater" ,
       name		: 	"Myles Coverdale",
       personage		:	false,
@@ -270,7 +270,7 @@
       committed		: 	0,
     });
 
-    this.importUnit('cranmer-debater', {
+    this.importDebater('cranmer-debater', {
       type		:	"cranmer-debater" ,
       name		: 	"Thomas Cranmer",
       personage		:	false,
