@@ -339,6 +339,36 @@ alert("removing unit not implement for sea");
 
 	}
 
+	if (mv[0] === "moveunit") {
+
+	  let faction   = mv[1];
+	  let from_type = mv[2];
+	  let from_key  = mv[3];
+	  let from_idx  = mv[4];
+	  let to_type   = mv[5];
+	  let to_key    = mv[6];
+
+	  let unit_to_move;
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (from_type === "sea") {
+	    unit_to_move = this.game.navalspaces[from_key].units[faction][from_idx];
+	  }
+	  if (from_type === "land") {
+	    unit_to_move = this.game.spaces[from_key].units[faction][from_idx];
+	  }
+
+	  if (to_type === "sea") {
+	    this.game.navalspaces[to_key].units[faction].push(unit_to_move);
+	  }
+	  if (to_type === "land") {
+	    this.game.spaces[to_key].units[faction].push(unit_to_move);
+	  }
+
+	  return 1;
+
+	}
 
 
         if (mv[0] === "move") {

@@ -16,8 +16,8 @@
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
     if (obj.besieged == null)           { obj.besieged = false; }
-    if (obj.loaned == null)		{ obj.loaned = false; }
     if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
     if (obj.key == null)		{ obj.key = name; }
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
