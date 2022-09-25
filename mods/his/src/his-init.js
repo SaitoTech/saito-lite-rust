@@ -70,6 +70,7 @@ class HereIStand extends GameTemplate {
     //
     this.factions = {};
 
+    this.units = {};
     this.army = {};
     this.navy = {};
     this.reformers = {};
