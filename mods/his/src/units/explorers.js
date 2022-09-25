@@ -1,27 +1,4 @@
 
-/************************
-
-English explorers:
-1. Chancellor 1
-2. Rur 1 (John Rut?)
-3. Willoughby 0
-
-French explorers:
-1. Cartier 3
-2. Roberval 0
-3. Verrazano 2
-
-Habsburg explorers:
-1. Orellana 3
-2. Magellan 4
-3. Leon 1
-4. Narvaez -1
-5. De Vaca 0
-6. DeSoto 2
-
-************************/
-
-
       /***** English Explorers *****/
 
       this.importUnit('chancellor', {
@@ -31,13 +8,18 @@ Habsburg explorers:
            img               :       "Chancellor.svg",
       });
 
-      // RUR
-
       this.importUnit('willoughby', {
            type              :       "willoughby" ,
            name              :       "Katherine Willoughby",
            personage         :       true,
            img               :       "Willoughby.svg",
+      });
+
+      this.importUnit('rut', {
+           type              :       "rut" ,
+           name              :       "John Rut",
+           personage         :       true,
+           img               :       "Rut.svg",
       });
 
 
@@ -58,8 +40,12 @@ Habsburg explorers:
            img               :       "Roberval.svg",
       });
 
-      // VERRAZANO
-
+      this.importUnit('verrazano', {
+           type              :       "verrazano" ,
+           name              :       "Giovanni da Verrazano" ,
+           personage         :       true,
+           img               :       "Verrazano.svg",
+      });
 
 
 

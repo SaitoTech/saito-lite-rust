@@ -4,6 +4,7 @@
 
     if (obj.type == null)               { obj.type = "unit"; }
     if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
     if (obj.personage == null)          { obj.personage = false; }
     if (obj.debater == null)            { obj.debater = false; }
     if (obj.reformer == null)           { obj.reformer = false; }
