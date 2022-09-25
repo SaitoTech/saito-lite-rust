@@ -61,6 +61,10 @@
     grid-template-rows: min-content 1fr;
 }
 
+.chat-body>.saito-user>.saito-userline {
+    font-size: 1.7rem;
+}
+
 .chat-footer {
     background-color: rgb(236, 236, 236);
     position: absolute;
