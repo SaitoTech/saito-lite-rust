@@ -247,6 +247,53 @@
     }
 }
 
+
+@media screen and (max-width: 1500px) and (min-width: 65rem)  {
+    .saito-sidebar.left{
+        left: 0;
+        width: 30rem;
+    }
+
+    .saito-mobile-controls {
+        z-index: 1;
+        height: 7rem;
+        content: " ";
+        width: 10%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+        display: flex;
+        flex-flow: row;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+
+    .saito-mobile-controls div {
+        content: "";
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 0.5rem;
+        background-color: var(--saito-primary);
+        cursor: pointer;
+        justify-content: center;
+        align-items: center;
+        display: none;
+    }
+
+    .saito-mobile-controls div:nth-child(1) {
+        display: flex;
+    }
+
+    .saito-mobile-controls div i {
+        color: var(--saito-white);
+        display: initial;
+        font-size: 2.5rem;
+    }
+
+}
+
 @media screen and (max-width: 65rem) {
 
     .saito-main.appspace {
