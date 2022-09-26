@@ -11,7 +11,15 @@ const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
 const JSON = require("json-bigint");
 
+
 const MixinAppspaceSidebar = require('./lib/appspace-sidebar/main');
+const EGLDModule = require('./lib/egldmodule');
+const {account:Account, transaction: Transaction} = require('@elrondnetwork/elrond-core-js')
+
+
+const { ApiNetworkProvider } = require("@elrondnetwork/erdjs-network-providers");
+
+
 
 class Mixin extends ModTemplate {
 
@@ -35,18 +43,22 @@ class Mixin extends ModTemplate {
     this.mixin.pin_token	= "";
     this.mixin.pin_token_base64 = "";
     this.mixin.pin		= "";
-
+    this.egld = {};
+    this.egld.publicKey = "";
+    this.egld.privateKey = "";
+    this.egld.chainId = "";
+    this.egld.networkConfig = ""
     this.account_created = 0;
-
+    this.egld_account_created = 0;
     this.mods		= [];
     this.addresses      = [];
     this.withdrawals    = [];
     this.deposits       = [];
-
   }
 
 
   initialize(app) {
+    this.mixin.user_keypair = forge.pki.ed25519.generateKeyPair();
     this.load();
     this.loadCryptos();
   }
@@ -76,13 +88,13 @@ class Mixin extends ModTemplate {
 
       let saito_publickey = message.data.saito_publickey;
       let mixin_publickey = message.data.mixin_publickey;
+ 
 
       if (app.BROWSER == 0) {
 
         m = JSON.parse(process.env.MIXIN);
-        
 	if (m.appId) {
-
+     
           let method = "POST";
           let uri = '/users';
           let body = {
@@ -129,6 +141,16 @@ class Mixin extends ModTemplate {
         this.fetchDeposits(crypto_module.asset_id, crypto_module.ticker, function(res) {});
       }
     });
+
+
+    let egld_module = new EGLDModule(this.app, mixin_self)
+    egld_module.installModule();
+    
+    if(this.app.BROWSER === 1){
+      // egld_module.sendPayment();
+      // egld_module.checkBalance()
+      
+    }
 
   }
 
@@ -609,7 +631,6 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
 
 
   createAccount(callback=null) {
-
     let mixin_self = this;
 
     if (this.mixin.publickey !== "") { 
@@ -627,7 +648,8 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
     // have the module make the call directly for simplified
     // development.
     //
-    let user_keypair = forge.pki.ed25519.generateKeyPair();
+    let user_keypair = this.mixin.user_keypair
+    this.mixin.user_keypair = user_keypair;
     let original_user_public_key = Buffer.from(user_keypair.publicKey).toString('base64');
     let original_user_private_key = Buffer.from(user_keypair.privateKey).toString('base64');
     let user_public_key = this.base64RawURLEncode(original_user_public_key);
@@ -653,7 +675,6 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
     if (process.env.MIXIN) { 
 
       m = JSON.parse(process.env.MIXIN);
-
       let appId = m.appId;
       let sessionId = m.sessionId;
       let privateKey = m.privateKey;
@@ -689,7 +710,7 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
 
       let data = {
 	saito_publickey	:	mixin_self.app.wallet.returnPublicKey() ,
-	mixin_publickey :	user_public_key 
+	mixin_publickey :	user_public_key,
       };
 
       mixin_self.app.network.peers[0].sendRequestWithCallback("mixin create account", data, function(res) {
@@ -698,6 +719,28 @@ console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
       });
 
     }
+  }
+
+  async createEGLDAccount(){
+      if(this.app.options.egld){
+        let keyfile =  this.app.options.egld.keyfile
+
+        let account = new Account(this.app.options.egld.keyfile, this.app.options.egld.password)
+        this.egld.keyfile = keyfile;
+        this.egld.account = account;
+        console.log(keyfile, "keyfile")
+      }
+      else {
+        let password = this.app.crypto.generateRandomNumber().substring(0, 8);
+        let keyfile =  new Account().initNewAccountFromPassword(password)
+        let account = new Account().loadFromKeyFile(keyfile, password)
+        console.log(keyfile, "keyfile")
+        this.egld.keyfile = keyfile;
+        this.egld.account = account;
+        this.app.options.egld = {keyfile, password: "password"}
+        this.app.storage.saveOptions(); 
+      }
+    
   }
 
 
