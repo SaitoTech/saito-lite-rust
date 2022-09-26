@@ -72,6 +72,7 @@ span.redsquare-home-red-square+span {
   padding-bottom: 3rem;
 }
 
+
 #redsquare-intersection {
   opacity: 1;
   height: 3rem;
@@ -138,15 +139,12 @@ span.redsquare-home-red-square+span {
   left: unset;
 }
 
-.redsquare-sidebar-arcade #redsquare-create-game {
-  transform: translateY(-25%);
-}
-
 .saito-main.appspace {
   height: 5000px;
   overflow-y: hidden;
   width: 92.5%;
   margin-left: 5%;
+  position: relative;
 }
 
 .redsquare-appspace-contacts-list {
@@ -203,7 +201,7 @@ span.redsquare-home-red-square+span {
 
 .redsquare-game-creator {
   padding: 3rem;
-  border-radius: 2rem;
+  border-radius: 0.5rem;
   background-color: #0009;
   color: white;
   max-height: 90vh;

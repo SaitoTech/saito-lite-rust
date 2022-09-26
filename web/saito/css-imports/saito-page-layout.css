@@ -334,7 +334,7 @@
 
 
     .saito-mobile-bar {
-        background: #4444;
+        background: #0009;
         z-index: 1;
         height: 7rem;
         content: " ";
@@ -392,6 +392,15 @@
     }
 }
 
+
+/* need to fix naming here - redsquare out of module */
+.redsquare-actions-container {
+    display: flex;
+    flex-flow: row-reverse;
+    position: absolute;
+    right: 1rem;
+  }
+
 @media screen and (max-width: 515px) {
 
     .saito-main.appspace {
@@ -434,9 +443,10 @@
         position: fixed;
         bottom: 7rem;
         left: 0;
+        right: unset;
         width: 100vw;
         display: none;
-        background: #44444444;
+        background: #0009;
         grid-template-columns: 1fr;
         grid-gap: 1rem;
         border: 0.5rem;
@@ -444,8 +454,11 @@
         z-index: 2;
     }
 
+
+
     .redsquare-actions-container .saito-button-secondary {
-        background-color: var(--saito-white);
+        background-color: var(--saito-primary);
+        color: var(--saito-white);
     }
 
     .saito-redsquare-actions-buttons .saito-button-secondary {
