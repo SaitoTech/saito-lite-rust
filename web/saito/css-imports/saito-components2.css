@@ -141,7 +141,7 @@ Saito Page Header
     z-index: 9;
 }
 
-.saito-page-header:hover .saito-page-header-text {
+.saito-redsquare-actions-buttons:hover .saito-page-header-text {
     min-height: 3rem;
     height: auto;
     border: 1px solid var(--saito-border);
