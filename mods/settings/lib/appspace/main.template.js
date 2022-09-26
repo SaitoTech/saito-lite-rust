@@ -63,6 +63,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
   <div class="saito-page-header">
 
+
         <div class="saito-redsquare-actions-buttons">
         <div class="saito-redsquare-actions-buttons-icon">
           <i id="action-icon" class="fas fa-plus"></i>
