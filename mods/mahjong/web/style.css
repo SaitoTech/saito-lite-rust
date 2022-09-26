@@ -44,6 +44,7 @@ body {
 
 .slot.available:hover{
   background-color: ghostwhite;
+  cursor: pointer;
 }
 .slot.available img:hover{
   filter: brightness(2);
