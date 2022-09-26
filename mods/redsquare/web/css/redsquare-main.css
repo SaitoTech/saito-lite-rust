@@ -105,7 +105,7 @@ span.redsquare-home-red-square+span {
 .redsquare-tweet-overlay {
   padding: 2rem;
   padding-bottom: 1rem;
-  border-radius: 2rem;
+  border-radius: 1rem;
   background-color: white;
   position: relative;
   width: 50rem;

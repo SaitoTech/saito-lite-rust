@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.397,
+    version: 4.399,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -1106,11 +1106,19 @@ console.log("---------------------");
     if (
       !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     ) {
+
+console.log("preferred transaction does not exist, so...");
+
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
         console.log(
           "senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress()
         );
+
+	//
+	// DEBUGGING - sender is address to which we send the crypto
+	// 	     - not our own publickey
+	//
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);

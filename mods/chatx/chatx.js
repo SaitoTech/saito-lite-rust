@@ -81,7 +81,10 @@ class Chatx extends ModTemplate {
             return;
           }
           let newgroup = this.createChatGroup(data.members);
-          app.connection.emit('chat-render-request', newgroup.id);
+        //   if(app.browser.getWidth > 535){
+        //     app.connection.emit('chat-render-request', newgroup.id);
+        //   }
+
 
         });
 
@@ -105,7 +108,7 @@ class Chatx extends ModTemplate {
             let newgroup = this.createChatGroup(g[i].members, g[i].name);
         }
 
-        app.connection.emit('chat-render-request', "");
+        // app.connection.emit('chat-render-request', "");
 
     }
 
@@ -224,7 +227,10 @@ class Chatx extends ModTemplate {
 			    //
 			    // render community chat
 			    //
-		    	    app.connection.emit('chat-render-request', );
+
+                    app.connection.emit('chat-render-request', );
+                
+		
 
                             //
                             // check identifiers
@@ -809,7 +815,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
 
 console.log("RENDERING CRR: " + group_id);
 
-        this.app.connection.emit('chat-render-request', group_id);
+        // this.app.connection.emit('chat-render-request', group_id);
     }
 
 
