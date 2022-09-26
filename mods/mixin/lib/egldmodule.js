@@ -37,9 +37,7 @@ class EGLDModule extends CryptoModule {
         console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
         console.log("---------------------");
 	     await this.mixin.createEGLDAccount();
-        }   
-
-      
+        } 
     }
   }
 
@@ -65,17 +63,15 @@ class EGLDModule extends CryptoModule {
     try {
        let serializedTx = tx.prepareForSigning();
        tx.signature = this.mixin.egld.account.sign(serializedTx)
-       console.log("signed tx", tx);
         let signedtx = tx.prepareForNode();
-        let signedTxJson = JSON.stringify(signedtx, null, 4);
-        console.log(signedTxJson)
+        let signedTxJson = JSON.stringify(signedtx, null, 4);;
       let res  = await  axios({
         method: 'post',
         url: 'https://gateway.elrond.com/transaction/send',
-        data: signedtx
+        data: signedTxJson
       })
     } catch (error) {
-        console.log(error, "error")
+        console.log(error, "error");
     }
 
 
@@ -87,7 +83,7 @@ async returnBalance(address){
         url: `https://gateway.elrond.com/address/${address}/balance`,
         data: ""
       })
-
+      this.balance = res.data.data.balance;
       return res.data.data.balance;
 
 }
@@ -101,7 +97,7 @@ returnPrivateKey(){
 }
 
 async updateBalance(balance){
-    this.balance  = balance
+    this.balance  = balance;
 }
 
 

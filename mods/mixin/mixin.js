@@ -140,17 +140,11 @@ class Mixin extends ModTemplate {
         this.fetchAddresses(crypto_module.asset_id, function(res) {});
         this.fetchDeposits(crypto_module.asset_id, crypto_module.ticker, function(res) {});
       }
-    });
-
-
+    }); 
+    
     let egld_module = new EGLDModule(this.app, mixin_self)
     egld_module.installModule();
-    
-    if(this.app.BROWSER === 1){
-      // egld_module.sendPayment();
-      // egld_module.checkBalance()
-      
-    }
+
 
   }
 
@@ -728,13 +722,11 @@ console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
         let account = new Account(this.app.options.egld.keyfile, this.app.options.egld.password)
         this.egld.keyfile = keyfile;
         this.egld.account = account;
-        console.log(keyfile, "keyfile")
       }
       else {
         let password = this.app.crypto.generateRandomNumber().substring(0, 8);
         let keyfile =  new Account().initNewAccountFromPassword(password)
         let account = new Account().loadFromKeyFile(keyfile, password)
-        console.log(keyfile, "keyfile")
         this.egld.keyfile = keyfile;
         this.egld.account = account;
         this.app.options.egld = {keyfile, password}
