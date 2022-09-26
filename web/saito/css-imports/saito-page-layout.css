@@ -62,6 +62,10 @@
     z-index: 2;
 }
 
+.saito-mobile-bar {
+    display: none;
+}
+
 /*
 
 .saito-sidebar.left .hamburger {
@@ -254,7 +258,7 @@
         width: 30rem;
     }
 
-    .saito-mobile-controls {
+    .saito-mobile-bar {
         z-index: 1;
         height: 7rem;
         content: " ";
@@ -270,7 +274,7 @@
     }
 
 
-    .saito-mobile-controls div {
+    .saito-mobile-bar div {
         content: "";
         width: 3.5rem;
         height: 3.5rem;
@@ -282,11 +286,11 @@
         display: none;
     }
 
-    .saito-mobile-controls div:nth-child(1) {
+    .saito-mobile-bar div:nth-child(1) {
         display: flex;
     }
 
-    .saito-mobile-controls div i {
+    .saito-mobile-bar div i {
         color: var(--saito-white);
         display: initial;
         font-size: 2.5rem;
@@ -329,7 +333,7 @@
     }
 
 
-    .saito-mobile-controls {
+    .saito-mobile-bar {
         background: #4444;
         z-index: 1;
         height: 7rem;
@@ -346,7 +350,7 @@
     }
 
 
-    .saito-mobile-controls div {
+    .saito-mobile-bar div {
         content: "";
         width: 3.5rem;
         height: 3.5rem;
@@ -358,10 +362,14 @@
         display: flex;
     }
 
-    .saito-mobile-controls div i {
+    .saito-mobile-bar div i {
         color: var(--saito-white);
         display: initial;
         font-size: 2.5rem;
+    }
+
+    .saito-mobile-bar div:nth-child(2) {
+        display: none;
     }
 
 }
@@ -391,14 +399,14 @@
         padding: 1rem 2rem 1rem 0rem;
     }
 
-    .saito-mobile-controls {
+    .saito-mobile-bar {
         display: flex;
         flex-flow: row;
         justify-content: space-around;
         align-items: center;
     }
 
-    .saito-mobile-controls div {
+    .saito-mobile-bar div {
         content: "";
         width: 3.5rem;
         height: 3.5rem;
@@ -410,7 +418,7 @@
         display: flex;
     }
 
-    .saito-mobile-controls div i {
+    .saito-mobile-bar div i {
         color: var(--saito-white);
         display: initial;
         font-size: 2.5rem;
@@ -442,6 +450,10 @@
 
     .saito-redsquare-actions-buttons .saito-button-secondary {
         display: block;
+    }
+
+    .saito-mobile-bar div:nth-child(2) {
+        display: flex;
     }
 
 }
