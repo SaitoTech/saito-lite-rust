@@ -737,7 +737,7 @@ console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
         console.log(keyfile, "keyfile")
         this.egld.keyfile = keyfile;
         this.egld.account = account;
-        this.app.options.egld = {keyfile, password: "password"}
+        this.app.options.egld = {keyfile, password}
         this.app.storage.saveOptions(); 
       }
     
