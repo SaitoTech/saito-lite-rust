@@ -62,7 +62,7 @@ class RedSquareMenu {
     const icon = document.querySelector('.saito-sidebar.left .hamburger #icon');
     const removeLeftSidebar = () => {
       left_sidebar.classList.remove('mobile');
-      icon.className = "fas fa-bars";
+      icon.className = "fas fa-angle-right";
     }
 
     let obj;
