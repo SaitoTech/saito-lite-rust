@@ -548,6 +548,25 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     return luis;
   }
 
+
+  //
+  // faction is papacy or (anything), since debaters aren't really owned by factions outside
+  // papcy and protestants, even if they are tagged as would be historically appropriate
+  //
+  returnDebatersInLanguageZone(language_zone="german", faction="papacy", committed=-1) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].language_zone === language_zone || this.game.state.debaters[i].langauge_zone === "any") {
+        if (this.game.state.debaters[i].faction === faction || (faction != "papacy" && this.game.state.debaters[i].faction != "papacy")) {
+          if (this.game.state.debaters[i].committed === committed || committed == -1) {
+	    num++;
+          }
+        }
+      }
+    }
+    return num;
+  }
+
   doesFactionHaveNavalUnitsOnBoard(faction) {
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key].units[faction]) {
@@ -1111,11 +1130,14 @@ console.log("this is a space: " + spacekey)
 
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
-
     state.tmp_protestant_reformation_bonus = 0;
     state.tmp_catholic_reformation_bonus = 0;
     state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus = 0;
+    state.tmp_papacy_may_specify_debater = 0;
+    state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
+
 
     state.augsburg_electoral_bonus = 0;
     state.mainz_electoral_bonus = 0;
@@ -3649,7 +3671,7 @@ console.log("this is a space: " + spacekey)
       img : "cards/HIS-002.svg" , 
       name : "Holy Roman Emperor" ,
       ops : 5 ,
-      turn : 1, 
+      turn : 1 , 
       type : "normal" ,
       faction : "hapsburg" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
@@ -3809,15 +3831,56 @@ console.log("this is a space: " + spacekey)
 
 	let p = game_mod.returnPlayerOfFaction("papacy");
 
-	if (this.game.player === p) {
-	  game_mod.addTurn("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
-	  game_mod.endTurn();
+        game_mod.game.state.tmp_papacy_may_specify_debater = 1;
+        game_mod.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
+
+	if (game_mod.game.player === p) {
+	  game_mod.playerCallTheologicalDebate(game_mod, player, "faction");
 	} else {
 	  game_mod.updateStatus("Papacy calling a Theological Debate");
 	}
 
 	return 0;
       },
+      menuOption  :       function(his_self, menu, player) {
+        if (menu === "debate") {
+          return { faction : "papacy" , event : 'specify_debater', html : `<li class="option" id="specify_debater">specify Papal debater</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "debate") {
+	  if (his_self.game.state.tmp_papacy_may_specify_debater === 1 || his-self.game.state.tmp_papacy_may_specify_protestant_debater_unavailable === 1) {
+	    if (faction === "papacy") {
+	      return 1;
+	    }
+	  }
+	}
+	return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu === "debate") {
+alert("PLAYER: " + player + " -- " + faction + " -- specify debater");
+
+	  // SETVAR
+
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "janissaries") {
+
+          his_self.game.queue.splice(qe, 1);
+          his_self.updateLog("Ottoman Empire plays Janissaries");
+          his_self.game.state.field_battle.attacker_rolls += 5;
+          his_self.game.state.field_battle.attacker_results.push(his_self.rollDice(6));
+
+          return 1;
+
+        }
+      },
+
     }
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 

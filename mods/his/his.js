@@ -757,6 +757,7 @@ Habsburg conquistadores:
       name		: 	"Martin Luther",
       img		:	"LutherDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -765,6 +766,7 @@ Habsburg conquistadores:
       name		: 	"Ulrich Zwingli",
       img		:	"ZwingliDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -773,6 +775,7 @@ Habsburg conquistadores:
       name		: 	"Martin Bucer",
       img		:	"BucerDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -781,6 +784,7 @@ Habsburg conquistadores:
       name		: 	"Heinrich Bullinger",
       img		:	"BullingerDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -789,6 +793,7 @@ Habsburg conquistadores:
       name		: 	"Andreas Carlstadt",
       img		:	"CarlstadtDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -797,6 +802,7 @@ Habsburg conquistadores:
       name		: 	"Philip Melanchthon",
       img		:	"MelanchthonDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -805,6 +811,7 @@ Habsburg conquistadores:
       name		: 	"Johannes Oekolampadius",
       img		:	"OekolampadiusDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -818,6 +825,7 @@ Habsburg conquistadores:
       name		: 	"Johann Eck",
       img		:       "EckDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -826,6 +834,7 @@ Habsburg conquistadores:
       name		: 	"Hieronymus Aleander",
       img		:       "AleanderDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -834,6 +843,7 @@ Habsburg conquistadores:
       name		: 	"Thomas Cajetan",
       img		:	"CajetanDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -842,6 +852,7 @@ Habsburg conquistadores:
       name		: 	"Lorenzo Campeggio",
       img		:	"CampeggioDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -850,6 +861,7 @@ Habsburg conquistadores:
       name		: 	"Peter Canisius",
       img		:	"CanisiusDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -858,6 +870,7 @@ Habsburg conquistadores:
       name		: 	"Carlo Carafa",
       img		:	"CarafaDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -866,6 +879,7 @@ Habsburg conquistadores:
       name		: 	"Gasparo Contarini",
       img		:	"ContariniDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -874,6 +888,7 @@ Habsburg conquistadores:
       name		: 	"Peter Faber",
       img		:	"FaberDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -882,6 +897,7 @@ Habsburg conquistadores:
       name		: 	"Stephen Gardiner",
       img		:	"GardinerDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -890,6 +906,7 @@ Habsburg conquistadores:
       name		: 	"Ignatius Loyola",
       img		:	"LoyolaDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -898,6 +915,7 @@ Habsburg conquistadores:
       name		: 	"Reginald Pole",
       img		:	"PoleDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -906,6 +924,7 @@ Habsburg conquistadores:
       name		: 	"Johann Tetzel ",
       img		:	"TetzelDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -919,6 +938,7 @@ Habsburg conquistadores:
       name		: 	"John Calvin",
       img		:	"CalvinDebater.svg",
       language_zone	:	"french" ,
+      faction		:	"france" ,
       committed		: 	0,
     });
 
@@ -927,6 +947,7 @@ Habsburg conquistadores:
      name		: 	"Nicolas Cop",
       img		:	"CopDebater.svg",
       language_zone	:	"french" ,
+      faction		:	"france" ,
       committed		: 	0,
     });
 
@@ -935,6 +956,7 @@ Habsburg conquistadores:
       name		: 	"William Farel",
       img		:	"FarelDebater.svg",
       language_zone	:	"french" ,
+      faction		:	"france" ,
       committed		: 	0,
     });
 
@@ -943,6 +965,7 @@ Habsburg conquistadores:
       name		: 	"Pierre Robert Olivetan",
       img		:	"OlivetanDebater.svg",
       language_zone	:	"french" ,
+      faction		:	"france" ,
       committed		: 	0,
     });
 
@@ -956,6 +979,7 @@ Habsburg conquistadores:
       name		: 	"Thomas Cranmer",
       img		:	"CranmerDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -964,6 +988,7 @@ Habsburg conquistadores:
       name		: 	"George Wishart",
       img		:	"WishartDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -972,6 +997,7 @@ Habsburg conquistadores:
       name		: 	"William Tyndale",
       img		:	"TyndaleDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -980,6 +1006,7 @@ Habsburg conquistadores:
       name		: 	"Hugh Latimer",
       img		:	"LatimerDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -988,6 +1015,7 @@ Habsburg conquistadores:
       name		: 	"John Knox",
       img		:	"KnoxDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -996,6 +1024,7 @@ Habsburg conquistadores:
       name		: 	"Myles Coverdale",
       img		:	"CoverdaleDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -1004,6 +1033,7 @@ Habsburg conquistadores:
       name		: 	"Thomas Cranmer",
       img		:	"CranmerDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -2314,6 +2344,25 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     return luis;
   }
 
+
+  //
+  // faction is papacy or (anything), since debaters aren't really owned by factions outside
+  // papcy and protestants, even if they are tagged as would be historically appropriate
+  //
+  returnDebatersInLanguageZone(language_zone="german", faction="papacy", committed=-1) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].language_zone === language_zone || this.game.state.debaters[i].langauge_zone === "any") {
+        if (this.game.state.debaters[i].faction === faction || (faction != "papacy" && this.game.state.debaters[i].faction != "papacy")) {
+          if (this.game.state.debaters[i].committed === committed || committed == -1) {
+	    num++;
+          }
+        }
+      }
+    }
+    return num;
+  }
+
   doesFactionHaveNavalUnitsOnBoard(faction) {
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key].units[faction]) {
@@ -2877,11 +2926,14 @@ console.log("this is a space: " + spacekey)
 
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
-
     state.tmp_protestant_reformation_bonus = 0;
     state.tmp_catholic_reformation_bonus = 0;
     state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus = 0;
+    state.tmp_papacy_may_specify_debater = 0;
+    state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
+
 
     state.augsburg_electoral_bonus = 0;
     state.mainz_electoral_bonus = 0;
@@ -5415,7 +5467,7 @@ console.log("this is a space: " + spacekey)
       img : "cards/HIS-002.svg" , 
       name : "Holy Roman Emperor" ,
       ops : 5 ,
-      turn : 1, 
+      turn : 1 , 
       type : "normal" ,
       faction : "hapsburg" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
@@ -5575,15 +5627,56 @@ console.log("this is a space: " + spacekey)
 
 	let p = game_mod.returnPlayerOfFaction("papacy");
 
-	if (this.game.player === p) {
-	  game_mod.addTurn("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
-	  game_mod.endTurn();
+        game_mod.game.state.tmp_papacy_may_specify_debater = 1;
+        game_mod.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
+
+	if (game_mod.game.player === p) {
+	  game_mod.playerCallTheologicalDebate(game_mod, player, "faction");
 	} else {
 	  game_mod.updateStatus("Papacy calling a Theological Debate");
 	}
 
 	return 0;
       },
+      menuOption  :       function(his_self, menu, player) {
+        if (menu === "debate") {
+          return { faction : "papacy" , event : 'specify_debater', html : `<li class="option" id="specify_debater">specify Papal debater</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "debate") {
+	  if (his_self.game.state.tmp_papacy_may_specify_debater === 1 || his-self.game.state.tmp_papacy_may_specify_protestant_debater_unavailable === 1) {
+	    if (faction === "papacy") {
+	      return 1;
+	    }
+	  }
+	}
+	return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu === "debate") {
+alert("PLAYER: " + player + " -- " + faction + " -- specify debater");
+
+	  // SETVAR
+
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "janissaries") {
+
+          his_self.game.queue.splice(qe, 1);
+          his_self.updateLog("Ottoman Empire plays Janissaries");
+          his_self.game.state.field_battle.attacker_rolls += 5;
+          his_self.game.state.field_battle.attacker_results.push(his_self.rollDice(6));
+
+          return 1;
+
+        }
+      },
+
     }
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
@@ -7748,11 +7841,12 @@ alert("removing unit not implement for sea");
 
 	if (mv[0] === "is_testing") {
 
-/*****
-	  this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
-****/
 
-	  this.game.queue.push("retreat_to_winter_spaces");
+	  this.game.queue.push("event\t" + this.returnPlayerOfFaction("papacy") + "\t" + "006");
+
+	  //this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+
+	  //this.game.queue.push("retreat_to_winter_spaces");
 
     	  //
     	  // IS_TESTING -- TEMPORARY
@@ -7792,7 +7886,7 @@ alert("removing unit not implement for sea");
 
         if (mv[0] === "event") {
 
-	  let player = mv[1];
+	  let player = parseInt(mv[1]);
 	  let card = mv[2];
 
 	  this.game.queue.splice(qe, 1);
@@ -10778,6 +10872,9 @@ console.log("space: " + spacekey);
 
         if (mv[0] === "theological_debate") {
 
+this.game.state.tmp_papacy_may_specify_debater = 1;
+this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
+
 	  let attacker = mv[1];
 	  let defender = mv[2];
 	  let language_zone = mv[3];
@@ -11826,6 +11923,8 @@ this.updateLog("Catholics: " + c_rolls);
     this.game.state.tmp_catholic_reformation_bonus = 0;
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+    this.game.state.tmp_papacy_may_specify_debater = 0;
+    this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
 
     for (let s in this.game.spaces) {
@@ -13713,9 +13812,16 @@ return;
 
     let msg = "Select Language Zone for Theological Debate:";
     let html = '<ul>';
+
+    if (his_self.returnDebatersInLanguageZone("german", "protestant")) { 
         html += '<li class="option" style="" id="german">German</li>';
+    }
+    if (his_self.returnDebatersInLanguageZone("french", "france")) { 
         html += '<li class="option" style="" id="french">French</li>';
+    }
+    if (his_self.returnDebatersInLanguageZone("english", "france")) { 
         html += '<li class="option" style="" id="english">English</li>';
+    }
         html += '</ul>';
 
     his_self.updateStatusWithOptions(msg, html);
@@ -13727,9 +13833,13 @@ return;
 
       let msg = "Against Comitted or Uncommited Debater?";
       let html = '<ul>';
+      if (0 < his_self.returnDebatersInLanguageZone("english", "protestant", 1)) {
           html += '<li class="option" id="committed">Committed</li>';
+      }
+      if (0 < his_self.returnDebatersInLanguageZone("english", "protestant", 0)) {
           html += '<li class="option" id="uncommitted">Uncommitted</li>';
-          html += '</ul>';
+      }
+      html += '</ul>';
 
       his_self.updateStatusWithOptions(msg, html);
 
@@ -13737,6 +13847,8 @@ return;
       $('.option').on('click', function () {
 
         let committed = $(this).attr("id");
+
+        if (committed === "committed") { committed = 1; } else { committed = 0; }
 
         if (faction === "papacy") {
 	  his_self.addMove("theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);

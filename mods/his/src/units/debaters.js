@@ -8,6 +8,7 @@
       name		: 	"Martin Luther",
       img		:	"LutherDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -16,6 +17,7 @@
       name		: 	"Ulrich Zwingli",
       img		:	"ZwingliDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -24,6 +26,7 @@
       name		: 	"Martin Bucer",
       img		:	"BucerDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -32,6 +35,7 @@
       name		: 	"Heinrich Bullinger",
       img		:	"BullingerDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -40,6 +44,7 @@
       name		: 	"Andreas Carlstadt",
       img		:	"CarlstadtDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -48,6 +53,7 @@
       name		: 	"Philip Melanchthon",
       img		:	"MelanchthonDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -56,6 +62,7 @@
       name		: 	"Johannes Oekolampadius",
       img		:	"OekolampadiusDebater.svg",
       language_zone	:	"german" ,
+      faction		:	"protestant" ,
       committed		: 	0,
     });
 
@@ -69,6 +76,7 @@
       name		: 	"Johann Eck",
       img		:       "EckDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -77,6 +85,7 @@
       name		: 	"Hieronymus Aleander",
       img		:       "AleanderDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -85,6 +94,7 @@
       name		: 	"Thomas Cajetan",
       img		:	"CajetanDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -93,6 +103,7 @@
       name		: 	"Lorenzo Campeggio",
       img		:	"CampeggioDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -101,6 +112,7 @@
       name		: 	"Peter Canisius",
       img		:	"CanisiusDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -109,6 +121,7 @@
       name		: 	"Carlo Carafa",
       img		:	"CarafaDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -117,6 +130,7 @@
       name		: 	"Gasparo Contarini",
       img		:	"ContariniDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -125,6 +139,7 @@
       name		: 	"Peter Faber",
       img		:	"FaberDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -133,6 +148,7 @@
       name		: 	"Stephen Gardiner",
       img		:	"GardinerDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -141,6 +157,7 @@
       name		: 	"Ignatius Loyola",
       img		:	"LoyolaDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -149,6 +166,7 @@
       name		: 	"Reginald Pole",
       img		:	"PoleDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -157,6 +175,7 @@
       name		: 	"Johann Tetzel ",
       img		:	"TetzelDebater.svg",
       language_zone	:	"any" ,
+      faction		:	"papacy" ,
       committed		: 	0,
     });
 
@@ -170,6 +189,7 @@
       name		: 	"John Calvin",
       img		:	"CalvinDebater.svg",
       language_zone	:	"french" ,
+      faction		:	"france" ,
       committed		: 	0,
     });
 
@@ -178,6 +198,7 @@
      name		: 	"Nicolas Cop",
       img		:	"CopDebater.svg",
       language_zone	:	"french" ,
+      faction		:	"france" ,
       committed		: 	0,
     });
 
@@ -186,6 +207,7 @@
       name		: 	"William Farel",
       img		:	"FarelDebater.svg",
       language_zone	:	"french" ,
+      faction		:	"france" ,
       committed		: 	0,
     });
 
@@ -194,6 +216,7 @@
       name		: 	"Pierre Robert Olivetan",
       img		:	"OlivetanDebater.svg",
       language_zone	:	"french" ,
+      faction		:	"france" ,
       committed		: 	0,
     });
 
@@ -207,6 +230,7 @@
       name		: 	"Thomas Cranmer",
       img		:	"CranmerDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -215,6 +239,7 @@
       name		: 	"George Wishart",
       img		:	"WishartDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -223,6 +248,7 @@
       name		: 	"William Tyndale",
       img		:	"TyndaleDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -231,6 +257,7 @@
       name		: 	"Hugh Latimer",
       img		:	"LatimerDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -239,6 +266,7 @@
       name		: 	"John Knox",
       img		:	"KnoxDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -247,6 +275,7 @@
       name		: 	"Myles Coverdale",
       img		:	"CoverdaleDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 
@@ -255,6 +284,7 @@
       name		: 	"Thomas Cranmer",
       img		:	"CranmerDebater.svg",
       language_zone	:	"english" ,
+      faction		:	"england" ,
       committed		: 	0,
     });
 

@@ -266,11 +266,12 @@ alert("removing unit not implement for sea");
 
 	if (mv[0] === "is_testing") {
 
-/*****
-	  this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
-****/
 
-	  this.game.queue.push("retreat_to_winter_spaces");
+	  this.game.queue.push("event\t" + this.returnPlayerOfFaction("papacy") + "\t" + "006");
+
+	  //this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+
+	  //this.game.queue.push("retreat_to_winter_spaces");
 
     	  //
     	  // IS_TESTING -- TEMPORARY
@@ -310,7 +311,7 @@ alert("removing unit not implement for sea");
 
         if (mv[0] === "event") {
 
-	  let player = mv[1];
+	  let player = parseInt(mv[1]);
 	  let card = mv[2];
 
 	  this.game.queue.splice(qe, 1);
@@ -3295,6 +3296,9 @@ console.log("space: " + spacekey);
 
 
         if (mv[0] === "theological_debate") {
+
+this.game.state.tmp_papacy_may_specify_debater = 1;
+this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
 
 	  let attacker = mv[1];
 	  let defender = mv[2];

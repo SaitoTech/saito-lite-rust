@@ -155,6 +155,8 @@
     this.game.state.tmp_catholic_reformation_bonus = 0;
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+    this.game.state.tmp_papacy_may_specify_debater = 0;
+    this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
 
     for (let s in this.game.spaces) {
@@ -2042,9 +2044,16 @@ return;
 
     let msg = "Select Language Zone for Theological Debate:";
     let html = '<ul>';
+
+    if (his_self.returnDebatersInLanguageZone("german", "protestant")) { 
         html += '<li class="option" style="" id="german">German</li>';
+    }
+    if (his_self.returnDebatersInLanguageZone("french", "france")) { 
         html += '<li class="option" style="" id="french">French</li>';
+    }
+    if (his_self.returnDebatersInLanguageZone("english", "france")) { 
         html += '<li class="option" style="" id="english">English</li>';
+    }
         html += '</ul>';
 
     his_self.updateStatusWithOptions(msg, html);
@@ -2056,9 +2065,13 @@ return;
 
       let msg = "Against Comitted or Uncommited Debater?";
       let html = '<ul>';
+      if (0 < his_self.returnDebatersInLanguageZone("english", "protestant", 1)) {
           html += '<li class="option" id="committed">Committed</li>';
+      }
+      if (0 < his_self.returnDebatersInLanguageZone("english", "protestant", 0)) {
           html += '<li class="option" id="uncommitted">Uncommitted</li>';
-          html += '</ul>';
+      }
+      html += '</ul>';
 
       his_self.updateStatusWithOptions(msg, html);
 
@@ -2066,6 +2079,8 @@ return;
       $('.option').on('click', function () {
 
         let committed = $(this).attr("id");
+
+        if (committed === "committed") { committed = 1; } else { committed = 0; }
 
         if (faction === "papacy") {
 	  his_self.addMove("theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
