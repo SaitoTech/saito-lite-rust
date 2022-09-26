@@ -59,8 +59,8 @@ class RedSquareMenu {
   attachEvents(app, mod) {
     this_menu = this;
     const left_sidebar = document.querySelector('.saito-sidebar.left');
-    const icon = document.querySelector('.saito-sidebar.left .hamburger #icon');
     const removeLeftSidebar = () => {
+      const icon = document.querySelector('#saito-mobile-toggle-left-icon');
       left_sidebar.classList.remove('mobile');
       icon.className = "fas fa-angle-right";
     }

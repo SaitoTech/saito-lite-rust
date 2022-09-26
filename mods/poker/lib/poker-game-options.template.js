@@ -32,11 +32,10 @@ module.exports = (app, mod) => {
     for (let i = 0; i < app.modules.mods.length; i++) {
       if (
         app.modules.mods[i].ticker != "" &&
-        app.modules.mods[i].ticker != undefined &&
-  !listed.includes(app.modules.mods[i].ticker)
+        app.modules.mods[i].ticker != undefined && !listed.includes(app.modules.mods[i].ticker)
       ) {
         options_html += `<option value="${app.modules.mods[i].ticker}">${app.modules.mods[i].ticker}</option>`;
-  listed.push(app.modules.mods[i].ticker);
+        listed.push(app.modules.mods[i].ticker);
       }
     }
 
@@ -44,7 +43,7 @@ module.exports = (app, mod) => {
             </select>
           </div>
           <div id="chip_wrapper" class="overlay-input" style="display:none;">
-            <label for="stake">Game stake:</label>
+            <label for="stake">Buy-in:</label>
             
             <input type="number" id="stake" list="suggestedChipValues" name="stake" min="0" value="0" step="1">
           </div>
