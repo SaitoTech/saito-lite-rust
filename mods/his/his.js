@@ -813,6 +813,14 @@ Habsburg conquistadores:
     // PAPACY //
     ////////////
 
+    this.importDebater('eck-debater', {
+      type		:	"eck-debater" ,
+      name		: 	"Johann Eck",
+      img		:       "EckDebater.svg",
+      language_zone	:	"any" ,
+      committed		: 	0,
+    });
+
     this.importDebater('aleander-debater', {
       type		:	"aleander-debater" ,
       name		: 	"Hieronymus Aleander",
@@ -13967,11 +13975,20 @@ return;
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    //obj = this.addEvents(obj);
     this.units[name] = obj;
 
   }
 
+  newUnit(faction, type) {
+    for (let key in this.units) {
+      if (this.units[key].type === type) {
+        let new_unit = JSON.parse(JSON.stringify(this.units[key]));
+        new_unit.owner = faction;
+        return new_unit;
+      }
+    }
+    return null;
+  }
 
   importArmyLeader(name, obj) {
     if (obj.type == null)               { obj.type = "unit"; }

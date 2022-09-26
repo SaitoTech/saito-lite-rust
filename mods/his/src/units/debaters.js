@@ -64,6 +64,14 @@
     // PAPACY //
     ////////////
 
+    this.importDebater('eck-debater', {
+      type		:	"eck-debater" ,
+      name		: 	"Johann Eck",
+      img		:       "EckDebater.svg",
+      language_zone	:	"any" ,
+      committed		: 	0,
+    });
+
     this.importDebater('aleander-debater', {
       type		:	"aleander-debater" ,
       name		: 	"Hieronymus Aleander",
