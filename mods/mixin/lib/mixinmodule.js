@@ -283,6 +283,7 @@ console.log("unique hash is : " + unique_hash);
     this.mixin.createWithdrawalAddress(mm_self.asset_id, destination, "", "", (d) => {
 
 console.log("In the catch function in create Withdrawal Address in mixinmodule.");
+console.log("d: " + JSON.stringify(d));
 
       let asset_id = d.data.asset_id;
       let withdrawal_address_id = d.data.address_id;
