@@ -101,7 +101,11 @@ class ChatManager {
 				let psq = "#chat-container-"+gid;
 				if (!document.querySelector(psq)) {
 				      let chat_popup = new ChatPopup(app, mod, gid);
-				      chat_popup.render(app, mod, gid);
+						if(app.browser.isMobileBrowser(navigator.userAgent) === false) {
+							chat_popup.render(app, mod, gid);
+						}
+					
+					  
 			        }
 			}
 		}

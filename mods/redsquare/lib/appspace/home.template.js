@@ -6,7 +6,10 @@ module.exports = (app, mod) => {
       <div id="redsquare-appspace-home" class="redsquare-appspace-home">
 
         <div class="saito-page-header" id="redsquare-home-header">
-      
+         <div class="saito-redsquare-actions-buttons">
+         <div class="saito-redsquare-actions-buttons-icon">
+         <i id="action-icon" class="fas fa-plus"></i>
+         </div>
           <div class="redsquare-actions-container"> 
           <div id="redsquare-new-tweet" class="saito-button-secondary small" style="float: right;">New Tweet</div>
           </div>
