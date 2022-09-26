@@ -4,11 +4,6 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
 const JSON = require('json-bigint');
 
-var marked = require('marked');
-var sanitizeHtml = require('sanitize-html');
-const linkifyHtml = require('markdown-linkify');
-
-
 class Chatx extends ModTemplate {
 
     constructor(app) {
@@ -338,25 +333,7 @@ class Chatx extends ModTemplate {
             }
         }
 
-
-        //
-        // update last message
-        //
-        for (let i = 0; i < this.groups.length; i++) {
-            if (this.renderMode == "email") {
-                if (this.groups[i].txs.length > 0) {
-                    this.updateLastMessage(this.groups[i].id, this.parseMsg(this.groups[i].txs[this.groups[i].txs.length - 1]), this.groups[i].txs[this.groups[i].txs.length - 1].transaction.ts);
-                } else {
-                    this.updateLastMessage(this.groups[i].id, "new chat");
-                }
-            }
-            if (this.renderMode == "main") {
-                if (this.groups[i].txs.length > 0) {
-                    this.updateLastMessage(this.groups[i].id, this.parseMsg(this.groups[i].txs[this.groups[i].txs.length - 1]), this.groups[i].txs[this.groups[i].txs.length - 1].transaction.ts);
-                }
-            }
-        }
-
+      
 
         //
         // render loaded messages
@@ -390,13 +367,14 @@ class Chatx extends ModTemplate {
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i].id === group_id) {
                 let element_to_update = 'chat-last-message-' + group_id;
+                alert(this.app.browser.sanitize(msg));
                 try {
-                    document.getElementById(element_to_update).innerHTML = sanitize(msg);
+                    document.getElementById(element_to_update).innerHTML = app.browser.sanitize(msg);
                 } catch (err) {
                 }
                 element_to_update = 'chat-last-message-timestamp-' + group_id;
                 try {
-                    document.getElementById(element_to_update).innerHTML = sanitize(`${datetime.hours}-${datetime.minutes}`);
+                    document.getElementById(element_to_update).innerHTML = app.browser.sanitize(`${datetime.hours}-${datetime.minutes}`);
                 } catch (e) {
                 }
             }
@@ -620,12 +598,13 @@ class Chatx extends ModTemplate {
           for (let z = 0; z < block.length; z++) {
             if (z > 0) { msg += '<br/>'; }
             let txmsg = block[z].returnMessage();
-  	    sender = block[z].transaction.from[0].add;
+            sender = block[z].transaction.from[0].add;
             msg += txmsg.message;       
           }
           let datets = new Date(block[block.length - 1].msg.timestamp)
           let x = this.app.browser.formatDate(datets);
           let last_update = x.hours + ":" + x.minutes;
+          msg = this.app.browser.sanitize(msg);
           html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg, last_update)}`;
         }
       }
@@ -673,33 +652,6 @@ class Chatx extends ModTemplate {
         return blocks;
 
     }
-
-
-    formatMessage(msg) {
-        msg = linkifyHtml(msg, { target: { url: '_self' } });
-        msg = marked(msg);
-        msg = sanitizeHtml(msg, {
-            allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
-                'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-                'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'marquee', 'pre'
-            ],
-            allowedAttributes: {
-                div: ['class', 'id'],
-                a: ['href', 'name', 'target', 'class', 'id'],
-                img: ['src', 'class']
-            },
-            selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
-            allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
-            allowedSchemesByTag: {},
-            allowedSchemesAppliedToAttributes: ['href', 'cite'],
-            allowProtocolRelative: true,
-            transformTags: {
-                'a': sanitizeHtml.simpleTransform('a', { target: '_blank' })
-            }
-        });
-        return sanitize(msg);
-    }
-
 
     receiveChatTransaction(app, tx) {
 

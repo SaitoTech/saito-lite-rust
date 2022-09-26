@@ -23,7 +23,7 @@ class ChatPopup {
           app.browser.addElementToSelector(`${mod.returnChatBody(gid)}`,  `.chat-body-${gid}`);
         }
 
-        app.browser.replaceElementBySelector(`<div class="chat-body chat-body-${gid}">${mod.returnChatBody(gid)} </div> ,`,  `.chat-body-${gid}`);
+        app.browser.replaceElementBySelector(`<div class="chat-body chat-body-${gid}">${mod.returnChatBody(gid)} </div>`,  `.chat-body-${gid}`);
         document.querySelector(".chat-body").scroll(0, 1000000000);
         app.browser.makeDraggable(`chat-container-${gid}`, `chat-header-${gid}`);
         this.attachEvents(app, mod, gid);
