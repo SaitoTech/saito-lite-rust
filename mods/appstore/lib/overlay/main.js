@@ -36,8 +36,10 @@ class AppStoreOverlay {
       //
       //
       document.querySelector(".appstore-overlay-apps").innerHTML = "";
-      for (let i = 0; i < rows.length; i++) {
-        app.browser.addElementToSelector(SaitoModuleImageBoxTemplate(rows[i].name, "/saito/img/dreamscape.png", "install"), ".appstore-overlay-apps");
+      for (let i = 0; i < rows.length; i++){
+	let approw = rows[i];
+        let base64msg = app.crypto.stringToBase64(JSON.stringify({ name : approw.name , description : approw.description , unixtime : approw.unixtime , publickey : approw.publickey , version : approw.version , bsh : approw.bsh , bid : approw.bid }));
+        app.browser.addElementToSelector(SaitoModuleImageBoxTemplate(rows[i].name, "/saito/img/dreamscape.png", base64msg, "install"), ".appstore-overlay-apps");
       }
 
       //
@@ -47,7 +49,7 @@ class AppStoreOverlay {
         installbtn.onclick = (e) => {
 
           // appbox is 3 above us
-          let module_obj = JSON.parse(app.crypto.base64ToString(e.currentTarget.parentElement.parentElement.parentElement.id));
+          let module_obj = JSON.parse(app.crypto.base64ToString(e.currentTarget.getAttribute("data-id")));
           let img = e.currentTarget.parentElement.parentElement.style.background;
 	      img = img.substring(5);
               img = img.substring(0, img.indexOf('")')-1);
@@ -73,7 +75,7 @@ class AppStoreOverlay {
     //
     Array.from(document.getElementsByClassName("appstore-app-install-btn")).forEach(installbtn => {
       installbtn.onclick = (e) => {
-        let module_obj = JSON.parse(app.crypto.base64ToString(e.currentTarget.id));
+        let module_obj = JSON.parse(installbtn.getAttribute("data-id"));
         data.module = module_obj;
         AppStoreAppDetails.render(app, data);
         AppStoreAppDetails.attachEvents(app, data);
