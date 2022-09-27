@@ -750,6 +750,12 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
     //////////////////
     openChatBox(group_id = null) {
 
+        let active_module = this.app.modules.returnActiveModule();
+	if (active_module.request_no_interrupts == true) {
+	  // if the module has ASKED leave it alone
+	  return;
+	}
+
         if (this.chat_manager == null) {
             this.chat_manager = new ChatManager(this.app, this);
         }
@@ -765,9 +771,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
             group_id = group.id;
         }
 
-console.log("RENDERING CRR: " + group_id);
-
-        // this.app.connection.emit('chat-render-request', group_id);
+        this.app.connection.emit('chat-render-request', group_id);
     }
 
 

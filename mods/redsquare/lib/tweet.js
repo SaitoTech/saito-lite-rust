@@ -39,6 +39,7 @@ class RedSquareTweet {
     //
     this.retweet = null;
     this.retweet_tx = null;
+    this.retweet_tx_sig = null;
     this.retweet_html = null;
     this.retweet_link_properties = null;
     this.retweet_link = null;
@@ -339,6 +340,14 @@ class RedSquareTweet {
       window.history.pushState({}, document.title, tweetUrl);
 
       this.saito_loader.remove();
+    }
+
+
+    //
+    // render retweet first
+    //
+    if (this.retweet != null) {
+      this.retweet.attachEvents(app, mod);
     }
 
 
