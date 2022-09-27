@@ -17,16 +17,15 @@ const CryptoModule = require("../../lib/templates/cryptomodule");
 
 class EGLDModule extends CryptoModule {
 
-  constructor(app,  mixin_mod) {
+  constructor(app, mod) {
 
     super(app);
     this.app = app;
     this.ticker = "EGLD";
     this.name = "EGLD";
     this.categories = "Cryptocurrency";
-    this.mixin = mixin_mod;
     this.balance = 0
-
+    this.egld = {}
 
     app.connection.on('update-egld-balance', (address)=> {
             this.receivePayment(address);
@@ -36,26 +35,33 @@ class EGLDModule extends CryptoModule {
 
   }
 
-  async installModule() {
-    if (this.mixin) {
-        if (this.mixin.egld_account_created == 0) {
-        console.log("---------------------");
-        console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
-        console.log("---------------------");
-	     await this.mixin.createEGLDAccount();
-         if(this.app.BROWSER ===0){
-             await  this.init()
-            //  this.sendPayment("0.5", "erd1v580hy7cnntscsrqu407hlhuxr0rdm9c0tg5elt3wp4j4dd2kpmqnr969x" )
-            //  console.log('egld module ', this)
-         }
-         
-        } 
-    }
+
+  initialize(){
+        this.createEGLDAccount();
+        this.init();
+        console.log(this);
   }
+
+//   async installModule() {
+//     if (this.mixin) {
+//         if (this.egld_account_created == 0) {
+//         console.log("---------------------");
+//         console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
+//         console.log("---------------------");
+// 	     await this.createEGLDAccount();
+//          if(this.app.BROWSER ===0){
+//              await  this.init()
+//             //  this.sendPayment("0.5", "erd1v580hy7cnntscsrqu407hlhuxr0rdm9c0tg5elt3wp4j4dd2kpmqnr969x" )
+//             //  console.log('egld module ', this)
+//          }
+         
+//         } 
+//     }
+//   }
 
 
   async init(){
-    let address = this.mixin.egld.keyfile.bech32;
+    let address = this.egld.keyfile.bech32;
     this.networkProvider = new ApiNetworkProvider("https://devnet-api.elrond.com")
     await this.updateBalance(address);
     await this.updateAddressNonce(address);
@@ -64,7 +70,7 @@ class EGLDModule extends CryptoModule {
 
 
   async sendPayment(amount, recipient){
-    let from = this.mixin.egld.keyfile.bech32
+    let from = this.egld.keyfile.bech32
      let config = await this.networkProvider.getNetworkConfig()
      let nonce = await this.nonce
      nonce = this.incrementNonce(nonce)
@@ -93,7 +99,7 @@ class EGLDModule extends CryptoModule {
 
     try {
        let serializedTx = tx.prepareForSigning();
-       tx.signature = this.mixin.egld.account.sign(serializedTx)
+       tx.signature = this.egld.account.sign(serializedTx)
         let signedtx = tx.prepareForNode();
         signedtx.chainId = config.ChainID;
         let signedTxJson = JSON.stringify(signedtx, null, 4);;
@@ -107,7 +113,7 @@ class EGLDModule extends CryptoModule {
      this.updateBalance(from)
     }, 3000)
     this.nonce = nonce
-    this.mixin.sendUpdateRecipientBalanceTransaction(to)
+    this.sendUpdateRecipientBalanceTransaction(to)
     } catch (error) {
         console.log(error, "error");
     }
@@ -157,7 +163,7 @@ receivePayment(address){
 }
 
 returnPrivateKey(){
-    return this.mixin.egld.account.privateKey;
+    return this.egld.account.privateKey;
 }
 
 async updateBalance(address){
