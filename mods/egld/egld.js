@@ -1,10 +1,10 @@
 /*********************************************************************************
 
-   returnAddress()
+     returnAddress()
    returnPrivateKey()
    async returnBalance(address = "")
-   async sendPayment(amount="", recipient="")
-   async receivePayment(recipient)
+   async sendPayment(amount="", recipient="", unique_hash="")
+   async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
 
 
 **********************************************************************************/
@@ -42,22 +42,6 @@ class EGLDModule extends CryptoModule {
         console.log(this);
   }
 
-//   async installModule() {
-//     if (this.mixin) {
-//         if (this.egld_account_created == 0) {
-//         console.log("---------------------");
-//         console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
-//         console.log("---------------------");
-// 	     await this.createEGLDAccount();
-//          if(this.app.BROWSER ===0){
-//              await  this.init()
-//             //  this.sendPayment("0.5", "erd1v580hy7cnntscsrqu407hlhuxr0rdm9c0tg5elt3wp4j4dd2kpmqnr969x" )
-//             //  console.log('egld module ', this)
-//          }
-         
-//         } 
-//     }
-//   }
 
 
   async init(){
@@ -69,15 +53,15 @@ class EGLDModule extends CryptoModule {
   }
 
 
-  async sendPayment(amount, recipient){
+  async sendPayment(amount, recipient,  unique_hash=""){
     let from = this.egld.keyfile.bech32
      let config = await this.networkProvider.getNetworkConfig()
      let nonce = await this.nonce
      nonce = this.incrementNonce(nonce)
-    //  console.log('nonce ', nonce)
+     console.log('nonce ', nonce)
     let tokenPayment = TokenPayment.egldFromAmount(amount);
     let value = BigInt(amount * (10 ** tokenPayment.numDecimals));
-    // console.log('value ', value.toString())
+    console.log('value ', value.toString())
     const balance =  await this.returnBalance(from);
     if(parseFloat(balance) < parseFloat(value.toString())){
         return console.log("your balance is not enough for this transaction", balance);
@@ -184,7 +168,7 @@ async createEGLDAccount(){
     }
     else {
       let password = this.app.crypto.generateRandomNumber().substring(0, 8);
-      // let password = "password"
+    //   let password = "password"
       let keyfile =  new Account().initNewAccountFromPassword(password)
       let account = new Account().loadFromKeyFile(keyfile, password)
       this.egld.keyfile = keyfile;
@@ -196,25 +180,25 @@ async createEGLDAccount(){
 
 }
 
-sendUpdateRecipientBalanceTransaction(recipient){
-    //   let newtx = this.app.wallet.createUnsignedTransaction();
-    //   newtx.transaction.to.push(recipient);
-    //   newtx.msg.module = "Mixin";
-    //   newtx.msg.request = "update-recipient-balance"
-    //   newtx.msg.data = {
-    //     recipient
-    // };
-    //   newtx = this.app.wallet.signTransaction(newtx);
-    //   console.log(this.app.network);
-    //   this.app.network.propagateTransaction(newtx);
-  }
+// sendUpdateRecipientBalanceTransaction(recipient){
+//       let newtx = this.app.wallet.createUnsignedTransaction();
+//       newtx.transaction.to.push(recipient);
+//       newtx.msg.module = "Mixin";
+//       newtx.msg.request = "update-recipient-balance"
+//       newtx.msg.data = {
+//         recipient
+//     };
+//       newtx = this.app.wallet.signTransaction(newtx);
+//       console.log(this.app.network);
+//       this.app.network.propagateTransaction(newtx);
+//   }
   
-  receiveUpdateReciepientBalanceTransaction(blk, tx, conf, app){
-          let egld_address = this.egld.keyfile.bech32;
-          if (egld_address === tx.msg.data.recipient) {
-              app.connection.emit('update-egld-balance', egld_address);
-          }
-  }
+//   receiveUpdateReciepientBalanceTransaction(blk, tx, conf, app){
+//           let egld_address = this.egld.keyfile.bech32;
+//           if (egld_address === tx.msg.data.recipient) {
+//               app.connection.emit('update-egld-balance', egld_address);
+//           }
+//   }
 
 
 
