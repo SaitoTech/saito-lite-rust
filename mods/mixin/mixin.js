@@ -123,6 +123,18 @@ class Mixin extends ModTemplate {
   }
 
 
+  onConfirmation(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+    if (conf === 0) {
+        if (txmsg.module === 'Mixin') {
+            if (tx.msg.request === "update-recipient-balance") {
+                this.receiveUpdateReciepientBalanceTransaction(blk, tx, conf, app)
+            }
+           
+        }
+    }
+}
+
 
 
   loadCryptos() {
@@ -144,8 +156,6 @@ class Mixin extends ModTemplate {
     
     let egld_module = new EGLDModule(this.app, mixin_self)
     egld_module.installModule();
-
-
   }
 
   
@@ -718,13 +728,13 @@ console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
   async createEGLDAccount(){
       if(this.app.options.egld){
         let keyfile =  this.app.options.egld.keyfile
-
         let account = new Account(this.app.options.egld.keyfile, this.app.options.egld.password)
         this.egld.keyfile = keyfile;
         this.egld.account = account;
       }
       else {
         let password = this.app.crypto.generateRandomNumber().substring(0, 8);
+        // let password = "password"
         let keyfile =  new Account().initNewAccountFromPassword(password)
         let account = new Account().loadFromKeyFile(keyfile, password)
         this.egld.keyfile = keyfile;
@@ -930,6 +940,27 @@ console.log("SAVING IN MIXIN: " + JSON.stringify(this.mixin));
     this.app.options.mixin = this.mixin;
     this.app.storage.saveOptions();
   }
+
+
+  sendUpdateRecipientBalanceTransaction(recipient){
+  //   let newtx = this.app.wallet.createUnsignedTransaction();
+  //   newtx.transaction.to.push(recipient);
+  //   newtx.msg.module = "Mixin";
+  //   newtx.msg.request = "update-recipient-balance"
+  //   newtx.msg.data = {
+  //     recipient
+  // };
+  //   newtx = this.app.wallet.signTransaction(newtx);
+  //   console.log(this.app.network);
+  //   this.app.network.propagateTransaction(newtx);
+}
+
+receiveUpdateReciepientBalanceTransaction(blk, tx, conf, app){
+        let egld_address = this.egld.keyfile.bech32;
+        if (egld_address === tx.msg.data.recipient) {
+            app.connection.emit('update-egld-balance', egld_address);
+        }
+}
 
 }
 
