@@ -725,26 +725,6 @@ console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
     }
   }
 
-  async createEGLDAccount(){
-      if(this.app.options.egld){
-        let keyfile =  this.app.options.egld.keyfile
-        let account = new Account(this.app.options.egld.keyfile, this.app.options.egld.password)
-        this.egld.keyfile = keyfile;
-        this.egld.account = account;
-      }
-      else {
-        let password = this.app.crypto.generateRandomNumber().substring(0, 8);
-        // let password = "password"
-        let keyfile =  new Account().initNewAccountFromPassword(password)
-        let account = new Account().loadFromKeyFile(keyfile, password)
-        this.egld.keyfile = keyfile;
-        this.egld.account = account;
-        this.app.options.egld = {keyfile, password}
-        this.app.storage.saveOptions(); 
-      }
-    
-  }
-
 
 
 

@@ -9,10 +9,10 @@
 
 **********************************************************************************/
 const { ApiNetworkProvider } = require("@elrondnetwork/erdjs-network-providers");
-const CryptoModule = require('./../../../lib/templates/cryptomodule');
 const {TokenPayment} = require("@elrondnetwork/erdjs");
 const axios  = require('axios')
-const {account:Account, transaction: Transaction} = require('@elrondnetwork/elrond-core-js')
+const {account:Account, transaction: Transaction} = require('@elrondnetwork/elrond-core-js');
+const CryptoModule = require("../../lib/templates/cryptomodule");
 
 
 class EGLDModule extends CryptoModule {
@@ -104,7 +104,7 @@ class EGLDModule extends CryptoModule {
         })
         console.log('transaction successful')
     setTimeout(()=> {
-        await  this.updateBalance(from)
+     this.updateBalance(from)
     }, 3000)
     this.nonce = nonce
     this.mixin.sendUpdateRecipientBalanceTransaction(to)
@@ -166,6 +166,29 @@ async updateBalance(address){
     this.balance  = balance.toPrettyString()
     console.log('egld balance', this.balance)
 }
+
+
+
+async createEGLDAccount(){
+    if(this.app.options.egld){
+      let keyfile =  this.app.options.egld.keyfile
+      let account = new Account(this.app.options.egld.keyfile, this.app.options.egld.password)
+      this.egld.keyfile = keyfile;
+      this.egld.account = account;
+    }
+    else {
+      let password = this.app.crypto.generateRandomNumber().substring(0, 8);
+      // let password = "password"
+      let keyfile =  new Account().initNewAccountFromPassword(password)
+      let account = new Account().loadFromKeyFile(keyfile, password)
+      this.egld.keyfile = keyfile;
+      this.egld.account = account;
+      this.app.options.egld = {keyfile, password}
+      this.app.storage.saveOptions(); 
+    }
+  
+}
+
 
 
 }
