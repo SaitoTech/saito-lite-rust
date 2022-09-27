@@ -35,13 +35,13 @@ class InviteOverlay {
     }
 
     attachEvents() {
-        document.querySelector('#copyVideoInviteCode').addEventListener('click', (e) => {
+        document.querySelector('#stunx-copy-vide-invite-code').addEventListener('click', (e) => {
             navigator.clipboard.writeText(`${this.roomCode}`);
-            siteMessageNew("Copied code to clipboard");
+            salert("Copied code to clipboard");
         });
-        document.querySelector('#copyVideoInviteLink').addEventListener('click', (e) => {
+        document.querySelector('#stunx-copy-video-invite-link').addEventListener('click', (e) => {
             navigator.clipboard.writeText(`${window.location.host}/redsquare/#stunx?invite_code=${this.roomCode}`);
-            siteMessageNew("Copied link to clipboard")
+            salert("Copied link to clipboard")
         });
 
         document.querySelector('#inviteCode').value = this.roomCode;
