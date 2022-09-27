@@ -27,12 +27,6 @@ class EGLDModule extends CryptoModule {
     this.balance = 0
     this.egld = {}
 
-    app.connection.on('update-egld-balance', (address)=> {
-            this.receivePayment(address);
-    })
-
-    return this;
-
   }
 
 
@@ -45,10 +39,12 @@ class EGLDModule extends CryptoModule {
 
 
   async init(){
+    if(this.app.BROWSER === 0){
     let address = this.egld.keyfile.bech32;
     this.networkProvider = new ApiNetworkProvider("https://devnet-api.elrond.com")
     await this.updateBalance(address);
     await this.updateAddressNonce(address);
+    }
 
   }
 
@@ -57,7 +53,6 @@ class EGLDModule extends CryptoModule {
     let from = this.egld.keyfile.bech32
      let config = await this.networkProvider.getNetworkConfig()
      let nonce = await this.nonce
-     nonce = this.incrementNonce(nonce)
      console.log('nonce ', nonce)
     let tokenPayment = TokenPayment.egldFromAmount(amount);
     let value = BigInt(amount * (10 ** tokenPayment.numDecimals));
@@ -80,33 +75,60 @@ class EGLDModule extends CryptoModule {
         chainID: config.ChainID,
         version: 1
     })
-
     try {
        let serializedTx = tx.prepareForSigning();
        tx.signature = this.egld.account.sign(serializedTx)
         let signedtx = tx.prepareForNode();
         signedtx.chainId = config.ChainID;
         let signedTxJson = JSON.stringify(signedtx, null, 4);;
+
         let res  = await  axios({
             method: 'post',
-            url: 'https://devnet-api.elrond.com/transactions',
+            url: `${this.base_url}/transactions`,
             data: signedtx
         })
-        console.log('transaction successful')
-    setTimeout(()=> {
-     this.updateBalance(from)
-    }, 3000)
-    this.nonce = nonce
-    this.sendUpdateRecipientBalanceTransaction(to)
+ 
+        console.log('transaction successful', res)
+
+        await this.updateAddressNonce(from);
+
+   return res.data.txHash;
     } catch (error) {
         console.log(error, "error");
     }
 }
 
+
+async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash=""){
+    const res = await axios({
+        method: "get",
+        url: `https://elrond-api-devnet.public.blastapi.io/accounts/${recipient}/transfers?sender=${sender}`
+       })
+       console.log(res.data)
+
+       let toReturn = null
+
+       for(let i = 0; i< res.data.length; i++){
+         if(res.data[i].timestamp > timestamp){
+            let amountRes = TokenPayment.egldFromBigInteger(res.data[i].value);
+            let amountSent = TokenPayment.egldFromAmount(amount);
+                console.log(amountRes.toString(), amountSent.toString())
+            if(parseFloat(amountRes.toString()) === parseFloat(amountSent.toString())){
+                toReturn = 1;
+                // console.log(res.data[i], "actual transaction");
+            }
+       
+          
+         }
+       }
+       return toReturn
+}
+
+
 async returnBalance(address){
     let  res  = await  axios({
         method: 'get',
-        url: `https://devnet-api.elrond.com/address/${address}/balance`,
+        url: `https://elrond-api-devnet.public.blastapi.io/address/${address}/balance`,
         data: ""
       })
       this.balance = res.data.data.balance;
@@ -118,7 +140,7 @@ async returnBalance(address){
 async getAddressNonce(address){
    const res = await axios({
     method: "get",
-    url: `https://devnet-api.elrond.com/address/${address}/nonce`
+    url: `https://elrond-api-devnet.public.blastapi.io/address/${address}/nonce`
    })
    let nonce = res.data.data.nonce;
 //    console.log(res, 'data')
@@ -129,7 +151,7 @@ async getAddressNonce(address){
 async updateAddressNonce(address){
     const res = await axios({
         method: "get",
-        url: `https://devnet-api.elrond.com/address/${address}/nonce`
+        url: `https://elrond-api-devnet.public.blastapi.io/address/${address}/nonce`
        })
 
        this.nonce = res.data.data.nonce;
@@ -141,10 +163,6 @@ incrementNonce(nonce){
 }
 
 
-
-receivePayment(address){
-        this.updateBalance(address)
-}
 
 returnPrivateKey(){
     return this.egld.account.privateKey;
@@ -175,6 +193,35 @@ async createEGLDAccount(){
       this.egld.account = account;
       this.app.options.egld = {keyfile, password}
       this.app.storage.saveOptions(); 
+
+    // let keyfile =  {
+    //     "version": 4,
+    //     "id": "7ec57842-6808-4b24-acad-4ea97b004be2",
+    //     "address": "573f7f00a6c99fa399eb969ae08a73891bd46484a10f44c6207c3a8ef5e16840",
+    //     "bech32": "erd12ulh7q9xex068x0tj6dwpznn3ydageyy5y85f33q0sagaa0pdpqqal879j",
+    //     "crypto": {
+    //       "ciphertext": "e4ffc0b7aa7a269d347c25c440c279692379bd3cf525781711b6ad0830bfeed53ac705a91141c3e126c5b97178e1113019c4fd7975a23637733498cb5bb0f240",
+    //       "cipherparams": {
+    //         "iv": "604826587f31bdf765ca28115cd2d588"
+    //       },
+    //       "cipher": "aes-128-ctr",
+    //       "kdf": "scrypt",
+    //       "kdfparams": {
+    //         "dklen": 32,
+    //         "salt": "e0a132cd73464e414e94c21d453f52407918895b9d586316950c74e9fd4c8848",
+    //         "n": 4096,
+    //         "r": 8,
+    //         "p": 1
+    //       },
+    //       "mac": "c8770053d62c66ddb0e2d5105dd6dc7c72b05b2476867db7a3667f245b6aa260"
+    //     }
+    //   }
+    
+    //   let account = new Account(keyfile, password);
+    //   this.egld.keyfile = keyfile;
+    //   this.egld.account = account;
+    //   this.app.options.egld = {keyfile, password}
+    //   this.app.storage.saveOptions(); 
     }
   
 
