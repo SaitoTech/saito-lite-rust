@@ -134,6 +134,7 @@ class Mahjong extends GameTemplate {
       for (let row = 1; row <= 21; row++){
         for (let column = 1; column <= 14; column++){
           let position = `row${row}_slot${column}`;
+          this.makeInvisible(position);
           if (!this.isArrayInArray(this.emptyCells, [row,column]) && deckSize > index) {
             this.game.board[position] = Object.values(this.game.deck.cards)[index];
             index++;
@@ -144,12 +145,17 @@ class Mahjong extends GameTemplate {
       }
     } else {
       deckSize = Object.values(this.returnDeck()).length;
+      for (let row = 1; row <= 21; row++){
+        for (let column = 1; column <= 14; column++){
+          let position = `row${row}_slot${column}`;
+          this.makeInvisible(position);
+        }
+      }
     }
 
     this.game.cardsLeft = deckSize - this.game.hidden.length;
     this.game.selected = "";
-    if (this.browser_active === 0) { return; }
-    $(".slot").removeClass("empty");
+
     index = 0;
     try {
       //Want to add a timed delay for animated effect
@@ -160,12 +166,10 @@ class Mahjong extends GameTemplate {
           if (!this.isArrayInArray(this.emptyCells, [row,column]) && deckSize > index) {
             await timeout(timeInterval);
             $('#' + divname).html(this.returnCardImageHTML(this.game.board[divname]));
-            this.untoggleCard(divname);
+            this.makeVisible(divname);
             if (this.game.hidden.includes(divname)) {
               this.makeInvisible(divname);
             }
-          } else {
-            this.makeInvisible(divname);
           }
         }
       }
@@ -178,79 +182,22 @@ class Mahjong extends GameTemplate {
 
   }
 
-  /*highlightRow(num=0) {
-
-    if (num === 1) {
-      $('.row1 > img').css('opacity', 0.85);
-      $('.row2 > img').css('opacity', 0.85);
-      $('.row3 > img').css('opacity', 0.85);
-      $('.row4 > img').css('opacity', 0.85);
-      $('.row5 > img').css('opacity', 0.85);
-      $('.row6 > img').css('opacity', 0.85);
-      $('.row7 > img').css('opacity', 0.85);
-      $('.row8 > img').css('opacity', 0.85);
-    }
-    if (num === 2) {
-      $('.row9 > img').css('opacity', 0.8);
-      $('.row10 > img').css('opacity', 0.8);
-      $('.row11 > img').css('opacity', 0.8);
-      $('.row12 > img').css('opacity', 0.8);
-      $('.row13 > img').css('opacity', 0.8);
-      $('.row14 > img').css('opacity', 0.8);
-    }
-    if (num === 3) {
-      $('.row15 > img').css('opacity', 0.75);
-      $('.row16 > img').css('opacity', 0.75);
-      $('.row17 > img').css('opacity', 0.75);
-      $('.row18 > img').css('opacity', 0.75);
-    }
-    if (num === 4) {
-      $('.row19 > img').css('opacity', 0.7);
-      $('.row20 > img').css('opacity', 0.7);
-    }
-    if (num === 5) {
-      $('.row21 > img').css('opacity', 0.65);
-    }
-
-  }
-
-  unhighlightRows() {
-    $('.row1 > img').css('opacity', 1.0);
-    $('.row2 > img').css('opacity', 1.0);
-    $('.row3 > img').css('opacity', 1.0);
-    $('.row4 > img').css('opacity', 1.0);
-    $('.row5 > img').css('opacity', 1.0);
-    $('.row6 > img').css('opacity', 1.0);
-    $('.row7 > img').css('opacity', 1.0);
-    $('.row8 > img').css('opacity', 1.0);
-    $('.row9 > img').css('opacity', 1.0);
-    $('.row10 > img').css('opacity', 1.0);
-    $('.row11 > img').css('opacity', 1.0);
-    $('.row12 > img').css('opacity', 1.0);
-    $('.row13 > img').css('opacity', 1.0);
-    $('.row14 > img').css('opacity', 1.0);
-    $('.row15 > img').css('opacity', 1.0);
-    $('.row16 > img').css('opacity', 1.0);
-    $('.row17 > img').css('opacity', 1.0);
-    $('.row18 > img').css('opacity', 1.0);
-    $('.row19 > img').css('opacity', 1.0);
-    $('.row20 > img').css('opacity', 1.0);
-    $('.row21 > img').css('opacity', 1.0);
-  }
-*/
-
+ 
   makeInvisible(divname) {
     let noShadowBox = 'none';
     this.applyShadowBox(divname, noShadowBox);
     $(`#${divname}`).addClass("invisible");
-    //$(`#${divname}`).css('opacity','0.0');
-    //$(`#${divname}`).css('pointer-events','none');
   }
+
+  makeVisible(divname) {
+    $(`#${divname}`).removeClass("invisible");
+    let boxShadow = '12px 10px 12px 1px #000000';
+    this.applyShadowBox(divname, boxShadow);
+  }
+
 
   toggleCard(divname) {
     $(`#${divname}`).addClass("selected");
-    //let highlighted = '0px 0px 0px 3px #00ff00';
-    //this.applyShadowBox(divname, highlighted);
   }
 
   toggleInvalidCard(divname) {
@@ -259,29 +206,21 @@ class Mahjong extends GameTemplate {
     $(`#${divname}`).addClass("invalid");
     $(`#${mahjong_self.game.selected}`).addClass("invalid");
     $(".selected").removeClass("selected");
-    //let invalidHighlight = '0px 0px 0px 3px #ff0000'
-    //this.applyShadowBox(divname, invalidHighlight);
+
+    let last = mahjong_self.game.selected;
+
     setTimeout(() => {
       $(".invalid").removeClass("invalid");
       mahjong_self.untoggleCard(divname);
-      mahjong_self.untoggleCard(mahjong_self.game.selected);
+      mahjong_self.untoggleCard(last);
       mahjong_self.game.selected = "";
     }, 900);
 
   }
 
   untoggleCard(divname) {
-    //$(`#${divname}`).css('opacity','1.0');
-    //$(`#${divname}`).css('pointer-events','auto');
-    $(`#${divname}`).removeClass("invisible");
+
     $(`#${divname}`).removeClass("selected");
-    let outermostBoxShadow = '0px 4px 2px 1px #000000';
-    let boxShadow = '12px 10px 12px 1px #000000';
-    if (`#${divname}` === "#row4_slot1" || `#${divname}` === "#row5_slot14") {
-      this.applyShadowBox(divname, outermostBoxShadow);
-    } else {
-      this.applyShadowBox(divname, boxShadow);
-    }
   }
 
   applyShadowBox(divname, property) {
@@ -357,12 +296,6 @@ class Mahjong extends GameTemplate {
     // render menu
     //
     this.menu.render(app, this);
-
-    //
-    // sidebar log
-    //
-    this.log.render(this.app, this);
-    this.log.attachEvents(this.app, this);
 
     //
     // display the board?
@@ -446,28 +379,6 @@ class Mahjong extends GameTemplate {
       }
     });
 
-    /*$('.row1').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function() { mahjong_self.unhighlightRows()});
-    $('.row2').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row3').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row4').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row5').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row6').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row7').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row8').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row9').mouseover(function() { mahjong_self.highlightRow(2)  }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row10').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row11').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row12').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row13').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row14').mouseover(function() { mahjong_self.highlightRow(2) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row15').mouseover(function() { mahjong_self.highlightRow(3) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row16').mouseover(function() { mahjong_self.highlightRow(3) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row17').mouseover(function() { mahjong_self.highlightRow(3) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row18').mouseover(function() { mahjong_self.highlightRow(3) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row19').mouseover(function() { mahjong_self.highlightRow(4) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row20').mouseover(function() { mahjong_self.highlightRow(4) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    $('.row21').mouseover(function() { mahjong_self.highlightRow(5) }).mouseout(function () { mahjong_self.unhighlightRows() });
-    */
   }
 
   getAvailableTiles() {
@@ -532,33 +443,21 @@ class Mahjong extends GameTemplate {
       }
     }
 
-    /*let unlockableTiles = 0;
-    // console.log("available pairs:");
-    for (const k of availableTiles.keys()) {
-      if (availableTiles.get(k) >= 2 && availableTiles.get(k) < 4) {
-        unlockableTiles += 2;
-        // console.log(`Available tile pair: ${k} (tiles: ${availableTiles.get(k)})`);
-      } else if (availableTiles.get(k) === 4) {
-        unlockableTiles += 4;
-        // console.log(`Available tile pair: ${k} (tiles: ${availableTiles.get(k)})`);
-      }
-    }*/
-    //return unlockableTiles;
     return hints;
   }
 
   displayUserInterface() {
     let tilesLeftToUnlock = this.getAvailableTiles();
-    if (tilesLeftToUnlock === []) {
+
+    if (!tilesLeftToUnlock || tilesLeftToUnlock.length == 0) {
       this.addMove("lose");
       this.endTurn();
       return;
     }
-    let pairsLeftToUnlock = tilesLeftToUnlock.length;
     let mahjong_self = this;
 
     let html = `<div class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.</div>
-                <div id="hint" class="tip">Available tile pairs to unlock: <span class="hint_btn">${pairsLeftToUnlock}</span>
+                <div id="hint" class="tip">Available tile pairs to unlock: <span class="hint_btn">${tilesLeftToUnlock.length}</span>
                   <div class="tiptext">Click for a hint</div>
                 </div>`;
 
@@ -613,10 +512,10 @@ class Mahjong extends GameTemplate {
       this.untoggleCard(this.game.selected);
       this.game.selected = "";
     }
-    this.untoggleCard(this.game.hidden[this.game.hidden.length - 1]);
-    this.untoggleCard(this.game.hidden[this.game.hidden.length - 2]);
-    this.game.hidden.splice(this.game.hidden.length - 2, 2);
-    this.game.cardsLeft = this.game.cardsLeft + 2;
+    this.makeVisible(this.game.hidden.pop());
+    this.makeVisible(this.game.hidden.pop());
+
+    this.game.cardsLeft += 2;
     this.displayUserInterface();
   }
 
