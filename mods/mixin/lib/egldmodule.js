@@ -130,9 +130,9 @@ async getAddressNonce(address){
     method: "get",
     url: `https://devnet-api.elrond.com/address/${address}/nonce`
    })
-   this.nonce = res.data.data.nonce;
+   let nonce = res.data.data.nonce;
 //    console.log(res, 'data')
-   return this.nonce
+   return  nonce
 }
 
 
