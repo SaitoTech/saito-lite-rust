@@ -4,10 +4,10 @@ module.exports = ChatListHeaderTemplate = (group, last_message="", formatted_ts=
       <img src="/saito/img/logo-color.svg">
       <div class="chat-content">
         <div class="chat-group-name">${group.name}</div>
-        <div id="chat-last-message-${group.id}" class="chat-last-message">${sanitize(last_message)}</div>
+        <div id="chat-last-message-${group.id}" class="chat-last-message">${this.apply.browser.sanitize(last_message)}</div>
       </div>
       <div style="display: grid;">
-        <div id="chat-last-message-timestamp-${group.id}" class="chat-last-message-timestamp">${sanitize(formatted_ts)}</div>
+        <div id="chat-last-message-timestamp-${group.id}" class="chat-last-message-timestamp">${this.apply.browser.sanitize(formatted_ts)}</div>
       </div>
     </div>
   `;

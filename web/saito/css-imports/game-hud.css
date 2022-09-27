@@ -170,7 +170,10 @@ ul li a {
 
 /*When using a font awesome icon*/
 i.menu_icon_icon{
+  box-sizing: content-box;
   background-color: rgba(10,10,10,0.75);
+  /*font-size: 75px;*/
+  /*margin-bottom: 5px;*/
 }
 
 .menu_icon{

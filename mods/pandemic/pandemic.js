@@ -81,9 +81,6 @@ class Pandemic extends GameTemplate {
       //
       this.game.queue = [];
       this.game.queue.push("start");
-
-      this.game.queue.push("place_initial_infection");
-
       this.game.queue.push("READY");
 
       //Insert Epidemics into player deck
@@ -96,6 +93,9 @@ class Pandemic extends GameTemplate {
       for (let i = 1; i <= this.game.players.length; i++) {
         this.game.queue.push(`draw_player_card\t${i}\t${cards_to_deal}`);
       }
+
+      this.game.queue.push("place_initial_infection");
+
 
       this.game.queue.push("SHUFFLE\t2");
       this.game.queue.push("DECK\t2\t" + JSON.stringify(this.skin.returnPlayerCards()));
@@ -175,7 +175,7 @@ class Pandemic extends GameTemplate {
           game_mod,
           game_mod.returnWelcomeOverlay()
         );
-        document.querySelector("#close_welcome_overlay").onclick = (e) => {
+        document.querySelector(".close_welcome_overlay").onclick = (e) => {
           game_mod.overlay.hide();
         };
       },
@@ -248,7 +248,7 @@ class Pandemic extends GameTemplate {
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
           let html = game_mod.returnPlayerCardHTML(i + 1);
-          game_mod.overlay.show(app, game_mod, `<div class="giant_cards bighand">${html}</div>`);
+          game_mod.overlay.show(app, game_mod, `<div class=" bighand">${html}</div>`);
           game_mod.attachCardboxEvents(); //Don't do anything on click
         },
       });
@@ -271,8 +271,6 @@ class Pandemic extends GameTemplate {
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 
-    this.cardfan.addClass("bighand");
-
     if (this.game.players_info && this.game.player > 0){
       let hh = document.querySelector(".hud-header");
       let role = this.game.players_info[this.game.player-1].name;
@@ -288,6 +286,8 @@ class Pandemic extends GameTemplate {
           pandemic_self.cardfan.hide();
         }else{
           pandemic_self.cardfan.render(app, pandemic_self, pandemic_self.returnPlayerCardHTML(pandemic_self.game.player));  
+          document.getElementById("cardfan").classList.add("bighand");
+          pandemic_self.cardfan.attachEvents(app, pandemic_self);
           pandemic_self.attachCardboxEvents(pandemic_self.playFromCardFan);
         }
       }
@@ -295,7 +295,6 @@ class Pandemic extends GameTemplate {
 
     this.attachCardboxEvents(); //Add hover action to restored Log tags and set this.cardbox_callback to dummy function
 
-    $("#hud").disableSelection();
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -360,7 +359,6 @@ class Pandemic extends GameTemplate {
       $(".city").off();
       $(".research_station").css("z-index", "");
       $(".research_station").off();
-      $(".popup-confirm-menu").remove();
     } catch (err) {
       console.log("ERROR: removing events",err);
     }
@@ -1631,17 +1629,14 @@ class Pandemic extends GameTemplate {
           $(`#player${player}`).addClass("active_player");
            
           $(".player.active_player .move_counter").html(this.game.state.active_moves);
-
           if (this.game.state.welcome == 0) {
             this.overlay.show(this.app, this, this.returnWelcomeOverlay());
-            document.querySelector("#close_welcome_overlay").onclick = (e) => {
+            document.querySelector(".close_welcome_overlay").onclick = (e) => {
               this.overlay.hide();
-              this.animateInitial();
             };
             this.game.state.welcome = 1;
           }
           if (player == this.game.player) {
-            this.cardfan.render(this.app, this, this.returnPlayerCardHTML(this.game.player));  
             this.playerMakeMove();
           } else {
             this.removeEvents();
@@ -1749,7 +1744,7 @@ class Pandemic extends GameTemplate {
         // show overlay
         //
         this.overlay.show(this.app, this, this.returnEpidemicOverlay(city));
-        document.querySelector("#close_epidemic_overlay").onclick = (e) => {
+        document.querySelector(".close_epidemic_overlay").onclick = (e) => {
           pandemic_self.overlay.hide();
         };
         this.overlay.blockClose();
@@ -1820,14 +1815,11 @@ class Pandemic extends GameTemplate {
             let virus = this.skin.cities[newcard].virus;
             this.game.state.cities[newcard].virus[virus] = i;
             this.game.state.active[virus] += i;
-            this.skin.animateInfection(newcard, "Initial infection...", 0, ()=>{this.restartQueue();});
             //console.log(this.game.state.cities[newcard].virus);
             this.updateLog(`${this.skin.cities[newcard].name} infected with ${i} ${this.skin.getVirusName(virus)}`);
           }
         }
         this.game.queue.splice(qe, 1);
-        this.showBoard();
-        return 0;
       }
 
       //Insert Epidemics into player deck
@@ -1858,15 +1850,15 @@ class Pandemic extends GameTemplate {
         pandemic_self.game.halted = 1;
 
         pandemic_self.acknowledgeInfectionCard(mv[1], function () {
-          //console.log("Acknowledgeing...");
-          //console.log(JSON.stringify(pandemic_self.game.queue));
-          //console.log(JSON.stringify(pandemic_self.moves));
+          console.log("Acknowledgeing...");
+          console.log(JSON.stringify(pandemic_self.game.queue));
+          console.log(JSON.stringify(pandemic_self.moves));
           pandemic_self.game.queue.splice(pandemic_self.game.queue.length - 1, 1);
           pandemic_self.game.queue = pandemic_self.game.queue.concat(pandemic_self.moves);
           pandemic_self.moves = [];
-          //console.log("continuing...");
-          //console.log(JSON.stringify(pandemic_self.game.queue));
-          //console.log(JSON.stringify(pandemic_self.moves));
+          console.log("continuing...");
+          console.log(JSON.stringify(pandemic_self.game.queue));
+          console.log(JSON.stringify(pandemic_self.moves));
 
           pandemic_self.restartQueue();
           return 1;
@@ -2119,6 +2111,7 @@ class Pandemic extends GameTemplate {
     this.moves = [];
     this.saveGame(this.game.id);
   }
+
 
 
   triggerOutbreak(city, virus) {
@@ -2519,7 +2512,7 @@ displayDisease() {
         <div class="epidemic-card">
           <img src="/${this.name.toLowerCase()}/img/${this.skin.epidemic.img}"/>
         </div>
-        <div class="button saito-button-primary" id="close_epidemic_overlay">close</div>
+        <div class="button close_epidemic_overlay" id="close_epidemic_overlay">close</div>
       </div>
     `;
 
@@ -2543,7 +2536,7 @@ displayDisease() {
       }
 
       html += `
-        <div class="player_info_box ${(i+1 == this.game.player)?"myrole":""}">
+        <div class="player_info_box">
           <div class="player_role_card">
             <img src="/${this.name.toLowerCase()}/img/${player.card}" />
           </div>
@@ -2574,7 +2567,7 @@ displayDisease() {
     }
 
     html += `
-        <div class="button saito-button-primary" id="close_welcome_overlay">Start Playing</div>
+        <div class="button close_welcome_overlay" id="close_welcome_overlay">Start Playing</div>
       </div>`;
 
     return html;

@@ -82,7 +82,7 @@ module.exports = ChatBoxMessageBlockTemplate = (app, mod, group, message_block) 
               <p class="chat-message-timestamp">${datetime.hours}:${datetime.minutes}</p>
         </div>
         <div class="chat-box-message-container chat-box-message-container-${type}" style="border-color:${identicon_color};">
-          ${sanitize(emoji.emojify(messages_html))}
+          ${this.app.browser.sanitize(messages_html)}
         </div>
       </div>
     </div>
