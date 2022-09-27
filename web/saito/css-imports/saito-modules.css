@@ -19,22 +19,18 @@ Saito Module Stubs - horizontal bar with image left
     font-weight: bold;
     width: 100%;
     overflow: hidden;
-    padding: 10px 15px;
+    padding: 1rem 1.5rem;
     height: min-content;
     bottom: 0px;
 }
 .saito-module-imagebox-title {
-    margin-top: 0.3rem;
-    display: block;
+    margin-top: 0.8rem;
     float: left;
 }
 .saito-module-imagebox-button {
     width: min-content;
-    padding-left: 2rem;
-    padding-right: 2rem;
     float: right;
     background-color: white;
-    margin: 0px;
 }
 
 
