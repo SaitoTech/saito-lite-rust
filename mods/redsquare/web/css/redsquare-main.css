@@ -108,10 +108,11 @@ span.redsquare-home-red-square+span {
 .redsquare-tweet-overlay {
   padding: 2rem;
   padding-bottom: 1rem;
-  border-radius: 1rem;
-  background-color: white;
+  border-radius: 0.5rem;
+  background-color: var(--saito-white);
   position: relative;
   width: 50rem;
+  max-width: 100vw;
   max-height: 95vh;
   overflow-y: auto;
 }
@@ -200,37 +201,36 @@ span.redsquare-home-red-square+span {
   padding: 3rem;
   border-radius: 0.5rem;
   background-color: #0009;
-  color: white;
+  color: var(--saito-white);
   max-height: 90vh;
-  max-width: 114rem;
+  max-width: 100vw;
   overflow-y: auto;
 }
 
 .redsquare-create-game-list {
   display: grid;
-  grid-template-rows: auto;
   grid-template-columns: 1fr 1fr;
-  row-gap: 2rem;
-  column-gap: 2rem;
+  grid-gap: 1rem;
 }
+
 
 .redsquare-create-game-header {
   font-size: 3rem;
   margin-bottom: 1rem;
-  background-color: #0008;
   padding: 1rem;
 }
 
 .redsquare-game-container {
   display: grid;
-  grid-template-columns: 10vw auto;
+  grid-template-columns: 12rem auto;
   grid-template-rows: min-content 1fr;
-  max-width: 80vw;
-  column-gap: 2rem;
-  min-height: 10rem;
-  max-height: 10rem;
-  min-width: 51rem;
-  padding: 0.5rem
+  grid-gap: 1rem;
+  min-height: 12rem;
+  max-height: 12rem;
+  padding: 0.5rem;
+  min-width: 35rem;
+  width: 50rem;
+  max-width: calc(100vw - 4rem);
 }
 
 .redsquare-game-container:hover {
@@ -240,9 +240,8 @@ span.redsquare-home-red-square+span {
 
 .redsquare-game-image {
   grid-row: span 2;
-  width: 10vw;
+  width: 12rem;
   height: auto;
-  max-height: 10rem;
 }
 
 .redsquare-game-image>img {
@@ -252,24 +251,46 @@ span.redsquare-home-red-square+span {
 }
 
 .redsquare-game-title {
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 1;
-  grid-row-end: 2;
   font-size: 3rem;
-  font-weight: bolder;
 }
 
 .redsquare-game-description {
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 2;
-  grid-row-end: 3;
-  overflow-y: hidden;
-  text-overflow: clip;
   font-size: 1.5rem;
   line-height: 1.9rem;
+  overflow: auto;
 }
+
+@media only screen and (max-width: 535px) {
+  
+  .redsquare-create-game-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 1rem;
+  }
+
+  .redsquare-game-image {
+    grid-row: unset;
+    width: 6rem;
+  }
+
+  .redsquare-game-description {
+    grid-column: span 2;
+    max-height: 8rem;
+  }  
+  
+  .redsquare-game-container {
+    grid-template-columns: 6rem auto;
+    min-height: unset;
+    max-height: 25rem;
+  }
+
+  .redsquare-game-title {
+    line-height: 4rem;
+  }
+}
+
+/*--------------------*/
+
 
 .redsquare-tweet-tools {
   display: flex;
