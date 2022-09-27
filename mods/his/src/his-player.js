@@ -2065,10 +2065,10 @@ return;
 
       let msg = "Against Comitted or Uncommited Debater?";
       let html = '<ul>';
-      if (0 < his_self.returnDebatersInLanguageZone("english", "protestant", 1)) {
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
           html += '<li class="option" id="committed">Committed</li>';
       }
-      if (0 < his_self.returnDebatersInLanguageZone("english", "protestant", 0)) {
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 0)) {
           html += '<li class="option" id="uncommitted">Uncommitted</li>';
       }
       html += '</ul>';
