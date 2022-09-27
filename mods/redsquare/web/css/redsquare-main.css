@@ -140,10 +140,7 @@ span.redsquare-home-red-square+span {
 }
 
 .saito-main.appspace {
-  height: 5000px;
-  overflow-y: hidden;
-  width: 92.5%;
-  margin-left: 5%;
+  margin: 0 2rem 15rem;
   position: relative;
 }
 
