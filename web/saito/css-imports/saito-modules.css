@@ -1,0 +1,49 @@
+/* ----------------------------------------------------------------
+Saito Module Stubs - horizontal bar with image left
+-----------------------------------------------------------------*/
+.saito-module-imagebox {
+    min-height: 200px;
+    min-width: 300px;
+    display: grid;
+    position: relative;
+    border: 1px solid;
+    border-top: none;
+    margin-bottom: 2rem;
+    background: url(/saito/img/dreamscape.png);
+    background-size: cover;
+}
+.saito-module-imagebox-titlebar {
+    color: rgb(255, 255, 255);
+    font-size: 1.6em;
+    margin-top: -49px;
+    font-weight: bold;
+    z-index: 1;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    padding: 10px 15px;
+    grid-row: 3;
+}
+.saito-module-imagebox-title {
+    margin-top: 0.3rem;
+    display: block;
+    float: left;
+}
+.saito-module-imagebox-button {
+    width: min-content;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    float: right;
+    background-color: white;
+    margin: 0px;
+}
+
+
+
+/* ----------------------------------------------------------------
+Saito Module Stubs - horizontal bar with image left
+-----------------------------------------------------------------*/
+
+
+
+
