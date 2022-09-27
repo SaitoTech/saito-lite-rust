@@ -1,4 +1,9 @@
 body{
+   font-family: arial, helvetica, sans-serif;
+   font-size: 1.1em;
+   padding:0px;
+   margin:0px;
+
   background: -webkit-linear-gradient(top, #0a2942, #010204);
   background: -moz-linear-gradient(top, #0a2942, #010204);
   background: linear-gradient(to top, #0a2942, #010204);
@@ -82,10 +87,10 @@ body{
   background-color: #49575b;
 }
 .hud-header.field{
-  background-color: #f09820;
+  background-color: #c57a28;
 }
 .hud-header.contamination{
-  background-color: #e94f8b;
+  background-color: #49575b;
 }
 .hud-header.investigator{
   background-color: #48555a;
@@ -180,7 +185,7 @@ body{
 }
 
 
-.giant_cards .card{
+.bighand .card{
   position: absolute;
   width: 25vh;
   height: auto;
@@ -261,9 +266,6 @@ body{
   z-index: 900009;
 }
 
-.game-scoreboard{
-  font-size: 16px;
-}
 
 .game-scoreboard .cube{
   position: static;
@@ -456,16 +458,10 @@ body{
 /*** Player Cards ***/
 
 .player_info_box {
-  margin:  15px 0;
-  padding: 15px 0;
+  padding-top: 25px;
   min-height: 200px;
   display: grid;
   grid-template-columns: 1fr 4fr;
-}
-.player_info_box.myrole{
-  background: linear-gradient(rgba(250,0,0,0.5), antiquewhite);
-  border-radius: 10px;
-  border: solid 2px black;
 }
 .player_role_card {
   height: 200px;
@@ -496,11 +492,9 @@ body{
   overflow-y: auto;
   background-color: whitesmoke;
   text-align: center;
-  padding: 40px;
 }
-
-.welcome_overlay .button{
-  margin-top: 40px;
+.close_welcome_overlay{
+  margin: 40px;
 }
 
 
@@ -559,7 +553,6 @@ body{
  max-width: 150%;
  white-space: nowrap;
  overflow-x: visible;
- font-size: 20px;
 }
 
 .status ul li.card{

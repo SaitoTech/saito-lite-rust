@@ -17,7 +17,7 @@ module.exports = (app, mod) => {
       <i id="action-icon" class="fas fa-plus"></i>
       </div>
        <div class="redsquare-actions-container"> 
-       <div id="redsquare-add-contact" class="redsquare-add-contact saito-button-secondary small" style="float: right;">Add Contact</div>
+       <div id="redsquare-add-contact" class="redsquare-add-contact saito-button-secondary small">Add Contact</div>
        </div>
       </div>
 

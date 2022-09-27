@@ -95,7 +95,8 @@ class Mahjong extends GameTemplate {
     [1,1], [1,14],
     [2,1], [2,2], [2,3], [2,12], [2,13], [2,14],
     [3,1], [3,2], [3,13], [3,14],
-    [5,1], [5,14],
+    [4,14],
+    [5,1], 
     [6,1], [6,2], [6,13], [6,14],
     [7,1], [7,2], [7,3], [7,12], [7,13], [7,14],
     [8,1], [8,14],
@@ -177,7 +178,7 @@ class Mahjong extends GameTemplate {
 
   }
 
-  highlightRow(num=0) {
+  /*highlightRow(num=0) {
 
     if (num === 1) {
       $('.row1 > img').css('opacity', 0.85);
@@ -236,37 +237,47 @@ class Mahjong extends GameTemplate {
     $('.row20 > img').css('opacity', 1.0);
     $('.row21 > img').css('opacity', 1.0);
   }
-
-
-  boxShadowProperties = ['box-shadow', '-moz-box-shadow', '-webkit-box-shadow', '-o-box-shadow'];
+*/
 
   makeInvisible(divname) {
     let noShadowBox = 'none';
     this.applyShadowBox(divname, noShadowBox);
-    $(`#${divname}`).css('opacity','0.0');
-    $(`#${divname}`).css('pointer-events','none');
+    $(`#${divname}`).addClass("invisible");
+    //$(`#${divname}`).css('opacity','0.0');
+    //$(`#${divname}`).css('pointer-events','none');
   }
 
   toggleCard(divname) {
-    let highlighted = '0px 0px 0px 3px #00ff00';
-    this.applyShadowBox(divname, highlighted);
+    $(`#${divname}`).addClass("selected");
+    //let highlighted = '0px 0px 0px 3px #00ff00';
+    //this.applyShadowBox(divname, highlighted);
   }
 
   toggleInvalidCard(divname) {
     let mahjong_self = this;
-    let invalidHighlight = '0px 0px 0px 3px #ff0000'
-    this.applyShadowBox(divname, invalidHighlight);
+    
+    $(`#${divname}`).addClass("invalid");
+    $(`#${mahjong_self.game.selected}`).addClass("invalid");
+    $(".selected").removeClass("selected");
+    //let invalidHighlight = '0px 0px 0px 3px #ff0000'
+    //this.applyShadowBox(divname, invalidHighlight);
     setTimeout(() => {
+      $(".invalid").removeClass("invalid");
       mahjong_self.untoggleCard(divname);
-    }, 0.90);
+      mahjong_self.untoggleCard(mahjong_self.game.selected);
+      mahjong_self.game.selected = "";
+    }, 900);
+
   }
 
   untoggleCard(divname) {
-    $(`#${divname}`).css('opacity','1.0');
-    $(`#${divname}`).css('pointer-events','auto');
+    //$(`#${divname}`).css('opacity','1.0');
+    //$(`#${divname}`).css('pointer-events','auto');
+    $(`#${divname}`).removeClass("invisible");
+    $(`#${divname}`).removeClass("selected");
     let outermostBoxShadow = '0px 4px 2px 1px #000000';
     let boxShadow = '12px 10px 12px 1px #000000';
-    if (`#${divname}` === "#row4_slot1" || `#${divname}` === "#row4_slot14") {
+    if (`#${divname}` === "#row4_slot1" || `#${divname}` === "#row5_slot14") {
       this.applyShadowBox(divname, outermostBoxShadow);
     } else {
       this.applyShadowBox(divname, boxShadow);
@@ -274,8 +285,9 @@ class Mahjong extends GameTemplate {
   }
 
   applyShadowBox(divname, property) {
-    for (let i = 0; i < this.boxShadowProperties.length; i++) {
-      $(`#${divname}`).css(this.boxShadowProperties[i],property);
+    let boxShadowProperties = ['box-shadow', '-moz-box-shadow', '-webkit-box-shadow', '-o-box-shadow'];
+    for (let i = 0; i < boxShadowProperties.length; i++) {
+      $(`#${divname}`).css(boxShadowProperties[i],property);
     }
   }
 
@@ -435,7 +447,7 @@ class Mahjong extends GameTemplate {
       }
     });
 
-    $('.row1').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function() { mahjong_self.unhighlightRows()});
+    /*$('.row1').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function() { mahjong_self.unhighlightRows()});
     $('.row2').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row3').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row4').mouseover(function() { mahjong_self.highlightRow(1)  }).mouseout(function () { mahjong_self.unhighlightRows() });
@@ -456,17 +468,18 @@ class Mahjong extends GameTemplate {
     $('.row19').mouseover(function() { mahjong_self.highlightRow(4) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row20').mouseover(function() { mahjong_self.highlightRow(4) }).mouseout(function () { mahjong_self.unhighlightRows() });
     $('.row21').mouseover(function() { mahjong_self.highlightRow(5) }).mouseout(function () { mahjong_self.unhighlightRows() });
-
+    */
   }
 
   getAvailableTiles() {
     let mahjong_self = this;
     let availableTiles = new Map([]);
     mahjong_self.game.availableMoves = [];
+    $(".slot").removeClass("available");
     for (let row = 1; row <= 21; row++){
       for (let column = 1; column <= 14; column++){
         if ((row === 5 && column === 2 && !mahjong_self.game.hidden.includes('row4_slot1')) || 
-          (row === 5 && column === 13 && !mahjong_self.game.hidden.includes('row4_slot14'))) {
+          (row === 4 && column === 13 && !mahjong_self.game.hidden.includes('row5_slot14'))) {
             continue;
         }
         if (row >= 2 && row <= 7 && column >= 5 && column <= 10) {
@@ -499,7 +512,7 @@ class Mahjong extends GameTemplate {
           // /\ checking if right or left tile is unlocked or empty
           // \/ checking two outermost rows
             (row === 4 && column === 1 && !mahjong_self.game.hidden.includes('row4_slot1')) ||
-            (row === 4 && column === 14 && !mahjong_self.game.hidden.includes('row4_slot14'))
+            (row === 5 && column === 14 && !mahjong_self.game.hidden.includes('row5_slot14'))
           ) { // /\ checking two outermost rows
             if (availableTiles.get(mahjong_self.game.board[`row${row}_slot${column}`]) !== undefined) {
               availableTiles.set(mahjong_self.game.board[`row${row}_slot${column}`], availableTiles.get(mahjong_self.game.board[`row${row}_slot${column}`]) + 1);
@@ -507,6 +520,7 @@ class Mahjong extends GameTemplate {
               availableTiles.set(mahjong_self.game.board[`row${row}_slot${column}`], 1);
             }
             mahjong_self.game.availableMoves.push(`row${row}_slot${column}`)
+            $(`#row${row}_slot${column}`).addClass("available");
         }
       }
     }

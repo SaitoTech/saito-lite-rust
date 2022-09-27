@@ -76,8 +76,13 @@
   margin-bottom: 1rem;
 }
 .appstore-appbox-details .saito-table .saito-table-row {
+  display: grid;
   grid-template-columns: minmax(10rem, min-content) 1fr;
   column-gap: 10rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 .appstore-install-confirm-button {
   margin-left: 0;

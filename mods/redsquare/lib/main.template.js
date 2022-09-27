@@ -8,7 +8,6 @@ module.exports = (app, mod) => {
 	 Main Container
        </div>
        <div class="saito-sidebar-right appspace-sidebar"></div>
-       <div class="saito-mobile-controls"> </div>
      </div>
   `;
 

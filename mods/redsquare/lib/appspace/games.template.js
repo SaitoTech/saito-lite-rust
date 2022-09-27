@@ -16,8 +16,8 @@ module.exports = (app, mod) => {
      <i id="action-icon" class="fas fa-plus"></i>
      </div>
       <div class="redsquare-actions-container"> 
-      <div id="redsquare-schedule-game" class="saito-button-secondary small" style="float: right;">Schedule for Later</div>
-      <div id="redsquare-create-game" class="saito-button-secondary small" style="float: right;">Create New Game</div>
+      <div id="redsquare-schedule-game" class="saito-button-secondary small"><i class="fa fa-calendar"></i>Schedule Game</div>
+      <div id="redsquare-create-game" class="saito-button-secondary small"><i class="fas fa-gamepad"></i> New Game</div>
       </div>
      </div>
 

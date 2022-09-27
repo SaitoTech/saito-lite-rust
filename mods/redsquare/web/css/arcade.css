@@ -7,6 +7,10 @@
     z-index: 1;
 }
 
+.tip:hover .tiptext {
+  visibility: visible;
+}
+
 .tiptext {
     width: 90%;
     min-width: 400px;
@@ -669,7 +673,11 @@ option {
 .redsquare-sidebar-observer .saito-table .saito-table-row {
   display: grid;
   grid-template-columns: 15rem 1fr min-content;
-  cursor: pointer;  
+  border-width: 2px 0;
+  border-color: #fff;
+  border-style: solid;
+  cursor: pointer;
+  background-color: var(--saito-gray);
   padding: 0.5rem 1rem;
 }
 
