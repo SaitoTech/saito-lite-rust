@@ -432,9 +432,9 @@ class Mahjong extends GameTemplate {
             mahjong_self.game.hidden.push(mahjong_self.game.selected);
             mahjong_self.game.cardsLeft = mahjong_self.game.cardsLeft - 2;
             if (mahjong_self.game.cardsLeft === 0) {
-              mahjong_self.game.state.wins++;
-              mahjong_self.displayModal("Congratulations!", "You won ser!");
-              mahjong_self.newRound();
+              mahjong_self.addMove("win");
+              mahjong_self.endTurn();
+              return;              
             }
             mahjong_self.displayUserInterface();
             mahjong_self.game.selected = "";
@@ -541,8 +541,8 @@ class Mahjong extends GameTemplate {
   displayUserInterface() {
     let tilesLeftToUnlock = this.getAvailableTiles();
     if (tilesLeftToUnlock === 0) {
-      this.displayWarning("Game over", "There are no more available moves to make.", 9000);
-      this.newRound();
+      this.addMove("lose");
+      this.endTurn();
       return;
     }
     let pairsLeftToUnlock = tilesLeftToUnlock / 2;
@@ -610,6 +610,27 @@ class Mahjong extends GameTemplate {
       if (mv[0] === "round") {
         this.newRound();
       }
+
+      if (mv[0] === "lose"){
+        this.game.queue.splice(qe, 1);
+        this.displayWarning("Game over", "There are no more available moves to make.", 9000);
+        this.endGame();
+        this.newRound();
+        return 1;
+      }
+
+      if (mv[0] === "win"){
+        this.game.queue.splice(qe, 1);
+        this.game.state.wins++;
+        this.animateFinalVictory();
+        this.endGame(this.app.wallet.returnPublicKey());
+        this.displayModal("Congratulations!", "You solved the puzzle!");
+        this.newRound();
+
+        return 0;
+      }
+
+
 
       if (mv[0] === "exit_game"){
         this.game.queue = [];
@@ -700,6 +721,11 @@ class Mahjong extends GameTemplate {
 
   }
 
+
+  receiveGameoverRequest(blk, tx, conf, app) {
+    console.log("The game never ends in Mahjong Solitaire");
+    return;
+  }
 
 }
 
