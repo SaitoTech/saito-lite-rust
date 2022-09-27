@@ -10,6 +10,21 @@ body {
   padding: 0 0 0 0 ;
 }
 
+#hint{
+  margin-top: 1em;
+  cursor: pointer;
+}
+
+.tip .tiptext{
+  min-width: unset;
+  width: 100%;
+}
+
+.hint_btn{
+  font-weight: bold;
+  font-style: italic;
+}
+
 .slot {
   background-color: ivory;
   position: relative;
@@ -34,7 +49,11 @@ body {
   background-color: #ff0000;
 }
 
-.slot.selected img, .slot.invalid img{
+.slot.hint{
+  background-color: #ffff00;
+}
+
+.slot.selected img, .slot.invalid img, .slot.hint img{
   opacity: 0.8;
 }
 

@@ -325,6 +325,7 @@ class Mahjong extends GameTemplate {
       class : "game-new",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
+        game_mod.endGame([], "abandon");
         game_mod.newRound();
       }
     });
@@ -383,9 +384,7 @@ class Mahjong extends GameTemplate {
 
   exitGame(){
     this.updateStatusWithOptions("Saving game to the blockchain...");
-    this.gaming_active = 0;
-    this.saveGame(this.game.id);
-    this.prependMove("exit_game\t"+this.game.player);
+    this.addMove("exit_game\t"+this.game.player);
     this.endTurn();
   }
 
@@ -472,59 +471,68 @@ class Mahjong extends GameTemplate {
   }
 
   getAvailableTiles() {
-    let mahjong_self = this;
     let availableTiles = new Map([]);
-    mahjong_self.game.availableMoves = [];
+    this.game.availableMoves = [];
     $(".slot").removeClass("available");
     for (let row = 1; row <= 21; row++){
       for (let column = 1; column <= 14; column++){
-        if ((row === 5 && column === 2 && !mahjong_self.game.hidden.includes('row4_slot1')) || 
-          (row === 4 && column === 13 && !mahjong_self.game.hidden.includes('row5_slot14'))) {
+        if ((row === 5 && column === 2 && !this.game.hidden.includes('row4_slot1')) || 
+          (row === 4 && column === 13 && !this.game.hidden.includes('row5_slot14'))) {
             continue;
         }
         if (row >= 2 && row <= 7 && column >= 5 && column <= 10) {
-          if (!mahjong_self.game.hidden.includes(`row${row + 7}_slot${column}`)) {
+          if (!this.game.hidden.includes(`row${row + 7}_slot${column}`)) {
             continue;
           }
         }
         if (row >= 10 && row <= 13 && column >= 6 && column <= 9) {
-          if (!mahjong_self.game.hidden.includes(`row${row + 5}_slot${column}`)) {
+          if (!this.game.hidden.includes(`row${row + 5}_slot${column}`)) {
             continue;
           }
         }
         if (row >= 16 && row <= 17 && column >= 7 && column <= 8) {
-          if (!mahjong_self.game.hidden.includes(`row${row + 3}_slot${column}`)) {
+          if (!this.game.hidden.includes(`row${row + 3}_slot${column}`)) {
             continue;
           }
         }
         if (row >= 19 && row <= 20 && column >= 7 && column <= 8) {
-          if (!mahjong_self.game.hidden.includes(`row21_slot${column}`)) {
+          if (!this.game.hidden.includes(`row21_slot${column}`)) {
             continue;
           }
         }
         if ( // \/ checking if right or left tile is unlocked or empty
-          ((mahjong_self.game.hidden.includes(`row${row}_slot${column - 1}`) || 
-          mahjong_self.game.board[`row${row}_slot${column - 1}`] === "E" ||
-          mahjong_self.game.hidden.includes(`row${row}_slot${column + 1}`) || 
-          mahjong_self.game.board[`row${row}_slot${column + 1}`] === "E") && 
-          mahjong_self.game.board[`row${row}_slot${column}`] !== "E" && 
-          !mahjong_self.game.hidden.includes(`row${row}_slot${column}`)) ||
+          ((this.game.hidden.includes(`row${row}_slot${column - 1}`) || 
+          this.game.board[`row${row}_slot${column - 1}`] === "E" ||
+          this.game.hidden.includes(`row${row}_slot${column + 1}`) || 
+          this.game.board[`row${row}_slot${column + 1}`] === "E") && 
+          this.game.board[`row${row}_slot${column}`] !== "E" && 
+          !this.game.hidden.includes(`row${row}_slot${column}`)) ||
           // /\ checking if right or left tile is unlocked or empty
           // \/ checking two outermost rows
-            (row === 4 && column === 1 && !mahjong_self.game.hidden.includes('row4_slot1')) ||
-            (row === 5 && column === 14 && !mahjong_self.game.hidden.includes('row5_slot14'))
+            (row === 4 && column === 1 && !this.game.hidden.includes('row4_slot1')) ||
+            (row === 5 && column === 14 && !this.game.hidden.includes('row5_slot14'))
           ) { // /\ checking two outermost rows
-            if (availableTiles.get(mahjong_self.game.board[`row${row}_slot${column}`]) !== undefined) {
-              availableTiles.set(mahjong_self.game.board[`row${row}_slot${column}`], availableTiles.get(mahjong_self.game.board[`row${row}_slot${column}`]) + 1);
+            if (availableTiles.get(this.game.board[`row${row}_slot${column}`]) !== undefined) {
+              availableTiles.set(this.game.board[`row${row}_slot${column}`], availableTiles.get(this.game.board[`row${row}_slot${column}`]) + 1);
             } else {
-              availableTiles.set(mahjong_self.game.board[`row${row}_slot${column}`], 1);
+              availableTiles.set(this.game.board[`row${row}_slot${column}`], 1);
             }
-            mahjong_self.game.availableMoves.push(`row${row}_slot${column}`)
+            this.game.availableMoves.push(`row${row}_slot${column}`)
             $(`#row${row}_slot${column}`).addClass("available");
         }
       }
     }
-    let unlockableTiles = 0;
+
+    let hints = [];
+    for (let i = 0; i < this.game.availableMoves.length - 1; i++){
+      for (let j = i + 1; j < this.game.availableMoves.length; j++){
+        if (this.game.board[this.game.availableMoves[i]] === this.game.board[this.game.availableMoves[j]]){
+          hints.push([this.game.availableMoves[i], this.game.availableMoves[j]]);
+        }
+      }
+    }
+
+    /*let unlockableTiles = 0;
     // console.log("available pairs:");
     for (const k of availableTiles.keys()) {
       if (availableTiles.get(k) >= 2 && availableTiles.get(k) < 4) {
@@ -534,22 +542,25 @@ class Mahjong extends GameTemplate {
         unlockableTiles += 4;
         // console.log(`Available tile pair: ${k} (tiles: ${availableTiles.get(k)})`);
       }
-    }
-    return unlockableTiles;
+    }*/
+    //return unlockableTiles;
+    return hints;
   }
 
   displayUserInterface() {
     let tilesLeftToUnlock = this.getAvailableTiles();
-    if (tilesLeftToUnlock === 0) {
+    if (tilesLeftToUnlock === []) {
       this.addMove("lose");
       this.endTurn();
       return;
     }
-    let pairsLeftToUnlock = tilesLeftToUnlock / 2;
+    let pairsLeftToUnlock = tilesLeftToUnlock.length;
     let mahjong_self = this;
 
-    let html = `<span class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.<br><br>` + 
-    `Available tile pairs to unlock: <em>${pairsLeftToUnlock}</em></span>`;
+    let html = `<div class="hidable">Remove tiles in pairs until none remain. Tiles must be at the edge of their level to be removed.</div>
+                <div id="hint" class="tip">Available tile pairs to unlock: <span class="hint_btn">${pairsLeftToUnlock}</span>
+                  <div class="tiptext">Click for a hint</div>
+                </div>`;
 
     let option = '';
     if (this.game.hidden.length > 0){
@@ -567,6 +578,34 @@ class Mahjong extends GameTemplate {
         return;
       }
     });
+
+    $("#hint").off();
+    $("#hint").on("click", function(){
+      let pair = tilesLeftToUnlock.pop();
+      $(`#${pair[0]}, #${pair[1]}`).addClass("hint").delay(500)
+      .queue(function () {
+        $(this).removeClass("hint").dequeue();
+      })
+      .delay(400)
+      .queue(function () {
+        $(this).addClass("hint").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("hint").dequeue();
+      })
+      .delay(400)
+      .queue(function () {
+        $(this).addClass("hint").dequeue();
+      })
+      .delay(500)
+      .queue(function () {
+        $(this).removeClass("hint").dequeue();
+      });
+
+      tilesLeftToUnlock.unshift(pair);
+    });
+
   }
 
   undoMove() {
@@ -614,7 +653,7 @@ class Mahjong extends GameTemplate {
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
         this.displayWarning("Game over", "There are no more available moves to make.", 9000);
-        this.endGame();
+        this.endGame([], "no more moves");
         this.newRound();
         return 1;
       }
@@ -622,7 +661,6 @@ class Mahjong extends GameTemplate {
       if (mv[0] === "win"){
         this.game.queue.splice(qe, 1);
         this.game.state.wins++;
-        this.animateFinalVictory();
         this.endGame(this.app.wallet.returnPublicKey());
         this.displayModal("Congratulations!", "You solved the puzzle!");
         this.newRound();
@@ -634,7 +672,6 @@ class Mahjong extends GameTemplate {
 
       if (mv[0] === "exit_game"){
         this.game.queue = [];
-        this.gaming_active = 0;
         let player = parseInt(mv[1])
         this.saveGame(this.game.id);
 
