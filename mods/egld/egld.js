@@ -187,7 +187,28 @@ async createEGLDAccount(){
       this.app.storage.saveOptions(); 
     }
   
+
 }
+
+sendUpdateRecipientBalanceTransaction(recipient){
+    //   let newtx = this.app.wallet.createUnsignedTransaction();
+    //   newtx.transaction.to.push(recipient);
+    //   newtx.msg.module = "Mixin";
+    //   newtx.msg.request = "update-recipient-balance"
+    //   newtx.msg.data = {
+    //     recipient
+    // };
+    //   newtx = this.app.wallet.signTransaction(newtx);
+    //   console.log(this.app.network);
+    //   this.app.network.propagateTransaction(newtx);
+  }
+  
+  receiveUpdateReciepientBalanceTransaction(blk, tx, conf, app){
+          let egld_address = this.egld.keyfile.bech32;
+          if (egld_address === tx.msg.data.recipient) {
+              app.connection.emit('update-egld-balance', egld_address);
+          }
+  }
 
 
 
