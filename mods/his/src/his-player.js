@@ -2083,12 +2083,16 @@ return;
         if (committed === "committed") { committed = 1; } else { committed = 0; }
 
         if (faction === "papacy") {
-	  his_self.addMove("theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+	  his_self.addMove("theological_debate");
+          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+          this.addMove("RESETCONFIRMSNEEDED\tall");
+	  his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
         } else {
-    	  his_self.addMove("theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
+    	  his_self.addMove("theological_debate");
+          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+          this.addMove("RESETCONFIRMSNEEDED\tall");
+    	  his_self.addMove("pre_theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
         }
-        this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-        this.addMove("RESETCONFIRMSNEEDED\tall");
         his_self.endTurn();
 
       });

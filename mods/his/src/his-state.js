@@ -3835,50 +3835,100 @@ console.log("this is a space: " + spacekey)
         game_mod.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
 
 	if (game_mod.game.player === p) {
-	  game_mod.playerCallTheologicalDebate(game_mod, player, "faction");
+
+          let msg = "Select Language Zone for Theological Debate:";
+          let html = '<ul>';
+
+          if (his_self.returnDebatersInLanguageZone("german", "protestant")) { 
+            html += '<li class="option" style="" id="german">German</li>';
+          }
+          if (his_self.returnDebatersInLanguageZone("french", "france")) { 
+            html += '<li class="option" style="" id="french">French</li>';
+          }
+          if (his_self.returnDebatersInLanguageZone("english", "france")) { 
+            html += '<li class="option" style="" id="english">English</li>';
+          }
+          html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+
+            let language_zone = $(this).attr("id");
+
+            let msg = "Leigzip Debate Format?";
+            let html = '<ul>';
+            html += '<li class="option" id="select">Pick My Debater</li>';
+            if (1 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
+              html += '<li class="option" id="prohibit">Prohibit Protestant Debater</li>';
+            }
+            html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+  
+            $('.option').off();
+            $('.option').on('click', function () {
+
+              let opt = $(this).attr("id");
+
+	      if (opt === "select") {
+
+                let msg = "Select Uncommitted Papal Debater:";
+                let html = '<ul>';
+		for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+		  let d = his_self.game.state.debaters[i];
+		  if (d.faction === "papacy") {
+            	    html += `<li class="option" id="${i}">${d.name}</li>`;
+		  }
+		}
+		html += '</ul>';
+                his_self.updateStatusWithOptions(msg, html);
+  
+                $('.option').off();
+                $('.option').on('click', function () {
+                  let selected_papal_debater = $(this).attr("id");
+	          his_self.addMove("theological_debate");
+        	  his_self.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	          his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tselected_papal_debater\t"+selected_paper_debater);
+	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+		  his_self.endTurn();
+		});
+	
+	      } else {
+
+                let msg = "Prohibit Protestant Debater:";
+                let html = '<ul>';
+		for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+		  let d = his_self.game.state.debaters[i];
+		  if (d.faction !== "papacy" && d.language_zone === language_zone) {
+            	    html += `<li class="option" id="${i}">${d.name}</li>`;
+		  }
+		}
+		html += '</ul>';
+                his_self.updateStatusWithOptions(msg, html);
+  
+                $('.option').off();
+                $('.option').on('click', function () {
+                  let prohibited_protestant_debater = $(this).attr("id");
+	          his_self.addMove("theological_debate");
+        	  his_self.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	          his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tprohibited_protestant_debater\t"+prohibited_protestant_debater);
+	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+		  his_self.endTurn();
+		});
+	
+	      }
+	    });
+	  });
+
 	} else {
 	  game_mod.updateStatus("Papacy calling a Theological Debate");
 	}
 
 	return 0;
-      },
-      menuOption  :       function(his_self, menu, player) {
-        if (menu === "debate") {
-          return { faction : "papacy" , event : 'specify_debater', html : `<li class="option" id="specify_debater">specify Papal debater</li>` };
-        }
-        return {};
-      },
-      menuOptionTriggers:  function(his_self, menu, player, faction) {
-        if (menu == "debate") {
-	  if (his_self.game.state.tmp_papacy_may_specify_debater === 1 || his-self.game.state.tmp_papacy_may_specify_protestant_debater_unavailable === 1) {
-	    if (faction === "papacy") {
-	      return 1;
-	    }
-	  }
-	}
-	return 0;
-      },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu === "debate") {
-alert("PLAYER: " + player + " -- " + faction + " -- specify debater");
-
-	  // SETVAR
-
-        }
-        return 0;
-      },
-      handleGameLoop : function(his_self, qe, mv) {
-
-        if (mv[0] == "janissaries") {
-
-          his_self.game.queue.splice(qe, 1);
-          his_self.updateLog("Ottoman Empire plays Janissaries");
-          his_self.game.state.field_battle.attacker_rolls += 5;
-          his_self.game.state.field_battle.attacker_results.push(his_self.rollDice(6));
-
-          return 1;
-
-        }
       },
 
     }
@@ -3890,6 +3940,82 @@ alert("PLAYER: " + player + " -- " + faction + " -- specify debater");
       type : "normal" ,
       faction : "protestant" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu === "debate") {
+          return { faction : "protestant" , event : 'substitute_luther', html : `<li class="option" id="substitute_luther">Here I Stand (assign Luther)</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "debate") {
+	  if (his_self.game.state.leaders.luther == 1) {
+	    if (faction === "protestant") {
+	      return 1;
+	    }
+	  }
+	}
+	return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu === "debate") {
+	  his_self.addMove("here_i_stand");
+	  his_seld.endTurn();
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "here_i_stand") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.updateLog("Luther accepts the Debate Challenge - Here I Stand");
+
+	  //
+	  // existing protestant debater is committed
+	  //
+	  for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+	    let d = his_self.game.state.debaters[i];
+	    if (this.game.state.theological_debate.attacker === "papacy") {
+	      if (this.game.state.theological_debate.round == 1) {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_defender_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      } else {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_defender_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      }
+	    } else {
+	      if (this.game.state.theological_debate.round == 1) {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_attacker_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      } else {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_attacker_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      }
+	    }
+	  }
+
+	  if (his_self.game.state.theological_debate.attacker === "papacy") {
+	    if (his_self.game.state.theological_debate.round == 1) {
+              his_self.game.state.theological_debate.round1_defender_debater = "luther-debater";
+	    } else {
+              his_self.game.state.theological_debate.round2_defender_debater = "luther-debater";
+	    }
+	  } else {
+	    if (his_self.game.state.theological_debate.round == 1) {
+              his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
+	    } else {
+              his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
+	    }
+	  }
+
+	  return 1;
+
+        }
+      },
     }
     // 95 Theses
     deck['008'] = { 

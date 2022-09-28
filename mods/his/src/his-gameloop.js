@@ -269,7 +269,8 @@ alert("removing unit not implement for sea");
 
 	  this.game.queue.push("event\t" + this.returnPlayerOfFaction("papacy") + "\t" + "006");
 
-	  //this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+	  this.game.queue.push("theological_debate");
+	  this.game.queue.push("pre_theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
 
 	  //this.game.queue.push("retreat_to_winter_spaces");
 
@@ -3295,17 +3296,12 @@ console.log("space: " + spacekey);
 	}
 
 
-        if (mv[0] === "theological_debate") {
-
-this.game.state.tmp_papacy_may_specify_debater = 1;
-this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
+	if (mv[0] === "pre_theological_debate") {
 
 	  let attacker = mv[1];
 	  let defender = mv[2];
 	  let language_zone = mv[3];
 	  let committed_or_uncommitted = mv[4];
-
-	  this.game.queue.splice(qe, 1);
 
 	  this.game.state.theological_debate = {};
 	  this.game.state.theological_debate.attacker = mv[1];
@@ -3313,13 +3309,12 @@ this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
 	  this.game.state.theological_debate.language_zone = mv[3];
 	  this.game.state.theological_debate.committed = mv[4];
 	  this.game.state.theological_debate.round = 1;
-	  this.game.state.theological_debate.attacker_debater = "";
-	  this.game.state.theological_debate.defender_debater = "";
-
-console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
-
-	  //if (this.returnNumberOfUncommittedDebaters(faction));
-	  //if (this.returnNumberOfCommittedDebaters(faction));
+	  this.game.state.theological_debate.round1_attacker_debater = "";
+	  this.game.state.theological_debate.round1_defender_debater = "";
+	  this.game.state.theological_debate.round2_attacker_debater = "";
+	  this.game.state.theological_debate.round2_defender_debater = "";
+	  this.game.state.theological_debate.selected_papal_debater = "";
+	  this.game.state.theological_debate.prohibited_protestant_debater = "";
 
 	  let x = 0;
 
@@ -3344,9 +3339,8 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	    }
 	  }
 	  
-
 	  //
-	  // defender chosen from type 
+	  // defender chosen randomly from type 
 	  //
 	  let dd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
@@ -3372,6 +3366,22 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	    }
 	  }
 	  
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
+
+        if (mv[0] === "theological_debate") {
+
+	  let attacker = this.game.state.theological_debate.attacker;
+	  let defender = this.game.state.theological_debate.defender;
+	  let language_zone = this.game.state.theological_debate.language_zone;
+	  let committed_or_uncommitted = this.game.state.theological_debate.committed;
+
+	  this.game.queue.splice(qe, 1);
 
 	  //
 	  // commit debaters if uncommitted
@@ -3391,7 +3401,9 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	    }
 	  }
 
-
+	  //
+	  // open theological debate UI
+	  //
 	  this.displayTheologicalDebate();
 
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
@@ -3401,7 +3413,6 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
-
 	  let attacker_rolls = 0 + 3; // power of debater + 3;
 	  let defender_rolls = 0 + 1; // power of debater + 1; // or 2 if uncommitted
 
@@ -3431,6 +3442,7 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  }
 
 	  this.game.queue.push("counter_or_acknowledge\tThe Debate is Over\tdebate_finished");
+          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 	  return 1;
 
