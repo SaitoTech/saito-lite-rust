@@ -36,6 +36,7 @@ class EGLDModule extends CryptoModule {
         let address = this.egld.keyfile.bech32;
         await this.updateBalance(address);
         await this.updateAddressNonce(address);
+
   }
 
 
