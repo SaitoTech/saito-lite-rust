@@ -3296,6 +3296,92 @@ console.log("space: " + spacekey);
 	}
 
 
+
+	if (mv[0] === "pick_second_round_debaters") {
+
+	  //
+	  // attacker chosen randomly from uncommitted
+	  //
+          let ad = 0;
+          let cd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].owner == attacker) {
+	      if (this.game.state.debaters[i].committed == 0) {
+	        ad++;
+	      } else {
+	        cd++;
+	      }
+	    }
+	  }
+	  if (ad != 0) {
+	    x = this.rollDice(ad) - 1;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	        if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	        ad++;
+	      }
+	    }
+	  } else {
+	    x = this.rollDice(cd) - 1;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
+	        if (x === cd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	        cd++;
+	      }
+	    }
+	  }
+	  
+
+	  //
+	  // defender chosen randomly from uncommitted too
+	  //
+	  let dd = 0;
+	  let cd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.theological_debate.committed == "committed") {
+	      if (this.game.state.debaters[i].owner == attacker) {
+		if (this.game.state.debaters[i].committed == 1) {
+	          dd++;
+	        } else {
+		  cd++;
+	        }
+	      }
+	    }
+	  }
+	  if (dd == 0) {
+      	    x = this.rollDice(dd) - 1;
+  	    dd = 0;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.theological_debate.committed == "committed") {
+	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	          if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	          dd++;
+	        } else {
+	          if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	  	  dd++;
+	        }
+	      }
+	    }
+	  } else {
+      	    x = this.rollDice(cd) - 1;
+  	    cd = 0;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.theological_debate.committed == "committed") {
+	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	          if (x === cd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	          cd++;
+	        } else {
+	          if (x === cd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	  	  cd++;
+	        }
+	      }
+	    }
+	  }
+	  
+	  this.game.queue.splice(qe, 1);
+
+	}
+
 	if (mv[0] === "pre_theological_debate") {
 
 	  let attacker = mv[1];
@@ -3323,17 +3409,16 @@ console.log("space: " + spacekey);
 	  //
           let ad = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
-	    if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
-	      ad++;
+	    if (this.game.state.debaters[i].owner == attacker) {
+	      if (this.game.state.debaters[i].committed == 0) {
+	        ad++;
+	      }
 	    }
 	  }
 	  x = this.rollDice(ad) - 1;
 	  ad = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
-	      if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
-	      ad++;
-	    } else {
 	      if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
 	      ad++;
 	    }
@@ -3347,8 +3432,6 @@ console.log("space: " + spacekey);
 	    if (this.game.state.theological_debate.committed == "committed") {
 	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
 	        dd++;
-	      } else {
-	        dd++;
 	      }
 	    }
 	  }
@@ -3359,9 +3442,6 @@ console.log("space: " + spacekey);
 	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
 	        if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
 	        dd++;
-	      } else {
-	        if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
-		dd++;
 	      }
 	    }
 	  }
@@ -3372,7 +3452,6 @@ console.log("space: " + spacekey);
 
 	}
 
-console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 
         if (mv[0] === "theological_debate") {
 
@@ -3380,6 +3459,9 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  let defender = this.game.state.theological_debate.defender;
 	  let language_zone = this.game.state.theological_debate.language_zone;
 	  let committed_or_uncommitted = this.game.state.theological_debate.committed;
+	  let attacker_idx = 0;
+	  let defender_idx = 0;
+	  let was_defender_uncommitted = 0;
 
 	  this.game.queue.splice(qe, 1);
 
@@ -3388,6 +3470,7 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  //
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.attacker_debater) {
+	      attacker_idx = i;
 	      if (this.game.state.debaters[i].committed == 0) {
 		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
 	      }
@@ -3395,7 +3478,9 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  }
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
+	      defender_idx = i;
 	      if (this.game.state.debaters[i].committed == 0) {
+	        was_defender_uncommitted = 1;
 		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater);
 	      }
 	    }
@@ -3405,7 +3490,6 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  // open theological debate UI
 	  //
 	  this.displayTheologicalDebate();
-
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
 	  
@@ -3413,8 +3497,8 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
-	  let attacker_rolls = 0 + 3; // power of debater + 3;
-	  let defender_rolls = 0 + 1; // power of debater + 1; // or 2 if uncommitted
+	  let attacker_rolls = this.game.state.debaters[attacker_idx].power + 3; // power of debater + 3;
+	  let defender_rolls = this.game.state.debaters[debater_idx].power + 1 + was_defender_uncommitted;
 
 	  let attacker_hits = 0;
 	  let defender_hits = 0;
@@ -3431,8 +3515,16 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  }
 	
 	  if (attacker_hits == defender_hits) {
+
+	    //
 	    // first round of debate moves into second
-	    this.updateLog("TIE - skipping second round for now");
+	    //
+	    this.game.state.theological_debate.round++;
+	    this.game.queue.push("theological_debate");
+	    this.game.queue.push("counter_or_acknowledge\tThe Debate is Tied - Progress to 2nd Round\tdebate");
+            this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("pick_second_round_debaters");
+
 	  } else {
 	    if (attacker_hits > defender_hits) {
 	      this.updateLog("Attacker Wins");

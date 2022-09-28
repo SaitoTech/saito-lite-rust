@@ -45,6 +45,34 @@
       power		:	2 ,
       ability		:	"Insert in 2nd round of debate in any Language Zone" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu === "debate") {
+          return { faction : "protestant" , event : 'substitute_bullinger', html : `<li class="option" id="substitute_bullinger">substitute Bullinger</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "debate") {
+	  if (his_self.game.state.theological_debate.round === 2) {
+            if (faction === "protestant") {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu === "debate") {
+	  if (his_self.game.state.theological_debate.attacker === "papacy") {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tdefender_debater\tbullinger-debater");
+	  } else {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tattacker_debater\tbullinger-debater");
+	  }
+          his_seld.endTurn();
+        }
+        return 0;
+      },
+
     });
 
     this.importDebater('carlstadt-debater', {
