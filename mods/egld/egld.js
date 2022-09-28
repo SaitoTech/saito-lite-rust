@@ -48,7 +48,7 @@ class EGLDModule extends CryptoModule {
     let config = await this.networkProvider.getNetworkConfig()
     let nonce = await this.nonce
     console.log('nonce ', nonce)
-    let tokenPayment = TokenPayment.egldFromAmount(amount);
+    let tokenPayment = TokenPayment.egldFromAmount(String(amount));
     let value = BigInt(amount * (10 ** tokenPayment.numDecimals));
     console.log('value ', value.toString())
     const balance =  await this.returnBalance(from);
@@ -106,7 +106,7 @@ async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_has
        for(let i = 0; i< res.data.length; i++){
          if(res.data[i].timestamp > timestamp){
             let amountRes = TokenPayment.egldFromBigInteger(res.data[i].value);
-            let amountSent = TokenPayment.egldFromAmount(amount);
+            let amountSent = TokenPayment.egldFromAmount(String(amount));
                 // console.log(amountRes.toString(), amountSent.toString())
             if(parseFloat(amountRes.toString()) === parseFloat(amountSent.toString())){
                 toReturn = 1;
