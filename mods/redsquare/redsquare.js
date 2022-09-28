@@ -21,7 +21,7 @@ class RedSquare extends ModTemplate {
     this.appname = "Red Square";
     this.name = "RedSquare";
     this.slug = "redsquare";
-    this.description = "EOpen Source Twitter-clone for the Saito Network";
+    this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
     this.saito_loader = new SaitoLoader(app, this);
     this.redsquare = {}; // where settings go, saved to options file
@@ -44,8 +44,9 @@ class RedSquare extends ModTemplate {
     this.styles = [
       '/saito/saito.css',
       '/redsquare/css/redsquare-main.css',
-      '/redsquare/css/arcade.css',		// game creation overlays
-      '/redsquare/css/chat.css',		// game creation overlays
+      '/redsquare/css/arcade.css',		      // game creation overlays
+      '/redsquare/css/chat.css',		        // game creation overlays
+      //'/saito/show.css',                    // show body (antifauc)
     ];
     this.ui_initialized = false;
 

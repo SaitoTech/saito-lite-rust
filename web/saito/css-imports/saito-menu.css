@@ -44,15 +44,14 @@
 .saito-notification-dot {
     width: 2rem;
     height: 2rem;
-    border-radius: 50%;
+    border-radius: 0.5rem;
     background-color: var(--saito-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
     color: var(--saito-white);
     position: absolute;
     bottom: 25px;
     left: 3.5rem;
+    text-align: center;
+    line-height: 2.2rem;
 }
 
 

@@ -263,6 +263,8 @@ module.exports = ArcadeMain = {
                       arcade_main_self.cancelGame(app, mod, game_sig);
                       return;
                   }
+                }else{
+                  arcade_main_self.cancelGame(app, mod, game_sig);                  
                 }
 
               }
@@ -537,7 +539,7 @@ module.exports = ArcadeMain = {
                   clearInterval(mod.game_close_interval_id);
                 }
                 mod.game_close_interval_cnt--;
-              },5*1000)
+              },5*1000);
             }
             return;
           }

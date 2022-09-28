@@ -73,6 +73,7 @@ class RedSquareMenu {
         removeLeftSidebar()
         window.history.replaceState({}, "Saito RedSquare", "/redsquare/");
         this_menu.renderItem(app, mod, "home");
+        document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
     }
     obj = document.querySelector('.redsquare-menu-notifications');
@@ -80,6 +81,7 @@ class RedSquareMenu {
       obj.onclick = (e) => {
         removeLeftSidebar()
         this_menu.renderItem(app, mod, "notifications");
+        document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
     }
     obj = document.querySelector('.redsquare-menu-settings');
@@ -87,6 +89,7 @@ class RedSquareMenu {
       obj.onclick = (e) => {
         removeLeftSidebar()
         this_menu.renderItem(app, mod, "settings");
+        document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
     }
     obj = document.querySelector('.redsquare-menu-contacts');
@@ -94,6 +97,7 @@ class RedSquareMenu {
       obj.onclick = (e) => {
         removeLeftSidebar()
         this_menu.renderItem(app, mod, "contacts");
+        document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
     }
     obj = document.querySelector('.redsquare-menu-games');
@@ -101,6 +105,7 @@ class RedSquareMenu {
       obj.onclick = (e) => {
         removeLeftSidebar()
         this_menu.renderItem(app, mod, "games");
+        document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
     }
 
@@ -116,6 +121,7 @@ class RedSquareMenu {
         obj.onclick = (e) => {
           removeLeftSidebar()
           this.renderItem(app, mod, app.modules.mods[i].returnSlug());
+          document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
         }
       }
     }
