@@ -9,6 +9,8 @@
       img		:	"LutherDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	4,
+      ability		:	"Bonus CP for transaction in German zone" ,
       committed		: 	0,
     });
 
@@ -18,6 +20,8 @@
       img		:	"ZwingliDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	3 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Zurich" ,
       committed		: 	0,
     });
 
@@ -27,6 +31,8 @@
       img		:	"BucerDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Strasburg" ,
       committed		: 	0,
     });
 
@@ -36,6 +42,8 @@
       img		:	"BullingerDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"Insert in 2nd round of debate in any Language Zone" ,
       committed		: 	0,
     });
 
@@ -45,6 +53,8 @@
       img		:	"CarlstadtDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	1 ,
+      ability		:	"Target 3 Germany spaces with Treatise, unrest if fails" ,
       committed		: 	0,
     });
 
@@ -54,6 +64,8 @@
       img		:	"MelanchthonDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	3 ,
+      ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
     });
 
@@ -63,6 +75,8 @@
       img		:	"OekolampadiusDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Basel" ,
       committed		: 	0,
     });
 
@@ -77,6 +91,8 @@
       img		:       "EckDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in Debate Attacks" ,
       committed		: 	0,
     });
 
@@ -86,6 +102,8 @@
       img		:       "AleanderDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"If concludes debate, winner flips an extra space" ,
       committed		: 	0,
     });
 
@@ -95,6 +113,8 @@
       img		:	"CajetanDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	1 ,
+      ability		:	"Target 3 spaces with burn books" ,
       committed		: 	0,
     });
 
@@ -104,6 +124,8 @@
       img		:	"CampeggioDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"Roll die after debate loss; if 5 or 6 result is ignored" ,
       committed		: 	0,
     });
 
@@ -113,15 +135,19 @@
       img		:	"CanisiusDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die for Counter-Reformation attempts within 2 spaces of Regensburg" ,
       committed		: 	0,
     });
 
-    this.importDebater('carafa-debater', {
-      type		:	"carafa-debater" ,
-      name		: 	"Carlo Carafa",
-      img		:	"CarafaDebater.svg",
+    this.importDebater('caraffa-debater', {
+      type		:	"caraffa-debater" ,
+      name		: 	"Carlo Caraffa",
+      img		:	"CaraffaDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"Target 2 spaces in any zone with burn books" ,
       committed		: 	0,
     });
 
@@ -131,6 +157,8 @@
       img		:	"ContariniDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"+1 die for Counter-Reformations within 2 spaces of Charles V" ,
       committed		: 	0,
     });
 
@@ -140,6 +168,8 @@
       img		:	"FaberDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+2 die for Counter-Reformations against an Electorate" ,
       committed		: 	0,
     });
 
@@ -149,6 +179,8 @@
       img		:	"GardinerDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in debate in English zone if attacker" ,
       committed		: 	0,
     });
 
@@ -158,6 +190,8 @@
       img		:	"LoyolaDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	4 ,
+      ability		:	"Found Jesuit University for only 2 CP" ,
       committed		: 	0,
     });
 
@@ -167,6 +201,8 @@
       img		:	"PoleDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die for Papacy if at Council of Trent" ,
       committed		: 	0,
     });
 
@@ -176,6 +212,8 @@
       img		:	"TetzelDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	1 ,
+      ability		:	"1 CP to Saint Peters with Burn Books" ,
       committed		: 	0,
     });
 
@@ -190,6 +228,8 @@
       img		:	"CalvinDebater.svg",
       language_zone	:	"french" ,
       faction		:	"france" ,
+      power		:	4 ,
+      ability		:	"Target 3 French-speaking spaces with a treatise" ,
       committed		: 	0,
     });
 
@@ -199,6 +239,8 @@
       img		:	"CopDebater.svg",
       language_zone	:	"french" ,
       faction		:	"france" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation attempts within 2 spaces of Paris" ,
       committed		: 	0,
     });
 
@@ -208,6 +250,8 @@
       img		:	"FarelDebater.svg",
       language_zone	:	"french" ,
       faction		:	"france" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation attempts within 2 spaces of Geneva" ,
       committed		: 	0,
     });
 
@@ -217,6 +261,8 @@
       img		:	"OlivetanDebater.svg",
       language_zone	:	"french" ,
       faction		:	"france" ,
+      power		:	1 ,
+      ability		:	"Bonus CP for translation in French Zone" ,
       committed		: 	0,
     });
 
@@ -231,6 +277,8 @@
       img		:	"CranmerDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation within 2 spaces of London" ,
       committed		: 	0,
     });
 
@@ -240,6 +288,8 @@
       img		:	"WishartDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	1 ,
+      ability		:	"+1 die for Reformation attempts in Scotland" ,
       committed		: 	0,
     });
 
@@ -249,6 +299,8 @@
       img		:	"TyndaleDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
       committed		: 	0,
     });
 
@@ -258,6 +310,8 @@
       img		:	"LatimerDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	1 ,
+      ability		:	"+1 die for Reformation attempts in England" ,
       committed		: 	0,
     });
 
@@ -267,6 +321,8 @@
       img		:	"KnoxDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	3 ,
+      ability		:	"+1 die for Reformation Attempts in England or Scotland" ,
       committed		: 	0,
     });
 
@@ -276,15 +332,8 @@
       img		:	"CoverdaleDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
-      committed		: 	0,
-    });
-
-    this.importDebater('cranmer-debater', {
-      type		:	"cranmer-debater" ,
-      name		: 	"Thomas Cranmer",
-      img		:	"CranmerDebater.svg",
-      language_zone	:	"english" ,
-      faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
       committed		: 	0,
     });
 
