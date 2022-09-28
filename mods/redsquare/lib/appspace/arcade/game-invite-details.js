@@ -1,6 +1,6 @@
 const saito = require('./../../../../../lib/saito/saito');
 const GameInviteDetailsTemplate = require('./game-invite-details.template');
-const ArcadeGameDetails = require('./../../../../arcade/lib/arcade-game/arcade-game-details');
+const ArcadeGameDetails = require('./arcade-game-details');
 const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
 
