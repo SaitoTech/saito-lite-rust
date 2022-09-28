@@ -1,11 +1,10 @@
 /*********************************************************************************
 
-     returnAddress()
+   returnAddress()
    returnPrivateKey()
    async returnBalance(address = "")
    async sendPayment(amount="", recipient="", unique_hash="")
    async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
-
 
 **********************************************************************************/
 const { ApiNetworkProvider } = require("@elrondnetwork/erdjs-network-providers");
@@ -39,27 +38,26 @@ class EGLDModule extends CryptoModule {
 
 
   async init(){
-    if(this.app.BROWSER === 0){
-    let address = this.egld.keyfile.bech32;
-    this.networkProvider = new ApiNetworkProvider("https://devnet-api.elrond.com")
-    await this.updateBalance(address);
-    await this.updateAddressNonce(address);
+    if (this.app.BROWSER === 0){
+      let address = this.egld.keyfile.bech32;
+      this.networkProvider = new ApiNetworkProvider("https://devnet-api.elrond.com")
+      await this.updateBalance(address);
+      await this.updateAddressNonce(address);
     }
-
   }
 
 
   async sendPayment(amount, recipient,  unique_hash=""){
     let from = this.egld.keyfile.bech32
-     let config = await this.networkProvider.getNetworkConfig()
-     let nonce = await this.nonce
-     console.log('nonce ', nonce)
+    let config = await this.networkProvider.getNetworkConfig()
+    let nonce = await this.nonce
+    console.log('nonce ', nonce)
     let tokenPayment = TokenPayment.egldFromAmount(amount);
     let value = BigInt(amount * (10 ** tokenPayment.numDecimals));
     console.log('value ', value.toString())
     const balance =  await this.returnBalance(from);
-    if(parseFloat(balance) < parseFloat(value.toString())){
-        return console.log("your balance is not enough for this transaction", balance);
+    if (parseFloat(balance) < parseFloat(value.toString())){
+      return console.log("your balance is not enough for this transaction", balance);
     }
    let  to = recipient
     let tx = new Transaction({
@@ -92,7 +90,7 @@ class EGLDModule extends CryptoModule {
 
         await this.updateAddressNonce(from);
 
-   return res.data.txHash;
+        return res.data.txHash;
     } catch (error) {
         console.log(error, "error");
     }
@@ -100,6 +98,7 @@ class EGLDModule extends CryptoModule {
 
 
 async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash=""){
+
     const res = await axios({
         method: "get",
         url: `https://elrond-api-devnet.public.blastapi.io/accounts/${recipient}/transfers?sender=${sender}`
@@ -251,7 +250,6 @@ async createEGLDAccount(){
 
 }
 
-module.exports = EGLDModule
-
+module.exports = EGLDModule;
 
 
