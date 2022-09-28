@@ -155,6 +155,7 @@ class Mahjong extends GameTemplate {
 
     this.game.cardsLeft = deckSize - this.game.hidden.length;
     this.game.selected = "";
+    $(".selected").removeClass("selected");
 
     index = 0;
     try {
@@ -187,6 +188,7 @@ class Mahjong extends GameTemplate {
     let noShadowBox = 'none';
     this.applyShadowBox(divname, noShadowBox);
     $(`#${divname}`).addClass("invisible");
+    $(`#${divname}`).removeClass("selected");
   }
 
   makeVisible(divname) {
