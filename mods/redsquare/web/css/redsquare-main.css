@@ -432,19 +432,21 @@ span.redsquare-home-red-square+span {
 }
 
 #redsquare-new-tweets-banner {
-  display: none;
+  display: none; 
   color: #fff;
-  position: sticky;
-  top: 13rem;
+  top: 2rem;
+  left: 0;
   z-index: 2;
   cursor: pointer;
   height: 3rem;
   line-height: 3rem;
   text-align: center;
   width: 34%;
-  margin: 0 33%;
-  background: #0004;
+  background: #0009;
   border-radius: 0.5rem;
+  margin: -3rem 50% 0;
+  transform: translateX(-50%);
+  position: sticky;
 }
 
 .redsquare-ellipsis::after {
