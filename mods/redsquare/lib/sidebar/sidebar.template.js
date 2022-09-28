@@ -3,9 +3,7 @@ module.exports = RedSquareSidebarTemplate = (app, mod) => {
   return `
 
   <div class="saito-sidebar right">
-  <div class="caret">
-  <i id="icon" class="fas fa-angle-left"></i>
-  </div>
+    
     <div class="redsquare-sidebar-calendar">
     </div>
     

@@ -31,8 +31,7 @@ module.exports = ArcadeLink = {
         
         document.querySelector('#copy-invite-link').addEventListener('click', (e) => {
             navigator.clipboard.writeText(invite_self.invite_link);
-            document.querySelector("#invite-link-text").innerHTML = "Copied to clipboard!";
-
+            salert("Copied to clipboard!");
         });
         }catch(err){
             console.error(err);

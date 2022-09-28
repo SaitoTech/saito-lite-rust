@@ -52,7 +52,7 @@
     max-height: 56rem;
     height: 56rem;
     overflow: auto;
-    margin-bottom: 2.5rem;
+    margin-bottom: 5.5rem;
 }
 
 .chat-body>.saito-user {
@@ -104,7 +104,7 @@
 
 @media only screen and (max-width: 535px) {
     .chat-container {
-        height: calc(100vh - var(--saito-header-height) - 6rem);
+        height: calc(100vh - var(--saito-header-height) - 7rem);
         width: 100vw;
         position: fixed;
         right: 0rem;

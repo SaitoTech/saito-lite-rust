@@ -4,6 +4,11 @@ import screenfull from "screenfull";
 import html2canvas from "html2canvas";
 const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
+var marked = require('marked');
+var sanitizeHtml = require('sanitize-html');
+const linkifyHtml = require('markdown-linkify');
+const emoji = require('node-emoji');
+
 class Browser {
   public app: any;
   public browser_active: any;
@@ -275,9 +280,10 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) {}
+    } catch (err) { }
     return "en";
   }
+
 
   isMobileBrowser(user_agent) {
     let check = false;
@@ -946,7 +952,7 @@ class Browser {
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) {}
+    } catch (err) { }
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1050,7 +1056,7 @@ class Browser {
   }
 
   // TODO: implement htis function
-  getValueFromHashAsBoolean() {}
+  getValueFromHashAsBoolean() { }
 
   getValueFromHashAsNumber(hash, key) {
     try {
@@ -1090,22 +1096,42 @@ class Browser {
   sanitize(text) {
     try {
       if (text !== "") {
-        // sanitize html tags
-        const decoder = document.createElement("div");
-        decoder.innerText = text;
-        text = decoder.innerHTML;
+
+        text = marked.parseInline(text);
 
         //trim trailing line breaks
         text = text.replace(/[\r<br>]+$/, "");
-
-        // wrap link in <a> tag
-        let urlPattern =
-          /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
-        text = text.replace(urlPattern, function (url) {
-          return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
-        });
       }
 
+      text = sanitizeHtml(text, {
+        allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'ul', 'ol',
+          'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+          'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'marquee', 'pre'
+        ],
+        allowedAttributes: {
+          div: ['class', 'id'],
+          a: ['href', 'name', 'target', 'class', 'id'],
+          img: ['src', 'class']
+        },
+        selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
+        allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
+        allowedSchemesByTag: {},
+        allowedSchemesAppliedToAttributes: ['href', 'cite'],
+        allowProtocolRelative: true,
+        transformTags: {
+          'a': sanitizeHtml.simpleTransform('a', { target: '_blank' })
+        }
+      });
+
+      /* wrap link in <a> tag */
+      let urlPattern =
+        /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
+      text = text.replace(urlPattern, function (url) {
+        return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
+      });
+      
+      text = emoji.emojify(text);
+      
       return text;
     } catch (err) {
       console.log("Err in sanitizing: " + err);

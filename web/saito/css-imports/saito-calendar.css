@@ -12,12 +12,12 @@
     min-width: 30rem;
     min-height: 30rem;
     background-color: whitesmoke;
-    border-radius: 2rem;
+    border-radius: 1rem;
     padding: 2rem;
 }
 
 .saito-calendar {
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     width: 100%;
     display: grid;
     grid-template-rows: min-content min-content min-content;

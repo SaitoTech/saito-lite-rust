@@ -29,6 +29,7 @@ class Arcade extends ModTemplate {
     //this.observer = [];
     this.old_game_removal_delay = 2000000;
     this.services = [{ service: "arcade", domain: "saito" }];
+    this.request_no_interrupts = true; // ask other modules not to insert content
 
     this.viewing_arcade_initialization_page = 0;
     this.viewing_game_homepage = ""; //// this.app.browser.returnURLParameter("game");
@@ -169,6 +170,7 @@ class Arcade extends ModTemplate {
       }
     }
 
+
     //
     // hack to force forum to onPeerHandShake
     //
@@ -185,6 +187,15 @@ class Arcade extends ModTemplate {
     });
 
     if (!app.BROWSER){return;}
+
+    if (this.browser_active){
+      //Leave a cookie trail to return to Arcade when you enter a game
+      if (app.options.homeModule !== this.returnSlug()){
+        console.log("Update homepage to " + this.returnSlug());
+        app.options.homeModule = this.returnSlug();
+        app.storage.saveOptions();
+      }
+    }
 
     app.connection.on("join-game", (game_id)=>{
       ArcadeMain.joinGame(app, this, game_id);
@@ -425,12 +436,8 @@ class Arcade extends ModTemplate {
     if (this.debug){ console.log("Received Join Message for game="+game_id,JSON.parse(JSON.stringify(tx)));}
 
     //Check if game exists
-    let accepted_game = null;
-    for (let i = 0; i < this.games.length; i++) {
-      if (this.games[i].transaction.sig == game_id) {
-        accepted_game = this.games[i]; //cache a refence to the game in the module
-      }
-    }
+    let accepted_game = this.games.find((g) => g.transaction.sig === game_id);
+
     if (accepted_game == null){
       console.log("Game not available",this.games);
       return;
@@ -441,10 +448,7 @@ class Arcade extends ModTemplate {
     if (this.debug) { console.log(JSON.parse(JSON.stringify(players))); }
 
     //Update Arcade hero to reflect new player
-    if (!this.joinGameOnOpenList(tx)){
-      console.log("Player cannot join game (already joined)");
-      return;
-    } 
+    this.joinGameOnOpenList(tx) 
     
     if (this.debug) { 
       console.log(JSON.parse(JSON.stringify(players))); 
@@ -1212,6 +1216,7 @@ class Arcade extends ModTemplate {
                 let gm = this.app.modules.returnModule(this.app.options.games[i].module);
                 if (gm){
                   let game_name = gm.gamename || gm.name;
+                  this.app.connection.emit("arcade-game-ready-play", {game_id, game_name});
                   let go = await sconfirm(`${game_name} is ready. Join now?`);
                   if (go){
                     this.app.browser.logMatomoEvent("Arcade", "SaitoConfirmStartGame", this.app.options.games[i].module);
@@ -1344,34 +1349,6 @@ class Arcade extends ModTemplate {
     return game_tx;
   }
 
-  removeOldGames() {
-    let removed_old_games = 0;
-
-    // if the game is very old, remove it
-    for (let i = 0; i < this.games.length; i++) {
-      let remove_this_game = 0;
-      let include_this_game = 0;
-
-      if (this.games[i].msg?.players?.includes(this.app.wallet.returnPublicKey())) {
-        include_this_game = 1;
-      }
-
-      if (include_this_game == 0) {
-        let gamets = parseInt(this.games[i].transaction.ts);
-        let timepassed = new Date().getTime() - gamets;
-        if (timepassed > this.old_game_removal_delay) {
-          remove_this_game = 1;
-        }
-      }
-
-      if (remove_this_game == 1 && include_this_game == 0) {
-        this.games.splice(i, 1);
-        removed_old_games = 1;
-        i--;
-      }
-    }
-    return removed_old_games;
-  }
 
   // just receive the sig of the game to remove
   removeGameFromOpenList(game_sig) {
@@ -1387,51 +1364,15 @@ class Arcade extends ModTemplate {
     ArcadeMain.renderArcadeTab(this.app, this);
   }
 
-  isForUs(tx) {
-    if (!tx) {
-      return false;
-    }
-
-    let txmsg = tx.returnMessage(this.app);
-    if (!txmsg) {
-      return false;
-    }
-
-    let for_us = true;
-
-    if (txmsg.options.players_invited) {
-      for_us = false;
-      if (tx.transaction.from[0].add == this.app.wallet.returnPublicKey()) {
-        for_us = true;
-      } else {
-        tx.returnMessage().options.players_invited.forEach((player) => {
-          if (
-            player == this.app.wallet.returnPublicKey() ||
-            player == this.app.keys.returnIdentifierByPublicKey(this.app.wallet.returnPublicKey())
-          ) {
-            for_us = true;
-          }
-        });
-      }
-    }
-    return for_us;
-  }
-
   validateGame(tx) {
-    if (!tx) {
+    if (!tx?.transaction?.sig || !tx?.msg) {
       return false;
     }
 
-    if (!tx.transaction) {
+    if (tx.msg.over == 1) {
       return false;
-    } else {
-      if (!tx.transaction.sig) {
-        return false;
-      }
-      if (tx.msg.over == 1) {
-        return false;
-      }
     }
+
     for (let i = 0; i < this.games.length; i++) {
       let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
 
@@ -1492,7 +1433,7 @@ class Arcade extends ModTemplate {
     let game_id = txmsg.sig || txmsg.game_id;
     console.log(`Player ${tx.transaction.from[0].add} wants out of game ${game_id}`);
     for (let i = 0; i < this.games.length; i++) {
-      if (this.games[i]?.transaction.sig == game_id) {
+      if (this.games[i]?.transaction.sig === game_id) {
         if (this.games[i].msg.players.includes(tx.transaction.from[0].add)) {
           let p_index = this.games[i].msg.players.indexOf(tx.transaction.from[0].add);
           this.games[i].msg.players.splice(p_index, 1);
@@ -1502,6 +1443,7 @@ class Arcade extends ModTemplate {
           }
 
           this.updatePlayerList(game_id, this.games[i].msg.players, this.games[i].msg.players_sigs);
+          break;
         }
       }
     }
@@ -1563,44 +1505,50 @@ class Arcade extends ModTemplate {
 
 
   addGameToOpenList(tx) {
-    if (!this.app.BROWSER){return;}
     let valid_game = this.validateGame(tx);
-    let for_us = this.isForUs(tx);
-
+    
     if (valid_game) {
-      if (for_us) {
-        this.games.unshift(tx);
-      }
-      let removed_game = this.removeOldGames();
-      if (for_us || removed_game) {
-        ArcadeMain.renderArcadeTab(this.app, this);
-      }
-    }
-    console.log("Add Game: (valid)" + valid_game + " (for us)" +for_us);
-
-  }
-  addGamesToOpenList(txs) {
-    let for_us = false;
-    console.log("Loaded games:");
-    txs.forEach((tx, i) => {
-      let valid_game = this.validateGame(tx);
-      if (valid_game) {
-        let this_game_is_for_us = this.isForUs(tx);
-        if (this_game_is_for_us) {
-          console.log(JSON.parse(JSON.stringify(tx)));
-          this.games.unshift(tx);
-        }
-        for_us = for_us || this_game_is_for_us;
-      }
-    });
-
-    //let removed_game = this.removeOldGames();
-    //if (for_us || removed_game){
-    if (for_us) {
+      this.games.unshift(tx);
       ArcadeMain.renderArcadeTab(this.app, this);
     }
   }
 
+
+  /*
+    Process games we read from Arcade SQL table
+    First validate the games (make sure they are game invite txs)
+    and filter any old games (for which we aren't a member...)
+    TODO: if I see my old invite, but no one else does, what is the point?
+  */
+  addGamesToOpenList(txs) {
+    console.log("Loaded games:");
+    txs.forEach((tx, i) => {
+      if (this.validateGame(tx)) {
+          console.log(JSON.parse(JSON.stringify(tx)));
+          this.games.unshift(tx);
+      }
+    });
+
+    this.removeOldGames();
+    ArcadeMain.renderArcadeTab(this.app, this);      
+
+  }
+
+  removeOldGames() {
+    let removed_old_games = false;
+
+    for (let i = this.games.length-1; i >= 0; i--) {
+      if (!this.games[i].msg?.players?.includes(this.app.wallet.returnPublicKey())) {
+        let timepassed = new Date().getTime() - parseInt(this.games[i].transaction.ts);
+        if (timepassed > this.old_game_removal_delay) {
+          this.games.splice(i, 1);
+          removed_old_games = true;
+        }
+      }
+    }
+
+    return removed_old_games;
+  }
 
 
   shouldAffixCallbackToModule(modname) {

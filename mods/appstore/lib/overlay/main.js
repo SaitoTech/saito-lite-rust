@@ -1,7 +1,8 @@
 const AppStoreOverlayTemplate = require('./main.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 const AppstoreAppDetails = require('./details.js');
-const AppBoxTemplate = require('./appbox.template.js');
+//const AppBoxTemplate = require('./appbox.template.js');
+const SaitoModuleImageBoxTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module-imagebox.template.js');
 const JSON = require('json-bigint');
 
 class AppStoreOverlay {
@@ -37,7 +38,8 @@ class AppStoreOverlay {
       //
       document.querySelector(".appstore-overlay-apps").innerHTML = "";
       for (let i = 0; i < rows.length; i++) {
-        app.browser.addElementToSelector(AppBoxTemplate(app, mod, rows[i]), ".appstore-overlay-apps");
+        app.browser.addElementToSelector(SaitoModuleBoxTemplate(rows[i].name, "/saito/img/dreamscape.png", "install"), ".appstore-overlay-apps");
+        //app.browser.addElementToSelector(AppBoxTemplate(app, mod, rows[i]), ".appstore-overlay-apps");
       }
 
       //

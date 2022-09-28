@@ -11,9 +11,9 @@ class RedSquareObserver {
 	    app.connection.on("observer-add-game-render-request", (games)=>{   
 	      this.render(app, mod, ".redsquare-sidebar-observer");
 	    });
-	    app.connection.on("arcade-game-ready", (slug)=>{
-	    	let spinner = new GameLoader(app, mod);
-	    	spinner.render(app, mod, "#rs-sidebar-observer", "Game Moves Loaded", slug, "Watch Game");
+	    app.connection.on("arcade-game-ready-observer", (game_id)=>{
+	    	let spinner = new GameLoader(app, mod, game_id);
+	    	spinner.render(app, mod, "#rs-sidebar-observer", "Game Moves Loaded", "Watch Game");
 	    });
   	}
 
