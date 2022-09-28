@@ -1452,31 +1452,43 @@ class Poker extends GameTableTemplate {
   }
   
   returnPlayerStackHTML(player,numChips){
-    let html = `<div class="chip_stack pstack${player} tip">`;
+    let html = `<div class="chip_stack tip">`;
+    let identicon = this.app.keys.returnIdenticon(this.app.keys.returnUsername(this.game.players[player-1]));
 
-    let numBigChips = Math.floor(numChips/10);
-    let numSmallChips = numChips - numBigChips*10;
+    let chipSizes = [100, 25, 5, 1];
+    let idx = 0;
+    for (size of chipSizes){
+      let numChipsToRender = Math.floor(numChips/size);
+      numChips -= numChipsToRender * size;
+      for (let i = 0; i < numChipsToRender; i++){
+        html += this.returnChipHTML(size, idx*8);
+        idx++;
+      }
+    }
 
-    if (numSmallChips == 0 && numBigChips > 0){
-      numSmallChips += 10;
-      numBigChips --;
-    }
-    //console.log(`${numChips} represented as ${numBigChips} large chips and ${numSmallChips} small chips`);
-    for (let i = 0; i < numBigChips; i++){
-      html += this.returnChipHTML(false, player, i*8);
-    }
-    for (let i = numBigChips; i < numBigChips+numSmallChips; i++){
-      html += this.returnChipHTML(true, player, i*8);
-    }
-    
+   html += `<img class="chipstack-identicon" src="${identicon}" style="bottom:${(idx-3)*8 - 2}px;">`;
+
    html += "</div>";
    return html;
   }
 
 
-  returnChipHTML(single = true, player = 1, offset = 0){
-    if (single){
-     return `<svg class="poker_chip" style="bottom:${offset}px; " viewbox="0 0 100 35">
+  returnChipHTML(value, offset = 0){
+    let color = "#ffffff";
+    let stroke_color = "black";
+    if (value == 5){
+      color = "#fd403f";
+    }
+    if (value == 25){
+      color = "#2a8072"; 
+    }
+    if (value == 100){
+      color = "#090909";
+      stroke_color = "white";
+    }
+
+   // if (single){
+     return `<svg class="poker_chip" style="bottom:${offset}px; fill:${color}; stroke: ${stroke_color}" viewbox="0 0 100 35">
             <path d="
                 M 2 13
                 A 41 10 0 0 0 98 13
@@ -1487,7 +1499,7 @@ class Poker extends GameTableTemplate {
               " 
               stroke-width="1">
             </svg>`;
-    }else{
+    /*}else{
       return `<svg class="poker_chip" style="bottom:${offset}px; " viewbox="0 0 100 35">
               <path d="
                 M 2 13
@@ -1504,7 +1516,7 @@ class Poker extends GameTableTemplate {
               " 
               stroke-width="1" stroke="black" />
             </svg>`;
-    }
+    }*/
   }
 
   payWinners(winner){
