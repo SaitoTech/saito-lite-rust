@@ -14,13 +14,12 @@
 .saito-container {
     width: 100vw;
     height: 100vh;
-    overflow-y: auto;
-    align-contents: top;
     display: grid;
     grid-template-columns: min-content 1fr min-content;
     padding: 0 calc((100vw - var(--saito-width)) / 2);
-    overflow-x: hidden;
     z-index: 0;
+    margin-top: var(--saito-header-height);
+    overflow-y: auto;
 }
 
 .saito-container div {
@@ -30,7 +29,6 @@
 .saito-main {
     background-color: var(--saito-white);
     padding: 2rem 0;
-    margin-top: var(--saito-header-height);
 }
 
 .saito-sidebar {
@@ -449,12 +447,9 @@
         background: #0009;
         grid-template-columns: 1fr;
         grid-gap: 1rem;
-        border: 0.5rem;
-        padding: .5rem;
+        padding: 1rem;
         z-index: 2;
     }
-
-
 
     .redsquare-actions-container .saito-button-secondary {
         background-color: var(--saito-primary);
@@ -489,3 +484,4 @@
     .saito-main {
         padding-top: 0rem;
     }
+}

@@ -6,6 +6,7 @@ module.exports = (app, mod) => {
       <div id="redsquare-appspace-home" class="redsquare-appspace-home">
 
         <div class="saito-page-header" id="redsquare-home-header">
+         <div class="redsquare-new-tweets-banner" id="redsquare-new-tweets-banner">Load New Tweets</div> 
          <div class="saito-redsquare-actions-buttons">
          <div class="saito-redsquare-actions-buttons-icon">
          <i id="action-icon" class="fas fa-plus"></i>
@@ -31,4 +32,7 @@ module.exports = (app, mod) => {
 }
 
 
-{/* <div class="redsquare-new-tweets-banner" id="redsquare-new-tweets-banner">Load New Tweets</div> */ }
+{/*
+  <div id="redsquare-fetch-new" class="saito-button-secondary small">🟥 Fetch Tweets</div>
+  
+*/ }
