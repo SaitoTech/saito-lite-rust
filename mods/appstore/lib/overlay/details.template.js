@@ -7,9 +7,12 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
 
   let html = `<div class="saito-module-box">`;
 
-console.log("IMAGE: " + module.image);
+   if (module.image) {
+     html += SaitoModuleTemplate(module.name, module.description, module.image);
+   } else {
+     html += SaitoModuleTemplate(module.name, module.description);
+   }
 
-   html += SaitoModuleTemplate(module.name, module.description, module.image);
    html += `
 
     <div class="appstore-appbox-details">
