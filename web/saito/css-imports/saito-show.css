@@ -3,4 +3,6 @@ body {
 }
 body::after {
     background-image: none !important;
+    display: none;
+    content: "";
 }
