@@ -47,6 +47,10 @@ Saito Module box
 -----------------------------------------------------------------*/
 
 
+.saito-module-box {
+  width: 50rem;
+}
+
 .saito-module {
   display: flex;
   border: 1px solid #ccc;
@@ -54,7 +58,9 @@ Saito Module box
   width: 100%;
   height: auto;
   margin-bottom: 2rem;
-  padding: 0.5rem 0.5rem
+  padding: 0.5rem 0.5rem;
+  overflow: hidden;
+  max-height:10rem;
 }
 
 .saito-module > * {
@@ -79,6 +85,10 @@ Saito Module box
   height:2rem;
   width: 2rem;
   margin-bottom: 0.5rem;
+}
+
+.saito-module.large {
+  max-height:12rem;
 }
 
 .saito-module.large  .saito-module-graphic-img { 
