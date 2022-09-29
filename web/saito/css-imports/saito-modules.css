@@ -67,7 +67,7 @@ Saito Module box
   height: 100%;
 }
 
-.saito-module-graphic > .saito-module-graphic-img {
+.saito-module-image-box > .saito-module-image {
   height:10rem;
   width: 15rem;
   margin-right: 0.5rem;
@@ -75,30 +75,24 @@ Saito Module box
   background-size: cover;
 }
 
-.saito-module.small > .saito-module-graphic {
-  display: flex;
-  width: 35rem;
-  flex-wrap: wrap;
-}
-
-.saito-module.small  .saito-module-graphic-img { 
-  height:2rem;
-  width: 2rem;
-  margin-bottom: 0.5rem;
+.saito-module.small  .saito-module-image { 
+  height:5rem;
+  width: 7rem;
 }
 
 .saito-module.large {
   max-height:12rem;
 }
 
-.saito-module.large  .saito-module-graphic-img { 
+.saito-module.large  .saito-module-image { 
   height:12rem;
   width: 20rem;
 }
 
-.saito-module-name {
+.saito-module-title {
   font-weight: bold;
   font-size: 1.3rem;
+  margin-bottom: 1rem;
 }
 
 
