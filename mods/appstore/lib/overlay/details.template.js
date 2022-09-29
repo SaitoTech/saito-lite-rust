@@ -5,13 +5,12 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
 
   var unixtime = new Date(module.unixtime);
 
-  let html = `
-    <div class="saito-module-box">
-  `;
+  let html = `<div class="saito-module-box">`;
 
-   html += SaitoModuleTemplate(app, mod, "", module.name, module.description );
+console.log("IMAGE: " + module.image);
 
-  html += `
+   html += SaitoModuleTemplate(module.name, module.description, module.image);
+   html += `
 
     <div class="appstore-appbox-details">
       <div class="saito-table">
@@ -36,6 +35,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
 
     <button id="appstore-install-confirm-button" class="appstore-install-confirm-button saito-button-primary">confirm install</button>
   
+  </div>
   `;
 
 
