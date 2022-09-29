@@ -758,6 +758,8 @@ Habsburg conquistadores:
       img		:	"LutherDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	4,
+      ability		:	"Bonus CP for transaction in German zone" ,
       committed		: 	0,
     });
 
@@ -767,6 +769,8 @@ Habsburg conquistadores:
       img		:	"ZwingliDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	3 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Zurich" ,
       committed		: 	0,
     });
 
@@ -776,6 +780,8 @@ Habsburg conquistadores:
       img		:	"BucerDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Strasburg" ,
       committed		: 	0,
     });
 
@@ -785,7 +791,37 @@ Habsburg conquistadores:
       img		:	"BullingerDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"Insert in 2nd round of debate in any Language Zone" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu === "debate") {
+          return { faction : "protestant" , event : 'substitute_bullinger', html : `<li class="option" id="substitute_bullinger">substitute Bullinger</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "debate") {
+	  if (his_self.game.state.theological_debate.round === 2) {
+            if (faction === "protestant") {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu === "debate") {
+	  if (his_self.game.state.theological_debate.attacker === "papacy") {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tdefender_debater\tbullinger-debater");
+	  } else {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tattacker_debater\tbullinger-debater");
+	  }
+          his_seld.endTurn();
+        }
+        return 0;
+      },
+
     });
 
     this.importDebater('carlstadt-debater', {
@@ -794,6 +830,8 @@ Habsburg conquistadores:
       img		:	"CarlstadtDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	1 ,
+      ability		:	"Target 3 Germany spaces with Treatise, unrest if fails" ,
       committed		: 	0,
     });
 
@@ -803,6 +841,8 @@ Habsburg conquistadores:
       img		:	"MelanchthonDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	3 ,
+      ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
     });
 
@@ -812,6 +852,8 @@ Habsburg conquistadores:
       img		:	"OekolampadiusDebater.svg",
       language_zone	:	"german" ,
       faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Basel" ,
       committed		: 	0,
     });
 
@@ -826,6 +868,8 @@ Habsburg conquistadores:
       img		:       "EckDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in Debate Attacks" ,
       committed		: 	0,
     });
 
@@ -835,6 +879,8 @@ Habsburg conquistadores:
       img		:       "AleanderDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"If concludes debate, winner flips an extra space" ,
       committed		: 	0,
     });
 
@@ -844,6 +890,8 @@ Habsburg conquistadores:
       img		:	"CajetanDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	1 ,
+      ability		:	"Target 3 spaces with burn books" ,
       committed		: 	0,
     });
 
@@ -853,6 +901,8 @@ Habsburg conquistadores:
       img		:	"CampeggioDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"Roll die after debate loss; if 5 or 6 result is ignored" ,
       committed		: 	0,
     });
 
@@ -862,15 +912,19 @@ Habsburg conquistadores:
       img		:	"CanisiusDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die for Counter-Reformation attempts within 2 spaces of Regensburg" ,
       committed		: 	0,
     });
 
-    this.importDebater('carafa-debater', {
-      type		:	"carafa-debater" ,
-      name		: 	"Carlo Carafa",
-      img		:	"CarafaDebater.svg",
+    this.importDebater('caraffa-debater', {
+      type		:	"caraffa-debater" ,
+      name		: 	"Carlo Caraffa",
+      img		:	"CaraffaDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"Target 2 spaces in any zone with burn books" ,
       committed		: 	0,
     });
 
@@ -880,6 +934,8 @@ Habsburg conquistadores:
       img		:	"ContariniDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"+1 die for Counter-Reformations within 2 spaces of Charles V" ,
       committed		: 	0,
     });
 
@@ -889,6 +945,8 @@ Habsburg conquistadores:
       img		:	"FaberDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+2 die for Counter-Reformations against an Electorate" ,
       committed		: 	0,
     });
 
@@ -898,6 +956,8 @@ Habsburg conquistadores:
       img		:	"GardinerDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in debate in English zone if attacker" ,
       committed		: 	0,
     });
 
@@ -907,6 +967,8 @@ Habsburg conquistadores:
       img		:	"LoyolaDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	4 ,
+      ability		:	"Found Jesuit University for only 2 CP" ,
       committed		: 	0,
     });
 
@@ -916,6 +978,8 @@ Habsburg conquistadores:
       img		:	"PoleDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die for Papacy if at Council of Trent" ,
       committed		: 	0,
     });
 
@@ -925,6 +989,8 @@ Habsburg conquistadores:
       img		:	"TetzelDebater.svg",
       language_zone	:	"any" ,
       faction		:	"papacy" ,
+      power		:	1 ,
+      ability		:	"1 CP to Saint Peters with Burn Books" ,
       committed		: 	0,
     });
 
@@ -939,6 +1005,8 @@ Habsburg conquistadores:
       img		:	"CalvinDebater.svg",
       language_zone	:	"french" ,
       faction		:	"france" ,
+      power		:	4 ,
+      ability		:	"Target 3 French-speaking spaces with a treatise" ,
       committed		: 	0,
     });
 
@@ -948,6 +1016,8 @@ Habsburg conquistadores:
       img		:	"CopDebater.svg",
       language_zone	:	"french" ,
       faction		:	"france" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation attempts within 2 spaces of Paris" ,
       committed		: 	0,
     });
 
@@ -957,6 +1027,8 @@ Habsburg conquistadores:
       img		:	"FarelDebater.svg",
       language_zone	:	"french" ,
       faction		:	"france" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation attempts within 2 spaces of Geneva" ,
       committed		: 	0,
     });
 
@@ -966,6 +1038,8 @@ Habsburg conquistadores:
       img		:	"OlivetanDebater.svg",
       language_zone	:	"french" ,
       faction		:	"france" ,
+      power		:	1 ,
+      ability		:	"Bonus CP for translation in French Zone" ,
       committed		: 	0,
     });
 
@@ -980,6 +1054,8 @@ Habsburg conquistadores:
       img		:	"CranmerDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation within 2 spaces of London" ,
       committed		: 	0,
     });
 
@@ -989,6 +1065,8 @@ Habsburg conquistadores:
       img		:	"WishartDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	1 ,
+      ability		:	"+1 die for Reformation attempts in Scotland" ,
       committed		: 	0,
     });
 
@@ -998,6 +1076,8 @@ Habsburg conquistadores:
       img		:	"TyndaleDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
       committed		: 	0,
     });
 
@@ -1007,6 +1087,8 @@ Habsburg conquistadores:
       img		:	"LatimerDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	1 ,
+      ability		:	"+1 die for Reformation attempts in England" ,
       committed		: 	0,
     });
 
@@ -1016,6 +1098,8 @@ Habsburg conquistadores:
       img		:	"KnoxDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
+      power		:	3 ,
+      ability		:	"+1 die for Reformation Attempts in England or Scotland" ,
       committed		: 	0,
     });
 
@@ -1025,15 +1109,8 @@ Habsburg conquistadores:
       img		:	"CoverdaleDebater.svg",
       language_zone	:	"english" ,
       faction		:	"england" ,
-      committed		: 	0,
-    });
-
-    this.importDebater('cranmer-debater', {
-      type		:	"cranmer-debater" ,
-      name		: 	"Thomas Cranmer",
-      img		:	"CranmerDebater.svg",
-      language_zone	:	"english" ,
-      faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
       committed		: 	0,
     });
 
@@ -5684,11 +5761,11 @@ console.log("this is a space: " + spacekey)
                 $('.option').off();
                 $('.option').on('click', function () {
                   let selected_papal_debater = $(this).attr("id");
-	          his_self.addMove("theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+	          his_self.addMove("theological_debate");
         	  his_self.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	          his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tselected_papal_debater\t"+selected_paper_debater);
-	          his_self.addMove("pre_theological_debate");
+	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
 		  his_self.endTurn();
 		});
 	
@@ -5708,11 +5785,11 @@ console.log("this is a space: " + spacekey)
                 $('.option').off();
                 $('.option').on('click', function () {
                   let prohibited_protestant_debater = $(this).attr("id");
-	          his_self.addMove("theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+	          his_self.addMove("theological_debate");
         	  his_self.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
         	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	          his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tprohibited_protestant_debater\t"+prohibited_protestant_debater);
-	          his_self.addMove("pre_theological_debate");
+	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
 		  his_self.endTurn();
 		});
 	
@@ -5754,20 +5831,61 @@ console.log("this is a space: " + spacekey)
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "debate") {
-alert("PROTESTANTS SUBSTITUTE IN LUTHER");
+	  his_self.addMove("here_i_stand");
+	  his_seld.endTurn();
         }
         return 0;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
-        if (mv[0] == "janissaries") {
+        if (mv[0] == "here_i_stand") {
 
           his_self.game.queue.splice(qe, 1);
-          his_self.updateLog("Ottoman Empire plays Janissaries");
-          his_self.game.state.field_battle.attacker_rolls += 5;
-          his_self.game.state.field_battle.attacker_results.push(his_self.rollDice(6));
+	  his_self.updateLog("Luther accepts the Debate Challenge - Here I Stand");
 
-          return 1;
+	  //
+	  // existing protestant debater is committed
+	  //
+	  for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+	    let d = his_self.game.state.debaters[i];
+	    if (this.game.state.theological_debate.attacker === "papacy") {
+	      if (this.game.state.theological_debate.round == 1) {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_defender_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      } else {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_defender_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      }
+	    } else {
+	      if (this.game.state.theological_debate.round == 1) {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_attacker_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      } else {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_attacker_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      }
+	    }
+	  }
+
+	  if (his_self.game.state.theological_debate.attacker === "papacy") {
+	    if (his_self.game.state.theological_debate.round == 1) {
+              his_self.game.state.theological_debate.round1_defender_debater = "luther-debater";
+	    } else {
+              his_self.game.state.theological_debate.round2_defender_debater = "luther-debater";
+	    }
+	  } else {
+	    if (his_self.game.state.theological_debate.round == 1) {
+              his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
+	    } else {
+              his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
+	    }
+	  }
+
+	  return 1;
 
         }
       },
@@ -7609,6 +7727,13 @@ alert("PROTESTANTS SUBSTITUTE IN LUTHER");
       z.push(this.deck[key]);
     }
 
+    //
+    // debaters have bonuses which modify gameplay
+    //
+    for (let key in this.debaters) {
+      z.push(this.debaters[key]);
+    }
+
     return z;
 
   }
@@ -7929,7 +8054,8 @@ alert("removing unit not implement for sea");
 
 	  this.game.queue.push("event\t" + this.returnPlayerOfFaction("papacy") + "\t" + "006");
 
-	  //this.game.queue.push("theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+	  this.game.queue.push("theological_debate");
+	  this.game.queue.push("pre_theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
 
 	  //this.game.queue.push("retreat_to_winter_spaces");
 
@@ -10955,7 +11081,98 @@ console.log("space: " + spacekey);
 	}
 
 
+
+	if (mv[0] === "pick_second_round_debaters") {
+
+	  //
+	  // attacker chosen randomly from uncommitted
+	  //
+          let ad = 0;
+          let cd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].owner == attacker) {
+	      if (this.game.state.debaters[i].committed == 0) {
+	        ad++;
+	      } else {
+	        cd++;
+	      }
+	    }
+	  }
+	  if (ad != 0) {
+	    x = this.rollDice(ad) - 1;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	        if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	        ad++;
+	      }
+	    }
+	  } else {
+	    x = this.rollDice(cd) - 1;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
+	        if (x === cd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	        cd++;
+	      }
+	    }
+	  }
+	  
+
+	  //
+	  // defender chosen randomly from uncommitted too
+	  //
+	  let dd = 0;
+	  let cd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.theological_debate.committed == "committed") {
+	      if (this.game.state.debaters[i].owner == attacker) {
+		if (this.game.state.debaters[i].committed == 1) {
+	          dd++;
+	        } else {
+		  cd++;
+	        }
+	      }
+	    }
+	  }
+	  if (dd == 0) {
+      	    x = this.rollDice(dd) - 1;
+  	    dd = 0;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.theological_debate.committed == "committed") {
+	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	          if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	          dd++;
+	        } else {
+	          if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	  	  dd++;
+	        }
+	      }
+	    }
+	  } else {
+      	    x = this.rollDice(cd) - 1;
+  	    cd = 0;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.theological_debate.committed == "committed") {
+	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	          if (x === cd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	          cd++;
+	        } else {
+	          if (x === cd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	  	  cd++;
+	        }
+	      }
+	    }
+	  }
+	  
+	  this.game.queue.splice(qe, 1);
+
+	}
+
 	if (mv[0] === "pre_theological_debate") {
+
+	  let attacker = mv[1];
+	  let defender = mv[2];
+	  let language_zone = mv[3];
+	  let committed_or_uncommitted = mv[4];
 
 	  this.game.state.theological_debate = {};
 	  this.game.state.theological_debate.attacker = mv[1];
@@ -10970,26 +11187,6 @@ console.log("space: " + spacekey);
 	  this.game.state.theological_debate.selected_papal_debater = "";
 	  this.game.state.theological_debate.prohibited_protestant_debater = "";
 
-	  this.game.queue.splice(qe, 1);
-
-	  return 1;
-
-	}
-
-console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
-
-        if (mv[0] === "theological_debate") {
-
-	  let attacker = mv[1];
-	  let defender = mv[2];
-	  let language_zone = mv[3];
-	  let committed_or_uncommitted = mv[4];
-
-	  this.game.queue.splice(qe, 1);
-
-	  //if (this.returnNumberOfUncommittedDebaters(faction));
-	  //if (this.returnNumberOfCommittedDebaters(faction));
-
 	  let x = 0;
 
 	  //
@@ -10997,8 +11194,10 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  //
           let ad = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
-	    if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
-	      ad++;
+	    if (this.game.state.debaters[i].owner == attacker) {
+	      if (this.game.state.debaters[i].committed == 0) {
+	        ad++;
+	      }
 	    }
 	  }
 	  x = this.rollDice(ad) - 1;
@@ -11007,22 +11206,16 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	    if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
 	      if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
 	      ad++;
-	    } else {
-	      if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
-	      ad++;
 	    }
 	  }
 	  
-
 	  //
-	  // defender chosen from type 
+	  // defender chosen randomly from type 
 	  //
 	  let dd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.theological_debate.committed == "committed") {
 	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
-	        dd++;
-	      } else {
 	        dd++;
 	      }
 	    }
@@ -11034,19 +11227,35 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
 	        if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
 	        dd++;
-	      } else {
-	        if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
-		dd++;
 	      }
 	    }
 	  }
 	  
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+
+        if (mv[0] === "theological_debate") {
+
+	  let attacker = this.game.state.theological_debate.attacker;
+	  let defender = this.game.state.theological_debate.defender;
+	  let language_zone = this.game.state.theological_debate.language_zone;
+	  let committed_or_uncommitted = this.game.state.theological_debate.committed;
+	  let attacker_idx = 0;
+	  let defender_idx = 0;
+	  let was_defender_uncommitted = 0;
+
+	  this.game.queue.splice(qe, 1);
 
 	  //
 	  // commit debaters if uncommitted
 	  //
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.attacker_debater) {
+	      attacker_idx = i;
 	      if (this.game.state.debaters[i].committed == 0) {
 		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
 	      }
@@ -11054,15 +11263,18 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  }
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
+	      defender_idx = i;
 	      if (this.game.state.debaters[i].committed == 0) {
+	        was_defender_uncommitted = 1;
 		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater);
 	      }
 	    }
 	  }
 
-
+	  //
+	  // open theological debate UI
+	  //
 	  this.displayTheologicalDebate();
-
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
 	  
@@ -11070,9 +11282,8 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
-
-	  let attacker_rolls = 0 + 3; // power of debater + 3;
-	  let defender_rolls = 0 + 1; // power of debater + 1; // or 2 if uncommitted
+	  let attacker_rolls = this.game.state.debaters[attacker_idx].power + 3; // power of debater + 3;
+	  let defender_rolls = this.game.state.debaters[debater_idx].power + 1 + was_defender_uncommitted;
 
 	  let attacker_hits = 0;
 	  let defender_hits = 0;
@@ -11089,8 +11300,16 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  }
 	
 	  if (attacker_hits == defender_hits) {
+
+	    //
 	    // first round of debate moves into second
-	    this.updateLog("TIE - skipping second round for now");
+	    //
+	    this.game.state.theological_debate.round++;
+	    this.game.queue.push("theological_debate");
+	    this.game.queue.push("counter_or_acknowledge\tThe Debate is Tied - Progress to 2nd Round\tdebate");
+            this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("pick_second_round_debaters");
+
 	  } else {
 	    if (attacker_hits > defender_hits) {
 	      this.updateLog("Attacker Wins");
@@ -11100,6 +11319,7 @@ console.log("DEBATERS: " + JSON.stringify(this.game.state.debaters));
 	  }
 
 	  this.game.queue.push("counter_or_acknowledge\tThe Debate is Over\tdebate_finished");
+          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 	  return 1;
 
@@ -13945,13 +14165,16 @@ return;
         if (committed === "committed") { committed = 1; } else { committed = 0; }
 
         if (faction === "papacy") {
-	  his_self.addMove("theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+	  his_self.addMove("theological_debate");
+          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+          this.addMove("RESETCONFIRMSNEEDED\tall");
+	  his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
         } else {
-    	  his_self.addMove("theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
+    	  his_self.addMove("theological_debate");
+          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+          this.addMove("RESETCONFIRMSNEEDED\tall");
+    	  his_self.addMove("pre_theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
         }
-        this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-        this.addMove("RESETCONFIRMSNEEDED\tall");
-        this.addMove("pre_theological_debate");
         his_self.endTurn();
 
       });
