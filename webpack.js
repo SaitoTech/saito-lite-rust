@@ -13,6 +13,7 @@ console.log(output_filename);
 let devtool = undefined;
 devtool = "eval";
 
+
 entrypoint = entry_path;
 outputfile = output_filename;
 let outputpath = output_path;

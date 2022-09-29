@@ -29,6 +29,7 @@ class Arcade extends ModTemplate {
     //this.observer = [];
     this.old_game_removal_delay = 2000000;
     this.services = [{ service: "arcade", domain: "saito" }];
+    this.request_no_interrupts = true; // ask other modules not to insert content
 
     this.viewing_arcade_initialization_page = 0;
     this.viewing_game_homepage = ""; //// this.app.browser.returnURLParameter("game");
@@ -169,6 +170,7 @@ class Arcade extends ModTemplate {
       }
     }
 
+
     //
     // hack to force forum to onPeerHandShake
     //
@@ -185,6 +187,15 @@ class Arcade extends ModTemplate {
     });
 
     if (!app.BROWSER){return;}
+
+    if (this.browser_active){
+      //Leave a cookie trail to return to Arcade when you enter a game
+      if (app.options.homeModule !== this.returnSlug()){
+        console.log("Update homepage to " + this.returnSlug());
+        app.options.homeModule = this.returnSlug();
+        app.storage.saveOptions();
+      }
+    }
 
     app.connection.on("join-game", (game_id)=>{
       ArcadeMain.joinGame(app, this, game_id);

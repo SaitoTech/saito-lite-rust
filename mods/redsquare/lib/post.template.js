@@ -28,10 +28,11 @@ module.exports = (app, mod, publickey, parent_id = "", thread_id = "") => {
       .redsquare-tweet-overlay {
         padding: 2rem;
         padding-bottom: 0.5rem;
-        border-radius: 2rem;
+        border-radius: 0.5rem;
         background-color: white;
         position: relative;
         width: 50rem;
+        max-width: 100vw
         max-height: 95vh;
         overflow-y: auto;
       }

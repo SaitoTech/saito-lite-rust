@@ -23,6 +23,7 @@
   font-size: 2em;
   text-transform: uppercase;
   transition: all .2s ease-in-out;
+  cursor: pointer;
 }
 .crypto_transfer_btn:hover,
 .crypto_transfer_btn:active,

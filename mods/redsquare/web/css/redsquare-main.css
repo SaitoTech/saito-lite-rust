@@ -62,23 +62,26 @@ span.redsquare-home-red-square+span {
   font-size: 5rem;
   color: #444A;
 }
+
 .post-tweet-preview {
   padding: 0rem;
   padding-bottom: 2rem;
 }
 
 #redsquare-appspace-home {
- padding-bottom: 3rem;
+  padding-bottom: 3rem;
 }
 
-#redsquare-intersection{
+
+#redsquare-intersection {
   opacity: 1;
-   height: 3rem;
+  height: 3rem;
 }
 
 .redsquare-list {
   min-height: 120vh;
 }
+
 .post-tweet-preview .redsquare-item {
   padding-left: 0rem;
   padding-top: 0rem;
@@ -105,26 +108,31 @@ span.redsquare-home-red-square+span {
 .redsquare-tweet-overlay {
   padding: 2rem;
   padding-bottom: 1rem;
-  border-radius: 2rem;
-  background-color: white;
+  border-radius: 0.5rem;
+  background-color: var(--saito-white);
   position: relative;
   width: 50rem;
+  max-width: 100vw;
   max-height: 95vh;
   overflow-y: auto;
 }
 
 .saito-sidebar.right {
   width: 51rem;
+  position: fixed;
+  width: inherit;
+  height: inherit;
+  overflow-y: auto;
 }
 
 .saito-sidebar-left {
-  position: fixed;
-  top: calc(var(--saito-header-height) + 1rem);
+  width: 250px;
 }
 
 .saito-sidebar-right {
-  left: calc(var(--saito-left-sidebar-width) + var(--saito-main-appspace-width) + 20rem);
-  top: calc(var(--saito-header-height) + 1rem);
+  width: 50rem;
+  overflow-y: scroll;
+  height: inherit;
 }
 
 .sidebar-scrollable {
@@ -132,15 +140,9 @@ span.redsquare-home-red-square+span {
   left: unset;
 }
 
-.redsquare-sidebar-arcade #redsquare-create-game {
-  transform: translateY(-25%);
-}
-
 .saito-main.appspace {
-  min-width: var(--saito-main-appspace-width);
-  height: 100vh;
+  margin: 0 2rem 15rem;
   position: relative;
-  margin-left: calc(var(--saito-left-sidebar-width) + 1rem);
 }
 
 .redsquare-appspace-contacts-list {
@@ -158,7 +160,7 @@ span.redsquare-home-red-square+span {
   border-bottom: 1px solid #a5a5a533;
 }
 
-.link-preview>.redsquare-item { 
+.link-preview>.redsquare-item {
   border-bottom: none;
   padding-right: 0rem;
   padding-bottom: 0rem;
@@ -197,39 +199,38 @@ span.redsquare-home-red-square+span {
 
 .redsquare-game-creator {
   padding: 3rem;
-  border-radius: 2rem;
+  border-radius: 0.5rem;
   background-color: #0009;
-  color: white;
+  color: var(--saito-white);
   max-height: 90vh;
-  max-width: 114rem;
+  max-width: 100vw;
   overflow-y: auto;
 }
 
 .redsquare-create-game-list {
   display: grid;
-  grid-template-rows: auto;
   grid-template-columns: 1fr 1fr;
-  row-gap: 2rem;
-  column-gap: 2rem;
+  grid-gap: 1rem;
 }
+
 
 .redsquare-create-game-header {
   font-size: 3rem;
   margin-bottom: 1rem;
-  background-color: #0008;
   padding: 1rem;
 }
 
 .redsquare-game-container {
   display: grid;
-  grid-template-columns: 10vw auto;
+  grid-template-columns: 12rem auto;
   grid-template-rows: min-content 1fr;
-  max-width: 80vw;
-  column-gap: 2rem;
-  min-height: 10rem;
-  max-height: 10rem;
-  min-width: 51rem;
-  padding: 0.5rem
+  grid-gap: 1rem;
+  min-height: 12rem;
+  max-height: 12rem;
+  padding: 0.5rem;
+  min-width: 35rem;
+  width: 50rem;
+  max-width: calc(100vw - 4rem);
 }
 
 .redsquare-game-container:hover {
@@ -239,9 +240,8 @@ span.redsquare-home-red-square+span {
 
 .redsquare-game-image {
   grid-row: span 2;
-  width: 10vw;
+  width: 12rem;
   height: auto;
-  max-height: 10rem;
 }
 
 .redsquare-game-image>img {
@@ -251,24 +251,46 @@ span.redsquare-home-red-square+span {
 }
 
 .redsquare-game-title {
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 1;
-  grid-row-end: 2;
   font-size: 3rem;
-  font-weight: bolder;
 }
 
 .redsquare-game-description {
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 2;
-  grid-row-end: 3;
-  overflow-y: hidden;
-  text-overflow: clip;
   font-size: 1.5rem;
   line-height: 1.9rem;
+  overflow: auto;
 }
+
+@media only screen and (max-width: 535px) {
+  
+  .redsquare-create-game-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 1rem;
+  }
+
+  .redsquare-game-image {
+    grid-row: unset;
+    width: 6rem;
+  }
+
+  .redsquare-game-description {
+    grid-column: span 2;
+    max-height: 8rem;
+  }  
+  
+  .redsquare-game-container {
+    grid-template-columns: 6rem auto;
+    min-height: unset;
+    max-height: 25rem;
+  }
+
+  .redsquare-game-title {
+    line-height: 4rem;
+  }
+}
+
+/*--------------------*/
+
 
 .redsquare-tweet-tools {
   display: flex;
@@ -287,7 +309,9 @@ span.redsquare-home-red-square+span {
   grid-template-columns: 2fr 1fr;
 }
 
-.tweet-tool-like-count, .tweet-tool-retweet-count, .tweet-tool-comment-count {
+.tweet-tool-like-count,
+.tweet-tool-retweet-count,
+.tweet-tool-comment-count {
   text-align: right;
 }
 
@@ -395,7 +419,7 @@ span.redsquare-home-red-square+span {
 
 .tweet-img-expand-container:hover {
   transform: scale(1.2);
-} 
+}
 
 #redsquare-reply-tweet-overlay {
   background-color: #fff;
@@ -408,19 +432,21 @@ span.redsquare-home-red-square+span {
 }
 
 #redsquare-new-tweets-banner {
-  display: none;
+  display: none; 
   color: #fff;
-  position: sticky;
-  top: 13rem;
+  top: 2rem;
+  left: 0;
   z-index: 2;
   cursor: pointer;
   height: 3rem;
   line-height: 3rem;
   text-align: center;
   width: 34%;
-  margin: 0 33%;
-  background: #0004;
+  background: #0009;
   border-radius: 0.5rem;
+  margin: -3rem 50% 0;
+  transform: translateX(-50%);
+  position: sticky;
 }
 
 .redsquare-ellipsis::after {
@@ -500,13 +526,13 @@ span.redsquare-home-red-square+span {
   font-size: 1.6rem;
 }
 
-.post-tweet-image-upload > #post-tweet-supports {
-    font-size: 1rem !important;
-    color: var(--saito-default-font-color);
+.post-tweet-image-upload>#post-tweet-supports {
+  font-size: 1rem !important;
+  color: var(--saito-default-font-color);
 }
 
 .post-tweet-image-upload input {
- opacity: 1;
+  opacity: 1;
 }
 
 #redsquare-post-tweet-image-upload .my-form {
@@ -594,7 +620,8 @@ span.redsquare-home-red-square+span {
 
 /* Hacks to stop old arcade and chat content from ruining display */
 
-.chat-box, .saito-arcade-invite {
+.chat-box,
+.saito-arcade-invite {
   display: none;
 }
 
@@ -622,16 +649,17 @@ span.redsquare-home-red-square+span {
 
   .saito-main.appspace {
     min-width: 35rem;
-   
+
   }
-  .redsquare-tweet-overlay{
+
+  .redsquare-tweet-overlay {
     width: 100vw;
     border-radius: 0;
   }
-  
+
   .redsquare-tweet-tools {
     display: grid;
-    grid-template-columns: repeat(5,1fr);
+    grid-template-columns: repeat(5, 1fr);
     width: 100%;
     margin: 2rem 0 0rem 0;
   }
@@ -648,20 +676,9 @@ span.redsquare-home-red-square+span {
     width: 80vw;
     object-fit: contain;
   }
-  
-  
-  .redsquare-tweet-tools span {
-    /* font-size: 1.3rem; */
-  }
-  .redsquare-tweet-tools i {
-    /* font-size: 1.3rem; */
-  }
-
-
 
   .saito-page-header .saito-button-secondary {
-    padding: 0.5rem 0.5rem 0.4rem 0.5rem;
-    margin-top: 0rem;
+    font-size: 1.8rem;
   }
 
   .post-tweet-button {
@@ -671,7 +688,7 @@ span.redsquare-home-red-square+span {
   .tweet-overlay-img-cont img {
     max-width: 100vw;
   }
-  
+
 }
 
 
@@ -679,27 +696,22 @@ span.redsquare-home-red-square+span {
 
   .saito-main.appspace {
     min-width: 35rem;
-   
+    width: 94vw;
   }
-  
+
   .redsquare-tweet-tools>div {
     position: relative;
     margin: 0 0;
     min-width: 8%;
     margin-right: 8%;
   }
-  
 
-  /* .redsquare-tweet-tools span {
-    font-size: 1rem;
-  } */
-  .redsquare-tweet-tools i {
-    /* font-size: 1rem; */
+  .saito-container {
+    padding: 0 1rem;
   }
-  
 
 }
-  
+
 .notification-item .tweet {
   max-height: 8rem;
   overflow: hidden;
@@ -717,7 +729,7 @@ span.redsquare-home-red-square+span {
   background-color: #ededed;
 }
 
-.notification-item > .redsquare-item-contents {
+.notification-item>.redsquare-item-contents {
   display: block;
 }
 
@@ -801,7 +813,7 @@ span.redsquare-home-red-square+span {
   grid-gap: 1rem;
   padding: 20px;
   background: radial-gradient(100.52% 47851.24% at 0% 0%, #f66659 0%, #f21d3b 51.56%, #f66659 100%)
-      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */
+    /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */
   ;
   transform: matrix(1, 0, 0, -1, 0, 0);
   color: white;
@@ -871,30 +883,30 @@ span.redsquare-home-red-square+span {
 
 @keyframes lds-dual-ring {
   0% {
-      transform: rotate(0deg);
+    transform: rotate(0deg);
   }
 
   100% {
-      transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
 
 @keyframes glow {
   0% {
-      transform: scale(.97);
+    transform: scale(.97);
   }
 
   50% {
-      transform: scale(1);
+    transform: scale(1);
   }
 
   75% {
-      transform: scale(0.97);
+    transform: scale(0.97);
   }
 
   100% {
-      transform: scale(.97);
+    transform: scale(.97);
   }
 }
 
@@ -972,8 +984,6 @@ span.redsquare-home-red-square+span {
   grid-template-columns: 20rem 1fr;
 }
 
-.stunx-appspace-join {}
-
 .stunx-appspace-join input {
   margin-right: 1rem;
   padding-left: 1rem;
@@ -992,7 +1002,7 @@ span.redsquare-home-red-square+span {
 
 
 .saito-redsquare-actions-buttons-icon i {
- display: none;
+  display: none;
 }
 
 
@@ -1006,76 +1016,7 @@ span.redsquare-home-red-square+span {
     position: relative;
   }
 
-  .saito-main.appspace {
-    margin-left: 0px;
-  }
-
   .saito-sidebar-right {
     position: relative;
   }
 }
-
-@media screen and (max-width: 515px) { 
-
-  .saito-redsquare-actions-buttons {
-    z-index: 10;
-    bottom: 1rem;
-    position: fixed;
-    margin-left: 10rem;
-  }
-  
-  .saito-redsquare-actions-buttons-icon {
-  
-    content: "";
-    width: 5rem;
-    height: 5rem;
-    border-radius: 50%;
-    background-color: var(--saito-primary);
-    cursor: pointer;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    bottom: 1rem;
-    display: flex;
- 
-  }
-  .saito-redsquare-actions-buttons-icon i {
-    font-size: 3rem;
-    color: var(--saito-white);
-    display: block;
-  }
-  
-
-  .display-actions {
-    display: grid !important;
-  }
-  
-
-  .redsquare-actions-container {
-    position: fixed;
-    bottom: 7rem;
-    left: 0;
-    width: 100vw;
-    display: none;
-    background: #44444444;
-    grid-template-columns: 1fr;
-    grid-gap: 1rem;
-    border: 0.5rem;
-    padding: .5rem;
-  }
-
-  .redsquare-actions-container .saito-button-secondary { 
-    background-color: var(--saito-white);
-  }
-  
-  .saito-redsquare-actions-buttons .saito-button-secondary {
-    display: block;
-  } 
-
-}
-/* @media screen and (max-width: 396px) {
-
-  
-
-} */
-

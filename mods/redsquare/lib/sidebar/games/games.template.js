@@ -38,7 +38,7 @@ module.exports = RedSquareGamesTemplate = (app, mod) => {
       if (games.length == 0) {
         html = ""
         if (window.location.hash !== "#games"){
-      	   html += `<div id="redsquare-create-game" class="saito-button-secondary small" style="float: right;">Create New Game</div>
+      	   html += `<div id="redsquare-create-game" class="saito-button-secondary small"> New Game</div>
               `;
         }
       }

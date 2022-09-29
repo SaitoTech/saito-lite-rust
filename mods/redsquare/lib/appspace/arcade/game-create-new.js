@@ -73,7 +73,7 @@ class GameCreateNew {
         identifier.addEventListener("click", (e) => {
 
           //Requery advancedOptions on the click so it can dynamically update based on # of players
-          let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small" style="float: right;">Accept</div>`;
+          let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small">Accept</div>`;
           let advancedOptionsHTML = gamecreate_self.game_mod.returnGameOptionsHTML();
           if (!advancedOptionsHTML.includes(accept_button)){
             advancedOptionsHTML += accept_button;

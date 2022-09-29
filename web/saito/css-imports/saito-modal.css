@@ -1,13 +1,13 @@
 
 .saito-modal {
-  width: 90rem;
+  width: 70rem;
   height: min-content;
   max-width: 80vw;
   font-size: 1.5rem;
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
   background-image: url(/saito/img/dreamscape.png);
   background-position: 0em;
-  background-size: cover;
+  background-size: 120% 100%;
   color: white;
   display: grid;
   grid-template-rows: min-content auto;

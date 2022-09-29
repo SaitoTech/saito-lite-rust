@@ -23,6 +23,12 @@ class RedSquareAppspaceHome {
       })
     })
 
+    app.connection.on("new-tweet-render-request", (tweet) => {
+      console.log("ADDING TRR: " + tweet.tx.transaction.sig);
+      tweet.render(app, mod, ".redsquare-list", false);
+    });
+
+
     app.connection.on("tweet-render-request", (tweet) => {
       console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list");
@@ -77,8 +83,24 @@ class RedSquareAppspaceHome {
     document.getElementById("redsquare-new-tweet").onclick = (e) => {
       let ptweet = new PostTweet(app, mod);
       ptweet.render(app, mod);
-
       app.browser.addIdentifiersToDom();
+    }
+    /*
+    document.getElementById("redsquare-fetch-new").onclick = (e) => {
+      mod.fetchNewTweets(app, mod);
+    }
+    */
+    document.getElementById("redsquare-new-tweets-banner").onclick = (e) => {
+      mod.newTweets.reverse();
+      mod.newTweets.forEach(tweet => {
+        let tweet_id = "tweet-box-" + tweet.tx.transaction.sig;
+        if (!document.getElementById(tweet_id)) {
+          mod.addTweetAndBroadcastRenderRequest(app, mod, tweet);
+        }
+      });
+      mod.newTweets = [];
+      e.target.style.display = "none";
+      document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
     }
   }
 

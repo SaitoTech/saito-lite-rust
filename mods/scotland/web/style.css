@@ -10,10 +10,6 @@
   position: absolute;
 }
 
-.hidden{
-  display: none;
-}
-
 .gameboard {
   background-image: url("/scotland/img/gameboard-large.jpg");
   width: 5135px;
