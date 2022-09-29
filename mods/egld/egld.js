@@ -25,26 +25,22 @@ class EGLDModule extends CryptoModule {
     this.categories = "Cryptocurrency";
     this.balance = 0
     this.egld = {}
-
+    this.base_url = "https://elrond-api-devnet.public.blastapi.io"
+    this.api_network_provider = "https://devnet-api.elrond.com"
   }
 
 
-  initialize(){
+  async initialize(){
         this.createEGLDAccount();
-        this.init();
-        console.log(this);
+        this.networkProvider = new ApiNetworkProvider(this.api_network_provider)
+        let address = this.egld.keyfile.bech32;
+        await this.updateBalance(address);
+        await this.updateAddressNonce(address);
+
   }
 
 
 
-  async init(){
-    if (this.app.BROWSER === 0){
-      let address = this.egld.keyfile.bech32;
-      this.networkProvider = new ApiNetworkProvider("https://devnet-api.elrond.com")
-      await this.updateBalance(address);
-      await this.updateAddressNonce(address);
-    }
-  }
 
 
   async sendPayment(amount, recipient,  unique_hash=""){
@@ -52,7 +48,7 @@ class EGLDModule extends CryptoModule {
     let config = await this.networkProvider.getNetworkConfig()
     let nonce = await this.nonce
     console.log('nonce ', nonce)
-    let tokenPayment = TokenPayment.egldFromAmount(amount);
+    let tokenPayment = TokenPayment.egldFromAmount(String(amount));
     let value = BigInt(amount * (10 ** tokenPayment.numDecimals));
     console.log('value ', value.toString())
     const balance =  await this.returnBalance(from);
@@ -101,17 +97,17 @@ async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_has
 
     const res = await axios({
         method: "get",
-        url: `https://elrond-api-devnet.public.blastapi.io/accounts/${recipient}/transfers?sender=${sender}`
+        url: `${this.base_url}/accounts/${recipient}/transfers?sender=${sender}`
        })
-       console.log(res.data)
+    //    console.log(res.data)
 
        let toReturn = null
 
        for(let i = 0; i< res.data.length; i++){
          if(res.data[i].timestamp > timestamp){
             let amountRes = TokenPayment.egldFromBigInteger(res.data[i].value);
-            let amountSent = TokenPayment.egldFromAmount(amount);
-                console.log(amountRes.toString(), amountSent.toString())
+            let amountSent = TokenPayment.egldFromAmount(String(amount));
+                // console.log(amountRes.toString(), amountSent.toString())
             if(parseFloat(amountRes.toString()) === parseFloat(amountSent.toString())){
                 toReturn = 1;
                 // console.log(res.data[i], "actual transaction");
@@ -127,11 +123,15 @@ async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_has
 async returnBalance(address){
     let  res  = await  axios({
         method: 'get',
-        url: `https://elrond-api-devnet.public.blastapi.io/address/${address}/balance`,
+        url: `${this.base_url}/address/${address}/balance`,
         data: ""
       })
       this.balance = res.data.data.balance;
       return res.data.data.balance;
+}
+
+returnAddress (){
+    return this.egld.keyfile.bech32;
 }
 
 
@@ -139,7 +139,7 @@ async returnBalance(address){
 async getAddressNonce(address){
    const res = await axios({
     method: "get",
-    url: `https://elrond-api-devnet.public.blastapi.io/address/${address}/nonce`
+    url: `${this.base_url}/address/${address}/nonce`
    })
    let nonce = res.data.data.nonce;
 //    console.log(res, 'data')
@@ -150,7 +150,7 @@ async getAddressNonce(address){
 async updateAddressNonce(address){
     const res = await axios({
         method: "get",
-        url: `https://elrond-api-devnet.public.blastapi.io/address/${address}/nonce`
+        url: `${this.base_url}/address/${address}/nonce`
        })
 
        this.nonce = res.data.data.nonce;
@@ -221,30 +221,12 @@ async createEGLDAccount(){
     //   this.egld.account = account;
     //   this.app.options.egld = {keyfile, password}
     //   this.app.storage.saveOptions(); 
-    }
+    // }
   
 
 }
 
-// sendUpdateRecipientBalanceTransaction(recipient){
-//       let newtx = this.app.wallet.createUnsignedTransaction();
-//       newtx.transaction.to.push(recipient);
-//       newtx.msg.module = "Mixin";
-//       newtx.msg.request = "update-recipient-balance"
-//       newtx.msg.data = {
-//         recipient
-//     };
-//       newtx = this.app.wallet.signTransaction(newtx);
-//       console.log(this.app.network);
-//       this.app.network.propagateTransaction(newtx);
-//   }
-  
-//   receiveUpdateReciepientBalanceTransaction(blk, tx, conf, app){
-//           let egld_address = this.egld.keyfile.bech32;
-//           if (egld_address === tx.msg.data.recipient) {
-//               app.connection.emit('update-egld-balance', egld_address);
-//           }
-//   }
+  }
 
 
 

@@ -60,7 +60,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
   let html = `
 
-
+  
   <div class="saito-page-header">
 
 

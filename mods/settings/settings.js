@@ -11,17 +11,21 @@ class Settings extends ModTemplate {
     this.app = app;
     this.name = "Settings";
     this.appname = "Settings";
+    this.slug = "settings";
     this.description = "Convenient Email plugin for managing Saito account settings";
     this.utilities = "Core Utilities";
     this.link = "/email?module=settings";
     this.icon = "fas fa-cog";
     this.description = "User settings module.";
     this.categories = "Admin Users";
+    this.styles = ['/settings/style.css'];
     return this;
   }
 
 
   initialize(app) {
+    super.initialize(app);
+
     let settings_self = this;
     this.app.connection.on("update_identifier", (tmpkey) => {
       if (document.getElementById("register-identifier-btn")) {
