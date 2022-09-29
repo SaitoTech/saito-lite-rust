@@ -1,3 +1,6 @@
 body {
     visibility: visible !important;
 }
+body::after {
+    background-image: none !important;
+}
