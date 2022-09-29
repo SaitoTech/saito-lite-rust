@@ -448,13 +448,16 @@ class Mahjong extends GameTemplate {
     return hints;
   }
 
-  displayUserInterface() {
+  async displayUserInterface() {
     let tilesLeftToUnlock = this.getAvailableTiles();
 
     if (!tilesLeftToUnlock || tilesLeftToUnlock.length == 0) {
-      this.addMove("lose");
-      this.endTurn();
-      return;
+      let c = await sconfirm("There are no more available moves to make, start new game?");
+      if (c){
+        this.addMove("lose");
+        this.endTurn();
+        return;
+      }
     }
     let mahjong_self = this;
 
@@ -480,31 +483,36 @@ class Mahjong extends GameTemplate {
       }
     });
 
-    $("#hint").off();
-    $("#hint").on("click", function(){
-      let pair = tilesLeftToUnlock.pop();
-      $(`#${pair[0]}, #${pair[1]}`).addClass("hint").delay(500)
-      .queue(function () {
-        $(this).removeClass("hint").dequeue();
-      })
-      .delay(400)
-      .queue(function () {
-        $(this).addClass("hint").dequeue();
-      })
-      .delay(500)
-      .queue(function () {
-        $(this).removeClass("hint").dequeue();
-      })
-      .delay(400)
-      .queue(function () {
-        $(this).addClass("hint").dequeue();
-      })
-      .delay(500)
-      .queue(function () {
-        $(this).removeClass("hint").dequeue();
-      });
 
-      tilesLeftToUnlock.unshift(pair);
+    $("#hint").off();
+    
+
+    $("#hint").on("click", function(){
+      if (tilesLeftToUnlock.length > 0){
+        let pair = tilesLeftToUnlock.pop();
+        $(`#${pair[0]}, #${pair[1]}`).addClass("hint").delay(500)
+        .queue(function () {
+          $(this).removeClass("hint").dequeue();
+        })
+        .delay(400)
+        .queue(function () {
+          $(this).addClass("hint").dequeue();
+        })
+        .delay(500)
+        .queue(function () {
+          $(this).removeClass("hint").dequeue();
+        })
+        .delay(400)
+        .queue(function () {
+          $(this).addClass("hint").dequeue();
+        })
+        .delay(500)
+        .queue(function () {
+          $(this).removeClass("hint").dequeue();
+        });
+
+        tilesLeftToUnlock.unshift(pair);
+      }
     });
 
   }
@@ -553,7 +561,6 @@ class Mahjong extends GameTemplate {
 
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
-        this.displayWarning("Game over", "There are no more available moves to make.", 9000);
         this.endGame([], "no more moves");
         this.newRound();
         return 1;
