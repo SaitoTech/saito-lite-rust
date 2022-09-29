@@ -42,3 +42,60 @@ Saito Module Stubs - horizontal bar with image left
 
 
 
+/* ----------------------------------------------------------------
+Saito Module box
+-----------------------------------------------------------------*/
+
+
+.saito-module {
+  display: flex;
+  border: 1px solid #ccc;
+  justify-content: space-between;
+  width: 100%;
+  height: auto;
+  margin-bottom: 2rem;
+  padding: 0.5rem 0.5rem
+}
+
+.saito-module > * {
+  height: 100%;
+}
+
+.saito-module-graphic > .saito-module-graphic-img {
+  height:10rem;
+  width: 15rem;
+  margin-right: 0.5rem;
+  background: url('https://saito.io/saito/img/dreamscape.png');
+  background-size: cover;
+}
+
+.saito-module.small > .saito-module-graphic {
+  display: flex;
+  width: 35rem;
+  flex-wrap: wrap;
+}
+
+.saito-module.small  .saito-module-graphic-img { 
+  height:2rem;
+  width: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.saito-module.large  .saito-module-graphic-img { 
+  height:12rem;
+  width: 20rem;
+}
+
+.saito-module-name {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+
+/* ----------------------------------------------------------------
+Saito Module box
+-----------------------------------------------------------------*/
+
+
+
+
