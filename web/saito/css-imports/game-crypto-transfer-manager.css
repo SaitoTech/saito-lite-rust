@@ -25,6 +25,9 @@
   transition: all .2s ease-in-out;
   cursor: pointer;
 }
+.crypto_transfer_btn.hidden{
+  display: none;
+}
 .crypto_transfer_btn:hover,
 .crypto_transfer_btn:active,
 .crypto_transfer_btn:focus {
