@@ -4,7 +4,6 @@ Saito Module Stubs - horizontal bar with image left
 .saito-module-imagebox {
     min-height: 240px;
     min-width: 300px;
-    display: grid;
     position: relative;
     border: 1px solid;
     border-top: none;

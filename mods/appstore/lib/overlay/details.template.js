@@ -1,3 +1,4 @@
+const SaitoModule = require('./../../../../lib/saito/new-ui/templates/saito-module.template');
 const SaitoModuleIntroTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module-intro.template');
 
 module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
@@ -5,10 +6,10 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
   var unixtime = new Date(module.unixtime);
 
   let html = `
-
-    ${SaitoModuleIntroTemplate(app, mod, "", module.name, module.description )} 
-
+    <div class="saito-module-box">
   `;
+
+   html += SaitoModuleTemplate(app, mod, "", module.name, module.description );
 
   html += `
 
