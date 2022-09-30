@@ -23,15 +23,16 @@ class RedSquareAppspaceHome {
       })
     })
 
+    //not used - keeping for legacy
     app.connection.on("new-tweet-render-request", (tweet) => {
       console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list", false);
     });
 
 
-    app.connection.on("tweet-render-request", (tweet) => {
+    app.connection.on("tweet-render-request", (tweet, append = true) => {
       console.log("ADDING TRR: " + tweet.tx.transaction.sig);
-      tweet.render(app, mod, ".redsquare-list");
+      tweet.render(app, mod, ".redsquare-list", append);
     });
 
     let options = {
@@ -52,8 +53,6 @@ class RedSquareAppspaceHome {
         }
 
       })
-
-
     }, options)
   }
 
@@ -95,7 +94,7 @@ class RedSquareAppspaceHome {
       mod.newTweets.forEach(tweet => {
         let tweet_id = "tweet-box-" + tweet.tx.transaction.sig;
         if (!document.getElementById(tweet_id)) {
-          mod.addTweetAndBroadcastRenderRequest(app, mod, tweet);
+          mod.addTweetAndBroadcastRenderRequest(app, mod, tweet, 'true');
         }
       });
       mod.newTweets = [];

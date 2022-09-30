@@ -44,8 +44,13 @@ module.exports = (app, mod) => {
           </div>
           <div id="chip_wrapper" class="overlay-input" style="display:none;">
             <label for="stake">Buy-in:</label>
-            
             <input type="number" id="stake" list="suggestedChipValues" name="stake" min="0" value="0" step="1">
+
+            <div class="overlay-input">
+              <input type="checkbox" checked name="settle_by_round" />
+              <label for="settle_by_round">Settle After Every Hand</label>
+            </div>
+
           </div>
           <datalist id="suggestedChipValues">
             <option value="0.01">
@@ -56,6 +61,8 @@ module.exports = (app, mod) => {
             <option value="50">
             <option value="100">
           </datalist>
+
+
    
           <!--input type="hidden" id="stake" name="stake" value="0"-->`;
 
