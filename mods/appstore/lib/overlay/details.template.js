@@ -1,5 +1,4 @@
 const SaitoModule = require('./../../../../lib/saito/new-ui/templates/saito-module.template');
-const SaitoModuleIntroTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module-intro.template');
 
 module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
 
@@ -8,9 +7,9 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
   let html = `<div class="saito-module-box">`;
 
    if (module.image) {
-     html += SaitoModuleTemplate(module.name, module.description, module.image);
+     html += SaitoModuleTemplate(module.name, module.description, module.image, "", "large");
    } else {
-     html += SaitoModuleTemplate(module.name, module.description);
+     html += SaitoModuleTemplate(module.name, module.description, "", "", "large");
    }
 
    html += `
