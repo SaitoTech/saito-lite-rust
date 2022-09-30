@@ -46,7 +46,6 @@ Saito Module box
 -----------------------------------------------------------------*/
 .saito-module {
   font-size: 1.6em;
-  border: 1px solid #ccc;
   justify-content: space-between;
   width: 100%;
   height: auto;
@@ -55,6 +54,7 @@ Saito Module box
   overflow: hidden;
   display: grid;
   grid-template-columns: min-content 1fr;
+  background: var(--saito-gray);
 }
 .saito-module.small {
   font-size: 1.3rem;
@@ -71,8 +71,8 @@ Saito Module box
   height:10rem;
   width: 15rem;
   margin-right: 0.5rem;
-  background: url('https://saito.io/saito/img/dreamscape.png');
-  background-size: cover;
+  background-image: url('https://saito.io/saito/img/dreamscape.png');
+  background-size: 100%;
 }
 
 .saito-module > * > .saito-module-image { 
@@ -81,8 +81,8 @@ Saito Module box
 }
 
 .saito-module.small > * > .saito-module-image { 
-  height: 5rem;
-  width: 7rem;
+    height: 5.4rem;
+    width: 10rem;
 }
 
 .saito-module.large > * > .saito-module-image { 

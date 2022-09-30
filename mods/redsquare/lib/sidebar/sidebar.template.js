@@ -1,3 +1,5 @@
+const SaitoArcadeBoxTemplate = require("./../../../../lib/saito/new-ui/templates/saito-arcade-box.template");
+
 module.exports = RedSquareSidebarTemplate = (app, mod) => {
 
   return `
@@ -11,6 +13,10 @@ module.exports = RedSquareSidebarTemplate = (app, mod) => {
     </div>
 
     <div class="redsquare-sidebar-observer">
+    </div>
+
+    <div class="redsquare-sidebar-box">
+        ${SaitoArcadeBoxTemplate()}
     </div>
 
     <div class="redsquare-sidebar-league">
