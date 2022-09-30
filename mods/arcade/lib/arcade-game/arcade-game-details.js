@@ -152,20 +152,22 @@ module.exports = ArcadeGameDetails = {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
-          for (let game of mod.games){
-            if (mod.isMyGame(game, app)){
-              let c = await sconfirm(`You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`);
-              if (!c){
-                closeGameDetails(mod);
-                return;
+          if (isPrivateGame !== "single"){
+            for (let game of mod.games){
+              if (mod.isMyGame(game, app) && game.msg.players_needed>1){
+                let c = await sconfirm(`You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`);
+                if (!c){
+                  closeGameDetails(mod);
+                  return;
+                }
               }
-            }
-            if (game.msg.game === options.game){
-              let c = await sconfirm(`There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`);
-              if (!c){
-                closeGameDetails(mod);
-                return;
-              } 
+              if (game.msg.game === options.game){
+                let c = await sconfirm(`There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`);
+                if (!c){
+                  closeGameDetails(mod);
+                  return;
+                } 
+              }
             }
           }
 

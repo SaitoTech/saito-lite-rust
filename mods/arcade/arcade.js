@@ -1210,6 +1210,16 @@ class Arcade extends ModTemplate {
 
       this.launchGame();
 
+      if (app.options.games){
+        for (let i = 0; i < app.options.games.length; i++){
+          if (app.options.games[i].module == gameobj.name){
+            console.log("We already have an open copy of this single player game");
+            this.launchGame(app.options.games[i].id);
+            return;
+          }
+        }
+      }
+
       let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
       tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
 
