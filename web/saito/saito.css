@@ -54,6 +54,11 @@ saito form elements
 @import url("./css-imports/saito-form-elements.css");
 
 /* ----------------------------------------------------------------
+saito table
+-----------------------------------------------------------------*/
+@import url("./css-imports/saito-table.css");
+
+/* ----------------------------------------------------------------
 saito Components
 -----------------------------------------------------------------*/
 @import url("./css-imports/saito-components.css");
