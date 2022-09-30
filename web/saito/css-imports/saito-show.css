@@ -1,3 +1,4 @@
-body {
-    visibility: visible !important;
+body::before,
+body::after {
+    display: none;
 }

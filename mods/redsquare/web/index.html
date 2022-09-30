@@ -21,19 +21,20 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@SaitoOfficial" />
   <meta name="twitter:creator" content="@SaitoOfficial" />
-  <meta name="twitter:title" content="Saito - Enabling a paradigm shift in blockchain applications"/>
-  <meta name="twitter:url" content="https://saito.tech/"/>
-  <meta name="twitter:description" content="Saito RedSquare - Web3 Social."/>
-  <meta name="twitter:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"/>
+  <meta name="twitter:title" content="Saito - Enabling a paradigm shift in blockchain applications" />
+  <meta name="twitter:url" content="https://saito.tech/" />
+  <meta name="twitter:description" content="Saito RedSquare - Web3 Social." />
+  <meta name="twitter:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
 
   <meta property="og:title" content="🟥 Saito Red Square" />
   <meta property="og:url" content="https://saito.io/redsquare" />
   <meta property="og:type" content="website" />
   <meta property="og:description" content="Peer to peer social and more" />
   <meta property="og:site_name" content="🟥 Saito Red Square" />
-  <meta property="og:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"/>
-  <meta property="og:image:url" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"/>
-  <meta property="og:image:secure_url" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"/>
+  <meta property="og:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta property="og:image:url" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta property="og:image:secure_url"
+    content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
 
 
   <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
@@ -43,9 +44,75 @@
 
 
   <title>Saito RedSquare</title>
-
 </head>
-<body style="visibility: hidden;">
+
+<body>
+
+
 </body>
 <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
+
+<style>
+  body::before {
+    content: "";
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    background: #fff;
+    z-index: 1000000;
+  }
+  body::after {
+    content: "";
+    background-color: transparent;
+    background-image: url("./images/saito-loader.svg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    animation-duration: 2s;
+    animation-name: homepulse;
+    animation-iteration-count: infinite;
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    width: 70px;
+    height: 70px;
+    z-index: 1000001;
+  }
+
+  @keyframes homepulse {
+  0% {
+      transform: translate(-50%, -50%) scale(0.2);
+      border-radius: 50%;
+      background-size: 0px;
+  }
+
+  30% {
+      transform: translate(-50%, -50%) scale(1);
+      border-radius: 0;
+      background-color: red;
+      background-size: 0px;
+  }
+
+  50% {
+      background-size: 50px;
+      transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  70% {
+      transform: translate(-50%, -50%) scale(1);
+      border-radius: 0;
+      background-color: red;
+      background-size: 50px;
+  }
+
+  100% {
+      transform: translate(-50%, -50%) scale(0.5);
+      border-radius: 50%;
+      background-size: 0px;
+  }
+}
+
+</style>
+
+
 </html>

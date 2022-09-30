@@ -26,6 +26,7 @@ class EGLDModule extends CryptoModule {
     this.balance = 0
     this.egld = {}
     this.base_url = "https://elrond-api-devnet.public.blastapi.io"
+    // this.base_url = "https://elrond.saito.io/0"
     this.api_network_provider = "https://devnet-api.elrond.com"
   }
 
