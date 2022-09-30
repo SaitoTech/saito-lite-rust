@@ -47,7 +47,7 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
             <button type="button" id="game-home-btn" class="game-home-btn">Home Page</button>
           </div>`;  
       if (mod.maxPlayers == 1){
-        html += `<button type="button" id="game-invite-btn" class="game-invite-btn" >Play</button>`;
+        html += `<button type="button" id="game-invite-btn" data-type="single" class="game-invite-btn" >Play</button>`;
       }else{
         html += `<div class="dynamic_button saito-select">
                  <div class="dynamic_button_options saito-slct">
