@@ -213,59 +213,6 @@ Saito Module Boxes
 }
 
 
-.saito-module {
-    min-height: 370px;
-    min-width: 44%;
-    display: grid;
-    grid-template-rows: min-content 1fr;
-    position: relative;
-    border-radius: 1rem;
-    border: 1px solid;
-    border-top: none;
-    margin-bottom: 2rem;
-
-}
-
-.saito-module-image {
-    display: grid;
-    grid-template-rows: min-content 1fr min-content;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-}
-
-.saito-module-controls {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    color: #fff;
-    z-index: 2;
-    font-size: 22px;
-    cursor: pointer;
-    grid-row: 1;
-}
-
-.saito-module-title {
-    color: rgb(255, 255, 255);
-    font-size: 1.6em;
-    margin-top: -49px;
-    font-weight: bold;
-    z-index: 1;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    padding: 10px 15px;
-    grid-row: 3;
-}
-
-.saito-module-title-text {
-    margin-top: 0.3rem;
-    display: block;
-    float: left;
-}
-
-
-
 /* ----------------------------------------------------------------
 Saito Module Boxes
 -----------------------------------------------------------------*/
