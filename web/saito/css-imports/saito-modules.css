@@ -45,55 +45,80 @@ Saito Module Stubs - horizontal bar with image left
 Saito Module box
 -----------------------------------------------------------------*/
 
-
-.saito-module-box {
-  width: 50rem;
+.saito-module-alt {
+    display: flex;
+    width: 100%;
+    height: auto;
+    margin-bottom: 2rem;
+    padding: 0.5rem 0.5rem;
+    overflow: hidden;
+    max-height: 10rem
+    background:  var(--saito-gray);
 }
 
-.saito-module {
-  display: flex;
-  border: 1px solid #ccc;
-  justify-content: space-between;
-  width: 100%;
-  height: auto;
-  margin-bottom: 2rem;
-  padding: 0.5rem 0.5rem;
-  overflow: hidden;
-  max-height:10rem;
-}
-
-.saito-module > * {
+.saito-module-alt > * {
   height: 100%;
 }
 
-.saito-module-image-box > .saito-module-image {
-  height:10rem;
-  width: 15rem;
-  margin-right: 0.5rem;
-  background: url('https://saito.io/saito/img/dreamscape.png');
-  background-size: cover;
+.saito-module-alt-image-box > .saito-module-alt-image {
+    background-image: url('https://saito.io/saito/img/dreamscape.png');
+    background-size: 100%;
+    height: 7rem;
+    width: 11rem;
 }
 
-.saito-module.small  .saito-module-image { 
+.saito-module-alt.small  .saito-module-alt-image { 
   height:5rem;
   width: 7rem;
 }
 
-.saito-module.large {
+.saito-module-alt.large {
   max-height:12rem;
 }
 
-.saito-module.large  .saito-module-image { 
+.saito-module-alt.large  .saito-module-alt-image { 
   height:12rem;
   width: 20rem;
 }
 
-.saito-module-title {
-  font-weight: bold;
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
+.saito-module-alt-details-box {
+    width: 22rem;
+    margin-left: 1.5rem;
 }
 
+.saito-module-alt-description .playerInfo {
+    display: flex;
+}
+.saito-module-alt-description .playerInfo img {
+    width: 2.2rem;
+    margin-right: 0.7rem;
+}
+
+.saito-module-alt-title {
+    font-size: 2rem;
+    margin-bottom: 2.2rem;
+}
+
+.saito-module-custom-box {
+    padding-left: 1rem;
+    height: inherit;
+    position: relative;
+    min-width: 12rem;
+    text-align: right;
+}
+
+.saito-module-option {
+    position: absolute;
+    bottom: 0px;
+    right:  0px;
+    font-size: 1.5rem;
+}
+
+.saito-module-action {
+    color: var(--saito-primary);
+    font-weight: bold;
+    font-size: 1.7rem;
+}
 
 /* ----------------------------------------------------------------
 Saito Module box
