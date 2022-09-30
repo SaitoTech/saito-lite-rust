@@ -1534,6 +1534,8 @@ class Arcade extends ModTemplate {
   (works for adding or subtracting players and enforces consistent ordering)
   */
   async updatePlayerList(id, keys, sigs) {
+    this.app.connection.emit("Arcade-Observer-Update-Player", {id, keys});
+
     if (this.app.BROWSER) { return; }
     //Copy arrays to new data structures
     keys = keys.slice();
