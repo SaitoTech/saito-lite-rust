@@ -189,7 +189,7 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  addTweetAndBroadcastRenderRequest(app, mod, tweet) {
+  addTweetAndBroadcastRenderRequest(app, mod, tweet, updateTweet = false) {
 
     //
     // post-level
@@ -206,7 +206,7 @@ class RedSquare extends ModTemplate {
         let insertion_index = 0;
         //recommended change - add before first tweet it's newer than.
         for (let i = 0; i < this.tweets.length; i++) {
-           if ((this.tweets[i].updated_at < tweet.updated_at))
+          if ((this.tweets[i].updated_at < tweet.updated_at))
             /*          
             if (this.tweets[i].updated_at > tweet.updated_at) {
               insertion_index++;
@@ -215,12 +215,13 @@ class RedSquare extends ModTemplate {
               insertion_index++;
             }
             */
-           this.tweets.splice(i, 0, tweet);
+            this.tweets.splice(i, 0, tweet);
           break;
         }
         //this.tweets.splice(insertion_index, 0, tweet);
-        this.txmap[tweet.tx.transaction.sig] = 1;
-        mod.app.connection.emit('tweet-render-request', tweet);
+        // newTweet value is inverted as the render function defaults to 
+        // appending tweets to the list, we want to prepend new ones.
+        mod.app.connection.emit('tweet-render-request', tweet, !updateTweet);
       }
       //
       // comment-level
