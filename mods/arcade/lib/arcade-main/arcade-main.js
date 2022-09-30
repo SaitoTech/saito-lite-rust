@@ -209,7 +209,7 @@ module.exports = ArcadeMain = {
             }
           }
 
-          if (invite.msg?.max_players == invite.msg.players.length){
+          if (invite.msg?.options?.max_players == invite.msg.players.length){
             includeGame = false;
           }
 

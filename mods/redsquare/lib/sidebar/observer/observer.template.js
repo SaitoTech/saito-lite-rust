@@ -28,7 +28,6 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 
 			//Only list recent (last move within 20 minutes), ongoing (not over) games for which I am NOT a player
 			if (g.game_status !== "over" && g.latest_move > cutoff && !players.includes(app.wallet.returnPublicKey())){
-				cnt++;
 
 				let gameModule = app.modules.returnModule(g.module);
 	  		    let slug = gameModule.returnSlug();
@@ -40,6 +39,13 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 			    let numSeats = gameState?.options?.max_players || players.length;
 			    console.log(JSON.parse(JSON.stringify(gameState)));
 			    console.log(numSeats);
+
+				//if (players.length < numSeats){
+				//	continue;
+				//}
+				
+				cnt++;
+
 
 			    for (let i = 0; i < 4; i++){
 			    	if (i == 3 && numSeats > 4){
