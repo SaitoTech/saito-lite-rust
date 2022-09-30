@@ -1160,19 +1160,18 @@ class Arcade extends ModTemplate {
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.default.slip(gametx.transaction.from[0].add, 0.0));
     tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
-    tx.msg.ts = "";
-    tx.msg.module = txmsg.game;
+
+    tx.msg = JSON.parse(JSON.stringify(txmsg));
     tx.msg.request = "join";
+    tx.msg.module = txmsg.game;
+    tx.msg.status = txmsg.request;
     tx.msg.game_id = gametx.transaction.sig;
-    tx.msg.players_needed = parseInt(txmsg.players_needed);
-    tx.msg.options = txmsg.options;
+
     tx.msg.invite_sig = this.app.crypto.signMessage(
       "invite_game_" + gametx.msg.ts,
       this.app.wallet.returnPrivateKey()
     );
-    if (gametx.msg.ts != "") {
-      tx.msg.ts = gametx.msg.ts;
-    }
+
     tx = this.app.wallet.signTransaction(tx);
 
     return tx;
@@ -1185,9 +1184,9 @@ class Arcade extends ModTemplate {
       "invite_game_" + txmsg.ts,
       this.app.wallet.returnPrivateKey()
     );
+
     txmsg.players.push(this.app.wallet.returnPublicKey());
     txmsg.players_sigs.push(accept_sig);
-    txmsg.request = "accept";
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     for (let i = 0; i < txmsg.players.length; i++) {
@@ -1195,10 +1194,12 @@ class Arcade extends ModTemplate {
     }
     //tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
 
-    tx.msg = txmsg;
+    tx.msg = JSON.parse(JSON.stringify(txmsg));;
+    tx.msg.module = txmsg.game;
+    tx.msg.status = txmsg.request;
     tx.msg.game_id = gametx.transaction.sig;
     tx.msg.request = "accept";
-    tx.msg.module = txmsg.game;
+
     tx = this.app.wallet.signTransaction(tx);
 
     return tx;
