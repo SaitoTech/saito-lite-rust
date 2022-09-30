@@ -44,14 +44,7 @@ Saito Module Stubs - horizontal bar with image left
 /* ----------------------------------------------------------------
 Saito Module box
 -----------------------------------------------------------------*/
-
-
-.saito-module-box {
-  width: 50rem;
-}
-
 .saito-module {
-  display: flex;
   border: 1px solid #ccc;
   justify-content: space-between;
   width: 100%;
@@ -59,7 +52,8 @@ Saito Module box
   margin-bottom: 2rem;
   padding: 0.5rem 0.5rem;
   overflow: hidden;
-  max-height:10rem;
+  display: grid;
+  grid-template-columns: min-content 1fr;
 }
 
 .saito-module > * {
@@ -74,18 +68,19 @@ Saito Module box
   background-size: cover;
 }
 
-.saito-module.small  .saito-module-image { 
-  height:5rem;
+.saito-module > * > .saito-module-image { 
+  height:10rem;
+  width: 15rem;
+}
+
+.saito-module.small > * > .saito-module-image { 
+  height: 5rem;
   width: 7rem;
 }
 
-.saito-module.large {
-  max-height:12rem;
-}
-
-.saito-module.large  .saito-module-image { 
-  height:12rem;
-  width: 20rem;
+.saito-module.large > * > .saito-module-image { 
+  height:20rem;
+  width: 30rem;
 }
 
 .saito-module-title {
