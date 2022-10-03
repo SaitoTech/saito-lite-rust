@@ -19,7 +19,7 @@ class ChatManager {
 
 		app.connection.on("chat-render-request", (group_id = "") => {
 			if (app.BROWSER) {
-				if ((app.browser.isMobileBrowser(navigator.userAgent) == true || window.innerWidth > 600) && !mod.mobile_chat_active) {
+				if ((app.browser.isMobileBrowser(navigator.userAgent) == true || window.innerWidth < 600) && !mod.mobile_chat_active) {
 					//send chat notification event
 					app.connection.emit("chat-render-request-notify");
 					return;
