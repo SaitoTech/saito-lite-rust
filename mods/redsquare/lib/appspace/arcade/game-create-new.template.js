@@ -1,4 +1,3 @@
-//const Saitogame_modIntroTemplate = require('./../../../../../lib/saito/new-ui/templates/saito-module-intro.template');
 
 module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
 
