@@ -13,7 +13,7 @@
 
 .saito-container {
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - var(--saito-header-height)); /* Should factor in top margin so it fits the screen */
     display: grid;
     grid-template-columns: min-content 1fr min-content;
     padding: 0 calc((100vw - var(--saito-width)) / 2);

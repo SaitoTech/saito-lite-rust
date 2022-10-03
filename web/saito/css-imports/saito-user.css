@@ -214,6 +214,49 @@ Saito List,Saito User List and Saito User
     display: block;
 }
 
+/*** SATIO Identicons ***/
+
+.saito-module-description-identicon-box {
+    display: flex;
+    flex-direction: row;   
+}
+
+.saito-module-identicon-box {
+    height: 2.5rem;
+    width: 2.5rem;
+    background-image: url(/saito/img/no-profile.png);
+    background-size: 100%;
+    margin-right: 1rem;
+    overflow: hidden;
+}
+
+.saito-module-identicon-box i {
+    font-size: 2.2rem;
+    line-height: 2.5rem;
+    width: 2.5rem;
+    text-align: center;
+}
+
+.saito-module-identicon-box i:hover {
+    transform: scale(1.1);
+}
+
+.saito-module-identicon-box img {
+    margin-right: 0.7rem;
+    border: 0px;
+    border-radius: 0.33rem;
+    width: 2rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+}
+
+.saito-module-identicon.small {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+/*** SATIO Identicons ***/
+
 @media screen and (max-width: 1200px) {}
 
 @media screen and (max-width: 768px) {

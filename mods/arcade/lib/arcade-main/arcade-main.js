@@ -193,7 +193,7 @@ module.exports = ArcadeMain = {
 
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
-          //console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
+          console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           let includeGame = true;
           
           //Only filter if there are leagues to compare against
@@ -207,6 +207,10 @@ module.exports = ArcadeMain = {
                 }
               }
             }
+          }
+
+          if (invite.msg?.options?.max_players == invite.msg.players.length){
+            includeGame = false;
           }
 
           //isMyGame is a decent safety catch for ongoing games
@@ -477,7 +481,7 @@ module.exports = ArcadeMain = {
 
   cancelGame(app, mod, game_id) {
     var testsig = "";
-    let players = [];
+
     console.log("Click to Cancel Game: " + game_id);
     console.log(JSON.parse(JSON.stringify(mod.games)));
     console.log(JSON.parse(JSON.stringify(app.options.games)));
@@ -489,10 +493,6 @@ module.exports = ArcadeMain = {
       let peers = [];
       for (let i = 0; i < app.network.peers.length; i++) {
         peers.push(app.network.peers[i].returnPublicKey());
-      }
-
-      for (let i = 0; i < players.length; i++) {
-        if (players[i] != my_publickey) newtx.transaction.to.push(new saito.default.slip(players[i]));
       }
 
       let msg = {
@@ -508,7 +508,6 @@ module.exports = ArcadeMain = {
 
       let relay_mod = app.modules.returnModule("Relay");
       if (relay_mod != null) {
-        relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
         relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
       }
 
