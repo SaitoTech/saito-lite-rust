@@ -34,18 +34,6 @@ class RedSquareObserver {
 	}
 
 	attachEvents(app, mod){
-		// let widget = this;
-  //       document.querySelectorAll(`.observe-game-btn`)
-  //         .forEach((el, i) => {
-  //           el.onclick = function (e) {
-  //             let game_sig = e.currentTarget.getAttribute("data-id");
-  //             let spinner = new GameLoader(app, mod);
-  //             widget.blockRender = true;
-  //             spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
-            
-  //             app.connection.emit("arcade-observer-join-table",game_sig);
-  //           }
-  //       });
 	}
 
 };

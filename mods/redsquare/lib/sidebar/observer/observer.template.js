@@ -73,17 +73,6 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
     				}
     			}*/
 
-				// let inviteHtml = `
-				//     <div class="saito-table-row">
-				//         <div class="saito-table-gamename observer-info">
-				//             <div>${gameName}</div>
-				//             ${playersHtml}
-				//         </div>
-				//         <div class="observer-details saito-deemphasize"><p>${g.step} moves</p><p>Last move ${Moment(g.latest_move).fromNow()}</p><p>Started ${Moment(g.ts).fromNow()}</p></div>
-				//         <div class="observer-action"><a href="#" data-sig="${g.game_id}" data-cmd="watch" class="button observe-game-btn">${(isMyGame)?"Play":"Watch"}</a></div>
-				//     </div>
-				// `;
-
 				let inviteHtml = SaitoModuleXTemplate(gameName, playersHtml, image, `${g.step} moves`, `${(isMyGame)?"Play":"Watch"}`, g.game_id);
 
 				html += inviteHtml;
