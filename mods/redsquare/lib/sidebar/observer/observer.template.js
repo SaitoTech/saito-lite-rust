@@ -83,9 +83,6 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 		html +=  `
 		</div>`;
 
-		console.log('observer game');
-		console.log(html);
-
 		//IF there are no games, we want this to be invisible
 		if (cnt == 0){
 			html = "";
