@@ -123,6 +123,7 @@ span.redsquare-home-red-square+span {
   width: inherit;
   height: inherit;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .saito-sidebar-left {
