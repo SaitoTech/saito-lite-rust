@@ -7188,6 +7188,7 @@ playerTurnHeadlineSelected(card, player) {
         if (this.game.state.events.shuttlediplomacy == 1) {
           if (scoring.ussr.bg > 0) {
             scoring.ussr.bg--;
+            scoring.ussr.total--;
           }         
           if (mouseover_preview == 0) { //commit score
             scoring.shuttle = 1;
@@ -7273,25 +7274,22 @@ playerTurnHeadlineSelected(card, player) {
         
         scoring_range = {presence: 3, domination: 7, control: 9};
 
-        //
-        // Shuttle Diplomacy
-        //
-        let ussr_bonus = true;
-
+        ///////////////////////
+        // Shuttle Diplomacy //
+        ///////////////////////
         if (this.game.state.events.shuttlediplomacy == 1) {
           if (scoring.ussr.bg > 0) {
             scoring.ussr.bg--;
+            scoring.ussr.total--;
           }
+
+          scoring.shuttle = 1;
+
           if (mouseover_preview == 0) {
-            scoring.shuttle = 1;
             this.game.state.events.shuttlediplomacy = 0;
       	    this.game.deck[0].discards['shuttle'] = this.game.deck[0].cards['shuttle'];
-           
-            if (this.isControlled("ussr", "japan") == 1) { 
-               this.updateLog("USSR loses Japan/US-adjacency with Shuttle Diplomacy");
-               ussr_bonus = false;
-            }
           }
+           
       	}
 
         scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
@@ -7306,10 +7304,12 @@ playerTurnHeadlineSelected(card, player) {
         if (this.isControlled("us", "afghanistan") == 1) { scoring.us.vp++; scoring.us.neigh.push("afghanistan");}
         if (this.isControlled("us", "northkorea") == 1) { scoring.us.vp++; scoring.us.neigh.push("northkorea");}
         if (this.isControlled("ussr", "japan") == 1) { 
-          if (ussr_bonus) { 
+          if (this.game.state.events.shuttlediplomacy == 1) {
+            this.updateLog("USSR loses Japan/US-adjacency with Shuttle Diplomacy");
+  	  } else {
   	    scoring.ussr.vp++; 
             scoring.ussr.neigh.push("japan");
-  	  }
+	  }
 	}
 
         break;

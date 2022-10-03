@@ -48,7 +48,7 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = false;
+    this.debug = true;
 
     //So we can keep track of games which we want to close but are waiting on game engine to process
     this.game_close_interval_cnt = 0;
@@ -223,7 +223,56 @@ class Arcade extends ModTemplate {
       console.log("GAME READY received:" + gameid);
       this.launchGame(gameid);
     });
-      
+    
+    app.connection.on("arcade-gametable-addplayer", (game_id)=>{
+
+      let accepted_game = this.games.find((g) => g.transaction.sig === game_id);
+      if (accepted_game){
+        let peers = [];
+        for (let i = 0; i < app.network.peers.length; i++) {
+          peers.push(app.network.peers[i].returnPublicKey());
+        }
+
+        let newtx = this.createJoinTransaction(accepted_game);
+        app.network.propagateTransaction(newtx);
+
+        let relay_mod = app.modules.returnModule("Relay");
+        if (relay_mod != null) {
+          relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+        }
+      }
+
+    });
+
+    app.connection.on("arcade-gametable-removeplayer", (game_id)=>{
+      let accepted_game = this.games.find((g) => g.transaction.sig === game_id);
+      if (accepted_game){
+
+        let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+
+        let msg = {
+          request: "close",
+          module: "Arcade",
+        };
+
+        newtx.msg = msg;
+        newtx.msg.game_id = game_id;
+        newtx = app.wallet.signTransaction(newtx);
+
+        app.network.propagateTransaction(newtx);
+
+        let peers = [];
+        for (let i = 0; i < app.network.peers.length; i++) {
+          peers.push(app.network.peers[i].returnPublicKey());
+        }
+
+        let relay_mod = app.modules.returnModule("Relay");
+        if (relay_mod != null) {
+          relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+        }
+      }
+
+    });
 
   }
 
@@ -461,6 +510,17 @@ class Arcade extends ModTemplate {
     }
 
 
+    //If this game already exists in our wallet
+    //We don't need to continue processing for an accept
+    if (this.app?.options?.games) {
+      for (let i = 0; i < this.app.options.games.length; i++) {
+        if (this.app.options.games[i].id === game_id) {
+          return;
+        }
+      }
+    }
+
+
     //
     // it is possible that we have multiple joins that bring us up to
     // the required number of players, but that did not arrive in the
@@ -540,6 +600,8 @@ class Arcade extends ModTemplate {
     if (!gamemod.opengame){
       this.receiveAcceptRequest(null, tx, 0, app);
       this.removeGameFromOpenList(txmsg.game_id);
+    }else{
+      this.markGameAsOpen(tx);
     }
 
     // do not process if transaction is not for us
@@ -823,7 +885,8 @@ class Arcade extends ModTemplate {
 
     let accepted_game = this.games.find((g) => g.transaction.sig === game_id);
     if (accepted_game) {
-      if (accepted_game.transaction.from[0].add == tx.transaction.from[0].add) {
+      if (this.debug){ console.log(accepted_game) };
+      if (accepted_game.transaction.from[0].add == tx.transaction.from[0].add && !accepted_game?.open) {
         if (this.debug) { console.log("Canceling invitation for an uninitialized game"); }
         this.receiveCloseRequest(blk, tx, conf, app); //Update SQL to mark game as closed
       } else {
@@ -1097,19 +1160,18 @@ class Arcade extends ModTemplate {
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.default.slip(gametx.transaction.from[0].add, 0.0));
     tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
-    tx.msg.ts = "";
-    tx.msg.module = txmsg.game;
+
+    tx.msg = JSON.parse(JSON.stringify(txmsg));
     tx.msg.request = "join";
+    tx.msg.module = txmsg.game;
+    tx.msg.status = txmsg.request;
     tx.msg.game_id = gametx.transaction.sig;
-    tx.msg.players_needed = parseInt(txmsg.players_needed);
-    tx.msg.options = txmsg.options;
+
     tx.msg.invite_sig = this.app.crypto.signMessage(
       "invite_game_" + gametx.msg.ts,
       this.app.wallet.returnPrivateKey()
     );
-    if (gametx.msg.ts != "") {
-      tx.msg.ts = gametx.msg.ts;
-    }
+
     tx = this.app.wallet.signTransaction(tx);
 
     return tx;
@@ -1122,9 +1184,9 @@ class Arcade extends ModTemplate {
       "invite_game_" + txmsg.ts,
       this.app.wallet.returnPrivateKey()
     );
+
     txmsg.players.push(this.app.wallet.returnPublicKey());
     txmsg.players_sigs.push(accept_sig);
-    txmsg.request = "accept";
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     for (let i = 0; i < txmsg.players.length; i++) {
@@ -1132,10 +1194,12 @@ class Arcade extends ModTemplate {
     }
     //tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
 
-    tx.msg = txmsg;
+    tx.msg = JSON.parse(JSON.stringify(txmsg));;
+    tx.msg.module = txmsg.game;
+    tx.msg.status = txmsg.request;
     tx.msg.game_id = gametx.transaction.sig;
     tx.msg.request = "accept";
-    tx.msg.module = txmsg.game;
+
     tx = this.app.wallet.signTransaction(tx);
 
     return tx;
@@ -1146,6 +1210,16 @@ class Arcade extends ModTemplate {
     try {
 
       this.launchGame();
+
+      if (app.options.games){
+        for (let i = 0; i < app.options.games.length; i++){
+          if (app.options.games[i].module == gameobj.name){
+            console.log("We already have an open copy of this single player game");
+            this.launchGame(app.options.games[i].id);
+            return;
+          }
+        }
+      }
 
       let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
       tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
@@ -1364,6 +1438,15 @@ class Arcade extends ModTemplate {
     ArcadeMain.renderArcadeTab(this.app, this);
   }
 
+  markGameAsOpen(tx){
+    let txmsg = tx.returnMessage();
+    for (let game of this.games){
+      if (game.transaction.sig == txmsg.game_id){
+        game.open = true;
+      }
+    }
+  }
+
   validateGame(tx) {
     if (!tx?.transaction?.sig || !tx?.msg) {
       return false;
@@ -1462,6 +1545,8 @@ class Arcade extends ModTemplate {
   (works for adding or subtracting players and enforces consistent ordering)
   */
   async updatePlayerList(id, keys, sigs) {
+    this.app.connection.emit("Arcade-Observer-Update-Player", {id, keys});
+
     if (this.app.BROWSER) { return; }
     //Copy arrays to new data structures
     keys = keys.slice();

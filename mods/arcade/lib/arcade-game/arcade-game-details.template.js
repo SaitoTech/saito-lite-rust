@@ -8,13 +8,15 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
       let defaultPlayers = min;
       if (mod.opengame){
         defaultPlayers = max;
-        selection = `<label for="game-wizard-players-select">Max Number of Players:</label>`;
+        //selection = `<label for="game-wizard-players-select">Max Number of Players:</label>`;
+        selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${max}">${max} player</div>`;
+      }else{
+        selection += `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
+        for (let p = min; p <= max; p++) {
+          selection += `<option value="${p}" ${(p===defaultPlayers)?"selected default":""}>${p} player</option>`;
+        }
+        selection += `</select>`;
       }
-      selection += `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
-      for (let p = min; p <= max; p++) {
-        selection += `<option value="${p}" ${(p===defaultPlayers)?"selected default":""}>${p} player</option>`;
-      }
-      selection += `</select>`;
     }
 
     return selection;
@@ -47,7 +49,7 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
             <button type="button" id="game-home-btn" class="game-home-btn">Home Page</button>
           </div>`;  
       if (mod.maxPlayers == 1){
-        html += `<button type="button" id="game-invite-btn" class="game-invite-btn" >Play</button>`;
+        html += `<button type="button" id="game-invite-btn" data-type="single" class="game-invite-btn" >Play</button>`;
       }else{
         html += `<div class="dynamic_button saito-select">
                  <div class="dynamic_button_options saito-slct">

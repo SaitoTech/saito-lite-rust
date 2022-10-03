@@ -1,3 +1,4 @@
+const SaitoModuleXTemplate = require("../../../../../lib/saito/new-ui/templates/saito-module-x.template");
 const Moment = require("moment");
 
 module.exports = RedSquareObserverTemplate = (app, mod) => {
@@ -14,7 +15,6 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 		html = `<div id="rs-sidebar-observer" class="observer-sidebar">`;
 
 		html += `<h6>Live Games You Can Watch:</h6>`;
-		html += `<div class="saito-table">`;
 		let cnt = 0;
 
 		/*
@@ -28,12 +28,11 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 
 			//Only list recent (last move within 20 minutes), ongoing (not over) games for which I am NOT a player
 			if (g.game_status !== "over" && g.latest_move > cutoff && !players.includes(app.wallet.returnPublicKey())){
-				cnt++;
 
 				let gameModule = app.modules.returnModule(g.module);
 	  		    let slug = gameModule.returnSlug();
 
-			    let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${players.length}, 1fr);">`;
+			    let playersHtml = `<div class="saito-module-description-identicon-box">`;
 			    let gameName= gameModule.gamename || gameModule.name;
 			  
 			  	let gameState = JSON.parse(g.game_state)
@@ -41,25 +40,30 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 			    console.log(JSON.parse(JSON.stringify(gameState)));
 			    console.log(numSeats);
 
+				//if (players.length < numSeats){
+				//	continue;
+				//}
+				
+				cnt++;
+
+
 			    for (let i = 0; i < 4; i++){
 			    	if (i == 3 && numSeats > 4){
-			    		playersHtml += `<div class="player-slot-ellipsis fas fa-ellipsis-h"></div>`;  
+			    		playersHtml += `<div class="saito-module-identicon-box fas fa-ellipsis-h"></div>`;  
 			    	}else{
 			    		if (players[i]){
 					      let identicon = app.keys.returnIdenticon(players[i]);
-					      playersHtml += `<div class="player-slot tip id-${players[i]}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(players[i])}</div></div>`;
+					      playersHtml += `<div class="saito-module-identicon-box tip id-${players[i]}"><img class="saito-module-identicon small" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(players[i])}</div></div>`;
 			    		}else{
 			    			if (i < numSeats){
-			    				playersHtml += `<div class="saito-arcade-invite-slot identicon-empty"></div>`;			
+			    				playersHtml += `<div class="saito-module-identicon-box identicon-empty"></div>`;			
 			    			}
 			    		}
 			    	}
 			    }
 			    playersHtml += '</div>';
 
-			    //No graphics at the moment
-			    //let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
-			    
+			    let image = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
 			    let isMyGame = false;
 			   	/*for (let local_game of app.options.games) {
     				if (local_game.id === g.game_id) {
@@ -69,16 +73,7 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
     				}
     			}*/
 
-				let inviteHtml = `
-				    <div class="saito-table-row">
-				        <div class="saito-table-gamename observer-info">
-				            <div>${gameName}</div>
-				            ${playersHtml}
-				        </div>
-				        <div class="observer-details saito-deemphasize"><p>${g.step} moves</p><p>Last move ${Moment(g.latest_move).fromNow()}</p><p>Started ${Moment(g.ts).fromNow()}</p></div>
-				        <div class="observer-action"><a href="#" data-sig="${g.game_id}" data-cmd="watch" class="button observe-game-btn">${(isMyGame)?"Play":"Watch"}</a></div>
-				    </div>
-				`;
+				let inviteHtml = SaitoModuleXTemplate(gameName, playersHtml, image, `${g.step} moves`, `${(isMyGame)?"Play":"Watch"}`, g.game_id);
 
 				html += inviteHtml;
 			}
@@ -86,7 +81,6 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 
 
 		html +=  `
-			</div>
 		</div>`;
 
 		//IF there are no games, we want this to be invisible
