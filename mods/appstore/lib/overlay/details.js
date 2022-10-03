@@ -5,7 +5,6 @@ module.exports = AppstoreAppDetails = {
 
   render(app, mod, data) {
     document.querySelector('.appstore-overlay').innerHTML = AppstoreAppDetailsTemplate(app, mod, data);
-    document.querySelector(".saito-module-intro-image > img").src = data.image;
     this.attachEvents(app, mod, data);
   },
 

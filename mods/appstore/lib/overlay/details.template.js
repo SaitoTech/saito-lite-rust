@@ -1,16 +1,18 @@
-const SaitoModuleIntroTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module-intro.template');
+const SaitoModule = require('./../../../../lib/saito/new-ui/templates/saito-module.template');
 
 module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
 
   var unixtime = new Date(module.unixtime);
 
-  let html = `
+  let html = `<div class="saito-module-box">`;
 
-    ${SaitoModuleIntroTemplate(app, mod, "", module.name, module.description )} 
+   if (module.image) {
+     html += SaitoModuleTemplate(module.name, module.description, module.image, "", "large");
+   } else {
+     html += SaitoModuleTemplate(module.name, module.description, "", "", "large");
+   }
 
-  `;
-
-  html += `
+   html += `
 
     <div class="appstore-appbox-details">
       <div class="saito-table">
@@ -35,6 +37,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
 
     <button id="appstore-install-confirm-button" class="appstore-install-confirm-button saito-button-primary">confirm install</button>
   
+  </div>
   `;
 
 

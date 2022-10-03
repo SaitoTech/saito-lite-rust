@@ -1,3 +1,5 @@
+const SaitoModuleXTemplate = require("./../../../../lib/saito/new-ui/templates/saito-module-x.template");
+
 module.exports = RedSquareSidebarTemplate = (app, mod) => {
 
   return `
