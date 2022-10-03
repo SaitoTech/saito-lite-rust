@@ -42,14 +42,14 @@ Saito Module Stubs - horizontal bar with image left
 
 
 /* ----------------------------------------------------------------
-Saito Module box
+Saito Module
 -----------------------------------------------------------------*/
 .saito-module {
   font-size: 1.6em;
   justify-content: space-between;
   width: 100%;
   height: auto;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   padding: 0.5rem 0.5rem;
   overflow: hidden;
   display: grid;
@@ -97,9 +97,56 @@ Saito Module box
 
 
 /* ----------------------------------------------------------------
-Saito Module box
+Saito Module
 -----------------------------------------------------------------*/
 
 
 
 
+/* ----------------------------------------------------------------
+Saito Module X
+-----------------------------------------------------------------*/
+
+.saito-module-x .saito-module {
+    grid-template-columns: min-content 3fr 1fr;
+}
+
+.saito-module-image-box > .saito-module-image {
+    margin-right: 0px;
+}
+
+.saito-module-x .saito-module-details-box {
+    margin-left: 1rem;
+}
+
+.saito-module-x .saito-module-title {
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.saito-module-x .saito-module-custom-box {
+    padding-left: 1rem;
+    height: inherit;
+    position: relative;
+    min-width: 12rem;
+    text-align: right;
+}
+
+.saito-module-x .saito-module-action {
+    font-size: 1.8rem;
+    border-bottom: 1px dotted var(--saito-primary);
+    color: var(--saito-primary);
+}
+
+.saito-module-x .saito-module-option {
+    position: absolute;
+    bottom: 0px;
+    right:  0px;
+    font-size: 1.5rem;
+}
+
+/* ----------------------------------------------------------------
+Saito Module X
+-----------------------------------------------------------------*/
