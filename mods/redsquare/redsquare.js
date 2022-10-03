@@ -368,6 +368,7 @@ class RedSquare extends ModTemplate {
     } else {
       t.renderWithParents(app, mod, ".redsquare-list", 0);
     }
+    document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
   }
 
 
@@ -378,6 +379,7 @@ class RedSquare extends ModTemplate {
   renderWithChildren(app, mod, sig) {
     this.viewing = sig;
     this.reorganizeTweets(app, mod);
+    document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     for (let i = 0; i < this.tweets.length; i++) {
@@ -405,7 +407,6 @@ class RedSquare extends ModTemplate {
     mod.fetchTweets(app, mod, sql, function (app, mod) {
       mod.renderWithChildren(app, mod, sig);
     });
-
   }
 
 
