@@ -435,7 +435,7 @@ span.redsquare-home-red-square+span {
 #redsquare-new-tweets-banner {
   display: none; 
   color: #fff;
-  top: 2rem;
+  top: 5rem;
   left: 0;
   z-index: 2;
   cursor: pointer;
