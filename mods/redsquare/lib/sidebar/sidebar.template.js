@@ -15,10 +15,6 @@ module.exports = RedSquareSidebarTemplate = (app, mod) => {
     <div class="redsquare-sidebar-observer">
     </div>
 
-    <div class="redsquare-sidebar-box">
-        ${SaitoModuleXTemplate()}
-    </div>
-
     <div class="redsquare-sidebar-league">
     </div>
   

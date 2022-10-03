@@ -51,7 +51,7 @@ class RedSquareGames {
 
 
   attachEvents(app, mod) {
-    Array.from(document.querySelectorAll('.saito-arcade-invite')).forEach(game => {
+    Array.from(document.querySelectorAll('.saito-module-action')).forEach(game => {
       game.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
