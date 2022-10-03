@@ -61,6 +61,16 @@
     grid-template-rows: min-content 1fr;
 }
 
+.chat-manager .saito-userline {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 13rem;
+}
+
+.chat-body .saito-userline {
+    overflow-wrap: anywhere;
+}
+
 .chat-footer {
     background-color: rgb(236, 236, 236);
     position: absolute;
