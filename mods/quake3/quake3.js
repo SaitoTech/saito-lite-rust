@@ -109,14 +109,27 @@ console.log(" 4=========");
         game_mod.menu.showSubMenu("game-game");
       }
     });
-    this.menu.addSubMenuOption("game-game",{
-      text : "Start New Game",
-      id : "game-new",
-      class : "game-new",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-      }
+
+    this.menu.addSubMenuOption("game-game", {
+        text : "Q3-Shot",
+        id : "game-post",
+        class : "game-post",
+        callback : async function(app, game_mod) {
+          let m = game_mod.app.modules.returnModule("RedSquare");
+          if (m){
+            let log = document.getElementById("log-wrapper");
+            if (log && !log.classList.contains("log_lock")) { log.style.display = "none"; }
+            let menu = document.getElementById("game-menu");
+            menu.style.display = "none";
+            await app.browser.screenshotCanvasElementById("viewport", function(image) {
+              if (log && !log.classList.contains("log_lock")) { log.style.display = "block"; }
+              menu.style.display = "block";
+              m.tweetImage(image);
+            });
+          }
+        },
     });
+
 
 console.log(" 5--------");
 
