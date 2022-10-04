@@ -12,8 +12,9 @@ class Stunx extends ModTemplate {
 
     constructor(app, mod) {
         super(app);
-        this.appname = "Stunx";
+        this.appname = "Video Call";
         this.name = "Stunx";
+        this.slug = this.returnSlug();
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
         this.app = app;
@@ -237,7 +238,7 @@ class Stunx extends ModTemplate {
             $created_at: Date.now(),
             $validity_period: room.validityPeriod,
         };
-        const result = await app.storage.executeDatabase(sql, params, "Stunx");
+        const result = await app.storage.executeDatabase(sql, params, this.slug);
         console.log('db result ', result, app.storage.executeDatabase);
     }
 
@@ -253,7 +254,7 @@ class Stunx extends ModTemplate {
             $peer_count: peer_count,
             $is_max_capacity: is_max_capacity
         }
-        app.storage.executeDatabase(sql, params, "Stunx");
+        app.storage.executeDatabase(sql, params, this.slug);
 
         return;
 
