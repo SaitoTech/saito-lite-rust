@@ -78,10 +78,6 @@ span.redsquare-home-red-square+span {
   height: 3rem;
 }
 
-.redsquare-list {
-  min-height: 120vh;
-}
-
 .post-tweet-preview .redsquare-item {
   padding-left: 0rem;
   padding-top: 0rem;
@@ -132,7 +128,7 @@ span.redsquare-home-red-square+span {
 
 .saito-sidebar-right {
   width: 50rem;
-  overflow-y: scroll;
+  overflow-y: auto;
   height: inherit;
 }
 
