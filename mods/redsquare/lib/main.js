@@ -81,7 +81,6 @@ class RedSquareMain {
     var hash = new URL(document.URL).hash.split('#')[1];
     let component = hash;
     let params = null;
-    console.log('component ', component);
 
     if (hash) {
       component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
