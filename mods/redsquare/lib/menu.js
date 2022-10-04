@@ -40,7 +40,7 @@ class RedSquareMenu {
         let html = `
                 <li class="redsquare-menu-${app.modules.mods[i].returnSlug()}" data-id="${i}">
                   <i class="${app.modules.mods[i].icon}"></i>
-                  <span> ${app.modules.mods[i].returnName()}</span>
+                  <span> ${app.modules.mods[i].returnSlug() !== "stunx" ?app.modules.mods[i].returnName():"Video Call"}</span>
              
                 </li>
         `;
@@ -131,7 +131,7 @@ class RedSquareMenu {
 
     this.displayNotification(app, component, 0);
 
-    let url = component
+    let url = component === "stunx" ? "video-call" : component
     if (params) {
       url = `${component}?${params}`;
     }
