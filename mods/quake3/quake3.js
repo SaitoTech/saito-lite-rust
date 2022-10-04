@@ -79,7 +79,18 @@ class Quake3 extends GameTemplate {
 
 
 
+  onPeerHandshakeComplete(app, peer) {
 
+    if (app.BROWSER == 0 || !document) { return; } 
+
+    if (document.querySelector(".chat-input")) {
+      let c = document.querySelector(".chat-input");
+      if (c) {
+        c.placeholder = 'typing T activates chat...';
+      }
+    }
+
+  }
 
   initializeHTML(app) {
 
@@ -87,16 +98,7 @@ class Quake3 extends GameTemplate {
 
     if (this.browser_active != 1) { return; }
 
-    console.log("INITIALIZE HTML in Quake3 - 2");
-
-
-
-console.log(" 1=========");
     super.initializeHTML(app);
-
-console.log(" 2=========");
-console.log(" 3=========");
-console.log(" 4=========");
 
     //
     // ADD MENU
@@ -130,20 +132,8 @@ console.log(" 4=========");
         },
     });
 
-
-console.log(" 5--------");
-
     this.menu.addChatMenu(app, this);
-
-console.log(" 6--------");
-
     this.menu.render(app, this);
-
-console.log(" 1=========");
-console.log(" 2=========");
-console.log(" 3=========");
-console.log(" 4=========");
-
 
 
     //

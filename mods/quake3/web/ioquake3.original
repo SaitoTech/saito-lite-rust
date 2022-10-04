@@ -14871,7 +14871,7 @@ console.log("GETNAME 2: " + this.name);
           if (useWebGL) {
             var contextAttributes = {
               antialias: false,
-              alpha: false,
+              alpha: false
             };
   
             if (webGLContextAttributes) {
@@ -14880,12 +14880,7 @@ console.log("GETNAME 2: " + this.name);
               }
             }
   
-	    //  
-	    // HACK - we need this for screenshots on canvas  
-	    //  
-	    contextAttributes['preserveDrawingBuffer'] = true;
-
-
+  
             var errorInfo = '?';
             function onContextCreationError(event) {
               errorInfo = event.statusMessage || errorInfo;

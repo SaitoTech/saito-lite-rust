@@ -21,7 +21,7 @@ class ChatManager {
 console.log("RECEIVED CHAT RENDER REQUEST...");
 			if (app.BROWSER) {
 console.log("we are a browser...");
-				//if ((app.browser.isMobileBrowser(navigator.userAgent) == true || window.innerWidth > 600) && !mod.mobile_chat_active) {
+				if ((app.browser.isMobileBrowser(navigator.userAgent) == true || window.innerWidth < 600) && !mod.mobile_chat_active) {
 
 console.log("a: " + app.browser.isMobileBrowser(navigator.userAgent));
 console.log("b: " + window.innerWidth);
