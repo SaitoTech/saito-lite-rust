@@ -1,6 +1,6 @@
 const RedSquareGamesTemplate = require("./games.template");
 const GameCreator = require("./../../appspace/arcade/game-creator");
-const GameInviteDetails = require("./../../appspace/arcade/game-invite-details");
+const SaitoModuleOverlay = require("../../../../../lib/saito/new-ui/saito-module-overlay/saito-module-overlay");
 const SaitoScheduler = require("./../../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler");
 const GameLoader = require("../../../../../lib/saito/new-ui/game-loader/game-loader");
 
@@ -59,23 +59,27 @@ class RedSquareGames {
         let game_id = e.currentTarget.getAttribute("data-id");
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
 
-        if (game_cmd == "join") {
+        //if (game_cmd == "join") {
           let arcade_mod = app.modules.returnModule("Arcade");
           if (arcade_mod) {
             for (let i = 0; i < arcade_mod.games.length; i++) {
               if (arcade_mod.games[i].transaction.sig == game_id){
-                let gameInviteDetails = new GameInviteDetails(this.app, this.mod);
-                gameInviteDetails.render(this.app, this.mod, arcade_mod.games[i]);
+
+                let saito_mod_detials_overlay = new SaitoModuleOverlay(this.app, this.mod);
+                saito_mod_detials_overlay.action = game_cmd;
+                saito_mod_detials_overlay.render(this.app, this.mod, arcade_mod.games[i]);
+              
               }
             }    
           }
-        } else {
-          let spinner = new GameLoader(app, mod);
-          //widget.blockRender = true;
-          spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
+        //}
+        // } else {
+        //   let spinner = new GameLoader(app, mod);
+        //   //widget.blockRender = true;
+        //   spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
         
-          app.connection.emit("arcade-observer-join-table",game_sig);
-        }
+        //   app.connection.emit("arcade-observer-join-table",game_sig);
+        // }
       };
     }); 
   

@@ -44,3 +44,40 @@
   color: red;
   font-size: 31px;
 }
+
+
+/******
+  Saito module overlay - Start
+******/
+
+.game-invite-detail-container {
+  position: relative;
+  width: 71rem;
+  background-color: #fff;
+  min-height: 22rem;
+  display: flex;
+  justify-content: initial;
+}
+
+.game-invite-img {
+  width: 30%;
+  background-color: #f7d3d9;
+  background-size: cover;
+}
+
+.game-invite-info {
+  padding: 2.5rem;
+  width: 69%;
+}
+
+.game-invite-info-table {
+  margin-top: 2rem;
+}
+
+.game-invite-join-btn {
+  margin-top: 2rem;
+}
+
+/******
+  Saito module overlay - End
+******/
