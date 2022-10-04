@@ -1,5 +1,4 @@
 const ArcadeLeagueTemplate = require("./arcade-league.template");
-const ArcadeLeagueView = require("../overlays/arcade-league-view");
 
 class ArcadeLeague {
 
@@ -31,9 +30,9 @@ class ArcadeLeague {
         }
 
         if (game_cmd == "view" && game_sig == league.id){
-          let bs = new ArcadeLeagueView(app);
-          bs.render(app, mod, league);
+          app.connection.emit("view-league-details", game_sig);
         }
+        
         if (game_cmd == "join" && game_sig == league.id){
           mod.sendJoinLeagueTransaction(league.id);
           salert('Joining League... it may take a moment to update info');
