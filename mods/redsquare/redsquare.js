@@ -77,7 +77,7 @@ class RedSquare extends ModTemplate {
         //Query tweets every 30 seconds
         setInterval(() => {
           this.fetchNewTweets(app, this)
-        }, 4000)
+        }, 45000)
       }
     }
   }
@@ -515,7 +515,7 @@ class RedSquare extends ModTemplate {
             console.log("~~~~~~~~~~~~~~~~~~");
             console.log("1 TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
             mod.renderMainPage(app, redsquare_self);
-          });
+          }, true);
         }
 
       }
@@ -579,7 +579,7 @@ class RedSquare extends ModTemplate {
   ///////////////////////////////////////
   // fetching curated tweets from peer //
   ///////////////////////////////////////
-  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet=true) {
+  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet=false) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -589,7 +589,7 @@ class RedSquare extends ModTemplate {
             mod.trackedTweet = res.rows[0];
           }
     
-          console.log('current tracked tweet', mod.trackedTweet);
+          // console.log('current tracked tweet', mod.trackedTweet);
           res.rows.forEach(row => {
             let new_tweet = 1;
             if (new_tweet) {
@@ -681,7 +681,7 @@ class RedSquare extends ModTemplate {
         if (res.rows) {
           console.log(res.rows, "result");
           if (res.rows[0]) {
-            console.log(res.rows, "continue");
+            // console.log(res.rows, "continue");
             mod.trackedTweet = res.rows[0];
             res.rows.forEach(row => {
               let new_tweet = true;
