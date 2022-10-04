@@ -4,9 +4,9 @@ const LeagueMainContainer = require('./lib/main/container');
 const ArcadeLeague = require('./lib/components/arcade-league');
 const ForumLeague = require('./lib/components/forum-league');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
-const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ViewLeagueDetails = require("./lib/overlays/view-league-details");
-const LeagueInvite = require("./lib/overlays/league-invite");
+const InvitationLink = require("./../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
 
@@ -1027,18 +1027,16 @@ class League extends ModTemplate {
   }
 
 
-  showShareLink(league_id, mod){
+  showShareLink(league_id){
     let data = {};
 
     //Add more information about the game
-    let league = null;
-    this.leagues.forEach((g) => {
-      if (g.id === league_id) {
-        league = g;
-      }
-    });
+    let league = this.leagues.find((g) => g.id === league_id);
 
-    if (!league){
+    if (league){
+      data.game = league.name;
+    }else{
+      console.log("League not found!");
       return;
     }
     
@@ -1056,7 +1054,7 @@ class League extends ModTemplate {
       inviteLink = inviteLink.replace("#", "?jid=" + league_id);
     }
       
-    LeagueInvite.render(this.app, mod, league, inviteLink);
+    InvitationLink.render(this.app, this, data);
   }
 
 

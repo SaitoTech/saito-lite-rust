@@ -1,5 +1,5 @@
 const LeagueDetailsTemplate = require("./view-league-details.template");
-const SaitoOverlay = require("../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const LeaderboardTemplate = require("./leaderboard.template");
 const RecentGameTemplate = require("./recent-game.template");
 

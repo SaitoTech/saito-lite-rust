@@ -8,7 +8,7 @@ const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
 const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
-const ArcadeLink = require("./lib/arcade-main/arcade-link");
+const InvitationLink = require("../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
@@ -1678,17 +1678,14 @@ class Arcade extends ModTemplate {
     let data = {};
 
     //Add more information about the game
-    try {
-      let accepted_game = null;
-      this.games.forEach((g) => {
-        if (g.transaction.sig === game_sig) {
-          accepted_game = g;
-        }
-      });
-      if (accepted_game) {
-        data.game = accepted_game.msg.game;
-      }
-    } catch (err) { }
+    let accepted_game = this.games.find((g) => g.transaction.sig === game_sig);
+
+    if (accepted_game) {
+      data.game = accepted_game.msg.game;
+    }else{
+      console.log("Game invitation not found");
+      return;
+    }
 
     //Create invite link from the game_sig 
     let inviteLink = window.location.href;
@@ -1705,8 +1702,7 @@ class Arcade extends ModTemplate {
 
     console.log(inviteLink);
 
-    ArcadeLink.render(this.app, this, data);
-    ArcadeLink.attachEvents(this.app, this);
+    InvitationLink.render(this.app, this, data);
   }
 }
 
