@@ -130,10 +130,10 @@ class RedSquareMenu {
   renderItem(app, mod, component, params = null) {
 
     this.displayNotification(app, component, 0);
-
-    let url = component === "stunx" ? "video-call" : component
+  
+    let url = component === "stunx" ? "video-call" : component;
     if (params) {
-      url = `${component}?${params}`;
+      url = `${component === "stunx" ? "video-call" : component}?${params}`;
     }
 
     let matched = 0;
