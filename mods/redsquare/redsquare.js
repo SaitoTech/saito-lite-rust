@@ -34,9 +34,8 @@ class RedSquare extends ModTemplate {
     this.newTweets = []; // tmp holder for new tweets before renering
     this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
 
-    this.viewing = "main";
     // "main" or sig if viewing page-specific
-    this.viewing = "main";
+    this.viewing = "feed";
     this.last_viewed_notifications_ts = 0;
     this.unviewed_notifications = 0;
 
@@ -48,7 +47,6 @@ class RedSquare extends ModTemplate {
       '/redsquare/css/redsquare-main.css',
       '/redsquare/css/arcade.css',		      // game creation overlays
       '/redsquare/css/chat.css',		        // game creation overlays
-      //'/saito/show.css',                    // show body (antifauc)
     ];
     this.ui_initialized = false;
 
@@ -66,6 +64,13 @@ class RedSquare extends ModTemplate {
     super.initialize(app);
 
     if (app.BROWSER === 1) {
+
+      let tweet_id = app.browser.returnURLParameter('tweet_id');
+
+      if (tweet_id != "") {
+        this.viewing = tweet_id;
+      }
+
       if (this.browser_active == 1) {
         //Leave a cookie trail to return to Redsquare when you enter a game
         if (app.options.homeModule !== this.returnSlug()) {
@@ -76,7 +81,9 @@ class RedSquare extends ModTemplate {
 
         //Query tweets every 30 seconds
         setInterval(() => {
-          this.fetchNewTweets(app, this)
+          if (this.viewing == "feed") {
+            this.fetchNewTweets(app, this)
+          }
         }, 45000)
       }
     }
@@ -249,7 +256,7 @@ class RedSquare extends ModTemplate {
     this.addTweet(app, this, tweet, 1);
     this.txmap[tx.transaction.sig] = 1;
 
-    if (this.viewing === "main") {
+    if (this.viewing == "feed") {
       this.renderMainPage(app, mod);
     } else {
       app.connection.emit('tweet-render-request', tweet);
@@ -317,7 +324,6 @@ class RedSquare extends ModTemplate {
 
 
   renderMainPage(app, mod) {
-    this.viewing = "main";
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
@@ -330,7 +336,7 @@ class RedSquare extends ModTemplate {
   // render with children, but loads if not parent (used for retweets)
   //
   renderParentWithChildren(app, mod, sig) {
-    this.viewing = sig;
+    //this.viewing = sig;
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
@@ -346,7 +352,7 @@ class RedSquare extends ModTemplate {
     // if we get here, we don't have this locally, try remote request
     //
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
-    mod.etchTweets(app, mod, sql, function (app, mod) {
+    mod.fetchTweets(app, mod, sql, function (app, mod) {
       mod.renderParentWithChildren(app, mod, sig);
 
     });
@@ -359,7 +365,7 @@ class RedSquare extends ModTemplate {
   // renders tweet with parents
   //
   renderWithParents(app, mod, sig, num = -1) {
-    this.viewing = sig;
+    //this.viewing = sig;
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     let t = this.returnTweet(app, mod, sig);
@@ -503,13 +509,8 @@ class RedSquare extends ModTemplate {
     if (this.app.BROWSER == 1) {
       this.saito_loader.render(app, redsquare_self, 'redsquare-home-header', false);
 
-      let tweet_id = app.browser.returnURLParameter('tweet_id');
-
       if (document.querySelector(".redsquare-list")) {
-        if (tweet_id != "") {
-          let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-          this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
-        } else {
+        if (redsquare_self.viewing == "feed") {
           let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND parent_id == thread_id AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
             console.log("~~~~~~~~~~~~~~~~~~");
@@ -518,6 +519,9 @@ class RedSquare extends ModTemplate {
             console.log("1 TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
             mod.renderMainPage(app, redsquare_self);
           });
+        } else {
+            let sql = `SELECT * FROM tweets WHERE sig = '${redsquare_self.viewing}' OR parent_id = '${redsquare_self.viewing}'`;
+            this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, redsquare_self.viewing); });
         }
 
       }
@@ -537,10 +541,12 @@ class RedSquare extends ModTemplate {
           }
           redsquare_self.addNotification(redsquare_self.app, redsquare_self, txs[i]);
         }
+        /*
         if (tweet_id != "") {
           console.log("HOW MANY DID WE LOAD 2? " + txs.length);
           redsquare_self.renderMainPage(redsquare_self.app, redsquare_self);
         }
+        */
       });
 
 

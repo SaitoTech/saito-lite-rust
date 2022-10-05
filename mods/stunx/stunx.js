@@ -237,7 +237,7 @@ class Stunx extends ModTemplate {
             $created_at: Date.now(),
             $validity_period: room.validityPeriod,
         };
-        const result = await app.storage.executeDatabase(sql, params, "Stunx");
+        const result = await app.storage.executeDatabase(sql, params, "videocalls");
         console.log('db result ', result, app.storage.executeDatabase);
     }
 
