@@ -53,7 +53,8 @@ class Quake3 extends GameTemplate {
 
   initialize(app) {
 
-    super.initialize(app);
+    //super.initialize(app);
+    this.initializeQueueCommands(); // Define standard queue commands
 
     //
     // divert console.log to track player name
