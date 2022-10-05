@@ -182,7 +182,7 @@ function recompile(){
 	console.log("");
 	console.log("");
 	
-	if(fs.existsSync('config/modules.config.js')){	
+	if(!fs.existsSync('config/modules.config.js')){	
  		copyDir('config/modules.default.js',  'config/modules.config.js');
 	}
 	
@@ -197,7 +197,7 @@ function recompile(){
 /* -------------------------------------------------- */
 function post_compile( ){
 
-	fs.copyFileSync("built/lib/saito/boot.js", "web/saito/saito2.js" );
+	fs.copyFileSync("lib/saito/boot.js", "web/saito/saito2.js" );
 	
 	var s1 = fs.readFileSync("web/saito/saito.js");
 	var s2 = fs.readFileSync("web/saito/saito2.js");
@@ -206,7 +206,8 @@ function post_compile( ){
         	console.log("Concat failed: " + err);
 			return;
 		}
-		
+		removeDir("web/saito/saito2.js");		
+
 		console.log("Finished")
 		console.log("");
 		console.log("To get started run");
@@ -225,7 +226,7 @@ function post_compile( ){
 
 	function webPack(){
 		
-		var entrypoint = "bundler/default/apps/lite/index.ts";
+		var entrypoint = "../bundler/default/apps/lite/index.ts";
 		var outputfile = "saito.js";
 		
 		console.log(__dirname)
@@ -261,7 +262,7 @@ function post_compile( ){
 		  // Path to your entry point. From this file Webpack will begin his work
 		  entry: ["babel-polyfill", path.resolve(__dirname, entrypoint)],
 		  output: {
-			path: path.resolve(__dirname, "web/saito"),
+			path: path.resolve(__dirname, "../web/saito"),
 			filename: outputfile
 		  },
 		  resolve: {
@@ -336,8 +337,8 @@ function post_compile( ){
 			  {
 				test: /\.zip$/,
 				exclude: [
-				  path.resolve(__dirname, "mods/appstore/bundler"),
-				  path.resolve(__dirname, "mods/appstore/mods")
+				  path.resolve(__dirname, "../mods/appstore/bundler"),
+				  path.resolve(__dirname, "../mods/appstore/mods")
 				]
 			  }
 			]
@@ -366,12 +367,15 @@ function post_compile( ){
 				  let info = stats.toJson();
 				  console.log(info.errors);
 				}
+			  }else{
+			  	//
+			  	// Done processing
+			  	//
+		
+				console.log("Bundle Success!");
+				post_compile();
+
 			  }
-		  	//
-		  	// Done processing
-		  	//
-			console.log("Bundle Success!");
-			post_compile();
 		});
 		
 	}
@@ -501,7 +505,7 @@ function reset_bundler() {
 
 function copy_lite_mods_to_bundler_directory() {
 
-	var liteMods = require("./config/modules.config.js");
+	var liteMods = require(path.resolve("./config/modules.config.js"));
 
 	for(let i = 0; i < liteMods.lite.length; i++){
 		
