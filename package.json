@@ -60,7 +60,6 @@
     "markdown-linkify": "^1.0.3",
     "marked": "^3.0.2",
     "merkle-tree-gen": "^1.1.0",
-    "mini-blake3": "^6.5.5",
     "mixin-node-sdk": "^3.0.5",
     "moment": "^2.29.4",
     "net": "^1.0.2",
