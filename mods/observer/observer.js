@@ -42,6 +42,9 @@ class Observer extends ModTemplate {
     app.connection.on("arcade-observer-join-table", (game_id)=>{
       this.observeGame(game_id, true);
     });
+    app.connection.on("arcade-observer-review-game", (game_id)=>{
+      this.observeGame(game_id, false);
+    });
 
     app.connection.on("Arcade-Observer-Update-Player", (obj)=>{
       //{id, keys}
