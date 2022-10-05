@@ -3,6 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const PostMain = require("./lib/post-main/post-main");
 const PostSidebar = require("./lib/post-sidebar/post-sidebar");
 const PostCreate = require("./lib/post-overlay/post-create");
+const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ArcadePosts = require("./lib/arcade-posts/arcade-posts");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const datetimeRelative = require("../../lib/helpers/datetime_formatter");
@@ -19,6 +20,7 @@ class Post extends ModTemplate {
     this.events = ["chat-render-request"];
     this.renderMethod = "none";
 
+    this.overlay = new SaitoOverlay(app);
     this.post = {};
     this.post.domain = "saito";
     this.posts = [];
