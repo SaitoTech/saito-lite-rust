@@ -1,10 +1,11 @@
 const saito = require("./../../lib/saito/saito");
-const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/arcade-main/arcade-main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
 const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
+const ArcadeGameDetails = require("./lib/arcade-game/arcade-game-details");
 const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
@@ -1703,6 +1704,12 @@ class Arcade extends ModTemplate {
 
     let invitationModal = new InvitationLink(this.app, this);
     invitationModal.render(this.app, this, data);
+  }
+
+
+  createGame(pseudoTX){
+    let ux = new ArcadeGameDetails(this.app);
+    ux.render(this.app, this, pseudoTX);
   }
 }
 

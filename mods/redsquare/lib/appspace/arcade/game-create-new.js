@@ -31,14 +31,13 @@ class GameCreateNew {
 
       //Create (hidden) the advanced options window
       this.meta_overlay = new SaitoOverlay(app, false, false);
-      this.meta_overlay.class = "game-overlay";
       this.meta_overlay.show(app, mod, advancedOptions);
 
       this.meta_overlay.hide();      
 
       //
       // move advanced options into game details form
-      let overlay1 = document.querySelector(".game-overlay");
+      let overlay1 = document.querySelector(`#saito-overlay${this.meta_overlay.ordinal}`);
       let overlay_backdrop_el = document.querySelector(`#saito-overlay-backdrop${this.meta_overlay.ordinal}`);
       let overlaybox = document.querySelector("#advanced-options-overlay-container");
       overlaybox.appendChild(overlay1);
@@ -47,10 +46,6 @@ class GameCreateNew {
       overlay_backdrop_el.style.opacity = 0.95;
       overlay_backdrop_el.style.backgroundColor = "#111";
 
-      //let advanced1 = document.querySelector(".game-wizard-advanced-box");
-      //if (advanced1) {
-      //  overlaybox.appendChild(advanced1);
-      //}
     }
 
     this.attachEvents(app, mod);

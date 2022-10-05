@@ -1,6 +1,5 @@
 const saito = require('./../../../../lib/saito/saito');
 const GameCreatorTemplate = require('./main.template');
-const ArcadeGameDetails = require('./../arcade-game/arcade-game-details');
 const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
 class GameCreator {
@@ -34,8 +33,7 @@ class GameCreator {
         let arcade_mod = app.modules.returnModule("Arcade");
 	// invite info will be here
 	arcade_mod.invite = mod.invite;
-        ArcadeGameDetails.render(app, arcade_mod, tx);
-        ArcadeGameDetails.attachEvents(app, arcade_mod, tx);
+        arcade_mod.createGame(tx);
 
 	this.overlay.hide();
 

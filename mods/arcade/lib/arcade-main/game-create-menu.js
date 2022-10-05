@@ -1,7 +1,6 @@
 const saito = require('./../../../../lib/saito/saito');
 const GameCreateMenuTemplate= require('./templates/game-create-menu.template');
 const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
-const ArcadeGameDetails = require('./../arcade-game/arcade-game-details');
 
 module.exports = GameCreateMenu = {
 
@@ -27,8 +26,7 @@ module.exports = GameCreateMenu = {
 
         let tx = new saito.default.transaction();
         tx.msg.game = gameName;
-        ArcadeGameDetails.render(app, mod, tx);
-        ArcadeGameDetails.attachEvents(app, mod, tx);
+        mod.createGame(tx); 
         
       });
     });

@@ -26,34 +26,20 @@ body {
   justify-content: center;
 }
 
-/* Game Advanced Options*/
-.game-overlay {
-  min-width: 320px;
-  padding: 1rem;
-}
-
-.game-overlay .long-scroll {
-  padding: 40px;
-  width: 100vw;
-  height: 100vh;
-  overflow-y: scroll;
-  display: grid;
-  grid-template-columns: 200px auto;
-}
-
-.game-overlay .overlay-title {
+/* Game Advanced Options Styling*/
+.game-wizard-advanced-options-overlay .overlay-title {
   text-align: center;
 }
 
-.game-overlay .overlay-input {
+.game-wizard-advanced-options-overlay .overlay-input {
   margin-bottom: 1rem;
 }
 
-.game-overlay select {
+.game-wizard-advanced-options-overlay select {
   text-transform: capitalize;
 }
 
-.game-overlay .options_notice {
+.game-wizard-advanced-options-overlay .options_notice {
   margin-bottom: 1.2rem;
   color: var(--saito-white);
   font-style: italic;
