@@ -55,7 +55,6 @@ class RedSquareGames {
       game.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
-
         let game_id = e.currentTarget.getAttribute("data-id");
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
 
@@ -72,15 +71,8 @@ class RedSquareGames {
               }
             }    
           }
-        //}
-        // } else {
-        //   let spinner = new GameLoader(app, mod);
-        //   //widget.blockRender = true;
-        //   spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
-        
-        //   app.connection.emit("arcade-observer-join-table",game_sig);
-        // }
-      };
+        }
+      }
     }); 
   
     //Copied from lib/appspace/games.js
