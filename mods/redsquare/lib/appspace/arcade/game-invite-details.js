@@ -1,8 +1,9 @@
-const saito = require('./../../../../../lib/saito/saito');
 const GameInviteDetailsTemplate = require('./game-invite-details.template');
-const ArcadeGameDetails = require('./arcade-game-details');
 const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
+/*
+  To show details of an open game invite, so users may click to join
+*/
 
 class GameInviteDetails {
 
@@ -24,7 +25,6 @@ class GameInviteDetails {
     let classSelf = this;
     if (btn){
       btn.onclick = (e) => {
-        //salert("Please visit the Arcade to play a game :P");
         app.connection.emit("join-game", invite.transaction.sig);
         classSelf.overlay.hide();
       }

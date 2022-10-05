@@ -3,7 +3,6 @@ const ArcadeContainerTemplate = require("./templates/arcade-container.template")
 const ArcadeMobileHelper = require("./templates/arcade-mobile-helper.template");
 const ArcadeForums = require("./arcade-forums");
 const ArcadePosts = require("./arcade-posts");
-const ArcadeInfobox = require("./arcade-infobox");
 const GameLoader = require("./../../../../lib/saito/new-ui/game-loader/game-loader");
 const SaitoCarousel = require("./../../../../lib/saito/ui/saito-carousel/saito-carousel");
 const ArcadeInviteTemplate = require("./templates/arcade-invite.template");
@@ -136,8 +135,6 @@ module.exports = ArcadeMain = {
       post.renderMethod = "arcade";
       post.render();
     }
-
-    //ArcadeInfobox.render(app, mod); //Not doing anything right now
 
 
     try {

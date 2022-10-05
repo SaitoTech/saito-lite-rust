@@ -1,4 +1,4 @@
-module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
+module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
 
   if (!league){
     return "";
@@ -16,6 +16,9 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
       <div>Ranking Algo:</div><div>${league.ranking}</div>
       <div>Admin:</div><div>${app.keys.returnUsername(league.admin)}</div>
     </div>`;
+
+    //Add btn to query games
+    html += `<div><button type="button" id="game-leaderboard-toggle" class="view_leaderboard">Show Recent Games</button></div>`;
 
     //Show League dates
     if (league.startdate || league.enddate){
@@ -35,6 +38,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
     html += `<div id="league-leaderboard" class="league-leaderboard">
       <div class="leaderboard-spinner loader"></div>
     </div>
+    
     <div class="btn-controls-box">`;
     //Available space in the league
     if (league.max_players == 0 || league.playerCnt < league.max_players){
