@@ -26,7 +26,7 @@ class ArcadeLeague {
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
 
         if (game_cmd == "play" && game_sig == league.id){
-          mod.launchGame(league);
+          mod.createLeagueGame(league);
         }
 
         if (game_cmd == "view" && game_sig == league.id){

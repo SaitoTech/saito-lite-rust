@@ -98,7 +98,7 @@ class ViewLeagueDetails {
     if (joinBtn){
     	joinBtn.onclick = ()=> {
     		mod.sendJoinLeagueTransaction(this.league.id);
-    		salert('League joined');
+    		salert('Sending TX to join league...');
         joinBtn.remove();
         this.overlay.hide();
     	}
@@ -135,7 +135,7 @@ class ViewLeagueDetails {
     if (createGameBtn){
       createGameBtn.onclick = () => {
         this.overlay.hide();
-        mod.launchGame(this.league);
+        mod.createLeagueGame(this.league);
       }
     }
 

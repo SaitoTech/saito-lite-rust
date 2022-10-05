@@ -1053,15 +1053,19 @@ class League extends ModTemplate {
     } else {
       inviteLink = inviteLink.replace("#", "?jid=" + league_id);
     }
-      
-    InvitationLink.render(this.app, this, data);
+    data.invite_link = inviteLink;
+
+    console.log(JSON.stringify(data));
+
+    let linkModal = new InvitationLink(this.app, this);
+    linkModal.render(this.app, this, data);
   }
 
 
   /**
    * Wrapper function to help us launch a League specific game!
    */ 
-  async launchGame(league){
+  async createLeagueGame(league){
 
     let arcade_mod = this.app.modules.returnModule("Arcade");
 

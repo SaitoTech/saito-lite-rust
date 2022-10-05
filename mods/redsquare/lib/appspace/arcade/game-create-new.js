@@ -2,6 +2,10 @@ const GameCreateNewTemplate = require('./game-create-new.template.js');
 const GameCryptoTransferManager = require('./../../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
 const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
+/*
+  Red Square re-do of "arcade-game-details", an interface to select game options and create a game invite
+*/
+
 class GameCreateNew {
 
   constructor(app, mod, game_mod, invite) {
@@ -9,7 +13,6 @@ class GameCreateNew {
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app);
-    this.overlay.removeOnClose = true;
   }
 
   render(app, mod, invite) {

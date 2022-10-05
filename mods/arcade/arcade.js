@@ -131,7 +131,6 @@ class Arcade extends ModTemplate {
             document.querySelectorAll("#header-dropdown-create-game").forEach((element) => {
               element.onclick = (e) => {
                 GameCreateMenu.render(app, mod);
-                GameCreateMenu.attachEvents(app, mod);
               };
             });
           },
@@ -1700,9 +1699,10 @@ class Arcade extends ModTemplate {
 
     data.invite_link = inviteLink;
 
-    console.log(inviteLink);
+    console.log(JSON.stringify(data));
 
-    InvitationLink.render(this.app, this, data);
+    let invitationModal = new InvitationLink(this.app, this);
+    invitationModal.render(this.app, this, data);
   }
 }
 
