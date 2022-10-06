@@ -1,13 +1,11 @@
 let saito = require("./../../../../lib/saito/saito");
       
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const PostViewTemplate = require("./post-view.template");
 const PostViewCommentTemplate = require("./post-view-comment.template");
 //const JSON = require("json-bigint");
 
 module.exports = PostView = {
   render(app, mod, sig = "") {
-    mod.overlay = new SaitoOverlay(app);
     mod.comments = []; //For threaded replies
 
     this.images = [];   //For uploading multiple images

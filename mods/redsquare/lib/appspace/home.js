@@ -40,20 +40,19 @@ class RedSquareAppspaceHome {
       rootMargin: '0px',
       threshold: 1
     }
+
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          let saito_loader = this.saito_loader;
-         
-          if (mod.viewing === "main") {
+        if (mod.viewing == "feed") {
+          if (entry.isIntersecting) {
+            let saito_loader = this.saito_loader;
             saito_loader.render(app, mod, "redsquare-intersection", false);
             mod.fetchMoreTweets(app, mod, (app, mod) => saito_loader.remove());
           }
-
         }
+      });
+    }, options);
 
-      })
-    }, options)
   }
 
   async render(app, mod) {
@@ -99,7 +98,7 @@ class RedSquareAppspaceHome {
       });
       mod.newTweets = [];
       e.target.style.display = "none";
-      document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
+      document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
     }
   }
 

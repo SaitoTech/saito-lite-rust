@@ -1,263 +1,367 @@
 
-    this.importUnit('luther', {
-      type		:	"luther" ,
+    ////////////////
+    // PROTESTANT //
+    ////////////////
+
+    this.importDebater('luther-debater', {
+      type		:	"luther-debater" ,
       name		: 	"Martin Luther",
-      personage		:	false,
-      debater		:	true,
       img		:	"LutherDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	4,
+      ability		:	"Bonus CP for transaction in German zone" ,
       committed		: 	0,
     });
 
-    this.importUnit('zwingli', {
-      type		:	"zwingli" ,
+    this.importDebater('zwingli-debater', {
+      type		:	"zwingli-debater" ,
       name		: 	"Ulrich Zwingli",
-      personage		:	false,
-      debater		:	true,
       img		:	"ZwingliDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	3 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Zurich" ,
       committed		: 	0,
     });
 
-    this.importUnit('cranmer', {
-      type		:	"cranmer" ,
-      name		: 	"Thomas Cranmer",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CranmerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('calvin', {
-      type		:	"calvin" ,
-      name		: 	"John Calvin",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CalvinDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('aleander', {
-      type		:	"aleander" ,
-      name		: 	"Hieronymus Aleander",
-      personage		:	false,
-      debater		:	true,
-      img		:       "AleanderDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('bucer', {
-      type		:	"bucer" ,
+    this.importDebater('bucer-debater', {
+      type		:	"bucer-debater" ,
       name		: 	"Martin Bucer",
-      personage		:	false,
-      debater		:	true,
       img		:	"BucerDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Strasburg" ,
       committed		: 	0,
     });
 
-    this.importUnit('bullinger', {
-      type		:	"bullinger" ,
+    this.importDebater('bullinger-debater', {
+      type		:	"bullinger-debater" ,
       name		: 	"Heinrich Bullinger",
-      personage		:	false,
-      debater		:	true,
       img		:	"BullingerDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"Insert in 2nd round of debate in any Language Zone" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu === "debate") {
+          return { faction : "protestant" , event : 'substitute_bullinger', html : `<li class="option" id="substitute_bullinger">substitute Bullinger</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "debate") {
+	  if (his_self.game.state.theological_debate.round === 2) {
+            if (faction === "protestant") {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu === "debate") {
+	  if (his_self.game.state.theological_debate.attacker === "papacy") {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tdefender_debater\tbullinger-debater");
+	  } else {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tattacker_debater\tbullinger-debater");
+	  }
+          his_seld.endTurn();
+        }
+        return 0;
+      },
+
     });
 
-    this.importUnit('cajetan', {
-      type		:	"cajetan" ,
-      name		: 	"Thomas Cajetan",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CajetanDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('campeggio', {
-      type		:	"campeggio" ,
-      name		: 	"Lorenzo Campeggio",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CampeggioDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('canisius', {
-      type		:	"canisius" ,
-      name		: 	"Peter Canisius",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CanisiusDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('carafa', {
-      type		:	"carafa" ,
-      name		: 	"Carlo Carafa",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CarafaDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('carlstadt', {
-      type		:	"carlstadt" ,
+    this.importDebater('carlstadt-debater', {
+      type		:	"carlstadt-debater" ,
       name		: 	"Andreas Carlstadt",
-      personage		:	false,
-      debater		:	true,
       img		:	"CarlstadtDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	1 ,
+      ability		:	"Target 3 Germany spaces with Treatise, unrest if fails" ,
       committed		: 	0,
     });
 
-    this.importUnit('contarini', {
-      type		:	"contarini" ,
-      name		: 	"Gasparo Contarini",
-      personage		:	false,
-      debater		:	true,
-      img		:	"ContariniDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('cop', {
-      type		:	"cop" ,
-      name		: 	"Nicolas Cop",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CopDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('coverdale', {
-      type		:	"coverdale" ,
-      name		: 	"Myles Coverdale",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CoverdaleDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('cranmer', {
-      type		:	"cranmer" ,
-      name		: 	"Thomas Cranmer",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CranmerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('faber', {
-      type		:	"faber" ,
-      name		: 	"Peter Faber",
-      personage		:	false,
-      debater		:	true,
-      img		:	"FaberDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('farel', {
-      type		:	"farel" ,
-      name		: 	"William Farel",
-      personage		:	false,
-      debater		:	true,
-      img		:	"FarelDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('gardiner', {
-      type		:	"gardiner" ,
-      name		: 	"Stephen Gardiner",
-      personage		:	false,
-      debater		:	true,
-      img		:	"GardinerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('knox', {
-      type		:	"knox" ,
-      name		: 	"John Knox",
-      personage		:	false,
-      debater		:	true,
-      img		:	"KnoxDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('latimer', {
-      type		:	"latimer" ,
-      name		: 	"Hugh Latimer",
-      personage		:	false,
-      debater		:	true,
-      img		:	"LatimerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('loyola', {
-      type		:	"loyola" ,
-      name		: 	"Ignatius Loyola",
-      personage		:	false,
-      debater		:	true,
-      img		:	"LoyolaDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('melanchthon', {
-      type		:	"melanchthon" ,
+    this.importDebater('melanchthon-debater', {
+      type		:	"melanchthon-debater" ,
       name		: 	"Philip Melanchthon",
-      personage		:	false,
-      debater		:	true,
       img		:	"MelanchthonDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	3 ,
+      ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
     });
 
-    this.importUnit('oekolampadius', {
-      type		:	"oekolampadius" ,
+    this.importDebater('oekolampadius-debater', {
+      type		:	"oekolampadius-debater" ,
       name		: 	"Johannes Oekolampadius",
-      personage		:	false,
-      debater		:	true,
       img		:	"OekolampadiusDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Basel" ,
       committed		: 	0,
     });
 
-    this.importUnit('olivetan', {
-      type		:	"olivetan" ,
-      name		: 	"Pierre Robert Olivetan",
-      personage		:	false,
-      debater		:	true,
-      img		:	"OlivetanDebater.svg",
+
+    ////////////
+    // PAPACY //
+    ////////////
+
+    this.importDebater('eck-debater', {
+      type		:	"eck-debater" ,
+      name		: 	"Johann Eck",
+      img		:       "EckDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in Debate Attacks" ,
       committed		: 	0,
     });
 
-    this.importUnit('pole', {
-      type		:	"pole" ,
+    this.importDebater('aleander-debater', {
+      type		:	"aleander-debater" ,
+      name		: 	"Hieronymus Aleander",
+      img		:       "AleanderDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"If concludes debate, winner flips an extra space" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('cajetan-debater', {
+      type		:	"cajetan-debater" ,
+      name		: 	"Thomas Cajetan",
+      img		:	"CajetanDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	1 ,
+      ability		:	"Target 3 spaces with burn books" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('campeggio-debater', {
+      type		:	"campeggio-debater" ,
+      name		: 	"Lorenzo Campeggio",
+      img		:	"CampeggioDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"Roll die after debate loss; if 5 or 6 result is ignored" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('canisius-debater', {
+      type		:	"canisius-debater" ,
+      name		: 	"Peter Canisius",
+      img		:	"CanisiusDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die for Counter-Reformation attempts within 2 spaces of Regensburg" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('caraffa-debater', {
+      type		:	"caraffa-debater" ,
+      name		: 	"Carlo Caraffa",
+      img		:	"CaraffaDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"Target 2 spaces in any zone with burn books" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('contarini-debater', {
+      type		:	"contarini-debater" ,
+      name		: 	"Gasparo Contarini",
+      img		:	"ContariniDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"+1 die for Counter-Reformations within 2 spaces of Charles V" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('faber-debater', {
+      type		:	"faber-debater" ,
+      name		: 	"Peter Faber",
+      img		:	"FaberDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+2 die for Counter-Reformations against an Electorate" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('gardiner-debater', {
+      type		:	"gardiner-debater" ,
+      name		: 	"Stephen Gardiner",
+      img		:	"GardinerDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in debate in English zone if attacker" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('loyola-debater', {
+      type		:	"loyola-debater" ,
+      name		: 	"Ignatius Loyola",
+      img		:	"LoyolaDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	4 ,
+      ability		:	"Found Jesuit University for only 2 CP" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('pole-debater', {
+      type		:	"pole-debater" ,
       name		: 	"Reginald Pole",
-      personage		:	false,
-      debater		:	true,
       img		:	"PoleDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die for Papacy if at Council of Trent" ,
       committed		: 	0,
     });
 
-    this.importUnit('tetzel', {
-      type		:	"tetzel" ,
+    this.importDebater('tetzel-debater', {
+      type		:	"tetzel-debater" ,
       name		: 	"Johann Tetzel ",
-      personage		:	false,
-      debater		:	true,
       img		:	"TetzelDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	1 ,
+      ability		:	"1 CP to Saint Peters with Burn Books" ,
       committed		: 	0,
     });
 
-    this.importUnit('tyndalex', {
-      type		:	"tyndale" ,
-      name		: 	"William Tyndale",
-      personage		:	false,
-      debater		:	true,
-      img		:	"TyndaleDebater.svg",
+
+    ////////////
+    // FRENCH //
+    ////////////
+
+    this.importDebater('calvin-debater', {
+      type		:	"calvin-debater" ,
+      name		: 	"John Calvin",
+      img		:	"CalvinDebater.svg",
+      language_zone	:	"french" ,
+      faction		:	"france" ,
+      power		:	4 ,
+      ability		:	"Target 3 French-speaking spaces with a treatise" ,
       committed		: 	0,
     });
 
-    this.importUnit('wishart', {
-      type		:	"wishart" ,
+    this.importDebater('cop-debater', {
+      type		:	"cop-debater" , 
+     name		: 	"Nicolas Cop",
+      img		:	"CopDebater.svg",
+      language_zone	:	"french" ,
+      faction		:	"france" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation attempts within 2 spaces of Paris" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('farel-debater', {
+      type		:	"farel-debater" ,
+      name		: 	"William Farel",
+      img		:	"FarelDebater.svg",
+      language_zone	:	"french" ,
+      faction		:	"france" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation attempts within 2 spaces of Geneva" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('olivetan-debater', {
+      type		:	"olivetan-debater" ,
+      name		: 	"Pierre Robert Olivetan",
+      img		:	"OlivetanDebater.svg",
+      language_zone	:	"french" ,
+      faction		:	"france" ,
+      power		:	1 ,
+      ability		:	"Bonus CP for translation in French Zone" ,
+      committed		: 	0,
+    });
+
+
+    /////////////
+    // ENGLISH //
+    /////////////
+
+    this.importDebater('cranmer-debater', {
+      type		:	"cranmer-debater" ,
+      name		: 	"Thomas Cranmer",
+      img		:	"CranmerDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation within 2 spaces of London" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('wishart-debater', {
+      type		:	"wishart-debater" ,
       name		: 	"George Wishart",
-      personage		:	false,
-      debater		:	true,
       img		:	"WishartDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	1 ,
+      ability		:	"+1 die for Reformation attempts in Scotland" ,
       committed		: 	0,
     });
 
+    this.importDebater('tyndalex-debater', {
+      type		:	"tyndale-debater" ,
+      name		: 	"William Tyndale",
+      img		:	"TyndaleDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('latimer-debater', {
+      type		:	"latimer-debater" ,
+      name		: 	"Hugh Latimer",
+      img		:	"LatimerDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	1 ,
+      ability		:	"+1 die for Reformation attempts in England" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('knox-debater', {
+      type		:	"knox-debater" ,
+      name		: 	"John Knox",
+      img		:	"KnoxDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	3 ,
+      ability		:	"+1 die for Reformation Attempts in England or Scotland" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('coverdale-debater', {
+      type		:	"coverdale-debater" ,
+      name		: 	"Myles Coverdale",
+      img		:	"CoverdaleDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
+      committed		: 	0,
+    });
 

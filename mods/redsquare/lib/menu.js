@@ -72,6 +72,7 @@ class RedSquareMenu {
       obj.onclick = (e) => {
         removeLeftSidebar()
         window.history.replaceState({}, "Saito RedSquare", "/redsquare/");
+        mod.viewing = "feed";
         this_menu.renderItem(app, mod, "home");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }

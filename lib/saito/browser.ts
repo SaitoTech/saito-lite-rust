@@ -1093,6 +1093,17 @@ class Browser {
     });
   }
 
+  async screenshotCanvasElementById(id = "" , callback = null) {
+      let canvas = document.getElementById(id);
+      if (canvas) {
+        let img = canvas.toDataURL("image/jpeg", 0.35);
+        if (callback != null) {
+          callback(img);
+        }
+      }
+  }
+
+
   sanitize(text) {
     try {
       if (text !== "") {

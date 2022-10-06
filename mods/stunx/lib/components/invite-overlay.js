@@ -40,7 +40,7 @@ class InviteOverlay {
             salert("Copied code to clipboard");
         });
         document.querySelector('#stunx-copy-video-invite-link').addEventListener('click', (e) => {
-            navigator.clipboard.writeText(`${window.location.host}/redsquare/#video-call?invite_code=${this.roomCode}`);
+            navigator.clipboard.writeText(`${window.location.host}/redsquare/#videocall?invite_code=${this.roomCode}`);
             salert("Copied link to clipboard")
         });
 

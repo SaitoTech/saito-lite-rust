@@ -13,6 +13,7 @@ class StunxAppspace {
         this.attachEvents(app, mod);
         const inviteCode = window.location.hash.split('=')[1];
         const stunx_mod = app.modules.returnModule('Stunx');
+
         let self = this
         if (inviteCode && stunx_mod.appspaceRendered === false) {
             setTimeout(() => {
