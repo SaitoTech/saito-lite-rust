@@ -69,7 +69,16 @@ class HereIStand extends GameTemplate {
     // initialize game objects
     //
     this.factions = {};
+
     this.units = {};
+    this.army = {};
+    this.navy = {};
+    this.reformers = {};
+    this.debaters = {};
+    this.explorers = {};
+    this.conquistadors = {};
+    this.wives = {};
+
     this.deck = this.returnDeck();
 
 
@@ -525,7 +534,7 @@ class HereIStand extends GameTemplate {
 
 
 
-    this.importUnit('suleiman', {
+    this.importArmyLeader('suleiman', {
       type		:	"suleiman" ,
       name		: 	"Suleiman",
       personage		:	true,
@@ -535,7 +544,7 @@ class HereIStand extends GameTemplate {
       command_value	:	10,
     });
  
-    this.importUnit('ibrahim-pasha', {
+    this.importArmyLeader('ibrahim-pasha', {
       type		:	"ibrahim-pasha" ,
       name		: 	"Ibrahim Pasha",
       personage		:	true,
@@ -546,7 +555,7 @@ class HereIStand extends GameTemplate {
     });
  
   
-    this.importUnit('charles-v', {
+    this.importArmyLeader('charles-v', {
       type		:	"charles-v" ,
       name		: 	"Charles V",
       personage		:	true,
@@ -556,7 +565,7 @@ class HereIStand extends GameTemplate {
       command_value	:	10,
     });
  
-    this.importUnit('duke-of-alva', {
+    this.importArmyLeader('duke-of-alva', {
       type		:	"duke-of-alva" ,
       name		: 	"Duke of Alva",
       personage		:	true,
@@ -566,7 +575,7 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
  
-    this.importUnit('ferdinand', {
+    this.importArmyLeader('ferdinand', {
       type		:	"ferdinand" ,
       name		: 	"Ferdinand",
       personage		:	true,
@@ -576,7 +585,7 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
  
-    this.importUnit('henry-viii', {
+    this.importArmyLeader('henry-viii', {
       type		:	"henry-viii" ,
       name		: 	"Henry VIII",
       personage		:	true,
@@ -586,7 +595,7 @@ class HereIStand extends GameTemplate {
       command_value	:	8,
     });
  
-    this.importUnit('charles-brandon', {
+    this.importArmyLeader('charles-brandon', {
       type		:	"charles-brandon" ,
       name		: 	"Charles Brandon",
       personage		:	true,
@@ -596,7 +605,7 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
  
-    this.importUnit('francis-i', {
+    this.importArmyLeader('francis-i', {
       type		:	"francis-i" ,
       name		: 	"Francis I",
       personage		:	true,
@@ -606,7 +615,7 @@ class HereIStand extends GameTemplate {
       command_value	:	8,
     });
  
-    this.importUnit('montmorency', {
+    this.importArmyLeader('montmorency', {
       type		:	"montmorency" ,
       name		: 	"Montmorency",
       personage		:	true,
@@ -616,7 +625,7 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
  
-    this.importUnit('andrea-doria', {
+    this.importArmyLeader('andrea-doria', {
       type		:	"andrea-doria" ,
       name		: 	"Andrea Doria",
       personage		:	true,
@@ -626,7 +635,7 @@ class HereIStand extends GameTemplate {
       command_value	:	0,
     });
 
-    this.importUnit('maurice-of-saxony', {
+    this.importArmyLeader('maurice-of-saxony', {
       type		:	"maurice-of-saxony" ,
       name		: 	"Maurice of Saxony",
       personage		:	true,
@@ -636,272 +645,573 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
 
+    this.importArmyLeader('maurice-of-saxony', {
+      type              :       "maurice-of-saxony" ,
+      name              :       "Maurice of Saxony",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "Maurice_Hapsburg.svg",
+      battle_rating     :       1,
+      command_value     :       6,
+    });
 
 
-    this.importUnit('luther', {
-      type		:	"luther" ,
+
+/************************
+
+Habsburg conquistadores:
+1. Pizarro 3
+2. Montejo 2
+3. Cortez 4
+4. Cordova 1
+5. Coronado 1
+
+************************/
+
+      this.importConquistador('orellana', {
+           type              :       "orellana",
+           name              :       "Hector Rodrigo Enriquez Orellana",
+           personage         :       true,
+           img               :       "Orellana.svg",
+      });
+
+      this.importConquistador('magellan', {
+           type              :       "magellan" ,
+           name              :       "Ferdinand Magellan",
+           personage         :       true,
+           img               :       "Magellan.svg",
+      });
+
+      this.importConquistador('leon', {
+           type              :       "leon" ,
+           name              :       "Leon",
+           personage         :       true,
+           img               :       "Leon.svg",
+      });
+
+      this.importConquistador('narvaez', {
+           type              :       "narvaez" ,
+           name              :       "Sofia Narvaez",
+           personage         :       true,
+           img               :       "Narvaez.svg",
+      });
+
+      this.importConquistador('de-vaca', {
+           type              :       "de-vaca" ,
+           name              :       "Cabeza De Vaca",
+           personage         :       true,
+           img               :       "De_Vaca.svg",
+      });
+
+      this.importConquistador('de-soto', {
+           type              :       "de-soto" ,
+           name              :       "DeSoto",
+           personage         :       true,
+           img               :       "DeSoto.svg",
+      });
+
+
+
+
+
+      /***** Hapsburg Conquistadors *****/
+
+      this.importConquistador('pizarro', {
+           type              :       "pizarro" ,
+           name              :       "Francisco Pizarro",
+           personage         :       true,
+           img               :       "Pizarro.svg",
+      });
+
+      // Montejo
+
+      this.importConquistador('cordova', {
+           type              :       "cordova" ,
+           name              :       "Neisa Cordova",
+           personage         :       true,
+           img               :       "Cordova.svg",
+      });
+
+      this.importConquistador('coronado', {
+           type              :       "coronado" ,
+           name              :       "Francisco Vázquez de Coronado",
+           personage         :       true,
+           img               :       "Coronado.svg",
+      });
+
+      this.importConquistador('cortez', {
+           type              :       "cortez" ,
+           name              :       "Hernan Cortes",
+           personage         :       true,
+           img               :       "Cortez.svg",
+      });
+
+
+
+    ////////////////
+    // PROTESTANT //
+    ////////////////
+
+    this.importDebater('luther-debater', {
+      type		:	"luther-debater" ,
       name		: 	"Martin Luther",
-      personage		:	false,
-      debater		:	true,
       img		:	"LutherDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	4,
+      ability		:	"Bonus CP for transaction in German zone" ,
       committed		: 	0,
     });
 
-    this.importUnit('zwingli', {
-      type		:	"zwingli" ,
+    this.importDebater('zwingli-debater', {
+      type		:	"zwingli-debater" ,
       name		: 	"Ulrich Zwingli",
-      personage		:	false,
-      debater		:	true,
       img		:	"ZwingliDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	3 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Zurich" ,
       committed		: 	0,
     });
 
-    this.importUnit('cranmer', {
-      type		:	"cranmer" ,
-      name		: 	"Thomas Cranmer",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CranmerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('calvin', {
-      type		:	"calvin" ,
-      name		: 	"John Calvin",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CalvinDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('aleander', {
-      type		:	"aleander" ,
-      name		: 	"Hieronymus Aleander",
-      personage		:	false,
-      debater		:	true,
-      img		:       "AleanderDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('bucer', {
-      type		:	"bucer" ,
+    this.importDebater('bucer-debater', {
+      type		:	"bucer-debater" ,
       name		: 	"Martin Bucer",
-      personage		:	false,
-      debater		:	true,
       img		:	"BucerDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Strasburg" ,
       committed		: 	0,
     });
 
-    this.importUnit('bullinger', {
-      type		:	"bullinger" ,
+    this.importDebater('bullinger-debater', {
+      type		:	"bullinger-debater" ,
       name		: 	"Heinrich Bullinger",
-      personage		:	false,
-      debater		:	true,
       img		:	"BullingerDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"Insert in 2nd round of debate in any Language Zone" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu === "debate") {
+          return { faction : "protestant" , event : 'substitute_bullinger', html : `<li class="option" id="substitute_bullinger">substitute Bullinger</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "debate") {
+	  if (his_self.game.state.theological_debate.round === 2) {
+            if (faction === "protestant") {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu === "debate") {
+	  if (his_self.game.state.theological_debate.attacker === "papacy") {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tdefender_debater\tbullinger-debater");
+	  } else {
+            his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tattacker_debater\tbullinger-debater");
+	  }
+          his_seld.endTurn();
+        }
+        return 0;
+      },
+
     });
 
-    this.importUnit('cajetan', {
-      type		:	"cajetan" ,
-      name		: 	"Thomas Cajetan",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CajetanDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('campeggio', {
-      type		:	"campeggio" ,
-      name		: 	"Lorenzo Campeggio",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CampeggioDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('canisius', {
-      type		:	"canisius" ,
-      name		: 	"Peter Canisius",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CanisiusDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('carafa', {
-      type		:	"carafa" ,
-      name		: 	"Carlo Carafa",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CarafaDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('carlstadt', {
-      type		:	"carlstadt" ,
+    this.importDebater('carlstadt-debater', {
+      type		:	"carlstadt-debater" ,
       name		: 	"Andreas Carlstadt",
-      personage		:	false,
-      debater		:	true,
       img		:	"CarlstadtDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	1 ,
+      ability		:	"Target 3 Germany spaces with Treatise, unrest if fails" ,
       committed		: 	0,
     });
 
-    this.importUnit('contarini', {
-      type		:	"contarini" ,
-      name		: 	"Gasparo Contarini",
-      personage		:	false,
-      debater		:	true,
-      img		:	"ContariniDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('cop', {
-      type		:	"cop" ,
-      name		: 	"Nicolas Cop",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CopDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('coverdale', {
-      type		:	"coverdale" ,
-      name		: 	"Myles Coverdale",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CoverdaleDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('cranmer', {
-      type		:	"cranmer" ,
-      name		: 	"Thomas Cranmer",
-      personage		:	false,
-      debater		:	true,
-      img		:	"CranmerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('faber', {
-      type		:	"faber" ,
-      name		: 	"Peter Faber",
-      personage		:	false,
-      debater		:	true,
-      img		:	"FaberDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('farel', {
-      type		:	"farel" ,
-      name		: 	"William Farel",
-      personage		:	false,
-      debater		:	true,
-      img		:	"FarelDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('gardiner', {
-      type		:	"gardiner" ,
-      name		: 	"Stephen Gardiner",
-      personage		:	false,
-      debater		:	true,
-      img		:	"GardinerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('knox', {
-      type		:	"knox" ,
-      name		: 	"John Knox",
-      personage		:	false,
-      debater		:	true,
-      img		:	"KnoxDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('latimer', {
-      type		:	"latimer" ,
-      name		: 	"Hugh Latimer",
-      personage		:	false,
-      debater		:	true,
-      img		:	"LatimerDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('loyola', {
-      type		:	"loyola" ,
-      name		: 	"Ignatius Loyola",
-      personage		:	false,
-      debater		:	true,
-      img		:	"LoyolaDebater.svg",
-      committed		: 	0,
-    });
-
-    this.importUnit('melanchthon', {
-      type		:	"melanchthon" ,
+    this.importDebater('melanchthon-debater', {
+      type		:	"melanchthon-debater" ,
       name		: 	"Philip Melanchthon",
-      personage		:	false,
-      debater		:	true,
       img		:	"MelanchthonDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	3 ,
+      ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
     });
 
-    this.importUnit('oekolampadius', {
-      type		:	"oekolampadius" ,
+    this.importDebater('oekolampadius-debater', {
+      type		:	"oekolampadius-debater" ,
       name		: 	"Johannes Oekolampadius",
-      personage		:	false,
-      debater		:	true,
       img		:	"OekolampadiusDebater.svg",
+      language_zone	:	"german" ,
+      faction		:	"protestant" ,
+      power		:	2 ,
+      ability		:	"+1 for Reformation attempts within 2 spaces of Basel" ,
       committed		: 	0,
     });
 
-    this.importUnit('olivetan', {
-      type		:	"olivetan" ,
-      name		: 	"Pierre Robert Olivetan",
-      personage		:	false,
-      debater		:	true,
-      img		:	"OlivetanDebater.svg",
+
+    ////////////
+    // PAPACY //
+    ////////////
+
+    this.importDebater('eck-debater', {
+      type		:	"eck-debater" ,
+      name		: 	"Johann Eck",
+      img		:       "EckDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in Debate Attacks" ,
       committed		: 	0,
     });
 
-    this.importUnit('pole', {
-      type		:	"pole" ,
+    this.importDebater('aleander-debater', {
+      type		:	"aleander-debater" ,
+      name		: 	"Hieronymus Aleander",
+      img		:       "AleanderDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"If concludes debate, winner flips an extra space" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('cajetan-debater', {
+      type		:	"cajetan-debater" ,
+      name		: 	"Thomas Cajetan",
+      img		:	"CajetanDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	1 ,
+      ability		:	"Target 3 spaces with burn books" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('campeggio-debater', {
+      type		:	"campeggio-debater" ,
+      name		: 	"Lorenzo Campeggio",
+      img		:	"CampeggioDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"Roll die after debate loss; if 5 or 6 result is ignored" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('canisius-debater', {
+      type		:	"canisius-debater" ,
+      name		: 	"Peter Canisius",
+      img		:	"CanisiusDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die for Counter-Reformation attempts within 2 spaces of Regensburg" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('caraffa-debater', {
+      type		:	"caraffa-debater" ,
+      name		: 	"Carlo Caraffa",
+      img		:	"CaraffaDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"Target 2 spaces in any zone with burn books" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('contarini-debater', {
+      type		:	"contarini-debater" ,
+      name		: 	"Gasparo Contarini",
+      img		:	"ContariniDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	2 ,
+      ability		:	"+1 die for Counter-Reformations within 2 spaces of Charles V" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('faber-debater', {
+      type		:	"faber-debater" ,
+      name		: 	"Peter Faber",
+      img		:	"FaberDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+2 die for Counter-Reformations against an Electorate" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('gardiner-debater', {
+      type		:	"gardiner-debater" ,
+      name		: 	"Stephen Gardiner",
+      img		:	"GardinerDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die in debate in English zone if attacker" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('loyola-debater', {
+      type		:	"loyola-debater" ,
+      name		: 	"Ignatius Loyola",
+      img		:	"LoyolaDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	4 ,
+      ability		:	"Found Jesuit University for only 2 CP" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('pole-debater', {
+      type		:	"pole-debater" ,
       name		: 	"Reginald Pole",
-      personage		:	false,
-      debater		:	true,
       img		:	"PoleDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	3 ,
+      ability		:	"+1 die for Papacy if at Council of Trent" ,
       committed		: 	0,
     });
 
-    this.importUnit('tetzel', {
-      type		:	"tetzel" ,
+    this.importDebater('tetzel-debater', {
+      type		:	"tetzel-debater" ,
       name		: 	"Johann Tetzel ",
-      personage		:	false,
-      debater		:	true,
       img		:	"TetzelDebater.svg",
+      language_zone	:	"any" ,
+      faction		:	"papacy" ,
+      power		:	1 ,
+      ability		:	"1 CP to Saint Peters with Burn Books" ,
       committed		: 	0,
     });
 
-    this.importUnit('tyndalex', {
-      type		:	"tyndale" ,
-      name		: 	"William Tyndale",
-      personage		:	false,
-      debater		:	true,
-      img		:	"TyndaleDebater.svg",
+
+    ////////////
+    // FRENCH //
+    ////////////
+
+    this.importDebater('calvin-debater', {
+      type		:	"calvin-debater" ,
+      name		: 	"John Calvin",
+      img		:	"CalvinDebater.svg",
+      language_zone	:	"french" ,
+      faction		:	"france" ,
+      power		:	4 ,
+      ability		:	"Target 3 French-speaking spaces with a treatise" ,
       committed		: 	0,
     });
 
-    this.importUnit('wishart', {
-      type		:	"wishart" ,
+    this.importDebater('cop-debater', {
+      type		:	"cop-debater" , 
+     name		: 	"Nicolas Cop",
+      img		:	"CopDebater.svg",
+      language_zone	:	"french" ,
+      faction		:	"france" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation attempts within 2 spaces of Paris" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('farel-debater', {
+      type		:	"farel-debater" ,
+      name		: 	"William Farel",
+      img		:	"FarelDebater.svg",
+      language_zone	:	"french" ,
+      faction		:	"france" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation attempts within 2 spaces of Geneva" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('olivetan-debater', {
+      type		:	"olivetan-debater" ,
+      name		: 	"Pierre Robert Olivetan",
+      img		:	"OlivetanDebater.svg",
+      language_zone	:	"french" ,
+      faction		:	"france" ,
+      power		:	1 ,
+      ability		:	"Bonus CP for translation in French Zone" ,
+      committed		: 	0,
+    });
+
+
+    /////////////
+    // ENGLISH //
+    /////////////
+
+    this.importDebater('cranmer-debater', {
+      type		:	"cranmer-debater" ,
+      name		: 	"Thomas Cranmer",
+      img		:	"CranmerDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"+1 die for Reformation within 2 spaces of London" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('wishart-debater', {
+      type		:	"wishart-debater" ,
       name		: 	"George Wishart",
-      personage		:	false,
-      debater		:	true,
       img		:	"WishartDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	1 ,
+      ability		:	"+1 die for Reformation attempts in Scotland" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('tyndalex-debater', {
+      type		:	"tyndale-debater" ,
+      name		: 	"William Tyndale",
+      img		:	"TyndaleDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('latimer-debater', {
+      type		:	"latimer-debater" ,
+      name		: 	"Hugh Latimer",
+      img		:	"LatimerDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	1 ,
+      ability		:	"+1 die for Reformation attempts in England" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('knox-debater', {
+      type		:	"knox-debater" ,
+      name		: 	"John Knox",
+      img		:	"KnoxDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	3 ,
+      ability		:	"+1 die for Reformation Attempts in England or Scotland" ,
+      committed		: 	0,
+    });
+
+    this.importDebater('coverdale-debater', {
+      type		:	"coverdale-debater" ,
+      name		: 	"Myles Coverdale",
+      img		:	"CoverdaleDebater.svg",
+      language_zone	:	"english" ,
+      faction		:	"england" ,
+      power		:	2 ,
+      ability		:	"Bonus CP for translation in English zone" ,
       committed		: 	0,
     });
 
 
+      /***** English Explorers *****/
 
-    this.importUnit('barbarossa', {
+      this.importExplorer('chancellor', {
+           type              :       "chancellor" ,
+           name              :       "Chancellor",
+           personage         :       true,
+           img               :       "Chancellor.svg",
+      });
+
+      this.importExplorer('willoughby', {
+           type              :       "willoughby" ,
+           name              :       "Katherine Willoughby",
+           personage         :       true,
+           img               :       "Willoughby.svg",
+      });
+
+      this.importExplorer('rut', {
+           type              :       "rut" ,
+           name              :       "John Rut",
+           personage         :       true,
+           img               :       "Rut.svg",
+      });
+
+
+
+      /***** French Explorers *****/
+
+      this.importExplorer('cartier', {
+           type              :       "cartier" ,
+           name              :       "Jacques Cartier",
+           personage         :       true,
+           img               :       "Cartier.svg",
+      });
+
+      this.importExplorer('roberval', {
+           type              :       "roberval" ,
+           name              :       "Jean-François de La Rocque de Roberval",
+           personage         :       true,
+           img               :       "Roberval.svg",
+      });
+
+      this.importExplorer('verrazano', {
+           type              :       "verrazano" ,
+           name              :       "Giovanni da Verrazano" ,
+           personage         :       true,
+           img               :       "Verrazano.svg",
+      });
+
+
+
+      /***** Hapsburg Explorers *****/
+
+      this.importExplorer('orellana', {
+           type              :       "orellana",
+           name              :       "Hector Rodrigo Enriquez Orellana",
+           personage         :       true,
+           img               :       "Orellana.svg",
+      });
+
+      this.importExplorer('magellan', {
+           type              :       "magellan" ,
+           name              :       "Ferdinand Magellan",
+           personage         :       true,
+           img               :       "Magellan.svg",
+      });
+
+      this.importExplorer('leon', {
+           type              :       "leon" ,
+           name              :       "Leon",
+           personage         :       true,
+           img               :       "Leon.svg",
+      });
+
+      this.importExplorer('narvaez', {
+           type              :       "narvaez" ,
+           name              :       "Sofia Narvaez",
+           personage         :       true,
+           img               :       "Narvaez.svg",
+      });
+
+      this.importExplorer('de-vaca', {
+           type              :       "de-vaca" ,
+           name              :       "Cabeza De Vaca",
+           personage         :       true,
+           img               :       "De_Vaca.svg",
+      });
+
+      this.importExplorer('de-soto', {
+           type              :       "de-soto" ,
+           name              :       "DeSoto",
+           personage         :       true,
+           img               :       "DeSoto.svg",
+      });
+
+
+
+    this.importNavyLeader('barbarossa', {
       type		:	"barbarossa" ,
       name		: 	"Barbarossa",
       personage		:	true,
@@ -911,7 +1221,7 @@ class HereIStand extends GameTemplate {
       piracy_rating	:	1,
     });
  
-    this.importUnit('dragut', {
+    this.importNavyLeader('dragut', {
       type		:	"dragut" ,
       name		: 	"Dragut",
       personage		:	true,
@@ -921,359 +1231,48 @@ class HereIStand extends GameTemplate {
       piracy_rating	:	2,
     });
  
+    this.importNavyLeader('andrea-dorea', {
+      type		:	"andrea-dorea" ,
+      name		: 	"Andrea Dorea",
+      personage		:	true,
+      navy_leader	:	true,
+      img		:	"Andrea_Dorea.svg",
+      battle_rating	:	2,
+      piracy_rating	:	0,
+    });
+ 
 
 
-      this.importUnit('doria', {
-           type              :       "doria" ,
-           name              :       "Andrea Doria",
-           personage         :       true,
-           img               :       "Andrea_Doria.svg",
-      });
-
-      this.importUnit('boleyn', {
-           type              :       "boleyn" ,
-           name              :       "Anne Boleyn",
-           personage         :       true,
-           img               :       "AnneBoleyn.svg",
-      });
-
-      this.importUnit('cleves', {
-           type              :       "cleves" ,
-           name              :       "Anne Cleves",
-           personage         :       true,
-           img               :       "AnneCleves.svg",
-      });
-
-      this.importUnit('barbarossa', {
-           type              :       "barbarossa" ,
-           name              :       "Frederick Barbarossa",
-           personage         :       true,
-           img               :       "Barbarossa.svg",
-      });
-
-      this.importUnit('Brandon', {
-           type              :       "Brandon" ,
-           name              :       "Katherine Brandon",
-           personage         :       true,
-           img               :       "Brandon.svg",
-      });
-
-      this.importUnit('cabot', {
-           type              :       "cabot" ,
-           name              :       "John Cabot",
-           personage         :       true,
-           img               :       "Cabot_English.svg",
-      });
-
-      this.importUnit('cabot', {
-           type              :       "cabot" ,
-           name              :       "John Cabot",
-           personage         :       true,
-           img               :       "Cabot_French.svg",
-      });
-
-      this.importUnit('cabot', {
-           type              :       "cabot" ,
-           name              :       "John Cabot",
-           personage         :       true,
-           img               :       "Cabot_Hapsburg.svg",
-      });
-
-
-      this.importUnit('cartier', {
-           type              :       "cartier" ,
-           name              :       "Jacques Cartier",
-           personage         :       true,
-           img               :       "Cartier.svg",
-      });
-
-      this.importUnit('aragon', {
-           type              :       "aragon" ,
-           name              :       "CatherineAragon",
-           personage         :       true,
-           img               :       "CatherineAragon.svg",
-      });
-
-      this.importUnit('chancellor', {
-           type              :       "chancellor" ,
-           name              :       "Chancellor",
-           personage         :       true,
-           img               :       "Chancellor.svg",
-      });
-
-      this.importUnit('charles-v', {
-           type              :       "charles-v" ,
-           name              :       "Charles V",
-           personage         :       true,
-           img               :       "Charles_V.svg",
-      });
-
-      this.importUnit('cordova', {
-           type              :       "cordova" ,
-           name              :       "Neisa Cordova",
-           personage         :       true,
-           img               :       "Cordova.svg",
-      });
-
-      this.importUnit('Coronado', {
-           type              :       "Coronado" ,
-           name              :       "Francisco Vázquez de Coronado",
-           personage         :       true,
-           img               :       "Coronado.svg",
-      });
-
-      this.importUnit('cortez', {
-           type              :       "cortez" ,
-           name              :       "Hernan Cortes",
-           personage         :       true,
-           img               :       "Cortez.svg",
-      });
-
-      this.importUnit('de-vaca', {
-           type              :       "de-vaca" ,
-           name              :       "Cabeza De Vaca",
-           personage         :       true,
-           img               :       "De_Vaca.svg",
-      });
-
-      this.importUnit('de-soto', {
-           type              :       "de-soto" ,
-           name              :       "DeSoto",
-           personage         :       true,
-           img               :       "DeSoto.svg",
-      });
-
-       this.importUnit('dragut', {
-           type              :       "dragut" ,
-           name              :       "Alexandra Dragut",
-           personage         :       true,
-           img               :       "Dragut.svg",
-      });
-
-      this.importUnit('dudley', {
-           type              :       "dudley" ,
-           name              :       "John Dudley",
-           personage         :       true,
-           img               :       "Dudley.svg",
-      });
-
-      this.importUnit('duke-of-alva', {
-           type              :       "duke-of-alva" ,
-           name              :       "Duke_of_Alva",
-           personage         :       true,
-           img               :       "Duke_of_Alva.svg",
-      });
-
-      this.importUnit('ferdinand-ii', {
-           type              :       "ferdinand-ii" ,
-           name              :       "Ferdinand_II",
-           personage         :       true,
-           img               :       "Ferdinand.svg",
-      });
-
-      this.importUnit('francis-i', {
-           type              :       "francis-i" ,
-           name              :       "Francis_I",
-           personage         :       true,
-           img               :       "Francis_I.svg",
-      });
-
-      this.importUnit('henry-ii', {
-           type              :       "henry-ii" ,
-           name              :       "Henry_II",
-           personage         :       true,
-           img               :       "Henry_II.svg",
-      });
-
-      this.importUnit('henry-viii', {
-           type              :       "henry-viii" ,
-           name              :       "Henry_VIII",
-           personage         :       true,
-           img               :       "Henry_VIII.svg",
-      });
-
-      this.importUnit('ibrahim', {
-           type              :       "ibrahim" ,
-           name              :       "Raymond Ibrahim",
-           personage         :       true,
-           img               :       "Ibrahim.svg",
-      });
-
-      this.importUnit('seymour', {
-           type              :       "seymour" ,
-           name              :       "Jane Seymour",
-           personage         :       true,
-           img               :       "JaneSeymour.svg",
-      });
-
-      this.importUnit('frederick', {
-           type              :       "frederick" ,
-           name              :       "John_Frederick",
-           personage         :       true,
-           img               :       "John_Frederick.svg",
-      });
-
-       this.importUnit('parr', {
-           type              :       "parr" ,
-           name              :       "Katherine Parr",
-           personage         :       true,
-           img               :       "KatherineParr.svg",
-      });
-
-      this.importUnit('howard', {
-           type              :       "howard" ,
-           name              :       "Kathryn Howard",
-           personage         :       true,
-           img               :       "KathrynHoward.svg",
-      });
-
-      this.importUnit('leon', {
-           type              :       "leon" ,
-           name              :       "Leon",
-           personage         :       true,
-           img               :       "Leon.svg",
-      });
-
-      this.importUnit('magellan', {
-           type              :       "magellan" ,
-           name              :       "Ferdinand Magellan",
-           personage         :       true,
-           img               :       "Magellan.svg",
-      });
-
-      this.importUnit('Maurice', {
-           type              :       "Maurice" ,
-           name              :       "Maurice of Sax",
-           personage         :       true,
-           img               :       "Maurice_Hapsburg.svg",
-      });
-
-      this.importUnit('Maurice', {
-           type              :       "maurice" ,
-           name              :       "Maurice of Sax",
-           personage         :       true,
-           img               :       "Maurice_Protestant.svg",
-      });
-
-      this.importUnit('montejo', {
-           type              :       "montejo" ,
-           name              :       "Victor Montejo",
-           personage         :       true,
-           img               :       "Montejo.svg",
-      });
-
-      this.importUnit('montmorency', {
-           type              :       "montmorency" ,
-           name              :       "François de Montmorency",
-           personage         :       true,
-           img               :       "Montmorency.svg",
-      });
-
-      this.importUnit('narvaez', {
-           type              :       "narvaez" ,
-           name              :       "Sofia Narvaez",
-           personage         :       true,
-           img               :       "Narvaez.svg",
-      });
-
-      this.importUnit('orellana', {
-           type              :       "orellana",
-           name              :       "Hector Rodrigo Enriquez Orellana",
-           personage         :       true,
-           img               :       "Orellana.svg",
-      });
-
-      this.importUnit('philip-i', {
-           type              :       "philip-i" ,
-           name              :       "Philip_I",
-           personage         :       true,
-           img               :       "Philip_Hesse.svg",
-      });
-
-      this.importUnit('pizarro', {
-           type              :       "pizarro" ,
-           name              :       "Francisco Pizarro",
-           personage         :       true,
-           img               :       "Pizarro.svg",
-      });
-
-      this.importUnit('', {
-           type              :       "" ,
-           name              :       "",
-           personage         :       true,
-           img               :       "Renegade.svg",
-      });
-
-      this.importUnit('roberval', {
-           type              :       "roberval" ,
-           name              :       "Jean-François de La Rocque de Roberval",
-           personage         :       true,
-           img               :       "Roberval.svg",
-      });
-
-      this.importUnit('more', {
-           type              :       "more" ,
-           name              :       "Thomas More",
-           personage         :       true,
-           img               :       "ThomasMore.svg",
-      });
-
-      this.importUnit('verrazano', {
-           type              :       "verrazano" ,
-           name              :       "Giovanni da Verrazano",
-           personage         :       true,
-           img               :       "Verrazano.svg",
-      });
-
-      this.importUnit('willoughby', {
-           type              :       "willoughby" ,
-           name              :       "Katherine Willoughby",
-           personage         :       true,
-           img               :       "Willoughby.svg",
-      });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      this.importUnit('calvin-reformer', {
+      this.importReformer('calvin-reformer', {
            type              :       "calvin-reformer" ,
            name              :       "John Calvin",
            reformer          :       true,
            img               :       "CalvinReformer.svg",
+	   spacekey	     :	     "geneva",
       });
 
-
-      this.importUnit('cranmer-reformer', {
+      this.importReformer('cranmer-reformer', {
            type              :       "cranmer-reformer" ,
            name              :       "Thomas Cranmer ",
            reformer          :       true,
            img               :       "CranmerReformer.svg",
+	   spacekey	     :	     "london",
       });
 
-
-      this.importUnit('luther-reformer', {
+      this.importReformer('luther-reformer', {
            type              :       "luther-reformer" ,
            name              :       "Martin Luther",
            reformer          :       true,
            img               :       "LutherReformer.svg",
+	   spacekey	     :	     "wittenberg",
       });
 
-      this.importUnit('zwingli-reformer', {
+      this.importReformer('zwingli-reformer', {
            type              :       "zwingli-reformer" ,
            name              :       "Huldrych Zwingli",
            reformer          :       true,
            img               :       "ZwingliReformer.svg",
+	   spacekey	     :	     "zurich",
       });
 
 
@@ -1319,6 +1318,49 @@ class HereIStand extends GameTemplate {
 
 
 
+
+
+    this.importWife('anne-boleyn', {
+      type		:	"anne-boleyn" ,
+      name		: 	"Anne Boleyn",
+      personage		:	true,
+      img		:	"AnneBoleyn.svg",
+    });
+
+    this.importWife('anne-cleves', {
+      type		:	"anne-cleves" ,
+      name		: 	"Anne Cleves",
+      personage		:	true,
+      img		:	"AnneCleves.svg",
+    });
+
+    this.importWife('catherine-aragon', {
+      type		:	"catherine-aragon" ,
+      name		: 	"Catherine Aragon",
+      personage		:	true,
+      img		:	"CatherinAragon.svg",
+    });
+
+    this.importWife('jane-seymour', {
+      type		:	"jane-seymour" ,
+      name		: 	"Jane Seymour",
+      personage		:	true,
+      img		:	"JaneSeymour.svg",
+    });
+
+    this.importWife('katherine-parr', {
+      type		:	"katherine-parr" ,
+      name		: 	"Katherine Parr",
+      personage		:	true,
+      img		:	"KatherineParr.svg",
+    });
+
+    this.importWife('kathryn-howard', {
+      type		:	"kathryn-howard" ,
+      name		: 	"Kathryn Howard",
+      personage		:	true,
+      img		:	"KathrynHoward.svg",
+    });
 
 
     let first_time_running = 0;
@@ -1389,8 +1431,8 @@ console.log("is first tiem running: " + this.game.state.scenario);
 console.log("adding stuff!");
 
 	// OTTOMAN
-        this.addPersonage("ottoman", "istanbul", "suleiman");
-        this.addPersonage("ottoman", "istanbul", "ibrahim-pasha");
+        this.addArmyLeader("ottoman", "istanbul", "suleiman");
+        this.addArmyLeader("ottoman", "istanbul", "ibrahim-pasha");
         this.addRegular("ottoman", "istanbul", 7);
         this.addCavalry("ottoman", "istanbul", 1);
         this.addNavalSquadron("ottoman", "istanbul", 1);
@@ -1401,8 +1443,8 @@ console.log("adding stuff!");
         this.addNavalSquadron("ottoman", "athens", 1);
 
 	// HAPSBURG
-	this.addPersonage("hapsburg", "valladolid", "charles-v");
-	this.addPersonage("hapsburg", "valladolid", "duke-of-alva");
+	this.addArmyLeader("hapsburg", "valladolid", "charles-v");
+	this.addArmyLeader("hapsburg", "valladolid", "duke-of-alva");
         this.addRegular("hapsburg", "seville", 1);
         this.addNavalSquadron("hapsburg", "seville", 1);
         this.addRegular("hapsburg", "barcelona", 1);
@@ -1413,13 +1455,13 @@ console.log("adding stuff!");
         this.addNavalSquadron("hapsburg", "naples", 2);
         this.addRegular("hapsburg", "besancon", 1);
         this.addRegular("hapsburg", "brussels", 1);
-	this.addPersonage("hapsburg", "vienna", "ferdinand");
+	this.addArmyLeader("hapsburg", "vienna", "ferdinand");
         this.addRegular("hapsburg", "vienna", 4);
         this.addRegular("hapsburg", "antwerp", 3);
 
 	// ENGLAND
-        this.addPersonage("england", "london", "henry-viii");
-        this.addPersonage("england", "london", "charles-brandon");
+        this.addArmyLeader("england", "london", "henry-viii");
+        this.addArmyLeader("england", "london", "charles-brandon");
         this.addRegular("england", "london", 3);
         this.addNavalSquadron("england", "london", 1);
         this.addNavalSquadron("england", "portsmouth", 1);
@@ -1428,8 +1470,8 @@ console.log("adding stuff!");
         this.addRegular("england", "bristol", 1);
 
 	// FRANCE
-        this.addPersonage("france", "paris", "francis-i");
-        this.addPersonage("france", "paris", "montmorency");
+        this.addArmyLeader("france", "paris", "francis-i");
+        this.addArmyLeader("france", "paris", "montmorency");
         this.addRegular("france", "paris", 4);
         this.addRegular("france", "rouen", 1);
         this.addNavalSquadron("france", "rouen", 1);
@@ -1456,7 +1498,7 @@ console.log("adding stuff!");
         this.addRegular("venice", "candia", 1);
 	
 	// GENOA
-        this.addPersonage("genoa", "genoa", "andrea-doria");
+        this.addNavyLeader("genoa", "genoa", "andrea-doria");
         this.addNavalSquadron("genoa", "genoa", 1);
         this.addRegular("genoa", "genoa", 2);
 	
@@ -1469,6 +1511,17 @@ console.log("adding stuff!");
         this.addRegular("independent", "metz", 1);
         this.addRegular("independent", "florence", 1);
 	
+	// DEBATERS
+	this.addDebater("papacy", "eck-debater");
+	this.addDebater("papacy", "campeggio-debater");
+	this.addDebater("papacy", "aleander-debater");
+	this.addDebater("papacy", "tetzel-debater");
+	this.addDebater("papacy", "cajetan-debater");
+
+	this.addDebater("protestant", "luther-debater");
+	this.addDebater("protestant", "melanchthon-debater");
+	this.addDebater("protestant", "bucer-debater");
+	this.addDebater("protestant", "carlstadt-debater");
       }
 
       
@@ -1581,6 +1634,33 @@ console.log("adding stuff!");
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
         game_mod.displayReligiousConflictSheet();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Debaters",
+      id : "game-debaters",
+      class : "game-debaters",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayDebaters();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Explorers",
+      id : "game-explorers",
+      class : "game-explorers",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayExplorers();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Conquistadors",
+      id : "game-conquistadors",
+      class : "game-conquistadors",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayConquistadors();
       }
     });
 
@@ -1792,6 +1872,218 @@ console.log("adding stuff!");
 
 
 
+
+  returnSpaceOfPersonage(faction, personage) {
+    for (let key in this.game.spaces) {
+      for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	if (this.game.spaces[key].units[faction][i].type === personage) {
+	  return key;
+        }
+      }
+    }
+    return "";
+  }
+
+  returnIndexOfPersonageInSpace(faction, personage, spacekey) {
+    if (spacekey === "") { return -1; }
+    for (let i = 0; i < this.game.spaces[spacekey].units[faction].length; i++) {
+      if (this.game.spaces[spacekey].units[faction][i].type === personage) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  returnFactionNavalUnitsToMove(faction) {
+
+    let units = [];
+
+    //
+    // include minor-activated factions
+    //
+    let fip = [];
+        fip.push(faction);
+    if (this.game.state.activated_powers[faction]) {
+      for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
+        fip.push(this.game.state.activated_powers[faction][i]);
+      }
+    }
+
+    //
+    // find units
+    //
+    for (let i = 0; i < fip.length; i++) {
+      for (let key in this.game.spaces) {
+
+	//
+	// we only care about units in ports
+	//
+	if (this.game.spaces[key].ports) {
+	if (this.game.spaces[key].ports.length > 0) {
+	  let ships = [];
+	  let leaders = [];
+	  for (let z = 0; z < this.game.spaces[key].units[fip[i]].length; z++) {
+
+	    //
+	    // only add leaders if there is a ship in port
+	    //
+	    let u = this.game.spaces[key].units[fip[i]][z];
+	    if (u.land_or_sea === "sea") {
+	      if (u.navy_leader == true) {
+		leaders.push(u);
+	      } else {
+		ships.push(u);
+	      }
+	    }
+	  }
+
+	  //
+	  // add and include location
+	  //
+	  if (ships.length > 0) {
+	    for (let y = 0; y < ships.length; y++) {
+	      ships[y].spacekey = key;
+	      units.push(ships[y]);
+	    }
+	    for (let y = 0; y < leaders.length; y++) {
+	      leaders[y].spacekey = key;
+	      units.push(leaders[y]);
+	    }
+	  }
+	}
+        }
+      }
+    }
+
+console.log("A2 ");
+
+    //
+    // add ships and leaders out-of-port
+    //
+    for (let i = 0; i < fip.length; i++) {
+      for (let key in this.game.navalspaces) {
+	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
+	  this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
+	  units.push(this.game.navalspaces[key].units[fip[i]][z]);
+	}
+      }
+    }
+
+    return units;
+  }
+
+
+
+  returnLoanedUnits() {
+    for (let i in this.game.spaces) {
+      space = this.game.spaces[i];
+      for (let f in space.units) {
+        for (let z = space.units[f].length-1;  z >= 0; z--) {
+	  let unit = space.units[f][z];
+	  if (unit.loaned != false) {
+	    let lender = unit.loaned;
+	    space.units[f].splice(z, 1);
+	    space.units[lender].push(unit);
+	  }
+        }
+      }
+    }
+    for (let i in this.game.navalspaces) {
+      space = this.game.navalspaces[i];
+      for (let f in space.units) {
+        for (let z = space.units[f].length-1;  z >= 0; z--) {
+	  let unit = space.units[f][z];
+	  if (unit.loaned != false) {
+	    let lender = unit.loaned;
+	    space.units[f].splice(z, 1);
+	    space.units[lender].push(unit);
+	  }
+        }
+      }
+    }
+  }
+
+  isSpaceFortified(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.type === "key" || space.type === "fortress") { return 1; }
+    return 0;
+  }
+
+
+  returnNearestFriendlyFortifiedSpaces(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let already_routed_through = {};
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // fortified spaces
+      function(spacekey) {
+        if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
+	  if (his_self.isSpaceControlledByFaction(space, faction)) {
+	    return 1;
+	  }
+	  if (his_self.isSpaceFriendly(space, faction)) {
+	    return 1;
+	  }
+	}
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      }
+    );
+
+    return res;
+
+  }
+
+
+  returnNearestFactionControlledPorts(faction, space) {
+    try { if (this.game.navelspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let already_routed_through = {};
+
+    let res = this.returnNearestNavalSpaceOrPortWithFilter(
+
+      space.key,
+
+      // ports
+      function(spacekey) {
+        if (his_self.game.spaces[spacekey]) {
+	  if (his_self.isSpaceControlledByFaction(space, faction)) {
+	    return 1;
+	  }
+	}
+        return 0;
+      },
+
+      // route through this
+      function(spacekey) {	
+        if (his_self.game.spaces[spacekey]) { return 0; }
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	return 1;
+      }
+    );
+
+    return res;
+
+  }
+
+
+
+
+
   captureLeader(winning_faction, losing_faction, space, unit) {
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -1801,6 +2093,11 @@ console.log("adding stuff!");
       if (JSON.stringify(p.captured[z]) === unitjson) { return; }
     }
     p.captured.push(unit);
+  }
+
+  captureNavalLeader(winning_faction, losing_faction, space, unit) {
+    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
+    this.game.state.naval_leaders_lost_at_sea.push(unit);
   }
 
   isPersonageOnMap(faction, personage) {
@@ -1932,21 +2229,6 @@ console.log("adding stuff!");
     }
   }
 
-  addReformer(faction, space, reformer) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.units[faction].push(this.newReformer(faction, reformer));
-  }
-
-  addDebater(faction, debater) {
-    let d = this.newDebater(faction, debater);
-    this.game.state.debaters.push(d);
-  }
-
-  addPersonage(faction, space, personage) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.units[faction].push(this.newPersonage(faction, personage));
-  }
-
   // figure out how many points people have
   calculateVictoryPoints() {
 
@@ -2047,15 +2329,17 @@ console.log("adding stuff!");
   canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[invalid_space]; } } catch (err) {}
-console.log("retreat 1");
     if (space === attacker_comes_from_this_space) { return 0; }
-console.log("retreat 2");
     if (this.isSpaceInUnrest(space) == 1) { return 0; }
-console.log("retreat 3");
-console.log("is space " + this.returnSpaceName(space.key) + " friendly to " + faction);
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
-console.log("retreat 4");
     return 0;
+  }
+
+  canFactionRetreatToNavalSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports AND open sea");
+    return 1;
   }
 
   convertSpace(religion, space) {
@@ -2126,6 +2410,36 @@ console.log("retreat 4");
     return luis;
   }
 
+  returnFactionSeaUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === "squadron") { luis++; }
+      if (space.units[faction][i].type === "corsair") { luis++; }
+    }
+    return luis;
+  }
+
+
+  //
+  // faction is papacy or (anything), since debaters aren't really owned by factions outside
+  // papcy and protestants, even if they are tagged as would be historically appropriate
+  //
+  returnDebatersInLanguageZone(language_zone="german", faction="papacy", committed=-1) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].language_zone === language_zone || this.game.state.debaters[i].langauge_zone === "any") {
+        if (this.game.state.debaters[i].faction === faction || (faction != "papacy" && this.game.state.debaters[i].faction != "papacy")) {
+          if (this.game.state.debaters[i].committed === committed || committed == -1) {
+	    num++;
+          }
+        }
+      }
+    }
+    return num;
+  }
+
   doesFactionHaveNavalUnitsOnBoard(faction) {
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key].units[faction]) {
@@ -2148,6 +2462,7 @@ console.log("retreat 4");
 
   returnFactionMap(space, faction1, faction2) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let faction_map = {};
     for (let f in space.units) {
       if (this.returnFactionLandUnitsInSpace(f, space)) {
@@ -2201,6 +2516,164 @@ console.log("retreat 4");
     return neighbours;
   }
 
+
+  //
+  // only calculates moves from naval spaces, not outbound from ports
+  //
+  returnNavalNeighbours(space, transit_passes=1) {
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    let neighbours = [];
+    for (let i = 0; i < space.ports.length; i++) {
+      let x = space.ports[i];
+      neighbours.push(x);
+    }
+    for (let i = 0; i < space.neighbours.length; i++) {
+      let x = space.neighbours[i];
+      neighbours.push(x);
+    }
+
+    return neighbours;
+  }
+
+
+  //
+  // returns adjacent naval and port spaces
+  //
+  returnNavalAndPortNeighbours(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+
+    let key = space.key;
+    let neighbours = [];
+
+    //
+    // ports add only naval spaces
+    //
+    if (this.game.spaces[key]) {
+      for (let i = 0; i < space.ports.length; i++) {
+        let x = space.ports[i];
+        neighbours.push(x);
+      }
+    }
+
+    //
+    // naval spaces add ports
+    //
+    if (this.game.navalspaces[key]) {
+      for (let i = 0; i < space.ports.length; i++) {
+        let x = space.ports[i];
+        neighbours.push(x);
+      }
+      for (let i = 0; i < space.neighbours.length; i++) {
+        let x = space.neighbours[i];
+        neighbours.push(x);
+      }
+    }
+
+    return neighbours;
+  }
+
+
+
+  //
+  // returns both naval and port movement options
+  //
+  returnNavalMoveOptions(spacekey) {
+
+    let neighbours = [];
+
+    if (this.game.navalspaces[spacekey]) {
+      for (let i = 0; i < this.game.navalspaces[spacekey].neighbours.length; i++) {
+	neighbours.push(this.game.navalspaces[spacekey].neighbours[i]);
+      }
+      for (let i = 0; i < this.game.navalspaces[spacekey].ports.length; i++) {
+	neighbours.push(this.game.navalspaces[spacekey].ports[i]);
+      }
+    } else {
+      if (this.game.spaces[spacekey]) {
+console.log("this is a space: " + spacekey)
+        for (let i = 0; i < this.game.spaces[spacekey].ports.length; i++) {
+	  neighbours.push(this.game.spaces[spacekey].ports[i]);
+        }
+      }
+    }
+
+    return neighbours;
+  }
+
+
+  //
+  // find the nearest destination.
+  //
+  returnNearestNavalSpaceOrPortWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1) {
+
+    //
+    // return array with results + hops distance
+    //
+    let results = [];
+    let searched_spaces = {};
+    let pending_spaces = {};
+
+    //
+    // if the source matches our destination, return it
+    //
+    if (include_source == 1) {
+      if (destination_filter(sourcekey)) {
+        results.push({ space : sourcekey , hops : 0 });
+        return results;
+      }
+    }
+
+    //
+    // put the neighbours into pending
+    //
+    let n = this.returnNavalNeighbours(sourcekey);
+
+    for (let i = 0; i < n.length; i++) {
+      pending_spaces[n[i]] = { hops : 0 , key : n[i] };
+    }
+
+    //
+    // otherwise propagate outwards searching pending
+    //
+    let continue_searching = 1;
+    while (continue_searching) {
+
+      let count = 0;
+      for (let key in pending_spaces) {
+
+	count++;
+	let hops = pending_spaces[key].hops;
+
+	if (destination_filter(key)) {
+	  // found results? this is last pass
+	  results.push({ hops : (hops+1) , key : key });	
+	  continue_searching = 0;
+	} else {
+	  if (propagation_filter(key)) {
+    	    for (let i = 0; i < this.game.navalspaces[key].neighbours.length; i++) {
+	      if (!searched_spaces.hasOwnProperty[this.game.navalspaces[key].neighbours[i]]) {
+		// don't add to pending as we've transversed before
+	      } else {
+      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+	      }
+    	    }
+	  }
+	  searched_spaces[key] = { hops : (hops+1) , key : key };
+	}
+	delete pending_spaces[key];
+
+      }
+      if (count == 0) { continue_searching = 0; }
+    }
+
+    //
+    // at this point we have results or not 
+    //
+    return results;
+
+  }
+
   //
   // find the nearest destination.
   //
@@ -2227,8 +2700,6 @@ console.log("retreat 4");
     // put the neighbours into pending
     //
     let n = this.returnNeighbours(sourcekey, transit_passes);
-
-
 
     for (let i = 0; i < n.length; i++) {
       pending_spaces[n[i]] = { hops : 0 , key : n[i] };
@@ -2260,7 +2731,6 @@ console.log("retreat 4");
 	      }
     	    }
 	  }
-
 	  searched_spaces[key] = { hops : (hops+1) , key : key };
 	}
 	delete pending_spaces[key];
@@ -2268,7 +2738,6 @@ console.log("retreat 4");
       }
       if (count == 0) { continue_searching = 0; }
     }
-    
 
     //
     // at this point we have results or not 
@@ -2349,10 +2818,6 @@ console.log("retreat 4");
     if (this.game.state.activated_powers[space.home]) {
       if (this.game.state.activated_powers[space.home].includes(faction)) { return 1; }
     }
-    for (let i = 0; i < space.units[faction].length; i++) {
-      // we already have troops there, we must be friendly!
-      if (space.units[faction][i].besieged == false || space.units[faction][i].captured == false) { return 1; }
-    }
     return 0;
   }
 
@@ -2393,6 +2858,46 @@ console.log("retreat 4");
       }
     }
     return false;
+  }
+
+  returnNumberOfUncommittedDebaters(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 0) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfCommittedDebaters(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 1) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfUncommittedExplorers(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 0) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfCommittedExplorers(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 1) {
+	num++;
+      }
+    }
+    return num;
   }
 
   returnNumberOfElectoratesControlledByCatholics() {
@@ -2463,13 +2968,14 @@ console.log("retreat 4");
     state.round = 0;
     state.players = [];
     state.events = {};
-    state.debaters = [];
 
     // whose turn is it? (attacker)
     state.active_player = -1;
 
     // which ones are activated
     state.minor_activated_powers = [];
+
+    state.naval_leaders_lost_at_sea = [];
 
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];
@@ -2493,14 +2999,18 @@ console.log("retreat 4");
     state.saint_peters_cathedral['state'] = 0;
     state.saint_peters_cathedral['vp'] = 0;    
 
+    state.french_chateaux_vp = 0;
 
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
-
     state.tmp_protestant_reformation_bonus = 0;
     state.tmp_catholic_reformation_bonus = 0;
     state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus = 0;
+    state.tmp_papacy_may_specify_debater = 0;
+    state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
+
 
     state.augsburg_electoral_bonus = 0;
     state.mainz_electoral_bonus = 0;
@@ -2515,15 +3025,20 @@ console.log("retreat 4");
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
-    state.leaders = {};
 
+
+    state.debaters = [];
+    state.explorers = [];
+    state.conquistadors = [];
+
+
+    state.leaders = {};
     state.leaders.francis_i = 1;
     state.leaders.henry_viii = 1;
     state.leaders.charles_v = 1;
     state.leaders.suleiman = 1;
     state.leaders.leo_x = 1;
-    state.leaders.martin_luther = 1
-
+    state.leaders.luther = 1
     state.leaders.clement_vii = 0;
     state.leaders.paul_iii = 0;
     state.leaders.edward_vi = 0;
@@ -2531,14 +3046,15 @@ console.log("retreat 4");
     state.leaders.mary_i = 0;
     state.leaders.julius_iii = 0;
     state.leaders.elizabeth_i = 0;
+    state.leaders.calvin = 0;
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
     state.events.papacy_may_found_jesuit_universities = 0;
-
     state.events.schmalkaldic_league = 0;
+    state.events.edward_vi_born = 0;
 
-    state.debaters = [];
+
 
     return state;
 
@@ -3066,84 +3582,98 @@ console.log("retreat 4");
       top : 875 ,
       left : 900 ,
       name : "Irish Sea" ,
+      ports : ["glasgow"] ,
       neighbours : ["biscay","north","channel"] ,
     }
     seas['biscay'] = {
       top : 1500 ,
       left : 1400 ,
       name : "Bay of Biscay" ,
+      ports : ["brest", "nantes", "bordeaux", "corunna" ] ,
       neighbours : ["irish","channel","atlantic"] ,
     }
     seas['atlantic'] = {
       top : 2700 ,
       left : 850 ,
       name : "Atlantic Ocean" ,
+      ports : ["gibraltar" , "seville" , "corunna"] ,
       neighbours : ["biscay"] ,
     }
     seas['channel'] = {
       top : 1020 ,
       left : 1450 ,
       name : "English Channel" ,
+      ports : ["brest", "plymouth", "portsmouth", "rouen", "bolougne", "calais" ] ,
       neighbours : ["irish","biscay","north"] ,
     }
     seas['north'] = {
       top : 200 ,
       left : 2350 ,
       name : "North Sea" ,
+      ports : ["london", "norwich", "berwick", "edinburgh", "calais", "antwerp", "amsterdam", "bremen", "hamburg" ] ,
       neighbours : ["irish","channel","baltic"] ,
     }
     seas['baltic'] = {
       top : 50 ,
       left : 3150 ,
       name : "Baltic Sea" ,
+      ports : ["lubeck", "stettin" ] ,
       neighbours : ["north"] ,
     }
     seas['gulflyon'] = {
       top : 1930 ,
       left : 2430 ,
       name : "Gulf of Lyon" ,
+      ports : ["cartagena", "valencia", "palma", "barcelona" , "marseille", "nice" , "genoa", "bastia" ] ,
       neighbours : ["barbary","tyrrhenian"] ,
     }
     seas['barbary'] = {
       top : 2330 ,
       left : 2430 ,
       name : "Barbary Coast" ,
+      ports : ["gibraltar", "oran", "cartagena", "algiers" , "tunis", "cagliari" , "palma" ] ,
       neighbours : ["gulflyon","tyrrhenian","ionian","african"] ,
     }
     seas['tyrrhenian'] = {
       top : 2260 ,
       left : 3300 ,
       name : "Tyrrhenian Sea" ,
+      ports : ["genoa" , "bastia" , "rome" , "naples" , "palermo" , "caliari" , "messina" ] ,
       neighbours : ["barbary","gulflyon"] ,
     }
     seas['africa'] = {
       top : 2770 ,
       left : 4200 ,
       name : "North African Coast" ,
+      ports : ["tunis" , "tripoli" , "malta" , "candia" , "rhodes" ] ,
       neighbours : ["ionian","barbary","aegean"] ,
     }
     seas['aegean'] = {
       top : 2470 ,
       left : 4450 ,
       name : "Aegean Sea" ,
+      ports : ["rhodes" , "candia" , "coron" , "athens" , "salonika" , "istanbul" ] ,
       neighbours : ["black","african","ionian"] ,
     }
     seas['ionian'] = {
       top : 2390 ,
       left : 3750 ,
       name : "Ionian Sea" ,
+      ports : ["malta" , "messina" , "coron", "lepanto" , "corfu" , "taranto" ] ,
       neighbours : ["black","aegean","adriatic"] ,
     }
     seas['adriatic'] = {
       top : 1790 ,
       left : 3400 ,
       name : "Adriatic Sea" ,
+      ports : ["corfu" , "durazzo" , "scutari" , "ragusa" , "trieste" , "venice" , "ravenna" , "ancona" ] ,
       neighbours : ["ionian"] ,
     }
     seas['black'] = {
       top : 1450 ,
       left : 4750 ,
       name : "Black Sea" ,
+      ports : ["istanbul" , "varna" ] ,
       neighbours : ["aegean"] ,
     }
 
@@ -3925,7 +4455,7 @@ console.log("retreat 4");
     spaces['algiers'] = {
       top: 2656,
       left: 2275,
-      home: "ottoman independent",
+      home: "independent",
       political: "",
       religion: "catholic",
       ports: ["barbary"],
@@ -5014,10 +5544,82 @@ console.log("retreat 4");
       img : "cards/HIS-002.svg" , 
       name : "Holy Roman Emperor" ,
       ops : 5 ,
-      turn : 1, 
+      turn : 1 , 
       type : "normal" ,
       faction : "hapsburg" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+
+	// if charles-v not captured or under seige
+        let is_charles_captured_or_beseiged = true;
+	let ck = game_mod.returnSpaceOfPersonage("hapsburg", "charles-v");
+	let ak = game_mod.returnSpaceOfPersonage("hapsburg", "duke-of-alva");
+	let ck_idx = game_mod.returnIndexOfPersonageInSpace("hapsburg", "charles-v", ck);
+	let ak_idx = game_mod.returnIndexOfPersonageInSpace("hapsburg", "duke-of-alva", ak);
+	
+	if (!is_charles_captured_or_beseiged) {
+
+          game_mod.playerSelectSpaceWithFilter(
+
+	      "Select Destination for Charles V: ",
+
+	      function(space) {
+		if (
+		  space.home === "hapsburg" &&
+		  !game_mod.isSpaceControlledByFaction(space, "hapsburg")
+	        ) {
+		  return 1;
+	        }
+		return 0;
+	      },
+
+	      function(spacekey) {
+
+		if (ak === ck && ak !== "") {
+
+		  let msg = "Move Duke of Alva with Charles V?";
+    		  let html = '<ul>';
+        	  html += '<li class="option" id="yes">yes</li>';
+        	  html += '<li class="option" id="no">no</li>';
+    		  html += '</ul>';
+
+    		  game_mod.updateStatusWithOptions(msg, html);
+
+	          $('.option').off();
+	          $('.option').on('click', function () {
+	            let action = $(this).attr("id");
+		    if (action === "yes") {
+		      game_mod.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
+		      game_mod.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ak_key + "\t" + ak_idx + "\t" + "land" + spacekey);
+		      game_mod.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
+		      game_mod.endTurn();
+		    } else {
+		      game_mod.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
+		      game_mod.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
+		      game_mod.endTurn();
+		    }
+		  });
+
+		} else {
+		  game_mod.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
+		  game_mod.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
+		  game_mod.endTurn();
+		}
+
+	      },
+
+	      null
+
+	  );
+
+          return 0;
+
+        } else {
+	  return 1;
+	}
+
+	return 1;
+      },
     }
     deck['003'] = { 
       img : "cards/HIS-003.svg" , 
@@ -5036,6 +5638,38 @@ console.log("retreat 4");
       type : "normal" ,
       faction : "french" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.queue.push("patron-of-the-arts");
+	return 1;
+      },
+      handleGameLoop : function(game_mod, qe, mv) {
+
+        if (mv[0] == "patron-of-the-arts") {
+
+	  let roll = game_mod.rollDice(6);
+
+	  game_mod.updateLog("France rolls " + roll + " for Patron of the Arts");
+
+	  if (game_mod.isSpaceControlledByFaction("milan", "france")) {
+	    game_mod.updateLog("French control Milan - roll adjusted to 6");
+	    roll = 6;
+	  };
+
+	  //
+	  // France wins 1 VP
+	  //
+	  if (roll >= 3) {
+	    if (game_mod.game.state.french_chateaux_vp < 6) {
+	      game_mod.updateLog("SUCCESS: France gains 1VP from Patron of the Arts");
+	      game_mod.game.state.french_chateaux_vp++;
+              game_mod.gainVP("france", 1);
+	    }
+	  }
+
+          return 1;
+
+        }
+      },
     }
     if (this.game.players.length == 2) {
       deck['005'] = { 
@@ -5066,6 +5700,110 @@ console.log("retreat 4");
       type : "normal" , 
       faction : "papacy" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+
+	let p = game_mod.returnPlayerOfFaction("papacy");
+
+        game_mod.game.state.tmp_papacy_may_specify_debater = 1;
+        game_mod.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
+
+	if (game_mod.game.player === p) {
+
+          let msg = "Select Language Zone for Theological Debate:";
+          let html = '<ul>';
+
+          if (his_self.returnDebatersInLanguageZone("german", "protestant")) { 
+            html += '<li class="option" style="" id="german">German</li>';
+          }
+          if (his_self.returnDebatersInLanguageZone("french", "france")) { 
+            html += '<li class="option" style="" id="french">French</li>';
+          }
+          if (his_self.returnDebatersInLanguageZone("english", "france")) { 
+            html += '<li class="option" style="" id="english">English</li>';
+          }
+          html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+
+            let language_zone = $(this).attr("id");
+
+            let msg = "Leigzip Debate Format?";
+            let html = '<ul>';
+            html += '<li class="option" id="select">Pick My Debater</li>';
+            if (1 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
+              html += '<li class="option" id="prohibit">Prohibit Protestant Debater</li>';
+            }
+            html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+  
+            $('.option').off();
+            $('.option').on('click', function () {
+
+              let opt = $(this).attr("id");
+
+	      if (opt === "select") {
+
+                let msg = "Select Uncommitted Papal Debater:";
+                let html = '<ul>';
+		for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+		  let d = his_self.game.state.debaters[i];
+		  if (d.faction === "papacy") {
+            	    html += `<li class="option" id="${i}">${d.name}</li>`;
+		  }
+		}
+		html += '</ul>';
+                his_self.updateStatusWithOptions(msg, html);
+  
+                $('.option').off();
+                $('.option').on('click', function () {
+                  let selected_papal_debater = $(this).attr("id");
+	          his_self.addMove("theological_debate");
+        	  his_self.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	          his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tselected_papal_debater\t"+selected_paper_debater);
+	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+		  his_self.endTurn();
+		});
+	
+	      } else {
+
+                let msg = "Prohibit Protestant Debater:";
+                let html = '<ul>';
+		for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+		  let d = his_self.game.state.debaters[i];
+		  if (d.faction !== "papacy" && d.language_zone === language_zone) {
+            	    html += `<li class="option" id="${i}">${d.name}</li>`;
+		  }
+		}
+		html += '</ul>';
+                his_self.updateStatusWithOptions(msg, html);
+  
+                $('.option').off();
+                $('.option').on('click', function () {
+                  let prohibited_protestant_debater = $(this).attr("id");
+	          his_self.addMove("theological_debate");
+        	  his_self.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	          his_self.addMove("SETVAR\tstate\tevents\ttheological_debate\tprohibited_protestant_debater\t"+prohibited_protestant_debater);
+	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+		  his_self.endTurn();
+		});
+	
+	      }
+	    });
+	  });
+
+	} else {
+	  game_mod.updateStatus("Papacy calling a Theological Debate");
+	}
+
+	return 0;
+      },
+
     }
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
@@ -5075,6 +5813,82 @@ console.log("retreat 4");
       type : "normal" ,
       faction : "protestant" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu === "debate") {
+          return { faction : "protestant" , event : 'substitute_luther', html : `<li class="option" id="substitute_luther">Here I Stand (assign Luther)</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "debate") {
+	  if (his_self.game.state.leaders.luther == 1) {
+	    if (faction === "protestant") {
+	      return 1;
+	    }
+	  }
+	}
+	return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu === "debate") {
+	  his_self.addMove("here_i_stand");
+	  his_seld.endTurn();
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "here_i_stand") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.updateLog("Luther accepts the Debate Challenge - Here I Stand");
+
+	  //
+	  // existing protestant debater is committed
+	  //
+	  for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+	    let d = his_self.game.state.debaters[i];
+	    if (this.game.state.theological_debate.attacker === "papacy") {
+	      if (this.game.state.theological_debate.round == 1) {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_defender_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      } else {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_defender_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      }
+	    } else {
+	      if (this.game.state.theological_debate.round == 1) {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_attacker_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      } else {
+	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_attacker_debater) {
+		  his_self.commitDebater(d.key);
+	        }
+	      }
+	    }
+	  }
+
+	  if (his_self.game.state.theological_debate.attacker === "papacy") {
+	    if (his_self.game.state.theological_debate.round == 1) {
+              his_self.game.state.theological_debate.round1_defender_debater = "luther-debater";
+	    } else {
+              his_self.game.state.theological_debate.round2_defender_debater = "luther-debater";
+	    }
+	  } else {
+	    if (his_self.game.state.theological_debate.round == 1) {
+              his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
+	    } else {
+              his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
+	    }
+	  }
+
+	  return 1;
+
+        }
+      },
     }
     // 95 Theses
     deck['008'] = { 
@@ -5214,6 +6028,7 @@ console.log("retreat 4");
       onEvent : function(game_mod, player) {
 
 	// algiers space is now in play
+	game_mod.game.spaces['algiers'].home = "ottoman";
 	game_mod.game.spaces['algiers'].political = "ottoman";
 	game_mod.addRegular("ottoman", "algiers", 2);
 	game_mod.addCorsair("ottoman", "algiers", 2);
@@ -5294,15 +6109,30 @@ console.log("retreat 4");
 
       }
     }
-    deck['013'] = { 
-      img : "cards/HIS-013.svg" , 
-      name : "Schmalkaldic League" ,
-      ops : 2 ,
-      turn : 1 ,
-      type : "mandatory" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, player) {
-        state.events.schmalkaldic_league = 1;
+    if (this.game.players.length == 2) {
+      deck['013'] = { 
+        img : "cards/HIS-013-2P.svg" , 
+        name : "Schmalkaldic League" ,
+        ops : 2 ,
+        turn : 1 ,
+        type : "mandatory" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+        onEvent : function(game_mod, player) {
+          state.events.schmalkaldic_league = 1;
+          game_mod.game.state.activated_powers["papacy"].push("hapsburg");
+        }
+      }
+    } else {
+      deck['013'] = { 
+        img : "cards/HIS-013.svg" , 
+        name : "Schmalkaldic League" ,
+        ops : 2 ,
+        turn : 1 ,
+        type : "mandatory" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+        onEvent : function(game_mod, player) {
+          state.events.schmalkaldic_league = 1;
+        }
       }
     }
     deck['014'] = { 
@@ -5348,6 +6178,28 @@ console.log("retreat 4");
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+
+	game_mod.game.state.leaders['luther'] = 0;
+	game_mod.game.state.leaders['calvin'] = 1;
+
+	let x = game_mod.returnSpaceOfPersonage("luther-reformer");
+	let y = game_mod.returnIndexOfPersonageInSpace("luther-reformer");
+
+	if (y > -1) {
+	  game_mod.game.spaces[x].units["protestant"].splice(y, 1);
+	}
+
+	for (let i = 0; i < game_mod.game.state.debaters.length; i++) {
+	  if (game_mod.game.state.debaters[i].type === "luther-debater") {
+	    game_mod.game.state.debaters.splice(i, 1);
+	  }
+	}
+
+	game_mod.updateLog("Luther dies and is replaced by Calvin");
+
+	return 0;
+      }
     }
     deck['017'] = { 
       img : "cards/HIS-017.svg" , 
@@ -6875,6 +7727,13 @@ console.log("retreat 4");
       z.push(this.deck[key]);
     }
 
+    //
+    // debaters have bonuses which modify gameplay
+    //
+    for (let key in this.debaters) {
+      z.push(this.debaters[key]);
+    }
+
     return z;
 
   }
@@ -7051,8 +7910,154 @@ alert("removing unit not implement for sea");
 
 	}
 
+	if (mv[0] === "retreat_to_winter_spaces") {
+
+	  let moves = [];
+
+	  this.game.queue.splice(qe, 1);
+
+	  for (let i in this.game.spaces) {
+	    for (let key in this.game.spaces[i].units) {
+	      if (this.game.spaces[i].units[key].length > 0) {
+	        let space = this.game.spaces[i];
+		if (!this.isSpaceFortified(space)) {
+		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
+		  moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
+		}
+	      }
+	    }
+	  }
+
+
+	  //
+	  // prevents in-memory differences in processing resulting in a different
+	  // queue order, resulting in divergent game processing.
+	  //
+	  moves.sort();
+	  for (let i = 0; i < moves.length; i++) {
+	    this.game.queue.push(moves[i]);
+	  }
+
+	  return 1;
+        }
+
+
+	if (mv[0] === "retreat_to_winter_spaces_player_select") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let x = this.returnPlayerOfFaction(mv[1]);
+
+	  if (this.game.player === x) {
+	    this.playerResolveWinterRetreat(mv[1], mv[2]);
+	    return 0;
+	  } else {
+	    this.updateStatus(mv[1] + " is selecting winter retreat options from " + mv[2]);
+	    if (x > 0) { return 0; }
+	  }
+
+	  //
+	  // non-player controlled factions skip winter retreat
+	  //
+	  return 1;
+
+        }
+
+
+	if (mv[0] === "retreat_to_winter_spaces_resolve") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let from = mv[2];
+	  let to = mv[3];
+
+          for (let i = this.game.spaces[from].units[faction].length-1; i >= 0; i--) {
+	    this.game.spaces[to].units[faction].push(this.game.spaces[from].units[faction][i]);
+	    this.game.spaces[from].units[faction].splice(i, 1);
+	  }
+
+	  return 1;
+
+        }
+
+
+
+
+	if (mv[0] === "retreat_to_winter_ports") {
+
+	  let moves = [];
+
+	  this.game.queue.splice(qe, 1);
+
+	  for (let i in this.game.navalspaces) {
+	    for (let key in this.game.navalspaces[i].units) {
+	      if (this.game.navalspaces[i].units[key].length > 0) {
+	        let space = this.game.navalspaces[i];
+		let res = this.returnNearestFactionControlledPorts(key, space);
+		moves.push("retreat_to_winter_ports_player_select\t"+key+"\t"+space.key);
+	      }
+	    }
+	  }
+
+	  //
+	  // prevents in-memory differences in processing resulting in a different
+	  // queue order, resulting in divergent game processing.
+	  //
+	  moves.sort();
+	  for (let i = 0; i < moves.length; i++) {
+	    this.game.queue.push(moves[i]);
+	  }
+
+	  return 1;
+        }
+
+
+	if (mv[0] === "retreat_to_winter_ports_player_select") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let x = this.returnPlayerOfFaction(mv[1]);
+
+	  if (this.game.player === x) {
+	    this.playerResolvePortsWinterRetreat(mv[1], mv[2]);
+	  } else {
+	    this.updateStatus(mv[1] + " is selecting winter port retreat options from " + mv[2]);
+	  }
+
+	  return 0;
+
+        }
+
+
+	if (mv[0] === "retreat_to_winter_ports_resolve") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let from = mv[2];
+	  let to = mv[3];
+
+          for (let i = this.game.navalspaces[from].units[faction].length-1; i >= 0; i--) {
+	    this.game.spaces[to].units[faction].push(this.game.navalspaces[from].units[faction][i]);
+	    this.game.navalspaces[from].units[faction].splice(i, 1);
+	  }
+
+	  return 1;
+
+        }
+
+
 
 	if (mv[0] === "is_testing") {
+
+
+	  this.game.queue.push("event\t" + this.returnPlayerOfFaction("papacy") + "\t" + "006");
+
+	  this.game.queue.push("theological_debate");
+	  this.game.queue.push("pre_theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+
+	  //this.game.queue.push("retreat_to_winter_spaces");
 
     	  //
     	  // IS_TESTING -- TEMPORARY
@@ -7061,6 +8066,7 @@ alert("removing unit not implement for sea");
     	  this.addDebater("hapsburg", "aleander");
     	  this.addDebater("england", "bullinger");
     	  this.addDebater("protestant", "campeggio");
+
 
     	  this.activateMinorPower("papacy", "venice");
 
@@ -7085,12 +8091,13 @@ alert("removing unit not implement for sea");
 
     	  this.game.queue.splice(qe, 1);
 
+
 	  return 1;
 	}
 
         if (mv[0] === "event") {
 
-	  let player = mv[1];
+	  let player = parseInt(mv[1]);
 	  let card = mv[2];
 
 	  this.game.queue.splice(qe, 1);
@@ -7119,6 +8126,36 @@ alert("removing unit not implement for sea");
 
 	}
 
+	if (mv[0] === "moveunit") {
+
+	  let faction   = mv[1];
+	  let from_type = mv[2];
+	  let from_key  = mv[3];
+	  let from_idx  = mv[4];
+	  let to_type   = mv[5];
+	  let to_key    = mv[6];
+
+	  let unit_to_move;
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (from_type === "sea") {
+	    unit_to_move = this.game.navalspaces[from_key].units[faction][from_idx];
+	  }
+	  if (from_type === "land") {
+	    unit_to_move = this.game.spaces[from_key].units[faction][from_idx];
+	  }
+
+	  if (to_type === "sea") {
+	    this.game.navalspaces[to_key].units[faction].push(unit_to_move);
+	  }
+	  if (to_type === "land") {
+	    this.game.spaces[to_key].units[faction].push(unit_to_move);
+	  }
+
+	  return 1;
+
+	}
 
 
         if (mv[0] === "move") {
@@ -7170,7 +8207,53 @@ alert("removing unit not implement for sea");
 	      this.displaySpace(destination);
 	    }
 
+	    //
+	    // do we have a jolly sea battle?
+	    //
+            let space;
+	    if (this.game.spaces[destination]) {
+	      space = this.game.spaces[destination];
+	    }
+	    if (this.game.navalspaces[destination]) {
+	      space = this.game.navalspaces[destination];
+	    }
+
+            let anyone_else_here = 0;
+
+            let lqe = qe-1;
+            if (lqe >= 0) {
+              let lmv = this.game.queue[lqe].split("\t");
+              if (lmv[0] == "naval_interception_check") {
+                for (let f in space.units) {
+                  if (space.units[f].length > 0 && f != faction) {
+                    anyone_else_here = 1;
+                  }
+                  if (f !== faction && space.units[f].length > 0 && !this.areAllies(f, faction)) {
+                    if (lqe-1 >= 0) {
+                      // added in reverse order
+                      if (skip_avoid_battle != 1) {
+                        this.game.queue.splice(lqe, 0, "naval_retreat_check\t"+faction+"\t"+destination+"\t"+source);
+                      }
+                      this.game.queue.splice(lqe, 0, "RESETCONFIRMSNEEDED\tall");
+                      this.game.queue.splice(lqe, 0, "counter_or_acknowledge\tNaval Battle is about to begin in "+destination + "\tnaval_battle");
+                      this.game.queue.splice(lqe, 0, "naval_battle\t"+space.key+"\t"+faction);
+                    }
+                  }
+                }
+              } else {
+                //
+                // we only update the occupier of the space if the next move is not a "move"
+                // as we require interception check to find out if there are units here already.
+                //
+                if (lmv[0] !== "move") {
+                  if (anyone_else_here == 0) {
+                    space.occupier = faction;
+                  }
+                }
+              }
+            }
 	  }
+
 
 	  if (movetype === "land") {
 
@@ -7186,8 +8269,6 @@ alert("removing unit not implement for sea");
 	    //
 	    let space = this.game.spaces[destination];
 	    let anyone_else_here = 0;
-
-console.log("OCCUPIER OF SPACE IS: " + space.occupier);
 
 	    let lqe = qe-1;
 	    if (lqe >= 0) {
@@ -7479,6 +8560,39 @@ console.log(JSON.stringify(mv));
 
 	}
 
+
+	if (mv[0] === "naval_retreat") {
+
+	  let faction = mv[1];
+	  let source_spacekey = mv[2];
+	  let destination_spacekey = mv[3];
+
+	  let source;
+	  if (this.game.spaces[source_spacekey]) { source = this.game.spaces[source_spacekey]; }
+	  if (this.game.navalspaces[source_spacekey]) { source = this.game.navalspaces[source_spacekey]; }
+
+	  let destination;
+	  if (this.game.spaces[destination_spacekey]) { source = this.game.spaces[destination_spacekey]; }
+	  if (this.game.navalspaces[destination_spacekey]) { source = this.game.navalspaces[destination_spacekey]; }
+
+	  for (let i = source.units[faction].length-1; i >= 0; i--) {
+	    if (source.units[faction][i].land_or_sea == "sea" || source.units[faction][i].land_or_sea == "both") {
+	      destination.units[faction].push(source.units[faction][i]);
+	      source.units[faction].splice(i, 1);
+	    }
+	  }
+
+	  this.displaySpace(source_spacekey);
+	  this.displayNavalSpace(source_spacekey);
+	  this.displaySpace(destination_spacekey);
+	  this.displayNavalSpace(destination_spacekey);
+	  
+	  return 1;
+
+	}
+
+
+
         if (mv[0] === "retreat") {
 
 	  this.game.queue.splice(qe, 1);
@@ -7504,7 +8618,27 @@ console.log(JSON.stringify(mv));
 	}
 
 
+        if (mv[0] === "naval_battle_hits_assignment") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let hits_to_assign = parseInt(mv[2]);
+	  let space = mv[3];
+
+	  let player = this.returnPlayerOfFaction(faction);
+	  if (player > 0) {
+	    if (this.game.player === player) {
+	      this.playerAssignNavalHits(faction, space, hits_to_assign);
+	    } else {
+	      this.updateStatus(faction + " assigning hits [ " + hits_to_assigns + " ]");
+	    }
+	  } else {
+	    return 1;
+	  }
+
+	  return 0;
+	}
 
 
 
@@ -7545,30 +8679,81 @@ console.log(JSON.stringify(mv));
 	        }
 	      }
 	    }
-
 	  }
-
           return 1;
-
 	}
 
 
-        if (mv[0] === "player_evaluate_interception_opportunity") {
+        if (mv[0] === "naval_interception_check") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+
+	  let neighbours = this.returnNavalAndPortNeighbours(spacekey);
+	  let attacking_player = this.returnPlayerOfFaction(faction);
+
+	  //
+	  // interception at port is not possible
+	  //
+	  if (this.game.spaces[spacekey]) {
+	    console.log("INTERCEPTIONS INVOLVING PORTS NOT SUPPORTED YET");
+	  }
+
+	  //
+	  //
+	  //
+	  if (this.game.navalspaces[spacekey]) {
+
+	    let io = this.returnImpulseOrder();
+	    for (let i = io.length-1; i>= 0; i--) {
+	      let player_of_faction = this.returnPlayerOfFaction(io[i]);
+	      if (player_of_faction != attacking_player && player_of_faction != 0) {
+  	        if (io[i] !== faction) {
+	          for (let z = 0; z < neighbours.length; z++) {
+	            let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[z]);
+	            if (fluis > 0) {
+	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+io[i]+"\t"+neighbours[z]);
+	            }
+	          }
+	        }
+	      }
+
+	      for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
+	        let ap = this.game.state.activated_powers[io[i]][z];
+	        if (ap != faction) {
+	          let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[z]);
+	          if (fluis > 0) {
+	            this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+ap+"\t"+neighbours[z]);
+	          }
+	        }
+	      }
+	    }
+	  }
+          return 1;
+	}
+
+
+
+
+
+
+        if (mv[0] === "player_evaluate_naval_interception_opportunity") {
 
 	  this.game.queue.splice(qe, 1);
 
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
-	  let attacker_includes_cavalry = parseInt(mv[3]);
-	  let defender = mv[4];
-	  let defender_spacekey = mv[5];
+	  let defender = mv[3];
+	  let defender_spacekey = mv[4];
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
 	  if (player_factions.includes(defender)) {
-	    this.playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey);
+	    this.playerEvaluateNavalInterceptionOpportunity(attacker, spacekey, defender, defender_spacekey);
 	  } else {
-	    this.updateStatus(this.returnFactionName(defender) + " considering interception from " + this.returnSpaceName(defender_spacekey));
+	    this.updateStatus(this.returnFactionName(defender) + " considering naval interception from " + this.returnSpaceName(defender_spacekey));
 	  }
 
 	  return 0;
@@ -7648,11 +8833,11 @@ console.log(JSON.stringify(mv));
 	    for (let i = this.game.queue.length-1; i >= 0; i--) {
 	      let lqe = this.game.queue[i];
 	      let lmv = lqe.split("\t");
-	      if (lmv[0] !== "player_evaluate_interception_opportunity") {
+	      if (lmv[0] !== "player_evaluate_navel_interception_opportunity") {
 	        index_to_insert_moves = i;
 		break;
 	      } else {
-	        if (lmv[4] !== defender) {
+	        if (lmv[3] !== defender) {
 		  this.game.queue.splice(i, 1); // remove 1 at i
 		  i--; // queue is 1 shorter
 		}
@@ -7665,6 +8850,111 @@ console.log(JSON.stringify(mv));
 	    //
 	    for (let i = 0; i < units_to_move_idx.length; i++) {
 	      let m = "move\t"+defender+"\tland\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i+"\t"+1]; // 1 = skip avoid battle
+	      his_self.game.queue.splice(index_to_insert_moves, 0, m);
+	    }
+
+	  } else {
+	    this.updateLog("FAILURE");
+	  }
+
+	  return 1;
+
+	}
+
+
+
+
+        if (mv[0] === "naval_intercept") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let defender = mv[3];
+	  let defender_spacekey = mv[4];
+	  let units_to_move_idx = JSON.parse(mv[5]);
+	  let units_to_move = [];
+
+	  //
+	  // load actual units to examine them for squadrons, corsairs, navy leaders
+	  //
+	  let s;
+	  if (this.game.spaces[defender_spacekey]) {
+	    s = this.game.spaces[defender_spacekey];
+	  }
+	  if (this.game.navalspaces[defender_spacekey]) {
+	    s = this.game.navalspaces[defender_spacekey];
+	  }
+
+          for (let i = 0; i < units_to_move_idx.length; i++) {
+	    units_to_move.push(s.units[defender][units_to_move_idx[i]]);
+	  }
+
+	  if (units_to_move.length == 0) {
+	    this.updateLog("no units sent to intercept...");
+	    return 1;
+	  }
+
+	  let hits_on = 9;
+	  let defender_highest_battle_rating = 0;
+
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    if (units_to_move[i].battle_rating > defender_highest_battle_rating) {
+	      defender_highest_battle_rating = units_to_move[i].battle_rating;
+	    }
+	  }
+
+	  this.updateLog(this.returnFactionName(defender) + " navy moves to intercept from " + this.returnSpaceName(defender_spacekey));
+	  if (defender_highest_battle_rating > 0) {
+	    this.updateLog(this.returnFactionName(defender) + " gains " + defender_highest_battle_rating + " bonus from navy leader");
+	  }
+
+	  let d1 = this.rollDice(6);
+	  let d2 = this.rollDice(6);
+	  let dsum = d1+d2;
+
+	  this.updateLog("Interception roll #1: " + d1);
+	  this.updateLog("Interception roll #2: " + d2);
+
+	  // IS_TESTING
+	  if (dsum >= hits_on) {
+
+	    this.updateLog("SUCCESS");
+
+	    //
+	    // insert at end of queue by default
+	    //
+	    let index_to_insert_moves = this.game.queue.length-1;
+
+	    //
+	    // BUT NO OTHER POWER CAN INTERCEPT, SO CLEAN OUT GAME QUEUE FOR THIS DESTINATION
+	    //
+	    for (let i = this.game.queue.length-1; i >= 0; i--) {
+	      let lqe = this.game.queue[i];
+	      let lmv = lqe.split("\t");
+	      if (lmv[0] !== "player_evaluate_naval_interception_opportunity") {
+	        index_to_insert_moves = i;
+		break;
+	      } else {
+	        if (lmv[2] != spacekey) {
+		  this.game.queue.splice(i, 1); // remove 1 at i
+		  i--; // queue is 1 shorter
+	          index_to_insert_moves = i;
+		  break;
+		}
+	        if (lmv[3] !== defender) {
+		  this.game.queue.splice(i, 1); // remove 1 at i
+		  i--; // queue is 1 shorter
+	        } 
+	      }
+	    }
+
+
+	    //
+	    // SUCCESS - move and continue to evaluate interception opportunities
+	    //
+	    for (let i = 0; i < units_to_move_idx.length; i++) {
+	      let m = "move\t"+defender+"\tsea\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i+"\t"+1]; // 1 = skip avoid battle
 	      his_self.game.queue.splice(index_to_insert_moves, 0, m);
 	    }
 
@@ -7857,6 +9147,225 @@ console.log(JSON.stringify(mv));
 	  return 0;
 
 	}
+
+
+
+	if (mv[0] === "naval_battle") {
+
+          this.game.queue.splice(qe, 1);
+
+	  this.game.state.naval_battle = {};
+
+	  //
+	  // count units
+	  //
+          let calculate_units = function(faction) {
+	    let rolls = 0;
+            for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].type === "squadron") { rolls += 1; }
+	      if (space.units[faction][i].type === "corsair") { rolls += 1; }
+	    }
+	    return rolls;
+          }
+	  //
+	  // calculate rolls
+	  //
+          let calculate_rolls = function(faction) {
+	    let rolls = 0;
+            for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].type === "squadron") { rolls += 2; }
+	      if (space.units[faction][i].type === "corsair") { rolls += 1; }
+	    }
+	    return rolls;
+          }
+	  //
+	  // calculate highest battle ranking
+	  //
+          let calculate_highest_battle_ranking = function(faction) {
+	    let highest_battle_ranking = 0;
+            for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].battle_ranking > 0) {
+	        if (highest_battle_ranking < space.units[faction][i].battle_ranking) {
+		  highest_battle_ranking = space.units[faction][i].battle_ranking;
+		}
+	      }
+	    }
+	    return highest_battle_ranking;
+          }
+
+
+	  //
+	  // this is run when a naval battle starts. players have by now 
+	  // interceded or played cards that allow them to respond to the 
+	  // movement, including retreat into a fortress if available. as
+	  // such, this handles the conflict.
+	  //
+	  let his_self = this;
+	  let space;
+	  if (this.game.spaces[mv[1]]) { space = this.game.spaces[mv[1]]; }
+	  if (this.game.navalspaces[mv[1]]) { space = this.game.navalspaces[mv[1]]; }
+	  let attacker = mv[2];
+	  let stage = "naval_battle";
+
+	  //
+	  // ok -- who the hell is here?
+	  //
+	  // an ally of a major power can intercept and fight together, complicating
+	  // how hits are assigned. so we need to know which factions are actually on 
+	  // which sides. additionally, formations can include units from allied minor
+	  // powers.
+	  //
+	  let attacker_faction = attacker;
+	  let defender_faction = his_self.returnDefenderFaction(attacker_faction, space);
+
+ 	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
+ 	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
+
+
+	  //
+	  // map every faction in space to attacker or defender
+	  //
+	  let attacking_factions = 0;
+	  let defending_factions = 0;
+	  let faction_map = this.returnFactionMap(space, attacker_faction, defender_faction);
+
+	  //
+	  // migrate any bonuses to attacker or defender
+	  //
+          for (let f in space.units) {
+	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
+	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      let ap = his_self.game.players_info[attacker_player-1];
+	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
+	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
+	      if (p.tmp_roll_modifiers.length > 0) { 
+		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
+	          ap.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	        } 
+	      } 
+	    }
+	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
+	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	      let dp = his_self.game.players_info[defender_player-1];
+	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
+	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
+	      if (p.tmp_roll_modifiers.length > 0) { 
+		for (let i = 0; i < p.tmp_roll_modifiers.length; i++) {
+	          dp.tmp_roll_modifiers.push(p.tmp_roll_modifiers[i]); 
+	        } 
+	      } 
+	    }
+          }
+
+	  //
+	  // we now have a mapping of all factions to the two main factions that
+	  // will make any strategic decisions for hits assignment, etc. and any 
+	  // bonuses that affect combat will have been copied over to those players
+	  //
+
+	  //
+	  // calculate the total rolls each faction gets to make. the defender starts
+	  // with +1 roll bonus because they have control over the space.
+	  //
+	  let attacker_rolls = 0;
+	  let defender_rolls = 1;
+	  let attacker_units = 0;
+          let defender_units = 0;
+	  let defender_port_bonus = 0;
+	  if (this.game.spaces[mv[1]]) { defender_port_bonus++; defender_rolls++; }
+
+	  let attacker_highest_battle_ranking = 0;
+	  let defender_highest_battle_ranking = 0;
+
+
+	  for (let f in faction_map) {
+	    if (faction_map[f] === attacker_faction) {
+	      attacker_units += calculate_units(f);
+	      attacker_rolls += calculate_rolls(f);
+	      if (calculate_highest_battle_ranking(f) > attacker_highest_battle_ranking) {
+		attacker_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      }
+	    }
+	    if (faction_map[f] === defender_faction) {
+	      defender_units += calculate_units(f);
+	      defender_rolls += calculate_rolls(f);
+	      if (calculate_highest_battle_ranking(f) > defender_highest_battle_ranking) {
+		defender_highest_battle_ranking = calculate_highest_battle_ranking(f);
+	      }
+	    }  
+	  }
+	  if (attacker_player.tmp_roll_bonus) {
+  	    attacker_rolls += parseInt(attacker_player.tmp_roll_bonus);
+	  }
+	  if (defender_player.tmp_roll_bonus) {
+            defender_rolls += parseInt(defender_player.tmp_roll_bonus);
+	  }
+
+
+
+	  //
+	  // "professional rowers" may be played after dice are rolled, so we roll the dice
+	  // now and break ("naval_battle_continued" afterwards...
+	  //
+	  let attacker_results = [];
+	  let defender_results = [];
+	  let attacker_hits = 0;
+	  let defender_hits = 0;
+
+	  for (let i = 0; i < attacker_rolls; i++) {
+	    let res = this.rollDice(6);
+	    attacker_results.push(res);
+	    if (res >= 5) { attacker_hits++; }
+	  }
+	  for (let i = 0; i < defender_rolls; i++) {
+	    let res = this.rollDice(6);
+	    defender_results.push(res);
+	    if (res >= 5) { defender_hits++; }
+	  }
+
+	  //
+	  // PRINT OUT INFO TO LOG
+	  //
+	  this.updateLog("Attackers: " + attacker_rolls + " in total rolls");
+	  for (let i = 0; i < attacker_results.length; i++) {
+	    this.updateLog(" ... rolls: " + attacker_results[i]);
+          }
+	  this.updateLog("Defenders: " + defender_rolls + " in total rolls");
+	  for (let i = 0; i < defender_results.length; i++) {
+	    this.updateLog(" ... rolls: " + defender_results[i]);
+          }
+
+	  //
+	  // things get messy and conditional now, because Professional Rowers may 
+	  // be played to modify dice rolls.
+	  //
+	  // we handle this by saving the "state" of the battle and pushing 
+	  // execution back to the game queue.
+	  //
+
+
+	  //
+	  // save battle state
+	  //
+	  his_self.game.state.naval_battle.attacker_units = attacker_units;
+	  his_self.game.state.naval_battle.defender_units = defender_units;
+	  his_self.game.state.naval_battle.attacker_rolls = attacker_rolls;
+	  his_self.game.state.naval_battle.defender_rolls = defender_rolls;
+	  his_self.game.state.naval_battle.attacker_results = attacker_results;
+	  his_self.game.state.naval_battle.defender_results = defender_results;
+	  his_self.game.state.naval_battle.attacker_faction = attacker_faction;
+	  his_self.game.state.naval_battle.defender_faction = defender_faction;
+	  his_self.game.state.naval_battle.faction_map = faction_map;
+
+	  his_self.game.queue.push(`field_battle_continue\t${mv[1]}`);
+	  his_self.game.queue.push(`counter_or_acknowledge\tNaval Battle Hits Assigmentt\tnaval_battle_hits_assignment`);
+	  his_self.game.queue.push(`RESETCONFIRMSNEEDED\tall`);
+
+	  return 1;
+
+        }
+
+
 
 
 
@@ -8505,6 +10014,343 @@ console.log("done");
 
 
 
+ 	if (mv[0] === "destroy_naval_units") {
+
+          this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let units_to_destroy = JSON.parse(mv[3]);
+
+	  let space;
+
+	  if (this.game.space[spacekey]) { space = this.game.space[spacekey]; }
+	  if (this.game.navalspace[spacekey]) { space = this.game.navalspace[spacekey]; }
+
+	  units_to_destroy.sort();
+	  if (units_to_destroy[0] < units_to_destroy[units_to_destroy.length-1]) {
+	    units_to_destroy.reverse();
+	  }
+
+	  //
+	  // remove from max to minimum to avoid index-out-of-array errors
+	  //
+	  for (let i = 0; i < units_to_destroy.length; i++) {
+	    space.units[faction].splice(i, 1);
+	  }
+
+	  return 1;
+
+	}
+
+
+	if (mv[0] === "naval_battle_continue") {
+
+          this.game.queue.splice(qe, 1);
+
+	  let his_self = this;
+	  let space;
+	  if (this.game.spaces[mv[1]]) {
+	    space = this.game.spaces[mv[1]];
+	  }
+	  if (this.game.navalspaces[mv[1]]) {
+	    space = this.game.navalspaces[mv[1]];
+	  }
+
+
+	  //
+	  // calculate hits
+	  //
+          let modify_rolls = function(player, roll_array) {
+	    let modified_rolls = [];
+            for (let i = 0; i < roll_array.length; i++) {
+              if (player.tmp_roll_modifiers.length > i) {
+                let modded_roll = roll_array[i] + player.tmp_roll_modifiers[i];
+                if (modded_roll >= 5) {
+                  modified_rolls.push(modded_roll);
+                }
+              } else {
+                if (roll_array[i] >= 5) {
+                  modified_rolls.push(roll_array[i]);
+                }
+              }
+            }
+	    return modified_rolls;
+          }
+          let calculate_hits = function(player, roll_array) {
+            let hits = 0;
+            for (let i = 0; i < roll_array.length; i++) {
+              if (roll_array[i] >= 5) {
+                hits++;
+              }
+            }
+            return hits;
+          }
+	  let assign_hits = function(faction, hits) {
+
+	    //
+	    // hits are spread out over units
+	    //
+	    let are_hits_all_assigned = 0;
+	    let hits_to_assign = hits;
+	    let max_possible_hits_assignable = 0;
+
+	    //
+	    // max hits to assign are the faction land units
+	    //
+	    for (let f in faction_map) {
+	      if (faction_map[f] === faction) { 
+	    	max_possible_hits_assignable += his_self.returnFactionSeaUnitsInSpace(f, space);
+	      }
+	    }
+
+	    //
+	    //
+	    //
+	    if (max_possible_hits_assignable < hits_to_assign) {
+	      hits_to_assign = max_possible_hits_assignable;
+	    }
+
+
+	    while (are_hits_all_assigned == 0 && hits_to_assign > 0) {
+
+	      //
+	      // first we calculate starting faction targets
+	      //
+	      let number_of_targets = 0;
+	      for (let f in faction_map) {
+	        if (faction_map[f] === faction) { 
+		  if (his_self.returnFactionSeaUnitsInSpace(f, space) > 0) {
+		    number_of_targets++;
+		  }
+		}
+	      }
+
+	      while (hits_to_assign >= number_of_targets && hits_to_assign > 0) {
+
+		//
+		// assign hits to allies
+		//
+	        for (let f in faction_map) {
+	          if (faction_map[f] === faction) { 
+		    if (his_self.returnFactionSeaUnitsInSpace(f, space) > 0) {
+	 	      for (let zzz = 0; zzz < 2; zzz++) {
+
+		        let cannon_fodder = "";
+		        if (zzz == 0) { cannon_fodder = "corsair"; }
+		        if (zzz == 1) { cannon_fodder = "squadron"; }
+
+  	     	        for (let i = 0; i < space.units[f].length; i++) {
+	   	          if (space.units[f][i].type === cannon_fodder) {
+		  	    space.units[f].splice(i, 0);
+			    hits_to_assign--;
+		            zzz = 1000000;
+		            i   = 1000000;
+			  }
+			}
+		      }
+		    }
+		  }
+		}
+
+	        //
+	        // recalculate num targets
+	        //
+	        number_of_targets = 0;
+	        for (let f in faction_map) {
+	          if (faction_map[f] === faction) { 
+		    if (his_self.returnFactionSeaUnitsInSpace(f, space) > 0) {
+		      number_of_targets++;
+		    }
+		  }
+	        }
+	      }
+
+	      //
+	      // we now have fewer hits to assign than there are factions available
+	      // to share the damage, so we pick randomly by rolling a dice.
+	      //
+	      while (hits_to_assign > 0) {
+
+		let targets = [];
+	        for (let f in faction_map) { targets.push(f); }
+		targets.sort();
+		
+		for (let i = hits_to_assign; i > 0; i--) {
+		  let selected_target = his_self.rollDice(targets.length);
+		  let selected_faction = targets[selected_target-1];
+		  his_self.updateLog("Random Target: " + selected_faction);
+		
+		  //
+		  // again, survival of the fittest
+		  //
+		  for (let zzz = 0; zzz < 2; zzz++) {
+
+                    let cannon_fodder = "";
+                    if (zzz == 0) { cannon_fodder = "corsair"; }
+                    if (zzz == 1) { cannon_fodder = "squadron"; }
+
+                    for (let ii = 0; ii < space.units[selected_faction].length; ii++) {
+                      if (space.units[selected_faction][ii].type === cannon_fodder) {
+			his_self.updateLog(this.returnFactionName(f) + " " + space.units[selected_faction][ii].name + " sunk");
+                        space.units[selected_faction].splice(ii, 0);
+                        hits_to_assign--;
+                        zzz = 1000000;
+                        ii  = 1000000;
+                      }
+                    }
+                  }
+
+		  //
+		  // remove other faction sea units next
+		  //
+		  targets.splice(selected_target-1, 0);
+		}
+	      }
+
+	      are_hits_all_assigned = 1;
+
+	    }
+	  }
+
+	  let faction_map      = his_self.game.state.naval_battle.faction_map;
+	  let attacker_faction = his_self.game.state.naval_battle.attacker_faction;
+	  let defender_faction = his_self.game.state.naval_battle.defender_faction;
+          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	  let attacker_results = his_self.game.state.naval_battle.attacker_results;
+	  let defender_results = his_self.game.state.naval_battle.defender_results;
+	  let attacker_rolls   = his_self.game.state.naval_battle.attacker_rolls;
+	  let defender_rolls   = his_self.game.state.naval_battle.defender_rolls;
+	  let attacker_units   = his_self.game.state.naval_battle.attacker_units;
+	  let defender_units   = his_self.game.state.naval_battle.defender_units;
+
+	  let winner	       = defender_faction;
+	  let attacker_hits    = 0;
+	  let defender_hits    = 0;
+
+	  //
+	  // assign hits simultaneously
+	  //
+	  his_self.game.state.naval_battle.attacker_modified_rolls = modify_rolls(attacker_player, attacker_results);
+	  his_self.game.state.naval_battle.defender_modified_rolls = modify_rolls(defender_player, defender_results);
+	  attacker_hits = calculate_hits(attacker_player, attacker_results);
+	  defender_hits = calculate_hits(defender_player, defender_results);
+	  assign_hits(defender_player, attacker_hits);
+	  assign_hits(attacker_player, defender_hits);
+
+	  his_self.game.state.naval_battle.attacker_hits = attacker_hits;
+	  his_self.game.state.naval_battle.defender_hits = defender_hits;
+
+	  his_self.updateLog("Attacker Modified: " + JSON.stringify(his_self.game.state.naval_battle.attacker_modified_rolls));
+	  his_self.updateLog("Defender Modified: " + JSON.stringify(his_self.game.state.naval_battle.defender_modified_rolls));
+	  his_self.updateLog("Attacker Hits: " + attacker_hits);
+	  his_self.updateLog("Defender Hits: " + defender_hits);
+
+	  //
+	  // who won?
+	  //
+	  if (attacker_hits > defender_hits) {
+	    winner = attacker_faction;
+	  }
+
+	  //
+	  // calculate units remaining
+	  //
+	  let attacker_sea_units_remaining = attacker_units - defender_hits;
+	  let defender_sea_units_remaining = defender_units - attacker_hits;
+
+          his_self.game.state.naval_battle.attacker_sea_units_remaining = attacker_sea_units_remaining;
+          his_self.game.state.naval_battle.defender_sea_units_remaining = defender_sea_units_remaining;
+
+	  if (attacker_sea_units_remaining <= 0 && defender_sea_units_remaining <= 0) {
+	    if (attacker_rolls > defender_rolls) {
+	      his_self.updateLog("Attacker adds 1 squadron");
+	      his_self.addSquadron(attacker_faction, space);
+	    } else {
+	      his_self.updateLog("Defender adds 1 squadron");
+	      his_self.addSquadron(defender_faction, space);
+	    }
+	  }
+
+
+	  //
+	  // capture stranded leaders
+	  //
+	  if (attacker_sea_units_remaining <= 0) {
+	    for (let f in faction_map) {
+	      if (faction_map[f] === attacker_faction) {
+	        for (let i = 0; i < space.units[f].length; i++) {
+	          his_self.captureLeader(defender_faction, attacker_faction, mv[1], space.units[f][i]);
+		  space.units[f].splice(i, 1);
+		  i--;
+		}
+	      }
+	    }
+	  }
+	  if (defender_sea_units_remaining <= 0) {
+	    for (let f in faction_map) {
+	      if (faction_map[f] === defender_faction) {
+	        for (let i = 0; i < space.units[f].length; i++) {
+	          his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
+		  space.units[f].splice(i, 1);
+		  i--;
+		}
+	      }
+	    }
+	  }
+
+	  this.updateLog("Winner: "+this.returnFactionName(winner));
+
+	  this.updateLog("Attacker Units Remaining: "+attacker_land_units_remaining);
+	  this.updateLog("Defender Units Remaining: "+defender_land_units_remaining);
+
+console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
+
+          this.game.queue.push("purge_naval_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
+
+          //
+          // conduct retreats
+          //
+	  if (this.game.spaces[space.key]) {
+
+	    //
+	    // attacker always retreats from ports
+	    //
+            this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+attacker_faction+"\t"+space.key);
+
+	  } else {
+
+	    //
+	    // loser retreats on open seas
+	    //
+            if (winner === defender_faction) {
+              this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+attacker_faction+"\t"+space.key);
+	    } else {
+              this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+defender_faction+"\t"+space.key);
+	    }
+
+	  }
+
+          this.game.queue.push("naval_battle_hits_assignment\t"+defender_faction+"\t"+attacker_hits+"\t"+space.key);
+          this.game.queue.push("naval_battle_hits_assignment\t"+attacker_faction+"\t"+defender_hits+"\t"+space.key);
+
+
+          //
+          // redisplay
+          //
+	  if (this.game.spaces[space.key]) {
+            his_self.displaySpace(space.key);
+	  } else {
+            his_self.displayNavalSpace(space.key);
+	  }
+
+          return 1;
+
+        }
+
+
+
 	if (mv[0] === "assault") {
 
           this.game.queue.splice(qe, 1);
@@ -8997,7 +10843,7 @@ console.log("removing secondarily!");
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
 
 
-	  if (attacker_land_units_remaining == 0 && defender_land_units_remaining == 0) {
+	  if (attacker_land_units_remaining <= 0 && defender_land_units_remaining <= 0) {
 	    if (attacker_rolls > defender_rolls) {
 	      his_self.updateLog("Attacker adds 1 regular");
 	      his_self.addRegular(attacker_faction, space);
@@ -9010,7 +10856,7 @@ console.log("removing secondarily!");
 	  //
 	  // capture stranded leaders
 	  //
-	  if (attacker_land_units_remaining == 0) {
+	  if (attacker_land_units_remaining <= 0) {
 	    for (let f in faction_map) {
 	      if (faction_map[f] === attacker_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
@@ -9021,7 +10867,7 @@ console.log("removing secondarily!");
 	      }
 	    }
 	  }
-	  if (defender_land_units_remaining == 0) {
+	  if (defender_land_units_remaining <= 0) {
 	    for (let f in faction_map) {
 	      if (faction_map[f] === defender_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
@@ -9123,6 +10969,63 @@ console.log("purging units and capturing leader");
 	}
 
 
+	if (mv[0] === "purge_naval_units_and_capture_leaders") {
+
+console.log("purging naval units and capturing leader");
+
+          this.game.queue.splice(qe, 1);
+
+          let loser = mv[1];
+          let winner = mv[2];
+          let spacekey = mv[3];
+
+	  let space;
+	  if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
+	  if (this.game.navalspaces[spacekey]) { space = this.game.navalspaces[spacekey]; }
+
+	  if (space.units[loser].length > 0) {
+	    this.updateLog(this.returnFactionName(loser) + " eliminated in " + this.returnSpaceName(spacekey));
+	  }
+
+	  for (let i = 0; i < space.units[loser].length; i++) {
+	    this.captureNavalLeader(loser, winner, spacekey, space.units[f][i]);
+	  }
+
+	  space.units[loser] = [];
+
+	  return 1;
+
+	}
+
+
+        if (mv[0] === "player_evaluate_post_naval_battle_retreat") {
+
+console.log("PLAYER EVALUATE POST FIELD BATTLE RETREAT!");
+console.log("loser: " + loser);
+console.log("space: " + spacekey);
+
+          this.game.queue.splice(qe, 1);
+
+          let loser = mv[1];
+          let spacekey = mv[2];
+
+          let faction_map = his_self.game.state.naval_battle.faction_map;
+          let attacker_faction = his_self.game.state.naval_battle.attacker_faction;
+          let defender_faction = his_self.game.state.naval_battle.defender_faction;
+          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+
+          if (this.game.player == this.returnPlayerOfFaction(loser)) {
+            this.playerEvaluateNavalRetreatOpportunity(loser, spacekey);
+          } else {
+            this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat at sea");
+          }
+
+          return 0;
+
+        }
+
+
         if (mv[0] === "player_evaluate_post_field_battle_retreat") {
 
 console.log("PLAYER EVALUATE POST FIELD BATTLE RETREAT!");
@@ -9178,30 +11081,209 @@ console.log("space: " + spacekey);
 	}
 
 
-        if (mv[0] === "theological_debate") {
+
+	if (mv[0] === "pick_second_round_debaters") {
+
+	  //
+	  // attacker chosen randomly from uncommitted
+	  //
+          let ad = 0;
+          let cd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].owner == attacker) {
+	      if (this.game.state.debaters[i].committed == 0) {
+	        ad++;
+	      } else {
+	        cd++;
+	      }
+	    }
+	  }
+	  if (ad != 0) {
+	    x = this.rollDice(ad) - 1;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	        if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	        ad++;
+	      }
+	    }
+	  } else {
+	    x = this.rollDice(cd) - 1;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
+	        if (x === cd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	        cd++;
+	      }
+	    }
+	  }
+	  
+
+	  //
+	  // defender chosen randomly from uncommitted too
+	  //
+	  let dd = 0;
+	  let cd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.theological_debate.committed == "committed") {
+	      if (this.game.state.debaters[i].owner == attacker) {
+		if (this.game.state.debaters[i].committed == 1) {
+	          dd++;
+	        } else {
+		  cd++;
+	        }
+	      }
+	    }
+	  }
+	  if (dd == 0) {
+      	    x = this.rollDice(dd) - 1;
+  	    dd = 0;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.theological_debate.committed == "committed") {
+	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	          if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	          dd++;
+	        } else {
+	          if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	  	  dd++;
+	        }
+	      }
+	    }
+	  } else {
+      	    x = this.rollDice(cd) - 1;
+  	    cd = 0;
+	    for (let i = 0; i < this.game.state.debaters.length; i++) {
+	      if (this.game.state.theological_debate.committed == "committed") {
+	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	          if (x === cd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	          cd++;
+	        } else {
+	          if (x === cd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	  	  cd++;
+	        }
+	      }
+	    }
+	  }
+	  
+	  this.game.queue.splice(qe, 1);
+
+	}
+
+	if (mv[0] === "pre_theological_debate") {
 
 	  let attacker = mv[1];
 	  let defender = mv[2];
 	  let language_zone = mv[3];
+	  let committed_or_uncommitted = mv[4];
 
-	  this.game.queue.splice(qe, 1);
+	  this.game.state.theological_debate = {};
+	  this.game.state.theological_debate.attacker = mv[1];
+	  this.game.state.theological_debate.defender = mv[2];
+	  this.game.state.theological_debate.language_zone = mv[3];
+	  this.game.state.theological_debate.committed = mv[4];
+	  this.game.state.theological_debate.round = 1;
+	  this.game.state.theological_debate.round1_attacker_debater = "";
+	  this.game.state.theological_debate.round1_defender_debater = "";
+	  this.game.state.theological_debate.round2_attacker_debater = "";
+	  this.game.state.theological_debate.round2_defender_debater = "";
+	  this.game.state.theological_debate.selected_papal_debater = "";
+	  this.game.state.theological_debate.prohibited_protestant_debater = "";
+
+	  let x = 0;
 
 	  //
 	  // attacker picks debater at random
 	  //
-	  this.game.queue.push();
+          let ad = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].owner == attacker) {
+	      if (this.game.state.debaters[i].committed == 0) {
+	        ad++;
+	      }
+	    }
+	  }
+	  x = this.rollDice(ad) - 1;
+	  ad = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	      if (x === ad) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	      ad++;
+	    }
+	  }
+	  
+	  //
+	  // defender chosen randomly from type 
+	  //
+	  let dd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.theological_debate.committed == "committed") {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 1) {
+	        dd++;
+	      }
+	    }
+	  }
+	  x = this.rollDice(ad) - 1;
+	  dd = 0;
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.theological_debate.committed == "committed") {
+	      if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	        if (x === dd) { this.game.state.theological_debate.attacker_debater = this.game.state.debaters[i].type; }
+	        dd++;
+	      }
+	    }
+	  }
+	  
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
 
 
+        if (mv[0] === "theological_debate") {
+
+	  let attacker = this.game.state.theological_debate.attacker;
+	  let defender = this.game.state.theological_debate.defender;
+	  let language_zone = this.game.state.theological_debate.language_zone;
+	  let committed_or_uncommitted = this.game.state.theological_debate.committed;
+	  let attacker_idx = 0;
+	  let defender_idx = 0;
+	  let was_defender_uncommitted = 0;
+
+	  this.game.queue.splice(qe, 1);
+
 	  //
-	  // attacker specifies if commited or uncommitted debater on defense
+	  // commit debaters if uncommitted
 	  //
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.attacker_debater) {
+	      attacker_idx = i;
+	      if (this.game.state.debaters[i].committed == 0) {
+		this.commitDebater(this.game.state.theological_debate.attacker, this.game.state.theological_debate.attacker_debater);
+	      }
+	    }
+	  }
+	  for (let i = 0; i < this.game.state.debaters.length; i++) {
+	    if (this.game.state.debaters[i].type === this.game.state.theological_debate.defender_debater) {
+	      defender_idx = i;
+	      if (this.game.state.debaters[i].committed == 0) {
+	        was_defender_uncommitted = 1;
+		this.commitDebater(this.game.state.theological_debate.defender, this.game.state.theological_debate.defender_debater);
+	      }
+	    }
+	  }
+
+	  //
+	  // open theological debate UI
+	  //
+	  this.displayTheologicalDebate();
+	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
+	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
+	  
 
 	  //
 	  // some wrangling lets defender switch up if Protestant
 	  //
-
-	  let attacker_rolls = 0 + 3; // power of debater + 3;
-	  let defender_rolls = 0 + 1; // power of debater + 1; // or 2 if uncommitted
+	  let attacker_rolls = this.game.state.debaters[attacker_idx].power + 3; // power of debater + 3;
+	  let defender_rolls = this.game.state.debaters[debater_idx].power + 1 + was_defender_uncommitted;
 
 	  let attacker_hits = 0;
 	  let defender_hits = 0;
@@ -9218,8 +11300,16 @@ console.log("space: " + spacekey);
 	  }
 	
 	  if (attacker_hits == defender_hits) {
+
+	    //
 	    // first round of debate moves into second
-	    this.updateLog("TIE - skipping second round for now");
+	    //
+	    this.game.state.theological_debate.round++;
+	    this.game.queue.push("theological_debate");
+	    this.game.queue.push("counter_or_acknowledge\tThe Debate is Tied - Progress to 2nd Round\tdebate");
+            this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("pick_second_round_debaters");
+
 	  } else {
 	    if (attacker_hits > defender_hits) {
 	      this.updateLog("Attacker Wins");
@@ -9227,6 +11317,9 @@ console.log("space: " + spacekey);
 	      this.updateLog("Defender Wins");
 	    }
 	  }
+
+	  this.game.queue.push("counter_or_acknowledge\tThe Debate is Over\tdebate_finished");
+          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 	  return 1;
 
@@ -9301,6 +11394,8 @@ console.log("NEW WORLD PHASE!");
 	  console.log("Winter Phase!");
 
 	  // Remove loaned naval squadron markers
+	  this.returnLoanedUnits();
+
 	  // Remove the Renegade Leader if in play
 	  // Return naval units to the nearest port
 	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
@@ -9961,6 +12056,7 @@ this.updateLog("Catholics: " + c_rolls);
 
 	}
 
+
 	//
 	// objects and cards can add commands
 	//
@@ -10141,6 +12237,9 @@ this.updateLog("Catholics: " + c_rolls);
     this.game.state.tmp_catholic_reformation_bonus = 0;
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+    this.game.state.tmp_papacy_may_specify_debater = 0;
+    this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
 
     for (let s in this.game.spaces) {
       if (this.game.spaces[s].besieged == 2) {
@@ -10153,6 +12252,9 @@ this.updateLog("Catholics: " + c_rolls);
       p.tmp_roll_bonus = 0;
       p.tmp_roll_first = 0;
       p.tmp_roll_modifiers = [];
+      p.has_colonized = 0;
+      p.has_explored = 0;
+      p.has_conquered = 0;
     }
 
     this.game.state.field_battle = {};
@@ -10185,6 +12287,131 @@ this.updateLog("Catholics: " + c_rolls);
     }
     return 0;
   }
+
+
+
+  playerAssignNavalHits(faction, hits_to_assign, spacekey) {
+
+    let space;
+
+    if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
+    if (this.game.navalspaces[spacekey]) { space = this.game.navalspaces[spacekey]; }
+
+    let units_available = space.units[faction];
+    let units_to_destroy = [];
+
+    let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
+
+      let msg = "Hits Remaining: " + hits_to_assign;
+      let html = "<ul>";
+      let targets = 0;
+      for (let i = 0; i < space.units[faction].length; i++) {
+        if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
+          if (!units_to_destroy.includes(parseInt(i))) {
+	    targets++;
+            html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+          }
+          html += "</ul>";
+        }
+      }
+
+
+      if (targets <= 0 || hits_to_assign <= 0) {
+	this.addMove("destroy_naval_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
+	this.endTurn();
+	return;
+      }
+
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (!units_to_destroy.includes(id)) {
+          units_to_destroy.push(parseInt(id));
+        }
+
+	if (units_available[id].type == "squadron") { hits_to_assign -= 2; }
+	if (units_available[id].type == "corsair") { hits_to_assign -= 1; }
+
+        selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
+
+      });
+    }
+
+    selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
+
+    return 0;
+
+  }
+
+
+  playerResolveNavalWinterRetreat(faction, spacekey) {
+
+    let his_self = this;
+    let res = this.returnNearestFactionControlledPort(faction, spacekey);
+
+    let msg = "Select Winter Port for Naval Units in "+space.name;
+    let opt = "";
+    for (let i = 0; i < res.length; i++) {
+      opt += `<li class="option" id="${res[i].key}">${res[i].key}</li>`;
+    }
+
+    if (res.length == 0) {
+      this.endTurn();
+      return 0;
+    }
+
+    this.updateStatusWithOptions(msg, opt);
+
+    $(".option").off();
+    $(".option").on('click', function() {
+
+      let id = $(this).attr('id');
+      $(".option").off();
+
+      his_self.addMove("retreat_to_winter_port_resolve\t"+faction+"\t"+spacekey+"\t"+id);
+      his_self.endTurn();
+
+    });
+
+  }
+
+  playerResolveWinterRetreat(faction, spacekey) {
+
+    let his_self = this;
+    let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
+    let space = this.game.spaces[spacekey];
+
+    let msg = "Select Winter Location for Units in "+space.name;
+    let opt = "";
+    for (let i = 0; i < res.length; i++) {
+      opt += `<li class="option" id="${res[i].key}">${res[i].key}</li>`;
+    }
+
+    if (res.length == 0) {
+      this.endTurn();
+      return 0;
+    }
+
+    this.updateStatusWithOptions(msg, opt);
+
+    $(".option").off();
+    $(".option").on('click', function() {
+
+      let id = $(this).attr('id');
+      $(".option").off();
+
+      his_self.addMove("retreat_to_winter_spaces_resolve\t"+faction+"\t"+spacekey+"\t"+id);
+      his_self.endTurn();
+
+    });
+
+  }
+
 
 
   returnPlayerFactions(player) {
@@ -11017,6 +13244,72 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 
 
+  playerEvaluateNavalRetreatOpportunity(faction, spacekey) {
+
+    let his_self = this;
+    let retreat_destination = "";
+
+    let space;
+    if (his_self.game.spaces[spacekey]) { space = his_self.game.spaces[spacekey]; }
+    if (his_self.game.navalspaces[spacekey]) { space = his_self.game.navalspaces[spacekey]; }
+
+    let neighbours = this.returnNavalAndPortNeighbours(spacekey);
+    let retreat_options = 0;
+    for (let i = 0; i < neighbours.length; i++) {
+      if (this.canFactionRetreatToNavalSpace(faction, neighbours[i])) {
+	retreat_options++;
+      }
+    }
+
+    if (retreat_options == 0) {
+      his_self.updateLog("Naval retreat not possible...");
+      his_self.endTurn();
+      return 0;
+    }
+
+    let onFinishSelect = function(his_self, destination_spacekey) {
+      his_self.addMove("naval_retreat"+"\t"+faction+"\t"+spacekey+"\t"+"\t"+destination_spacekey);
+      his_self.endTurn();
+    };
+
+    let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
+      let html = "<ul>";
+      for (let i = 0; i < neighbours.length; i++) {
+        if (this.canFactionNavalRetreatToSpace(defender, neighbours[i])) {
+          html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
+	}
+      }
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions("Choose Destination for Naval Retreat: ", html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let id = $(this).attr("id");
+        onFinishSelect(his_self, id);
+      });
+    };
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="retreat">retreat</li>`;
+    html    += `<li class="card" id="skip">do not retreat</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Retreat from ${spacekey}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "retreat") {
+	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
   playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender) {
 
     let his_self = this;
@@ -11185,10 +13478,98 @@ console.log("units length: " + space.units[defender].length);
 
 
 
+
+
+
+  playerEvaluateNavalInterceptionOpportunity(attacker, spacekey, defender, defender_spacekey) {
+
+    let his_self = this;
+
+    let units_to_move = [];
+
+    let onFinishSelect = function(his_self, units_to_move) {
+      his_self.addMove("naval_intercept"+"\t"+attacker+"\t"+spacekey+"\t"+"\t"+defender+"\t"+defender_spacekey+"\t"+JSON.stringify(units_to_move));
+      his_self.endTurn();
+    };
+
+    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
+
+      let msg = "Select Units to Intercept: ";
+      let space;
+      if (his_self.game.spaces[defender_spacekey]) {
+        space = his_self.game.spaces[defender_spacekey];
+      }
+      if (his_self.game.navalspaces[defender_spacekey]) {
+        space = his_self.game.navalspaces[defender_spacekey];
+      }
+
+      let html = "<ul>";
+
+console.log("units length: " + space.units[defender].length);
+
+      for (let i = 0; i < space.units[defender].length; i++) {
+        if (space.units[defender][i].land_or_sea === "sea" || space.units[defender][i].land_or_sea === "both") {
+          if (units_to_move.includes(parseInt(i))) {
+            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
+          } else {
+            html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+          }
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+          onFinishSelect(his_self, units_to_move);
+          return;
+        }
+
+        if (units_to_move.includes(id)) {
+          let idx = units_to_move.indexOf(id);
+          if (idx > -1) {
+            units_to_move.splice(idx, 1);
+          }
+        } else {
+          units_to_move.push(parseInt(id));
+        }
+
+        selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+      });
+    };
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="intercept">intercept</li>`;
+    html    += `<li class="card" id="skip">skip</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Intercept from ${defender_spacekey}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "intercept") {
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
+
+
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_units.length; i++) {
-      if (this.game.spaces[spaces_with_units[i]].pass.length > 0) { return 1; }
+      if (his_self.game.spaces[spaces_with_units[i]].pass.length > 0) { return 1; }
     }
     return 0;
   }
@@ -11313,143 +13694,130 @@ console.log("units length: " + space.units[defender].length);
   async playerNavalMove(his_self, player, faction) {
 
     let units_to_move = [];
-    let cancel_func = null;
+    let units_available = his_self.returnFactionNavalUnitsToMove(faction);
 
-    his_self.playerSelectNavalSpaceWithFilter(
+console.log("UA: " + JSON.stringify(units_available));
 
-      "Select Naval Space from Which to Move Units:",
+    let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 
-      function(space) {
-	for (let z in space.units) {
-	  if (space.units[z].length && faction === z) {
-	    for (let i = 0; i < space.units[z].length; i++) {
-	      if (space.units[z][i].land_or_sea == "sea" || space.units[z][i].land_or_sea == "both") {
-	        return 1;
+      let msg = "Select Unit to Move";
+      let html = "<ul>";
+      for (let i = 0; i < units_available.length; i++) {
+	let spacekey = units_available[i].spacekey;
+	let unit = units_available[i];
+        if (units_to_move.includes(parseInt(i))) {
+          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
+        } else {
+          html += `<li class="option" id="${i}">${units_available[i].name} (${units_available[i].spacekey})</li>`;
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+
+	  let destinations = {};
+
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    let unit = units_available[units_to_move[i]];
+	    if (!destinations[unit.destination]) {
+	      his_self.addMove("naval_interception_check\t"+faction+"\t"+unit.destination);
+	      destinations[unit.destination] = 1;
+	    }
+	  }
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    let unit = units_available[units_to_move[i]];
+            his_self.addMove("move\t"+faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+units_to_move[i]);
+	  }
+          his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" shifting naval forces\tnavalmove");
+	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	  his_self.endTurn();
+
+	}
+
+	//
+	// add unit to units available
+	//
+        if (units_to_move.includes(id)) {
+          let idx = units_to_move.indexOf(id);
+          if (idx > -1) {
+            units_to_move.splice(idx, 1);
+          }
+        } else {
+          if (!units_to_move.includes(parseInt(id))) {
+            units_to_move.push(parseInt(id));
+            selectDestinationInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+          } else {
+            for (let i = 0; i < units_to_move.length; i++) {
+              if (units_to_move[i] === parseInt(id)) {
+                units_to_move.splice(i, 1);
+      	        selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+                break;
               }
             }
           }
-	}
-	return 0;
-      },
+        }
+      });
+    }
 
-      function(spacekey) {
+    let selectDestinationInterface = function(his_self, unit_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 
-        let space = his_self.spaces[spacekey];
+      //
+      // unit selected will always be last in array
+      //
+      let unit = units_available[unit_to_move[unit_to_move.length-1]];
 
-	let selectDestinationInterface = function(his_self, units_to_move) {  
-    	  his_self.playerSelectNavalSpaceWithFilter(
+console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
-            "Select Naval Destination for these Units",
+      let destinations = his_self.returnNavalMoveOptions(unit.spacekey);
 
-      	    function(space) {
-	      //
-	      // trying to find out if space is destination for spacekey
-	      //
-	      if (his_self.game.spaces[spacekey]) {
-	        if (space.ports) {
-		  if (space.ports.includes(spacekey)) {
-	  	    return 1; 
-	          } 
-		}
-		return 0;
-	      }
+      console.log("SELECT DESTINATION INTERFACE: " + JSON.stringify(destinations));
 
-	      if (his_self.game.navalspaces[spacekey]) {
-	        if (space.neighbours.includes(spacekey)) {
-		  return 1;
-		}
-	        if (space.ports.includes(spacekey)) {
-		  return 1;
-		}
-		return 0;
-	      }		
+      let msg = "Select Destination";
+      let html = "<ul>";
+      for (let i = 0; i < destinations.length; i++) {
+	let spacekey = destinations[i];
+        html += `<li class="option" style="font-weight:bold" id="${spacekey}">${spacekey}</li>`;
+      }
+      html += "</ul>";
 
-	      return 0;
-            },
+      his_self.updateStatusWithOptions(msg, html);
 
-      	    function(destination_spacekey) {
-	
-	      units_to_move.sort();
-	      ////units_to_move.reverse();
+      $('.option').off();
+      $('.option').on('click', function () {
 
-	      for (let i = 0; i < units_to_move.length; i++) {
-		his_self.addMove("move\t"+faction+"\tsea\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
-	      }
-	      his_self.endTurn();
+        let id = $(this).attr("id");
 
-	    },
+	unit.destination = id;
+        selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
 
-	    cancel_func,
+      });
 
-	    true 
+    }
 
-	  );
-	}
+    selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
 
-	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
-
-	  let html = "<ul>";
-	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
-	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	      } else {
-	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
-	      }
-	    }
-	  }
-	  html += `<li class="option" id="end">finish</li>`;
-	  html += "</ul>";
-
-	  his_self.updateStatus(html);
-
-          $('.option').off();
-          $('.option').on('click', function () {
-
-            let id = $(this).attr("id");
-
-	    if (id === "end") {
-	      selectDestinationInterface(his_self, units_to_move);
-	      return;
-	    }
-
-	    if (units_to_move.includes(id)) {
-	      let idx = units_to_move.indexOf(id);
-	      if (idx > -1) {
-  		units_to_move.splice(idx, 1);
-	      }
-	    } else {
-	      units_to_move.push(parseInt(id));
-	    }
-
-	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-	  });
-	}
-	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-	
-      },
-
-      cancel_func,
-
-      true,
-
-    );
-
-  }
-  canPlayerMoveFormationOverPass(his_self, player, faction) {
-    return 1;
   }
 
   canPlayerMoveFormationInClear(his_self, player, faction) {
-    return 1;
+    let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
+    if (spaces_with_units.length > 0) { 
+      return 1;
+    }
+    return 0;
   }
 
   canPlayerBuyMercenary(his_self, player, faction) {
     return 1;
   }
   playerBuyMercenary(his_self, player, faction) {
-
-console.log("faction: " + faction);
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -11468,7 +13836,6 @@ console.log("faction: " + faction);
 
     );
   }
-
 
   canPlayerRaiseRegular(his_self, player, faction) {
     return 1;
@@ -11553,24 +13920,55 @@ console.log("faction: " + faction);
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
+      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
+	for (let z = 0; z < neighbours.length; z++) {
+	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
+	    console.log("SPACE IS: " + neighbours[z]);
+	    return 1;
+	  } 
+	}
+	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) {
+	  console.log("SPACE IS: " + spaces_in_unrest[i]);
+	  return 1;
+	} 
+      }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { return 1; }
-    }
+      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { 
+	console.log("SPACE IS: " + conquerable_spaces[i]);
+	return 1;
+      } 
+   }
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
+    let pacifiable_spaces_in_unrest = [];
+    for (let i = 0; i < spaces_in_unrest.length; i++) {
+      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
+	for (let z = 0; z < neighbours.length; z++) {
+	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
+	}
+	if (his_self.returnFactionLandUnitsInSpace(faction, spaces_in_unrest[i]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
+      }
+    }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      if (his_self.isSpaceControlledByFaction(conquerable_spaces[i], faction)) {
+	conquerable_spaces.splice(i, 1);
+	i--;
+      }
+    }
 
     his_self.playerSelectSpaceWithFilter(
 
       "Select Space to Pacify:",
 
       function(space) {
-        if (spaces_in_unrest.includes(space.key)) { return 1; }
-        if (conquerable_spaces.includes(space.key)) { return 1; }
+        if (pacifiable_spaces_in_unrest.includes(space.key)) { return 1; }
+        if (conquerable_spaces.includes(space.key) && !his_self.isSpaceControlledByFaction(space.key, faction) && !his_self.isSpaceFriendly(space.key, faction)) { return 1; }
 	return 0;
       },
 
@@ -11583,23 +13981,29 @@ console.log("faction: " + faction);
     return 0;
   }
   canPlayerExplore(his_self, player, faction) {
+    if (this.game.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
   async playerExplore(his_self, player, faction) {
+    this.game.players_info[player-1].has_explored = 1;
 console.log("10");
 return;
   }
   canPlayerColonize(his_self, player, faction) {
+    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerColonize(his_self, player, faction) {
+    this.game.players_info[player-1].has_colonized = 1;
 console.log("11");
 return;
   }
   canPlayerConquer(his_self, player, faction) {
+    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerConquer(his_self, player, faction) {
+    this.game.players_info[player-1].has_conquered = 1;
 console.log("12");
 return;
   }
@@ -11722,24 +14126,58 @@ return;
 
     let msg = "Select Language Zone for Theological Debate:";
     let html = '<ul>';
+
+    if (his_self.returnDebatersInLanguageZone("german", "protestant")) { 
         html += '<li class="option" style="" id="german">German</li>';
+    }
+    if (his_self.returnDebatersInLanguageZone("french", "france")) { 
         html += '<li class="option" style="" id="french">French</li>';
+    }
+    if (his_self.returnDebatersInLanguageZone("english", "france")) { 
         html += '<li class="option" style="" id="english">English</li>';
+    }
         html += '</ul>';
 
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
-      let id = $(this).attr("id");
-      if (faction === "papacy") {
-	his_self.addMove("theological_debate\tpapacy\tprotestant\t"+id);
-      } else {
-	his_self.addMove("theological_debate\tprotestant\tpapacy\t"+id);
+
+      let language_zone = $(this).attr("id");
+
+      let msg = "Against Comitted or Uncommited Debater?";
+      let html = '<ul>';
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
+          html += '<li class="option" id="committed">Committed</li>';
       }
-      this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
-      this.addMove("RESETCONFIRMSNEEDED\tall");
-      his_self.endTurn();
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 0)) {
+          html += '<li class="option" id="uncommitted">Uncommitted</li>';
+      }
+      html += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let committed = $(this).attr("id");
+
+        if (committed === "committed") { committed = 1; } else { committed = 0; }
+
+        if (faction === "papacy") {
+	  his_self.addMove("theological_debate");
+          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+          this.addMove("RESETCONFIRMSNEEDED\tall");
+	  his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+        } else {
+    	  his_self.addMove("theological_debate");
+          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " calls a theological debate\tdebate");
+          this.addMove("RESETCONFIRMSNEEDED\tall");
+    	  his_self.addMove("pre_theological_debate\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
+        }
+        his_self.endTurn();
+
+      });
     });
 
     return 0;
@@ -11945,7 +14383,6 @@ return;
 
 
 
-
   importUnit(name, obj) {
 
     if (obj.type == null)               { obj.type = "unit"; }
@@ -11963,9 +14400,11 @@ return;
     if (obj.committed == null)          { obj.committed = 0; }
     if (obj.besieged == null)           { obj.besieged = false; }
     if (obj.captured == null)           { obj.captured = false; }
-    if (obj.key == null)		{ obj.key = name; }
-
-    //obj = this.addEvents(obj);
+    if (obj.loaned == null)             { obj.loaned = false; }
+    if (obj.key == null)                { obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
     this.units[name] = obj;
 
   }
@@ -11973,83 +14412,414 @@ return;
   newUnit(faction, type) {
     for (let key in this.units) {
       if (this.units[key].type === type) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	return new_unit;
+        let new_unit = JSON.parse(JSON.stringify(this.units[key]));
+        new_unit.owner = faction;
+        return new_unit;
       }
     }
     return null;
   }
 
-  newReformer(faction, reformer) {
-    for (let key in this.units) {
-      if (this.units[key].type === reformer) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	return new_unit;
-      }
+  importArmyLeader(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = true; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    return null;
+    this.army[name] = obj;
   }
-  newDebater(faction, debater) {
-    for (let key in this.units) {
-      if (this.units[key].type === debater) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	new_unit.committed = 0;
-	return new_unit;
-      }
+
+  importNavyLeader(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = true; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    return null;
+    this.navy[name] = obj;
   }
-  newPersonage(faction, personage) {
-    for (let key in this.units) {
-      if (this.units[key].type === personage) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	return new_unit;
-      }
+
+  importWife(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = true; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
     }
-    return null;
+    this.wives[name] = obj;
+  }
+
+  importReformer(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = true; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = true; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.reformers[name] = obj;
+  }
+
+  importDebater(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = true; }
+    if (obj.debater == null)            { obj.debater = true; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.debaters[name] = obj;
+  }
+
+  importExplorer(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.explorers[name] = obj;
+  }
+
+  importConquistador(name, obj) {
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.spacekey == null)           { obj.spacekey = ""; }
+    if (obj.personage == null)          { obj.personage = false; }
+    if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
+    if (obj.army_leader == null)        { obj.army_leader = false; }
+    if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
+    if (obj.command_value == null)      { obj.command_value = 0; }
+    if (obj.battle_rating == null)      { obj.battle_rating = 0; }
+    if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
+    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.captured == null)           { obj.captured = false; }
+    if (obj.loaned == null)		{ obj.loaned = false; }
+    if (obj.key == null)		{ obj.key = name; }
+    if (obj.onCommitted == null) {
+      obj.onCommitted = function(his_self, faction) { return 1; }
+    }
+    this.conquistadors[name] = obj;
+  }
+
+  addArmyLeader(faction, space, leader) {
+
+    if (!this.army[leader]) {
+      console.log("ARMY LEADER: " + leader + " not found");
+      return;
+    }
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.units[faction].push(this.army[leader]);
+    space.units[faction][space.units[faction].length-1].owner = faction; 
+
   }
 
 
-  displayReligiousConflictUI(attacker, defender) {
+  addNavyLeader(faction, space, leader) {
 
-    let html = `
-      <div class="theological_debate_sheet" id="theological_debate_sheet" style="background-image: url('/his/img/backgrounds/theological-debate2.jpeg')">
-	<div class="attacker_debater"></div>
-	<div class="defender_debater"></div>
-	<div class="status" id="status"></div>
-      </div>
-    `;
+    if (!this.navy[leader]) {
+      console.log("NAVY LEADER: " + leader + " not found");
+      return;
+    }
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    space.units[faction].push(this.navy[leader]);
+    space.units[faction][space.units[faction].length-1].owner = faction; 
+
+  }
+
+
+  addReformer(faction, space, reformer) {
+
+    if (!this.reformer[reformer]) {
+      console.log("REFORMER: " + reformer + " not found");
+      return;
+    }
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.units[faction].push(this.reformers[reformer]);
+    space.units[faction][space.units[faction].length-1].owner = faction; 
+
+  }
+
+  addWife(faction, wife) {
+
+    if (!this.wives[wife]) {
+      console.log("WIFE: " + wife + " not found");
+      return;
+    }
+
+    this.game.state.wives.push(this.wives[wife]);
+    this.game.state.wives[this.game.state.wives.length-1].owner = faction; 
+
+  }
+
+  addDebater(faction, debater) {
+
+    if (!this.debaters[debater]) {
+      console.log("DEBATER: " + debater + " not found");
+      return;
+    }
+
+    this.game.state.debaters.push(this.debaters[debater]);
+    this.game.state.debaters[this.game.state.debaters.length-1].owner = faction; 
+    this.game.state.debaters[this.game.state.debaters.length-1].committed = 0; 
+
+  }
+
+  addExplorer(faction, explorer) {
+
+    if (!this.explorers[explorer]) {
+      console.log("EXPLORER: " + explorer + " not found");
+      return;
+    }
+
+    this.game.state.explorers.push(this.explorers[explorer]);
+  }
+
+  addConquistador(faction, conquistador) {
+
+    if (!this.conquistadors[conquistador]) {
+      console.log("CONQUISTADOR: " + conquistador + " not found");
+      return;
+    }
+
+    this.game.state.conquistador.push(this.conquistadors[conquistador]);
+
+  }
+
+
+
+  commitDebater(faction, debater) {
+    let his_self = this;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key == debater) {
+	this.game.state.debaters[i].committed = 1;
+	this.debaters[debater].onCommitted(his_self, this.game.state.debaters[i].owner);
+      }
+    }
+  }
+
+  commitExplorer(faction, explorer) {
+    let his_self = this;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].key == explorer) {
+	this.game.state.explorer[i].committed = 1;
+	this.explorers[explorer].onCommitted(his_self, this.game.state.explorers[i].owner);
+      }
+    }
+  }
+
+  commitConquistador(faction, explorer) {
+    let his_self = this;
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      if (this.game.state.conquistadors[i].key == explorer) {
+	this.game.state.conquistadors[i].committed = 1;
+	this.conquistadors[conquistador].onCommitted(his_self, this.game.state.conquistadors[i].owner);
+      }
+    }
+  }
+
+
+
+
+  displayDebaters() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
+    }
+    html += `</div>`;
 
     this.overlay.showOverlay(this.app, this, html);
 
-    //
-    // list all debaters
-    //
     for (let i = 0; i < this.game.state.debaters.length; i++) {
-      let d = this.game.state.debaters[i];
-      let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
-      if (d.owner === "papacy") {
-	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
+      let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.debaters[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
       }
-      if (d.owner === "england") {
-	this.app.browser.addElementToSelector(dtile, '.anglican_debaters');
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+    }
+  }
+
+  displayExplorers() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      html += `	<div class="personage_tile${i}" data-id="${this.game.state.explorers[i].img}" style="background-image:url('/his/img/tiles/explorers/${this.game.state.explorers[i].img}')"></div>`;
+    }
+    html += `</div>`;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.explorers[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
       }
-      if (d.owner === "hapsburg") {
-	this.app.browser.addElementToSelector(dtile, '.calvinist_debaters');
-      }
-      if (d.owner === "protestant") {
-	this.app.browser.addElementToSelector(dtile, '.protestant_debaters');
-      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
     }
 
-    let obj = document.getElementById("religious_conflict_sheet_tile");
-    obj.style.top = rcc[cid].top;
-    obj.style.left = rcc[cid].left;
+  }
 
+  displayConquistadors() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.conquistadors[i].img}" style="background-image:url('/his/img/tiles/conquistadors/${this.game.state.conquistadors[i].img}')"></div>`;
+    }
+    html += `</div>`;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      let tile_f = "/his/img/tiles/conquistadors/" + this.game.state.conquistadors[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.conquistadors[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
+      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+    }
+  }
+
+  displayTheologicalDebater(debater, attacker=true) {
+
+    let tile_f = "/his/img/tiles/debaters/" + this.units[debater].img;
+    let tile_b = tile_f.replace('.svg', '_back.svg');
+
+    if (attacker) {
+      $('.attacker_debater').css('background-image', `url('${tile_f}')`);
+      $('.attacker_debater').mouseover(function() { 
+	$('.attacker_debater').css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$('.attacker_debater').css('background-image', `url('${tile_f}')`);
+      });
+    } else {
+      $('.defender_debater').css('background-image', `url('${tile_f}')`);
+      $('.defender_debater').mouseover(function() { 
+	$('.defender_debater').css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$('.defender_debater').css('background-image', `url('${tile_f}')`);
+      });
+    }
   }
 
   displayReligiousConflictSheet() {
@@ -12174,25 +14944,18 @@ return;
     // PROTESTANTS
     if (this.factions[faction].key === "protestant") {
 
-console.log("TRANS: " + JSON.stringify(this.game.state.translations));
-
       let total_keys = 11;
       let remaining_keys = total_keys - controlled_keys;
       for (let i = 0; i <= 6; i++) {
 	  let box_inserts = "";
-console.log("A");
-console.log("A: " + this.game.state.translations['new']["german"]);
-console.log("B: " + this.game.state.translations['new']['french']);
-console.log("C: " + this.game.state.translations['new']['english']);
-console.log("D");
 	  if (this.game.state.translations['new']['german'] == i) {
-            box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
+            box_inserts += `<div class="new_testament_german_tile" id="new_testament_german_tile"></div>`;
 	  }
 	  if (this.game.state.translations['new']['french'] == i) {
-            box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
+            box_inserts += `<div class="new_testament_french_tile" id="new_testament_french_tile"></div>`;
 	  }
 	  if (this.game.state.translations['new']['english'] == i) {
-            box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
+            box_inserts += `<div class="new_testament_english_tile" id="new_testament_english_tile"></div>`;
 	  }
           keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
       }
@@ -12881,6 +15644,8 @@ console.log("D");
 
   displaySpace(key) {
 
+    if (!this.game.spaces[key]) { return; }
+
     let obj = document.getElementById(key);
     let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
@@ -12939,8 +15704,10 @@ console.log("D");
 
   displayNavalSpace(key) {
 
+    if (!this.game.navalspaces[key]) { return; }
+
     let obj = document.getElementById(key);
-    let space = this.navalspaces[key];
+    let space = this.game.navalspaces[key];
 
     //
     // should we show the tile?
@@ -12963,8 +15730,8 @@ console.log("D");
     //
     // add tiles
     //
-    for (let key in this.navalspaces) {
-      if (this.navalspaces.hasOwnProperty(key)) {
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces.hasOwnProperty(key)) {
 	this.displayNavalSpace(key);
         document.getElementById(key).onclick = (e) => {
 	  this.displayNavalSpaceDetailedView(key);

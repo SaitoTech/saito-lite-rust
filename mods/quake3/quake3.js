@@ -277,7 +277,7 @@ console.log("FLOWING INTO GAME INITIALIZE HTML 2");
     });
 
     this.menu.addSubMenuOption("game-game", {
-        text : "Q3-Shot",
+        text : "Screenshot",
         id : "game-post",
         class : "game-post",
         callback : async function(app, game_mod) {
