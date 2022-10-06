@@ -61,6 +61,10 @@
     grid-template-rows: min-content 1fr;
 }
 
+.chat-body>.saito-user>.saito-userline {
+    font-size: 1.7rem;
+}
+
 .chat-manager .saito-userline {
         text-overflow: ellipsis;
         overflow: hidden;
