@@ -1,4 +1,5 @@
 const GameTemplate = require('./../../lib/templates/gametemplate');
+const QuakeGameOptionsTemplate = require('./lib/quake-game-options.template');
 
 
 class Quake3 extends GameTemplate {
@@ -13,14 +14,8 @@ class Quake3 extends GameTemplate {
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license and executes open source code. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
-    this.maxPlayers      = 1;
     this.minPlayers      = 1;
-
-    //
-    // when we join a game, we remember the name
-    //
-    this.player_name_identified = false;
-    this.player_name = "";
+    this.maxPlayers      = 4;
 
   }
 
@@ -28,16 +23,32 @@ class Quake3 extends GameTemplate {
 
 
 
+  returnGameOptionsHTML() {
+    return QuakeGameOptionsTemplate(this.app, this);
+  }
+  attachAdvancedOptionsEventListeners(){
 
-  initializeGame(game_id) {
+    let crypto = document.getElementById("crypto");
+    let killValue = document.getElementById("killValue");
+    let killValue_wrapper = document.getElementById("killValue_wrapper");
 
-    console.log("SET WITH GAMEID: " + game_id);
+    const updateChips = function(){
+      if (killValue) {
+        if (crypto.value == ""){
+          killValue_wrapper.style.display = "none";
+          killValue.value = "0";
+        } else {
+          let killValueAmt = parseFloat(killValue.value);
+          killValue_wrapper.style.display = "block";
+        }
+      }
+    };
 
-    if (!this.game.state) {
-      console.log("******Generating the Game******");
-      this.game.state = {};
-      this.game.queue = [];
-      this.game.queue.push("READY");
+    if (crypto){
+      crypto.onchange = updateChips;
+    }
+    if (killValue){
+      killValue.onchange = updateChips;
     }
 
   }
@@ -46,35 +57,110 @@ class Quake3 extends GameTemplate {
 
 
 
+  initializeGame(game_id) {
 
+    if (!this.game.state) {
+      console.log("******Generating the Game******");
+      this.game.state = {};
+      this.game.queue = [];
+      this.game.queue.push("init");
+      this.game.queue.push("READY");
 
+      //
+      // when we join a game, we remember the name
+      //
+      this.game.player_name_identified = false;
+      this.game.player_name = "";
+      this.game.all_player_names = [];
 
-
+      //
+      // set player names
+      //
+      if (this.game?.players) {
+        for (let i = 0; i < this.game.players.length; i++) {
+          this.game.all_player_names[i] = "";
+        }
+      }
+    }
+  }
 
 
   initialize(app) {
 
-    //super.initialize(app);
-    this.initializeQueueCommands(); // Define standard queue commands
+    if (app.BROWSER == 0) { return; }
+
+    super.initialize(app);
+
+    if (this.browser_active == 1) {
+/***
+      //
+      // bind console.log to track outside app
+      //
+      {
+        const log = console.log.bind(console)
+        console.log = (...args) => {
+  	  if (args.length > 0) {
+	    if (typeof args[0] === 'string') {
+	      this.processQuakeLog(args[0]);
+            }
+            log(...args);
+          }
+        }
+      }
+***/
+    }
+
+
+  }
+
+
+
+
+
+  //
+  // for the love of God don't add console.logs within this function
+  //
+  processQuakeLog(logline) {
 
     //
-    // divert console.log to track player name
+    // identify my name
     //
-    {
-      const log = console.log.bind(console)
-      console.log = (...args) => {
-	if (args.length > 0) {
-	  if (typeof args[0] === 'string') {
-            let pos = args[0].indexOf(" entered the game");
-            if (pos > -1 && this.player_name_identified == false) {    
-	      this.player_name = args[0].substring(0, pos);
-  	      this.player_name_identified = true;
-              log("-----------------");
-              log("PLAYER NAME: " +this.player_name);
-              log("-----------------");
-            }
-          }
-          log(...args);
+    let pos = logline.indexOf(" entered the game");
+    if (pos > -1 && this.game.player_name_identified == false) {    
+      this.game.player_name = logline.substring(0, pos);
+      this.game.player_name_identified = true;
+      this.addMove("player_name\t"+this.app.wallet.returnPublicKey()+"\t"+this.game.player_name);
+      this.endMove();
+    }
+
+
+    if (this.game?.all_player_names) {
+    for (let z = 0; z < this.game.all_player_names.length; z++) {
+
+      let name = this.game.all_player_names[z];
+      let pos = logline.indexOf(name);
+        if (pos == 0) {
+
+          //
+          // someone got murdered
+          //
+          for (let i = 0; i < this.game.all_player_names.length; i++) {
+	    if (this.game_all_player_names[i] !== name) {
+              if (logline.indexOf(this.game.all_player_names[i]) > -1) {
+
+	        let victim = z;
+	        let killer = i;
+
+                //
+                // someone got murdered
+                //
+	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
+                  this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
+                  this.endMove();
+	        }
+	      }
+	    }
+  	  }
         }
       }
     }
@@ -83,7 +169,74 @@ class Quake3 extends GameTemplate {
 
 
 
+  handleGameLoop() {
+
+console.log("start handle game loop");
+
+    ///////////
+    // QUEUE //
+    ///////////
+    if (this.game.queue.length > 0) {
+      let qe = this.game.queue.length - 1;
+      let mv = this.game.queue[qe].split("\t");
+      let shd_continue = 1;
+
+      console.log("QUEUE: " + JSON.stringify(this.game.queue));
+
+      // nothing more until someone sends us instructions
+      if (mv[0] === "READY") {
+        this.game.initializing = 0;
+        this.game.queue.splice(qe, 1);
+        return 1;
+      }
+
+      if (mv[0] === "init") {
+        return 0;
+      }
+
+      if (mv[0] === "player_kill") {
+	this.game.queue.splice(qe, 1);
+	let victim = mv[1];
+	let killer = mv[2];
+	console.log("KILLED");
+        return 1;
+      }
+
+      if (mv[0] === "player_name") {
+	this.game.queue.splice(qe, 1);
+	let publickey = mv[1];
+	let name = mv[2];
+	for (let i = 0; i < this.game.players.length; i++) {
+	  if (this.game.players[i] === publickey) {
+	    this.game.all_player_names[i] = name;
+	    console.log("PLAYER " + (i+1) + " is " + name);
+	  }
+	}
+        return 1;
+      }
+
+      //
+      // avoid infinite loops
+      //
+      if (shd_continue == 0) {
+        console.log("NOT CONTINUING");
+        return 0;
+      }
+
+    } else {
+      console.log("QUEUE EMPTY!");
+    }
+
+console.log("return 1");
+    return 1;
+  }
+
+
+
+
   onPeerHandshakeComplete(app, peer) {
+
+console.log("start OPHC");
 
     if (app.BROWSER == 0 || !document) { return; } 
 
@@ -93,15 +246,13 @@ class Quake3 extends GameTemplate {
         c.placeholder = 'typing T activates chat...';
       }
     }
-
   }
 
   initializeHTML(app) {
 
-    console.log("INITIALIZE HTML in Quake3 - 1");
-
     if (this.browser_active != 1) { return; }
-
+    if (this.initialize_game_run) { return; }
+    
     super.initializeHTML(app);
 
     //
@@ -117,7 +268,7 @@ class Quake3 extends GameTemplate {
     });
 
     this.menu.addSubMenuOption("game-game", {
-        text : "Q3-Shot",
+        text : "Screenshot",
         id : "game-post",
         class : "game-post",
         callback : async function(app, game_mod) {
@@ -171,6 +322,9 @@ class Quake3 extends GameTemplate {
     ioq3.elementPointerLock = true;
     ioq3.exitHandler = function (err) {
 
+console.log(err);
+return;
+
       if (err) {
         var form = document.createElement('form');
         form.setAttribute('method', 'POST');
@@ -180,12 +334,10 @@ class Quake3 extends GameTemplate {
         hiddenField.setAttribute('name', 'error');
         hiddenField.setAttribute('value', err);
         form.appendChild(hiddenField);
-
         document.body.appendChild(form);
         form.submit();
         return;
       }
-
       window.location.href = '/';
     }
 
@@ -197,7 +349,11 @@ class Quake3 extends GameTemplate {
     var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
     //var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+set', 'sv_enable_bots', '1', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
     args.push.apply(args, getQueryCommands());
-    ioq3.callMain(args);
+
+    if (this.browser_active == 1) {
+      console.log("CALLING QUAKE");
+      ioq3.callMain(args);
+    }
 
   }
 

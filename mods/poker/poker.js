@@ -2736,10 +2736,6 @@ class Poker extends GameTableTemplate {
     return PokerGameRulesTemplate(this.app, this);
   }
 
-  /**
-   * Casinos generally have a minimum buyin of 20 x big blind and maximum buyin of 100 x big blind
-   * We can't let users independently select starting blinds and stakes
-   */ 
   returnGameOptionsHTML() {
     return PokerGameOptionsTemplate(this.app, this);
   }
