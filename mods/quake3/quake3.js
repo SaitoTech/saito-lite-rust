@@ -117,7 +117,7 @@ class Quake3 extends GameTemplate {
     });
 
     this.menu.addSubMenuOption("game-game", {
-        text : "Q3-Shot",
+        text : "Screenshot",
         id : "game-post",
         class : "game-post",
         callback : async function(app, game_mod) {
