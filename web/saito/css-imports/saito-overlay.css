@@ -45,6 +45,42 @@
   font-size: 31px;
 }
 
+/******
+  Saito module overlay - Start
+******/
+
+.saito-module-overlay-box {
+  position: relative;
+  width: 71rem;
+  background-color: #fff;
+  min-height: 22rem;
+  display: flex;
+  justify-content: initial;
+}
+
+.saito-module-overlay-img {
+  width: 30%;
+  background-color: #f7d3d9;
+  background-size: cover;
+}
+
+.saito-module-overlay-info-box {
+  padding: 2.5rem;
+  width: 69%;
+}
+
+.saito-module-overlay-info-table {
+  margin-top: 2rem;
+}
+
+.saito-module-overlay-btn {
+  margin-top: 2rem;
+}
+
+/******
+  Saito module overlay - End
+******/
+
 /* Overlay within an overlay
    a weird bit of logic to facilitate 
    game creation form
@@ -60,4 +96,3 @@
   top: 50%;
   transform: translate(-50%, -50%);
 }
-
