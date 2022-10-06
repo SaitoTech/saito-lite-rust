@@ -12,26 +12,16 @@ class StunxAppspace {
         }
         this.attachEvents(app, mod);
         const inviteCode = window.location.hash.split('=')[1];
-
-
         const stunx_mod = app.modules.returnModule('Stunx');
-
-
-
+        let self = this
         if (inviteCode && stunx_mod.appspaceRendered === false) {
-      
             setTimeout(() => {
-                stunxAppspace.joinVideoInvite(app, mod, inviteCode);
+                self.joinVideoInvite(app, mod, inviteCode);
                 console.log('invite code ', window.location.hash.split('=')[1])
             }, 3000)
         }
         stunx_mod.appspaceRendered = true;
-
-
-
-
         this.joined = true;
-
     }
 
     attachEvents(app, mod) {
