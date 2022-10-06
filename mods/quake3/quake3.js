@@ -59,8 +59,6 @@ class Quake3 extends GameTemplate {
 
   initializeGame(game_id) {
 
-console.log("start init game");
-
     if (!this.game.state) {
       console.log("******Generating the Game******");
       this.game.state = {};
@@ -89,14 +87,12 @@ console.log("start init game");
 
   initialize(app) {
 
-console.log("start initialize");
-
     if (app.BROWSER == 0) { return; }
 
     super.initialize(app);
 
     if (this.browser_active == 1) {
-
+/***
       //
       // bind console.log to track outside app
       //
@@ -111,6 +107,7 @@ console.log("start initialize");
           }
         }
       }
+***/
     }
 
 
@@ -120,10 +117,10 @@ console.log("start initialize");
 
 
 
-
+  //
+  // for the love of God don't add console.logs within this function
+  //
   processQuakeLog(logline) {
-
-console.log("start process quake log");
 
     //
     // identify my name
@@ -132,9 +129,6 @@ console.log("start process quake log");
     if (pos > -1 && this.game.player_name_identified == false) {    
       this.game.player_name = logline.substring(0, pos);
       this.game.player_name_identified = true;
-      log("-----------------");
-      log("PLAYER NAME: " +this.game.player_name);
-      log("-----------------");
       this.addMove("player_name\t"+this.app.wallet.returnPublicKey()+"\t"+this.game.player_name);
       this.endMove();
     }
@@ -160,9 +154,7 @@ console.log("start process quake log");
                 //
                 // someone got murdered
                 //
-	        console.log("PLAYER WAS MURDERED");
 	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
-	  	  console.log("... I WAS MURDERED");
                   this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
                   this.endMove();
 	        }
@@ -235,6 +227,7 @@ console.log("start handle game loop");
       console.log("QUEUE EMPTY!");
     }
 
+console.log("return 1");
     return 1;
   }
 
