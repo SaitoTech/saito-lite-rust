@@ -13,7 +13,6 @@ class Quake3 extends GameTemplate {
     this.description = "Quake3-Saito Interface";
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license and executes open source code. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
-    this.initializedHTML = -1;
 
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
@@ -93,23 +92,27 @@ console.log("start init game");
 console.log("start initialize");
 
     if (app.BROWSER == 0) { return; }
-    if (this.browser_active == 0) { return; }
+
     super.initialize(app);
 
-    //
-    // bind console.log to track outside app
-    //
-    {
-      const log = console.log.bind(console)
-      console.log = (...args) => {
-	if (args.length > 0) {
-	  if (typeof args[0] === 'string') {
-	    this.processQuakeLog(args[0]);
+    if (this.browser_active == 1) {
+
+      //
+      // bind console.log to track outside app
+      //
+      {
+        const log = console.log.bind(console)
+        console.log = (...args) => {
+  	  if (args.length > 0) {
+	    if (typeof args[0] === 'string') {
+	      this.processQuakeLog(args[0]);
+            }
+            log(...args);
           }
-          log(...args);
         }
       }
     }
+
 
   }
 
@@ -254,14 +257,9 @@ console.log("start OPHC");
 
   initializeHTML(app) {
 
-console.log("FLOWING INTO GAME INITIALIZE HTML");
-
-    if (this.initializedHTML == -1) { console.log("skipping out on initializeHTML the first time..."); this.initializedHTML == 1; return; }
     if (this.browser_active != 1) { return; }
     if (this.initialize_game_run) { return; }
     
-console.log("FLOWING INTO GAME INITIALIZE HTML 2");
-
     super.initializeHTML(app);
 
     //
@@ -358,7 +356,11 @@ return;
     var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
     //var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+set', 'sv_enable_bots', '1', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
     args.push.apply(args, getQueryCommands());
-    ioq3.callMain(args);
+
+    if (this.browser_active == 1) {
+      console.log("CALLING QUAKE");
+      ioq3.callMain(args);
+    }
 
   }
 
