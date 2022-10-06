@@ -27,7 +27,7 @@ module.exports = (app, mod, group_id) => {
         </div>
 
         <div class="chat-footer">
-          <input name="chat-input" id="chat-input-${group_id}" type="text" value="" autocomplete="off" placeholder="Type something..." />
+          <input name="chat-input" class="chat-input chat-input-${group_id}" id="chat-input-${group_id}" type="text" value="" autocomplete="off" placeholder="Type something..." />
           <i class="fas fa-paper-plane chat-input-submit" id="chat-input-submit-${group_id}"></i>
         </div>
 

@@ -1,14 +1,15 @@
 const saito = require("./../../lib/saito/saito");
-const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/arcade-main/arcade-main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
 const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
+const ArcadeGameDetails = require("./lib/arcade-game/arcade-game-details");
 const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
-const ArcadeLink = require("./lib/arcade-main/arcade-link");
+const InvitationLink = require("../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
@@ -131,7 +132,6 @@ class Arcade extends ModTemplate {
             document.querySelectorAll("#header-dropdown-create-game").forEach((element) => {
               element.onclick = (e) => {
                 GameCreateMenu.render(app, mod);
-                GameCreateMenu.attachEvents(app, mod);
               };
             });
           },
@@ -1678,17 +1678,14 @@ class Arcade extends ModTemplate {
     let data = {};
 
     //Add more information about the game
-    try {
-      let accepted_game = null;
-      this.games.forEach((g) => {
-        if (g.transaction.sig === game_sig) {
-          accepted_game = g;
-        }
-      });
-      if (accepted_game) {
-        data.game = accepted_game.msg.game;
-      }
-    } catch (err) { }
+    let accepted_game = this.games.find((g) => g.transaction.sig === game_sig);
+
+    if (accepted_game) {
+      data.game = accepted_game.msg.game;
+    }else{
+      console.log("Game invitation not found");
+      return;
+    }
 
     //Create invite link from the game_sig 
     let inviteLink = window.location.href;
@@ -1703,10 +1700,16 @@ class Arcade extends ModTemplate {
 
     data.invite_link = inviteLink;
 
-    console.log(inviteLink);
+    console.log(JSON.stringify(data));
 
-    ArcadeLink.render(this.app, this, data);
-    ArcadeLink.attachEvents(this.app, this);
+    let invitationModal = new InvitationLink(this.app, this);
+    invitationModal.render(this.app, this, data);
+  }
+
+
+  createGame(pseudoTX){
+    let ux = new ArcadeGameDetails(this.app);
+    ux.render(this.app, this, pseudoTX);
   }
 }
 

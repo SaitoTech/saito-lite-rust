@@ -25,100 +25,6 @@
 
 /* Overlay */
 
-.saito-overlay-backdrop,
-.game-overlay-backdrop {
-  position: fixed;
-  display: none;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #444;
-  opacity: 0.4;
-  z-index: 100;
-}
-
-.saito-overlay,
-.game-overlay {
-  position: absolute;
-  display: inline-block;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  margin-left: auto;
-  margin-right: auto;
-  background-color: transparent;
-  z-index: 1000;
-  min-width: 10%;
-  min-height: 10%;
-
-}
-
-.saito-overlay {
-  position: fixed;
-}
-
-.saito-overlay-closebox {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  right: -13px;
-  border-radius: 50%;
-  top: -15px;
-  background-color: white;
-  z-index: 100;
-}
-
-.saito-overlay-closebox-btn {
-  display: block;
-  height: 32px;
-  width: 32px;
-  color: red;
-  font-size: 31px;
-}
-
-.saito-overlay-closebox-btn:hover {
-  transform: scale(1);
-}
-
-/* Make sure game overlay can cover saito-overlay */
-.game-overlay {
-  z-index: 2010;
-}
-
-.game-overlay-backdrop {
-  z-index: 2000;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: block;
-  background-color: rgb(17, 17, 17, 0.5);
-
-}
-
-.saito-overlay-menu {
-  padding: 10px;
-  background-color: whitesmoke;
-  opacity: 0.8;
-  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-}
-
-.saito-overlay-menu ul li {
-  width: 100%;
-  line-height: 3.5em;
-  border-top: 1px solid var(--saito-skyline-grey);
-  cursor: pointer;
-  text-align: -webkit-match-parent;
-  display: list-item;
-  list-style: none;
-  padding: 0 1em;
-}
-
-.saito-overlay-menu ul li:hover {
-  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75), -2px -2px 5px #eee;
-  background: #0001;
-}
-
 .rules-overlay{
   padding: 1em;
   font-size: 20px;
@@ -140,35 +46,27 @@
 .rules-overlay p{
   margin-top: 0.5em;
 }
-.game-overlay {
-  min-width: 320px;
-  padding: 2rem;
-  position: fixed;
-  background-color: var(--saito-white);
-}
-.game-overlay .long-scroll {
-  padding: 40px;
-  width: 100vw;
-  height: 100vh;
-  overflow-y: auto;
-  display: grid;
-  grid-template-columns: 200px auto;
-}
-.game-overlay .overlay-title {
+
+/* Game Advanced Options Styling*/
+.game-wizard-advanced-options-overlay .overlay-title {
   text-align: center;
 }
-.game-overlay .overlay-input {
+
+.game-wizard-advanced-options-overlay .overlay-input {
   margin-bottom: 1rem;
 }
-.game-overlay select {
+
+.game-wizard-advanced-options-overlay select {
   text-transform: capitalize;
 }
-.game-overlay .options_notice{
+
+.game-wizard-advanced-options-overlay .options_notice {
   margin-bottom: 1.2rem;
   color: var(--saito-white);
   font-style: italic;
   text-align: center;
 }
+
 
 .invite-tile-button-join {
   height: 5em;
@@ -291,60 +189,60 @@
   color: var(--saito-white);
 }
 
-.game-create-new-overlay.dark .game-overlay {
+.game-create-new-overlay.dark .saito-overlay {
   background: none;
   color: var(--saito-white);
 }
 
-.game-create-new-overlay.dark .game-overlay select {
+.game-create-new-overlay.dark .saito-overlay select {
   background: none;
   color: var(--saito-white);;
   border: 2px solid var(--saito-purple);
 }
 
-.game-create-new-overlay.dark .game-overlay select::focus-visible {
+.game-create-new-overlay.dark .saito-overlay select::focus-visible {
   border: 2px solid var(--saito-purple);
 }
 
-.game-create-new-overlay.dark .game-overlay input {
+.game-create-new-overlay.dark .saito-overlay input {
   border-color: var(--saito-purple);
 }
 
-.game-create-new-overlay.dark .game-overlay input::after {
+.game-create-new-overlay.dark .saito-overlay input::after {
   background: var(--saito-purple);
 }
 
-.game-create-new-overlay.dark .game-overlay .saito-select {
+.game-create-new-overlay.dark .saito-overlay .saito-select {
   margin: 1.5rem 0rem;
 }
 
-.game-create-new-overlay.dark .game-overlay .saito-select::after {
+.game-create-new-overlay.dark .saito-overlay .saito-select::after {
   background: none;
 }
 
-.game-create-new-overlay.dark .game-overlay select option {
+.game-create-new-overlay.dark .saito-overlay select option {
   background: var(--saito-black);
 }
 
-.game-create-new-overlay.dark .game-overlay .game-wizard-advanced-return-btn {
+.game-create-new-overlay.dark .saito-overlay .game-wizard-advanced-return-btn {
   background: var(--saito-purple);
 }
 
-.game-create-new-overlay.dark .game-overlay .game-wizard-advanced-return-btn:hover {
+.game-create-new-overlay.dark .saito-overlay .game-wizard-advanced-return-btn:hover {
   color: #fff;
   border: none;
 }
 
-.game-create-new-overlay.dark .game-overlay h1,
-.game-create-new-overlay.dark .game-overlay h2,
-.game-create-new-overlay.dark .game-overlay h3, 
-.game-create-new-overlay.dark .game-overlay h4,
-.game-create-new-overlay.dark .game-overlay p {
+.game-create-new-overlay.dark .saito-overlay h1,
+.game-create-new-overlay.dark .saito-overlay h2,
+.game-create-new-overlay.dark .saito-overlay h3, 
+.game-create-new-overlay.dark .saito-overlay h4,
+.game-create-new-overlay.dark .saito-overlay p {
   color: var(--saito-white);
   margin: 1.5rem 0rem;
 }
 
-.game-create-new-overlay.dark .game-overlay p {
+.game-create-new-overlay.dark .saito-overlay p {
   line-height: 2rem;
 }
 
@@ -652,83 +550,12 @@ option {
 }
 
 
-/*------*/
-.league-details-overlay {
-  width: 100%;
-  min-width: min(70rem, 100vw);
-  border: 1px solid var(--saito-border);
-  border-radius: 5px;
+/* League overlay */
+.league-details-overlay{
   background: var(--saito-white);
-  padding: 10px;
-  user-select: none;
-  cursor: default;
+  border-color: var(--saito-border);
 }
 
-.league-details-overlay h2 {
-  text-align: center;
-}
-
-.league-details-overlay p {
-  padding: 1rem;
-}
-
-.league-details-overlay .league-overview-box {
-  margin: auto;
-  width: 100%;
-  padding: 1rem;
-  max-height: 60vh;
-  overflow-y: auto;
-  display: grid;
-  grid-gap: 0.5rem;
-  grid-template-columns: 8rem auto;
-}
-
-.league-leaderboard-table {
-  display: grid;
-  grid-gap: 0.5rem;
-  grid-template-columns: 4rem auto 5rem 5.5rem 4rem 4rem auto;
-  width: 100%;
-  padding: 1rem;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-.league-leaderboard-table.saitolicious {
-  grid-template-columns: 4rem auto 5rem 5.5rem 4rem 4rem;
-}
-
-.league-leaderboard-table.admin {
-  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto 4fr 4fr auto;
-}
-
-.league-leaderboard-table.admin.saitolicious {
-  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem  4fr 4fr auto;
-}
-
-.league-overview-box div:nth-child(odd) {
-  font-weight: bold;
-}
-
-.mystats {
-  font-weight: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.newfriend {
-  cursor: crosshair;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.league-overview-box .info-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
 /*----*/
 
 .game-help-link {

@@ -1,7 +1,5 @@
 const saito = require('./../../../../lib/saito/saito');
 const ArcadeGameSidebarTemplate = require('./arcade-game-sidebar.template');
-const ModalRegisterUsername = require('./../../../../lib/saito/ui/modal-register-username/modal-register-username');
-const ArcadeGameDetails = require('../arcade-game/arcade-game-details');
 const ArcadeContainerTemplate = require('../arcade-main/templates/arcade-container.template');
 
 module.exports = ArcadeGameSidebar = {
@@ -31,8 +29,7 @@ module.exports = ArcadeGameSidebar = {
         app.browser.logMatomoEvent("Arcade", "GamePageClick", game_mod.name); 
         let tx = new saito.default.transaction();
         tx.msg.game = game_mod.name;
-        ArcadeGameDetails.render(app, mod, tx);
-        ArcadeGameDetails.attachEvents(app, mod, tx); 
+        mod.createGame(tx);
       });
     });
     

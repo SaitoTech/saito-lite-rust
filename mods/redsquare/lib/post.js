@@ -153,10 +153,12 @@ class Post {
 
 
   resizeImg(img, dimensions, quality) {
+
     let post_self = this;
     let imgSize = img.length / 1024;
 
     // compress img if file size greater tan 150kb
+/*****
     if (imgSize > 150) {
 
       let canvas = document.createElement("canvas");
@@ -201,7 +203,6 @@ class Post {
           post_self.resizeImg(result_img_uri, newDimensions, newQuality);
 
         } else {
-
           post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${result_img_uri}"
            /><i data-id="${post_self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
@@ -211,13 +212,14 @@ class Post {
         }
       };
     } else {
+****/
       post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${img}"
            /><i data-id="${post_self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
 
       post_self.images.push(img);
       return img;
-    }
+//    }
   }
 }
 

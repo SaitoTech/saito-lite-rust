@@ -45,7 +45,6 @@
   font-size: 31px;
 }
 
-
 /******
   Saito module overlay - Start
 ******/
@@ -81,3 +80,19 @@
 /******
   Saito module overlay - End
 ******/
+
+/* Overlay within an overlay
+   a weird bit of logic to facilitate 
+   game creation form
+*/
+
+.saito-overlay .saito-overlay{
+  min-width: 320px;
+  padding: 2rem;
+}
+
+.saito-overlay .saito-overlay-backdrop {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

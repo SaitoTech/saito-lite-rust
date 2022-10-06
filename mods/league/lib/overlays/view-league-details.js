@@ -1,23 +1,34 @@
-const ArcadeLeagueViewTemplate = require("./arcade-league-view.template");
-const SaitoOverlay = require("../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const LeagueDetailsTemplate = require("./view-league-details.template");
+const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const LeaderboardTemplate = require("./leaderboard.template");
+const RecentGameTemplate = require("./recent-game.template");
 
-class ArcadeLeagueView {
+class ViewLeagueDetails {
   constructor(app){
     this.app = app;
+
+    var s = document.createElement("link");
+    s.rel = "stylesheet";
+    s.type = "text/css";
+    s.href = "/league/view-league-details.css";
+    document.querySelector('head link').after(s);
+
   }
 
   render(app, mod, league) {
   	this.league = league;
+    this.mod = mod;
+
     if (this.overlay == null) {
       this.overlay = new SaitoOverlay(app);
     }
-    this.overlay.show(app, mod, ArcadeLeagueViewTemplate(app, mod, league));
+    this.overlay.show(app, mod, LeagueDetailsTemplate(app, mod, league));
     this.loadLeaderboard(app, mod, league);
     
   }
 
   /**
-  * Query the league for the latest stats
+  * Query the league.players for the latest stats
   */
   loadLeaderboard(app, mod, league){
   	let leaderboard = [];
@@ -41,69 +52,42 @@ class ArcadeLeagueView {
             }
             league.playerCnt = cnt;
           }
-          al.overlay.show(app, mod, ArcadeLeagueViewTemplate(app, mod, league));
-          al.injectLeaderboard(app, mod, leaderboard);
+          al.overlay.show(app, mod, LeagueDetailsTemplate(app, mod, league));
+
+          let target = document.getElementById("league-leaderboard");
+          if (target){
+            target.innerHTML = (leaderboard.length > 0) ? LeaderboardTemplate(app, mod, league, leaderboard) : `<div class="league-error">No Stats for the league</div>`;
+          }
           al.attachEvents(app, mod);    
-          //mod.renderLeagues(app, mod);
-        }
-      );
+
+        });
   }
 
+
   /**
-   * Replace the loader with formatted html of the stats
-   */
-   injectLeaderboard(app, mod, leaderboard){
-   		let loader = document.querySelector(".leaderboard-spinner");
-   		if (loader){ loader.remove();}
-      let myKey = app.wallet.returnPublicKey();
+  * Query the league.games for the latest stats
+  */
+  loadRecentGames(app, mod, league){
+    let games = [];
+    let al = this;
 
-
-   		if (leaderboard.length > 0){
-        //create wrapper grid div 
-        //add admin class if we are admin
-        //add saitolicious class if this is saitolicious league
-        let html = "";
-        html = `<div class="league-leaderboard-table${(this.league.admin == myKey)?" admin":""}${(this.league.id == "SAITOLICIOUS")?" saitolicious":""}">`
-        html += `<div><b>Rank</b></div><div><b>Player</b></div><div><b>Score</b></div><div><b>Games</b></div><div><b>Wins</b></div><div><b>Ties</b></div>`;
-        if (this.league.admin == myKey){
-          html += `<div><b>Games Started</b></div><div></div><div></div>`;
-        }
-        // if league isn't Saitolicious add col for challenge button
-        if (this.league.id !== "SAITOLICIOUS"){
-          html += `<div></div>`
-        }
-        //add content
-   			let cnt = 1;
-   			for (let r of leaderboard){
-   				html += `<div>${cnt++}</div>
-                   <div id="${r.pkey}" class="${(r.pkey == myKey)?"mystats":""} ${(r.pkey !== myKey)?"newfriend":""}">${app.keys.returnIdentifierByPublicKey(r.pkey, true)}</div>
-                   <div class="${(r.pkey == myKey)?"mystats":""}">${Math.round(r.score)}</div>
-                   <div class="${(r.pkey == myKey)?"mystats":""}">${r.games_finished}</div>
-                   <div class="${(r.pkey == myKey)?"mystats":""}">${r.games_won}</div>
-                   <div class="${(r.pkey == myKey)?"mystats":""}">${r.games_tied}</div>`;
-          if (this.league.admin == myKey){
-            html += `<div class="${(r.pkey == myKey)?"mystats":""}">${r.games_started}</div>`;
-            html += `<div class="edit_player" data-id="${r.pkey}"><i class="fas fa-edit"></i></div>`;
-            html += `<div class="delete_player" data-id="${r.pkey}"><i class="fa fa-trash"></i></div>`;
+    mod.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league.id}' LIMIT 10` ,
+      (res) => {
+        if (res.rows){
+          for (let g of res.rows){
+            games.push(g);
           }
 
-          if (this.league.id !== "SAITOLICIOUS"){
-            html += `<div>`
-            if (r.pkey !== myKey) {
-              html +=  `<button class="button challenge-btn" data-id="${r.pkey}" style="display:none">CHALLENGE</button>`
-            }
-            html += `</div>`;
+          let target = document.getElementById("league-leaderboard");
+          if (target){
+            target.innerHTML = (games.length > 0) ? RecentGameTemplate(app, mod, league, games) : `<div class="league-error">No Recent Games for the league</div>`;
           }
-   			}
+          al.attachEvents(app, mod);    
 
-   			html += `</div>`;
-   			app.browser.addElementToId(html, "league-leaderboard");
+        }          
+      });    
+  }
 
-
-   		}else{
-   			app.browser.addElementToId(`<div class="league-error">No Stats for the league</div>`, "league-leaderboard");
-   		}
-   }
 
   /*
   We call attachEvents after we load all the players, so we can attach functionality all in one place
@@ -114,7 +98,7 @@ class ArcadeLeagueView {
     if (joinBtn){
     	joinBtn.onclick = ()=> {
     		mod.sendJoinLeagueTransaction(this.league.id);
-    		salert('League joined');
+    		salert('Sending TX to join league...');
         joinBtn.remove();
         this.overlay.hide();
     	}
@@ -123,25 +107,55 @@ class ArcadeLeagueView {
     let inviteBtn = document.getElementById("invite-btn");
     if (inviteBtn){
       inviteBtn.onclick = () => {
+        //ActiveModule should be Arcade
         mod.showShareLink(this.league.id, app.modules.returnActiveModule());
       }
     }
 
-    //ActiveModule should be Arcade
+    let viewToggle = document.getElementById("game-leaderboard-toggle");
+    if (viewToggle){
+      viewToggle.onclick = () => {
+        if (viewToggle.classList.contains("view_leaderboard")){
+          viewToggle.outerHTML = `<button type="button" id="game-leaderboard-toggle" class="view_games">Show Leaderboard</button>`
+          let target = document.getElementById("league-leaderboard");
+          if (target){
+            target.innerHTML = `<div class="leaderboard-spinner loader"></div>`;
+          }
+          this.loadRecentGames(this.app, this.mod, this.league);
+        }else{
+          this.overlay.show(this.app, this.mod, LeagueDetailsTemplate(this.app, this.mod, this.league));
+          this.loadLeaderboard(this.app, this.mod, this.league);
+       }
+      }
+    }
+
+
     //We only render the button in the template if that is the case
     let createGameBtn = document.getElementById("game-invite-btn");
     if (createGameBtn){
       createGameBtn.onclick = () => {
-        this.overlay.hide();
-        mod.launchGame(this.league);
+        this.overlay.remove();
+        mod.createLeagueGame(this.league);
       }
     }
+
+    //Observer hook
+     Array.from(document.getElementsByClassName('review-btn')).forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        let game_id = e.currentTarget.getAttribute("data-id");
+        app.connection.emit("arcade-observer-review-game",game_id);
+        this.overlay.remove();
+      }
+    });
+
 
     //TODO: Implement this
      Array.from(document.getElementsByClassName('challenge-btn')).forEach(btn => {
       btn.onclick = (e) => {
         e.preventDefault();
-        app.modules.returnActiveModule().overlay.show(app, mod, `<h2>Coming soon</h2><div class="warning">This feature is not supported yet</div>`);
+        let warning_overlay = new SaitoOverlay(app);
+        warning_overlay.show(app, mod, `<h2>Coming soon</h2><div class="warning">This feature is not supported yet</div>`);
       }
     });
 
@@ -183,4 +197,4 @@ class ArcadeLeagueView {
   }
 }
 
-module.exports = ArcadeLeagueView;
+module.exports = ViewLeagueDetails;
