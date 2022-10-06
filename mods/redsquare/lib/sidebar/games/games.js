@@ -18,17 +18,17 @@ class RedSquareGames {
         this.render(app, mod);
     });
 
-    app.connection.on("arcade-game-loading" , () =>{
-      this.blockRender = true;
-      let gameLoader = new GameLoader(this.app, this);
-      gameLoader.render(this.app, this, this.selector);
-    });
+    // app.connection.on("arcade-game-loading" , () =>{
+    //   this.blockRender = true;
+    //   let gameLoader = new GameLoader(this.app, this);
+    //   gameLoader.render(this.app, this, this.selector);
+    // });
 
-    app.connection.on("arcade-game-ready-play" , (game) =>{
-      this.blockRender = true;
-      let gameLoader = new GameLoader(this.app, this, game.game_id);
-      gameLoader.render(this.app, this, this.selector, `${game.game_name} is ready to start!`);
-    });
+    // app.connection.on("arcade-game-ready-play" , (game) =>{
+    //   this.blockRender = true;
+    //   let gameLoader = new GameLoader(this.app, this, game.game_id);
+    //   gameLoader.render(this.app, this, this.selector, `${game.game_name} is ready to start!`);
+    // });
 
   }
 
@@ -51,7 +51,7 @@ class RedSquareGames {
 
 
   attachEvents(app, mod) {
-    Array.from(document.querySelectorAll('.saito-module-action')).forEach(game => {
+    Array.from(document.querySelectorAll('.saito-module-action.join')).forEach(game => {
       game.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -71,7 +71,6 @@ class RedSquareGames {
               }
             }    
           }
-        }
       }
     }); 
   

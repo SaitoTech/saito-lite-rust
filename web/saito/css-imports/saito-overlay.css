@@ -50,7 +50,7 @@
   Saito module overlay - Start
 ******/
 
-.game-invite-detail-container {
+.saito-module-overlay-box {
   position: relative;
   width: 71rem;
   background-color: #fff;
@@ -59,22 +59,22 @@
   justify-content: initial;
 }
 
-.game-invite-img {
+.saito-module-overlay-img {
   width: 30%;
   background-color: #f7d3d9;
   background-size: cover;
 }
 
-.game-invite-info {
+.saito-module-overlay-info-box {
   padding: 2.5rem;
   width: 69%;
 }
 
-.game-invite-info-table {
+.saito-module-overlay-info-table {
   margin-top: 2rem;
 }
 
-.game-invite-join-btn {
+.saito-module-overlay-btn {
   margin-top: 2rem;
 }
 
