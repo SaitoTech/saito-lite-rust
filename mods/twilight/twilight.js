@@ -2392,7 +2392,7 @@ try {
 
     if (mv[0] === "setvar") {
       if (this.game.player != mv[1]) {
-  	    if (mv[2] == "opponent_cards_in_hand") {
+  	if (mv[2] == "opponent_cards_in_hand") {
           this.game.state.opponent_cards_in_hand = parseInt(mv[3]);
         }
         if (mv[3]) {
