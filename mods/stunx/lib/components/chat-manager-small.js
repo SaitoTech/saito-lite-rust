@@ -72,7 +72,9 @@ class ChatManagerSmall {
     hide() {
         console.log('hiding')
         document.querySelector('#small-video-chatbox').parentElement.removeChild(document.querySelector('#small-video-chatbox'));
-
+        document.querySelectorAll('.video-box-container').forEach(box => {
+            box.parentElement.removeChild(box)
+        })
     }
 
     disconnect() {

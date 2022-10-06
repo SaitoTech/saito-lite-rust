@@ -42,15 +42,19 @@ class VideoBox {
 
     renderStream({ muted }) {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
-            this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted), this.containerClass);
+            this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, muted));
+
         }
         const videoBox = document.querySelector(`#stream${this.stream_id}`);
         videoBox.firstElementChild.srcObject = this.stream;
+        this.app.browser.makeDraggable(`stream${this.stream_id}`);
     }
 
     renderPlaceholder() {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
-            this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false), this.containerClass);
+            this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, false));
+            this.app.browser.makeDraggable(`stream${this.stream_id}`);
+            // makeDraggable(id_to_move, id_to_drag = "", mycallback = null
         }
         const videoBox = document.querySelector(`#stream${this.stream_id}`);
         if (this.placeholderRendered) return;

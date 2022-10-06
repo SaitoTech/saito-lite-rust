@@ -95,11 +95,23 @@ class Stunx extends ModTemplate {
                                 callback: function (app, game_mod) {
                                     const stunx = app.modules.returnModule('Stunx');
                                     console.log('player ', game_mod.game.players[i]);
-                                    app.connection.emit('game-start-video-call', game_mod.game.players[i]);
+                                    app.connection.emit('game-start-video-call', [game_mod.game.players[i]]);
                                 },
                             });
                         }
                     }
+                    game_mod.menu.addSubMenuOption("game-video-chat", {
+                        text: "All players",
+                        id: "game-video-chat",
+                        class: "game-video-chat",
+                        callback: function (app, game_mod) {
+                            const stunx = app.modules.returnModule('Stunx');
+                            console.log('all players ', game_mod.game.players);
+                            app.connection.emit('game-start-video-call', [...game_mod.game.players]);
+                        },
+                    });
+
+
                 },
                 menus: []
             }
