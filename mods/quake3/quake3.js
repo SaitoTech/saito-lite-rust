@@ -20,12 +20,11 @@ class Quake3 extends GameTemplate {
   }
 
 
-
-
-
   returnGameOptionsHTML() {
     return QuakeGameOptionsTemplate(this.app, this);
   }
+
+
   attachAdvancedOptionsEventListeners(){
 
     let crypto = document.getElementById("crypto");
@@ -52,9 +51,6 @@ class Quake3 extends GameTemplate {
     }
 
   }
-
-
-
 
 
   initializeGame(game_id) {
@@ -88,11 +84,9 @@ class Quake3 extends GameTemplate {
   initialize(app) {
 
     if (app.BROWSER == 0) { return; }
-
     super.initialize(app);
 
     if (this.browser_active == 1) {
-/***
       //
       // bind console.log to track outside app
       //
@@ -101,60 +95,38 @@ class Quake3 extends GameTemplate {
         console.log = (...args) => {
   	  if (args.length > 0) {
 	    if (typeof args[0] === 'string') {
-	      this.processQuakeLog(args[0]);
+	      this.processQuakeLog(args[0], log);
             }
             log(...args);
           }
         }
       }
-***/
     }
-
-
   }
-
-
-
 
 
   //
   // for the love of God don't add console.logs within this function
   //
-  processQuakeLog(logline) {
-
+  processQuakeLog(logline, log) {
     if (this.game?.all_player_names) {
     for (let z = 0; z < this.game.all_player_names.length; z++) {
-
       let pn = this.game.all_player_names[z].toLowerCase().substring(0, 15);
-
       let pos = logline.indexOf(pn);
         if (pos == 0) {
-
-console.log("LOG: " + pn + " something");
-
           //
           // someone got murdered
           //
           for (let i = 0; i < this.game.all_player_names.length; i++) {
-
             let pn2 = this.game.all_player_names[i].toLowerCase().substring(0, 15);
-
 	    if (pn !== pn2) {
               if (logline.indexOf(pn2) > -1) {
-
-
-console.log("LOG2: " + pn2 + " something something");
-console.log(logline);
-
 	        let victim = z;
 	        let killer = i;
-
-
                 //
                 // someone got murdered
                 //
 	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
-console.log("SOMEONE GOT MURDERED");
                   this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
                   this.endTurn();
 	        }
@@ -164,15 +136,10 @@ console.log("SOMEONE GOT MURDERED");
         }
       }
     }
-
   }
 
 
-
   handleGameLoop() {
-
-console.log("start handle game loop");
-
     ///////////
     // QUEUE //
     ///////////
@@ -195,9 +162,11 @@ console.log("start handle game loop");
       }
 
       if (mv[0] === "player_kill") {
+
 	this.game.queue.splice(qe, 1);
 	let victim = mv[1];
 	let killer = mv[2];
+
 	console.log("KILLED");
         return 1;
       }
@@ -227,19 +196,12 @@ console.log("start handle game loop");
       console.log("QUEUE EMPTY!");
     }
 
-console.log("return 1");
     return 1;
   }
 
 
-
-
   onPeerHandshakeComplete(app, peer) {
-
-console.log("start OPHC");
-
     if (app.BROWSER == 0 || !document) { return; } 
-
     if (document.querySelector(".chat-input")) {
       let c = document.querySelector(".chat-input");
       if (c) {
@@ -247,6 +209,7 @@ console.log("start OPHC");
       }
     }
   }
+
 
   initializeHTML(app) {
 
@@ -293,23 +256,18 @@ console.log("start OPHC");
         class : "game-register",
         callback : async function(app, game_mod) {
 
-console.log("TRYING TO SCROLL DOWN CONSOLE");
-
-          //document.dispatchEvent(new KeyboardEvent('keypress',{'keyCode':192}));
-          //document.dispatchEvent(new KeyboardEvent('keyup', {'keyCode': 192}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
 
-	  // "/name
+	  // "/name "
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 191}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 78}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 65}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 77}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 69}));
-
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 32}));
 
+	  // provide publickey
 	  let publickey = app.wallet.returnPublicKey().toLowerCase();
-   
 	  for (let z = 0; z < publickey.length; z++) {
 	    let char = publickey[z];
 	    let charCode = char.charCodeAt(0);
