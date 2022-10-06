@@ -29,17 +29,23 @@ class RedSquareAppspaceHome {
       tweet.render(app, mod, ".redsquare-list", false);
     });
 
-
     app.connection.on("tweet-render-request", (tweet, append = true) => {
       console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list", append);
     });
+
+    app.connection.on("tweet-render-feed-request", () => {
+      mod.renderMainPage(app, mod);
+    });
+
 
     let options = {
       root: null,
       rootMargin: '0px',
       threshold: 1
     }
+
+    //renderWithParents
 
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -89,11 +95,19 @@ class RedSquareAppspaceHome {
     }
     */
     document.getElementById("redsquare-new-tweets-banner").onclick = (e) => {
+      e.target.style.display = 'none';
       mod.newTweets.reverse();
       mod.newTweets.forEach(tweet => {
         let tweet_id = "tweet-box-" + tweet.tx.transaction.sig;
-        if (!document.getElementById(tweet_id)) {
-          mod.addTweetAndBroadcastRenderRequest(app, mod, tweet, 'true');
+        let parent_id = "parent-" + tweet.parent_id;
+
+        //if tweet is a reply
+        if (tweet.tx.transaction.sig != tweet.parent_id) {
+          mod.addTweetAndBroadcastRenderFamilyRequest(app, mod, tweet, 'true');
+        } else {
+          if (!document.getElementById(tweet_id)) {
+            mod.addTweetAndBroadcastRenderRequest(app, mod, tweet, 'true');
+          }
         }
       });
       mod.newTweets = [];

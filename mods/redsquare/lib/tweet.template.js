@@ -80,7 +80,7 @@ console.log("Error processing image/link: " + err);
   if (tweet.flagged > 0) { saito_tweet_flagged = "saito-tweet-activity" }
 
   let html = `
-       <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
+       <div class="redsquare-item parent-${tweet.parent_id} thread-${tweet.thread_id}" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
     `;
   if (include_header == 1) {
     html += SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline);
