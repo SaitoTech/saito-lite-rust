@@ -116,7 +116,7 @@ class ChatManagerSmall {
             const videoBox = new VideoBox(this.app, this.mod);
             this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         }
-        this.video_boxes[peer].video_box.render(null, peer, 'small-wrapper');
+        this.video_boxes[peer].video_box.render(null, peer, null);
     }
 
 
