@@ -352,31 +352,6 @@ class League extends ModTemplate {
     }
   }
 
-  /*async handlePeerRequest(app, message, peer, mycallback = null) {
-    //
-    // this code doubles onConfirmation
-    //
-
-    if (message.request === "league spv update") {
-      let tx = null;
-
-      if (!message.data.tx) {
-        if (message.data.transaction) {
-          tx = new saito.default.transaction(message.data.transaction);
-        }
-      }
-
-      if (tx == null) {
-        tx = new saito.default.transaction(message.data.tx.transaction);
-      }
-
-      if (app.BROWSER){
-        console.log("Handling Peer Request");
-        this.onConfirmation(null, tx, 0, app);
-      }
-    }
-  }*/
-
 
   //
   // TODO -- consistency in variable names -- game_id not game in DB etc.
@@ -481,6 +456,24 @@ class League extends ModTemplate {
    // },1000); 
 
   }
+
+  createPingTX(recipients){
+    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    for (let player of recipients){
+      newtx.transaction.to.push(new saito.default.slip(player, 0.0));
+    }
+
+    newtx.msg = {
+      module:    "League",
+      request:   "ping",
+      ts: new Date().getTime()
+    };
+
+    newtx = this.app.wallet.signTransaction(newtx);
+
+    return newtx;
+  }
+
 
   sendJoinLeagueTransaction(league_id="") {
 

@@ -13,6 +13,12 @@ class ViewLeagueDetails {
     s.href = "/league/view-league-details.css";
     document.querySelector('head link').after(s);
 
+    app.connection.on("relay-is-online", (pkey)=>{
+      let playerRow = document.querySelector(`.newfriend[data-id="${pkey}"]`);
+      if (playerRow){
+        playerRow.classList.add("online");
+      }
+    });
   }
 
   render(app, mod, league) {
@@ -32,6 +38,7 @@ class ViewLeagueDetails {
   */
   loadLeaderboard(app, mod, league){
   	let leaderboard = [];
+    let players = [];
   	let al = this;
 
     //Recompute league stats
@@ -48,6 +55,8 @@ class ViewLeagueDetails {
               leaderboard.push(p);
               if (p.pkey == pid){
                 league.myRank = cnt; //I am the cnt player in the leaderboard
+              }else{
+                players.push(p.pkey);
               }
             }
             league.playerCnt = cnt;
@@ -60,6 +69,9 @@ class ViewLeagueDetails {
           }
           al.attachEvents(app, mod);    
 
+          //Ping all players in league
+          let pingTx = {};//mod.createPingTX(players);
+          app.connection.emit("send-relay-message", {recipient: players, request: "ping", data: pingTx});
         });
   }
 
@@ -173,7 +185,7 @@ class ViewLeagueDetails {
     };
     Array.from(document.querySelectorAll(".newfriend")).forEach((username)=>{
       username.onclick = (e) =>{
-        startKeyExchange(e.target.getAttribute("id"));
+        startKeyExchange(e.target.getAttribute("data-id"));
       }
     });
 

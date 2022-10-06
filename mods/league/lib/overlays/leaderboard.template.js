@@ -2,7 +2,7 @@ module.exports = LeaderboardTemplate = (app, mod, league, players) => {
 
 	const makePlayerRow = (player, rank) => {
 	   	let html = 	`<div>${rank}</div>
-	                 <div id="${player.pkey}" class="${(player.pkey == myKey)?"mystats":""} ${(player.pkey !== myKey)?"newfriend":""}">
+	                 <div class="${(player.pkey == myKey)?"mystats":""} ${(player.pkey !== myKey)?"newfriend":""}" data-id="${player.pkey}">
 	                 	${app.keys.returnIdentifierByPublicKey(player.pkey, true)}</div>
 	                 <div class="${(player.pkey == myKey)?"mystats":""}">${Math.round(player.score)}</div>
 	                 <div class="${(player.pkey == myKey)?"mystats":""}">${player.games_finished}</div>

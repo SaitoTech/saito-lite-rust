@@ -6,6 +6,7 @@ const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
 const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
 const ArcadeGameDetails = require("./lib/arcade-game/arcade-game-details");
+const ChallengeTemplate = require("./lib/arcade-main/templates/arcade-challenge.template");
 const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
@@ -274,6 +275,11 @@ class Arcade extends ModTemplate {
 
     });
 
+    app.connection.on("issue-challenge", (gameDetails) =>{
+      let tx = this.createChallengeTransaction(gameDetails);
+      app.connection.emit("send-relay-message", {recipient: gameDetails.players, request: "arcade spv update", data: tx});
+    });
+
   }
 
   initializeHTML(app) {
@@ -470,6 +476,10 @@ class Arcade extends ModTemplate {
       }
     }
   }
+
+
+
+
 
   /*
   Process a join request
@@ -842,6 +852,11 @@ class Arcade extends ModTemplate {
         this.acceptGame(app, tx);
       }
 
+      if (txmsg.request == "challenge"){
+        if (this.debug) { console.log("handlePeerRequest: challenge request received"); }
+        this.receiveChallenge(app, tx);
+      }
+
       console.log(txmsg);
 
       //Process Gameovers
@@ -912,6 +927,7 @@ class Arcade extends ModTemplate {
       this.checkGameDatabase();
     }
   }
+
 
   async receiveOpenRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
@@ -1100,6 +1116,87 @@ class Arcade extends ModTemplate {
       }
     });
   }
+
+  createChallengeTransaction(gameData){
+
+    let ts = new Date().getTime();
+    let accept_sig = this.app.crypto.signMessage(
+      `invite_game_${ts}`,
+      this.app.wallet.returnPrivateKey()
+    );
+
+    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    for (let sendto of gameData.players){
+      tx.transaction.to.push(new saito.default.slip(sendto, 0.0));
+    }
+
+    tx.msg = {
+      ts: ts,
+      module: "Arcade",
+      request: "challenge",
+      game: gameData.game,
+      options: gameData.options,
+      players_needed: gameData.players.length,
+      players: [this.app.wallet.returnPublicKey()],
+      players_sigs: [accept_sig],
+      originator: this.app.wallet.returnPublicKey(),
+      invitees: gameData.players,
+    };
+
+    tx = this.app.wallet.signTransaction(tx);
+
+    return tx;
+
+  }
+
+
+  receiveChallenge(app, tx){
+    if (!tx.transaction || !tx.transaction.sig || !tx.msg || tx.msg.over == 1) {
+      return;
+    }
+
+    if (!tx.isTo(this.app.wallet.returnPublicKey())){
+      return;
+    }
+
+    this.addGameToOpenList(tx);
+
+    if (!tx.isFrom(this.app.wallet.returnPublicKey())){
+      let txmsg = tx.returnMessage();      
+
+      let overlay = new SaitoOverlay(app, false);
+      overlay.show(app, this, ChallengeTemplate(txmsg));
+      overlay.blockClose();
+
+      document.getElementById("reject-btn").onclick = (e) =>{
+        let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+  
+        for (let player of txmsg.players){
+          newtx.transaction.to.push(new saito.default.slip(player, 0.0));
+        }
+
+        newtx.msg = {
+          request: "sorry",
+          module: "Arcade",
+          game_id: tx.transaction.sig,
+        };
+
+        console.log(JSON.parse(JSON.stringify(newtx)));
+        newtx = app.wallet.signTransaction(newtx);
+
+        app.connection.emit("send-relay-message", {recipient: txmsg.players, request: "arcade spv update", data:newtx});
+        overlay.remove();
+
+      }
+      document.getElementById("accept-btn").onclick = (e) =>{
+        let newtx = this.createJoinTransaction(tx);
+        app.connection.emit("send-relay-message", {recipient: txmsg.players, request: "arcade spv update", data:newtx});
+        overlay.remove();        
+      }
+    }
+  }
+
 
   createOpenTransaction(gamedata, recipient = "") {
     let sendto = this.app.wallet.returnPublicKey();
