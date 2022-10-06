@@ -1,6 +1,6 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
+const SaitoOverlay = require('../../lib/saito/new-ui/saito-overlay/saito-overlay');
 const CalendarAppspace = require('./lib/email-appspace/calendar-appspace');
 
 

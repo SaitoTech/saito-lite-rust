@@ -306,18 +306,19 @@ class RedSquareTweet {
       this.saito_loader.render(app, mod, 'redsquare-home-header', false);
       let el = e.currentTarget;
       let tweet_sig_id = el.getAttribute("data-id");
+      mod.viewing = tweet_sig_id;
 
       //
       // add back button
       //
       document.querySelector(".redsquare-list").innerHTML = "";
-      let new_title = "<i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE";
-      app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE</div>`, "saito-page-header-title");
+      app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> RED SQUARE</div>`, "saito-page-header-title");
       document.querySelector(".saito-back-button").onclick = (e) => {
         app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
         mod.renderMainPage(app, mod);
         let redsquareUrl = window.location.origin + window.location.pathname;
         window.history.pushState({}, document.title, redsquareUrl);
+        mod.viewing = "feed";
       }
 
       let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;

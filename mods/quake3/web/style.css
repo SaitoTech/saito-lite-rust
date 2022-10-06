@@ -1,0 +1,23 @@
+
+.chat-container {
+  background-color: transparent;
+  color: whitesmoke;
+  border: 1px solid #6654;
+}
+.chat-header {
+  border-bottom: 1px solid #6654;
+}
+.chat-header>h6 {
+  color: whitesmoke;
+}
+.chat-input , input[type="text"] {
+  background-color: #FFF3;
+  color: white;
+}
+.chat-footer {
+  background-color: transparent;
+}
+.saito-userline {
+  color: #999;
+}
+
