@@ -14,6 +14,7 @@ class Stunx extends ModTemplate {
         super(app);
         this.appname = "Video Call";
         this.name = "Stunx";
+        this.slug = this.returnSlug();
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
         this.app = app;
@@ -254,11 +255,7 @@ class Stunx extends ModTemplate {
             $is_max_capacity: is_max_capacity
         }
         app.storage.executeDatabase(sql, params, "videocall");
-
         return;
-
-
-
     }
 
     acceptOfferAndBroadcastAnswer(app, offer_creator, offer) {

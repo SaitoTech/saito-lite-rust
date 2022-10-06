@@ -83,8 +83,8 @@ class RedSquareMain {
     let params = null;
 
     if (hash) {
+      component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
       if (hash?.split("").includes("?")) {
-        component = hash.split("?")[0];
         params = hash.split("?")[1];
       }
     }
