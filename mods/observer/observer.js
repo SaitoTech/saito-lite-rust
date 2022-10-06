@@ -42,6 +42,30 @@ class Observer extends ModTemplate {
     app.connection.on("arcade-observer-join-table", (game_id)=>{
       this.observeGame(game_id, true);
     });
+    app.connection.on("arcade-observer-review-game", (game_id)=>{
+      this.observeGame(game_id, false);
+    });
+
+    app.connection.on("Arcade-Observer-Update-Player", (obj)=>{
+      //{id, keys}
+      let game = this.games.find((g) => g.game_id === obj.id);
+      if (game){
+        let current_players = game.players_array.split("_");
+        let need_to_update = true;
+        if (current_players.length == obj.keys.length){
+          need_to_update = false;
+          for (let i = 0; i < current_players.length; i++){
+            if (current_players[i] !== obj.keys[i]){
+              need_to_update = true;
+            }
+          }
+        }
+        if (need_to_update){
+          game.players_array = obj.keys.join("_");
+          app.connection.emit("observer-add-game-render-request",this.games);
+        }
+      }
+    });
 
     if (this.app.BROWSER){
       return;

@@ -30,6 +30,8 @@ class Chatx extends ModTemplate {
         this.added_identifiers_post_load = 0;
         this.chat_manager = null;
 
+        this.mobile_chat_active = false;
+
     }
 
 
@@ -72,13 +74,13 @@ class Chatx extends ModTemplate {
 
         app.connection.on("encrypt-key-exchange-confirm", (data) => {
 
-          if (data.members === undefined) {
-            return;
-          }
-          let newgroup = this.createChatGroup(data.members);
-        //   if(app.browser.getWidth > 535){
-        //     app.connection.emit('chat-render-request', newgroup.id);
-        //   }
+            if (data.members === undefined) {
+                return;
+            }
+            let newgroup = this.createChatGroup(data.members);
+            //   if(app.browser.getWidth > 535){
+            //     app.connection.emit('chat-render-request', newgroup.id);
+            //   }
 
 
         });
@@ -164,7 +166,7 @@ class Chatx extends ModTemplate {
             // service. TODO - fix later
             //
             let newgroup = this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
-	    if (this.chat_manager != null) { this.chat_manager.render(this.app, this, ".chat-manager"); }
+            if (this.chat_manager != null) { this.chat_manager.render(this.app, this, ".chat-manager"); }
 
             for (let z = 0; z < this.groups.length; z++) {
                 if (this.groups[z].name === "Saito Community Chat") {
@@ -188,44 +190,44 @@ class Chatx extends ModTemplate {
                             for (let i = 0; i < res.rows.length; i++) {
                                 let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
                                 let txmsg = tx.returnMessage();
-				let ins = true;
-				let group_id = "";
-		    		for (let z = 0; z < this.groups.length; z++) {
-		    		    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
-			  	        if (this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) {
-					    let oldtxmsg = this.groups[z].txs[zz].returnMessage();
-					    if (txmsg.timestamp === oldtxmsg.timestamp) {
-						ins = false;
-					    }
-					}
-		    		    }
-		    		}
-				if (ins) {
+                                let ins = true;
+                                let group_id = "";
+                                for (let z = 0; z < this.groups.length; z++) {
+                                    for (let zz = 0; zz < this.groups[z].txs.length; zz++) {
+                                        if (this.groups[z].txs[zz].transaction.sig === tx.transaction.sig) {
+                                            let oldtxmsg = this.groups[z].txs[zz].returnMessage();
+                                            if (txmsg.timestamp === oldtxmsg.timestamp) {
+                                                ins = false;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (ins) {
                                     this.binaryInsert(this.groups[this.groups.length - 1].txs, tx, (a, b) => {
                                         return a.transaction.ts - b.transaction.ts;
                                     })
                                 } else {
-				}
+                                }
                             }
 
 
-			    //
-			    // show community chat
-			    //
-			    let active_mod = this.app.modules.returnActiveModule();
- 			    if (active_mod) {
-				if (active_mod.name != "Arcade") {
-			    	    if (app.BROWSER) { this.openChatBox(); }
-				}
-			    }
+                            //
+                            // show community chat
+                            //
+                            let active_mod = this.app.modules.returnActiveModule();
+                            if (active_mod) {
+                                if (active_mod.name != "Arcade") {
+                                    if (app.BROWSER) { this.openChatBox(); }
+                                }
+                            }
 
-			    //
-			    // render community chat
-			    //
+                            //
+                            // render community chat
+                            //
 
-                    app.connection.emit('chat-render-request', );
-                
-		
+                            app.connection.emit('chat-render-request',);
+
+
 
                             //
                             // check identifiers
@@ -333,12 +335,12 @@ class Chatx extends ModTemplate {
             }
         }
 
-      
+
 
         //
         // render loaded messages
         //
-        app.connection.emit('chat-render-request', "");
+        //app.connection.emit('chat-render-request', "");
 
     }
 
@@ -586,30 +588,30 @@ class Chatx extends ModTemplate {
 
     returnChatBody(group_id) {
 
-      let html = '';
-      let group = this.returnGroup(group_id);
-      let message_blocks = this.createMessageBlocks(group);
+        let html = '';
+        let group = this.returnGroup(group_id);
+        let message_blocks = this.createMessageBlocks(group);
 
-      for (let i = 0; i < message_blocks.length; i++) {
-        let block = message_blocks[i];
-        if (block.length > 0) {
-          let sender = "";
-          let msg = "";
-          for (let z = 0; z < block.length; z++) {
-            if (z > 0) { msg += '<br/>'; }
-            let txmsg = block[z].returnMessage();
-            sender = block[z].transaction.from[0].add;
-            msg += txmsg.message;       
-          }
-          let datets = new Date(block[block.length - 1].msg.timestamp)
-          let x = this.app.browser.formatDate(datets);
-          let last_update = x.hours + ":" + x.minutes;
-          msg = this.app.browser.sanitize(msg);
-          html +=`${SaitoUserSmallTemplate(this.app, this, sender, msg, last_update)}`;
+        for (let i = 0; i < message_blocks.length; i++) {
+            let block = message_blocks[i];
+            if (block.length > 0) {
+                let sender = "";
+                let msg = "";
+                for (let z = 0; z < block.length; z++) {
+                    if (z > 0) { msg += '<br/>'; }
+                    let txmsg = block[z].returnMessage();
+                    sender = block[z].transaction.from[0].add;
+                    msg += txmsg.message;
+                }
+                let datets = new Date(block[block.length - 1].msg.timestamp)
+                let x = this.app.browser.formatDate(datets);
+                let last_update = x.hours + ":" + x.minutes;
+                msg = this.app.browser.sanitize(msg);
+                html += `${SaitoUserSmallTemplate(this.app, this, sender, msg, last_update)}`;
+            }
         }
-      }
 
-      return html;
+        return html;
 
     }
 
@@ -655,11 +657,11 @@ class Chatx extends ModTemplate {
 
     receiveChatTransaction(app, tx) {
 
-	//
-	// allows us to open popup windows on chat-render-request
-	//
-	// create but don't render
-	//
+        //
+        // allows us to open popup windows on chat-render-request
+        //
+        // create but don't render
+        //
         if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
 
         //
@@ -687,26 +689,26 @@ class Chatx extends ModTemplate {
             }
         }
 
-	//
-	// insert?
-	//
+        //
+        // insert?
+        //
         let inserted = false;
         if (txmsg.group_id) {
-	  let ins = true;
- 	  for (let i = 0; i < this.groups.length; i++) {
-	    if (this.groups[i].id === txmsg.group_id) {
-	      for (let z = 0; z < this.groups[i].txs.length; z++) {
-		if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { return; }
-	      }
-	      if (ins) {
-    	        this.addTransactionToGroup(this.groups[i], tx);
-                inserted = true;
-console.log("emitting render request with group id: " + txmsg.group_id);
-                app.connection.emit('chat-render-request', txmsg.group_id);
-	      }
-	    }
-	  }
-	}
+            let ins = true;
+            for (let i = 0; i < this.groups.length; i++) {
+                if (this.groups[i].id === txmsg.group_id) {
+                    for (let z = 0; z < this.groups[i].txs.length; z++) {
+                        if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { return; }
+                    }
+                    if (ins) {
+                        this.addTransactionToGroup(this.groups[i], tx);
+                        inserted = true;
+                        console.log("emitting render request with group id: " + txmsg.group_id);
+                        app.connection.emit('chat-render-request', txmsg.group_id);
+                    }
+                }
+            }
+        }
 
 
         //
@@ -732,11 +734,11 @@ console.log("emitting render request with group id: " + txmsg.group_id);
             if (add_new_group == 1) {
                 proper_group = this.createChatGroup(members);
             }
-	    if (proper_group) {
-	        this.addTransactionToGroup(proper_group, tx);
-console.log("emitting render request 2 with group id: " + proper_group.id);
+            if (proper_group) {
+                this.addTransactionToGroup(proper_group, tx);
+                console.log("emitting render request 2 with group id: " + proper_group.id);
                 app.connection.emit('chat-render-request', proper_group.id);
-	    }
+            }
 
             return;
 
@@ -751,10 +753,11 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
     openChatBox(group_id = null) {
 
         let active_module = this.app.modules.returnActiveModule();
-	if (active_module.request_no_interrupts == true) {
-	  // if the module has ASKED leave it alone
-	  return;
-	}
+        if (active_module.request_no_interrupts == true) {
+            // if the module has ASKED leave it alone
+console.log("ASKED NOT TO INTERRUPT!");
+            return;
+        }
 
         if (this.chat_manager == null) {
             this.chat_manager = new ChatManager(this.app, this);
@@ -771,6 +774,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
             group_id = group.id;
         }
 
+console.log("BROADCASTING CHAT RENDER REQUEST: " + group_id);
         this.app.connection.emit('chat-render-request', group_id);
     }
 
@@ -799,7 +803,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
 
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i].id == id) {
-		return this.groups[i];
+                return this.groups[i];
             }
         }
 
@@ -824,7 +828,7 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
         group.txs.push(tx);
     }
 
-    returnChatByName(name="") {
+    returnChatByName(name = "") {
         for (let i = 0; i < this.groups.length; i++) {
             if (this.app.options.peers.length > 0) {
                 if (this.groups[i].name === name) {
@@ -911,17 +915,17 @@ console.log("emitting render request 2 with group id: " + proper_group.id);
     }
 
     deactivatePopup(group_id) {
-       this.chat_manager.inactive_popups.push(group_id);
+        this.chat_manager.inactive_popups.push(group_id);
     }
 
-    activatePopup(gid){
+    activatePopup(gid) {
         if (this.chat_manager) {
             this.chat_manager.inactive_popups = this.chat_manager.inactive_popups.filter(group_id => group_id !== gid);
         }
-      
+
     }
 
-    
+
 
 }
 

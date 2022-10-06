@@ -78,10 +78,6 @@ span.redsquare-home-red-square+span {
   height: 3rem;
 }
 
-.redsquare-list {
-  min-height: 120vh;
-}
-
 .post-tweet-preview .redsquare-item {
   padding-left: 0rem;
   padding-top: 0rem;
@@ -123,6 +119,7 @@ span.redsquare-home-red-square+span {
   width: inherit;
   height: inherit;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .saito-sidebar-left {
@@ -131,7 +128,7 @@ span.redsquare-home-red-square+span {
 
 .saito-sidebar-right {
   width: 50rem;
-  overflow-y: scroll;
+  overflow-y: auto;
   height: inherit;
 }
 
@@ -432,19 +429,21 @@ span.redsquare-home-red-square+span {
 }
 
 #redsquare-new-tweets-banner {
-  display: none;
+  display: none; 
   color: #fff;
-  position: sticky;
-  top: 13rem;
+  top: 5rem;
+  left: 0;
   z-index: 2;
   cursor: pointer;
   height: 3rem;
   line-height: 3rem;
   text-align: center;
   width: 34%;
-  margin: 0 33%;
-  background: #0004;
+  background: #0009;
   border-radius: 0.5rem;
+  margin: -3rem 50% 0;
+  transform: translateX(-50%);
+  position: sticky;
 }
 
 .redsquare-ellipsis::after {
@@ -676,8 +675,7 @@ span.redsquare-home-red-square+span {
   }
 
   .saito-page-header .saito-button-secondary {
-    padding: 0.5rem 0.5rem 0.4rem 0.5rem;
-    margin-top: 0rem;
+    font-size: 1.8rem;
   }
 
   .post-tweet-button {

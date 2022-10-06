@@ -36,7 +36,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
       //
       // if link properties
       //
-
+      try {
       if (typeof tweet.link_properties != 'undefined') {
         if (tweet.link_properties['og:exists'] !== false) {
           let d = tweet.link_properties;
@@ -55,8 +55,10 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
                         </a>
                         `;
           }
-
         }
+      }
+      } catch (err) {
+console.log("Error processing image/link: " + err);
       }
     }
   }

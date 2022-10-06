@@ -1,4 +1,5 @@
-const ModTemplate = require('./../../lib/templates/modtemplate');
+const saito = require("../../lib/saito/saito");
+const ModTemplate = require('../../lib/templates/modtemplate');
 const EmailAppspace = require('./lib/appspace/main');
 
 
@@ -21,9 +22,12 @@ class Email extends ModTemplate {
 
     this.count = 0;
 
+    this.styles = [`/${this.returnSlug()}/css/appspace.css`];
+
   }
 
   initialize(app) {
+    //super.initialize(app);
     let welcometx = app.wallet.createUnsignedTransaction();
     welcometx.msg.module   = "Email";
     welcometx.msg.title    = "Welcome to Saito";
@@ -38,7 +42,6 @@ class Email extends ModTemplate {
 
   respondTo(type) {
     if (type === "appspace") {
-      this.styles = ['/email/css/appspace.css'];
       super.render(this.app, this);
       return new EmailAppspace(this.app, this, "inbox");
     }

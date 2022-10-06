@@ -1,4 +1,5 @@
-const SaitoModuleTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module.template');
+//const SaitoModuleTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module.template');
+const SaitoModuleImageBoxTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module-imagebox.template');
 
 
 module.exports = (app, mod) => {
@@ -42,10 +43,10 @@ module.exports = (app, mod) => {
 
       html += `
         <div class="saito-game">
-	        ${SaitoModuleTemplate(app, mod, modtitle, modimage)}
+	        ${SaitoModuleImageBoxTemplate(modtitle, modimage)}
           <div class="saito-game-content">
             <div class="saito-leaderboard">
-	            <div class="saito-table">`;
+              <div class="saito-table">`;
 
         if (league_mod){
           if (league_mod.leagues.length > 0){
