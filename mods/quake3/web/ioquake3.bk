@@ -1,3 +1,15 @@
+//
+// HACK
+//
+// this tracks whether the user is interacting with a UI component shown
+// by Saito. if this variable is TRUE then we want to disable the default
+// UI events that emscripten creates.
+//
+var SAITO_COMPONENT_ACTIVE = false;
+var SAITO_COMPONENT_CLICKED = false;
+
+
+
 // Note: For maximum-speed code, see "Optimizing Code" on the Emscripten wiki, https://github.com/kripken/emscripten/wiki/Optimizing-Code
 // Note: Some Emscripten settings may limit the speed of the generated code.
 // The Module object: Our interface to the outside world. We import
@@ -15280,7 +15292,8 @@ console.log("GETNAME 2: " + this.name);
   			var fs_game = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('fs_game'), 'i8', ALLOC_STACK)));
   			var com_basegame = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('com_basegame'), 'i8', ALLOC_STACK)));
   			var mapname = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('mapname'), 'i8', ALLOC_STACK)));
-  			var url = 'http://' + fs_cdn + '/assets/manifest.json';
+  			//var url = 'http://' + fs_cdn + '/assets/manifest.json';
+  			var url = 'https://saito.io/quake3/assets/manifest.json';
   
   			function isInstaller(name) {
   				return SYSC.installers.some(function (installer) {
@@ -20585,7 +20598,56 @@ console.log("GETNAME 2: " + this.name);
         _free(surf);
         SDL.surfaces[surf] = null;
       },touchX:0,touchY:0,savedKeydown:null,receiveEvent:function (event) {
+
+	//
+	// HACK
+	//
+	// if we KNOW that we have enabled another component that is not the standard
+	// Quake viewport, we want to check to see if we have taken an action that is
+	// trying to interact with the Quake viewport, and in that case UNKNOW that we
+	// are not dealing with Quake.
+	//
+	if (SAITO_COMPONENT_ACTIVE == true || SAITO_COMPONENT_CLICKED == true) {
+	  let ect = event.currentTarget;
+	  let et = event.target;
+	  let active_id = "viewport";
+	  if (ect.id !== 'undefined') { active_id = ect.id; }
+	  if (et.id  !== 'undefined') { active_id = et.id; }
+	  if (active_id === "viewport" || active_id === 'undefined') {
+console.log("UNACTIVATING");
+	    document.getElementById("viewport").focus();
+	    SAITO_COMPONENT_ACTIVE = false;
+	    SAITO_COMPONENT_CLICKED = false;
+	  }
+	} else {
+
+	  //
+	  // if this is a click event, see if we are trying to click on a component
+	  // that has a defined classname, in which case if it is a Saito component 
+	  // we should flag that.
+	  //
+	  if (event.type === 'click') {
+	    let ect = event.currentTarget;
+	    let et = event.target;
+	    console.log("ect: " + ect.id);
+	    console.log("et: " + et.id);
+	    let active_id = "viewport";
+	    if (ect.id !== 'undefined') { active_id = ect.id; }
+	    if (et.id  !== 'undefined') { active_id = et.id; }
+	    if (active_id === "viewport" || active_id === 'undefined') {
+	    } else {
+	      if (document.getElementById(active_id)) {
+		SAITO_COMPONENT_ACTIVE = true;
+		SAITO_COMPONENT_CLICKED = true;
+		return;
+	      }
+	    }
+	  }
+
+	}
+
         switch(event.type) {
+
           case 'touchstart':
             event.preventDefault();
             var touch = event.touches[0];
@@ -20641,6 +20703,66 @@ console.log("GETNAME 2: " + this.name);
             }
             // fall through
           case 'keydown': case 'keyup': case 'keypress': case 'mousedown': case 'mouseup': case 'DOMMouseScroll': case 'mousewheel':
+
+	    //
+	    // HACK
+	    //
+	    // we should let text input instructions pass cleanly through in the case that
+	    // users are interacting with non-viewport elements. the chat instructions in 
+	    // Quake are also triggered by users pressing 't', so we add a catch for that
+	    // which activates the Community Chat window.
+	    //
+	    if (event.type === 'keydown' || event.type === "keypress" || event.type === "keyup") {
+
+	      //
+	      // HACK - 'enter' de-activates chat, but only if we didn't click on it to start typing
+	      // if we actually clicked to put our cursor in that box, we remain active on the input
+	      // until the user clicks away manually.
+	      //
+	      if (event.keyCode === 13 && SAITO_COMPONENT_ACTIVE == true) {
+
+console.log("RETURN PRESSED... should we de-activate?");
+
+	        if (document.querySelector('.chat-input')) {
+console.log("chat input class is on page!");
+		  if (SAITO_COMPONENT_CLICKED == false) {
+console.log("we should de-activate, clicked is false");
+	            document.querySelector('.chat-input').blur();
+	            SAITO_COMPONENT_ACTIVE = false;
+		    return;
+		  } else {
+console.log("keep open, we clicked here!");
+		    // we are still in component, so don't let the events below run
+		    return;
+		  }
+	        }
+	      }
+
+	      //
+	      // HACK - 't' activates chat if chat popup is visible, but does not set CLCKED
+	      // as this is a quick interaction as opposed to extended chat session.
+	      //
+	      if (event.keyCode === 84 && SAITO_COMPONENT_ACTIVE == false && SAITO_COMPONENT_CLICKED == false) {
+		if (document.querySelector('.chat-input')) {
+		  document.querySelector('.chat-input').focus();
+		  SAITO_COMPONENT_ACTIVE = true;
+		  event.preventDefault();
+		  return;
+		}
+	      }
+
+	      //
+	      // HACK - if we are interacting with a Saito component, we skip out
+	      // before the code below so as to prevent the in-game events from
+	      // triggering.
+	      //
+	      if (SAITO_COMPONENT_ACTIVE == true || SAITO_COMPONENT_CLICKED == true) {
+		return;
+	      };
+
+	    }
+
+
             // If we preventDefault on keydown events, the subsequent keypress events
             // won't fire. However, it's fine (and in some cases necessary) to
             // preventDefault for keys that don't generate a character. Otherwise,

@@ -15292,8 +15292,11 @@ console.log("GETNAME 2: " + this.name);
   			var fs_game = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('fs_game'), 'i8', ALLOC_STACK)));
   			var com_basegame = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('com_basegame'), 'i8', ALLOC_STACK)));
   			var mapname = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('mapname'), 'i8', ALLOC_STACK)));
-  			//var url = 'http://' + fs_cdn + '/assets/manifest.json';
-  			var url = 'https://saito.io/quake3/assets/manifest.json';
+			//
+			// original is above, below is for saito.io because of cross-origin/mixed content restrictions
+			//
+  			var url = 'http://' + fs_cdn + '/assets/manifest.json';
+  			//var url = 'https://saito.io/quake3/assets/manifest.json';
   
   			function isInstaller(name) {
   				return SYSC.installers.some(function (installer) {
@@ -20614,7 +20617,6 @@ console.log("GETNAME 2: " + this.name);
 	  if (ect.id !== 'undefined') { active_id = ect.id; }
 	  if (et.id  !== 'undefined') { active_id = et.id; }
 	  if (active_id === "viewport" || active_id === 'undefined') {
-console.log("UNACTIVATING");
 	    document.getElementById("viewport").focus();
 	    SAITO_COMPONENT_ACTIVE = false;
 	    SAITO_COMPONENT_CLICKED = false;
@@ -20704,6 +20706,8 @@ console.log("UNACTIVATING");
             // fall through
           case 'keydown': case 'keyup': case 'keypress': case 'mousedown': case 'mouseup': case 'DOMMouseScroll': case 'mousewheel':
 
+console.log("EVENT RECEIVED: " + event.type + " -- " + event.keyCode);
+
 	    //
 	    // HACK
 	    //
@@ -20721,17 +20725,12 @@ console.log("UNACTIVATING");
 	      //
 	      if (event.keyCode === 13 && SAITO_COMPONENT_ACTIVE == true) {
 
-console.log("RETURN PRESSED... should we de-activate?");
-
 	        if (document.querySelector('.chat-input')) {
-console.log("chat input class is on page!");
 		  if (SAITO_COMPONENT_CLICKED == false) {
-console.log("we should de-activate, clicked is false");
 	            document.querySelector('.chat-input').blur();
 	            SAITO_COMPONENT_ACTIVE = false;
 		    return;
 		  } else {
-console.log("keep open, we clicked here!");
 		    // we are still in component, so don't let the events below run
 		    return;
 		  }
@@ -20761,7 +20760,6 @@ console.log("keep open, we clicked here!");
 	      };
 
 	    }
-
 
             // If we preventDefault on keydown events, the subsequent keypress events
             // won't fire. However, it's fine (and in some cases necessary) to

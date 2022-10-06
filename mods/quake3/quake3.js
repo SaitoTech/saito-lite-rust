@@ -122,41 +122,41 @@ class Quake3 extends GameTemplate {
   //
   processQuakeLog(logline) {
 
-    //
-    // identify my name
-    //
-    let pos = logline.indexOf(" entered the game");
-    if (pos > -1 && this.game.player_name_identified == false) {    
-      this.game.player_name = logline.substring(0, pos);
-      this.game.player_name_identified = true;
-      this.addMove("player_name\t"+this.app.wallet.returnPublicKey()+"\t"+this.game.player_name);
-      this.endMove();
-    }
-
-
     if (this.game?.all_player_names) {
     for (let z = 0; z < this.game.all_player_names.length; z++) {
 
-      let name = this.game.all_player_names[z];
-      let pos = logline.indexOf(name);
+      let pn = this.game.all_player_names[z].toLowerCase().substring(0, 15);
+
+      let pos = logline.indexOf(pn);
         if (pos == 0) {
+
+console.log("LOG: " + pn + " something");
 
           //
           // someone got murdered
           //
           for (let i = 0; i < this.game.all_player_names.length; i++) {
-	    if (this.game_all_player_names[i] !== name) {
-              if (logline.indexOf(this.game.all_player_names[i]) > -1) {
+
+            let pn2 = this.game.all_player_names[i].toLowerCase().substring(0, 15);
+
+	    if (pn !== pn2) {
+              if (logline.indexOf(pn2) > -1) {
+
+
+console.log("LOG2: " + pn2 + " something something");
+console.log(logline);
 
 	        let victim = z;
 	        let killer = i;
+
 
                 //
                 // someone got murdered
                 //
 	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
+console.log("SOMEONE GOT MURDERED");
                   this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
-                  this.endMove();
+                  this.endTurn();
 	        }
 	      }
 	    }
@@ -284,6 +284,50 @@ console.log("start OPHC");
               m.tweetImage(image);
             });
           }
+        },
+    });
+
+    this.menu.addSubMenuOption("game-game", {
+        text : "Register",
+        id : "game-register",
+        class : "game-register",
+        callback : async function(app, game_mod) {
+
+console.log("TRYING TO SCROLL DOWN CONSOLE");
+
+          //document.dispatchEvent(new KeyboardEvent('keypress',{'keyCode':192}));
+          //document.dispatchEvent(new KeyboardEvent('keyup', {'keyCode': 192}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
+
+	  // "/name
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 191}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 78}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 65}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 77}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 69}));
+
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 32}));
+
+	  let publickey = app.wallet.returnPublicKey().toLowerCase();
+   
+	  for (let z = 0; z < publickey.length; z++) {
+	    let char = publickey[z];
+	    let charCode = char.charCodeAt(0);
+	    if (charCode > 65) { charCode -= 32; } // 97 -> 65
+            console.log("typing in: " + char);
+            document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': charCode}));
+	  }
+
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 13}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
+
+	  game_mod.game.player_name = publickey;
+	  game_mod.game.player_name_identified = true;
+	  game_mod.game.all_player_names[game_mod.game.player-1] = publickey;
+
+          game_mod.addMove("player_name\t"+game_mod.app.wallet.returnPublicKey()+"\t"+game_mod.game.player_name);
+          game_mod.endTurn();
+
         },
     });
 
