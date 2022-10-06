@@ -10,6 +10,10 @@ body {
   height: 100vh;
 }
 
+.poker-seat-4{
+  top: 40px;
+}
+
 .gameboard{
   /* Default fill the background with image */
   position: absolute;
@@ -31,8 +35,8 @@ body {
   top: 20vh;
 }
 
-.jaipur_board div{
-  margin: 20px;
+.jaipur_board > div{
+  margin: 15px;
 }
 
 .pb_sub_info{
@@ -45,8 +49,8 @@ body {
 }
 .bonus_tokens{
   display: grid;
-  grid-template-columns: repeat(3, minmax(50px, 1fr));
-  grid-template-rows: repeat(3, minmax(50px, 1fr));
+  grid-template-columns: repeat(3, 70px);
+  grid-template-rows: repeat(3, 70px);
   width: fit-content;
   height: fit-content;
 }
@@ -56,7 +60,7 @@ body {
 }
 
 .card_count{
-  width: 106px;
+  width: 146px;
   height: 146px;
   background-size: cover;
   background-position: center;
@@ -73,12 +77,11 @@ body {
 }
 
 #draw{
-  background-image: url("/jaipur/img/card_back.png");
   color: maroon;
 }
 
 #discard{
-  width: 106px;
+  width: 146px;
 }
 
 #discard .card{
@@ -106,7 +109,6 @@ body {
 }
 
 .camel_train{
-  background-image: url("/jaipur/img/camel.png");
   color: cadetblue;
 }
 
@@ -168,6 +170,6 @@ body {
 }
 
 .card_group img.card{
-  width: 106px;
+  width: 146px;
   margin: unset;
 }

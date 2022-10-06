@@ -13,7 +13,7 @@ class Jaipur extends GameTemplate {
 
     this.app             = app;
 
-    this.name  		       = "Jaipur";
+    this.name  		       = "Bazaar";
 
     this.description     = `${this.name} is a fast-paced two player card game where players acquire sets of resources to sell for the maximum profit.`;
     this.status          = "Alpha";
@@ -24,7 +24,9 @@ class Jaipur extends GameTemplate {
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
 
-    this.card_img_dir = "/jaipur/img";
+    this.slug         = this.name.toLowerCase();
+    this.card_img_dir = `/${this.slug}/img/cards/`;
+    this.token_img_dir = `/${this.slug}/img/tokens/`;
     this.categories 	 = "Games Boardgame Cardgame";
 
   }
@@ -44,6 +46,13 @@ class Jaipur extends GameTemplate {
 
     if (this.browser_active == 0) { return; }
     if (this.initialize_game_run) { return; }
+
+    document.title = this.name;
+    var s = document.createElement("link");
+    s.rel = "stylesheet";
+    s.type = "text/css";
+    s.href = `/${this.name.toLowerCase()}/style.css`;
+    document.querySelector('head').appendChild(s);
 
     super.initializeHTML(app);
 
@@ -75,8 +84,6 @@ class Jaipur extends GameTemplate {
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-    this.cardfan.addClass("bighand");  
-
     this.playerbox.render(app, this);
     this.playerbox.attachEvents(app, this);
     this.playerbox.addClassAll("poker-seat-", true);
@@ -105,7 +112,7 @@ initializeGame(game_id) {
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("------ INITIALIZE GAME ----");
-    console.log("-----------Jaipur----------");
+    console.log(`-----------${this.name}----------`);
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("\n\n\n\n");
@@ -764,16 +771,16 @@ initializeQueue(first_player = 1){
 
   cardWithCountToHTML(card, amt){
     if (amt !== 0){
-      return `<div class="card_count${(amt < 0)?" disabled":""}" data-id="${card}" style="background-image:url('/jaipur/img/${card}.png');">${Math.abs(amt)}</div>`;  
+      return `<div class="card_count${(amt < 0)?" disabled":""}" data-id="${card}" style="background-image:url('${this.card_img_dir}${card}.png');">${Math.abs(amt)}</div>`;  
     }else{
       return "";
     }
   }
 
   camelHTML(herd1, herd2){
-    let camel_bonus = (herd1 > herd2) ? `<img class="camel_bonus" src="/jaipur/img/tokens/Tokens Camel 5 Points.jpg" />` : "";
+    let camel_bonus = (herd1 > herd2) ? `<img class="camel_bonus" src="${this.token_img_dir}camel_token.png" />` : "";
     if (herd1 > 0){
-      return `<div class="camel_train card_count">${herd1}${camel_bonus}</div>`;
+      return `<div class="camel_train card_count" style="background-image: url('${this.card_img_dir}camel.png');">${herd1}${camel_bonus}</div>`;
     }else{
       return "";
     }
@@ -788,6 +795,7 @@ initializeQueue(first_player = 1){
       html += this.cardToHTML(c);
     }
     this.cardfan.render(this.app, this, html);
+    this.cardfan.addClass("bighand");  
 
     this.playerbox.refreshGraphic(this.camelHTML(this.game.state.herd, this.game.state.enemyherd), this.game.player);
     this.playerbox.refreshGraphic(this.camelHTML(this.game.state.enemyherd, this.game.state.herd), 3-this.game.player);
@@ -809,24 +817,24 @@ initializeQueue(first_player = 1){
     for (let token in this.game.state.tokens){
       if (this.game.state.tokens[token].length > 0){
         let value = this.game.state.tokens[token].pop();
-        html += `<img class="token" src="/jaipur/img/tokens/Tokens ${token} ${value} Points.jpg"/>`;
+        html += `<img class="token" src="${this.token_img_dir}${token}_token.png"/>`;
         this.game.state.tokens[token].push(value);      
       }else{
-        html += `<img class="token" src="/jaipur/img/tokens/empty.jpg"/>`;
+        html += `<img class="token" src="${this.token_img_dir}empty.jpg"/>`;
       }
     }
     for (let i = 3; i <= 5; i++){
       if (this.game.deck[i-2].crypt.length > 0){
-        html += `<img class="token" src= "/jaipur/img/tokens/${i} cards bonus tokens front.jpg" />`;
+        html += `<img class="token" src= "${this.token_img_dir}${i}_card_token.png" />`;
       }else{
-        html += `<img class="token" src="/jaipur/img/tokens/empty.jpg"/>`;
+        html += `<img class="token" src="${this.token_img_dir}empty.jpg"/>`;
       }
     }
 
     html += "</div>";
 
     html += `<div class="draw_decks">
-                <div id="draw" class="tip card_count">
+                <div id="draw" class="tip card_count" style="background-image:url('${this.card_img_dir}card_back.png');">
                   ${this.game.deck[0].crypt.length}
                   <div class="tiptext">${this.game.deck[0].crypt.length} cards left in draw pile.</div>
                 </div>
