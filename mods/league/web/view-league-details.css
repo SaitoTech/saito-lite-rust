@@ -89,7 +89,7 @@
 }
 
 
-*/
+
 .mystats {
   font-weight: bold;
   white-space: nowrap;
@@ -98,10 +98,14 @@
 }
 
 .newfriend {
-  cursor: crosshair;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.newfriend.online{
+  cursor: crosshair;
+  color: green;
 }
 
 .league-overview-box .info-item {

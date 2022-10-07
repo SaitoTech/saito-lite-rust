@@ -13,6 +13,12 @@ class ViewLeagueDetails {
     s.href = "/league/view-league-details.css";
     document.querySelector('head link').after(s);
 
+    app.connection.on("relay-is-online", (pkey)=>{
+      let playerRow = document.querySelector(`.newfriend[data-id="${pkey}"]`);
+      if (playerRow){
+        playerRow.classList.add("online");
+      }
+    });
   }
 
   render(app, mod, league) {
@@ -32,6 +38,7 @@ class ViewLeagueDetails {
   */
   loadLeaderboard(app, mod, league){
   	let leaderboard = [];
+    let players = [];
   	let al = this;
 
     //Recompute league stats
@@ -48,6 +55,8 @@ class ViewLeagueDetails {
               leaderboard.push(p);
               if (p.pkey == pid){
                 league.myRank = cnt; //I am the cnt player in the leaderboard
+              }else{
+                players.push(p.pkey);
               }
             }
             league.playerCnt = cnt;
@@ -60,6 +69,9 @@ class ViewLeagueDetails {
           }
           al.attachEvents(app, mod);    
 
+          //Ping all players in league
+          let pingTx = {};//mod.createPingTX(players);
+          app.connection.emit("send-relay-message", {recipient: players, request: "ping", data: pingTx});
         });
   }
 
@@ -108,7 +120,7 @@ class ViewLeagueDetails {
     if (inviteBtn){
       inviteBtn.onclick = () => {
         //ActiveModule should be Arcade
-        mod.showShareLink(this.league.id, app.modules.returnActiveModule());
+        mod.showShareLink(this.league.id);
       }
     }
 
@@ -154,9 +166,9 @@ class ViewLeagueDetails {
      Array.from(document.getElementsByClassName('challenge-btn')).forEach(btn => {
       btn.onclick = (e) => {
         e.preventDefault();
-        let warning_overlay = new SaitoOverlay(app);
-        warning_overlay.show(app, mod, `<h2>Coming soon</h2><div class="warning">This feature is not supported yet</div>`);
-      }
+        mod.createLeagueChallenge(this.league, e.currentTarget.getAttribute("data-id"));
+        this.overlay.remove();
+      };
     });
 
    //Need to attach events for clicking on players on the leaderboard
@@ -173,7 +185,7 @@ class ViewLeagueDetails {
     };
     Array.from(document.querySelectorAll(".newfriend")).forEach((username)=>{
       username.onclick = (e) =>{
-        startKeyExchange(e.target.getAttribute("id"));
+        startKeyExchange(e.target.getAttribute("data-id"));
       }
     });
 

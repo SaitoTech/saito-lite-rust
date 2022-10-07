@@ -14,10 +14,12 @@ class Relay extends ModTemplate {
         this.description = "Adds support for off-chain, realtime communications channels through relay servers, for mobile users and real-time gaming needs.";
         this.categories = "Utilities Core";
 
-
         this.description = "Simple Message Relay for Saito";
         this.categories = "Utilities Communications";
-        return this;
+
+        app.connection.on("send-relay-message", (obj)=>{
+            this.sendRelayMessage(obj.recipient, obj.request, obj.data);
+        })
     }
 
 
@@ -119,15 +121,23 @@ class Relay extends ModTemplate {
                 // if interior transaction is intended for me, I process regardless
                 //
                 if (tx.isTo(app.wallet.returnPublicKey())) {
-                    // && !tx.isFrom(app.wallet.returnPublicKey())) {
+
+                    if (txmsg.request === "ping"){
+                        this.sendRelayMessage(tx.transaction.from[0].add, "echo", {});
+                        return;
+                    }
+
+                    if (txmsg.request === "echo"){
+                        app.connection.emit("relay-is-online", tx.transaction.from[0].add);
+                    }
 
                     //console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
                     app.modules.handlePeerRequest(txmsg, peer, mycallback);
                     return;
 
-                    //
-                    // otherwise relay
-                    //
+                //
+                // otherwise relay
+                //
                 } else {
 
                     //
