@@ -20711,8 +20711,6 @@ console.log("GETNAME 2: " + this.name);
             // fall through
           case 'keydown': case 'keyup': case 'keypress': case 'mousedown': case 'mouseup': case 'DOMMouseScroll': case 'mousewheel':
 
-console.log("EVENT RECEIVED: " + event.type + " -- " + event.keyCode);
-
 	    //
 	    // HACK
 	    //

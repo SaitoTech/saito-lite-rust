@@ -58,27 +58,33 @@ class Quake3 extends GameTemplate {
 
 console.log("CRYPTOL: " + JSON.stringify(this.game.options));
 
-	if (this.game.options.crypto) {
+	//
+	// victim offers sacrificial tribue
+	//
+	if (this.app.wallet.returnPublicKey() === victim) {
 
-	  let ts = new Date().getTime();
-	  let ticker = this.game.options.crypto;
-          let killValue = this.game.options.killValue;
-	  let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
-
-	  // the user is proactively sending tokens unsolicited, so we can skip the 
-	  // confirmation prompt provided by the crypto-manager.
-
+	  if (this.game.options.crypto) {
+	    let ts = new Date().getTime();
+	    let ticker = this.game.options.crypto;
+            let killValue = this.game.options.killValue;
+	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
+	    // the user is proactively sending tokens unsolicited, so we can skip the 
+	    // confirmation prompt provided by the crypto-manager.
 console.log("sending payment to: " + killer_web3_address + " of " + killValue + " in " + ticker);
+	    this.app.wallet.sendPayment(
+	      [victim_web3_address], 
+	      [killer_web3_address],
+	      [killValue],
+	      ts,
+	      uhash,
+	      null,
+	      ticker
+            );	  
+	  }
 
-	  this.app.wallet.sendPayment(
-	    [victim_web3_address], 
-	    [killer_web3_address],
-	    [killValue],
-	    ts,
-	    uhash,
-	    null,
-	    ticker
-          );	  
+	} else {
+
+
 	}
 
 console.log("we have made the payment request");
@@ -290,6 +296,7 @@ console.log("we have made the payment request");
               menu.style.display = "block";
               m.tweetImage(image);
             });
+	    game_mod.menu.hideSubMenus();
           }
         },
     });
@@ -300,9 +307,18 @@ console.log("we have made the payment request");
         class : "game-register",
         callback : async function(app, game_mod) {
 
+	  game_mod.menu.hideSubMenus();
+
+	  //
+	  // prevent Saito components from processing
+	  //
+	  SAITO_COMPONENT_ACTIVE = false;
+	  SAITO_COMPONENT_CLICKED = false;
+	  if (document.getElementById("viewport")) { document.getElementById("viewport").focus(); }
+
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
 
-	  // "/name "
+	  // type "/name "
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 191}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 78}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 65}));
@@ -310,7 +326,7 @@ console.log("we have made the payment request");
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 69}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 32}));
 
-	  // provide publickey
+	  // type lowercase publickey
 	  let publickey = app.wallet.returnPublicKey().toLowerCase();
 	  for (let z = 0; z < publickey.length; z++) {
 	    let char = publickey[z];
@@ -320,13 +336,11 @@ console.log("we have made the payment request");
             document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': charCode}));
 	  }
 
+	  // type "enter" and hide console (w/ tilde)
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 13}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
 
-	  game_mod.game.player_name = publickey;
-	  game_mod.game.player_name_identified = true;
-	  game_mod.game.all_player_names[game_mod.game.player-1] = publickey;
-
+	  game_mod.setPlayerName(app.wallet.returnPublicKey(), publickey);
           game_mod.addMove("player_name\t"+game_mod.app.wallet.returnPublicKey()+"\t"+game_mod.game.player_name);
           game_mod.endTurn();
 
