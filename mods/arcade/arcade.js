@@ -275,7 +275,7 @@ class Arcade extends ModTemplate {
 
     });
 
-    app.connection.on("issue-challenge", (gameDetails) =>{
+    app.connection.on("arcade-issue-challenge", (gameDetails) =>{
       let tx = this.createChallengeTransaction(gameDetails);
       app.connection.emit("send-relay-message", {recipient: gameDetails.players, request: "arcade spv update", data: tx});
     });
@@ -857,6 +857,11 @@ class Arcade extends ModTemplate {
         this.receiveChallenge(app, tx);
       }
 
+      if (txmsg.request == "sorry"){
+        if (this.debug) { console.log("handlePeerRequest: sorry request received"); }
+        app.connection.emit("arcade-reject-challenge", txmsg.game_id);
+      }
+
       console.log(txmsg);
 
       //Process Gameovers
@@ -1187,8 +1192,8 @@ class Arcade extends ModTemplate {
 
         app.connection.emit("send-relay-message", {recipient: txmsg.players, request: "arcade spv update", data:newtx});
         overlay.remove();
-
       }
+
       document.getElementById("accept-btn").onclick = (e) =>{
         let newtx = this.createJoinTransaction(tx);
         app.connection.emit("send-relay-message", {recipient: txmsg.players, request: "arcade spv update", data:newtx});
@@ -1196,6 +1201,7 @@ class Arcade extends ModTemplate {
       }
     }
   }
+
 
 
   createOpenTransaction(gamedata, recipient = "") {
