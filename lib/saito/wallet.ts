@@ -1082,6 +1082,9 @@ console.log("---------------------");
     mycallback = null,
     ticker
   ) {
+
+console.log("IN SEND PAYMENT IN WALLET!");
+
     console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
