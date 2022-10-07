@@ -13,10 +13,7 @@ class RedSquareObserver {
 	    app.connection.on("observer-add-game-render-request", (games)=>{   
 	      this.render(app, mod, ".redsquare-sidebar-observer");
 	    });
-	    app.connection.on("arcade-game-ready-observer", (game_id)=>{
-	    	let spinner = new GameLoader(app, mod, game_id);
-	    	spinner.render(app, mod, "#rs-sidebar-observer", "Game Moves Loaded", "Watch Game");
-	    });
+	    
   	}
 
 	render(app, mod, selector=""){
@@ -44,11 +41,27 @@ class RedSquareObserver {
         let game_id = e.currentTarget.getAttribute("data-id");
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
         let spinner = new GameLoader(app, mod);
-	      
-	      widget.blockRender = true;
-	      spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
-	      
-	      app.connection.emit("arcade-observer-join-table",game_id);
+        let sign_exists = false;
+
+        let arcade_mod = app.modules.returnModule("Arcade");  
+        if (arcade_mod) {
+
+          for (let i = 0; i < arcade_mod.games.length; i++) {
+            if (arcade_mod.games[i].transaction.sig == game_id) {
+          		sign_exists = true;
+              let saito_mod_detials_overlay = new SaitoModuleOverlay(this.app, this.mod);
+              saito_mod_detials_overlay.action = game_cmd;
+              saito_mod_detials_overlay.render(this.app, this.mod, arcade_mod.games[i]);
+          	}
+          }
+
+          if (sign_exists != true) {      
+			      widget.blockRender = true;
+			      spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
+			      
+			      app.connection.emit("arcade-observer-join-table",game_id);
+      		}    
+        } 
       }
     }); 
 	}
