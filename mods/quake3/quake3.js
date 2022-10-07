@@ -20,12 +20,77 @@ class Quake3 extends GameTemplate {
   }
 
 
+  handleGameLoop() {
+    ///////////
+    // QUEUE //
+    ///////////
+    if (this.game.queue.length > 0) {
+      let qe = this.game.queue.length - 1;
+      let mv = this.game.queue[qe].split("\t");
+      let shd_continue = 1;
 
+      console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
+      if (mv[0] === "init") {
+        return 0;
+      }
 
+      if (mv[0] === "player_kill") {
+
+	this.game.queue.splice(qe, 1);
+	let victim = mv[1];
+	let killer = mv[2];
+
+	if (this.game.options.crypto) {
+
+	  let ts = new Date().getTime();
+	  let ticker = this.game.options.crypto;
+          let killValue = this.game.options.killValue;
+	  let uhash = app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
+
+	  // the user is proactively sending tokens unsolicited, so we can skip the 
+	  // confirmation prompt provided by the crypto-manager.
+	  this.app.wallet.sendPayment(
+	    [victim], 
+	    [killer],
+	    [killValue],
+	    ts,
+	    uhash,
+	    null,
+	    ticker
+          );	  
+	}
+
+        return 1;
+      }
+
+      if (mv[0] === "player_name") {
+	this.game.queue.splice(qe, 1);
+	let publickey = mv[1];
+	let name = mv[2];
+	this.setPlayerName(publickey, name);
+        return 1;
+      }
+
+      //
+      // avoid infinite loops
+      //
+      if (shd_continue == 0) {
+        console.log("NOT CONTINUING");
+        return 0;
+      }
+
+    } else {
+      console.log("QUEUE EMPTY!");
+    }
+
+    return 1;
+  }
   returnGameOptionsHTML() {
     return QuakeGameOptionsTemplate(this.app, this);
   }
+
+
   attachAdvancedOptionsEventListeners(){
 
     let crypto = document.getElementById("crypto");
@@ -52,9 +117,6 @@ class Quake3 extends GameTemplate {
     }
 
   }
-
-
-
 
 
   initializeGame(game_id) {
@@ -88,11 +150,9 @@ class Quake3 extends GameTemplate {
   initialize(app) {
 
     if (app.BROWSER == 0) { return; }
-
     super.initialize(app);
 
     if (this.browser_active == 1) {
-/***
       //
       // bind console.log to track outside app
       //
@@ -101,62 +161,40 @@ class Quake3 extends GameTemplate {
         console.log = (...args) => {
   	  if (args.length > 0) {
 	    if (typeof args[0] === 'string') {
-	      this.processQuakeLog(args[0]);
+	      this.processQuakeLog(args[0], log);
             }
             log(...args);
           }
         }
       }
-***/
     }
-
-
   }
-
-
-
 
 
   //
   // for the love of God don't add console.logs within this function
   //
-  processQuakeLog(logline) {
-
-    //
-    // identify my name
-    //
-    let pos = logline.indexOf(" entered the game");
-    if (pos > -1 && this.game.player_name_identified == false) {    
-      this.game.player_name = logline.substring(0, pos);
-      this.game.player_name_identified = true;
-      this.addMove("player_name\t"+this.app.wallet.returnPublicKey()+"\t"+this.game.player_name);
-      this.endMove();
-    }
-
-
+  processQuakeLog(logline, log) {
     if (this.game?.all_player_names) {
     for (let z = 0; z < this.game.all_player_names.length; z++) {
-
-      let name = this.game.all_player_names[z];
-      let pos = logline.indexOf(name);
+      let pn = this.game.all_player_names[z].toLowerCase().substring(0, 15);
+      let pos = logline.indexOf(pn);
         if (pos == 0) {
-
           //
           // someone got murdered
           //
           for (let i = 0; i < this.game.all_player_names.length; i++) {
-	    if (this.game_all_player_names[i] !== name) {
-              if (logline.indexOf(this.game.all_player_names[i]) > -1) {
-
+            let pn2 = this.game.all_player_names[i].toLowerCase().substring(0, 15);
+	    if (pn !== pn2) {
+              if (logline.indexOf(pn2) > -1) {
 	        let victim = z;
 	        let killer = i;
-
                 //
                 // someone got murdered
                 //
 	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
                   this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
-                  this.endMove();
+                  this.endTurn();
 	        }
 	      }
 	    }
@@ -164,82 +202,28 @@ class Quake3 extends GameTemplate {
         }
       }
     }
-
   }
 
 
 
-  handleGameLoop() {
 
-console.log("start handle game loop");
-
-    ///////////
-    // QUEUE //
-    ///////////
-    if (this.game.queue.length > 0) {
-      let qe = this.game.queue.length - 1;
-      let mv = this.game.queue[qe].split("\t");
-      let shd_continue = 1;
-
-      console.log("QUEUE: " + JSON.stringify(this.game.queue));
-
-      // nothing more until someone sends us instructions
-      if (mv[0] === "READY") {
-        this.game.initializing = 0;
-        this.game.queue.splice(qe, 1);
-        return 1;
+  setPlayerName(publickey, name) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      if (this.game.players[i] === publickey) {
+        this.game.all_player_names[i] = name;
+        console.log("PLAYER " + (i+1) + " is " + name);
       }
-
-      if (mv[0] === "init") {
-        return 0;
-      }
-
-      if (mv[0] === "player_kill") {
-	this.game.queue.splice(qe, 1);
-	let victim = mv[1];
-	let killer = mv[2];
-	console.log("KILLED");
-        return 1;
-      }
-
-      if (mv[0] === "player_name") {
-	this.game.queue.splice(qe, 1);
-	let publickey = mv[1];
-	let name = mv[2];
-	for (let i = 0; i < this.game.players.length; i++) {
-	  if (this.game.players[i] === publickey) {
-	    this.game.all_player_names[i] = name;
-	    console.log("PLAYER " + (i+1) + " is " + name);
-	  }
-	}
-        return 1;
-      }
-
-      //
-      // avoid infinite loops
-      //
-      if (shd_continue == 0) {
-        console.log("NOT CONTINUING");
-        return 0;
-      }
-
-    } else {
-      console.log("QUEUE EMPTY!");
     }
-
-console.log("return 1");
-    return 1;
+    if (this.app.wallet.returnPublicKey() === publickey) {
+      this.game.player_name = name;
+      this.game.player_name_identified = true;
+    }
   }
-
 
 
 
   onPeerHandshakeComplete(app, peer) {
-
-console.log("start OPHC");
-
     if (app.BROWSER == 0 || !document) { return; } 
-
     if (document.querySelector(".chat-input")) {
       let c = document.querySelector(".chat-input");
       if (c) {
@@ -247,6 +231,7 @@ console.log("start OPHC");
       }
     }
   }
+
 
   initializeHTML(app) {
 
@@ -284,6 +269,45 @@ console.log("start OPHC");
               m.tweetImage(image);
             });
           }
+        },
+    });
+
+    this.menu.addSubMenuOption("game-game", {
+        text : "Register",
+        id : "game-register",
+        class : "game-register",
+        callback : async function(app, game_mod) {
+
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
+
+	  // "/name "
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 191}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 78}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 65}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 77}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 69}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 32}));
+
+	  // provide publickey
+	  let publickey = app.wallet.returnPublicKey().toLowerCase();
+	  for (let z = 0; z < publickey.length; z++) {
+	    let char = publickey[z];
+	    let charCode = char.charCodeAt(0);
+	    if (charCode > 65) { charCode -= 32; } // 97 -> 65
+            console.log("typing in: " + char);
+            document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': charCode}));
+	  }
+
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 13}));
+          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
+
+	  game_mod.game.player_name = publickey;
+	  game_mod.game.player_name_identified = true;
+	  game_mod.game.all_player_names[game_mod.game.player-1] = publickey;
+
+          game_mod.addMove("player_name\t"+game_mod.app.wallet.returnPublicKey()+"\t"+game_mod.game.player_name);
+          game_mod.endTurn();
+
         },
     });
 

@@ -43,17 +43,12 @@ class RedSquareObserver {
         e.stopImmediatePropagation();
         let game_id = e.currentTarget.getAttribute("data-id");
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
-
-        let arcade_mod = app.modules.returnModule("Arcade");  
-        if (arcade_mod) {
-          for (let i = 0; i < arcade_mod.games.length; i++) {
-            if (arcade_mod.games[i].transaction.sig == game_id){
-              let saito_mod_detials_overlay = new SaitoModuleOverlay(this.app, this.mod);
-              saito_mod_detials_overlay.action = game_cmd;
-              saito_mod_detials_overlay.render(this.app, this.mod, arcade_mod.games[i]);
-          	}
-          }    
-        }
+        let spinner = new GameLoader(app, mod);
+	      
+	      widget.blockRender = true;
+	      spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
+	      
+	      app.connection.emit("arcade-observer-join-table",game_id);
       }
     }); 
 	}
