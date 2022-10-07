@@ -1066,8 +1066,8 @@ console.log("---------------------");
   /**
    * Sends payments to the addresses provided if this user is the corresponding
    * sender. Will not send if similar payment was found after the given timestamp.
-   * @param {Array} senders - Array of addresses
-   * @param {Array} receivers - Array of addresses
+   * @param {Array} senders - Array of addresses -- in web3 currency
+   * @param {Array} receivers - Array of addresses -- in web3 curreny
    * @param {Array} amounts - Array of amounts to send
    * @param {Int} timestamp - Timestamp of time after which payment should be made
    * @param {Function} mycallback - ({hash: {String}}) -> {...}

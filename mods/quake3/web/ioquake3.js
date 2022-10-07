@@ -15295,8 +15295,8 @@ console.log("GETNAME 2: " + this.name);
 			//
 			// original is above, below is for saito.io because of cross-origin/mixed content restrictions
 			//
-  			var url = 'http://' + fs_cdn + '/assets/manifest.json';
-  			//var url = 'https://saito.io/quake3/assets/manifest.json';
+  			//var url = 'http://' + fs_cdn + '/assets/manifest.json';
+  			var url = 'https://saito.io/quake3/assets/manifest.json';
   
   			function isInstaller(name) {
   				return SYSC.installers.some(function (installer) {

@@ -20,6 +20,72 @@ class Quake3 extends GameTemplate {
   }
 
 
+  handleGameLoop() {
+    ///////////
+    // QUEUE //
+    ///////////
+    if (this.game.queue.length > 0) {
+      let qe = this.game.queue.length - 1;
+      let mv = this.game.queue[qe].split("\t");
+      let shd_continue = 1;
+
+      console.log("QUEUE: " + JSON.stringify(this.game.queue));
+
+      if (mv[0] === "init") {
+        return 0;
+      }
+
+      if (mv[0] === "player_kill") {
+
+	this.game.queue.splice(qe, 1);
+	let victim = mv[1];
+	let killer = mv[2];
+
+	if (this.game.options.crypto) {
+
+	  let ts = new Date().getTime();
+	  let ticker = this.game.options.crypto;
+          let killValue = this.game.options.killValue;
+	  let uhash = app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
+
+	  // the user is proactively sending tokens unsolicited, so we can skip the 
+	  // confirmation prompt provided by the crypto-manager.
+	  this.app.wallet.sendPayment(
+	    [victim], 
+	    [killer],
+	    [killValue],
+	    ts,
+	    uhash,
+	    null,
+	    ticker
+          );	  
+	}
+
+        return 1;
+      }
+
+      if (mv[0] === "player_name") {
+	this.game.queue.splice(qe, 1);
+	let publickey = mv[1];
+	let name = mv[2];
+	this.setPlayerName(publickey, name);
+        return 1;
+      }
+
+      //
+      // avoid infinite loops
+      //
+      if (shd_continue == 0) {
+        console.log("NOT CONTINUING");
+        return 0;
+      }
+
+    } else {
+      console.log("QUEUE EMPTY!");
+    }
+
+    return 1;
+  }
   returnGameOptionsHTML() {
     return QuakeGameOptionsTemplate(this.app, this);
   }
@@ -139,65 +205,21 @@ class Quake3 extends GameTemplate {
   }
 
 
-  handleGameLoop() {
-    ///////////
-    // QUEUE //
-    ///////////
-    if (this.game.queue.length > 0) {
-      let qe = this.game.queue.length - 1;
-      let mv = this.game.queue[qe].split("\t");
-      let shd_continue = 1;
 
-      console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
-      // nothing more until someone sends us instructions
-      if (mv[0] === "READY") {
-        this.game.initializing = 0;
-        this.game.queue.splice(qe, 1);
-        return 1;
+  setPlayerName(publickey, name) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      if (this.game.players[i] === publickey) {
+        this.game.all_player_names[i] = name;
+        console.log("PLAYER " + (i+1) + " is " + name);
       }
-
-      if (mv[0] === "init") {
-        return 0;
-      }
-
-      if (mv[0] === "player_kill") {
-
-	this.game.queue.splice(qe, 1);
-	let victim = mv[1];
-	let killer = mv[2];
-
-	console.log("KILLED");
-        return 1;
-      }
-
-      if (mv[0] === "player_name") {
-	this.game.queue.splice(qe, 1);
-	let publickey = mv[1];
-	let name = mv[2];
-	for (let i = 0; i < this.game.players.length; i++) {
-	  if (this.game.players[i] === publickey) {
-	    this.game.all_player_names[i] = name;
-	    console.log("PLAYER " + (i+1) + " is " + name);
-	  }
-	}
-        return 1;
-      }
-
-      //
-      // avoid infinite loops
-      //
-      if (shd_continue == 0) {
-        console.log("NOT CONTINUING");
-        return 0;
-      }
-
-    } else {
-      console.log("QUEUE EMPTY!");
     }
-
-    return 1;
+    if (this.app.wallet.returnPublicKey() === publickey) {
+      this.game.player_name = name;
+      this.game.player_name_identified = true;
+    }
   }
+
 
 
   onPeerHandshakeComplete(app, peer) {
