@@ -15242,7 +15242,11 @@ console.log("GETNAME 2: " + this.name);
   		},DownloadAsset:function (asset, onprogress, onload) {
   			var root = SYSC.GetCDN();
   			var name = asset.name.replace(/(.+\/|)(.+?)$/, '$1' + asset.checksum + '-$2');
-  			var url = 'http://' + root + '/assets/' + name;
+
+			//
+			// HACK - shift to HTTPS
+			//
+  			var url = 'https://' + root + '/assets/' + name;
   
   			SYS.DoXHR(url, {
   				dataType: 'arraybuffer',
@@ -15293,10 +15297,11 @@ console.log("GETNAME 2: " + this.name);
   			var com_basegame = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('com_basegame'), 'i8', ALLOC_STACK)));
   			var mapname = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('mapname'), 'i8', ALLOC_STACK)));
 			//
-			// original is above, below is for saito.io because of cross-origin/mixed content restrictions
+			// HACK -- original is above, below is for saito.io because of cross-origin/mixed content restrictions
 			//
+  			var url = 'https://' + fs_cdn + '/assets/manifest.json';
   			//var url = 'http://' + fs_cdn + '/assets/manifest.json';
-  			var url = 'https://saito.io/quake3/assets/manifest.json';
+  			//var url = 'https://saito.io/quake3/assets/manifest.json';
   
   			function isInstaller(name) {
   				return SYSC.installers.some(function (installer) {
@@ -20705,8 +20710,6 @@ console.log("GETNAME 2: " + this.name);
             }
             // fall through
           case 'keydown': case 'keyup': case 'keypress': case 'mousedown': case 'mouseup': case 'DOMMouseScroll': case 'mousewheel':
-
-console.log("EVENT RECEIVED: " + event.type + " -- " + event.keyCode);
 
 	    //
 	    // HACK

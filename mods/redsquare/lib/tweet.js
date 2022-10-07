@@ -5,6 +5,7 @@ const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const SaitoLoader = require("./../../../lib/saito/new-ui/saito-loader/saito-loader");
 const ModalAddPublicKey = require("./../../../lib/saito/new-ui/modals/confirm-add-publickey/confirm-add-publickey");
+const e = require("blake3-js");
 
 class RedSquareTweet {
 
@@ -171,17 +172,30 @@ class RedSquareTweet {
       app.browser.replaceElementById(html, tweet_id);
     } else {
       if (appendToSelector) {
-        app.browser.addElementToSelector(html, selector);
+        if (document.querySelector(selector).childElementCount > 1) {
+          if (document.querySelector(selector).lastElementChild.previousElementSibling && document.querySelector(selector).lastElementChild.previousElementSibling.classList.contains("thread-" + this.thread_id)) {
+            app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+            app.browser.addElementToSelector(html, selector);
+          } else {
+            app.browser.addElementToSelector(html, selector);
+          }
+        } else {
+          app.browser.addElementToSelector(html, selector);
+        }
       } else {
         app.browser.prependElementToSelector(html, selector)
       }
     }
 
-    if (this.critical_child != null && this.flagged != 1) {
+    if (obj) {
+      if (obj.previousElementSibling.classList.contains("thread-" + this.thread_id)) {
+        this.in_thread = true;
+      }
+    }
+
+    if ((this.critical_child != null || this.in_thread) && this.flagged != 1) {
       if (obj) {
-        obj.previousElementSibling.classList.add("before-ellipsis");
-        obj.nextSibling.classList.add("after-ellipsis");
-        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+       app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
         if (appendToSelector) {
@@ -190,10 +204,18 @@ class RedSquareTweet {
           app.browser.prependElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
         }
         this.critical_child.render(app, mod, selector);
-        document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.previousElementSibling.classList.add("before-ellipsis");
-        document.querySelector(selector).querySelector('.redsquare-ellipsis').nextElementSibling.classList.add("after-ellipsis");
       }
     }
+    document.querySelector(selector).querySelectorAll('.redsquare-ellipsis').forEach(el => {
+      if (el.previousElementSibling) {
+        if (el.previousElementSibling.previousElementSibling) {
+          el.previousElementSibling.previousElementSibling.classList.add("before-ellipsis");
+        }
+      }
+      if (el.nextElementSibling) {
+        el.nextElementSibling.classList.add("after-ellipsis");
+      }
+    });
     this.attachEvents(app, mod);
     app.browser.addModalIdentifierAddPublickey(app, mod);
   }
@@ -208,7 +230,7 @@ class RedSquareTweet {
 
     if (obj) {
       app.browser.replaceElementById(html, tweet_id);
-    } else {
+    } else {      
       app.browser.addElementToSelector(html, selector);
     }
 

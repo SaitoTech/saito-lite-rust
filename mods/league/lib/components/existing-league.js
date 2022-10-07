@@ -27,7 +27,7 @@ module.exports = ExistingLeague = {
           app.connection.emit("view-league-details", league_id);
         }
         if (cmd == "invite") {
-          mod.showShareLink(league_id, mod);
+          mod.showShareLink(league_id);
         }
         if (cmd == "delete") {
           let confirm = await sconfirm("Are you sure you want to delete this league?");

@@ -17,6 +17,9 @@ class Quake3 extends GameTemplate {
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
 
+    this.content_server  = "q3.saito.io";
+    //this.content_server  = "18.163.184.251:80";
+    this.game_server     = "18.163.184.251:27960";
   }
 
 
@@ -37,32 +40,81 @@ class Quake3 extends GameTemplate {
 
       if (mv[0] === "player_kill") {
 
+console.log("PLAYER KILL RECEIVED: " + JSON.stringify(this.game.queue));
+
 	this.game.queue.splice(qe, 1);
 	let victim = mv[1];
 	let killer = mv[2];
 
+	let victim_web3_address = "";
+	let killer_web3_address = "";
+
+	for (let i = 0; i < this.game.players.length; i++) {
+	  if (this.game.players[i] === victim) {
+	    victim_web3_address = this.game.keys[i];
+	  }
+	  if (this.game.players[i] === killer) {
+	    killer_web3_address = this.game.keys[i];
+	  }
+	}
+
+console.log("CRYPTOL: " + JSON.stringify(this.game.options));
+
+	//
+	// victim offers sacrificial tribue
+	//
 	if (this.game.options.crypto) {
+	  if (this.app.wallet.returnPublicKey() === victim) {
 
-	  let ts = new Date().getTime();
-	  let ticker = this.game.options.crypto;
-          let killValue = this.game.options.killValue;
-	  let uhash = app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
+console.log("i am the victim, sendin tokens");
 
-	  // the user is proactively sending tokens unsolicited, so we can skip the 
-	  // confirmation prompt provided by the crypto-manager.
-	  this.app.wallet.sendPayment(
-	    [victim], 
-	    [killer],
-	    [killValue],
-	    ts,
-	    uhash,
-	    null,
-	    ticker
-          );	  
+	    let ts = new Date().getTime();
+	    let ticker = this.game.options.crypto;
+            let killValue = this.game.options.killValue;
+	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
+	    // the user is proactively sending tokens unsolicited, so we can skip the 
+	    // confirmation prompt provided by the crypto-manager.
+console.log("sending payment to: " + killer_web3_address + " of " + killValue + " in " + ticker);
+	    this.app.wallet.sendPayment(
+	      [victim_web3_address], 
+	      [killer_web3_address],
+	      [killValue],
+	      ts,
+	      uhash,
+	      function() {
+		siteMessage(`${killValue} ${ticker} sent in tribute`, 8000);
+	      },
+	      ticker
+            );	  
+
+	  } else {
+
+console.log("i am the killer, receivin'...");
+	    let ts = new Date().getTime();
+	    let ticker = this.game.options.crypto;
+            let killValue = this.game.options.killValue;
+	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
+
+	    //
+	    // monitor for receipt
+	    //
+            this.app.wallet.receivePayment(
+	      [victim_web3_address] ,
+	      [killer_web3_address] ,
+    	      [killValue] ,
+    	      ts ,
+              uhash ,
+              function() {
+	        siteMessage(`${killValue} ${ticker} received in tribute`, 8000);
+	      },
+	      ticker
+	    );
+	  }
 	}
 
         return 1;
       }
+
 
       if (mv[0] === "player_name") {
 	this.game.queue.splice(qe, 1);
@@ -268,6 +320,7 @@ class Quake3 extends GameTemplate {
               menu.style.display = "block";
               m.tweetImage(image);
             });
+	    game_mod.menu.hideSubMenus();
           }
         },
     });
@@ -278,9 +331,18 @@ class Quake3 extends GameTemplate {
         class : "game-register",
         callback : async function(app, game_mod) {
 
+	  game_mod.menu.hideSubMenus();
+
+	  //
+	  // prevent Saito components from processing
+	  //
+	  SAITO_COMPONENT_ACTIVE = false;
+	  SAITO_COMPONENT_CLICKED = false;
+	  if (document.getElementById("viewport")) { document.getElementById("viewport").focus(); }
+
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
 
-	  // "/name "
+	  // type "/name "
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 191}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 78}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 65}));
@@ -288,7 +350,7 @@ class Quake3 extends GameTemplate {
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 69}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 32}));
 
-	  // provide publickey
+	  // type lowercase publickey
 	  let publickey = app.wallet.returnPublicKey().toLowerCase();
 	  for (let z = 0; z < publickey.length; z++) {
 	    let char = publickey[z];
@@ -298,13 +360,11 @@ class Quake3 extends GameTemplate {
             document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': charCode}));
 	  }
 
+	  // type "enter" and hide console (w/ tilde)
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 13}));
           document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
 
-	  game_mod.game.player_name = publickey;
-	  game_mod.game.player_name_identified = true;
-	  game_mod.game.all_player_names[game_mod.game.player-1] = publickey;
-
+	  game_mod.setPlayerName(app.wallet.returnPublicKey(), publickey);
           game_mod.addMove("player_name\t"+game_mod.app.wallet.returnPublicKey()+"\t"+game_mod.game.player_name);
           game_mod.endTurn();
 
@@ -370,8 +430,9 @@ return;
     // merge default args with query string args
     //var args = ['+set', 'fs_cdn', 'content.quakejs.com:80', '+set', 'sv_master1', 'master.quakejs.com:27950']; //original args to list the servers from master.quakejs.com
     //var args = ['+set', 'fs_cdn', 'content.quakejs.com:80', '+set', 'sv_master1', 'master.quakejs.com:27950', '+connect', 'YOUR_SERVER_HERE:27960']; //additional +connect arguement to connect to a specific server
-    var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
+    //var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
     //var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+set', 'sv_enable_bots', '1', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
+    var args = ['+set', 'fs_cdn', this.content_server, '+connect', this.game_server];
     args.push.apply(args, getQueryCommands());
 
     if (this.browser_active == 1) {

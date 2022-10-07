@@ -6,7 +6,9 @@ const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
 const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
 const ArcadeGameDetails = require("./lib/arcade-game/arcade-game-details");
+const ChallengeTemplate = require("./lib/arcade-main/templates/arcade-challenge.template");
 const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
+const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
 const InvitationLink = require("../../lib/saito/new-ui/modals/invitation-link/invitation-link");
@@ -274,6 +276,11 @@ class Arcade extends ModTemplate {
 
     });
 
+    app.connection.on("arcade-issue-challenge", (gameDetails) =>{
+      let tx = this.createChallengeTransaction(gameDetails);
+      app.connection.emit("send-relay-message", {recipient: gameDetails.players, request: "arcade spv update", data: tx});
+    });
+
   }
 
   initializeHTML(app) {
@@ -470,6 +477,10 @@ class Arcade extends ModTemplate {
       }
     }
   }
+
+
+
+
 
   /*
   Process a join request
@@ -842,6 +853,16 @@ class Arcade extends ModTemplate {
         this.acceptGame(app, tx);
       }
 
+      if (txmsg.request == "challenge"){
+        if (this.debug) { console.log("handlePeerRequest: challenge request received"); }
+        this.receiveChallenge(app, tx);
+      }
+
+      if (txmsg.request == "sorry"){
+        if (this.debug) { console.log("handlePeerRequest: sorry request received"); }
+        app.connection.emit("arcade-reject-challenge", txmsg.game_id);
+      }
+
       console.log(txmsg);
 
       //Process Gameovers
@@ -912,6 +933,7 @@ class Arcade extends ModTemplate {
       this.checkGameDatabase();
     }
   }
+
 
   async receiveOpenRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
@@ -1100,6 +1122,88 @@ class Arcade extends ModTemplate {
       }
     });
   }
+
+  createChallengeTransaction(gameData){
+
+    let ts = new Date().getTime();
+    let accept_sig = this.app.crypto.signMessage(
+      `invite_game_${ts}`,
+      this.app.wallet.returnPrivateKey()
+    );
+
+    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+    for (let sendto of gameData.players){
+      tx.transaction.to.push(new saito.default.slip(sendto, 0.0));
+    }
+
+    tx.msg = {
+      ts: ts,
+      module: "Arcade",
+      request: "challenge",
+      game: gameData.game,
+      options: gameData.options,
+      players_needed: gameData.players.length,
+      players: [this.app.wallet.returnPublicKey()],
+      players_sigs: [accept_sig],
+      originator: this.app.wallet.returnPublicKey(),
+      invitees: gameData.players,
+    };
+
+    tx = this.app.wallet.signTransaction(tx);
+
+    return tx;
+
+  }
+
+
+  receiveChallenge(app, tx){
+    if (!tx.transaction || !tx.transaction.sig || !tx.msg || tx.msg.over == 1) {
+      return;
+    }
+
+    if (!tx.isTo(this.app.wallet.returnPublicKey())){
+      return;
+    }
+
+    this.addGameToOpenList(tx);
+
+    if (!tx.isFrom(this.app.wallet.returnPublicKey())){
+      let txmsg = tx.returnMessage();      
+
+      let overlay = new SaitoOverlay(app, false);
+      overlay.show(app, this, ChallengeTemplate(txmsg));
+      overlay.blockClose();
+
+      document.getElementById("reject-btn").onclick = (e) =>{
+        let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+  
+        for (let player of txmsg.players){
+          newtx.transaction.to.push(new saito.default.slip(player, 0.0));
+        }
+
+        newtx.msg = {
+          request: "sorry",
+          module: "Arcade",
+          game_id: tx.transaction.sig,
+        };
+
+        console.log(JSON.parse(JSON.stringify(newtx)));
+        newtx = app.wallet.signTransaction(newtx);
+
+        app.connection.emit("send-relay-message", {recipient: txmsg.players, request: "arcade spv update", data:newtx});
+        overlay.remove();
+      }
+
+      document.getElementById("accept-btn").onclick = (e) =>{
+        let newtx = this.createJoinTransaction(tx);
+        app.connection.emit("send-relay-message", {recipient: txmsg.players, request: "arcade spv update", data:newtx});
+        overlay.remove();        
+      }
+    }
+  }
+
+
 
   createOpenTransaction(gamedata, recipient = "") {
     let sendto = this.app.wallet.returnPublicKey();
@@ -1711,6 +1815,103 @@ class Arcade extends ModTemplate {
     let ux = new ArcadeGameDetails(this.app);
     ux.render(this.app, this, pseudoTX);
   }
+
+
+  async verifyOptions(gameType, options){
+    if (gameType !== "single"){
+      for (let game of this.games){
+        if (this.isMyGame(game, this.app) && game.msg.players_needed>1){
+          let c = await sconfirm(`You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`);
+          if (!c){
+            return false;
+          }
+        }
+        if (game.msg.game === options.game){
+          let c = await sconfirm(`There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`);
+          if (!c){
+            return false;
+          } 
+        }
+      }
+    }
+
+    //
+    // if crypto and stake selected, make sure creator has it
+    //
+    try{
+      if (options.crypto && parseFloat(options.stake) > 0) {
+        let crypto_transfer_manager = new GameCryptoTransferManager(this.app);
+        let success = await crypto_transfer_manager.confirmBalance(this.app, this, options.crypto, options.stake);
+        if (!success){ 
+          return false; 
+        }
+      }
+    }catch(err){
+       console.log("ERROR checking crypto: " + err);
+      return false;
+    }
+
+    return true;
+  }
+
+  makeGameInvite(options, gameType = "public"){
+    console.log(JSON.parse(JSON.stringify(options)));
+
+    let game = options.game;
+    let game_mod = this.app.modules.returnModule(game);
+    let players_needed = options["game-wizard-players-select"];
+
+    if (game_mod.opengame){
+      options = Object.assign(options, {max_players: players_needed});
+      console.log(JSON.parse(JSON.stringify(options)));
+      players_needed = game_mod.minPlayers;
+    }
+
+    if (!players_needed) {
+      console.error("Create Game Error");
+      console.log(gamedata);
+      return;
+    }
+
+    let gamedata = {
+      ts: new Date().getTime(),
+      name: game,
+      slug: game_mod.returnSlug(),
+      options: options,
+      players_needed: players_needed,
+      invitation_type: gameType,
+    };
+
+    if (players_needed == 1) {
+      this.launchSinglePlayerGame(this.app, gamedata); //Game options don't get saved....
+    } else {
+      let newtx = this.createOpenTransaction(gamedata);
+      this.app.network.propagateTransaction(newtx);
+
+      //
+      // and relay open if exists
+      //
+      let peers = [];
+      for (let i = 0; i < this.app.network.peers.length; i++) {
+        peers.push(this.app.network.peers[i].returnPublicKey());
+      }
+
+      this.app.connection.emit("send-relay-message", {recipient: peers, request: "arcade spv update", data: newtx});
+  
+      this.addGameToOpenList(newtx);
+
+      this.active_tab = "arcade"; //So it refreshes to show the new game invite
+  
+      this.renderArcadeMain(this.app, this.mod);
+
+      if (gameType == "private") {
+        console.log(newtx);
+        //Create invite link from the game_sig 
+        this.showShareLink(newtx.transaction.sig);
+      }
+    }
+  }
+
 }
 
 module.exports = Arcade;

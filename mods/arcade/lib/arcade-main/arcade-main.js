@@ -190,7 +190,7 @@ module.exports = ArcadeMain = {
 
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
-          console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
+          //console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           let includeGame = true;
           
           //Only filter if there are leagues to compare against
