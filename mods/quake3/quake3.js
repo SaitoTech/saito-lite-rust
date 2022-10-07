@@ -49,7 +49,7 @@ class Quake3 extends GameTemplate {
 	  let ts = new Date().getTime();
 	  let ticker = this.game.options.crypto;
           let killValue = this.game.options.killValue;
-	  let uhash = app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
+	  let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
 
 	  // the user is proactively sending tokens unsolicited, so we can skip the 
 	  // confirmation prompt provided by the crypto-manager.
