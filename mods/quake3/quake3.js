@@ -44,6 +44,20 @@ class Quake3 extends GameTemplate {
 	let victim = mv[1];
 	let killer = mv[2];
 
+	let victim_web3_address = "";
+	let killer_web3_address = "";
+
+	for (let i = 0; i < this.game.players.length; i++) {
+	  if (this.game.players[i] === victim) {
+	    victim_web3_address = this.game.keys[i];
+	  }
+	  if (this.game.players[i] === killer) {
+	    killer_web3_address = this.game.keys[i];
+	  }
+	}
+
+console.log("CRYPTOL: " + JSON.stringify(this.game.options));
+
 	if (this.game.options.crypto) {
 
 	  let ts = new Date().getTime();
@@ -53,9 +67,12 @@ class Quake3 extends GameTemplate {
 
 	  // the user is proactively sending tokens unsolicited, so we can skip the 
 	  // confirmation prompt provided by the crypto-manager.
+
+console.log("sending payment to: " + killer_web3_address + " of " + killValue + " in " + ticker);
+
 	  this.app.wallet.sendPayment(
-	    [victim], 
-	    [killer],
+	    [victim_web3_address], 
+	    [killer_web3_address],
 	    [killValue],
 	    ts,
 	    uhash,
@@ -63,6 +80,8 @@ class Quake3 extends GameTemplate {
 	    ticker
           );	  
 	}
+
+console.log("we have made the payment request");
 
         return 1;
       }
