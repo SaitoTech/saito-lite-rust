@@ -40,6 +40,8 @@ class Quake3 extends GameTemplate {
 
       if (mv[0] === "player_kill") {
 
+console.log("PLAYER KILL RECEIVED: " + JSON.stringify(this.game.queue));
+
 	this.game.queue.splice(qe, 1);
 	let victim = mv[1];
 	let killer = mv[2];
@@ -61,9 +63,11 @@ console.log("CRYPTOL: " + JSON.stringify(this.game.options));
 	//
 	// victim offers sacrificial tribue
 	//
-	if (this.app.wallet.returnPublicKey() === victim) {
+	if (this.game.options.crypto) {
+	  if (this.app.wallet.returnPublicKey() === victim) {
 
-	  if (this.game.options.crypto) {
+console.log("i am the victim, sendin tokens");
+
 	    let ts = new Date().getTime();
 	    let ticker = this.game.options.crypto;
             let killValue = this.game.options.killValue;
@@ -77,20 +81,40 @@ console.log("sending payment to: " + killer_web3_address + " of " + killValue + 
 	      [killValue],
 	      ts,
 	      uhash,
-	      null,
+	      function() {
+		siteMessage(`${killValue} ${ticker} sent in tribute`, 8000);
+	      },
 	      ticker
             );	  
+
+	  } else {
+
+console.log("i am the killer, receivin'...");
+	    let ts = new Date().getTime();
+	    let ticker = this.game.options.crypto;
+            let killValue = this.game.options.killValue;
+	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
+
+	    //
+	    // monitor for receipt
+	    //
+            this.app.wallet.receivePayment(
+	      [victim_web3_address] ,
+	      [killer_web3_address] ,
+    	      [killValue] ,
+    	      ts ,
+              uhash ,
+              function() {
+	        siteMessage(`${killValue} ${ticker} received in tribute`, 8000);
+	      },
+	      ticker
+	    );
 	  }
-
-	} else {
-
-
 	}
-
-console.log("we have made the payment request");
 
         return 1;
       }
+
 
       if (mv[0] === "player_name") {
 	this.game.queue.splice(qe, 1);
