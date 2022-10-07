@@ -120,7 +120,7 @@ class ViewLeagueDetails {
     if (inviteBtn){
       inviteBtn.onclick = () => {
         //ActiveModule should be Arcade
-        mod.showShareLink(this.league.id, app.modules.returnActiveModule());
+        mod.showShareLink(this.league.id);
       }
     }
 
@@ -166,9 +166,9 @@ class ViewLeagueDetails {
      Array.from(document.getElementsByClassName('challenge-btn')).forEach(btn => {
       btn.onclick = (e) => {
         e.preventDefault();
-        let warning_overlay = new SaitoOverlay(app);
-        warning_overlay.show(app, mod, `<h2>Coming soon</h2><div class="warning">This feature is not supported yet</div>`);
-      }
+        mod.createLeagueChallenge(this.league, e.currentTarget.getAttribute("data-id"));
+        this.overlay.remove();
+      };
     });
 
    //Need to attach events for clicking on players on the leaderboard

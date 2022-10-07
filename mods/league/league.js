@@ -8,7 +8,9 @@ const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay
 const ViewLeagueDetails = require("./lib/overlays/view-league-details");
 const InvitationLink = require("./../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
-
+const ChallengeIssuedTemplate = require('./../../lib/saito/new-ui/templates/challenge-issued.template');
+const ChallengeAcceptedTemplate = require('./../../lib/saito/new-ui/templates/challenge-accepted.template');
+const ChallengeRejectedTemplate = require('./../../lib/saito/new-ui/templates/challenge-rejected.template');
 
 class League extends ModTemplate {
 
@@ -1061,82 +1063,169 @@ class League extends ModTemplate {
   async createLeagueGame(league){
 
     let arcade_mod = this.app.modules.returnModule("Arcade");
+    if (!arcade_mod) { return; }
 
+    //Check League Membership
+    if (!this.isLeagueMember(league.id)){
+      salert("You need to be a member of the League to create a League-only game invite");
+      return;
+    }
 
-    //We automatically create a game invite with the league's pre-determined options
-    if (league.options){
-      let options = JSON.parse(league.options);
-
-      //Check Crypto
-      try{
-        if (options.crypto && parseFloat(options.stake) > 0) {
-          let crypto_transfer_manager = new GameCryptoTransferManager(this.app);
-          let success = await crypto_transfer_manager.confirmBalance(this.app, this, options.crypto, options.stake);
-          if (!success){ return; }
-        }
-      }catch(err){
-         console.log("ERROR checking crypto: " + err);
-        return;
-      }
-
-      //Check League Membership
-      if (!this.isLeagueMember(league.id)){
-        salert("You need to be a member of the League to create a League-only game invite");
-        return;
-      }
-
-      let gamemod = this.app.modules.returnModule(league.game);
-      let players_needed = 0;
-      if (options["game-wizard-players-select"]) {
-        players_needed = options["game-wizard-players-select"];
-      } else {
-        //players_needed = document.querySelector(".game-wizard-players-no-select").dataset.player;
-      }
-
-      options.league = league.id;
-
-      let gamedata = {
-        ts: new Date().getTime(),
-        name: gamemod.name,
-        slug: gamemod.returnSlug(),
-        options: options,
-        players_needed: players_needed,
-        invitation_type: "public",
-      };
-
-      let newtx = arcade_mod.createOpenTransaction(gamedata);
-      this.app.network.propagateTransaction(newtx);
-  
-      //
-      // and relay open if exists
-      //
-      let peers = [];
-      for (let i = 0; i < this.app.network.peers.length; i++) {
-        peers.push(this.app.network.peers[i].returnPublicKey());
-      }
-      let relay_mod = this.app.modules.returnModule("Relay");
-      if (relay_mod != null) {
-        relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
-      }
-  
-      arcade_mod.addGameToOpenList(newtx);
-
-      arcade_mod.active_tab = "arcade";
-      arcade_mod.renderArcadeMain(this.app, arcade_mod);
-
-
-    }else{  //Or we let the player select the options
-
+    let options = (league.options) ? JSON.parse(league.options) : null;
+    
+    //Get options if needed through the normal interface
+    if (!options){
       let tx = new saito.default.transaction();
       tx.msg.game = league.game;
       if (league.admin !== "saito"){
         tx.msg.league = league.id;
       }
-      
       arcade_mod.createGame(tx);
+      return;
     }
+
+    //Check options
+    let c = await arcade_mod.verifyOptions("public", options);
+    if (!c){
+      return;
+    }
+ 
+    options.league = league.id;
+    options.game = league.game;
+
+    //Create invite
+    arcade_mod.makeGameInvite(options, "public");
+    
   }
 
+
+  async createLeagueChallenge(league, player_id){
+    let arcade_mod = this.app.modules.returnModule("Arcade");
+    if (!arcade_mod) { return; }
+    
+    //Check League Membership
+    if (!this.isLeagueMember(league.id)){
+      salert("You need to be a member of the League to create a League-only game invite");
+      return;
+    }
+
+    let options = (league.options) ? JSON.parse(league.options) : null;
+    
+    //Get options if needed
+    if (!options){
+      const players = (app, mod) => {
+        let selection = "";
+        if (mod.minPlayers === mod.maxPlayers) {
+          selection = `<input type="hidden" class="game-wizard-players-select" name="game-wizard-players-select" value="${mod.minPlayers}">`;
+          selection += mod.returnSingularGameOption(app);
+        } else {
+          selection = `<div><label for="game-wizard-players-select">Number of Players:</label>
+                       <select class="game-wizard-players-select" name="game-wizard-players-select">`;
+          for (let p = mod.minPlayers; p <= mod.maxPlayers; p++) {
+            selection += `<option value="${p}">${p} player</option>`;
+          }
+          selection += `</select></div>`;
+        }
+
+        return selection;
+      };
+
+      const getGameOptions = () => {
+        let options = "";
+        document.querySelectorAll("form#game-wizard-form input, form#game-wizard-form select").forEach((element) => {
+          if (!options){
+            options = {};
+          }
+          if (element.type == "checkbox") {
+            if (element.checked) {
+              options[element.name] = 1;
+            }
+          } else if (element.type == "radio") {
+            if (element.checked) {
+              options[element.name] = element.value;
+            }
+          } else {
+            options[element.name] = element.value;
+          }
+        });
+        return options;
+      };
+
+
+      let newOverlay = new SaitoOverlay(this.app, false, false);
+      let gamemod = this.app.modules.returnModule(league.game);
+      let advancedOptions = gamemod.returnGameOptionsHTML();
+      let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+      let moreOptions = players(this.app, gamemod);
+
+      if (advancedOptions.includes(accept_button)){
+        advancedOptions = advancedOptions.replace(accept_button, moreOptions+accept_button);
+      }else{
+        advancedOptions += moreOptions + accept_button; 
+      }
+
+      let html = `<div class="game_option_league_wizard">
+                  <form id="game-wizard-form" class="game-wizard-form">
+                  ${advancedOptions}
+                  </form>
+                  </div>
+                  `;
+      //Display Game Options
+      newOverlay.show(this.app, this, html, ()=>{
+        options = getGameOptions();                
+        newOverlay.remove();
+      });  
+      //Attach dynamic listeners
+      gamemod.attachAdvancedOptionsEventListeners();
+      //Hide overlay if clicking button
+      if (document.getElementById("game-wizard-advanced-return-btn")) {
+        document.querySelector(".game-wizard-advanced-return-btn").onclick = (e) => {
+          newOverlay.hide();
+        };
+      }
+    }
+
+    if (options["game-wizard-players-select"] != 2){
+      salert("You can only challenge head-to-head");
+      return;
+    }
+
+    //Check options
+    let c = await arcade_mod.verifyOptions("public", options);
+    if (!c){
+      return;
+    }
+ 
+    options.league = league.id;
+    options.game = league.game;
+
+    //Issue Challenge
+    let challenge_overlay = new SaitoOverlay(this.app);
+    let players = [this.app.wallet.returnPublicKey(), player_id];
+    this.app.connection.emit("arcade-issue-challenge", {
+      game: league.game, 
+      players: players, 
+      options: options
+    });
+
+    challenge_overlay.show(this.app, this, ChallengeIssuedTemplate());
+
+    timeout = setTimeout(async ()=>{
+      salert("It seems your opponent isn't available.");
+      challenge_overlay.remove();
+    }, 30000);
+
+    this.app.connection.on("arcade-reject-challenge", (game_id)=>{
+      clearTimeout(timeout);
+      challenge_overlay.show(this.app, this, ChallengeRejectedTemplate());      
+    });
+
+    this.app.connection.on("arcade-game-loading" , () =>{
+      clearTimeout(timeout);
+      challenge_overlay.show(this.app, this, ChallengeAcceptedTemplate());      
+    });
+
+  }
 
   /**
    * Tell League to also listen to messages from Arcade and every installed game

@@ -1,7 +1,5 @@
 const ArcadeGameDetailsTemplate = require("./arcade-game-details.template");
 const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-const GameCryptoTransferManager = require("./../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
-
 
 class ArcadeGameDetails {
   
@@ -104,11 +102,18 @@ class ArcadeGameDetails {
     //
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
       gameButton.addEventListener("click", async (e) => {
-        mod.active_tab = "arcade"; //So it refreshes to show the new game invite
         e.stopPropagation();
+    
         try {
           let options = this.readOptions();
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
+
+          let c = await mod.verifyOptions(isPrivateGame, options);
+          if (!c){
+            this.overlay.remove();
+            return;
+          }
+
           if (isPrivateGame == "private") {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
           } else if (isPrivateGame == "single") {
@@ -117,124 +122,15 @@ class ArcadeGameDetails {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
-          if (isPrivateGame !== "single"){
-            for (let game of mod.games){
-              if (mod.isMyGame(game, app) && game.msg.players_needed>1){
-                let c = await sconfirm(`You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`);
-                if (!c){
-                  this.overlay.remove();
-                  return;
-                }
-              }
-              if (game.msg.game === options.game){
-                let c = await sconfirm(`There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`);
-                if (!c){
-                  this.overlay.remove();
-                  return;
-                } 
-              }
-            }
-          }
+          mod.makeGameInvite(options, isPrivateGame);
 
-          //
-          // if crypto and stake selected, make sure creator has it
-          //
-          try{
-            if (options.crypto && parseFloat(options.stake) > 0) {
-              let crypto_transfer_manager = new GameCryptoTransferManager(app);
-              let success = await crypto_transfer_manager.confirmBalance(app, mod, options.crypto, options.stake);
-              if (!success){ 
-                this.overlay.remove();
-                return; 
-              }
-            }
-          }catch(err){
-             console.log("ERROR checking crypto: " + err);
-            return;
-          }
-
-          //Check League Membership
-          if (options.league){
-            let leag = app.modules.returnModule("League");
-            if (!leag.isLeagueMember(options.league)){
-              await sconfirm("You need to be a member of the League to create a League-only game invite");
-              this.overlay.remove();
-              return;
-            }
-          }
-
-          let players_needed = 0;
-          if (document.querySelector(".game-wizard-players-select")) {
-            players_needed = document.querySelector(".game-wizard-players-select").value;
-          } else {
-            players_needed = document.querySelector(".game-wizard-players-no-select").dataset.player;
-          }
-
-          if (this.gamemod.opengame){
-            options = Object.assign(options, {max_players: players_needed});
-            console.log(JSON.parse(JSON.stringify(options)));
-            players_needed = this.gamemod.minPlayers;
-          }
-
-          let gamedata = {
-            ts: new Date().getTime(),
-            name: this.gamemod.name,
-            slug: this.gamemod.returnSlug(),
-            options: options,
-            players_needed: players_needed,
-            invitation_type: "public",
-          };
-
-          this.overlay.remove();
-
-          if (players_needed === 0) {
-            console.error("Create Game Error");
-            console.log(gamedata);
-            return;
-          }
-          
-
-          if (players_needed == 1) {
-
-            mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
-            return;
-          } else {
-            
-            //console.log("PRE CREATING OPEN TX");
-            if (isPrivateGame == "private") {
-              gamedata.invitation_type = "private";
-            }
-
-            let newtx = mod.createOpenTransaction(gamedata);
-            app.network.propagateTransaction(newtx);
-  
-            //
-            // and relay open if exists
-            //
-            let peers = [];
-            for (let i = 0; i < app.network.peers.length; i++) {
-              peers.push(app.network.peers[i].returnPublicKey());
-            }
-            let relay_mod = app.modules.returnModule("Relay");
-            if (relay_mod != null) {
-              relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
-            }
-        
-            mod.addGameToOpenList(newtx);
-
-            mod.renderArcadeMain(app, mod);
-
-            if (isPrivateGame == "private") {
-              console.log(newtx);
-              //Create invite link from the game_sig 
-              mod.showShareLink(newtx.transaction.sig);
-            }
-          }
         } catch (err) {
           alert("error: " + err);
         }
 
-        return false;
+        this.overlay.remove();
+
+        return false; //For form stuff (?)
       });
     });
   }
@@ -257,6 +153,12 @@ class ArcadeGameDetails {
         options[element.name] = element.value;
       }
     });
+
+    let fixed_players = document.querySelector(".game-wizard-players-no-select");
+    if (fixed_players){
+      options["game-wizard-players-select"] = fixed_players.dataset.player;
+    }
+
     return options;
   }
 
