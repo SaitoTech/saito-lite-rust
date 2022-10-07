@@ -15293,7 +15293,7 @@ console.log("GETNAME 2: " + this.name);
   			var com_basegame = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('com_basegame'), 'i8', ALLOC_STACK)));
   			var mapname = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('mapname'), 'i8', ALLOC_STACK)));
 			//
-			// original is above, below is for saito.io because of cross-origin/mixed content restrictions
+			// HACK -- original is above, below is for saito.io because of cross-origin/mixed content restrictions
 			//
   			var url = 'http://' + fs_cdn + '/assets/manifest.json';
   			//var url = 'https://saito.io/quake3/assets/manifest.json';
