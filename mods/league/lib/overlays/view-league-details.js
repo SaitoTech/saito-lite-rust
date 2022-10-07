@@ -134,18 +134,28 @@ class ViewLeagueDetails {
     let createGameBtn = document.getElementById("game-invite-btn");
     if (createGameBtn){
       createGameBtn.onclick = () => {
-        this.overlay.hide();
+        this.overlay.remove();
         mod.createLeagueGame(this.league);
       }
     }
 
+    //Observer hook
+     Array.from(document.getElementsByClassName('review-btn')).forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        let game_id = e.currentTarget.getAttribute("data-id");
+        app.connection.emit("arcade-observer-review-game",game_id);
+        this.overlay.remove();
+      }
+    });
 
 
     //TODO: Implement this
      Array.from(document.getElementsByClassName('challenge-btn')).forEach(btn => {
       btn.onclick = (e) => {
         e.preventDefault();
-        app.modules.returnActiveModule().overlay.show(app, mod, `<h2>Coming soon</h2><div class="warning">This feature is not supported yet</div>`);
+        let warning_overlay = new SaitoOverlay(app);
+        warning_overlay.show(app, mod, `<h2>Coming soon</h2><div class="warning">This feature is not supported yet</div>`);
       }
     });
 

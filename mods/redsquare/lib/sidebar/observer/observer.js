@@ -1,9 +1,11 @@
 const RedSquareObserverTemplate = require("./observer.template");
+const SaitoModuleOverlay = require("../../../../../lib/saito/new-ui/saito-module-overlay/saito-module-overlay");
 const GameLoader = require("../../../../../lib/saito/new-ui/game-loader/game-loader");
 
 class RedSquareObserver {
 	
 	constructor(app, mod, selector="") {
+		  this.app = app;
 	    this.mod = mod;
 	    this.selector = selector;
 	    this.blockRender = false;
@@ -35,20 +37,19 @@ class RedSquareObserver {
 
 	attachEvents(app, mod){
 		let widget = this;
-		Array.from(document.querySelectorAll('.saito-module-action')).forEach(game => {
+		Array.from(document.querySelectorAll('.saito-module-action.watch')).forEach(game => {
       game.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
         let game_id = e.currentTarget.getAttribute("data-id");
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
-        if (game_cmd == "watch") {
-           let spinner = new GameLoader(app, mod);
-          widget.blockRender = true;
-          spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
-        
-          app.connection.emit("arcade-observer-join-table",game_id);
-        }
-      };
+        let spinner = new GameLoader(app, mod);
+	      
+	      widget.blockRender = true;
+	      spinner.render(app, mod, "#rs-sidebar-observer", "Loading Game Moves");
+	      
+	      app.connection.emit("arcade-observer-join-table",game_id);
+      }
     }); 
 	}
 

@@ -331,9 +331,7 @@ class RedSquare extends ModTemplate {
   addTweetFromTransaction(app, mod, tx, tracktweet = false) {
     let tweet = new Tweet(app, this, tx);
 
-    if (tracktweet) {
-      this.trackTweet(app, mod, tweet)
-    }
+
 
     this.addTweet(app, this, tweet);
     this.txmap[tx.transaction.sig] = 1;
@@ -687,7 +685,7 @@ class RedSquare extends ModTemplate {
   ///////////////////////////////////////
   // fetching curated tweets from peer //
   ///////////////////////////////////////
-  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null) {
+  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet=false) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -697,6 +695,7 @@ class RedSquare extends ModTemplate {
             mod.trackedTweet = res.rows[0];
           }
           //mod.trackedTweet = res.rows[0];
+
           res.rows.forEach(row => {
             if (row.created_at > mod.trackedTweet.created_at) {
               mod.trackedTweet = row;
@@ -789,10 +788,10 @@ class RedSquare extends ModTemplate {
       async (res) => {
         const tweets = [];
         if (res.rows) {
+          console.log(res.rows, "result");
           if (res.rows[0]) {
-
+            // console.log(res.rows, "continue");
             mod.trackedTweet = res.rows[0];
-
             res.rows.forEach(row => {
               let new_tweet = true;
               let tweet_id = "tweet-box-" + row.sig;

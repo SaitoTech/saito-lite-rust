@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.419,
+    version: 4.423,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -1066,8 +1066,8 @@ console.log("---------------------");
   /**
    * Sends payments to the addresses provided if this user is the corresponding
    * sender. Will not send if similar payment was found after the given timestamp.
-   * @param {Array} senders - Array of addresses
-   * @param {Array} receivers - Array of addresses
+   * @param {Array} senders - Array of addresses -- in web3 currency
+   * @param {Array} receivers - Array of addresses -- in web3 curreny
    * @param {Array} amounts - Array of amounts to send
    * @param {Int} timestamp - Timestamp of time after which payment should be made
    * @param {Function} mycallback - ({hash: {String}}) -> {...}

@@ -344,6 +344,8 @@ class RedSquareTweet {
       }
 
       let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
+      
+      // false - don't track tweet
       mod.fetchTweets(app, mod, sql, function (app, mod) {
         let t = mod.returnTweet(app, mod, tweet_sig_id);
 
@@ -357,7 +359,7 @@ class RedSquareTweet {
           mod.renderWithParents(app, mod, tweet_sig_id, 1);
         }
 
-      });
+      }, false);
 
       let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + this.tx.transaction.sig;
       window.history.pushState({}, document.title, tweetUrl);
