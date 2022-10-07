@@ -340,32 +340,10 @@ class RedSquare extends ModTemplate {
   }
 
 
-  reorganizeTweets(app, mod) {
-    // sort chronologically
-    /*
-    for (let i = this.tweets.length - 1; i >= 1; i--) {
-      if (this.tweets[i - 1].updated_at < this.tweets[i].updated_at) {
-        let x = this.tweets[i - 1];
-        let y = this.tweets[i];
-        this.tweets[i] = x;
-        this.tweets[i - 1] = y;
-      }
+  reorganizeTweets(app, mod, promote_images = true) {
+    if (promote_images) {
+      this.orderTweetsByTime(app, mod);
     }
-    
-    // and pull image to top
-    for (let i = 0; i < this.tweets.length; i++) {
-      if (this.tweets[i].has_image == true) {
-        if (i > 0) {
-          let x = this.tweets[i];
-          let y = this.tweets[0];
-          this.tweets[i] = y;
-          this.tweets[0] = x;
-        }
-        return;
-      }
-    }
-    */
-    this.orderTweetsByTime(app, mod);
     this.orderTweetsMovePictureIntoView();
     return;
   }
@@ -427,8 +405,8 @@ class RedSquare extends ModTemplate {
   }
 
 
-  renderMainPage(app, mod) {
-    this.reorganizeTweets(app, mod);
+  renderMainPage(app, mod, promote_images = true) {
+    this.reorganizeTweets(app, mod, promote_images);
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
@@ -496,6 +474,18 @@ class RedSquare extends ModTemplate {
   //
   renderWithChildren(app, mod, sig) {
     this.viewing = sig;
+    let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + sig;
+    window.history.pushState({}, document.title, tweetUrl);
+
+    app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> RED SQUARE</div>`, "saito-page-header-title");
+    document.querySelector(".saito-back-button").onclick = (e) => {
+      app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
+      mod.renderMainPage(app, mod);
+      let redsquareUrl = window.location.origin + window.location.pathname;
+      window.history.pushState({}, document.title, redsquareUrl);
+      mod.viewing = "feed";
+    }
+
     this.reorganizeTweets(app, mod);
     document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
     document.querySelector(".redsquare-list").innerHTML = "";
@@ -952,10 +942,7 @@ class RedSquare extends ModTemplate {
         this.addNotification(app, this, tx);
       }
 
-      /// XXX change to add to banner.
-      //this.addTweet(app, this, tweet);
-      //app.connection.emit("tweet-render-request", tweet);
-      this.newTweets.push(tweet);
+     this.newTweets.push(tweet);
       if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
         document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
       }

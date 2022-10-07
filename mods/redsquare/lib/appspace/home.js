@@ -35,7 +35,7 @@ class RedSquareAppspaceHome {
     });
 
     app.connection.on("tweet-render-feed-request", () => {
-      mod.renderMainPage(app, mod);
+      mod.renderMainPage(app, mod, false);
     });
 
 
