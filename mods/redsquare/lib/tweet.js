@@ -23,6 +23,7 @@ class RedSquareTweet {
     this.parent_tweet = null;
     this.parent_id = "";
     this.thread_id = "";
+    this.notice = "";
     this.critical_child = null;
     this.text = null;
     this.link = null;
@@ -39,6 +40,7 @@ class RedSquareTweet {
     // so it can be rendered separately into the tweet as a subcomponent
     //
     this.retweet = null;
+    this.retweeters = [];
     this.retweet_tx = null;
     this.retweet_tx_sig = null;
     this.retweet_html = null;
@@ -163,6 +165,17 @@ class RedSquareTweet {
     // do not double-render
     //
     if (document.getElementById(tweet_id)) { return; }
+
+    //
+    // retweets with no comments?
+    //
+    if (this.retweet != null && this.text == "" && !this.has_image) {
+      this.retweet.notice = "retweeted by " + app.browser.returnAddressHTML(this.sender);
+      if (!this.retweet.retweeters.includes(this.sender)) { this.retweet.retweeters.push(this.sender); }
+      this.retweet.render(app, mod, selector, appendToSelector);
+      return;
+    }
+
 
     let html = TweetTemplate(app, mod, this);
     let tweet_div = "#" + tweet_id;
@@ -569,6 +582,7 @@ class RedSquareTweet {
   // returns 1 if tweet is added
   //
   addTweet(app, mod, tweet) {
+
     //
     // maybe we have some parentless children?
     //

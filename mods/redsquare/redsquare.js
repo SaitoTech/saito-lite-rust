@@ -154,6 +154,23 @@ class RedSquare extends ModTemplate {
   addTweet(app, mod, tweet, prepend = 0) {
 
     //
+    // if the tweet is an empty retweet, search for this tweet if it already exists
+    // and mark it up with the notice we have provided. or add the subtweet directly
+    // and indicate that we have retweeted. this only applies to tweets that lack
+    // commentary, in which case we want to highlight the original message.
+    //
+    if (tweet.text == "" && tweet.retweet_tx != "") {
+      let t = tweet.retweet;
+      if (t != null) {
+        t.notice = "retweeted by " + app.browser.returnAddressHTML(tweet.sender);
+        t.retweeters.push(tweet.sender);
+        this.addTweet(app, mod, t);
+      }
+      return;
+    }
+
+
+    //
     // post-level
     //
     if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {

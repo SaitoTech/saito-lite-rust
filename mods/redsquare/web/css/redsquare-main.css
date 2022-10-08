@@ -13,6 +13,22 @@
 }
 
 
+.redsquare-item-notice {
+    box-sizing: border-box;
+    color: rgba(0,0,0,1.00);
+    font-family: var(--saito-font);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    padding-bottom: 1.5rem;
+    position: relative;
+}
+.redsquare-item-notice .saito-address {
+    display: inline;
+    margin-left: 0.25rem;
+    font-weight: bold;
+}
+
+
 .saito-menu i::before {
   -webkit-text-stroke: var(--saito-default-font-color) 1px;
   color: transparent;
