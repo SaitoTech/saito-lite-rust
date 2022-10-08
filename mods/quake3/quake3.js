@@ -18,8 +18,9 @@ class Quake3 extends GameTemplate {
     this.maxPlayers      = 4;
 
     this.content_server  = "q3.saito.io";
+    this.game_server  = "q3.saito.io:27960";
     //this.content_server  = "18.163.184.251:80";
-    this.game_server     = "18.163.184.251:27960";
+    //this.game_server     = "18.163.184.251:27960";
   }
 
 
