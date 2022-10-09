@@ -10,9 +10,9 @@ class Quake3 extends GameTemplate {
 
     this.app = app;
     this.name = "Quake3";
-    this.description = "Quake3-Saito Interface";
+    this.description = "Quake3 is a multiplayer first-person-shooter originally released by ID Software in 1999. This version runs directly in your browser and connects with Saito to use other Saito applications and bring modules right into the game.";
     this.categories = "Games Entertainment";
-    this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license and executes open source code. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
+    this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
     this.minPlayers      = 1;
     this.maxPlayers      = 4;

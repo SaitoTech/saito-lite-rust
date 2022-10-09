@@ -562,7 +562,7 @@ option {
   position: absolute;
   right: 2rem;
   font-size: 2rem;
-  color: var(--saito-primary);
+  color: #FFFD;
 }
 
 .rs-btn-create-game-wrapper {

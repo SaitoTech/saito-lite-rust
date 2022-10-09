@@ -14,11 +14,10 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       let defaultPlayers = min;
       if (game_mod.opengame){
         defaultPlayers = max;
-        selection = `<label for="game-wizard-players-select">Max Number of Players:</label>`;
       }
       selection += `<select class="game-wizard-players-select dark" name="game-wizard-players-select">`;
       for (let p = min; p <= max; p++) {
-        selection += `<option value="${p}" ${(p===defaultPlayers)?"selected default":""}>${p} player</option>`;
+        selection += `<option value="${p}" ${(p===defaultPlayers)?"selected default":""}>${p} table limit</option>`;
       }
       selection += `</select>`;
     }
@@ -42,7 +41,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       <div class="saito-module-intro-details rs-create-game-desc-wrapper">
         <div>
           <span><b>${game_mod.name}</b></span>
-          <div id="game-rules-btn" class="game-help-link arcade-game-help info-item-wrapper">How to play?</div>
+          <div id="game-rules-btn" class="game-help-link arcade-game-help info-item-wrapper">how to play?</div>
         </div>
         <div class="rs-create-game-desc">${game_mod.description}</div>
         
