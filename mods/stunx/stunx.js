@@ -6,6 +6,7 @@ const ChatManagerSmall = require("./lib/components/chat-manager-small");
 const StunxAppspace = require('./lib/appspace/main');
 const InviteOverlay = require("./lib/components/invite-overlay");
 const StunxGameMenu = require("./lib/game-menu/main");
+const StunxInvite = require("./lib/invite/main");
 
 
 class Stunx extends ModTemplate {
@@ -64,7 +65,7 @@ class Stunx extends ModTemplate {
         if (type === 'invite') {
             this.styles = [`/${this.returnSlug()}/css/style.css`,];
             super.render(this.app, this);
-            // return new StunInvite(this.app, this);
+            return new StunxInvite(this.app, this);
         }
         if (type === 'appspace') {
             this.styles = [`/${this.returnSlug()}/css/style.css`,];
