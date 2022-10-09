@@ -396,23 +396,27 @@ class RedSquareTweet {
     document.querySelector(sel).onclick = (e) => {
 
       //
-      // check we are not already viewing this
-      //
-      if (this.tx.transaction.sig === mod.viewing) {
-        console.log("Already Viewing Tweet");
-        return;
-      }
-
-      //
       // trap links in tweets
       //
       if (e.target.classList.contains('saito-treated-link') || e.target.classList.contains('saito-og-link')) {
+console.log("clicked on a link!");
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
         e.preventDefault();
         e.stopImmediatePropagation();
         return;
       }
+
+      //
+      // links in tweet_previews
+      //
+      if ((e.target.classList.contains('preview-img') || e.target.classList.contains('preview-container')) && this.link !== null) {
+        window.open(this.link, '_blank').focus();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+
 
       //
       // avoid other clickable elements
@@ -424,7 +428,15 @@ class RedSquareTweet {
         !e.target.classList.contains("fa") &&   // icons
         !e.target.classList.contains("fas")
       ) {
-        //console.log("OPEN TWEET: " + JSON.stringify(e.target.classList));
+
+        //
+        // check we are not already viewing this
+        //
+        if (this.tx.transaction.sig === mod.viewing) {
+          console.log("Already Viewing Tweet");
+          return;
+        }
+
         openTweet(e);
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -433,10 +445,12 @@ class RedSquareTweet {
     };
 
 
+console.log("didn't trigger!");
+
+
     //
     // view image
     //
-    //sel = `#tweet-img-${this.tx.transaction.sig}`;
     sel = `.tweet-img-${this.tx.transaction.sig}`;
     if (document.querySelectorAll(sel)) {
       document.querySelectorAll(sel).forEach(img => {
@@ -457,8 +471,6 @@ class RedSquareTweet {
           let winWidth = window.innerWidth;
         }
       })
-
-
     }
 
 
@@ -466,10 +478,8 @@ class RedSquareTweet {
     // reply
     //
     sel = ".tweet-reply-" + this.tx.transaction.sig;
-
-    //    Nope out if this tweet does not have controls:
+    // nope out if no controls
     if (!document.querySelector(sel)) { return };
-
     document.querySelector(sel).onclick = (e) => {
 
       e.preventDefault();
@@ -486,6 +496,7 @@ class RedSquareTweet {
     };
 
 
+console.log("we hit here!");
 
 
     //
