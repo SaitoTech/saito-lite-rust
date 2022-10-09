@@ -44,8 +44,6 @@ class Quake3 extends GameTemplate {
 
       if (mv[0] === "player_kill") {
 
-console.log("PLAYER KILL RECEIVED: " + JSON.stringify(this.game.queue));
-
 	this.game.queue.splice(qe, 1);
 	let victim = mv[1];
 	let killer = mv[2];
