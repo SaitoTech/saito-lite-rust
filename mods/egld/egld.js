@@ -25,18 +25,49 @@ class EGLDModule extends CryptoModule {
     this.categories = "Cryptocurrency";
     this.balance = 0
     this.egld = {}
-    this.base_url = "https://elrond-api-devnet.public.blastapi.io"
+    this.base_url = ""
     // this.base_url = "https://elrond.saito.io/0"
     this.api_network_provider = "https://devnet-api.elrond.com"
+    this.first = true
   }
 
 
   async initialize(){
-        this.createEGLDAccount();
-        this.networkProvider = new ApiNetworkProvider(this.api_network_provider)
-        let address = this.egld.keyfile.bech32;
-        await this.updateBalance(address);
-        await this.updateAddressNonce(address);
+       if(this.first){
+        try {
+          const res = await axios({
+            method: "get",
+            url: `https://devnet-api.elrond.com/hello`
+           })
+           this.base_url = "https://devnet-api.elrond.com"
+        } catch (error) {
+          this.base_url = "https://elrond-api-devnet.public.blastapi.io"
+        }
+        finally {
+          this.createEGLDAccount();
+          this.networkProvider = new ApiNetworkProvider(this.api_network_provider)
+          let address = this.egld.keyfile.bech32;
+          await this.updateBalance(address);
+          await this.updateAddressNonce(address);
+          console.log('base url', this.base_url);
+          this.first = false
+        }
+       }
+
+       setInterval(async ()=> {
+        try {
+          const res = await axios({
+            method: "get",
+            url: `https://elrond.saito.io/0/health`
+           })
+           this.base_url = "https://elrond.saito.io/0"
+        } catch (error) {
+          this.base_url = "https://elrond-api-devnet.public.blastapi.io"
+        }
+     
+       }, 30000)
+
+   
 
   }
 
