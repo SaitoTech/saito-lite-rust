@@ -158,6 +158,8 @@ MixinModule.prototype.renderModalSelectCrypto = function() {
       <div class="mixin_risk_acknowledge button">i understand</div>
 
     </div>
+
+
     <style>
       .mixin_crypto_overlay {
 	padding: 30px;
@@ -180,6 +182,7 @@ MixinModule.prototype.renderModalSelectCrypto = function() {
 	text-align: center;
 	margin-right: auto;
       }
+    
     </style>
   `;
 }
