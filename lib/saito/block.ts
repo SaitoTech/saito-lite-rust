@@ -111,7 +111,6 @@ class Block {
     for (let z = 0; z < this.transactions.length; z++) {
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
         const txmsg = this.transactions[z].returnMessage();
-        // console.log("EXAMINE: " + JSON.stringify(txmsg));
         this.app.modules.affixCallbacks(
           this.transactions[z],
           z,
@@ -1065,7 +1064,6 @@ class Block {
           this.txs_hmap[this.transactions[i].transaction.from[ii].add] = 1;
         }
         for (let ii = 0; ii < this.transactions[i].transaction.to.length; ii++) {
-          // console.log("setting txhmap for " + this.transactions[i].transaction.to[ii].add);
           this.txs_hmap[this.transactions[i].transaction.to[ii].add] = 1;
         }
       }
@@ -1480,10 +1478,7 @@ class Block {
       this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash ||
       this.app.blockchain.blockchain.genesis_block_hash === ""
     ) {
-      console.log(
-        "DEBUG SERVER CRASH: saved genesis_block_hash is: " +
-          this.app.blockchain.blockchain.genesis_block_hash
-      );
+      console.log("DEBUG SERVER CRASH: saved genesis_block_hash is: " + this.app.blockchain.blockchain.genesis_block_hash);
       console.log(`approving ${this.returnHash()} as genesis block`);
       return true;
     }
@@ -1493,7 +1488,6 @@ class Block {
       return true;
     }
 
-    //console.log("block::validate");
     //
     // invalid if no transactions
     //

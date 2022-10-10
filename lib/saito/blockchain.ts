@@ -135,10 +135,6 @@ class Blockchain {
     //
     block.generateHashes();
 
-    if (this.debugging) {
-      //console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
-      //console.debug(this);
-    }
     //
     // start by extracting some variables that we will use
     // repeatedly in the course of adding this block to the
@@ -389,8 +385,6 @@ class Blockchain {
   }
 
   async addBlockSuccess(block) {
-    //console.log("blockchain.addBlockSuccess : ", block.returnHash());
-    //this.app.blockring.print();
 
     let block_id = block.returnId();
 
