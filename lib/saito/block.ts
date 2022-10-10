@@ -875,8 +875,15 @@ class Block {
     for (let i = 0; i < this.transactions.length; i++) {
       if (!this.transactions[i].isFeeTransaction()) {
         for (let k = 0; k < this.transactions[i].transaction.from.length; k++) {
+          this.transactions[i].transaction.from[k].generateKey(this.app);
           this.slips_spent_this_block[this.transactions[i].transaction.from[k].returnKey()] = 1;
         }
+      }
+      for (let k = 0; k < this.transactions[i].transaction.to.length; k++) {
+        this.transactions[i].transaction.to[k].block_id = this.block.id;
+        this.transactions[i].transaction.to[k].tx_ordinal = BigInt(i);
+        this.transactions[i].transaction.to[k].sid = k;
+        this.transactions[i].transaction.to[k].generateKey(this.app);
       }
     }
     this.created_hashmap_of_slips_spent_this_block = true;
@@ -940,7 +947,7 @@ class Block {
     // and the routing work.
     //
     const creator_publickey = this.returnCreator();
-    this.transactions.map((tx) => tx.generateMetadata());
+    this.transactions.map((tx, index) => tx.generateMetadata(this.app, this.block.id, BigInt(index)));
 
     //
     // we need to calculate the cumulative figures AFTER the
@@ -1363,7 +1370,7 @@ class Block {
     const block_creator = this.block.creator;
     const block_signature = this.block.signature;
 
-    console.log(`block.serialize tx length = ${this.transactions.length} for ${this.hash}`);
+    console.log(`block.serialize : tx count = ${this.transactions.length} for ${this.hash}`);
     let transactions_length = this.app.binary.u32AsBytes(this.transactions.length);
 
     const id = this.app.binary.u64AsBytes(this.block.id);
@@ -1423,6 +1430,7 @@ class Block {
     ret.set(block_header_data, 0);
     let next_tx_location = BLOCK_HEADER_SIZE;
     for (let i = 0; i < transactions.length; i++) {
+      console.debug(`block.serialize : tx ${i} starting = ${next_tx_location}, length = ${transactions[i].length}, sig = ${this.transactions[i].returnSignature(this.app)}`);
       ret.set(transactions[i], next_tx_location);
       next_tx_location += transactions[i].length;
     }

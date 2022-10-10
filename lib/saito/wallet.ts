@@ -571,7 +571,6 @@ console.log("---------------------");
         // update slips prior to insert
         //
         for (let ii = 0; ii < to_slips.length; ii++) {
-          to_slips[ii].uuid = block.returnHash();
           to_slips[ii].lc = lc; // longest-chain
           to_slips[ii].ts = block.returnTimestamp(); // timestamp
           to_slips[ii].from = JSON.parse(JSON.stringify(tx.transaction.from)); // from slips
@@ -656,7 +655,7 @@ console.log("---------------------");
             const s = from_slips[m];
             for (let c = 0; c < this.wallet.inputs.length; c++) {
               const qs = this.wallet.inputs[c];
-              if (
+              if (// TODO : Check the s.returnKey() == qs.returnKey() instead
                 s.uuid == qs.uuid &&
                 s.sid == qs.sid &&
                 s.amt.toString() == qs.amt.toString() &&

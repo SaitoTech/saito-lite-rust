@@ -39,8 +39,7 @@ test("slip serialize deserialze", () => {
   slip.type = 3;
 
   const buffer = slip.serialize(
-    mockApp,
-    "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b"
+    mockApp
   );
 
   const slip2 = new Slip(wallet.wallet.privatekey);

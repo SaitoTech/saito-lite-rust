@@ -6,7 +6,7 @@ import Hop from "./hop";
 import { Saito } from "../../apps/core";
 
 export const TRANSACTION_SIZE = 93;
-export const SLIP_SIZE = 75;
+export const SLIP_SIZE = 59;
 export const HOP_SIZE = 130;
 
 export enum TransactionType {
@@ -92,9 +92,9 @@ class Transaction {
           fslip.add,
           fslip.amt,
           fslip.type,
-          fslip.uuid,
           fslip.sid,
-          fslip.lc
+          fslip.block_id,
+            fslip.tx_ordinal
         );
       }
       for (let i = 0; i < this.transaction.to.length; i++) {
@@ -103,9 +103,9 @@ class Transaction {
           fslip.add,
           fslip.amt,
           fslip.type,
-          fslip.uuid,
           fslip.sid,
-          fslip.lc
+          fslip.block_id,
+            fslip.tx_ordinal
         );
       }
     }
@@ -280,7 +280,9 @@ class Transaction {
     output.add = output_slip_to_rebroadcast.add;
     output.amt = output_payment;
     output.type = SlipType.ATR;
-    output.uuid = output_slip_to_rebroadcast.uuid;
+    output.block_id = output_slip_to_rebroadcast.block_id;
+    output.tx_ordinal = output_slip_to_rebroadcast.tx_ordinal;
+    output.sid = output_slip_to_rebroadcast.sid;
 
     //
     // if this is the FIRST time we are rebroadcasting, we copy the
@@ -671,6 +673,8 @@ class Transaction {
       next_hop_location += HOP_SIZE;
     }
 
+    console.debug(`transaction.serialize length : ${ret.length}, inputs : ${inputs.length}, outputs : ${outputs.length}, message len : ${this.transaction.m.byteLength}, path len : ${this.transaction.path.length}`)
+
     return ret;
   }
 
@@ -696,8 +700,6 @@ class Transaction {
       Buffer.from(app.binary.u32AsBytes(this.transaction.type)),
     ]);
 
-    const m_as_hex = Buffer.from(this.transaction.m).toString("hex");
-    const tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
     buffer = Buffer.concat([buffer, this.transaction.m]);
 
     return buffer;
@@ -923,8 +925,16 @@ class Transaction {
     return true;
   }
 
-  generateMetadata() {
-    // TODO
+  generateMetadata(app : Saito, block_id : bigint, tx_ordinal : bigint) {
+    for (let i = 0; i < this.transaction.from.length; i++) {
+      this.transaction.from[i].generateKey(app);
+    }
+    for (let i = 0; i < this.transaction.to.length; i++) {
+      this.transaction.to[i].block_id = block_id;
+      this.transaction.to[i].tx_ordinal = tx_ordinal;
+      this.transaction.to[i].sid = i;
+      this.transaction.to[i].generateKey(app);
+    }
   }
 
   generateMetadataCumulativeFees() {

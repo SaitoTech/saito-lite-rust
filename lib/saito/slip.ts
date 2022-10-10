@@ -1,4 +1,7 @@
 import {Saito} from "../../apps/core";
+import block from "./block";
+import assert from "assert";
+import {SLIP_SIZE} from "./transaction";
 
 export enum SlipType {
   Normal = 0,
@@ -16,8 +19,10 @@ class Slip {
   public add: string;
   public amt: bigint;
   public type: SlipType;
-  public uuid: string;
+  //public uuid: string;
   public sid: number;
+  public block_id : bigint;
+  public tx_ordinal : bigint;
   public lc: number;
   public timestamp: number;
   public key: string;
@@ -27,9 +32,10 @@ class Slip {
     publickey = "",
     amount = BigInt(0),
     type = SlipType.Normal,
-    uuid = "",
     slip_ordinal = 0,
-    lc = 1
+    block_id = BigInt(0),
+    tx_ordinal = BigInt(0),
+    lc = 1,
   ) {
     //
     // consensus variables
@@ -37,9 +43,10 @@ class Slip {
     this.add = publickey;
     this.amt = BigInt(amount);
     this.type = type;
-    this.uuid = uuid;
+    //this.uuid = uuid;
     this.sid = slip_ordinal;
-
+    this.block_id = block_id;
+    this.tx_ordinal = tx_ordinal;
     //
     // non-consensus variables
     //
@@ -96,15 +103,17 @@ class Slip {
   }
 
   clone() {
-    return new Slip(this.add, BigInt(this.amt.toString()), this.type, this.uuid, this.sid, this.lc);
+    return new Slip(this.add, BigInt(this.amt.toString()), this.type, this.sid, this.block_id, this.tx_ordinal);
   }
 
   deserialize(app:Saito, buffer) {
     this.add = app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
-    this.uuid = Buffer.from(buffer.slice(33, 65)).toString("hex");
-    this.amt = app.binary.u64FromBytes(buffer.slice(65, 73));
-    this.sid = app.binary.u8FromByte(buffer[73]);
-    this.type = app.binary.u8FromByte(buffer[74]);
+    // this.uuid = Buffer.from(buffer.slice(33, 65)).toString("hex");
+    this.amt = app.binary.u64FromBytes(buffer.slice(33, 41));
+    this.block_id = app.binary.u64FromBytes(buffer.slice(42, 49));
+    this.tx_ordinal = app.binary.u64FromBytes(buffer.slice(49, 57));
+    this.sid = app.binary.u8FromByte(buffer[57]);
+    this.type = app.binary.u8FromByte(buffer[58]);
 
     // convert to BigInts
     this.amt = BigInt(this.amt.toString());
@@ -127,8 +136,22 @@ class Slip {
     return `         ${this.sid} | ${this.add} | ${this.amt.toString()}`;
   }
 
+  generateKey(app : Saito) {
+    const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
+    const block_id = app.binary.u64AsBytes(this.block_id.toString());
+    const tx_ordinal = app.binary.u64AsBytes(this.tx_ordinal.toString());
+    const slip_ordinal = app.binary.u8AsByte(this.sid);
+    const amount = app.binary.u64AsBytes(this.amt.toString());
+
+    console.debug(`Generating UTXOKey for ${this.block_id}, ${this.tx_ordinal}, ${this.sid}`);
+    let arr = new Uint8Array([...publickey, ...block_id, ...tx_ordinal, slip_ordinal, ...amount]);
+    console.assert(arr.length == 58, "UTXO Key Length is not 58");
+    this.key = arr.toString();
+  }
+
   returnKey() {
-    return this.add + this.uuid + this.amt.toString() + this.sid;
+    console.assert(this.key != "", "UTXO Key is not generated");
+    return this.key
   }
 
   returnPublicKey() {
@@ -141,34 +164,27 @@ class Slip {
    * @param app
    * @param uuid
    */
-  serialize(app:Saito, uuid = "") {
-    if (uuid === "") {
-      uuid = this.uuid;
-    }
-    if (uuid === "") {
-      uuid = "0";
-    }
+  serialize(app:Saito) {
 
-    const publickey = app.binary.hexToSizedArray(
-      app.crypto.fromBase58(this.add),
-      33
-    );
-    const uuidx = app.binary.hexToSizedArray(uuid, 32);
+    const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
 
     const amount = app.binary.u64AsBytes(this.amt.toString());
+    const block_id = app.binary.u64AsBytes(this.block_id.toString());
+    const tx_ordinal = app.binary.u64AsBytes(this.tx_ordinal.toString());
     const slip_ordinal = app.binary.u8AsByte(this.sid);
     const slip_type = [this.type as number];
 
-    return new Uint8Array([...publickey, ...uuidx, ...amount, slip_ordinal, ...slip_type]);
+    let arr = new Uint8Array([...publickey, ...amount, ...block_id, ...tx_ordinal, slip_ordinal, ...slip_type]);
+    console.assert(arr.length == SLIP_SIZE, "Slip Size is incorrect");
+    return arr;
   }
 
   serializeInputForSignature(app:Saito) : Uint8Array {
-    return this.serialize(app, this.uuid);
+    return this.serialize(app);
   }
 
   serializeOutputForSignature(app:Saito) : Uint8Array {
-    return this.serialize(app, "0");
-    //(new Array(32).fill(0).toString()));
+    return this.serialize(app);
   }
 
   validate(app:Saito) : boolean {
