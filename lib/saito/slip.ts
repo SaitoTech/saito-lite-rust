@@ -180,11 +180,31 @@ class Slip {
   }
 
   serializeInputForSignature(app:Saito) : Uint8Array {
-    return this.serialize(app);
+    const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
+
+    const amount = app.binary.u64AsBytes(this.amt.toString());
+    // const block_id = app.binary.u64AsBytes(this.block_id.toString());
+    // const tx_ordinal = app.binary.u64AsBytes(this.tx_ordinal.toString());
+    const slip_ordinal = app.binary.u8AsByte(this.sid);
+    const slip_type = [this.type as number];
+
+    let arr = new Uint8Array([...publickey, ...amount, slip_ordinal, ...slip_type]);
+    console.assert(arr.length == 43, "serializeInputForSignature Size is incorrect");
+    return arr;
   }
 
   serializeOutputForSignature(app:Saito) : Uint8Array {
-    return this.serialize(app);
+    const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
+
+    const amount = app.binary.u64AsBytes(this.amt.toString());
+    // const block_id = app.binary.u64AsBytes(this.block_id.toString());
+    // const tx_ordinal = app.binary.u64AsBytes(this.tx_ordinal.toString());
+    const slip_ordinal = app.binary.u8AsByte(this.sid);
+    const slip_type = [this.type as number];
+
+    let arr = new Uint8Array([...publickey, ...amount, slip_ordinal, ...slip_type]);
+    console.assert(arr.length == 43, "serializeOutputForSignature Size is incorrect");
+    return arr;
   }
 
   validate(app:Saito) : boolean {
