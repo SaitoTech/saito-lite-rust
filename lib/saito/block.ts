@@ -334,7 +334,7 @@ class Block {
     cv.nolan_falling_off_chain = BigInt(0);
     cv.rebroadcast_hash = "";
     cv.staking_treasury = BigInt(0);
-    cv.rebroadcasts = [];
+    cv.rebroadcasts = new Array<Transaction>();
     cv.block_payouts = [];
     cv.fee_transaction = null;
     cv.avg_income = BigInt(0);
@@ -850,7 +850,11 @@ class Block {
     //
     const rlen = cv.rebroadcasts.length;
     for (let i = 0; i < rlen; i++) {
-      cv.rebroadcasts[i].generateMetadata(this.app.wallet.returnPublicKey());
+      // cv.rebroadcasts[i].generateMetadata(
+      //   this.app,
+      //   this.block.id,
+      //   BigInt(this.transactions.length)
+      // );
       this.transactions.push(cv.rebroadcasts[i]);
     }
 
@@ -858,9 +862,12 @@ class Block {
     // fee transactions
     //
     if (cv.fee_transaction != null) {
-      //
+      // cv.fee_transaction.generateMetadata(
+      //   this.app,
+      //   this.block.id,
+      //   BigInt(this.transactions.length)
+      // );
       // creator signs fee transaction
-      //
       cv.fee_transaction.sign(this.app);
       this.transactions.push(cv.fee_transaction);
     }
@@ -873,18 +880,16 @@ class Block {
     // that is also paid this block otherwise.
     //
     for (let i = 0; i < this.transactions.length; i++) {
+      this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i));
       if (!this.transactions[i].isFeeTransaction()) {
         for (let k = 0; k < this.transactions[i].transaction.from.length; k++) {
-          this.transactions[i].transaction.from[k].generateKey(this.app);
+          // this.transactions[i].transaction.from[k].generateKey(this.app);
           this.slips_spent_this_block[this.transactions[i].transaction.from[k].returnKey()] = 1;
         }
       }
-      for (let k = 0; k < this.transactions[i].transaction.to.length; k++) {
-        this.transactions[i].transaction.to[k].block_id = this.block.id;
-        this.transactions[i].transaction.to[k].tx_ordinal = BigInt(i);
-        this.transactions[i].transaction.to[k].sid = k;
-        this.transactions[i].transaction.to[k].generateKey(this.app);
-      }
+      // for (let k = 0; k < this.transactions[i].transaction.to.length; k++) {
+      //   this.transactions[i].transaction.to[k].generateKey(this.app);
+      // }
     }
     this.created_hashmap_of_slips_spent_this_block = true;
 
@@ -947,7 +952,9 @@ class Block {
     // and the routing work.
     //
     const creator_publickey = this.returnCreator();
-    this.transactions.map((tx, index) => tx.generateMetadata(this.app, this.block.id, BigInt(index)));
+    this.transactions.map((tx, index) =>
+      tx.generateMetadata(this.app, this.block.id, BigInt(index))
+    );
 
     //
     // we need to calculate the cumulative figures AFTER the
@@ -1430,7 +1437,11 @@ class Block {
     ret.set(block_header_data, 0);
     let next_tx_location = BLOCK_HEADER_SIZE;
     for (let i = 0; i < transactions.length; i++) {
-      console.debug(`block.serialize : tx ${i} starting = ${next_tx_location}, length = ${transactions[i].length}, sig = ${this.transactions[i].returnSignature(this.app)}`);
+      console.debug(
+        `block.serialize : tx ${i} starting = ${next_tx_location}, length = ${
+          transactions[i].length
+        }, sig = ${this.transactions[i].returnSignature(this.app)}`
+      );
       ret.set(transactions[i], next_tx_location);
       next_tx_location += transactions[i].length;
     }
@@ -1715,7 +1726,7 @@ class Block {
       // block-specific data in the same way that all the transactions in
       // the block have been. we must do this prior to comparing them.
       //
-      cv.fee_transaction.generateMetadata(this.returnCreator());
+      cv.fee_transaction.generateMetadata(this.app, this.block.id, BigInt(cv.ft_idx));
 
       const hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature(this.app));
       const hash2 = this.app.crypto.hash(cv.fee_transaction.serializeForSignature(this.app));

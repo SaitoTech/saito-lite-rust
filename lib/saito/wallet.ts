@@ -655,12 +655,8 @@ console.log("---------------------");
             const s = from_slips[m];
             for (let c = 0; c < this.wallet.inputs.length; c++) {
               const qs = this.wallet.inputs[c];
-              if (// TODO : Check the s.returnKey() == qs.returnKey() instead
-                s.uuid == qs.uuid &&
-                s.sid == qs.sid &&
-                s.amt.toString() == qs.amt.toString() &&
-                s.add == qs.add
-              ) {
+              console.assert(s.returnKey().length > 0 && qs.returnKey().length > 0, "sss");
+              if (s.returnKey() === qs.returnKey()) {
                 if (!this.containsOutput(s)) {
                   this.addOutput(s);
                 }
@@ -691,9 +687,9 @@ console.log("---------------------");
     // this adds a 1 block buffer so that inputs are valid in the future block included
     //
     const lowest_block: bigint =
-        this.app.blockchain.blockchain.last_block_id -
-        this.app.blockchain.blockchain.genesis_period +
-        BigInt(2);
+      this.app.blockchain.blockchain.last_block_id -
+      this.app.blockchain.blockchain.genesis_period +
+      BigInt(2);
 
     //
     // check pending txs to avoid slip reuse if necessary
@@ -872,7 +868,10 @@ console.log("---------------------");
         tx.msg = this.app.keys.encryptMessage(tx.transaction.to[0].add, tx.msg);
       }
       // nov 30 - set in tx.sign() now
-      tx.transaction.m = Buffer.from(this.app.crypto.stringToBase64(JSON.stringify(tx.msg)),"base64");
+      tx.transaction.m = Buffer.from(
+        this.app.crypto.stringToBase64(JSON.stringify(tx.msg)),
+        "base64"
+      );
     } catch (err) {
       console.log("####################");
       console.log("### OVERSIZED TX ###");
@@ -1293,11 +1292,13 @@ console.log("---------------------");
   ) {
     return this.app.crypto.hash(
       Buffer.from(
-          JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        unique_hash +
-        ticker,"utf-8")
+        JSON.stringify(senders) +
+          JSON.stringify(receivers) +
+          JSON.stringify(amounts) +
+          unique_hash +
+          ticker,
+        "utf-8"
+      )
     );
   }
   savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {

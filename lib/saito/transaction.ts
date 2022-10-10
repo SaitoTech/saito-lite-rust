@@ -94,7 +94,7 @@ class Transaction {
           fslip.type,
           fslip.sid,
           fslip.block_id,
-            fslip.tx_ordinal
+          fslip.tx_ordinal
         );
       }
       for (let i = 0; i < this.transaction.to.length; i++) {
@@ -105,7 +105,7 @@ class Transaction {
           fslip.type,
           fslip.sid,
           fslip.block_id,
-            fslip.tx_ordinal
+          fslip.tx_ordinal
         );
       }
     }
@@ -280,9 +280,9 @@ class Transaction {
     output.add = output_slip_to_rebroadcast.add;
     output.amt = output_payment;
     output.type = SlipType.ATR;
-    output.block_id = output_slip_to_rebroadcast.block_id;
-    output.tx_ordinal = output_slip_to_rebroadcast.tx_ordinal;
-    output.sid = output_slip_to_rebroadcast.sid;
+    // output.block_id = output_slip_to_rebroadcast.block_id;
+    // output.tx_ordinal = output_slip_to_rebroadcast.tx_ordinal;
+    // output.sid = output_slip_to_rebroadcast.sid;
 
     //
     // if this is the FIRST time we are rebroadcasting, we copy the
@@ -673,7 +673,9 @@ class Transaction {
       next_hop_location += HOP_SIZE;
     }
 
-    console.debug(`transaction.serialize length : ${ret.length}, inputs : ${inputs.length}, outputs : ${outputs.length}, message len : ${this.transaction.m.byteLength}, path len : ${this.transaction.path.length}`)
+    console.debug(
+      `transaction.serialize length : ${ret.length}, inputs : ${inputs.length}, outputs : ${outputs.length}, message len : ${this.transaction.m.byteLength}, path len : ${this.transaction.path.length}`
+    );
 
     return ret;
   }
@@ -925,7 +927,7 @@ class Transaction {
     return true;
   }
 
-  generateMetadata(app : Saito, block_id : bigint, tx_ordinal : bigint) {
+  generateMetadata(app: Saito, block_id: bigint, tx_ordinal: bigint) {
     for (let i = 0; i < this.transaction.from.length; i++) {
       this.transaction.from[i].generateKey(app);
     }
