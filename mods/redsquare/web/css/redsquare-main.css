@@ -16,6 +16,7 @@
 }
 
 .saito-arcade-invite-list .saito-module-x:hover {
+  cursor: pointer;
   background-color: #4442;
 }
 

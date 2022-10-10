@@ -1335,6 +1335,7 @@ class Arcade extends ModTemplate {
       let gameMod = app.modules.returnModule(gameobj.name);
       let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
 
+      this.addMyGamesToOpenList();
       this.launchGame(game_id);
 
     } catch (err) {
