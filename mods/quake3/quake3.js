@@ -358,6 +358,8 @@ class Quake3 extends GameTemplate {
             await app.browser.screenshotCanvasElementById("viewport", function(image) {
               if (log && !log.classList.contains("log_lock")) { log.style.display = "block"; }
               menu.style.display = "block";
+    	      SAITO_COMPONENT_ACTIVE = true;
+    	      SAITO_COMPONENT_CLICKED = true;
               m.tweetImage(image);
             });
 	    game_mod.menu.hideSubMenus();

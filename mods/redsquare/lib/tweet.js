@@ -335,6 +335,8 @@ class RedSquareTweet {
     //
     const openTweet = (e) => {
 
+console.log("AAAAA");
+
       //e.preventDefault();
       e.stopImmediatePropagation();
 
@@ -395,6 +397,8 @@ class RedSquareTweet {
     let sel = "#tweet-box-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
 
+console.log("AAAAA 2");
+
       //
       // trap links in tweets
       //
@@ -417,6 +421,7 @@ console.log("clicked on a link!");
         return;
       }
 
+console.log("AAAAA 4");
 
       //
       // avoid other clickable elements
@@ -436,6 +441,8 @@ console.log("clicked on a link!");
           console.log("Already Viewing Tweet");
           return;
         }
+
+console.log("AAAAA 5");
 
         openTweet(e);
         e.preventDefault();

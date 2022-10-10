@@ -19,7 +19,6 @@ class Post {
     if (document.querySelector('#redsquare-tweet-overlay') != null) {
       document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
     }
-
     this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();
@@ -45,13 +44,18 @@ class Post {
       },
       false);
 
+
+
     document.querySelector('.redsquare-tweet-overlay').onclick = (e) => {
 
       if (e.target.classList.contains("fa-image")) {
         document.querySelector("#hidden_file_element_redsquare-tweet-overlay").click();
+	return;
       }
 
+
       if (e.target.id === "post-tweet-button") {
+
 
         document.getElementById("post-tweet-loader").style.display = 'block';
         e.preventDefault();
@@ -109,10 +113,8 @@ class Post {
 
         setTimeout(() => {
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
-
           if (post_self.render_after_submit == 1) {
             mod.prependTweetFromTransaction(app, mod, newtx, true);
-
             if (thread_id !== "") {
               mod.renderWithChildren(app, mod, thread_id);
             } else {
@@ -122,13 +124,12 @@ class Post {
                 mod.renderMainPage(app, mod);
               }
             }
-	        }
-
+	  }
           post_self.overlay.hide();
-
         }, 1000);
 
       }
+
     }
 
     document.querySelector(".my-form").style.display = "none";

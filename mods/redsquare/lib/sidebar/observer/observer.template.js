@@ -14,7 +14,7 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 
 		html = `<div id="rs-sidebar-observer" class="observer-sidebar">`;
 
-		html += `<h6>Live Games You Can Watch:</h6>`;
+		html += `<h6>Watch Live:</h6>`;
 		let cnt = 0;
 
 		/*

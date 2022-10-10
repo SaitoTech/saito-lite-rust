@@ -31,14 +31,21 @@ class RedSquareGames {
       div.innerHTML = RedSquareGamesTemplate(app, mod);
       this.attachEvents(app, mod);
     }
-    //app.browser.replaceElementBySelector(RedSquareGamesTemplate(app, mod), this.selector);
 
-    //this.attachEvents(app, mod);
   }
 
 
   attachEvents(app, mod) {
-    Array.from(document.querySelectorAll('.saito-module-action.join')).forEach(game => {
+
+    Array.from(document.querySelectorAll('.saito-arcade-invite-list .saito-module-x')).forEach(game => {
+      game.onclick = (e) => {
+      	let x = e.currentTarget.getAttribute("data-id");
+        let click_me = "saito-module-action-"+x;
+        document.getElementById(click_me).click();
+      }
+    });
+
+    Array.from(document.querySelectorAll('.saito-module-action.join, .saito-module-action.details')).forEach(game => {
       game.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();

@@ -1,3 +1,6 @@
+
+
+
 .treated {
   display: block;
 }
@@ -12,6 +15,10 @@
   z-index: 10;
 }
 
+.saito-arcade-invite-list .saito-module-x:hover {
+  cursor: pointer;
+  background-color: #4442;
+}
 
 .redsquare-item-notice {
     box-sizing: border-box;
@@ -279,6 +286,10 @@ span.redsquare-home-red-square+span {
     display: grid;
     grid-template-columns: 1fr;
     grid-gap: 1rem;
+  }
+
+  .saito-sidebar-right {
+    width: 0;
   }
 
   .redsquare-game-image {
@@ -1033,3 +1044,4 @@ span.redsquare-home-red-square+span {
     position: relative;
   }
 }
+

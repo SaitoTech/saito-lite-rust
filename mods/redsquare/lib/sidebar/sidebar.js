@@ -1,5 +1,5 @@
 const RedSquareSidebarTemplate = require("./sidebar.template");
-const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/saito-calendar");
+//const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/saito-calendar");
 const RedSquareLeague = require("./league/league");
 const RedSquareObserver = require("./observer/observer");
 const RedSquareGames = require("./games/games");
@@ -32,8 +32,11 @@ class RedSquareSidebar {
       app.browser.addElementToSelector(RedSquareSidebarTemplate(app, mod), this.selector);
     }
 
-    let sidebar_calendar = new SaitoCalendar(app, mod);
-    sidebar_calendar.render(app, mod, ".redsquare-sidebar-calendar");
+    //
+    // disable calendar -- html still in template for now
+    //
+    //let sidebar_calendar = new SaitoCalendar(app, mod);
+    //sidebar_calendar.render(app, mod, ".redsquare-sidebar-calendar");
 
     let game_sidebar = new RedSquareGames(app, mod);
     game_sidebar.render(app, mod, ".redsquare-sidebar-arcade");

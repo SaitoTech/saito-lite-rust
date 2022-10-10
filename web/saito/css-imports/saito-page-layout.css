@@ -22,6 +22,7 @@
     position: absolute;
     top: var(--saito-header-height);
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .saito-container div {

@@ -8,6 +8,7 @@ const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay
 const ViewLeagueDetails = require("./lib/overlays/view-league-details");
 const InvitationLink = require("./../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
+const GameOptionsSelect = require("./../../lib/saito/new-ui/game-options-select/game-options-select");
 const ChallengeIssuedTemplate = require('./../../lib/saito/new-ui/templates/challenge-issued.template');
 const ChallengeAcceptedTemplate = require('./../../lib/saito/new-ui/templates/challenge-accepted.template');
 const ChallengeRejectedTemplate = require('./../../lib/saito/new-ui/templates/challenge-rejected.template');
@@ -1113,77 +1114,11 @@ class League extends ModTemplate {
     
     //Get options if needed
     if (!options){
-      const players = (app, mod) => {
-        let selection = "";
-        if (mod.minPlayers === mod.maxPlayers) {
-          selection = `<input type="hidden" class="game-wizard-players-select" name="game-wizard-players-select" value="${mod.minPlayers}">`;
-          selection += mod.returnSingularGameOption(app);
-        } else {
-          selection = `<div><label for="game-wizard-players-select">Number of Players:</label>
-                       <select class="game-wizard-players-select" name="game-wizard-players-select">`;
-          for (let p = mod.minPlayers; p <= mod.maxPlayers; p++) {
-            selection += `<option value="${p}">${p} player</option>`;
-          }
-          selection += `</select></div>`;
-        }
-
-        return selection;
-      };
-
-      const getGameOptions = () => {
-        let options = "";
-        document.querySelectorAll("form#game-wizard-form input, form#game-wizard-form select").forEach((element) => {
-          if (!options){
-            options = {};
-          }
-          if (element.type == "checkbox") {
-            if (element.checked) {
-              options[element.name] = 1;
-            }
-          } else if (element.type == "radio") {
-            if (element.checked) {
-              options[element.name] = element.value;
-            }
-          } else {
-            options[element.name] = element.value;
-          }
-        });
-        return options;
-      };
-
-
-      let newOverlay = new SaitoOverlay(this.app, false, false);
-      let gamemod = this.app.modules.returnModule(league.game);
-      let advancedOptions = gamemod.returnGameOptionsHTML();
-      let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
-      let moreOptions = players(this.app, gamemod);
-
-      if (advancedOptions.includes(accept_button)){
-        advancedOptions = advancedOptions.replace(accept_button, moreOptions+accept_button);
-      }else{
-        advancedOptions += moreOptions + accept_button; 
-      }
-
-      let html = `<div class="game_option_league_wizard">
-                  <form id="game-wizard-form" class="game-wizard-form">
-                  ${advancedOptions}
-                  </form>
-                  </div>
-                  `;
-      //Display Game Options
-      newOverlay.show(this.app, this, html, ()=>{
-        options = getGameOptions();                
-        newOverlay.remove();
-      });  
-      //Attach dynamic listeners
-      gamemod.attachAdvancedOptionsEventListeners();
-      //Hide overlay if clicking button
-      if (document.getElementById("game-wizard-advanced-return-btn")) {
-        document.querySelector(".game-wizard-advanced-return-btn").onclick = (e) => {
-          newOverlay.hide();
-        };
-      }
+      let selector = new GameOptionsSelect(this.app);
+      options = await selector.selectGameOptions(this.app, this.app.modules.returnModule(league.game));
     }
+
+    console.log(JSON.parse(JSON.stringify(options)));
 
     if (options["game-wizard-players-select"] != 2){
       salert("You can only challenge head-to-head");
