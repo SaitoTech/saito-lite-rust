@@ -12,7 +12,7 @@ module.exports = RedSquareGamesTemplate = (app, mod) => {
     });
 
     if (mygames.length > 0){
-      html += `<h6>My games:</h6>
+      html += `<h6>My Games:</h6>
                   <div class="saito-arcade-invite-list">`;
       for (let i = 0; i < mygames.length; i++) {
         html +=  SaitoArcadeInviteTemplate(app, mod, mygames[i]);
@@ -26,7 +26,7 @@ module.exports = RedSquareGamesTemplate = (app, mod) => {
     });
 
     if (games.length > 0){
-      html += `<h6>Games Looking for a Player:</h6>
+      html += `<h6>Open Invites:</h6>
             <div class="saito-arcade-invite-list">`;
 
       for (let i = 0; i < games.length; i++) {
