@@ -27,6 +27,7 @@ class Keychain {
   }
 
   initialize() {
+
     if (this.app.options.keys == null) {
       this.app.options.keys = [];
     }
@@ -71,7 +72,6 @@ class Keychain {
     if (this.app.options.keys.length == 0) {
       this.addKey(this.app.wallet.returnPublicKey(), { watched: true });
     }
-    console.log("options ", this.app.options);
   }
 
   //
@@ -641,7 +641,6 @@ class Keychain {
       "Registry",
       `SELECT * FROM records WHERE identifier = '${identifier}'`,
       (res) => {
-        console.log(4);
         if (res.rows && res.rows.length > 0) {
           //It should be unique....
           res.rows.forEach((row) => {

@@ -64,7 +64,7 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-        /******
+/******
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {
@@ -91,14 +91,12 @@ class Browser {
         document.addEventListener(
           "visibilitychange",
           () => {
-            //console.log("document event listener visibility change");
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
                 publickey: this.app.wallet.returnPublicKey(),
               });
             } else {
-              //console.log("document event listener visibility change");
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,
@@ -125,10 +123,8 @@ class Browser {
       // Abercrombie's rule.
       //
       if (typeof window == "undefined") {
-        //console.log("Initializing Saito Node");
         return;
       } else {
-        //console.info("Initializing Saito Light Client");
       }
       const current_url = window.location.toString();
       const myurl = new URL(current_url);
@@ -268,7 +264,6 @@ class Browser {
         }
       }
     } catch (err) {
-      //console.log("error in urlparams: " + err);
     }
     return "";
   }
@@ -964,7 +959,6 @@ class Browser {
         .push(category, action, name, value);
     } catch (err) {
       if (err.startsWith("Module responding to")) {
-        //console.log("Matomo module not present, cannot push event");
       } else {
         console.log(err);
       }
