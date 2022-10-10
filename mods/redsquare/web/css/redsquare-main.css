@@ -1,3 +1,6 @@
+
+
+
 .treated {
   display: block;
 }
@@ -279,6 +282,10 @@ span.redsquare-home-red-square+span {
     display: grid;
     grid-template-columns: 1fr;
     grid-gap: 1rem;
+  }
+
+  .saito-sidebar-right {
+    width: 0;
   }
 
   .redsquare-game-image {
@@ -1033,3 +1040,4 @@ span.redsquare-home-red-square+span {
     position: relative;
   }
 }
+
