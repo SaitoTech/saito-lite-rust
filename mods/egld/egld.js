@@ -63,14 +63,9 @@ class EGLDModule extends CryptoModule {
             url: `https://elrond.saito.io/0/hello`
            })
            this.base_url = "https://elrond.saito.io/0"
-           console.log(res)
         } catch (error) {
           this.base_url = "https://elrond-api-devnet.public.blastapi.io"
         }
-        finally {
-          console.log('new base url', this.base_url)
-        }
-     
        }, 60000)
 
    
@@ -83,7 +78,7 @@ class EGLDModule extends CryptoModule {
 
   async sendPayment(amount, recipient,  unique_hash=""){
     let from = this.egld.keyfile.bech32
-    let config = await this.networkProvider.getNetworkConfig()
+    let config = await this.networkProvider.getNetworkConfig();
     let nonce = await this.nonce
     console.log('nonce ', nonce)
     let tokenPayment = TokenPayment.egldFromAmount(String(amount));
