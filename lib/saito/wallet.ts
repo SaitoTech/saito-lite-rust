@@ -679,7 +679,7 @@ console.log("---------------------");
   }
 
   returnAdequateInputs(amt) {
-    const utxiset = [];
+    const utxiset = new Array<Slip>();
     let value = BigInt(0);
     const bigamt = BigInt(amt) * BigInt(100_000_000);
 
