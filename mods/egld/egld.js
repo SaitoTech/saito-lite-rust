@@ -71,7 +71,7 @@ class EGLDModule extends CryptoModule {
           console.log('new base url', this.base_url)
         }
      
-       }, 10000)
+       }, 60000)
 
    
 
