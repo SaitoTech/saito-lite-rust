@@ -721,6 +721,7 @@ class Browser {
   }
 
   preventDefaults(e) {
+console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
   }
@@ -781,7 +782,6 @@ class Browser {
         };
 
         document.onmousemove = function (e) {
-          console.log("MOVE MOUSEDOWN");
 
           e = e || window.event;
           e.preventDefault();
@@ -910,9 +910,11 @@ class Browser {
   addModalIdentifierAddPublickey(app, mod) {
     try {
       const identifiers = document.getElementsByClassName(`saito-identicon`);
-
       Array.from(identifiers).forEach((identifier) => {
         identifier.addEventListener("click", (e) => {
+
+console.log("preventing default 444");
+
           e.preventDefault();
           e.stopImmediatePropagation();
 
