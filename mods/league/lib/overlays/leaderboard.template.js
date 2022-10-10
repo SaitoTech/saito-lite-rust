@@ -16,7 +16,7 @@ module.exports = LeaderboardTemplate = (app, mod, league, players) => {
 
 	    if (league.id !== "SAITOLICIOUS"){
 		    if (player.pkey !== myKey) {
-		    	html +=  `<div><button class="button challenge-btn" data-id="${player.pkey}">CHALLENGE</button></div>`
+		    	html +=  `<div><div class="saito-button-secondary challenge-btn" data-id="${player.pkey}" style="display:none;">CHALLENGE</div></div>`
 		    }else{
 		    	html += `<div></div>`;	
 		    }
