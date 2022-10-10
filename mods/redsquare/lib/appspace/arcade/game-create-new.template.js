@@ -12,14 +12,16 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
       selection += game_mod.returnSingularGameOption(app);
     } else {
       let defaultPlayers = min;
-      if (game_mod.opengame){
+      if (mod.opengame){
         defaultPlayers = max;
+        selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${max}">${max} player</div>`;
+      }else{
+        selection += `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
+        for (let p = min; p <= max; p++) {
+          selection += `<option value="${p}" ${(p===defaultPlayers)?"selected default":""}>${p} player</option>`;
+        }
+        selection += `</select>`;
       }
-      selection += `<select class="game-wizard-players-select dark" name="game-wizard-players-select">`;
-      for (let p = min; p <= max; p++) {
-        selection += `<option value="${p}" ${(p===defaultPlayers)?"selected default":""}>${p} table limit</option>`;
-      }
-      selection += `</select>`;
     }
 
     return selection;

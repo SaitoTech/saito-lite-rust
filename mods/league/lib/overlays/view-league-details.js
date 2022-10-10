@@ -18,6 +18,10 @@ class ViewLeagueDetails {
       if (playerRow){
         playerRow.classList.add("online");
       }
+      let playerChallenge = document.querySelector(`.challenge-btn[data-id="${pkey}"]`);
+      if (playerChallenge){
+        playerChallenge.style.display = "block";
+      }
     });
   }
 

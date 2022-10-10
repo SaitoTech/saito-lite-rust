@@ -160,17 +160,8 @@ class Arcade extends ModTemplate {
   initialize(app) {
     super.initialize(app);
 
-    //
-    // add my own games (as fake txs)
-    //
-    if (this.app.options.games != null) {
-      for (let z = 0; z < this.app.options.games.length; z++) {
-        let game = this.app.options.games[z];
-        if (game.over == 0 && (game.players_set != 1 || game.players.includes(app.wallet.returnPublicKey()) || game.accepted.includes(app.wallet.returnPublicKey()))) {
-          this.addGameToOpenList(this.createGameTXFromOptionsGame(game));
-        }
-      }
-    }
+    
+    this.addMyGamesToOpenList();
 
 
     //
@@ -281,6 +272,9 @@ class Arcade extends ModTemplate {
       app.connection.emit("send-relay-message", {recipient: gameDetails.players, request: "arcade spv update", data: tx});
     });
 
+    app.connection.on("arcade-close-game", (gameid)=>{
+      ArcadeMain.cancelGame(app, this, gameid);
+    });
   }
 
   initializeHTML(app) {
@@ -620,7 +614,8 @@ class Arcade extends ModTemplate {
       console.log("TX not for me");
       return;
     }
-
+  
+    this.addMyGamesToOpenList();
 
     // do not re-accept if game is really old (sanity check)
     for (let i = 0; i < this.app?.options?.games?.length; i++) {
@@ -632,8 +627,10 @@ class Arcade extends ModTemplate {
             return;
           }
         }
-        console.log(`game (${txmsg.game_id}) already exists`);
-        console.info("MY CREATED GAMES: ", this.app?.options?.games);
+        if (this.debug){
+          console.log(`game (${txmsg.game_id}) already exists`);
+          console.info("MY CREATED GAMES: ", this.app?.options?.games);
+        }
         return;
       }
     }
@@ -664,6 +661,7 @@ class Arcade extends ModTemplate {
         await sconfirm("Something went wrong with the game initialization, reload?");
         window.location.reload();
       }
+
     }
   }
 
@@ -1337,6 +1335,7 @@ class Arcade extends ModTemplate {
       let gameMod = app.modules.returnModule(gameobj.name);
       let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
 
+      this.addMyGamesToOpenList();
       this.launchGame(game_id);
 
     } catch (err) {
@@ -1720,6 +1719,21 @@ class Arcade extends ModTemplate {
 
     this.removeOldGames();
     ArcadeMain.renderArcadeTab(this.app, this);      
+
+  }
+
+  
+  //
+  // add my own games (as fake txs)
+  //
+  addMyGamesToOpenList(){
+    if (this.app?.options?.games != null) {
+      for (let game of this.app.options.games) {
+        if (game.over == 0 && (game.players_set != 1 || game.players.includes(this.app.wallet.returnPublicKey()) || game.accepted.includes(this.app.wallet.returnPublicKey()))) {
+          this.addGameToOpenList(this.createGameTXFromOptionsGame(game));
+        }
+      }
+    }
 
   }
 
