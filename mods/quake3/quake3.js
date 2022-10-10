@@ -17,6 +17,9 @@ class Quake3 extends GameTemplate {
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
 
+    // ask chat not to start on launch
+    this.request_no_interrupts = true;
+
     this.content_server  = "q3.saito.io";
     this.game_server  = "q3.saito.io:27960";
     //this.content_server  = "18.163.184.251:80";
@@ -41,8 +44,6 @@ class Quake3 extends GameTemplate {
 
       if (mv[0] === "player_kill") {
 
-console.log("PLAYER KILL RECEIVED: " + JSON.stringify(this.game.queue));
-
 	this.game.queue.splice(qe, 1);
 	let victim = mv[1];
 	let killer = mv[2];
@@ -59,23 +60,17 @@ console.log("PLAYER KILL RECEIVED: " + JSON.stringify(this.game.queue));
 	  }
 	}
 
-console.log("CRYPTOL: " + JSON.stringify(this.game.options));
-
 	//
 	// victim offers sacrificial tribue
 	//
 	if (this.game.options.crypto) {
 	  if (this.app.wallet.returnPublicKey() === victim) {
-
-console.log("i am the victim, sendin tokens");
-
 	    let ts = new Date().getTime();
 	    let ticker = this.game.options.crypto;
             let killValue = this.game.options.killValue;
 	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
 	    // the user is proactively sending tokens unsolicited, so we can skip the 
 	    // confirmation prompt provided by the crypto-manager.
-console.log("sending payment to: " + killer_web3_address + " of " + killValue + " in " + ticker);
 	    this.app.wallet.sendPayment(
 	      [victim_web3_address], 
 	      [killer_web3_address],
@@ -89,13 +84,10 @@ console.log("sending payment to: " + killer_web3_address + " of " + killValue + 
             );	  
 
 	  } else {
-
-console.log("i am the killer, receivin'...");
 	    let ts = new Date().getTime();
 	    let ticker = this.game.options.crypto;
             let killValue = this.game.options.killValue;
 	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
-
 	    //
 	    // monitor for receipt
 	    //
@@ -112,7 +104,6 @@ console.log("i am the killer, receivin'...");
 	    );
 	  }
 	}
-
         return 1;
       }
 
@@ -122,6 +113,7 @@ console.log("i am the killer, receivin'...");
 	let publickey = mv[1];
 	let name = mv[2];
 	this.setPlayerName(publickey, name);
+        if (publickey === this.app.wallet.returnPublicKey()) { this.game.player_name_identified = true; }
         return 1;
       }
 
@@ -227,24 +219,32 @@ console.log("i am the killer, receivin'...");
   //
   // for the love of God don't add console.logs within this function
   //
-  processQuakeLog(logline, log) {
+  processQuakeLog(logline="", log) {
+
+    //
+    // register publickey/name when we enter the game if unset
+    //
+    if (this.game.player_name_identified == false) {
+      if (logline.indexOf("entered the game") > 0) {
+        let name = this.app.wallet.returnPublicKey().toLowerCase();
+	this.registerPlayerName();
+      }
+    }
+
+    //
+    // someone got murdered
+    //
     if (this.game?.all_player_names) {
     for (let z = 0; z < this.game.all_player_names.length; z++) {
       let pn = this.game.all_player_names[z].toLowerCase().substring(0, 15);
       let pos = logline.indexOf(pn);
         if (pos == 0) {
-          //
-          // someone got murdered
-          //
           for (let i = 0; i < this.game.all_player_names.length; i++) {
             let pn2 = this.game.all_player_names[i].toLowerCase().substring(0, 15);
 	    if (pn !== pn2) {
               if (logline.indexOf(pn2) > -1) {
 	        let victim = z;
 	        let killer = i;
-                //
-                // someone got murdered
-                //
 	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
                   this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
                   this.endTurn();
@@ -259,6 +259,46 @@ console.log("i am the killer, receivin'...");
 
 
 
+  registerPlayerName() {
+    //
+    // prevent Saito components from processing
+    //
+    SAITO_COMPONENT_ACTIVE = false;
+    SAITO_COMPONENT_CLICKED = false;
+
+    if (document.getElementById("chat-container")) { document.getElementById("chat-container").remove(); }
+    if (document.getElementById("viewport")) { document.getElementById("viewport").focus(); }
+
+    document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
+
+    // type "/name "
+    document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 191}));
+    document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 78}));
+    document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 65}));
+    document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 77}));
+    document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 69}));
+    document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 32}));
+
+    // type lowercase publickey
+    let publickey = this.app.wallet.returnPublicKey().toLowerCase();
+    for (let z = 0; z < publickey.length; z++) {
+      let char = publickey[z];
+      let charCode = char.charCodeAt(0);
+      if (charCode > 65) { charCode -= 32; } // 97 -> 65
+      console.log("typing in: " + char);
+      document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': charCode}));
+    }
+
+    // type "enter" and hide console (w/ tilde)
+    document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 13}));
+    document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
+
+    this.setPlayerName(this.app.wallet.returnPublicKey(), publickey);
+    this.addMove("player_name\t"+this.app.wallet.returnPublicKey()+"\t"+this.game.player_name);
+    this.endTurn();
+
+    return;
+  }
 
   setPlayerName(publickey, name) {
     for (let i = 0; i < this.game.players.length; i++) {
@@ -269,7 +309,6 @@ console.log("i am the killer, receivin'...");
     }
     if (this.app.wallet.returnPublicKey() === publickey) {
       this.game.player_name = name;
-      this.game.player_name_identified = true;
     }
   }
 
@@ -327,48 +366,13 @@ console.log("i am the killer, receivin'...");
     });
 
     this.menu.addSubMenuOption("game-game", {
-        text : "Register",
+        text : "Update Name",
         id : "game-register",
         class : "game-register",
         callback : async function(app, game_mod) {
-
+	  siteMessage("Updating Player Name to Saito Address");
 	  game_mod.menu.hideSubMenus();
-
-	  //
-	  // prevent Saito components from processing
-	  //
-	  SAITO_COMPONENT_ACTIVE = false;
-	  SAITO_COMPONENT_CLICKED = false;
-	  if (document.getElementById("viewport")) { document.getElementById("viewport").focus(); }
-
-          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
-
-	  // type "/name "
-          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 191}));
-          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 78}));
-          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 65}));
-          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 77}));
-          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 69}));
-          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 32}));
-
-	  // type lowercase publickey
-	  let publickey = app.wallet.returnPublicKey().toLowerCase();
-	  for (let z = 0; z < publickey.length; z++) {
-	    let char = publickey[z];
-	    let charCode = char.charCodeAt(0);
-	    if (charCode > 65) { charCode -= 32; } // 97 -> 65
-            console.log("typing in: " + char);
-            document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': charCode}));
-	  }
-
-	  // type "enter" and hide console (w/ tilde)
-          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 13}));
-          document.dispatchEvent(new KeyboardEvent('keydown', {'keyCode': 192}));
-
-	  game_mod.setPlayerName(app.wallet.returnPublicKey(), publickey);
-          game_mod.addMove("player_name\t"+game_mod.app.wallet.returnPublicKey()+"\t"+game_mod.game.player_name);
-          game_mod.endTurn();
-
+	  game_mod.registerPlayerName();
         },
     });
 
