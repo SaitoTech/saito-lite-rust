@@ -10,20 +10,11 @@ module.exports = RedSquareGamesTemplate = (app, mod) => {
     let arcade_mod = app.modules.returnModule("Arcade");
     if (arcade_mod) {
 
-
-
       let games = arcade_mod.games.filter(invite => {
-          console.log(JSON.parse(JSON.stringify(invite.msg)));
           let game_initialized = 0;
-
           if (invite.msg.players_needed <= invite.msg.players.length) {
             game_initialized = 1;
           }
-
-          //if (invite.msg.options.max_players > invite.msg.players.length){
-          //  game_initialized = 0;
-          //}
-
           if (game_initialized /*|| arcade_mod.isMyGame(invite, app)*/){
             return false;
           }
@@ -55,3 +46,4 @@ module.exports = RedSquareGamesTemplate = (app, mod) => {
 
     return html;
 }
+

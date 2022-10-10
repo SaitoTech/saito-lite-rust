@@ -12,6 +12,9 @@
   z-index: 10;
 }
 
+.saito-arcade-invite-list .saito-module-x:hover {
+  background-color: #4442;
+}
 
 .redsquare-item-notice {
     box-sizing: border-box;
