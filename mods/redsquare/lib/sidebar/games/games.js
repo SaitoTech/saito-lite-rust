@@ -39,13 +39,13 @@ class RedSquareGames {
 
     Array.from(document.querySelectorAll('.saito-arcade-invite-list .saito-module-x')).forEach(game => {
       game.onclick = (e) => {
-	let x = e.currentTarget.getAttribute("data-id");
+      	let x = e.currentTarget.getAttribute("data-id");
         let click_me = "saito-module-action-"+x;
         document.getElementById(click_me).click();
       }
     });
 
-    Array.from(document.querySelectorAll('.saito-module-action.join')).forEach(game => {
+    Array.from(document.querySelectorAll('.saito-module-action.join, .saito-module-action.details')).forEach(game => {
       game.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
