@@ -84,9 +84,12 @@ class RedSquare extends ModTemplate {
         setInterval(() => {
           if (this.viewing == "feed") {
             this.fetchNewTweets(app, this);
-            this.fetchStatsUpdate(app, this);
           }
-        }, 45000)
+        }, 45000);
+        //Query tweets every 30 seconds
+        setInterval(() => {
+          this.fetchStatsUpdate(app, this);
+        }, 37000);
       }
     }
   }
@@ -258,7 +261,7 @@ class RedSquare extends ModTemplate {
   }
 
   addTweetAndBroadcastRenderFamilyRequest(app, mod, tweet, updateTweet = false) {
-    
+
     let tmp = [];
 
     // remove tweets from thread and add to tmp
@@ -272,59 +275,59 @@ class RedSquare extends ModTemplate {
     tmp.push(tweet);
 
     if (tmp.length > 0) {
-    // update updated times to now.
-    let ts = new Date().getTime();
-    tmp.forEach(twt => {
-      twt.updated_at = ts;
-    });
+      // update updated times to now.
+      let ts = new Date().getTime();
+      tmp.forEach(twt => {
+        twt.updated_at = ts;
+      });
 
-    //order thread for display
-    thread = [];
+      //order thread for display
+      thread = [];
 
-    //move tweets from tmp to thread in order
-    let h = tmp.length;
-    while (h > 0) {
-      var action = 0;
-      //find the root
-      for (let i = 0; i < tmp.length; i++) {
-        if (tmp[i].tx.transaction.sig == tmp[i].parent_id) {
-          thread.push(tmp[i]);
-          tmp.splice(i, 1);
-          h = tmp.length;
-          action++
-          break;
-        }
-        //add all the branches
-        for (let j = 0; j < thread.length; j++) {
-          if (thread[j].parent_id == tmp[i].parent_id) {
-            if (thread[j].created_at < tmp[i].created_at) {
-              thread.splice(j, 0, tmp[i]);
-              tmp.splice(i, 1);
-              h = tmp.length;
-              action++;
-              break;
+      //move tweets from tmp to thread in order
+      let h = tmp.length;
+      while (h > 0) {
+        var action = 0;
+        //find the root
+        for (let i = 0; i < tmp.length; i++) {
+          if (tmp[i].tx.transaction.sig == tmp[i].parent_id) {
+            thread.push(tmp[i]);
+            tmp.splice(i, 1);
+            h = tmp.length;
+            action++
+            break;
+          }
+          //add all the branches
+          for (let j = 0; j < thread.length; j++) {
+            if (thread[j].parent_id == tmp[i].parent_id) {
+              if (thread[j].created_at < tmp[i].created_at) {
+                thread.splice(j, 0, tmp[i]);
+                tmp.splice(i, 1);
+                h = tmp.length;
+                action++;
+                break;
+              }
             }
           }
         }
+        if (action == 0) {
+          h = -1;
+          break;
+        }
       }
-      if (action == 0) {
-        h = -1;
-        break;
-      }
-    }
 
-    thread.forEach(twt => {
-      console.log(twt.created_at + " - " + twt.updated_at + " - " + twt.parent_id)
-    })
+      thread.forEach(twt => {
+        console.log(twt.created_at + " - " + twt.updated_at + " - " + twt.parent_id)
+      })
 
-    thread.reverse();
+      thread.reverse();
 
-    //add to this.tweets
-    this.tweets = thread.concat(this.tweets);
-    
-    //call for a general render
-    mod.app.connection.emit('tweet-render-feed-request');
-    //mod.app.connection.emit('tweet-render-request', tweet, !updateTweet);
+      //add to this.tweets
+      this.tweets = thread.concat(this.tweets);
+
+      //call for a general render
+      mod.app.connection.emit('tweet-render-feed-request');
+      //mod.app.connection.emit('tweet-render-request', tweet, !updateTweet);
 
     } else {
       mod.app.connection.emit('tweet-render-request', tweet, !updateTweet);
@@ -703,7 +706,7 @@ class RedSquare extends ModTemplate {
   ///////////////////////////////////////
   // fetching curated tweets from peer //
   ///////////////////////////////////////
-  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet=false) {
+  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -847,11 +850,39 @@ class RedSquare extends ModTemplate {
     let obj = document.querySelector(".redsquare-list");
 
     if (obj) {
-      let id_list = "";
+      let id_list = '("';
       obj.querySelectorAll(".redsquare-item").forEach(item => {
-        id_list += item.dataset.id + ", ";
+        id_list += item.dataset.id + '", "';
       });
+      id_list = id_list.slice(0, -3) + ");";
       console.log(id_list);
+      let sql = "select num_likes, num_retweets, num_replies, id, sig from tweets where num_likes + num_retweets + num_replies > 0 and sig in " + id_list;
+      app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
+        "RedSquare",
+        sql,
+        async (res) => {
+          const tweets = [];
+          if (res.rows) {
+            res.rows.forEach(row => {
+              let tweet_id = "tweet-box-" + row.sig;
+              let obj = document.getElementById(tweet_id);
+              if (obj) {
+                if (obj.querySelector('.redsquare-tweet-tools')) {
+                  if (row.num_likes > parseInt(obj.querySelector(".tweet-tool-like-count-" + row.sig).innerHTML)) {
+                    obj.querySelector(".tweet-tool-like-count-" + row.sig).innerHTML = row.num_likes;
+                  }
+                  if (row.num_replies > parseInt(obj.querySelector(".tweet-tool-comment-count-" + row.sig).innerHTML)) {
+                    obj.querySelector(".tweet-tool-comment-count-" + row.sig).innerHTML = row.num_replies;
+                  }
+                  if (row.num_retweets > parseInt(obj.querySelector(".tweet-tool-retweet-count-" + row.sig).innerHTML)) {
+                    obj.querySelector(".tweet-tool-retweet-count-" + row.sig).innerHTML = row.num_retweets;
+                  }
+                }
+              }
+            });
+          }
+        }
+      );
     }
   }
 
@@ -973,7 +1004,7 @@ class RedSquare extends ModTemplate {
         this.addNotification(app, this, tx);
       }
 
-     this.newTweets.push(tweet);
+      this.newTweets.push(tweet);
       if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
         document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
       }
