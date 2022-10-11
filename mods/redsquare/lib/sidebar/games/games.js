@@ -47,24 +47,17 @@ class RedSquareGames {
 
     Array.from(document.querySelectorAll('.saito-module-action.join, .saito-module-action.details')).forEach(game => {
       game.onclick = (e) => {
-        e.preventDefault();
+
+        //Prevent double rendering from overlapping selectors
         e.stopImmediatePropagation();
+
         let game_id = e.currentTarget.getAttribute("data-id");
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
 
-        //if (game_cmd == "join") {
-          let arcade_mod = app.modules.returnModule("Arcade");
-          if (arcade_mod) {
-            for (let i = 0; i < arcade_mod.games.length; i++) {
-              if (arcade_mod.games[i].transaction.sig == game_id){
+        let saito_mod_detials_overlay = new SaitoModuleOverlay(app, mod);
 
-                let saito_mod_detials_overlay = new SaitoModuleOverlay(this.app, this.mod);
-                saito_mod_detials_overlay.action = game_cmd;
-                saito_mod_detials_overlay.render(this.app, this.mod, arcade_mod.games[i]);
+        saito_mod_detials_overlay.render(app, app.modules.returnModule("Arcade"), game_id, game_cmd);
               
-              }
-            }    
-          }
       }
     }); 
   

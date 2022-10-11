@@ -5,6 +5,7 @@
 .league-details-overlay {
   width: 100%;
   min-width: min(600px, 100vw);
+  max-height: 95vh;
   border: 1px solid var(--saito-cyber-grey);
   border-radius: 5px;
   background: var(--saito-cyber-black);
