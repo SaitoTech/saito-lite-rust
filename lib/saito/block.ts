@@ -317,30 +317,53 @@ class Block {
     //
     // return obj w/ default values
     //
-    const cv: any = {};
-
-    cv.total_fees = BigInt(0);
-    cv.ft_num = 0;
-    cv.gt_num = 0;
-    cv.it_num = 0;
-    cv.ft_idx = 0;
-    cv.gt_idx = 0;
-    cv.it_idx = 0;
-    cv.expected_difficulty = 1;
-    cv.total_rebroadcast_nolan = BigInt(0);
-    cv.total_rebroadcast_fees_nolan = BigInt(0);
-    cv.total_rebroadcast_staking_payouts_nolan = BigInt(0);
-    cv.total_rebroadcast_slips = 0;
-    cv.nolan_falling_off_chain = BigInt(0);
-    cv.rebroadcast_hash = "";
-    cv.staking_treasury = BigInt(0);
-    cv.rebroadcasts = new Array<Transaction>();
-    cv.block_payouts = [];
-    cv.fee_transaction = null;
-    cv.avg_income = BigInt(0);
-    cv.avg_variance = BigInt(0);
-    cv.avg_atr_income = BigInt(0);
-    cv.avg_atr_variance = BigInt(0);
+    const cv: {
+      total_rebroadcast_staking_payouts_nolan: bigint;
+      staking_treasury: bigint;
+      total_fees: bigint;
+      gt_num: number;
+      avg_income: bigint;
+      ft_num: number;
+      rebroadcast_hash: string;
+      block_payouts: any[];
+      avg_atr_income: bigint;
+      avg_atr_variance: bigint;
+      it_num: number;
+      fee_transaction: Transaction | null;
+      avg_variance: bigint;
+      expected_difficulty: number;
+      ft_idx: number;
+      total_rebroadcast_slips: number;
+      rebroadcasts: Transaction[];
+      it_idx: number;
+      gt_idx: number;
+      nolan_falling_off_chain: bigint;
+      total_rebroadcast_fees_nolan: bigint;
+      total_rebroadcast_nolan: bigint;
+    } = {
+      total_fees: BigInt(0),
+      ft_num: 0,
+      gt_num: 0,
+      it_num: 0,
+      ft_idx: 0,
+      gt_idx: 0,
+      it_idx: 0,
+      expected_difficulty: 1,
+      total_rebroadcast_nolan: BigInt(0),
+      total_rebroadcast_fees_nolan: BigInt(0),
+      total_rebroadcast_staking_payouts_nolan: BigInt(0),
+      total_rebroadcast_slips: 0,
+      nolan_falling_off_chain: BigInt(0),
+      rebroadcast_hash: "",
+      staking_treasury: BigInt(0),
+      rebroadcasts: new Array<Transaction>(),
+      block_payouts: [],
+      fee_transaction: null,
+      avg_income: BigInt(0),
+      avg_variance: BigInt(0),
+      avg_atr_income: BigInt(0),
+      avg_atr_variance: BigInt(0),
+    };
 
     //
     // calculate total fees and indices
@@ -903,14 +926,14 @@ class Block {
     //
     // set treasury
     //
-    if (cv.nolan_falling_off_chain !== 0) {
+    if (cv.nolan_falling_off_chain !== BigInt(0)) {
       this.block.treasury = previous_block_treasury + cv.nolan_falling_off_chain;
     }
 
     //
     // set staking treasury
     //
-    if (cv.staking_treasury !== 0) {
+    if (cv.staking_treasury !== BigInt(0)) {
       let adjusted_staking_treasury = previous_block_staking_treasury;
       if (cv.staking_treasury < 0) {
         const x: bigint = cv.staking_treasury * BigInt(-1);
@@ -1573,9 +1596,9 @@ class Block {
       let adjusted_staking_treasury = previous_block.returnStakingTreasury();
       const cv_st = cv.staking_treasury;
       if (cv_st < BigInt(0)) {
-        const x = cv_st * -1;
+        const x: bigint = cv_st * BigInt(-1);
         if (adjusted_staking_treasury > x) {
-          adjusted_staking_treasury = adjusted_staking_treasury - BigInt(x);
+          adjusted_staking_treasury = adjusted_staking_treasury - x;
         } else {
           adjusted_staking_treasury = BigInt(0);
         }
