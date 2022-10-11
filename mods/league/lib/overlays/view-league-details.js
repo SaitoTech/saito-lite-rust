@@ -26,6 +26,7 @@ class ViewLeagueDetails {
         playerChallenge.style.display = "block";
       }
     });
+
   }
 
   render(app, mod, league) {
