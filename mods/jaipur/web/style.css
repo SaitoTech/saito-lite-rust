@@ -25,19 +25,29 @@ body {
 }
 
 .jaipur_board{
-  display: flex;
+  /*display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
+  */
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(80px, 1fr) 4fr;
+  align-items: center;
+  grid-gap: 15px;
+
   max-height: 60vh;
   max-width: 100vw;
+  min-width: 80vw;
   position: absolute;
-  top: 20vh;
+  top: 30vh;
+
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.jaipur_board > div{
+/*.jaipur_board > div{
   margin: 15px;
-}
+}*/
 
 .pb_sub_info{
   font-size: 0.8em;
@@ -49,40 +59,43 @@ body {
 }
 .bonus_tokens{
   display: grid;
-  grid-template-columns: repeat(3, 70px);
-  grid-template-rows: repeat(3, 70px);
+  grid-template-columns: repeat(3, minmax(40px, 1fr));
+  grid-template-rows: repeat(3, minmax(40px, 1fr));
   width: fit-content;
   height: fit-content;
 }
 
 .token{
   max-width: 70px;
+  width: 100%;
 }
 
 .card_count{
-  width: 146px;
-  height: 146px;
-  background-size: cover;
+  width: 100%;
+  height: auto;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  font-size: 96px;
-  line-height: 146px;
+  font-size: min(6vw,80px);
+  line-height: 8vw;
   text-align: center;
   text-shadow: 1px 1px 2px black;  
   position: relative;
 }
 
+
 .card_count.disabled{
   filter: brightness(0.35);  
+}
+
+.draw_decks{
+  max-width: 150px;
 }
 
 #draw{
   color: maroon;
 }
 
-#discard{
-  width: 146px;
-}
 
 #discard .card{
   width: 100%;
@@ -90,8 +103,10 @@ body {
 
 .market{
   display: grid;
-  grid-template-columns: repeat(5, minmax(50px, 1fr));
-  max-width: 700px;
+  grid-template-columns: repeat(5, fit-content(150px));
+  max-width: 750px;
+  min-width: max(300px, 50vw);
+
 }
 
 .market .card{
@@ -109,6 +124,7 @@ body {
 }
 
 .camel_train{
+  width: 150px;
   color: cadetblue;
 }
 
