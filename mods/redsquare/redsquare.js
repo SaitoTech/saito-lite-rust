@@ -83,7 +83,8 @@ class RedSquare extends ModTemplate {
         //Query tweets every 30 seconds
         setInterval(() => {
           if (this.viewing == "feed") {
-            this.fetchNewTweets(app, this)
+            this.fetchNewTweets(app, this);
+            this.fetchStatsUpdate(app, this);
           }
         }, 45000)
       }
@@ -841,6 +842,20 @@ class RedSquare extends ModTemplate {
       }
     );
   }
+
+  fetchStatsUpdate(app, mod) {
+    let obj = document.querySelector(".redsquare-list");
+
+    if (obj) {
+      let id_list = "";
+      obj.querySelectorAll(".redsquare-item").forEach(item => {
+        id_list += item.dataset.id + ", ";
+      });
+      console.log(id_list);
+    }
+  }
+
+
 
 
 
