@@ -503,6 +503,7 @@ span.redsquare-home-red-square+span {
   flex-wrap: wrap;
   flex-grow: revert;
   width: 100%;
+  background-position: center;
 }
 
 .redsquare-image-container div {
