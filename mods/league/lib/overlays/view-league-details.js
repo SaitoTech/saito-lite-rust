@@ -7,11 +7,14 @@ class ViewLeagueDetails {
   constructor(app){
     this.app = app;
 
-    var s = document.createElement("link");
-    s.rel = "stylesheet";
-    s.type = "text/css";
-    s.href = "/league/view-league-details.css";
-    document.querySelector('head link').after(s);
+    if (!document.getElementById("view-league-details-css-link")){
+      var s = document.createElement("link");
+      s.id = "view-league-details-css-link";
+      s.rel = "stylesheet";
+      s.type = "text/css";
+      s.href = "/league/view-league-details.css";
+      document.querySelector('head link').after(s);
+    }
 
     app.connection.on("relay-is-online", (pkey)=>{
       let playerRow = document.querySelector(`.newfriend[data-id="${pkey}"]`);
