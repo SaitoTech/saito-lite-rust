@@ -855,7 +855,7 @@ class RedSquare extends ModTemplate {
         id_list += item.dataset.id + '", "';
       });
       id_list = id_list.slice(0, -3) + ");";
-      console.log(id_list);
+      //console.log(id_list);
       let sql = "select num_likes, num_retweets, num_replies, id, sig from tweets where num_likes + num_retweets + num_replies > 0 and sig in " + id_list;
       app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
         "RedSquare",
