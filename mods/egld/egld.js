@@ -25,50 +25,18 @@ class EGLDModule extends CryptoModule {
     this.categories = "Cryptocurrency";
     this.balance = 0
     this.egld = {}
-    this.base_url = ""
+    this.base_url = "https://elrond-api-devnet.public.blastapi.io"
     // this.base_url = "https://elrond.saito.io/0"
     this.api_network_provider = "https://devnet-api.elrond.com"
-    this.has_loaded = false
   }
 
 
   async initialize(){
-       if(!this.has_loaded){
-        try {
-          const res = await axios({
-            method: "get",
-            url: `https://elrond.saito.io/0/hello`
-           })
-           this.base_url = "https://elrond.saito.io/0"
-        } catch (error) {
-          this.base_url = "https://elrond-api-devnet.public.blastapi.io"
-        }
-        finally {
-          this.createEGLDAccount();
-          this.networkProvider = new ApiNetworkProvider(this.api_network_provider)
-          let address = this.egld.keyfile.bech32;
-          await this.updateBalance(address);
-          await this.updateAddressNonce(address);
-          console.log('base url', this.base_url);
-          this.has_loaded = true;
-        }
-       }
-
-
-       // check saito api status periodically, use fallback if it fails
-       setInterval(async ()=> {
-        try {
-          const res = await axios({
-            method: "get",
-            url: `https://elrond.saito.io/0/hello`
-           })
-           this.base_url = "https://elrond.saito.io/0"
-        } catch (error) {
-          this.base_url = "https://elrond-api-devnet.public.blastapi.io"
-        }
-       }, 60000)
-
-   
+        this.createEGLDAccount();
+        this.networkProvider = new ApiNetworkProvider(this.api_network_provider)
+        let address = this.egld.keyfile.bech32;
+        await this.updateBalance(address);
+        await this.updateAddressNonce(address);
 
   }
 
@@ -78,7 +46,7 @@ class EGLDModule extends CryptoModule {
 
   async sendPayment(amount, recipient,  unique_hash=""){
     let from = this.egld.keyfile.bech32
-    let config = await this.networkProvider.getNetworkConfig();
+    let config = await this.networkProvider.getNetworkConfig()
     let nonce = await this.nonce
     console.log('nonce ', nonce)
     let tokenPayment = TokenPayment.egldFromAmount(String(amount));
