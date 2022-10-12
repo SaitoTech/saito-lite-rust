@@ -22,9 +22,9 @@ module.exports = (app, mod) => {
       options_html += `
         </select>
           </div>
-          <div id="killValue_wrapper" class="overlay-input" style="display:none;">
-            <label for="killValue">Cost Per Kill:</label>
-            <input type="number" id="killValue" list="suggestedChipValues" name="killValue" min="0" value="0" step="1">
+          <div id="stake_wrapper" class="overlay-input" style="display:none;">
+            <label for="stake">Cost Per Kill:</label>
+            <input type="number" id="stake" list="suggestedChipValues" name="stake" min="0" value="0" step="1">
           </div>
           <datalist id="suggestedChipValues">
             <option value="0.01">

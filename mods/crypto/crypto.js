@@ -1,5 +1,6 @@
 const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
+const CryptoOverlay = require('./lib/overlay/main');
 
 class Crypto extends ModTemplate {
 
@@ -11,6 +12,8 @@ class Crypto extends ModTemplate {
     this.name = "Crypto";
     this.description = "Modifies the Game-Menu to add an option for managing in-game crypto";
     this.categories = "Utility Entertainment";
+
+    this.overlay = new CryptoOverlay(app, this);
 
   }
   
@@ -25,7 +28,7 @@ class Crypto extends ModTemplate {
       	    callback : async function(app, game_mod) {
 	      let cm = app.modules.returnModule("Crypto");
 	      let game_id = game_mod.game.id;
-	      cm.enableCrypto(game_id);
+	      cm.enableCrypto(game_mod, game_id);
 	    }
           },
 	} ]
@@ -35,14 +38,14 @@ class Crypto extends ModTemplate {
   }
 
 
-  enableCrypto(game_id) {
-    alert("Enabling Crypto:" + game_id);
+  enableCrypto(game_mod, game_id) {
+    alert("Proposing Game Stake!");
+    game_mod.proposeGameStake("TRX", "0.2");
+    alert("Proposed!");
+    //this.overlay.render(this.app, this);
   }
 
 }
 
-
-
-
-module.exports = Screenshot;
+module.exports = Crypto;
 
