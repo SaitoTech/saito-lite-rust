@@ -751,9 +751,17 @@ class Browser {
       let element_start_top = 0;
 
       element_to_drag.onmousedown = function (e) {
+        let resizeable = ["both", "vertical", "horizontal"];
+        //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
+        if(resizeable.indexOf(getComputedStyle(e.target).resize) > -1 || resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1) {
+          if (e.offsetX > (e.target.offsetWidth - 20) && e.offsetY > (e.target.offsetHeight -20)) {return;}
+        }
+
         e = e || window.event;
 
         console.log("DRAG MOUSEDOWN");
+        console.log(e.clientX);
+        console.log(e.offsetX);
 
         if (
           !e.currentTarget.id ||
@@ -769,6 +777,7 @@ class Browser {
         const rect = element_to_move.getBoundingClientRect();
         element_start_left = rect.left;
         element_start_top = rect.top;
+
 
         mouse_down_left = e.clientX;
         mouse_down_top = e.clientY;
