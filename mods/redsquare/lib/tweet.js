@@ -726,6 +726,13 @@ console.log("we hit here!");
 
   }
 
+  returnWeightedTime() {
+    let weightedTime = (this.updated_at - Math.pow((this.updated_at - this.created_at), 0.5));
+    return weightedTime;
+  }
+
+
+
 
   ///////////////
   // functions //

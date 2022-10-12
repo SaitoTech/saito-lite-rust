@@ -369,7 +369,7 @@ class RedSquare extends ModTemplate {
 
   orderTweetsByTime(app, mod) {
     this.tweets.sort(function compare(a, b) {
-      if (a.updated_at > b.updated_at) {
+      if (a.returnWeightedTime() > b.returnWeightedTime) {
         return -1;
       } else {
         return 1;
@@ -384,7 +384,7 @@ class RedSquare extends ModTemplate {
       let inc = 36000;
       while (inc < 172800000) {
         this.tweets.sort(function compare(a, b) {
-          if (a.updated_at + (a.has_image * inc) > b.updated_at) {
+          if (a.returnWeightedTime() + (a.has_image * inc) > b.returnWeightedTime()) {
             return -1;
           } else {
             return 1;
@@ -398,6 +398,8 @@ class RedSquare extends ModTemplate {
       }
     }
   }
+
+
 
 
   initializeHTML(app) {
@@ -424,7 +426,7 @@ class RedSquare extends ModTemplate {
   }
 
 
-  renderMainPage(app, mod, promote_images = true) {
+  renderMainPage(app, mod, promote_images = false) {
     this.reorganizeTweets(app, mod, promote_images);
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
