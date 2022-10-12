@@ -130,7 +130,7 @@ span.redsquare-home-red-square+span {
   border-radius: 0.5rem;
   background-color: var(--saito-white);
   position: relative;
-  width: min-content;
+  width: max-content;
   max-width: 100vw;
   max-height: 95vh;
   overflow-y: auto;
@@ -503,6 +503,7 @@ span.redsquare-home-red-square+span {
   flex-wrap: wrap;
   flex-grow: revert;
   width: 100%;
+  background-position: center;
 }
 
 .redsquare-image-container div {

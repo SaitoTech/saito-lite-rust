@@ -31,7 +31,7 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
           <div style="font-size:0.9em">${msg.step} moves as of ${datetime.hours}:${datetime.minutes}, ${datetime.day} ${datetime.month} ${datetime.year}</div>
           ${playersHtml}
         </div>
-        <div class="gameShortDescription">${makeDescription(app, msg)}</div>
+        <div class="gameShortDescription">${makeDescription(gameModule, msg.msg?.options)}</div>
 	      <div class="gameButtons" style="position:relative;">
           <button data-sig="${msg.game_id}" data-cmd="watch" class="button observe-game-btn">WATCH</button>
           ${gameIndicator}
@@ -44,19 +44,16 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
 }
 
 
-let makeDescription = (app, invite) => {
+let makeDescription = (game_mod, options) => {
 
   let html = '';
 
-  if (invite.msg) {
-    let gameModule = app.modules.returnModule(invite.msg.game);
-    if (gameModule) {
-      let sgoa = gameModule.returnShortGameOptionsArray(invite.msg.options);
-      for (let i in sgoa) {
-        let output_me = 1;
-        if (output_me == 1) {
-          html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i}: </div><div class="gameShortDescriptionValue">${sgoa[i]}</div></div>`;
-        }
+  if (options) {
+    let sgoa = game_mod.returnShortGameOptionsArray(options);
+    for (let i in sgoa) {
+      let output_me = 1;
+      if (output_me == 1) {
+        html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i}: </div><div class="gameShortDescriptionValue">${sgoa[i]}</div></div>`;
       }
     }
   }

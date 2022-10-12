@@ -116,6 +116,19 @@ class Arcade extends ModTemplate {
     }
   }
 
+  returnGameById(game_id){
+    let game = this.games.find((g) => g.transaction.sig == game_id);
+    let gameObj = {
+      id: game_id,
+      game: game.msg.game,
+      options: game.msg.options,
+      players: game.msg.players,
+      players_needed: game.msg.players_needed
+    };
+    return gameObj;
+  }
+
+
   respondTo(type = "") {
     let arcade_mod = this;
     if (type === "invite") {
