@@ -7,9 +7,8 @@ module.exports = (app, mod, publickey, parent_id = "", thread_id = "") => {
 
     ${SaitoUserTemplate(app, mod, publickey, "create a text-tweet or drag-and-drop images...")}
 
-    <div class="saito-emoji-container">
     <textarea rows="7" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="What's happening" cols="60"></textarea>
-    </div>
+
     <input type="hidden" id="parent_id" name="parent_id" value="${parent_id}" />
     <input type="hidden" id="thread_id" name="thread_id" value="${thread_id}" />
 
