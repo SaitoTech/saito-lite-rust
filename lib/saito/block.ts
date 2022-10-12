@@ -6,7 +6,7 @@ import Goldenticket from "./goldenticket";
 import GoldenTicket from "./goldenticket";
 import UtxoSet from "./utxoset";
 
-const BLOCK_HEADER_SIZE = 245;
+const BLOCK_HEADER_SIZE = 301;
 
 export enum BlockType {
   Ghost = 0,
@@ -149,18 +149,18 @@ class Block {
     this.block.merkle = Buffer.from(buffer.slice(85, 117)).toString("hex");
     this.block.signature = Buffer.from(buffer.slice(117, 181)).toString("hex");
 
-    this.block.treasury = this.app.binary.u64FromBytes(buffer.slice(181, 189));
-    this.block.staking_treasury = BigInt(this.app.binary.u64FromBytes(buffer.slice(189, 197)));
-    this.block.burnfee = BigInt(this.app.binary.u64FromBytes(buffer.slice(197, 205)));
+    this.block.treasury = this.app.binary.u128FromBytes(buffer.slice(181, 197));
+    this.block.staking_treasury = BigInt(this.app.binary.u128FromBytes(buffer.slice(197, 213)));
+    this.block.burnfee = BigInt(this.app.binary.u128FromBytes(buffer.slice(213, 229)));
 
     this.block.difficulty = parseInt(
-      this.app.binary.u64FromBytes(buffer.slice(205, 213)).toString()
+      this.app.binary.u64FromBytes(buffer.slice(229, 237)).toString()
     );
 
-    this.block.avg_income = BigInt(this.app.binary.u64FromBytes(buffer.slice(213, 221)));
-    this.block.avg_variance = BigInt(this.app.binary.u64FromBytes(buffer.slice(221, 229)));
-    this.block.avg_atr_income = BigInt(this.app.binary.u64FromBytes(buffer.slice(229, 237)));
-    this.block.avg_atr_variance = BigInt(this.app.binary.u64FromBytes(buffer.slice(237, 245)));
+    this.block.avg_income = BigInt(this.app.binary.u128FromBytes(buffer.slice(237, 253)));
+    this.block.avg_variance = BigInt(this.app.binary.u128FromBytes(buffer.slice(253, 269)));
+    this.block.avg_atr_income = BigInt(this.app.binary.u128FromBytes(buffer.slice(269, 285)));
+    this.block.avg_atr_variance = BigInt(this.app.binary.u128FromBytes(buffer.slice(285, 301)));
 
     let start_of_transaction_data = BLOCK_HEADER_SIZE;
 
@@ -1413,15 +1413,15 @@ class Block {
     const merkle_root = this.app.binary.hexToSizedArray(block_merkle, 32);
     const signature = this.app.binary.hexToSizedArray(block_signature, 64);
 
-    const treasury = this.app.binary.u64AsBytes(this.block.treasury.toString());
-    const staking_treasury = this.app.binary.u64AsBytes(this.block.staking_treasury.toString());
-    const burnfee = this.app.binary.u64AsBytes(this.block.burnfee.toString());
+    const treasury = this.app.binary.u128AsBytes(this.block.treasury.toString());
+    const staking_treasury = this.app.binary.u128AsBytes(this.block.staking_treasury.toString());
+    const burnfee = this.app.binary.u128AsBytes(this.block.burnfee.toString());
     const difficulty = this.app.binary.u64AsBytes(this.block.difficulty);
 
-    const avg_income = this.app.binary.u64AsBytes(this.block.avg_income.toString());
-    const avg_variance = this.app.binary.u64AsBytes(this.block.avg_variance.toString());
-    const avg_atr_income = this.app.binary.u64AsBytes(this.block.avg_atr_income.toString());
-    const avg_atr_variance = this.app.binary.u64AsBytes(this.block.avg_atr_variance.toString());
+    const avg_income = this.app.binary.u128AsBytes(this.block.avg_income.toString());
+    const avg_variance = this.app.binary.u128AsBytes(this.block.avg_variance.toString());
+    const avg_atr_income = this.app.binary.u128AsBytes(this.block.avg_atr_income.toString());
+    const avg_atr_variance = this.app.binary.u128AsBytes(this.block.avg_atr_variance.toString());
 
     const block_header_data = new Uint8Array([
       ...transactions_length,
@@ -1481,14 +1481,14 @@ class Block {
       this.app.binary.hexToSizedArray(this.block.previous_block_hash, 32),
       this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(this.block.creator), 33),
       this.app.binary.hexToSizedArray(this.block.merkle, 32),
-      this.app.binary.u64AsBytes(this.block.treasury.toString()),
-      this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
-      this.app.binary.u64AsBytes(this.block.burnfee.toString()),
+      this.app.binary.u128AsBytes(this.block.treasury.toString()),
+      this.app.binary.u128AsBytes(this.block.staking_treasury.toString()),
+      this.app.binary.u128AsBytes(this.block.burnfee.toString()),
       this.app.binary.u64AsBytes(this.block.difficulty),
-      this.app.binary.u64AsBytes(this.block.avg_income),
-      this.app.binary.u64AsBytes(this.block.avg_variance),
-      this.app.binary.u64AsBytes(this.block.avg_atr_income),
-      this.app.binary.u64AsBytes(this.block.avg_atr_variance),
+      this.app.binary.u128AsBytes(this.block.avg_income),
+      this.app.binary.u128AsBytes(this.block.avg_variance),
+      this.app.binary.u128AsBytes(this.block.avg_atr_income),
+      this.app.binary.u128AsBytes(this.block.avg_atr_variance),
     ]);
   }
 

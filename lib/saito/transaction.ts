@@ -6,7 +6,7 @@ import Hop from "./hop";
 import { Saito } from "../../apps/core";
 
 export const TRANSACTION_SIZE = 93;
-export const SLIP_SIZE = 59;
+export const SLIP_SIZE = 67;
 export const HOP_SIZE = 130;
 
 export enum TransactionType {

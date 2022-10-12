@@ -109,11 +109,11 @@ class Slip {
   deserialize(app:Saito, buffer) {
     this.add = app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
     // this.uuid = Buffer.from(buffer.slice(33, 65)).toString("hex");
-    this.amt = app.binary.u64FromBytes(buffer.slice(33, 41));
-    this.block_id = app.binary.u64FromBytes(buffer.slice(42, 49));
-    this.tx_ordinal = app.binary.u64FromBytes(buffer.slice(49, 57));
-    this.sid = app.binary.u8FromByte(buffer[57]);
-    this.type = app.binary.u8FromByte(buffer[58]);
+    this.amt = app.binary.u128FromBytes(buffer.slice(33, 49));
+    this.block_id = app.binary.u64FromBytes(buffer.slice(49, 57));
+    this.tx_ordinal = app.binary.u64FromBytes(buffer.slice(57, 65));
+    this.sid = app.binary.u8FromByte(buffer[65]);
+    this.type = app.binary.u8FromByte(buffer[66]);
 
     // convert to BigInts
     this.amt = BigInt(this.amt.toString());
@@ -141,11 +141,11 @@ class Slip {
     const block_id = app.binary.u64AsBytes(this.block_id.toString());
     const tx_ordinal = app.binary.u64AsBytes(this.tx_ordinal.toString());
     const slip_ordinal = app.binary.u8AsByte(this.sid);
-    const amount = app.binary.u64AsBytes(this.amt.toString());
+    const amount = app.binary.u128AsBytes(this.amt.toString());
 
     console.debug(`Generating UTXOKey for ${this.block_id}, ${this.tx_ordinal}, ${this.sid}`);
     let arr = new Uint8Array([...publickey, ...block_id, ...tx_ordinal, slip_ordinal, ...amount]);
-    console.assert(arr.length == 58, "UTXO Key Length is not 58");
+    console.assert(arr.length == 66, "UTXO Key Length is not 66");
     this.key = arr.toString();
   }
 
@@ -168,7 +168,7 @@ class Slip {
 
     const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
 
-    const amount = app.binary.u64AsBytes(this.amt.toString());
+    const amount = app.binary.u128AsBytes(this.amt.toString());
     const block_id = app.binary.u64AsBytes(this.block_id.toString());
     const tx_ordinal = app.binary.u64AsBytes(this.tx_ordinal.toString());
     const slip_ordinal = app.binary.u8AsByte(this.sid);
@@ -182,28 +182,28 @@ class Slip {
   serializeInputForSignature(app:Saito) : Uint8Array {
     const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
 
-    const amount = app.binary.u64AsBytes(this.amt.toString());
+    const amount = app.binary.u128AsBytes(this.amt.toString());
     // const block_id = app.binary.u64AsBytes(this.block_id.toString());
     // const tx_ordinal = app.binary.u64AsBytes(this.tx_ordinal.toString());
     const slip_ordinal = app.binary.u8AsByte(this.sid);
     const slip_type = [this.type as number];
 
     let arr = new Uint8Array([...publickey, ...amount, slip_ordinal, ...slip_type]);
-    console.assert(arr.length == 43, "serializeInputForSignature Size is incorrect");
+    console.assert(arr.length == 51, "serializeInputForSignature Size is incorrect");
     return arr;
   }
 
   serializeOutputForSignature(app:Saito) : Uint8Array {
     const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
 
-    const amount = app.binary.u64AsBytes(this.amt.toString());
+    const amount = app.binary.u128AsBytes(this.amt.toString());
     // const block_id = app.binary.u64AsBytes(this.block_id.toString());
     // const tx_ordinal = app.binary.u64AsBytes(this.tx_ordinal.toString());
     const slip_ordinal = app.binary.u8AsByte(this.sid);
     const slip_type = [this.type as number];
 
     let arr = new Uint8Array([...publickey, ...amount, slip_ordinal, ...slip_type]);
-    console.assert(arr.length == 43, "serializeOutputForSignature Size is incorrect");
+    console.assert(arr.length == 51, "serializeOutputForSignature Size is incorrect");
     return arr;
   }
 
