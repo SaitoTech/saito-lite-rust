@@ -503,7 +503,6 @@ span.redsquare-home-red-square+span {
   flex-wrap: wrap;
   flex-grow: revert;
   width: 100%;
-  background-position: center;
 }
 
 .redsquare-image-container div {
@@ -513,6 +512,7 @@ span.redsquare-home-red-square+span {
   height: 40rem;
   background-size: cover !important;
   background-repeat: no-repeat;
+  background-position: center;
 }
 
 .redsquare-image-container div.tweet-multiple-img {
