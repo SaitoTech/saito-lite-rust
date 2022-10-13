@@ -39,7 +39,7 @@ class Crypto extends ModTemplate {
             game_mod.menu.hideSubMenus();
 	    let cm = app.modules.returnModule("Crypto");
 	    let game_id = game_mod.game.id;
-	    cm.enableCrypto(game_mod, game_id, a[i].ticker);
+	    cm.enableCrypto(game_mod, game_id, ac[i].ticker);
           }
         };
       }
@@ -51,8 +51,20 @@ class Crypto extends ModTemplate {
 
   enableCrypto(game_mod, game_id, ticker) {
     alert("Proposing Game Stake!");
+
+    //
+    // restore original pre-move state
+    //
+    // this ensures if we are halfway through a move that we will
+    // return to the game in a clean state after we send the request
+    // to our opponent for shifting game modes.
+    //
+    game_mod.game = game_mod.game_state_pre_move;
+    game_mod.game.turn = [];
+    game_mod.moves = [];
     game_mod.proposeGameStake(ticker, "0.2");
-    alert("Proposed!");
+    alert("Proposed Stake - Reloading!");
+    location.reload();
     //this.overlay.render(this.app, this);
   }
 
