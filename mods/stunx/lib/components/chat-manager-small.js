@@ -136,11 +136,11 @@ class ChatManagerSmall {
     
             switch (state) {
                 case "disconnected":
-                    delete this.video_boxes[peer];
-                    if (Object.keys(this.video_boxes).length === 1) {
+                    // delete this.video_boxes[peer];
+                    // if (Object.keys(this.video_boxes).length === 1) {
                         this.disconnect();
                         // siteMessage("Video call ended");
-                    }
+                    // }
                     console.log("video boxes: after ", this.video_boxes);
                     break;
     
