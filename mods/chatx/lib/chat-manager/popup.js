@@ -1,3 +1,4 @@
+const SaitoEmoji = require("../../../../lib/saito/new-ui/saito-emoji/saito-emoji");
 const ChatPopupTemplate = require("./popup.template");
 class ChatPopup {
 
@@ -23,6 +24,8 @@ class ChatPopup {
         } else {
           if (!this.hasRendered) {
             app.browser.replaceElementById(ChatPopupTemplate(app, mod, gid), divid);
+            this.emoji = new SaitoEmoji(app, mod, `chat-input-${gid}`);
+            this.emoji.render(app, mod);
             this.hasRendered = true;
             app.browser.addElementToSelector(`${mod.returnChatBody(gid)}`, `.chat-body-${gid}`);
           }
@@ -62,6 +65,8 @@ class ChatPopup {
       if (group_id != "" && this.group_id == "") { this.group_id = group_id; }
       if (!document.getElementById(`chat-container-${this.group_id}`)) {
         app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
+        this.emoji = new SaitoEmoji(app, mod, `chat-input-${this.group_id}`);
+        this.emoji.render(app, mod);
         app.browser.makeDraggable(`chat-header-${this.group_id}`, `chat-header-${this.group_id}`);
         this.attachEvents(app, mod, this.group_id);
       } else {

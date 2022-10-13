@@ -10,7 +10,6 @@ class RedSquareGames {
     this.app = app;
     this.mod = mod;
     this.selector = selector;
-    this.blockRender = false;
 
     app.connection.on("game-invite-list-update", () => {
         //console.log("Arcade update received");
@@ -20,8 +19,6 @@ class RedSquareGames {
   }
 
   render(app, mod, selector="") {
-    if (this.blockRender) { return; }
-
     if (selector != "") {
       this.selector = selector;
     }
