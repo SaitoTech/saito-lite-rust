@@ -6,7 +6,7 @@ module.exports = DebugAppspaceMainTemplate = () => {
       <div id="saito-page-header-text" class="saito-page-header-text">This module permits exploring the contents of your Saito Wallet. Please remember to backup your wallet if you wish to keep it over time.</div>
     </div>
 
-  <div style="clear:both;padding-top:10px;padding-bottom:10px;" id="appspace-debug" class="appspace-debug"></div>
+  <div id="appspace-debug" class="appspace-debug"></div>
 
   `;
 }
