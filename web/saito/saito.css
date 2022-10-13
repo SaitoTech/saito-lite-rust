@@ -75,7 +75,7 @@ saito overlay
 @import url("./css-imports/saito-modal.css");
 
 
-
+@import url("./css-imports/saito-emoji.css");
 /* ----------------------------------------------------------------
 
 saito header
@@ -116,6 +116,7 @@ saito loader
 /* ----------------------------------------------------------------
 
 
+
 /* ----------------------------------------------------------------
 global saito Borders
 -----------------------------------------------------------------*/
@@ -125,3 +126,5 @@ global saito Borders
 last loaded show body
 -----------------------------------------------------------------*/
 @import url("./css-imports/saito-last.css");
+
+

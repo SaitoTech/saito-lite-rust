@@ -45,6 +45,7 @@
     "curve25519-js": "^0.0.4",
     "dompurify": "^2.3.5",
     "elo-rank": "^1.0.4",
+    "emoji-picker-element": "^1.12.1",
     "exports-loader": "^0.7.0",
     "express": "^4.17.1",
     "fastest-stable-stringify": "^2.0.2",
