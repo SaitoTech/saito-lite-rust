@@ -14,14 +14,14 @@
 // }
 const ChatManagerSmallTemplate = () => {
   return `
-          <li>
-            <i class="video-chat-manager audio_control fa fa-microphone game-menu-option" aria-hidden="true"></i>
+          <li class="video-chat-manager">
+            <i class="audio_control fa fa-microphone game-menu-option" aria-hidden="true"></i>
           </li>
-          <li>
-            <i class="video-chat-manager video_control fas fa-video game-menu-option" aria-hidden="true"></i>
+          <li class="video-chat-manager">
+            <i class="video_control fas fa-video game-menu-option" aria-hidden="true"></i>
           </li>
-          <li>
-            <button style="margin:0" class="video-chat-manager disconnect_btn game-menu-option ">Disconnect</div>
+          <li class="video-chat-manager">
+            <button style="margin:0; padding: .8rem;" class="disconnect_btn game-menu-option ">Disconnect</div>
           </li>
 
            `

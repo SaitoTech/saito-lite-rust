@@ -52,7 +52,7 @@ class ChatManagerSmall {
 
         document.querySelector('.disconnect_btn').onclick = (e) => {
             this.disconnect();
-            siteMessage("You have been disconnected", 5000);
+            // siteMessage("You have been disconnected", 5000);
         }
 
         document.querySelector('.audio_control').onclick = (e) => {
@@ -126,25 +126,31 @@ class ChatManagerSmall {
 
 
     updateConnectionState(peer, state) {
-        console.log(state, this.video_boxes[peer].video_box);
-        if (!this.video_boxes[peer].video_box) {
-            return;
-        }
-        this.video_boxes[peer].video_box.handleConnectionStateChange(state);
 
-        switch (state) {
-            case "disconnected":
-                delete this.video_boxes[peer];
-                if (Object.keys(this.video_boxes).length === 1) {
-                    this.disconnect();
-                    siteMessage("Video call ended")
-                }
-                console.log("video boxes: after ", this.video_boxes);
-                break;
-
-            default:
-                break;
+        try {
+            console.log(state, this.video_boxes[peer].video_box);
+            if (!this.video_boxes[peer].video_box) {
+                return;
+            }
+            this.video_boxes[peer].video_box.handleConnectionStateChange(state);
+    
+            switch (state) {
+                case "disconnected":
+                    delete this.video_boxes[peer];
+                    if (Object.keys(this.video_boxes).length === 1) {
+                        this.disconnect();
+                        // siteMessage("Video call ended");
+                    }
+                    console.log("video boxes: after ", this.video_boxes);
+                    break;
+    
+                default:
+                    break;
+            } 
+        } catch (error) {
+            console.log(error);
         }
+
 
 
 

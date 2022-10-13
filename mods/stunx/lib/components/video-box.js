@@ -85,9 +85,9 @@ class VideoBox {
                     this.renderStream({ muted: null });
                 }
                 break;
-            case "disconnected":
-                document.querySelector(`#stream${this.stream_id}`).parentElement.remove(document.querySelector(`#stream${this.stream_id}`));
-                break;
+            // case "disconnected":
+            //     document.querySelector(`#stream${this.stream_id}`).parentElement.remove(document.querySelector(`#stream${this.stream_id}`));
+            //     break;
             case "failed":
                 document.querySelector('#connection-message').textContent = "<p>Failed to connect </p>"
                 break;
