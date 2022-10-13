@@ -358,7 +358,11 @@ console.log("AAAAA");
         mod.viewing = "feed";
       }
 
-      let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
+      let target = mod.returnTweet(app, mod, tweet_sig_id);
+
+      //let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${tweet_sig_id}' OR parent_id = '${tweet_sig_id}' OR thread_id = '${tweet_sig_id}'`;
+
       
       // false - don't track tweet
       mod.fetchTweets(app, mod, sql, function (app, mod) {
@@ -380,6 +384,7 @@ console.log("AAAAA");
       window.history.pushState({}, document.title, tweetUrl);
 
       this.saito_loader.remove();
+
     }
 
 
