@@ -8,7 +8,6 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
       let defaultPlayers = min;
       if (mod.opengame){
         defaultPlayers = max;
-        //selection = `<label for="game-wizard-players-select">Max Number of Players:</label>`;
         selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${max}">${max} player</div>`;
       }else{
         selection += `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
@@ -53,7 +52,7 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
       }else{
         html += `<div class="dynamic_button saito-select">
                  <div class="dynamic_button_options saito-slct">
-                    <button type="button" id="game-invite-btn" class="game-invite-btn" data-type="open">Create ${(invite.msg.league)?"League":"Open"} Game</button>
+                    <button type="button" id="game-invite-btn" class="game-invite-btn" data-type="public">Create ${(invite.msg.league)?"League":"Open"} Game</button>
                     <button type="button" id="game-invite-btn" class="game-invite-btn tip" data-type="private">Create Private Game<div class="tiptext">Other players on the Saito network will not see this game and can only join if you provide them the invitation link</div></button>
                  </div>
                  </div>

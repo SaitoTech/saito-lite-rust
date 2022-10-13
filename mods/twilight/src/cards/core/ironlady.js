@@ -5,6 +5,7 @@
     //
     if (card == "ironlady") {
 
+      this.updateLog("US gains 1 VP from The Iron Lady");
       this.game.state.vp += 1;
       this.updateVictoryPoints();
 

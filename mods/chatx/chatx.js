@@ -755,6 +755,7 @@ class Chatx extends ModTemplate {
         let active_module = this.app.modules.returnActiveModule();
         if (active_module.request_no_interrupts == true) {
             // if the module has ASKED leave it alone
+console.log("ASKED NOT TO INTERRUPT!");
             return;
         }
 
@@ -773,6 +774,7 @@ class Chatx extends ModTemplate {
             group_id = group.id;
         }
 
+console.log("BROADCASTING CHAT RENDER REQUEST: " + group_id);
         this.app.connection.emit('chat-render-request', group_id);
     }
 

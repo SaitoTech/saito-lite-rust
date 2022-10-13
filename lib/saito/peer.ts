@@ -153,7 +153,6 @@ class Peer {
     //
     // respect prohibitions
     //
-    // console.debug("peer.sendRequest : " + message);
     // block as Block.serialize(BlockType.Header)
     if (message === "SNDBLOCK") {
       this.app.networkApi.send(this.socket, "SNDBLOCK", data);
@@ -206,7 +205,6 @@ class Peer {
 
     if (this.socket && this.socket.readyState === this.socket.OPEN) {
       this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer).then(() => {
-        //console.debug("message sent with sendRequest");
       });
     } else {
       this.sendRequestWithCallbackAndRetry(message, data);
@@ -277,7 +275,6 @@ class Peer {
     initialDelay = 1000,
     delayFalloff = 1.3
   ) {
-    //console.debug("sendRequestWithCallbackAndRetry");
     const callbackWrapper = (res) => {
       if (!res.err) {
         if (callback != null) {

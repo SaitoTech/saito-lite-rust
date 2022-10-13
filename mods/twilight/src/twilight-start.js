@@ -401,6 +401,12 @@ class Twilight extends GameTemplate {
         this.saveGamePreference("lang", "zh");
       }
     }
+    if (app.browser.returnPreferredLanguage() === "es") {
+      if (!app?.options?.gameprefs?.lang) {
+        this.lang = "zh";
+        this.saveGamePreference("lang", "es");
+      }
+    }
 
     // required here so menu will be proper
     try {
@@ -579,13 +585,23 @@ class Twilight extends GameTemplate {
         setTimeout(function() { window.location.reload(); }, 1000);
       }
     });
-  this.menu.addSubMenuOption("game-language", {
+    this.menu.addSubMenuOption("game-language", {
       text: `简体中文 ${(this.lang=="zh")?"✔":""}`,
       id: "game-language-zh",
       callback: function(app, game_mod){
         game_mod.displayModal("语言设定", "卡牌语言改成简体中文");
         game_mod.lang = "zh";
         game_mod.saveGamePreference("lang", "zh");
+        setTimeout(function() { window.location.reload(); }, 1000);
+      }
+    });
+    this.menu.addSubMenuOption("game-language", {
+      text: `Español ${(this.lang=="es")?"✔":""}`,
+      id: "game-language-es",
+      callback: function(app, game_mod){
+        game_mod.displayModal("");
+        game_mod.lang = "es";
+        game_mod.saveGamePreference("lang", "es"); 
         setTimeout(function() { window.location.reload(); }, 1000);
       }
     });
@@ -8396,11 +8412,11 @@ playerTurnHeadlineSelected(card, player) {
 
 
   returnSingularGameOption(){
-    return `<div><label for="player1">Play as:</label>
+    return `<div>
             <select name="player1">
-              <option value="random" selected>random</option>
-              <option value="ussr">USSR</option>
-              <option value="us">US</option>
+              <option value="random" selected>random sides</option>
+              <option value="ussr">play as USSR</option>
+              <option value="us">play as US</option>
             </select></div>
           `;
   }

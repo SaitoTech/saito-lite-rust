@@ -86,7 +86,6 @@ class NetworkAPI {
    * @returns
    */
   sendAPICall(ws, command, message_bytes) {
-    //console.debug("sendAPICall : " + command);
     return new Promise((resolve, reject) => {
       this.api_callbacks[this.api_call_index] = {
         resolve: resolve,
@@ -97,14 +96,12 @@ class NetworkAPI {
         this.api_call_index,
         message_bytes
       );
-      //console.debug("sending message for index " + this.api_call_index + " : " + command);
       this.api_call_index += 1;
       ws.send(serialized_api_message);
     });
   }
 
   sendAPIResponse(ws, command, message_id, message_bytes) {
-    //console.debug("sendAPIResponse : " + command + " : " + message_id);
     const serialized_api_message = this.serializeAPIMessage(command, message_id, message_bytes);
     ws.send(serialized_api_message);
   }

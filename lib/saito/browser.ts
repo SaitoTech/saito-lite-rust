@@ -64,7 +64,7 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-        /******
+/******
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {
@@ -91,14 +91,12 @@ class Browser {
         document.addEventListener(
           "visibilitychange",
           () => {
-            //console.log("document event listener visibility change");
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
                 publickey: this.app.wallet.returnPublicKey(),
               });
             } else {
-              //console.log("document event listener visibility change");
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,
@@ -125,10 +123,8 @@ class Browser {
       // Abercrombie's rule.
       //
       if (typeof window == "undefined") {
-        //console.log("Initializing Saito Node");
         return;
       } else {
-        //console.info("Initializing Saito Light Client");
       }
       const current_url = window.location.toString();
       const myurl = new URL(current_url);
@@ -268,7 +264,6 @@ class Browser {
         }
       }
     } catch (err) {
-      //console.log("error in urlparams: " + err);
     }
     return "";
   }
@@ -726,6 +721,7 @@ class Browser {
   }
 
   preventDefaults(e) {
+console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
   }
@@ -795,7 +791,6 @@ class Browser {
         };
 
         document.onmousemove = function (e) {
-          console.log("MOVE MOUSEDOWN");
 
           e = e || window.event;
           e.preventDefault();
@@ -924,9 +919,11 @@ class Browser {
   addModalIdentifierAddPublickey(app, mod) {
     try {
       const identifiers = document.getElementsByClassName(`saito-identicon`);
-
       Array.from(identifiers).forEach((identifier) => {
         identifier.addEventListener("click", (e) => {
+
+console.log("preventing default 444");
+
           e.preventDefault();
           e.stopImmediatePropagation();
 
@@ -945,7 +942,9 @@ class Browser {
   returnAddressHTML(key) {
     const identifier = this.app.keys.returnIdentifierByPublicKey(key);
     const id = !identifier ? key : identifier;
-    return `<span data-id="${key}" id="saito-address-${key}" class="saito-address saito-address-${key}">${id}</span>`;
+    // obsolete
+    //return `<span data-id="${key}" id="saito-address-${key}" class="saito-address saito-address-${key}">${id}</span>`;
+    return `<div class="saito-address saito-address-${key}" data-id="${key}">${id}</div>`;
   }
 
   async returnAddressHTMLPromise(key) {
@@ -971,7 +970,6 @@ class Browser {
         .push(category, action, name, value);
     } catch (err) {
       if (err.startsWith("Module responding to")) {
-        //console.log("Matomo module not present, cannot push event");
       } else {
         console.log(err);
       }
@@ -1101,6 +1099,17 @@ class Browser {
       }
     });
   }
+
+  async screenshotCanvasElementById(id = "" , callback = null) {
+      let canvas = document.getElementById(id);
+      if (canvas) {
+        let img = canvas.toDataURL("image/jpeg", 0.35);
+        if (callback != null) {
+          callback(img);
+        }
+      }
+  }
+
 
   sanitize(text) {
     try {

@@ -14,7 +14,7 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 
 		html = `<div id="rs-sidebar-observer" class="observer-sidebar">`;
 
-		html += `<h6>Live Games You Can Watch:</h6>`;
+		html += `<h6>Watch Live:</h6>`;
 		let cnt = 0;
 
 		/*
@@ -37,15 +37,10 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 			  
 			  	let gameState = JSON.parse(g.game_state)
 			    let numSeats = gameState?.options?.max_players || players.length;
-			    console.log(JSON.parse(JSON.stringify(gameState)));
-			    console.log(numSeats);
+			    //console.log(JSON.parse(JSON.stringify(gameState)));
+			    //console.log(numSeats);
 
-				//if (players.length < numSeats){
-				//	continue;
-				//}
-				
 				cnt++;
-
 
 			    for (let i = 0; i < 4; i++){
 			    	if (i == 3 && numSeats > 4){

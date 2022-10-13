@@ -5,10 +5,12 @@ module.exports = RedSquareSidebarTemplate = (app, mod) => {
   return `
 
   <div class="saito-sidebar right">
-    
+
+    <!--   
     <div class="redsquare-sidebar-calendar">
     </div>
-    
+    -->    
+
     <div class="redsquare-sidebar-arcade">
     </div>
 

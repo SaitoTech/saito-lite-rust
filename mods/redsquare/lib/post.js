@@ -1,5 +1,6 @@
 const PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoEmoji = require("./../../../lib/saito/new-ui/saito-emoji/saito-emoji");
 const JSON = require('json-bigint');
 
 class Post {
@@ -19,11 +20,13 @@ class Post {
     if (document.querySelector('#redsquare-tweet-overlay') != null) {
       document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
     }
-
     this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();
     this.attachEvents(app, mod);
+
+    this.emoji = new SaitoEmoji(app, mod, 'post-tweet-textarea');
+    this.emoji.render(app, mod);
   }
 
   attachEvents(app, mod) {
@@ -45,13 +48,18 @@ class Post {
       },
       false);
 
+
+
     document.querySelector('.redsquare-tweet-overlay').onclick = (e) => {
 
       if (e.target.classList.contains("fa-image")) {
         document.querySelector("#hidden_file_element_redsquare-tweet-overlay").click();
+	return;
       }
 
+
       if (e.target.id === "post-tweet-button") {
+
 
         document.getElementById("post-tweet-loader").style.display = 'block';
         e.preventDefault();
@@ -109,10 +117,8 @@ class Post {
 
         setTimeout(() => {
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
-
           if (post_self.render_after_submit == 1) {
             mod.prependTweetFromTransaction(app, mod, newtx, true);
-
             if (thread_id !== "") {
               mod.renderWithChildren(app, mod, thread_id);
             } else {
@@ -122,13 +128,12 @@ class Post {
                 mod.renderMainPage(app, mod);
               }
             }
-	        }
-
+	  }
           post_self.overlay.hide();
-
         }, 1000);
 
       }
+
     }
 
     document.querySelector(".my-form").style.display = "none";
@@ -153,10 +158,12 @@ class Post {
 
 
   resizeImg(img, dimensions, quality) {
+
     let post_self = this;
     let imgSize = img.length / 1024;
 
     // compress img if file size greater tan 150kb
+/*****
     if (imgSize > 150) {
 
       let canvas = document.createElement("canvas");
@@ -201,7 +208,6 @@ class Post {
           post_self.resizeImg(result_img_uri, newDimensions, newQuality);
 
         } else {
-
           post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${result_img_uri}"
            /><i data-id="${post_self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
@@ -211,13 +217,14 @@ class Post {
         }
       };
     } else {
+****/
       post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${img}"
            /><i data-id="${post_self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
 
       post_self.images.push(img);
       return img;
-    }
+//    }
   }
 }
 

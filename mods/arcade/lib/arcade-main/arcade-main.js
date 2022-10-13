@@ -3,7 +3,6 @@ const ArcadeContainerTemplate = require("./templates/arcade-container.template")
 const ArcadeMobileHelper = require("./templates/arcade-mobile-helper.template");
 const ArcadeForums = require("./arcade-forums");
 const ArcadePosts = require("./arcade-posts");
-const ArcadeInfobox = require("./arcade-infobox");
 const GameLoader = require("./../../../../lib/saito/new-ui/game-loader/game-loader");
 const SaitoCarousel = require("./../../../../lib/saito/ui/saito-carousel/saito-carousel");
 const ArcadeInviteTemplate = require("./templates/arcade-invite.template");
@@ -137,8 +136,6 @@ module.exports = ArcadeMain = {
       post.render();
     }
 
-    //ArcadeInfobox.render(app, mod); //Not doing anything right now
-
 
     try {
 
@@ -193,7 +190,7 @@ module.exports = ArcadeMain = {
 
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
-          console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
+          //console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           let includeGame = true;
           
           //Only filter if there are leagues to compare against

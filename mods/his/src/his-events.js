@@ -21,6 +21,13 @@
       z.push(this.deck[key]);
     }
 
+    //
+    // debaters have bonuses which modify gameplay
+    //
+    for (let key in this.debaters) {
+      z.push(this.debaters[key]);
+    }
+
     return z;
 
   }

@@ -117,6 +117,12 @@ Saito Page Header
     text-transform: uppercase;
 }
 
+i.saito-back-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    text-align: center;
+}
+
 .saito-page-header-title>span {
     text-transform: none;
 }

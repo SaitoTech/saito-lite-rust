@@ -17,9 +17,6 @@ class RedSquareMain {
     this.app = app;
     this.name = "RedSquareMain";
 
-    // TODO -- HACK TO AVOID LEAGUES PROBLEM
-    this.left_sidebar_rendered = 0;
-
     //
     // left sidebar
     //
@@ -65,12 +62,7 @@ class RedSquareMain {
       app.browser.addElementToDom(RedSquareMainTemplate(app, mod));
     }
 
-    // TODO - remove when refactored
-    //if (this.left_sidebar_rendered === 0) {
-      mod.lsidebar.render(app, mod, ".saito-sidebar-left");
-      this.left_sidebar_rendered = 1;
-    //}
-
+    mod.lsidebar.render(app, mod, ".saito-sidebar-left");
     mod.home.render(app, mod, ".appspace");
     mod.rsidebar.render(app, mod, ".saito-sidebar-right");
 
@@ -83,8 +75,8 @@ class RedSquareMain {
     let params = null;
 
     if (hash) {
+      component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
       if (hash?.split("").includes("?")) {
-        component = hash.split("?")[0];
         params = hash.split("?")[1];
       }
     }

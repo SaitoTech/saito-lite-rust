@@ -1,6 +1,7 @@
 const RetweetTemplate = require("./retweet.template");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const JSON = require('json-bigint');
+const SaitoEmoji = require("../../../lib/saito/new-ui/saito-emoji/saito-emoji");
 
 class Retweet {
 
@@ -22,6 +23,8 @@ class Retweet {
       this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay-'+this.tweet.tx.transaction.sig+'" class="redsquare-tweet-overlay"></div>');  
       
       app.browser.addElementToSelector(RetweetTemplate(app, mod, app.wallet.returnPublicKey(), this.tweet), "#redsquare-tweet-overlay-"+this.tweet.tx.transaction.sig);
+      this.emoji = new SaitoEmoji(app, mod, 'post-tweet-textarea');
+      this.emoji.render(app, mod);
       this.attachEvents(app, mod);
     }
 

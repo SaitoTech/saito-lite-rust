@@ -71,7 +71,6 @@ class Server {
     });
 
     server.on("connection", (wsocket, request) => {
-      //console.log("new connection received by server", request);
       this.app.network.addRemotePeer(wsocket);
     });
   }

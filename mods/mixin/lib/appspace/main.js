@@ -1,7 +1,7 @@
 const MixinAppspaceTemplate = require('./main.template.js');
 const MixinDepositTemplate = require('./mixin-deposit.template.js');
 const MixinWithdrawTemplate = require('./mixin-withdraw.template.js');
-const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 
 class MixinAppspace {
 

@@ -42,6 +42,9 @@ class Observer extends ModTemplate {
     app.connection.on("arcade-observer-join-table", (game_id)=>{
       this.observeGame(game_id, true);
     });
+    app.connection.on("arcade-observer-review-game", (game_id)=>{
+      this.observeGame(game_id, false);
+    });
 
     app.connection.on("Arcade-Observer-Update-Player", (obj)=>{
       //{id, keys}
@@ -128,6 +131,27 @@ class Observer extends ModTemplate {
   attachEvents(app, mod) {
   }
 
+  returnGameById(game_id){
+    let game = this.games.find((g) => g.game_id === game_id);
+
+    let players = game.players_array.split("_");
+    let gameState = JSON.parse(game.game_state)
+
+    let gameObj = {
+      //arcade game invite
+      id: game_id,
+      game: game.module,
+      options: gameState.options,
+      players: players,
+      players_needed: gameState?.options?.max_players || players.length,
+      //extra observer info
+      latest_move: game.latest_move,
+      step: game.step,
+      status: game.game_status
+    };
+
+    return gameObj;
+  }
 
   shouldAffixCallbackToModule(modname) {
     for (let i = 0; i < this.affix_callbacks_to.length; i++) {

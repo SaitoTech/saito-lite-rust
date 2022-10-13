@@ -1,11 +1,12 @@
-const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
+const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 const SendTokensOverlayTemplate = require('./send-tokens-overlay.template');
 
 module.exports = SendTokensOverlay = {
 
   render(app, mod) {
-
-    mod.overlay = new SaitoOverlay(app);
+    if (!mod.overlay){
+      mod.overlay = new SaitoOverlay(app);      
+    }
     mod.overlay.show(app, mod, SendTokensOverlayTemplate());
 
   },
@@ -33,7 +34,7 @@ alert("PREFERRED CRYPTO: " + app.wallet.wallet.preferred_crypto);
       if (c) {
 	let sender = cryptomod.returnAddress();
 	let hash = app.wallet.sendPayment([sender], [recipient], [amount], (new Date().getTime()), btoa(sender+recipient+amount+Date.now()), function() {
-	  mod.overlay.hide();
+	  mod.overlay.remove();
     salert("Transfer successful");
 	}, ticker);
       } else {
