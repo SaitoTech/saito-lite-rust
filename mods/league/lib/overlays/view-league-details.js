@@ -33,7 +33,7 @@ class ViewLeagueDetails {
       this.overlay = new SaitoOverlay(app);
     }
     this.overlay.show(app, mod, LeagueDetailsTemplate(app, mod, league));
-    this.loadLeaderboard(app, mod, league);
+    //this.loadLeaderboard(app, mod, league);
     
   }
 

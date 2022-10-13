@@ -35,15 +35,15 @@
 .league-leaderboard-table {
   display: grid;
   grid-gap: 0.5rem;
-  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto;
+  grid-template-columns: 4rem auto 5rem;
   width: 100%;
   padding: 1rem;
-  max-height: 60vh;
+  max-height: 100%;
   overflow-y: auto;
 }
 
 .league-leaderboard-table.saitolicious {
-  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem;
+  grid-template-columns: 4rem auto 5rem;
 }
 
 .league-leaderboard-table.admin {
@@ -52,6 +52,10 @@
 
 .league-leaderboard-table.admin.saitolicious {
   grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem  4fr 4fr auto;
+}
+
+.league-leaderboard-table::scrollbar {
+  display: none;
 }
 
 .league-game-table{
@@ -86,6 +90,11 @@
 
 .league-overview-box div:nth-child(odd) {
   font-weight: bold;
+}
+
+
+.league-leaderboard::-webkit-scrollbar {
+    display: none;
 }
 
 
