@@ -204,6 +204,7 @@ span.redsquare-home-red-square+span {
   max-width: 20rem;
   text-overflow: ellipsis;
   overflow-x: hidden;
+  margin-top: -1.75rem;
 }
 
 .redsquare-invite-title {
