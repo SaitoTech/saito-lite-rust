@@ -4,7 +4,7 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
     return "";
   }
 
-  let html = `<div class="league-details-overlay">
+  let html = `<div class="league-details-overlay saito-overlay-content-large">
     
     <h2>${league.name}</h2>
      

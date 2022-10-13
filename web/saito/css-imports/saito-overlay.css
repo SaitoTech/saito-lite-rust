@@ -112,3 +112,10 @@
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+
+
+.saito-overlay-content-large{
+  padding: 2rem;
+  min-width: min(800px, 95vw);
+}
