@@ -43,7 +43,8 @@ class ChatManagerSmall {
     }
 
     render() {
-        this.app.browser.addElementToDom(ChatManagerSmallTemplate(), document.getElementById('content__'));
+        // this.app.browser.addElementToDom(ChatManagerSmallTemplate(), document.getElementById('content__'));
+        this.app.browser.addElementToSelector(ChatManagerSmallTemplate(), "#game-menu > ul");
     }
 
     attachEvents(app, mod) {
@@ -71,7 +72,11 @@ class ChatManagerSmall {
 
     hide() {
         console.log('hiding')
-        document.querySelector('#small-video-chatbox').parentElement.removeChild(document.querySelector('#small-video-chatbox'));
+        document.querySelectorAll('.video-chat-manager').forEach(item => {
+            item.parentElement.removeChild(document.querySelector('.video-chat-manager'));
+        })
+        
+      
         document.querySelectorAll('.video-box-container').forEach(box => {
             box.parentElement.removeChild(box)
         })
