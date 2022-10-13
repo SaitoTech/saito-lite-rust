@@ -78,7 +78,7 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
     margin-right: 2rem;
 ">
 
-    <div class="saito-module">
+    <div class="saito-module large">
           <div class="saito-module-image-box">
              <div class="saito-module-image" style="
 "></div>
@@ -87,10 +87,7 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
     margin-left: 1rem;
 ">
             <div class="saito-module-title">Saitolicious</div>
-            <div class="saito-module-description" style="
-    font-size: 1.7rem;
-    font-weight: 500;
-">Who is the most Saitolicious Saitozen out there? Earn points for playing games on the Arcade and climb the rankings, but your score will drop if you don't come by regularly.</div>
+            <div class="saito-module-description">Who is the most Saitolicious Saitozen out there? Earn points for playing games on the Arcade and climb the rankings, but your score will drop if you don't come by regularly.</div>
           </div>
         </div>
 
@@ -103,15 +100,10 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
     margin-bottom: 0.8rem;
     display: inline-block;
     color: var(--saito-black-faded);
-">Recent games</h6><h6 style="
-    font-size: 2.2rem;
-    margin-bottom: 0.5rem;
-    display: inline-block;
-    float: right;
-">Create new game</h6>
+">Recent games</h6>
 
 
-<div class="recent-games-box" style="display: grid;grid-template-columns: 49% 49%;grid-column-gap: 2rem;">
+<div class="recent-games-box" style="display: grid;grid-column-gap: 2rem;">
 
 
   <div class="saito-module-x" id="saito-module-x-d030499d6b21b3f655045d3a0b4838e39e19acf07ac051a6506216eaccb7e93923efc5b617f09245c14cd12c23cd04485fa338bf1639e282e128bb32bd85dd2c" data-id="d030499d6b21b3f655045d3a0b4838e39e19acf07ac051a6506216eaccb7e93923efc5b617f09245c14cd12c23cd04485fa338bf1639e282e128bb32bd85dd2c">
@@ -183,19 +175,10 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
     margin-bottom: 1rem;
 ">
 
-<div class="league-leaderboard-table" style="
-    margin-top: 1rem;
-">
+<div class="league-leaderboard-table">
         <div><b>Rank</b></div>
         <div><b>Player</b></div>
         <div><b>Score</b></div>
-        
-        
-        
-        
-        
-
-            
 
             <div>1</div>
                    <div class=" newfriend" data-id="22cEMK37H3HCiR6AgWBsTPDr9ywfT8zXAareeK9L2HUmU">
