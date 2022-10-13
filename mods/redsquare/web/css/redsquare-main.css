@@ -141,7 +141,7 @@ span.redsquare-home-red-square+span {
   position: fixed;
   width: inherit;
   height: inherit;
-  /* overflow-y: auto; */
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
@@ -151,14 +151,14 @@ span.redsquare-home-red-square+span {
 
 .saito-sidebar-right {
   width: 50rem;
-  /* overflow-y: auto; */
+  overflow-y: auto;
   height: inherit;
 }
 
-/* .sidebar-scrollable {
+.sidebar-scrollable {
   position: relative;
   left: unset;
-} */
+}
 
 .saito-main.appspace {
   margin: 0 2rem 15rem;
