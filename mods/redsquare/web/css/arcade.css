@@ -28,7 +28,7 @@
 .rules-overlay{
   padding: 1em;
   font-size: 20px;
-  border-radius: 10px;
+  border-radius: 0.5rem;
   max-width: 80vw;
   min-width: 600px;
   max-height: 80vh;
@@ -294,7 +294,7 @@
 }
 
 .saito-multi-select_btn_options button{
-  border-radius: 5px 0px 0px 5px;
+  border-radius: 0.5rem 0px 0px 0.5rem;
 }
 
 .saito-multi-select_btn.showAll {
@@ -332,7 +332,7 @@
   border: 1px solid var(--saito-primary);
   background-color: #fff;
   color: var(--saito-primary);
-  border-radius: 0 5px 5px 0;
+  border-radius: 0 0.5rem 0.5rem 0;
   height: 4.8rem;
   line-height: 4.8rem;
   width: 60px;
@@ -426,7 +426,7 @@ option {
   grid-template-rows: min-content auto;
   background-color: var(--saito-white);
   padding: 2rem;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
 }
 
 .game-create-new-overlay.dark {
@@ -521,7 +521,6 @@ option {
 
 .observer-info .playerInfo .player-slot .identicon {
   border: 0px;
-  border-radius: 0.33rem;
   width: 100%;
   height: 100%;
   width: 2rem;

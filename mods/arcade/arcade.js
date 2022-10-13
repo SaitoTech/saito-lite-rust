@@ -1564,7 +1564,7 @@ class Arcade extends ModTemplate {
   }
 
   validateGame(tx) {
-    if (!tx?.transaction?.sig || !tx?.msg) {
+    if (!tx || !tx.msg || !tx.transaction || !tx.transaction.sig) {
       return false;
     }
 
@@ -1573,19 +1573,12 @@ class Arcade extends ModTemplate {
     }
 
     for (let i = 0; i < this.games.length; i++) {
-      let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
-
-      if (tx.transaction.sig == transaction.sig) {
-        return false;
-      }
-      if (tx.returnMessage().game_id != "" && tx.returnMessage().game_id == transaction.sig) {
-        return false;
-      }
-      if (tx.returnMessage().game_id === this.games[i].transaction.sig) {
-        console.log("ERROR 480394: not re-adding existing game to list");
+      if (tx.transaction.sig === this.games[i].transaction.sig) {
+        console.log("TX is already in Arcade list");
         return false;
       }
     }
+
     return true;
   }
 
@@ -1706,9 +1699,7 @@ class Arcade extends ModTemplate {
 
 
   addGameToOpenList(tx) {
-    let valid_game = this.validateGame(tx);
-    
-    if (valid_game) {
+    if (this.validateGame(tx)) {
       this.games.unshift(tx);
       ArcadeMain.renderArcadeTab(this.app, this);
     }
