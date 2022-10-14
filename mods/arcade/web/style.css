@@ -19,8 +19,7 @@
 }
 
 body {
-  min-height: 100vh;
-  font-size: 1em;
+  height: 100vh;
   color: var(--saito-skyline-grey);
   background: var(--saito-nightscape);
   justify-content: center;
@@ -739,11 +738,6 @@ button.add-games {
 }
 
 .chat-header {
-  background: var(--saito-nightscape);
-  border: 1px solid var(--saito-red);
-  border-bottom: 0px;
-  padding-left: 15px;
-  padding-right: 15px;
   background: var(--saito-jester);
 }
 
@@ -1422,51 +1416,6 @@ option {
   height: 6em;
 }
 
-/** CHAT STYLING **/
-.chat-row {
-  /* no border */
-  border-bottom: 0px solid var(--saito-red);
-}
-
-.chat-row:hover {
-  background-color: #33669999;
-}
-
-.chat-box {
-  background-color: var(--saito-cyber-black);
-  border: 1px solid var(--saito-red);
-}
-
-.chat-box-main {
-  background: var(--saito-nightscape);
-  color: #ffffff;
-}
-
-.chat-box-header {
-  border-bottom: 1px solid var(--saito-red);
-  background: var(--saito-jester);
-}
-
-.chat-message-others {
-  color: black;
-}
-
-.chat-box-input {
-  border-top: 1px solid var(--saito-red);
-}
-
-.chat-box-new-message-input {
-  background: var(--saito-cyber-black);
-  color: white;
-}
-
-.chat-room-submit-button {
-  color: #fff;
-}
-
-.chat-message-header {
-  color: #ffffff;
-}
 
 #alert-box {
   background: var(--saito-nightscape);

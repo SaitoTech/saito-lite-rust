@@ -12,19 +12,14 @@ class Chatx extends ModTemplate {
 
         super(app);
         this.name = "Chat";
-        this.slug = "chat";
+
         this.gamesmenufilter = "chatx"; // once chat is purged, remove in games-menu
-        this.description = "Saito instant-messaging client and application platform";
+        this.description = "Saito instant-messaging client";
 
         this.groups = [];
 
-        this.timeerror_tolerance = 1800000; // 30 minutes tolerance for TZ issues at chat head
-        this.header = null;
-
         this.mute_community_chat = 0; //TODO add functionality
-        this.max_msg_size = 1 * 300 * 1024;
 
-        this.icon_fa = "far fa-comments";
         this.inTransitImageMsgSig = null;
 
         this.added_identifiers_post_load = 0;
@@ -52,7 +47,7 @@ class Chatx extends ModTemplate {
 
             //Left Sidebar wants a widget that can manage a list of ongoing chats
             case 'chat-manager':
-                //We could insert specific CSS here, e.g. this.scripts.push()
+                //We could insert specific CSS here, e.g. this.styles.push()
                 return this.chat_manager;
             default:
                 return super.respondTo(type);
@@ -95,6 +90,11 @@ class Chatx extends ModTemplate {
             if (data?.members) {
                 this.createChatGroup(data.members);
             }
+        });
+
+        app.connection.on("open-chat-with", (pkey) => {
+            let group = this.createChatGroup([app.wallet.returnPublicKey(), pkey], app.keys.returnUsername(pkey));
+            this.openChatBox(group.id);
         });
 
     }
@@ -198,8 +198,16 @@ class Chatx extends ModTemplate {
                         // show community chat on load if not mobile
                         //
                         if (app.BROWSER) {
-                            if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600) || this.mobile_chat_active) { 
-                                this.openChatBox(); 
+                            if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600) || this.mobile_chat_active) {
+                                if (app.options.auto_open_chat_box == null || app.options.auto_open_chat_box){
+                                    let active_module = app.modules.returnActiveModule();
+                                    if (active_module.request_no_interrupts == true) {
+                                        // if the module has ASKED leave it alone
+                                        console.log("ASKED NOT TO INTERRUPT!");
+                                        return;
+                                    }
+                                    this.openChatBox();                                     
+                                } 
                             }
                         }
 
@@ -556,8 +564,8 @@ class Chatx extends ModTemplate {
         //
         // TODO - remove when Arcade is purged
         //
-        let am = app.modules.returnActiveModule();
-        if (am?.name === "Arcade") { return; }
+        //let am = app.modules.returnActiveModule();
+        //if (am?.name === "Arcade") { return; }
 
 
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
@@ -636,13 +644,8 @@ class Chatx extends ModTemplate {
     */
     openChatBox(group_id = null) {
 
-        let active_module = this.app.modules.returnActiveModule();
-        if (active_module.request_no_interrupts == true) {
-            // if the module has ASKED leave it alone
-            console.log("ASKED NOT TO INTERRUPT!");
-            return;
-        }
-
+        this.app.options.auto_open_chat_box = true;
+        this.app.storage.saveOptions();
 
         if (group_id == null) {
 

@@ -97,7 +97,13 @@ class ChatPopup {
       this.active = false;
       this.minimized = false;
       mod.mobile_chat_active = false;
-      let obj = document.getElementById(`chat-container-${group_id}`).remove();
+
+      document.getElementById(`chat-container-${group_id}`).remove();
+
+      if (!document.querySelector(".chat-container")){
+        app.options.auto_open_chat_box = false;
+        app.storage.saveOptions();
+      }
     }
 
     //
