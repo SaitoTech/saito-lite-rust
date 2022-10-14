@@ -22,6 +22,7 @@ class Quake3 extends GameTemplate {
 
     this.content_server  = "q3.saito.io";
     this.game_server  = "q3.saito.io:27960";
+
     //this.content_server  = "18.163.184.251:80";
     //this.game_server     = "18.163.184.251:27960";
   }
@@ -380,6 +381,20 @@ class Quake3 extends GameTemplate {
 
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
+
+
+if (app.BROWSER != 0) {
+    if (this.game.options.server === "as") {
+alert("Asian Game Server - use advanced options to change");
+      this.content_server = "q3.saito.io";
+      this.game_server = "q3.saito.io:27960";
+    }
+    if (this.game.options.server === "na") {
+alert("North American Game Server - use advanced options to change");
+      this.content_server = "q3-us.saito.io";
+      this.game_server = "q3-us.saito.io:27960";
+    }
+}
 
 
     //

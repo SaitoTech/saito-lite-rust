@@ -21,7 +21,11 @@ module.exports = (app, mod) => {
 
       options_html += `
         </select>
-          </div>
+          <label for="server">Game Server:</label>
+          <select id="server" name="server">
+            <option value="na" selected>North America</option>
+            <option value="as">Asia</option>
+          </select>
           <div id="stake_wrapper" class="overlay-input" style="display:none;">
             <label for="stake">Cost Per Kill:</label>
             <input type="number" id="stake" list="suggestedChipValues" name="stake" min="0" value="0" step="1">
@@ -35,6 +39,7 @@ module.exports = (app, mod) => {
             <option value="15">
             <option value="20">
           </datalist>
+          </div>
 
   `;
 
