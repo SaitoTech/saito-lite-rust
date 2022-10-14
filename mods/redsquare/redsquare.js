@@ -47,7 +47,6 @@ class RedSquare extends ModTemplate {
       '/saito/saito.css',
       '/redsquare/css/redsquare-main.css',
       '/redsquare/css/arcade.css',		      // game creation overlays
-      '/redsquare/css/chat.css',		        // game creation overlays
     ];
     this.ui_initialized = false;
 

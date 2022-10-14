@@ -14,12 +14,19 @@ class ChatPopup {
       app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
     }
 
+    this.attachEvents(app, mod);
+  }
 
+   attachEvents(app, mod){
     // close
-    document.querySelector(`#chat-container-close-${this.group_id}`).onclick = (e) => {
-      let obj = document.getElementById(`chat-popup-${this.group_id}`).remove(); 
+    if (document.querySelector(`#chat-container-close-${this.group_id}`)){
+      document.querySelector(`#chat-container-close-${this.group_id}`).onclick = (e) => {
+        try{
+          e.stopPropagation();
+          document.getElementById(`chat-popup-${this.group_id}`).remove();   
+        }catch(err){}
+      }
     }
-
   }
 
 }

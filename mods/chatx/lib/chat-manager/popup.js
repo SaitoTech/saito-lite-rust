@@ -5,93 +5,109 @@ class ChatPopup {
   constructor(app, mod, group_id = "") {
     this.app = app;
     this.mod = mod;
-    this.name = "ChatPopup";
     this.group_id = group_id;
-    this.input_value = ""
-    this.hasRendered = true;
+    this.emoji = new SaitoEmoji(app, mod, `chat-input-${this.group_id}`);
 
-    app.connection.on("chat-render-request", (gid = "") => {
+    this.active = true;
+    this.minimized = false;
 
-      if (mod.chat_manager.inactive_popups.includes(gid)) { return; }
-
-      if (gid === this.group_id && gid != "" && this.group_id != "") {
-
-        let divid = "chat-container-" + gid;
-
-        if ((app.browser.isMobileBrowser(navigator.userAgent) == true || window.innerWidth < 600) && !mod.mobile_chat_active) {
-          //emit-chat-notification-event for mobile
-          app.connection.emit("chat-render-request-notify");
+    //Each ChatPopup has listeners so we need to only act if it is for us
+    app.connection.on("chat-render-request", (gid) => {
+      if (gid && gid === this.group_id) {
+        if (((app.browser.isMobileBrowser(navigator.userAgent) == true || window.innerWidth < 600) && !mod.mobile_chat_active)
+          || !this.active || this.minimized) {
+          app.connection.emit("chat-render-request-notify", gid);
         } else {
-          if (!this.hasRendered) {
-            app.browser.replaceElementById(ChatPopupTemplate(app, mod, gid), divid);
-            this.emoji = new SaitoEmoji(app, mod, `chat-input-${gid}`);
-            this.emoji.render(app, mod);
-            this.hasRendered = true;
-            app.browser.addElementToSelector(`${mod.returnChatBody(gid)}`, `.chat-body-${gid}`);
-          }
-          app.browser.replaceElementBySelector(`<div class="chat-body chat-body-${gid}">${mod.returnChatBody(gid)} </div>`, `.chat-body-${gid}`);
-          document.querySelector(".chat-body").scroll(0, 1000000000);
-          app.browser.makeDraggable(`chat-container-${gid}`, `chat-header-${gid}`);
-          this.attachEvents(app, mod, gid);
+          this.render(app, mod);
         }
       }
     });
 
-
-  }
-
-  render(app, mod, group_id = "") {
-
-    if ((app.browser.isMobileBrowser(navigator.userAgent) == true || window.innerWidth < 600) && !mod.mobile_chat_active) {
-      //emit-chat-notification-event
-      app.connection.emit("chat-render-request-notify");
-    } else {
-      let chatboxen_open = 0;
-      let pixen_consumed = 0;
-      let right_orientation = "0px";
-  
-      for (let i = 0; i < mod.groups.length; i++) {
-        if (document.getElementById(`chat-container-${mod.groups[i].id}`)) {
-          chatboxen_open++;
-          pixen_consumed += document
-            .getElementById(`chat-container-${mod.groups[i].id}`)
-            .getBoundingClientRect().width;
+    app.connection.on("chat-render-request-notify", (gid)=>{
+      if (gid && gid === this.group_id) {
+        if (this.active && this.minimized){
+            let group = mod.returnGroup(gid);
+            let chat_bubble = document.getElementById(`chat-container-minimize-${gid}`);
+            if (chat_bubble && group?.unread){
+              chat_bubble.innerHTML = `<div class="saito-notification-counter">${group.unread}</div>`;
+            }
         }
       }
-  
-      right_orientation = pixen_consumed + (20 * chatboxen_open) + "px";
-  
-      if (mod.chat_manager.inactive_popups.includes(group_id)) { return; }
-      if (group_id != "" && this.group_id == "") { this.group_id = group_id; }
-      if (!document.getElementById(`chat-container-${this.group_id}`)) {
-        app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
-        this.emoji = new SaitoEmoji(app, mod, `chat-input-${this.group_id}`);
-        this.emoji.render(app, mod);
-        app.browser.makeDraggable(`chat-header-${this.group_id}`, `chat-header-${this.group_id}`);
-        this.attachEvents(app, mod, this.group_id);
-      } else {
-        // we've been told to render, but the container exists, so update the chat-body     
-      }
-  
-      //
-      // update right-alignment
-      //
-      let obj = document.querySelector(`.chat-container-${this.group_id}`);
-      if (obj) { obj.style.right = right_orientation; }
-  
-      app.browser.addElementToSelector(`${mod.returnChatBody(group_id)}`, `.chat-body`);
-      }
+    });
+
   }
 
-  attachEvents(app, mod, group_id) {
+  render(app, mod) {
 
+      this.active = true;
+
+      if (this.minimized){
+        this.toggleDisplay();
+      }
+
+      if (!document.getElementById(`chat-container-${this.group_id}`)) {
+
+        // 
+        // Some calculations to layer chatpopups from the right side of screen
+        //
+        let chatboxen_open = 0;
+        let pixen_consumed = 0;
+        let right_orientation = "0px";
+    
+        for (let i = 0; i < mod.groups.length; i++) {
+          if (document.getElementById(`chat-container-${mod.groups[i].id}`)) {
+            chatboxen_open++;
+            pixen_consumed += document
+              .getElementById(`chat-container-${mod.groups[i].id}`)
+              .getBoundingClientRect().width;
+          }
+        }
+    
+        right_orientation = pixen_consumed + (20 * chatboxen_open) + "px";
+  
+        app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
+
+        //
+        // update right-alignment
+        //
+        let obj = document.querySelector(`.chat-container-${this.group_id}`);
+        if (obj) { obj.style.right = right_orientation; }
+  
+        this.emoji.render(app, mod);
+  
+        app.browser.makeDraggable(`chat-container-${this.group_id}`, `chat-header-${this.group_id}`);
+
+      }else{
+        app.browser.replaceElementBySelector(`<div class="chat-body">${mod.returnChatBody(this.group_id)}</div>`, `#chat-container-${this.group_id} .chat-body`);
+      } 
+
+      document.querySelector(".chat-body").scroll(0, 1000000000);
+      this.attachEvents(app, mod);
+      
+  }
+
+  attachEvents(app, mod) {
+
+    let group_id = this.group_id;
+    
     //
     // close
     //
     document.querySelector(`#chat-container-close-${group_id}`).onclick = (e) => {
-      mod.deactivatePopup(group_id);
+      this.active = false;
+      this.minimized = false;
       mod.mobile_chat_active = false;
       let obj = document.getElementById(`chat-container-${group_id}`).remove();
+    }
+
+    //
+    // minimize
+    //
+    let chat_bubble = document.getElementById(`chat-container-minimize-${group_id}`);
+    if (chat_bubble){
+      chat_bubble.onclick = (e) =>{
+        this.toggleDisplay();
+      }
     }
 
     //
@@ -129,6 +145,23 @@ class ChatPopup {
       mod.sendChatTransaction(app, newtx);
       mod.receiveChatTransaction(app, newtx);
       msg_input.value = "";
+    }
+
+  }
+
+  toggleDisplay(){
+    let chat_bubble = document.getElementById(`chat-container-minimize-${this.group_id}`);
+    if (chat_bubble){
+      chat_bubble.parentElement.parentElement.classList.toggle("minimize");
+      chat_bubble.parentElement.parentElement.removeAttribute("style");
+      chat_bubble.innerHTML = "";
+
+      this.minimized = !this.minimized;
+
+      if (!this.minimized){
+        this.app.connection.emit("chat-render-request", this.group_id);
+      }
+
     }
 
   }

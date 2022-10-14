@@ -1,3 +1,14 @@
+/* Chat / Manager */
+
+.chat-manager-list > .saito-user > .saito-identicon-container {
+    padding-left: 0.7rem;
+    padding-right: 0.4rem;
+}
+
+
+
+
+/*  chat / Popup  */
 .chat-container {
     margin-right: 1rem;
     width: 44rem;
@@ -10,26 +21,29 @@
     right: 0px;
 }
 
-
+.chat-container.minimize .chat-body, .chat-container.minimize .chat-footer{
+    display: none;
+}
 
 .chat-header {
-    padding: 1rem;
-    padding-left: 1rem;
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--saito-border);
-    cursor: pointer;
+    cursor: grab;
 }
 
 .chat-header>i {
-    margin-right: .5rem;
+    margin: 0;
+    padding: 1.2rem;
     color: var(--saito-primary);
     font-size: 2rem;
     display: inline-block;
+    cursor: row-resize;
+    position: relative;
 }
 
 .chat-header>i:last-child {
-    margin-left: auto;
+    padding-bottom: 1.3rem;
     cursor: pointer;
     transition: all .2s;
 }
@@ -39,8 +53,9 @@
 }
 
 .chat-header>h6 {
+    margin: 1rem 0;
     color: var(--saito-default-font-color);
-    width: 80%;
+    width: 90%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -107,6 +122,24 @@
 }
 
 
+.saito-identicon-container{
+    position: relative;
+}
+
+.saito-notification-counter{
+    position: absolute;
+    top: -0.5rem;
+    right: 0;
+    font-size: 1.5rem;
+    line-height: 1.1;
+    text-align: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 100%;
+    color: whitesmoke;
+    background-color: red;
+    overflow: hidden;
+}
 
 
 
