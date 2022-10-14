@@ -153,17 +153,14 @@
 
 
 /* Dark Mode */
-.dark .chat-container {
+.dark .chat-container, .dark .chat-footer, .dark .chat-header {
   background-color: var(--saito-cyber-black);
   border-color: var(--saito-red);
   color: var(--saito-white);
 }
 
-.dark .chat-header{
-  border-color: var(--saito-red);
-}
-
-.dark .chat-header > i, .dark .chat-header h6{
+.dark .chat-header > i, .dark .chat-header h6, .dark .chat-footer i {
  color: var(--saito-white);   
 }
+
 

@@ -3678,7 +3678,7 @@ class Settlers extends GameTemplate {
   }
 
   chatWith(player) {
-    this.app.connection.emit("open-chat-with", this.game.players[player - 1]);
+    this.app.connection.emit("open-chat-with", {key: this.game.players[player - 1]});
   }
 
   /* 

@@ -92,9 +92,21 @@ class Chatx extends ModTemplate {
             }
         });
 
-        app.connection.on("open-chat-with", (pkey) => {
-            let group = this.createChatGroup([app.wallet.returnPublicKey(), pkey], app.keys.returnUsername(pkey));
+        app.connection.on("open-chat-with", (data) => {
+            let group;
+
+            if (Array.isArray(data.key)){
+                group = this.createChatGroup(data.key, data.name);
+            }else{
+                let name = data.name || app.keys.returnUsername(data.key);
+                group = this.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
+            }
+            
             this.openChatBox(group.id);
+        });
+
+        app.connection.on("open-chat-with-community", ()=>{
+            this.openChatBox();
         });
 
     }

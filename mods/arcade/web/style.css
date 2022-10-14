@@ -737,7 +737,7 @@ button.add-games {
   padding-bottom: 1.7em;
 }
 
-.chat-header {
+.chat-header, .chat-footer {
   background: var(--saito-jester);
 }
 
