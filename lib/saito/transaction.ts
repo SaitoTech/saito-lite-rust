@@ -31,6 +31,7 @@ class Transaction {
     type: TransactionType.Normal,
     m: "",
   };
+  public optional: any;
   public fees_total: bigint;
   public work_available_to_me: bigint;
   public work_available_to_creator: bigint;
@@ -62,6 +63,7 @@ class Transaction {
     // cumulative weight of the usable fees that
     // are behind the transactions.
 
+    this.optional = {}; // non-signed field for users
     this.msg = {};
     this.dmsg = "";
     this.size = 0;

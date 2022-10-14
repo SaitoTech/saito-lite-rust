@@ -321,7 +321,6 @@ console.log("CREATING COMMUNITY CHAT OLD W/: " + peer.peer.publickey);
             }
         }
 
-
         let txs = new Promise((resolve, reject) => {
             app.storage.loadTransactionsByKeys(group_ids, "Chat", 25, (txs) => {
                 resolve(txs);

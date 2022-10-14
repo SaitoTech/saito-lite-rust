@@ -37,7 +37,9 @@ class Storage {
   returnClientOptions(): string {
     throw new Error("Method not implemented.");
   }
+
   loadTransactions(type = "all", num = 50, mycallback) {
+
     const message = "archive";
     const data: any = {};
     data.request = "load";
@@ -49,9 +51,14 @@ class Storage {
       let txs = [];
       if (obj) {
         if (obj.txs) {
-          if (obj.txs.length > 0) {
-            txs = obj.txs.map((tx) => new Transaction(JSON.parse(tx)));
-          }
+	  for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+	    tx.optional = {};
+	    if (obj.txs[i].optional) {
+	      try { tx.optional = JSON.parse(obj.txs[i].optional); } catch (err) { console.log("error loading optional data into tx"); }
+	    }
+	    txs.push(tx);
+	  }
         }
       }
       mycallback(txs);
@@ -82,9 +89,14 @@ class Storage {
       let txs = [];
       if (obj) {
         if (obj.txs) {
-          if (obj.txs.length > 0) {
-            txs = obj.txs.map((tx) => new Transaction(JSON.parse(tx)));
-          }
+	  for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+	    tx.optional = {};
+	    if (obj.txs[i].optional) {
+	      try { tx.optional = JSON.parse(obj.txs[i].optional); } catch (err) { console.log("error loading optional data into tx"); }
+	    }
+	    txs.push(tx);
+	  }
         }
       }
       mycallback(txs);
@@ -143,33 +155,32 @@ class Storage {
   /**
    * FUNCTIONS OVERWRITTEN BY STORAGE-CORE WHICH HANDLES ITS OWN DATA STORAGE IN ./core/storage-core.js
    **/
-
+  updateTransactionOptional(sig, optional) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "update_optional";
+    data.sig = sig;
+    data.publickey = this.app.wallet.returnPublicKey();
+    data.optional = optional;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
   saveTransaction(tx) {
     const txmsg = tx.returnMessage();
-
-    console.log("SAVING TRANSACTION");
-
     const message = "archive";
     const data: any = {};
     data.request = "save";
     data.tx = tx;
     data.type = txmsg.module;
-
-    console.log("send request with callback...");
-
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
-
   saveTransactionByKey(key, tx) {
     const txmsg = tx.returnMessage();
-
     const message = "archive";
     const data: any = {};
     data.request = "save_key";
     data.tx = tx;
     data.key = key;
     data.type = txmsg.module;
-
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
 

@@ -54,12 +54,15 @@ class Archive extends ModTemplate {
         this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
       }
       if (req.data.request === "save") {
-console.log("SAVING TRANSACTION");
         this.saveTransaction(req.data.tx, req.data.type);
       }
       if (req.data.request === "save_key") {
         if (!req.data.key) { return; }
         this.saveTransactionByKey(req.data.key, req.data.tx, req.data.type);
+      }
+      if (req.data.request === "update_optional") {
+        if (!req.data.optional) { return; }
+        this.updateTransactionOptional(req.data.sig, req.data.publickey, req.data.optional);
       }
       if (req.data.request === "load") {
         let type = "";
@@ -87,6 +90,38 @@ console.log("SAVING TRANSACTION");
 
 
 
+  async updateTransactionOptional(sig, publickey, optional) {
+
+    let sql = "UPDATE txs SET optional = $optional WHERE sig = $sig AND publickey = $publickey";
+    let params = {
+        $sig		:	sig ,
+        $publickey	:	publickey ,
+        $optional	:	JSON.stringify(optional)
+      };
+      await this.app.storage.executeDatabase(sql, params, "archive");
+
+  }
+
+
+
+
+
+  async updateTransactionOptional(sig="", publickey="", optional="") {
+
+    if (sig === "" || publickey === "" || optional === "") { return; }
+
+    let sql = "";
+    let params = {};
+
+    sql = "UPDATE txs SET optional = $optional WHERE sig = $sig AND publickey = $publickey";
+    params = {
+      $sig		:	sig ,
+      $publickey	:	publickey ,
+      $optional		:	JSON.stringify(optional) ,
+    };
+    await this.app.storage.executeDatabase(sql, params, "archive");
+
+  }
 
 
   async saveTransaction(tx=null, msgtype="") {
@@ -95,13 +130,16 @@ console.log("SAVING TRANSACTION");
 
     let sql = "";
     let params = {};
+    let optional = {};
+    if (tx.optional) { optional = tx.optional; }
 
     for (let i = 0; i < tx.transaction.to.length; i++) {
-      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, ts, type) VALUES ($sig, $publickey, $tx, $ts, $type)";
+      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $type)";
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.to[i].add ,
         $tx		:	JSON.stringify(tx.transaction) ,
+        $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
         $type		:	msgtype
       };
@@ -114,11 +152,12 @@ console.log("SAVING TRANSACTION");
     // sanity check that we want to be saving this for the FROM fields
     //
     for (let i = 0; i < tx.transaction.from.length; i++) {
-      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, ts, type) VALUES ($sig, $publickey, $tx, $ts, $type)";
+      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $type)";
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.from[i].add ,
         $tx		:	JSON.stringify(tx.transaction) ,
+        $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
         $type		:	msgtype
       };
@@ -149,14 +188,17 @@ console.log("SAVING TRANSACTION");
   async saveTransactionByKey(key="", tx=null, msgtype="") {
 
     if (tx == null) { return; }
+    let optional = {};
+    if (tx.optional) { optional = tx.optional; }
 
-    let sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, ts, type) VALUES ($sig, $publickey, $tx, $ts, $type)";
+    let sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $type)";
     let params = {
-      $sig:	tx.transaction.sig ,
+      $sig:		tx.transaction.sig ,
       $publickey:	key,
-      $tx:	JSON.stringify(tx.transaction),
-      $ts:	tx.transaction.ts,
-      $type:	msgtype
+      $tx:		JSON.stringify(tx.transaction),
+      $optional: 	optional,
+      $ts:		tx.transaction.ts,
+      $type:		msgtype
     };
     await this.app.storage.executeDatabase(sql, params, "archive");
 
@@ -209,7 +251,7 @@ console.log("SAVING TRANSACTION");
 
     if (rows != undefined) {
       if (rows.length > 0) {
-        txs = rows.map(row => row.tx);
+        txs.push({ tx : row.tx , optional : row.optional });
       }
     }
     return txs;
@@ -250,7 +292,7 @@ console.log("SAVING TRANSACTION");
       let txs = [];
       if (rows != undefined) {
 	if (rows.length > 0) {
-          txs = rows.map(row => row.tx);
+          txs.push({ tx : row.tx , optional : row.optional });
         }
       }
       return txs;
