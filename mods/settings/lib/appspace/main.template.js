@@ -123,21 +123,8 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         <h6> Installed Modules </h6>
 
   <div class="settings-appspace-modules">
-      ${modules_html_active}
+      ${modules_html}
    </div>
-   <div id="settings-appspace-manage-modules" class="saito-button-primary">Manage Modules</div>
-      <div class="saito-overlay-container">
-            <div class="saito-backdrop">
-              <div class="settings-appspace-modules-modal">
-              ${modules_html}
-              </div>
-              <div class="saito-overlay-actions">
-                <div id="settings-appspace-cancel-modules-modal" class="saito-button-secondary"> Cancel </div>
-              </div>
-            </div>
-      </div>
-      </div>
-      
       </div>
 
     </div>
