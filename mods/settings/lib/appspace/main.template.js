@@ -18,7 +18,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         <div class="settings-appspace-app">
         <label class="saito-switch">
           <input type="checkbox"  id="${i}"  value="modules_mods_${i}" name="modules_mods_${i}" ${CHECKED}>
-          <span class="saito-switch-slider round"></span>
+          <span class="saito-switch-slider"></span>
         </label>
           <label>${mod.name}
             <span></span>
@@ -123,21 +123,8 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         <h6> Installed Modules </h6>
 
   <div class="settings-appspace-modules">
-      ${modules_html_active}
+      ${modules_html}
    </div>
-   <div id="settings-appspace-manage-modules" class="saito-button-primary">Manage Modules</div>
-      <div class="saito-overlay-container">
-            <div class="saito-backdrop">
-              <div class="settings-appspace-modules-modal">
-              ${modules_html}
-              </div>
-              <div class="saito-overlay-actions">
-                <div id="settings-appspace-cancel-modules-modal" class="saito-button-secondary"> Cancel </div>
-              </div>
-            </div>
-      </div>
-      </div>
-      
       </div>
 
     </div>

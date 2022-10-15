@@ -100,6 +100,10 @@
   display: none;
 }
 
+.settings-appspace-modules {
+  transform: scale(0.8);
+  transform-origin: top left;
+}
 
 .settings-appspace-app {
   line-height: 2rem;
