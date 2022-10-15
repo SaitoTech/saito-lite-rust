@@ -20,4 +20,12 @@
 .saito-userline {
   color: #999;
 }
+.game-menu {
+  left: 50%;
+  transform: translate(-50%, 0);
+  opacity: 60%;
+}
 
+.game-menu:hover{
+  opacity: 90%;
+}
