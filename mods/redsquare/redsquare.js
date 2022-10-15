@@ -1038,18 +1038,27 @@ console.log(i + ": " + JSON.stringify(txs[i].optional));
 	// if retweets
 	//
 	if (txmsg.data?.retweet_tx) {
-          if (txmsg.data?.retweet_tx?.transaction?.sig) {
-            if (this.txmap[txmsg.data.retweet_tx.transaction.sig]) {
-	      let tweet = this.returnTweet(app, this, txmsg.data.sig);
-	      if (tweet == null) { return; }
-  	      let tx = this.txmap[txmsg.data.retweet_tx.transaction.sig];
+console.log("we have a retweet in this transaction!");
+console.log(JSON.stringify(txmsg));
+          if (txmsg.data?.retweet_tx) {
+
+	    let rtxobj = JSON.parse(txmsg.data.retweet_tx);
+	    let rtxsig = rtxobj.sig;
+
+console.log("we have a retweet in this transaction with sig: " + rtxsig); 
+           if (this.txmap[rtxsig]) {
+console.log("we have a retweet in this transaction with sig: " + rtxsig);
+	      let tweet2 = this.returnTweet(app, this, rtxsig);
+	      if (tweet2 == null) { return; }
+  	      let tx = tweet2.tx;
               if (!tx.optional) { tx.optional = {}; }
 	      if (!tx.optional.num_retweets) { tx.optional.num_retweets = 0; }
 	      tx.optional.num_retweets++;
-	      this.app.storage.updateTransactionOptional(txmsg.data.sig, app.wallet.returnPublicKey(), tx.optional);
-	      tweet.renderRetweets();
+	      this.app.storage.updateTransactionOptional(rtxsig, app.wallet.returnPublicKey(), tx.optional);
+console.log("now rendering retweets...");
+	      tweet2.renderRetweets();
 	    } else {
-	      this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_retweets");
+	      this.app.storage.incrementTransactionOptionalValue(rtxsig, "num_retweets");
 	    }
 	  }
 	}

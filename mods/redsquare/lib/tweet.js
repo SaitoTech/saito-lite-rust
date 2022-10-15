@@ -665,25 +665,31 @@ class RedSquareTweet {
   }
 
   renderLikes() {
-console.log("rendering likes...");
-    let qs = ".tweet-tool-like-count-"+this.tx.transaction.sig;
-    let obj = document.querySelector(qs);
-    if (!this.tx?.optional?.num_likes) { return; }
-    obj.innerHTML = this.tx.optional.num_likes;
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = ".tweet-tool-like-count-"+this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_likes) { return; }
+      obj.innerHTML = this.tx.optional.num_likes;
+    } catch (err) {}
   }
   renderRetweets() {
-console.log("rendering retweets...");
-    let qs = ".tweet-tool-retweet-count-"+this.tx.transaction.sig;
-    let obj = document.querySelector(qs);
-    if (!this.tx?.optional?.num_retweets) { return; }
-    obj.innerHTML = this.tx.optional.num_retweets;
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = ".tweet-tool-retweet-count-"+this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_retweets) { return; }
+      obj.innerHTML = this.tx.optional.num_retweets;
+    } catch (err) {}
   }
   renderReplies() {
-console.log("rendering replies...");
-    let qs = ".tweet-tool-comment-count-"+this.tx.transaction.sig;
-    let obj = document.querySelector(qs);
-    if (!this.tx?.optional?.num_replies) { return; }
-    obj.innerHTML = this.tx.optional.num_replies;
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = ".tweet-tool-comment-count-"+this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_replies) { return; }
+      obj.innerHTML = this.tx.optional.num_replies;
+    } catch (err) {}
   }
   
 

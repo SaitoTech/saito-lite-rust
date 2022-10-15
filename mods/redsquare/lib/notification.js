@@ -35,7 +35,7 @@ class RedSquareNotification {
       	if (txmsg.data.retweet_tx) {
       	  let retweet_tx = new saito.default.transaction(JSON.parse(txmsg.data.retweet_tx));
           let retweet_txmsg = retweet_tx.returnMessage();
-      	  html = RetweetNotificationTemplate(app, mod, tx, retweet_tx, retweet_txmsg);
+      	  html = RetweetNotificationTemplate(app, mod, this.tx, retweet_tx, retweet_txmsg);
       	//
       	// or reply
       	//
