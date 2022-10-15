@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.440,
+    version: 4.445,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -936,11 +936,14 @@ console.log("---------------------");
   returnActivatedCryptos() {
     const allMods = this.returnInstalledCryptos();
     const activeMods = [];
+console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
     for (let i = 0; i < allMods.length; i++) {
+console.log("checking if activated: " + allMods[i].name);
       if (allMods[i].returnIsActivated()) {
         activeMods.push(allMods[i]);
       }
     }
+console.log("returning activated cryptos num: " + activeMods.length);
     return activeMods;
   }
 
@@ -988,6 +991,8 @@ console.log("---------------------");
         modal_select_crypto.attachEvents(this.app, cryptomod);
       }
     }
+
+console.log("done in setPreferredCrypto");
 
     return;
   }

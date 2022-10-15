@@ -22,6 +22,7 @@ class Quake3 extends GameTemplate {
 
     this.content_server  = "q3.saito.io";
     this.game_server  = "q3.saito.io:27960";
+
     //this.content_server  = "18.163.184.251:80";
     //this.game_server     = "18.163.184.251:27960";
   }
@@ -67,18 +68,18 @@ class Quake3 extends GameTemplate {
 	  if (this.app.wallet.returnPublicKey() === victim) {
 	    let ts = new Date().getTime();
 	    let ticker = this.game.options.crypto;
-            let killValue = this.game.options.killValue;
+            let stake = this.game.options.stake;
 	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
 	    // the user is proactively sending tokens unsolicited, so we can skip the 
 	    // confirmation prompt provided by the crypto-manager.
 	    this.app.wallet.sendPayment(
 	      [victim_web3_address], 
 	      [killer_web3_address],
-	      [killValue],
+	      [stake],
 	      ts,
 	      uhash,
 	      function() {
-		siteMessage(`${killValue} ${ticker} sent in tribute`, 8000);
+		siteMessage(`${stake} ${ticker} sent in tribute`, 8000);
 	      },
 	      ticker
             );	  
@@ -86,7 +87,7 @@ class Quake3 extends GameTemplate {
 	  } else {
 	    let ts = new Date().getTime();
 	    let ticker = this.game.options.crypto;
-            let killValue = this.game.options.killValue;
+            let stake = this.game.options.stake;
 	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
 	    //
 	    // monitor for receipt
@@ -94,11 +95,11 @@ class Quake3 extends GameTemplate {
             this.app.wallet.receivePayment(
 	      [victim_web3_address] ,
 	      [killer_web3_address] ,
-    	      [killValue] ,
+    	      [stake] ,
     	      ts ,
               uhash ,
               function() {
-	        siteMessage(`${killValue} ${ticker} received in tribute`, 8000);
+	        siteMessage(`${stake} ${ticker} received in tribute`, 8000);
 	      },
 	      ticker
 	    );
@@ -139,17 +140,17 @@ class Quake3 extends GameTemplate {
   attachAdvancedOptionsEventListeners(){
 
     let crypto = document.getElementById("crypto");
-    let killValue = document.getElementById("killValue");
-    let killValue_wrapper = document.getElementById("killValue_wrapper");
+    let stake = document.getElementById("stake");
+    let stake_wrapper = document.getElementById("stake_wrapper");
 
     const updateChips = function(){
-      if (killValue) {
+      if (stake) {
         if (crypto.value == ""){
-          killValue_wrapper.style.display = "none";
-          killValue.value = "0";
+          stake_wrapper.style.display = "none";
+          stake.value = "0";
         } else {
-          let killValueAmt = parseFloat(killValue.value);
-          killValue_wrapper.style.display = "block";
+          let stakeAmt = parseFloat(stake.value);
+          stake_wrapper.style.display = "block";
         }
       }
     };
@@ -157,8 +158,8 @@ class Quake3 extends GameTemplate {
     if (crypto){
       crypto.onchange = updateChips;
     }
-    if (killValue){
-      killValue.onchange = updateChips;
+    if (stake){
+      stake.onchange = updateChips;
     }
 
   }
@@ -380,6 +381,20 @@ class Quake3 extends GameTemplate {
 
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
+
+
+if (app.BROWSER != 0) {
+    if (this.game.options.server === "as") {
+alert("Asian Game Server - use advanced options to change");
+      this.content_server = "q3.saito.io";
+      this.game_server = "q3.saito.io:27960";
+    }
+    if (this.game.options.server === "na") {
+alert("North American Game Server - use advanced options to change");
+      this.content_server = "q3-us.saito.io";
+      this.game_server = "q3-us.saito.io:27960";
+    }
+}
 
 
     //

@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS txs (
   sig TEXT,
   publickey TEXT,
   tx TEXT,
+  optional TEXT,
   ts INTEGER,
   type TEXT,
   UNIQUE (publickey, tx),
