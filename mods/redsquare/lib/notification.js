@@ -37,7 +37,6 @@ class RedSquareNotification {
       }
 
       if (this.tx.transaction.ts > mod.last_viewed_notifications_ts) {
-console.log("rendering notifications and updating last viewed to : " + this.tx.transaction.ts);
 	mod.last_viewed_notifications_ts = this.tx.transaction.ts;
 	mod.saveRedSquare();
       }
@@ -47,6 +46,22 @@ console.log("rendering notifications and updating last viewed to : " + this.tx.t
     }
 
     attachEvents(app, mod) { 
+
+      let qs = ".notification-item-"+this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+
+      if (obj) {
+
+        obj.onclick = (e) => {
+
+	  let id = e.currentTarget.getAttribute("data-id");
+
+alert("clicked! " + id);
+
+	}
+
+      }
+
 
     }
 }

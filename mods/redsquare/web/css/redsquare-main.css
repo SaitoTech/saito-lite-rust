@@ -78,6 +78,9 @@ span.redsquare-home-red-square+span {
 .redsquare-item {
   cursor: pointer;
 }
+.redsquare-item:hover {
+  background-color: rgba(0, 0, 0, 0.03)
+}
 
 .post-tweet-img-icon {
   margin-top: 0.5rem;
