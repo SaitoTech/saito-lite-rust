@@ -122,7 +122,6 @@ class RedSquare extends ModTemplate {
 
 
   addNotification(app, mod, tx) {
-    // skip notifying us of our own posts / comments
     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
       return;
     }
@@ -145,14 +144,11 @@ class RedSquare extends ModTemplate {
 
 
   returnTweet(app, mod, sig) {
-
     for (let i = 0; i < this.tweets.length; i++) {
       let r = this.tweets[i].returnTweet(app, mod, sig);
       if (r != null) { return r; }
     }
-
     return null;
-
   }
 
   addTweet(app, mod, tweet, prepend = 0) {
@@ -638,6 +634,7 @@ class RedSquare extends ModTemplate {
         console.log("~~~~~~~~~~~~~~~~~~");
         console.log("HOW MANY DID WE LOAD? " + txs.length);
         for (let i = 0; i < txs.length; i++) {
+console.log(i + ": " + JSON.stringify(txs[i].optional));
           txs[i].decryptMessage(app);
           let txmsg = txs[i].returnMessage();
           if (txmsg.request == "create tweet") {
@@ -736,7 +733,6 @@ class RedSquare extends ModTemplate {
               tx.optional.num_likes = row.num_likes;
               tx.optional.flagged = row.flagged;
               tx.optional.link_properties = {};
-
               try {
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
@@ -764,12 +760,9 @@ class RedSquare extends ModTemplate {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
-
       async (res) => {
         const tweets = [];
-
         if (res.rows) {
-
           res.rows.forEach(row => {
             let new_tweet = 1;
             if (new_tweet) {
@@ -790,15 +783,12 @@ class RedSquare extends ModTemplate {
               } catch (err) { }
             }
           });
-
           for (let i = 0; i < tweets.length; i++) {
             mod.addTweetAndBroadcastRenderRequest(app, mod, tweets[i]);
           }
           post_fetch_tweets_callback(app, mod);
           mod.page_number++;
-
         }
-
       }
     );
   }
@@ -815,7 +805,6 @@ class RedSquare extends ModTemplate {
         if (res.rows) {
           console.log(res.rows, "result");
           if (res.rows[0]) {
-            // console.log(res.rows, "continue");
             mod.trackedTweet = res.rows[0];
             res.rows.forEach(row => {
               let new_tweet = true;
@@ -823,7 +812,6 @@ class RedSquare extends ModTemplate {
               if (document.getElementById(tweet_id)) {
                 new_tweet = false;
               }
-
               if (new_tweet) {
                 let tx = new saito.default.transaction(JSON.parse(row.tx));
                 if (!tx.optional) { tx.optional = {}; }
@@ -841,7 +829,6 @@ class RedSquare extends ModTemplate {
                 } catch (err) { }
               }
             });
-
             mod.newTweets = mod.newTweets.concat(tweets);
             document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
           }
@@ -895,7 +882,7 @@ class RedSquare extends ModTemplate {
 
 
 
-  sendLikeTransaction(app, mod, data) {
+  sendLikeTransaction(app, mod, data, tx=null) {
 
     let redsquare_self = this;
 
@@ -909,6 +896,12 @@ class RedSquare extends ModTemplate {
     }
 
     let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
+    for (let i = 0; i < tx.transaction.to.length; i++) {
+      if (tx.transaction.to[i].add !== app.wallet.returnPublicKey()) {
+        newtx.transaction.to.push(new saito.default.slip(tx.transaction.to[i].add, 0.0));
+      }
+    }
+
     newtx.msg = obj;
     newtx = redsquare_self.app.wallet.signTransaction(newtx);
     redsquare_self.app.network.propagateTransaction(newtx);
@@ -929,7 +922,27 @@ class RedSquare extends ModTemplate {
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
         this.app.storage.saveTransaction(tx);
+
+        //
+        // save optional likes
+        //
+        let txmsg = tx.returnMessage();
+        if (this.txmap[txmsg.data.sig]) {
+	  let tweet = this.returnTweet(app, this, txmsg.data.sig);
+	  if (tweet == null) { return; }
+	  let tx = tweet.tx;
+          if (!tx.optional) { tx.optional = {}; }
+	  if (!tx.optional.num_likes) { tx.optional.num_likes = 0; }
+	  tx.optional.num_likes++;
+	  this.app.storage.updateTransactionOptional(txmsg.data.sig, app.wallet.returnPublicKey(), tx.optional);
+	  tweet.renderLikes();
+	} else {
+	  this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_likes");
+	}
+
       }
+
+
 
       //
       // add notification for unviewed
@@ -998,6 +1011,48 @@ class RedSquare extends ModTemplate {
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
         this.app.storage.saveTransaction(tx);
+        let txmsg = tx.returnMessage();
+
+	//
+	// if replies
+	//
+	if (txmsg.data?.parent_id) {
+          if (this.txmap[txmsg.data.parent_id]) {
+	    let tweet = this.returnTweet(app, this, txmsg.data.sig);
+	    if (tweet == null) { return; }
+  	    let tx = this.txmap[parent_id];
+	    if (tx.isTo(app.wallet.returnPublicKey())) {
+              if (!tx.optional) { tx.optional = {}; }
+	      if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
+	      tx.optional.num_replies++;
+	      this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
+	      tweet.renderReplies();
+	    }
+	  } else {
+	    this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_replies");
+	  }
+	}
+
+
+	//
+	// if retweets
+	//
+	if (txmsg.data?.retweet_tx) {
+          if (txmsg.data?.retweet_tx?.transaction?.sig) {
+            if (this.txmap[txmsg.data.retweet_tx.transaction.sig]) {
+	      let tweet = this.returnTweet(app, this, txmsg.data.sig);
+	      if (tweet == null) { return; }
+  	      let tx = this.txmap[txmsg.data.retweet_tx.transaction.sig];
+              if (!tx.optional) { tx.optional = {}; }
+	      if (!tx.optional.num_retweets) { tx.optional.num_retweets = 0; }
+	      tx.optional.num_retweets++;
+	      this.app.storage.updateTransactionOptional(txmsg.data.sig, app.wallet.returnPublicKey(), tx.optional);
+	      tweet.renderRetweets();
+	    } else {
+	      this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_retweets");
+	    }
+	  }
+	}
       }
 
       //

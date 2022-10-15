@@ -155,6 +155,33 @@ class Storage {
   /**
    * FUNCTIONS OVERWRITTEN BY STORAGE-CORE WHICH HANDLES ITS OWN DATA STORAGE IN ./core/storage-core.js
    **/
+  updateTransaction(tx) {
+    const txmsg = tx.returnMessage();
+    const message = "archive";
+    const data: any = {};
+    data.request = "update";
+    data.tx = tx;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
+  incrementTransactionOptionalValue(sig, optional_key) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "increment_optional_value";
+    data.sig = sig;
+    data.publickey = this.app.wallet.returnPublicKey();
+    data.optional_key = optional_key;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
+  updateTransactionOptionalValue(sig, optional_key, optional_value) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "update_optional_value";
+    data.sig = sig;
+    data.publickey = this.app.wallet.returnPublicKey();
+    data.optional_value = optional_value;
+    data.optional_key = optional_key;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
   updateTransactionOptional(sig, optional) {
     const message = "archive";
     const data: any = {};

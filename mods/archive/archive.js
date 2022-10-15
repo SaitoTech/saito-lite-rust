@@ -56,13 +56,27 @@ class Archive extends ModTemplate {
       if (req.data.request === "save") {
         this.saveTransaction(req.data.tx, req.data.type);
       }
+      if (req.data.request === "update") {
+        this.updateTransaction(req.data.tx);
+      }
       if (req.data.request === "save_key") {
         if (!req.data.key) { return; }
         this.saveTransactionByKey(req.data.key, req.data.tx, req.data.type);
       }
       if (req.data.request === "update_optional") {
         if (!req.data.optional) { return; }
+console.log("RECEIVED REQUEST TO UPDATE TX OPTIONAL: " + JSON.stringify(req.data.optional));
         this.updateTransactionOptional(req.data.sig, req.data.publickey, req.data.optional);
+      }
+      if (req.data.request === "update_optional_value") {
+        if (!req.data.optional) { return; }
+console.log("RECEIVED REQUEST TO UPDATE TX OPTIONAL VALUE: " + req.data.optional_key + " - " + req.data.optional_value);
+        this.updateTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key, req.data.optional_value);
+      }
+      if (req.data.request === "increment_optional_value") {
+        if (!req.data.optional) { return; }
+console.log("RECEIVED REQUEST TO INCREMENT TX OPTIONAL: " + req.data.optional_key + " - " + req.data.optional_value);
+        this.incrementTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key);
       }
       if (req.data.request === "load") {
         let type = "";
@@ -94,12 +108,60 @@ class Archive extends ModTemplate {
 
     let sql = "UPDATE txs SET optional = $optional WHERE sig = $sig AND publickey = $publickey";
     let params = {
+        $optional	:	JSON.stringify(optional) ,
         $sig		:	sig ,
         $publickey	:	publickey ,
-        $optional	:	JSON.stringify(optional)
-      };
-      await this.app.storage.executeDatabase(sql, params, "archive");
+    };
+    await this.app.storage.executeDatabase(sql, params, "archive");
 
+  }
+
+
+  async updateTransactionOptionalValue(sig, publickey, key, new_value) {
+
+    let sql = "SELECT id, sig, publickey, tx, optional FROM txs WHERE sig = $sig AND publickey = $publickey";
+    let params = {
+        $sig		:	sig ,
+        $publickey	:	publickey ,
+    };
+
+    let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    if (rows != undefined) {
+      if (rows.length > 0) {
+	for (let i = 0; i < rows.length; i++) {
+
+          let optional = JSON.parse(rows[i].optional);
+	  if (!optional) { optional = {}; }
+	  optional[key] = new_value;
+	  await this.updateTransactionOptional(rows[i].sig, rows[i].publickey, optional);
+        }
+      }
+    }
+  }
+
+
+
+  async incrementTransactionOptionalValue(sig, publickey, key) {
+
+    let sql = "SELECT id, sig, publickey, tx, optional FROM txs WHERE sig = $sig AND publickey = $publickey";
+    let params = {
+        $sig		:	sig ,
+        $publickey	:	publickey ,
+    };
+
+    let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+    if (rows != undefined) {
+      if (rows.length > 0) {
+	for (let i = 0; i < rows.length; i++) {
+
+          let optional = JSON.parse(rows[i].optional);
+	  if (!optional) { optional = {}; }
+	  if (!optional[key]) { optional[key] = 0; }
+	  optional[key]++;
+	  await this.updateTransactionOptional(rows[i].sig, rows[i].publickey, optional);
+        }
+      }
+    }
   }
 
 
@@ -169,6 +231,40 @@ class Archive extends ModTemplate {
     //
     if ((Date.now() - this.last_clean_on) >= this.cleaning_period_in_ms) { await this.pruneOldTransactions(); }
   }
+
+
+
+  async updateTransaction(tx=null) {
+
+    if (tx == null) { return; }
+
+    let sql = "";
+    let params = {};
+    let optional = {};
+    if (tx.optional) { optional = tx.optional; }
+
+    for (let i = 0; i < tx.transaction.to.length; i++) {
+      sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
+      params = {
+        $tx		:	JSON.stringify(tx.transaction) ,
+        $sig		:	tx.transaction.sig ,
+        $publickey	:	tx.transaction.to[i].add ,
+        $optional	:	JSON.stringify(optional) ,
+      };
+      await this.app.storage.executeDatabase(sql, params, "archive");
+    }
+    for (let i = 0; i < tx.transaction.from.length; i++) {
+      sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
+      params = {
+        $tx		:	JSON.stringify(tx.transaction) ,
+        $sig		:	tx.transaction.sig ,
+        $publickey	:	tx.transaction.from[i].add ,
+        $optional	:	JSON.stringify(optional) ,
+      };
+      await this.app.storage.executeDatabase(sql, params, "archive");
+    }
+  }
+
 
 
   async pruneOldTransactions() {
@@ -251,7 +347,9 @@ class Archive extends ModTemplate {
 
     if (rows != undefined) {
       if (rows.length > 0) {
-        txs.push({ tx : row.tx , optional : row.optional });
+	for (let i = 0; i < rows.length; i++) {
+          txs.push({ tx : rows[i].tx , optional : rows[i].optional });
+        }
       }
     }
     return txs;
