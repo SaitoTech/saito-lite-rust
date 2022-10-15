@@ -18,7 +18,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         <div class="settings-appspace-app">
         <label class="saito-switch">
           <input type="checkbox"  id="${i}"  value="modules_mods_${i}" name="modules_mods_${i}" ${CHECKED}>
-          <span class="saito-switch-slider round"></span>
+          <span class="saito-switch-slider"></span>
         </label>
           <label>${mod.name}
             <span></span>
