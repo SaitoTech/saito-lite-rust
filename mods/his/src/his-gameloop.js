@@ -266,11 +266,9 @@ alert("removing unit not implement for sea");
 
 	if (mv[0] === "is_testing") {
 
-
-	  this.game.queue.push("event\t" + this.returnPlayerOfFaction("papacy") + "\t" + "006");
-
-	  this.game.queue.push("theological_debate");
-	  this.game.queue.push("pre_theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+//	  this.game.queue.push("event\t" + this.returnPlayerOfFaction("papacy") + "\t" + "006");
+//	  this.game.queue.push("theological_debate");
+//	  this.game.queue.push("pre_theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
 
 	  //this.game.queue.push("retreat_to_winter_spaces");
 
@@ -3300,6 +3298,12 @@ console.log("space: " + spacekey);
 
 	if (mv[0] === "pick_second_round_debaters") {
 
+	  let attacker = this.game.state.theological_debate.attacker;
+	  let defender = this.game.state.theological_debate.defender;
+	  this.game.state.theological_debate.round++;
+
+	  let x = 0;
+
 	  //
 	  // attacker chosen randomly from uncommitted
 	  //
@@ -3340,7 +3344,7 @@ console.log("space: " + spacekey);
 	      cd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.theological_debate.committed == "committed") {
-	      if (this.game.state.debaters[i].owner == attacker) {
+	      if (this.game.state.debaters[i].owner == defender) {
 		if (this.game.state.debaters[i].committed == 1) {
 	          dd++;
 	        } else {
@@ -3354,7 +3358,7 @@ console.log("space: " + spacekey);
   	    dd = 0;
 	    for (let i = 0; i < this.game.state.debaters.length; i++) {
 	      if (this.game.state.theological_debate.committed == "committed") {
-	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 0) {
 	          if (x === dd) { this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type; }
 	          dd++;
 	        } else {
@@ -3368,7 +3372,7 @@ console.log("space: " + spacekey);
   	    cd = 0;
 	    for (let i = 0; i < this.game.state.debaters.length; i++) {
 	      if (this.game.state.theological_debate.committed == "committed") {
-	        if (this.game.state.debaters[i].owner == attacker && this.game.state.debaters[i].committed == 0) {
+	        if (this.game.state.debaters[i].owner == defender && this.game.state.debaters[i].committed == 0) {
 	          if (x === cd) { this.game.state.theological_debate.defender_debater = this.game.state.debaters[i].type; }
 	          cd++;
 	        } else {
