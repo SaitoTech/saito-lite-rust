@@ -2,6 +2,8 @@ const PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const SaitoEmoji = require("./../../../lib/saito/new-ui/saito-emoji/saito-emoji");
 const JSON = require('json-bigint');
+const Flip = require('gsap/Flip');
+
 
 class Post {
 
@@ -21,6 +23,7 @@ class Post {
       document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
     }
     this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
+    console.log(Flip, 'gsap');
     app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
     document.getElementById("post-tweet-textarea").focus();
     this.attachEvents(app, mod);
