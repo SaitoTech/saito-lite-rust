@@ -443,17 +443,15 @@ class Browser {
   }
 
   replaceElementById(html, id = null) {
-    console.log("replace element by id: " + id);
     if (id == null) {
+      console.warn("no id provided to replace, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
-      console.log("trying to get element by id: " + id);
       let obj = document.getElementById(id);
       if (obj) {
-        console.log("can find so replacing");
         obj.outerHTML = html;
       } else {
-        console.log("cannot find so adding");
+        console.warn(`cannot find ${id} to replace, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -461,14 +459,14 @@ class Browser {
 
   addElementToId(html, id = null) {
     if (id == null) {
+      console.warn(`no id provided to add to, so adding to DOM`);
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementById(id);
       if (obj) {
-        console.log("add element by id 2: " + id);
         this.app.browser.addElementToDom(html, obj);
       } else {
-        console.log("NOT FOUND add element by id 2: " + id);
+        console.warn(`cannot find ${id} to add to, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -476,12 +474,14 @@ class Browser {
 
   prependElementToId(html, id = null) {
     if (id == null) {
+      console.warn(`no id provided to prepend to, so adding to DOM`);
       this.app.browser.prependElementToDom(html);
     } else {
       let obj = document.getElementById(id);
       if (obj) {
         this.app.browser.prependElementToDom(html, obj);
       } else {
+        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
@@ -489,12 +489,14 @@ class Browser {
 
   replaceElementBySelector(html, selector = "") {
     if (selector === "") {
-      this.app.browser.addElementToDom(html);
+     console.warn("no selector provided to replace, so adding direct to DOM");
+     this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
       if (obj) {
         obj.outerHTML = html;
       } else {
+        console.warn(`cannot find ${id} to replace, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -502,12 +504,14 @@ class Browser {
 
   addElementToSelector(html, selector = "") {
     if (selector === "") {
+     console.warn("no selector provided to add to, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
       } else {
+        console.warn(`cannot find ${id} to add to, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -515,12 +519,14 @@ class Browser {
 
   prependElementToSelector(html, selector = "") {
     if (selector === "") {
+      console.warn("no selector provided to prepend to, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.prependElementToDom(html, container);
       } else {
+        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
@@ -747,9 +753,17 @@ console.log("preventing the defaults");
       let element_start_top = 0;
 
       element_to_drag.onmousedown = function (e) {
+        let resizeable = ["both", "vertical", "horizontal"];
+        //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
+        if(resizeable.indexOf(getComputedStyle(e.target).resize) > -1 || resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1) {
+          if (e.offsetX > (e.target.offsetWidth - 20) && e.offsetY > (e.target.offsetHeight -20)) {return;}
+        }
+
         e = e || window.event;
 
         console.log("DRAG MOUSEDOWN");
+        console.log(e.clientX);
+        console.log(e.offsetX);
 
         if (
           !e.currentTarget.id ||
@@ -765,6 +779,7 @@ console.log("preventing the defaults");
         const rect = element_to_move.getBoundingClientRect();
         element_start_left = rect.left;
         element_start_top = rect.top;
+
 
         mouse_down_left = e.clientX;
         mouse_down_top = e.clientY;

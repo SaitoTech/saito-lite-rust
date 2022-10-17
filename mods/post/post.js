@@ -34,14 +34,6 @@ class Post extends ModTemplate {
     this.categories = "Social Messaging";
   }
 
-  receiveEvent(type, data) {
-    if (type == "chat-render-request") {
-      if (this.browser_active) {
-        PostSidebar.render(this.app, this);
-        PostSidebar.attachEvents(this.app, this);
-      }
-    }
-  }
 
   //
   // manually announce arcade banner support
@@ -100,7 +92,16 @@ class Post extends ModTemplate {
     return services;
   }
 
-  /* Does this still get called or only render???*/
+  initialize(app){
+    super.initialize(app);
+    //Add Chat-Manager to my components
+    app.modules.respondTo("chat-manager").forEach(m => {
+      this.addComponent(m.respondTo("chat-manager"));
+    });
+
+  }
+
+  /* We exploit the dual nature of render/initializeHTML to do some weird shit*/
   initializeHTML(app) {
     if (this.header == null) {
       this.header = new SaitoHeader(app, this);
@@ -117,6 +118,8 @@ class Post extends ModTemplate {
 
     PostMain.render(app, this);
     PostMain.attachEvents(app, this);
+
+    super.render(this.app, this, ".post-sidebar");
 
     this.urlParams = new URLSearchParams(window.location.search);
     if (this.urlParams.get("delete")) {

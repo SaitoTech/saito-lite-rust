@@ -47,7 +47,6 @@ class RedSquare extends ModTemplate {
       '/saito/saito.css',
       '/redsquare/css/redsquare-main.css',
       '/redsquare/css/arcade.css',		      // game creation overlays
-      '/redsquare/css/chat.css',		        // game creation overlays
     ];
     this.ui_initialized = false;
 
@@ -407,6 +406,7 @@ class RedSquare extends ModTemplate {
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
+      this.header.setClickTarget("/redsquare");
       this.mobileBar = new SaitoMobileBar(this.app, this);
       this.addComponent(this.main);
       this.addComponent(this.header);
@@ -943,13 +943,14 @@ console.log(i + ": " + JSON.stringify(txs[i].optional));
       }
 
 
-
       //
       // add notification for unviewed
       //
       console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
+      } else {
+        this.ntfs.push(tx);
       }
 
       return;
@@ -1038,16 +1039,12 @@ console.log(i + ": " + JSON.stringify(txs[i].optional));
 	// if retweets
 	//
 	if (txmsg.data?.retweet_tx) {
-console.log("we have a retweet in this transaction!");
-console.log(JSON.stringify(txmsg));
           if (txmsg.data?.retweet_tx) {
 
 	    let rtxobj = JSON.parse(txmsg.data.retweet_tx);
 	    let rtxsig = rtxobj.sig;
 
-console.log("we have a retweet in this transaction with sig: " + rtxsig); 
            if (this.txmap[rtxsig]) {
-console.log("we have a retweet in this transaction with sig: " + rtxsig);
 	      let tweet2 = this.returnTweet(app, this, rtxsig);
 	      if (tweet2 == null) { return; }
   	      let tx = tweet2.tx;
@@ -1055,7 +1052,6 @@ console.log("we have a retweet in this transaction with sig: " + rtxsig);
 	      if (!tx.optional.num_retweets) { tx.optional.num_retweets = 0; }
 	      tx.optional.num_retweets++;
 	      this.app.storage.updateTransactionOptional(rtxsig, app.wallet.returnPublicKey(), tx.optional);
-console.log("now rendering retweets...");
 	      tweet2.renderRetweets();
 	    } else {
 	      this.app.storage.incrementTransactionOptionalValue(rtxsig, "num_retweets");
@@ -1070,6 +1066,8 @@ console.log("now rendering retweets...");
       console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
+      } else {
+	this.ntfs.push(tx);
       }
 
       this.newTweets.push(tweet);

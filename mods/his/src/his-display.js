@@ -83,7 +83,9 @@
 
   displayTheologicalDebater(debater, attacker=true) {
 
-    let tile_f = "/his/img/tiles/debaters/" + this.units[debater].img;
+console.log("DEBATER: " + debater);
+
+    let tile_f = "/his/img/tiles/debaters/" + this.debaters[debater].img;
     let tile_b = tile_f.replace('.svg', '_back.svg');
 
     if (attacker) {
@@ -102,6 +104,21 @@
       });
     }
   }
+
+  displayTheologicalDebate() {
+
+    let html = `
+      <div class="theological_debate_sheet" id="theological_debate_sheet">
+	<div class=".status"></div>
+	<div class="attacker_debater"></div>
+	<div class="defender_debater"></div>
+      </div>
+    `;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+  }
+
 
   displayReligiousConflictSheet() {
 
@@ -1012,7 +1029,8 @@
     // add tiles
     //
     for (let key in this.game.navalspaces) {
-      if (this.game.navalspaces.hasOwnProperty(key)) {
+console.log("nk: " + key);
+      if (this.game.navalspaces[key]) {
 	this.displayNavalSpace(key);
         document.getElementById(key).onclick = (e) => {
 	  this.displayNavalSpaceDetailedView(key);

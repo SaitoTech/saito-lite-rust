@@ -13,13 +13,6 @@ module.exports = PostSidebar = {
       app.browser.addElementToDom(PostSidebarTemplate(app, mod), document.getElementById("post-container")); 
     }
 
-    app.modules.respondTo("email-chat").forEach(module => {
-      if (module != null) {
-        module.respondTo('email-chat').render(app, module);
-      }
-    });
-
-
   },
 
 
@@ -37,10 +30,6 @@ module.exports = PostSidebar = {
       link.addEventListener("click", (e) => {
         window.location = "/post";
       });
-    });
-
-    app.modules.respondTo("email-chat").forEach(module => {
-      module.respondTo('email-chat').attachEvents(app, mod);
     });
 
   },
