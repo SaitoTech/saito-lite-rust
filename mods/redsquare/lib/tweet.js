@@ -533,11 +533,14 @@ class RedSquareTweet {
     // like
     //
     sel = ".tweet-like-" + this.tx.transaction.sig;
+   
     document.querySelector(sel).onclick = (e) => {
+   
+      let sel = ".tweet-like-" + this.tx.transaction.sig;
       e.preventDefault();
       e.stopImmediatePropagation();
       mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig }, this.tx);
-
+      
       // increase num likes
       sel = ".tweet-tool-like-count-" + this.tx.transaction.sig;
       let obj = document.querySelector(sel);

@@ -430,6 +430,36 @@ span.redsquare-home-red-square+span {
   cursor: pointer;
 }
 
+.tweet-tool-like i {
+  transition: all 1s;
+  position: relative;
+}
+
+.tweet-tool-like i::after {
+  content: "\f004";
+  font-size: 100%;
+  position: absolute;
+  left: 0;
+}
+
+.tweet-tool-like i:active::after{
+  transition: all .2s;
+  opacity: 1;
+  scale: 1.6;
+}
+
+.tweet-tool-like i.pulse::after {
+  animation: pulse .2s ease-in-out 1;
+}
+
+
+@keyframes pulse {
+   100% {
+    opacity: .5;
+    scale: 1.4;
+   }
+}
+
 .tweet-img {
   position: relative;
 }

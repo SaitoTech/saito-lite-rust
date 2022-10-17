@@ -53,8 +53,7 @@ class RedSquareMenu {
 
 
     const tl = gsap.timeline();
-
-    tl.fromTo('.saito-menu-list li', {duration: .05, opacity: .1, x: "-10rem", stagger:.1, delay: 1.5}, {duration: .05,opacity: 1, x: 0, stagger: .1});
+    tl.fromTo('.saito-menu-list li', {duration: .05, opacity: .1, x: "-10rem", stagger:.1, delay: 2.3}, {duration: .05,opacity: 1, x: 0, stagger: .1});
 
     this.attachEvents(app, mod);
   }
