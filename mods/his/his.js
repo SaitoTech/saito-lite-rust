@@ -1928,6 +1928,7 @@ console.log("adding stuff!");
 	    // only add leaders if there is a ship in port
 	    //
 	    let u = this.game.spaces[key].units[fip[i]][z];
+	    u.idx = z;
 	    if (u.land_or_sea === "sea") {
 	      if (u.navy_leader == true) {
 		leaders.push(u);
@@ -8051,11 +8052,9 @@ alert("removing unit not implement for sea");
 
 	if (mv[0] === "is_testing") {
 
-
-	  this.game.queue.push("event\t" + this.returnPlayerOfFaction("papacy") + "\t" + "006");
-
-	  this.game.queue.push("theological_debate");
-	  this.game.queue.push("pre_theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
+//	  this.game.queue.push("event\t" + this.returnPlayerOfFaction("papacy") + "\t" + "006");
+//	  this.game.queue.push("theological_debate");
+//	  this.game.queue.push("pre_theological_debate\tpapacy\tprotestant\tgerman\tuncommitted");
 
 	  //this.game.queue.push("retreat_to_winter_spaces");
 
@@ -13720,8 +13719,6 @@ console.log("units length: " + space.units[defender].length);
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
 
-console.log("UA: " + JSON.stringify(units_available));
-
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 
       let msg = "Select Unit to Move";
@@ -13746,8 +13743,10 @@ console.log("UA: " + JSON.stringify(units_available));
         let id = $(this).attr("id");
 
         if (id === "end") {
-
 	  let destinations = {};
+
+console.log("UNITS AVAILABLE: " + JSON.stringify(units_available));
+console.log("UNITS TO MOVE: " + JSON.stringify(units_to_move));
 
 	  for (let i = 0; i < units_to_move.length; i++) {
 	    let unit = units_available[units_to_move[i]];
@@ -13756,15 +13755,52 @@ console.log("UA: " + JSON.stringify(units_available));
 	      destinations[unit.destination] = 1;
 	    }
 	  }
-	  for (let i = 0; i < units_to_move.length; i++) {
-	    let unit = units_available[units_to_move[i]];
-            his_self.addMove("move\t"+faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+units_to_move[i]);
+
+
+	  let revised_units_to_move = [];
+	  let entries_to_loop = units_to_move.length;	
+	  for (let z = 0; z < entries_to_loop; z++) {
+
+console.log("z: " + z);
+
+	    let highest_idx = 0;
+	    let highest_num = 0;
+
+	    for (let y = 0; y < units_to_move.length; y++) {
+console.log("y: " + y);
+   	      let unit = units_available[units_to_move[y]];
+	      let max_num = unit.idx;
+	      let max_idx = y;
+	      if (max_num > highest_num) {
+		highest_idx = max_idx;
+		highest_num = max_num;
+	      }
+	    }
+
+console.log("highest_idx: " + highest_idx);
+console.log("highest_num: " + highest_num);
+
+	    revised_units_to_move.unshift(JSON.parse(JSON.stringify(units_available[units_to_move[highest_idx]])));
+	    units_to_move.splice(highest_idx, 1);
+	  }
+
+console.log("revised: " + JSON.stringify(revised_units_to_move));
+
+	  //
+	  // revised units to move is
+	  //
+	  for (let i = 0; i < revised_units_to_move.length; i++) {
+	    let unit = revised_units_to_move[i];
+            his_self.addMove("move\t"+faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+revised_units_to_move[i].idx);
 	  }
           his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" shifting naval forces\tnavalmove");
 	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	  his_self.endTurn();
+	  return;
 
 	}
+
+console.log("done 2");
 
 	//
 	// add unit to units available
@@ -13790,6 +13826,7 @@ console.log("UA: " + JSON.stringify(units_available));
         }
       });
     }
+console.log("done 3");
 
     let selectDestinationInterface = function(his_self, unit_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 

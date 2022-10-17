@@ -55,6 +55,7 @@
 	    // only add leaders if there is a ship in port
 	    //
 	    let u = this.game.spaces[key].units[fip[i]][z];
+	    u.idx = z;
 	    if (u.land_or_sea === "sea") {
 	      if (u.navy_leader == true) {
 		leaders.push(u);
