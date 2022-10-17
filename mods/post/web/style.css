@@ -535,10 +535,8 @@
   background-size: cover;
   color: var(--saito-white);
   border: 1px solid var(--saito-red);
-  border-bottom: 0px;
-  padding-left: 15px;
-  padding-right: 15px;
 }
+
 .chat-list {
   border: 1px solid var(--saito-red);
 
