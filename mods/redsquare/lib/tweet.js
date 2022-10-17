@@ -428,7 +428,8 @@ class RedSquareTweet {
         !e.target.classList.contains("tweet-tool") &&   // buttons
         !e.target.classList.contains("far") &&   // icons
         !e.target.classList.contains("fa") &&   // icons
-        !e.target.classList.contains("fas")
+        !e.target.classList.contains("fas") && 
+        !e.target.classList.contains("redsquare-tweet-tools")
       ) {
 
         //
