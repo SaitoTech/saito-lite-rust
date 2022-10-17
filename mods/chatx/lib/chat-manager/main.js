@@ -18,27 +18,16 @@ class ChatManager {
 		}
 
 		app.connection.on("chat-render-request", (group_id = "") => {
-console.log("RECEIVED CHAT RENDER REQUEST...");
 			if (app.BROWSER) {
-console.log("we are a browser...");
 				if ((app.browser.isMobileBrowser(navigator.userAgent) == true || window.innerWidth < 600) && !mod.mobile_chat_active) {
-
-console.log("a: " + app.browser.isMobileBrowser(navigator.userAgent));
-console.log("b: " + window.innerWidth);
-console.log("c: " + !mod.mobile_chat_active);
-
 					//send chat notification event
-console.log("send notification instead...");
 					app.connection.emit("chat-render-request-notify");
 					return;
 				} else {
-console.log("we are not a mobile device...: " + group_id);
 					if (group_id != "") {
-console.log("we are not a mobile device...");
 						let psq = "#chat-container-" + group_id;
 						let obj = document.querySelector(psq);
 						if (!obj) {
-console.log("RECEIVED CHAT RENDER REQUEST SO RENDERING POPUP...");
 							let chat_popup = new ChatPopup(app, mod, group_id);
 							chat_popup.render(app, mod, group_id);
 						} else {

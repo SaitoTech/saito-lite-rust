@@ -50,7 +50,6 @@ class Crypto extends ModTemplate {
 
 
   enableCrypto(game_mod, game_id, ticker) {
-    alert("Proposing Game Stake!");
 
     //
     // restore original pre-move state
@@ -63,9 +62,15 @@ class Crypto extends ModTemplate {
     game_mod.game.turn = [];
     game_mod.moves = [];
     game_mod.proposeGameStake(ticker, "0.2");
-    alert("Proposed Stake - Reloading!");
+
+
+    //
+    // users have deliberately opted-in
+    //
+    //game_mod.crypto_transfers_outbound_approved = 1;
+    //game_mod.crypto_transfers_inbound_trusted = 1;
+
     location.reload();
-    //this.overlay.render(this.app, this);
   }
 
 }
