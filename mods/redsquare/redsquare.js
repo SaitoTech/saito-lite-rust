@@ -406,6 +406,7 @@ class RedSquare extends ModTemplate {
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
+      this.header.setClickTarget("/redsquare");
       this.mobileBar = new SaitoMobileBar(this.app, this);
       this.addComponent(this.main);
       this.addComponent(this.header);

@@ -65,17 +65,14 @@ class Archive extends ModTemplate {
       }
       if (req.data.request === "update_optional") {
         if (!req.data.optional) { return; }
-console.log("RECEIVED REQUEST TO UPDATE TX OPTIONAL: " + JSON.stringify(req.data.optional));
         this.updateTransactionOptional(req.data.sig, req.data.publickey, req.data.optional);
       }
       if (req.data.request === "update_optional_value") {
         if (!req.data.optional) { return; }
-console.log("RECEIVED REQUEST TO UPDATE TX OPTIONAL VALUE: " + req.data.optional_key + " - " + req.data.optional_value);
         this.updateTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key, req.data.optional_value);
       }
       if (req.data.request === "increment_optional_value") {
         if (!req.data.optional) { return; }
-console.log("RECEIVED REQUEST TO INCREMENT TX OPTIONAL: " + req.data.optional_key + " - " + req.data.optional_value);
         this.incrementTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key);
       }
       if (req.data.request === "load") {
