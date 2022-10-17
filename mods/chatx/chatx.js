@@ -526,7 +526,7 @@ class Chatx extends ModTemplate {
                     sender = block[z].transaction.from[0].add;
                     msg += txmsg.message;
                 }
-                let datets = new Date(block[block.length - 1].msg.timestamp)
+                let datets = new Date(block[block.length - 1].msg.timestamp);
                 let x = this.app.browser.formatDate(datets);
                 let last_update = x.hours + ":" + x.minutes;
                 msg = this.app.browser.sanitize(msg);
@@ -722,6 +722,7 @@ class Chatx extends ModTemplate {
             name: name,
             txs: [],
             unread: 0,
+            popup: new ChatPopup(this.app, this, id),
         }
 
         this.groups.push(newGroup);

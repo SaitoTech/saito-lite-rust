@@ -20,12 +20,6 @@ class ChatManager {
 			}
 		});
 
-		app.connection.on("chat-render-request", (gid) => {
-			if (this.rendered){
-				this.render(app, mod);
-			}
-		});
-
 		app.connection.on("chat-render-request-notify", (gid) => {
 			if (this.rendered){
 				let group = mod.returnGroup(gid);
