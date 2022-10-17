@@ -125,6 +125,10 @@
   margin-right: .5rem;
 }
 
+label.treated {
+  display: none;
+}
+
 
 .settings-appspace-versions-container {
   margin-bottom: 4rem;
