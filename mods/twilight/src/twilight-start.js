@@ -403,8 +403,14 @@ class Twilight extends GameTemplate {
     }
     if (app.browser.returnPreferredLanguage() === "es") {
       if (!app?.options?.gameprefs?.lang) {
-        this.lang = "zh";
+        this.lang = "es";
         this.saveGamePreference("lang", "es");
+      }
+    }
+    if (app.browser.returnPreferredLanguage() === "ru") {
+      if (!app?.options?.gameprefs?.lang) {
+        this.lang = "ru";
+        this.saveGamePreference("lang", "ru");
       }
     }
 
@@ -592,6 +598,16 @@ class Twilight extends GameTemplate {
         game_mod.displayModal("语言设定", "卡牌语言改成简体中文");
         game_mod.lang = "zh";
         game_mod.saveGamePreference("lang", "zh");
+        setTimeout(function() { window.location.reload(); }, 1000);
+      }
+    });
+    this.menu.addSubMenuOption("game-language", {
+      text: `русский язык ${(this.lang=="ru")?"✔":""}`,
+      id: "game-language-es",
+      callback: function(app, game_mod){
+        game_mod.displayModal("");
+        game_mod.lang = "ru";
+        game_mod.saveGamePreference("lang", "ru"); 
         setTimeout(function() { window.location.reload(); }, 1000);
       }
     });
