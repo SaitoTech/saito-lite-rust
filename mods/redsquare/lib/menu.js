@@ -1,7 +1,7 @@
 const RedSquareMenuTemplate = require("./menu.template");
 const RedSquareWideSidebar = require("./sidebar/sidebar");
 const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
-
+const {gsap} = require('gsap');
 
 
 class RedSquareMenu {
@@ -50,6 +50,12 @@ class RedSquareMenu {
 
       }
     }
+
+
+    const tl = gsap.timeline();
+
+    tl.fromTo('.saito-menu-list li', {duration: .05, opacity: .1, x: "-10rem", stagger:.1, delay: 1.5}, {duration: .05,opacity: 1, x: 0, stagger: .1});
+
     this.attachEvents(app, mod);
   }
 
