@@ -55,6 +55,8 @@ Generic Style Settings for Modules in the Saito App Suite
   --saito-cyber-black-cut: rgb(28, 28, 35, 0.5);
   --saito-wu: none;
   --saito-width: 1500px;
+
+  font-size: 10px;
 }
 
 * {
@@ -131,6 +133,7 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--thumbBG) var(--scrollbarBG);
   overflow: hidden;
+  font-size: 1.6rem;
 }
 
 ::-webkit-scrollbar {
@@ -213,6 +216,10 @@ h5,
 h6,
 p {
   margin: 0.5em 0;
+}
+
+h6{
+  font-size: 2rem;
 }
 
 hr {

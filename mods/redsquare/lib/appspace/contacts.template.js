@@ -3,8 +3,8 @@ const SaitoUserTemplateWithTime = require('./../../../../lib/saito/new-ui/templa
 
 module.exports = (app, mod) => {
 
-  let groups = app.keys.groups;
-  let keys = app.keys.keys;
+  let groups = app.keys.returnGroups();
+  let keys = app.keys.returnKeys();
 
 
   let html = `

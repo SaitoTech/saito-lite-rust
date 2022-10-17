@@ -32,12 +32,10 @@ class Arcade extends ModTemplate {
     //this.observer = [];
     this.old_game_removal_delay = 2000000;
     this.services = [{ service: "arcade", domain: "saito" }];
-    this.request_no_interrupts = true; // ask other modules not to insert content
+    this.request_no_interrupts = false; // ask other modules not to insert content
 
     this.viewing_arcade_initialization_page = 0;
     this.viewing_game_homepage = ""; //// this.app.browser.returnURLParameter("game");
-
-    this.chat_open = 0;
 
     this.icon_fa = "fas fa-gamepad";
 
@@ -51,50 +49,17 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = true;
+    this.debug = false;
 
     //So we can keep track of games which we want to close but are waiting on game engine to process
     this.game_close_interval_cnt = 0;
     this.game_close_interval_queue = [];
     this.game_close_interval_id = null;
 
-
-
   }
 
 
-  receiveEvent(type, data) {
-    if (type == "chat-render-request") {
-      if (this.browser_active) {
-        if (this.app.options.auto_open_chat_box == undefined) {
-          this.app.options.auto_open_chat_box = 1;
-          this.app.storage.saveOptions();
-        }
-        //this.renderSidebar();
-          let chat_mod = this.app.modules.returnModule("Chat");
-          if (chat_mod){
-            if (chat_mod.groups && 
-                chat_mod.groups.length > 0 &&
-                this.chat_open == 0 &&
-                this.app.options.auto_open_chat_box
-             ) {
-              this.chat_open = 1;
-              chat_mod.openChats();
-          }
-        }
-      }
-    }
-  }
-
-/*  handleUrlParams(urlParams) {
-    let i = urlParams.get("i");
-    if (i == "watch") {
-      let msg = urlParams.get("msg");
-      this.observeGame(msg, 0);
-    }
-  }
-*/
-
+ 
   renderArcadeMain() {
     if (this.browser_active == 1) {
       if (this.viewing_arcade_initialization_page == 0) {
@@ -173,7 +138,12 @@ class Arcade extends ModTemplate {
   initialize(app) {
     super.initialize(app);
 
-    
+    //Add Chat-Manager to my components
+    app.modules.respondTo("chat-manager").forEach(m => {
+      this.addComponent(m.respondTo("chat-manager"));
+    });
+
+
     this.addMyGamesToOpenList();
 
 
@@ -438,6 +408,7 @@ class Arcade extends ModTemplate {
 
     this.renderSidebar();
     this.renderArcadeMain();
+    super.render(this.app, this, ".arcade-sidebar");
   }
 
   isMyGame(invite, app) {

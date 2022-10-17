@@ -50,6 +50,15 @@
   margin-bottom: 4px;
 }
 
+/* Chat / Manager */
+
+.chat-manager-list > .saito-user > .saito-identicon-container {
+    padding-left: 0.7rem;
+    padding-right: 0.4rem;
+}
+
+
+
 .redsquare-home-red-square {
   font-size: 2.6rem;
   width: 2rem;

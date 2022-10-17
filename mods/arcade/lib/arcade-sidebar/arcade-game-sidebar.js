@@ -10,12 +10,6 @@ module.exports = ArcadeGameSidebar = {
     if (!document.getElementById("arcade-container")) { app.browser.addElementToDom(ArcadeContainerTemplate()); }
     if (!document.querySelector(".arcade-sidebar")) { app.browser.addElementToDom(ArcadeGameSidebarTemplate(game_mod), document.getElementById("arcade-container")); }
 
-    app.modules.respondTo("email-chat").forEach(module => {
-      if (module != null) {
-        module.respondTo('email-chat').render(app, module);
-      }
-    });
-
   },
 
   
@@ -49,10 +43,6 @@ module.exports = ArcadeGameSidebar = {
       });
     });
 
-
-    app.modules.respondTo("email-chat").forEach(module => {
-      module.respondTo('email-chat').attachEvents(app, mod);
-    });
 
   }
 
