@@ -1,6 +1,5 @@
-const JSON = require('json-bigint');
 
-module.exports = (app, mod, group_id) => {
+module.exports = (app, mod, group_id = "") => {
 
     let group = mod.returnGroup(group_id);
     if (!group) { return ""; }
@@ -9,22 +8,15 @@ module.exports = (app, mod, group_id) => {
     
     let html = `
 
-      <div class="chat-container chat-container-${group_id}" id="chat-container-${group_id}">
+      <div class="chat-container" id="chat-container-${group_id}">
 
         <div class="chat-header" id="chat-header-${group_id}">
-          <i class="far fa-comment-dots"></i>
+          <i id="chat-container-minimize-${group_id}" class="far fa-comment-dots"></i>
           <h6>${group.name}</h6>
           <i id="chat-container-close-${group_id}" class="chat-container-close fas fa-times"></i>
         </div>
 
-        <div class="chat-body chat-body-${group_id}">
-    `;
-
-    html += mod.returnChatBody(group_id);
-
-    html += `
-
-        </div>
+        <div class="chat-body">${mod.returnChatBody(group_id)}</div>
 
         <div class="chat-footer">
     

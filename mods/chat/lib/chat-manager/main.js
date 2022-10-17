@@ -26,10 +26,10 @@ class ChatManager {
 	if (this.rendered === 0) {
 	  let divid = "Saito Community Chat";
 	  if (document.getElementById(divid)) {
-            let html = SaitoUserWithTime(app, mod, "Saito Community Chat", "last msg", "3.45");
+            let html = SaitoUserWithTime(app, mod, "Saito Community Chat", "last msg");
 	    app.browser.replaceElementById(html, divid);
 	  } else {
-            let html = SaitoUserWithTime(app, mod, "Saito Community Chat", "last msg", "3.45");
+            let html = SaitoUserWithTime(app, mod, "Saito Community Chat", "last msg");
 	    app.browser.addElementToSelector(html, ".chat-manager-list");
 	  }
 	  this.rendered = 1;
@@ -39,10 +39,10 @@ class ChatManager {
 	  if (app.keys.keys[i].publickey != app.wallet.returnPublicKey()) {
 	    let divid = `saito-user-${app.keys.keys[i].publickey}`;
 	    if (document.getElementById(divid)) {
-              let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey, "", "3.45");
+              let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey);
 	      app.browser.replaceElementById(html, divid);
 	    } else {
-         let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey, "", "3.45");
+         let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey);
 	      app.browser.addElementToSelector(html, ".chat-manager-list");
 	    }
 	  }

@@ -3,8 +3,8 @@ const SaitoUserTemplateWithTime = require('./../../../../lib/saito/new-ui/templa
 
 module.exports = (app, mod) => {
 
-  let groups = app.keys.groups;
-  let keys = app.keys.keys;
+  let groups = app.keys.returnGroups();
+  let keys = app.keys.returnKeys();
 
 
   let html = `
@@ -75,7 +75,8 @@ module.exports = (app, mod) => {
 	  security = "secure";
 	}
 	if (keys.watched === 1 || keys.aes_publickey != "") {
-          html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline, security);
+    //This is not the right template for including a security flag....
+          html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline/*, security*/);
 	}
       }
 

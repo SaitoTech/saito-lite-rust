@@ -94,6 +94,8 @@
     margin-right: 3rem;
 }
 
+
+
 /* video chat */
 
 /*  video box */
@@ -104,6 +106,12 @@
     justify-content: center;
     align-items: center;
     color: white;
+    transform: translate(0,0);
+    position: relative;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    width: 100%;
 }
 
 .video-box-container>div {
