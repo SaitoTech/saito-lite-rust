@@ -104,7 +104,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
                   <div class="saito-address">${app.wallet.returnPublicKey()}</div>
 
                   <div class="saito-black">Private Key:</div>
-                  <div class="settings-appspace-privatekey">
+                  <div class="settings-appspace-privatekey saito-password">
                           ${app.wallet.returnPrivateKey()}
                       <i class="settings-appspace-see-privatekey fas fa-eye" id="settings-appspace-see-privatekey"></i>
                   </div>

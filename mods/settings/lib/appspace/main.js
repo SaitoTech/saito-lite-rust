@@ -69,9 +69,6 @@ class SettingsAppspace {
         document.querySelector(".settings-appspace-privatekey").toggleClass("saito-password");
       }
 
-      document.querySelector(".settings-appspace-see-privatekey").onclick = function (e) {
-        document.querySelector(".settings-appspace-privatekey").toggleClass("saito-password");
-      }
 
       if (document.getElementById("trigger-appstore-btn")) {
         document.getElementById("trigger-appstore-btn").onclick = function (e) {
