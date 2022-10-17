@@ -66,6 +66,7 @@ class Chatx extends ModTemplate {
     initialize(app) {
 
         super.initialize(app);
+        if (!this.app.BROWSER){return;}
 
         //
         // create chatgroups from keychain -- friends only
@@ -152,6 +153,7 @@ class Chatx extends ModTemplate {
     }
 
     async onPeerHandshakeComplete(app, peer) {
+        if (!app.BROWSER) { return; }
 
         let community_chat_group_id = "";
 
@@ -233,7 +235,7 @@ class Chatx extends ModTemplate {
                                     this.added_identifiers_post_load = 1;
                                 }, 1200);
                             } catch (err) {
-                                console.log("error adding identifiers post-chat");
+                                console.warn("error adding identifiers post-chat");
                             }
                         }
                     }
@@ -419,7 +421,7 @@ class Chatx extends ModTemplate {
                     break;
             }
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     }
 
@@ -517,6 +519,7 @@ class Chatx extends ModTemplate {
         let message_blocks = this.createMessageBlocks(group);
 
         for (let block of message_blocks) {
+            let ts = 0;
             if (block.length > 0) {
                 let sender = "";
                 let msg = "";
@@ -525,12 +528,10 @@ class Chatx extends ModTemplate {
                     let txmsg = block[z].returnMessage();
                     sender = block[z].transaction.from[0].add;
                     msg += txmsg.message;
+                    ts = txmsg.timestamp;
                 }
-                let datets = new Date(block[block.length - 1].msg.timestamp)
-                let x = this.app.browser.formatDate(datets);
-                let last_update = x.hours + ":" + x.minutes;
                 msg = this.app.browser.sanitize(msg);
-                html += `${SaitoUserSmallTemplate(this.app, this, sender, msg, last_update)}`;
+                html += `${SaitoUserSmallTemplate(this.app, this, sender, msg, ts)}`;
             }
         }
 
@@ -586,7 +587,7 @@ class Chatx extends ModTemplate {
 
         let txmsg = tx.returnMessage();
 
-        console.log("receiveChatTrans: " + JSON.stringify(txmsg));
+        if (this.debug) { console.log("receiveChatTrans: " + JSON.stringify(txmsg)); }
 
         //
         // if to someone else and encrypted
@@ -611,7 +612,7 @@ class Chatx extends ModTemplate {
                     }
                     this.addTransactionToGroup(this.groups[i], tx);
                     
-                    console.log("emitting render request with group id: " + txmsg.group_id);
+                    if (this.debug){ console.log("emitting render request with group id: " + txmsg.group_id); }
                     app.connection.emit('chat-render-request', txmsg.group_id);
                     return;
                 }
@@ -639,7 +640,9 @@ class Chatx extends ModTemplate {
             let proper_group = this.createChatGroup(members);
             
             this.addTransactionToGroup(proper_group, tx);
-            console.log("emitting render request 2 with group id: " + proper_group.id);
+            
+            if (this.debug) { console.log("emitting render request 2 with group id: " + proper_group.id); }
+            
             app.connection.emit('chat-render-request', proper_group.id);
 
         }
@@ -655,6 +658,7 @@ class Chatx extends ModTemplate {
         This is a function to open a chat popup, and create it if necessary
     */
     openChatBox(group_id = null) {
+        if (!this.app.BROWSER) {return;}
 
         this.app.options.auto_open_chat_box = true;
         this.app.storage.saveOptions();
@@ -722,6 +726,7 @@ class Chatx extends ModTemplate {
             name: name,
             txs: [],
             unread: 0,
+            popup: (this.app.BROWSER)? new ChatPopup(this.app, this, id) : null,
         }
 
         this.groups.push(newGroup);

@@ -31,12 +31,6 @@ class ChatManager {
 			}
 		});
 
-		app.connection.on("chat-render-request", (gid) => {
-			if (this.rendered){
-				this.render(app, mod);
-			}
-		});
-
 		app.connection.on("chat-render-request-notify", (gid) => {
 			if (this.rendered){
 				let group = mod.returnGroup(gid);
@@ -64,9 +58,8 @@ class ChatManager {
 			app.browser.addElementToSelector(ChatManagerTemplate(app, container_mod), selector);
 		} 
 
-		console.log("Rendering Chat Manager with " + this.chat_mod.groups.length + " groups");
 		for (let group of this.chat_mod.groups) {
-			this.makeGroupHeader(group);
+			this.makeGroupHeader(group, group.unread);
 		}
 
 		this.rendered = 1;
