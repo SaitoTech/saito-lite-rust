@@ -4,10 +4,10 @@ import screenfull from "screenfull";
 import html2canvas from "html2canvas";
 const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
-var marked = require('marked');
-var sanitizeHtml = require('sanitize-html');
-const linkifyHtml = require('markdown-linkify');
-const emoji = require('node-emoji');
+var marked = require("marked");
+var sanitizeHtml = require("sanitize-html");
+const linkifyHtml = require("markdown-linkify");
+const emoji = require("node-emoji");
 
 class Browser {
   public app: any;
@@ -64,7 +64,7 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-/******
+        /******
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {
@@ -263,8 +263,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {
-    }
+    } catch (err) {}
     return "";
   }
 
@@ -275,10 +274,9 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) { }
+    } catch (err) {}
     return "en";
   }
-
 
   isMobileBrowser(user_agent) {
     let check = false;
@@ -489,8 +487,8 @@ class Browser {
 
   replaceElementBySelector(html, selector = "") {
     if (selector === "") {
-     console.warn("no selector provided to replace, so adding direct to DOM");
-     this.app.browser.addElementToDom(html);
+      console.warn("no selector provided to replace, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
       if (obj) {
@@ -504,7 +502,7 @@ class Browser {
 
   addElementToSelector(html, selector = "") {
     if (selector === "") {
-     console.warn("no selector provided to add to, so adding direct to DOM");
+      console.warn("no selector provided to add to, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let container = document.querySelector(selector);
@@ -727,7 +725,7 @@ class Browser {
   }
 
   preventDefaults(e) {
-console.log("preventing the defaults");
+    console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
   }
@@ -755,8 +753,13 @@ console.log("preventing the defaults");
       element_to_drag.onmousedown = function (e) {
         let resizeable = ["both", "vertical", "horizontal"];
         //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
-        if(resizeable.indexOf(getComputedStyle(e.target).resize) > -1 || resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1) {
-          if (e.offsetX > (e.target.offsetWidth - 20) && e.offsetY > (e.target.offsetHeight -20)) {return;}
+        if (
+          resizeable.indexOf(getComputedStyle(e.target).resize) > -1 ||
+          resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1
+        ) {
+          if (e.offsetX > e.target.offsetWidth - 20 && e.offsetY > e.target.offsetHeight - 20) {
+            return;
+          }
         }
 
         e = e || window.event;
@@ -780,7 +783,6 @@ console.log("preventing the defaults");
         element_start_left = rect.left;
         element_start_top = rect.top;
 
-
         mouse_down_left = e.clientX;
         mouse_down_top = e.clientY;
 
@@ -797,7 +799,6 @@ console.log("preventing the defaults");
         };
 
         document.onmousemove = function (e) {
-
           e = e || window.event;
           e.preventDefault();
 
@@ -927,8 +928,7 @@ console.log("preventing the defaults");
       const identifiers = document.getElementsByClassName(`saito-identicon`);
       Array.from(identifiers).forEach((identifier) => {
         identifier.addEventListener("click", (e) => {
-
-console.log("preventing default 444");
+          console.log("preventing default 444");
 
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -966,7 +966,7 @@ console.log("preventing default 444");
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) { }
+    } catch (err) {}
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1069,7 +1069,7 @@ console.log("preventing default 444");
   }
 
   // TODO: implement htis function
-  getValueFromHashAsBoolean() { }
+  getValueFromHashAsBoolean() {}
 
   getValueFromHashAsNumber(hash, key) {
     try {
@@ -1106,21 +1106,19 @@ console.log("preventing default 444");
     });
   }
 
-  async screenshotCanvasElementById(id = "" , callback = null) {
-      let canvas = document.getElementById(id);
-      if (canvas) {
-        let img = canvas.toDataURL("image/jpeg", 0.35);
-        if (callback != null) {
-          callback(img);
-        }
+  async screenshotCanvasElementById(id = "", callback = null) {
+    let canvas = document.getElementById(id);
+    if (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      if (callback != null) {
+        callback(img);
       }
+    }
   }
-
 
   sanitize(text) {
     try {
       if (text !== "") {
-
         text = marked.parseInline(text);
 
         //trim trailing line breaks
@@ -1128,23 +1126,53 @@ console.log("preventing default 444");
       }
 
       text = sanitizeHtml(text, {
-        allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'ul', 'ol',
-          'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-          'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'marquee', 'pre'
+        allowedTags: [
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "blockquote",
+          "p",
+          "ul",
+          "ol",
+          "nl",
+          "li",
+          "b",
+          "i",
+          "strong",
+          "em",
+          "strike",
+          "code",
+          "hr",
+          "br",
+          "div",
+          "table",
+          "thead",
+          "caption",
+          "tbody",
+          "tr",
+          "th",
+          "td",
+          "pre",
+          "img",
+          "marquee",
+          "pre",
         ],
         allowedAttributes: {
-          div: ['class', 'id'],
-          a: ['href', 'name', 'target', 'class', 'id'],
-          img: ['src', 'class']
+          div: ["class", "id"],
+          a: ["href", "name", "target", "class", "id"],
+          img: ["src", "class"],
         },
-        selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
-        allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
+        selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
+        allowedSchemes: ["http", "https", "ftp", "mailto"],
         allowedSchemesByTag: {},
-        allowedSchemesAppliedToAttributes: ['href', 'cite'],
+        allowedSchemesAppliedToAttributes: ["href", "cite"],
         allowProtocolRelative: true,
         transformTags: {
-          'a': sanitizeHtml.simpleTransform('a', { target: '_blank' })
-        }
+          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
+        },
       });
 
       /* wrap link in <a> tag */
@@ -1153,13 +1181,71 @@ console.log("preventing default 444");
       text = text.replace(urlPattern, function (url) {
         return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
       });
-      
+
       text = emoji.emojify(text);
-      
+
       return text;
     } catch (err) {
       console.log("Err in sanitizing: " + err);
       return text;
+    }
+  }
+
+  resizeImg(img, dimensions, quality, targetSize =970) {
+    let self = this;
+    let imgSize = img.length / 1024;
+    if (imgSize > 150) {
+      let canvas = document.createElement("canvas");
+      let oImg = document.createElement("img");
+      oImg.setAttribute('src', img);
+      oImg.setAttribute('id', "uploaded-img");
+      document.body.appendChild(oImg);
+
+      let original = document.getElementById("uploaded-img");
+      let img_width = 0;
+      let img_height = 0;
+
+
+      original.onload = function () {
+        console.log('resizing');
+        img_width = this.width;
+        img_height = this.height;
+
+        let type = original.src.split(";")[0].split(":")[1];
+        let canvas = document.createElement("canvas");
+
+        let w = 0;
+        let h = 0;
+        let r = 1;
+
+        w = (img_width * r) * dimensions;
+        h = (img_height * r) * dimensions;
+
+        canvas.width = w;
+        canvas.height = h;
+
+        canvas.getContext("2d").drawImage(this, 0, 0, w, h);
+        let result_img_uri = canvas.toDataURL('image/jpeg', quality);
+        let imgSize = result_img_uri.length / 1024; // in KB
+
+        this.remove();
+
+        if (imgSize > targetSize) {
+
+          let newDimensions = (dimensions < 0.95) ? dimensions + 0.05 : 0.95;
+          let newQuality = (quality < 0.95) ? quality + 0.05 : 0.95;
+
+          self.resizeImg(result_img_uri, newDimensions, newQuality);
+
+        }else {
+          return;
+        }
+      };
+
+      return oImg.src;
+      
+    } else {
+      return img;
     }
   }
 }
