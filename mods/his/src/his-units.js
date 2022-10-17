@@ -21,6 +21,7 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    this.addEvents(obj);
     this.units[name] = obj;
 
   }
@@ -58,6 +59,7 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    this.addEvents(obj);
     this.army[name] = obj;
   }
 
@@ -83,6 +85,7 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    this.addEvents(obj);
     this.navy[name] = obj;
   }
 
@@ -108,6 +111,7 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    this.addEvents(obj);
     this.wives[name] = obj;
   }
 
@@ -133,6 +137,7 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    this.addEvents(obj);
     this.reformers[name] = obj;
   }
 
@@ -158,6 +163,7 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    this.addEvents(obj);
     this.debaters[name] = obj;
   }
 
@@ -183,6 +189,7 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    this.addEvents(obj);
     this.explorers[name] = obj;
   }
 
@@ -208,6 +215,7 @@
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
     }
+    this.addEvents(obj);
     this.conquistadors[name] = obj;
   }
 
