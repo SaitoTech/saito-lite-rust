@@ -75,7 +75,8 @@ module.exports = (app, mod) => {
 	  security = "secure";
 	}
 	if (keys.watched === 1 || keys.aes_publickey != "") {
-          html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline, security);
+    //This is not the right template for including a security flag....
+          html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline/*, security*/);
 	}
       }
 

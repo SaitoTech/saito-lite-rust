@@ -46,6 +46,7 @@ class ChatPopup {
       }
 
       if (!document.getElementById(`chat-container-${this.group_id}`)) {
+        //console.log("Create new chat popup in DOM for: " + this.group_id);
 
         // 
         // Some calculations to layer chatpopups from the right side of screen
@@ -55,32 +56,36 @@ class ChatPopup {
         let right_orientation = "0px";
     
         for (let i = 0; i < mod.groups.length; i++) {
+          //console.log("Chat group: " + mod.groups[i].id);
           if (document.getElementById(`chat-container-${mod.groups[i].id}`)) {
+            //console.log("exists! ");
             chatboxen_open++;
             pixen_consumed += document
               .getElementById(`chat-container-${mod.groups[i].id}`)
               .getBoundingClientRect().width;
           }
+          //console.log(pixen_consumed);
         }
     
         right_orientation = pixen_consumed + (20 * chatboxen_open) + "px";
   
         app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
+        app.browser.makeDraggable(`chat-container-${this.group_id}`, `chat-header-${this.group_id}`);
 
         //
         // update right-alignment
         //
-        let obj = document.querySelector(`.chat-container-${this.group_id}`);
+        let obj = document.getElementById(`chat-container-${this.group_id}`);
         if (obj) { obj.style.right = right_orientation; }
   
         this.emoji.render(app, mod);
   
-        app.browser.makeDraggable(`chat-container-${this.group_id}`, `chat-header-${this.group_id}`);
 
       }else{
         app.browser.replaceElementBySelector(`<div class="chat-body">${mod.returnChatBody(this.group_id)}</div>`, `#chat-container-${this.group_id} .chat-body`);
       } 
 
+      app.connection.emit("refresh-chat-groups", this.group_id);
       document.querySelector(".chat-body").scroll(0, 1000000000);
       this.attachEvents(app, mod);
       
@@ -164,8 +169,9 @@ class ChatPopup {
 
       this.minimized = !this.minimized;
 
+      //Upon restoring chat popup, resend message to render
       if (!this.minimized){
-        this.app.connection.emit("chat-render-request", this.group_id);
+        this.render(this.app, this.mod);
       }
 
     }
