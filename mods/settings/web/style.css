@@ -100,11 +100,6 @@
   display: none;
 }
 
-.settings-appspace-modules {
-  transform: scale(0.8);
-  transform-origin: top left;
-}
-
 .settings-appspace-app {
   line-height: 2rem;
   display: flex;
@@ -384,4 +379,14 @@ div#message-wrapper {
   left: 1em;
   color: #fff;
   z-index: 200;
+}
+
+.settings-appspace-debug-content {
+  margin: 1rem 0;
+  padding: 1rem 0;
+}
+
+/*json tree */
+.jsontree_node {
+  list-style: none;
 }
