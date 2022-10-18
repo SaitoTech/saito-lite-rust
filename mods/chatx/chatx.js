@@ -24,7 +24,7 @@ class Chatx extends ModTemplate {
 
         this.added_identifiers_post_load = 0;
         this.chat_manager = new ChatManager(this.app, this);
-        
+
         this.mobile_chat_active = false;
 
     }
@@ -66,7 +66,7 @@ class Chatx extends ModTemplate {
     initialize(app) {
 
         super.initialize(app);
-        if (!this.app.BROWSER){return;}
+        if (!this.app.BROWSER) { return; }
 
         //
         // create chatgroups from keychain -- friends only
@@ -96,17 +96,17 @@ class Chatx extends ModTemplate {
         app.connection.on("open-chat-with", (data) => {
             let group;
 
-            if (Array.isArray(data.key)){
+            if (Array.isArray(data.key)) {
                 group = this.createChatGroup(data.key, data.name);
-            }else{
+            } else {
                 let name = data.name || app.keys.returnUsername(data.key);
                 group = this.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
             }
-            
+
             this.openChatBox(group.id);
         });
 
-        app.connection.on("open-chat-with-community", ()=>{
+        app.connection.on("open-chat-with-community", () => {
             this.openChatBox();
         });
 
@@ -205,7 +205,7 @@ class Chatx extends ModTemplate {
                                 this.binaryInsert(this.groups[this.groups.length - 1].txs, tx, (a, b) => {
                                     return a.transaction.ts - b.transaction.ts;
                                 })
-                            } 
+                            }
                         }
 
                         //
@@ -213,15 +213,15 @@ class Chatx extends ModTemplate {
                         //
                         if (app.BROWSER) {
                             if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600) || this.mobile_chat_active) {
-                                if (app.options.auto_open_chat_box == null || app.options.auto_open_chat_box){
+                                if (app.options.auto_open_chat_box == null || app.options.auto_open_chat_box) {
                                     let active_module = app.modules.returnActiveModule();
                                     if (active_module.request_no_interrupts == true) {
                                         // if the module has ASKED leave it alone
                                         console.log("ASKED NOT TO INTERRUPT!");
                                         return;
                                     }
-                                    this.openChatBox();                                     
-                                } 
+                                    this.openChatBox();
+                                }
                             }
                         }
 
@@ -231,7 +231,7 @@ class Chatx extends ModTemplate {
                         if (this.added_identifiers_post_load == 0) {
                             try {
                                 setTimeout(() => {
-                                    this.app.browser.addIdentifiersToDom();
+                                    // this.app.browser.addIdentifiersToDom();
                                     this.added_identifiers_post_load = 1;
                                 }, 1200);
                             } catch (err) {
@@ -248,17 +248,17 @@ class Chatx extends ModTemplate {
                 }
             );
 
-        } 
+        }
 
         //
         // load transactions from server, but not group chat again
         //
-        let group_ids = this.groups.map( 
-            (group) => { 
-             if (group.id!==community_chat_group_id){
-                 return group.id
-             } 
-         });
+        let group_ids = this.groups.map(
+            (group) => {
+                if (group.id !== community_chat_group_id) {
+                    return group.id
+                }
+            });
 
 
         let txs = new Promise((resolve, reject) => {
@@ -448,8 +448,8 @@ class Chatx extends ModTemplate {
             tx = app.wallet.signAndEncryptTransaction(tx);
 
             app.network.propagateTransaction(tx);
-            
-            app.connection.emit("send-relay-message", {recipient, request: 'chat broadcast message', data:tx});
+
+            app.connection.emit("send-relay-message", { recipient, request: 'chat broadcast message', data: tx });
 
         } else {
             salert("Connection to chat server lost");
@@ -478,11 +478,11 @@ class Chatx extends ModTemplate {
         }
 
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
-        
+
         if (newtx == null) {
             return;
         }
-        
+
         for (let i = 1; i < members.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(members[i]));
         }
@@ -548,7 +548,7 @@ class Chatx extends ModTemplate {
         let txs = group.txs;
         let last_message_sender = "";
 
-        for (let i = 0; i < txs.length; i ++) {
+        for (let i = 0; i < txs.length; i++) {
 
             //First transaction -- start first block
             if (last_message_sender == "") {
@@ -603,16 +603,16 @@ class Chatx extends ModTemplate {
         if (txmsg.group_id) {
             for (let i = 0; i < this.groups.length; i++) {
                 if (this.groups[i].id === txmsg.group_id) {
-                    
+
                     //Have we already inserted this message into the chat
                     for (let z = 0; z < this.groups[i].txs.length; z++) {
-                        if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) { 
-                            return; 
+                        if (this.groups[i].txs[z].transaction.sig === tx.transaction.sig) {
+                            return;
                         }
                     }
                     this.addTransactionToGroup(this.groups[i], tx);
-                    
-                    if (this.debug){ console.log("emitting render request with group id: " + txmsg.group_id); }
+
+                    if (this.debug) { console.log("emitting render request with group id: " + txmsg.group_id); }
                     app.connection.emit('chat-render-request', txmsg.group_id);
                     return;
                 }
@@ -638,11 +638,11 @@ class Chatx extends ModTemplate {
             // it makes a new group
             //
             let proper_group = this.createChatGroup(members);
-            
+
             this.addTransactionToGroup(proper_group, tx);
-            
+
             if (this.debug) { console.log("emitting render request 2 with group id: " + proper_group.id); }
-            
+
             app.connection.emit('chat-render-request', proper_group.id);
 
         }
@@ -658,7 +658,7 @@ class Chatx extends ModTemplate {
         This is a function to open a chat popup, and create it if necessary
     */
     openChatBox(group_id = null) {
-        if (!this.app.BROWSER) {return;}
+        if (!this.app.BROWSER) { return; }
 
         this.app.options.auto_open_chat_box = true;
         this.app.storage.saveOptions();
@@ -674,10 +674,10 @@ class Chatx extends ModTemplate {
         }
 
         let group = this.returnGroup(group_id);
-        
-        if (!group) {return;}
 
-        if (!group.popup){
+        if (!group) { return; }
+
+        if (!group.popup) {
             group.popup = new ChatPopup(this.app, this, group_id);
         }
 
@@ -697,7 +697,7 @@ class Chatx extends ModTemplate {
 
         //So the David + Richard == Richard + David
         members.sort();
-        
+
         let id = this.app.crypto.hash(`${members.join('_')}`);
 
         for (let i = 0; i < this.groups.length; i++) {
@@ -715,8 +715,8 @@ class Chatx extends ModTemplate {
             }
             if (!name) {
                 name = "me";
-            }else{
-                name = name.substring(0, name.length-2);
+            } else {
+                name = name.substring(0, name.length - 2);
             }
         }
 
@@ -726,7 +726,7 @@ class Chatx extends ModTemplate {
             name: name,
             txs: [],
             unread: 0,
-            popup: (this.app.BROWSER)? new ChatPopup(this.app, this, id) : null,
+            popup: (this.app.BROWSER) ? new ChatPopup(this.app, this, id) : null,
         }
 
         this.groups.push(newGroup);

@@ -208,7 +208,7 @@ class RedSquareTweet {
 
     if ((this.critical_child != null || this.in_thread) && this.flagged != 1) {
       if (obj) {
-       app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
         if (appendToSelector) {
@@ -243,7 +243,7 @@ class RedSquareTweet {
 
     if (obj) {
       app.browser.replaceElementById(html, tweet_id);
-    } else {      
+    } else {
       app.browser.addElementToSelector(html, selector);
     }
 
@@ -257,7 +257,7 @@ class RedSquareTweet {
       }
     }
 
-    app.browser.addIdentifiersToDom();
+    // app.browser.addIdentifiersToDom();
     this.attachEvents(app, mod);
   }
 
@@ -360,7 +360,7 @@ class RedSquareTweet {
 
       //let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${tweet_sig_id}' OR parent_id = '${tweet_sig_id}' OR thread_id = '${tweet_sig_id}'`;
-      
+
       // false - don't track tweet
       mod.fetchTweets(app, mod, sql, function (app, mod) {
         let t = mod.returnTweet(app, mod, tweet_sig_id);
@@ -428,7 +428,7 @@ class RedSquareTweet {
         !e.target.classList.contains("tweet-tool") &&   // buttons
         !e.target.classList.contains("far") &&   // icons
         !e.target.classList.contains("fa") &&   // icons
-        !e.target.classList.contains("fas") && 
+        !e.target.classList.contains("fas") &&
         !e.target.classList.contains("redsquare-tweet-tools")
       ) {
 
@@ -492,7 +492,7 @@ class RedSquareTweet {
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
-      app.browser.addIdentifiersToDom();
+      // app.browser.addIdentifiersToDom();
     };
 
 
@@ -668,31 +668,31 @@ class RedSquareTweet {
   renderLikes() {
     // some edge cases where tweet won't have rendered
     try {
-      let qs = ".tweet-tool-like-count-"+this.tx.transaction.sig;
+      let qs = ".tweet-tool-like-count-" + this.tx.transaction.sig;
       let obj = document.querySelector(qs);
       if (!this.tx?.optional?.num_likes) { return; }
       obj.innerHTML = this.tx.optional.num_likes;
-    } catch (err) {}
+    } catch (err) { }
   }
   renderRetweets() {
     // some edge cases where tweet won't have rendered
     try {
-      let qs = ".tweet-tool-retweet-count-"+this.tx.transaction.sig;
+      let qs = ".tweet-tool-retweet-count-" + this.tx.transaction.sig;
       let obj = document.querySelector(qs);
       if (!this.tx?.optional?.num_retweets) { return; }
       obj.innerHTML = this.tx.optional.num_retweets;
-    } catch (err) {}
+    } catch (err) { }
   }
   renderReplies() {
     // some edge cases where tweet won't have rendered
     try {
-      let qs = ".tweet-tool-comment-count-"+this.tx.transaction.sig;
+      let qs = ".tweet-tool-comment-count-" + this.tx.transaction.sig;
       let obj = document.querySelector(qs);
       if (!this.tx?.optional?.num_replies) { return; }
       obj.innerHTML = this.tx.optional.num_replies;
-    } catch (err) {}
+    } catch (err) { }
   }
-  
+
 
   exportData(app, mod) {
     return { text: this.text };

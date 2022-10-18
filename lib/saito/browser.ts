@@ -226,12 +226,67 @@ class Browser {
     // listen with mutation observer
     let mutaionObserver = new MutationObserver((entries) => {
       console.log(entries);
+      entries.forEach((entry) => {
+        entry.addedNodes.forEach((node) => {
+          recursive(this.app, node);
+        });
+      });
+
+      function recursive(app, node) {
+        if (node && node.classList && Array.from(node.classList).includes("saito-user")) {
+          console.log("user node ", node);
+          if (node.classList && Array.from(node.classList).includes("saito-user")) {
+            console.log("children ", node.children);
+            if (node.children.length > 0) {
+              Array.from(node.children).forEach((child_node) => {
+                console.log("childnodes", child_node);
+                if (
+                  child_node.classList &&
+                  Array.from(child_node.classList).includes("saito-address")
+                ) {
+                  console.log(child_node);
+                  let address = child_node.getAttribute("data-id");
+                  console.log("address ", address);
+
+                  let identifier = app.keys.returnIdentifierByPublicKey(address, true);
+                  console.log("identifier ", identifier);
+                  // if (!identifier) {
+                  //   return;
+                  // }
+                  try {
+                    if (document.querySelector(`.saito-address-${address}`)) {
+                      document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
+                        console.log("address dom ", item);
+                        item.innerHTML = identifier;
+                      });
+                    }
+                  } catch (err) {
+                    console.log("error ", err);
+                  }
+                }
+              });
+            }
+
+            // if (Array.from(node.classList).includes("saito-user")) {
+            //   console.log("node ", node);
+            //   console.log("classlist ", node.classList);
+
+            // }
+          }
+        } else {
+          console.log("node ", node, node.children);
+          if (node.children && Array.from(node.children).length > 0) {
+            Array.from(node.children).forEach((item) => {
+              recursive(item);
+            });
+          }
+        }
+      }
     });
 
     mutaionObserver.observe(document.body, {
+      childList: true,
       subtree: true,
-      characterDataOldValue: true,
-      characterData: true,
     });
   }
 
@@ -1201,6 +1256,8 @@ class Browser {
       return text;
     }
   }
+
+  activatePublicKeyObserver() {}
 }
 
 export default Browser;
