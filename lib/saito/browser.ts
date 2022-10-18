@@ -226,7 +226,9 @@ class Browser {
     // listen with mutation observer
     let mutaionObserver = new MutationObserver((entries) => {
       console.log(entries);
+
       entries.forEach((entry) => {
+        console.log("files ", entry.files);
         entry.addedNodes.forEach((node) => {
           recursive(this.app, node);
         });
@@ -234,21 +236,16 @@ class Browser {
 
       function recursive(app, node) {
         if (node && node.classList && Array.from(node.classList).includes("saito-user")) {
-          console.log("user node ", node);
           if (node.classList && Array.from(node.classList).includes("saito-user")) {
-            console.log("children ", node.children);
             if (node.children && node.children.length > 0) {
               Array.from(node.children).forEach((child_node) => {
-                console.log("childnodes", child_node);
                 if (
                   child_node.classList &&
                   Array.from(child_node.classList).includes("saito-address")
                 ) {
                   console.log(child_node);
                   let address = child_node.getAttribute("data-id");
-                  console.log("address ", address);
                   let identifier = app.keys.returnIdentifierByPublicKey(address, true);
-                  console.log("identifier ", identifier);
                   // if (!identifier) {
                   //   return;
                   // }
@@ -265,10 +262,10 @@ class Browser {
                 }
               });
             }
-            if (Array.from(node.classList).includes("saito-user")) {
-              console.log("node ", node);
-              console.log("classlist ", node.classList);
-            }
+            // if (Array.from(node.classList).includes("saito-user")) {
+            //   console.log("node ", node);
+            //   console.log("classlist ", node.classList);
+            // }
           }
         } else {
           console.log("node ", node, node.children);
