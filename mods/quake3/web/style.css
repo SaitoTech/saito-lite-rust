@@ -1,4 +1,12 @@
 
+
+.quake-controls {
+  background-color: whitesmoke;
+  border-radius: 0.5rem;
+  width: 80vw;
+  height: auto;
+}
+
 .chat-container {
   background-color: transparent;
   color: whitesmoke;
