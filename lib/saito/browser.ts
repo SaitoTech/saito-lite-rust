@@ -237,7 +237,7 @@ class Browser {
           console.log("user node ", node);
           if (node.classList && Array.from(node.classList).includes("saito-user")) {
             console.log("children ", node.children);
-            if (node.children.length > 0) {
+            if (node.children && node.children.length > 0) {
               Array.from(node.children).forEach((child_node) => {
                 console.log("childnodes", child_node);
                 if (
@@ -247,7 +247,6 @@ class Browser {
                   console.log(child_node);
                   let address = child_node.getAttribute("data-id");
                   console.log("address ", address);
-
                   let identifier = app.keys.returnIdentifierByPublicKey(address, true);
                   console.log("identifier ", identifier);
                   // if (!identifier) {
@@ -266,18 +265,16 @@ class Browser {
                 }
               });
             }
-
-            // if (Array.from(node.classList).includes("saito-user")) {
-            //   console.log("node ", node);
-            //   console.log("classlist ", node.classList);
-
-            // }
+            if (Array.from(node.classList).includes("saito-user")) {
+              console.log("node ", node);
+              console.log("classlist ", node.classList);
+            }
           }
         } else {
           console.log("node ", node, node.children);
-          if (node.children && Array.from(node.children).length > 0) {
+          if (node && node.children && Array.from(node.children).length > 0) {
             Array.from(node.children).forEach((item) => {
-              recursive(item);
+              recursive(app, item);
             });
           }
         }
