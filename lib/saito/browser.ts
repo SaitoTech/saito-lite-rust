@@ -1230,8 +1230,6 @@ class Browser {
             return;
           }
 
-//        document.body.appendChild(oImg);
-
       };
 
       resizeLoop(img);
