@@ -1194,7 +1194,6 @@ class Browser {
     }
   }
 
-
   activatePublicKeyObserver(app) {
     let mutaionObserver = new MutationObserver((entries) => {
       entries.forEach((entry) => {
@@ -1269,42 +1268,36 @@ class Browser {
     canvas.width = w;
     canvas.height = h;
 
-      function resizeLoop(img, quality = 1) {
-        console.log('resizing');
-        oImg.setAttribute('src', img);
-        canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
-        new_img = canvas.toDataURL('image/jpeg', quality);
-        let imgSize = new_img.length / 1024; // in KB
-  
-        if (imgSize > targetSize) {
-  
-          resizeLoop(new_img, quality * 0.9);
-  
-          } else {
-            return;
-          }
+    function resizeLoop(img, quality = 1) {
+      console.log("resizing");
+      oImg.setAttribute("src", img);
+      canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
+      new_img = canvas.toDataURL("image/jpeg", quality);
+      let imgSize = new_img.length / 1024; // in KB
 
-      };
+      if (imgSize > targetSize) {
+        resizeLoop(new_img, quality * 0.9);
+      } else {
+        return;
+      }
+    }
 
-      resizeLoop(img);
+    resizeLoop(img);
 
-      console.log("Resized to: " + new_img.length / 1024);
+    console.log("Resized to: " + new_img.length / 1024);
 
-      return new_img;
-      
+    return new_img;
   }
 
   getImageDimensions(file) {
-    return new Promise (function (resolved, rejected) {
-      var i = new Image()
-      i.onload = function(){
-        resolved({w: i.width, h: i.height})
+    return new Promise(function (resolved, rejected) {
+      var i = new Image();
+      i.onload = function () {
+        resolved({ w: i.width, h: i.height });
       };
-      i.src = file
-    })
+      i.src = file;
+    });
   }
-
-
 }
 
 export default Browser;
