@@ -7,6 +7,7 @@ class QuakeControls {
   constructor(app, mod, tx) {
     this.overlay = new SaitoOverlay(app);
     this.controls = this.returnDefaultControls();
+    this.current_setting = "";
   }
 
   render(app, mod) {
@@ -25,7 +26,7 @@ class QuakeControls {
 
   setMyKeyDownListener(setting) {
 
-    current_setting = setting;
+    this.current_setting = setting;
 
     // keyboard buttons
     window.addEventListener("keydown", handleKey);
@@ -61,14 +62,14 @@ class QuakeControls {
     window.removeEventListener('wheel', handleWheel);
     
     // full
-    q3_bindCommand = 'bind ' + q3_bind + ' "' + current_setting + '"';
+    q3_bindCommand = 'bind ' + q3_bind + ' "' + this.current_setting + '"';
     
     // update JSON game config
     // {setting: [value, command]}
-    this.controls[current_setting] = [q3_bind, q3_bindCommand];
+    this.controls[this.current_setting] = [q3_bind, q3_bindCommand];
     
     // update HTML table to reflect current settings
-    document.getElementById(current_setting).children[1].innerHTML = q3_bind
+    document.getElementById(this.current_setting).children[1].innerHTML = q3_bind
       
     console.log(this.controls)
     console.log(q3_bindCommand);
