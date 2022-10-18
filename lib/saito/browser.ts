@@ -732,8 +732,8 @@ class Browser {
   }
 
   makeDraggable(id_to_move, id_to_drag = "", mycallback = null) {
-    console.log("make draggable: " + id_to_drag);
-    console.log(" and move? " + id_to_move);
+    //console.log("make draggable: " + id_to_drag);
+    //console.log(" and move? " + id_to_move);
 
     try {
       const element_to_move = document.getElementById(id_to_move);
@@ -765,9 +765,9 @@ class Browser {
 
         e = e || window.event;
 
-        console.log("DRAG MOUSEDOWN");
-        console.log(e.clientX);
-        console.log(e.offsetX);
+        //console.log("DRAG MOUSEDOWN");
+        //console.log(e.clientX);
+        //console.log(e.offsetX);
 
         if (
           !e.currentTarget.id ||

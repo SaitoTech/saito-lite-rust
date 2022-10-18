@@ -18,9 +18,22 @@ class Archive extends ModTemplate {
     this.last_clean_on = Date.now();
     this.cleaning_period_in_ms = 1000000;
 
+    app.connection.on("archive-save-transaction", (data)=>{
+      if (data.key){
+        this.saveTransactionByKey(data.key, data.tx, data?.type);
+      }else{
+        this.saveTransaction(data.tx, data?.type);
+      }
+    });
+
   }
 
-
+  /*shouldAffixCallbackToModule(modname = "") {
+     if (modname == "Chat"){
+      return 1;
+     }
+    return 0;
+  }*/
 
   onConfirmation(blk, tx, conf, app) {
 
@@ -28,6 +41,8 @@ class Archive extends ModTemplate {
 
     //
     // by default we just save everything that is an application
+    //
+    // *** only if we turn on the listeners, no? ***
     //
     if (conf == 0) {
       if (tx.msg.module != "") {
@@ -60,6 +75,7 @@ class Archive extends ModTemplate {
         this.updateTransaction(req.data.tx);
       }
       if (req.data.request === "save_key") {
+        console.log("PeerRequest: save TX by Key");
         if (!req.data.key) { return; }
         this.saveTransactionByKey(req.data.key, req.data.tx, req.data.type);
       }
@@ -86,6 +102,7 @@ class Archive extends ModTemplate {
         mycallback(response);
       }
       if (req.data.request === "load_keys") {
+        console.log("PeerRequest: load TX by Keys");
         if (!req.data.keys) { return; }
         txs = await this.loadTransactionsByKeys(req.data);
         response.err = "";
@@ -278,21 +295,21 @@ class Archive extends ModTemplate {
   }
 
 
-  async saveTransactionByKey(key="", tx=null, msgtype="") {
+  async saveTransactionByKey(key="", tx=null, type="") {
 
     if (tx == null) { return; }
-    let optional = {};
-    if (tx.optional) { optional = tx.optional; }
+    let optional = (tx.optional) ? tx.optional : {};
 
     let sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $type)";
     let params = {
-      $sig:		tx.transaction.sig ,
+      $sig:		tx.transaction.sig,
       $publickey:	key,
       $tx:		JSON.stringify(tx.transaction),
       $optional: 	optional,
       $ts:		tx.transaction.ts,
-      $type:		msgtype
+      $type:		type
     };
+
     await this.app.storage.executeDatabase(sql, params, "archive");
 
     //
@@ -378,21 +395,18 @@ class Archive extends ModTemplate {
         sql = `SELECT * FROM txs WHERE publickey IN ( ${where_statement_array.join(',')} ) AND type = $type ORDER BY id DESC LIMIT $num`;
         params = Object.assign(params, { $type : type , $num : num});
       }
-    } catch(err) {
-      console.log(err);
-    }
 
-    try {
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
       let txs = [];
-      if (rows != undefined) {
-	if (rows.length > 0) {
+      if (rows?.length > 0) {
+	      for (let row of rows){
           txs.push({ tx : row.tx , optional : row.optional });
         }
       }
       return txs;
     } catch (err) {
       console.log(err);
+      return [];
     }
 
   }
