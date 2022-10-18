@@ -1,5 +1,6 @@
 const GameTemplate = require('./../../lib/templates/gametemplate');
 const QuakeGameOptionsTemplate = require('./lib/quake-game-options.template');
+const QuakeControls = require('./lib/controls');
 
 
 class Quake3 extends GameTemplate {
@@ -13,6 +14,8 @@ class Quake3 extends GameTemplate {
     this.description = "Quake3 is a multiplayer first-person-shooter originally released by ID Software in 1999. This version runs directly in your browser and connects with Saito to use other Saito applications and bring modules right into the game.";
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
+
+    this.controls = this.returnDefaults();
 
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
@@ -166,6 +169,8 @@ class Quake3 extends GameTemplate {
 
 
   initializeGame(game_id) {
+
+    this.load();
 
     if (!this.game.state) {
       console.log("******Generating the Game******");
@@ -346,6 +351,19 @@ class Quake3 extends GameTemplate {
     });
 
     this.menu.addSubMenuOption("game-game", {
+      text : "Controls",
+      id : "game-controls",
+      class : "game-game-controls",
+      callback : async function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        let controls = new QuakeControls(app, game_mod);
+	controls.render(app, game_mod);
+    	SAITO_COMPONENT_ACTIVE = true;
+    	SAITO_COMPONENT_CLICKED = true;
+      },
+    });
+
+    this.menu.addSubMenuOption("game-game", {
         text : "Screenshot",
         id : "game-post",
         class : "game-post",
@@ -462,6 +480,21 @@ return;
       ioq3.callMain(args);
     }
 
+  }
+
+
+
+  returnDefaults() {
+    return {};
+  }
+
+  load() {
+    this.quake3 = this.app.options.quake3;
+  }
+
+  save() {
+    this.app.options.quake3 = this.quake3;
+    this.app.storage.saveOptions();
   }
 
 }

@@ -2,6 +2,7 @@
 
 import screenfull from "screenfull";
 import html2canvas from "html2canvas";
+import { getDiffieHellman } from "crypto";
 const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
 var marked = require("marked");
@@ -734,8 +735,8 @@ class Browser {
   }
 
   makeDraggable(id_to_move, id_to_drag = "", mycallback = null) {
-    console.log("make draggable: " + id_to_drag);
-    console.log(" and move? " + id_to_move);
+    //console.log("make draggable: " + id_to_drag);
+    //console.log(" and move? " + id_to_move);
 
     try {
       const element_to_move = document.getElementById(id_to_move);
@@ -767,9 +768,9 @@ class Browser {
 
         e = e || window.event;
 
-        console.log("DRAG MOUSEDOWN");
-        console.log(e.clientX);
-        console.log(e.offsetX);
+        //console.log("DRAG MOUSEDOWN");
+        //console.log(e.clientX);
+        //console.log(e.offsetX);
 
         if (
           !e.currentTarget.id ||
@@ -1193,6 +1194,7 @@ class Browser {
     }
   }
 
+
   activatePublicKeyObserver(app) {
     let mutaionObserver = new MutationObserver((entries) => {
       entries.forEach((entry) => {
@@ -1243,6 +1245,66 @@ class Browser {
       subtree: true,
     });
   }
+
+  async resizeImg(img, targetSize = 512) {
+    let self = this;
+    var dimensions = await this.getImageDimensions(img);
+    var new_img = "";
+    let canvas = document.createElement("canvas");
+    let oImg = document.createElement("img");
+
+    let w = dimensions.w;
+    let h = dimensions.h;
+    let aspect = w / h;
+
+    if (w > 1440) {
+      w = 1440;
+      h = 1440 * aspect;
+    }
+    if (h > 768) {
+      h = 768;
+      w = 768 / aspect;
+    }
+
+    canvas.width = w;
+    canvas.height = h;
+
+      function resizeLoop(img, quality = 1) {
+        console.log('resizing');
+        oImg.setAttribute('src', img);
+        canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
+        new_img = canvas.toDataURL('image/jpeg', quality);
+        let imgSize = new_img.length / 1024; // in KB
+  
+        if (imgSize > targetSize) {
+  
+          resizeLoop(new_img, quality * 0.9);
+  
+          } else {
+            return;
+          }
+
+      };
+
+      resizeLoop(img);
+
+      console.log("Resized to: " + new_img.length / 1024);
+
+      return new_img;
+      
+  }
+
+  getImageDimensions(file) {
+    return new Promise (function (resolved, rejected) {
+      var i = new Image()
+      i.onload = function(){
+        resolved({w: i.width, h: i.height})
+      };
+      i.src = file
+    })
+  }
+
+
 }
 
 export default Browser;
