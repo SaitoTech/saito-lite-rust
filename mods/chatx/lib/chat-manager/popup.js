@@ -8,7 +8,7 @@ class ChatPopup {
     this.group_id = group_id;
     this.emoji = new SaitoEmoji(app, mod, `chat-input-${this.group_id}`);
 
-    this.active = true;
+    this.active = (group_id == app.options.auto_open_chat_box);
     this.minimized = false;
 
     //Each ChatPopup has listeners so we need to only act if it is for us
@@ -105,10 +105,13 @@ class ChatPopup {
 
       document.getElementById(`chat-container-${group_id}`).remove();
 
-      if (!document.querySelector(".chat-container")){
-        app.options.auto_open_chat_box = false;
-        app.storage.saveOptions();
+      let otherChatBox = document.querySelector(".chat-container");
+      if (!otherChatBox){
+        app.options.auto_open_chat_box = -1;
+      }else{
+        app.options.auto_open_chat_box = otherChatBox.getAttribute("id").replace("chat-container-","");
       }
+      app.storage.saveOptions();
     }
 
     //
@@ -124,8 +127,10 @@ class ChatPopup {
     //
     // focus on text input
     //
-    let iobj = "chat-input-" + group_id;
-    document.getElementById(iobj).focus();
+    if (!mod.isOtherInputActive()){
+      let iobj = "chat-input-" + group_id;
+      document.getElementById(iobj).focus();
+    }
 
     //
     // submit
