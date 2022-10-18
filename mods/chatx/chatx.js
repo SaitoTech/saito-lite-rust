@@ -11,22 +11,23 @@ class Chatx extends ModTemplate {
     constructor(app) {
 
         super(app);
+
         this.name = "Chat";
 
         this.description = "Saito instant-messaging client";
 
         this.groups = [];
 
-        this.mute_community_chat = 0; //TODO add functionality
-
         this.inTransitImageMsgSig = null;
 
         this.added_identifiers_post_load = 0;
+
         this.chat_manager = new ChatManager(this.app, this);
         
         this.communityGroupName = "Saito Community Chat";
 
         this.mobile_chat_active = false;
+
         this.debug = true;
 
     }
@@ -204,22 +205,9 @@ class Chatx extends ModTemplate {
 
 
 
-    parseMsg(txs) {
-        let msg = {};
-        msg.message = "";
-        try {
-            const reconstruct = Buffer.from((Buffer.from(txs.transaction.m).toString()), "base64").toString("utf-8");
-            msg = JSON.parse(reconstruct);
-        } catch (err) {
-            console.error(err);
-        }
-        return msg.message;
-    }
-
-
     //
-    // on chain messages
-    // on processed if I am in the to/from of the transaction
+    // ---------- on chain messages ------------------------
+    // ONLY processed if I am in the to/from of the transaction
     // so I will process messages I send to community, but not other peoples
     // it is mostly just a legacy safety catch for direct messaging 
     //
@@ -274,10 +262,10 @@ class Chatx extends ModTemplate {
             //that handles Community chat and will forward the message as a "chat message"
             //Without relay + handlePeerRequest, we do not receive community chat messages
 
-            console.log("Receive Chat BROADCAST on RELAY");
-
+            //Tell Archive to save a copy of this TX
             app.connection.emit("archive-save-transaction", {key: message.data.group_id, type: "Chat", tx});                
 
+            //Forward to all my peers (but not me again) with new request & same data 
             app.network.peers.forEach(p => {
                 if (p.peer.publickey !== peer.peer.publickey) {
                     p.sendRequest("chat message", message.data);
@@ -285,6 +273,7 @@ class Chatx extends ModTemplate {
             });
         }
 
+        //Legacy code??? 
         if (mycallback) {
             mycallback({ "payload": "success", "error": {} });
         }
@@ -292,6 +281,12 @@ class Chatx extends ModTemplate {
     }
 
 
+    /**
+     * 
+     * Encrypt and send your chat message 
+     * We send messages on chain to their target and to the chat-services node via Relay
+     * 
+    */
     sendChatTransaction(app, tx, broadcast = 0) {
 
         if (tx.msg.message.substring(0, 4) == "<img") {
@@ -311,7 +306,7 @@ class Chatx extends ModTemplate {
                 }
             }
 
-            //We want to send this unencrypted
+            //We want to send this info unencrypted, so save a copy first
             let group_id = tx.msg.group_id;
 
             tx = app.wallet.signAndEncryptTransaction(tx);
@@ -362,18 +357,82 @@ class Chatx extends ModTemplate {
 
     }
 
-    msgIsFrom(txs, publickey) {
-        if (txs.transaction.from != null) {
-            for (let v = 0; v < txs.transaction.from.length; v++) {
-                if (txs.transaction.from[v].add === publickey) {
-                    return true;
-                }
+    /**
+     * Everyone receives the chat message (via the Relay)
+     * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
+     */
+    receiveChatTransaction(app, tx) {
+
+        if (!app.BROWSER) { return; }
+
+        if (this.inTransitImageMsgSig == tx.transaction.sig) {
+            this.inTransitImageMsgSig = null;
+        }
+
+        let txmsg = tx.returnMessage();
+
+        //
+        // if to someone else and encrypted 
+        // (i.e. I am sending an encrypted message and not waiting for relay)
+        //
+        if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
+            if (app.keys.hasSharedSecret(tx.transaction.to[0].add)) {
+                tx.decryptMessage(app);
+                txmsg = tx.returnMessage();
             }
         }
-        return false;
+
+        let group = this.returnGroup(txmsg.group_id);
+
+        if (group) {
+                        
+            //Have we already inserted this message into the chat?
+            for (let z = 0; z < group.txs.length; z++) {
+                if (group.txs[z].transaction.sig === tx.transaction.sig) { 
+                    return; 
+                }
+            }
+
+            if (this.debug) { console.log("receiveChatTrans for defined group: " + JSON.stringify(txmsg)); }
+
+            this.addTransactionToGroup(group, tx);
+            
+            app.connection.emit('chat-render-request', txmsg.group_id);
+
+        }else if (tx.isTo(app.wallet.returnPublicKey())) {
+            //
+            // no match on groups -- direct message to me
+            //
+
+            let members = [];
+            for (let x = 0; x < tx.transaction.to.length; x++) {
+                if (!members.includes(tx.transaction.to[x].add)) {
+                    members.push(tx.transaction.to[x].add);
+                }
+            }
+
+            let proper_group = this.createChatGroup(members);
+            
+            this.addTransactionToGroup(proper_group, tx);
+            
+            if (this.debug) { console.log("emitting render request to new group: " + proper_group.id); }
+            
+            app.connection.emit('chat-render-request', proper_group.id);
+
+        }else{
+            if (this.debug) { console.log("Chat message not for me"); }            
+        }
+
     }
 
 
+    //////////////////
+    // UI Functions //
+    //////////////////
+    //
+    // These three functions replace all the templates to format the messages into 
+    // single speaker blocks
+    //
     returnChatBody(group_id) {
 
         let html = '';
@@ -437,111 +496,18 @@ class Chatx extends ModTemplate {
 
     }
 
-    receiveChatTransaction(app, tx) {
-
-        if (!app.BROWSER) { return; }
-
-        if (this.inTransitImageMsgSig == tx.transaction.sig) {
-            this.inTransitImageMsgSig = null;
-        }
-
-        let txmsg = tx.returnMessage();
-
-        //
-        // if to someone else and encrypted 
-        // (i.e. I am sending an encrypted message and not waiting for relay)
-        //
-        if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
-            if (app.keys.hasSharedSecret(tx.transaction.to[0].add)) {
-                tx.decryptMessage(app);
-                txmsg = tx.returnMessage();
-            }
-        }
-
-
-
-        let group = this.returnGroup(txmsg.group_id);
-        if (group) {
-    
-                    
-            //Have we already inserted this message into the chat
-            for (let z = 0; z < group.txs.length; z++) {
-                if (group.txs[z].transaction.sig === tx.transaction.sig) { 
-                    return; 
+    msgIsFrom(txs, publickey) {
+        if (txs.transaction.from != null) {
+            for (let v = 0; v < txs.transaction.from.length; v++) {
+                if (txs.transaction.from[v].add === publickey) {
+                    return true;
                 }
             }
-
-            if (this.debug) { console.log("receiveChatTrans for defined group: " + JSON.stringify(txmsg)); }
-
-            this.addTransactionToGroup(group, tx);
-            
-            app.connection.emit('chat-render-request', txmsg.group_id);
-
-        }else if (tx.isTo(app.wallet.returnPublicKey())) {
-            //
-            // no match on groups -- direct message to me ???
-            //
-
-            let members = [];
-            for (let x = 0; x < tx.transaction.to.length; x++) {
-                if (!members.includes(tx.transaction.to[x].add)) {
-                    members.push(tx.transaction.to[x].add);
-                }
-            }
-
-            let proper_group = this.createChatGroup(members);
-            
-            this.addTransactionToGroup(proper_group, tx);
-            
-            if (this.debug) { console.log("emitting render request to new group: " + proper_group.id); }
-            
-            app.connection.emit('chat-render-request', proper_group.id);
-
-        }else{
-            
-            if (this.debug) { console.log("Chat message not for me"); }            
-      
         }
-
+        return false;
     }
 
 
-    //////////////////
-    // UI Functions //
-    //////////////////
-
-    /*
-        This is a function to open a chat popup, and create it if necessary
-    */
-    openChatBox(group_id = null) {
-        if (!this.app.BROWSER) {return;}
-
-
-        if (group_id == null) {
-
-            let community = this.returnCommunityChat();
-
-            if (!community?.id) {
-                return;
-            }
-            group_id = community.id;
-        }
-
-        let group = this.returnGroup(group_id);
-        
-        if (!group) {return;}
-
-        this.app.options.auto_open_chat_box = group_id;
-        this.app.storage.saveOptions();
-
-
-        if (!group.popup){
-            group.popup = new ChatPopup(this.app, this, group_id);
-        }
-
-        group.popup.render(this.app, this, group_id);
-
-    }
 
 
     ///////////////////
@@ -607,17 +573,61 @@ class Chatx extends ModTemplate {
 
     }
 
+    //
+    // This is a function to open a chat popup, and create it if necessary
+    //
+    openChatBox(group_id = null) {
+        if (!this.app.BROWSER) {return;}
 
+
+        if (group_id == null) {
+
+            let community = this.returnCommunityChat();
+
+            if (!community?.id) {
+                return;
+            }
+            group_id = community.id;
+        }
+
+        let group = this.returnGroup(group_id);
+        
+        if (!group) {return;}
+
+        this.app.options.auto_open_chat_box = group_id;
+        this.app.storage.saveOptions();
+
+
+        if (!group.popup){
+            group.popup = new ChatPopup(this.app, this, group_id);
+        }
+
+        group.popup.render(this.app, this, group_id);
+
+    }
+
+
+    //
+    // Since we were always testing the timestamp its a good thing we don't manipulate it
+    //
     addTransactionToGroup(group, tx) {
         for (let i = 0; i < group.txs.length; i++) {
             if (group.txs[i].transaction.sig === tx.transaction.sig && group.txs[i].transaction.ts === tx.transaction.ts) {
                 return;
             }
         }
-        group.unread++;
+
         group.txs.push(tx);
+        
+        //We mark "new/unread" messages as we add them to the group
+        //and clear them when we render them in the popup
+        group.unread++;
+        
     }
 
+    ///////////////////
+    // CHAT UTILITIES //
+    ///////////////////
 
     returnGroup(group_id) {
 
@@ -683,7 +693,10 @@ class Chatx extends ModTemplate {
         return this.groups[0];
     }
 
-
+    //
+    // Maybe needs improvement, but simple test to not rip away
+    // focus from a ChatPopup if rendering a new Chatpopup
+    //
     isOtherInputActive() {
         // if we are viewing an overlay, nope out
         if (document.querySelector(".saito-overlay-backdrop")?.style?.display == "block") {
@@ -703,7 +716,9 @@ class Chatx extends ModTemplate {
         return 0;
     }
 
-
+    ///////////////////
+    // LOCAL STORAGE //
+    ///////////////////
 
     loadChats(){
         if (!this.app.options.chat){
@@ -736,6 +751,10 @@ class Chatx extends ModTemplate {
 
         this.app.storage.saveOptions();
     }
+
+    ///////////////////
+    // CHAT DEBUGGING //
+    ///////////////////
 
     //
     // I'm a lazy man who stores the popup module in the group, 

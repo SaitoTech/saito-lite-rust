@@ -1,5 +1,6 @@
 const SaitoEmoji = require("../../../../lib/saito/new-ui/saito-emoji/saito-emoji");
 const ChatPopupTemplate = require("./popup.template");
+
 class ChatPopup {
 
   constructor(app, mod, group_id = "") {
