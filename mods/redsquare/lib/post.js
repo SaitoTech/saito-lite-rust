@@ -13,7 +13,7 @@ class Post {
     this.thread_id = "";
     this.images = [];
     this.tweet = tweet;
-    this.render_after_submit = 1; 
+    this.render_after_submit = 1;
   }
 
   render(app, mod) {
@@ -54,7 +54,7 @@ class Post {
 
       if (e.target.classList.contains("fa-image")) {
         document.querySelector("#hidden_file_element_redsquare-tweet-overlay").click();
-	return;
+        return;
       }
 
 
@@ -87,9 +87,9 @@ class Post {
         post_self.overlay.closebox = false;
         post_self.overlay.show(app, mod, '<div class="saito-loader"></div>');
 
-	//
-	// tweet data
-	//
+        //
+        // tweet data
+        //
         let data = { text: text };
         if (parent_id !== "") {
           data = { text: text, parent_id: parent_id, thread_id: thread_id };
@@ -98,7 +98,7 @@ class Post {
           data['images'] = this.images;
         }
 
-	//
+        //
         // check if posting tweet from overlay (reply tweet)
         // if yes then update reply counter
         //
@@ -128,7 +128,7 @@ class Post {
                 mod.renderMainPage(app, mod);
               }
             }
-	  }
+          }
           post_self.overlay.hide();
         }, 1000);
 
@@ -157,21 +157,20 @@ class Post {
 
 
 
-  resizeImg(img, dimensions, quality) {
+  async resizeImg(img, dimensions, quality) {
 
     let self = this;
     let imgSize = img.length / 1024;
-    let resized_img = self.app.browser.resizeImg(img, dimensions, quality);
-    console.log('resized image ', resized_img)
-      self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${resized_img}"
+    let resized_img = await self.app.browser.resizeImg(img);
+    self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${resized_img}"
            /><i data-id="${self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
 
-      self.images.push(resized_img);
-      return resized_img;
-//    }
+    self.images.push(resized_img);
+    return resized_img;
+    //    }
 
-}
+  }
 
 
 }

@@ -2,6 +2,7 @@
 
 import screenfull from "screenfull";
 import html2canvas from "html2canvas";
+import { getDiffieHellman } from "crypto";
 const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
 var marked = require("marked");
@@ -1191,63 +1192,66 @@ class Browser {
     }
   }
 
-  resizeImg(img, dimensions, quality, targetSize =970) {
+  async resizeImg(img, targetSize = 512) {
     let self = this;
-    let imgSize = img.length / 1024;
-    if (imgSize > 150) {
-      let canvas = document.createElement("canvas");
-      let oImg = document.createElement("img");
-      oImg.setAttribute('src', img);
-      oImg.setAttribute('id', "uploaded-img");
-      document.body.appendChild(oImg);
+    var dimensions = await this.getImageDimensions(img);
+    var new_img = "";
+    let canvas = document.createElement("canvas");
+    let oImg = document.createElement("img");
 
-      let original = document.getElementById("uploaded-img");
-      let img_width = 0;
-      let img_height = 0;
+    let w = dimensions.w;
+    let h = dimensions.h;
+    let aspect = w / h;
 
+    if (w > 1440) {
+      w = 1440;
+      h = 1440 * aspect;
+    }
+    if (h > 768) {
+      h = 768;
+      w = 768 / aspect;
+    }
 
-      original.onload = function () {
+    canvas.width = w;
+    canvas.height = h;
+
+      function resizeLoop(img, quality = 1) {
         console.log('resizing');
-        img_width = this.width;
-        img_height = this.height;
-
-        let type = original.src.split(";")[0].split(":")[1];
-        let canvas = document.createElement("canvas");
-
-        let w = 0;
-        let h = 0;
-        let r = 1;
-
-        w = (img_width * r) * dimensions;
-        h = (img_height * r) * dimensions;
-
-        canvas.width = w;
-        canvas.height = h;
-
-        canvas.getContext("2d").drawImage(this, 0, 0, w, h);
-        let result_img_uri = canvas.toDataURL('image/jpeg', quality);
-        let imgSize = result_img_uri.length / 1024; // in KB
-
-        this.remove();
-
+        oImg.setAttribute('src', img);
+        canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
+        new_img = canvas.toDataURL('image/jpeg', quality);
+        let imgSize = new_img.length / 1024; // in KB
+  
         if (imgSize > targetSize) {
+  
+          resizeLoop(new_img, quality * 0.9);
+  
+          } else {
+            return;
+          }
 
-          let newDimensions = (dimensions < 0.95) ? dimensions + 0.05 : 0.95;
-          let newQuality = (quality < 0.95) ? quality + 0.05 : 0.95;
+//        document.body.appendChild(oImg);
 
-          self.resizeImg(result_img_uri, newDimensions, newQuality);
-
-        }else {
-          return;
-        }
       };
 
-      return oImg.src;
+      resizeLoop(img);
+
+      console.log("Resized to: " + new_img.length / 1024);
+
+      return new_img;
       
-    } else {
-      return img;
-    }
   }
+
+  getImageDimensions(file) {
+    return new Promise (function (resolved, rejected) {
+      var i = new Image()
+      i.onload = function(){
+        resolved({w: i.width, h: i.height})
+      };
+      i.src = file
+    })
+  }
+
 }
 
 export default Browser;
