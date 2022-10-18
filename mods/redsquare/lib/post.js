@@ -13,7 +13,7 @@ class Post {
     this.thread_id = "";
     this.images = [];
     this.tweet = tweet;
-    this.render_after_submit = 1; 
+    this.render_after_submit = 1;
   }
 
   render(app, mod) {
@@ -54,7 +54,7 @@ class Post {
 
       if (e.target.classList.contains("fa-image")) {
         document.querySelector("#hidden_file_element_redsquare-tweet-overlay").click();
-	return;
+        return;
       }
 
 
@@ -87,9 +87,9 @@ class Post {
         post_self.overlay.closebox = false;
         post_self.overlay.show(app, mod, '<div class="saito-loader"></div>');
 
-	//
-	// tweet data
-	//
+        //
+        // tweet data
+        //
         let data = { text: text };
         if (parent_id !== "") {
           data = { text: text, parent_id: parent_id, thread_id: thread_id };
@@ -98,7 +98,7 @@ class Post {
           data['images'] = this.images;
         }
 
-	//
+        //
         // check if posting tweet from overlay (reply tweet)
         // if yes then update reply counter
         //
@@ -128,7 +128,7 @@ class Post {
                 mod.renderMainPage(app, mod);
               }
             }
-	  }
+          }
           post_self.overlay.hide();
         }, 1000);
 
@@ -157,75 +157,22 @@ class Post {
 
 
 
-  resizeImg(img, dimensions, quality) {
+  async resizeImg(img, dimensions, quality) {
 
-    let post_self = this;
+    let self = this;
     let imgSize = img.length / 1024;
-
-    // compress img if file size greater tan 150kb
-/*****
-    if (imgSize > 150) {
-
-      let canvas = document.createElement("canvas");
-      let oImg = document.createElement("img");
-      oImg.setAttribute('src', img);
-      oImg.setAttribute('id', "uploaded-img");
-      document.body.appendChild(oImg);
-
-      let original = document.getElementById("uploaded-img");
-      let img_width = 0;
-      let img_height = 0;
-
-
-      let resizedImg = original.onload = function () {
-        img_width = this.width;
-        img_height = this.height;
-
-        let type = original.src.split(";")[0].split(":")[1];
-        let canvas = document.createElement("canvas");
-
-        let w = 0;
-        let h = 0;
-        let r = 1;
-
-        w = (img_width * r) * dimensions;
-        h = (img_height * r) * dimensions;
-
-        canvas.width = w;
-        canvas.height = h;
-
-        canvas.getContext("2d").drawImage(this, 0, 0, w, h);
-        let result_img_uri = canvas.toDataURL('image/jpeg', quality);
-        let imgSize = result_img_uri.length / 1024; // in KB
-
-        this.remove();
-
-        if (imgSize > 970) {
-
-          let newDimensions = (dimensions < 0.95) ? dimensions + 0.05 : 0.95;
-          let newQuality = (quality < 0.95) ? quality + 0.05 : 0.95;
-
-          post_self.resizeImg(result_img_uri, newDimensions, newQuality);
-
-        } else {
-          post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${result_img_uri}"
-           /><i data-id="${post_self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
+    let resized_img = await self.app.browser.resizeImg(img);
+    self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${resized_img}"
+           /><i data-id="${self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
 
-          post_self.images.push(result_img_uri);
-          return result_img_uri;
-        }
-      };
-    } else {
-****/
-      post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${img}"
-           /><i data-id="${post_self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
-           </div>`, document.getElementById("post-tweet-img-preview-container"));
+    self.images.push(resized_img);
+    return resized_img;
+    //    }
 
-      post_self.images.push(img);
-      return img;
-//    }
   }
+
+
 }
 
 module.exports = Post;
