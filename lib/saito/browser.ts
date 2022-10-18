@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import screenfull from "screenfull";
+import screenfull, { element } from "screenfull";
 import html2canvas from "html2canvas";
 const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
@@ -787,6 +787,24 @@ console.log("preventing the defaults");
         element_moved = false;
 
         document.onmouseup = function (e) {
+
+          if (element_to_move.classList.contains("dockedLeft")) {
+            element_to_move.style.left = 0;
+          }
+
+          if (element_to_move.classList.contains("dockedTop")) {
+            element_to_move.style.top = 0;
+          }
+
+          if (element_to_move.classList.contains("dockedRight")) {
+            element_to_move.style.left = window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
+          }
+
+          if (element_to_move.classList.contains("dockedBottom")) {
+            element_to_move.style.top = window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
+          }
+
+
           document.onmouseup = null;
           document.onmousemove = null;
 
@@ -810,9 +828,50 @@ console.log("preventing the defaults");
             element_moved = true;
           }
 
+          //if draggable
+          if (element_to_move.getBoundingClientRect().x < 50) {
+            element_to_move.classList.add("dockedLeft");
+          } else {
+            element_to_move.classList.remove("dockedLeft");
+          }
+
+          if (element_to_move.getBoundingClientRect().y < 50) {
+            element_to_move.classList.add("dockedTop");
+          } else {
+            element_to_move.classList.remove("dockedTop");
+          }
+
+          if (element_to_move.getBoundingClientRect().x + element_to_move.getBoundingClientRect().width > window.innerWidth - 50) {
+            element_to_move.classList.add("dockedRight");
+          } else {
+            element_to_move.classList.remove("dockedRight");
+          }
+
+          if (element_to_move.getBoundingClientRect().y + element_to_move.getBoundingClientRect().height > window.innerHeight - 50) {
+            element_to_move.classList.add("dockedBottom");
+          } else {
+            element_to_move.classList.remove("dockedBottom");
+          }
+
+
           // set the element's new position:
-          element_to_move.style.left = element_start_left + adjustmentX + "px";
-          element_to_move.style.top = element_start_top + adjustmentY + "px";
+
+          //if draggable
+          let newPosX = element_start_left + adjustmentX;
+          if (newPosX <= 0) { newPosX = 0}
+          if (newPosX + element_to_move.getBoundingClientRect().width >= window.innerWidth) {
+            newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
+          }
+
+          let newPosY = element_start_top + adjustmentY;
+          if (newPosY <= 0) { newPosY = 0}
+          if (newPosY + element_to_move.getBoundingClientRect().height >= window.innerHeight) {
+            newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
+          }
+          ///end
+
+          element_to_move.style.left = newPosX + "px";
+          element_to_move.style.top = newPosY + "px";
 
           //We are changing to Top/Left so get rid of bottom/right
           element_to_move.style.bottom = "unset";

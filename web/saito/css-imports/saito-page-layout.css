@@ -67,6 +67,23 @@
     display: none;
 }
 
+.dockedLeft {
+    border-left: 5px solid orangered !important;
+}
+
+.dockedRight {
+    border-right: 5px solid orangered !important;
+}
+
+.dockedTop {
+    border-top: 5px solid orangered !important;
+}
+
+.dockedBottom {
+    border-bottom: 5px solid orangered !important;
+}
+
+
 /*
 
 .saito-sidebar.left .hamburger {
