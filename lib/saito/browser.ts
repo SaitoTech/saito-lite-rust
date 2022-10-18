@@ -224,64 +224,7 @@ class Browser {
     }
 
     // listen with mutation observer
-    let mutaionObserver = new MutationObserver((entries) => {
-      console.log(entries);
-
-      entries.forEach((entry) => {
-        console.log("files ", entry.files);
-        entry.addedNodes.forEach((node) => {
-          recursive(this.app, node);
-        });
-      });
-
-      function recursive(app, node) {
-        if (node && node.classList && Array.from(node.classList).includes("saito-user")) {
-          if (node.classList && Array.from(node.classList).includes("saito-user")) {
-            if (node.children && node.children.length > 0) {
-              Array.from(node.children).forEach((child_node) => {
-                if (
-                  child_node.classList &&
-                  Array.from(child_node.classList).includes("saito-address")
-                ) {
-                  console.log(child_node);
-                  let address = child_node.getAttribute("data-id");
-                  let identifier = app.keys.returnIdentifierByPublicKey(address, true);
-                  // if (!identifier) {
-                  //   return;
-                  // }
-                  try {
-                    if (document.querySelector(`.saito-address-${address}`)) {
-                      document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
-                        console.log("address dom ", item);
-                        item.innerHTML = identifier;
-                      });
-                    }
-                  } catch (err) {
-                    console.log("error ", err);
-                  }
-                }
-              });
-            }
-            // if (Array.from(node.classList).includes("saito-user")) {
-            //   console.log("node ", node);
-            //   console.log("classlist ", node.classList);
-            // }
-          }
-        } else {
-          console.log("node ", node, node.children);
-          if (node && node.children && Array.from(node.children).length > 0) {
-            Array.from(node.children).forEach((item) => {
-              recursive(app, item);
-            });
-          }
-        }
-      }
-    });
-
-    mutaionObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+    this.activatePublicKeyObserver(app);
   }
 
   extractKeys(text = "") {
@@ -965,22 +908,21 @@ class Browser {
    * @param {Array} keys
    */
   async addIdentifiersToDom(keys = []) {
-    if (keys.length == 0) {
-      const addresses = document.getElementsByClassName(`saito-address`);
-      Array.from(addresses).forEach((add) => {
-        const pubkey = add.getAttribute("data-id");
-        if (pubkey) {
-          keys.push(pubkey);
-        }
-      });
-    }
-
-    try {
-      const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
-      Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
-    } catch (err) {
-      console.error(err);
-    }
+    // if (keys.length == 0) {
+    //   const addresses = document.getElementsByClassName(`saito-address`);
+    //   Array.from(addresses).forEach((add) => {
+    //     const pubkey = add.getAttribute("data-id");
+    //     if (pubkey) {
+    //       keys.push(pubkey);
+    //     }
+    //   });
+    // }
+    // try {
+    //   const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
+    //   Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
+    // } catch (err) {
+    //   console.error(err);
+    // }
   }
 
   addModalIdentifierAddPublickey(app, mod) {
@@ -1251,7 +1193,56 @@ class Browser {
     }
   }
 
-  activatePublicKeyObserver() {}
+  activatePublicKeyObserver(app) {
+    let mutaionObserver = new MutationObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.addedNodes.forEach((node) => {
+          recursive_search(app, node);
+        });
+      });
+
+      function recursive_search(app, node) {
+        if (node && node.classList && Array.from(node.classList).includes("saito-user")) {
+          if (node.classList && Array.from(node.classList).includes("saito-user")) {
+            if (node.children && node.children.length > 0) {
+              Array.from(node.children).forEach((child_node) => {
+                if (
+                  child_node.classList &&
+                  Array.from(child_node.classList).includes("saito-address")
+                ) {
+                  let address = child_node.getAttribute("data-id");
+                  let identifier = app.keys.returnIdentifierByPublicKey(address, true);
+                  // if (!identifier) {
+                  //   return;
+                  // }
+                  try {
+                    if (document.querySelector(`.saito-address-${address}`)) {
+                      document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
+                        item.innerHTML = identifier;
+                      });
+                    }
+                  } catch (err) {
+                    console.log("error ", err);
+                  }
+                }
+              });
+            }
+          }
+        } else {
+          if (node && node.children && Array.from(node.children).length > 0) {
+            Array.from(node.children).forEach((child_node) => {
+              recursive_search(app, child_node);
+            });
+          }
+        }
+      }
+    });
+
+    mutaionObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
 }
 
 export default Browser;

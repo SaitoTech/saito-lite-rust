@@ -169,7 +169,7 @@ class Observer extends ModTemplate {
     if (!app.BROWSER) { return; }
     
     // fetch any usernames needed
-    app.browser.addIdentifiersToDom();
+    // app.browser.addIdentifiersToDom();
 
     // load observer games (active)
     this.sendPeerDatabaseRequestWithFilter(

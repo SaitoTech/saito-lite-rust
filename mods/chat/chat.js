@@ -37,7 +37,7 @@ class Chat extends ModTemplate {
         this.inTransitImageMsgSig = null;
 
         this.added_identifiers_post_load = 0;
-	this.chat_manager = null;
+        this.chat_manager = null;
 
     }
 
@@ -157,11 +157,11 @@ class Chat extends ModTemplate {
 
     initialize(app) {
 
-	//let redsquare_mod = app.modules.returnModule("RedSquare");
-	//if (redsquare_mod) {
-	//  this.onConfirmation = function(a, b, c, d) {};
-	//  this.render = function() {};
-	//}
+        //let redsquare_mod = app.modules.returnModule("RedSquare");
+        //if (redsquare_mod) {
+        //  this.onConfirmation = function(a, b, c, d) {};
+        //  this.render = function() {};
+        //}
 
         super.initialize(app);
 
@@ -228,7 +228,7 @@ class Chat extends ModTemplate {
         //
         if (peer.isMainPeer()) {
 
-console.log("CREATING COMMUNITY CHAT OLD W/: " + peer.peer.publickey);
+            console.log("CREATING COMMUNITY CHAT OLD W/: " + peer.peer.publickey);
 
             console.log("peer handshake complete with: " + peer.peer.publickey);
             this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
@@ -253,7 +253,7 @@ console.log("CREATING COMMUNITY CHAT OLD W/: " + peer.peer.publickey);
                                     return a.transaction.ts - b.transaction.ts;
                                 })
                             }
-			    //
+                            //
                             this.sendEvent('old-chat-render-request', {});
 
                             //
@@ -281,19 +281,19 @@ console.log("CREATING COMMUNITY CHAT OLD W/: " + peer.peer.publickey);
 
                     this.sendEvent('old-chat-render-request', {});
 
-		    //
-		    // check identifiers
-		    //
-		    if (this.added_identifiers_post_load == 0) {
-		      try {
-			setTimeout(()=>{
-		          this.app.browser.addIdentifiersToDom();
-		          this.added_identifiers_post_load = 1;
-			}, 1200);
-		      } catch (err) {
-			console.log("error adding identifiers post-chat");
-		      }
-		    }
+                    //
+                    // check identifiers
+                    //
+                    if (this.added_identifiers_post_load == 0) {
+                        try {
+                            setTimeout(() => {
+                                // this.app.browser.addIdentifiersToDom();
+                                this.added_identifiers_post_load = 1;
+                            }, 1200);
+                        } catch (err) {
+                            console.log("error adding identifiers post-chat");
+                        }
+                    }
                 }
 
 
@@ -375,14 +375,14 @@ console.log("CREATING COMMUNITY CHAT OLD W/: " + peer.peer.publickey);
     }
 
 
-    parseMsg(txs){
+    parseMsg(txs) {
         let msg = {};
         msg.message = "";
         try {
-          const reconstruct = Buffer.from((Buffer.from(txs.transaction.m).toString()), "base64").toString("utf-8");
-          msg = JSON.parse(reconstruct);
+            const reconstruct = Buffer.from((Buffer.from(txs.transaction.m).toString()), "base64").toString("utf-8");
+            msg = JSON.parse(reconstruct);
         } catch (err) {
-          //console.error(err);
+            //console.error(err);
         }
         return msg.message;
     }
@@ -418,10 +418,10 @@ console.log("CREATING COMMUNITY CHAT OLD W/: " + peer.peer.publickey);
     //
     onConfirmation(blk, tx, conf, app) {
 
-	// 
-	// CHAT mod deprecated by CHATX
-	//
-return;
+        // 
+        // CHAT mod deprecated by CHATX
+        //
+        return;
 
         tx.decryptMessage(app);
         let txmsg = tx.returnMessage();
@@ -456,11 +456,11 @@ return;
     //
     async handlePeerRequest(app, req, peer, mycallback) {
 
-	// 
-	// CHAT mod deprecated
-	//
-	let arcade_mod = app.modules.returnModule("Arcade");
-	if (!arcade_mod.browser_active) { return; }
+        // 
+        // CHAT mod deprecated
+        //
+        let arcade_mod = app.modules.returnModule("Arcade");
+        if (!arcade_mod.browser_active) { return; }
 
 
         if (req.request == null) {
@@ -623,13 +623,13 @@ return;
     msgIsFrom(txs, publickey) {
         const x = [];
         if (txs.transaction.from != null) {
-          for (let v = 0; v < txs.transaction.from.length; v++) {
-            if (txs.transaction.from[v].add === publickey) {
-              x.push(txs.transaction.from[v]);
+            for (let v = 0; v < txs.transaction.from.length; v++) {
+                if (txs.transaction.from[v].add === publickey) {
+                    x.push(txs.transaction.from[v]);
+                }
             }
-          }
         }
-        return (x.length !==0);
+        return (x.length !== 0);
     }
 
 
@@ -825,7 +825,7 @@ return;
         this.sendEvent('chat_receive_message', message);
         this.render(this.app, renderMode);
 
-	//this.app.emit('old-chat-render-request', {});
+        //this.app.emit('old-chat-render-request', {});
 
         this.saveChat();
 
@@ -834,7 +834,7 @@ return;
         //
         let msgidentifier = app.keys.returnIdentifierByPublicKey(tx.transaction.from[0].add);
         if (msgidentifier === tx.transaction.from[0].add || msgidentifier == "") {
-            app.browser.addIdentifiersToDom([tx.transaction.from[0].add]);
+            // app.browser.addIdentifiersToDom([tx.transaction.from[0].add]);
         }
 
     }
@@ -845,8 +845,8 @@ return;
 
         if (options) {
             options = JSON.parse(options);
-            if (options.chat?.groups){
-                groups = options.chat.groups;    
+            if (options.chat?.groups) {
+                groups = options.chat.groups;
             }
         }
 
@@ -859,7 +859,7 @@ return;
         this.app.options.chat = Object.assign({}, this.app.options.chat);
         this.app.options.chat.groups = this.groups.map(group => {
             let { id, name, members, is_encrypted, txs } = group;
-            return { id, name, members, is_encrypted, txs};
+            return { id, name, members, is_encrypted, txs };
         });
         this.app.storage.saveOptions();
     }
@@ -873,14 +873,14 @@ return;
         let groups = this.getChatGroups();
 
         if (groups.length > 0) {
-            for (let i=0; i < groups.length; i++) {
+            for (let i = 0; i < groups.length; i++) {
                 console.log('opening this group chat');
                 console.log(groups[i]);
                 this.groups = groups;
                 this.openChatBox(groups[i].id);
             }
         } else {
-           this.openChatBox();
+            this.openChatBox();
         }
     }
 
