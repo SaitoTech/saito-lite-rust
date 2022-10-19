@@ -14,9 +14,7 @@ class ChatPopup {
     //Each ChatPopup has listeners so we need to only act if it is for us
     app.connection.on("chat-render-request", (gid) => {
       if (gid) {
-        console.log("Chat render request");
         if (this.minimized || gid != this.activeTab()) {
-          console.log("Create notification")
           app.connection.emit("chat-render-request-notify", gid);
         } else {
           this.render(app, mod, gid);
@@ -57,7 +55,6 @@ class ChatPopup {
     }
 
     if (!document.getElementById(`chat-container`)) {
-      console.log("Create new chat popup");
       app.browser.addElementToDom(ChatPopupTemplate(app, mod, group));
       app.browser.makeDraggable(`chat-container`, `chat-header`, true);
 
@@ -71,14 +68,12 @@ class ChatPopup {
       }
 
       if (document.getElementById(`chat-group-${group_id}`)){
-        console.log("Activate or refresh existing tab");
         //Update tab
         document.getElementById(`chat-group-${group_id}`).innerHTML = group.name;
         document.getElementById(`chat-group-${group_id}`).classList.add("active-chat-tab");
         //Load chat messages
         app.browser.replaceElementBySelector(`<div class="chat-body">${mod.returnChatBody(group_id)}</div>`, `#chat-container .chat-body`);
       }else{
-        console.log("Insert new tab");
         let tabContainer = document.querySelector(".chat-group-tabs");
         if (tabContainer){
           tabContainer.classList.add("show-multi");
@@ -100,7 +95,7 @@ class ChatPopup {
   attachEvents(app, mod) {
 
     let group_id = this.activeTab();
-    console.log("Active CHAT: " + group_id);    
+
     //
     // close
     //
