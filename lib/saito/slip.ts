@@ -151,7 +151,7 @@ class Slip {
 
   returnKey() {
     console.assert(this.key != "", "UTXO Key is not generated");
-    return this.key
+    return this.key;
   }
 
   returnPublicKey() {

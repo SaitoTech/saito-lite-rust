@@ -598,7 +598,7 @@ console.log("---------------------");
             } else {
               if (ptx.transaction.type == TransactionType.GoldenTicket) {
                 this.wallet.pending.splice(i, 1);
-                this.unspendInputSlips(ptx);
+                this.unspendInputSlips(this.app, ptx);
                 i--;
                 removed_pending_slips = 1;
               } else {
@@ -611,7 +611,7 @@ console.log("---------------------");
 
                   if (ptx_ts + 12000000 < blk_ts) {
                     this.wallet.pending.splice(i, 1);
-                    this.unspendInputSlips(ptx);
+                    this.unspendInputSlips(this.app, ptx);
                     removed_pending_slips = 1;
                     i--;
                   }
@@ -886,11 +886,12 @@ console.log("---------------------");
     return tx;
   }
 
-  unspendInputSlips(tmptx = null) {
+  unspendInputSlips(app: Saito, tmptx = null) {
     if (tmptx == null) {
       return;
     }
     for (let i = 0; i < tmptx.transaction.from.length; i++) {
+      tmptx.transaction.from[i].generateKey(app);
       const fsidx = tmptx.transaction.from[i].returnKey();
       for (let z = 0; z < this.wallet.inputs.length; z++) {
         if (fsidx == this.wallet.inputs[z].returnKey()) {

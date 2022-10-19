@@ -96,6 +96,7 @@ class Transaction {
           fslip.block_id,
           fslip.tx_ordinal
         );
+
       }
       for (let i = 0; i < this.transaction.to.length; i++) {
         const fslip = this.transaction.to[i];
