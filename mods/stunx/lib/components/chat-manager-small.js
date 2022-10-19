@@ -48,7 +48,7 @@ class ChatManagerSmall {
     }
 
     attachEvents(app, mod) {
-        app.browser.makeDraggable("small-video-chatbox");
+        app.browser.makeDraggable("small-video-chatbox", null, true);
 
         document.querySelector('.disconnect_btn').onclick = (e) => {
             this.disconnect();

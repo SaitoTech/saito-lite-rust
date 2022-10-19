@@ -69,18 +69,26 @@
 
 .dockedLeft {
     border-left: 5px solid orangered !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 }
 
 .dockedRight {
     border-right: 5px solid orangered !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
 }
 
 .dockedTop {
     border-top: 5px solid orangered !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
 }
 
 .dockedBottom {
     border-bottom: 5px solid orangered !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
 }
 
 

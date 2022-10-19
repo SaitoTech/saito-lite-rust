@@ -64,29 +64,29 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-/******
-        channel.onmessage = (e) => {
-          console.log("document onmessage change");
-          if (!document.hidden) {
-            channel.postMessage({
-              active: 1,
-              publickey: this.app.wallet.returnPublicKey(),
-            });
-            this.setActiveTab(1);
-          } else {
-            //
-            // only disable if someone else active w/ same key
-            //
-            if (e.data) {
-              if (e.data.active == 1) {
-                if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
-                  this.setActiveTab(0);
-                }
-              }
-            }
-          }
-        };
-*****/
+        /******
+                channel.onmessage = (e) => {
+                  console.log("document onmessage change");
+                  if (!document.hidden) {
+                    channel.postMessage({
+                      active: 1,
+                      publickey: this.app.wallet.returnPublicKey(),
+                    });
+                    this.setActiveTab(1);
+                  } else {
+                    //
+                    // only disable if someone else active w/ same key
+                    //
+                    if (e.data) {
+                      if (e.data.active == 1) {
+                        if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
+                          this.setActiveTab(0);
+                        }
+                      }
+                    }
+                  }
+                };
+        *****/
 
         document.addEventListener(
           "visibilitychange",
@@ -489,8 +489,8 @@ class Browser {
 
   replaceElementBySelector(html, selector = "") {
     if (selector === "") {
-     console.warn("no selector provided to replace, so adding direct to DOM");
-     this.app.browser.addElementToDom(html);
+      console.warn("no selector provided to replace, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
       if (obj) {
@@ -504,7 +504,7 @@ class Browser {
 
   addElementToSelector(html, selector = "") {
     if (selector === "") {
-     console.warn("no selector provided to add to, so adding direct to DOM");
+      console.warn("no selector provided to add to, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let container = document.querySelector(selector);
@@ -727,12 +727,12 @@ class Browser {
   }
 
   preventDefaults(e) {
-console.log("preventing the defaults");
+    console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
   }
 
-  makeDraggable(id_to_move, id_to_drag = "", mycallback = null) {
+  makeDraggable(id_to_move, id_to_drag = "", dockable = false, mycallback = null) {
     console.log("make draggable: " + id_to_drag);
     console.log(" and move? " + id_to_move);
 
@@ -755,8 +755,8 @@ console.log("preventing the defaults");
       element_to_drag.onmousedown = function (e) {
         let resizeable = ["both", "vertical", "horizontal"];
         //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
-        if(resizeable.indexOf(getComputedStyle(e.target).resize) > -1 || resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1) {
-          if (e.offsetX > (e.target.offsetWidth - 20) && e.offsetY > (e.target.offsetHeight -20)) {return;}
+        if (resizeable.indexOf(getComputedStyle(e.target).resize) > -1 || resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1) {
+          if (e.offsetX > (e.target.offsetWidth - 20) && e.offsetY > (e.target.offsetHeight - 20)) { return; }
         }
 
         e = e || window.event;
@@ -788,22 +788,24 @@ console.log("preventing the defaults");
 
         document.onmouseup = function (e) {
 
-          if (element_to_move.classList.contains("dockedLeft")) {
-            element_to_move.style.left = 0;
-          }
+          if (dockable) {
+            if (element_to_move.classList.contains("dockedLeft")) {
+              element_to_move.style.left = 0;
+            }
 
-          if (element_to_move.classList.contains("dockedTop")) {
-            element_to_move.style.top = 0;
-          }
+            if (element_to_move.classList.contains("dockedTop")) {
+              element_to_move.style.top = 0;
+            }
 
-          if (element_to_move.classList.contains("dockedRight")) {
-            element_to_move.style.left = window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
-          }
+            if (element_to_move.classList.contains("dockedRight")) {
+              element_to_move.style.left = window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
+            }
 
-          if (element_to_move.classList.contains("dockedBottom")) {
-            element_to_move.style.top = window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
-          }
+            if (element_to_move.classList.contains("dockedBottom")) {
+              element_to_move.style.top = window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
+            }
 
+          }
 
           document.onmouseup = null;
           document.onmousemove = null;
@@ -828,47 +830,49 @@ console.log("preventing the defaults");
             element_moved = true;
           }
 
-          //if draggable
-          if (element_to_move.getBoundingClientRect().x < 50) {
-            element_to_move.classList.add("dockedLeft");
-          } else {
-            element_to_move.classList.remove("dockedLeft");
-          }
-
-          if (element_to_move.getBoundingClientRect().y < 50) {
-            element_to_move.classList.add("dockedTop");
-          } else {
-            element_to_move.classList.remove("dockedTop");
-          }
-
-          if (element_to_move.getBoundingClientRect().x + element_to_move.getBoundingClientRect().width > window.innerWidth - 50) {
-            element_to_move.classList.add("dockedRight");
-          } else {
-            element_to_move.classList.remove("dockedRight");
-          }
-
-          if (element_to_move.getBoundingClientRect().y + element_to_move.getBoundingClientRect().height > window.innerHeight - 50) {
-            element_to_move.classList.add("dockedBottom");
-          } else {
-            element_to_move.classList.remove("dockedBottom");
-          }
-
-
-          // set the element's new position:
-
-          //if draggable
           let newPosX = element_start_left + adjustmentX;
-          if (newPosX <= 0) { newPosX = 0}
-          if (newPosX + element_to_move.getBoundingClientRect().width >= window.innerWidth) {
-            newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
-          }
-
           let newPosY = element_start_top + adjustmentY;
-          if (newPosY <= 0) { newPosY = 0}
-          if (newPosY + element_to_move.getBoundingClientRect().height >= window.innerHeight) {
-            newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
+
+          //if dockable show docking edge
+          if (dockable) {
+            if (element_to_move.getBoundingClientRect().x < 50) {
+              element_to_move.classList.add("dockedLeft");
+            } else {
+              element_to_move.classList.remove("dockedLeft");
+            }
+
+            if (element_to_move.getBoundingClientRect().y < 50) {
+              element_to_move.classList.add("dockedTop");
+            } else {
+              element_to_move.classList.remove("dockedTop");
+            }
+
+            if (element_to_move.getBoundingClientRect().x + element_to_move.getBoundingClientRect().width > window.innerWidth - 50) {
+              element_to_move.classList.add("dockedRight");
+            } else {
+              element_to_move.classList.remove("dockedRight");
+            }
+
+            if (element_to_move.getBoundingClientRect().y + element_to_move.getBoundingClientRect().height > window.innerHeight - 50) {
+              element_to_move.classList.add("dockedBottom");
+            } else {
+              element_to_move.classList.remove("dockedBottom");
+            }
+
+
+            // set the element's new position:
+
+            if (newPosX <= 0) { newPosX = 0 }
+            if (newPosX + element_to_move.getBoundingClientRect().width >= window.innerWidth) {
+              newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
+            }
+
+            if (newPosY <= 0) { newPosY = 0 }
+            if (newPosY + element_to_move.getBoundingClientRect().height >= window.innerHeight) {
+              newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
+            }
+
           }
-          ///end
 
           element_to_move.style.left = newPosX + "px";
           element_to_move.style.top = newPosY + "px";
@@ -987,7 +991,7 @@ console.log("preventing the defaults");
       Array.from(identifiers).forEach((identifier) => {
         identifier.addEventListener("click", (e) => {
 
-console.log("preventing default 444");
+          console.log("preventing default 444");
 
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -1165,14 +1169,14 @@ console.log("preventing default 444");
     });
   }
 
-  async screenshotCanvasElementById(id = "" , callback = null) {
-      let canvas = document.getElementById(id);
-      if (canvas) {
-        let img = canvas.toDataURL("image/jpeg", 0.35);
-        if (callback != null) {
-          callback(img);
-        }
+  async screenshotCanvasElementById(id = "", callback = null) {
+    let canvas = document.getElementById(id);
+    if (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      if (callback != null) {
+        callback(img);
       }
+    }
   }
 
 
@@ -1212,9 +1216,9 @@ console.log("preventing default 444");
       text = text.replace(urlPattern, function (url) {
         return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
       });
-      
+
       text = emoji.emojify(text);
-      
+
       return text;
     } catch (err) {
       console.log("Err in sanitizing: " + err);
