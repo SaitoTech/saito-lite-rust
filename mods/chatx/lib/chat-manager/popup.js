@@ -71,7 +71,7 @@ class ChatPopup {
         right_orientation = pixen_consumed + (20 * chatboxen_open) + "px";
   
         app.browser.addElementToDom(ChatPopupTemplate(app, mod, this.group_id));
-        app.browser.makeDraggable(`chat-container-${this.group_id}`, `chat-header-${this.group_id}`);
+        app.browser.makeDraggable(`chat-container-${this.group_id}`, `chat-header-${this.group_id}`, true);
 
         //
         // update right-alignment
