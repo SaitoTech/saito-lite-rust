@@ -37,6 +37,7 @@ class RedSquare extends ModTemplate {
 
     // "main" or sig if viewing page-specific
     this.viewing = "feed";
+    this.mode = "feed";
     this.last_viewed_notifications_ts = 0;
     this.unviewed_notifications = 0;
 
@@ -66,10 +67,18 @@ class RedSquare extends ModTemplate {
     if (app.BROWSER === 1) {
 
       let tweet_id = app.browser.returnURLParameter('tweet_id');
+      let user_id = app.browser.returnURLParameter('user_id');
 
       if (tweet_id != "") {
         this.viewing = tweet_id;
+        this.mode = "thread";
       }
+
+      if (user_id != "") {
+        this.viewing = user_id;
+        this.mode = "user";
+      }
+
 
       if (this.browser_active == 1) {
         //Leave a cookie trail to return to Redsquare when you enter a game
@@ -485,13 +494,12 @@ class RedSquare extends ModTemplate {
   }
 
 
-
   //
   // renders children
   //
   renderWithChildren(app, mod, sig) {
     this.viewing = sig;
-    let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + sig;
+    let tweetUrl = window.location.origin + window.location.pathname + `?${this.mode}_id=` + sig;
     window.history.pushState({}, document.title, tweetUrl);
 
     app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> RED SQUARE</div>`, "saito-page-header-title");
@@ -533,7 +541,33 @@ class RedSquare extends ModTemplate {
       mod.renderWithChildren(app, mod, sig);
     });
   }
+   // 
+   // render user page
+   //
 
+   renderUserPage(app, mod, key) {
+    this.viewing = key;
+    let tweetUrl = window.location.origin + window.location.pathname + `?${this.mode}_id=` + key;
+    window.history.pushState({}, document.title, tweetUrl);
+
+    app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> ${key}</div>`, "saito-page-header-title");
+    document.querySelector(".saito-back-button").onclick = (e) => {
+      app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
+      mod.renderMainPage(app, mod);
+      let redsquareUrl = window.location.origin + window.location.pathname;
+      window.history.pushState({}, document.title, redsquareUrl);
+      mod.viewing = "feed";
+    }
+    
+    this.reorganizeTweets(app, mod, false);
+    document.querySelector(".redsquare-list").innerHTML = "";
+    for (let i = 0; i < this.tweets.length; i++) {
+      if (this.tweets[i].sender == key) {
+        this.tweets[i].render(app, mod, ".redsquare-list");
+      } 
+    }
+    app.browser.addIdentifiersToDom();
+  }
 
 
   //
@@ -657,19 +691,26 @@ console.log(i + ": " + JSON.stringify(txs[i].optional));
 //          let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND parent_id = thread_id AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
           let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
-            console.log("~~~~~~~~~~~~~~~~~~");
-            console.log("~~~~~~~~~~~~~~~~~~");
-            console.log("~~~~~~~~~~~~~~~~~~");
-            console.log("1 TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
+            console.log("Main - TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
             mod.renderMainPage(app, redsquare_self);
           });
         } else {
           //let sql = `SELECT * FROM tweets WHERE sig = '${redsquare_self.viewing}' OR parent_id = '${redsquare_self.viewing}'`;
-          let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${redsquare_self.viewing}' OR parent_id = '${redsquare_self.viewing}' OR thread_id = '${redsquare_self.viewing}'`;
-          this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, redsquare_self.viewing); });
+          if (this.mode == "thread") {
+            let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${redsquare_self.viewing}' OR parent_id = '${redsquare_self.viewing}' OR thread_id = '${redsquare_self.viewing}'`;
+            this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, redsquare_self.viewing); });
+ 
+          }
+          if (this.mode == "user") {
+            let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+            this.fetchTweets(app, redsquare_self, sql, function (app, mod) {
+              console.log("Main - TWEETS FETCH FROM PEER: " + redsquare_self.tweets.length);
+            });
+            sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND publickey = '${redsquare_self.viewing}';`;
+            this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderUserPage(app, redsquare_self, redsquare_self.viewing); });
+          }
         }
       }
-
     }
   }
 
