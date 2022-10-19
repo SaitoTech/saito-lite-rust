@@ -9,6 +9,7 @@ var marked = require("marked");
 var sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
+const UserMenu = require("./new-ui/modals/user-menu/user-menu");
 
 class Browser {
   public app: any;
@@ -226,6 +227,22 @@ class Browser {
 
     // listen with mutation observer
     this.activatePublicKeyObserver(app);
+
+    // attach listening events
+
+    document.querySelector("body").onclick = (e) => {
+      console.log(e.target, e.target?.classList);
+      if (e.target.classList && e.target.classList.contains("saito-identicon")) {
+        let public_key = e.target.getAttribute("data-id");
+        console.log(public_key);
+        if (!public_key) {
+          return;
+        }
+
+        let userMenu = new UserMenu(app, public_key);
+        userMenu.render(app);
+      }
+    };
   }
 
   extractKeys(text = "") {
@@ -930,18 +947,15 @@ class Browser {
     try {
       const identifiers = document.getElementsByClassName(`saito-identicon`);
       Array.from(identifiers).forEach((identifier) => {
-        identifier.addEventListener("click", (e) => {
-          console.log("preventing default 444");
-
-          e.preventDefault();
-          e.stopImmediatePropagation();
-
-          let identiconUri = e.target.getAttribute("src");
-          let publickey = e.target.getAttribute("data-id");
-
-          let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey);
-          addPublicKeyModal.render(app, mod);
-        });
+        // identifier.addEventListener("click", (e) => {
+        //   console.log("preventing default 444");
+        //   e.preventDefault();
+        //   e.stopImmediatePropagation();
+        //   let identiconUri = e.target.getAttribute("src");
+        //   let publickey = e.target.getAttribute("data-id");
+        //   let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey);
+        //   addPublicKeyModal.render(app, mod);
+        // });
       });
     } catch (err) {
       console.error("Error while adding event to identifiers: " + err);
@@ -1213,6 +1227,7 @@ class Browser {
                 ) {
                   let address = child_node.getAttribute("data-id");
                   let identifier = app.keys.returnIdentifierByPublicKey(address, true);
+                  console.log(identifier, "identifier");
                   // if (!identifier) {
                   //   return;
                   // }

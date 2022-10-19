@@ -7,7 +7,7 @@
 .small-video-chatbox {
     max-width: 60vw;
     left: 0;
-    top: 4.2rem;
+    bottom: 4.2rem;
     width: 42.8rem;
     border-radius: .5rem;
     background-color: #ffffff;
@@ -27,6 +27,7 @@
   .small-video-chatbox .disconnect_btn {
     transform: matrix(1, 0, 0, -1, 0, 0);
     background-color: var(--saito-white);
+    margin:  0;
   }
   
   

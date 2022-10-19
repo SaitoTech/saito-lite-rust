@@ -106,6 +106,20 @@ class RedSquare extends ModTemplate {
       };
     }
 
+    if (type == "user_menu") {
+      return {
+        text: "Add Contact",
+        icon: "far fa-id-card",
+        callback: function (app, public_key) {
+          console.log(app, "app ")
+          let redsquare_mod = app.modules.returnModule("RedSquare");
+          console.log('redsquare mod', redsquare_mod);
+          redsquare_mod.contacts.showAddModalContact(app, redsquare_mod);
+          console.log('this ', this)
+        }
+      }
+    }
+
     return super.respondTo(type);
   }
 
