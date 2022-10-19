@@ -18,9 +18,22 @@ class Archive extends ModTemplate {
     this.last_clean_on = Date.now();
     this.cleaning_period_in_ms = 1000000;
 
+    app.connection.on("archive-save-transaction", (data)=>{
+      if (data.key){
+        this.saveTransactionByKey(data.key, data.tx, data?.type);
+      }else{
+        this.saveTransaction(data.tx, data?.type);
+      }
+    });
+
   }
 
-
+  /*shouldAffixCallbackToModule(modname = "") {
+     if (modname == "Chat"){
+      return 1;
+     }
+    return 0;
+  }*/
 
   onConfirmation(blk, tx, conf, app) {
 
@@ -28,6 +41,8 @@ class Archive extends ModTemplate {
 
     //
     // by default we just save everything that is an application
+    //
+    // *** only if we turn on the listeners, no? ***
     //
     if (conf == 0) {
       if (tx.msg.module != "") {
@@ -60,22 +75,20 @@ class Archive extends ModTemplate {
         this.updateTransaction(req.data.tx);
       }
       if (req.data.request === "save_key") {
+        console.log("PeerRequest: save TX by Key");
         if (!req.data.key) { return; }
         this.saveTransactionByKey(req.data.key, req.data.tx, req.data.type);
       }
       if (req.data.request === "update_optional") {
         if (!req.data.optional) { return; }
-console.log("RECEIVED REQUEST TO UPDATE TX OPTIONAL: " + JSON.stringify(req.data.optional));
         this.updateTransactionOptional(req.data.sig, req.data.publickey, req.data.optional);
       }
       if (req.data.request === "update_optional_value") {
         if (!req.data.optional) { return; }
-console.log("RECEIVED REQUEST TO UPDATE TX OPTIONAL VALUE: " + req.data.optional_key + " - " + req.data.optional_value);
         this.updateTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key, req.data.optional_value);
       }
       if (req.data.request === "increment_optional_value") {
         if (!req.data.optional) { return; }
-console.log("RECEIVED REQUEST TO INCREMENT TX OPTIONAL: " + req.data.optional_key + " - " + req.data.optional_value);
         this.incrementTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key);
       }
       if (req.data.request === "load") {
@@ -89,6 +102,7 @@ console.log("RECEIVED REQUEST TO INCREMENT TX OPTIONAL: " + req.data.optional_ke
         mycallback(response);
       }
       if (req.data.request === "load_keys") {
+        console.log("PeerRequest: load TX by Keys");
         if (!req.data.keys) { return; }
         txs = await this.loadTransactionsByKeys(req.data);
         response.err = "";
@@ -281,21 +295,21 @@ console.log("RECEIVED REQUEST TO INCREMENT TX OPTIONAL: " + req.data.optional_ke
   }
 
 
-  async saveTransactionByKey(key="", tx=null, msgtype="") {
+  async saveTransactionByKey(key="", tx=null, type="") {
 
     if (tx == null) { return; }
-    let optional = {};
-    if (tx.optional) { optional = tx.optional; }
+    let optional = (tx.optional) ? tx.optional : {};
 
     let sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $type)";
     let params = {
-      $sig:		tx.transaction.sig ,
+      $sig:		tx.transaction.sig,
       $publickey:	key,
       $tx:		JSON.stringify(tx.transaction),
       $optional: 	optional,
       $ts:		tx.transaction.ts,
-      $type:		msgtype
+      $type:		type
     };
+
     await this.app.storage.executeDatabase(sql, params, "archive");
 
     //
@@ -381,21 +395,18 @@ console.log("RECEIVED REQUEST TO INCREMENT TX OPTIONAL: " + req.data.optional_ke
         sql = `SELECT * FROM txs WHERE publickey IN ( ${where_statement_array.join(',')} ) AND type = $type ORDER BY id DESC LIMIT $num`;
         params = Object.assign(params, { $type : type , $num : num});
       }
-    } catch(err) {
-      console.log(err);
-    }
 
-    try {
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
       let txs = [];
-      if (rows != undefined) {
-	if (rows.length > 0) {
+      if (rows?.length > 0) {
+	      for (let row of rows){
           txs.push({ tx : row.tx , optional : row.optional });
         }
       }
       return txs;
     } catch (err) {
       console.log(err);
+      return [];
     }
 
   }

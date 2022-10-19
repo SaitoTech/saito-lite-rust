@@ -602,8 +602,8 @@ class Twilight extends GameTemplate {
       }
     });
     this.menu.addSubMenuOption("game-language", {
-      text: `русский язык ${(this.lang=="ru")?"✔":""}`,
-      id: "game-language-es",
+      text: `русский ${(this.lang=="ru")?"✔":""}`,
+      id: "game-language-ru",
       callback: function(app, game_mod){
         game_mod.displayModal("");
         game_mod.lang = "ru";

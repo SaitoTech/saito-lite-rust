@@ -44,7 +44,7 @@ class ChatManagerSmall {
 
     render() {
         // this.app.browser.addElementToDom(ChatManagerSmallTemplate(), document.getElementById('content__'));
-        this.app.browser.addElementToSelector(ChatManagerSmallTemplate(), "#game-menu > ul");
+        this.app.browser.addElementToSelector(ChatManagerSmallTemplate(), "#game-video-chat ul");
     }
 
     attachEvents(app, mod) {

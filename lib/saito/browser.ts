@@ -2,12 +2,13 @@
 
 import screenfull, { element } from "screenfull";
 import html2canvas from "html2canvas";
+import { getDiffieHellman } from "crypto";
 const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
-var marked = require('marked');
-var sanitizeHtml = require('sanitize-html');
-const linkifyHtml = require('markdown-linkify');
-const emoji = require('node-emoji');
+var marked = require("marked");
+var sanitizeHtml = require("sanitize-html");
+const linkifyHtml = require("markdown-linkify");
+const emoji = require("node-emoji");
 
 class Browser {
   public app: any;
@@ -65,28 +66,30 @@ class Browser {
           });
         }
         /******
-                channel.onmessage = (e) => {
-                  console.log("document onmessage change");
-                  if (!document.hidden) {
-                    channel.postMessage({
-                      active: 1,
-                      publickey: this.app.wallet.returnPublicKey(),
-                    });
-                    this.setActiveTab(1);
-                  } else {
-                    //
-                    // only disable if someone else active w/ same key
-                    //
-                    if (e.data) {
-                      if (e.data.active == 1) {
-                        if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
-                          this.setActiveTab(0);
-                        }
-                      }
-                    }
-                  }
-                };
-        *****/
+
+        channel.onmessage = (e) => {
+          console.log("document onmessage change");
+          if (!document.hidden) {
+            channel.postMessage({
+              active: 1,
+              publickey: this.app.wallet.returnPublicKey(),
+            });
+            this.setActiveTab(1);
+          } else {
+            //
+            // only disable if someone else active w/ same key
+            //
+            if (e.data) {
+              if (e.data.active == 1) {
+                if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
+                  this.setActiveTab(0);
+                }
+              }
+            }
+          }
+        };
+*****/
+
 
         document.addEventListener(
           "visibilitychange",
@@ -263,8 +266,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {
-    }
+    } catch (err) {}
     return "";
   }
 
@@ -275,10 +277,9 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) { }
+    } catch (err) {}
     return "en";
   }
-
 
   isMobileBrowser(user_agent) {
     let check = false;
@@ -755,15 +756,16 @@ class Browser {
       element_to_drag.onmousedown = function (e) {
         let resizeable = ["both", "vertical", "horizontal"];
         //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
+
         if (resizeable.indexOf(getComputedStyle(e.target).resize) > -1 || resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1) {
           if (e.offsetX > (e.target.offsetWidth - 20) && e.offsetY > (e.target.offsetHeight - 20)) { return; }
         }
 
         e = e || window.event;
 
-        console.log("DRAG MOUSEDOWN");
-        console.log(e.clientX);
-        console.log(e.offsetX);
+        //console.log("DRAG MOUSEDOWN");
+        //console.log(e.clientX);
+        //console.log(e.offsetX);
 
         if (
           !e.currentTarget.id ||
@@ -779,7 +781,6 @@ class Browser {
         const rect = element_to_move.getBoundingClientRect();
         element_start_left = rect.left;
         element_start_top = rect.top;
-
 
         mouse_down_left = e.clientX;
         mouse_down_top = e.clientY;
@@ -817,7 +818,6 @@ class Browser {
         };
 
         document.onmousemove = function (e) {
-
           e = e || window.event;
           e.preventDefault();
 
@@ -1029,7 +1029,7 @@ class Browser {
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) { }
+    } catch (err) {}
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1132,7 +1132,7 @@ class Browser {
   }
 
   // TODO: implement htis function
-  getValueFromHashAsBoolean() { }
+  getValueFromHashAsBoolean() {}
 
   getValueFromHashAsNumber(hash, key) {
     try {
@@ -1179,11 +1179,9 @@ class Browser {
     }
   }
 
-
   sanitize(text) {
     try {
       if (text !== "") {
-
         text = marked.parseInline(text);
 
         //trim trailing line breaks
@@ -1191,23 +1189,53 @@ class Browser {
       }
 
       text = sanitizeHtml(text, {
-        allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'ul', 'ol',
-          'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-          'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'marquee', 'pre'
+        allowedTags: [
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "blockquote",
+          "p",
+          "ul",
+          "ol",
+          "nl",
+          "li",
+          "b",
+          "i",
+          "strong",
+          "em",
+          "strike",
+          "code",
+          "hr",
+          "br",
+          "div",
+          "table",
+          "thead",
+          "caption",
+          "tbody",
+          "tr",
+          "th",
+          "td",
+          "pre",
+          "img",
+          "marquee",
+          "pre",
         ],
         allowedAttributes: {
-          div: ['class', 'id'],
-          a: ['href', 'name', 'target', 'class', 'id'],
-          img: ['src', 'class']
+          div: ["class", "id"],
+          a: ["href", "name", "target", "class", "id"],
+          img: ["src", "class"],
         },
-        selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
-        allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
+        selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
+        allowedSchemes: ["http", "https", "ftp", "mailto"],
         allowedSchemesByTag: {},
-        allowedSchemesAppliedToAttributes: ['href', 'cite'],
+        allowedSchemesAppliedToAttributes: ["href", "cite"],
         allowProtocolRelative: true,
         transformTags: {
-          'a': sanitizeHtml.simpleTransform('a', { target: '_blank' })
-        }
+          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
+        },
       });
 
       /* wrap link in <a> tag */
@@ -1225,6 +1253,65 @@ class Browser {
       return text;
     }
   }
+
+  async resizeImg(img, targetSize = 512) {
+    let self = this;
+    var dimensions = await this.getImageDimensions(img);
+    var new_img = "";
+    let canvas = document.createElement("canvas");
+    let oImg = document.createElement("img");
+
+    let w = dimensions.w;
+    let h = dimensions.h;
+    let aspect = w / h;
+
+    if (w > 1440) {
+      w = 1440;
+      h = 1440 * aspect;
+    }
+    if (h > 768) {
+      h = 768;
+      w = 768 / aspect;
+    }
+
+    canvas.width = w;
+    canvas.height = h;
+
+      function resizeLoop(img, quality = 1) {
+        console.log('resizing');
+        oImg.setAttribute('src', img);
+        canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
+        new_img = canvas.toDataURL('image/jpeg', quality);
+        let imgSize = new_img.length / 1024; // in KB
+  
+        if (imgSize > targetSize) {
+  
+          resizeLoop(new_img, quality * 0.9);
+  
+          } else {
+            return;
+          }
+
+      };
+
+      resizeLoop(img);
+
+      console.log("Resized to: " + new_img.length / 1024);
+
+      return new_img;
+      
+  }
+
+  getImageDimensions(file) {
+    return new Promise (function (resolved, rejected) {
+      var i = new Image()
+      i.onload = function(){
+        resolved({w: i.width, h: i.height})
+      };
+      i.src = file
+    })
+  }
+
 }
 
 export default Browser;
