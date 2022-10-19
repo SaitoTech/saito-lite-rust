@@ -75,7 +75,7 @@ span.redsquare-home-red-square+span {
   font-size: 1.7rem;
   line-height: 2.2rem;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   max-height: 30rem;
   overflow: auto;
 }
