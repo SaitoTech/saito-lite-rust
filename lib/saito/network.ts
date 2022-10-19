@@ -1053,6 +1053,9 @@ class Network {
       return;
     }
 
+    for (let i = 0 ; i < tx.transaction.from.length ; ++i) {
+      tx.transaction.from[i].generateKey(this.app);
+    }
     //
     // if this is our (normal) transaction, add to pending
     //
