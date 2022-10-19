@@ -32,7 +32,6 @@ class ChatManager {
 				}
 
 				this.attachEvents(app, this.chat_mod);
-
 			}
 		});
 

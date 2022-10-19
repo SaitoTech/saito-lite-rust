@@ -14,8 +14,9 @@ class ChatPopup {
     //Each ChatPopup has listeners so we need to only act if it is for us
     app.connection.on("chat-render-request", (gid) => {
       if (gid) {
-        if (((app.browser.isMobileBrowser(navigator.userAgent) == true || window.innerWidth < 600) && !mod.mobile_chat_active)
-           || this.minimized || gid != this.activeTab()) {
+        console.log("Chat render request");
+        if (this.minimized || gid != this.activeTab()) {
+          console.log("Create notification")
           app.connection.emit("chat-render-request-notify", gid);
         } else {
           this.render(app, mod, gid);
@@ -105,7 +106,6 @@ class ChatPopup {
     //
     document.querySelector(`#chat-container-close`).onclick = (e) => {
       this.minimized = false;
-      mod.mobile_chat_active = false;
 
       document.getElementById(`chat-container`).remove();
 
