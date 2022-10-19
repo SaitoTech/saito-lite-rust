@@ -22,6 +22,8 @@ class Chatx extends ModTemplate {
 
         this.added_identifiers_post_load = 0;
 
+        this.popup = null;
+        
         this.chat_manager = new ChatManager(this.app, this);
         
         this.communityGroupName = "Saito Community Chat";
@@ -557,8 +559,6 @@ class Chatx extends ModTemplate {
             unread: 0,
         }
 
-        newGroup.popup = (this.app.BROWSER)? new ChatPopup(this.app, this, id) : null;
-
         //Prepend the community chat
         if (name === this.communityGroupName){
             this.groups.unshift(newGroup);
@@ -598,11 +598,11 @@ class Chatx extends ModTemplate {
         this.app.storage.saveOptions();
 
 
-        if (!group.popup){
-            group.popup = new ChatPopup(this.app, this, group_id);
+        if (!this.popup){
+            this.popup = new ChatPopup(this.app, this);
         }
 
-        group.popup.render(this.app, this, group_id);
+        this.popup.render(this.app, this, group_id);
 
     }
 
