@@ -46,7 +46,7 @@ class VideoBox {
                 this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted), this.containerClass);
             } else {
                 this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, muted));
-                this.app.browser.makeDraggable(`stream${this.stream_id}`);
+                this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
             }
         }
         const videoBox = document.querySelector(`#stream${this.stream_id}`);
@@ -60,7 +60,7 @@ class VideoBox {
                 this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false), this.containerClass);
             } else {
                 this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, false));
-                this.app.browser.makeDraggable(`stream${this.stream_id}`);
+                this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
             }
 
 

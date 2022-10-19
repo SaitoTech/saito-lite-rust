@@ -326,6 +326,7 @@ module.exports = ChatBox = {
       app.browser.makeDraggable(
         el.id,
         `chat-box-header-${group_id}`,
+        true,
         function () {
           return;
           // toggle height -- DRAG triggers click too

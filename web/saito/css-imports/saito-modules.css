@@ -50,7 +50,7 @@ Saito Module
   width: 100%;
   height: auto;
   margin-bottom: 1rem;
-  padding: 0.5rem 0.5rem;
+  padding: 1rem;
   overflow: hidden;
   display: grid;
   grid-template-columns: min-content 1fr;

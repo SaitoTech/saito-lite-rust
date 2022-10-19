@@ -30,7 +30,10 @@ class Chatx extends ModTemplate {
 
         this.mobile_chat_active = false;
 
-        this.debug = true;
+
+        //We define these when we initialize
+        this.popup = null;
+        this.chat_manager = null;
 
     }
 
@@ -63,6 +66,9 @@ class Chatx extends ModTemplate {
 
 
     initialize(app) {
+
+        this.popup = new ChatPopup(app, this);
+        this.chat_manager = new ChatManager(app, this);
 
         super.initialize(app);
 
@@ -97,6 +103,12 @@ class Chatx extends ModTemplate {
         // Can provide a single public key or an array of them, + optional chat group name
         //
         app.connection.on("open-chat-with", (data) => {
+
+            if (!data){
+                this.openChatBox(app.auto_open_chat_box)    
+                return;
+            }
+
             let group;
 
             if (Array.isArray(data.key)) {
@@ -197,7 +209,7 @@ class Chatx extends ModTemplate {
         // we update the group_id of our default chat every time the user opens/closes a popup
         //
         if (app.BROWSER) {
-            if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600) || this.mobile_chat_active) {
+            if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600)) {
                 if (app.options.auto_open_chat_box !== -1){
                     let active_module = app.modules.returnActiveModule();
                     if (active_module.request_no_interrupts == true) {
@@ -572,8 +584,6 @@ class Chatx extends ModTemplate {
 
         }
 
-        newGroup.popup = (this.app.BROWSER)? new ChatPopup(this.app, this, id) : null;
-
         //Prepend the community chat
         if (name === this.communityGroupName){
             this.groups.unshift(newGroup);
@@ -595,7 +605,7 @@ class Chatx extends ModTemplate {
         if (!this.app.BROWSER) {return;}
 
 
-        if (group_id == null) {
+        if (!group_id || group_id == -1) {
 
             let community = this.returnCommunityChat();
 
@@ -612,12 +622,7 @@ class Chatx extends ModTemplate {
         this.app.options.auto_open_chat_box = group_id;
         this.app.storage.saveOptions();
 
-
-        if (!group.popup){
-            group.popup = new ChatPopup(this.app, this, group_id);
-        }
-
-        group.popup.render(this.app, this, group_id);
+        this.popup.render(this.app, this, group_id);
 
     }
 
