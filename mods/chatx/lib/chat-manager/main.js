@@ -9,23 +9,16 @@ class ChatManager {
 		this.chat_mod = mod; // Store a reference to the "parent" module, which also stores a copy of me
 		this.rendered = 0;	 // So chat will work without the chat manager rendered on screen, so we may want to know its status
 	
-
 		this.name = "ChatManager";
 		this.mod = mod;
-		this.messages_in_groups = [];
 		this.rendered = 0;
-		this.inactive_popups = [];
-
-		for (let z = 0; z < this.mod.groups.length; z++) {
-			this.messages_in_groups[z] = this.mod.groups[z].txs.length;
-		}
 
 		//
 		// we listen for events to re-render the Chat Manager,
 		// emphasis on "re-" because we want to be on a page which includes
 		// it as a component and wait for the page UI to render the manager
 		//
-		app.connection.on("refresh-chat-groups", (gid)=>{
+		app.connection.on("refresh-chat-groups", ()=>{
 			if (this.rendered){
 				this.render(app, mod);
 			}
@@ -39,7 +32,6 @@ class ChatManager {
 				}
 
 				this.attachEvents(app, this.chat_mod);
-
 			}
 		});
 
