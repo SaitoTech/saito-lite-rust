@@ -9,6 +9,7 @@ var marked = require("marked");
 var sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
+const UserMenu = require("./new-ui/modals/user-menu/user-menu");
 
 class Browser {
   public app: any;
@@ -89,7 +90,6 @@ class Browser {
           }
         };
 *****/
-
 
         document.addEventListener(
           "visibilitychange",
@@ -225,6 +225,32 @@ class Browser {
         siteMessage("Websocket Connection Lost");
       });
     }
+
+    // listen with mutation observer
+    this.activatePublicKeyObserver(app);
+
+    // attach listening events
+    document.querySelector("body").addEventListener(
+      "click",
+      (e) => {
+        e.preventDefault();
+        if (
+          (e.target.classList && e.target.classList.contains("saito-identicon")) ||
+          (e.target.classList && e.target.classList.contains("saito-address"))
+        ) {
+          let public_key = e.target.getAttribute("data-id");
+          if (!public_key || public_key.length < 44) {
+            return;
+          }
+
+          let userMenu = new UserMenu(app, public_key);
+          userMenu.render(app);
+        }
+      },
+      {
+        capture: true,
+      }
+    );
   }
 
   extractKeys(text = "") {
@@ -757,8 +783,13 @@ class Browser {
         let resizeable = ["both", "vertical", "horizontal"];
         //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
 
-        if (resizeable.indexOf(getComputedStyle(e.target).resize) > -1 || resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1) {
-          if (e.offsetX > (e.target.offsetWidth - 20) && e.offsetY > (e.target.offsetHeight - 20)) { return; }
+        if (
+          resizeable.indexOf(getComputedStyle(e.target).resize) > -1 ||
+          resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1
+        ) {
+          if (e.offsetX > e.target.offsetWidth - 20 && e.offsetY > e.target.offsetHeight - 20) {
+            return;
+          }
         }
 
         e = e || window.event;
@@ -788,7 +819,6 @@ class Browser {
         element_moved = false;
 
         document.onmouseup = function (e) {
-
           if (dockable) {
             if (element_to_move.classList.contains("dockedLeft")) {
               element_to_move.style.left = 0;
@@ -799,13 +829,14 @@ class Browser {
             }
 
             if (element_to_move.classList.contains("dockedRight")) {
-              element_to_move.style.left = window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
+              element_to_move.style.left =
+                window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
             }
 
             if (element_to_move.classList.contains("dockedBottom")) {
-              element_to_move.style.top = window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
+              element_to_move.style.top =
+                window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
             }
-
           }
 
           document.onmouseup = null;
@@ -847,31 +878,41 @@ class Browser {
               element_to_move.classList.remove("dockedTop");
             }
 
-            if (element_to_move.getBoundingClientRect().x + element_to_move.getBoundingClientRect().width > window.innerWidth - 50) {
+            if (
+              element_to_move.getBoundingClientRect().x +
+                element_to_move.getBoundingClientRect().width >
+              window.innerWidth - 50
+            ) {
               element_to_move.classList.add("dockedRight");
             } else {
               element_to_move.classList.remove("dockedRight");
             }
 
-            if (element_to_move.getBoundingClientRect().y + element_to_move.getBoundingClientRect().height > window.innerHeight - 50) {
+            if (
+              element_to_move.getBoundingClientRect().y +
+                element_to_move.getBoundingClientRect().height >
+              window.innerHeight - 50
+            ) {
               element_to_move.classList.add("dockedBottom");
             } else {
               element_to_move.classList.remove("dockedBottom");
             }
 
-
             // set the element's new position:
 
-            if (newPosX <= 0) { newPosX = 0 }
+            if (newPosX <= 0) {
+              newPosX = 0;
+            }
             if (newPosX + element_to_move.getBoundingClientRect().width >= window.innerWidth) {
               newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
             }
 
-            if (newPosY <= 0) { newPosY = 0 }
+            if (newPosY <= 0) {
+              newPosY = 0;
+            }
             if (newPosY + element_to_move.getBoundingClientRect().height >= window.innerHeight) {
               newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
             }
-
           }
 
           element_to_move.style.left = newPosX + "px";
@@ -976,7 +1017,6 @@ class Browser {
         }
       });
     }
-
     try {
       const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
       Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
@@ -989,19 +1029,15 @@ class Browser {
     try {
       const identifiers = document.getElementsByClassName(`saito-identicon`);
       Array.from(identifiers).forEach((identifier) => {
-        identifier.addEventListener("click", (e) => {
-
-          console.log("preventing default 444");
-
-          e.preventDefault();
-          e.stopImmediatePropagation();
-
-          let identiconUri = e.target.getAttribute("src");
-          let publickey = e.target.getAttribute("data-id");
-
-          let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey);
-          addPublicKeyModal.render(app, mod);
-        });
+        // identifier.addEventListener("click", (e) => {
+        //   console.log("preventing default 444");
+        //   e.preventDefault();
+        //   e.stopImmediatePropagation();
+        //   let identiconUri = e.target.getAttribute("src");
+        //   let publickey = e.target.getAttribute("data-id");
+        //   let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey);
+        //   addPublicKeyModal.render(app, mod);
+        // });
       });
     } catch (err) {
       console.error("Error while adding event to identifiers: " + err);
@@ -1254,6 +1290,57 @@ class Browser {
     }
   }
 
+  activatePublicKeyObserver(app) {
+    let mutaionObserver = new MutationObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.addedNodes.forEach((node) => {
+          recursive_search(app, node);
+        });
+      });
+
+      function recursive_search(app, node) {
+        if (node && node.classList && Array.from(node.classList).includes("saito-user")) {
+          if (node.classList && Array.from(node.classList).includes("saito-user")) {
+            if (node.children && node.children.length > 0) {
+              Array.from(node.children).forEach((child_node) => {
+                if (
+                  child_node.classList &&
+                  Array.from(child_node.classList).includes("saito-address")
+                ) {
+                  let address = child_node.getAttribute("data-id");
+                  let identifier = app.keys.returnIdentifierByPublicKey(address, true);
+                  if (!identifier) {
+                    return;
+                  }
+                  try {
+                    if (document.querySelector(`.saito-address-${address}`)) {
+                      document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
+                        item.innerHTML = identifier;
+                      });
+                    }
+                  } catch (err) {
+                    console.log("An error occurred with adding identifiers ", err);
+                  }
+                }
+              });
+            }
+          }
+        } else {
+          if (node && node.children && Array.from(node.children).length > 0) {
+            Array.from(node.children).forEach((child_node) => {
+              recursive_search(app, child_node);
+            });
+          }
+        }
+      }
+    });
+
+    mutaionObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
   async resizeImg(img, targetSize = 512) {
     let self = this;
     var dimensions = await this.getImageDimensions(img);
@@ -1277,41 +1364,36 @@ class Browser {
     canvas.width = w;
     canvas.height = h;
 
-      function resizeLoop(img, quality = 1) {
-        console.log('resizing');
-        oImg.setAttribute('src', img);
-        canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
-        new_img = canvas.toDataURL('image/jpeg', quality);
-        let imgSize = new_img.length / 1024; // in KB
-  
-        if (imgSize > targetSize) {
-  
-          resizeLoop(new_img, quality * 0.9);
-  
-          } else {
-            return;
-          }
+    function resizeLoop(img, quality = 1) {
+      console.log("resizing");
+      oImg.setAttribute("src", img);
+      canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
+      new_img = canvas.toDataURL("image/jpeg", quality);
+      let imgSize = new_img.length / 1024; // in KB
 
-      };
+      if (imgSize > targetSize) {
+        resizeLoop(new_img, quality * 0.9);
+      } else {
+        return;
+      }
+    }
 
-      resizeLoop(img);
+    resizeLoop(img);
 
-      console.log("Resized to: " + new_img.length / 1024);
+    console.log("Resized to: " + new_img.length / 1024);
 
-      return new_img;
-      
+    return new_img;
   }
 
   getImageDimensions(file) {
-    return new Promise (function (resolved, rejected) {
-      var i = new Image()
-      i.onload = function(){
-        resolved({w: i.width, h: i.height})
+    return new Promise(function (resolved, rejected) {
+      var i = new Image();
+      i.onload = function () {
+        resolved({ w: i.width, h: i.height });
       };
-      i.src = file
-    })
+      i.src = file;
+    });
   }
-
 }
 
 export default Browser;

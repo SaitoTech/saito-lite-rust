@@ -322,10 +322,12 @@ class Quake3 extends GameTemplate {
 
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER == 0 || !document) { return; } 
-    if (document.querySelector(".chat-input")) {
-      let c = document.querySelector(".chat-input");
-      if (c) {
-        c.placeholder = 'typing T activates chat...';
+    if (this.browser_active == 1) {
+      if (document.querySelector(".chat-input")) {
+        let c = document.querySelector(".chat-input");
+        if (c) {
+          c.placeholder = 'typing T activates chat...';
+        }
       }
     }
   }

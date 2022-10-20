@@ -1,25 +1,4 @@
 module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
-  const players = (min, max) => {
-    let selection = "";
-    if (min === max) {
-      selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${min}">${min} player</div>`;
-      selection += mod.returnSingularGameOption(app);
-    } else {
-      let defaultPlayers = min;
-      if (mod.opengame){
-        defaultPlayers = max;
-        selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${max}">${max} player</div>`;
-      }else{
-        selection += `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
-        for (let p = min; p <= max; p++) {
-          selection += `<option value="${p}" ${(p===defaultPlayers)?"selected default":""}>${p} player</option>`;
-        }
-        selection += `</select>`;
-      }
-    }
-
-    return selection;
-  };
 
   let game_name = mod.gamename || mod.name;
   let gamemod_url = mod.respondTo("arcade-games")?.img || `/${mod.returnSlug()}/img/arcade/arcade.jpg`;
@@ -39,7 +18,7 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
         
       <div class="game-wizard-controls">
         <div id="game-wizard-players" class="game-wizard-players">
-          ${players(mod.minPlayers, mod.maxPlayers)}
+          ${mod.returnPlayerSelectHTML()}
           <div class="game-wizard-options-toggle"><span class="game-wizard-options-toggle-text">advanced options...</span></div>
          </div>
         <div id="game-wizard-invite" class="game-wizard-invite">
