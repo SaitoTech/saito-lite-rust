@@ -155,6 +155,10 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
       margin-bottom: 0.5rem;
       background-color: var(--saito-gray);
     }
+
+    .saito-table::-webkit-scrollbar {
+      width: 0px;
+    }
   </style>
 
     <div class="league-details-overlay">
