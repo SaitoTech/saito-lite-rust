@@ -26,9 +26,9 @@ class Chatx extends ModTemplate {
 
         this.debug = false;
 
-        //We define these when we initialize
-        this.popup = null;
-        this.chat_manager = null;
+        this.popup = null;  //We define these when we initialize
+        //This needs to be defined so that it other modules (A-, B- can initialize)
+        this.chat_manager = new ChatManager(app, this);
 
     }
 
@@ -62,10 +62,10 @@ class Chatx extends ModTemplate {
 
     initialize(app) {
 
-        this.popup = new ChatPopup(app, this);
-        this.chat_manager = new ChatManager(app, this);
-
         super.initialize(app);
+        
+        this.popup = new ChatPopup(app, this);
+        
         if (!app.BROWSER){return;}
 
         //
