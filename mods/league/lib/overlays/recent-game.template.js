@@ -30,8 +30,11 @@ module.exports = RecentGameTemplate = (app, mod, league, games) => {
 
 	const makeGameRow = (game) => {
 
+		console.log('game');
+		console.log(game);
+
 		let player_identicons = formatPlayers(game.winner, game.players_array);
-		let game_img = league.game != null ? '/'+league.game.toLowerCase()+'/img/arcade/arcade.jpg' : '';
+		let game_img = '/'+game.module.toLowerCase()+'/img/arcade/arcade.jpg';
 	   	let game_option = 	`${game.method} - ${Moment(game.time_finished).fromNow()}`;
 	   	return SaitoModuleXTemplate(game.module, player_identicons, game_img, game_option, "Review", game.game_id);
 	}
