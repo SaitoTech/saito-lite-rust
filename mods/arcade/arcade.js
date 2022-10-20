@@ -138,14 +138,8 @@ class Arcade extends ModTemplate {
   initialize(app) {
     super.initialize(app);
 
-    //Add Chat-Manager to my components
-    app.modules.respondTo("chat-manager").forEach(m => {
-      this.addComponent(m.respondTo("chat-manager"));
-    });
-
-
+    //Load my locally saved games
     this.addMyGamesToOpenList();
-
 
     //
     // hack to force forum to onPeerHandShake
@@ -165,9 +159,14 @@ class Arcade extends ModTemplate {
     if (!app.BROWSER){return;}
 
     if (this.browser_active){
+      //Add Chat-Manager to my components
+      app.modules.respondTo("chat-manager").forEach(m => {
+        this.addComponent(m.respondTo("chat-manager"));
+      });
+
+
       //Leave a cookie trail to return to Arcade when you enter a game
       if (app.options.homeModule !== this.returnSlug()){
-        console.log("Update homepage to " + this.returnSlug());
         app.options.homeModule = this.returnSlug();
         app.storage.saveOptions();
       }
@@ -196,7 +195,6 @@ class Arcade extends ModTemplate {
       }
     });
     app.connection.on("game-ready", (gameid)=>{
-      console.log("GAME READY received:" + gameid);
       this.launchGame(gameid);
     });
     
@@ -260,9 +258,6 @@ class Arcade extends ModTemplate {
     });
   }
 
-  initializeHTML(app) {
-    this.header = new SaitoHeader(app, this);
-  }
 
   checkGameDatabase(){
     if (!this.app.BROWSER){return;}
@@ -408,7 +403,7 @@ class Arcade extends ModTemplate {
 
     this.renderSidebar();
     this.renderArcadeMain();
-    super.render(this.app, this, ".arcade-sidebar");
+    super.render(app, this, "#arcade-sidebar");
   }
 
   isMyGame(invite, app) {
