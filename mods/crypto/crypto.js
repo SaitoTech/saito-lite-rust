@@ -70,7 +70,11 @@ class Crypto extends ModTemplate {
     //game_mod.crypto_transfers_outbound_approved = 1;
     //game_mod.crypto_transfers_inbound_trusted = 1;
 
-    location.reload();
+//alert("Reloading to restore playable game...");
+
+    //setTimeout(function() {
+    //  location.reload();
+    //}, 1500);
   }
 
 }
