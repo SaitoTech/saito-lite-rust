@@ -436,7 +436,10 @@ class RedSquareTweet {
         // check we are not already viewing this
         //
 
-
+        // stop if modal already exists
+        if (document.querySelector(".saito-overlay-backdrop") || document.querySelector(".saito-overlay")) {
+          return;
+        }
         if (this.tx.transaction.sig === mod.viewing) {
           console.log("Already Viewing Tweet");
           return;

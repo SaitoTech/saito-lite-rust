@@ -233,14 +233,13 @@ class Browser {
     document.querySelector("body").addEventListener(
       "click",
       (e) => {
-        console.log(e.target, e.target?.classList);
+        e.preventDefault();
         if (
           (e.target.classList && e.target.classList.contains("saito-identicon")) ||
           (e.target.classList && e.target.classList.contains("saito-address"))
         ) {
           let public_key = e.target.getAttribute("data-id");
-          console.log(public_key);
-          if (!public_key) {
+          if (!public_key || public_key.length < 44) {
             return;
           }
 
@@ -248,7 +247,9 @@ class Browser {
           userMenu.render(app);
         }
       },
-      { capture: true }
+      {
+        capture: true,
+      }
     );
   }
 
@@ -1308,7 +1309,6 @@ class Browser {
                 ) {
                   let address = child_node.getAttribute("data-id");
                   let identifier = app.keys.returnIdentifierByPublicKey(address, true);
-                  console.log(identifier, "identifier");
                   // if (!identifier) {
                   //   return;
                   // }
@@ -1319,7 +1319,7 @@ class Browser {
                       });
                     }
                   } catch (err) {
-                    console.log("error ", err);
+                    console.log("An error occurred with adding identifiers ", err);
                   }
                 }
               });
