@@ -1309,9 +1309,9 @@ class Browser {
                 ) {
                   let address = child_node.getAttribute("data-id");
                   let identifier = app.keys.returnIdentifierByPublicKey(address, true);
-                  // if (!identifier) {
-                  //   return;
-                  // }
+                  if (!identifier) {
+                    return;
+                  }
                   try {
                     if (document.querySelector(`.saito-address-${address}`)) {
                       document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
