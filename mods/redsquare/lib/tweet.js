@@ -435,6 +435,8 @@ class RedSquareTweet {
         //
         // check we are not already viewing this
         //
+
+
         if (this.tx.transaction.sig === mod.viewing) {
           console.log("Already Viewing Tweet");
           return;

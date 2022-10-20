@@ -91,7 +91,6 @@ class Browser {
         };
 *****/
 
-
         document.addEventListener(
           "visibilitychange",
           () => {
@@ -231,20 +230,26 @@ class Browser {
     this.activatePublicKeyObserver(app);
 
     // attach listening events
+    document.querySelector("body").addEventListener(
+      "click",
+      (e) => {
+        console.log(e.target, e.target?.classList);
+        if (
+          (e.target.classList && e.target.classList.contains("saito-identicon")) ||
+          (e.target.classList && e.target.classList.contains("saito-address"))
+        ) {
+          let public_key = e.target.getAttribute("data-id");
+          console.log(public_key);
+          if (!public_key) {
+            return;
+          }
 
-    document.querySelector("body").onclick = (e) => {
-      console.log(e.target, e.target?.classList);
-      if (e.target.classList && e.target.classList.contains("saito-identicon")) {
-        let public_key = e.target.getAttribute("data-id");
-        console.log(public_key);
-        if (!public_key) {
-          return;
+          let userMenu = new UserMenu(app, public_key);
+          userMenu.render(app);
         }
-
-        let userMenu = new UserMenu(app, public_key);
-        userMenu.render(app);
-      }
-    };
+      },
+      { capture: true }
+    );
   }
 
   extractKeys(text = "") {
@@ -777,8 +782,13 @@ class Browser {
         let resizeable = ["both", "vertical", "horizontal"];
         //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
 
-        if (resizeable.indexOf(getComputedStyle(e.target).resize) > -1 || resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1) {
-          if (e.offsetX > (e.target.offsetWidth - 20) && e.offsetY > (e.target.offsetHeight - 20)) { return; }
+        if (
+          resizeable.indexOf(getComputedStyle(e.target).resize) > -1 ||
+          resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1
+        ) {
+          if (e.offsetX > e.target.offsetWidth - 20 && e.offsetY > e.target.offsetHeight - 20) {
+            return;
+          }
         }
 
         e = e || window.event;
@@ -808,7 +818,6 @@ class Browser {
         element_moved = false;
 
         document.onmouseup = function (e) {
-
           if (dockable) {
             if (element_to_move.classList.contains("dockedLeft")) {
               element_to_move.style.left = 0;
@@ -819,13 +828,14 @@ class Browser {
             }
 
             if (element_to_move.classList.contains("dockedRight")) {
-              element_to_move.style.left = window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
+              element_to_move.style.left =
+                window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
             }
 
             if (element_to_move.classList.contains("dockedBottom")) {
-              element_to_move.style.top = window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
+              element_to_move.style.top =
+                window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
             }
-
           }
 
           document.onmouseup = null;
@@ -867,31 +877,41 @@ class Browser {
               element_to_move.classList.remove("dockedTop");
             }
 
-            if (element_to_move.getBoundingClientRect().x + element_to_move.getBoundingClientRect().width > window.innerWidth - 50) {
+            if (
+              element_to_move.getBoundingClientRect().x +
+                element_to_move.getBoundingClientRect().width >
+              window.innerWidth - 50
+            ) {
               element_to_move.classList.add("dockedRight");
             } else {
               element_to_move.classList.remove("dockedRight");
             }
 
-            if (element_to_move.getBoundingClientRect().y + element_to_move.getBoundingClientRect().height > window.innerHeight - 50) {
+            if (
+              element_to_move.getBoundingClientRect().y +
+                element_to_move.getBoundingClientRect().height >
+              window.innerHeight - 50
+            ) {
               element_to_move.classList.add("dockedBottom");
             } else {
               element_to_move.classList.remove("dockedBottom");
             }
 
-
             // set the element's new position:
 
-            if (newPosX <= 0) { newPosX = 0 }
+            if (newPosX <= 0) {
+              newPosX = 0;
+            }
             if (newPosX + element_to_move.getBoundingClientRect().width >= window.innerWidth) {
               newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
             }
 
-            if (newPosY <= 0) { newPosY = 0 }
+            if (newPosY <= 0) {
+              newPosY = 0;
+            }
             if (newPosY + element_to_move.getBoundingClientRect().height >= window.innerHeight) {
               newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
             }
-
           }
 
           element_to_move.style.left = newPosX + "px";
@@ -1008,7 +1028,6 @@ class Browser {
     try {
       const identifiers = document.getElementsByClassName(`saito-identicon`);
       Array.from(identifiers).forEach((identifier) => {
-
         // identifier.addEventListener("click", (e) => {
         //   console.log("preventing default 444");
         //   e.preventDefault();
@@ -1018,7 +1037,6 @@ class Browser {
         //   let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey);
         //   addPublicKeyModal.render(app, mod);
         // });
-
       });
     } catch (err) {
       console.error("Error while adding event to identifiers: " + err);
