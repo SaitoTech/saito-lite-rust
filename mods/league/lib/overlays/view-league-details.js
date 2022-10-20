@@ -37,8 +37,8 @@ class ViewLeagueDetails {
       this.overlay = new SaitoOverlay(app);
     }
     this.overlay.show(app, mod, LeagueDetailsTemplate(app, mod, league));
-    //this.loadLeaderboard(app, mod, league);
-    
+    this.loadLeaderboard(app, mod, league);
+    this.loadRecentGames(this.app, this.mod, this.league);
   }
 
   /**
@@ -71,9 +71,11 @@ class ViewLeagueDetails {
           }
           al.overlay.show(app, mod, LeagueDetailsTemplate(app, mod, league));
 
-          let target = document.getElementById("league-leaderboard");
+          let target = document.getElementById("league-table-ranking-body");
           if (target){
-            target.innerHTML = (leaderboard.length > 0) ? LeaderboardTemplate(app, mod, league, leaderboard) : `<div class="league-error">No Stats for the league</div>`;
+            console.log('leaderboard');
+            console.log(leaderboard);
+            target.innerHTML = (leaderboard.length > 0) ? LeaderboardTemplate(app, mod, league, leaderboard) : `<div class="league-error">No ranking stats for this league</div>`;
           }
           al.attachEvents(app, mod);    
 
@@ -98,7 +100,7 @@ class ViewLeagueDetails {
             games.push(g);
           }
 
-          let target = document.getElementById("league-leaderboard");
+          let target = document.getElementById("recent-games-box");
           if (target){
             target.innerHTML = (games.length > 0) ? RecentGameTemplate(app, mod, league, games) : `<div class="league-error">No Recent Games for the league</div>`;
           }
@@ -214,6 +216,13 @@ class ViewLeagueDetails {
         }
       }
     });
+
+    // let createGameBtn = document.getElementById("leaderboard-btn-create-game");
+    // if (createGameBtn){
+    //   createGameBtn.onclick = ()=> {
+    //     salert("Create league games (in progress...)");
+    //   }
+    // }
   }
 }
 
