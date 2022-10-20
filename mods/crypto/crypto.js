@@ -61,10 +61,6 @@ class Crypto extends ModTemplate {
     game_mod.game = game_mod.game_state_pre_move;
     game_mod.game.turn = [];
     game_mod.moves = [];
-    //
-    // users have opted-in so simplify
-    //
-    game_mod.game.crypto_auto_settle = 1;
     game_mod.proposeGameStake(ticker, "100");
 
   }
