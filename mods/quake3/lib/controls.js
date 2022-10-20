@@ -21,8 +21,8 @@ class QuakeControls {
 
     document.querySelectorAll(".quake-control-trigger").forEach((el) => {
       el.onclick = (e) => {
+
         let setting = e.currentTarget.getAttribute("data-id");
-console.log("setting: " + setting);
         thisobj.current_setting = setting;
 
 	thisobj.handleKey = function(e) {
@@ -50,21 +50,6 @@ console.log("setting: " + setting);
   returnDefaultControls() {
     return {};
   }
-
-/****
-  handleKey(event) {
-    return this.handleInput(event.key);
-  }
-
-  handleMouse(event) {
-    return this.handleInput(event.button);
-  }
-
-  handleWheel(event) {
-    scroll = (-5) * Math.sign(event.deltaY);
-    return this.handleInput(scroll);
-  }
-****/
 
   handleInput(input) {
 

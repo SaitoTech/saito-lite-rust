@@ -737,6 +737,11 @@ button.add-games {
   padding-bottom: 1.7em;
 }
 
+.chat-input {
+  background-color: #8884;
+  color: white;
+}
+
 .chat-header, .chat-footer {
   background: var(--saito-jester);
 }
