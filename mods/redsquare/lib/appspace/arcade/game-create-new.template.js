@@ -1,31 +1,9 @@
 
-module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
+module.exports = GameCreateNewTemplate = (app, mod, game_mod, invite) => {
 
   let html = `<div class="game-create-new-overlay dark">`;
   let slug = (game_mod.returnSlug())? game_mod.slug: game_mod.name.toLowerCase();
   let image = `/${slug}/img/arcade/arcade.jpg`;
-
-  const players = (min, max) => {
-    let selection = "";
-    if (min === max) {
-      selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${min}">${min} player</div>`;
-      selection += game_mod.returnSingularGameOption(app);
-    } else {
-      let defaultPlayers = min;
-      if (mod.opengame){
-        defaultPlayers = max;
-        selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${max}">${max} player</div>`;
-      }else{
-        selection += `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
-        for (let p = min; p <= max; p++) {
-          selection += `<option value="${p}" ${(p===defaultPlayers)?"selected default":""}>${p} player</option>`;
-        }
-        selection += `</select>`;
-      }
-    }
-
-    return selection;
-  };
 
 
   html += `
@@ -64,7 +42,7 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, game_mod, invite) => {
     <div class="game-wizard-controls">
   
       <div class="rs-create-game-players dark">
-        ${players(game_mod.minPlayers, game_mod.maxPlayers)}
+        ${game_mod.returnPlayerSelectHTML()}
         <div class="info-item-wrapper arcade-advance-opt">advanced options...</div>
       </div>
 

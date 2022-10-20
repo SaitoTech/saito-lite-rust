@@ -2,7 +2,7 @@ const saito = require('./../../../../lib/saito/saito');
 const RedSquareAppspaceGamesTemplate = require("./games.template");
 const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const GameCreator = require("./arcade/game-creator");
-const GameScheduler = require("./arcade/game-scheduler");
+//const GameScheduler = require("./arcade/game-scheduler");
 const SaitoScheduler = require("../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler");
 const GameCreateNew = require('./arcade/game-create-new');
 
@@ -26,13 +26,13 @@ class RedSquareAppspaceGames {
     this.overlay = new SaitoOverlay(app);
 
     document.getElementById("redsquare-schedule-game").onclick = (e) => {
-
-      let sc = new SaitoScheduler(app, mod);
+      salert("This feature isn't available yet");
+      /*let sc = new SaitoScheduler(app, mod);
       // callback is on submit
       sc.render(app, mod, function(options) {
         let gc = new GameCreator(app, mod);
         gc.render(app, mod);
-      });
+      });*/
     }
 
     document.getElementById("redsquare-create-game").onclick = (e) => {
