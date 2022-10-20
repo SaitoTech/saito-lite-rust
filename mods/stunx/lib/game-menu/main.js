@@ -16,6 +16,9 @@ class StunxGameMenu {
 
 
     async startVideoCall(peers) {
+        if (peers.constructor !== Array) {
+            peers = [peers]
+        }
         const stunx_mod = this.app.modules.returnModule('Stunx');
         const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         stunx_mod.setLocalStream(localStream);
@@ -25,7 +28,7 @@ class StunxGameMenu {
             this.app.connection.emit('render-local-stream-request', localStream, "small");
             this.app.connection.emit('render-remote-stream-placeholder-request', peer, "small");
         })
-     
+
         stunx_mod.createStunConnectionWithPeers(peers, 'small');
 
     }

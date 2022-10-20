@@ -118,6 +118,16 @@ class Stunx extends ModTemplate {
                 menus: []
             }
         }
+
+        if (type === 'user_menu') {
+            return {
+                text: "Video Call",
+                icon: "fas fa-video",
+                callback: function (app, mod, public_key) {
+                    app.connection.emit('game-start-video-call', public_key);
+                }
+            }
+        }
         return null;
     }
 
