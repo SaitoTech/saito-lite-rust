@@ -18,7 +18,7 @@ class Jaipur extends GameTemplate {
     this.description     = `${this.name} is a fast-paced two player card game where players acquire sets of resources to sell for the maximum profit.`;
     this.status          = "Alpha";
     
-    this.card_height_ratio = 1;
+    this.card_height_ratio = 1.5;
 
     this.interface     = 1; //Display card graphics
     this.minPlayers 	 = 2;
@@ -91,7 +91,7 @@ class Jaipur extends GameTemplate {
     //this.scoreboard.render(app, this);
     //this.scoreboard.attachEvents(app, this);
 
-    this.hud.auto_sizing = 0;
+    this.hud.card_width = 120;
     this.hud.render(app, this);
     this.hud.attachEvents(app, this); //Enable dragging
 
@@ -715,7 +715,7 @@ initializeQueue(first_player = 1){
 
   cardWithCountToHTML(card, amt){
     if (amt !== 0){
-      return `<div class="card_count${(amt < 0)?" disabled":""}" data-id="${card}" data-cnt="${amt}" style="background-image:url('${this.card_img_dir}${card}.png');">${Math.abs(amt)}</div>`;  
+      return `<div class="hud-card card_count${(amt < 0)?" disabled":""}" data-id="${card}" data-cnt="${amt}" style="background-image:url('${this.card_img_dir}${card}.png');">${Math.abs(amt)}</div>`;  
     }else{
       return "";
     }
@@ -835,7 +835,7 @@ initializeQueue(first_player = 1){
     }
 
     html += "</div>";
-
+    
     html += `<div class="draw_decks">
                 <div id="draw" class="tip card_count" style="background-image:url('${this.card_img_dir}card_back.png');">
                   ${this.game.deck[0].crypt.length}
@@ -843,7 +843,7 @@ initializeQueue(first_player = 1){
                 </div>
                 <div id="discard">${this.cardToHTML(this.game.state.last_discard)}</div>
               </div>`;
-
+    
     html +=`<div class="market">`;
     for (let res of this.game.state.market){
       html += this.cardToHTML(res);

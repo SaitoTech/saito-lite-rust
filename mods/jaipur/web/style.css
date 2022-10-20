@@ -89,12 +89,12 @@ body {
 }
 
 .draw_decks{
-  max-width: 150px;
+  max-width: 100px;
 }
 
 #draw{
   color: maroon;
-  width: 8vw;
+  /*width: 8vw;*/
   margin: auto;
 }
 
@@ -105,7 +105,7 @@ body {
 
 .market{
   display: grid;
-  grid-template-columns: repeat(5, fit-content(150px));
+  grid-template-columns: repeat(5, fit-content(100px));
   max-width: 750px;
   min-width: max(300px, 50vw);
 
@@ -129,7 +129,7 @@ body {
 }
 
 .camel_train{
-  width: 150px;
+  width: 100px;
   color: cadetblue;
 }
 
@@ -203,7 +203,7 @@ body {
 
 .card, .card_count{
   cursor: pointer;
-  border-radius: 10%;
+  /*border-radius: 10%;*/
 }
 
 .card_group{
@@ -282,9 +282,9 @@ body {
 }
 
 .rack div.card_count {
-  width: 150px;
+  width: 100px;
   height: 150px;
-  line-height: 150px;
+  /*line-height: 150px;*/
 }
 
 /**** AND PLAYER BOXES *****/
