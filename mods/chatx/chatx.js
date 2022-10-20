@@ -22,18 +22,13 @@ class Chatx extends ModTemplate {
 
         this.added_identifiers_post_load = 0;
 
-        this.chat_manager = new ChatManager(this.app, this);
-
-        
         this.communityGroupName = "Saito Community Chat";
 
+        this.debug = false;
 
-        this.mobile_chat_active = false;
-
-
-        //We define these when we initialize
-        this.popup = null;
-        this.chat_manager = null;
+        this.popup = null;  //We define these when we initialize
+        //This needs to be defined so that it other modules (A-, B- can initialize)
+        this.chat_manager = new ChatManager(app, this);
 
     }
 
@@ -67,13 +62,11 @@ class Chatx extends ModTemplate {
 
     initialize(app) {
 
-        this.popup = new ChatPopup(app, this);
-        this.chat_manager = new ChatManager(app, this);
-
         super.initialize(app);
-
+        
+        this.popup = new ChatPopup(app, this);
+        
         if (!app.BROWSER){return;}
-
 
         //
         // create chatgroups from keychain -- friends only
@@ -111,17 +104,17 @@ class Chatx extends ModTemplate {
 
             let group;
 
-            if (Array.isArray(data.key)) {
+            if (Array.isArray(data.key)){
                 group = this.createChatGroup(data.key, data.name);
-            } else {
+            }else{
                 let name = data.name || app.keys.returnUsername(data.key);
                 group = this.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
             }
-
+            
             this.openChatBox(group.id);
         });
 
-        app.connection.on("open-chat-with-community", () => {
+        app.connection.on("open-chat-with-community", ()=>{
             this.openChatBox();
         });
 
@@ -143,7 +136,6 @@ class Chatx extends ModTemplate {
             // Now that we have all the chat groups from our wallet + peer
             // We can load the previously messages from our local storage
             //
-
             this.createChatGroup([peer.peer.publickey], this.communityGroupName);
             this.loadChats();
 
@@ -170,39 +162,34 @@ class Chatx extends ModTemplate {
                                 tx.decryptMessage(app);
 
                                 this.receiveChatTransaction(app, tx); 
-
                             }
                         }
                     },
 
-
                     (p) => {
                         if (p.peer.publickey === peer.peer.publickey) {
                             return 1;
-
                         }
                     }
                 );
             }
 
-        }
+        } 
 
 
         //
         // check identifiers
         //
-
         if (this.added_identifiers_post_load == 0) {
             try {
                 setTimeout(() => {
-//                     this.app.browser.addIdentifiersToDom();
+                    this.app.browser.addIdentifiersToDom();
                     this.added_identifiers_post_load = 1;
                 }, 1200);
             } catch (err) {
                 console.warn("error adding identifiers post-chat");
             }
         }
-
 
         //
         // See if we want to auto open a chatpopup
@@ -334,10 +321,8 @@ class Chatx extends ModTemplate {
             tx = app.wallet.signAndEncryptTransaction(tx);
 
             app.network.propagateTransaction(tx);
-
             
             app.connection.emit("send-relay-message", {recipient, request: 'chat message broadcast', data: {tx, group_id}});
-
 
         } else {
             salert("Connection to chat server lost");
@@ -359,11 +344,11 @@ class Chatx extends ModTemplate {
         }
 
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
-
+        
         if (newtx == null) {
             return;
         }
-
+        
         for (let i = 1; i < members.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(members[i]));
         }
@@ -496,7 +481,7 @@ class Chatx extends ModTemplate {
         let txs = group.txs;
         let last_message_sender = "";
 
-        for (let i = 0; i < txs.length; i++) {
+        for (let i = 0; i < txs.length; i ++) {
 
             //First transaction -- start first block
             if (last_message_sender == "") {
@@ -527,7 +512,6 @@ class Chatx extends ModTemplate {
                     return true;
                 }
             }
-
         }
         return false;
     }
@@ -551,7 +535,7 @@ class Chatx extends ModTemplate {
 
         //So the David + Richard == Richard + David
         members.sort();
-
+        
         let id = this.app.crypto.hash(`${members.join('_')}`);
 
         for (let i = 0; i < this.groups.length; i++) {
@@ -569,8 +553,8 @@ class Chatx extends ModTemplate {
             }
             if (!name) {
                 name = "me";
-            } else {
-                name = name.substring(0, name.length - 2);
+            }else{
+                name = name.substring(0, name.length-2);
             }
         }
 
@@ -580,8 +564,6 @@ class Chatx extends ModTemplate {
             name: name,
             txs: [],
             unread: 0,
-
-
         }
 
         //Prepend the community chat
