@@ -204,7 +204,6 @@ class RedSquareMenu {
 
 
   displayNotification(app, menu_item, notifications = Math.floor(Math.random() * 20)) {
-
     let qs = `.redsquare-menu-${menu_item}`;
     if (document.querySelector(qs)) {
       qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;

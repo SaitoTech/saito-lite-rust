@@ -32,12 +32,10 @@ class Arcade extends ModTemplate {
     //this.observer = [];
     this.old_game_removal_delay = 2000000;
     this.services = [{ service: "arcade", domain: "saito" }];
-    this.request_no_interrupts = true; // ask other modules not to insert content
+    this.request_no_interrupts = false; // ask other modules not to insert content
 
     this.viewing_arcade_initialization_page = 0;
     this.viewing_game_homepage = ""; //// this.app.browser.returnURLParameter("game");
-
-    this.chat_open = 0;
 
     this.icon_fa = "fas fa-gamepad";
 
@@ -51,50 +49,17 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = true;
+    this.debug = false;
 
     //So we can keep track of games which we want to close but are waiting on game engine to process
     this.game_close_interval_cnt = 0;
     this.game_close_interval_queue = [];
     this.game_close_interval_id = null;
 
-
-
   }
 
 
-  receiveEvent(type, data) {
-    if (type == "chat-render-request") {
-      if (this.browser_active) {
-        if (this.app.options.auto_open_chat_box == undefined) {
-          this.app.options.auto_open_chat_box = 1;
-          this.app.storage.saveOptions();
-        }
-        //this.renderSidebar();
-          let chat_mod = this.app.modules.returnModule("Chat");
-          if (chat_mod){
-            if (chat_mod.groups && 
-                chat_mod.groups.length > 0 &&
-                this.chat_open == 0 &&
-                this.app.options.auto_open_chat_box
-             ) {
-              this.chat_open = 1;
-              chat_mod.openChats();
-          }
-        }
-      }
-    }
-  }
-
-/*  handleUrlParams(urlParams) {
-    let i = urlParams.get("i");
-    if (i == "watch") {
-      let msg = urlParams.get("msg");
-      this.observeGame(msg, 0);
-    }
-  }
-*/
-
+ 
   renderArcadeMain() {
     if (this.browser_active == 1) {
       if (this.viewing_arcade_initialization_page == 0) {
@@ -115,6 +80,19 @@ class Arcade extends ModTemplate {
       ArcadeSidebar.attachEvents(this.app, this);
     }
   }
+
+  returnGameById(game_id){
+    let game = this.games.find((g) => g.transaction.sig == game_id);
+    let gameObj = {
+      id: game_id,
+      game: game.msg.game,
+      options: game.msg.options,
+      players: game.msg.players,
+      players_needed: game.msg.players_needed
+    };
+    return gameObj;
+  }
+
 
   respondTo(type = "") {
     let arcade_mod = this;
@@ -160,9 +138,8 @@ class Arcade extends ModTemplate {
   initialize(app) {
     super.initialize(app);
 
-    
+    //Load my locally saved games
     this.addMyGamesToOpenList();
-
 
     //
     // hack to force forum to onPeerHandShake
@@ -182,9 +159,14 @@ class Arcade extends ModTemplate {
     if (!app.BROWSER){return;}
 
     if (this.browser_active){
+      //Add Chat-Manager to my components
+      app.modules.respondTo("chat-manager").forEach(m => {
+        this.addComponent(m.respondTo("chat-manager"));
+      });
+
+
       //Leave a cookie trail to return to Arcade when you enter a game
       if (app.options.homeModule !== this.returnSlug()){
-        console.log("Update homepage to " + this.returnSlug());
         app.options.homeModule = this.returnSlug();
         app.storage.saveOptions();
       }
@@ -213,7 +195,6 @@ class Arcade extends ModTemplate {
       }
     });
     app.connection.on("game-ready", (gameid)=>{
-      console.log("GAME READY received:" + gameid);
       this.launchGame(gameid);
     });
     
@@ -277,9 +258,6 @@ class Arcade extends ModTemplate {
     });
   }
 
-  initializeHTML(app) {
-    this.header = new SaitoHeader(app, this);
-  }
 
   checkGameDatabase(){
     if (!this.app.BROWSER){return;}
@@ -425,6 +403,7 @@ class Arcade extends ModTemplate {
 
     this.renderSidebar();
     this.renderArcadeMain();
+    super.render(app, this, "#arcade-sidebar");
   }
 
   isMyGame(invite, app) {
@@ -1551,7 +1530,7 @@ class Arcade extends ModTemplate {
   }
 
   validateGame(tx) {
-    if (!tx?.transaction?.sig || !tx?.msg) {
+    if (!tx || !tx.msg || !tx.transaction || !tx.transaction.sig) {
       return false;
     }
 
@@ -1560,19 +1539,12 @@ class Arcade extends ModTemplate {
     }
 
     for (let i = 0; i < this.games.length; i++) {
-      let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
-
-      if (tx.transaction.sig == transaction.sig) {
-        return false;
-      }
-      if (tx.returnMessage().game_id != "" && tx.returnMessage().game_id == transaction.sig) {
-        return false;
-      }
-      if (tx.returnMessage().game_id === this.games[i].transaction.sig) {
-        console.log("ERROR 480394: not re-adding existing game to list");
+      if (tx.transaction.sig === this.games[i].transaction.sig) {
+        console.log("TX is already in Arcade list");
         return false;
       }
     }
+
     return true;
   }
 
@@ -1693,9 +1665,7 @@ class Arcade extends ModTemplate {
 
 
   addGameToOpenList(tx) {
-    let valid_game = this.validateGame(tx);
-    
-    if (valid_game) {
+    if (this.validateGame(tx)) {
       this.games.unshift(tx);
       ArcadeMain.renderArcadeTab(this.app, this);
     }

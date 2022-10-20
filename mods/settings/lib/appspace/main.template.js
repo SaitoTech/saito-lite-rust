@@ -18,7 +18,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         <div class="settings-appspace-app">
         <label class="saito-switch">
           <input type="checkbox"  id="${i}"  value="modules_mods_${i}" name="modules_mods_${i}" ${CHECKED}>
-          <span class="saito-switch-slider round"></span>
+          <span class="saito-switch-slider"></span>
         </label>
           <label>${mod.name}
             <span></span>
@@ -64,88 +64,65 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   <div class="saito-page-header">
 
 
-        <div class="saito-redsquare-actions-buttons">
-        <div class="saito-redsquare-actions-buttons-icon">
+  <div class="saito-redsquare-actions-buttons">
+      <div class="saito-redsquare-actions-buttons-icon">
           <i id="action-icon" class="fas fa-plus"></i>
-        </div>
-        <div class="redsquare-actions-container"> 
-        <div class="saito-button-secondary small" style="float: right;" id="restore-privatekey-btn">Import Key</div>
-        <div class="saito-button-secondary small" style="float: right;" id="restore-account-btn">Restore Wallet</div>
-        <div class="saito-button-secondary small" style="float: right;" id="backup-account-btn">Backup Wallet</div>
-        </div>
-        </div>
-        
-    <div class="saito-page-header-title">SETTINGS</div>
-    <div class="saito-page-header-text">
-      Configure and personalise your Saito experience. Add/remove modules, setup wallet. 
-      Get informed on latest versions. Reach out to us on social media platforms in case of any queries.
-    </div>
-  </div>
-
-  <div class="settings-appspace">
-
-    <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />
-
-    <div>
-
-      <div>
-
-      
-        ${balance_link}
-
-
-  <div class="settings-appspace-user-details-container">
-	<h6>Wallet</h6>
-        <div class="settings-appspace-user-details">
-          
-          <div id="register-email-btn" class="saito-black">Email:</div>
-          <div >${email_registered}</div>
-
-          <div id="register-identifier-btn-label" class="saito-black">Username:</div>
-         <div>${identifier_registered}</div>
-
-          <div class="saito-black">Public Key:</div>
-          <div class="saito-address">${app.wallet.returnPublicKey()}</div>
-
-          <div class="saito-black">Private Key:</div>
-          <div class="settings-appspace-privatekey">
-             <div class="settings-appspace-password" id="settings-appspace-password">${app.wallet.returnPrivateKey()} </div>
-            <i class="settings-appspace-see-password fas fa-eye" id="settings-appspace-see-password"></i>
+      </div>
+      <div class="redsquare-actions-container">
+          <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
+          <div class="saito-button-secondary small"id="restore-account-btn">Restore Wallet
           </div>
-
-	       </div>
-     
+          <div class="saito-button-secondary small"id="backup-account-btn">Backup Wallet</div>
+      </div>
   </div>
 
-      </div>
+  <div class="saito-page-header-title">SETTINGS</div>
+  <div class="saito-page-header-text">
+      Configure and personalise your Saito experience. Add/remove modules, setup wallet.
+      Get informed on latest versions. Reach out to us on social media platforms in case of any queries.
+  </div>
+</div>
 
+<div class="settings-appspace">
+
+  <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />
+
+  <div>
+      <div>
+          ${balance_link}
+          <div class="settings-appspace-user-details-container">
+              <h6>Wallet</h6>
+              <div class="settings-appspace-user-details">
+
+                  <div id="register-email-btn" class="saito-black">Email:</div>
+                  <div>${email_registered}</div>
+
+                  <div id="register-identifier-btn-label" class="saito-black">Username:</div>
+                  <div>${identifier_registered}</div>
+
+                  <div class="saito-black">Public Key:</div>
+                  <div class="saito-address">${app.wallet.returnPublicKey()}</div>
+
+                  <div class="saito-black">Private Key:</div>
+                  <div class="settings-appspace-privatekey saito-password">
+                          ${app.wallet.returnPrivateKey()}
+                      <i class="settings-appspace-see-privatekey fas fa-eye" id="settings-appspace-see-privatekey"></i>
+                  </div>
+              </div>
+          </div>
+      </div>
       <div class="settings-appspace-modules-container">
-        <h6> Installed Modules </h6>
-
-  <div class="settings-appspace-modules">
-      ${modules_html_active}
-   </div>
-   <div id="settings-appspace-manage-modules" class="saito-button-primary">Manage Modules</div>
-      <div class="saito-overlay-container">
-            <div class="saito-backdrop">
-              <div class="settings-appspace-modules-modal">
+          <h6> Installed Modules </h6>
+          <div class="settings-appspace-modules">
               ${modules_html}
-              </div>
-              <div class="saito-overlay-actions">
-                <div id="settings-appspace-cancel-modules-modal" class="saito-button-secondary"> Cancel </div>
-              </div>
-            </div>
+          </div>
       </div>
-      </div>
-      
-      </div>
-
+    <div class="settings-appspace-debug">
+        <h6>Debug Info</h6>
+        <div class="settings-appspace-debug-content"></div>
     </div>
-  
-  </select>
-
-
   </div>
+
 </div>
   `;
 

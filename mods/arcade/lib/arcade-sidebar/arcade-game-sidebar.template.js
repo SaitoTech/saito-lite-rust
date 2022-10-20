@@ -35,6 +35,5 @@ module.exports = ArcadeGameSidebarTemplate = (game_mod) => {
   }
 
 
-  html += `<div id="email-chat" class="email-chat"></div>`;
   return html;
 }

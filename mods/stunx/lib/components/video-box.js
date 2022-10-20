@@ -14,7 +14,7 @@ class VideoBox {
     }
 
     render(stream, streamId, containerClass) {
-        if (!containerClass) return console.log("Please insert a container class to render the stream");
+        // if (!containerClass) return console.log("Please insert a container class to render the stream");
 
 
         this.stream_id = streamId;
@@ -42,15 +42,29 @@ class VideoBox {
 
     renderStream({ muted }) {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
-            this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted), this.containerClass);
+            if(this.containerClass){
+                this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted), this.containerClass);
+            }else {
+                this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, muted));
+                this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
+            }
         }
         const videoBox = document.querySelector(`#stream${this.stream_id}`);
         videoBox.firstElementChild.srcObject = this.stream;
+   
     }
 
     renderPlaceholder() {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
-            this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false), this.containerClass);
+            if(this.containerClass){
+                this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false), this.containerClass);
+            }else {
+                this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, false));
+                this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
+            }
+
+          
+            // makeDraggable(id_to_move, id_to_drag = "", mycallback = null
         }
         const videoBox = document.querySelector(`#stream${this.stream_id}`);
         if (this.placeholderRendered) return;
@@ -71,9 +85,9 @@ class VideoBox {
                     this.renderStream({ muted: null });
                 }
                 break;
-            case "disconnected":
-                document.querySelector(`#stream${this.stream_id}`).parentElement.remove(document.querySelector(`#stream${this.stream_id}`));
-                break;
+            // case "disconnected":
+            //     document.querySelector(`#stream${this.stream_id}`).parentElement.remove(document.querySelector(`#stream${this.stream_id}`));
+            //     break;
             case "failed":
                 document.querySelector('#connection-message').textContent = "<p>Failed to connect </p>"
                 break;

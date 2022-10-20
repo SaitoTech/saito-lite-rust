@@ -44,12 +44,7 @@ pre {
 }
 
 .saito-treated-link {
-  width: 50rem;
-  max-width: 80vw;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
+  display: inline;
 }
 
 /* ----------------------------------------------------------------
@@ -129,6 +124,14 @@ p::-webkit-scrollbar {
 
 p.small {
   font-size: 1.3rem;
+}
+
+/* ----------------------------------------------------------------
+Password Font
+-----------------------------------------------------------------*/
+
+.saito-password {
+  font-family: "p-word";
 }
 
 /* ----------------------------------------------------------------

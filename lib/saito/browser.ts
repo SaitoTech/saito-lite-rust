@@ -1,13 +1,14 @@
 // @ts-nocheck
 
-import screenfull from "screenfull";
+import screenfull, { element } from "screenfull";
 import html2canvas from "html2canvas";
+import { getDiffieHellman } from "crypto";
 const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
-var marked = require('marked');
-var sanitizeHtml = require('sanitize-html');
-const linkifyHtml = require('markdown-linkify');
-const emoji = require('node-emoji');
+var marked = require("marked");
+var sanitizeHtml = require("sanitize-html");
+const linkifyHtml = require("markdown-linkify");
+const emoji = require("node-emoji");
 
 class Browser {
   public app: any;
@@ -64,7 +65,8 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-/******
+        /******
+
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {
@@ -87,6 +89,7 @@ class Browser {
           }
         };
 *****/
+
 
         document.addEventListener(
           "visibilitychange",
@@ -263,8 +266,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {
-    }
+    } catch (err) {}
     return "";
   }
 
@@ -275,10 +277,9 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) { }
+    } catch (err) {}
     return "en";
   }
-
 
   isMobileBrowser(user_agent) {
     let check = false;
@@ -443,17 +444,15 @@ class Browser {
   }
 
   replaceElementById(html, id = null) {
-    console.log("replace element by id: " + id);
     if (id == null) {
+      console.warn("no id provided to replace, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
-      console.log("trying to get element by id: " + id);
       let obj = document.getElementById(id);
       if (obj) {
-        console.log("can find so replacing");
         obj.outerHTML = html;
       } else {
-        console.log("cannot find so adding");
+        console.warn(`cannot find ${id} to replace, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -461,14 +460,14 @@ class Browser {
 
   addElementToId(html, id = null) {
     if (id == null) {
+      console.warn(`no id provided to add to, so adding to DOM`);
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementById(id);
       if (obj) {
-        console.log("add element by id 2: " + id);
         this.app.browser.addElementToDom(html, obj);
       } else {
-        console.log("NOT FOUND add element by id 2: " + id);
+        console.warn(`cannot find ${id} to add to, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -476,12 +475,14 @@ class Browser {
 
   prependElementToId(html, id = null) {
     if (id == null) {
+      console.warn(`no id provided to prepend to, so adding to DOM`);
       this.app.browser.prependElementToDom(html);
     } else {
       let obj = document.getElementById(id);
       if (obj) {
         this.app.browser.prependElementToDom(html, obj);
       } else {
+        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
@@ -489,12 +490,14 @@ class Browser {
 
   replaceElementBySelector(html, selector = "") {
     if (selector === "") {
+      console.warn("no selector provided to replace, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
       if (obj) {
         obj.outerHTML = html;
       } else {
+        console.warn(`cannot find ${id} to replace, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -502,12 +505,14 @@ class Browser {
 
   addElementToSelector(html, selector = "") {
     if (selector === "") {
+      console.warn("no selector provided to add to, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
       } else {
+        console.warn(`cannot find ${id} to add to, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -515,12 +520,14 @@ class Browser {
 
   prependElementToSelector(html, selector = "") {
     if (selector === "") {
+      console.warn("no selector provided to prepend to, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.prependElementToDom(html, container);
       } else {
+        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
@@ -721,12 +728,12 @@ class Browser {
   }
 
   preventDefaults(e) {
-console.log("preventing the defaults");
+    console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
   }
 
-  makeDraggable(id_to_move, id_to_drag = "", mycallback = null) {
+  makeDraggable(id_to_move, id_to_drag = "", dockable = false, mycallback = null) {
     console.log("make draggable: " + id_to_drag);
     console.log(" and move? " + id_to_move);
 
@@ -747,9 +754,18 @@ console.log("preventing the defaults");
       let element_start_top = 0;
 
       element_to_drag.onmousedown = function (e) {
+        let resizeable = ["both", "vertical", "horizontal"];
+        //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
+
+        if (resizeable.indexOf(getComputedStyle(e.target).resize) > -1 || resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1) {
+          if (e.offsetX > (e.target.offsetWidth - 20) && e.offsetY > (e.target.offsetHeight - 20)) { return; }
+        }
+
         e = e || window.event;
 
-        console.log("DRAG MOUSEDOWN");
+        //console.log("DRAG MOUSEDOWN");
+        //console.log(e.clientX);
+        //console.log(e.offsetX);
 
         if (
           !e.currentTarget.id ||
@@ -772,6 +788,26 @@ console.log("preventing the defaults");
         element_moved = false;
 
         document.onmouseup = function (e) {
+
+          if (dockable) {
+            if (element_to_move.classList.contains("dockedLeft")) {
+              element_to_move.style.left = 0;
+            }
+
+            if (element_to_move.classList.contains("dockedTop")) {
+              element_to_move.style.top = 0;
+            }
+
+            if (element_to_move.classList.contains("dockedRight")) {
+              element_to_move.style.left = window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
+            }
+
+            if (element_to_move.classList.contains("dockedBottom")) {
+              element_to_move.style.top = window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
+            }
+
+          }
+
           document.onmouseup = null;
           document.onmousemove = null;
 
@@ -782,7 +818,6 @@ console.log("preventing the defaults");
         };
 
         document.onmousemove = function (e) {
-
           e = e || window.event;
           e.preventDefault();
 
@@ -795,9 +830,52 @@ console.log("preventing the defaults");
             element_moved = true;
           }
 
-          // set the element's new position:
-          element_to_move.style.left = element_start_left + adjustmentX + "px";
-          element_to_move.style.top = element_start_top + adjustmentY + "px";
+          let newPosX = element_start_left + adjustmentX;
+          let newPosY = element_start_top + adjustmentY;
+
+          //if dockable show docking edge
+          if (dockable) {
+            if (element_to_move.getBoundingClientRect().x < 50) {
+              element_to_move.classList.add("dockedLeft");
+            } else {
+              element_to_move.classList.remove("dockedLeft");
+            }
+
+            if (element_to_move.getBoundingClientRect().y < 50) {
+              element_to_move.classList.add("dockedTop");
+            } else {
+              element_to_move.classList.remove("dockedTop");
+            }
+
+            if (element_to_move.getBoundingClientRect().x + element_to_move.getBoundingClientRect().width > window.innerWidth - 50) {
+              element_to_move.classList.add("dockedRight");
+            } else {
+              element_to_move.classList.remove("dockedRight");
+            }
+
+            if (element_to_move.getBoundingClientRect().y + element_to_move.getBoundingClientRect().height > window.innerHeight - 50) {
+              element_to_move.classList.add("dockedBottom");
+            } else {
+              element_to_move.classList.remove("dockedBottom");
+            }
+
+
+            // set the element's new position:
+
+            if (newPosX <= 0) { newPosX = 0 }
+            if (newPosX + element_to_move.getBoundingClientRect().width >= window.innerWidth) {
+              newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
+            }
+
+            if (newPosY <= 0) { newPosY = 0 }
+            if (newPosY + element_to_move.getBoundingClientRect().height >= window.innerHeight) {
+              newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
+            }
+
+          }
+
+          element_to_move.style.left = newPosX + "px";
+          element_to_move.style.top = newPosY + "px";
 
           //We are changing to Top/Left so get rid of bottom/right
           element_to_move.style.bottom = "unset";
@@ -913,7 +991,7 @@ console.log("preventing the defaults");
       Array.from(identifiers).forEach((identifier) => {
         identifier.addEventListener("click", (e) => {
 
-console.log("preventing default 444");
+          console.log("preventing default 444");
 
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -951,7 +1029,7 @@ console.log("preventing default 444");
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) { }
+    } catch (err) {}
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1054,7 +1132,7 @@ console.log("preventing default 444");
   }
 
   // TODO: implement htis function
-  getValueFromHashAsBoolean() { }
+  getValueFromHashAsBoolean() {}
 
   getValueFromHashAsNumber(hash, key) {
     try {
@@ -1091,21 +1169,19 @@ console.log("preventing default 444");
     });
   }
 
-  async screenshotCanvasElementById(id = "" , callback = null) {
-      let canvas = document.getElementById(id);
-      if (canvas) {
-        let img = canvas.toDataURL("image/jpeg", 0.35);
-        if (callback != null) {
-          callback(img);
-        }
+  async screenshotCanvasElementById(id = "", callback = null) {
+    let canvas = document.getElementById(id);
+    if (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      if (callback != null) {
+        callback(img);
       }
+    }
   }
-
 
   sanitize(text) {
     try {
       if (text !== "") {
-
         text = marked.parseInline(text);
 
         //trim trailing line breaks
@@ -1113,23 +1189,53 @@ console.log("preventing default 444");
       }
 
       text = sanitizeHtml(text, {
-        allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'ul', 'ol',
-          'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-          'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'marquee', 'pre'
+        allowedTags: [
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "blockquote",
+          "p",
+          "ul",
+          "ol",
+          "nl",
+          "li",
+          "b",
+          "i",
+          "strong",
+          "em",
+          "strike",
+          "code",
+          "hr",
+          "br",
+          "div",
+          "table",
+          "thead",
+          "caption",
+          "tbody",
+          "tr",
+          "th",
+          "td",
+          "pre",
+          "img",
+          "marquee",
+          "pre",
         ],
         allowedAttributes: {
-          div: ['class', 'id'],
-          a: ['href', 'name', 'target', 'class', 'id'],
-          img: ['src', 'class']
+          div: ["class", "id"],
+          a: ["href", "name", "target", "class", "id"],
+          img: ["src", "class"],
         },
-        selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
-        allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
+        selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
+        allowedSchemes: ["http", "https", "ftp", "mailto"],
         allowedSchemesByTag: {},
-        allowedSchemesAppliedToAttributes: ['href', 'cite'],
+        allowedSchemesAppliedToAttributes: ["href", "cite"],
         allowProtocolRelative: true,
         transformTags: {
-          'a': sanitizeHtml.simpleTransform('a', { target: '_blank' })
-        }
+          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
+        },
       });
 
       /* wrap link in <a> tag */
@@ -1138,15 +1244,74 @@ console.log("preventing default 444");
       text = text.replace(urlPattern, function (url) {
         return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
       });
-      
+
       text = emoji.emojify(text);
-      
+
       return text;
     } catch (err) {
       console.log("Err in sanitizing: " + err);
       return text;
     }
   }
+
+  async resizeImg(img, targetSize = 512) {
+    let self = this;
+    var dimensions = await this.getImageDimensions(img);
+    var new_img = "";
+    let canvas = document.createElement("canvas");
+    let oImg = document.createElement("img");
+
+    let w = dimensions.w;
+    let h = dimensions.h;
+    let aspect = w / h;
+
+    if (w > 1440) {
+      w = 1440;
+      h = 1440 * aspect;
+    }
+    if (h > 768) {
+      h = 768;
+      w = 768 / aspect;
+    }
+
+    canvas.width = w;
+    canvas.height = h;
+
+      function resizeLoop(img, quality = 1) {
+        console.log('resizing');
+        oImg.setAttribute('src', img);
+        canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
+        new_img = canvas.toDataURL('image/jpeg', quality);
+        let imgSize = new_img.length / 1024; // in KB
+  
+        if (imgSize > targetSize) {
+  
+          resizeLoop(new_img, quality * 0.9);
+  
+          } else {
+            return;
+          }
+
+      };
+
+      resizeLoop(img);
+
+      console.log("Resized to: " + new_img.length / 1024);
+
+      return new_img;
+      
+  }
+
+  getImageDimensions(file) {
+    return new Promise (function (resolved, rejected) {
+      var i = new Image()
+      i.onload = function(){
+        resolved({w: i.width, h: i.height})
+      };
+      i.src = file
+    })
+  }
+
 }
 
 export default Browser;

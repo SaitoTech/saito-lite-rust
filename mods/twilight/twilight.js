@@ -401,6 +401,18 @@ class Twilight extends GameTemplate {
         this.saveGamePreference("lang", "zh");
       }
     }
+    if (app.browser.returnPreferredLanguage() === "es") {
+      if (!app?.options?.gameprefs?.lang) {
+        this.lang = "es";
+        this.saveGamePreference("lang", "es");
+      }
+    }
+    if (app.browser.returnPreferredLanguage() === "ru") {
+      if (!app?.options?.gameprefs?.lang) {
+        this.lang = "ru";
+        this.saveGamePreference("lang", "ru");
+      }
+    }
 
     // required here so menu will be proper
     try {
@@ -579,13 +591,33 @@ class Twilight extends GameTemplate {
         setTimeout(function() { window.location.reload(); }, 1000);
       }
     });
-  this.menu.addSubMenuOption("game-language", {
+    this.menu.addSubMenuOption("game-language", {
       text: `简体中文 ${(this.lang=="zh")?"✔":""}`,
       id: "game-language-zh",
       callback: function(app, game_mod){
         game_mod.displayModal("语言设定", "卡牌语言改成简体中文");
         game_mod.lang = "zh";
         game_mod.saveGamePreference("lang", "zh");
+        setTimeout(function() { window.location.reload(); }, 1000);
+      }
+    });
+    this.menu.addSubMenuOption("game-language", {
+      text: `русский ${(this.lang=="ru")?"✔":""}`,
+      id: "game-language-ru",
+      callback: function(app, game_mod){
+        game_mod.displayModal("");
+        game_mod.lang = "ru";
+        game_mod.saveGamePreference("lang", "ru"); 
+        setTimeout(function() { window.location.reload(); }, 1000);
+      }
+    });
+    this.menu.addSubMenuOption("game-language", {
+      text: `Español ${(this.lang=="es")?"✔":""}`,
+      id: "game-language-es",
+      callback: function(app, game_mod){
+        game_mod.displayModal("");
+        game_mod.lang = "es";
+        game_mod.saveGamePreference("lang", "es"); 
         setTimeout(function() { window.location.reload(); }, 1000);
       }
     });

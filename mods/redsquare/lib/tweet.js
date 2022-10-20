@@ -335,8 +335,6 @@ class RedSquareTweet {
     //
     const openTweet = (e) => {
 
-console.log("AAAAA");
-
       //e.preventDefault();
       e.stopImmediatePropagation();
 
@@ -358,7 +356,10 @@ console.log("AAAAA");
         mod.viewing = "feed";
       }
 
-      let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
+      let target = mod.returnTweet(app, mod, tweet_sig_id);
+
+      //let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${tweet_sig_id}' OR parent_id = '${tweet_sig_id}' OR thread_id = '${tweet_sig_id}'`;
       
       // false - don't track tweet
       mod.fetchTweets(app, mod, sql, function (app, mod) {
@@ -380,6 +381,7 @@ console.log("AAAAA");
       window.history.pushState({}, document.title, tweetUrl);
 
       this.saito_loader.remove();
+
     }
 
 
@@ -397,13 +399,10 @@ console.log("AAAAA");
     let sel = "#tweet-box-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
 
-console.log("AAAAA 2");
-
       //
       // trap links in tweets
       //
       if (e.target.classList.contains('saito-treated-link') || e.target.classList.contains('saito-og-link')) {
-console.log("clicked on a link!");
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
         e.preventDefault();
@@ -421,8 +420,6 @@ console.log("clicked on a link!");
         return;
       }
 
-console.log("AAAAA 4");
-
       //
       // avoid other clickable elements
       //
@@ -431,7 +428,8 @@ console.log("AAAAA 4");
         !e.target.classList.contains("tweet-tool") &&   // buttons
         !e.target.classList.contains("far") &&   // icons
         !e.target.classList.contains("fa") &&   // icons
-        !e.target.classList.contains("fas")
+        !e.target.classList.contains("fas") && 
+        !e.target.classList.contains("redsquare-tweet-tools")
       ) {
 
         //
@@ -442,17 +440,12 @@ console.log("AAAAA 4");
           return;
         }
 
-console.log("AAAAA 5");
-
         openTweet(e);
         e.preventDefault();
         e.stopImmediatePropagation();
       }
 
     };
-
-
-console.log("didn't trigger!");
 
 
     //
@@ -503,9 +496,6 @@ console.log("didn't trigger!");
     };
 
 
-console.log("we hit here!");
-
-
     //
     // click on interior retweet to view it
     //
@@ -547,7 +537,7 @@ console.log("we hit here!");
     document.querySelector(sel).onclick = (e) => {
       e.preventDefault();
       e.stopImmediatePropagation();
-      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig });
+      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig }, this.tx);
 
       // increase num likes
       sel = ".tweet-tool-like-count-" + this.tx.transaction.sig;
@@ -569,7 +559,7 @@ console.log("we hit here!");
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig });
+      mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig }, this.tx);
 
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");
@@ -675,6 +665,35 @@ console.log("we hit here!");
     }
   }
 
+  renderLikes() {
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = ".tweet-tool-like-count-"+this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_likes) { return; }
+      obj.innerHTML = this.tx.optional.num_likes;
+    } catch (err) {}
+  }
+  renderRetweets() {
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = ".tweet-tool-retweet-count-"+this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_retweets) { return; }
+      obj.innerHTML = this.tx.optional.num_retweets;
+    } catch (err) {}
+  }
+  renderReplies() {
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = ".tweet-tool-comment-count-"+this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_replies) { return; }
+      obj.innerHTML = this.tx.optional.num_replies;
+    } catch (err) {}
+  }
+  
+
   exportData(app, mod) {
     return { text: this.text };
   }
@@ -725,6 +744,13 @@ console.log("we hit here!");
     return this;
 
   }
+
+  returnWeightedTime() {
+    let weightedTime = (this.updated_at - Math.pow((this.updated_at - this.created_at), 0.5));
+    return weightedTime;
+  }
+
+
 
 
   ///////////////

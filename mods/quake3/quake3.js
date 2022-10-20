@@ -1,5 +1,6 @@
 const GameTemplate = require('./../../lib/templates/gametemplate');
 const QuakeGameOptionsTemplate = require('./lib/quake-game-options.template');
+const QuakeControls = require('./lib/controls');
 
 
 class Quake3 extends GameTemplate {
@@ -14,14 +15,17 @@ class Quake3 extends GameTemplate {
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
+    this.controls = this.returnDefaults();
+
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
 
     // ask chat not to start on launch
     this.request_no_interrupts = true;
 
-    this.content_server  = "q3.saito.io";
-    this.game_server  = "q3.saito.io:27960";
+    this.content_server  = "q3-us.saito.io";
+    this.game_server  = "q3-us.saito.io:27959";
+
     //this.content_server  = "18.163.184.251:80";
     //this.game_server     = "18.163.184.251:27960";
   }
@@ -67,18 +71,18 @@ class Quake3 extends GameTemplate {
 	  if (this.app.wallet.returnPublicKey() === victim) {
 	    let ts = new Date().getTime();
 	    let ticker = this.game.options.crypto;
-            let killValue = this.game.options.killValue;
+            let stake = this.game.options.stake;
 	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
 	    // the user is proactively sending tokens unsolicited, so we can skip the 
 	    // confirmation prompt provided by the crypto-manager.
 	    this.app.wallet.sendPayment(
 	      [victim_web3_address], 
 	      [killer_web3_address],
-	      [killValue],
+	      [stake],
 	      ts,
 	      uhash,
 	      function() {
-		siteMessage(`${killValue} ${ticker} sent in tribute`, 8000);
+		siteMessage(`${stake} ${ticker} sent in tribute`, 8000);
 	      },
 	      ticker
             );	  
@@ -86,7 +90,7 @@ class Quake3 extends GameTemplate {
 	  } else {
 	    let ts = new Date().getTime();
 	    let ticker = this.game.options.crypto;
-            let killValue = this.game.options.killValue;
+            let stake = this.game.options.stake;
 	    let uhash = this.app.crypto.hash(`${victim}${killer}${this.game.step.game}`);
 	    //
 	    // monitor for receipt
@@ -94,11 +98,11 @@ class Quake3 extends GameTemplate {
             this.app.wallet.receivePayment(
 	      [victim_web3_address] ,
 	      [killer_web3_address] ,
-    	      [killValue] ,
+    	      [stake] ,
     	      ts ,
               uhash ,
               function() {
-	        siteMessage(`${killValue} ${ticker} received in tribute`, 8000);
+	        siteMessage(`${stake} ${ticker} received in tribute`, 8000);
 	      },
 	      ticker
 	    );
@@ -139,17 +143,17 @@ class Quake3 extends GameTemplate {
   attachAdvancedOptionsEventListeners(){
 
     let crypto = document.getElementById("crypto");
-    let killValue = document.getElementById("killValue");
-    let killValue_wrapper = document.getElementById("killValue_wrapper");
+    let stake = document.getElementById("stake");
+    let stake_wrapper = document.getElementById("stake_wrapper");
 
     const updateChips = function(){
-      if (killValue) {
+      if (stake) {
         if (crypto.value == ""){
-          killValue_wrapper.style.display = "none";
-          killValue.value = "0";
+          stake_wrapper.style.display = "none";
+          stake.value = "0";
         } else {
-          let killValueAmt = parseFloat(killValue.value);
-          killValue_wrapper.style.display = "block";
+          let stakeAmt = parseFloat(stake.value);
+          stake_wrapper.style.display = "block";
         }
       }
     };
@@ -157,14 +161,16 @@ class Quake3 extends GameTemplate {
     if (crypto){
       crypto.onchange = updateChips;
     }
-    if (killValue){
-      killValue.onchange = updateChips;
+    if (stake){
+      stake.onchange = updateChips;
     }
 
   }
 
 
   initializeGame(game_id) {
+
+    this.load();
 
     if (!this.game.state) {
       console.log("******Generating the Game******");
@@ -345,6 +351,19 @@ class Quake3 extends GameTemplate {
     });
 
     this.menu.addSubMenuOption("game-game", {
+      text : "Controls",
+      id : "game-controls",
+      class : "game-game-controls",
+      callback : async function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        let controls = new QuakeControls(app, game_mod);
+	controls.render(app, game_mod);
+    	SAITO_COMPONENT_ACTIVE = true;
+    	SAITO_COMPONENT_CLICKED = true;
+      },
+    });
+
+    this.menu.addSubMenuOption("game-game", {
         text : "Screenshot",
         id : "game-post",
         class : "game-post",
@@ -380,6 +399,20 @@ class Quake3 extends GameTemplate {
 
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
+
+
+if (app.BROWSER != 0) {
+    if (this.game.options.server === "as") {
+alert("Asian Game Server - use advanced options to change");
+      this.content_server = "q3.saito.io";
+      this.game_server = "q3.saito.io:27960";
+    }
+    if (this.game.options.server === "na") {
+alert("North American Game Server - use advanced options to change");
+      this.content_server = "q3-us.saito.io";
+      this.game_server = "q3-us.saito.io:27959";
+    }
+}
 
 
     //
@@ -447,6 +480,21 @@ return;
       ioq3.callMain(args);
     }
 
+  }
+
+
+
+  returnDefaults() {
+    return {};
+  }
+
+  load() {
+    this.quake3 = this.app.options.quake3;
+  }
+
+  save() {
+    this.app.options.quake3 = this.quake3;
+    this.app.storage.saveOptions();
   }
 
 }

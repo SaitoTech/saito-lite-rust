@@ -18,8 +18,16 @@ class RedSquareNotification {
       let txmsg = this.tx.returnMessage();
  
       if (txmsg.request == "like tweet") {
-	html = LikeNotificationTemplate(app, mod, this.tx);
+	let qs = `.liked-tweet-${txmsg.data.sig}`;
+	let obj = document.querySelector(qs);
+	if (obj) {
+	  obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
+	  return;
+	} else {
+	  html = LikeNotificationTemplate(app, mod, this.tx);
+        }
       }
+
       else if (txmsg.request == "create tweet") {
         //
       	// retweet
@@ -27,7 +35,7 @@ class RedSquareNotification {
       	if (txmsg.data.retweet_tx) {
       	  let retweet_tx = new saito.default.transaction(JSON.parse(txmsg.data.retweet_tx));
           let retweet_txmsg = retweet_tx.returnMessage();
-      	  html = RetweetNotificationTemplate(app, mod, retweet_tx, retweet_txmsg);
+      	  html = RetweetNotificationTemplate(app, mod, this.tx, retweet_tx, retweet_txmsg);
       	//
       	// or reply
       	//
@@ -37,7 +45,6 @@ class RedSquareNotification {
       }
 
       if (this.tx.transaction.ts > mod.last_viewed_notifications_ts) {
-console.log("rendering notifications and updating last viewed to : " + this.tx.transaction.ts);
 	mod.last_viewed_notifications_ts = this.tx.transaction.ts;
 	mod.saveRedSquare();
       }
@@ -47,6 +54,16 @@ console.log("rendering notifications and updating last viewed to : " + this.tx.t
     }
 
     attachEvents(app, mod) { 
+
+      let qs = ".notification-item-"+this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+
+      if (obj) {
+        obj.onclick = (e) => {
+	  let sig = e.currentTarget.getAttribute("data-id");
+	  mod.renderParentWithChildren(app, mod, sig);
+	}
+      }
 
     }
 }

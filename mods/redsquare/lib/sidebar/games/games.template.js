@@ -3,7 +3,7 @@ const SaitoArcadeInviteTemplate = require('./../../../../../lib/saito/new-ui/tem
 module.exports = RedSquareGamesTemplate = (app, mod) => {
 
 	let html = "";
-  console.log("Render game sidebar for RS");
+  //console.log("Render game sidebar for RS");
   let arcade_mod = app.modules.returnModule("Arcade");
   if (arcade_mod) {
 
@@ -21,7 +21,7 @@ module.exports = RedSquareGamesTemplate = (app, mod) => {
     }
 
     let games = arcade_mod.games.filter(invite => {
-      console.log(JSON.parse(JSON.stringify(invite.msg)));
+      //console.log(JSON.parse(JSON.stringify(invite.msg)));
       return (invite.msg.players.length < invite.msg.players_needed && !arcade_mod.isMyGame(invite, app));
     });
 

@@ -44,7 +44,7 @@ class VideoChatManager {
     }
 
     attachEvents(app, mod) {
-        app.browser.makeDraggable("stunx-chatbox");
+        app.browser.makeDraggable("stunx-chatbox", null, true);
 
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
 

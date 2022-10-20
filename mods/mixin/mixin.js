@@ -566,6 +566,13 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
 
     let mixin_self = this;
 
+    // check we do not already have an account
+    if (this.app.options?.mixin?.user_id) {
+      console.log("skipping mixin account creation as exists");
+      return;
+    }
+
+
     let d = res;
     mixin_self.mixin.session_id = d.data.session_id;
     mixin_self.mixin.user_id = d.data.user_id;
@@ -692,6 +699,7 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
 	mixin_publickey :	user_public_key 
       };
 
+console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
       mixin_self.app.network.peers[0].sendRequestWithCallback("mixin create account", data, function(res) {
 console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
 	mixin_self.createAccountCallback(res, callback);

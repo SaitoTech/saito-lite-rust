@@ -1,4 +1,6 @@
 const path = require("path");
+const TerserPlugin = require("terser-webpack-plugin");
+
 const webpack = require("webpack");
 // const CircularDependencyPlugin = require('circular-dependency-plugin');
 
@@ -18,6 +20,11 @@ if (process.argv.includes("web3")) {
 webpack({
   optimization: {
     minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        parallel: true,
+      }),
+    ],
   },
   target: "web",
   // node: {
@@ -108,7 +115,7 @@ webpack({
             loader: "babel-loader",
             options: {
               presets: ["@babel/preset-env"],
-              sourceMaps: true
+              sourceMaps: false
             }
           }
         ],

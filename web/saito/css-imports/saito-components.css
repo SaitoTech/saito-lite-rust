@@ -11,7 +11,7 @@ Saito searchbar
     align-items: center;
     justify-content: center;
     border: 1px solid var(--saito-border);
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     padding: 0 .8rem
 }
 
@@ -70,7 +70,7 @@ Saito backdrop
     min-width: 30rem;
     min-height: 20rem;
     background-color: var(--saito-white);
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     position: relative;
 }
 
@@ -87,8 +87,8 @@ Saito backdrop
 .saito-switch {
     position: relative;
     display: inline-block;
-    width: 5rem;
-    height: 2.822rem;
+    width: 4rem;
+    height: 1.8rem;
 }
 
 /* Hide default HTML checkbox */
@@ -107,32 +107,29 @@ Saito backdrop
     right: 0;
     bottom: 0;
     background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
     border: 1px solid gray;
+    border-radius: 0.5rem;
 }
 
 .saito-switch-slider:before {
     position: absolute;
     content: "";
-    height: 2.158rem;
-    width: 2.158rem;
-    left: .332rem;
-    bottom: 2.5px;
+    height: 1.2rem;
+    width: 1.5rem;
+    left: .132rem;
+    bottom: 1.5px;
     background-color: gray;
-    -webkit-transition: .4s;
-    transition: .4s;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
     border: 1px solid var(--saito-gray);
+    border-radius: 0.5rem;
 }
 
 input:checked+.saito-switch-slider {
     border: 1px solid var(--saito-primary);
     background-color: var(--saito-white);
-}
-
-input:focus+.saito-switch-slider {
-    /* box-shadow: 0 0 1px var(--saito-primary); */
-
 }
 
 input:checked+.saito-switch-slider:before {
@@ -150,3 +147,5 @@ input:checked+.saito-switch-slider:before {
 .saito-switch-slider.round:before {
     border-radius: 50%;
 }
+
+

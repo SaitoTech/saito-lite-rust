@@ -50,6 +50,15 @@
   margin-bottom: 4px;
 }
 
+/* Chat / Manager */
+
+.chat-manager-list > .saito-user > .saito-identicon-container {
+    padding-left: 0.7rem;
+    padding-right: 0.4rem;
+}
+
+
+
 .redsquare-home-red-square {
   font-size: 2.6rem;
   width: 2rem;
@@ -66,7 +75,7 @@ span.redsquare-home-red-square+span {
   font-size: 1.7rem;
   line-height: 2.2rem;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   max-height: 30rem;
   overflow: auto;
 }
@@ -77,6 +86,9 @@ span.redsquare-home-red-square+span {
 
 .redsquare-item {
   cursor: pointer;
+}
+.redsquare-item:hover {
+  background-color: rgba(0, 0, 0, 0.03)
 }
 
 .post-tweet-img-icon {
@@ -130,7 +142,7 @@ span.redsquare-home-red-square+span {
   border-radius: 0.5rem;
   background-color: var(--saito-white);
   position: relative;
-  width: min-content;
+  width: max-content;
   max-width: 100vw;
   max-height: 95vh;
   overflow-y: auto;
@@ -176,7 +188,7 @@ span.redsquare-home-red-square+span {
 
 
 .redsquare-item {
-  padding: 2rem 3rem 2rem 1rem;
+  padding: 2rem 3rem 0rem 1rem;
   border-bottom: 1px solid #a5a5a533;
 }
 
@@ -204,6 +216,7 @@ span.redsquare-home-red-square+span {
   max-width: 20rem;
   text-overflow: ellipsis;
   overflow-x: hidden;
+  margin-top: -1.75rem;
 }
 
 .redsquare-invite-title {
@@ -267,7 +280,7 @@ span.redsquare-home-red-square+span {
 .redsquare-game-image>img {
   width: 100%;
   height: 100%;
-  border-radius: 1rem
+  border-radius: 0.5rem
 }
 
 .redsquare-game-title {
@@ -321,16 +334,25 @@ span.redsquare-home-red-square+span {
   justify-content: space-between;
   font-size: 1.5rem;
   width: 100%;
-  margin: 2rem 0 0rem 0;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  cursor: default;
 }
 
 
 .redsquare-tweet-tools>div {
   position: relative;
-  margin: 0 1rem 0 0;
   display: grid;
-  grid-gap: 1rem;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr;
+  padding: 1rem 0;
+  cursor: pointer;
+  color: rgba(83, 100, 113, 0.8);
+}
+
+.redsquare-tweet-tools>div.tweet-tool-like,
+.redsquare-tweet-tools>div.tweet-tool-retweet,
+.redsquare-tweet-tools>div.tweet-tool-comment {
+  grid-template-columns: 1fr 1fr;
 }
 
 .tweet-tool-like-count,
@@ -340,7 +362,9 @@ span.redsquare-home-red-square+span {
 }
 
 .redsquare-tweet-tools>div:hover {
-  transform: scale(1);
+  transform: scale(1.05);
+  color: var(--saito-primary);
+
 }
 
 
@@ -348,19 +372,16 @@ span.redsquare-home-red-square+span {
   display: inline-block;
   font-weight: bold;
   z-index: 1;
-  color: rgba(83, 100, 113, 0.8);
+  
   font-size: 1.5rem;
 }
 
 .redsquare-tweet-tools i {
   font-size: 1.7rem;
+  margin: 0 1rem;
   text-align: center;
-  color: rgba(83, 100, 113, 0.8);
 }
 
-.redsquare-tweet-tools i:hover {
-  color: var(--saito-primary);
-}
 
 .tweet-tool-retweet i {
   font-size: 1.7rem;
@@ -390,7 +411,7 @@ span.redsquare-home-red-square+span {
 .preview-info {
   padding: 20px;
   border: 1px solid #ccc;
-  border-radius: 20px;
+  border-radius: 0.5rem;
   border-top: none;
   border-top-right-radius: unset;
   border-top-left-radius: unset;
@@ -484,6 +505,7 @@ span.redsquare-home-red-square+span {
 
 .redsquare-ellipsis {
   height: 0;
+  margin-top: -1.75rem;
 }
 
 .before-ellipsis {
@@ -507,11 +529,12 @@ span.redsquare-home-red-square+span {
 
 .redsquare-image-container div {
   width: 100%;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   border: 1px solid #d7d3d3;
   height: 40rem;
   background-size: cover !important;
   background-repeat: no-repeat;
+  background-position: center;
 }
 
 .redsquare-image-container div.tweet-multiple-img {
@@ -523,13 +546,13 @@ span.redsquare-home-red-square+span {
 
 .post-tweet-image-upload {
   border: 1px solid var(--saito-border);
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: .5rem 0;
+  padding: 0.5rem 0;
 }
 
 .post-tweet-image-upload-content {
@@ -546,7 +569,7 @@ span.redsquare-home-red-square+span {
 
 .post-tweet-image-upload #post-tweet-select-image {
   cursor: pointer;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   font-size: 1.6rem;
 }
 
@@ -610,7 +633,7 @@ span.redsquare-home-red-square+span {
   background-color: rgba(0, 0, 0, 0.5);
   left: 0px;
   top: 0px;
-  border-radius: 2rem;
+  border-radius: 0.5rem;
   height: 100%;
   display: none;
 }
@@ -806,7 +829,7 @@ span.redsquare-home-red-square+span {
 }
 
 .stunx-chatbox .video-box {
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -823,7 +846,7 @@ span.redsquare-home-red-square+span {
   margin-top: 250px;
   width: 160px;
   height: 38px;
-  border-radius: 4px;
+  border-radius: 0.5rem;
   left: 51px;
   cursor: pointer;
 }
@@ -845,11 +868,9 @@ span.redsquare-home-red-square+span {
   grid-template-columns: 2em 2em 1fr;
 }
 
-
 .stunx-chatbox p {
   margin: 0;
 }
-
 
 .stunx-chatbox .disconnect_btn {
   margin-left: auto;

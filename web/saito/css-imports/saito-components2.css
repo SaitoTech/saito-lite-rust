@@ -479,10 +479,10 @@ Saito Arcade Invite
 Legacy Site Message
 -----------------------------------------------------------------*/
 div#message-wrapper {
-    border: 2px solid var(--saito-primary);
+    border: 2px solid var(--saito-primary) !important;
     min-width: 500px;
     padding: 1em;
-    background: var(--saito-primary);
+    background: var(--saito-primary) !important;
     position: fixed;
     bottom: 1em;
     left: 1em;
