@@ -1,4 +1,4 @@
-const SaitoUserSmallTemplate = require('./../../lib/saito/new-ui/templates/saito-user-small.template.js');
+const SaitoUserWithTimeTemplate = require('./../../lib/saito/new-ui/templates/saito-user-with-time.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
@@ -461,7 +461,7 @@ class Chatx extends ModTemplate {
                     ts = txmsg.timestamp;
                 }
                 msg = this.app.browser.sanitize(msg);
-                html += `${SaitoUserSmallTemplate(this.app, this, sender, msg, ts)}`;
+                html += `${SaitoUserWithTimeTemplate(this.app, this, sender, msg, ts)}`;
             }
         }
 
