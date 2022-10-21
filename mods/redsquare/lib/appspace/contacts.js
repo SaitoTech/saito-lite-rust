@@ -6,6 +6,7 @@ class RedSquareAppspaceContacts {
   constructor(app, mod = null, selector = "") {
     this.app = app;
     this.name = "RedSquareAppspaceContacts";
+    this.add_user_modal = new ModalAddContact(app, mod);
   }
 
   render(app, mod, selector = "") {
@@ -20,10 +21,13 @@ class RedSquareAppspaceContacts {
     // "add contact"
     //
     document.getElementById("redsquare-add-contact").onclick = (e) => {
-      let add_user_modal = new ModalAddContact(app, mod);
-      add_user_modal.render(app, mod);
+      this.add_user_modal.render(app, mod);
     }
 
+  }
+
+  showAddModalContact(app, mod) {
+    this.add_user_modal.render(app, mod);
   }
 
 }

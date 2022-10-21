@@ -518,34 +518,20 @@ module.exports = ArcadeMain = {
         if (testsig == game_id) { //If the game has been initialized
           let gamemod = app.modules.returnModule(app.options.games[i].module);
           if (gamemod) {
-            this.removeGameFromList(game_id);
             gamemod.resignGame(game_id, "cancellation");
-
+            console.log("If game engine doesn't respond, will auto close game in 2.5 seconds...");
             //Set a fallback interval if the opponent is no longer online
-            mod.game_close_interval_cnt += 5;
-            mod.game_close_interval_queue.push(game_id);  
-            if (!mod.game_close_interval_id){
-              mod.game_close_interval_id = setInterval(()=>{
-                console.log(mod.game_close_interval_cnt);
-                if (mod.game_close_interval_cnt<=0){
-                  console.log("Interval Timeout, closing game myself");
-                  for (let id of mod.game_close_interval_queue){
-                    createCloseTx(id);  
-                  }
-                  clearInterval(mod.game_close_interval_id);
-                }
-                mod.game_close_interval_cnt--;
-              },5*1000);
-            }
+            setTimeout(()=>{
+                createCloseTx(game_id);
+              },2.5*1000);
             return;
           }
         }
       }
     }
 
-
+    //Fall back -- force the game to be marked as closed
     createCloseTx(game_id);
-    this.removeGameFromList(game_id);
   },
 
   //&&&&&&&&&&&&&&&&
@@ -648,15 +634,8 @@ module.exports = ArcadeMain = {
           }
         }
       }
-      this.removeGameFromList(game_id);
     }
   },*/
 
-  removeGameFromList(game_id) {
-    try{
-      document
-      .getElementById(`arcade-hero`)
-      .removeChild(document.getElementById(`invite-${game_id}`));
-    }catch(err){console.log(err);};
-  },
+
 };

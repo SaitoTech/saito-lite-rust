@@ -126,6 +126,14 @@ Saito Module X
     text-transform: capitalize;
 }
 
+.saito-module-x.large .saito-module-title { 
+    font-size: 4rem;
+}
+
+.saito-module-x.large .saito-module-title { 
+    font-size: 2.3rem;
+}
+
 .saito-module-x .saito-module-custom-box {
     padding-left: 1rem;
     height: inherit;

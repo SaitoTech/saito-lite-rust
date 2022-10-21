@@ -37,7 +37,8 @@ class RedSquare extends ModTemplate {
 
     // "main" or sig if viewing page-specific
     this.viewing = "feed";
-    this.mode = "feed";
+    
+  
     this.last_viewed_notifications_ts = 0;
     this.unviewed_notifications = 0;
 
@@ -437,7 +438,7 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
     }
-    app.browser.addIdentifiersToDom();
+    // app.browser.addIdentifiersToDom();
   }
 
   renderMainFeed(app, mod) {
@@ -445,7 +446,7 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
     }
-    app.browser.addIdentifiersToDom();
+    // app.browser.addIdentifiersToDom();
   }
 
 
@@ -919,7 +920,7 @@ class RedSquare extends ModTemplate {
 
 
 
-  sendLikeTransaction(app, mod, data, tx=null) {
+  sendLikeTransaction(app, mod, data, tx = null) {
 
     let redsquare_self = this;
 
@@ -965,17 +966,17 @@ class RedSquare extends ModTemplate {
         //
         let txmsg = tx.returnMessage();
         if (this.txmap[txmsg.data.sig]) {
-	  let tweet = this.returnTweet(app, this, txmsg.data.sig);
-	  if (tweet == null) { return; }
-	  let tx = tweet.tx;
+          let tweet = this.returnTweet(app, this, txmsg.data.sig);
+          if (tweet == null) { return; }
+          let tx = tweet.tx;
           if (!tx.optional) { tx.optional = {}; }
-	  if (!tx.optional.num_likes) { tx.optional.num_likes = 0; }
-	  tx.optional.num_likes++;
-	  this.app.storage.updateTransactionOptional(txmsg.data.sig, app.wallet.returnPublicKey(), tx.optional);
-	  tweet.renderLikes();
-	} else {
-	  this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_likes");
-	}
+          if (!tx.optional.num_likes) { tx.optional.num_likes = 0; }
+          tx.optional.num_likes++;
+          this.app.storage.updateTransactionOptional(txmsg.data.sig, app.wallet.returnPublicKey(), tx.optional);
+          tweet.renderLikes();
+        } else {
+          this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_likes");
+        }
 
       }
 
@@ -1051,50 +1052,50 @@ class RedSquare extends ModTemplate {
         this.app.storage.saveTransaction(tx);
         let txmsg = tx.returnMessage();
 
-	//
-	// if replies
-	//
-	if (txmsg.data?.parent_id) {
+        //
+        // if replies
+        //
+        if (txmsg.data?.parent_id) {
           if (this.txmap[txmsg.data.parent_id]) {
-	    let tweet = this.returnTweet(app, this, txmsg.data.sig);
-	    if (tweet == null) { return; }
-  	    let tx = this.txmap[parent_id];
-	    if (tx.isTo(app.wallet.returnPublicKey())) {
+            let tweet = this.returnTweet(app, this, txmsg.data.sig);
+            if (tweet == null) { return; }
+            let tx = this.txmap[parent_id];
+            if (tx.isTo(app.wallet.returnPublicKey())) {
               if (!tx.optional) { tx.optional = {}; }
-	      if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
-	      tx.optional.num_replies++;
-	      this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
-	      tweet.renderReplies();
-	    }
-	  } else {
-	    this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_replies");
-	  }
-	}
+              if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
+              tx.optional.num_replies++;
+              this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
+              tweet.renderReplies();
+            }
+          } else {
+            this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_replies");
+          }
+        }
 
 
-	//
-	// if retweets
-	//
-	if (txmsg.data?.retweet_tx) {
+        //
+        // if retweets
+        //
+        if (txmsg.data?.retweet_tx) {
           if (txmsg.data?.retweet_tx) {
 
-	    let rtxobj = JSON.parse(txmsg.data.retweet_tx);
-	    let rtxsig = rtxobj.sig;
+            let rtxobj = JSON.parse(txmsg.data.retweet_tx);
+            let rtxsig = rtxobj.sig;
 
-           if (this.txmap[rtxsig]) {
-	      let tweet2 = this.returnTweet(app, this, rtxsig);
-	      if (tweet2 == null) { return; }
-  	      let tx = tweet2.tx;
+            if (this.txmap[rtxsig]) {
+              let tweet2 = this.returnTweet(app, this, rtxsig);
+              if (tweet2 == null) { return; }
+              let tx = tweet2.tx;
               if (!tx.optional) { tx.optional = {}; }
-	      if (!tx.optional.num_retweets) { tx.optional.num_retweets = 0; }
-	      tx.optional.num_retweets++;
-	      this.app.storage.updateTransactionOptional(rtxsig, app.wallet.returnPublicKey(), tx.optional);
-	      tweet2.renderRetweets();
-	    } else {
-	      this.app.storage.incrementTransactionOptionalValue(rtxsig, "num_retweets");
-	    }
-	  }
-	}
+              if (!tx.optional.num_retweets) { tx.optional.num_retweets = 0; }
+              tx.optional.num_retweets++;
+              this.app.storage.updateTransactionOptional(rtxsig, app.wallet.returnPublicKey(), tx.optional);
+              tweet2.renderRetweets();
+            } else {
+              this.app.storage.incrementTransactionOptionalValue(rtxsig, "num_retweets");
+            }
+          }
+        }
       }
 
       //
@@ -1104,7 +1105,7 @@ class RedSquare extends ModTemplate {
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       } else {
-	this.ntfs.push(tx);
+        this.ntfs.push(tx);
       }
 
       this.newTweets.push(tweet);
