@@ -1,5 +1,6 @@
 const VideoBox = require('./video-box');
 const ChatManagerSmallTemplate = require('./chat-manager-small.template');
+const ChatManagerSmallTemplateGeneric = require('./chat-manager-small-template-generic');
 
 
 
@@ -44,7 +45,12 @@ class ChatManagerSmall {
 
     render() {
         // this.app.browser.addElementToDom(ChatManagerSmallTemplate(), document.getElementById('content__'));
-        this.app.browser.addElementToSelector(ChatManagerSmallTemplate(), "#game-video-chat ul");
+        if (document.querySelector("#game-video-chat ul")) {
+            this.app.browser.addElementToSelector(ChatManagerSmallTemplate(), "#game-video-chat ul");
+        } else {
+            this.app.browser.addElementToSelector(ChatManagerSmallTemplateGeneric(), "");
+        }
+
     }
 
     attachEvents(app, mod) {
@@ -75,11 +81,14 @@ class ChatManagerSmall {
         document.querySelectorAll('.video-chat-manager').forEach(item => {
             item.parentElement.removeChild(document.querySelector('.video-chat-manager'));
         })
-        
-      
+
+
         document.querySelectorAll('.video-box-container').forEach(box => {
             box.parentElement.removeChild(box)
         })
+
+        document.querySelector("#small-video-chatbox").parentElement.removeChild(document.querySelector("#small-video-chatbox"))
+
     }
 
     disconnect() {
@@ -133,20 +142,20 @@ class ChatManagerSmall {
                 return;
             }
             this.video_boxes[peer].video_box.handleConnectionStateChange(state);
-    
+
             switch (state) {
                 case "disconnected":
                     // delete this.video_boxes[peer];
                     // if (Object.keys(this.video_boxes).length === 1) {
-                        this.disconnect();
-                        // siteMessage("Video call ended");
+                    this.disconnect();
+                    // siteMessage("Video call ended");
                     // }
                     console.log("video boxes: after ", this.video_boxes);
                     break;
-    
+
                 default:
                     break;
-            } 
+            }
         } catch (error) {
             console.log(error);
         }

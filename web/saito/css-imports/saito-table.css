@@ -6,6 +6,7 @@ Saito Table
     display: grid;
     grid-template-columns: auto;
     width: 100%;
+    position: relative;
 }
 
 .saito-table-row {
@@ -48,3 +49,34 @@ Saito Leaderboard
 }
 
 
+
+
+.saito-table-header {
+  display: grid;
+  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
+  grid-column-gap: 1rem;
+  margin-bottom: 1rem;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  text-align: center;
+}
+
+.saito-table-body {
+  height: auto;
+  overflow-y: scroll;
+  height: 78vh;
+  position: relative;
+  overflow-y: scroll;
+  text-align: center;
+}
+
+.saito-table-row {
+  display: grid;
+  display: grid;
+  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
+  grid-column-gap: 1rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--saito-gray);
+}
