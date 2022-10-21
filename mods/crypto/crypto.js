@@ -51,6 +51,11 @@ class Crypto extends ModTemplate {
 
   enableCrypto(game_mod, game_id, ticker) {
 
+    if (game_mod.game.crypto != "") {
+      alert("Exiting: crypto already enabled for this game!");
+      return;
+    }
+
     //
     // restore original pre-move state
     //
