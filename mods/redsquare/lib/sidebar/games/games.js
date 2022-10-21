@@ -1,5 +1,4 @@
 const RedSquareGamesTemplate = require("./games.template");
-const GameCreator = require("./../../appspace/arcade/game-creator");
 const SaitoModuleOverlay = require("../../../../../lib/saito/new-ui/saito-module-overlay/saito-module-overlay");
 const SaitoScheduler = require("./../../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler");
 const GameLoader = require("../../../../../lib/saito/new-ui/game-loader/game-loader");

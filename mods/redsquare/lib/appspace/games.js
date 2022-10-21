@@ -1,9 +1,6 @@
 const saito = require('./../../../../lib/saito/saito');
 const RedSquareAppspaceGamesTemplate = require("./games.template");
 const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-const GameCreator = require("./arcade/game-creator");
-//const GameScheduler = require("./arcade/game-scheduler");
-const GameCreateNew = require('./arcade/game-create-new');
 
 class RedSquareAppspaceGames {
 
@@ -24,8 +21,10 @@ class RedSquareAppspaceGames {
     this.overlay = new SaitoOverlay(app);
 
     document.getElementById("redsquare-create-game").onclick = (e) => {
-      let gc = new GameCreator(app, mod);
-      gc.render(app, mod);
+      try {
+        let arcade_mod = app.modules.returnModule("Arcade");
+        arcade_mod.createGameWizard(modname);
+      } catch (err) { alert("Arcade not installed..."); }
     }
 
     //
