@@ -428,7 +428,6 @@ Selects
   -webkit-appearance: none;
   -moz-appearance: none;
   background-color: var(--saito-white);
-  border: 1px solid var(--saito-primary);
   border-radius: 1rem;
   padding: 0 1rem;
 }
