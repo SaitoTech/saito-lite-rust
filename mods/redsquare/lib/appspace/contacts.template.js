@@ -21,8 +21,9 @@ module.exports = (app, mod) => {
        </div>
       </div>
 
-        <div class="saito-page-header-title">CONTACTS</div>
+        <div class="saito-page-header-title">CONTACTS
         <div class="saito-page-header-text">Use this page to manage the contacts saved in your wallet, or create groups for secure communication channels with many participants. Remember to backup your wallet after creating a new group or adding a new contact.</div>
+      </div>
       </div>
 
       <div class="redsquare-appspace-contacts-list">

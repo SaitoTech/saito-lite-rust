@@ -25,15 +25,15 @@ class RedSquareAppspaceGames {
 
     this.overlay = new SaitoOverlay(app);
 
-    document.getElementById("redsquare-schedule-game").onclick = (e) => {
-      salert("This feature isn't available yet");
+    //document.getElementById("redsquare-schedule-game").onclick = (e) => {
+    //  salert("This feature isn't available yet");
       /*let sc = new SaitoScheduler(app, mod);
       // callback is on submit
       sc.render(app, mod, function(options) {
         let gc = new GameCreator(app, mod);
         gc.render(app, mod);
       });*/
-    }
+    //}
 
     document.getElementById("redsquare-create-game").onclick = (e) => {
       let gc = new GameCreator(app, mod);
