@@ -14,8 +14,9 @@ module.exports = (app, mod) => {
           <div class="redsquare-actions-container"> 
           <div id="redsquare-new-tweet" class="saito-button-secondary small">🟥 New Tweet</div>
           </div>
-          <div id="saito-page-header-title" class="saito-page-header-title">🟥 RED SQUARE</div>
-	  <div id="saito-page-header-text" class="saito-page-header-text">Red Square is an open media and gaming platform running on the Saito network. Learn why Saito matters and how to build applications on our Saito Wiki. And please report bugs to our community team of devs.
+          <div id="saito-page-header-title" class="saito-page-header-title">🟥 RED SQUARE
+	          <div id="saito-page-header-text" class="saito-page-header-text">Red Square is an open media and gaming platform running on the Saito network. Learn why Saito matters and how to build applications on our Saito Wiki. And please report bugs to our community team of devs.
+          </div>
           </div>
         </div>
 

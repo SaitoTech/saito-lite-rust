@@ -242,9 +242,10 @@ class Browser {
           if (!public_key || public_key.length < 44) {
             return;
           }
-
-          let userMenu = new UserMenu(app, public_key);
-          userMenu.render(app);
+          if (public_key !== app.wallet.returnPublicKey()){
+            let userMenu = new UserMenu(app, public_key);
+            userMenu.render(app);
+          }
         }
       },
       {
@@ -1299,9 +1300,9 @@ class Browser {
       });
 
       function recursive_search(app, node) {
-        if (node?.classList?.includes("saito-user")) {
+        if (node?.classList?.contains("saito-user")) {
           if (node.children && node.children.length > 0) {
-            let address = child_node.getAttribute("data-id");
+            let address = node.getAttribute("data-id");
 
             //Replace identifier from Registry -- there should just be one child
             Array.from(node.children).forEach((child_node) => {
