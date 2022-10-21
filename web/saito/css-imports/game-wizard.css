@@ -309,6 +309,11 @@
 .saito-multi-select_btn_options.dark button{
   background: var(--saito-dark-purple);
   border-color: var(--saito-purple);
+  margin: 0rem;
+  padding: 0rem;
+  width: 101%;
+  display: block;
+  margin-bottom: 0.2rem;
 }
 
 .game-wizard-invite .saito-select::after {
