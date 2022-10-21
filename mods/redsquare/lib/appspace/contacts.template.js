@@ -1,5 +1,5 @@
 const SaitoGroupTemplate = require('./../../../../lib/saito/new-ui/templates/saito-group.template');
-const SaitoUserTemplateWithTime = require('./../../../../lib/saito/new-ui/templates/saito-user-with-time.template');
+const SaitoUserTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user-with-controls.template');
 
 module.exports = (app, mod) => {
 
@@ -77,7 +77,7 @@ module.exports = (app, mod) => {
 	}
 	if (keys.watched === 1 || keys.aes_publickey != "") {
     //This is not the right template for including a security flag....
-          html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline/*, security*/);
+          html += SaitoUserTemplate(app, mod, keys[i].publickey, userline/*, security*/);
 	}
       }
 

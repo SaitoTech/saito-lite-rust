@@ -1,8 +1,4 @@
-const SaitoUserWithControlsTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user-with-controls.template');
-
 module.exports = RedSquareNotificationsAppspaceTemplate = (app, mod) => {
-
-  let tx = app.wallet.createUnsignedTransaction();
 
   return `
 

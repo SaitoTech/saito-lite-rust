@@ -52,7 +52,7 @@
 
 /* Chat / Manager */
 
-.chat-manager-list > .saito-user > .saito-identicon-container {
+.chat-manager-list > .saito-user > .saito-identicon-box {
     padding-left: 0.7rem;
     padding-right: 0.4rem;
 }
