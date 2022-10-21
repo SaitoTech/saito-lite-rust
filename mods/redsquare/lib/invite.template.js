@@ -1,11 +1,11 @@
-const SaitoUserWithTimeTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user-with-time.template');
+const SaitoUserTemplateWithTime = require('./../../../lib/saito/new-ui/templates/saito-user-with-time.template');
 const SaitoUser = require('./../../../lib/saito/new-ui/templates/saito-user.template');
 
 module.exports = (app, mod, tx) => {
 
     return `
        <div class="redsquare-item">
-         ${SaitoUserWithTimeTemplate(app, mod, tx.transaction.from[0].add, "received recently", new Date().getTime())}
+         ${SaitoUserTemplateWithTime(app, tx.transaction.from[0].add, "received recently", new Date().getTime())}
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tx.transaction.sig}" data-id="${tx.transaction.sig}">
 	   <div></div>
            <div class="redsquare-invite">
@@ -20,10 +20,10 @@ module.exports = (app, mod, tx) => {
 
              <div class="redsquare-invite-participants">
 
-	       ${SaitoUser(app, mod, tx.transaction.from[0].add)}
-	       ${SaitoUser(app, mod, tx.transaction.from[0].add)}
-	       ${SaitoUser(app, mod, tx.transaction.from[0].add)}
-	       ${SaitoUser(app, mod, tx.transaction.from[0].add)}
+	       ${SaitoUser(app, tx.transaction.from[0].add)}
+	       ${SaitoUser(app, tx.transaction.from[0].add)}
+	       ${SaitoUser(app, tx.transaction.from[0].add)}
+	       ${SaitoUser(app, tx.transaction.from[0].add)}
 
              </div>
 

@@ -78,7 +78,7 @@ class ChatManager {
 			last_ts = txmsg.timestamp;
 		}
 
-		let html = SaitoUserGroup(this.app, this.chat_mod, group.name, last_msg, last_ts, group.id, notifications);
+		let html = SaitoUserGroup(this.app, group.name, last_msg, last_ts, group.id, notifications);
 		let divid = "saito-user-" + group.id;
 		let obj = document.getElementById(divid);
 

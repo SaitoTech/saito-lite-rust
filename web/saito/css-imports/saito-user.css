@@ -7,6 +7,7 @@ Saito Identicon
     height: 3.5rem;
 }
 
+
 /* ----------------------------------------------------------------
 Saito Username
 -----------------------------------------------------------------*/
@@ -34,6 +35,7 @@ Saito User
     color: #888;
 }
 
+
 .saito-user {
     display: grid;
     cursor: pointer;
@@ -45,8 +47,11 @@ Saito User
     position: relative;
 }
 
+
 .saito-user.small {
-    grid-template-rows: min-content min-content;
+    grid-template-columns: min-content 1fr;
+    grid-template-rows: 1fr;
+    align-items: center;
 }
 
 /*  saito-identicon-box  */
