@@ -1,11 +1,11 @@
-const SaitoUserWithAlert = require('./../../../lib/saito/new-ui/templates/saito-user-with-alert.template');
+const SaitoUserSmall = require('./../../../lib/saito/new-ui/templates/saito-user-small.template');
 const SaitoUser = require('./../../../lib/saito/new-ui/templates/saito-user.template');
 
 module.exports = (app, mod, tx) => {
 
     return `
        <div class="redsquare-item">
-         ${SaitoUserWithAlert(app, mod, tx.transaction.from[0].add, "received recently", new Date().getTime())}
+         ${SaitoUserSmall(app, mod, tx.transaction.from[0].add, "received recently", new Date().getTime())}
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tx.transaction.sig}" data-id="${tx.transaction.sig}">
 	   <div></div>
            <div class="redsquare-invite">
