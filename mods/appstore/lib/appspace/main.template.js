@@ -5,9 +5,10 @@ module.exports = AppStoreAppspaceTemplate = () => {
 
       <div class="saito-page-header">
         <div id="appstore-install-button" class="saito-button-secondary small" style="float: right;">Install New Apps</div>
-        <div class="saito-page-header-title">SAITO APPSTORE</div>
+        <div class="saito-page-header-title">SAITO APPSTORE
         <div class="saito-page-header-text">
 The Saito Appstore lets you install or upload new applications. Visit our <a href="https://wiki.saito.io">developer center</a> for information on how to build applications, then drag-and-drop them into the network once done.
+        </div>
         </div>
       </div>
 

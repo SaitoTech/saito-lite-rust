@@ -22,9 +22,10 @@ module.exports = (app, mod) => {
       </div>
      </div>
 
-        <div class="saito-page-header-title">SAITO ARCADE</div>
+        <div class="saito-page-header-title">SAITO ARCADE
         <div class="saito-page-header-text">
           Welcome to the Saito Arcade, where all games are open source, provably-fair and can be played directly in your browser. Create a game today, or join our developer community in porting more great games to the platform.
+        </div>
         </div>
       </div>
 
