@@ -2,7 +2,7 @@ module.exports = LeaderboardTemplate = (app, mod, league, players) => {
 
 	// const makePlayerRow = (player, rank) => {
 	//    	let html = 	`<div>${rank}</div>
-	//                  <div class="${(player.pkey == myKey)?"mystats":""} ${(player.pkey !== myKey)?"newfriend":""}" data-id="${player.pkey}">
+	//                  <div class="${(player.pkey == myKey)?"mystats":""}" data-id="${player.pkey}">
 	//                  	${app.keys.returnIdentifierByPublicKey(player.pkey, true)}</div>
 	//                  <div class="${(player.pkey == myKey)?"mystats":""}">${Math.round(player.score)}</div>
 	//                  <div class="${(player.pkey == myKey)?"mystats":""}">${player.games_finished}</div>
@@ -30,7 +30,7 @@ module.exports = LeaderboardTemplate = (app, mod, league, players) => {
 	   	let html = 	`
 	   		<div class="saito-table-row">
               <div>${rank}</div>
-              <div class="${(player.pkey == myKey)?"mystats":""} ${(player.pkey !== myKey)?"newfriend":""}" data-id="${player.pkey}">
+              <div class="${(player.pkey == myKey)?"mystats":""}" data-id="${player.pkey}">
               ${app.keys.returnIdentifierByPublicKey(player.pkey, true)}</div>
               <div class="">${Math.round(player.score)}</div>
               <div class="">${player.games_won}</div>

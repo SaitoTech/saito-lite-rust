@@ -17,14 +17,15 @@ class ViewLeagueDetails {
     }
 
     app.connection.on("relay-is-online", (pkey)=>{
-      let playerRow = document.querySelector(`.newfriend[data-id="${pkey}"]`);
+      //Selectors deprecated
+      /*let playerRow = document.querySelector(`.newfriend[data-id="${pkey}"]`);
       if (playerRow){
         playerRow.classList.add("online");
       }
       let playerChallenge = document.querySelector(`.challenge-btn[data-id="${pkey}"]`);
       if (playerChallenge){
         playerChallenge.style.display = "block";
-      }
+      }*/
     });
 
   }
@@ -179,24 +180,6 @@ class ViewLeagueDetails {
         mod.createLeagueChallenge(this.league, e.currentTarget.getAttribute("data-id"));
         this.overlay.remove();
       };
-    });
-
-   //Need to attach events for clicking on players on the leaderboard
-    const startKeyExchange = async (publickey) => {
-      console.log("pkey1: " + publickey);
-      publickey = app.keys.fetchPublicKey(publickey);
-      console.log("pkey2: " + publickey);
-
-      if (publickey) {
-        let encrypt_mod = app.modules.returnModule("Encrypt");
-        encrypt_mod.initiate_key_exchange(publickey);
-        console.log("done initiate key exchange");
-      } 
-    };
-    Array.from(document.querySelectorAll(".newfriend")).forEach((username)=>{
-      username.onclick = (e) =>{
-        startKeyExchange(e.target.getAttribute("data-id"));
-      }
     });
 
     //Give admin ability to edit league
