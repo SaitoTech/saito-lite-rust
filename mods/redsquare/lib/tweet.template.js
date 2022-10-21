@@ -86,7 +86,7 @@ console.log("Error processing image/link: " + err);
     if (tweet.notice != "") {
       html += `<div class="redsquare-item-notice">${tweet.notice}</div>`;
     }
-    html += SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline);
+    html += SaitoUser(app, tweet.tx.transaction.from[0].add, userline);
   }
   html += `
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">

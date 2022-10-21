@@ -461,7 +461,7 @@ class Chatx extends ModTemplate {
                     ts = txmsg.timestamp;
                 }
                 msg = this.app.browser.sanitize(msg);
-                html += `${SaitoUserWithTimeTemplate(this.app, this, sender, msg, ts)}`;
+                html += `${SaitoUserWithTimeTemplate(this.app, sender, msg, ts)}`;
             }
         }
 

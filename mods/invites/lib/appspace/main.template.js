@@ -1,4 +1,3 @@
-const SaitoUserWithControlsTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user-with-controls.template');
 
 module.exports = InvitesAppspaceTemplate = (app, mod) => {
 
