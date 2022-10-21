@@ -1,4 +1,4 @@
-const ArcadeGameDetailsTemplate = require("./arcade-game-details.template");
+const ArcadeGameDetailsTemplate = require("./main.template");
 const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 
 class ArcadeGameDetails {

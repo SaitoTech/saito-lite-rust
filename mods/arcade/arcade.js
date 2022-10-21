@@ -1,16 +1,16 @@
 const saito = require("./../../lib/saito/saito");
 const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const ArcadeMain = require("./lib/arcade-main/arcade-main");
+const ArcadeMain = require("./lib/main/main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
-const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
-const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
-const ArcadeGameDetails = require("./lib/arcade-game/arcade-game-details");
-const ChallengeTemplate = require("./lib/arcade-main/templates/arcade-challenge.template");
-const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
+const ArcadeSidebar = require("./lib/sidebar/main");
+const GameCreateMenu = require("./lib/main/game-create-menu");
+const ArcadeGameDetails = require("./lib/game/main");
+const ChallengeTemplate = require("./lib/templates/arcade-challenge.template");
+const ArcadeGameSidebar = require("./lib/sidebar/arcade-game-sidebar");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
+const ArcadeContainerTemplate = require("./lib/templates/arcade-container.template");
 const InvitationLink = require("../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
@@ -120,6 +120,18 @@ class Arcade extends ModTemplate {
         slug: this.returnSlug(),
       };
     }
+    if (type === 'user-menu') {
+      return {
+        text: "Challenge to Arcade Game",
+        icon: "fas fa-gamepad",
+        callback: function (app, mod, publickey) {
+	  app.options.invite = {};
+	  app.options.invite.publickey = publickey;
+          GameCreateMenu.render(app, mod);
+        }
+      }
+    }
+
 
     //    if (type == "appspace") {
     //      this.scripts['/arcade/new-style.css'];

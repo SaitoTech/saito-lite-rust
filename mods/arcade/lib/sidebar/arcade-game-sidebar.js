@@ -1,6 +1,6 @@
 const saito = require('./../../../../lib/saito/saito');
 const ArcadeGameSidebarTemplate = require('./arcade-game-sidebar.template');
-const ArcadeContainerTemplate = require('../arcade-main/templates/arcade-container.template');
+const ArcadeContainerTemplate = require('./../templates/arcade-container.template');
 
 module.exports = ArcadeGameSidebar = {
 

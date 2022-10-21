@@ -1,5 +1,5 @@
-const ArcadeForumsTemplate = require("./templates/arcade-forums.template");
-const ArcadeForumsThreadTemplate = require("./templates/arcade-forums-thread.template");
+const ArcadeForumsTemplate = require("./../templates/arcade-forums.template");
+const ArcadeForumsThreadTemplate = require("./../templates/arcade-forums-thread.template");
 
 module.exports = ArcadeForums = {
   render(app, mod) {

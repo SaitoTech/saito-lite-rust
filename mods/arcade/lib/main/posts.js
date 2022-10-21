@@ -1,4 +1,4 @@
-const ArcadePostsTemplate = require('./templates/arcade-posts.template');
+const ArcadePostsTemplate = require('./../templates/arcade-posts.template');
 
 
 /* This is a wrapper for Post Module, which retuns an object with appropriate render/attachEvent functions */

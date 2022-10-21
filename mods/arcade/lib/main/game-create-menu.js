@@ -1,5 +1,5 @@
 const saito = require('./../../../../lib/saito/saito');
-const GameCreateMenuTemplate= require('./templates/game-create-menu.template');
+const GameCreateMenuTemplate= require('./../templates/game-create-menu.template');
 const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
 module.exports = GameCreateMenu = {
@@ -19,15 +19,13 @@ module.exports = GameCreateMenu = {
 
     Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
       game.addEventListener('click', (e) => {
-        overlay.remove();
-
         let gameName = e.currentTarget.id;
+	let arcade_mod = app.modules.returnModule("Arcade");
         app.browser.logMatomoEvent("Arcade", "GameListOverlayClick", gameName);
-
         let tx = new saito.default.transaction();
         tx.msg.game = gameName;
-        mod.createGame(tx); 
-        
+        arcade_mod.createGame(tx); 
+        overlay.remove();
       });
     });
 
