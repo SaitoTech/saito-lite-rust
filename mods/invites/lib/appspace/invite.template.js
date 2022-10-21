@@ -1,4 +1,4 @@
-const SaitoUserSmall = require('./../../../../lib/saito/new-ui/templates/saito-user-small.template');
+const SaitoUserWithTimeTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user-with-time.template');
 const SaitoUser = require('./../../../../lib/saito/new-ui/templates/saito-user.template');
 
 module.exports = (app, mod, invite) => {
@@ -7,7 +7,7 @@ module.exports = (app, mod, invite) => {
 
        <div class="redsquare-item">
 
-         ${SaitoUserSmall(app, mod, invite.creator, "received recently", new Date().getTime())}
+         ${SaitoUserWithTimeTemplate(app, mod, invite.creator, "received recently", new Date().getTime())}
 
          <div class="redsquare-item-contents" id="redsquare-item-contents-${invite.invite_id}" data-id="${invite.invite_id}">
 	   <div></div>
