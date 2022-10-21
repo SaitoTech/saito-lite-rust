@@ -17,6 +17,8 @@ class GameCreateNew {
 
   render(app, mod, invite) {
 
+alert("testing");
+
     let slug = (this.game_mod.returnSlug())? this.game_mod.slug: this.game_mod.name.toLowerCase();
     let image = `/${slug}/img/arcade/arcade.jpg`;
 

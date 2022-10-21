@@ -14,7 +14,6 @@ class RedSquareAppspaceGames {
   }
 
   render(app, mod) {
-
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceGamesTemplate(app, mod), "appspace");
     this.attachEvents(app, mod);
@@ -24,7 +23,8 @@ class RedSquareAppspaceGames {
   attachEvents(app, mod) {
 
     this.overlay = new SaitoOverlay(app);
-
+console.log("schedule game");
+try {
     document.getElementById("redsquare-schedule-game").onclick = (e) => {
       salert("This feature isn't available yet");
       /*let sc = new SaitoScheduler(app, mod);
@@ -34,16 +34,23 @@ class RedSquareAppspaceGames {
         gc.render(app, mod);
       });*/
     }
+} catch (err) {}
 
+console.log("create game");
     document.getElementById("redsquare-create-game").onclick = (e) => {
+alert("A");
       let gc = new GameCreator(app, mod);
+alert("B");
       gc.render(app, mod);
+alert("C");
     }
 
     //
     // create game direct-links
     //
     Array.from(document.querySelectorAll('.create-game-link')).forEach(game => {
+
+console.log("about to add onclick");
 
       game.onclick = (e) => {
 
@@ -57,8 +64,11 @@ class RedSquareAppspaceGames {
         GameCreate.render(app, mod, tx);
       };
 
+console.log("done adding onclick");
+
     });
 
+/****
     Array.from(document.querySelectorAll(".load-game-instructions")).forEach(game => {
       game.onclick = (e) => {
         e.stopPropagation();
@@ -70,10 +80,8 @@ class RedSquareAppspaceGames {
           console.log("Module not found");
         }
       };
-
     });
-        
-
+****/
 
 
   }
