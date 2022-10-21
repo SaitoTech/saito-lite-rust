@@ -1341,7 +1341,7 @@ class Browser {
     });
   }
 
-  async resizeImg(img, targetSize = 512) {
+  async resizeImg(img, targetSize = 512, maxDimensions = {w: 1920, h: 1024}) {
     let self = this;
     var dimensions = await this.getImageDimensions(img);
     var new_img = "";
@@ -1352,13 +1352,13 @@ class Browser {
     let h = dimensions.h;
     let aspect = w / h;
 
-    if (w > 1440) {
-      w = 1440;
-      h = 1440 * aspect;
+    if (w > maxDimensions.w) {
+      w = maxDimensions.w;
+      h = maxDimensions.w / aspect;
     }
-    if (h > 768) {
-      h = 768;
-      w = 768 / aspect;
+    if (h > maxDimensions.h) {
+      h = maxDimensions.h;
+      w = maxDimensions.h * aspect;
     }
 
     canvas.width = w;
@@ -1380,10 +1380,14 @@ class Browser {
 
     resizeLoop(img);
 
+    oImg.remove();
+    canvas.remove();
+
     console.log("Resized to: " + new_img.length / 1024);
 
     return new_img;
   }
+
 
   getImageDimensions(file) {
     return new Promise(function (resolved, rejected) {
