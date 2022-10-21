@@ -116,6 +116,10 @@ Saito Page Header
     padding-top: 0rem;
     text-transform: uppercase;
     display: inline-block;
+    width: 54rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 i.saito-back-button {

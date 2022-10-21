@@ -37,6 +37,12 @@ class RedSquareAppspaceHome {
     app.connection.on("tweet-render-feed-request", () => {
       mod.renderMainPage(app, mod, false);
     });
+    app.connection.on("redquare-show-user-feed", (key) => {
+      mod.mode = "user";
+      mod.viewing = key;
+      mod.loadTweets(app, mod);
+    });
+
 
 
     let options = {
