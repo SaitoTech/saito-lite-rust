@@ -115,6 +115,16 @@ class RedSquare extends ModTemplate {
       };
     }
 
+    if (type === 'user_menu') {
+      return {
+          text: "View Profile",
+          icon: "fa-regular fa-user",
+          callback: function (app, public_key) {
+              app.connection.emit('redquare-show-user-feed', public_key);
+          }
+      }
+  }
+
     return super.respondTo(type);
   }
 
