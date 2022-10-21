@@ -158,6 +158,37 @@ class Poker extends GameTableTemplate {
     }
   }
 
+
+  //
+  // if we switch into a staked game, we reset to a new round, while keeping all of the 
+  // other settings identical.
+  //
+  initializeGameStake(crypto, stake) {
+
+    this.game.crypto = this.game.options.crypto = crypto;
+    this.game.stake = this.game.options.stake = parseFloat(this.game.options.stake);
+    this.game.chipValue = this.game.stake / parseInt(this.game.options.num_chips);
+    this.game.chipStart = parseInt(this.game.options.num_chips);
+    this.game.tournamentBlinds = (this.game.options.blind_mode === "increase");
+    this.game.state.round = 1;
+
+    this.game.state.big_blind = this.game.stake/50;
+    this.game.state.small_blind = this.game.stake/100;
+    this.game.state.last_raise = this.game.state.big_blind;
+    this.game.state.required_pot = this.game.state.big_blind;
+    this.game.state.chips = this.game.crypto;
+
+    for (let i = 0; i < this.game.players.length; i++) {
+      this.game.state.passed[i] = 0;
+      this.game.state.player_pot[i] = 0;
+      this.game.state.debt[i] = 0;
+      this.game.state.player_credit[i] = this.game.stake;
+    }
+
+    this.game.queue = ["newround"];
+
+  }
+
   initializeGame(game_id) { 
   
 
@@ -973,10 +1004,10 @@ class Poker extends GameTableTemplate {
         let call_portion = this.game.state.required_pot - this.game.state.player_pot[player - 1];
         let raise_portion = raise - call_portion;
 
-        /*console.log("raise is: " + raise);
+        console.log("raise is: " + raise);
         console.log("raise portion: "  + raise_portion);
-        console.log("call portion: "  + call_portion);*/
-  
+        console.log("call portion: "  + call_portion);  
+
         if (raise_portion <= 0){
           salert("Insufficient raise");
           console.error("Call process in raise/Insufficient Raise",mv);
@@ -1210,6 +1241,7 @@ class Poker extends GameTableTemplate {
     state.player_cards_required = 0;
 
     state.plays_since_last_raise = 0;
+    state.chips = "CHIPS";
 
     state.pot = 0.0;
    
@@ -1364,38 +1396,38 @@ class Poker extends GameTableTemplate {
     if (!this.browser_active){
       return;
     }
-  try {
-    /*let player_box = "";
-    var prank = "";
-    if (!this.game.players.includes(this.app.wallet.returnPublicKey())) {
-      document.querySelector('.status').innerHTML = "You are out of the game.<br />Feel free to hang out and chat.";
-      this.cardfan.addClass("hidden");
-      player_box = this.returnViewBoxArray();
-    }*/
+    try {
+      /*let player_box = "";
+      var prank = "";
+      if (!this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        document.querySelector('.status').innerHTML = "You are out of the game.<br />Feel free to hang out and chat.";
+        this.cardfan.addClass("hidden");
+        player_box = this.returnViewBoxArray();
+      }*/
 
-    for (let i = 1; i <= this.game.players.length; i++) {
-      this.playerbox.refreshName(i);
-      this.refreshPlayerStack(i, true);  
-
-      if (!preserveLog){
-        this.playerbox.refreshLog("",i);
+      for (let i = 1; i <= this.game.players.length; i++) {
+        this.playerbox.refreshName(i);
+        this.refreshPlayerStack(i, true);  
+        if (!preserveLog){
+          this.playerbox.refreshLog("", i);
+        }
       }
-    }
 
-    let elem;
+      let elem;
     
-    elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)}`);
-    if (elem){
-      let newButton = this.app.browser.makeElement("div","dealerbutton","dealerbutton");
-      newButton.classList.add("dealer");
-      newButton.textContent = "⬤";
-      elem.firstChild.after(newButton);
-      this.app.browser.addToolTip(newButton, "Dealer");  
+      elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)}`);
+      if (elem){
+        let newButton = this.app.browser.makeElement("div","dealerbutton","dealerbutton");
+        newButton.classList.add("dealer");
+        newButton.textContent = "⬤";
+        elem.firstChild.after(newButton);
+        this.app.browser.addToolTip(newButton, "Dealer");  
+      }
+    } catch (err) {
+      console.log("error displaying player box",err);
     }
-  } catch (err) {
-    console.log("error displaying player box",err);
   }
-  }
+
 
   displayHand() {
     if (this.game.player == 0){ return; }
@@ -1434,10 +1466,10 @@ class Poker extends GameTableTemplate {
         let display1, display2;
         if (this.rawCrypto){
           display1 = `${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
-          display2 = `${this.game.state.pot} chips`;
+          display2 = `${this.game.state.pot} ${this.game.state.chips}`;
         }else{
           display2 = `${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
-          display1 = `${this.game.state.pot} chips`;
+          display1 = `${this.game.state.pot} ${this.game.state.chips}`;
         }
         html = `<div class="pot-counter crypto_tip">${display1}<div class="tiptext">${display2}</div></div>`;
       }
@@ -1466,7 +1498,7 @@ class Poker extends GameTableTemplate {
       return;
     }
     //Update numerical stack
-    let display1 = `${this.game.state.player_credit[player - 1]} CHIPS`;
+    let display1 = `${this.game.state.player_credit[player - 1]} ${this.game.state.chips}`;
 
     let html = "";
     if (this.game.state.player_credit[player - 1] === 0 && this.game.state.all_in){
@@ -1492,7 +1524,7 @@ class Poker extends GameTableTemplate {
       //Draw literal stack
       html = this.returnPlayerStackHTML(player, this.game.state.player_credit[player - 1]);
       html = html.substring(0,html.length - 6); //remove final </div> tag
-      let bonusExplainer = `<div>${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+      let bonusExplainer = `<div>${this.game.state.player_credit[player - 1]} ${this.game.state.chips}</div>`;
       if (this.game.crypto){
         bonusExplainer += `<div>${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div>`;
       }

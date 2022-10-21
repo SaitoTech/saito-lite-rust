@@ -51,6 +51,11 @@ class Crypto extends ModTemplate {
 
   enableCrypto(game_mod, game_id, ticker) {
 
+    if (game_mod.game.crypto != "") {
+      alert("Exiting: crypto already enabled for this game!");
+      return;
+    }
+
     //
     // restore original pre-move state
     //
@@ -61,20 +66,8 @@ class Crypto extends ModTemplate {
     game_mod.game = game_mod.game_state_pre_move;
     game_mod.game.turn = [];
     game_mod.moves = [];
-    game_mod.proposeGameStake(ticker, "0.2");
+    game_mod.proposeGameStake(ticker, "100");
 
-
-    //
-    // users have deliberately opted-in
-    //
-    //game_mod.crypto_transfers_outbound_approved = 1;
-    //game_mod.crypto_transfers_inbound_trusted = 1;
-
-//alert("Reloading to restore playable game...");
-
-    //setTimeout(function() {
-    //  location.reload();
-    //}, 1500);
   }
 
 }

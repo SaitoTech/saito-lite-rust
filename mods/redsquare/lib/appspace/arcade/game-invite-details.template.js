@@ -1,4 +1,4 @@
-module.exports = GameCreatorTemplate = (app, mod, invite = null) => {
+module.exports = GameInviteDetailsTemplate = (app, mod, invite = null) => {
   if (!invite){
     return dummyHTML();  
   }

@@ -18,12 +18,12 @@
   transform: translate(-50%, -50%);
   margin-left: auto;
   margin-right: auto;
-  background-color: transparent;
   z-index: 1000;
-  min-width: 10%;
   min-height: 10%;
   height: min-content;
   width: min-content;
+  min-width: 50rem;
+  max-width: 90vw;
 }
 
 .saito-overlay-closebox {
@@ -111,4 +111,32 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+
+/*
+  Cleaning up <style> within template of mixin overlays
+  Placing it here until another suitable place found.
+*/
+
+.mixin_crypto_overlay {
+  padding: 2rem;
+  background-color: var(--saito-white);
+  color: black;
+  line-height: 1.6em;
+  font-size: 1.5em;
+}
+.mixin_crypto_title {
+  margin: 0.5em 0;
+  font-size: 2em;
+  font-weight: bold;
+}
+.mixin_crypto_warning {
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+.mixin_risk_acknowledge {
+  max-width: 200px;
+  text-align: center;
+  margin-right: auto;
 }

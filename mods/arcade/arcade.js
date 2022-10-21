@@ -51,15 +51,9 @@ class Arcade extends ModTemplate {
     this.overlay = null;
     this.debug = false;
 
-    //So we can keep track of games which we want to close but are waiting on game engine to process
-    this.game_close_interval_cnt = 0;
-    this.game_close_interval_queue = [];
-    this.game_close_interval_id = null;
-
   }
 
 
- 
   renderArcadeMain() {
     if (this.browser_active == 1) {
       if (this.viewing_arcade_initialization_page == 0) {
@@ -840,7 +834,7 @@ class Arcade extends ModTemplate {
         app.connection.emit("arcade-reject-challenge", txmsg.game_id);
       }
 
-      console.log(txmsg);
+      //console.log(txmsg);
 
       //Process Gameovers
       if (txmsg.request == "gameover"){
@@ -898,7 +892,7 @@ class Arcade extends ModTemplate {
 
     //Force close in wallet if game was created
     app.options.games.forEach(g => {
-      if (g.id === game_id) {
+      if (g.id === game_id && g.over !== 1) {
         console.log("Mark game closed in options");
         g.over = 1;
       }
@@ -1009,13 +1003,12 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
     let id = txmsg.sig || txmsg.game_id;
     this.removeGameFromOpenList(id);            //remove from arcade.games[]
-    this.checkCloseQueue(id);
 
     if (app.BROWSER) {return;}
     if (this.debug) { console.log("Close game " + id); }
-    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`;
+    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id AND status != 'over'`;
     let params = { $status: "close", $game_id: id };
-    console.log(sql, params);
+    //console.log(sql, params);
     await app.storage.executeDatabase(sql, params, "arcade");
   }
 
@@ -1023,30 +1016,15 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
     let id = txmsg.sig || txmsg.game_id;
     this.removeGameFromOpenList(id);            //remove from arcade.games[]
-    this.checkCloseQueue(id);
 
     if (app.BROWSER) {return;}
     if (this.debug) { console.log("Resign game " + JSON.stringify(id)); }
     let sql = `UPDATE games SET status = $status, winner = $winner WHERE game_id = $game_id`;
     let params = { $status: "over", $winner: txmsg.winner, $game_id: id };
-    console.log(sql, params);
+    //console.log(sql, params);
     await app.storage.executeDatabase(sql, params, "arcade");
   }
 
-  checkCloseQueue(game_id) {
-    if (this.game_close_interval_id) {
-      console.log("Are we waiting on " + game_id);
-      for (let i = this.game_close_interval_queue.length - 1; i >= 0; i--) {
-        if (this.game_close_interval_queue[i] == game_id) {
-          this.game_close_interval_queue.splice(i, 1);
-        }
-      }
-      if (this.game_close_interval_queue.length == 0) {
-        clearInterval(this.game_close_interval_id);
-        this.game_close_interval_id = null;
-      }
-    }
-  }
 
   async receiveChangeRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
