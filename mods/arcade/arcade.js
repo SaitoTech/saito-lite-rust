@@ -18,7 +18,7 @@ const GameInvite = require('./lib/invite/main');
 
 
 const GameWizard = require('./lib/overlay/game-wizard');
-const GameSelector = require('./lib/overlay/game-wizard');
+const GameSelector = require('./lib/overlay/game-selector');
 
 
 class Arcade extends ModTemplate {
@@ -152,7 +152,8 @@ class Arcade extends ModTemplate {
         callback: function (app, mod, publickey) {
 	  app.options.invite = {};
 	  app.options.invite.publickey = publickey;
-          GameCreateMenu.render(app, mod);
+          let g = new GameSelector(app, mod);
+	  g.render(app, mod);
         }
       }
     }
