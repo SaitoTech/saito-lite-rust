@@ -22,9 +22,8 @@ module.exports = GameCreateMenu = {
         let gameName = e.currentTarget.id;
 	let arcade_mod = app.modules.returnModule("Arcade");
         app.browser.logMatomoEvent("Arcade", "GameListOverlayClick", gameName);
-        let tx = new saito.default.transaction();
-        tx.msg.game = gameName;
-        arcade_mod.createGame(tx); 
+alert("GameName: " + gameName);
+        arcade_mod.createGameWizard(gameName);
         overlay.remove();
       });
     });

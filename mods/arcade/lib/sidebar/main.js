@@ -60,9 +60,7 @@ module.exports = ArcadeSidebar = {
         let gameName = e.currentTarget.id;
         app.browser.logMatomoEvent("Arcade", "GameListArcadeSidebarClick", gameName);
         let doGameDetails = () => {
-          let tx = new saito.default.transaction();
-          tx.msg.game = gameName;
-          mod.createGame(tx);
+          mod.createGameWizard(gameName);
         }
         /*
         // Skip registration prompt

@@ -21,9 +21,7 @@ module.exports = ArcadeGameSidebar = {
       newGameBtn.addEventListener('click', (e) => {
         //Should we create a new Event tag?
         app.browser.logMatomoEvent("Arcade", "GamePageClick", game_mod.name); 
-        let tx = new saito.default.transaction();
-        tx.msg.game = game_mod.name;
-        mod.createGame(tx);
+	mod.createGameWizard(game_mod.name);
       });
     });
     
