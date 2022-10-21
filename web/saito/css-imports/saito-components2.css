@@ -115,6 +115,7 @@ Saito Page Header
     font-size: 2.5rem;
     padding-top: 0rem;
     text-transform: uppercase;
+    display: inline-block;
 }
 
 i.saito-back-button {
@@ -147,7 +148,7 @@ i.saito-back-button {
     z-index: 9;
 }
 
-.saito-redsquare-actions-buttons:hover .saito-page-header-text {
+.saito-page-header-title:hover .saito-page-header-text {
     min-height: 3rem;
     height: auto;
     border: 1px solid var(--saito-border);

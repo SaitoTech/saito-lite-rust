@@ -1,21 +1,24 @@
-const GameCreateNewTemplate = require('./game-create-new.template.js');
-const GameCryptoTransferManager = require('./../../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
-const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
+const GameWizardTemplate = require('./game-wizard.template.js');
+const GameCryptoTransferManager = require('./../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
+const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
 /*
   Red Square re-do of "arcade-game-details", an interface to select game options and create a game invite
 */
 
-class GameCreateNew {
+class GameWizard {
 
-  constructor(app, mod, game_mod, invite) {
+  constructor(app, mod, game_mod, invite="") {
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app);
+    this.invite = invite;
   }
 
-  render(app, mod, invite) {
+  render(app, mod, invite="") {
+
+    if (this.invite != "" && invite == "") { invite = this.invite; }
 
     let slug = (this.game_mod.returnSlug())? this.game_mod.slug: this.game_mod.name.toLowerCase();
     let image = `/${slug}/img/arcade/arcade.jpg`;
@@ -265,7 +268,5 @@ class GameCreateNew {
   }
 }
 
+module.exports = GameWizard;
 
-
-
-module.exports = GameCreateNew;

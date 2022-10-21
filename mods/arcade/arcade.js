@@ -18,6 +18,10 @@ const fetch = require("node-fetch");
 const GameInvite = require('./lib/invite/main');
 
 
+const GameWizard = require('./lib/overlay/game-wizard');
+const GameSelector = require('./lib/overlay/game-wizard');
+
+
 class Arcade extends ModTemplate {
 
   constructor(app) {
@@ -53,6 +57,28 @@ class Arcade extends ModTemplate {
 
   }
 
+
+  //
+  // triggers display of appropriate Arcade overlay, 
+  //
+  createGameWizard(gamename = "") {
+
+    if (gamename === "") {
+      let x = new GameSelector(this.app, this);
+      x.render(this.app, this);
+    } else {
+
+      let game_mod = this.app.modules.returnModule(gamename);
+      let tx = new saito.default.transaction();
+      tx.msg.game = gamename;
+
+      if (game_mod) {
+        let x = new GameWizard(this.app, this, game_mod, tx);
+        x.render(this.app, this);
+      }
+    }
+
+  }
 
   renderArcadeMain() {
     if (this.browser_active == 1) {

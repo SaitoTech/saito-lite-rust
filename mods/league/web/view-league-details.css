@@ -192,6 +192,10 @@
   margin-top: 1rem;
 }
 
+#league-table-ranking {
+  height: 77rem;
+}
+
 #league-table-ranking::-webkit-scrollbar {
   background: transparent;
   width: 0px;
@@ -204,4 +208,10 @@
 
 .saito-module {
   padding: 0rem!important;
+}
+
+#recent-games-box {
+  overflow-y: scroll;
+  height: 47rem;
+  padding-right: 1rem; 
 }

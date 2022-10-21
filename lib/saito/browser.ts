@@ -233,18 +233,19 @@ class Browser {
     document.querySelector("body").addEventListener(
       "click",
       (e) => {
-        e.preventDefault();
         if (
-          (e.target.classList && e.target.classList.contains("saito-identicon")) ||
-          (e.target.classList && e.target.classList.contains("saito-address"))
+          e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
+
+          e.preventDefault();
           let public_key = e.target.getAttribute("data-id");
           if (!public_key || public_key.length < 44) {
             return;
           }
-
-          let userMenu = new UserMenu(app, public_key);
-          userMenu.render(app);
+          if (public_key !== app.wallet.returnPublicKey()){
+            let userMenu = new UserMenu(app, public_key);
+            userMenu.render(app);
+          }
         }
       },
       {
@@ -1299,32 +1300,27 @@ class Browser {
       });
 
       function recursive_search(app, node) {
-        if (node && node.classList && Array.from(node.classList).includes("saito-user")) {
-          if (node.classList && Array.from(node.classList).includes("saito-user")) {
-            if (node.children && node.children.length > 0) {
-              Array.from(node.children).forEach((child_node) => {
-                if (
-                  child_node.classList &&
-                  Array.from(child_node.classList).includes("saito-address")
-                ) {
-                  let address = child_node.getAttribute("data-id");
-                  let identifier = app.keys.returnIdentifierByPublicKey(address, true);
-                  if (!identifier) {
-                    return;
-                  }
+        if (node?.classList?.contains("saito-user")) {
+          if (node.children && node.children.length > 0) {
+            let address = node.getAttribute("data-id");
+
+            //Replace identifier from Registry -- there should just be one child
+            Array.from(node.children).forEach((child_node) => {
+              if (child_node?.classList?.contains("saito-address")) {
+                let identifier = app.keys.returnIdentifierByPublicKey(address, true);
+                if (identifier) {
                   try {
-                    if (document.querySelector(`.saito-address-${address}`)) {
                       document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
                         item.innerHTML = identifier;
                       });
-                    }
                   } catch (err) {
                     console.log("An error occurred with adding identifiers ", err);
                   }
                 }
-              });
-            }
+              }
+            });
           }
+          
         } else {
           if (node && node.children && Array.from(node.children).length > 0) {
             Array.from(node.children).forEach((child_node) => {

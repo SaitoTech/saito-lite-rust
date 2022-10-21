@@ -123,7 +123,7 @@ class Stunx extends ModTemplate {
             return {
                 text: "Video Call",
                 icon: "fas fa-video",
-                callback: function (app, mod, public_key) {
+                callback: function (app, public_key) {
                     app.connection.emit('game-start-video-call', public_key);
                 }
             }
