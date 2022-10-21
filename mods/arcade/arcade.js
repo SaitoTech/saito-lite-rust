@@ -54,7 +54,6 @@ class Arcade extends ModTemplate {
   }
 
 
- 
   renderArcadeMain() {
     if (this.browser_active == 1) {
       if (this.viewing_arcade_initialization_page == 0) {
