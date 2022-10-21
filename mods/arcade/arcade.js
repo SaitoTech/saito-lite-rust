@@ -5,7 +5,6 @@ const ArcadeMain = require("./lib/main/main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const ArcadeSidebar = require("./lib/sidebar/main");
 const GameCreateMenu = require("./lib/main/game-create-menu");
-const ArcadeGameDetails = require("./lib/game/main");
 const ChallengeTemplate = require("./lib/templates/arcade-challenge.template");
 const ArcadeGameSidebar = require("./lib/sidebar/arcade-game-sidebar");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
@@ -1808,12 +1807,6 @@ class Arcade extends ModTemplate {
 
     let invitationModal = new InvitationLink(this.app, this);
     invitationModal.render(this.app, this, data);
-  }
-
-
-  createGame(pseudoTX){
-    let ux = new ArcadeGameDetails(this.app);
-    ux.render(this.app, this, pseudoTX);
   }
 
 

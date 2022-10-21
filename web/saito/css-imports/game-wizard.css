@@ -1,5 +1,4 @@
 
-
 .tip .tiptext {
     visibility: hidden;
     color: #444 !important;
@@ -547,15 +546,6 @@ option {
 .observer-action a {
   color: var(--saito-primary);
 }
-
-
-/* League overlay */
-.league-details-overlay{
-  background: var(--saito-white);
-  border-color: var(--saito-border);
-}
-
-/*----*/
 
 .game-help-link {
   position: absolute;
