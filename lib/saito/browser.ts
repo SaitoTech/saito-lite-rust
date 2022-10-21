@@ -1115,24 +1115,6 @@ class Browser {
     return "#" + hashString.substr(1);
   }
 
-  // Make a new hash and mix in keys from another hash.
-  // usage: buildHashAndPreserve("#foo=1&bar=2","#foo=3&bar=4&baz=5","baz") --> "#foo=1&bar=2&baz=5"
-  buildHashAndPreserve(newHash, oldHash, ...preservedKeys) {
-    return this.buildHash(
-      Object.assign(this.getSubsetOfHash(oldHash, preservedKeys), this.parseHash(newHash))
-    );
-  }
-
-  // Get a subset of key-value pairs from a url-hash string as an object.
-  // usage: getSubsetOfHash("#foo=1&bar=2","bar") --> {bar: 2}
-  getSubsetOfHash(hash, ...keys) {
-    const hashObj = this.parseHash(hash);
-    return keys.reduce(function (o, k) {
-      o[k] = hashObj[k];
-      return o;
-    }, {});
-  }
-
   // Remove a subset of key-value pairs from a url-hash string.
   // usage: removeFromHash("#foo=1&bar=2","bar") --> "#foo=1"
   removeFromHash(hash, ...keys) {
@@ -1167,21 +1149,6 @@ class Browser {
     return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
   }
 
-  // TODO: implement htis function
-  getValueFromHashAsBoolean() {}
-
-  getValueFromHashAsNumber(hash, key) {
-    try {
-      const subsetHashObj = this.getSubsetOfHash(hash, key);
-      if (subsetHashObj[key]) {
-        return Number(subsetHashObj[key]);
-      } else {
-        throw "key not found in hash";
-      }
-    } catch (err) {
-      return Number(0);
-    }
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   /////////////////////// end url-hash helper functions ////////////////////////
