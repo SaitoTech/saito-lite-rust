@@ -1,4 +1,4 @@
-const SaitoUserWithAlert = require('./../../../../lib/saito/new-ui/templates/saito-user-with-alert.template');
+const SaitoUserWithTimeTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user-with-time.template');
 const SaitoUser = require('./../../../../lib/saito/new-ui/templates/saito-user.template');
 
 module.exports = (app, mod, invite) => {
@@ -7,7 +7,7 @@ module.exports = (app, mod, invite) => {
 
        <div class="redsquare-item">
 
-         ${SaitoUserWithAlert(app, mod, invite.creator, "received recently", new Date().getTime())}
+         ${SaitoUserWithTimeTemplate(app, invite.creator, "received recently", new Date().getTime())}
 
          <div class="redsquare-item-contents" id="redsquare-item-contents-${invite.invite_id}" data-id="${invite.invite_id}">
 	   <div></div>
@@ -32,11 +32,11 @@ module.exports = (app, mod, invite) => {
       if (invite.terms[i] === "on accept") {
         status = '<span class="saito-primary-color saito-primary">accepted</span>';
       }
-      html += `   ${ SaitoUser(app, mod, invite.adds[i], status) } `;
+      html += `   ${ SaitoUser(app, invite.adds[i], status) } `;
       added++;
     }
     while (added < invite.num) {
-      html += `   ${ SaitoUser(app, mod, "open slot", "anyone can join") } `;
+      html += `   ${ SaitoUser(app, "open slot", "anyone can join") } `;
       added++;
     }
 

@@ -14,8 +14,7 @@ module.exports = LeaderboardTemplate = (app, mod, league, players) => {
 	}
 
 
-
-        let myKey = app.wallet.returnPublicKey();
+    let myKey = app.wallet.returnPublicKey();
 
 	let html = "";
 

@@ -5,7 +5,7 @@ module.exports = (app, mod, publickey, parent_id = "", thread_id = "") => {
 
   return `
 
-    ${SaitoUserTemplate(app, mod, publickey, "create a text-tweet or drag-and-drop images...")}
+    ${SaitoUserTemplate(app, publickey, "create a text-tweet or drag-and-drop images...")}
 
     <textarea rows="7" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="What's happening" cols="60"></textarea>
 

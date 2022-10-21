@@ -25,7 +25,7 @@ module.exports = (app, mod, tx) => {
 
     return `
        <div class="redsquare-item">
-         ${SaitoUser(app, mod, tx.transaction.from[0].add, activity)}
+         ${SaitoUser(app, tx.transaction.from[0].add, activity)}
 	 ${embedded_html}
        </div>
     `;
