@@ -9,9 +9,7 @@ const ViewLeagueDetails = require("./lib/overlays/view-league-details");
 const InvitationLink = require("./../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const GameOptionsSelect = require("./../../lib/saito/new-ui/game-options-select/game-options-select");
-const ChallengeIssuedTemplate = require('./../../lib/saito/new-ui/templates/challenge-issued.template');
-const ChallengeAcceptedTemplate = require('./../../lib/saito/new-ui/templates/challenge-accepted.template');
-const ChallengeRejectedTemplate = require('./../../lib/saito/new-ui/templates/challenge-rejected.template');
+
 
 class League extends ModTemplate {
 
@@ -1101,6 +1099,7 @@ class League extends ModTemplate {
 
 
   async createLeagueChallenge(league, player_id){
+    /*
     let arcade_mod = this.app.modules.returnModule("Arcade");
     if (!arcade_mod) { return; }
     
@@ -1159,7 +1158,7 @@ class League extends ModTemplate {
       clearTimeout(timeout);
       challenge_overlay.show(this.app, this, ChallengeAcceptedTemplate());      
     });
-
+  */
   }
 
   /**
