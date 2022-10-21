@@ -107,16 +107,6 @@
   text-overflow: ellipsis;
 }
 
-.newfriend {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.newfriend.online{
-  cursor: crosshair;
-  color: green;
-}
 
 .league-overview-box .info-item {
   display: flex;
