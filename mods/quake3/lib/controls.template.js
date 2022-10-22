@@ -1,4 +1,3 @@
-
 module.exports = (app, mod, ui) => {
 
   let html = `
@@ -97,11 +96,12 @@ module.exports = (app, mod, ui) => {
             <td> </td>
         </tr>
     </table>
+    <button type="button" id="finish-controls-button">Finish</button>
     </div>
+
 
   `;
 
   return html;
 
 }
-
