@@ -1291,6 +1291,45 @@ class Browser {
     }
   }
 
+  async linkifyKeys(app, mod, html) {
+  let identifiers = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
+  let keys = html.match(/([a-zA-Z0-9._-]{44})/gi);
+  //remove duplcates
+
+  if (!identifiers) {identifiers = []};
+  if (!keys) {keys = []}
+
+  if (identifiers.length + keys.length == 0) { return html;}
+
+  keys = [...new Set(keys)];
+  identifiers = [...new Set(identifiers)];
+
+  let pairs = [];
+  
+  identifiers.forEach(id => {
+    let k = app.keys.returnPublicKeyByIdentifier(id);
+    pairs.push[{key: k, identifier: id}];
+  });
+
+  keys.forEach(k => {
+    let id = app.keys.returnIdentifierByPublicKey(k);
+    pairs.push[{key: k, identifier: id}];
+  });
+
+  //remove any dupes here too
+  pairs = [...new Set(pairs)];
+
+  if (pairs.length > 0) {
+    keys.forEach(p => {
+      html = html.replace(p.key, p.identifier);
+      html = html.replace(p.identifier, "<span class='saito-active-key' data-key='" + p.key + "'>" + p.identifier + "</span>");    
+    });
+  }
+
+    return html;
+  }
+
+
   activatePublicKeyObserver(app) {
     let mutaionObserver = new MutationObserver((entries) => {
       entries.forEach((entry) => {

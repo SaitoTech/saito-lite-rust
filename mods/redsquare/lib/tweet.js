@@ -587,6 +587,13 @@ class RedSquareTweet {
       });
     };
 
+    sel = "saito-active-key";
+    document.querySelectorAll(sel).forEach(el => {
+      e.addEventListener("click", (e) => {
+        app.connection.emit('redquare-show-user-feed', public_key);
+      });
+    });
+
 
 
   }
