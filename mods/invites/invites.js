@@ -28,12 +28,10 @@ class Invites extends InviteTemplate {
   }
 
   respondTo(type) {
-
     if (type == 'appspace') {
       super.render(this.app, this); // for scripts + styles
       return new InvitesAppspace(this.app, this);
     }
-
     return null;
   }
 

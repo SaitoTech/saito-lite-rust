@@ -8,28 +8,27 @@ const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito
 
 class GameWizard {
 
-  constructor(app, mod, game_mod, invite="") {
+  constructor(app, mod, game_mod, invite_obj = {}) {
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app);
-    this.invite = invite;
+    this.obj = invite_obj;
   }
 
-  render(app, mod, invite="") {
-
-    if (this.invite != "" && invite == "") { invite = this.invite; }
+  render(app, mod) {
 
     let slug = (this.game_mod.returnSlug())? this.game_mod.slug: this.game_mod.name.toLowerCase();
     let image = `/${slug}/img/arcade/arcade.jpg`;
 
-    this.overlay.show(app, mod, GameCreateNewTemplate(app, mod, this.game_mod, invite));
+    this.overlay.show(app, mod, GameWizardTemplate(app, mod, this.game_mod, this.obj));
     this.overlay.setBackground(image);
-
 
     let advancedOptions = this.game_mod.returnGameOptionsHTML();
     if (!advancedOptions) {
+
       document.querySelector(".arcade-advance-opt").style.display = "none";
+
     } else {
 
       //Create (hidden) the advanced options window
@@ -63,9 +62,6 @@ class GameWizard {
       e.currentTarget.classList.toggle("showAll");
       });  
     }
-
-
-    //Attach events to advance options button
 
     try {
       const identifiers = document.getElementsByClassName(`arcade-advance-opt`);
@@ -122,6 +118,12 @@ class GameWizard {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
           } else if (isPrivateGame == "single") {
             app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.game);
+          } else if (isPrivateGame == "direct") {
+alert("THIS IS A DIRECT P2P INVITE!");
+console.log(JSON.stringify(options));
+              app.browser.logMatomoEvent("Arcade", "ArcadeCreateDirectInvite", options.game);
+//              gamecreate_self.overlay.remove();
+return;
           } else {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }

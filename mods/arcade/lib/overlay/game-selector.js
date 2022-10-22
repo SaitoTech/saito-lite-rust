@@ -9,10 +9,12 @@ const GameWizard = require('./game-wizard');
 
 class GameSelector {
 
-  constructor(app, mod) {
+  constructor(app, mod, obj = {}) {
     this.app = app;
     this.name = "GameSelector";
     this.overlay = new SaitoOverlay(app);
+    this.obj = obj;
+alert("OBJ is: " + JSON.stringify(obj));
   }
 
   render(app, mod) {
@@ -20,25 +22,14 @@ class GameSelector {
     this.attachEvents(app, mod);
   }
 
-  
   attachEvents(app, mod) {
+    let thisobj = this.obj;
 
     Array.from(document.querySelectorAll('.redsquare-game-container')).forEach(game => {
-
       game.onclick = (e) => {
-
         let modname = e.currentTarget.getAttribute("data-id");
-
-        let tx = new saito.default.transaction();
-        tx.msg.game = modname;
-
+	mod.createGameWizard(modname, thisobj);
         this.overlay.remove();
-
-        let game_mod = app.modules.returnModule(modname);
-
-        let w = new GameWizard(app, mod, game_mod, tx);
-        w.render(app, mod, tx);
-
       };
     });
   }

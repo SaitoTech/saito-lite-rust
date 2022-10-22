@@ -1,10 +1,13 @@
 
-module.exports = GameCreateNewTemplate = (app, mod, game_mod, invite) => {
+module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
 
   let html = `<div class="game-create-new-overlay dark">`;
   let slug = (game_mod.returnSlug())? game_mod.slug: game_mod.name.toLowerCase();
   let image = `/${slug}/img/arcade/arcade.jpg`;
-
+  let invite = null;
+  let publickey = null;
+  if (invite_obj.invite) { invite = invite_obj.invite; }
+  if (invite_obj.publickey) { publickey = invite_obj.publickey; }
 
   html += `
     <form>
@@ -29,14 +32,15 @@ module.exports = GameCreateNewTemplate = (app, mod, game_mod, invite) => {
   html += `
       </div>
       <!- ***Game desc & title end*** -->
-
-      
         <input type="hidden" name="game" value="${game_mod.name}" />
-        ${(invite.msg.league)? `<input type="hidden" name="league" value="${invite.msg.league}" />` : ""}
-      
-
+  `;
+  if (invite) {
+    html += `
+      ${(invite.msg.league)? `<input type="hidden" name="league" value="${invite.msg.league}" />` : ""}
+    `;
+  }
+  html += `
     </div>
-
 
     <div class="game-wizard-controls">
   
@@ -54,10 +58,21 @@ module.exports = GameCreateNewTemplate = (app, mod, game_mod, invite) => {
       html += `
           <div class="saito-multi-select_btn saito-select dark">
            <div class="saito-multi-select_btn_options dark saito-slct">
+      `;
+      if (publickey) {
+        html += `
+              <button type="button" class="saito-multi-btn game-invite-btn" data-type="direct">Next Step...</button>
+       `;
+      } else {
+        html += `
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="open">Create Open Game</button>
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private Game</button>
+       `;
+     }
+	html += `
            </div>
-          </div>`;
+          </div>
+	`;
     }
 
 

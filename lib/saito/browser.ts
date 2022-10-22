@@ -236,13 +236,13 @@ class Browser {
         if (
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
-
           e.preventDefault();
           let public_key = e.target.getAttribute("data-id");
-          if (!public_key || public_key.length < 44) {
+          if (!public_key || !app.crypto.isPublicKey(public_key)) {
             return;
           }
           if (public_key !== app.wallet.returnPublicKey()){
+alert("publickey is: " + public_key);
             let userMenu = new UserMenu(app, public_key);
             userMenu.render(app);
           }

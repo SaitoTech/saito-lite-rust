@@ -43,7 +43,7 @@ class Encrypt extends ModTemplate {
   respondTo(type){
     let encrypt_self = this;
 
-    if (type == "user_menu") {
+    if (type == "user-menu") {
       return {
         text: "Add Contact",
         icon: "far fa-id-card",

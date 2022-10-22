@@ -57,26 +57,19 @@ class Arcade extends ModTemplate {
   }
 
 
-  //
-  // triggers display of appropriate Arcade overlay, 
-  //
-  createGameWizard(gamename = "") {
-
-    if (gamename === "") {
-      let x = new GameSelector(this.app, this);
+  createGameSelector(obj = {}) {
+console.log("OBH JERE IS: " +JSON.stringify(obj));
+    let x = new GameSelector(this.app, this, obj);
+    x.render(this.app, this);
+  }
+  createGameWizard(gamename = "" , obj = {}) {
+    let game_mod = this.app.modules.returnModule(gamename);
+    let tx = new saito.default.transaction();
+    tx.msg.game = gamename;
+    if (game_mod) {
+      let x = new GameWizard(this.app, this, game_mod, obj);
       x.render(this.app, this);
-    } else {
-
-      let game_mod = this.app.modules.returnModule(gamename);
-      let tx = new saito.default.transaction();
-      tx.msg.game = gamename;
-
-      if (game_mod) {
-        let x = new GameWizard(this.app, this, game_mod, tx);
-        x.render(this.app, this);
-      }
     }
-
   }
 
   renderArcadeMain() {
@@ -149,11 +142,12 @@ class Arcade extends ModTemplate {
       return {
         text: "Challenge to Arcade Game",
         icon: "fas fa-gamepad",
-        callback: function (app, mod, publickey) {
-	  app.options.invite = {};
-	  app.options.invite.publickey = publickey;
-          let g = new GameSelector(app, mod);
-	  g.render(app, mod);
+        callback: function (app, publickey) {
+console.log("publickey is: " + publickey);
+	  let obj = { publickey : publickey };
+	  let arcade_mod = app.modules.returnModule("Arcade");
+console.log("OBJ IS: " + JSON.stringify(obj));
+	  arcade_mod.createGameSelector(obj);
         }
       }
     }
