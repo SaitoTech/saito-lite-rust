@@ -1,4 +1,4 @@
-const saito = require('./../../../../../lib/saito/saito');
+const saito = require('./../../../../lib/saito/saito');
 const GameSchedulerTemplate = require('./game-scheduler.template');
 
 class GameScheduler {

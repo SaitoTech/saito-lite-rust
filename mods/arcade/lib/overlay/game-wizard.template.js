@@ -21,7 +21,6 @@ module.exports = GameCreateNewTemplate = (app, mod, game_mod, invite) => {
       <div class="saito-module-intro-details rs-create-game-desc-wrapper">
         <div>
           <span><b>${game_mod.name}</b></span>
-          <div id="game-rules-btn" class="game-help-link arcade-game-help info-item-wrapper">how to play?</div>
         </div>
         <div class="rs-create-game-desc">${game_mod.description}</div>
         

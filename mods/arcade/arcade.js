@@ -1,21 +1,24 @@
 const saito = require("./../../lib/saito/saito");
 const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const ArcadeMain = require("./lib/arcade-main/arcade-main");
+const ArcadeMain = require("./lib/main/main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
-const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
-const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
-const ArcadeGameDetails = require("./lib/arcade-game/arcade-game-details");
-const ChallengeTemplate = require("./lib/arcade-main/templates/arcade-challenge.template");
-const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
+const ArcadeSidebar = require("./lib/sidebar/main");
+const GameCreateMenu = require("./lib/main/game-create-menu");
+const ChallengeTemplate = require("./lib/templates/arcade-challenge.template");
+const ArcadeGameSidebar = require("./lib/sidebar/arcade-game-sidebar");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
+const ArcadeContainerTemplate = require("./lib/templates/arcade-container.template");
 const InvitationLink = require("../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
 const GameInvite = require('./lib/invite/main');
+
+
+const GameWizard = require('./lib/overlay/game-wizard');
+const GameSelector = require('./lib/overlay/game-selector');
 
 
 class Arcade extends ModTemplate {
@@ -53,6 +56,28 @@ class Arcade extends ModTemplate {
 
   }
 
+
+  //
+  // triggers display of appropriate Arcade overlay, 
+  //
+  createGameWizard(gamename = "") {
+
+    if (gamename === "") {
+      let x = new GameSelector(this.app, this);
+      x.render(this.app, this);
+    } else {
+
+      let game_mod = this.app.modules.returnModule(gamename);
+      let tx = new saito.default.transaction();
+      tx.msg.game = gamename;
+
+      if (game_mod) {
+        let x = new GameWizard(this.app, this, game_mod, tx);
+        x.render(this.app, this);
+      }
+    }
+
+  }
 
   renderArcadeMain() {
     if (this.browser_active == 1) {
@@ -120,6 +145,19 @@ class Arcade extends ModTemplate {
         slug: this.returnSlug(),
       };
     }
+    if (type === 'user-menu') {
+      return {
+        text: "Challenge to Arcade Game",
+        icon: "fas fa-gamepad",
+        callback: function (app, mod, publickey) {
+	  app.options.invite = {};
+	  app.options.invite.publickey = publickey;
+          let g = new GameSelector(app, mod);
+	  g.render(app, mod);
+        }
+      }
+    }
+
 
     //    if (type == "appspace") {
     //      this.scripts['/arcade/new-style.css'];
@@ -1770,12 +1808,6 @@ class Arcade extends ModTemplate {
 
     let invitationModal = new InvitationLink(this.app, this);
     invitationModal.render(this.app, this, data);
-  }
-
-
-  createGame(pseudoTX){
-    let ux = new ArcadeGameDetails(this.app);
-    ux.render(this.app, this, pseudoTX);
   }
 
 

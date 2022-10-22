@@ -1,5 +1,5 @@
 const GameInviteDetailsTemplate = require('./game-invite-details.template');
-const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
+const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
 /*
   To show details of an open game invite, so users may click to join

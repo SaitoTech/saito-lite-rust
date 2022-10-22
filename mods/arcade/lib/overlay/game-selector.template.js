@@ -1,4 +1,4 @@
-module.exports = GameCreatorTemplate = (app, mod, element_title = "") => {
+module.exports = GameSelectorTemplate = (app, mod, element_title = "") => {
 
   let games_menu = '';
   if (element_title === "") { element_title = "Select Game"; }

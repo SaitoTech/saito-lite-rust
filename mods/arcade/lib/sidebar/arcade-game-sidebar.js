@@ -1,6 +1,6 @@
 const saito = require('./../../../../lib/saito/saito');
 const ArcadeGameSidebarTemplate = require('./arcade-game-sidebar.template');
-const ArcadeContainerTemplate = require('../arcade-main/templates/arcade-container.template');
+const ArcadeContainerTemplate = require('./../templates/arcade-container.template');
 
 module.exports = ArcadeGameSidebar = {
 
@@ -21,9 +21,7 @@ module.exports = ArcadeGameSidebar = {
       newGameBtn.addEventListener('click', (e) => {
         //Should we create a new Event tag?
         app.browser.logMatomoEvent("Arcade", "GamePageClick", game_mod.name); 
-        let tx = new saito.default.transaction();
-        tx.msg.game = game_mod.name;
-        mod.createGame(tx);
+	mod.createGameWizard(game_mod.name);
       });
     });
     

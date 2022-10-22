@@ -1,22 +1,22 @@
-const saito = require('./../../../../../lib/saito/saito');
-const GameCreatorTemplate = require('./game-creator.template');
-const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
-const GameCreateNew = require('./game-create-new');
+const saito = require('./../../../../lib/saito/saito');
+const GameSelectorTemplate = require('./game-selector.template');
+const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
+const GameWizard = require('./game-wizard');
 
 /*
   Creates an overlay of the list of available games, users can click to launch the game creation interface for that game
 */
 
-class GameCreator {
+class GameSelector {
 
   constructor(app, mod) {
     this.app = app;
-    this.name = "GameCreator";
+    this.name = "GameSelector";
     this.overlay = new SaitoOverlay(app);
   }
 
   render(app, mod) {
-    this.overlay.show(app, mod, GameCreatorTemplate(app, mod, "Select Game to Play"));
+    this.overlay.show(app, mod, GameSelectorTemplate(app, mod, "Select Game to Play"));
     this.attachEvents(app, mod);
   }
 
@@ -36,13 +36,13 @@ class GameCreator {
 
         let game_mod = app.modules.returnModule(modname);
 
-        let GameCreate = new GameCreateNew(app, mod, game_mod, tx);
-        GameCreate.render(app, mod, tx);
+        let w = new GameWizard(app, mod, game_mod, tx);
+        w.render(app, mod, tx);
 
       };
     });
   }
 }
 
-module.exports = GameCreator;
+module.exports = GameSelector;
 

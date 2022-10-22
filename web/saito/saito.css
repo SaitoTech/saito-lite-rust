@@ -14,6 +14,11 @@ global saito colors
 @import url("./css-imports/saito-colors.css");
 
 /* ----------------------------------------------------------------
+global saito game wizard stuff
+-----------------------------------------------------------------*/
+@import url("./css-imports/game-wizard.css");
+
+/* ----------------------------------------------------------------
 global saito module components
 -----------------------------------------------------------------*/
 @import url("./css-imports/saito-modules.css");
