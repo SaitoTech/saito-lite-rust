@@ -143,10 +143,8 @@ console.log("OBH JERE IS: " +JSON.stringify(obj));
         text: "Challenge to Arcade Game",
         icon: "fas fa-gamepad",
         callback: function (app, publickey) {
-console.log("publickey is: " + publickey);
 	  let obj = { publickey : publickey };
 	  let arcade_mod = app.modules.returnModule("Arcade");
-console.log("OBJ IS: " + JSON.stringify(obj));
 	  arcade_mod.createGameSelector(obj);
         }
       }

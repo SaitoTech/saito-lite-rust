@@ -112,12 +112,12 @@ class RedSquare extends ModTemplate {
         slug: this.returnSlug()
       };
     }
-    if (type === 'user_menu') {
+    if (type === 'user-menu') {
       return {
           text: "View Profile",
           icon: "fa-regular fa-user",
-          callback: function (app, public_key) {
-              app.connection.emit('redquare-show-user-feed', public_key);
+          callback: function (app, publickey) {
+              app.connection.emit('redquare-show-user-feed', publickey);
           }
       }
   }

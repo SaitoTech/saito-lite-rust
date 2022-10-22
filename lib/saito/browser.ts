@@ -242,7 +242,6 @@ class Browser {
             return;
           }
           if (public_key !== app.wallet.returnPublicKey()){
-alert("publickey is: " + public_key);
             let userMenu = new UserMenu(app, public_key);
             userMenu.render(app);
           }
