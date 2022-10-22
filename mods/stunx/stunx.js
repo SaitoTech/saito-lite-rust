@@ -119,7 +119,7 @@ class Stunx extends ModTemplate {
             }
         }
 
-        if (type === 'user_menu') {
+        if (type === 'user-menu') {
             return {
                 text: "Video Call",
                 icon: "fas fa-video",

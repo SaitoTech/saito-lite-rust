@@ -19,26 +19,12 @@ class GameCreator {
   attachEvents(app, mod) {
 
     Array.from(document.querySelectorAll('.redsquare-game-container')).forEach(game => {
-
       game.onclick = (e) => {
-
         let modname = e.currentTarget.getAttribute("data-id");
-
-        let tx = new saito.default.transaction();
-        tx.msg.game = modname;
-
-	//
-	// DEPRECATED -- 
-	//
         let arcade_mod = app.modules.returnModule("Arcade");
-	// invite info will be here
-	arcade_mod.invite = mod.invite;
-        arcade_mod.createGame(tx);
-
+	arcade_mod.createGameWizard(modname);        
 	this.overlay.hide();
-
       };
-
     });
 
   }

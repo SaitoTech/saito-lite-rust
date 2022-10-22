@@ -9,7 +9,6 @@ const JSON = require("json-bigint");
 const fetch = require('node-fetch');
 const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
-const GameCreator = require("./lib/appspace/arcade/game-creator");
 const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
 const PostTweet = require("./lib/post");
 const { convertCompilerOptionsFromJson } = require("typescript");
@@ -48,7 +47,6 @@ class RedSquare extends ModTemplate {
     this.styles = [
       '/saito/saito.css',
       '/redsquare/css/redsquare-main.css',
-      '/redsquare/css/arcade.css',		      // game creation overlays
     ];
     this.ui_initialized = false;
 
@@ -114,6 +112,15 @@ class RedSquare extends ModTemplate {
         slug: this.returnSlug()
       };
     }
+    if (type === 'user_menu') {
+      return {
+          text: "View Profile",
+          icon: "fa-regular fa-user",
+          callback: function (app, public_key) {
+              app.connection.emit('redquare-show-user-feed', public_key);
+          }
+      }
+  }
 
     return super.respondTo(type);
   }
