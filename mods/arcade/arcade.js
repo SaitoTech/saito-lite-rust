@@ -1191,15 +1191,18 @@ console.log("OBH JERE IS: " +JSON.stringify(obj));
 
 
   createOpenTransaction(gamedata, recipient = "") {
+
     let sendto = this.app.wallet.returnPublicKey();
     let moduletype = "Arcade";
 
-    /* Current deprecated, save for possible future resurrection
+    //
+    // currently used actively in game invite process
+    //
     if (recipient != "") {
       sendto = recipient;
       moduletype = "ArcadeInvite";
     }
-    */
+
     let { ts, name, options, players_needed, invitation_type } = gamedata;
 
     let requestMsg = invitation_type == "private" ? "private" : "open";
@@ -1210,7 +1213,8 @@ console.log("OBH JERE IS: " +JSON.stringify(obj));
     );
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    tx.transaction.to.push(new saito.default.slip(sendto, 0.0));
+    if (recipient != "") { tx.transaction.to.push(new saito.default.slip(sendto, 0.0)); }
+
     tx.msg = {
       ts: ts,
       module: moduletype,

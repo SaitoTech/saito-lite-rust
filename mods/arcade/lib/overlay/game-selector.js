@@ -14,7 +14,6 @@ class GameSelector {
     this.name = "GameSelector";
     this.overlay = new SaitoOverlay(app);
     this.obj = obj;
-alert("OBJ is: " + JSON.stringify(obj));
   }
 
   render(app, mod) {

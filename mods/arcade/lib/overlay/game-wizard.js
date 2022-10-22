@@ -1,6 +1,7 @@
 const GameWizardTemplate = require('./game-wizard.template.js');
 const GameCryptoTransferManager = require('./../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
 const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
+const ScheduleInvite = require('./../modals/schedule-invite/schedule-invite');
 
 /*
   Red Square re-do of "arcade-game-details", an interface to select game options and create a game invite
@@ -119,11 +120,9 @@ class GameWizard {
           } else if (isPrivateGame == "single") {
             app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.game);
           } else if (isPrivateGame == "direct") {
-alert("THIS IS A DIRECT P2P INVITE!");
 console.log(JSON.stringify(options));
+console.log(JSON.stringify(gamecreate_self.obj)); 
               app.browser.logMatomoEvent("Arcade", "ArcadeCreateDirectInvite", options.game);
-//              gamecreate_self.overlay.remove();
-return;
           } else {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
@@ -164,7 +163,9 @@ return;
             return;
           }
 
+	  //
           //Check League Membership
+	  //
           if (options.league){
             let leag = app.modules.returnModule("League");
             if (!leag.isLeagueMember(options.league)){
@@ -206,15 +207,24 @@ return;
           }
           
           if (players_needed == 1) {
-
             mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
             return;
           } else {
             
             //console.log("PRE CREATING OPEN TX");
-            if (isPrivateGame == "private") {
+            if (isPrivateGame == "private" || isPrivateGame == "direct") {
               gamedata.invitation_type = "private";
             }
+
+
+	    if (isPrivateGame == "direct") {
+              gamecreate_self.overlay.remove();
+              let newtx = mod.createOpenTransaction(gamedata, gamecreate_self.obj.publickey);
+	      let w = new ScheduleInvite(app, mod, newtx);
+	      w.render(app, mod);
+	      return;
+	    }
+
 
             let newtx = mod.createOpenTransaction(gamedata);
             app.network.propagateTransaction(newtx);
