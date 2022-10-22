@@ -558,7 +558,7 @@ class RedSquare extends ModTemplate {
     let tweetUrl = window.location.origin + window.location.pathname + `?${this.mode}_id=` + key;
     window.history.pushState({}, document.title, tweetUrl);
 
-    app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> ${key}</div>`, "saito-page-header-title");
+    app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> ${app.keys.returnUsername(key)}</div>`, "saito-page-header-title");
     document.querySelector(".saito-back-button").onclick = (e) => {
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
       let redsquareUrl = window.location.origin + window.location.pathname;

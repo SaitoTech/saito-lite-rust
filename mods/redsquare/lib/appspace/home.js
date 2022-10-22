@@ -95,6 +95,9 @@ class RedSquareAppspaceHome {
       ptweet.render(app, mod);
       // app.browser.addIdentifiersToDom();
     }
+    document.getElementById("redsquare-my-profile").onclick = (e) => {
+      app.connection.emit('redquare-show-user-feed', app.wallet.returnPublicKey());
+    }
     /*
     document.getElementById("redsquare-fetch-new").onclick = (e) => {
       mod.fetchNewTweets(app, mod);
