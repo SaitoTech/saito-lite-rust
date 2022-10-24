@@ -7,6 +7,7 @@ Saito Identicon
     height: 3.5rem;
 }
 
+
 /* ----------------------------------------------------------------
 Saito Username
 -----------------------------------------------------------------*/
@@ -24,6 +25,90 @@ Saito Username
 .saito-address>*:first-child , .saito-username>*:first-child {
     margin-right: .5rem;
 }
+
+
+/* ----------------------------------------------------------------
+Saito User
+-----------------------------------------------------------------*/
+
+.saito-userline {
+    color: #888;
+}
+
+
+.saito-user {
+    display: grid;
+    cursor: pointer;
+    grid-template-columns: min-content 1fr min-content;
+    grid-template-rows: min-content 1fr;
+    justify-items: start;
+    margin-bottom: 1px;
+    width: 100%;
+    position: relative;
+}
+
+
+.saito-user.small {
+    grid-template-columns: min-content 1fr;
+    grid-template-rows: 1fr;
+    align-items: center;
+}
+
+/*  saito-identicon-box  */
+.saito-user>div:nth-child(1) {
+    margin-right: 1rem;
+    grid-column-start: 1;
+    grid-column-end: span 1;
+    grid-row: span 2;
+}
+
+/* this hack is required in chrome to force */
+/* the name to steal the upper row from the */
+/* timebox, so the name does not cut off    */
+.saito-user>.saito-address-long:nth-child(2) {
+    grid-column-end: 4;
+}
+
+.saito-user>div:nth-child(2) {
+    grid-column-start: 2;
+    grid-column-end: span 1;
+    grid-row-start: 1;
+    grid-row-end: span 1;
+}
+
+.saito-user>div:nth-child(3) {
+    grid-column-start: 2;
+    grid-column-end: span 1;
+    grid-row-start: 2;
+    grid-row-end: span 1;
+    font-size: 1.4rem;
+}
+
+.saito-user.small>div:nth-child(3) {
+    line-height: 1.8rem;
+    padding-top: 0.5rem;
+}
+
+.saito-user>div:nth-child(4).saito-user-alert,
+.saito-user-alert {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    font-size: 3rem;
+    background-color: var(--saito-primary);
+    color: white;
+    padding: 1rem;
+    white-space: nowrap;
+}
+
+.saito-user>div:nth-child(4) {
+    cursor: pointer;
+    grid-column-start: 3;
+    grid-column-end: span 1;
+    grid-row: span 2;
+    font-size: 1.4rem;
+    align-items: top;
+}
+
 
 
 /* ----------------------------------------------------------------
@@ -51,154 +136,6 @@ Saito List,Saito User List and Saito User
     margin-bottom: 0;
 }
 
-.saito-userbox,
-.saito-list-user,
-.saito-list-chatbox,
-.saito-list-game {
-    display: flex;
-    position: relative;
-    justify-items: start;
-    margin-bottom: 1px;
-    width: 100%;
-}
-
-
-
-.saito-userbox>div:nth-child(1),
-.saito-list-user>div:nth-child(1),
-.saito-list-chatbox>div:nth-child(1),
-.saito-list-game>div:nth-child(1) {
-    margin-right: 1rem;
-}
-
-.saito-userbox>div:nth-child(1)>img,
-.saito-list-user>div:nth-child(1)>img,
-.saito-list-chatbox>div:nth-child(1)>img {
-    width: 4.5rem;
-    height: 4.5rem;
-    border-radius: .5rem;
-
-    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
-}
-
-.saito-list-game>div:nth-child(1)>img {
-    width: 7rem;
-    height: 5rem;
-    border-radius: .5rem;
-    margin-right: 1rem;
-    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
-}
-
-.saito-userbox>div:nth-child(2),
-.saito-list-user>div:nth-child(2),
-.saito-list-chatbox>div:nth-child(2),
-.saito-list-game>div:nth-child(2) {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    /* justify-content: center; */
-    width: 75%;
-}
-
-
-
-
-.saito-userbox>div:nth-child(2)>div,
-.saito-list-user>div:nth-child(2)>div,
-.saito-list-chatbox>div:nth-child(2)>div,
-.saito-list-game>div:nth-child(2)>div {
-    max-width: 90%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 1.6rem;
-    margin-bottom: .5rem;
-}
-
-.saito-userbox>div:nth-child(2)>p,
-.saito-list-user>div:nth-child(2)>p,
-.saito-list-chatbox>div:nth-child(2)>p,
-.saito-list-game>div:nth-child(2)>p {
-    font-size: 1.3rem;
-}
-
-.saito-userbox>div:nth-child(3),
-.saito-list-user>div:nth-child(3),
-.saito-list-chatbox>div:nth-child(3),
-.saito-list-game>div:nth-child(3) {
-    top: 0;
-    cursor: pointer;
-    font-size: 1.4rem;
-    top: 0;
-    position: absolute;
-    right: 0rem;
-    display: flex;
-    align-items: center;
-}
-
-/*  Small Size */
-
-.saito-userbox.small>div:nth-child(1)>img,
-.saito-list-user.small>div:nth-child(1)>img,
-.saito-list-chatbox.small>div:nth-child(1)>img {
-    width: 3rem;
-    height: 3rem;
-    border-radius: .5rem;
-    margin-right: 1rem;
-    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
-}
-
-.saito-list-game.small>div:nth-child(1)>img {
-    width: 5rem;
-    height: 3rem;
-    margin-right: .8rem;
-}
-
-.saito-userbox.small>div:nth-child(2)>div,
-.saito-list-user.small>div:nth-child(2)>div,
-.saito-list-chatbox.small>div:nth-child(2)>div,
-.saito-list-game.small>div:nth-child(2)>div {
-    font-size: 1.4rem;
-}
-
-.saito-userbox.small>div:nth-child(2)>p,
-.saito-list-user.small>div:nth-child(2)>p,
-.saito-list-chatbox.small>div:nth-child(2)>p,
-.saito-list-game.small>div:nth-child(2)>p {
-    font-size: 1.1rem;
-}
-
-/*  Large Size */
-
-.saito-userbox.large>div:nth-child(1)>img,
-.saito-list-user.large>div:nth-child(1)>img,
-.saito-list-chatbox.large>div:nth-child(1)>img {
-    width: 6.5rem;
-    height: 6.5rem;
-    border-radius: .5rem;
-    margin-right: 1.2rem;
-    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
-}
-
-.saito-list-game.large>div:nth-child(1)>img {
-    width: 8.5rem;
-    height: 6.5rem;
-    margin-right: .8rem;
-}
-
-.saito-userbox.large>div:nth-child(2)>div,
-.saito-list-user.large>div:nth-child(2)>div,
-.saito-list-chatbox.large>div:nth-child(2)>div,
-.saito-list-game.large>div:nth-child(2)>div {
-    font-size: 1.8rem;
-}
-
-.saito-userbox.large>div:nth-child(2)>p,
-.saito-list-user.large>div:nth-child(2)>p,
-.saito-list-chatbox.large>div:nth-child(2)>p,
-.saito-list-game.large>div:nth-child(2)>p {
-    font-size: 1.5rem;
-}
 
 .saito-user-dropdown {
     position: absolute;
@@ -244,7 +181,6 @@ Saito List,Saito User List and Saito User
 .saito-module-identicon-box img {
     margin-right: 0.7rem;
     border: 0px;
-    border-radius: 0.33rem;
     width: 2rem;
     min-width: 2.5rem;
     height: 2.5rem;

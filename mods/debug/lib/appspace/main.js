@@ -9,15 +9,21 @@ class DebugAppspaceMain {
 
   render(app, mod) {
 
-console.log("test ing A");
-      document.querySelector(".appspace").innerHTML = sanitize(DebugAppspaceMainTemplate());
-try {  var tree = jsonTree.create(app.options, document.getElementById("appspace-debug")); } catch (err) {
-  console.log("error creating jsonTree: " + jsonTree);
-}
+    console.log("testing A");
+
+    document.querySelector(".appspace").innerHTML = DebugAppspaceMainTemplate();
+
+    let el = document.getElementById("appspace-debug");
+
+    try { 
+      var tree = jsonTree.create(JSON.parse(JSON.stringify(app.options)), el); 
+    } catch (err) {
+      console.log("error creating jsonTree: " + err);
+    }
   }
 
 
-  attachEvents(app, mod) {}
+  attachEvents(app, mod) { }
 
 }
 

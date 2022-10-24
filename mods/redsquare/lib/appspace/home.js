@@ -37,6 +37,12 @@ class RedSquareAppspaceHome {
     app.connection.on("tweet-render-feed-request", () => {
       mod.renderMainPage(app, mod, false);
     });
+    app.connection.on("redquare-show-user-feed", (key) => {
+      mod.mode = "user";
+      mod.viewing = key;
+      mod.loadTweets(app, mod);
+    });
+
 
 
     let options = {
@@ -87,7 +93,10 @@ class RedSquareAppspaceHome {
     document.getElementById("redsquare-new-tweet").onclick = (e) => {
       let ptweet = new PostTweet(app, mod);
       ptweet.render(app, mod);
-      app.browser.addIdentifiersToDom();
+      // app.browser.addIdentifiersToDom();
+    }
+    document.getElementById("redsquare-my-profile").onclick = (e) => {
+      app.connection.emit('redquare-show-user-feed', app.wallet.returnPublicKey());
     }
     /*
     document.getElementById("redsquare-fetch-new").onclick = (e) => {

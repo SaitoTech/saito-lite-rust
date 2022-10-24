@@ -1,5 +1,4 @@
 const RedSquareGamesTemplate = require("./games.template");
-const GameCreator = require("./../../appspace/arcade/game-creator");
 const SaitoModuleOverlay = require("../../../../../lib/saito/new-ui/saito-module-overlay/saito-module-overlay");
 const SaitoScheduler = require("./../../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler");
 const GameLoader = require("../../../../../lib/saito/new-ui/game-loader/game-loader");
@@ -10,7 +9,6 @@ class RedSquareGames {
     this.app = app;
     this.mod = mod;
     this.selector = selector;
-    this.blockRender = false;
 
     app.connection.on("game-invite-list-update", () => {
         //console.log("Arcade update received");
@@ -20,8 +18,6 @@ class RedSquareGames {
   }
 
   render(app, mod, selector="") {
-    if (this.blockRender) { return; }
-
     if (selector != "") {
       this.selector = selector;
     }
@@ -47,43 +43,26 @@ class RedSquareGames {
 
     Array.from(document.querySelectorAll('.saito-module-action.join, .saito-module-action.details')).forEach(game => {
       game.onclick = (e) => {
-        e.preventDefault();
+
+        //Prevent double rendering from overlapping selectors
         e.stopImmediatePropagation();
+
         let game_id = e.currentTarget.getAttribute("data-id");
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
 
-        //if (game_cmd == "join") {
-          let arcade_mod = app.modules.returnModule("Arcade");
-          if (arcade_mod) {
-            for (let i = 0; i < arcade_mod.games.length; i++) {
-              if (arcade_mod.games[i].transaction.sig == game_id){
+        let saito_mod_detials_overlay = new SaitoModuleOverlay(app, mod);
 
-                let saito_mod_detials_overlay = new SaitoModuleOverlay(this.app, this.mod);
-                saito_mod_detials_overlay.action = game_cmd;
-                saito_mod_detials_overlay.render(this.app, this.mod, arcade_mod.games[i]);
+        saito_mod_detials_overlay.render(app, app.modules.returnModule("Arcade"), game_id, game_cmd);
               
-              }
-            }    
-          }
       }
     }); 
   
-    //Copied from lib/appspace/games.js
-    if (document.getElementById("redsquare-schedule-game")){
-      document.getElementById("redsquare-schedule-game").onclick = (e) => {
-        let sc = new SaitoScheduler(app, mod);
-        // callback is on submit
-        sc.render(app, mod, function(options) {
-          let gc = new GameCreator(app, mod);
-          gc.render(app, mod);
-        });
-      }
-
-    }
     if (document.getElementById("redsquare-create-game")){
       document.getElementById("redsquare-create-game").onclick = (e) => {
-        let gc = new GameCreator(app, mod);
-        gc.render(app, mod);
+	let arcade_mod = app.modules.returnModule("Arcade");
+	if (arcade_mod) {
+	  arcade_mod.createGameWizard();
+        }
       }
     }
 

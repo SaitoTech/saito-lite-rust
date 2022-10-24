@@ -7,22 +7,27 @@ class ViewLeagueDetails {
   constructor(app){
     this.app = app;
 
-    var s = document.createElement("link");
-    s.rel = "stylesheet";
-    s.type = "text/css";
-    s.href = "/league/view-league-details.css";
-    document.querySelector('head link').after(s);
+    if (!document.getElementById("view-league-details-css-link")){
+      var s = document.createElement("link");
+      s.id = "view-league-details-css-link";
+      s.rel = "stylesheet";
+      s.type = "text/css";
+      s.href = "/league/view-league-details.css";
+      document.querySelector('head link').after(s);
+    }
 
     app.connection.on("relay-is-online", (pkey)=>{
-      let playerRow = document.querySelector(`.newfriend[data-id="${pkey}"]`);
+      //Selectors deprecated
+      /*let playerRow = document.querySelector(`.newfriend[data-id="${pkey}"]`);
       if (playerRow){
         playerRow.classList.add("online");
       }
       let playerChallenge = document.querySelector(`.challenge-btn[data-id="${pkey}"]`);
       if (playerChallenge){
         playerChallenge.style.display = "block";
-      }
+      }*/
     });
+
   }
 
   render(app, mod, league) {
@@ -34,7 +39,7 @@ class ViewLeagueDetails {
     }
     this.overlay.show(app, mod, LeagueDetailsTemplate(app, mod, league));
     this.loadLeaderboard(app, mod, league);
-    
+    this.loadRecentGames(this.app, this.mod, this.league);
   }
 
   /**
@@ -67,9 +72,11 @@ class ViewLeagueDetails {
           }
           al.overlay.show(app, mod, LeagueDetailsTemplate(app, mod, league));
 
-          let target = document.getElementById("league-leaderboard");
+          let target = document.getElementById("league-table-ranking-body");
           if (target){
-            target.innerHTML = (leaderboard.length > 0) ? LeaderboardTemplate(app, mod, league, leaderboard) : `<div class="league-error">No Stats for the league</div>`;
+            console.log('leaderboard');
+            console.log(leaderboard);
+            target.innerHTML = (leaderboard.length > 0) ? LeaderboardTemplate(app, mod, league, leaderboard) : `<div class="league-error">No ranking stats for this league</div>`;
           }
           al.attachEvents(app, mod);    
 
@@ -94,7 +101,7 @@ class ViewLeagueDetails {
             games.push(g);
           }
 
-          let target = document.getElementById("league-leaderboard");
+          let target = document.getElementById("recent-games-box");
           if (target){
             target.innerHTML = (games.length > 0) ? RecentGameTemplate(app, mod, league, games) : `<div class="league-error">No Recent Games for the league</div>`;
           }
@@ -175,24 +182,6 @@ class ViewLeagueDetails {
       };
     });
 
-   //Need to attach events for clicking on players on the leaderboard
-    const startKeyExchange = async (publickey) => {
-      console.log("pkey1: " + publickey);
-      publickey = app.keys.fetchPublicKey(publickey);
-      console.log("pkey2: " + publickey);
-
-      if (publickey) {
-        let encrypt_mod = app.modules.returnModule("Encrypt");
-        encrypt_mod.initiate_key_exchange(publickey);
-        console.log("done initiate key exchange");
-      } 
-    };
-    Array.from(document.querySelectorAll(".newfriend")).forEach((username)=>{
-      username.onclick = (e) =>{
-        startKeyExchange(e.target.getAttribute("data-id"));
-      }
-    });
-
     //Give admin ability to edit league
     Array.from(document.querySelectorAll(".edit_player")).forEach((player)=>{
       player.onclick = async (e) =>{
@@ -210,6 +199,13 @@ class ViewLeagueDetails {
         }
       }
     });
+
+    // let createGameBtn = document.getElementById("leaderboard-btn-create-game");
+    // if (createGameBtn){
+    //   createGameBtn.onclick = ()=> {
+    //     salert("Create league games (in progress...)");
+    //   }
+    // }
   }
 }
 

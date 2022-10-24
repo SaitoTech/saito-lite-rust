@@ -1,10 +1,10 @@
 const SaitoGroupTemplate = require('./../../../../lib/saito/new-ui/templates/saito-group.template');
-const SaitoUserTemplateWithTime = require('./../../../../lib/saito/new-ui/templates/saito-user-with-time.template');
+const SaitoUserTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user-with-controls.template');
 
 module.exports = (app, mod) => {
 
-  let groups = app.keys.groups;
-  let keys = app.keys.keys;
+  let groups = app.keys.returnGroups();
+  let keys = app.keys.returnKeys();
 
 
   let html = `
@@ -21,8 +21,9 @@ module.exports = (app, mod) => {
        </div>
       </div>
 
-        <div class="saito-page-header-title">CONTACTS</div>
+        <div class="saito-page-header-title">CONTACTS
         <div class="saito-page-header-text">Use this page to manage the contacts saved in your wallet, or create groups for secure communication channels with many participants. Remember to backup your wallet after creating a new group or adding a new contact.</div>
+      </div>
       </div>
 
       <div class="redsquare-appspace-contacts-list">
@@ -75,7 +76,8 @@ module.exports = (app, mod) => {
 	  security = "secure";
 	}
 	if (keys.watched === 1 || keys.aes_publickey != "") {
-          html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline, security);
+    //This is not the right template for including a security flag....
+          html += SaitoUserTemplate(app, keys[i].publickey, userline);
 	}
       }
 

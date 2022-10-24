@@ -72,6 +72,15 @@ class Keychain {
     if (this.app.options.keys.length == 0) {
       this.addKey(this.app.wallet.returnPublicKey(), { watched: true });
     }
+
+    // Load groups from storage
+
+    if (this.app.options.groups == null) {
+      this.app.options.groups = [];
+    }else{
+      this.groups = this.app.options.groups;
+    }
+
   }
 
   //
@@ -345,7 +354,7 @@ class Keychain {
     const kx = [];
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].lc == 1 && this.keys[x].publickey != this.app.wallet.returnPublicKey()) {
-        kx[kx.length] = this.keys[x];
+        kx.push(this.keys[x]);
       }
     }
     return kx;

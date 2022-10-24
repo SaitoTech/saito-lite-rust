@@ -40,6 +40,23 @@ class Encrypt extends ModTemplate {
   }
 
 
+  respondTo(type){
+    let encrypt_self = this;
+
+    if (type == "user-menu") {
+      return {
+        text: "Add Contact",
+        icon: "far fa-id-card",
+        callback: function (app, public_key) {
+            app.keys.saveKeys();
+            encrypt_self.initiate_key_exchange(public_key);
+        }
+      }
+    }
+    return super.respondTo(type);
+  }
+
+
   handlePeerRequest(app, message, peer, mycallback = null) {
 
     let encrypt_self = this;

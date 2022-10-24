@@ -1,21 +1,24 @@
 const saito = require("./../../lib/saito/saito");
 const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const ArcadeMain = require("./lib/arcade-main/arcade-main");
+const ArcadeMain = require("./lib/main/main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
-const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
-const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
-const ArcadeGameDetails = require("./lib/arcade-game/arcade-game-details");
-const ChallengeTemplate = require("./lib/arcade-main/templates/arcade-challenge.template");
-const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
+const ArcadeSidebar = require("./lib/sidebar/main");
+const GameCreateMenu = require("./lib/main/game-create-menu");
+const ChallengeTemplate = require("./lib/templates/arcade-challenge.template");
+const ArcadeGameSidebar = require("./lib/sidebar/arcade-game-sidebar");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
+const ArcadeContainerTemplate = require("./lib/templates/arcade-container.template");
 const InvitationLink = require("../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
 const GameInvite = require('./lib/invite/main');
+
+
+const GameWizard = require('./lib/overlay/game-wizard');
+const GameSelector = require('./lib/overlay/game-selector');
 
 
 class Arcade extends ModTemplate {
@@ -32,12 +35,10 @@ class Arcade extends ModTemplate {
     //this.observer = [];
     this.old_game_removal_delay = 2000000;
     this.services = [{ service: "arcade", domain: "saito" }];
-    this.request_no_interrupts = true; // ask other modules not to insert content
+    this.request_no_interrupts = false; // ask other modules not to insert content
 
     this.viewing_arcade_initialization_page = 0;
     this.viewing_game_homepage = ""; //// this.app.browser.returnURLParameter("game");
-
-    this.chat_open = 0;
 
     this.icon_fa = "fas fa-gamepad";
 
@@ -51,49 +52,25 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = true;
-
-    //So we can keep track of games which we want to close but are waiting on game engine to process
-    this.game_close_interval_cnt = 0;
-    this.game_close_interval_queue = [];
-    this.game_close_interval_id = null;
-
-
+    this.debug = false;
 
   }
 
 
-  receiveEvent(type, data) {
-    if (type == "chat-render-request") {
-      if (this.browser_active) {
-        if (this.app.options.auto_open_chat_box == undefined) {
-          this.app.options.auto_open_chat_box = 1;
-          this.app.storage.saveOptions();
-        }
-        //this.renderSidebar();
-          let chat_mod = this.app.modules.returnModule("Chat");
-          if (chat_mod){
-            if (chat_mod.groups && 
-                chat_mod.groups.length > 0 &&
-                this.chat_open == 0 &&
-                this.app.options.auto_open_chat_box
-             ) {
-              this.chat_open = 1;
-              chat_mod.openChats();
-          }
-        }
-      }
+  createGameSelector(obj = {}) {
+console.log("OBH JERE IS: " +JSON.stringify(obj));
+    let x = new GameSelector(this.app, this, obj);
+    x.render(this.app, this);
+  }
+  createGameWizard(gamename = "" , obj = {}) {
+    let game_mod = this.app.modules.returnModule(gamename);
+    let tx = new saito.default.transaction();
+    tx.msg.game = gamename;
+    if (game_mod) {
+      let x = new GameWizard(this.app, this, game_mod, obj);
+      x.render(this.app, this);
     }
   }
-
-/*  handleUrlParams(urlParams) {
-    let i = urlParams.get("i");
-    if (i == "watch") {
-      let msg = urlParams.get("msg");
-      this.observeGame(msg, 0);
-    }
-  }
-*/
 
   renderArcadeMain() {
     if (this.browser_active == 1) {
@@ -115,6 +92,19 @@ class Arcade extends ModTemplate {
       ArcadeSidebar.attachEvents(this.app, this);
     }
   }
+
+  returnGameById(game_id){
+    let game = this.games.find((g) => g.transaction.sig == game_id);
+    let gameObj = {
+      id: game_id,
+      game: game.msg.game,
+      options: game.msg.options,
+      players: game.msg.players,
+      players_needed: game.msg.players_needed
+    };
+    return gameObj;
+  }
+
 
   respondTo(type = "") {
     let arcade_mod = this;
@@ -148,6 +138,18 @@ class Arcade extends ModTemplate {
         slug: this.returnSlug(),
       };
     }
+    if (type === 'user-menu') {
+      return {
+        text: "Challenge to Arcade Game",
+        icon: "fas fa-gamepad",
+        callback: function (app, publickey) {
+	  let obj = { publickey : publickey };
+	  let arcade_mod = app.modules.returnModule("Arcade");
+	  arcade_mod.createGameSelector(obj);
+        }
+      }
+    }
+
 
     //    if (type == "appspace") {
     //      this.scripts['/arcade/new-style.css'];
@@ -160,9 +162,8 @@ class Arcade extends ModTemplate {
   initialize(app) {
     super.initialize(app);
 
-    
+    //Load my locally saved games
     this.addMyGamesToOpenList();
-
 
     //
     // hack to force forum to onPeerHandShake
@@ -182,9 +183,14 @@ class Arcade extends ModTemplate {
     if (!app.BROWSER){return;}
 
     if (this.browser_active){
+      //Add Chat-Manager to my components
+      app.modules.respondTo("chat-manager").forEach(m => {
+        this.addComponent(m.respondTo("chat-manager"));
+      });
+
+
       //Leave a cookie trail to return to Arcade when you enter a game
       if (app.options.homeModule !== this.returnSlug()){
-        console.log("Update homepage to " + this.returnSlug());
         app.options.homeModule = this.returnSlug();
         app.storage.saveOptions();
       }
@@ -213,7 +219,6 @@ class Arcade extends ModTemplate {
       }
     });
     app.connection.on("game-ready", (gameid)=>{
-      console.log("GAME READY received:" + gameid);
       this.launchGame(gameid);
     });
     
@@ -277,9 +282,6 @@ class Arcade extends ModTemplate {
     });
   }
 
-  initializeHTML(app) {
-    this.header = new SaitoHeader(app, this);
-  }
 
   checkGameDatabase(){
     if (!this.app.BROWSER){return;}
@@ -425,6 +427,7 @@ class Arcade extends ModTemplate {
 
     this.renderSidebar();
     this.renderArcadeMain();
+    super.render(app, this, "#arcade-sidebar");
   }
 
   isMyGame(invite, app) {
@@ -861,7 +864,7 @@ class Arcade extends ModTemplate {
         app.connection.emit("arcade-reject-challenge", txmsg.game_id);
       }
 
-      console.log(txmsg);
+      //console.log(txmsg);
 
       //Process Gameovers
       if (txmsg.request == "gameover"){
@@ -919,7 +922,7 @@ class Arcade extends ModTemplate {
 
     //Force close in wallet if game was created
     app.options.games.forEach(g => {
-      if (g.id === game_id) {
+      if (g.id === game_id && g.over !== 1) {
         console.log("Mark game closed in options");
         g.over = 1;
       }
@@ -1030,13 +1033,12 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
     let id = txmsg.sig || txmsg.game_id;
     this.removeGameFromOpenList(id);            //remove from arcade.games[]
-    this.checkCloseQueue(id);
 
     if (app.BROWSER) {return;}
     if (this.debug) { console.log("Close game " + id); }
-    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`;
+    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id AND status != 'over'`;
     let params = { $status: "close", $game_id: id };
-    console.log(sql, params);
+    //console.log(sql, params);
     await app.storage.executeDatabase(sql, params, "arcade");
   }
 
@@ -1044,30 +1046,15 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
     let id = txmsg.sig || txmsg.game_id;
     this.removeGameFromOpenList(id);            //remove from arcade.games[]
-    this.checkCloseQueue(id);
 
     if (app.BROWSER) {return;}
     if (this.debug) { console.log("Resign game " + JSON.stringify(id)); }
     let sql = `UPDATE games SET status = $status, winner = $winner WHERE game_id = $game_id`;
     let params = { $status: "over", $winner: txmsg.winner, $game_id: id };
-    console.log(sql, params);
+    //console.log(sql, params);
     await app.storage.executeDatabase(sql, params, "arcade");
   }
 
-  checkCloseQueue(game_id) {
-    if (this.game_close_interval_id) {
-      console.log("Are we waiting on " + game_id);
-      for (let i = this.game_close_interval_queue.length - 1; i >= 0; i--) {
-        if (this.game_close_interval_queue[i] == game_id) {
-          this.game_close_interval_queue.splice(i, 1);
-        }
-      }
-      if (this.game_close_interval_queue.length == 0) {
-        clearInterval(this.game_close_interval_id);
-        this.game_close_interval_id = null;
-      }
-    }
-  }
 
   async receiveChangeRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
@@ -1204,15 +1191,18 @@ class Arcade extends ModTemplate {
 
 
   createOpenTransaction(gamedata, recipient = "") {
+
     let sendto = this.app.wallet.returnPublicKey();
     let moduletype = "Arcade";
 
-    /* Current deprecated, save for possible future resurrection
+    //
+    // currently used actively in game invite process
+    //
     if (recipient != "") {
       sendto = recipient;
       moduletype = "ArcadeInvite";
     }
-    */
+
     let { ts, name, options, players_needed, invitation_type } = gamedata;
 
     let requestMsg = invitation_type == "private" ? "private" : "open";
@@ -1223,7 +1213,8 @@ class Arcade extends ModTemplate {
     );
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    tx.transaction.to.push(new saito.default.slip(sendto, 0.0));
+    if (recipient != "") { tx.transaction.to.push(new saito.default.slip(sendto, 0.0)); }
+
     tx.msg = {
       ts: ts,
       module: moduletype,
@@ -1551,7 +1542,7 @@ class Arcade extends ModTemplate {
   }
 
   validateGame(tx) {
-    if (!tx?.transaction?.sig || !tx?.msg) {
+    if (!tx || !tx.msg || !tx.transaction || !tx.transaction.sig) {
       return false;
     }
 
@@ -1560,19 +1551,12 @@ class Arcade extends ModTemplate {
     }
 
     for (let i = 0; i < this.games.length; i++) {
-      let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
-
-      if (tx.transaction.sig == transaction.sig) {
-        return false;
-      }
-      if (tx.returnMessage().game_id != "" && tx.returnMessage().game_id == transaction.sig) {
-        return false;
-      }
-      if (tx.returnMessage().game_id === this.games[i].transaction.sig) {
-        console.log("ERROR 480394: not re-adding existing game to list");
+      if (tx.transaction.sig === this.games[i].transaction.sig) {
+        console.log("TX is already in Arcade list");
         return false;
       }
     }
+
     return true;
   }
 
@@ -1693,9 +1677,7 @@ class Arcade extends ModTemplate {
 
 
   addGameToOpenList(tx) {
-    let valid_game = this.validateGame(tx);
-    
-    if (valid_game) {
+    if (this.validateGame(tx)) {
       this.games.unshift(tx);
       ArcadeMain.renderArcadeTab(this.app, this);
     }
@@ -1822,12 +1804,6 @@ class Arcade extends ModTemplate {
 
     let invitationModal = new InvitationLink(this.app, this);
     invitationModal.render(this.app, this, data);
-  }
-
-
-  createGame(pseudoTX){
-    let ux = new ArcadeGameDetails(this.app);
-    ux.render(this.app, this, pseudoTX);
   }
 
 

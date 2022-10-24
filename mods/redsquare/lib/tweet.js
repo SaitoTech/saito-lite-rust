@@ -208,7 +208,7 @@ class RedSquareTweet {
 
     if ((this.critical_child != null || this.in_thread) && this.flagged != 1) {
       if (obj) {
-       app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
         if (appendToSelector) {
@@ -243,7 +243,7 @@ class RedSquareTweet {
 
     if (obj) {
       app.browser.replaceElementById(html, tweet_id);
-    } else {      
+    } else {
       app.browser.addElementToSelector(html, selector);
     }
 
@@ -257,7 +257,7 @@ class RedSquareTweet {
       }
     }
 
-    app.browser.addIdentifiersToDom();
+    // app.browser.addIdentifiersToDom();
     this.attachEvents(app, mod);
   }
 
@@ -335,8 +335,6 @@ class RedSquareTweet {
     //
     const openTweet = (e) => {
 
-console.log("AAAAA");
-
       //e.preventDefault();
       e.stopImmediatePropagation();
 
@@ -348,6 +346,7 @@ console.log("AAAAA");
       //
       // add back button
       //
+console.log("about to hit INNERHTML in TWEET");
       document.querySelector(".redsquare-list").innerHTML = "";
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> RED SQUARE</div>`, "saito-page-header-title");
       document.querySelector(".saito-back-button").onclick = (e) => {
@@ -358,8 +357,11 @@ console.log("AAAAA");
         mod.viewing = "feed";
       }
 
-      let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
-      
+      let target = mod.returnTweet(app, mod, tweet_sig_id);
+
+      //let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${tweet_sig_id}' OR parent_id = '${tweet_sig_id}' OR thread_id = '${tweet_sig_id}'`;
+
       // false - don't track tweet
       mod.fetchTweets(app, mod, sql, function (app, mod) {
         let t = mod.returnTweet(app, mod, tweet_sig_id);
@@ -380,6 +382,7 @@ console.log("AAAAA");
       window.history.pushState({}, document.title, tweetUrl);
 
       this.saito_loader.remove();
+
     }
 
 
@@ -397,13 +400,10 @@ console.log("AAAAA");
     let sel = "#tweet-box-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
 
-console.log("AAAAA 2");
-
       //
       // trap links in tweets
       //
       if (e.target.classList.contains('saito-treated-link') || e.target.classList.contains('saito-og-link')) {
-console.log("clicked on a link!");
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
         e.preventDefault();
@@ -421,8 +421,6 @@ console.log("clicked on a link!");
         return;
       }
 
-console.log("AAAAA 4");
-
       //
       // avoid other clickable elements
       //
@@ -431,18 +429,22 @@ console.log("AAAAA 4");
         !e.target.classList.contains("tweet-tool") &&   // buttons
         !e.target.classList.contains("far") &&   // icons
         !e.target.classList.contains("fa") &&   // icons
-        !e.target.classList.contains("fas")
+        !e.target.classList.contains("fas") &&
+        !e.target.classList.contains("redsquare-tweet-tools")
       ) {
 
         //
         // check we are not already viewing this
         //
+
+        // stop if modal already exists
+        if (document.querySelector(".saito-overlay-backdrop") || document.querySelector(".saito-overlay")) {
+          return;
+        }
         if (this.tx.transaction.sig === mod.viewing) {
           console.log("Already Viewing Tweet");
           return;
         }
-
-console.log("AAAAA 5");
 
         openTweet(e);
         e.preventDefault();
@@ -450,9 +452,6 @@ console.log("AAAAA 5");
       }
 
     };
-
-
-console.log("didn't trigger!");
 
 
     //
@@ -499,11 +498,8 @@ console.log("didn't trigger!");
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
-      app.browser.addIdentifiersToDom();
+      // app.browser.addIdentifiersToDom();
     };
-
-
-console.log("we hit here!");
 
 
     //
@@ -547,7 +543,7 @@ console.log("we hit here!");
     document.querySelector(sel).onclick = (e) => {
       e.preventDefault();
       e.stopImmediatePropagation();
-      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig });
+      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig }, this.tx);
 
       // increase num likes
       sel = ".tweet-tool-like-count-" + this.tx.transaction.sig;
@@ -569,7 +565,7 @@ console.log("we hit here!");
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig });
+      mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig }, this.tx);
 
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");
@@ -675,6 +671,35 @@ console.log("we hit here!");
     }
   }
 
+  renderLikes() {
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = ".tweet-tool-like-count-" + this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_likes) { return; }
+      obj.innerHTML = this.tx.optional.num_likes;
+    } catch (err) { }
+  }
+  renderRetweets() {
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = ".tweet-tool-retweet-count-" + this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_retweets) { return; }
+      obj.innerHTML = this.tx.optional.num_retweets;
+    } catch (err) { }
+  }
+  renderReplies() {
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = ".tweet-tool-comment-count-" + this.tx.transaction.sig;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_replies) { return; }
+      obj.innerHTML = this.tx.optional.num_replies;
+    } catch (err) { }
+  }
+
+
   exportData(app, mod) {
     return { text: this.text };
   }
@@ -725,6 +750,13 @@ console.log("we hit here!");
     return this;
 
   }
+
+  returnWeightedTime() {
+    let weightedTime = (this.updated_at - Math.pow((this.updated_at - this.created_at), 0.5));
+    return weightedTime;
+  }
+
+
 
 
   ///////////////

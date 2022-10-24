@@ -50,7 +50,7 @@ Saito Module
   width: 100%;
   height: auto;
   margin-bottom: 1rem;
-  padding: 0.5rem 0.5rem;
+  padding: 1rem;
   overflow: hidden;
   display: grid;
   grid-template-columns: min-content 1fr;
@@ -124,6 +124,14 @@ Saito Module X
     font-size: 1.8rem;
     font-weight: 500;
     text-transform: capitalize;
+}
+
+.saito-module-x.large .saito-module-title { 
+    font-size: 4rem;
+}
+
+.saito-module-x.large .saito-module-title { 
+    font-size: 2.3rem;
 }
 
 .saito-module-x .saito-module-custom-box {

@@ -9,21 +9,27 @@ class StunxGameMenu {
         this.app.connection.on('game-receive-video-call', (app, offer_creator, offer) => {
             this.receiveVideoCall(app, offer_creator, offer);
         })
-        this.app.connection.on('game-start-video-call', (peer) => {
-            this.startVideoCall(peer);
+        this.app.connection.on('game-start-video-call', (peers) => {
+            this.startVideoCall(peers);
         })
     }
 
 
-    async startVideoCall(peer) {
+    async startVideoCall(peers) {
+        if (peers.constructor !== Array) {
+            peers = [peers]
+        }
         const stunx_mod = this.app.modules.returnModule('Stunx');
         const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         stunx_mod.setLocalStream(localStream);
         // stunx_mod.setChatType("game");
-        this.app.connection.emit('show-video-chat-request', this.app, this, "small");
-        this.app.connection.emit('render-local-stream-request', localStream, "small");
-        this.app.connection.emit('render-remote-stream-placeholder-request', peer, "small");
-        stunx_mod.createStunConnectionWithPeers([peer], 'small');
+        peers.forEach(peer => {
+            this.app.connection.emit('show-video-chat-request', this.app, this, "small");
+            this.app.connection.emit('render-local-stream-request', localStream, "small");
+            this.app.connection.emit('render-remote-stream-placeholder-request', peer, "small");
+        })
+
+        stunx_mod.createStunConnectionWithPeers(peers, 'small');
 
     }
 

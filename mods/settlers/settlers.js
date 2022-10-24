@@ -3678,27 +3678,7 @@ class Settlers extends GameTemplate {
   }
 
   chatWith(player) {
-    let members = [
-      this.game.players[player - 1],
-      this.app.wallet.returnPublicKey(),
-    ].sort();
-    let gid = this.app.crypto.hash(members.join("_"));
-    let chatmod = null;
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].slug === "chat") {
-        chatmod = this.app.modules.mods[i];
-      }
-    }
-    let newgroup = chatmod.createChatGroup(members);
-    if (newgroup) {
-      chatmod.addNewGroup(newgroup);
-      chatmod.sendEvent("chat-render-request", {});
-      chatmod.saveChat();
-      chatmod.openChatBox(newgroup.id);
-    } else {
-      chatmod.sendEvent("chat-render-request", {});
-      chatmod.openChatBox(gid);
-    }
+    this.app.connection.emit("open-chat-with", {key: this.game.players[player - 1]});
   }
 
   /* 

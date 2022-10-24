@@ -94,6 +94,8 @@
     margin-right: 3rem;
 }
 
+
+
 /* video chat */
 
 /*  video box */
@@ -101,12 +103,28 @@
     background-color: black;
     display: flex;
     height: 100%;
+    position: fixed;
+    z-index: 100000;
+    width: 40rem;
+    height: 30rem;
+    bottom: 40%;
+    left: 50%;
+    top: 50%;
+    resize: both;
+    overflow: auto;
+    transform: translate(-50%, -50%);
     justify-content: center;
     align-items: center;
     color: white;
-}
+    border-radius: 1rem;
+  }
 
-.video-box-container>div {
+  .video-box-container  video {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .video-box-container>div {
     color: white;
     width: 50%;
     line-height: 1.5;
@@ -114,17 +132,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.video-box-container>div>p {
+  }
+  
+  .video-box-container>div>p {
     color: white;
-}
-
-.lds-dual-ring {
+  }
+  
+  .lds-dual-ring {
     display: inline-block;
-}
-
-.lds-dual-ring:after {
+  }
+  
+  .lds-dual-ring:after {
     content: " ";
     display: block;
     width: 10px;
@@ -134,7 +152,7 @@
     border: 6px solid #fff;
     border-color: #fff transparent #fff transparent;
     animation: lds-dual-ring 1.2s linear infinite;
-}
+  }
 
 @keyframes lds-dual-ring {
     0% {
@@ -250,13 +268,7 @@
 
 .stunx-appspace-join input:focus {
     outline: none;
-
 }
-
-.saito-overlay {
-    min-width: 25rem;
-}
-
 
 /*  responsive */
 

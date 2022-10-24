@@ -63,7 +63,7 @@
     transform-origin: 0% 100%;
 }
 
-.saito-header-profile .saito-identicon-container .saito-identicon {
+.saito-header-profile .saito-identicon-box .saito-identicon {
     width: 4.9rem;
     height: 4.9rem;
 }
@@ -120,9 +120,10 @@
     justify-content: center;
     justify-self: center;
     padding-top: 1rem;
+    cursor: pointer;
 }
 
-.saito-header-profile>div p {
+.saito-header-profile-address p {
     width: 70%;
     white-space: nowrap;
     overflow: hidden;
@@ -131,11 +132,7 @@
     margin-right: .5rem;
 }
 
-.saito-header-profile>div i {
-    cursor: pointer;
-}
-
-.saito-header-profile>div i:hover {
+.saito-header-profile-address:hover i{
     transform: scale(1.05);
     color: var(--saito-primary);
 }

@@ -1,5 +1,6 @@
 const GameTemplate = require('./../../lib/templates/gametemplate');
 const QuakeGameOptionsTemplate = require('./lib/quake-game-options.template');
+const QuakeControls = require('./lib/controls');
 
 
 class Quake3 extends GameTemplate {
@@ -14,14 +15,17 @@ class Quake3 extends GameTemplate {
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
+    this.controls = this.returnDefaults();
+
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
 
     // ask chat not to start on launch
     this.request_no_interrupts = true;
 
-    this.content_server  = "q3.saito.io";
-    this.game_server  = "q3.saito.io:27960";
+    this.content_server  = "q3-us.saito.io";
+    this.game_server  = "q3-us.saito.io:27959";
+
     //this.content_server  = "18.163.184.251:80";
     //this.game_server     = "18.163.184.251:27960";
   }
@@ -165,6 +169,8 @@ class Quake3 extends GameTemplate {
 
 
   initializeGame(game_id) {
+
+    this.load();
 
     if (!this.game.state) {
       console.log("******Generating the Game******");
@@ -316,10 +322,12 @@ class Quake3 extends GameTemplate {
 
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER == 0 || !document) { return; } 
-    if (document.querySelector(".chat-input")) {
-      let c = document.querySelector(".chat-input");
-      if (c) {
-        c.placeholder = 'typing T activates chat...';
+    if (this.browser_active == 1) {
+      if (document.querySelector(".chat-input")) {
+        let c = document.querySelector(".chat-input");
+        if (c) {
+          c.placeholder = 'typing T activates chat...';
+        }
       }
     }
   }
@@ -342,6 +350,20 @@ class Quake3 extends GameTemplate {
       callback : function(app, game_mod) {
         game_mod.menu.showSubMenu("game-game");
       }
+    });
+
+    this.menu.addSubMenuOption("game-game", {
+      text : "Controls",
+      id : "game-controls",
+      class : "game-game-controls",
+      callback : async function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	if (game_mod.controls) { game_mod.controls.overlay.hide(); }
+        game_mod.controls = new QuakeControls(app, game_mod);
+	controls.render(app, game_mod);
+    	SAITO_COMPONENT_ACTIVE = true;
+    	SAITO_COMPONENT_CLICKED = true;
+      },
     });
 
     this.menu.addSubMenuOption("game-game", {
@@ -380,6 +402,20 @@ class Quake3 extends GameTemplate {
 
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
+
+
+if (app.BROWSER != 0) {
+    if (this.game.options.server === "as") {
+alert("Asian Game Server - use advanced options to change");
+      this.content_server = "q3.saito.io";
+      this.game_server = "q3.saito.io:27960";
+    }
+    if (this.game.options.server === "na") {
+alert("North American Game Server - use advanced options to change");
+      this.content_server = "q3-us.saito.io";
+      this.game_server = "q3-us.saito.io:27959";
+    }
+}
 
 
     //
@@ -447,6 +483,21 @@ return;
       ioq3.callMain(args);
     }
 
+  }
+
+
+
+  returnDefaults() {
+    return {};
+  }
+
+  load() {
+    this.quake3 = this.app.options.quake3;
+  }
+
+  save() {
+    this.app.options.quake3 = this.quake3;
+    this.app.storage.saveOptions();
   }
 
 }
