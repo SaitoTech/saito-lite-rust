@@ -358,7 +358,8 @@ class Quake3 extends GameTemplate {
       class : "game-game-controls",
       callback : async function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        let controls = new QuakeControls(app, game_mod);
+	if (game_mod.controls) { game_mod.controls.overlay.hide(); }
+        game_mod.controls = new QuakeControls(app, game_mod);
 	controls.render(app, game_mod);
     	SAITO_COMPONENT_ACTIVE = true;
     	SAITO_COMPONENT_CLICKED = true;

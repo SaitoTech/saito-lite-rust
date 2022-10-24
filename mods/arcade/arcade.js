@@ -1,21 +1,25 @@
 const saito = require("./../../lib/saito/saito");
 const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const ArcadeMain = require("./lib/arcade-main/arcade-main");
+const ArcadeMain = require("./lib/main/main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
 const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
 const ArcadeGameDetails = require("./lib/arcade-game/arcade-game-details");
-const ChallengeTemplate = require("./lib/arcade-main/templates/arcade-challenge.template");
+const ChallengeModal = require("./../../lib/saito/new-ui/modals/game-challenge/game-challenge");
 const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
+const ArcadeContainerTemplate = require("./lib/templates/arcade-container.template");
 const InvitationLink = require("../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
 const GameInvite = require('./lib/invite/main');
+
+
+const GameWizard = require('./lib/overlay/game-wizard');
+const GameSelector = require('./lib/overlay/game-selector');
 
 
 class Arcade extends ModTemplate {
@@ -53,6 +57,21 @@ class Arcade extends ModTemplate {
 
   }
 
+
+  createGameSelector(obj = {}) {
+console.log("OBH JERE IS: " +JSON.stringify(obj));
+    let x = new GameSelector(this.app, this, obj);
+    x.render(this.app, this);
+  }
+  createGameWizard(gamename = "" , obj = {}) {
+    let game_mod = this.app.modules.returnModule(gamename);
+    let tx = new saito.default.transaction();
+    tx.msg.game = gamename;
+    if (game_mod) {
+      let x = new GameWizard(this.app, this, game_mod, obj);
+      x.render(this.app, this);
+    }
+  }
 
   renderArcadeMain() {
     if (this.browser_active == 1) {
@@ -120,6 +139,18 @@ class Arcade extends ModTemplate {
         slug: this.returnSlug(),
       };
     }
+    if (type === 'user-menu') {
+      return {
+        text: "Challenge to Arcade Game",
+        icon: "fas fa-gamepad",
+        callback: function (app, publickey) {
+	  let obj = { publickey : publickey };
+	  let arcade_mod = app.modules.returnModule("Arcade");
+	  arcade_mod.createGameSelector(obj);
+        }
+      }
+    }
+
 
     //    if (type == "appspace") {
     //      this.scripts['/arcade/new-style.css'];
@@ -1113,7 +1144,7 @@ class Arcade extends ModTemplate {
 
 
   receiveChallenge(app, tx){
-    if (!tx.transaction || !tx.transaction.sig || !tx.msg || tx.msg.over == 1) {
+    if (!tx.transaction || !tx.transaction.sig || !tx.msg) {
       return;
     }
 
@@ -1123,53 +1154,26 @@ class Arcade extends ModTemplate {
 
     this.addGameToOpenList(tx);
 
-    if (!tx.isFrom(this.app.wallet.returnPublicKey())){
-      let txmsg = tx.returnMessage();      
+    let challenge = new ChallengeModal(app, this, tx);
+    challenge.processChallenge(app, tx);
 
-      let overlay = new SaitoOverlay(app, false);
-      overlay.show(app, this, ChallengeTemplate(txmsg));
-      overlay.blockClose();
-
-      document.getElementById("reject-btn").onclick = (e) =>{
-        let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
-  
-        for (let player of txmsg.players){
-          newtx.transaction.to.push(new saito.default.slip(player, 0.0));
-        }
-
-        newtx.msg = {
-          request: "sorry",
-          module: "Arcade",
-          game_id: tx.transaction.sig,
-        };
-
-        console.log(JSON.parse(JSON.stringify(newtx)));
-        newtx = app.wallet.signTransaction(newtx);
-
-        app.connection.emit("send-relay-message", {recipient: txmsg.players, request: "arcade spv update", data:newtx});
-        overlay.remove();
-      }
-
-      document.getElementById("accept-btn").onclick = (e) =>{
-        let newtx = this.createJoinTransaction(tx);
-        app.connection.emit("send-relay-message", {recipient: txmsg.players, request: "arcade spv update", data:newtx});
-        overlay.remove();        
-      }
-    }
   }
 
 
 
   createOpenTransaction(gamedata, recipient = "") {
+
     let sendto = this.app.wallet.returnPublicKey();
     let moduletype = "Arcade";
 
-    /* Current deprecated, save for possible future resurrection
+    //
+    // currently used actively in game invite process
+    //
     if (recipient != "") {
       sendto = recipient;
       moduletype = "ArcadeInvite";
     }
-    */
+
     let { ts, name, options, players_needed, invitation_type } = gamedata;
 
     let requestMsg = invitation_type == "private" ? "private" : "open";
@@ -1180,7 +1184,8 @@ class Arcade extends ModTemplate {
     );
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    tx.transaction.to.push(new saito.default.slip(sendto, 0.0));
+    if (recipient != "") { tx.transaction.to.push(new saito.default.slip(sendto, 0.0)); }
+
     tx.msg = {
       ts: ts,
       module: moduletype,
@@ -1770,12 +1775,6 @@ class Arcade extends ModTemplate {
 
     let invitationModal = new InvitationLink(this.app, this);
     invitationModal.render(this.app, this, data);
-  }
-
-
-  createGame(pseudoTX){
-    let ux = new ArcadeGameDetails(this.app);
-    ux.render(this.app, this, pseudoTX);
   }
 
 
