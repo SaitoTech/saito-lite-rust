@@ -103,3 +103,11 @@
 #saito-confirm-add-publickey > .saito-contact-status {
   text-align: center;
 }
+
+.saito-modal-title .saito-user .saito-identicon{
+  width: 4rem;
+  height: 4rem;
+}
+.saito-modal-title .saito-user .saito-address{
+  font-size: 4rem;
+}

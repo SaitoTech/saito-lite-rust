@@ -1,42 +1,44 @@
-const SaitoUserWithAlert = require('./../../../../lib/saito/new-ui/templates/saito-user-with-alert.template');
+const SaitoUserWithTimeTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user-with-time.template');
 const SaitoUser = require('./../../../../lib/saito/new-ui/templates/saito-user.template');
 
 module.exports = (app, mod, invite) => {
+
+console.log("WHAT IS OUR INVITE? " + JSON.stringify(invite));
 
     let html = `
 
        <div class="redsquare-item">
 
-         ${SaitoUserWithAlert(app, mod, invite.creator, "received recently", new Date().getTime())}
+         ${SaitoUserWithTimeTemplate(app, invite.creator, "received recently", new Date().getTime())}
 
          <div class="redsquare-item-contents" id="redsquare-item-contents-${invite.invite_id}" data-id="${invite.invite_id}">
 	   <div></div>
            <div class="redsquare-invite">
 
-	     <div class="redsquare-invite-title">
-               Invitation Title
-             </div>
-
-             <div class="redsquare-invite-comment">
-
-               We can have a description of the invitatino here.
-
-             </div>
-
+	     <div class="redsquare-invite-title">${invite.title}</div>
+     `;
+     if (invite.description) {
+       html += `
+         <div class="redsquare-invite-comment">${invite.description}</div>
+       `;
+     }
+     html += `
              <div class="redsquare-invite-participants">
 
     `;
     let added = 0;
     for (let i = 0; i < invite.adds.length; i++) {
       let status = '<span class="saito-primary-color saito-primary">yet to accept</span>';
-      if (invite.terms[i] === "on accept") {
-        status = '<span class="saito-primary-color saito-primary">accepted</span>';
+      if (invite.terms[i] === "on accept" && invite.sigs.length >= (i+1)) {
+	if (invite.sigs[i] !== "") {
+          status = '<span class="saito-primary-color saito-primary">accepted</span>';
+        }
       }
-      html += `   ${ SaitoUser(app, mod, invite.adds[i], status) } `;
+      html += `   ${ SaitoUser(app, invite.adds[i], status) } `;
       added++;
     }
     while (added < invite.num) {
-      html += `   ${ SaitoUser(app, mod, "open slot", "anyone can join") } `;
+      html += `   ${ SaitoUser(app, "open slot", "anyone can join") } `;
       added++;
     }
 

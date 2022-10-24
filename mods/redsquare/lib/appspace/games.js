@@ -23,7 +23,7 @@ class RedSquareAppspaceGames {
     document.getElementById("redsquare-create-game").onclick = (e) => {
       try {
         let arcade_mod = app.modules.returnModule("Arcade");
-        arcade_mod.createGameWizard(modname);
+        arcade_mod.createGameSelector();
       } catch (err) { alert("Arcade not installed..."); }
     }
 

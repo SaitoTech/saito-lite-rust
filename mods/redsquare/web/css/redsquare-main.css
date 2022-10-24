@@ -52,7 +52,7 @@
 
 /* Chat / Manager */
 
-.chat-manager-list > .saito-user > .saito-identicon-container {
+.chat-manager-list > .saito-user > .saito-identicon-box {
     padding-left: 0.7rem;
     padding-right: 0.4rem;
 }
@@ -221,7 +221,6 @@ span.redsquare-home-red-square+span {
 
 .redsquare-invite-title {
   color: var(--saito-default-font-color);
-  background-color: white;
   font-weight: bold;
   font-size: 2.2rem;
   padding-top: 1rem;
