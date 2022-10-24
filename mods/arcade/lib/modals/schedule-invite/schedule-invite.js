@@ -9,10 +9,6 @@ class ScheduleInvite {
       this.app = app;
       this.invite_tx = invite_tx;
       this.overlay = new SaitoOverlay(app);
-
-console.log("INVITE TX");
-console.log(JSON.stringify(this.invite_tx));
-
     }
 
     render(app, mod) {
@@ -43,7 +39,6 @@ console.log(JSON.stringify(this.invite_tx));
 
         mod.addGameToOpenList(scheduler_self.invite_tx);
 
-        console.log("INVUTE TX: " + JSON.stringify(scheduler_self.invite_tx));
         // 
         // create invite link from the game_sig
         // 
@@ -51,17 +46,18 @@ console.log(JSON.stringify(this.invite_tx));
       }
       document.getElementById("create-specific-date").onclick = (e) => {
 	let txmsg = scheduler_self.invite_tx.returnMessage();
-console.log("IT");
-console.log(JSON.stringify(txmsg));
 	let title = "Game Invite: " + txmsg.options.game;
-console.log("title: " + title);
         this.overlay.hide();
 	let scheduler = new SaitoScheduler(app, mod, { date : new Date() , tx : scheduler_self.invite_tx , title : title });
-	scheduler.render(app, mod);
+	scheduler.render(app, mod, function() {
+	  alert("CALLBACK WHEN DATE SELECTED");
+	});
       }
-      document.getElementById("create-negotiate-date").onclick = (e) => {
-        this.overlay.hide();
-      }
+
+      // disabled in template file
+      //document.getElementById("create-negotiate-date").onclick = (e) => {
+      //  this.overlay.hide();
+      //}
     }
 }
 
