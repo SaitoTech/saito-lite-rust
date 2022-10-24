@@ -231,7 +231,7 @@ class RedSquareTweet {
     });
     this.attachEvents(app, mod);
     app.browser.addModalIdentifierAddPublickey(app, mod);
-    app.browser.linkifyKeys(app, mod, document.querySelector(".tweet"));
+    app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + this.tx.transaction.sig));
   }
 
   renderWithChildren(app, mod, selector = "") {
@@ -260,7 +260,7 @@ class RedSquareTweet {
 
     // app.browser.addIdentifiersToDom();
     this.attachEvents(app, mod);
-    app.browser.linkifyKeys(app, mod, document.querySelector(".tweet"));
+    app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + this.tx.transaction.sig));
   }
 
   renderWithParents(app, mod, selector = "", num = -1) {
@@ -326,7 +326,7 @@ class RedSquareTweet {
     }
     this.attachEvents(app, mod);
     app.browser.addModalIdentifierAddPublickey(app, mod);
-    app.browser.linkifyKeys(app, mod, document.querySelector(".tweet"));
+    app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + this.tx.transaction.sig));
   }
 
   attachEvents(app, mod) {
@@ -501,7 +501,7 @@ console.log("about to hit INNERHTML in TWEET");
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
-      app.browser.linkifyKeys(app, mod, document.querySelector(".tweet"));
+      app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + tweet_self.tx.transaction.sig));
     };
 
 
@@ -536,7 +536,7 @@ console.log("about to hit INNERHTML in TWEET");
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, "#redsquare-tweet-overlay-" + this.tx.transaction.sig);
-      app.browser.linkifyKeys(app, mod, document.querySelector(".tweet"));
+      app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + this.tx.transaction.sig));
     }
 
 

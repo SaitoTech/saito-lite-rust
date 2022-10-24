@@ -1257,14 +1257,15 @@ class Browser {
   }
 
   async linkifyKeys(app, mod, element) {
+    if (typeof element == "undefined") { return ;}
     console.log("linkifyin' " + element.id)
     if (element.id == "") { return; }
     let elements = element.childNodes;
     elements.forEach(async el => {
       const new_el = document.createElement("span");
       if (el.childNodes.length > 0) {
-        let tags = ['P', 'SPAN', 'DIV', 'BLOCKQUOTE']; 
-        if (tags.contains(el.tagName)) {
+        const tags = ['P', 'SPAN', 'DIV', 'BLOCKQUOTE'];
+        if (tags.includes(el.tagName)) {
           app.browser.linkifyKeys(el);
         }
       } else {
@@ -1293,19 +1294,20 @@ class Browser {
               if (!matched) {
                 html = html.replace(k, `<span data-id="${k}" class="saito-active-key saito-address">${k}</span>`);
               }
-              identifiers.forEach(async (identifier) => {
-                let k = await fetchPublicKeyPromise(identifier);
-                if (answer != identifier) {
-                  html.replace(id, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
-                }
-              })
-              if (typeof el.tagName == "undefined") {
-                new_el.innerHTML = html;
-                el.replaceWith(new_el);
-              } else {
-                el.innerHTML = html;
-              }
             });
+            identifiers.forEach(async (identifier) => {
+              let answer = this.app.keys.fetchPublicKey(identifier);
+              console.log(answer + " - " + identifier);
+              if (answer != identifier) {
+                html = html.replace(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
+              }
+            })
+            if (typeof el.tagName == "undefined") {
+              new_el.innerHTML = html;
+              el.replaceWith(new_el);
+            } else {
+              el.innerHTML = html;
+            }
           } catch (err) {
             console.error(err);
           }
