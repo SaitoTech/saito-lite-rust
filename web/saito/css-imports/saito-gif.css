@@ -1,0 +1,33 @@
+
+
+
+.saito-gif-container {
+    padding: 1rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: white;
+    position: relative;
+    width: 50rem;
+    max-width: 100vw;
+    max-height: 95vh;
+    overflow-y: auto;
+}
+
+.saito-gif{
+    position: absolute;
+    right: 3rem;
+    bottom: 0.5rem;
+    font-size: 2rem;
+    color: red;
+    cursor: pointer;
+
+}
+
+.saito-gif-content {
+    margin-top: 1rem;
+   display: flex;
+   justify-content: center;
+   padding: 1rem;
+}
+
+
