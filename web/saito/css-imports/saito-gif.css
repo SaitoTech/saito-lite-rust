@@ -2,7 +2,7 @@
 
 
 .saito-gif-container {
-    padding: 1rem;
+    padding: 2rem;
     padding-bottom: 0.5rem;
     border-radius: 0.5rem;
     background-color: white;
@@ -24,10 +24,26 @@
 }
 
 .saito-gif-content {
-    margin-top: 1rem;
    display: flex;
    justify-content: center;
    padding: 1rem;
 }
 
 
+
+.saito-gif-search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.saito-gif-search input {
+    margin-right: .5rem ;
+
+}
+
+.saito-gif-search i {
+    color: var(--saito-primary);
+    font-size: 2.2rem;
+    cursor: pointer;
+}

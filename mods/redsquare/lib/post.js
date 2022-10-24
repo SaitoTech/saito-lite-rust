@@ -28,7 +28,7 @@ class Post {
     this.attachEvents(app, mod);
     this.emoji = new SaitoEmoji(app, mod, 'post-tweet-textarea');
     this.emoji.render(app, mod);
-    this.gif = new SaitoGif(app, mod, self, "post-tweet-textarea")
+    this.gif = new SaitoGif(app, mod, this, "post-tweet-textarea")
     this.gif.render(app, mod)
  
   }
@@ -169,7 +169,7 @@ class Post {
     self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${resized_img}"
            /><i data-id="${self.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
-
+ 
     self.images.push(resized_img);
     return resized_img;
     //    }
