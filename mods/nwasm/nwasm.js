@@ -117,6 +117,19 @@ class Nwasm extends GameTemplate {
   }
 
 
+  load() {
+    if (this.app.options.nwasm) {
+      this.roms = this.app.options.nwasm;
+      return;
+    }
+    this.roms = {};
+  }
+
+  save() {
+    this.app.options.nwasm = this.roms;
+    this.app.storage.saveOptions();
+  }
+
 }
 
 module.exports = Nwasm;
