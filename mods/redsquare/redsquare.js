@@ -36,8 +36,8 @@ class RedSquare extends ModTemplate {
 
     // "main" or sig if viewing page-specific
     this.viewing = "feed";
-    
-  
+
+
     this.last_viewed_notifications_ts = 0;
     this.unviewed_notifications = 0;
 
@@ -122,7 +122,18 @@ class RedSquare extends ModTemplate {
       }
   }
 
+    if (type === 'user_menu') {
+      return {
+        text: "View Profile",
+        icon: "fa-regular fa-user",
+        callback: function (app, public_key) {
+          app.connection.emit('redquare-show-user-feed', public_key);
+        }
+      }
+    }
+
     return super.respondTo(type);
+
   }
 
   tweetImage(image, render_after_submit = 0) {
@@ -554,11 +565,11 @@ console.log("redsquare innerHTML");
       mod.renderWithChildren(app, mod, sig);
     });
   }
-   // 
-   // render user page
-   //
+  // 
+  // render user page
+  //
 
-   renderUserPage(app, mod, key) {
+  renderUserPage(app, mod, key) {
     this.viewing = key;
     let tweetUrl = window.location.origin + window.location.pathname + `?${this.mode}_id=` + key;
     window.history.pushState({}, document.title, tweetUrl);
@@ -572,14 +583,14 @@ console.log("redsquare innerHTML");
       mod.mode = "feed";
       mod.loadTweets(app, mod, true);
     }
-    
+
     this.reorganizeTweets(app, mod, false);
 console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].sender == key) {
         this.tweets[i].render(app, mod, ".redsquare-list");
-      } 
+      }
     }
     app.browser.addIdentifiersToDom();
   }
@@ -672,9 +683,9 @@ console.log("redsquare innerHTML");
     // avoid load in other apps
     //
     if (!this.browser_active) { return; }
-    
-    this.loadTweets(app, this);    
- 
+
+    this.loadTweets(app, this);
+
   }
 
   loadTweets(app, mod) {
@@ -682,7 +693,7 @@ console.log("redsquare innerHTML");
       mod.saito_loader.render(app, mod, 'redsquare-home-header', false);
 
       mod.app.storage.loadTransactions("RedSquare", 50, (txs) => {
-        
+
         for (let i = 0; i < txs.length; i++) {
           //console.log(i + ": " + JSON.stringify(txs[i].optional));
           txs[i].decryptMessage(app);
@@ -694,7 +705,7 @@ console.log("redsquare innerHTML");
           }
           mod.addNotification(mod.app, mod, txs[i]);
         }
-     
+
       });
 
       if (document.querySelector(".redsquare-list")) {
@@ -709,7 +720,7 @@ console.log("redsquare innerHTML");
           if (this.mode == "thread") {
             let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${mod.viewing}' OR parent_id = '${mod.viewing}' OR thread_id = '${mod.viewing}'`;
             this.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, mod.viewing); });
- 
+
           }
           if (this.mode == "user") {
             let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
