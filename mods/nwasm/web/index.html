@@ -2,43 +2,51 @@
 <html>
 
 <head>
-    <title>N64 Wasm</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="keywords" content="N64 Emulator, N64 JavaScript Emulator, WebAssembly, HTML5, Nintendo 64">
-    <meta charset="UTF-8">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/rivets/0.9.6/rivets.bundled.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
-    <style>
-        input[type="file"] {
-            display: none;
-        }
 
-        .table td,
-        .table th {
-            padding: 5px;
-        }
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="Saito Network" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-        .regularTable td,
-        .regularTable th {
-            padding: 0;
-            vertical-align: top;
-            border-top: 0px;
-        }
+  <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
 
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="saito.io redsquare" />
+  <meta name="apple-mobile-web-app-title" content="Saito N64 Wasm" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="msapplication-navbutton-color" content="#FFFFFF" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="msapplication-starturl" content="/index.html" />
 
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@SaitoOfficial" />
+  <meta name="twitter:creator" content="@SaitoOfficial" />
+  <meta name="twitter:title" content="Saito - enabling a paradigm shift in blockchain applications" />
+  <meta name="twitter:url" content="https://saito.tech/" />
+  <meta name="twitter:description" content="Saito N64 Wasm - Web3 Gaming" />
+  <meta name="twitter:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
 
-        
-        .nav-tabs .nav-item.show .nav-link,
-        .nav-tabs .nav-link.active {
-            color: #007bff;
-        }
-    </style>
+  <meta property="og:title" content="Saito N64 Wasm" />
+  <meta property="og:url" content="https://saito.io/arcade" />
+  <meta property="og:type" content="website" />
+  <meta property="og:description" content="Peer to peer social and more" />
+  <meta property="og:site_name" content="Saito Quake" />
+  <meta property="og:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta property="og:image:url" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta property="og:image:secure_url"
+  content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+
+  <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+  <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+
+  <title>Saito N64Wasm Port</title>
+
+  <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
+  <link rel="stylesheet" type="text/css" href="/saito/game.css" />
+  <link rel="stylesheet" type="text/css" href="style.css"></link>
 </head>
 
 <body>
@@ -742,5 +750,5 @@
         document.getElementsByTagName('head')[0].appendChild(script);
     </script>
 </body>
-
+<script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 </html>
