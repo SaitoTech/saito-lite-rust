@@ -1,4 +1,8 @@
 
+body {
+  background-color: black !important;
+}
+
 .container {
   max-width: unset;
   max-height: unset;
