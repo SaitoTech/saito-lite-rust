@@ -1,0 +1,40 @@
+
+.container {
+  max-width: unset;
+  max-height: unset;
+  min-width: unset;
+  min-height: unset;
+}
+
+#canvas {
+  height: 100vh;
+  width: auto;
+  cursor: default;
+  position: fixed;
+  top: 0px;
+}
+
+
+#topPanel {
+  display: none;
+}
+#lbErrorOuter {
+  display: none;
+}
+#buttomPanel {
+  display: none;
+}
+
+.card-title {
+  display: none;
+}
+
+#loginModal {
+  display: none;
+}
+
+#buttonsModal {
+  display: none;
+}
+
+

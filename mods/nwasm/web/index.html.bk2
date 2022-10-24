@@ -108,6 +108,8 @@
                     </div>
                 </div>
 
+
+
                 <input id="file-upload-eep" type="file" />
                 <input id="file-upload-sra" type="file" />
                 <input id="file-upload-fla" type="file" />
@@ -195,7 +197,7 @@
         <div id="mydiv" class="mt-4"></div>
         <!-- ID has to be canvas it's hardcoded in the EM generated .js -->
         <div id="canvasDiv" style="display: none;">
-            <canvas id="canvas"></canvas>
+            <canvas id="canvas" style="width: 640px;"></canvas>
         </div>
 
         <div id="bottomPanel" rv-hide="data.beforeEmulatorStarted">
