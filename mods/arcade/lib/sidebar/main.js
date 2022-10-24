@@ -59,21 +59,7 @@ module.exports = ArcadeSidebar = {
       game.addEventListener('click', (e) => {
         let gameName = e.currentTarget.id;
         app.browser.logMatomoEvent("Arcade", "GameListArcadeSidebarClick", gameName);
-        let doGameDetails = () => {
-          mod.createGameWizard(gameName);
-        }
-        /*
-        // Skip registration prompt
-        //
-        if (app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey()) == "") {
-          if (app.options.wallet.anonymous != 1) {
-            mod.modal_register_username = new ModalRegisterUsername(app, doGameDetails);
-            mod.modal_register_username.render(app, mod);
-            mod.modal_register_username.attachEvents(app, mod);
-            return;
-          }
-        }*/
-        doGameDetails();
+        mod.createGameWizard(gameName);
       });
     });
 

@@ -27,7 +27,7 @@ class GameSelector {
     Array.from(document.querySelectorAll('.redsquare-game-container')).forEach(game => {
       game.onclick = (e) => {
         let modname = e.currentTarget.getAttribute("data-id");
-	mod.createGameWizard(modname, thisobj);
+	      mod.createGameWizard(modname, thisobj);
         this.overlay.remove();
       };
     });
