@@ -13,14 +13,14 @@ class QuakeControls {
     "+attack":      ["MOUSE1", 'bind MOUSE1 +attack'],
     "+zoom":        ["MOUSE2", 'bind MOUSE2 +zoom'],
     "+forward":     ["w", 'bind w +forward'],
-    "+back":        ["s", 'bind s +forward'],
-    "+moveleft":    ["a", 'bind a +forward'],
-    "+moveright":   ["d", 'bind d +forward'],
-    "+moveup":      ["SPACE", 'bind SPACE +forward'],
-    "+speed":       ["SHIFT", 'bind SHIFT +forward'],
-    "+movedown":    ["CTRL", 'bind CTRL +forward'],
-    "weapnext":     ["MWHEELDOWN", 'bind MWHEELDOWN +forward'],
-    "weapprev":     ["MWHEELDOWN", 'bind MWHEELUP +forward'],
+    "+back":        ["s", 'bind s +back'],
+    "+moveleft":    ["a", 'bind a +moveleft'],
+    "+moveright":   ["d", 'bind d +moveright'],
+    "+moveup":      ["SPACE", 'bind SPACE +moveup'],
+    "+speed":       ["SHIFT", 'bind SHIFT +speed'],
+    "+movedown":    ["CTRL", 'bind CTRL +movedown'],
+    "weapnext":     ["MWHEELDOWN", 'bind MWHEELDOWN weapnext'],
+    "weapprev":     ["MWHEELDOWN", 'bind MWHEELUP weapprev'],
     "weapon 1":     ["1", 'bind 1 weapon 1'],
     "weapon 2":     ["2", 'bind 2 weapon 2'],
     "weapon 3":     ["3", 'bind 3 weapon 3'],
@@ -38,8 +38,9 @@ class QuakeControls {
     "sensitivity":  [5, 'sensitivity 5'],
     "cg_fov":       [90, 'cg_fov 90'],
     "s_volume":     [0.23, 's_volume 0.23'],
-	
     }
+
+    
      // defined after defaults in case default_config is needed
      this.loadSavedControls();
   }
