@@ -791,6 +791,7 @@ console.log("---------------------");
 
     this.saveWallet();
 
+    this.app.options.invites = [];
     this.app.options.games = [];
     this.app.storage.saveOptions();
 

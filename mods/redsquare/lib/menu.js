@@ -47,7 +47,6 @@ class RedSquareMenu {
         if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)) {
           app.browser.addElementToSelector(html, ".saito-menu-list");
         }
-
       }
     }
     this.attachEvents(app, mod);
@@ -153,7 +152,7 @@ class RedSquareMenu {
       case "settings":
         // re-render sidebar
         mod.settsidebar.render(app, mod, ".saito-sidebar-right");
-
+console.log("menu INNERHTML");
         // settings can render into appspace
         document.querySelector(".appspace").innerHTML = "";
         let settings_self = app.modules.returnModule("Settings");
