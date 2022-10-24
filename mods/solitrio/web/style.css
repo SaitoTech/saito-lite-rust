@@ -99,7 +99,7 @@ position: relative;
   display: grid;
   grid-template-columns: repeat(10,1fr);
   grid-template-rows: 1fr 1fr 1fr 1fr;
-  max-width: min(90vw,150vh);
+  max-width: min(90vw,160vh);
   grid-gap: min(5px,1vh);
   height: fit-content;
 }
@@ -115,6 +115,8 @@ position: relative;
 @media screen and (orientation: landscape) and (max-height: 600px) {
   .logobox{
     order: 1;
+    margin-top: 50vh;
+    transform: translateY(-50%);
     max-width: 150px;
   }
   .logobox img{
@@ -124,7 +126,8 @@ position: relative;
     display: none;
   }
   .rowbox{
-    margin-top: 0;
+    margin-top: 50vh;
+    transform: translateY(-50%);
     padding: 15px;
     order: 2;
   }

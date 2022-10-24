@@ -13,11 +13,17 @@ class Relay extends ModTemplate {
         this.name = "Relay";
         this.description = "Adds support for off-chain, realtime communications channels through relay servers, for mobile users and real-time gaming needs.";
         this.categories = "Utilities Core";
-
-
         this.description = "Simple Message Relay for Saito";
         this.categories = "Utilities Communications";
-        return this;
+
+        this.busy = false;
+
+        app.connection.on("send-relay-message", (obj)=>{
+            this.sendRelayMessage(obj.recipient, obj.request, obj.data);
+        })
+        app.connection.on("set-relay-status-to-busy", ()=>{
+            this.busy = true;
+        });
     }
 
 
@@ -122,15 +128,27 @@ class Relay extends ModTemplate {
                 // if interior transaction is intended for me, I process regardless
                 //
                 if (tx.isTo(app.wallet.returnPublicKey())) {
-                    // && !tx.isFrom(app.wallet.returnPublicKey())) {
+
+                    if (txmsg.request === "ping"){
+                        this.sendRelayMessage(tx.transaction.from[0].add, "echo", {status:this.busy});
+                        return;
+                    }
+
+                    if (txmsg.request === "echo"){
+                        if (txmsg.data.status){
+                            app.connection.emit("relay-is-busy", tx.transaction.from[0].add);
+                        }else{
+                            app.connection.emit("relay-is-online", tx.transaction.from[0].add);
+                        }
+                    }
 
                     //console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
                     app.modules.handlePeerRequest(txmsg, peer, mycallback);
                     return;
 
-                    //
-                    // otherwise relay
-                    //
+                //
+                // otherwise relay
+                //
                 } else {
 
                     //

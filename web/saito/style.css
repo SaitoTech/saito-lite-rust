@@ -55,6 +55,8 @@ Generic Style Settings for Modules in the Saito App Suite
   --saito-cyber-black-cut: rgb(28, 28, 35, 0.5);
   --saito-wu: none;
   --saito-width: 1500px;
+
+  font-size: 10px;
 }
 
 * {
@@ -131,6 +133,7 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--thumbBG) var(--scrollbarBG);
   overflow: hidden;
+  font-size: 1.6rem;
 }
 
 ::-webkit-scrollbar {
@@ -215,6 +218,10 @@ p {
   margin: 0.5em 0;
 }
 
+h6{
+  font-size: 2rem;
+}
+
 hr {
   margin: 1em 0;
 }
@@ -241,93 +248,6 @@ hr {
 }
 
 /* Overlay */
-
-.saito-overlay-backdrop,
-.game-overlay-backdrop {
-  position: absolute;
-  display: none;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #444;
-  opacity: 0.4;
-  z-index: 100;
-}
-
-.saito-overlay,
-.game-overlay {
-  position: absolute;
-  display: inline-block;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  margin-left: auto;
-  margin-right: auto;
-  background-color: transparent;
-  z-index: 1000;
-  min-width: 10%;
-  min-height: 10%;
-
-}
-
-.saito-overlay-closebox {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  right: -13px;
-  border-radius: 50%;
-  top: -15px;
-  background-color: white;
-  z-index: 100;
-}
-
-.saito-overlay-closebox-btn {
-  display: block;
-  height: 32px;
-  width: 32px;
-  color: red;
-  font-size: 31px;
-}
-
-.saito-overlay-closebox-btn:hover {
-  transform: scale(1);
-}
-
-/* Make sure game overlay can cover saito-overlay */
-.game-overlay {
-  z-index: 2010;
-}
-
-.game-overlay-backdrop {
-  z-index: 2000;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.saito-overlay-menu {
-  padding: 10px;
-  background-color: whitesmoke;
-  opacity: 0.8;
-  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-}
-
-.saito-overlay-menu ul li {
-  width: 100%;
-  line-height: 3.5em;
-  border-top: 1px solid var(--saito-skyline-grey);
-  cursor: pointer;
-  text-align: -webkit-match-parent;
-  display: list-item;
-  list-style: none;
-  padding: 0 1em;
-}
-
-.saito-overlay-menu ul li:hover {
-  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75), -2px -2px 5px #eee;
-  background: #0001;
-}
 
 .rules-overlay{
   background: var(--saito-nightscape);
@@ -1130,7 +1050,7 @@ label.treated {
 
 div#message-wrapper {
   border: 2px solid var(--saito-red);
-  min-width: 500px;
+  min-width: min(500px,100vw);
   padding: 1em;
   font-size: 2em;
   background: var(--saito-red);
@@ -1140,6 +1060,7 @@ div#message-wrapper {
   color: #fff;
   z-index: 200;
 }
+
 
 .promptval {
   margin: 0 0 1em 0;
@@ -1687,7 +1608,7 @@ div#message-wrapper {
   padding: 0px;
 }
 
-.loader {
+.loader, .game-loader-spinner {
   border: 16px solid var(--saito-skyline-grey);
   border-top: 16px solid var(--saito-red);
   border-radius: 50%;
@@ -1772,18 +1693,29 @@ div#message-wrapper {
     height: 2.5em;
   }
   .header-mini-wallet {
-    width: 50vw;
+    width: 40vw;
     margin: 0 3px 0 0;
     text-align: right;
     padding-right: 8px;
   }
   .header-username {
-    width: 40vw;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
   }
   .header-icon-links {
     align-items: start;
     height: 3em;
+  }
+  .rules-overlay{
+    min-width: unset;
+    max-width: 100vw;
+    width: 95vw;
+    font-size: 1em;
+  }
+
+  div#message-wrapper {
+    min-width: min(450px, 95vw);
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
@@ -2123,173 +2055,6 @@ a.header-icon-fullscreen.tip {
 /* file label */
 .treated {
   display:none;
-}
-
-
-
-/*  Video chat */
-
-/*  video chat */
-
-.small-video-chatbox {
-  max-width: 60vw;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80vw;
-  background-color: #ffffff;
-  position: fixed;
-  z-index: 100000;
-}
-
-
-.small-video-chatbox .heading {
-  padding: 1rem;
-}
-
-.small-video-chatbox .disconnect_btn {
-  transform: matrix(1, 0, 0, -1, 0, 0);
-  background-color: var(--saito-white);
-}
-
-
-.small-video-chatbox .disconnect_btn:hover {
-  color: black
-}
-
-.small-video-chatbox .small-wrapper {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-auto-rows: minmax(100px, 30vh);
-  grid-gap: 1rem;
-  background: var(--saito-skyline-grey);
-}
-
-.small-video-chatbox .video-box {
-  border-radius: 0.1rem;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border: 1px solid var(--saito-cyber-black-wash);
-
-}
-
-#localStream {
-  display: block;
-}
-
-.small-video-chatbox .b-btngrid {
-  border: none;
-  margin-left: 1rem;
-  margin-top: 250px;
-  width: 160px;
-  height: 38px;
-  border-radius: 4px;
-  left: 51px;
-  cursor: pointer;
-}
-
-.small-video-chatbox .heading {
-  background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
-}
-
-.small-video-chatbox .footer {
-  display: grid;
-  grid-gap: 1rem;
-  padding: 20px;
-  background: radial-gradient(100.52% 47851.24% at 0% 0%, #f66659 0%, #f21d3b 51.56%, #f66659 100%)
-      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */
-  ;
-  transform: matrix(1, 0, 0, -1, 0, 0);
-  color: white;
-  align-items: center;
-  grid-template-columns: 2em 2em 1fr;
-}
-
-
-.small-video-chatbox p {
-  margin: 0;
-}
-
-
-.small-video-chatbox .disconnect_btn {
-  margin-left: auto;
-  background-color: white;
-}
-
-.small-video-chatbox .footer .fa, .small-video-chatbox .footer .fas   {
-  color: white;
-  font-size: 2rem;
-  cursor: pointer;
-  transform: matrix(1, 0, 0, -1, 0, 0);
-  margin-right: 3rem;
-}
-.video-box-container {
-  background-color: black;
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  color: white;
-}
-
-.video-box-container>div {
-  color: white;
-  width: 50%;
-  line-height: 1.5;
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.video-box-container>div>p {
-  color: white;
-}
-
-.lds-dual-ring {
-  display: inline-block;
-}
-
-.lds-dual-ring:after {
-  content: " ";
-  display: block;
-  width: 10px;
-  height: 10px;
-  margin: 8px;
-  border-radius: 50%;
-  border: 6px solid #fff;
-  border-color: #fff transparent #fff transparent;
-  animation: lds-dual-ring 1.2s linear infinite;
-}
-
-@keyframes lds-dual-ring {
-  0% {
-      transform: rotate(0deg);
-  }
-
-  100% {
-      transform: rotate(360deg);
-  }
-}
-
-
-@keyframes glow {
-  0% {
-      transform: scale(.97);
-  }
-
-  50% {
-      transform: scale(1);
-  }
-
-  75% {
-      transform: scale(0.97);
-  }
-
-  100% {
-      transform: scale(.97);
-  }
 }
 
 

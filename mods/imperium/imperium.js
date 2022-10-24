@@ -11693,6 +11693,9 @@ ACTION CARD - types
         game_mod.log.toggleLog();
       }
     });
+
+
+
     this.menu.addSubMenuOption("game-game", {
       text : "Rules",
       id : "game-rules",
@@ -11739,14 +11742,6 @@ ACTION CARD - types
               break;
           }
         });
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        window.location.href = "/arcade";
       }
     });
 
@@ -11918,16 +11913,8 @@ ACTION CARD - types
     //
     if (this.browser_active == 0) { return; }
 
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        app.browser.requestFullscreen();
-      }
-    });
 
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.hud.auto_sizing = 0;
     this.hud.render(app, this);
@@ -19862,8 +19849,6 @@ console.log("K: " + z[k].name);
               <option value="12">12 VP</option>
               <option value="14">14 VP</option>
             </select>
-
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 
         </div>
         <div>

@@ -1,23 +1,25 @@
 const saito = require("../../lib/saito/saito");
-//const ModTemplate = require("../../lib/templates/modtemplate");
-const InviteTemplate = require("../../lib/templates/invitetemplate");
+const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
 const ChatManagerLarge = require('./lib/components/chat-manager-large');
 const ChatManagerSmall = require("./lib/components/chat-manager-small");
 const StunxAppspace = require('./lib/appspace/main');
 const InviteOverlay = require("./lib/components/invite-overlay");
 const StunxGameMenu = require("./lib/game-menu/main");
-const StunxInvite = require('./lib/invite/main');
+const StunxInvite = require("./lib/invite/main");
 
-class Stunx extends InviteTemplate {
+
+class Stunx extends ModTemplate {
 
     constructor(app, mod) {
         super(app);
         this.appname = "Video Call";
         this.name = "Stunx";
+        this.slug = this.returnSlug();
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
         this.app = app;
+        this.appspaceRendered = false;
         this.remoteStreamPosition = 0;
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
@@ -61,12 +63,12 @@ class Stunx extends InviteTemplate {
 
     respondTo(type) {
         if (type === 'invite') {
-          this.styles = ['/' + this.returnSlug() + '/css/style.css',];
-          super.render(this.app, this); // for scripts + styles
-          return new StunxInvite(this.app, this);
+            this.styles = [`/${this.returnSlug()}/css/style.css`,];
+            super.render(this.app, this);
+            return new StunxInvite(this.app, this);
         }
         if (type === 'appspace') {
-            this.styles = ['/' + this.returnSlug() + '/css/style.css',];
+            this.styles = [`/${this.returnSlug()}/css/style.css`,];
             super.render(this.app, this);
             return new StunxAppspace(this.app, this);
         }
@@ -95,13 +97,35 @@ class Stunx extends InviteTemplate {
                                 callback: function (app, game_mod) {
                                     const stunx = app.modules.returnModule('Stunx');
                                     console.log('player ', game_mod.game.players[i]);
-                                    app.connection.emit('game-start-video-call', game_mod.game.players[i]);
+                                    app.connection.emit('game-start-video-call', [game_mod.game.players[i]]);
                                 },
                             });
                         }
                     }
+                    game_mod.menu.addSubMenuOption("game-video-chat", {
+                        text: "All players",
+                        id: "game-video-chat",
+                        class: "game-video-chat",
+                        callback: function (app, game_mod) {
+                            const stunx = app.modules.returnModule('Stunx');
+                            console.log('all players ', game_mod.game.players);
+                            app.connection.emit('game-start-video-call', [...game_mod.game.players]);
+                        },
+                    });
+
+
                 },
                 menus: []
+            }
+        }
+
+        if (type === 'user-menu') {
+            return {
+                text: "Video Call",
+                icon: "fas fa-video",
+                callback: function (app, public_key) {
+                    app.connection.emit('game-start-video-call', public_key);
+                }
             }
         }
         return null;
@@ -237,7 +261,7 @@ class Stunx extends InviteTemplate {
             $created_at: Date.now(),
             $validity_period: room.validityPeriod,
         };
-        const result = await app.storage.executeDatabase(sql, params, "stunx");
+        const result = await app.storage.executeDatabase(sql, params, "videocall");
         console.log('db result ', result, app.storage.executeDatabase);
     }
 
@@ -253,12 +277,8 @@ class Stunx extends InviteTemplate {
             $peer_count: peer_count,
             $is_max_capacity: is_max_capacity
         }
-        app.storage.executeDatabase(sql, params, "stunx");
-
+        app.storage.executeDatabase(sql, params, "videocall");
         return;
-
-
-
     }
 
     acceptOfferAndBroadcastAnswer(app, offer_creator, offer) {

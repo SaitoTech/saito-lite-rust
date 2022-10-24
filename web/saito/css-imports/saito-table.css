@@ -1,0 +1,82 @@
+/* ----------------------------------------------------------------
+Saito Table
+-----------------------------------------------------------------*/
+.saito-table {
+    background-color: #fff;
+    display: grid;
+    grid-template-columns: auto;
+    width: 100%;
+    position: relative;
+}
+
+.saito-table-row {
+    align-items: center;
+    background-color: var(--saito-gray);
+}
+
+.saito-address {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    width: inherit;
+}
+
+.saito-table-rank {
+    font-family: courier, monospace;
+    font-size: 1.5rem;
+}
+
+/* ----------------------------------------------------------------
+Saito Leaderboard
+-----------------------------------------------------------------*/
+.saito-leaderboard .saito-table .saito-table-row {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-width: 2px 0;
+    border-color: #fff;
+    border-style: solid;
+    cursor: pointer;
+}
+
+
+.saito-leaderboard-gamename {
+    width: 100%;
+    overflow: hidden;
+}
+
+
+
+
+.saito-table-header {
+  display: grid;
+  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
+  grid-column-gap: 1rem;
+  margin-bottom: 1rem;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  text-align: center;
+}
+
+.saito-table-body {
+  height: auto;
+  overflow-y: scroll;
+  height: 78vh;
+  position: relative;
+  overflow-y: scroll;
+  text-align: center;
+}
+
+.saito-table-row {
+  display: grid;
+  display: grid;
+  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
+  grid-column-gap: 1rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--saito-gray);
+}

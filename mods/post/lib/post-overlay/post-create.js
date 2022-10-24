@@ -1,5 +1,4 @@
 const PostCreateTemplate = require('./post-create.template');
-const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 module.exports = PostCreate = {
 
@@ -11,8 +10,6 @@ module.exports = PostCreate = {
     this.new_post.comment = "";
     this.new_post.link = "";
     this.new_post.forum = "";
-
-    mod.overlay = new SaitoOverlay(app, mod);
     
     mod.overlay.show(app, mod, PostCreateTemplate(app, mod), function() {
     });

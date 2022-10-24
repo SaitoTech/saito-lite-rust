@@ -2,7 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeObserver = require("./lib/appspace/arcade-observer");
 const GameObserver = require("./lib/components/game-observer");
-const ObserverLoader = require("./lib/components/observer-loader");
+const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
 const JSON = require("json-bigint");
 
 
@@ -24,7 +24,7 @@ class Observer extends ModTemplate {
     this.step_speed = 2000;
     this.is_paused = true;
 
-    this.debug = true;
+    this.debug = false;
     this.controls = null;
   }
 
@@ -35,8 +35,36 @@ class Observer extends ModTemplate {
     //
     // listen for txs from arcade-supporting games
     //
-    this.app.modules.respondTo("arcade-games").forEach((mod) => {
+    app.modules.respondTo("arcade-games").forEach((mod) => {
       this.affix_callbacks_to.push(mod.name);
+    });
+
+    app.connection.on("arcade-observer-join-table", (game_id)=>{
+      this.observeGame(game_id, true);
+    });
+    app.connection.on("arcade-observer-review-game", (game_id)=>{
+      this.observeGame(game_id, false);
+    });
+
+    app.connection.on("Arcade-Observer-Update-Player", (obj)=>{
+      //{id, keys}
+      let game = this.games.find((g) => g.game_id === obj.id);
+      if (game){
+        let current_players = game.players_array.split("_");
+        let need_to_update = true;
+        if (current_players.length == obj.keys.length){
+          need_to_update = false;
+          for (let i = 0; i < current_players.length; i++){
+            if (current_players[i] !== obj.keys[i]){
+              need_to_update = true;
+            }
+          }
+        }
+        if (need_to_update){
+          game.players_array = obj.keys.join("_");
+          app.connection.emit("observer-add-game-render-request",this.games);
+        }
+      }
     });
 
     if (this.app.BROWSER){
@@ -64,8 +92,14 @@ class Observer extends ModTemplate {
     }, 24*60*60*1000);
   }
 
-  renderArcade(app, mod, elem_id){
-  	 try{
+  renderArcadeTab(app, mod){
+    if (!app.BROWSER) { return; }
+    
+    let elem_id = "observer-hero";
+    let tab = document.getElementById(elem_id);
+    if (tab){
+      tab.innerHTML = "";
+      try{
         this.games.forEach((observe) => {
           let ob = new ArcadeObserver(app, observe);
           ob.render(app, this, elem_id);
@@ -73,6 +107,11 @@ class Observer extends ModTemplate {
       }catch(err){
         console.log(err);
       }
+
+    }else{
+      //Probably on game_initialization screen
+      //console.error("Observer cannot render in Arcade");
+    }
   }
 
   renderControls(app, game_mod){
@@ -82,9 +121,37 @@ class Observer extends ModTemplate {
   	this.controls.render(app, game_mod);
   }
 
+  removeControls(){
+    if (this.controls){
+      this.controls.hide();
+      //this.controls = null;
+    }
+  }
+
   attachEvents(app, mod) {
   }
 
+  returnGameById(game_id){
+    let game = this.games.find((g) => g.game_id === game_id);
+
+    let players = game.players_array.split("_");
+    let gameState = JSON.parse(game.game_state)
+
+    let gameObj = {
+      //arcade game invite
+      id: game_id,
+      game: game.module,
+      options: gameState.options,
+      players: players,
+      players_needed: gameState?.options?.max_players || players.length,
+      //extra observer info
+      latest_move: game.latest_move,
+      step: game.step,
+      status: game.game_status
+    };
+
+    return gameObj;
+  }
 
   shouldAffixCallbackToModule(modname) {
     for (let i = 0; i < this.affix_callbacks_to.length; i++) {
@@ -99,10 +166,10 @@ class Observer extends ModTemplate {
   //
   // load transactions into interface when the network is up
   onPeerHandshakeComplete(app, peer) {
+    if (!app.BROWSER) { return; }
+    
     // fetch any usernames needed
-    if (this.app.BROWSER == 1) {
-      app.browser.addIdentifiersToDom();
-    }
+    // app.browser.addIdentifiersToDom();
 
     // load observer games (active)
     this.sendPeerDatabaseRequestWithFilter(
@@ -110,10 +177,26 @@ class Observer extends ModTemplate {
       `SELECT * FROM obgames ORDER BY ts DESC LIMIT 16`,
       (res) => {
         if (res.rows) {
-          console.log("GAMESTATES:");
           res.rows.forEach((row) => {
-            //console.log(JSON.parse(JSON.stringify(row)));
             this.addGameToObserverList(row);
+            this.updateGame(row.game_id);
+          });
+        }
+      }
+    );
+
+  }
+
+
+  async updateGame(game_id){
+    this.sendPeerDatabaseRequestWithFilter(
+      "Observer", 
+      `SELECT * FROM gamestate WHERE game_id = '${game_id}' ORDER BY step DESC LIMIT 1`,
+      (res) => {
+        if (res.rows) {
+          res.rows.forEach((row) => {
+            let latest_tx = new saito.default.transaction(JSON.parse(row.tx));
+            this.updateGameOnObserverList(latest_tx.msg);
           });
         }
       }
@@ -219,57 +302,46 @@ class Observer extends ModTemplate {
     newtx.game_status = (txmsg.game_state.over) ? "over" : "live";
     newtx.players_array = txmsg.game_state.players.join("_");;
     newtx.module = txmsg.module;
+    newtx.ts = txmsg.game_state.step.ts || new Date().getTime();
     newtx.game_state = JSON.stringify(txmsg.game_state);
-    newtx.ts = new Date().getTime();
 
     return newtx;
   }
 
   addGameToObserverList(msg) {
+    if (!this.app.BROWSER){ return; }
     for (let i = 0; i < this.games.length; i++) {
       if (msg.game_id == this.games[i].game_id) {
         return;
       }
     }
   
+    msg.latest_move = msg.ts;
     this.games.push(msg);
-
-    if (this.app.BROWSER){
-      let arcade = this.app.modules.returnModule("Arcade");
-      if (arcade){
-        arcade.renderArcadeMain();  
-      }
-    }
+    
+    this.app.connection.emit("observer-add-game-render-request",this.games);
+    
   }
 
   updateGameOnObserverList(msg){
+    if (!this.app.BROWSER){ return; }
+
     for (let i = 0; i < this.games.length; i++) {
       if (msg.game_id == this.games[i].game_id) {
         if (msg.step){
           this.games[i].step = msg.step.game;
+          this.games[i].latest_move = msg.step.ts;
         }
         if (msg.request == "gameover" || msg.request == "stopgame"){
           this.games[i].game_status = "over";
         }
-        
-        let arcade = this.app.modules.returnModule("Arcade");
-        if (arcade){
-          arcade.renderArcadeMain();  
-        }        
+
+        this.app.connection.emit("observer-add-game-render-request",this.games);
+        return;
       }
     }
-
-
   }
 
-  doesGameExistLocally(game_id){
-    for (let i = 0; i < this.games.length; i++) {
-      if (game_id == this.games[i].game_id) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   async saveGameState(blk, tx, conf, app) {
     if (this.app.BROWSER) { return; }
@@ -312,7 +384,7 @@ class Observer extends ModTemplate {
         $game_id: txmsg.game_id,
         $players_array: players_array,
         $module: txmsg.module,
-        $ts: new Date().getTime(),
+        $ts: game_state.step.ts || new Date().getTime(),
         $game_state: JSON.stringify(game_state),
       };
 
@@ -321,13 +393,8 @@ class Observer extends ModTemplate {
 
     }
 
-    if (!this.doesGameExistLocally(txmsg.game_id)){
-      return;
-    }
-
     //Otherwise, we have an update to the game
     if (txmsg.request == "game"){
-
 
       //New Step
       sql = `INSERT OR REPLACE INTO gamestate (
@@ -349,30 +416,29 @@ class Observer extends ModTemplate {
         $game_id: txmsg.game_id,
         $player: tx.transaction.from[0].add,
         $tx: JSON.stringify(tx.transaction),
-        $ts: new Date().getTime(),
+        $ts: txmsg.step?.ts || new Date().getTime(),
       };
 
-      console.log(JSON.stringify(params));      
       await app.storage.executeDatabase(sql, params, "observer");
  
+    /*
       let sql2 = `UPDATE obgames SET step = $step, ts = $ts WHERE game_id = $game_id`;
-      console.log(sql2);
-      console.log(params);
+      //console.log(sql2);
+      //console.log(params);
       params = {
         $step: txmsg.step?.game || 1,
         $game_id: txmsg.game_id,
         $ts: new Date().getTime(),
       }
       await app.storage.executeDatabase(sql2, params, "observer");
-
+    */
 
     }else{
       if (txmsg.request == "stopgame" || txmsg.request == "gameover"){
         //We have a game over request
-        let sql2 = `UPDATE obgames SET game_status = "over", ts = $ts WHERE game_id = $game_id`;
+        let sql2 = `UPDATE obgames SET game_status = "over" WHERE game_id = $game_id`;
         params = {
           $game_id: txmsg.game_id,
-          $ts: new Date().getTime(),
         }
 
         await app.storage.executeDatabase(sql2, params, "observer");
@@ -381,7 +447,7 @@ class Observer extends ModTemplate {
     }
   }
 
-  observeGame(game_id) {
+  observeGame(game_id, watch_live) {
 
     let msgobj = null;
 
@@ -399,11 +465,10 @@ class Observer extends ModTemplate {
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade.browser_active){
       arcade.viewing_arcade_initialization_page = 1;
-    }else{
-      return;
+      let gameLoader = new GameLoader(this.app, this);
+      gameLoader.render(this.app, this, "#arcade-main", "Loading Game Moves"); //Start Spinner
     }
-    ObserverLoader.render(this.app, this); //Start Spinner
-    
+
     //let address_to_watch = msgobj.player;
 
     if (!this.app.options.games) {
@@ -442,7 +507,7 @@ class Observer extends ModTemplate {
     //We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
     this.sendFollowTx(msgobj);
 
-    this.initializeObserverMode(game_id);
+    this.initializeObserverMode(game_id, watch_live);
   }
 
 
@@ -461,7 +526,6 @@ class Observer extends ModTemplate {
 	    tx.transaction.to.push(new saito.default.slip(p, 0.0));   	
     }
 
-    console.log(JSON.parse(JSON.stringify(tx)));
     tx = this.app.wallet.signTransaction(tx);
 
     this.app.network.propagateTransaction(tx);
@@ -609,7 +673,7 @@ class Observer extends ModTemplate {
   /**
    * 
    */ 
-  initializeObserverMode(game_id) {
+  async initializeObserverMode(game_id, watch_live) {
     let arcade_self = this;
 
     let first_tx = null;
@@ -640,6 +704,10 @@ class Observer extends ModTemplate {
           first_tx.observer_mode = 1;
           first_tx.player = 0; //Set me as an observer
           first_tx.halted = 1; // Default to paused
+          if (watch_live){
+            first_tx.halted = 0;
+            first_tx.live = 1;
+          }
 
           //Either add the cloned game to my wallet or update my wallet
           let idx = -1;
@@ -657,13 +725,20 @@ class Observer extends ModTemplate {
 
           console.log(JSON.parse(JSON.stringify(first_tx)));
 
+          //game_mod.saveFutureMoves(game_mod.game.id);
+          //game_mod.saveGame(game_mod.game.id);
+
           arcade_self.app.storage.saveOptions();
 
           //
           // move into game
           //
           let slug = arcade_self.app.modules.returnModule(first_tx.module).returnSlug();
-          ObserverLoader.render(arcade_self.app, arcade_self, slug); //Stop spinner, move into game
+          let gameLoader = new GameLoader(arcade_self.app, arcade_self, first_tx.id);
+          let msg = `You are ready to ${(watch_live)?"follow":"watch"} the game!` 
+          gameLoader.render(arcade_self.app, arcade_self, "#arcade-main", msg, "enter game");
+          
+          arcade_self.app.connection.emit("arcade-game-ready-observer", first_tx.id);
         });
       })
       .catch((err) =>
@@ -693,7 +768,7 @@ class Observer extends ModTemplate {
         let games = await app.storage.queryDatabase(sql, params, "observer");
 
         //Fetch all the moves 
-        sql = "SELECT * FROM gamestate WHERE game_id = $game_id AND step > $step ORDER BY step ASC";
+        sql = "SELECT * FROM gamestate WHERE game_id = $game_id AND step > $step ORDER BY step ASC LIMIT 100";
         params = { $game_id: game_id, $step: lm };
         let more_games = await app.storage.queryDatabase(sql, params, "observer");
 

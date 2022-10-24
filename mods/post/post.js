@@ -3,6 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const PostMain = require("./lib/post-main/post-main");
 const PostSidebar = require("./lib/post-sidebar/post-sidebar");
 const PostCreate = require("./lib/post-overlay/post-create");
+const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ArcadePosts = require("./lib/arcade-posts/arcade-posts");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const datetimeRelative = require("../../lib/helpers/datetime_formatter");
@@ -19,6 +20,7 @@ class Post extends ModTemplate {
     this.events = ["chat-render-request"];
     this.renderMethod = "none";
 
+    this.overlay = new SaitoOverlay(app);
     this.post = {};
     this.post.domain = "saito";
     this.posts = [];
@@ -32,14 +34,6 @@ class Post extends ModTemplate {
     this.categories = "Social Messaging";
   }
 
-  receiveEvent(type, data) {
-    if (type == "chat-render-request") {
-      if (this.browser_active) {
-        PostSidebar.render(this.app, this);
-        PostSidebar.attachEvents(this.app, this);
-      }
-    }
-  }
 
   //
   // manually announce arcade banner support
@@ -82,7 +76,7 @@ class Post extends ModTemplate {
 
     if (type == "header-dropdown") {
       return {
-        name: this.appname ? this.appname : this.name,
+        name: "Forums",//this.appname ? this.appname : this.name,
         icon_fa: this.icon_fa,
         browser_active: this.browser_active,
         slug: this.returnSlug(),
@@ -98,7 +92,16 @@ class Post extends ModTemplate {
     return services;
   }
 
-  /* Does this still get called or only render???*/
+  initialize(app){
+    super.initialize(app);
+    //Add Chat-Manager to my components
+    app.modules.respondTo("chat-manager").forEach(m => {
+      this.addComponent(m.respondTo("chat-manager"));
+    });
+
+  }
+
+  /* We exploit the dual nature of render/initializeHTML to do some weird shit*/
   initializeHTML(app) {
     if (this.header == null) {
       this.header = new SaitoHeader(app, this);
@@ -115,6 +118,8 @@ class Post extends ModTemplate {
 
     PostMain.render(app, this);
     PostMain.attachEvents(app, this);
+
+    super.render(this.app, this, ".post-sidebar");
 
     this.urlParams = new URLSearchParams(window.location.search);
     if (this.urlParams.get("delete")) {

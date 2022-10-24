@@ -1,5 +1,4 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-const GameScoreboard = require("../../lib/saito/ui/game-scoreboard/game-scoreboard");
 const saito = require('../../lib/saito/saito');
 const JSON = require('json-bigint');
 
@@ -26,7 +25,6 @@ class GameTestSuite extends GameTemplate {
     this.minPlayers = 1; //2;
     this.maxPlayers = 1; //6;
 
-    this.scoreboard = new GameScoreboard(app);
     this.game_cardfan_visible = 0;
     this.game_menu_visible = 1;
     this.game_hud_visible = 0;
@@ -148,14 +146,6 @@ class GameTestSuite extends GameTemplate {
       });
 
 
-    this.menu.addSubMenuOption("game-game", {
-          text : "Exit",
-          id : "game-exit",
-          class : "game-exit",
-          callback : function(app, game_mod) {
-            window.location.href = "/arcade";
-          },
-      });
 
     /* Simulate different numbers of players*/
     this.menu.addMenuOption({
@@ -341,7 +331,6 @@ class GameTestSuite extends GameTemplate {
 
 
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
@@ -446,7 +435,6 @@ class GameTestSuite extends GameTemplate {
     options_html += `
         </select>
       </div>
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
 
     return options_html;

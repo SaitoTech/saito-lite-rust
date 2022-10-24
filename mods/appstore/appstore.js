@@ -81,8 +81,6 @@ class AppStore extends ModTemplate {
 
     if (message.request === "appstore search modules") {
 
-////console.log("HANDLE SEARCH MODULES");
-
       let squery1 = "%" + message.data + "%";
       let squery2 = message.data;
 
@@ -91,9 +89,6 @@ class AppStore extends ModTemplate {
         $squery1: squery1,
         $squery2: squery2,
       };
-
-//console.log(sql);
-//console.log(JSON.stringify(params));
 
       let rows = await this.app.storage.queryDatabase(sql, params, "appstore");
 
@@ -182,7 +177,6 @@ class AppStore extends ModTemplate {
           let mod_zip_filename = path.basename(this.path);
           let mod_path = path.resolve(__dirname, `mods/${mod_zip_filename}`);
           let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
-////console.log("mod path is: " + mod_path);
           let zip = fs.readFileSync(mod_path, { encoding: 'base64' });
 
 	  //
@@ -194,8 +188,6 @@ class AppStore extends ModTemplate {
 	  // on start, particularly with Red Imperium.
 	  //
 	  if (zip.length <= 30000000) {
-
-////console.log("submitting: " + mod_zip_filename);
 
             newtx.msg = {
               module: "AppStore",

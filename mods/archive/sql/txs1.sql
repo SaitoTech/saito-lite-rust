@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS txs (
-  id INTEGER,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   sig TEXT,
   publickey TEXT,
   tx TEXT,
+  optional TEXT,
   ts INTEGER,
   type TEXT,
-  UNIQUE (publickey, tx),
-  PRIMARY KEY(id ASC)
+  UNIQUE (publickey, tx)
 );

@@ -93,6 +93,15 @@ class Peer {
     return 0;
   }
 
+  isConnected() {
+    if (this.socket) {
+      if (this.socket.readyState === this.socket.OPEN) {
+	return true;
+      }
+    }
+    return false;
+  }
+
   //
   // returns true if we are the first listed peer in the options file
   // TODO -- isFirstPeer

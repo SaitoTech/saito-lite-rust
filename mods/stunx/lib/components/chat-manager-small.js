@@ -1,5 +1,6 @@
 const VideoBox = require('./video-box');
 const ChatManagerSmallTemplate = require('./chat-manager-small.template');
+const ChatManagerSmallTemplateGeneric = require('./chat-manager-small-template-generic');
 
 
 
@@ -43,15 +44,21 @@ class ChatManagerSmall {
     }
 
     render() {
-        this.app.browser.addElementToDom(ChatManagerSmallTemplate(), document.getElementById('content__'));
+        // this.app.browser.addElementToDom(ChatManagerSmallTemplate(), document.getElementById('content__'));
+        if (document.querySelector("#game-video-chat ul")) {
+            this.app.browser.addElementToSelector(ChatManagerSmallTemplate(), "#game-video-chat ul");
+        } else {
+            this.app.browser.addElementToSelector(ChatManagerSmallTemplateGeneric(), "");
+        }
+
     }
 
     attachEvents(app, mod) {
-        app.browser.makeDraggable("small-video-chatbox");
+        app.browser.makeDraggable("small-video-chatbox", null, true);
 
         document.querySelector('.disconnect_btn').onclick = (e) => {
             this.disconnect();
-            siteMessage("You have been disconnected", 5000);
+            // siteMessage("You have been disconnected", 5000);
         }
 
         document.querySelector('.audio_control').onclick = (e) => {
@@ -71,7 +78,16 @@ class ChatManagerSmall {
 
     hide() {
         console.log('hiding')
-        document.querySelector('#small-video-chatbox').parentElement.removeChild(document.querySelector('#small-video-chatbox'));
+        document.querySelectorAll('.video-chat-manager').forEach(item => {
+            item.parentElement.removeChild(document.querySelector('.video-chat-manager'));
+        })
+
+
+        document.querySelectorAll('.video-box-container').forEach(box => {
+            box.parentElement.removeChild(box)
+        })
+
+        document.querySelector("#small-video-chatbox").parentElement.removeChild(document.querySelector("#small-video-chatbox"))
 
     }
 
@@ -114,30 +130,36 @@ class ChatManagerSmall {
             const videoBox = new VideoBox(this.app, this.mod);
             this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         }
-        this.video_boxes[peer].video_box.render(null, peer, 'small-wrapper');
+        this.video_boxes[peer].video_box.render(null, peer, null);
     }
 
 
     updateConnectionState(peer, state) {
-        console.log(state, this.video_boxes[peer].video_box);
-        if (!this.video_boxes[peer].video_box) {
-            return;
-        }
-        this.video_boxes[peer].video_box.handleConnectionStateChange(state);
 
-        switch (state) {
-            case "disconnected":
-                delete this.video_boxes[peer];
-                if (Object.keys(this.video_boxes).length === 1) {
+        try {
+            console.log(state, this.video_boxes[peer].video_box);
+            if (!this.video_boxes[peer].video_box) {
+                return;
+            }
+            this.video_boxes[peer].video_box.handleConnectionStateChange(state);
+
+            switch (state) {
+                case "disconnected":
+                    // delete this.video_boxes[peer];
+                    // if (Object.keys(this.video_boxes).length === 1) {
                     this.disconnect();
-                    siteMessage("Video call ended")
-                }
-                console.log("video boxes: after ", this.video_boxes);
-                break;
+                    // siteMessage("Video call ended");
+                    // }
+                    console.log("video boxes: after ", this.video_boxes);
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
+        } catch (error) {
+            console.log(error);
         }
+
 
 
 

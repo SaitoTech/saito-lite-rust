@@ -1,7 +1,6 @@
 
 body {
   font-family: arial, helvetica, sans-serif;
-  font-size: 13px;
   padding: 0px;
   margin: 0px;
   background-color: #024;
@@ -92,10 +91,10 @@ body {
 }
 
 .stats-overlay {
-  min-width: 220px;
+  min-width: 300px;
   min-height: 200px;
   max-height: 65vh;
-  max-width: 50vw;
+  max-width: max(50vw,600px);
   overflow-y: auto;
   overflow-x: auto;
   background-color: whitesmoke;
@@ -320,7 +319,7 @@ thead,  tfoot{
 
 .slot div.tile {
   color: rgb(43,29,14);
-  font-size: 2rem;
+  font-size: 36px; 
   background-color: rgba(68, 68, 68, 0.85);
   background-image: url("img/empty_tile.png");
   background-size: cover;
@@ -344,7 +343,7 @@ thead,  tfoot{
 */
 .slot .bonus{
   font-weight: bold;
-  font-size: 11px;
+  font-size: 12px;
   color: rgb(238, 238, 238);
   text-align: center;
   height: 100%;
@@ -614,7 +613,7 @@ Resize board on smaller screens
   background-image: url("img/empty_tile.png");
   background-size: cover;
   color: rgb(43,29,14);
-  font-size: 2rem;
+  font-size: 36px;
   text-align: center;
   padding-top: 6px;
   border-radius: 3px;

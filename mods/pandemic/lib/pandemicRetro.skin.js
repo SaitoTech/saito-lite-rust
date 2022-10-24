@@ -5,26 +5,43 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 		super(app, mod);
 		this.boardWidth = 2730;
     this.boardHeight = 1536;
+
+    this.epidemic = { img: "alt/epidemic.png" };
+    this.actionKey = "alt/ActionKey.png";
 	}
 
   render(){
 
-	$("#gameboard").css({
-	  'background-image': 'url("/pandemic/img/alt/pandemic_map.jpg")',
-	  'background-size': 'cover',
-	  width: this.boardWidth+'px',
-	  height: this.boardHeight+'px',
-	  "border-radius": "500px", 
-	});
+    if (!document.getElementById("gameboard")){
+      return;
+    }
 
-	if (!document.getElementById("myCanvas")){
-		this.app.browser.addElementToElement(`<canvas id="myCanvas" width="${this.boardWidth}" height="${this.boardHeight}"></canvas>`, document.getElementById("gameboard"));
-	}
+  	$("#gameboard").css({
+  	  'background-image': `url("/${this.mod.name.toLowerCase()}/img/alt/pandemic_map2.jpg")`,
+  	  'background-size': 'cover',
+  	  width: this.boardWidth+'px',
+  	  height: this.boardHeight+'px',
+  	  "border-radius": "500px", 
+  	});
+
+  	if (!document.getElementById("myCanvas")){
+  		this.app.browser.addElementToElement(`<canvas id="myCanvas" width="${this.boardWidth}" height="${this.boardHeight}"></canvas>`, document.getElementById("gameboard"));
+  	}
 
   }
 
-  returnDisease(color){
-    return `/pandemic/img/alt/cube_${color}.png`;
+  returnDiseaseImg(color){
+    return `/${this.mod.name.toLowerCase()}/img/alt/cube_${color}.png`;
+  }
+
+  getVirusName(virus){
+    switch(virus){
+      case "red": return "cyan";
+      case "blue": return "red";
+      case "black": return "magenta";
+      case "yellow": return "yellow";
+    }
+    return "unknown"
   }
 
 
@@ -34,7 +51,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
         if (role === "generalist") {
         player.name = "Pantologist";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn1.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn1.png"/>`;
         player.card = "alt/role1.png";
         player.desc =
           "The Pantologist may take an extra move every turn, performing 5 actions instead of 4";
@@ -43,7 +60,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "scientist") {
         player.name = "Experimenter";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn2.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn2.png"/>`;
         player.card = "alt/role2.png";
         player.desc =
           "The Experimenter may research a vaccine with only 4 cards instead of 5";
@@ -51,7 +68,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "medic") {
         player.name = "Physician";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn3.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn3.png"/>`;
         player.card = "alt/role3.png";
         player.desc =
           "The Physician may remove all disease cubes in a city when they treat disease. Once a disease has been cured, the medic removes cubes of that color merely by being in the city.";
@@ -59,7 +76,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "operationsexpert") {
         player.name = "Field Expert";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn4.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn4.png"/>`;
         player.card = "alt/role4.png";
         player.desc =
           "The Field Expert may build a research center in their current city as an action, or may discard a card to move from a research center to any other city.";
@@ -67,7 +84,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "quarantinespecialist"){
         player.name = "Contamination Specialist";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn5.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn5.png"/>`;
         player.card = "alt/role5.png";
         player.desc =
           "The Contamination Specialist prevents both the placement of disease cubes and outbreaks in her present city and all neighboring cities. Initial placement of disease cubes is not affected by the Quarantine Specialist.";
@@ -75,7 +92,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       }
       if (role === "researcher"){
         player.name = "Investigator";
-        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn6.png"/>`;
+        player.pawn = `<img class="scotland_pawn" src="/${this.mod.name.toLowerCase()}/img/alt/pawn6.png"/>`;
         player.card = "alt/role6.png";
         player.desc = "The Investigator may give any City card to another player in the same city as them. The transfer must go from the Researcher to the other player.";
         player.type = 6;
@@ -94,11 +111,6 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 
     let ctx = c.getContext("2d");
     ctx.clearRect(0, 0, this.boardWidth, this.boardHeight);
-    ctx.beginPath();
-    ctx.strokeStyle = "#C0C0C0";
-    ctx.lineWidth = 5;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
     let exceptions = ["tokyosanfrancisco", "sanfranciscotokyo","manilasanfrancisco", "sanfranciscomanila", "losangelessydney","sydneylosangeles"];
 
      for (var i in cities) {
@@ -113,12 +125,27 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
         city.style.height = "80px";
         city.style.top = this.mod.scale(cities[i].top) + "px";
   			city.style.left = this.mod.scale(cities[i].left) + "px";        
-        city.style.backgroundImage = `url("/pandemic/img/alt/city-${cities[i].virus}.png")`;
+        city.style.backgroundImage = `url("/${this.mod.name.toLowerCase()}/img/alt/city-${cities[i].virus}.png")`;
 
         let label = city.querySelector(".name");
         if (!label){
           this.app.browser.addElementToElement(`<div class="name">${cities[i].name}</div>`, city);
         }
+
+        if (this.shouldMap(cities[i])){
+          ctx.strokeStyle = "#333";
+          ctx.fillStyle = "#333";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(cities[i].left+40,cities[i].top+40);
+          ctx.lineTo(cities[i].x, cities[i].y);    
+          ctx.stroke();
+          ctx.arc(cities[i].x, cities[i].y, 5, 0, 2*Math.PI);
+          ctx.fill();          
+        }
+        ctx.strokeStyle = "#C0C0C0";
+        ctx.lineWidth = 5;      
+        ctx.beginPath();
 
         for (let neigh of cities[i].neighbours){
         	if (exceptions.includes(i+neigh)){
@@ -145,21 +172,33 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
   }
 
 
+  shouldMap(city){
+    if (!city.x || !city.y){
+      return false;
+    }
+
+    if (Math.sqrt(Math.pow(city.x-city.left-40, 2) + Math.pow(city.y - city.top-40, 2)) > 20){
+      return true;
+    }
+
+    return false;
+  }
+
   returnCities() {
     var cities = {};
 
     cities["sanfrancisco"] = {
-      top: 515,
-      left: 340,
+      top: 305,
+      left: 275,
       neighbours: ["tokyo", "manila", "losangeles", "chicago"],
       name: "Vancouver",
-      x: 395,
-      y: 580,
+      x: 313,
+      y: 387,
       virus: "blue",
     };
     cities["chicago"] = {
-      top: 520,
-      left: 533,
+      top: 310,
+      left: 500,
       neighbours: [
         "sanfrancisco",
         "losangeles",
@@ -168,259 +207,329 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
         "montreal",
       ],
       name: "Chicago",
-      x:660,
-      y:620,
+      x:594,
+      y:449,
       virus: "blue",
     };
     cities["montreal"] = {
-      top: 500,
-      left: 700,
+      top: 315,
+      left: 675,
       neighbours: ["chicago", "newyork", "washington"],
       name: "Toronto",
-      x: 530,
-      y: 750,
+      x: 658,
+      y: 406,
       virus: "blue",
     };
     cities["newyork"] = {
-      top: 520,
+      top: 375,
       left: 815,
       neighbours: ["montreal", "washington", "london", "madrid"],
       name: "New York",
+      x: 718,
+      y: 467,
       virus: "blue",
     };
     cities["washington"] = {
-      top: 625,
-      left: 795,
+      top: 500,
+      left: 700,
       neighbours: ["montreal", "newyork", "miami", "atlanta"],
       name: "Washington",
+      x: 671,
+      y: 512,
       virus: "blue",
     };
     cities["atlanta"] = {
-      top: 630,
-      left: 605,
+      top: 515,
+      left: 550,
       neighbours: ["chicago", "miami", "washington"],
       name: "Atlanta",
+      x: 586,
+      y: 533,
       virus: "blue",
     };
     cities["losangeles"] = {
-      top: 700,
-      left: 385,
+      top: 500,
+      left: 250,
       neighbours: ["sydney", "sanfrancisco", "mexicocity", "chicago"],
       name: "Los Angeles",
+      x: 311,
+      y: 551,
       virus: "yellow",
     };
     cities["mexicocity"] = {
-      top: 810,
-      left: 520,
+      top: 650,
+      left: 400,
       neighbours: ["chicago", "losangeles", "miami", "bogota", "lima"],
       name: "Mexico City",
+      x: 442,
+      y: 704,
       virus: "yellow",
     };
     cities["miami"] = {
-      top: 735,
-      left: 735,
+      top: 675,
+      left: 660,
       neighbours: ["washington", "atlanta", "mexicocity", "bogota"],
       name: "Santo Domingo",
+      x: 697,
+      y: 727,
       virus: "yellow",
     };
     cities["bogota"] = {
-      top: 905,
-      left: 670,
-      neighbours: ["miami", "mexicocity", "lima", "saopaulo", "buenosaires"],
+      top: 850,
+      left: 620,
+      neighbours: ["miami", "mexicocity", "lima", "saopaulo"],
       name: "Bogota",
+      x: 663,
+      y: 882,
       virus: "yellow",
     };
     cities["lima"] = {
-      top: 1100,
-      left: 650,
+      top: 1000,
+      left: 500,
       neighbours: ["santiago", "bogota", "mexicocity"],
       name: "Lima",
+      x: 633,
+      y: 1050,
       virus: "yellow",
     };
     cities["santiago"] = {
-      top: 1285,
-      left: 625,
+      top: 1250,
+      left: 550,
       neighbours: ["lima"],
       name: "Santiago",
+      x: 710,
+      y: 1271,
       virus: "yellow",
     };
     cities["buenosaires"] = {
-      top: 1280,
+      top: 1245,
       left: 885,
       neighbours: ["saopaulo", "bogota"],
       name: "Buenos Aires",
+      x: 810,
+      y: 1287,
       virus: "yellow",
     };
     cities["saopaulo"] = {
-      top: 1070,
-      left: 985,
+      top: 1100,
+      left: 980,
       neighbours: ["bogota", "buenosaires", "madrid", "lagos"],
       name: "Sao Paulo",
+      x: 892,
+      y: 1159,
       virus: "yellow",
+      x: 890,
+      y: 1175, 
     };
     cities["lagos"] = {
-      top: 950,
+      top: 825,
       left: 1250,
       neighbours: ["saopaulo", "khartoum", "kinshasa"],
       name: "Lagos",
       virus: "yellow",
+      x: 1306,
+      y: 844, 
     };
     cities["khartoum"] = {
-      top: 910,
-      left: 1500,
+      top: 950,
+      left: 1580,
       neighbours: ["cairo", "lagos", "kinshasa", "johannesburg"],
       name: "Dar Es Salaam",
       virus: "yellow",
+      x: 1600,
+      y: 982, 
     };
     cities["kinshasa"] = {
-      top: 1080,
+      top: 990,
       left: 1340,
       neighbours: ["lagos", "khartoum", "johannesburg"],
       name: "Luanda",
       virus: "yellow",
+      x: 1389,
+      y: 1000, 
     };
     cities["johannesburg"] = {
       top: 1200,
-      left: 1435,
+      left: 1450,
       neighbours: ["kinshasa", "khartoum"],
       name: "Johannesburg",
       virus: "yellow",
+      x: 1487,
+      y: 1224, 
     };
     cities["london"] = {
-      top: 425,
-      left: 1150,
-      neighbours: ["newyork", "madrid", "essen", "paris"],
+      top: 315,
+      left: 1125,
+      neighbours: ["newyork", "madrid", "paris"],
       name: "London",
       virus: "blue",
+      x: 1250,
+      y: 370,
     };
     cities["madrid"] = {
-      top: 580,
-      left: 1145,
+      top: 475,
+      left: 1105,
       neighbours: ["newyork", "paris", "london", "algiers", "saopaulo"],
       name: "Madrid",
       virus: "blue",
+      x: 1240,
+      y: 500,
     };
     cities["essen"] = {
-      top: 475,
+      top: 360,
       left: 1415,
-      neighbours: ["stpetersburg", "london", "milan", "paris"],
+      neighbours: ["stpetersburg", "istanbul", "milan", "paris"],
       name: "Kiev",
       virus: "blue",
+      x: 1496,
+      y: 400, 
     };
     cities["paris"] = {
-      top: 500,
-      left: 1295,
+      top: 390,
+      left: 1255,
       neighbours: ["london", "essen", "madrid", "milan", "algiers"],
       name: "Paris",
       virus: "blue",
+      x: 1295,
+      y: 425,
     };
     cities["stpetersburg"] = {
-      top: 365,
+      top: 245,
       left: 1480,
       neighbours: ["essen", "moscow", "istanbul"],
       name: "St. Petersburg",
       virus: "blue",
+      x: 1463,
+      y: 300, 
     };
     cities["milan"] = {
-      top: 575,
-      left: 1370,
+      top: 475,
+      left: 1350,
       neighbours: ["essen", "istanbul", "paris", "algiers"],
       name: "Rome",
       virus: "blue",
+      x: 1377,
+      y: 482, 
+
     };
     cities["algiers"] = {
-      top: 685,
+      top: 550,
       left: 1250,
       neighbours: ["madrid", "paris", "cairo", "milan"],
       name: "Casablanca",
       virus: "black",
+      x: 1217,
+      y: 566, 
     };
     cities["cairo"] = {
-      top: 720,
-      left: 1445,
+      top: 625,
+      left: 1475,
       neighbours: ["khartoum", "algiers", "istanbul", "baghdad", "riyadh"],
       name: "Cairo",
       virus: "black",
+      x: 1507,
+      y: 600, 
     };
     cities["istanbul"] = {
-      top: 580,
-      left: 1490,
+      top: 480,
+      left: 1500,
       neighbours: [
         "stpetersburg",
         "milan",
         "cairo",
         "baghdad",
         "moscow",
+        "essen",
       ],
       name: "Istanbul",
       virus: "black",
+      x: 1503,
+      y: 483, 
     };
     cities["moscow"] = {
-      top: 450,
-      left: 1535,
+      top: 310,
+      left: 1600,
       neighbours: ["stpetersburg", "tehran", "istanbul"],
       name: "Moscow",
       virus: "black",
+      x: 1580,
+      y: 334, 
     };
     cities["baghdad"] = {
-      top: 660,
-      left: 1585,
+      top: 550,
+      left: 1595,
       neighbours: ["cairo", "riyadh", "karachi", "tehran", "istanbul"],
       name: "Baghdad",
       virus: "black",
+      x: 1630,
+      y: 555, 
     };
     cities["riyadh"] = {
-      top: 760,
-      left: 1615,
+      top: 675,
+      left: 1625,
       neighbours: ["cairo", "baghdad", "karachi"],
       name: "Riyadh",
       virus: "black",
+      x: 1672,
+      y: 660, 
     };
     cities["tehran"] = {
-      top: 540,
-      left: 1710,
+      top: 450,
+      left: 1720,
       neighbours: ["moscow", "karachi", "baghdad", "delhi"],
       name: "Tehran",
       virus: "black",
+      x: 1700,
+      y: 550, 
     };
     cities["karachi"] = {
-      top: 675,
-      left: 1730,
+      top: 660,
+      left: 1780,
       neighbours: ["baghdad", "tehran", "delhi", "riyadh", "mumbai"],
       name: "Karachi",
       virus: "black",
+      x: 1865,
+      y: 680, 
     };
     cities["mumbai"] = {
-      top: 800,
-      left: 1750,
+      top: 790,
+      left: 1825,
       neighbours: ["chennai", "karachi", "delhi"],
       name: "Mumbai",
       virus: "black",
+      x: 1885,
+      y: 730, 
     };
     cities["delhi"] = {
-      top: 650,
-      left: 1845,
+      top: 550,
+      left: 1875,
       neighbours: ["tehran", "karachi", "mumbai", "chennai", "kolkata"],
       name: "Delhi",
       virus: "black",
+      x: 1925,
+      y: 630, 
     };
     cities["chennai"] = {
-      top: 890,
-      left: 1870,
+      top: 870,
+      left: 1930,
       neighbours: ["mumbai", "delhi", "kolkata", "bangkok", "jakarta"],
       name: "Bangalore",
       virus: "black",
+      x: 1930,
+      y: 785, 
     };
     cities["kolkata"] = {
-      top: 715,
-      left: 1940,
-      neighbours: ["delhi", "chennai", "bangkok", "hongkong"],
+      top: 615,
+      left: 1990,
+      neighbours: ["delhi", "chennai", "bangkok"],
       name: "Dhaka",
       virus: "black",
+      x: 2025,
+      y: 650, 
     };
     cities["bangkok"] = {
-      top: 810,
-      left: 2005,
+      top: 740,
+      left: 2080,
       neighbours: [
         "kolkata",
         "hongkong",
@@ -430,24 +539,30 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       ],
       name: "Bangkok",
       virus: "red",
+      x: 2125,
+      y: 765, 
     };
     cities["jakarta"] = {
-      top: 995,
-      left: 2000,
+      top: 975,
+      left: 2150,
       neighbours: ["chennai", "bangkok", "hochiminhcity", "sydney"],
       name: "Jakarta",
       virus: "red",
+      x: 2195,
+      y: 980, 
     };
     cities["sydney"] = {
-      top: 1245,
+      top: 1250,
       left: 2420,
       neighbours: ["jakarta", "manila", "losangeles"],
       name: "Melbourne",
       virus: "red",
+      x: 2444,
+      y: 1306, 
     };
     cities["manila"] = {
-      top: 850,
-      left: 2260,
+      top: 750,
+      left: 2350,
       neighbours: [
         "sydney",
         "hongkong",
@@ -456,69 +571,86 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       ],
       name: "Manila",
       virus: "red",
+      x: 2280,
+      y: 760, 
     };
     cities["hochiminhcity"] = {
-      top: 900,
-      left: 2100,
+      top: 850,
+      left: 2200,
       neighbours: ["jakarta", "bangkok", "hongkong", "manila"],
       name: "Ho Chi Minh City",
       virus: "red",
+      x: 2175,
+      y: 800, 
     };
     cities["hongkong"] = {
-      top: 790,
-      left: 2115,
+      top: 675,
+      left: 2200,
       neighbours: [
         "hochiminhcity",
         "shanghai",
         "bangkok",
-        "kolkata",
         "taipei",
         "manila",
       ],
       name: "Hong Kong",
       virus: "red",
+      x: 2222,
+      y: 680, 
     };
     cities["taipei"] = {
-      top: 660,
-      left: 2030,
+      top: 575,
+      left: 2125,
       neighbours: ["shanghai", "hongkong", "beijing"],
       name: "Chongqing",
       virus: "red",
+      x: 2150,
+      y: 625, 
     };
     cities["shanghai"] = {
-      top: 685,
-      left: 2205,
+      top: 590,
+      left: 2275,
       neighbours: ["hongkong", "taipei", "seoul", "tokyo", "osaka"],
       name: "Shanghai",
       virus: "red",
+      x: 2275,
+      y: 615, 
     };
     cities["beijing"] = {
-      top: 545,
-      left: 2085,
+      top: 430,
+      left: 2095,
       neighbours: ["seoul", "taipei"],
       name: "Beijing",
       virus: "red",
+      x: 2195,
+      y: 500, 
     };
     cities["seoul"] = {
-      top: 530,
-      left: 2185,
+      top: 400,
+      left: 2250,
       neighbours: ["beijing", "shanghai", "tokyo"],
       name: "Seoul",
       virus: "red",
+      x: 2298,
+      y: 535, 
     };
     cities["tokyo"] = {
-      top: 550,
-      left: 2385,
+      top: 500,
+      left: 2450,
       neighbours: ["seoul", "shanghai", "sanfrancisco", "osaka"],
       name: "Tokyo",
       virus: "red",
+      x: 2400,
+      y: 550, 
     };
     cities["osaka"] = {
-      top: 710,
-      left: 2325,
+      top: 600,
+      left: 2425,
       neighbours: ["shanghai", "tokyo"],
       name: "Osaka",
       virus: "red",
+      x: 2385,
+      y: 555, 
     };
 
     return cities;
@@ -621,7 +753,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       name: "Luanda",
     };
     deck["johannesburg"] = {
-      img: "alt/cards/Card_Luanda.png",
+      img: "alt/cards/Card_Johannesburg.png",
       name: "Johannesburg",
     };
     deck["algiers"] = {
@@ -724,24 +856,24 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     //and 5 event cards
 
     deck["event1"] = {
-      img: "Special%20Event%20-%20Airlift.jpg",
-      name: "Airlift",
+      img: "alt/cards/event1.png",
+      name: "Priority Transport",
     };
     deck["event2"] = {
-      img: "Special%20Event%20-%20Resilient%20Population.jpg",
-      name: "Resilient Population",
+      img: "alt/cards/event2.png",
+      name: "Herd Immunity",
     };
     deck["event3"] = {
-      img: "Special%20Event%20-%20One%20Quiet%20Night.jpg",
-      name: "One Quiet Night",
+      img: "alt/cards/event3.png",
+      name: "Hot Vax Summer",
     };
     deck["event4"] = {
-      img: "Special%20Event%20-%20Forecast.jpg",
-      name: "Forecast",
+      img: "alt/cards/event4.png",
+      name: "Modelling",
     };
     deck["event5"] = {
-      img: "Special%20Event%20-%20Government%20Grant.jpg",
-      name: "Government Grant",
+      img: "alt/cards/event5.png",
+      name: "Research Funding",
     };
 
     return deck;
@@ -765,7 +897,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       if (this.mod.game.state.cures[v]){
         for (let c in this.cities){
           if (this.cities[c].virus == v){
-            $(`#${c}`).css("background-image",`url("/pandemic/img/alt/cure-${v}.png")`);
+            $(`#${c}`).css("background-image",`url("/${this.mod.name.toLowerCase()}/img/alt/cure-${v}.png")`);
           }
         }
         if (this.mod.isEradicated(v)){
@@ -779,28 +911,37 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       let threat_level = "safe";
       if (outbreaks>2) threat_level = "caution";
       if (outbreaks>6) threat_level = "danger";
-      this.mod.scoreboard.append(`<i class="fas fa-skull"></i><div class="virus-count ${threat_level}">: ${8-outbreaks}</div>`);
+      let html = `<div class="scoreboard_virus_group tip">
+                    <i class="fas fa-skull"></i>
+                    <div class="virus-count ${threat_level}">: ${8-outbreaks}</div>
+                    <div class="tiptext">The game will end after 8 outbreaks</div>
+                  </div>`;
+      this.mod.scoreboard.append(html);
   }
 
   displayDecks() {
       let threat_level = "safe";
       if (this.mod.game.deck[1].crypt.length < 20) threat_level = "caution";
       if (this.mod.game.deck[1].crypt.length < 5) threat_level = "danger";
-  
-      this.mod.scoreboard.append(`<i class="fas fa-layer-group"></i><div class="virus-count ${threat_level}">:${this.mod.game.deck[1].crypt.length}</div>`);
+      let html = `<div class="scoreboard_virus_group tip">
+                    <i class="fas fa-layer-group"></i>
+                    <div class="virus-count ${threat_level}">: ${this.mod.game.deck[1].crypt.length}</div>
+                    <div class="tiptext">The game will end after all the player cards have been drawn</div>
+                  </div>`;
+      this.mod.scoreboard.append(html);
   }
 
   displayInfectionRate(infection_rate){
 
   }
 
-  animateInfection(city, msg, mycallback){
+  animateInfection(city, msg, dontplace, mycallback){
     let pandemic_self = this.mod;
 
     let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;
 
     try {
-      this.app.browser.addElementToElement(`<div class="infection_highlight" style="top: ${this.mod.scale(this.cities[city].top+40)}px; left: ${this.mod.scale(this.cities[city].left+40)}px;"></div>`,document.getElementById("gameboard"));
+      this.app.browser.addElementToElement(`<div class="infection_highlight${(dontplace)?" blocked":""}" style="top: ${this.mod.scale(this.cities[city].top+40)}px; left: ${this.mod.scale(this.cities[city].left+40)}px;"></div>`,document.getElementById("gameboard"));
       $(".confirmit").off();
       pandemic_self.updateStatusWithOptions(msg, html);
       $(".confirmit").on("click", async (e) => {
@@ -815,6 +956,13 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     }catch(err){
       console.log(err);
     }
+  }
+
+  prepInfectionDeck(pandemic_self){
+    pandemic_self.interface = 2;
+  }
+  resetInfectionDeck(pandemic_self){
+    pandemic_self.interface = 1;
   }
 
 

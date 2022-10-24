@@ -1,0 +1,217 @@
+/** Leaderboards 
+ *  
+ * **/
+
+.league-details-overlay {
+  width: 100%;
+  min-width: min(600px, 100vw);
+  max-height: 95vh;
+  border: 1px solid var(--saito-cyber-grey);
+  border-radius: 5px;
+  background: var(--saito-cyber-black);
+  padding: 10px;
+  user-select: none;
+  cursor: default;
+}
+
+.league-details-overlay h2 {
+  text-align: center;
+}
+
+.league-details-overlay p {
+  padding: 1rem;
+}
+
+.league-details-overlay .league-overview-box {
+  margin: auto;
+  width: 100%;
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 8rem auto;
+}
+
+.league-leaderboard-table {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 4rem auto 5rem;
+  width: 100%;
+  padding: 1rem;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.league-leaderboard-table.saitolicious {
+  grid-template-columns: 4rem auto 5rem;
+}
+
+.league-leaderboard-table.admin {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem auto 4fr 4fr auto;
+}
+
+.league-leaderboard-table.admin.saitolicious {
+  grid-template-columns: 4rem auto 5rem 4rem 4rem 4rem  4fr 4fr auto;
+}
+
+.league-leaderboard-table::scrollbar {
+  display: none;
+}
+
+.league-game-table{
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: auto 6rem 4rem 6rem;
+  width: 100%;
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.league-game-table.saitolicious {
+  grid-template-columns: 4rem auto 6rem 4rem 6rem;
+}
+
+.leagueGameplayerList{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.leagueGameplayerList .winner{
+  box-shadow: 0 0 10px 10px whitesmoke;
+}
+
+.leagueGameplayerList .player-slot{
+  max-width: 50px;
+  max-height: 50px;
+}
+
+.league-overview-box div:nth-child(odd) {
+  font-weight: bold;
+}
+
+
+.league-leaderboard::-webkit-scrollbar {
+    display: none;
+}
+
+
+
+.mystats {
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.newfriend {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.newfriend.online{
+  cursor: crosshair;
+  color: green;
+}
+
+.league-overview-box .info-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.league-details-overlay {
+  width: 85vw;
+  padding: 1.5rem;
+  height: 85vh;
+}
+
+.leaderboard-box {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 65% 34%;
+  width: 100%;
+  height: 100%;
+}
+
+.leaderboard-details-box {
+  padding-right: 1rem;
+  margin-right: 2rem;
+}
+
+.saito-module-details-box {
+  margin-left: 1rem;
+}
+
+#leaderboard-btn-create-game {
+  display: inline-block;
+  width: 22rem;
+}
+
+.saito-tool-tip {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1.5rem;
+  color: #fff;
+  text-align: center;
+  line-height: 3rem;
+  font-weight: bold;
+  display: inline-block;
+  border: 1px solid var(--saito-primary);
+  color: var(--saito-primary);
+  cursor: pointer;
+}
+
+.observer-sidebar {
+  margin-top: 1.5rem;
+}
+
+.observer-sidebar h6 {
+  font-size: 2.2rem;
+  margin-bottom: 0.8rem;
+  display: inline-block;
+  color: var(--saito-black-faded);
+}
+
+.recent-games-box {
+  display: grid;
+  grid-column-gap: 2rem;
+}
+
+.saito-module-custom-box {
+  min-width: 20rem;
+}
+
+.league-table-ranking {
+  padding-top: 3rem; 
+  margin-top: 1rem;
+}
+
+#league-table-ranking {
+  height: 77rem;
+}
+
+#league-table-ranking::-webkit-scrollbar {
+  background: transparent;
+  width: 0px;
+  display:none;
+}
+
+#leaderboard-btn-create-game {
+  margin-left: 0px; 
+}
+
+.saito-module {
+  padding: 0rem!important;
+}
+
+#recent-games-box {
+  overflow-y: scroll;
+  height: 47rem;
+  padding-right: 1rem; 
+}

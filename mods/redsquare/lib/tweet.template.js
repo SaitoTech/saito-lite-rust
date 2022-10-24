@@ -15,7 +15,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
     tweet_img += `<div class="redsquare-image-container">`;
     let img_class = (imgs.length > 1) ? 'tweet-multiple-img' : '';
     for (let i = 0; i < imgs.length; i++) {
-      tweet_img += `<div class='${img_class} tweet-img' style="background: url(${imgs[i]});"></div>`;
+      tweet_img += `<div  data-id='${tweet.tx.transaction.sig}' id='tweet-img-${tweet.tx.transaction.sig}' class='${img_class} tweet-img tweet-img-${tweet.tx.transaction.sig} ' style="background-image: url(${imgs[i]});"></div>`;
     }
     tweet_img += `</div>`;
   }
@@ -36,15 +36,14 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
       //
       // if link properties
       //
-      tweet_text = tweet_text.replace(tweet.link, '');
-
+      try {
       if (typeof tweet.link_properties != 'undefined') {
         if (tweet.link_properties['og:exists'] !== false) {
           let d = tweet.link_properties;
           if (d['og:url'] != '' && d['og:image'] != '') {
             let link = new URL(d['og:url']);
             link_preview = `
-                        <a target="_blank" href="${d['og:url']}">
+                        <a target="_blank" class="saito-og-link" href="${d['og:url']}">
                         <div class="preview-container">
                             <div class='preview-img' style="background: url(${d['og:image']})"></div>
                             <div class="preview-info">  
@@ -56,8 +55,10 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
                         </a>
                         `;
           }
-
         }
+      }
+      } catch (err) {
+console.log("Error processing image/link: " + err);
       }
     }
   }
@@ -79,9 +80,12 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
   if (tweet.flagged > 0) { saito_tweet_flagged = "saito-tweet-activity" }
 
   let html = `
-       <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
+       <div class="redsquare-item parent-${tweet.parent_id} thread-${tweet.thread_id}" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
     `;
   if (include_header == 1) {
+    if (tweet.notice != "") {
+      html += `<div class="redsquare-item-notice">${tweet.notice}</div>`;
+    }
     html += SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline);
   }
   html += `
@@ -104,11 +108,11 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
   if (include_controls == 1) {
     html += `
         <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
-           <div class="tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig} ${saito_tweet_replied}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
-           <div class="tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig} ${saito_tweet_retweeted}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">${tweet.num_retweets || 0}</span> <i class="fa fa-repeat"></i></div>
-           <div class="tweet-tool-like tweet-like-${tweet.tx.transaction.sig} ${saito_tweet_liked}"><span class="tweet-tool-like-count  tweet-tool-like-count-${tweet.tx.transaction.sig}">${tweet.num_likes || 0}</span> <i class="far fa-heart"></i></div>
-           <div class="tweet-tool-share tweet-share-${tweet.tx.transaction.sig}"><i class="fa fa-arrow-up-from-bracket"></i></div>
-           <div class="tweet-tool-flag tweet-flag-${tweet.tx.transaction.sig} ${saito_tweet_flagged}"><i class="fa fa-flag"></i></div>
+           <div class="tweet-tool tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig} ${saito_tweet_replied}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
+           <div class="tweet-tool tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig} ${saito_tweet_retweeted}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">${tweet.num_retweets || 0}</span> <i class="fa fa-repeat"></i></div>
+           <div class="tweet-tool tweet-tool-like tweet-like-${tweet.tx.transaction.sig} ${saito_tweet_liked}"><span class="tweet-tool-like-count  tweet-tool-like-count-${tweet.tx.transaction.sig}">${tweet.num_likes || 0}</span> <i class="far fa-heart"></i></div>
+           <div class="tweet-tool tweet-tool-share tweet-share-${tweet.tx.transaction.sig}"><i class="fa fa-arrow-up-from-bracket"></i></div>
+           <div class="tweet-tool tweet-tool-flag tweet-flag-${tweet.tx.transaction.sig} ${saito_tweet_flagged}"><i class="fa fa-flag"></i></div>
         </div>
       `;
   } else {
@@ -119,16 +123,10 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
 
   html += `
       </div>
-
-
-          <div></div>
-           <div class="redsquare-item-children redsquare-item-children-${tweet.tx.transaction.sig}"></div>
-        </div>
-
     </div>
-
-    
-    `;
+  </div>
+  <div class="redsquare-item-children redsquare-item-children-${tweet.tx.transaction.sig}"></div>
+       `;
 
   return html;
 

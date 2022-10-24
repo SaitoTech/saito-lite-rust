@@ -21,6 +21,13 @@
       z.push(this.deck[key]);
     }
 
+    //
+    // debaters have bonuses which modify gameplay
+    //
+    for (let key in this.debaters) {
+      z.push(this.debaters[key]);
+    }
+
     return z;
 
   }
@@ -52,16 +59,17 @@
     //
     // functions for convenience
     //
-    if (obj.removeFromDeck == null) { obj.removeFromDeck = function(his_self, player) { return 0; } }
-
+    if (obj.removeFromDeck == null) {
+      obj.removeFromDeck = function(his_self, player) { return 0; } 
+    }
     if (obj.menuOptionTriggers == null) {
-      obj.menuOptionTriggers = function(his_self, stage, player) { return 0; }
+      obj.menuOptionTriggers = function(his_self, stage, player, faction) { return 0; }
     }
     if (obj.menuOption == null) {
-      obj.menuOption = function(his_self, stage, player) { return 0; }
+      obj.menuOption = function(his_self, stage, player, faction) { return 0; }
     }
     if (obj.menuOptionActivated == null) {
-      obj.menuOptionActivated = function(his_self, stage, player) { return 0; }
+      obj.menuOptionActivated = function(his_self, stage, player, faction) { return 0; }
     }
 
     return obj;

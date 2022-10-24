@@ -100,47 +100,6 @@ body {
   overflow: hidden;
 }
 
-.league-details-overlay {
-  width: 100%;
-  min-width: min(600px, 100vw);
-  border: whitesmoke 2px dotted;
-  border-radius: 5px;
-  background: black;
-  padding: 10px;
-}
-
-.league-details-overlay h2 {
-  text-align: center;
-}
-
-.league-details-overlay .league-overview-box,
-.league-details-overlay .league-leaderboard {
-  margin: auto;
-  width: 100%;
-  padding: 1em;
-  max-height: 60vh;
-  overflow-y: scroll;
-
-}
-
-.league-leaderboard table {
-  width: 100%;
-}
-
-.league-leaderboard table td {
-  text-align: center;
-}
-
-.league-leaderboard table tr {
-  height: 42px;
-}
-
-.league-overview-box .info-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
 
 /* Invitation Link Popup overlay */
 .invite-link {
@@ -240,12 +199,44 @@ i.link_icon.private {
   margin-bottom: 0.6em;
 }
 
+.checkrow { 
+  position: relative;
+}
+.checkrow > input{
+  width: fit-content;
+}
+.checkrow .secretbutton{
+  width: fit-content;
+  position: absolute;
+  top: 0;
+  right: 0px;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+.checkrow .tip{
+  display: inline-block;
+  margin-left: 2em;
+}
+
+.gridme{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 .tip {
   width: unset;
 }
 
 .tiptext {
   background-color: #fefefeee;
+}
+
+
+.game_option_league_wizard{
+  padding: 1em;
+  font-size: 1em;
+  background-color: #0009;
+  max-height: 90vh;
 }
 
 .league-component-admin-box-form .label {

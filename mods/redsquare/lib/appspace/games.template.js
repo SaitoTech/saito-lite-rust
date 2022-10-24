@@ -1,4 +1,5 @@
-const SaitoModuleTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module.template');
+//const SaitoModuleTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module.template');
+const SaitoModuleImageBoxTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module-imagebox.template');
 
 
 module.exports = (app, mod) => {
@@ -11,11 +12,19 @@ module.exports = (app, mod) => {
     <div class="redsquare-appspace-games">
 
       <div class="saito-page-header">
-        <div id="redsquare-schedule-game" class="saito-button-secondary small" style="float: right;">Schedule for Later</div>
-        <div id="redsquare-create-game" class="saito-button-secondary small" style="float: right;">Create New Game</div>
-        <div class="saito-page-header-title">SAITO ARCADE</div>
+     <div class="saito-redsquare-actions-buttons">
+     <div class="saito-redsquare-actions-buttons-icon">
+     <i id="action-icon" class="fas fa-plus"></i>
+     </div>
+      <div class="redsquare-actions-container"> 
+      <div id="redsquare-create-game" class="saito-button-secondary small">New Game</div>
+      </div>
+     </div>
+
+        <div class="saito-page-header-title">SAITO ARCADE
         <div class="saito-page-header-text">
           Welcome to the Saito Arcade, where all games are open source, provably-fair and can be played directly in your browser. Create a game today, or join our developer community in porting more great games to the platform.
+        </div>
         </div>
       </div>
 
@@ -34,10 +43,10 @@ module.exports = (app, mod) => {
 
       html += `
         <div class="saito-game">
-	        ${SaitoModuleTemplate(app, mod, modtitle, modimage)}
+	        ${SaitoModuleImageBoxTemplate(modtitle, modimage)}
           <div class="saito-game-content">
             <div class="saito-leaderboard">
-	            <div class="saito-table">`;
+              <div class="saito-table">`;
 
         if (league_mod){
           if (league_mod.leagues.length > 0){

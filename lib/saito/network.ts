@@ -207,7 +207,6 @@ class Network {
    * @param peer
    */
   async fetchBlock(block_hash: string, peer: Peer = null) {
-    console.debug("network.fetchBlock : " + block_hash);
     if (!block_hash) {
       console.trace("block hash is empty");
     }
@@ -274,7 +273,6 @@ class Network {
           wsProtocol = "wss";
         }
       }
-      //console.log("attempting to connect 1 to: " + `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
@@ -325,9 +323,7 @@ class Network {
       if (peer.peer.protocol === "https") {
         wsProtocol = "wss";
       } else {
-        //console.log("non secure peer : ", peer.peer);
       }
-      //console.log("attempting to connect 2 to: " +`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket = new WSWebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
@@ -367,7 +363,6 @@ class Network {
       } else if (api_message.message_type == MessageType.Error) {
         this.app.networkApi.receiveAPIError(api_message);
       } else {
-        //console.debug("handling peer command - receiving peer id " + peer.socket.peer.id, api_message);
         await this.receiveRequest(peer, api_message);
       }
     });
@@ -376,7 +371,6 @@ class Network {
   }
 
   cleanupDisconnectedPeer(peer, force = 0) {
-    console.debug("cleanupDisconnectedPeer : peer count = " + this.peers.length);
     for (let c = 0; c < this.peers.length; c++) {
       // it has to be this peer, and the socket must be closed
       if (
@@ -526,6 +520,15 @@ class Network {
     this.peer_monitor_timer = setInterval(() => {
       this.pollPeers();
     }, this.peer_monitor_timer_speed);
+  }
+
+  isNetworkUp() {
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].isConnected()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   isPrivateNetwork() {
@@ -782,18 +785,14 @@ class Network {
               syncobj.prehash.push(block.prehash);
               syncobj.previous_block_hash.push(block.returnPreviousBlockHash());
               syncobj.block_ids.push(block.returnId());
-              //console.log("checking if " + block.returnHash() + " has txs for " + publickey);
               if (block.hasKeylistTransactions([publickey])) {
-                //console.log("yes");
                 syncobj.txs.push(1);
               } else {
-                //console.log("no");
                 syncobj.txs.push(0);
               }
             }
           }
         }
-        //console.log("ABOUT TO SEND GSTCHAIN");
 
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
@@ -931,7 +930,6 @@ class Network {
       }
     });
 
-    //console.log('dead peers to add: ' + this.dead_peers.length);
     // limit amount of time nodes spend trying to reconnect to
     // prevent ddos issues.
     const peer_add_delay = this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;

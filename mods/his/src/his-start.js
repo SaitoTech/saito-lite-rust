@@ -1,8 +1,4 @@
 
-
-
-
-
   initializeHTML(app) {
 
     if (this.browser_active == 0) { return; }
@@ -77,14 +73,6 @@
         game_mod.handleStatsMenu();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        window.location.href = "/arcade";
-      }
-    });
     this.menu.addMenuOption({
       text : "Info",
       id : "game-cards",
@@ -101,6 +89,33 @@
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
         game_mod.displayReligiousConflictSheet();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Debaters",
+      id : "game-debaters",
+      class : "game-debaters",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayDebaters();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Explorers",
+      id : "game-explorers",
+      class : "game-explorers",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayExplorers();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Conquistadors",
+      id : "game-conquistadors",
+      class : "game-conquistadors",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayConquistadors();
       }
     });
 
@@ -164,17 +179,8 @@
 
 
     this.menu.addChatMenu(app, this);
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
 
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
@@ -309,8 +315,6 @@
               <option value="1532">1532 - shorter game</option>
               <option value="tournament">1532 - tournament</option>
             </select>
-
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 
 	</div>
     </div>

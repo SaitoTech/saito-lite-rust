@@ -31,6 +31,7 @@ class Transaction {
     type: TransactionType.Normal,
     m: Buffer.alloc(0),
   };
+  public optional: any;
   public fees_total: bigint;
   public work_available_to_me: bigint;
   public work_available_to_creator: bigint;
@@ -62,6 +63,7 @@ class Transaction {
     // cumulative weight of the usable fees that
     // are behind the transactions.
 
+    this.optional = {}; // non-signed field for users
     this.msg = null;
     this.dmsg = "";
     this.size = 0;
@@ -481,7 +483,7 @@ class Transaction {
   }
 
   returnSlipsToAndFrom(publickey: string) {
-    const x: any = {};
+    let x: any = {};
     x.from = [];
     x.to = [];
     if (this.transaction.from != null) {
@@ -502,7 +504,7 @@ class Transaction {
   }
 
   returnSlipsTo(publickey: string) {
-    const x = [];
+    let x = [];
     if (this.transaction.to != null) {
       for (let v = 0; v < this.transaction.to.length; v++) {
         if (this.transaction.to[v].add === publickey) {

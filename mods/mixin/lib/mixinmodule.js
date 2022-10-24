@@ -63,10 +63,19 @@ class MixinModule extends CryptoModule {
     if (this.mixin) {
       if (this.app.wallet.wallet.preferred_crypto !== "SAITO" && this.app.wallet.wallet.preferred_crypto !== "") {
         if (this.mixin.account_created == 0) {
+
+	  //
+	  // not every crypto should trigger account creation
+	  //
+	  let c = this.app.modules.returnModule(this.app.wallet.wallet.preferred_crypto);
+          if (!c.asset_id) { return; }
+
 console.log("---------------------");
 console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
+console.log("creating on install: " + this.name);
 console.log("---------------------");
 	  this.mixin.createAccount();
+console.log("done creating account");
         }
       }
     }
@@ -158,29 +167,6 @@ MixinModule.prototype.renderModalSelectCrypto = function() {
       <div class="mixin_risk_acknowledge button">i understand</div>
 
     </div>
-    <style>
-      .mixin_crypto_overlay {
-	padding: 30px;
-	background-color: whitesmoke;
-	color: black;
-	line-height: 1.6em;
-        font-size: 1.5em;
-      }
-      .mixin_crypto_title {
-	margin: 0.5em 0;
-	font-size: 2em;
-	font-weight: bold;
-      }
-      .mixin_crypto_warning {
-	margin-top: 0px;
-	margin-bottom: 20px;
-      }
-      .mixin_risk_acknowledge {
-	max-width: 200px;
-	text-align: center;
-	margin-right: auto;
-      }
-    </style>
   `;
 }
 
@@ -283,6 +269,7 @@ console.log("unique hash is : " + unique_hash);
     this.mixin.createWithdrawalAddress(mm_self.asset_id, destination, "", "", (d) => {
 
 console.log("In the catch function in create Withdrawal Address in mixinmodule.");
+console.log("d: " + JSON.stringify(d));
 
       let asset_id = d.data.asset_id;
       let withdrawal_address_id = d.data.address_id;
@@ -349,7 +336,6 @@ console.log("checking for this trace ID: " + trace_id);
   //
   if (this.hasReceivedPayment(amount, sender, recipient, timestamp, unique_hash) == 1) { return 1; }
   this.mixin.fetchDeposits(this.asset_id, this.ticker, (d) => {});
-
   return 0;
 
 };

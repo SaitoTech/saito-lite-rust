@@ -64,6 +64,8 @@ mods/appstore/bundler
 mods/appstore/bundler/*
 mods/appstore/modules
 mods/appstore/modules/*
+mods/stunx-staging
+mods/stunx-staging/*
 #mods/stunx
 #mods/stunx/*
 

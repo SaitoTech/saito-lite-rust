@@ -1,5 +1,4 @@
 const ForumLeagueTemplate = require("./forum-league.template");
-const ArcadeLeagueView = require("../overlays/arcade-league-view");
 
 class ForumLeague {
 
@@ -31,9 +30,8 @@ class ForumLeague {
         el.onclick = function (e) {
         e.stopPropagation();
         let game_sig = e.currentTarget.getAttribute("data-sig");
-        console.log(game_sig);
         if (game_sig == league.id){
-          ArcadeLeagueView.render(app, mod, league);
+          app.connection.emit("view-league-details", game_sig);
         }
       }
       elem.querySelector("a").setAttribute("href","");

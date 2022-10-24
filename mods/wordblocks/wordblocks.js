@@ -1,4 +1,6 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
+const WordblocksGameRulesTemplate = require("./lib/wordblocks-game-rules.template");
+const WordblocksGameOptionsTemplate = require("./lib/wordblocks-game-options.template");
 
 class Wordblocks extends GameTemplate {
 
@@ -71,6 +73,8 @@ class Wordblocks extends GameTemplate {
         game_mod.log.toggleLog();
       },
     });
+
+
     this.menu.addSubMenuOption("game-game", {
       text: "Stats",
       id: "game-stats",
@@ -84,27 +88,10 @@ class Wordblocks extends GameTemplate {
         );
       },
     });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Exit",
-      id: "game-exit",
-      class: "game-exit",
-      callback: function (app, game_mod) {
-        game_mod.saveGame(game_mod.game.id);
-        window.location.href = "/arcade";
-      },
-    });
 
     this.menu.addChatMenu(app, this);
-    this.menu.addMenuIcon({
-      text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id: "game-menu-fullscreen",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      },
-    });
+
     this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
 
     this.hud.auto_sizing = 0; //turn off default sizing
     this.hud.render(app, this);
@@ -156,20 +143,7 @@ class Wordblocks extends GameTemplate {
   }
 
   returnGameRulesHTML() {
-    let overlay_html = `
-      <div class="rules-overlay">
-      <div class="intro">
-      <h1>Wordblocks</h1>
-      <p>Wordblocks is a crossword puzzle spelling game, similar to the classic boardgame.</p> 
-      <p>Players take turns spelling words using the seven letters in their tile rack and available space on the game board. The game ends when one player finishes all the letters in their rack and there are no remaining tiles to draw. The player with the highest score wins!</p>
-      <p>Words must be at least two letters in length and connect to an already played letter. Players may discard any number of tiles from their rack in lieu of playing a word.</p>
-      <p>Words are checked against a dictionary for validity. You may select the dictionary in the advanced options.</p>
-      <h2>Scoring</h2>
-      <p>Each letter is worth the number of points indicated on the tile. The score for the word is the sum of point values of its letters, which may be affected by playing the word over bonus spaces on the board. There are bonus spaced that double or triple the point value of a single letter or the entire word.</p>
-      <p>If you use all 7 tiles in one play, you receive 10 additional points to the letter score and a +1 multiple on the overall word score.</p>
-      <p>Good luck and happy spelling!</p>
-      </div></div>`;
-    return overlay_html;
+    return WordblocksGameRulesTemplate(this.app, this);
   }
 
   returnMath(play) {
@@ -1102,7 +1076,7 @@ class Wordblocks extends GameTemplate {
         this.drawTiles();
 
         if (this.checkForEndGame() == 1) {
-          return;
+          this.prependMove("gameover");
         }
 
         this.endTurn();
@@ -2250,11 +2224,13 @@ class Wordblocks extends GameTemplate {
           return;
         }
 
-        if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
-          if (wordblocks_self.checkForEndGame() == 1) {
-            return;
-          }
+        this.game.queue.splice(this.game.queue.length - 1, 1);
 
+        if (this.game.queue.includes("gameover")){
+          return 1;
+        }
+
+        if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
           wordblocks_self.updateStatusWithTiles(
             "YOUR GO: " + wordblocks_self.defaultMsg
           );
@@ -2270,7 +2246,6 @@ class Wordblocks extends GameTemplate {
           wordblocks_self.returnNextPlayer(player)
         );
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
-        this.game.queue.splice(this.game.queue.length - 1, 1);
         console.log("New Queue:",JSON.stringify(this.game.queue));
         return 0; // remove word and wait for next
       }
@@ -2290,11 +2265,13 @@ class Wordblocks extends GameTemplate {
         //  return 1;
         //}
 
-        if (this.game.player !== 0){
-          if (wordblocks_self.checkForEndGame() == 1) {
-            return;
-          }
+        this.game.queue.splice(this.game.queue.length - 1, 1);
+
+        
+        if (this.game.queue.includes("gameover")) {
+          return 1;
         }
+        
 
         let player = mv[1];
         let discardedTiles = mv[2];
@@ -2339,7 +2316,6 @@ class Wordblocks extends GameTemplate {
         $("player-box").removeClass("active");
         this.playerbox.addClass("active", wordblocks_self.returnNextPlayer(player));
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
-        this.game.queue.splice(this.game.queue.length - 1, 1);
         console.log("New Queue:",JSON.stringify(this.game.queue));
         return 0;
       }
@@ -2357,8 +2333,7 @@ class Wordblocks extends GameTemplate {
       this.game.deck[0].hand.length == 0 &&
       this.game.deck[0].crypt.length == 0
     ) {
-      this.addMove("gameover");
-      this.endTurn();
+      return 1;
     }
 
     return 0;
@@ -2387,27 +2362,7 @@ class Wordblocks extends GameTemplate {
   }
 
   returnGameOptionsHTML() {
-    let html = `<h1 class="overlay-title">Wordblocks Options</h1>`;
-
-    html += `<div class="overlay-input">
-                <label for="dictionary">Dictionary:</label>
-                <select name="dictionary">
-                  <option value="sowpods" title="A combination of the Official Scrabble Player Dictionary and Official Scrabble Words" selected>English: SOWPODS</option>
-                  <option value="twl" title="Scrabble Tournament Word List">English: TWL06</option>
-                  <option value="fise">Spanish: FISE</option>
-                  <option value="tagalog">Tagalog</option>
-                </select>
-              </div>
-          <div class="overlay-input">
-          <label for="observer_mode">Observer Mode:</label>
-          <select name="observer">
-            <option value="enable">enable</option>
-            <option value="disable" selected>disable</option>
-          </select>
-          </div>`;
-
-    html += this.returnCryptoOptionsHTML();
-    return html + `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+    return WordblocksGameOptionsTemplate(this.app, this);
   }
 
   async animatePlay(){

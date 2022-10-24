@@ -37,7 +37,6 @@ export default class Blockring {
     const insert_pos  = Number(block.returnId() % BigInt(this.ring_buffer_length));
     const block_id : bigint = block.returnId();
     const block_hash = block.returnHash();
-    //console.log("blockring.addBlock : " + block.hash + " at position " + block_id);
     if (!this.containsBlockHashAtBlockId(block_id, block_hash)) {
       this.ring[insert_pos].block_hashes.push(block_hash);
       this.ring[insert_pos].block_ids.push(block_id);

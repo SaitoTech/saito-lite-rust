@@ -1,13 +1,13 @@
 
 .saito-modal {
-  width: 90rem;
+  width: 70rem;
   height: min-content;
   max-width: 80vw;
   font-size: 1.5rem;
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
   background-image: url(/saito/img/dreamscape.png);
   background-position: 0em;
-  background-size: cover;
+  background-size: 120% 100%;
   color: white;
   display: grid;
   grid-template-rows: min-content auto;
@@ -65,3 +65,41 @@
     border: 1px solid white;
 }
 
+
+#saito-confirm-add-publickey {
+  background-color: #fff;
+  height: auto;
+  width: 30vh;
+  border-radius: 1.5rem;
+  padding: 2rem;
+}
+
+#saito-confirm-add-publickey  .saito-identicon-box {
+  display: inline-block;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+#saito-confirm-add-publickey  .saito-identicon-box .saito-identicon {
+  width: 8rem;
+  height: 8rem; 
+}
+
+#saito-confirm-add-publickey > .saito-address{
+  width: 100%;
+  max-width: 100%;
+  overflow: inherit;
+  display: block;
+  height: auto;
+  word-break: break-word;
+  text-overflow: inherit;
+  white-space: break-spaces;
+  text-align: center;
+  margin-top: 5rem;
+  margin-bottom: 1rem;
+}
+
+
+#saito-confirm-add-publickey > .saito-contact-status {
+  text-align: center;
+}

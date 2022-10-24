@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.289,
+    version: 4.463,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -935,11 +935,14 @@ console.log("---------------------");
   returnActivatedCryptos() {
     const allMods = this.returnInstalledCryptos();
     const activeMods = [];
+console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
     for (let i = 0; i < allMods.length; i++) {
+console.log("checking if activated: " + allMods[i].name);
       if (allMods[i].returnIsActivated()) {
         activeMods.push(allMods[i]);
       }
     }
+console.log("returning activated cryptos num: " + activeMods.length);
     return activeMods;
   }
 
@@ -987,6 +990,8 @@ console.log("---------------------");
         modal_select_crypto.attachEvents(this.app, cryptomod);
       }
     }
+
+console.log("done in setPreferredCrypto");
 
     return;
   }
@@ -1065,8 +1070,8 @@ console.log("---------------------");
   /**
    * Sends payments to the addresses provided if this user is the corresponding
    * sender. Will not send if similar payment was found after the given timestamp.
-   * @param {Array} senders - Array of addresses
-   * @param {Array} receivers - Array of addresses
+   * @param {Array} senders - Array of addresses -- in web3 currency
+   * @param {Array} receivers - Array of addresses -- in web3 curreny
    * @param {Array} amounts - Array of amounts to send
    * @param {Int} timestamp - Timestamp of time after which payment should be made
    * @param {Function} mycallback - ({hash: {String}}) -> {...}
@@ -1081,6 +1086,9 @@ console.log("---------------------");
     mycallback = null,
     ticker
   ) {
+
+console.log("IN SEND PAYMENT IN WALLET!");
+
     console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
@@ -1105,11 +1113,19 @@ console.log("---------------------");
     if (
       !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     ) {
+
+console.log("preferred transaction does not exist, so...");
+
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
         console.log(
           "senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress()
         );
+
+	//
+	// DEBUGGING - sender is address to which we send the crypto
+	// 	     - not our own publickey
+	//
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);

@@ -3,7 +3,6 @@ const RedSquareMainTemplate = require("./main.template");
 const RedSquareTweet = require("./tweet");
 const RedSquareSidebar = require("./sidebar/sidebar");
 const RedSquareMenu = require("./menu");
-const RedSquareGamesSidebar = require("./sidebar/games-sidebar");
 const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
 const RedSquareAppspaceHome = require("./appspace/home");
 const RedSquareAppspaceContacts = require("./appspace/contacts");
@@ -37,11 +36,6 @@ class RedSquareMain {
     // right sidebar
     //
     mod.rsidebar = new RedSquareSidebar(app, mod, ".saito-sidebar-right");
-
-    //
-    //
-    //
-    mod.gsidebar = new RedSquareGamesSidebar(app, mod, ".saito-sidebar-right");
 
 
     //
@@ -77,10 +71,24 @@ class RedSquareMain {
     // if that fails render home
 
     var hash = new URL(document.URL).hash.split('#')[1];
+    let component = hash;
+    let params = null;
+
+    if (hash) {
+      component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
+      if (hash?.split("").includes("?")) {
+        params = hash.split("?")[1];
+      }
+    }
+
+
+
+
+
     var hash_matched = 0;
 
-    if (hash != "") {
-      let hash_matched = mod.menu.renderItem(app, mod, hash);
+    if (component != "") {
+      let hash_matched = mod.menu.renderItem(app, mod, component, params);
       if (hash_matched == 1) {
         return 1;
       }
@@ -90,7 +98,10 @@ class RedSquareMain {
     //    tweet.render(app, mod); 
     //});
 
+
   }
+
+  
 
 }
 

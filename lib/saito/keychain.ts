@@ -7,7 +7,6 @@ import { Saito } from "../../apps/core";
 import Key from "./key";
 
 class Keychain {
-
   public app: Saito;
   public keys: any;
   public groups: any;
@@ -71,17 +70,23 @@ class Keychain {
     // add my key if nothing else
     //
     if (this.app.options.keys.length == 0) {
-      this.addKey(this.app.wallet.returnPublicKey(), { watched : true });
+      this.addKey(this.app.wallet.returnPublicKey(), { watched: true });
     }
-    console.log("options ", this.app.options);
-  }
 
+    // Load groups from storage
+
+    if (this.app.options.groups == null) {
+      this.app.options.groups = [];
+    }else{
+      this.groups = this.app.options.groups;
+    }
+
+  }
 
   //
   // adds an individual key
   //
   addKey(publickey = "", data = {}) {
-
     if (publickey === "") {
       return;
     }
@@ -96,7 +101,7 @@ class Keychain {
     let tmpkey = this.findByPublicKey(publickey);
     let added_identifier = 0;
     let added_tag = 0;
-    if (tmpkey == null) { 
+    if (tmpkey == null) {
       tmpkey = new Key();
       tmpkey.publickey = publickey;
       tmpkey.watched = 0;
@@ -104,33 +109,32 @@ class Keychain {
       this.keys.push(tmpkey);
     }
 
-console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
+    console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
 
     for (let key in data) {
-
       if (key === "identifiers") {
-        for (let z = 0; z < data[key].length; z++) { 
-	  if (!tmpkey.identifiers.includes(data[key][z])) {
-	    tmpkey.identifiers.push(data[key][z]);
-	    added_identifier = 1;
-	  }
-	}
+        for (let z = 0; z < data[key].length; z++) {
+          if (!tmpkey.identifiers.includes(data[key][z])) {
+            tmpkey.identifiers.push(data[key][z]);
+            added_identifier = 1;
+          }
+        }
       } else {
         if (key === "tags") {
-          for (let z = 0; z < data[key].length; z++) { 
-	    if (!tmpkey.tags.includes(data[key][z])) {
-	      tmpkey.tags.push(data[key][z]);
-	      added_tag = 1;
-	    }
-	  }
+          for (let z = 0; z < data[key].length; z++) {
+            if (!tmpkey.tags.includes(data[key][z])) {
+              tmpkey.tags.push(data[key][z]);
+              added_tag = 1;
+            }
+          }
         } else {
           if (key === "identifier") {
-	    if (!tmpkey.identifiers.includes(data[key])) {
-	      tmpkey.identifiers.push(data[key]);
-	      added_identifier = 1;
-	    }
-	  } else {
-  	    tmpkey[key] = data[key];
+            if (!tmpkey.identifiers.includes(data[key])) {
+              tmpkey.identifiers.push(data[key]);
+              added_identifier = 1;
+            }
+          } else {
+            tmpkey[key] = data[key];
           }
         }
       }
@@ -144,7 +148,6 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
     if (added_tag == 1) {
       this.app.connection.emit("update_tag", tmpkey);
     }
-
   }
 
   decryptMessage(publickey, encrypted_msg) {
@@ -167,20 +170,15 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
     return encrypted_msg;
   }
 
-
-
-
-
-  addGroup(group_id = "", data = { members : [] }) {
-
+  addGroup(group_id = "", data = { members: [] }) {
     //
-    // 
+    //
     //
     let group = null;
 
     for (let i = 0; i < this.groups.length; i++) {
       if (this.groups[i].id === group_id) {
-	group = this.groups[i];
+        group = this.groups[i];
       }
     }
 
@@ -194,16 +192,15 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
       group.block_hash = 0;
     }
 
-
     for (let key in data) {
       if (key !== "members") {
-	group[key] = data[key];
+        group[key] = data[key];
       } else {
-	if (data.members) {
+        if (data.members) {
           for (let i = 0; i < data.members.length++; i++) {
             this.addKey(data.members[i]);
             if (!group.members.includes(data.members[i])) {
-	      group.members.push(data.members[i]);
+              group.members.push(data.members[i]);
             }
           }
         }
@@ -211,7 +208,6 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
     }
 
     this.saveGroups();
-  
   }
 
   decryptString(publickey, encrypted_string) {
@@ -358,7 +354,7 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
     const kx = [];
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].lc == 1 && this.keys[x].publickey != this.app.wallet.returnPublicKey()) {
-        kx[kx.length] = this.keys[x];
+        kx.push(this.keys[x]);
       }
     }
     return kx;
@@ -536,7 +532,13 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
 
           // keep track that we fetched this already
           this.fetched_keys[publickey] = 1;
-          this.addKey(publickey, { identifier : identifier, watched : false, block_id : bid , block_hash : bsh , lc : lc});
+          this.addKey(publickey, {
+            identifier: identifier,
+            watched: false,
+            block_id: bid,
+            block_hash: bsh,
+            lc: lc,
+          });
           if (!found_keys.includes(publickey)) {
             found_keys[publickey] = identifier;
           }
@@ -590,11 +592,17 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
               if (res.rows.length > 0) {
                 rows = res.rows.map((row) => {
                   const { publickey, identifier, bid, bsh, lc } = row;
-                  this.addKey(publickey, { identifier :  identifier, watched : false, block_id : bid, block_hash : bsh, lc : lc});
+                  this.addKey(publickey, {
+                    identifier: identifier,
+                    watched: false,
+                    block_id: bid,
+                    block_hash: bsh,
+                    lc: lc,
+                  });
                   if (!found_keys.includes(publickey)) {
                     found_keys[publickey] = identifier;
                   }
-                });      
+                });
               }
             }
           }
@@ -642,12 +650,17 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
       "Registry",
       `SELECT * FROM records WHERE identifier = '${identifier}'`,
       (res) => {
-        console.log(4);
         if (res.rows && res.rows.length > 0) {
           //It should be unique....
           res.rows.forEach((row) => {
             const { publickey, identifier, bid, bsh, lc } = row;
-            this.addKey(publickey, { identifier : identifier, watched : false, block_id : bid, block_hash : bsh, lc : lc});
+            this.addKey(publickey, {
+              identifier: identifier,
+              watched: false,
+              block_id: bid,
+              block_hash: bsh,
+              lc: lc,
+            });
           });
           return res.rows[0].publickey;
         }
@@ -717,14 +730,13 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
   }
 
   addWatchedPublicKey(publickey = "") {
-    this.addKey(publickey, { watched : true});
+    this.addKey(publickey, { watched: true });
     this.saveKeys();
     this.app.network.updatePeersWithWatchedPublicKeys();
   }
 
   updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
-
-console.log("updating crypto for: " + publickey);
+    console.log("updating crypto for: " + publickey);
 
     if (publickey == "") {
       return;
@@ -733,10 +745,9 @@ console.log("updating crypto for: " + publickey);
     this.addKey(publickey);
 
     for (let x = 0; x < this.keys.length; x++) {
-console.log("TESTING: " + this.keys[x].publickey + " -- " + this.keys[x].lc);
+      console.log("TESTING: " + this.keys[x].publickey + " -- " + this.keys[x].lc);
       if (this.keys[x].publickey == publickey && this.keys[x].lc == 1) {
-
-console.log("UPDATING: " + shared_secret);
+        console.log("UPDATING: " + shared_secret);
         this.keys[x].aes_publickey = aes_publickey;
         this.keys[x].aes_privatekey = aes_privatekey;
         this.keys[x].aes_secret = shared_secret;

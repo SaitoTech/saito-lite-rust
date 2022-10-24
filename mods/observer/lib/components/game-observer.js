@@ -42,9 +42,23 @@ class GameObserver {
 
     if (!document.getElementById("game-observer-hud")) {
       app.browser.addElementToDom(GameObserverTemplate(step));
+    }else{
+      document.getElementById("game-observer-hud").style.display="block";
     }
 
     this.attachEvents(app, mod);
+  }
+
+  hide(){
+    if (document.getElementById("game-observer-hud")){
+      document.getElementById("game-observer-hud").style.display="none";
+    }
+  }
+
+  remove(){
+    if (document.getElementById("game-observer-hud")){
+      document.getElementById("game-observer-hud").remove();
+    }
   }
 
   /**
@@ -70,7 +84,10 @@ class GameObserver {
       document.getElementById("game-observer-next-btn").classList.remove("flashit");
         this.arcade_mod.step_speed = 2000; //Reset to normal play speed
       if (this.arcade_mod.is_paused){
+        //Update controls UI and flags
         this.play();  
+        //Kick off loop with next move
+        this.next();
       }else{
         this.pause();
       }
@@ -106,10 +123,10 @@ class GameObserver {
     document.getElementById("game-observer-help").onclick = (e) => {
       console.log(JSON.parse(JSON.stringify(this.game_mod.game)));
     }
-    document.getElementById("game-observer-help2").onclick = (e) => {
-      console.log(this.arcade_mod.game_states);
-      console.log(this.arcade_mod.game_moves);
-    }
+    //document.getElementById("game-observer-help2").onclick = (e) => {
+    //  console.log(this.arcade_mod.game_states);
+    //  console.log(this.arcade_mod.game_moves);
+    //}
 
 
     app.browser.makeDraggable("game-observer-hud");
@@ -128,6 +145,10 @@ class GameObserver {
     let playBtn = document.getElementById("game-observer-play-btn"); 
     playBtn.classList.add("play-state");
     playBtn.classList.remove("pause-state");
+    let fwdBtn = document.getElementById('game-observer-next-btn');
+    fwdBtn.classList.add("play-state");
+    fwdBtn.classList.remove("pause-state");
+    
     this.arcade_mod.is_paused = true;
     this.game_mod.game.halted = 1;
   }
@@ -136,11 +157,14 @@ class GameObserver {
     let playBtn = document.getElementById("game-observer-play-btn"); 
     playBtn.classList.remove("play-state");
     playBtn.classList.add("pause-state");
+    let fwdBtn = document.getElementById('game-observer-next-btn');
+    fwdBtn.classList.remove("play-state");
+    fwdBtn.classList.add("pause-state");
+
     this.game_mod.updateObserverStatus("Replaying moves...");
     this.arcade_mod.is_paused = false;
     this.game_mod.game.halted = 0; 
   
-    this.next();
   }
 
 
@@ -169,7 +193,7 @@ class GameObserver {
         if (mod.game.future.length == 0) {
           observer_self.hideNextMoveButton();
           mod.updateObserverStatus("");
-          mod.game.halted = observer_self.arcade_mod.is_paused; 
+          mod.game.halted = (observer_self.arcade_mod.is_paused) ? 1: 0; 
           return;
         }
 
@@ -185,9 +209,8 @@ class GameObserver {
         }
 
         //Reset game to halted 
-        if (observer_self.arcade_mod.is_paused){
-          observer_self.game_mod.game.halted = 1;
-        }
+        mod.game.halted = (observer_self.arcade_mod.is_paused) ? 1: 0; 
+
       });
     }
 
@@ -242,7 +265,7 @@ class GameObserver {
       nextMoveBtn.classList.remove("flashit");
       if (nextMoveBtn.style.display !== "none"){
         nextMoveBtn.style.display = "none";
-        salert("No Moves Yet Available Beyond this Point");
+        //salert("No Moves Yet Available Beyond this Point");
       }
     }
   }

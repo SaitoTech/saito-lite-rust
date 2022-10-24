@@ -1,6 +1,4 @@
 const ArcadeLeagueTemplate = require("./arcade-league.template");
-const ArcadeLeagueView = require("../overlays/arcade-league-view");
-const saito = require("../../../../lib/saito/saito");
 
 class ArcadeLeague {
 
@@ -28,19 +26,13 @@ class ArcadeLeague {
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
 
         if (game_cmd == "play" && game_sig == league.id){
-          let tx = new saito.default.transaction();
-          tx.msg.game = league.game;
-          if (league.admin !== "saito"){
-            tx.msg.league = league.id;
-          }
-          ArcadeGameDetails.render(app, app.modules.returnActiveModule(), tx);
-          ArcadeGameDetails.attachEvents(app, app.modules.returnActiveModule(), tx);
-
+          mod.createLeagueGame(league);
         }
 
         if (game_cmd == "view" && game_sig == league.id){
-          ArcadeLeagueView.render(app, mod, league);
+          app.connection.emit("view-league-details", game_sig);
         }
+        
         if (game_cmd == "join" && game_sig == league.id){
           mod.sendJoinLeagueTransaction(league.id);
           salert('Joining League... it may take a moment to update info');

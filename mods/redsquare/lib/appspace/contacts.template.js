@@ -3,8 +3,8 @@ const SaitoUserTemplateWithTime = require('./../../../../lib/saito/new-ui/templa
 
 module.exports = (app, mod) => {
 
-  let groups = app.keys.groups;
-  let keys = app.keys.keys;
+  let groups = app.keys.returnGroups();
+  let keys = app.keys.returnKeys();
 
 
   let html = `
@@ -12,9 +12,18 @@ module.exports = (app, mod) => {
     <div class="redsquare-appspace-contacts">
 
       <div class="saito-page-header">
-        <div id="redsquare-add-contact" class="redsquare-add-contact saito-button-secondary small" style="float: right;">Add Contact</div>
-        <div class="saito-page-header-title">CONTACTS</div>
+      <div class="saito-redsquare-actions-buttons">
+      <div class="saito-redsquare-actions-buttons-icon">
+      <i id="action-icon" class="fas fa-plus"></i>
+      </div>
+       <div class="redsquare-actions-container"> 
+       <div id="redsquare-add-contact" class="redsquare-add-contact saito-button-secondary small">Add Contact</div>
+       </div>
+      </div>
+
+        <div class="saito-page-header-title">CONTACTS
         <div class="saito-page-header-text">Use this page to manage the contacts saved in your wallet, or create groups for secure communication channels with many participants. Remember to backup your wallet after creating a new group or adding a new contact.</div>
+      </div>
       </div>
 
       <div class="redsquare-appspace-contacts-list">
@@ -66,7 +75,10 @@ module.exports = (app, mod) => {
 	if (keys[i].aes_secret !== "") {
 	  security = "secure";
 	}
-        html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline, security);
+	if (keys.watched === 1 || keys.aes_publickey != "") {
+    //This is not the right template for including a security flag....
+          html += SaitoUserTemplateWithTime(app, mod, keys[i].publickey, userline/*, security*/);
+	}
       }
 
       html += `

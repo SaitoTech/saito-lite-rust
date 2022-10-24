@@ -1,4 +1,4 @@
-const SaitoOverlay = require("../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const InviteOverlayTemplate = require("./invite-overlay.template");
 
 
@@ -11,12 +11,14 @@ class InviteOverlay {
     my_pc = [];
     peer_connection = "";
     peer_connections = []
-    overlay = new SaitoOverlay(this.app, true);
 
 
     constructor(app, mod) {
         this.app = app
         this.mod = mod
+        this.overlay = new SaitoOverlay(app, true);
+
+
         this.app.connection.on('show-invite-overlay-request', (roomCode) => {
             this.roomCode = roomCode;
             this.render(app, mod);
@@ -33,14 +35,13 @@ class InviteOverlay {
     }
 
     attachEvents() {
-        console.log("attaching copy event");
-        document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
+        document.querySelector('#stunx-copy-vide-invite-code').addEventListener('click', (e) => {
             navigator.clipboard.writeText(`${this.roomCode}`);
-            document.querySelector("#copyVideoInviteCode").textContent = "Copied to clipboard";
+            salert("Copied code to clipboard");
         });
-        document.querySelector('#copyVideoInviteLink i').addEventListener('click', (e) => {
-            navigator.clipboard.writeText(`${window.location.host}/stunx?invite_code=${this.roomCode}`);
-            document.querySelector("#copyVideoInviteLink").textContent = "Copied to clipboard";
+        document.querySelector('#stunx-copy-video-invite-link').addEventListener('click', (e) => {
+            navigator.clipboard.writeText(`${window.location.host}/redsquare/#${this.app.modules.returnModule('Stunx').returnSlug()}?invite_code=${this.roomCode}`);
+            salert("Copied link to clipboard")
         });
 
         document.querySelector('#inviteCode').value = this.roomCode;

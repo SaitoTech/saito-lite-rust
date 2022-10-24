@@ -364,22 +364,16 @@ class StorageCore extends Storage {
 
   convertIssuanceIntoSlip(line = "") {
     let entries = line.split("\t");
-
-    console.log(JSON.stringify(entries));
-
     let amount = BigInt(entries[0]);
     let publickey = entries[1];
     let type = entries[2];
-
     let slip = new Slip(publickey, amount);
-
     if (type === "VipOutput") {
       slip.type = SlipType.VipOutput;
     }
     if (type === "Normal") {
       slip.type = SlipType.Normal;
     }
-
     return slip;
   }
 
@@ -431,9 +425,7 @@ class StorageCore extends Storage {
     try {
       fs.writeFileSync(`${__dirname}/web/client.options`, JSON.stringify(t));
     } catch (err) {
-      console.log(err);
       console.error(err);
-      // this.app.logger.logError("Error thrown in storage.saveBlock", {message: "", stack: err});
     }
   }
 

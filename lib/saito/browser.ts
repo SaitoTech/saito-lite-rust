@@ -1,7 +1,15 @@
 // @ts-nocheck
 
-import screenfull from "screenfull";
+import screenfull, { element } from "screenfull";
 import html2canvas from "html2canvas";
+import { getDiffieHellman } from "crypto";
+const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
+
+var marked = require("marked");
+var sanitizeHtml = require("sanitize-html");
+const linkifyHtml = require("markdown-linkify");
+const emoji = require("node-emoji");
+const UserMenu = require("./new-ui/modals/user-menu/user-menu");
 
 class Browser {
   public app: any;
@@ -58,7 +66,8 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-/******
+        /******
+
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {
@@ -82,18 +91,15 @@ class Browser {
         };
 *****/
 
-
         document.addEventListener(
           "visibilitychange",
           () => {
-            //console.log("document event listener visibility change");
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
                 publickey: this.app.wallet.returnPublicKey(),
               });
             } else {
-              //console.log("document event listener visibility change");
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,
@@ -120,10 +126,8 @@ class Browser {
       // Abercrombie's rule.
       //
       if (typeof window == "undefined") {
-        //console.log("Initializing Saito Node");
         return;
       } else {
-        //console.info("Initializing Saito Light Client");
       }
       const current_url = window.location.toString();
       const myurl = new URL(current_url);
@@ -221,12 +225,62 @@ class Browser {
         siteMessage("Websocket Connection Lost");
       });
     }
+
+    // listen with mutation observer
+    this.activatePublicKeyObserver(app);
+
+    // attach listening events
+    document.querySelector("body").addEventListener(
+      "click",
+      (e) => {
+        if (
+          e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
+        ) {
+
+          e.preventDefault();
+          let public_key = e.target.getAttribute("data-id");
+          if (!public_key || public_key.length < 44) {
+            return;
+          }
+          if (public_key !== app.wallet.returnPublicKey()){
+            let userMenu = new UserMenu(app, public_key);
+            userMenu.render(app);
+          }
+        }
+      },
+      {
+        capture: true,
+      }
+    );
   }
 
+  extractKeys(text = "") {
+    let keys = [];
+    let w = text.split(/(\s+)/);
+    for (let i = 0; i < w.length; i++) {
+      if (w[i].length > 0) {
+        if (w[i][0] === "@") {
+          if (w.length > 1) {
+            let cleaner = w[i].substring(1);
+            let add = this.app.keys.returnPublicKeyByIdentifier(cleaner);
+            if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
+              add = cleaner;
+            }
+            if (!keys.includes(add)) {
+              keys.push(add);
+            }
+          }
+        }
+      }
+    }
+    return keys;
+  }
 
   returnInviteLink(email = "") {
     let { protocol, host, port } = this.app.options.peers[0];
-    let url_payload = encodeURIComponent(this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email))));
+    let url_payload = encodeURIComponent(
+      this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email)))
+    );
     return `${protocol}://${host}:${port}/r?i=${url_payload}`;
   }
 
@@ -239,9 +293,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {
-      //console.log("error in urlparams: " + err);
-    }
+    } catch (err) {}
     return "";
   }
 
@@ -266,8 +318,9 @@ class Browser {
         /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
           user_agent.substr(0, 4)
         )
-      )
+      ) {
         check = true;
+      }
     })(user_agent);
     return check;
   }
@@ -385,13 +438,9 @@ class Browser {
   // Browser and Helper Functions //
   //////////////////////////////////
   generateQRCode(data) {
-    const QRCode = require('./../helpers/qrcode');
-    return new QRCode(
-      document.getElementById("qrcode"),
-      data
-    );
+    const QRCode = require("./../helpers/qrcode");
+    return new QRCode(document.getElementById("qrcode"), data);
   }
-
 
   // https://github.com/sindresorhus/screenfull.js
   requestFullscreen() {
@@ -423,87 +472,95 @@ class Browser {
 
   replaceElementById(html, id = null) {
     if (id == null) {
+      console.warn("no id provided to replace, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementById(id);
       if (obj) {
         obj.outerHTML = html;
       } else {
-	this.app.browser.addElementToDom(html, id);
+        console.warn(`cannot find ${id} to replace, so adding to DOM`);
+        this.app.browser.addElementToDom(html);
       }
     }
   }
 
   addElementToId(html, id = null) {
     if (id == null) {
+      console.warn(`no id provided to add to, so adding to DOM`);
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.getElementById(id);
       if (obj) {
-	this.app.browser.addElementToDom(html, obj);
+        this.app.browser.addElementToDom(html, obj);
       } else {
-	this.app.browser.addElementToDom(html);
+        console.warn(`cannot find ${id} to add to, so adding to DOM`);
+        this.app.browser.addElementToDom(html);
       }
     }
   }
 
   prependElementToId(html, id = null) {
     if (id == null) {
+      console.warn(`no id provided to prepend to, so adding to DOM`);
       this.app.browser.prependElementToDom(html);
     } else {
       let obj = document.getElementById(id);
       if (obj) {
-	this.app.browser.prependElementToDom(html, obj);
+        this.app.browser.prependElementToDom(html, obj);
       } else {
-	this.app.browser.prependElementToDom(html);
+        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
+        this.app.browser.prependElementToDom(html);
       }
     }
   }
 
-  replaceElementBySelector(html, selector="") {
+  replaceElementBySelector(html, selector = "") {
     if (selector === "") {
+      console.warn("no selector provided to replace, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let obj = document.querySelector(selector);
       if (obj) {
         obj.outerHTML = html;
       } else {
-	this.app.browser.addElementToDom(html);
+        console.warn(`cannot find ${id} to replace, so adding to DOM`);
+        this.app.browser.addElementToDom(html);
       }
     }
   }
 
-  addElementToSelector(html, selector="") {
+  addElementToSelector(html, selector = "") {
     if (selector === "") {
+      console.warn("no selector provided to add to, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
       } else {
+        console.warn(`cannot find ${id} to add to, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
-
   }
 
-  prependElementToSelector(html, selector="") {
-
+  prependElementToSelector(html, selector = "") {
     if (selector === "") {
+      console.warn("no selector provided to prepend to, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.prependElementToDom(html, container);
       } else {
+        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
-
   }
 
-
-  replaceElementByClass(html, classname="") {
+  replaceElementByClass(html, classname = "") {
     if (classname === "") {
       this.app.browser.addElementToDom(html);
     } else {
@@ -512,13 +569,12 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
-	this.app.browser.addElementToDom(html);
+        this.app.browser.addElementToDom(html);
       }
     }
   }
 
-  addElementToClass(html, classname="") {
-
+  addElementToClass(html, classname = "") {
     if (classname === "") {
       this.app.browser.addElementToDom(html);
     } else {
@@ -530,11 +586,9 @@ class Browser {
         this.app.browser.addElementToDom(html);
       }
     }
-
   }
 
-  prependElementToClass(html, classname="") {
-
+  prependElementToClass(html, classname = "") {
     if (classname === "") {
       this.app.browser.prependElementToDom(html);
     } else {
@@ -546,7 +600,6 @@ class Browser {
         this.app.browser.prependElementToDom(html);
       }
     }
-
   }
 
   addElementToElement(html, elem = document.body) {
@@ -555,7 +608,8 @@ class Browser {
       elem.appendChild(el);
       el.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582343: error in addElementToElement");
+      console.log("ERROR 582343: error in addElementToElement. Does " + elem + " exist?");
+      console.log(html);
     }
   }
 
@@ -584,7 +638,7 @@ class Browser {
 
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
-    
+
     const hours = datetime.getHours();
     let minutes = datetime.getMinutes();
     const months = [12];
@@ -602,7 +656,7 @@ class Browser {
     months[11] = "December";
     const month = months[datetime.getMonth()];
     //getDay = Day of the Week, getDate = day of the month
-    const day = datetime.getDate(); 
+    const day = datetime.getDate();
     const year = datetime.getFullYear();
 
     minutes = minutes.toString().length == 1 ? `0${minutes}` : `${minutes}`;
@@ -614,8 +668,8 @@ class Browser {
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
-        <input type="file" id="hidden_file_element_${id}" multiple accept="*">
-        <label class="button" for="fileElem">Select some files</label>
+        <input type="file" id="hidden_file_element_${id}" multiple accept="*" class="treated hidden_file_element_${id}">
+        <label class="button" class="hidden_file_element_button_${id}" id="hidden_file_element_button_${id}" for="hidden_file_element_${id}">Select some files</label>
       </form>
     `;
 
@@ -701,11 +755,15 @@ class Browser {
   }
 
   preventDefaults(e) {
+    console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
   }
 
-  makeDraggable(id_to_move, id_to_drag = "", mycallback = null) {
+  makeDraggable(id_to_move, id_to_drag = "", dockable = false, mycallback = null) {
+    console.log("make draggable: " + id_to_drag);
+    console.log(" and move? " + id_to_move);
+
     try {
       const element_to_move = document.getElementById(id_to_move);
       let element_to_drag = element_to_move;
@@ -723,7 +781,23 @@ class Browser {
       let element_start_top = 0;
 
       element_to_drag.onmousedown = function (e) {
+        let resizeable = ["both", "vertical", "horizontal"];
+        //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
+
+        if (
+          resizeable.indexOf(getComputedStyle(e.target).resize) > -1 ||
+          resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1
+        ) {
+          if (e.offsetX > e.target.offsetWidth - 20 && e.offsetY > e.target.offsetHeight - 20) {
+            return;
+          }
+        }
+
         e = e || window.event;
+
+        //console.log("DRAG MOUSEDOWN");
+        //console.log(e.clientX);
+        //console.log(e.offsetX);
 
         if (
           !e.currentTarget.id ||
@@ -746,6 +820,26 @@ class Browser {
         element_moved = false;
 
         document.onmouseup = function (e) {
+          if (dockable) {
+            if (element_to_move.classList.contains("dockedLeft")) {
+              element_to_move.style.left = 0;
+            }
+
+            if (element_to_move.classList.contains("dockedTop")) {
+              element_to_move.style.top = 0;
+            }
+
+            if (element_to_move.classList.contains("dockedRight")) {
+              element_to_move.style.left =
+                window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
+            }
+
+            if (element_to_move.classList.contains("dockedBottom")) {
+              element_to_move.style.top =
+                window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
+            }
+          }
+
           document.onmouseup = null;
           document.onmousemove = null;
 
@@ -768,9 +862,62 @@ class Browser {
             element_moved = true;
           }
 
-          // set the element's new position:
-          element_to_move.style.left = element_start_left + adjustmentX + "px";
-          element_to_move.style.top = element_start_top + adjustmentY + "px";
+          let newPosX = element_start_left + adjustmentX;
+          let newPosY = element_start_top + adjustmentY;
+
+          //if dockable show docking edge
+          if (dockable) {
+            if (element_to_move.getBoundingClientRect().x < 50) {
+              element_to_move.classList.add("dockedLeft");
+            } else {
+              element_to_move.classList.remove("dockedLeft");
+            }
+
+            if (element_to_move.getBoundingClientRect().y < 50) {
+              element_to_move.classList.add("dockedTop");
+            } else {
+              element_to_move.classList.remove("dockedTop");
+            }
+
+            if (
+              element_to_move.getBoundingClientRect().x +
+                element_to_move.getBoundingClientRect().width >
+              window.innerWidth - 50
+            ) {
+              element_to_move.classList.add("dockedRight");
+            } else {
+              element_to_move.classList.remove("dockedRight");
+            }
+
+            if (
+              element_to_move.getBoundingClientRect().y +
+                element_to_move.getBoundingClientRect().height >
+              window.innerHeight - 50
+            ) {
+              element_to_move.classList.add("dockedBottom");
+            } else {
+              element_to_move.classList.remove("dockedBottom");
+            }
+
+            // set the element's new position:
+
+            if (newPosX <= 0) {
+              newPosX = 0;
+            }
+            if (newPosX + element_to_move.getBoundingClientRect().width >= window.innerWidth) {
+              newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
+            }
+
+            if (newPosY <= 0) {
+              newPosY = 0;
+            }
+            if (newPosY + element_to_move.getBoundingClientRect().height >= window.innerHeight) {
+              newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
+            }
+          }
+
+          element_to_move.style.left = newPosX + "px";
+          element_to_move.style.top = newPosY + "px";
 
           //We are changing to Top/Left so get rid of bottom/right
           element_to_move.style.bottom = "unset";
@@ -871,7 +1018,6 @@ class Browser {
         }
       });
     }
-
     try {
       const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
       Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
@@ -880,10 +1026,31 @@ class Browser {
     }
   }
 
+  addModalIdentifierAddPublickey(app, mod) {
+    try {
+      const identifiers = document.getElementsByClassName(`saito-identicon`);
+      Array.from(identifiers).forEach((identifier) => {
+        // identifier.addEventListener("click", (e) => {
+        //   console.log("preventing default 444");
+        //   e.preventDefault();
+        //   e.stopImmediatePropagation();
+        //   let identiconUri = e.target.getAttribute("src");
+        //   let publickey = e.target.getAttribute("data-id");
+        //   let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey);
+        //   addPublicKeyModal.render(app, mod);
+        // });
+      });
+    } catch (err) {
+      console.error("Error while adding event to identifiers: " + err);
+    }
+  }
+
   returnAddressHTML(key) {
     const identifier = this.app.keys.returnIdentifierByPublicKey(key);
     const id = !identifier ? key : identifier;
-    return `<span data-id="${key}" id="saito-address-${key}" class="saito-address saito-address-${key}">${id}</span>`;
+    // obsolete
+    //return `<span data-id="${key}" id="saito-address-${key}" class="saito-address saito-address-${key}">${id}</span>`;
+    return `<div class="saito-address saito-address-${key}" data-id="${key}">${id}</div>`;
   }
 
   async returnAddressHTMLPromise(key) {
@@ -909,7 +1076,6 @@ class Browser {
         .push(category, action, name, value);
     } catch (err) {
       if (err.startsWith("Module responding to")) {
-        //console.log("Matomo module not present, cannot push event");
       } else {
         console.log(err);
       }
@@ -950,24 +1116,6 @@ class Browser {
     return "#" + hashString.substr(1);
   }
 
-  // Make a new hash and mix in keys from another hash.
-  // usage: buildHashAndPreserve("#foo=1&bar=2","#foo=3&bar=4&baz=5","baz") --> "#foo=1&bar=2&baz=5"
-  buildHashAndPreserve(newHash, oldHash, ...preservedKeys) {
-    return this.buildHash(
-      Object.assign(this.getSubsetOfHash(oldHash, preservedKeys), this.parseHash(newHash))
-    );
-  }
-
-  // Get a subset of key-value pairs from a url-hash string as an object.
-  // usage: getSubsetOfHash("#foo=1&bar=2","bar") --> {bar: 2}
-  getSubsetOfHash(hash, ...keys) {
-    const hashObj = this.parseHash(hash);
-    return keys.reduce(function (o, k) {
-      o[k] = hashObj[k];
-      return o;
-    }, {});
-  }
-
   // Remove a subset of key-value pairs from a url-hash string.
   // usage: removeFromHash("#foo=1&bar=2","bar") --> "#foo=1"
   removeFromHash(hash, ...keys) {
@@ -1002,27 +1150,21 @@ class Browser {
     return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
   }
 
-  // TODO: implement htis function
-  getValueFromHashAsBoolean() {}
-
-  getValueFromHashAsNumber(hash, key) {
-    try {
-      const subsetHashObj = this.getSubsetOfHash(hash, key);
-      if (subsetHashObj[key]) {
-        return Number(subsetHashObj[key]);
-      } else {
-        throw "key not found in hash";
-      }
-    } catch (err) {
-      return Number(0);
-    }
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   async captureScreenshot(callback = null) {
+    // svg needs converstion
+    var svgElements = document.body.querySelectorAll("svg");
+    svgElements.forEach(function (item) {
+      item.setAttribute("width", item.getBoundingClientRect().width);
+      item.setAttribute("height", item.getBoundingClientRect().height);
+      item.style.width = null;
+      item.style.height = null;
+    });
+
     html2canvas(document.body).then(function (canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
       if (callback != null) {
@@ -1031,32 +1173,193 @@ class Browser {
     });
   }
 
+  async screenshotCanvasElementById(id = "", callback = null) {
+    let canvas = document.getElementById(id);
+    if (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      if (callback != null) {
+        callback(img);
+      }
+    }
+  }
+
   sanitize(text) {
     try {
-
-      if (text !== '') {
-     
-        // sanitize html tags
-        const decoder = document.createElement('div');
-        decoder.innerText = text;
-        text = decoder.innerHTML;
+      if (text !== "") {
+        text = marked.parseInline(text);
 
         //trim trailing line breaks
-        text = text.replace(/[\r<br>]+$/, '');
-
-        // wrap link in <a> tag
-        let urlPattern = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/ig;       
-        text = text.replace(urlPattern, function(url){ 
-            return `<a target="_blank" class="tweet-link" href="${url.trim()}">${url.trim()}</a>`; 
-        }); 
-      
+        text = text.replace(/[\r<br>]+$/, "");
       }
 
+      text = sanitizeHtml(text, {
+        allowedTags: [
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "blockquote",
+          "p",
+          "ul",
+          "ol",
+          "nl",
+          "li",
+          "b",
+          "i",
+          "strong",
+          "em",
+          "strike",
+          "code",
+          "hr",
+          "br",
+          "div",
+          "table",
+          "thead",
+          "caption",
+          "tbody",
+          "tr",
+          "th",
+          "td",
+          "pre",
+          "img",
+          "marquee",
+          "pre",
+        ],
+        allowedAttributes: {
+          div: ["class", "id"],
+          a: ["href", "name", "target", "class", "id"],
+          img: ["src", "class"],
+        },
+        selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
+        allowedSchemes: ["http", "https", "ftp", "mailto"],
+        allowedSchemesByTag: {},
+        allowedSchemesAppliedToAttributes: ["href", "cite"],
+        allowProtocolRelative: true,
+        transformTags: {
+          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
+        },
+      });
+
+      /* wrap link in <a> tag */
+      let urlPattern =
+        /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
+      text = text.replace(urlPattern, function (url) {
+        return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
+      });
+
+      text = emoji.emojify(text);
+
       return text;
-    } catch(err) {
-      console.log("Err in sanitizing: "+err);
+    } catch (err) {
+      console.log("Err in sanitizing: " + err);
       return text;
     }
+  }
+
+  activatePublicKeyObserver(app) {
+    let mutaionObserver = new MutationObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.addedNodes.forEach((node) => {
+          recursive_search(app, node);
+        });
+      });
+
+      function recursive_search(app, node) {
+        if (node?.classList?.contains("saito-user")) {
+          if (node.children && node.children.length > 0) {
+            let address = node.getAttribute("data-id");
+
+            //Replace identifier from Registry -- there should just be one child
+            Array.from(node.children).forEach((child_node) => {
+              if (child_node?.classList?.contains("saito-address")) {
+                let identifier = app.keys.returnIdentifierByPublicKey(address, true);
+                if (identifier) {
+                  try {
+                      document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
+                        item.innerHTML = identifier;
+                      });
+                  } catch (err) {
+                    console.log("An error occurred with adding identifiers ", err);
+                  }
+                }
+              }
+            });
+          }
+          
+        } else {
+          if (node && node.children && Array.from(node.children).length > 0) {
+            Array.from(node.children).forEach((child_node) => {
+              recursive_search(app, child_node);
+            });
+          }
+        }
+      }
+    });
+
+    mutaionObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  async resizeImg(img, targetSize = 512, maxDimensions = {w: 1920, h: 1024}) {
+    let self = this;
+    var dimensions = await this.getImageDimensions(img);
+    var new_img = "";
+    let canvas = document.createElement("canvas");
+    let oImg = document.createElement("img");
+
+    let w = dimensions.w;
+    let h = dimensions.h;
+    let aspect = w / h;
+
+    if (w > maxDimensions.w) {
+      w = maxDimensions.w;
+      h = maxDimensions.w / aspect;
+    }
+    if (h > maxDimensions.h) {
+      h = maxDimensions.h;
+      w = maxDimensions.h * aspect;
+    }
+
+    canvas.width = w;
+    canvas.height = h;
+
+    function resizeLoop(img, quality = 1) {
+      console.log("resizing");
+      oImg.setAttribute("src", img);
+      canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
+      new_img = canvas.toDataURL("image/jpeg", quality);
+      let imgSize = new_img.length / 1024; // in KB
+
+      if (imgSize > targetSize) {
+        resizeLoop(new_img, quality * 0.9);
+      } else {
+        return;
+      }
+    }
+
+    resizeLoop(img);
+
+    oImg.remove();
+    canvas.remove();
+
+    console.log("Resized to: " + new_img.length / 1024);
+
+    return new_img;
+  }
+
+
+  getImageDimensions(file) {
+    return new Promise(function (resolved, rejected) {
+      var i = new Image();
+      i.onload = function () {
+        resolved({ w: i.width, h: i.height });
+      };
+      i.src = file;
+    });
   }
 }
 

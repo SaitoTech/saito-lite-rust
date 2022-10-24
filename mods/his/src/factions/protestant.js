@@ -2,8 +2,8 @@
     this.importFaction('faction6', {
       id		:	"faction6" ,
       key		: 	"protestant",
-      name		: 	"Protestant",
-      nickname		: 	"Protestant",
+      name		: 	"Protestants",
+      nickname		: 	"Protestants",
       capitals		:	[] ,
       img		:	"protestant.png",
       cards_bonus	:	0,

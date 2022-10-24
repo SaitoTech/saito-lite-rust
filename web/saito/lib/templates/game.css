@@ -515,7 +515,7 @@ ul li a {
 /*** Vertical alternate ***/
 .hud-vertical .status-header{
   width: 100%;
-  min-height: fit-content;
+  /*min-height: fit-content;*/
 }
 
 /*** Icon/pictorial (but not card) container for menu options in hud > hud-body > status ***/ 
@@ -543,7 +543,7 @@ ul li a {
 .menu_icon_icon {
   max-width: 100px;
   max-height: 100px;
-
+  width: 100%;
 }
 
 /*When using a font awesome icon*/
@@ -674,6 +674,22 @@ i.menu_icon_icon{
   list-style-type: none;
 }
 
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .status-header{
+    min-height: 32px;
+    margin-bottom: 5px;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .status-header{
+    min-height: 32px;
+    margin-bottom: 5px;
+  }
+}
+
+
+
 
 /*******************/
 /** GAME LOG **/
@@ -772,10 +788,10 @@ i.menu_icon_icon{
   font-size: 0.9em;
 }
 
-.play-state i.fa-pause{
+.play-state i.fa-pause, .play-state i.fa-forward{
   display: none;
 }
-.pause-state i.fa-play{
+.pause-state i.fa-play, .pause-state i.fa-step-forward{
   display: none;
 }
 
@@ -1635,9 +1651,8 @@ i.menu_icon_icon{
     /*height: 18vw;*/
   }
 
-  .status-cardbox {
-    /*grid-template-columns: repeat( auto-fit, minmax(17vw, 1fr) );
-    grid-template-rows: repeat(auto-fit, 20vw);*/
+  .hud-long .status-cardbox {
+    grid-template-columns: repeat( auto-fit, minmax(18vw, 1fr) );
   }
 
   .game-menu ul li {
@@ -1653,10 +1668,8 @@ i.menu_icon_icon{
     width: calc(13vw * 0.811);
     /*height: 13vw;*/
   }
-  .status-cardbox {
-    /*grid-template-columns: repeat( auto-fit, minmax(12vw, 1fr) );
-    grid-template-rows: repeat(auto-fit, 15vw);*/
-
+  .hud-long .status-cardbox {
+    grid-template-columns: repeat( auto-fit, minmax(15vw, 1fr) );
   }
   .game-menu ul li {
     max-width: 100px;

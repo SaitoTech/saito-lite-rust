@@ -37,7 +37,9 @@ class Storage {
   returnClientOptions(): string {
     throw new Error("Method not implemented.");
   }
+
   loadTransactions(type = "all", num = 50, mycallback) {
+
     const message = "archive";
     const data: any = {};
     data.request = "load";
@@ -49,9 +51,14 @@ class Storage {
       let txs = [];
       if (obj) {
         if (obj.txs) {
-          if (obj.txs.length > 0) {
-            txs = obj.txs.map((tx) => new Transaction(JSON.parse(tx)));
-          }
+	  for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+	    tx.optional = {};
+	    if (obj.txs[i].optional) {
+	      try { tx.optional = JSON.parse(obj.txs[i].optional); } catch (err) { console.log("error loading optional data into tx"); }
+	    }
+	    txs.push(tx);
+	  }
         }
       }
       mycallback(txs);
@@ -82,9 +89,14 @@ class Storage {
       let txs = [];
       if (obj) {
         if (obj.txs) {
-          if (obj.txs.length > 0) {
-            txs = obj.txs.map((tx) => new Transaction(JSON.parse(tx)));
-          }
+	  for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+	    tx.optional = {};
+	    if (obj.txs[i].optional) {
+	      try { tx.optional = JSON.parse(obj.txs[i].optional); } catch (err) { console.log("error loading optional data into tx"); }
+	    }
+	    txs.push(tx);
+	  }
         }
       }
       mycallback(txs);
@@ -143,29 +155,59 @@ class Storage {
   /**
    * FUNCTIONS OVERWRITTEN BY STORAGE-CORE WHICH HANDLES ITS OWN DATA STORAGE IN ./core/storage-core.js
    **/
-
+  updateTransaction(tx) {
+    const txmsg = tx.returnMessage();
+    const message = "archive";
+    const data: any = {};
+    data.request = "update";
+    data.tx = tx;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
+  incrementTransactionOptionalValue(sig, optional_key) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "increment_optional_value";
+    data.sig = sig;
+    data.publickey = this.app.wallet.returnPublicKey();
+    data.optional_key = optional_key;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
+  updateTransactionOptionalValue(sig, optional_key, optional_value) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "update_optional_value";
+    data.sig = sig;
+    data.publickey = this.app.wallet.returnPublicKey();
+    data.optional_value = optional_value;
+    data.optional_key = optional_key;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
+  updateTransactionOptional(sig, optional) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "update_optional";
+    data.sig = sig;
+    data.publickey = this.app.wallet.returnPublicKey();
+    data.optional = optional;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
   saveTransaction(tx) {
     const txmsg = tx.returnMessage();
-
     const message = "archive";
     const data: any = {};
     data.request = "save";
     data.tx = tx;
     data.type = txmsg.module;
-
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
-
   saveTransactionByKey(key, tx) {
     const txmsg = tx.returnMessage();
-
     const message = "archive";
     const data: any = {};
     data.request = "save_key";
     data.tx = tx;
     data.key = key;
     data.type = txmsg.module;
-
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
 
@@ -218,8 +260,7 @@ class Storage {
 
   async queryDatabase(sql, params, database) {}
 
-  async executeDatabase(sql, params, database, mycallback = null) {
-  }
+  async executeDatabase(sql, params, database, mycallback = null) {}
 
   generateBlockFilename(block: Block): string {
     return ""; // empty
