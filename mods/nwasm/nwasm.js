@@ -94,22 +94,24 @@ class Nwasm extends GameTemplate {
       }
     });
     this.menu.addSubMenuOption("game-game",{
-      text : "Start New Game",
-      id : "game-new",
-      class : "game-new",
+      text : "Save",
+      id : "game-save",
+      class : "game-save",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
+        myApp.saveStateLocal()
       }
     });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Stats",
-      id : "game-stats",
-      class : "game-stats",
+    this.menu.addSubMenuOption("game-game",{
+      text : "Load",
+      id : "game-load",
+      class : "game-load",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	alert("You're doing fine...");
+        myApp.loadStateLocal()
       }
     });
+
 
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);

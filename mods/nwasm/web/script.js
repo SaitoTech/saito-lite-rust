@@ -502,7 +502,13 @@ class MyClass {
     }
 
     resizeCanvas() {
-        $('#canvas').width(this.canvasSize);
+        //$('#canvas').width(this.canvasSize);
+	try {
+          $('#canvas').style.width = "auto";
+          $('#canvas').style.height = "100vh";
+	} catch (err) {
+
+	}
     }
 
     zoomOut() {
