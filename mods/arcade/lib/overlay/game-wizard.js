@@ -1,6 +1,7 @@
 const GameWizardTemplate = require('./game-wizard.template.js');
 const GameCryptoTransferManager = require('./../../../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
 const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
+const ScheduleInvite = require('./../modals/schedule-invite/schedule-invite');
 
 /*
   Red Square re-do of "arcade-game-details", an interface to select game options and create a game invite
@@ -8,28 +9,27 @@ const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito
 
 class GameWizard {
 
-  constructor(app, mod, game_mod, invite="") {
+  constructor(app, mod, game_mod, invite_obj = {}) {
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app);
-    this.invite = invite;
+    this.obj = invite_obj;
   }
 
-  render(app, mod, invite="") {
-
-    if (this.invite != "" && invite == "") { invite = this.invite; }
+  render(app, mod) {
 
     let slug = (this.game_mod.returnSlug())? this.game_mod.slug: this.game_mod.name.toLowerCase();
     let image = `/${slug}/img/arcade/arcade.jpg`;
 
-    this.overlay.show(app, mod, GameCreateNewTemplate(app, mod, this.game_mod, invite));
+    this.overlay.show(app, mod, GameWizardTemplate(app, mod, this.game_mod, this.obj));
     this.overlay.setBackground(image);
-
 
     let advancedOptions = this.game_mod.returnGameOptionsHTML();
     if (!advancedOptions) {
+
       document.querySelector(".arcade-advance-opt").style.display = "none";
+
     } else {
 
       //Create (hidden) the advanced options window
@@ -63,9 +63,6 @@ class GameWizard {
       e.currentTarget.classList.toggle("showAll");
       });  
     }
-
-
-    //Attach events to advance options button
 
     try {
       const identifiers = document.getElementsByClassName(`arcade-advance-opt`);
@@ -122,6 +119,10 @@ class GameWizard {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
           } else if (isPrivateGame == "single") {
             app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.game);
+          } else if (isPrivateGame == "direct") {
+console.log(JSON.stringify(options));
+console.log(JSON.stringify(gamecreate_self.obj)); 
+              app.browser.logMatomoEvent("Arcade", "ArcadeCreateDirectInvite", options.game);
           } else {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
@@ -162,7 +163,9 @@ class GameWizard {
             return;
           }
 
+	  //
           //Check League Membership
+	  //
           if (options.league){
             let leag = app.modules.returnModule("League");
             if (!leag.isLeagueMember(options.league)){
@@ -204,15 +207,24 @@ class GameWizard {
           }
           
           if (players_needed == 1) {
-
             mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
             return;
           } else {
             
             //console.log("PRE CREATING OPEN TX");
-            if (isPrivateGame == "private") {
+            if (isPrivateGame == "private" || isPrivateGame == "direct") {
               gamedata.invitation_type = "private";
             }
+
+
+	    if (isPrivateGame == "direct") {
+              gamecreate_self.overlay.remove();
+              let newtx = mod.createOpenTransaction(gamedata, gamecreate_self.obj.publickey);
+	      let w = new ScheduleInvite(app, mod, newtx);
+	      w.render(app, mod);
+	      return;
+	    }
+
 
             let newtx = mod.createOpenTransaction(gamedata);
             app.network.propagateTransaction(newtx);
