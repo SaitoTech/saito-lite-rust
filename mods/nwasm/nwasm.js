@@ -1,8 +1,7 @@
 const GameTemplate = require('./../../lib/templates/gametemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
-const ModTemplate = require('../../lib/templates/modtemplate');
 
-class Nwasm extends ModTemplate {
+class Nwasm extends GameTemplate {
 
   constructor(app) {
     super(app);

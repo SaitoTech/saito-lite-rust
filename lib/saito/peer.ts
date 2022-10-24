@@ -142,9 +142,10 @@ class Peer {
     return this.peer.publickey;
   }
 
-  //
-  // no checks on socket state necessary when sending response
-  //
+
+  ////////////////
+  // NETWORKING //
+  ////////////////
   async sendResponse(message_id, data) {
     await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, data);
   }
