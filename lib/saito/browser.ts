@@ -239,10 +239,10 @@ class Browser {
 
           e.preventDefault();
           let public_key = e.target.getAttribute("data-id");
-          if (!public_key || public_key.length < 44) {
+          if (!public_key || public_key.length < 45) {
             return;
           }
-          if (public_key !== app.wallet.returnPublicKey()){
+          if (public_key !== app.wallet.returnPublicKey()) {
             let userMenu = new UserMenu(app, public_key);
             userMenu.render(app);
           }
@@ -293,7 +293,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {}
+    } catch (err) { }
     return "";
   }
 
@@ -304,7 +304,7 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) {}
+    } catch (err) { }
     return "en";
   }
 
@@ -881,7 +881,7 @@ class Browser {
 
             if (
               element_to_move.getBoundingClientRect().x +
-                element_to_move.getBoundingClientRect().width >
+              element_to_move.getBoundingClientRect().width >
               window.innerWidth - 50
             ) {
               element_to_move.classList.add("dockedRight");
@@ -891,7 +891,7 @@ class Browser {
 
             if (
               element_to_move.getBoundingClientRect().y +
-                element_to_move.getBoundingClientRect().height >
+              element_to_move.getBoundingClientRect().height >
               window.innerHeight - 50
             ) {
               element_to_move.classList.add("dockedBottom");
@@ -1066,7 +1066,7 @@ class Browser {
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) {}
+    } catch (err) { }
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1169,7 +1169,7 @@ class Browser {
   }
 
   // TODO: implement htis function
-  getValueFromHashAsBoolean() {}
+  getValueFromHashAsBoolean() { }
 
   getValueFromHashAsNumber(hash, key) {
     try {
@@ -1291,43 +1291,63 @@ class Browser {
     }
   }
 
-  async linkifyKeys(app, mod, html) {
-  let identifiers = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
-  let keys = html.match(/([a-zA-Z0-9._-]{44})/gi);
-  //remove duplcates
+  async linkifyKeys(app, mod, element) {
+    console.log("linkifyin' " + element.id)
+    if (element.id == "") { return; }
+    let elements = element.childNodes;
+    elements.forEach(async el => {
+      const new_el = document.createElement("span");
+      if (el.childNodes.length > 0) {
+        let tags = ['P', 'SPAN', 'DIV', 'BLOCKQUOTE']; 
+        if (tags.contains(el.tagName)) {
+          app.browser.linkifyKeys(el);
+        }
+      } else {
+        let html = el.textContent;
+        let identifiers = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
+        let keys = html.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
+        //remove duplcates
 
-  if (!identifiers) {identifiers = []};
-  if (!keys) {keys = []}
+        if (!identifiers) { identifiers = [] };
+        if (!keys) { keys = [] }
 
-  if (identifiers.length + keys.length == 0) { return html;}
+        if (identifiers.length + keys.length > 0) {
+          keys = [...new Set(keys)];
+          identifiers = [...new Set(identifiers)];
 
-  keys = [...new Set(keys)];
-  identifiers = [...new Set(identifiers)];
-
-  let pairs = [];
-  
-  identifiers.forEach(id => {
-    let k = app.keys.returnPublicKeyByIdentifier(id);
-    pairs.push[{key: k, identifier: id}];
-  });
-
-  keys.forEach(k => {
-    let id = app.keys.returnIdentifierByPublicKey(k);
-    pairs.push[{key: k, identifier: id}];
-  });
-
-  //remove any dupes here too
-  pairs = [...new Set(pairs)];
-
-  if (pairs.length > 0) {
-    keys.forEach(p => {
-      html = html.replace(p.key, p.identifier);
-      html = html.replace(p.identifier, "<span class='saito-active-key' data-key='" + p.key + "'>" + p.identifier + "</span>");    
-    });
-  }
-
-    return html;
-  }
+          try {
+            const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
+            keys.forEach(k => {
+              let matched = false;
+              Object.entries(answer).forEach(([key, value]) => {
+                if (key == k) {
+                  html = html.replace(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
+                  matched = true;
+                }
+              });
+              if (!matched) {
+                html = html.replace(k, `<span data-id="${k}" class="saito-active-key saito-address">${k}</span>`);
+              }
+              identifiers.forEach(async (identifier) => {
+                let k = await fetchPublicKeyPromise(identifier);
+                if (answer != identifier) {
+                  html.replace(id, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
+                }
+              })
+              if (typeof el.tagName == "undefined") {
+                new_el.innerHTML = html;
+                el.replaceWith(new_el);
+              } else {
+                el.innerHTML = html;
+              }
+            });
+          } catch (err) {
+            console.error(err);
+          }
+        };
+      }
+    })
+  };
 
 
   activatePublicKeyObserver(app) {
@@ -1349,9 +1369,9 @@ class Browser {
                 let identifier = app.keys.returnIdentifierByPublicKey(address, true);
                 if (identifier) {
                   try {
-                      document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
-                        item.innerHTML = identifier;
-                      });
+                    document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
+                      item.innerHTML = identifier;
+                    });
                   } catch (err) {
                     console.log("An error occurred with adding identifiers ", err);
                   }
@@ -1359,7 +1379,7 @@ class Browser {
               }
             });
           }
-          
+
         } else {
           if (node && node.children && Array.from(node.children).length > 0) {
             Array.from(node.children).forEach((child_node) => {
@@ -1376,7 +1396,7 @@ class Browser {
     });
   }
 
-  async resizeImg(img, targetSize = 512, maxDimensions = {w: 1920, h: 1024}) {
+  async resizeImg(img, targetSize = 512, maxDimensions = { w: 1920, h: 1024 }) {
     let self = this;
     var dimensions = await this.getImageDimensions(img);
     var new_img = "";
