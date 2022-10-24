@@ -108,6 +108,8 @@ class AppStore extends ModTemplate {
   //
   async installModule(app) {
 
+try {
+
     if (this.app.BROWSER == 1) { return; }
 
     await super.installModule(app);
@@ -211,6 +213,11 @@ class AppStore extends ModTemplate {
       });
 
     }
+} catch (err) {
+  console.log("Error in Appstore");
+}
+
+
   }
 
   initialize(app) {
@@ -219,6 +226,8 @@ class AppStore extends ModTemplate {
 
 
   onConfirmation(blk, tx, conf, app) {
+
+try {
 
     let txmsg = tx.returnMessage();
 
@@ -300,11 +309,16 @@ class AppStore extends ModTemplate {
           break;
       }
     }
+} catch (err) {
+  console.log("Error in Appstore");
+}
   }
 
 
 
   async getNameAndDescriptionFromZip(zip_bin, zip_path) {
+
+try {
 
     const fs = this.app.storage.returnFileSystem();
     const path = require('path');
@@ -425,6 +439,10 @@ class AppStore extends ModTemplate {
     fs.unlink(path.resolve(__dirname, zip_path));
     return { name, image , description, categories };
 
+} catch (err) {
+  console.log("Error in Appstore");
+}
+
   }
 
 
@@ -433,6 +451,8 @@ class AppStore extends ModTemplate {
 
 
   async submitModule(blk, tx) {
+
+try {
 
     if (this.app.BROWSER == 1) { 
 
@@ -553,6 +573,9 @@ if (name == "Unknown") {
 
     }
 
+} catch (err) {
+  console.log("Error in Appstore");
+}
   }
 
 
@@ -561,6 +584,8 @@ if (name == "Unknown") {
   async requestBundle(blk, tx) {
 
     if (this.app.BROWSER == 1) { return; }
+
+try {
 
 ////console.log("now making a bundle!");
 
@@ -688,6 +713,9 @@ if (name == "Unknown") {
     this.app.network.propagateTransaction(newtx);
 
 ////console.log("FINISHED MAKING BUNDLE!");
+} catch (err) {
+  console.log("Error in Appstore");
+}
 
   }
 
@@ -696,6 +724,8 @@ if (name == "Unknown") {
 
 
   async bundler(modules) {
+
+try {
 
 ////console.log("into bundler!");
 
@@ -852,6 +882,12 @@ if (name == "Unknown") {
     });
 
     return bundle_filename;
+
+} catch (err) {
+  console.log("Error in Appstore");
+}
+    return "";
+
   }
 
 
@@ -898,13 +934,6 @@ if (name == "Unknown") {
 
         if (rows) {
           if (rows.length > 0) {
-
-/*****
-            res.setHeader('Content-type', 'text/javascript');
-            res.charset = 'UTF-8';
-            res.write(rows[0].script);
-            res.end();
-*****/
 	    let scriptn = './bundler/dist/'+scriptname;
             let mods_dir_path = path.resolve(__dirname, scriptn);
             let filename = mods_dir_path;
@@ -1067,12 +1096,17 @@ module.exports = AppStore;
 //
 // recursively go through and find all files in dir
 function getFiles(dir) {
+try {
   const dirents = fs.readdirSync(dir, { withFileTypes: true });
   const files = dirents.map((dirent) => {
     const res = path.resolve(dir, dirent.name);
     return dirent.isDirectory() ? getFiles(res) : res;
   });
   return Array.prototype.concat(...files);
+} catch (err) {
+  console.log("error in getFiles");
+}
+  return [];
 }
 function returnSlug(nme) {
   nme = nme.toLowerCase();
@@ -1080,6 +1114,7 @@ function returnSlug(nme) {
   return nme;
 }
 function deleteDirs(dir) {
+try {
   const dirents = fs.readdirSync(dir, { withFileTypes: true });
   dirents.forEach((dirent) => {
     const res = path.resolve(dir, dirent.name);
@@ -1091,5 +1126,8 @@ function deleteDirs(dir) {
       fs.rmdirSync(res, { maxRetries: 100, recursive: true });
     }
   });
+} catch (err) {
+  console.log("error in deleteDirs");
+}
 }
 
