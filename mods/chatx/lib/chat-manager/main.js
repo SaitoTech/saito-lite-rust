@@ -24,11 +24,10 @@ class ChatManager {
 			}
 		});
 
-		app.connection.on("chat-render-request-notify", (gid) => {
+		app.connection.on("chat-render-request-notify", (chat_group) => {
 			if (this.rendered){
-				let group = mod.returnGroup(gid);
-				if (group){
-					this.makeGroupHeader(group, group.unread);
+				if (chat_group){
+					this.makeGroupHeader(chat_group, chat_group.unread);
 				}
 
 				this.attachEvents(app, this.chat_mod);
