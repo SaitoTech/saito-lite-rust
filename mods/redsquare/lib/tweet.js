@@ -718,7 +718,7 @@ console.log("about to hit INNERHTML in TWEET");
     return { text: this.text };
   }
 
-  async generateTweetProperties(app, mod, fetch_open_graph = 0) {
+  async generateTweetProperties(app, mod, fetch_open_graph = 1) {
 
     if (this.text == null) { return this; }
 
