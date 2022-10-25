@@ -1257,14 +1257,15 @@ class Browser {
   }
 
   async linkifyKeys(app, mod, element) {
+    if (typeof element == "undefined") { return ;}
     console.log("linkifyin' " + element.id)
     if (element.id == "") { return; }
     let elements = element.childNodes;
     elements.forEach(async el => {
       const new_el = document.createElement("span");
       if (el.childNodes.length > 0) {
-        let tags = ['P', 'SPAN', 'DIV', 'BLOCKQUOTE']; 
-        if (tags.contains(el.tagName)) {
+        const tags = ['P', 'SPAN', 'DIV', 'BLOCKQUOTE'];
+        if (tags.includes(el.tagName)) {
           app.browser.linkifyKeys(el);
         }
       } else {
@@ -1277,35 +1278,42 @@ class Browser {
         if (!keys) { keys = [] }
 
         if (identifiers.length + keys.length > 0) {
-          keys = [...new Set(keys)];
+          //deduplicate identifier list
           identifiers = [...new Set(identifiers)];
-
+          
           try {
+
+            identifiers.forEach(async (identifier) => {
+              let answer = this.app.keys.fetchPublicKey(identifier);
+              console.log(answer + " - " + identifier);
+              if (answer != identifier) {
+                //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
+                html = html.replaceAll(identifier, answer);
+                keys.push(answer);
+              }
+            });
+            //deduplicate keys list
+            keys = [...new Set(keys)];
+
             const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
             keys.forEach(k => {
               let matched = false;
               Object.entries(answer).forEach(([key, value]) => {
                 if (key == k) {
-                  html = html.replace(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
+                  html = html.replaceAll(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
                   matched = true;
                 }
               });
               if (!matched) {
-                html = html.replace(k, `<span data-id="${k}" class="saito-active-key saito-address">${k}</span>`);
-              }
-              identifiers.forEach(async (identifier) => {
-                let k = await fetchPublicKeyPromise(identifier);
-                if (answer != identifier) {
-                  html.replace(id, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
-                }
-              })
-              if (typeof el.tagName == "undefined") {
-                new_el.innerHTML = html;
-                el.replaceWith(new_el);
-              } else {
-                el.innerHTML = html;
+                html = html.replaceAll(k, `<span data-id="${k}" class="saito-active-key saito-address">${k}</span>`);
               }
             });
+            if (typeof el.tagName == "undefined") {
+              new_el.innerHTML = html;
+              el.replaceWith(new_el);
+            } else {
+              el.innerHTML = html;
+            }
           } catch (err) {
             console.error(err);
           }
