@@ -96,10 +96,24 @@ module.exports = (app, mod, ui) => {
             <td> </td>
         </tr>
     </table>
+    <div id="sliders">
+    
+    <label for="sensitivity">Mouse sensitivity</label>
+    <input type="range" id="sensitivity" class="sensitivity" min="0" max="10" step="0.01">
+    <input type="field" class="sensitivity" id="sensitivity_indicator" value="5">
+    
+    <br>
+    
+    <label for="cg_fov">Field of View</label>
+    <input type="range" id="cg_fov" class="cg_fov" min="10" max="200" value="90">
+    <input type="field" class="cg_fov" id="fov_indicator" value="90">
+
+    <div>
     <button type="button" id="finish-controls-button">Finish</button>
+    <button type="button" id="default-controls-button">Restore Defaults</button>
     </div>
 
-
+  </div>
   `;
 
   return html;
