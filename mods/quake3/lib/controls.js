@@ -8,7 +8,7 @@ class QuakeControls {
     this.mod = mod;
     this.overlay = new SaitoOverlay(app);
     this.current_setting = "";
-    this.controls = {};
+    //this.controls = {};
     this.default_config = {
     "+attack":      ["MOUSE1", 'bind MOUSE1 +attack'],
     "+zoom":        ["MOUSE2", 'bind MOUSE2 +zoom'],
@@ -33,16 +33,16 @@ class QuakeControls {
     "messagemode":  ["t", 'bind t messagemode'],
     "messagemode2": ["y", 'bind y messagemode2'],
     "+scores":      ["TAB", 'bind TAB +scores'],
-    "togglemenu":   ["ESCAPE", 'bind ESC togglemenu'],
+    "togglemenu":   ["ESCAPE", 'bind ESCAPE togglemenu'],
     "screenshot":   ["p", 'bind p screenshot'],
     "sensitivity":  [5, 'sensitivity 5'],
     "cg_fov":       [90, 'cg_fov 90'],
     "s_volume":     [0.23, 's_volume 0.23'],
     }
-
-    
      // defined after defaults in case default_config is needed
-     this.loadSavedControls();
+    this.controls = {};
+
+    this.loadSavedControls();
   }
 
   render(app, mod) {
@@ -79,8 +79,18 @@ class QuakeControls {
 	window.addEventListener('mousedown', thisobj.handleMouse);
         // scroll wheel
         window.addEventListener('wheel', thisobj.handleWheel);
-
+	  
+	////
       }
+    });
+
+    // reset defaults
+    let defaultButton = document.getElementById("default-controls-button");
+
+    defaultButton.addEventListener("click", () => {
+	console.log("restore default clicked");
+	this.controls = {...this.default_config};
+	this.render();
     });
 
     let finishButton = document.getElementById("finish-controls-button");
@@ -90,8 +100,57 @@ class QuakeControls {
 	this.overlay.remove();
 	this.applyControls();
     });
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // slider / feild sync EVENTs
+
+    let sens_slider = document.getElementById("sensitivity");
+    let sens_indicator = document.getElementById("sensitivity_indicator");
+
+    sens_slider.oninput = function() {
+	let v = sens_slider.value
+        thisobj.updateControls(["sensitivity"], [v, "sensitivity " + v]);
+	sens_indicator.value = v;
+	thisobj.saveSettings();
+    }
+
+    sens_indicator.oninput = function() {
+	var v = sens_indicator.value
+        thisobj.updateControls(["sensitivity"], [v, "sensitivity " + v]);
+	sens_slider.value = v;
+	thisobj.saveSettings();
+    }
+      
+    let fov_slider = document.getElementById("cg_fov");
+    let fov_indicator = document.getElementById("fov_indicator");
+
+    fov_slider.oninput = function() {
+	var v = fov_slider.value
+        thisobj.updateControls(["cg_fov"], [v, "cg_fov " + v]);
+	fov_indicator.value = v;
+	thisobj.saveSettings();
+    }
+
+    fov_indicator.oninput = function() {
+	var v = fov_indicator.value
+        thisobj.updateControls(["cg_fov"], [v, "cg_fov " + v]);
+	fov_slider.value = v;
+	thisobj.saveSettings();
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+
+    // End of attachEvents() object
   }
 
+  // useful to update this.controls from within function
+  updateControls(key, value) {
+      this.controls[key] = value;
+  }
+
+  // Apply menu controls in game
+  // first write a config file, then exec console command to run file in game
   applyControls() {
       function type(key) {
 	  document.dispatchEvent(new KeyboardEvent("keydown",{
@@ -108,6 +167,7 @@ class QuakeControls {
 
       FS.writeFile('base/baseq3/sqc.cfg', cfg_file);
       // `exec sqc` into game console
+      // will fail if game console already open
       type(192) // ~
       type(191) // /
       type(69)  // e
@@ -151,25 +211,24 @@ class QuakeControls {
 	}
 	// for sliders
 	else {
+	    let s_elem = document.getElementsByClassName(key)
 	    console.log("else");
-	    elem.value = value[0];
+	    console.log(key);
+	    console.log(s_elem);
+	    console.log(value);
+	    s_elem[0].value = value[0];
+	    s_elem[1].value = value[0];
 	     }
     }
   }
-/****
-  handleKey(event) {
-    return this.handleInput(event.key);
-  }
 
-  handleMouse(event) {
-    return this.handleInput(event.button);
+  saveSettings() {
+    if (!this.mod.quake3) {
+	this.mod.quake3 = {};
+    }
+    this.mod.quake3['controls'] = this.controls
+    this.mod.save()
   }
-
-  handleWheel(event) {
-    scroll = (-5) * Math.sign(event.deltaY);
-    return this.handleInput(scroll);
-  }
-****/
 
   handleInput(input) {
 
@@ -189,16 +248,19 @@ class QuakeControls {
     
     // update HTML table to reflect current settings
     document.getElementById(this.current_setting).children[1].innerHTML = q3_bind
-      
+    
+    this.saveSettings()
+
+/*
     if (!this.mod.quake3) {
 	this.mod.quake3 = {};
-}
+    }
 
     this.mod.quake3['controls'] = this.controls
     this.mod.save()
 
     return q3_bindCommand;
-
+*/
   }
 
   toQuakeBind(input) {
