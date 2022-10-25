@@ -1,6 +1,6 @@
 const GameTemplate = require('./../../lib/templates/gametemplate');
 const NwasmGameOptionsTemplate = require("./lib/nwasm-game-options.template");
-
+const UploadRom = require("./lib/upload-rom");
 
 class Nwasm extends GameTemplate {
 
@@ -16,6 +16,8 @@ class Nwasm extends GameTemplate {
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
+
+    this.load();
 
     return this;
   }
@@ -77,7 +79,7 @@ class Nwasm extends GameTemplate {
 
 
   initializeHTML(app) {
-
+    mod_self = this;
     if (!this.browser_active) { return; }
 
     super.initializeHTML(app);
@@ -112,12 +114,26 @@ class Nwasm extends GameTemplate {
       }
     });
 
+    this.menu.addSubMenuOption("game-game",{
+      text : "Upload ROM",
+      id : "game-upload-rom",
+      class : "game-upload-rom",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        mod_self.uploadRom(app);
+      }
+    });
 
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
 
   }
 
+
+  uploadRom(app) {
+    let upoad_rom = new UploadRom(app, this);
+    upoad_rom.render(app, this);
+  }
 
   load() {
     if (this.app.options.nwasm) {
@@ -129,7 +145,28 @@ class Nwasm extends GameTemplate {
 
   save() {
     this.app.options.nwasm = this.roms;
+
+    console.log('inside save');
+    console.log(this.roms);
+    console.log(this.app.options.nwasm);
     this.app.storage.saveOptions();
+  }
+
+  sendUploadRomTransaction(app, mod, data) {
+    let mod_self = this;
+
+    let obj = {
+      module: mod_self.name,
+      request: "upload rom",
+      data: {},
+    };
+
+    let newtx = mod_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    newtx = mod_self.app.wallet.signTransaction(newtx);
+    mod_self.app.network.propagateTransaction(newtx);
+
+    return newtx;
   }
 
 }
