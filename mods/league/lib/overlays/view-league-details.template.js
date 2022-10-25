@@ -64,14 +64,14 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
       <div class="leaderboard-box">
         
         <div class="leaderboard-details-box">
-          ${SaitoModuleTemplate(league.name, league.description, league_img, "", "large")}
+          ${SaitoModuleTemplate(league.name, league.description, league_img, "", "")}
 
           <div id="leaderboard-btn-create-game" class="saito-button-secondary small">Create game</div>
-          <div class="saito-tool-tip">?</div>
-          <div class="saito-tool-tip">i</div>
+          <!--div class="saito-tool-tip">?</div>
+          <div class="saito-tool-tip">i</div-->
       
         
-        <div id="rs-sidebar-observer" class="observer-sidebar">
+        <div class="observer-sidebar">
           <h6>Recent games</h6>
           <div class="recent-games-box" id="recent-games-box">
 

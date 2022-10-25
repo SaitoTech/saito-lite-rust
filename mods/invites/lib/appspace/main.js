@@ -68,8 +68,7 @@ console.log("MOD IS: " + mod.name);
     document.getElementById("invites-new-invite").onclick = (e) => {
       let sc = new SaitoScheduler(app, mod);
       sc.render(app, mod, function(data) {
-        let gc = new GameCreator(app, mod);
-        gc.render(app, mod);
+        //Need some callback???
       });
     }
 

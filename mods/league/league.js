@@ -337,7 +337,12 @@ class League extends ModTemplate {
 
         //Listen for gameovers
         if (txmsg.request === "gameover"){
-          this.receiveGameOverTransaction(blk, tx, conf, app);
+          this.processUpdateTransaction(app, txmsg, true);
+        }
+
+        if (txmsg.request === "roundover"){
+          console.log("On Confirm Receive Round Over TX");
+          this.processUpdateTransaction(app, txmsg, false);
         }
 
         //Keep track of how many games a player starts
@@ -709,33 +714,33 @@ class League extends ModTemplate {
     return playerStats;
   }
 
-  /* Let's try this function as a service node only */
-  async receiveGameOverTransaction(blk, tx, conf, app){
+  async receiveRoundOverTransaction(blk, tx, conf, app){
     if (app.BROWSER == 1) { return; }
-    
-    //console.log("League Receive Gameover");
-    
+
     let txmsg = tx.returnMessage();
     let game = txmsg.module;
 
+  }
+
+  /* Let's try this function as a service node only */
+  async processUpdateTransaction(app, txmsg, gameover){
+    if (app.BROWSER == 1) { return; }
+
     //All games have a grace window where if a player "quits" within X moves
     //it won't count as a win or loss for anyone
-    if (txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose"){
+    if ((txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose")
+      && gameover){
       return;
     }
+    
+    let game = txmsg.module;
 
     //Which leagues may this gameover affect?
-    let sql = `SELECT * FROM leagues WHERE game = ? OR id='SAITOLICIOUS'`;
+    let sql = `SELECT * FROM leagues WHERE game = ?${(gameover)? ` OR id='SAITOLICIOUS'`:''}`;
     const relevantLeagues = await app.storage.queryDatabase(sql, [game], "league");
 
-
     //Who are all the players in the game?
-    let publickeys = [];
-    for (let i = 0; i < tx.transaction.to.length; i++) {
-      if (!publickeys.includes(tx.transaction.to[i].add)) {
-        publickeys.push(tx.transaction.to[i].add);
-      }
-    }
+    let publickeys = txmsg.players.split("_");
 
     if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1){
       txmsg.winner = txmsg.winner[0];
@@ -764,25 +769,26 @@ class League extends ModTemplate {
         }
       }
 
-      //Make a record of the game
-      sql = `INSERT INTO games (league_id, game_id, module, winner, players_array, time_started, time_finished, method) VALUES ($league_id, $game_id, $module, $winner, $players_array, $time_started, $time_finished, $method)`;
+      if (gameover){
+        //Make a record of the game
+        sql = `INSERT INTO games (league_id, game_id, module, winner, players_array, time_started, time_finished, method) VALUES ($league_id, $game_id, $module, $winner, $players_array, $time_started, $time_finished, $method)`;
 
-      let params = {
-        $league_id: leag.id,
-        $game_id: txmsg.game_id,
-        $module: game,
-        $winner: (Array.isArray(txmsg.winner))? txmsg.winner.join("_") : txmsg.winner,
-        $players_array: publickeys.join("_"),
-        $time_started: 0,
-        $time_finished: new Date().getTime(),
-        $method: txmsg.reason,
-      };
+        let params = {
+          $league_id: leag.id,
+          $game_id: txmsg.game_id,
+          $module: game,
+          $winner: (Array.isArray(txmsg.winner))? txmsg.winner.join("_") : txmsg.winner,
+          $players_array: txmsg.players,
+          $time_started: 0,
+          $time_finished: new Date().getTime(),
+          $method: txmsg.reason,
+        };
 
-      console.log(sql, params);
-      await this.app.storage.executeDatabase(sql, params, "league");
-      sql = `UPDATE games SET rank=rank+1 WHERE league_id = "${leag.id}"`;
-      await this.app.storage.executeDatabase(sql, {}, "league");
-
+        console.log(sql, params);
+        await this.app.storage.executeDatabase(sql, params, "league");
+        sql = `UPDATE games SET rank=rank+1 WHERE league_id = "${leag.id}"`;
+        await this.app.storage.executeDatabase(sql, {}, "league");
+      }
 
       //Update players in the league based on results
       if (leag.ranking == "elo"){
@@ -1079,7 +1085,7 @@ class League extends ModTemplate {
       if (league.admin !== "saito"){
         tx.msg.league = league.id;
       }
-      arcade_mod.createGame(tx);
+      arcade_mod.createGameWizard(league.game, tx);
       return;
     }
 

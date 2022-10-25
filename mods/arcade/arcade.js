@@ -3,23 +3,21 @@ const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/main/main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
-const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
-const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
-const ArcadeGameDetails = require("./lib/arcade-game/arcade-game-details");
+const ArcadeSidebar = require("./lib/sidebar/main");
+const GameCreateMenu = require("./lib/overlay/game-create-menu");
+const ArcadeGameDetails = require("./lib/overlay/game-wizard");
 const ChallengeModal = require("./../../lib/saito/new-ui/modals/game-challenge/game-challenge");
-const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
+const ArcadeGameSidebar = require("./lib/sidebar/arcade-game-sidebar");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ArcadeContainerTemplate = require("./lib/templates/arcade-container.template");
 const InvitationLink = require("../../lib/saito/new-ui/modals/invitation-link/invitation-link");
-const ArcadeAppspace = require("./lib/appspace/main");
-const JSON = require("json-bigint");
-const fetch = require("node-fetch");
-const GameInvite = require('./lib/invite/main');
 
+const JSON = require("json-bigint");
 
 const GameWizard = require('./lib/overlay/game-wizard');
 const GameSelector = require('./lib/overlay/game-selector');
+const ScheduleInvite = require('./lib/modals/schedule-invite/schedule-invite');
 
 
 class Arcade extends ModTemplate {
@@ -59,14 +57,12 @@ class Arcade extends ModTemplate {
 
 
   createGameSelector(obj = {}) {
-console.log("OBH JERE IS: " +JSON.stringify(obj));
     let x = new GameSelector(this.app, this, obj);
     x.render(this.app, this);
   }
+
   createGameWizard(gamename = "" , obj = {}) {
     let game_mod = this.app.modules.returnModule(gamename);
-    let tx = new saito.default.transaction();
-    tx.msg.game = gamename;
     if (game_mod) {
       let x = new GameWizard(this.app, this, game_mod, obj);
       x.render(this.app, this);
@@ -109,9 +105,6 @@ console.log("OBH JERE IS: " +JSON.stringify(obj));
 
   respondTo(type = "") {
     let arcade_mod = this;
-    if (type === "invite") {
-      return new GameInvite(this.app, this);
-    }
     if (type == "header-menu") {
       if (this.browser_active) {
         return {
@@ -124,7 +117,7 @@ console.log("OBH JERE IS: " +JSON.stringify(obj));
           attachEvents: function (app, mod) {
             document.querySelectorAll("#header-dropdown-create-game").forEach((element) => {
               element.onclick = (e) => {
-                GameCreateMenu.render(app, mod);
+                GameCreateMenu.render(app, arcade_mod);
               };
             });
           },
@@ -144,19 +137,13 @@ console.log("OBH JERE IS: " +JSON.stringify(obj));
         text: "Challenge to Arcade Game",
         icon: "fas fa-gamepad",
         callback: function (app, publickey) {
-	  let obj = { publickey : publickey };
-	  let arcade_mod = app.modules.returnModule("Arcade");
-	  arcade_mod.createGameSelector(obj);
+    	  let obj = { publickey : publickey };
+    	  let arcade_mod = app.modules.returnModule("Arcade");
+    	  arcade_mod.createGameSelector(obj);
         }
       }
     }
 
-
-    //    if (type == "appspace") {
-    //      this.scripts['/arcade/new-style.css'];
-    //      super.render(this.app, this); // for scripts + styles
-    //      return new ArcadeAppspace(this.app, this);
-    //    }
     return null;
   }
 
@@ -196,6 +183,20 @@ console.log("OBH JERE IS: " +JSON.stringify(obj));
         app.storage.saveOptions();
       }
     }
+
+    app.connection.on("launch-game-selector", (graphical = false) => {
+      if (graphical){
+        this.createGameSelector();
+      }else{
+        GameCreateMenu.render(app, this);
+      }
+    });
+
+    app.connection.on("launch-game-wizard", (obj)=>{
+      if (obj.game){
+        this.createGameWizard(obj.game, obj);
+      }
+    });
 
     app.connection.on("join-game", (game_id)=>{
       ArcadeMain.joinGame(app, this, game_id);
@@ -615,7 +616,7 @@ console.log("OBH JERE IS: " +JSON.stringify(obj));
 
     // do not process if transaction is not for us
     if (!tx.isTo(app.wallet.returnPublicKey()) || app.BROWSER == 0) {
-      console.log("TX not for me");
+      //console.log("TX not for me");
       return;
     }
   
@@ -1846,6 +1847,18 @@ console.log("OBH JERE IS: " +JSON.stringify(obj));
     if (players_needed == 1) {
       this.launchSinglePlayerGame(this.app, gamedata); //Game options don't get saved....
     } else {
+
+      if (gameType == "private" || gameType == "direct") {
+        gamedata.invitation_type = "private";
+      }
+
+      if (gameType == "direct") {
+        let newtx = this.createOpenTransaction(gamedata, options.publickey);
+        let w = new ScheduleInvite(this.app, this, newtx);
+        w.render(this.app, this);
+        return;
+      }
+
       let newtx = this.createOpenTransaction(gamedata);
       this.app.network.propagateTransaction(newtx);
 

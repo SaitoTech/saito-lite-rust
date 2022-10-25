@@ -2,8 +2,7 @@
 module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
 
   let html = `<div class="game-create-new-overlay dark">`;
-  let slug = (game_mod.returnSlug())? game_mod.slug: game_mod.name.toLowerCase();
-  let image = `/${slug}/img/arcade/arcade.jpg`;
+  let image = `/${game_mod.returnSlug()}/img/arcade/arcade.jpg`;
   let invite = null;
   let publickey = null;
   if (invite_obj.invite) { invite = invite_obj.invite; }
@@ -26,12 +25,11 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
           <span><b>${game_mod.name}</b></span>
         </div>
         <div class="rs-create-game-desc">${game_mod.description}</div>
-        
+      </div>
+      <!- ***Game desc & title end*** -->
   `;
         
   html += `
-      </div>
-      <!- ***Game desc & title end*** -->
         <input type="hidden" name="game" value="${game_mod.name}" />
   `;
   if (invite) {
@@ -46,14 +44,14 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
   
       <div class="rs-create-game-players dark">
         ${game_mod.returnPlayerSelectHTML()}
-        <div class="info-item-wrapper arcade-advance-opt">advanced options...</div>
+        <div id="arcade-advance-opt" class="info-item-wrapper">advanced options...</div>
       </div>
 
       <div class="game-wizard-invite">
   `;
 
-    if (mod.maxPlayers == 1){
-      html += `<button type="button" id="game-invite-btn" class="game-invite-btn" >Play</button>`;
+    if (game_mod.maxPlayers == 1){
+      html += `<button type="button" id="game-invite-btn" class="game-invite-btn" data-type="single">Play</button>`;
     }else{
       html += `
           <div class="saito-multi-select_btn saito-select dark">

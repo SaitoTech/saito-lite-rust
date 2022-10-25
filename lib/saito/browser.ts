@@ -760,8 +760,8 @@ class Browser {
   }
 
   makeDraggable(id_to_move, id_to_drag = "", dockable = false, mycallback = null) {
-    console.log("make draggable: " + id_to_drag);
-    console.log(" and move? " + id_to_move);
+    //console.log("make draggable: " + id_to_drag);
+    //console.log(" and move? " + id_to_move);
 
     try {
       const element_to_move = document.getElementById(id_to_move);
@@ -866,13 +866,13 @@ class Browser {
 
           //if dockable show docking edge
           if (dockable) {
-            if (element_to_move.getBoundingClientRect().x < 50) {
+            if (element_to_move.getBoundingClientRect().x < 25) {
               element_to_move.classList.add("dockedLeft");
             } else {
               element_to_move.classList.remove("dockedLeft");
             }
 
-            if (element_to_move.getBoundingClientRect().y < 50) {
+            if (element_to_move.getBoundingClientRect().y < 25) {
               element_to_move.classList.add("dockedTop");
             } else {
               element_to_move.classList.remove("dockedTop");
@@ -881,7 +881,7 @@ class Browser {
             if (
               element_to_move.getBoundingClientRect().x +
               element_to_move.getBoundingClientRect().width >
-              window.innerWidth - 50
+              window.innerWidth - 25
             ) {
               element_to_move.classList.add("dockedRight");
             } else {
@@ -891,7 +891,7 @@ class Browser {
             if (
               element_to_move.getBoundingClientRect().y +
               element_to_move.getBoundingClientRect().height >
-              window.innerHeight - 50
+              window.innerHeight - 25
             ) {
               element_to_move.classList.add("dockedBottom");
             } else {

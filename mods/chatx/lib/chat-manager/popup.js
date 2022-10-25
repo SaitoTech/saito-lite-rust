@@ -15,23 +15,19 @@ class ChatPopup {
     app.connection.on("chat-render-request", (gid) => {
       if (gid) {
         if (this.minimized || gid != this.activeTab()) {
-          app.connection.emit("chat-render-request-notify", gid);
+          app.connection.emit("chat-render-request-notify", mod.returnGroup(gid));
         } else {
           this.render(app, mod, gid);
         }
       }
     });
 
-    app.connection.on("chat-render-request-notify", (gid)=>{
-      if (gid && ( gid != this.activeTab() || this.minimized) ) {
-        
-        let group = mod.returnGroup(gid);
-        
-        let tab = document.getElementById(`chat-group-${gid}`);
-        if (tab && group?.unread){
-          tab.innerHTML = `${group.name}<div class="saito-notification-counter">${group.unread}</div>`;
+    app.connection.on("chat-render-request-notify", (chat_group)=>{
+      if (chat_group?.id && (chat_group.id != this.activeTab() || this.minimized) ) {
+        let tab = document.getElementById(`chat-group-${chat_group.id}`);
+        if (tab && chat_group?.unread){
+          tab.innerHTML = `${chat_group.name}<div class="saito-notification-counter">${chat_group.unread}</div>`;
         }
-        
       }
     });
 

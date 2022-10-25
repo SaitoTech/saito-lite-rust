@@ -93,6 +93,11 @@
 }
 
 
+.game-menu .notification::after{
+  content: "◉";
+  color: var(--saito-primary);
+}
+
 @media screen and (orientation: landscape) and (max-height: 600px) {
   .game-menu > ul li{
     display: none;

@@ -30,9 +30,9 @@ class Poker extends GameTableTemplate {
 
   // Opt out of letting League create a default
   respondTo(type){
-    if (type == "default-league") {
-      return null;
-    }
+    //if (type == "default-league") {
+    //  return null;
+    //}
     return super.respondTo(type);
   }
 
@@ -554,6 +554,7 @@ class Poker extends GameTableTemplate {
           // if everyone has folded - start a new round
           console.log("everyone has folded... start next round");
           this.settleLastRound();
+          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}`);
 
           return 1;
         }
@@ -696,6 +697,7 @@ class Poker extends GameTableTemplate {
         }
         
         let winners = [];
+        let winner_keys = [];
 
         this.game.state.player_cards_reported++;
 
@@ -737,6 +739,7 @@ class Poker extends GameTableTemplate {
           for (let p = winlist.length - 1; p > 0; p--) {
             if (this.pickWinner(winlist[winlist.length - 1].player_hand, winlist[p - 1].player_hand) == 3) {
               winners.push(winlist[p - 1].player - 1);
+              winner_keys.push(this.game.players[winlist[p - 1].player - 1]);
             }
           }
 
@@ -841,6 +844,7 @@ class Poker extends GameTableTemplate {
             this.game.halted = 1;
           }
           this.settleLastRound();
+          this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_keys)}`);
 
           return 0;
         }

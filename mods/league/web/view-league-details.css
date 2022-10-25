@@ -6,13 +6,18 @@
   width: 100%;
   min-width: min(600px, 100vw);
   max-height: 95vh;
-  border: 1px solid var(--saito-cyber-grey);
+  border: 1px solid;
   border-radius: 5px;
-  background: var(--saito-cyber-black);
   padding: 10px;
   user-select: none;
   cursor: default;
+  background: var(--saito-white);
 }
+
+.dark .league-details-overlay{
+   background: var(--saito-cyber-black);
+} 
+
 
 .league-details-overlay h2 {
   text-align: center;

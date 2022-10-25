@@ -49,7 +49,7 @@ class Encrypt extends ModTemplate {
         icon: "far fa-id-card",
         callback: function (app, public_key) {
             app.keys.saveKeys();
-            encrypt_self.initiate_key_exchange(public_key);
+            encrypt_self.initiate_key_exchange(public_key, 1);
         }
       }
     }
