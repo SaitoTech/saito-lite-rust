@@ -100,8 +100,10 @@ class Blackjack extends GameTableTemplate {
     return super.respondTo(type);
   }
 
-  initializeGame(game_id) {
+  initializeGame() {
     
+    super.initializeGame();
+
     //
     // initialize
     //
@@ -112,9 +114,6 @@ class Blackjack extends GameTableTemplate {
       this.game.stake = 500;
       this.game.crypto = "";
     }
-
-    //Parse game options
-    this.maxPlayers = this.game.options.max_players || this.maxPlayers;
 
     if (this.game.deck.length == 0) {
 

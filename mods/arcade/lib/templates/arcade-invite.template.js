@@ -23,7 +23,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
     //console.log("Game initialized becase msg.players_needed")
     game_initialized = 1;
   }
-  let numPlayerSlots = Math.max(invite.msg.options?.max_players || 0, invite.msg.players_needed);
+  let numPlayerSlots = Math.max(invite.msg.options["game-wizard-players-select-max"] || 0, invite.msg.players_needed);
 
   //console.log("Game_initialized: " + game_initialized);
   //

@@ -143,7 +143,7 @@ class Observer extends ModTemplate {
       game: game.module,
       options: gameState.options,
       players: players,
-      players_needed: gameState?.options?.max_players || players.length,
+      players_needed: /*gameState?.options?.max_players ||*/ players.length,
       //extra observer info
       latest_move: game.latest_move,
       step: game.step,

@@ -1823,17 +1823,18 @@ class Arcade extends ModTemplate {
     let game_mod = this.app.modules.returnModule(game);
     let players_needed = options["game-wizard-players-select"];
 
-    if (game_mod.opengame){
-      options = Object.assign(options, {max_players: players_needed});
-      console.log(JSON.parse(JSON.stringify(options)));
-      players_needed = game_mod.minPlayers;
-    }
-
     if (!players_needed) {
       console.error("Create Game Error");
-      console.log(gamedata);
+      console.log(options);
       return;
     }
+
+    if (options["game-wizard-players-select-max"] && options["game-wizard-players-select-max"] < players_needed){
+      options["game-wizard-players-select"] = options["game-wizard-players-select-max"];
+      options["game-wizard-players-select-max"] = players_needed;
+      players_needed = options["game-wizard-players-select"];      
+    }
+
 
     let gamedata = {
       ts: new Date().getTime(),
