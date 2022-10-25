@@ -30,21 +30,9 @@ class UploadRomOverlay {
           // add file to txn
           console.log(file);
 
-
-	  let st = ab2str(file);
-
-ฝฝconsole.log("STRING: " + st);
-
-	  let file2 = str2ab(st);
-
-	  myApp.initializeRom(file2);
-
-
-/**
-
           let data = {
             filename: 'file.n64',
-            file: file
+            //file: file
           };
           let tx = mod.sendUploadRomTransaction(app, mod, data);
 
@@ -52,9 +40,9 @@ class UploadRomOverlay {
           let pubkey = app.wallet.returnPublicKey();
           mod.roms.push({
             file_id: data.filename, 
-            file: file,
             key: tx.transaction.sig, 
-            pubkey: pubkey
+            pubkey: pubkey,
+            //file: file
           });          
 
           console.log(mod.roms);
@@ -64,7 +52,13 @@ class UploadRomOverlay {
           salert('file uploaded successfully');
           this.overlay.hideOverlay();
           document.querySelector('.loader').style.display = "none";
-**/
+
+          // start emulator
+          let st = ab2str(file);
+          console.log("STRING: " + st);
+          let file2 = str2ab(st);
+          myApp.initializeRom(file2);
+
         },
       false, true); // true = read as array buffer
 
