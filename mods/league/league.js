@@ -1085,7 +1085,7 @@ class League extends ModTemplate {
       if (league.admin !== "saito"){
         tx.msg.league = league.id;
       }
-      arcade_mod.createGame(tx);
+      arcade_mod.createGameWizard(league.game, tx);
       return;
     }
 
