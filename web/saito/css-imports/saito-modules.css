@@ -45,7 +45,7 @@ Saito Module Stubs - horizontal bar with image left
 Saito Module
 -----------------------------------------------------------------*/
 .saito-module {
-  font-size: 1.6em;
+  font-size: 1.6rem;
   justify-content: space-between;
   width: 100%;
   height: auto;
@@ -73,6 +73,8 @@ Saito Module
   margin-right: 0.5rem;
   background-image: url('https://saito.io/saito/img/dreamscape.png');
   background-size: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .saito-module > * > .saito-module-image { 

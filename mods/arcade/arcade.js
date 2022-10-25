@@ -616,7 +616,7 @@ class Arcade extends ModTemplate {
 
     // do not process if transaction is not for us
     if (!tx.isTo(app.wallet.returnPublicKey()) || app.BROWSER == 0) {
-      console.log("TX not for me");
+      //console.log("TX not for me");
       return;
     }
   
