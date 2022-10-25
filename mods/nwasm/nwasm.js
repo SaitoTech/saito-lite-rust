@@ -96,6 +96,15 @@ class Nwasm extends GameTemplate {
       }
     });
     this.menu.addSubMenuOption("game-game",{
+      text : "Upload ROM",
+      id : "game-upload-rom",
+      class : "game-upload-rom",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.uploadRom(app);
+      }
+    });
+    this.menu.addSubMenuOption("game-game",{
       text : "Save",
       id : "game-save",
       class : "game-save",
@@ -110,16 +119,6 @@ class Nwasm extends GameTemplate {
       class : "game-load",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-      }
-    });
-
-    this.menu.addSubMenuOption("game-game",{
-      text : "Upload ROM",
-      id : "game-upload-rom",
-      class : "game-upload-rom",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        mod_self.uploadRom(app);
       }
     });
 
@@ -142,6 +141,9 @@ class Nwasm extends GameTemplate {
     let upoad_rom = new UploadRom(app, this);
     upoad_rom.render(app, this);
   }
+  initializeRom(bytearray) {
+    myApp.initializeRom(bytearray);
+  }
 
 
   load() {
@@ -162,6 +164,7 @@ class Nwasm extends GameTemplate {
   }
 
   sendUploadRomTransaction(app, mod, data) {
+
     let mod_self = this;
 
     let obj = {

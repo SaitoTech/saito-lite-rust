@@ -1,5 +1,8 @@
 const UploadRomOverlayTemplate = require("./upload-rom.template");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+var str2ab = require('string-to-arraybuffer');
+var ab2str = require('arraybuffer-to-string');
+
 
 class UploadRomOverlay {
 
@@ -26,6 +29,19 @@ class UploadRomOverlay {
           
           // add file to txn
           console.log(file);
+
+
+	  let st = ab2str(file);
+
+ฝฝconsole.log("STRING: " + st);
+
+	  let file2 = str2ab(st);
+
+	  myApp.initializeRom(file2);
+
+
+/**
+
           let data = {
             filename: 'file.n64',
             file: file
@@ -48,8 +64,9 @@ class UploadRomOverlay {
           salert('file uploaded successfully');
           this.overlay.hideOverlay();
           document.querySelector('.loader').style.display = "none";
+**/
         },
-      false);
+      false, true); // true = read as array buffer
 
     } catch(err) {
       console.log('ROM file upload error: '+err);
@@ -58,6 +75,7 @@ class UploadRomOverlay {
   }
 
 }
+
 
 module.exports = UploadRomOverlay;
 
