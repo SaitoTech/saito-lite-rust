@@ -438,16 +438,16 @@ body {
 
 .arcade-tile .player-slot {
   background-color: #8884;
-  box-shadow: 1px 1px #ccc, 1px 1px #333 inset;
   width: 2em;
   height: 2em;
   margin: 0.2em 0.2em;
   float: left;
 }
 
-.arcade-tile .player-slot-ellipsis {
-  align-self: end;
+.arcade-tile .player-slot.identicon-empty{
+  box-shadow: 1px 1px #ccc, 1px 1px #333 inset;
 }
+
 
 .arcade-tile .gameButtons {
   display: flex;

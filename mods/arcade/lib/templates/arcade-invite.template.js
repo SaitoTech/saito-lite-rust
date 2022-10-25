@@ -41,17 +41,14 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   //console.log("Game_initialized: " + game_initialized);
   let playersHtml = `<div class="playerInfo" style="">`;
   for (let i = 0; i < numPlayerSlots; i++) {
-    //if (i < 4) {
-      if (i < invite.msg.players.length) {
-        let identicon = app.keys.returnIdenticon(invite.msg.players[i]);
-        playersHtml += `<div class="player-slot tip id-${invite.msg.players[i]}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(invite.msg.players[i])}</div></div>`;
-      } else {
-        playersHtml += `<div class="player-slot identicon-empty"></div>`;  
-      }
-    /*} else {
-      playersHtml += `<div style="color:#f5f5f59c;margin-left:0.2em;" class="player-slot-ellipsis fas fa-ellipsis-h"></div>`;  
-      break;
-    }*/
+    if (i < invite.msg.players.length) {
+      let identicon = app.keys.returnIdenticon(invite.msg.players[i]);
+      playersHtml += `<div class="player-slot tip id-${invite.msg.players[i]}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(invite.msg.players[i])}</div></div>`;
+    } else if (i < invite.msg.players_needed) {
+      playersHtml += `<div class="player-slot identicon-empty"></div>`;  
+    }else{
+      playersHtml += `<div class="player-slot saito-module-identicon-box"></div>`;  
+    }
   }
 
   playersHtml += '</div>';
