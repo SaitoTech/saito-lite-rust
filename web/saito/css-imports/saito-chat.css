@@ -3,7 +3,7 @@
 .chat-container {
     margin-right: 1rem;
     width: 44rem;
-    border-radius: .4rem;
+    border-radius: 0.5rem;
     z-index: 1000;
     position: fixed;
     bottom: 0px;
@@ -69,11 +69,12 @@
 
 .chat-header>.chat-group-tabs.show-multi .chat-group.active-chat-tab{
     border: 1px solid var(--saito-primary);
-    border-radius: 10px 30px 0 0;
+    border-bottom: none;
+    border-radius: 0.5rem 0.5rem 0 0;
 }
 
 .chat-header>.chat-group-tabs.show-multi .chat-group:hover{
-    border-radius: 10px 30px 0 0;
+    border-radius: 0.5rem 0.5rem 0 0;
     background-color: var(--saito-primary);
     color: var(--saito-white);
 }
@@ -140,20 +141,21 @@
 
 
 
-.saito-notification-counter{
+.saito-notification-counter {
     position: absolute;
     top: -0.5rem;
     right: 0;
-    font-size: 1.5rem;
-    line-height: 1.1;
+    font-size: 1.25rem;
+    line-height: 2rem;
     text-align: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 100%;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
     color: var(--saito-white);
     background-color: var(--saito-primary);
     overflow: hidden;
 }
+
 
 /* Adjust for tabs in ChatPopup*/
 .chat-group-tabs .saito-notification-counter{
