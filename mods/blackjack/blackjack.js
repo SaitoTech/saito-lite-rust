@@ -94,9 +94,9 @@ class Blackjack extends GameTableTemplate {
 
   /* Opt out of letting League create a default*/
   respondTo(type){
-    if (type == "default-league") {
-      return null;
-    }
+    //if (type == "default-league") {
+    //  return null;
+    //}
     return super.respondTo(type);
   }
 
@@ -1074,7 +1074,8 @@ class Blackjack extends GameTableTemplate {
       this.game.state.player[i].winner = (this.game.state.player[i].total > dealerScore);
     } 
       
-    
+    let winners = [];
+    let losers = [];    
     let debt = 0;
     let logMsg = "";
     let dealerHTML = "";
@@ -1119,10 +1120,12 @@ class Blackjack extends GameTableTemplate {
             let uh = this.game.dice;
             this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[this.game.state.dealer-1]}\t${debt.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
           }
-
+          
+          losers.push(this.game.players[i]);
         }
       }
-    }else{ //Otherwise, normal processing, some players win, some lose
+    }else{ 
+      //Otherwise, normal processing, some players win, some lose
       //Update each player 
       let sender, receiver;
   
@@ -1131,6 +1134,7 @@ class Blackjack extends GameTableTemplate {
           if (this.game.state.player[i].wager>0){ //Player still has something to resolve
             debt = this.game.state.player[i].wager;
             if (this.game.state.player[i].winner){
+              winners.push(this.game.players[i]);
               this.game.state.player[this.game.state.dealer-1].wager -= debt;
               this.game.state.player[i].credit += Math.min(debt, this.game.state.player[this.game.state.dealer-1].credit);
               logMsg += `Player ${i+1} wins ${debt.toFixed(this.decimal_precision)}, `;
@@ -1138,6 +1142,7 @@ class Blackjack extends GameTableTemplate {
               receiver = this.game.players[i];     
 
             }else{
+              losers.push(this.game.players[i]);
               debt = Math.min(debt, this.game.state.player[i].credit);
               this.game.state.player[this.game.state.dealer-1].wager += debt
               this.game.state.player[i].credit -= debt;
@@ -1159,6 +1164,13 @@ class Blackjack extends GameTableTemplate {
               this.settlement.push(`SEND\t${sender}\t${receiver}\t${debt.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
             }
             this.game.state.player[i].wager = 0;
+          }else{
+            if (this.game.state.player[i].total == 21){
+              winners.push(this.game.players[i]);
+            }else{
+              losers.push(this.game.players[i]);
+            }
+
           }
           //check and process secondary hands
           for (let z of this.game.state.player[i].split){
@@ -1224,8 +1236,15 @@ class Blackjack extends GameTableTemplate {
     
     //Consolidated log message
     this.updateLog(logMsg);
-
     this.settleLastRound();
+
+    if (winners.length > 0){
+      this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winners)}\t${JSON.stringify([this.game.players[this.game.state.dealer-1]])}`);  
+    }
+    if (losers.length > 0){
+     this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.game.players[this.game.state.dealer-1]])}\t${JSON.stringify(losers)}`);   
+    }
+
     if (this.settlement.length > 0){
       this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, ()=>{
         this.restartQueue();
