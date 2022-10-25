@@ -614,7 +614,12 @@ class Chatx extends ModTemplate {
     //
     addTransactionToGroup(group, tx) {
         for (let i = 0; i < group.txs.length; i++) {
-            if (group.txs[i].transaction.sig === tx.transaction.sig && group.txs[i].transaction.ts === tx.transaction.ts) {
+            if (group.txs[i].transaction.sig === tx.transaction.sig) {
+                return;
+            }
+            if (tx.transaction.ts < group.txs[i].transaction.ts){
+                let pos = Math.max(0, i-1);
+                group.txs.splice(pos, 0, tx);
                 return;
             }
         }
@@ -624,8 +629,8 @@ class Chatx extends ModTemplate {
         //We mark "new/unread" messages as we add them to the group
         //and clear them when we render them in the popup
         group.unread++;
-        
     }
+
 
     ///////////////////
     // CHAT UTILITIES //
@@ -747,7 +752,7 @@ class Chatx extends ModTemplate {
         }
         
         this.app.options.chat[group.id] = [];       
-        for (let t of group.txs.slice(-50)){
+        for (let t of group.txs.slice(-100)){
             this.app.options.chat[group.id].push(t.transaction);
         }
 
