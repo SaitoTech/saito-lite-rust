@@ -99,7 +99,7 @@ class Nwasm extends GameTemplate {
       class : "game-save",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        myApp.saveStateLocal()
+	game_mod.saveGame();
       }
     });
     this.menu.addSubMenuOption("game-game",{
@@ -108,7 +108,6 @@ class Nwasm extends GameTemplate {
       class : "game-load",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        myApp.loadStateLocal()
       }
     });
 
@@ -116,6 +115,15 @@ class Nwasm extends GameTemplate {
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
 
+  }
+
+
+  saveWasmGame() {
+    myApp.exportEep();
+  }
+
+  loadWasmGame() {
+    myApp.exportEep();
   }
 
 

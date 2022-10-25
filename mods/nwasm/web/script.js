@@ -52,9 +52,9 @@ class MyClass {
             showFPS: true,
             settings: {
                 CLOUDSAVEURL: "",
-                SHOWADVANCED: false,
-                SHOWOPTIONS: false,
-                SHOWFPS: true
+                SHOWADVANCED: true,
+                SHOWOPTIONS: true,
+                SHOWFPS: false
             }
         };
 
@@ -485,6 +485,15 @@ class MyClass {
         reader.readAsArrayBuffer(file);
     }
 
+    //
+    // HACK
+    //
+    initializeRom(bytearray) {
+      console.log('finished loading');
+      var ba = new Uint8Array(bytearray);
+      myClass.LoadEmulator(ba);
+    }
+
     uploadRom(event) {
         var file = event.currentTarget.files[0];
         myClass.rom_name = file.name;
@@ -876,7 +885,11 @@ class MyClass {
         console.log('js eep event');
 
         let filearray = FS.readFile("/game.eep");   
+console.log("FILE: ");
+console.log("FILE LEN: " + filearray.length);
+console.log(filearray);
         var file = new File([filearray], "game.eep", {type: "text/plain; charset=x-user-defined"});
+alert("pre save as");
         saveAs(file);
     }
     exportSra(){
