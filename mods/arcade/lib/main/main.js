@@ -207,7 +207,7 @@ module.exports = ArcadeMain = {
             }
           }
 
-          if (invite.msg?.options?.max_players == invite.msg.players.length){
+          if (invite.msg?.options["game-wizard-players-select-max"] == invite.msg.players.length){
             includeGame = false;
           }
 

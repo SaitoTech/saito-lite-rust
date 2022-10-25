@@ -157,10 +157,6 @@ class GameWizard {
       }
     });
 
-    let fixed_players = document.querySelector(".game-wizard-players-no-select");
-    if (fixed_players){
-      options["game-wizard-players-select"] = fixed_players.dataset.player;
-    }
     return options;
   }
 }
