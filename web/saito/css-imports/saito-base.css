@@ -49,6 +49,7 @@ pre {
 
 .saito-active-key {
   border-bottom: 1px dashed var(--saito-primary);
+  display: inline !important;
 }
 
 /* ----------------------------------------------------------------
