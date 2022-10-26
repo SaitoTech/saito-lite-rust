@@ -96,19 +96,15 @@
 }
 
 .saito-page-header {
-    position: fixed;
     z-index: 2;
     background: #fff;
     padding-bottom: 0rem;
-    width: 704px;
+    width: -webkit-fill-available;
     top: 8rem;
     padding: 1.5rem 0rem;
+    position: sticky;
+    top: 0rem;
 }
-
-.saito-main {
-    padding-top: 6rem;
-}
-
 /*
 
 .saito-sidebar.left .hamburger {
