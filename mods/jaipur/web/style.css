@@ -39,7 +39,7 @@ body {
   max-width: 100vw;
   min-width: 80vw;
   position: absolute;
-  top: 35vh;
+  top: 25vh;
 
   left: 50%;
   transform: translateX(-50%);
@@ -63,15 +63,21 @@ body {
   grid-template-rows: repeat(3, minmax(40px, 1fr));
   width: fit-content;
   height: fit-content;
+  column-gap: 10px;
+  row-gap: 10px;
+  
 }
 
 .token{
   max-width: 70px;
   width: 100%;
+  filter: drop-shadow(5px 5px 5px black);
 }
 
 .card_count{
   width: 100%;
+  color: yellowgreen;
+  border-style: solid;
   height: auto;
   background-size: contain;
   background-position: center;
@@ -79,7 +85,7 @@ body {
   font-size: min(6vw,80px);
   line-height: 8vw;
   text-align: center;
-  text-shadow: 1px 1px 2px black;  
+  text-shadow: 2px 2px black;  
   position: relative;
 }
 
@@ -105,14 +111,22 @@ body {
 
 .market{
   display: grid;
+  background-color: rgb(255 248 220/ 75%);
   grid-template-columns: repeat(5, fit-content(100px));
-  max-width: 750px;
-  min-width: max(300px, 50vw);
+  max-width: 100px;
+  min-width: max(100px, 50vw);
+  column-gap: 42px;
+  outline-style: double;
+  outline-color: black;
+  outline-offset: 20px;
+  
 
 }
 
 .market .card{
   width: 100%;
+  box-shadow: 5px 5px black;
+  border: solid black;
 }
 
 .player-box-graphic{
@@ -129,7 +143,7 @@ body {
 }
 
 .camel_train{
-  width: 100px;
+  width: 75px;
   color: cadetblue;
 }
 
@@ -203,7 +217,7 @@ body {
 
 .card, .card_count{
   cursor: pointer;
-  /*border-radius: 10%;*/
+  border-radius: 10%;
 }
 
 .card_group{
@@ -233,7 +247,7 @@ body {
 
 .hud {
   display: block;
-  width: 750px;
+  width: 900px;
   max-height: initial;
   height: 300px;
   height: -moz-fit-content;
@@ -251,7 +265,7 @@ body {
   height: -moz-fit-content;
   overflow-y: visible;
   cursor: initial;
-  padding: 0 16px;
+  width: auto;
 }
 
 .hud-header {
