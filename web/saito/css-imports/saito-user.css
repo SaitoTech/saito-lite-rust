@@ -167,6 +167,10 @@ Saito List,Saito User List and Saito User
     overflow: hidden;
 }
 
+.identicon-empty{
+    background: var(--saito-dark-transparent);
+}
+
 .saito-module-identicon-box i {
     font-size: 2.2rem;
     line-height: 2.5rem;

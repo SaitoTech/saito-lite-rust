@@ -50,7 +50,7 @@ class StunxAppspace {
 
     joinVideoInvite(app, mod , roomCode) {
         console.log(roomCode)
-        if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
+        if (!roomCode) return siteMessage("Please insert a room code", 5000);
         let sql = `SELECT * FROM rooms WHERE room_code = "${roomCode}"`;
         // const stunx_mod = app.modules.returnModule('Stunx');
         // console.log(stunx_mod)
@@ -59,14 +59,14 @@ class StunxAppspace {
             console.log(res, 'res')
             if (!room) {
                 console.log('Invite code is invalid');
-                return siteMessageNew("Invite code is invalid");
+                return siteMessage("Invite code is invalid");
             }
             if (room.isMaxCapicity) {
                 console.log("Room has reached max capacity");
-                return siteMessageNew("Room has reached max capacity");
+                return siteMessage("Room has reached max capacity");
             }
             if (Date.now() < room.startTime) {
-                siteMessageNew("Video call time is not yet reached", 5000);
+                siteMessage("Video call time is not yet reached", 5000);
                 console.log("Video call time is not yet reached");
                 return "Video call time is not yet reached";
             }
@@ -91,7 +91,7 @@ class StunxAppspace {
                 mod.sendUpdateRoomTransaction(roomCode, data);
                 this.app.connection.emit('show-video-chat-request', app, this, 'large');
                 this.app.connection.emit('render-local-stream-request', localStream, 'large');
-                siteMessageNew("You are the only participant in this room");
+                siteMessage("You are the only participant in this room");
                 return;
 
             } else {

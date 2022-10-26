@@ -85,17 +85,6 @@ class RedSquare extends ModTemplate {
           app.options.homeModule = this.returnSlug();
           app.storage.saveOptions();
         }
-
-        //Query tweets every 30 seconds
-        setInterval(() => {
-          if (this.viewing == "feed") {
-            this.fetchNewTweets(app, this);
-          }
-        }, 45000);
-        //Query tweets every 30 seconds
-        setInterval(() => {
-          this.fetchStatsUpdate(app, this);
-        }, 37000);
       }
     }
   }
@@ -737,6 +726,23 @@ console.log("redsquare innerHTML");
 
 
   async onConfirmation(blk, tx, conf, app) {
+    if (blk != null) {
+      //random time in milliseconds)
+      let tweet_timeout = 10000 + (Math.random()*5000);
+      let stats_timeout = 10000 + (Math.random()*10000);
+
+      setTimeout(function(){
+        if (mod_self.viewing == "feed") {
+          mod_self.fetchNewTweets(app, mod_self);
+        }
+      }, tweet_timeout);
+
+      setTimeout(function(){
+        if (mod_self.viewing == "feed") {
+          mod_self.fetchStatsUpdate(app, mod_self);
+        }
+      }, stats_timeout);      
+    }
 
     let txmsg = tx.returnMessage();
     try {

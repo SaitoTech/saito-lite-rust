@@ -27,6 +27,9 @@ class Chatx extends ModTemplate {
         this.debug = false;
 
         this.popup = null;  //We define these when we initialize
+
+        this.mute = false;
+
         //This needs to be defined so that it other modules (A-, B- can initialize)
         this.chat_manager = new ChatManager(app, this);
 
@@ -603,6 +606,8 @@ class Chatx extends ModTemplate {
 
         this.app.options.auto_open_chat_box = group_id;
         this.app.storage.saveOptions();
+        
+        this.mute = false;
 
         this.popup.render(this.app, this, group_id);
 

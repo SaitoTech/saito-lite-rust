@@ -8,17 +8,25 @@ class ChatPopup {
     this.mod = mod;
 
     this.emoji = new SaitoEmoji(app, mod, `chat-input`);
-
     this.minimized = false;
 
     //Each ChatPopup has listeners so we need to only act if it is for us
     app.connection.on("chat-render-request", (gid) => {
       if (gid) {
-        if (this.minimized || gid != this.activeTab()) {
-          app.connection.emit("chat-render-request-notify", mod.returnGroup(gid));
-        } else {
-          this.render(app, mod, gid);
+        if (!mod.mute){
+          let at = this.activeTab();
+          if (!at || at == gid){
+            if (!this.minimized){
+              this.render(app, mod, gid);
+              return;              
+            }
+          }else{
+            if (!document.getElementById(`chat-group-${gid}`)){
+              this.insertBackgroundTab(app, mod, gid);
+            }
+          }  
         }
+        app.connection.emit("chat-render-request-notify", mod.returnGroup(gid));        
       }
     });
 
@@ -88,6 +96,20 @@ class ChatPopup {
       
   }
 
+  insertBackgroundTab(app, mod, gid){
+    let tabContainer = document.querySelector(".chat-group-tabs");
+    if (tabContainer){
+      tabContainer.classList.add("show-multi");
+    }
+
+    let group = mod.returnGroup(gid);
+
+    //Insert new tab
+    app.browser.addElementToSelector(`<div id="chat-group-${gid}" class="chat-group">${group.name}</div>`, ".chat-group-tabs");
+    this.attachEvents(app, mod);
+
+  }
+
   attachEvents(app, mod) {
 
     let group_id = this.activeTab();
@@ -97,7 +119,7 @@ class ChatPopup {
     //
     document.querySelector(`#chat-container-close`).onclick = (e) => {
       this.minimized = false;
-
+      mod.mute = true;
       document.getElementById(`chat-container`).remove();
 
       app.options.auto_open_chat_box = -1;

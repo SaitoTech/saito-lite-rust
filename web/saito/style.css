@@ -928,50 +928,6 @@ select::-ms-expand {
   display: none;
 }
 
-/* Custom Select */
-
-.saito-select {
-  position: relative;
-  display: flex;
-  width: 20em;
-  height: 3em;
-  line-height: 3;
-  background: #fff;
-  overflow: hidden;
-  border-bottom: 1px solid var(--saito-red);
-  width: 100%;
-}
-
-select {
-  font-size: 1em;
-  flex: 1;
-  padding: 0 0.5em;
-  cursor: pointer;
-  background: none;
-  line-height: 1em;
-}
-
-/* Arrow */
-
-.saito-select::after {
-  content: "\25BC";
-  position: absolute;
-  top: 0;
-  right: 1.5em;
-  padding: 0 1em;
-  background: #fff;
-  cursor: pointer;
-  pointer-events: none;
-  -webkit-transition: 0.25s all ease;
-  -o-transition: 0.25s all ease;
-  transition: 0.25s all ease;
-}
-
-/* Transition */
-
-.saito-select:hover::after {
-  color: var(--saito-red);
-}
 
 option {
   background: var(--saito-skyline-grey);
