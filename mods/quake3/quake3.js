@@ -5,7 +5,7 @@ const QuakeControls = require('./lib/controls');
 
 class Quake3 extends GameTemplate {
 
-  constructor(app, game_mod) {
+  constructor(app) {
 
     super(app);
 
@@ -15,7 +15,6 @@ class Quake3 extends GameTemplate {
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
-    this.controls = {};
     this.controls = new QuakeControls(app, this);
 
     this.minPlayers      = 1;
