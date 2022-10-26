@@ -5,7 +5,7 @@ const QuakeControls = require('./lib/controls');
 
 class Quake3 extends GameTemplate {
 
-  constructor(app) {
+  constructor(app, game_mod) {
 
     super(app);
 
@@ -15,7 +15,8 @@ class Quake3 extends GameTemplate {
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
-    this.controls = this.returnDefaults();
+    this.controls = {};
+    this.controls = new QuakeControls(app, this);
 
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
@@ -107,7 +108,7 @@ class Quake3 extends GameTemplate {
 	      ticker
 	    );
 	  }
-	}
+v	}
         return 1;
       }
 
@@ -357,12 +358,15 @@ class Quake3 extends GameTemplate {
       id : "game-controls",
       class : "game-game-controls",
       callback : async function(app, game_mod) {
+
         game_mod.menu.hideSubMenus();
-	if (game_mod.controls) { game_mod.controls.overlay.hide(); }
-        game_mod.controls = new QuakeControls(app, game_mod);
-	controls.render(app, game_mod);
+	//if (!game_mod.controls) {game_mod.controls = new QuakeControls(app, game_mod);}
+        //game_mod.controls = new QuakeControls(app, game_mod);
+	game_mod.controls.overlay.hide();
+	game_mod.controls.render(app, game_mod);
     	SAITO_COMPONENT_ACTIVE = true;
     	SAITO_COMPONENT_CLICKED = true;
+	
       },
     });
 
@@ -486,11 +490,6 @@ return;
   }
 
 
-
-  returnDefaults() {
-    return {};
-  }
-
   load() {
     this.quake3 = this.app.options.quake3;
   }
@@ -503,4 +502,3 @@ return;
 }
 
 module.exports = Quake3;
-
