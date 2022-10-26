@@ -103,13 +103,13 @@ class RedSquare extends ModTemplate {
     }
     if (type === 'user-menu') {
       return {
-          text: "View Profile",
-          icon: "fa-regular fa-user",
-          callback: function (app, publickey) {
-              app.connection.emit('redquare-show-user-feed', publickey);
-          }
+        text: "View Profile",
+        icon: "fa-regular fa-user",
+        callback: function (app, publickey) {
+          app.connection.emit('redquare-show-user-feed', publickey);
+        }
       }
-  }
+    }
 
     if (type === 'user_menu') {
       return {
@@ -441,7 +441,7 @@ class RedSquare extends ModTemplate {
 
   renderMainPage(app, mod, promote_images = false) {
     this.reorganizeTweets(app, mod, promote_images);
-console.log("redsquare innerHTML");
+    console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
@@ -450,7 +450,7 @@ console.log("redsquare innerHTML");
   }
 
   renderMainFeed(app, mod) {
-console.log("redsquare innerHTML");
+    console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
@@ -465,7 +465,7 @@ console.log("redsquare innerHTML");
   renderParentWithChildren(app, mod, sig) {
     //this.viewing = sig;
     //this.reorganizeTweets(app, mod);
-console.log("redsquare innerHTML");
+    console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     for (let i = 0; i < this.tweets.length; i++) {
@@ -493,7 +493,7 @@ console.log("redsquare innerHTML");
   //
   renderWithParents(app, mod, sig, num = -1) {
     //this.viewing = sig;
-console.log("redsquare innerHTML");
+    console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     let t = this.returnTweet(app, mod, sig);
@@ -525,7 +525,7 @@ console.log("redsquare innerHTML");
 
     this.reorganizeTweets(app, mod);
     document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
-console.log("redsquare innerHTML");
+    console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     for (let i = 0; i < this.tweets.length; i++) {
@@ -574,7 +574,7 @@ console.log("redsquare innerHTML");
     }
 
     this.reorganizeTweets(app, mod, false);
-console.log("redsquare innerHTML");
+    console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].sender == key) {
@@ -726,22 +726,25 @@ console.log("redsquare innerHTML");
 
 
   async onConfirmation(blk, tx, conf, app) {
-    if (blk != null) {
-      //random time in milliseconds)
-      let tweet_timeout = 10000 + (Math.random()*5000);
-      let stats_timeout = 10000 + (Math.random()*10000);
 
-      setTimeout(function(){
-        if (mod_self.viewing == "feed") {
-          mod_self.fetchNewTweets(app, mod_self);
-        }
-      }, tweet_timeout);
+    if (app.BROWSER === 1) {
+      if (blk != null) {
+        //random time in milliseconds)
+        let tweet_timeout = 10000 + (Math.random() * 5000);
+        let stats_timeout = 10000 + (Math.random() * 10000);
 
-      setTimeout(function(){
-        if (mod_self.viewing == "feed") {
-          mod_self.fetchStatsUpdate(app, mod_self);
-        }
-      }, stats_timeout);      
+        setTimeout(function () {
+          if (this.viewing == "feed") {
+            this.fetchNewTweets(app, mod_self);
+          }
+        }, tweet_timeout);
+
+        setTimeout(function () {
+          if (this.viewing == "feed") {
+            this.fetchStatsUpdate(app, mod_self);
+          }
+        }, stats_timeout);
+      }
     }
 
     let txmsg = tx.returnMessage();
@@ -927,7 +930,7 @@ console.log("redsquare innerHTML");
               let obj = document.getElementById(tweet_id);
               if (obj) {
                 if (obj.querySelector('.redsquare-tweet-tools')) {
-console.log("redsquare innerHTML");
+                  console.log("redsquare innerHTML");
                   if (row.num_likes > parseInt(obj.querySelector(".tweet-tool-like-count-" + row.sig).innerHTML)) {
                     obj.querySelector(".tweet-tool-like-count-" + row.sig).innerHTML = row.num_likes;
                   }
