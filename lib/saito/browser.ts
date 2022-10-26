@@ -851,6 +851,7 @@ class Browser {
         document.onmousemove = function (e) {
           e = e || window.event;
           e.preventDefault();
+          const threshold = 25;
 
           mouse_current_left = e.clientX;
           mouse_current_top = e.clientY;
@@ -866,22 +867,22 @@ class Browser {
 
           //if dockable show docking edge
           if (dockable) {
-            if (element_to_move.getBoundingClientRect().x < 25) {
+            if (Math.abs(element_to_move.getBoundingClientRect().x) < threshold) {
               element_to_move.classList.add("dockedLeft");
             } else {
               element_to_move.classList.remove("dockedLeft");
             }
 
-            if (element_to_move.getBoundingClientRect().y < 25) {
+            if (Math.abs(element_to_move.getBoundingClientRect().y < threshold)) {
               element_to_move.classList.add("dockedTop");
             } else {
               element_to_move.classList.remove("dockedTop");
             }
 
             if (
-              element_to_move.getBoundingClientRect().x +
-              element_to_move.getBoundingClientRect().width >
-              window.innerWidth - 25
+              Math.abs(element_to_move.getBoundingClientRect().x +
+              element_to_move.getBoundingClientRect().width -
+              window.innerWidth) < threshold
             ) {
               element_to_move.classList.add("dockedRight");
             } else {
@@ -889,9 +890,9 @@ class Browser {
             }
 
             if (
-              element_to_move.getBoundingClientRect().y +
-              element_to_move.getBoundingClientRect().height >
-              window.innerHeight - 25
+              Math.abs(element_to_move.getBoundingClientRect().y +
+              element_to_move.getBoundingClientRect().height -
+              window.innerHeight) < threshold
             ) {
               element_to_move.classList.add("dockedBottom");
             } else {
@@ -899,20 +900,21 @@ class Browser {
             }
 
             // set the element's new position:
-
-            if (newPosX <= 0) {
+            
+            if (Math.abs(newPosX) < threshold) {
               newPosX = 0;
             }
-            if (newPosX + element_to_move.getBoundingClientRect().width >= window.innerWidth) {
+            if (Math.abs(newPosX + element_to_move.getBoundingClientRect().width - window.innerWidth) < threshold) {
               newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
             }
 
-            if (newPosY <= 0) {
+            if (Math.abs(newPosY) < threshold) {
               newPosY = 0;
             }
-            if (newPosY + element_to_move.getBoundingClientRect().height >= window.innerHeight) {
+            if (Math.abs(newPosY + element_to_move.getBoundingClientRect().height - window.innerHeight) < threshold) {
               newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
             }
+            
           }
 
           element_to_move.style.left = newPosX + "px";

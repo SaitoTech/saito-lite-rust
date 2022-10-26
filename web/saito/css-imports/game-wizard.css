@@ -163,6 +163,35 @@
   padding: 0 1em;
 }
 
+
+/* Custom Select */
+.saito-select {
+  position: relative;
+  display: flex;
+  height: 3em;
+  line-height: 3;
+  background: #55555555;
+  overflow: hidden;
+  border-bottom: 1px solid var(--saito-red);
+  width: 100%;
+}
+
+/* Arrow */
+.saito-select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 1em;
+  background: #55555533;
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-transition: 0.25s all ease;
+  -o-transition: 0.25s all ease;
+  transition: 0.25s all ease;
+}
+
+
 .game-wizard-players-select.dark {
   background: var(--saito-light-dark-transparent);
   color: var(--saito-white);
@@ -218,6 +247,7 @@
 .game-create-new-overlay.dark .saito-overlay .saito-select::after {
   background: none;
 }
+
 
 .game-create-new-overlay.dark .saito-overlay select option {
   background: var(--saito-black);

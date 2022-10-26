@@ -2,6 +2,10 @@ const saito = require('./../../../../lib/saito/saito');
 const GameCreateMenuTemplate= require('./game-create-menu.template');
 const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
+/*
+  Not yet deprecated code for selecting a game from a list of games in order to launch the game wizard
+*/
+
 module.exports = GameCreateMenu = {
 
   render(app, mod) {

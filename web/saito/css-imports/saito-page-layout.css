@@ -95,7 +95,16 @@
     border-bottom-right-radius: 0 !important;
 }
 
-
+.saito-page-header {
+    z-index: 2;
+    background: #fff;
+    padding-bottom: 0rem;
+    width: -webkit-fill-available;
+    top: 8rem;
+    padding: 1.5rem 0rem;
+    position: sticky;
+    top: 0rem;
+}
 /*
 
 .saito-sidebar.left .hamburger {
