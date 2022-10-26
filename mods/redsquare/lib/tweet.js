@@ -588,7 +588,7 @@ console.log("about to hit INNERHTML in TWEET");
 
       let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + this.tx.transaction.sig;
       navigator.clipboard.writeText(tweetUrl).then(() => {
-        siteMessageNew("Link copied to clipboard.", 2000);
+        siteMessage("Link copied to clipboard.", 2000);
       });
     };
 

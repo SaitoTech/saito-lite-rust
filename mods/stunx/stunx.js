@@ -202,7 +202,7 @@ class Stunx extends ModTemplate {
         server.sendRequest(message.request, message.data);
 
         this.app.connection.emit('show-invite-overlay-request', roomCode);
-        siteMessageNew("Room created successfully", 5000);
+        siteMessage("Room created successfully", 5000);
     }
 
     async sendUpdateRoomTransaction(room_code, data) {
@@ -518,7 +518,7 @@ class Stunx extends ModTemplate {
             console.log('an error occurred with peer connection creation', error);
         }
         console.log("peer connections ", this.peer_connections);
-        siteMessageNew("Starting video connection", 5000);
+        siteMessage("Starting video connection", 5000);
     }
 
 
