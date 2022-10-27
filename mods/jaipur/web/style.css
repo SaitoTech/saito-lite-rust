@@ -33,7 +33,7 @@ body {
   display: grid;
   grid-template-columns: minmax(120px, 1fr) minmax(80px, 1fr) 4fr;
   align-items: center;
-  grid-gap: 15px;
+  grid-gap: 200px;
 
   max-height: 60vh;
   max-width: 100vw;
@@ -63,14 +63,14 @@ body {
   grid-template-rows: repeat(3, minmax(40px, 1fr));
   width: fit-content;
   height: fit-content;
-  column-gap: 10px;
-  row-gap: 10px;
+  column-gap: 70px;
+  row-gap: 30px;
   
 }
 
 .token{
-  max-width: 70px;
-  width: 100%;
+  max-width: 100px;
+  width: 100;
   filter: drop-shadow(5px 5px 5px black);
 }
 
@@ -114,7 +114,7 @@ body {
   background-color: rgb(255 248 220/ 75%);
   grid-template-columns: repeat(5, fit-content(100px));
   max-width: 100px;
-  min-width: max(100px, 50vw);
+  min-width: max(100px, 64vw);
   column-gap: 42px;
   outline-style: double;
   outline-color: black;
@@ -124,7 +124,7 @@ body {
 }
 
 .market .card{
-  width: 100%;
+  width: 210;
   box-shadow: 5px 5px black;
   border: solid black;
 }
