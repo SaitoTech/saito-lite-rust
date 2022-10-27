@@ -178,10 +178,13 @@
         width: 100vw;
         position: fixed;
         right: 0rem;
-        top: var(--saito-header-height);
         top: 0;
         bottom: 0rem;
         left: .1rem;
+    }
+
+    .chat-body {
+        height: auto;
     }
 }
 
