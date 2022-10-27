@@ -46,6 +46,7 @@
     "crypto": "^1.0.1",
     "curve25519-js": "^0.0.4",
     "dompurify": "^2.3.5",
+    "dotenv": "^16.0.3",
     "elo-rank": "^1.0.4",
     "emoji-picker-element": "^1.12.1",
     "exports-loader": "^0.7.0",
