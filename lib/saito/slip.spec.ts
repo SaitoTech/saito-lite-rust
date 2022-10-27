@@ -1,13 +1,13 @@
 import { Saito } from "../../apps/core";
 
-import * as blake3 from "blake3";
 import NetworkAPI from "./networkapi";
 import Crypto from "./crypto";
 import Binary from "./binary";
 import Wallet from "./wallet";
 import Slip from "./slip";
+import hashLoader from "../../apps/core/hash-loader";
 
-test("slip serialize deserialze", () => {
+test("slip serialize deserialze", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const mockApp: Saito = {};
@@ -25,9 +25,7 @@ test("slip serialize deserialze", () => {
     "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74"
   );
 
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const slip = new Slip(wallet.wallet.privatekey);
   slip.add = mockApp.crypto.toBase58(
@@ -58,7 +56,7 @@ test("slip serialize deserialze", () => {
 });
 
 describe("serializeForSignature", () => {
-  test("empty slip", () => {
+  test("empty slip", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
@@ -73,9 +71,7 @@ describe("serializeForSignature", () => {
     wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
     wallet.wallet.publickey = "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
 
-    mockApp.hash = (data) => {
-      return blake3.hash(data).toString("hex");
-    };
+    await hashLoader(mockApp);
 
     const slip = new Slip();
 

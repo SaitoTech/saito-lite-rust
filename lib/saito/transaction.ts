@@ -391,6 +391,7 @@ class Transaction {
     if (this.dmsg !== "") {
       return this.dmsg;
     }
+    // @ts-ignore
     if (this.msg !== {}) {
       return this.msg;
     }
