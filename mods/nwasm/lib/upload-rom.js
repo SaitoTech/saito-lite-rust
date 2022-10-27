@@ -1,7 +1,5 @@
 const UploadRomOverlayTemplate = require("./upload-rom.template");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-var str2ab = require('string-to-arraybuffer');
-var ab2str = require('arraybuffer-to-string');
 
 
 class UploadRomOverlay {
@@ -32,32 +30,6 @@ class UploadRomOverlay {
 
 	  myApp.initializeRom(file);
 
-
-/**
-
-          let data = {
-            filename: 'file.n64',
-            file: file
-          };
-          let tx = mod.sendUploadRomTransaction(app, mod, data);
-
-          // add file and keys to mod.rom
-          let pubkey = app.wallet.returnPublicKey();
-          mod.roms.push({
-            file_id: data.filename, 
-            file: file,
-            key: tx.transaction.sig, 
-            pubkey: pubkey
-          });          
-
-          console.log(mod.roms);
-          // save rom data inside wallet
-          mod.save();
-        
-          salert('file uploaded successfully');
-          this.overlay.hideOverlay();
-          document.querySelector('.loader').style.display = "none";
-**/
         },
       false, true); // true = read as array buffer
 
