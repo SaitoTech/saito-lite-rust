@@ -776,7 +776,7 @@ class Observer extends ModTemplate {
         if (games.length > 0) {
           res.write(JSON.stringify(games));
         } else {
-          res.write("{}");
+          res.write("{}");exp
         }
         res.end();
         return;
