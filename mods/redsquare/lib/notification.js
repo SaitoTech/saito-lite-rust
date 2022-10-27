@@ -16,15 +16,22 @@ class RedSquareNotification {
 
       let html = '';
       let txmsg = this.tx.returnMessage();
- 
+      
       if (txmsg.request == "like tweet") {
-	let qs = `.liked-tweet-${txmsg.data.sig}`;
+	let qs = `.likedd-tweet-${txmsg.data.sig}`;
+
 	let obj = document.querySelector(qs);
 	if (obj) {
-	  obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
+     mod.ntfs_counter[`likedd-tweet-${txmsg.data.sig}`]+= 1;
+     let counter = mod.ntfs_counter[`likedd-tweet-${txmsg.data.sig}`];
+
+    obj.textContent = counter;
+	  // obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
 	  return;
 	} else {
-	  html = LikeNotificationTemplate(app, mod, this.tx);
+    mod.ntfs_counter[`likedd-tweet-${txmsg.data.sig}`] = 1;
+    let counter = 1
+	  html = LikeNotificationTemplate(app, mod, this.tx,counter);
         }
       }
 
