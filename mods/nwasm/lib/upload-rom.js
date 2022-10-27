@@ -30,14 +30,7 @@ class UploadRomOverlay {
           // add file to txn
           console.log(file);
 
-
-	  let st = ab2str(file);
-
-ฝฝconsole.log("STRING: " + st);
-
-	  let file2 = str2ab(st);
-
-	  myApp.initializeRom(file2);
+	  myApp.initializeRom(file);
 
 
 /**
