@@ -8,6 +8,7 @@ class RedSquareAppspaceNotifications {
     this.app = app;
     this.name = "RedSquareAppspaceNotifications";
     this.saito_loader = new SaitoLoader(app, mod);
+    this.increment = 1;
   }
 
   render(app, mod) {
@@ -16,7 +17,25 @@ class RedSquareAppspaceNotifications {
 
     for (let i = 0; i < mod.ntfs.length; i++) {
       let notification = new Notification(app, mod, mod.ntfs[i]);
+
       notification.render(app, mod, ".redsquare-list");
+    }
+
+    // let notifications_height = document.querySelector('.redsquare-list').offsetHeight;
+    // let body_height = document.body.offsetHeight;
+    // let percentage = notifications_height/body_height * 100;
+
+;
+    let num_ntfs = mod.ntfs.length;
+    let max_ntfs = mod.max_ntfs_num;
+    let self = this
+    if(num_ntfs < max_ntfs){
+      mod.num_ntfs = num_ntfs;
+    }else if(num_ntfs >= max_ntfs) {
+      this.increment++;
+      mod.loadNotificationTransactions(app, mod, this.increment, (app, mod)=> {
+        self.render(app, mod)
+      })
     }
 
     this.attachEvents(app, mod);

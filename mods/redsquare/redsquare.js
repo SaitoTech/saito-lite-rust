@@ -33,7 +33,9 @@ class RedSquare extends ModTemplate {
     this.tweets = [];
     this.newTweets = []; // tmp holder for new tweets before renering
     this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
-
+    this.ntfs_num = 0;
+    this.max_ntfs_num = 50
+    this.ntfs_counter = {}
     // "main" or sig if viewing page-specific
     this.viewing = "feed";
 
@@ -677,26 +679,67 @@ class RedSquare extends ModTemplate {
 
   }
 
+  loadNotificationTransactions(app, mod, increment = 1, post_load_callback) {
+ 
+    mod.app.storage.loadTransactions("RedSquare", (50 * increment), (txs) => {
+      mod.ntfs_num = txs.length;
+      let first_index =  (increment - 1) * 50
+      mod.max_ntfs_num = 50 * increment;
+
+      console.log(mod.max_ntfs_num, mod.ntfs_num, txs, "notifications");
+
+      let tx_to_add =  txs.splice(first_index)
+
+        for (let i = 0; i < tx_to_add.length; i++) {
+          //console.log(i + ": " + JSON.stringify(txs[i].optional));
+          tx_to_add[i].decryptMessage(app);
+          let txmsg = tx_to_add[i].returnMessage();
+          if (txmsg.request == "create tweet") {
+            let tweet = new Tweet(mod.app, mod, tx_to_add[i]);
+            mod.addTweet(mod.app, mod, tweet);
+            mod.txmap[tweet.tx.transaction.sig] = 1;
+          } 
+          mod.addNotification(mod.app, mod, tx_to_add[i]);
+        }
+
+    
+
+      if (post_load_callback) {
+        post_load_callback(app, mod)
+      }
+
+
+
+    });
+  }
+
   loadTweets(app, mod) {
     if (mod.app.BROWSER == 1) {
       mod.saito_loader.render(app, mod, 'redsquare-home-header', false);
 
       mod.app.storage.loadTransactions("RedSquare", 50, (txs) => {
+        mod.ntfs_num = txs.length;
+        console.log(mod.max_ntfs_num, mod.ntfs_num, txs, "notifications");
 
-        for (let i = 0; i < txs.length; i++) {
-          //console.log(i + ": " + JSON.stringify(txs[i].optional));
-          txs[i].decryptMessage(app);
-          let txmsg = txs[i].returnMessage();
-          if (txmsg.request == "create tweet") {
-            let tweet = new Tweet(mod.app, mod, txs[i]);
-            mod.addTweet(mod.app, mod, tweet);
-            mod.txmap[tweet.tx.transaction.sig] = 1;
+          for (let i = 0; i < txs.length; i++) {
+            //console.log(i + ": " + JSON.stringify(txs[i].optional));
+            txs[i].decryptMessage(app);
+            let txmsg = txs[i].returnMessage();
+            if (txmsg.request == "create tweet") {
+              let tweet = new Tweet(mod.app, mod, txs[i]);
+              mod.addTweet(mod.app, mod, tweet);
+              mod.txmap[tweet.tx.transaction.sig] = 1;
+            }
+    
+      
+            mod.addNotification(mod.app, mod, txs[i]);
           }
-          mod.addNotification(mod.app, mod, txs[i]);
-        }
+          console.log('notific after ', mod.ntfs)
+        })
 
-      });
-
+      // this.loadNotificationTransactions(app, mod);
+  
+  
       if (document.querySelector(".redsquare-list")) {
         if (mod.viewing == "feed") {
           let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
