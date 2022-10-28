@@ -16,7 +16,9 @@ class UploadRomOverlay {
   }
 
   attachEvents(app, mod) {
-    
+
+    let uploader = this;    
+
     try {
 
       // upload rom file 
@@ -26,12 +28,24 @@ class UploadRomOverlay {
           document.querySelector('.loader').style.display = "grid";
           
           // add file to txn
-          console.log(file);
+          //console.log(file);
+	  //myApp.initializeRom(file);
 
-	  myApp.initializeRom(file);
+	  let a = Buffer.from(file, 'binary').toString('base64');;
+	  let b = Buffer.from(a, 'base64');
+
+          let ab = new ArrayBuffer(b.length);
+          let view = new Uint8Array(ab);
+          for (let i = 0; i < b.length; ++i) {
+            view[i] = b[i];
+          }
+
+	  myApp.initializeRom(ab);	  
+	  uploader.overlay.hide();
 
         },
       false, true); // true = read as array buffer
+
 
     } catch(err) {
       console.log('ROM file upload error: '+err);

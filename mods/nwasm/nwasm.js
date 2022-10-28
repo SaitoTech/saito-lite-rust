@@ -19,6 +19,8 @@ class Nwasm extends GameTemplate {
 
     this.load();
 
+    this.exported_game = null;
+
     return this;
   }
 
@@ -27,12 +29,22 @@ class Nwasm extends GameTemplate {
   }
 
   initializeGame(game_id) {
+
+    let nwasm_self = this;
+
     if (!this.game.state) {
       this.game.state = {};
       this.game.queue = [];
       this.game.queue.push("round");
       this.game.queue.push("READY");
     }
+
+    this.app.connection.on("nwasm-export-game-save", (savegame) => {
+console.log("setting exported game...");
+      nwasm_self.exported_game = Buffer.from(savegame, 'binary').toString('base64');
+console.log("EXPORTED: " + nwasm_self.exported_game);
+    });
+
   }
 
   handleGameLoop(msg=null) {
@@ -84,20 +96,39 @@ class Nwasm extends GameTemplate {
       }
     });
     this.menu.addSubMenuOption("game-game",{
-      text : "Save",
+      text : "Instant Save",
       id : "game-save",
       class : "game-save",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	game_mod.saveGame();
+	game_mod.saveState();
       }
     });
     this.menu.addSubMenuOption("game-game",{
-      text : "Load",
+      text : "Instant Load",
       id : "game-load",
       class : "game-load",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
+	game_mod.loadState();
+      }
+    });
+    this.menu.addSubMenuOption("game-game",{
+      text : "Export Tx",
+      id : "game-export",
+      class : "game-export",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.exportGame();
+      }
+    });
+    this.menu.addSubMenuOption("game-game",{
+      text : "Import Tx",
+      id : "game-import",
+      class : "game-import",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.importGame();
       }
     });
 
@@ -107,20 +138,34 @@ class Nwasm extends GameTemplate {
   }
 
 
-  saveGameState() {
-    myApp.saveLocalState();
+  saveState() {
+    myApp.saveStateLocal();
   }
 
-  loadGameState() {
-    myApp.loadLocalState();
+  loadState() {
+    myApp.loadStateLocal();
   }
 
-  exportGameState() {
-    myApp.exportEep();
+  exportGame() {
+    myApp.exportEep(this.app); // we send it saito, it will want to send an event when done !
   }
 
-  importGameState() {
-    myApp.exportEep();
+  importGame() {
+    if (this.exported_game == null) {
+      alert("Load from Transaction not done yet!");
+    } else {
+console.log("exportedGAME: " + this.exported_game);
+      myApp.importEep(this.exported_game);
+//      let b = Buffer.from(this.exported_game, 'base64');
+//      let ab = new ArrayBuffer(b.length);
+//      let view = new Uint8Array(ab);
+//      for (let i = 0; i < b.length; ++i) {
+//        view[i] = b[i];
+//      }
+
+//      myApp.loadFromByteArray(ab);
+
+    }
   }
 
   save() {
