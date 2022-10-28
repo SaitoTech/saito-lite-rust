@@ -523,7 +523,7 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
-        console.warn(`cannot find ${id} to replace, so adding to DOM`);
+        console.warn(`cannot find ${selector} to replace, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -538,7 +538,7 @@ class Browser {
       if (container) {
         this.app.browser.addElementToElement(html, container);
       } else {
-        console.warn(`cannot find ${id} to add to, so adding to DOM`);
+        console.warn(`cannot find ${selector} to add to, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -553,7 +553,7 @@ class Browser {
       if (container) {
         this.app.browser.prependElementToDom(html, container);
       } else {
-        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
+        console.warn(`cannot find ${selector} to prepend to, so adding to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
@@ -561,6 +561,7 @@ class Browser {
 
   replaceElementByClass(html, classname = "") {
     if (classname === "") {
+      console.warn("no classname provided to replace, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let classname = "." + classname;
@@ -568,6 +569,7 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
+        console.warn(`cannot find classname ${classname} provided to prepend to, so adding direct to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -575,6 +577,7 @@ class Browser {
 
   addElementToClass(html, classname = "") {
     if (classname === "") {
+      console.warn("no classname provided to add to, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       classname = "." + classname;
@@ -582,6 +585,7 @@ class Browser {
       if (container) {
         this.app.browser.addElementToElement(html, container);
       } else {
+        console.warn(`cannot find classname ${classname} provided to add to, so adding direct to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -589,6 +593,7 @@ class Browser {
 
   prependElementToClass(html, classname = "") {
     if (classname === "") {
+      console.warn("no classname provided to prepend to, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       classname = "." + classname;
@@ -596,6 +601,7 @@ class Browser {
       if (container) {
         this.app.browser.prependElementToDom(html, container);
       } else {
+        console.warn(`cannot find classname ${classname} provided to prepend to, so adding direct to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
