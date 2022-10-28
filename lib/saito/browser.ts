@@ -1194,8 +1194,11 @@ class Browser {
       if (text !== "") {
         text = marked.parseInline(text);
 
-        //trim trailing line breaks
-        text = text.replace(/[\r<br>]+$/, "");
+        //trim trailing line breaks - 
+        // commenting it out because no need for this now
+        // because of above marked parsing
+        //text = text.replace(/[\r<br>]+$/, ""); 
+
       }
 
       text = sanitizeHtml(text, {
