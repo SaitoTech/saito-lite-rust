@@ -961,6 +961,7 @@ class RedSquare extends ModTemplate {
       });
       id_list = id_list.slice(0, -3) + ");";
       //console.log(id_list);
+
       let sql = "select num_likes, num_retweets, num_replies, id, sig from tweets where num_likes + num_retweets + num_replies > 0 and sig in " + id_list;
       app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
         "RedSquare",
@@ -969,6 +970,13 @@ class RedSquare extends ModTemplate {
           const tweets = [];
           if (res.rows) {
             res.rows.forEach(row => {
+      
+              let optional = {};
+              optional.num_likes = row.num_likes;
+              optional.num_replies = row.num_replies;
+              optional.num_retweets = row.num_retweets;
+              app.storage.updateTransactionOptional(row.sig, app.wallet.returnPublicKey(), optional);
+
               let tweet_id = "tweet-box-" + row.sig;
               let obj = document.getElementById(tweet_id);
               if (obj) {
@@ -1141,6 +1149,8 @@ class RedSquare extends ModTemplate {
               if (!tx.optional) { tx.optional = {}; }
               if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
               tx.optional.num_replies++;
+              
+
               this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
               tweet.renderReplies();
             }
