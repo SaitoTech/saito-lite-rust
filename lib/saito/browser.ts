@@ -1283,6 +1283,7 @@ class Browser {
         let html = el.textContent;
         let identifiers = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
         let keys = html.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
+        let mappedKeyIdentifiers = [];
         //remove duplcates
 
         if (!identifiers) { identifiers = [] };
@@ -1297,19 +1298,21 @@ class Browser {
             identifiers.forEach(async (identifier) => {
               let answer = this.app.keys.fetchPublicKey(identifier);
               console.log(answer + " - " + identifier);
-              if (answer != identifier) {
+              if (answer != identifier && answer != null) {
                 //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
                 html = html.replaceAll(identifier, answer);
-                keys.push(answer);
+                mappedKeyIdentifiers[answer] = identifier;
               }
             });
             //deduplicate keys list
             keys = [...new Set(keys)];
 
             const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
+            mappedKeyIdentifiers = Object.assign({},mappedKeyIdentifiers, answer);
+
             keys.forEach(k => {
               let matched = false;
-              Object.entries(answer).forEach(([key, value]) => {
+              Object.entries(mappedKeyIdentifiers).forEach(([key, value]) => {
                 if (key == k) {
                   html = html.replaceAll(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
                   matched = true;
