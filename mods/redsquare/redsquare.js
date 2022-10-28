@@ -975,7 +975,7 @@ class RedSquare extends ModTemplate {
               optional.num_likes = row.num_likes;
               optional.num_replies = row.num_replies;
               optional.num_retweets = row.num_retweets;
-              app.storage.updateTransactionOptional(row.sig, app.wallet.returnPublicKey(), tx.optional);
+              app.storage.updateTransactionOptional(row.sig, app.wallet.returnPublicKey(), optional);
 
               let tweet_id = "tweet-box-" + row.sig;
               let obj = document.getElementById(tweet_id);
