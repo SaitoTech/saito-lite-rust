@@ -71,7 +71,7 @@ class RedSquare extends ModTemplate {
 
       if (tweet_id != "") {
         this.viewing = tweet_id;
-        this.mode = "thread";
+        this.mode = "tweet";
       }
 
       if (user_id != "") {
