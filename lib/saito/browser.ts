@@ -523,7 +523,7 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
-        console.warn(`cannot find ${id} to replace, so adding to DOM`);
+        console.warn(`cannot find ${selector} to replace, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -538,7 +538,7 @@ class Browser {
       if (container) {
         this.app.browser.addElementToElement(html, container);
       } else {
-        console.warn(`cannot find ${id} to add to, so adding to DOM`);
+        console.warn(`cannot find ${selector} to add to, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -553,7 +553,7 @@ class Browser {
       if (container) {
         this.app.browser.prependElementToDom(html, container);
       } else {
-        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
+        console.warn(`cannot find ${selector} to prepend to, so adding to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
@@ -561,6 +561,7 @@ class Browser {
 
   replaceElementByClass(html, classname = "") {
     if (classname === "") {
+      console.warn("no classname provided to replace, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let classname = "." + classname;
@@ -568,6 +569,7 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
+        console.warn(`cannot find classname ${classname} provided to prepend to, so adding direct to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -575,6 +577,7 @@ class Browser {
 
   addElementToClass(html, classname = "") {
     if (classname === "") {
+      console.warn("no classname provided to add to, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       classname = "." + classname;
@@ -582,6 +585,7 @@ class Browser {
       if (container) {
         this.app.browser.addElementToElement(html, container);
       } else {
+        console.warn(`cannot find classname ${classname} provided to add to, so adding direct to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -589,6 +593,7 @@ class Browser {
 
   prependElementToClass(html, classname = "") {
     if (classname === "") {
+      console.warn("no classname provided to prepend to, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       classname = "." + classname;
@@ -596,6 +601,7 @@ class Browser {
       if (container) {
         this.app.browser.prependElementToDom(html, container);
       } else {
+        console.warn(`cannot find classname ${classname} provided to prepend to, so adding direct to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
@@ -1188,8 +1194,11 @@ class Browser {
       if (text !== "") {
         text = marked.parseInline(text);
 
-        //trim trailing line breaks
-        text = text.replace(/[\r<br>]+$/, "");
+        //trim trailing line breaks - 
+        // commenting it out because no need for this now
+        // because of above marked parsing
+        //text = text.replace(/[\r<br>]+$/, ""); 
+
       }
 
       text = sanitizeHtml(text, {
@@ -1274,6 +1283,7 @@ class Browser {
         let html = el.textContent;
         let identifiers = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
         let keys = html.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
+        let mappedKeyIdentifiers = [];
         //remove duplcates
 
         if (!identifiers) { identifiers = [] };
@@ -1288,19 +1298,21 @@ class Browser {
             identifiers.forEach(async (identifier) => {
               let answer = this.app.keys.fetchPublicKey(identifier);
               console.log(answer + " - " + identifier);
-              if (answer != identifier) {
+              if (answer != identifier && answer != null) {
                 //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
                 html = html.replaceAll(identifier, answer);
-                keys.push(answer);
+                mappedKeyIdentifiers[answer] = identifier;
               }
             });
             //deduplicate keys list
             keys = [...new Set(keys)];
 
             const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
+            mappedKeyIdentifiers = Object.assign({},mappedKeyIdentifiers, answer);
+
             keys.forEach(k => {
               let matched = false;
-              Object.entries(answer).forEach(([key, value]) => {
+              Object.entries(mappedKeyIdentifiers).forEach(([key, value]) => {
                 if (key == k) {
                   html = html.replaceAll(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
                   matched = true;
