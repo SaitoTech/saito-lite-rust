@@ -19,7 +19,8 @@ class Nwasm extends GameTemplate {
 
     this.load();
 
-    this.exported_game = null;
+    this.active_rom = null;
+    this.active_game = null;
 
     return this;
   }
@@ -40,9 +41,10 @@ class Nwasm extends GameTemplate {
     }
 
     this.app.connection.on("nwasm-export-game-save", (savegame) => {
-console.log("setting exported game...");
-      nwasm_self.exported_game = Buffer.from(savegame, 'binary').toString('base64');
-console.log("EXPORTED: " + nwasm_self.exported_game);
+console.log("setting active game...");
+      nwasm_self.active_game = savegame;
+      //nwasm_self.active_game = Buffer.from(savegame, 'binary').toString('base64');
+console.log("EXPORTED: " + nwasm_self.active_game);
     });
 
   }
@@ -151,11 +153,11 @@ console.log("EXPORTED: " + nwasm_self.exported_game);
   }
 
   importGame() {
-    if (this.exported_game == null) {
+    if (this.active_game == null) {
       alert("Load from Transaction not done yet!");
     } else {
-console.log("exportedGAME: " + this.exported_game);
-      myApp.importEep(this.exported_game);
+console.log("exportedGAME: " + this.active_game);
+      myApp.importEep(this.active_game);
 //      let b = Buffer.from(this.exported_game, 'base64');
 //      let ab = new ArrayBuffer(b.length);
 //      let view = new Uint8Array(ab);

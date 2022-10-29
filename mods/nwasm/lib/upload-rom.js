@@ -31,6 +31,8 @@ class UploadRomOverlay {
           //console.log(file);
 	  //myApp.initializeRom(file);
 
+	  mod.active_game = file;
+
 	  let a = Buffer.from(file, 'binary').toString('base64');;
 	  let b = Buffer.from(a, 'base64');
 

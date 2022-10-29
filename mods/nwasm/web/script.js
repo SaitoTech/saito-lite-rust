@@ -887,8 +887,19 @@ class MyClass {
     // return added in exportEep !
     //
     importEep(filearray) {
-      FS.writeFile('/savestate.gz', filearray);
+      var byteArray = new Uint8Array(filearray);
+console.log("A 1");
+      myClass.eepData = byteArray;
+console.log("A 2");
+      FS.writeFile(
+        "game.eep", // file name
+        byteArray
+      );
+console.log("A 2 2");
+      FS.writeFile('/savestate.gz',byteArray);
+console.log("A 3");
       Module._neil_unserialize();
+console.log("A 4");
     }
     exportEep(saito) {
         this.saito = saito;
@@ -896,9 +907,9 @@ class MyClass {
     }
     ExportEepEvent()
     {
-      let compressed = FS.readFile('/savestate.gz')
+      let filearray = FS.readFile('/game.eep')
       if (this.saito != null) {
-        this.saito.connection.emit("nwasm-export-game-save", compressed);
+        this.saito.connection.emit("nwasm-export-game-save", filearray);
       } else {
         alert("Error: Saito not available...");
       }
