@@ -690,7 +690,7 @@ class Browser {
     return { year, month, day, hours, minutes };
   }
 
-  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true) {
+  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true, read_as_array_buffer = false) {
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
@@ -725,7 +725,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-            reader.readAsDataURL(file);
+	    if (read_as_array_buffer) {
+              reader.readAsArrayBuffer(file);
+	    } else {
+              reader.readAsDataURL(file);
+	    }
           });
         },
         false
@@ -739,7 +743,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-            reader.readAsDataURL(file);
+	    if (read_as_array_buffer) {
+              reader.readAsArrayBuffer(file);
+	    } else {
+              reader.readAsDataURL(file);
+	    }
           });
         },
         false
@@ -762,7 +770,11 @@ class Browser {
               reader.addEventListener("load", (event) => {
                 handleFileDrop(event.target.result);
               });
-              reader.readAsDataURL(file);
+	      if (read_as_array_buffer) {
+                reader.readAsArrayBuffer(file);
+	      } else {
+                reader.readAsDataURL(file);
+	      }
             });
           }
         },

@@ -2,6 +2,9 @@ var AUDIOBUFFSIZE = 1024;
 
 class MyClass {
     constructor() {
+
+	this.saito = null;
+
         this.rom_name = '';
         this.mobileMode = false;
         this.allSaveStates = [];
@@ -52,9 +55,9 @@ class MyClass {
             showFPS: true,
             settings: {
                 CLOUDSAVEURL: "",
-                SHOWADVANCED: false,
-                SHOWOPTIONS: false,
-                SHOWFPS: true
+                SHOWADVANCED: true,
+                SHOWOPTIONS: true,
+                SHOWFPS: false
             }
         };
 
@@ -485,6 +488,14 @@ class MyClass {
         reader.readAsArrayBuffer(file);
     }
 
+    //
+    // HACK
+    //
+    initializeRom(bytearray) {
+      var ba = new Uint8Array(bytearray);
+      myClass.LoadEmulator(ba);
+    }
+
     uploadRom(event) {
         var file = event.currentTarget.files[0];
         myClass.rom_name = file.name;
@@ -502,7 +513,13 @@ class MyClass {
     }
 
     resizeCanvas() {
-        $('#canvas').width(this.canvasSize);
+        //$('#canvas').width(this.canvasSize);
+	try {
+          $('#canvas').style.width = "auto";
+          $('#canvas').style.height = "100vh";
+	} catch (err) {
+
+	}
     }
 
     zoomOut() {
@@ -833,7 +850,6 @@ class MyClass {
                 let byteArray = rom.result; //Uint8Array
                 FS.writeFile('/savestate.gz',byteArray);
                 Module._neil_unserialize();
-
             };
             rom.onerror = function (event) {
                 toastr.error('error getting rom from store');
@@ -861,18 +877,49 @@ class MyClass {
 
     }
     
-
-    exportEep(){
-        Module._neil_export_eep();
+    //
+    // HACK
+    //
+    // we use this to export the game state into something that can be saved as a file
+    // and/or bundled into a transaction. We now return the JS file object instead of 
+    // pushing it out to the browser as something to be saved.
+    //
+    // return added in exportEep !
+    //
+    importEep(filearray) {
+      var byteArray = new Uint8Array(filearray);
+console.log("A 1");
+      myClass.eepData = byteArray;
+console.log("A 2");
+      FS.writeFile(
+        "game.eep", // file name
+        byteArray
+      );
+console.log("A 2 2");
+      FS.writeFile('/savestate.gz',byteArray);
+console.log("A 3");
+      Module._neil_unserialize();
+console.log("A 4");
+    }
+    exportEep(saito) {
+        this.saito = saito;
+        return Module._neil_export_eep();
     }
     ExportEepEvent()
     {
-        console.log('js eep event');
-
-        let filearray = FS.readFile("/game.eep");   
-        var file = new File([filearray], "game.eep", {type: "text/plain; charset=x-user-defined"});
-        saveAs(file);
+      let filearray = FS.readFile('/game.eep')
+      if (this.saito != null) {
+        this.saito.connection.emit("nwasm-export-game-save", filearray);
+      } else {
+        alert("Error: Saito not available...");
+      }
     }
+//    ExportEepEvent()
+//    {
+//        let filearray = FS.readFile("/game.eep");
+//        var file = new File([filearray], "game.eep", {type: "text/plain; charset=x-user-defined"});
+//	saveAs(file);
+//    }
     exportSra(){
         Module._neil_export_sra();
     }
