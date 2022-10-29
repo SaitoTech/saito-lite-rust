@@ -349,7 +349,7 @@ class RedSquareTweet {
       //
       // add back button
       //
-console.log("about to hit INNERHTML in TWEET");
+      console.log("about to hit INNERHTML in TWEET");
       document.querySelector(".redsquare-list").innerHTML = "";
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> RED SQUARE</div>`, "saito-page-header-title");
       document.querySelector(".saito-back-button").onclick = (e) => {
