@@ -42,10 +42,7 @@
   <link rel="stylesheet" type="text/css" href="css/style.css"></link>
 
 </head>
-
     <div id="maindiv" class="container text-center">
-
-
         <h1 style="display:none">
             N64 Wasm
         </h1>

@@ -4,8 +4,8 @@ const QuakeControls = require('./lib/controls');
 
 
 class Quake3 extends GameTemplate {
-
-  constructor(app, game_mod) {
+ 
+ constructor(app) {
 
     super(app);
 
