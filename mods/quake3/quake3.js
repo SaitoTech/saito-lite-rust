@@ -244,13 +244,6 @@ v	}
       if (logline.indexOf("entered the game") > 0) {
         let name = this.app.wallet.returnPublicKey().toLowerCase();
 	this.registerPlayerName();
-	  
-
-	/*
-	this.controls.loadSavedControls();
-	this.controls.writeControls();
-	this.controls.applyControls();
-	*/
       }
     }
 
