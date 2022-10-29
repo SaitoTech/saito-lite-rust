@@ -42,7 +42,10 @@ class UploadRomOverlay {
             view[i] = b[i];
           }
 
-	  myApp.initializeRom(ab);	  
+	  //
+	  // initialize ROM gets the ROM the APP and the MOD
+	  //
+	  myApp.initializeRom(ab, app, mod);
 	  uploader.overlay.hide();
 
         },

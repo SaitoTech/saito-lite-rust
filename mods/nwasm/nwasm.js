@@ -94,7 +94,7 @@ console.log("EXPORTED: " + nwasm_self.active_game);
       class : "game-upload-rom",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.uploadRom(app);
+        game_mod.uploadRom(app, game_mod);
       }
     });
     this.menu.addSubMenuOption("game-game",{
@@ -121,7 +121,7 @@ console.log("EXPORTED: " + nwasm_self.active_game);
       class : "game-export",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	game_mod.exportGame();
+	game_mod.exportState();
       }
     });
     this.menu.addSubMenuOption("game-game",{
@@ -130,7 +130,7 @@ console.log("EXPORTED: " + nwasm_self.active_game);
       class : "game-import",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	game_mod.importGame();
+	game_mod.importState();
       }
     });
 
@@ -141,32 +141,22 @@ console.log("EXPORTED: " + nwasm_self.active_game);
 
 
   saveState() {
-    myApp.saveStateLocal();
+    myApp.saveStateLocal(this);
   }
 
   loadState() {
     myApp.loadStateLocal();
   }
 
-  exportGame() {
-    myApp.exportEep(this.app); // we send it saito, it will want to send an event when done !
+  exportState() {
+    myApp.exportStateLocal();
   }
 
-  importGame() {
+  importState() {
     if (this.active_game == null) {
       alert("Load from Transaction not done yet!");
     } else {
-console.log("exportedGAME: " + this.active_game);
-      myApp.importEep(this.active_game);
-//      let b = Buffer.from(this.exported_game, 'base64');
-//      let ab = new ArrayBuffer(b.length);
-//      let view = new Uint8Array(ab);
-//      for (let i = 0; i < b.length; ++i) {
-//        view[i] = b[i];
-//      }
-
-//      myApp.loadFromByteArray(ab);
-
+      myApp.importStateLocal();
     }
   }
 
@@ -185,8 +175,8 @@ console.log("exportedGAME: " + this.active_game);
 
 
   uploadRom(app) {
-    let upoad_rom = new UploadRom(app, this);
-    upoad_rom.render(app, this);
+    let upload_rom = new UploadRom(app, this);
+    upload_rom.render(app, this);
   }
   initializeRom(bytearray) {
     myApp.initializeRom(bytearray);
@@ -210,6 +200,22 @@ console.log("exportedGAME: " + this.active_game);
     return newtx;
 ***/
   }
+
+
+  convertByteArrayToBase64(data) {
+    return Buffer.from(data, 'binary').toString('base64');;
+  } 
+
+  convertBase64ToByteArray(data) {
+    let b = Buffer.from(data, 'base64');
+    let ab = new ArrayBuffer(b.length);
+    let view = new Uint8Array(ab);
+    for (let i = 0; i < b.length; ++i) {
+      view[i] = b[i];
+    }
+    return ab;
+  }
+
 
 }
 
