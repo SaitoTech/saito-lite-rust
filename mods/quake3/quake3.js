@@ -5,7 +5,7 @@ const QuakeControls = require('./lib/controls');
 
 class Quake3 extends GameTemplate {
 
-  constructor(app) {
+  constructor(app, game_mod) {
 
     super(app);
 
@@ -15,6 +15,7 @@ class Quake3 extends GameTemplate {
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
+    this.controls = {};
     this.controls = new QuakeControls(app, this);
 
     this.minPlayers      = 1;
@@ -203,6 +204,7 @@ v	}
     if (app.BROWSER == 0) { return; }
     super.initialize(app);
 
+
     if (this.browser_active == 1) {
       //
       // bind console.log to track outside app
@@ -221,11 +223,19 @@ v	}
     }
   }
 
-
   //
   // for the love of God don't add console.logs within this function
   //
   processQuakeLog(logline="", log) {
+
+    //
+    // load and apply last saved control scheme
+    //
+    if (logline.indexOf("entered the game") > 0) {
+	this.controls.loadSavedControls();
+	this.controls.writeControls();
+	this.controls.applyControls();
+    }
 
     //
     // register publickey/name when we enter the game if unset
@@ -234,6 +244,13 @@ v	}
       if (logline.indexOf("entered the game") > 0) {
         let name = this.app.wallet.returnPublicKey().toLowerCase();
 	this.registerPlayerName();
+	  
+
+	/*
+	this.controls.loadSavedControls();
+	this.controls.writeControls();
+	this.controls.applyControls();
+	*/
       }
     }
 
