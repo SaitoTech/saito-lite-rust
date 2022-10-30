@@ -50,7 +50,7 @@ class Encrypt extends ModTemplate {
         icon: "far fa-id-card",
         callback: function (app, public_key) {
             encrypt_self.app.keys.saveKeys();
-            encrypt_self.initiate_key_exchange(public_key, 1);
+            encrypt_self.initiate_key_exchange(public_key, 0);
         }
       }
     }
@@ -192,8 +192,10 @@ class Encrypt extends ModTemplate {
     let tx = null;
     try{
       tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient, (parties_to_exchange * this.app.wallet.wallet.default_fee));  
-    } catch(err) {}
-  
+    } catch(err) {
+console.log("error: " + err);
+    }  
+
     //
     // we had an issue creating the transaction, try zero-fee
     //
@@ -217,6 +219,9 @@ class Encrypt extends ModTemplate {
 
     tx = this.app.wallet.signTransaction(tx);
 
+    //
+    //
+    //
     if (offchain == 0) {
       this.app.network.propagateTransaction(tx);
     } else {
