@@ -900,7 +900,6 @@ class MyClass {
     initializeRom(bytearray, app, mod) {
       this.app = app;
       this.mod = mod;
-
       var ba = new Uint8Array(bytearray);
       myClass.LoadEmulator(ba);
     }
@@ -929,21 +928,18 @@ class MyClass {
     }
 
     //
-    // HACKt
+    // HACK
     //
     exportStateLocal() {
       console.log('js savestate event');
       let compressed = FS.readFile('/savestate.gz'); //this is a Uint8Array
+      console.log('js savestate event 2');
       this.mod.active_game = compressed;
+      //
+      // exporting saves
+      //
+      this.mod.saveGameFile(compressed);
     }
-
-
-
-
-
-
-
-
 
     //
     // HACK
@@ -976,12 +972,6 @@ class MyClass {
         alert("Error: Saito not available...");
       }
     }
-//    ExportEepEvent()
-//    {
-//        let filearray = FS.readFile("/game.eep");
-//        var file = new File([filearray], "game.eep", {type: "text/plain; charset=x-user-defined"});
-//	saveAs(file);
-//    }
     exportSra(){
         Module._neil_export_sra();
     }
@@ -1013,6 +1003,7 @@ class MyClass {
     {
         console.log('js savestate event');
         let compressed = FS.readFile('/savestate.gz'); //this is a Uint8Array
+        console.log('js savestate event 2');
 
 	if (this.mod != null) {
 console.log("SAVE ACTIVE GAME!");

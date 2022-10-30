@@ -29,6 +29,28 @@ class Nwasm extends GameTemplate {
     return NwasmGameOptionsTemplate(this.app, this);
   }
 
+
+  async onPeerHandshakeComplete(app, peer) {
+
+    let nwasm_self = this;
+
+console.log("LOADING TXS FROM ARCHIVE");
+    this.app.storage.loadTransactions("Nwasm", 10, (txs) => {
+console.log("retrieved tx from storage");
+      if (txs.length > 0) {
+console.log("length > 0");
+        let tx = txs[0];
+        let txmsg = tx.returnMessage();
+        let data = txmsg.data;
+console.log("data: " + data);
+	let binary_data = nwasm_self.convertBase64ToByteArray(data);
+	nwasm_self.active_game = binary_data;
+        console.log("LOADED: " + data);
+      }
+    });
+
+  }
+
   initializeGame(game_id) {
 
     let nwasm_self = this;
@@ -41,10 +63,10 @@ class Nwasm extends GameTemplate {
     }
 
     this.app.connection.on("nwasm-export-game-save", (savegame) => {
-console.log("setting active game...");
       nwasm_self.active_game = savegame;
-      //nwasm_self.active_game = Buffer.from(savegame, 'binary').toString('base64');
-console.log("EXPORTED: " + nwasm_self.active_game);
+      console.log("EXPORTED 1: " + nwasm_self.active_game);
+      nwasm_self.saveGameFile(savegame);
+      console.log("EXPORTED 2: " + nwasm_self.active_game);
     });
 
   }
@@ -58,11 +80,9 @@ console.log("EXPORTED: " + nwasm_self.active_game);
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
-
       if (mv[0] === "round") {
         this.game.queue.splice(this.game.queue.length-1, 1);
       }
-
       if (shd_continue == 0) {
         return 0;
       }
@@ -133,15 +153,12 @@ console.log("EXPORTED: " + nwasm_self.active_game);
 	game_mod.importState();
       }
     });
-
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
-
   }
 
-
   saveState() {
-    myApp.saveStateLocal(this);
+    myApp.saveStateLocal();
   }
 
   loadState() {
@@ -149,6 +166,7 @@ console.log("EXPORTED: " + nwasm_self.active_game);
   }
 
   exportState() {
+    myApp.saveStateLocal();
     myApp.exportStateLocal();
   }
 
@@ -173,34 +191,36 @@ console.log("EXPORTED: " + nwasm_self.active_game);
     this.roms = {};
   }
 
-
   uploadRom(app) {
     let upload_rom = new UploadRom(app, this);
     upload_rom.render(app, this);
   }
+
   initializeRom(bytearray) {
     myApp.initializeRom(bytearray);
   }
 
-  sendUploadRomTransaction(app, mod, data) {
-/***
-    let mod_self = this;
+  saveGameFile(data) {
+
+    console.log("save game file: " + data);
+
+    let base64data = this.convertByteArrayToBase64(data);
+
+    console.log("save game file: " + base64data);
 
     let obj = {
-      module: mod_self.name,
+      module: this.name,
       request: "upload rom",
-      data: {},
+      data: base64data,
     };
 
-    let newtx = mod_self.app.wallet.createUnsignedTransaction();
+    let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
-    newtx = mod_self.app.wallet.signTransaction(newtx);
-    mod_self.app.network.propagateTransaction(newtx);
+    // temp not signing
+    newtx.presign(this.app);
+    this.app.storage.saveTransaction(newtx);
 
-    return newtx;
-***/
   }
-
 
   convertByteArrayToBase64(data) {
     return Buffer.from(data, 'binary').toString('base64');;
@@ -215,7 +235,6 @@ console.log("EXPORTED: " + nwasm_self.active_game);
     }
     return ab;
   }
-
 
 }
 
