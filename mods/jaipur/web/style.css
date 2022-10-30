@@ -33,14 +33,13 @@ body {
   display: grid;
   grid-template-columns: minmax(120px, 1fr) minmax(80px, 1fr) 4fr;
   align-items: center;
-  grid-gap: 200px;
+  grid-gap: 210px;
 
   max-height: 60vh;
   max-width: 100vw;
   min-width: 80vw;
   position: absolute;
-  top: 25vh;
-
+  top: 30vh;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -95,36 +94,31 @@ body {
 }
 
 .draw_decks{
-  max-width: 100px;
+  max-width: 200px;
 }
 
 #draw{
   color: maroon;
-  /*width: 8vw;*/
-  margin: auto;
+  width: 8vw;
 }
 
 
 #discard .card{
-  width: 100%;
+  width: 100px;
+  border: solid black;
 }
 
 .market{
   display: grid;
-  background-color: rgb(255 248 220/ 75%);
   grid-template-columns: repeat(5, fit-content(100px));
   max-width: 100px;
   min-width: max(100px, 64vw);
-  column-gap: 42px;
-  outline-style: double;
-  outline-color: black;
-  outline-offset: 20px;
-  
+  column-gap: 70px;
 
 }
 
 .market .card{
-  width: 210;
+  width: 190;
   box-shadow: 5px 5px black;
   border: solid black;
 }
@@ -143,15 +137,17 @@ body {
 }
 
 .camel_train{
-  width: 75px;
+  width: 110px;
   color: cadetblue;
+  box-shadow: 5px 5px black;
 }
 
 .camel_bonus{
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 40px;
+  bottom: -15px;
+  right: -15px;
+  width: 60px;
+  filter: drop-shadow(5px 5px 5px black);
 }
 
 .tip .tiptext{
@@ -249,7 +245,7 @@ body {
   display: block;
   width: 900px;
   max-height: initial;
-  height: 300px;
+  height: 400px;
   height: -moz-fit-content;
   background: rgba(43,29,14, 0.8);
   border: 2px solid rgb(230,206,180);
@@ -298,7 +294,7 @@ body {
 .rack div.card_count {
   width: 100px;
   height: 150px;
-  /*line-height: 150px;*/
+  line-height: 150px;
 }
 
 /**** AND PLAYER BOXES *****/
