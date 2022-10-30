@@ -41,6 +41,7 @@ class Encrypt extends ModTemplate {
 
 
   respondTo(type){
+
     let encrypt_self = this;
 
     if (type == "user-menu") {
@@ -48,7 +49,7 @@ class Encrypt extends ModTemplate {
         text: "Add Contact",
         icon: "far fa-id-card",
         callback: function (app, public_key) {
-            app.keys.saveKeys();
+            encrypt_self.app.keys.saveKeys();
             encrypt_self.initiate_key_exchange(public_key, 1);
         }
       }
@@ -223,7 +224,9 @@ class Encrypt extends ModTemplate {
       data.module = "Encrypt";
       data.tx = tx;
       console.log("sending request on network");
-      this.app.network.sendPeerRequest("diffie hellman key exchange", data, peer);
+console.log("WHAT NAME IS THIS: " + this.name);
+      this.app.network.sendRequest("diffie hellman key exchange", data, peer);
+console.log("SENT THE REQUEST");
     }
     this.saveEncrypt();
 
