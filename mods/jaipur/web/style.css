@@ -58,19 +58,15 @@ body {
 }
 .bonus_tokens{
   display: grid;
-  grid-template-columns: repeat(3, minmax(40px, 1fr));
-  grid-template-rows: repeat(3, minmax(40px, 1fr));
-  width: fit-content;
-  height: fit-content;
-  column-gap: 70px;
-  row-gap: 30px;
-  
-}
+  grid-template-columns: repeat(3, minmax(122px, 1fr));
+  grid-template-rows: repeat(3, minmax(122px, 1fr));
+  width: 100px;
+  height: 275px; 
+  }
 
 .token{
-  max-width: 100px;
-  width: 100;
-  filter: drop-shadow(5px 5px 5px black);
+  width: 100px;
+  filter: drop-shadow(5px -5px 5px maroon);
 }
 
 .card_count{
@@ -95,17 +91,21 @@ body {
 
 .draw_decks{
   max-width: 200px;
+  position:relative; left:70px;
 }
 
 #draw{
   color: maroon;
   width: 8vw;
+  box-shadow: 10px -5px 20px white;
 }
 
 
 #discard .card{
   width: 100px;
   border: solid black;
+  position: relative; left: 30px; top: 10px;
+  box-shadow: 10px -5px 20px white;
 }
 
 .market{
@@ -114,12 +114,13 @@ body {
   max-width: 100px;
   min-width: max(100px, 64vw);
   column-gap: 70px;
+  position:relative; top:40px;
 
 }
 
 .market .card{
   width: 190;
-  box-shadow: 5px 5px black;
+  box-shadow: 10px -5px 20px brown;
   border: solid black;
 }
 
@@ -139,7 +140,8 @@ body {
 .camel_train{
   width: 110px;
   color: cadetblue;
-  box-shadow: 5px 5px black;
+  box-shadow: 5px 5px 20px black;
+  position:relative; top:-25px; left:-5px
 }
 
 .camel_bonus{
