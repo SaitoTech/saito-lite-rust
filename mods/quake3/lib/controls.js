@@ -39,15 +39,14 @@ class QuakeControls {
     "cg_fov":       [90, 'cg_fov 90'],
     "s_volume":     [0.23, 's_volume 0.23'],
     }
-     // defined after defaults in case default_config is needed
     this.controls = {};
 
-    this.loadSavedControls();
   }
 
   render(app, mod) {
     this.overlay.show(app, mod, ControlsTemplate(app, mod, this));
     this.attachEvents(app, mod);
+    this.loadSavedControls();
     // render menu with saved or default config
     this.fill_menu()
   }
@@ -97,8 +96,9 @@ class QuakeControls {
 
     finishButton.addEventListener("click", () => {
 	console.log("clicked button 'finish' button");
-	this.overlay.remove();
+	this.writeControls();
 	this.applyControls();
+	this.overlay.remove();
     });
 
 
@@ -157,15 +157,7 @@ class QuakeControls {
 	      keyCode: key
 	  }))
       }
-      // must be single quotes to escape implicit double quotes
-      // from this.controls values
-      let cfg_file = '';
-
-      for (const [object, key] of Object.entries(this.controls)) {
-	  cfg_file = cfg_file.concat(key[1] + ';')
-      }
-
-      FS.writeFile('base/baseq3/sqc.cfg', cfg_file);
+     
       // `exec sqc` into game console
       // will fail if game console already open
       type(192) // ~
@@ -182,6 +174,19 @@ class QuakeControls {
       type(192) // ~
   }
 
+  writeControls() {
+
+    // must be single quotes to escape implicit double quotes
+    // from this.controls values
+    let cfg_file = '';
+
+    for (const [object, key] of Object.entries(this.controls)) {
+	cfg_file = cfg_file.concat(key[1] + ';')
+    }
+    FS.writeFile('base/baseq3/sqc.cfg', cfg_file);
+
+  }
+
   loadSavedControls() {
       this.mod.load();
       // if no saved controls
@@ -196,7 +201,6 @@ class QuakeControls {
 
       }
       console.log(this.controls);
-      //this.fill_menu(this.controls);
   }
 
   fill_menu() {
