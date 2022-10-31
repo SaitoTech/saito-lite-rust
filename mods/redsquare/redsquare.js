@@ -1368,7 +1368,7 @@ class RedSquare extends ModTemplate {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
             let txmsg = tx.returnMessage();
             let text = tx.msg.data.text;
-            let img_url = "https://test.saito.io/" + encodeURI(redsquare_self.returnSlug() + '?img_sig=' + sig);
+            let img_url = tx.msg.data?.images[0]; //"https://test.saito.io/" + encodeURI(redsquare_self.returnSlug() + '?img_sig=' + sig);
 
             redsquare_self.social.twitter_description = text;
             redsquare_self.social.og_description = text;
