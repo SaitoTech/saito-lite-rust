@@ -1375,14 +1375,54 @@ class RedSquare extends ModTemplate {
             redsquare_self.social.og_url = "https://test.saito.io/" + encodeURI(redsquare_self.returnSlug());
 
             if (typeof tx.msg.data.images != "undefined") {
-              let img_url = tx.msg.data?.images[0];
-              redsquare_self.social.og_image = img_url;
-              redsquare_self.social.og_image_url = img_url;
-              redsquare_self.social.og_image_secure_url = img_url;
-              redsquare_self.social.twitter_image = img_url;
+              let image = tx.msg.data?.images[0];
+            } else {
+              let publickey = tx.transaction.from[0].add;
+              let image = app.keys.returnIdenticon(publickey);
             }
+
+            redsquare_self.social.og_image = image;
+            redsquare_self.social.og_image_url = image;
+            redsquare_self.social.og_image_secure_url = image;
+            redsquare_self.social.twitter_image = image;
+            
           }
         } // if query param has tweet id
+
+        if (typeof query_params.img_sig != "undefined") {
+          let img_sig = query_params.img_sig;
+          let sql = `SELECT * FROM tweets WHERE sig = '${img_sig}' OR parent_id = '${img_sig}'`;
+
+          let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
+          for (let i = 0; i < rows.length; i++) {
+            let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+            let txmsg = tx.returnMessage();
+            let text = tx.msg.data.text;
+
+            if (typeof tx.msg.data.images != "undefined") {
+              let image = tx.msg.data?.images[0];
+            } else {
+              let publickey = tx.transaction.from[0].add;
+              let image = app.keys.returnIdenticon(publickey);
+            }
+
+            if (image != null) {
+              res.setHeader("Content-type", "text/html");
+              res.send(Buffer.from(`
+                <a id="download-img" href="`+ image +`" download>
+                  <img src="`+ image +`">
+                </a>
+
+                <script>
+                  document.getElementById('download-img').click();
+                </script>
+                `
+              ));;
+              res.end();
+              return;
+            }
+          }
+        }
 
       }
 
