@@ -1,80 +1,95 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
-    <title>N64 Wasm</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="keywords" content="N64 Emulator, N64 JavaScript Emulator, WebAssembly, HTML5, Nintendo 64">
-    <meta charset="UTF-8">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/rivets/0.9.6/rivets.bundled.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
-    <style>
-        input[type="file"] {
-            display: none;
-        }
-        .table td,
-        .table th {
-            padding: 5px;
-        }
-        .regularTable td,
-        .regularTable th {
-            padding: 0;
-            vertical-align: top;
-            border-top: 0px;
-        }
-        .nav-tabs .nav-item.show .nav-link,
-        .nav-tabs .nav-link.active {
-            color: #007bff;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="Saito Network" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
+  <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
+
+  <script src="/nwasm/libs/jquery-3.3.1.min.js"></script>
+  <script src="/nwasm/libs/rivets.bundled.min.js"></script>
+  <script src="/nwasm/libs/popper.min.js"></script>
+  <script src="/nwasm/libs/toastr.min.js"></script>
+  <script src="/nwasm/libs/FileSaver.min.js"></script>
+
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="saito.io redsquare" />
+  <meta name="apple-mobile-web-app-title" content="Saito N64 Wasm" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="msapplication-navbutton-color" content="#FFFFFF" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="msapplication-starturl" content="/index.html" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@SaitoOfficial" />
+  <meta name="twitter:creator" content="@SaitoOfficial" />
+  <meta name="twitter:title" content="Saito - enabling a paradigm shift in blockchain applications" />
+  <meta name="twitter:url" content="https://saito.tech/" />
+  <meta name="twitter:description" content="Saito N64 Wasm - Web3 Gaming" />
+  <meta name="twitter:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+
+  <meta property="og:title" content="Saito N64 Wasm" />
+  <meta property="og:url" content="https://saito.io/arcade" />
+  <meta property="og:type" content="website" />
+  <meta property="og:description" content="Peer to peer social and more" />
+  <meta property="og:site_name" content="Saito Quake" />
+  <meta property="og:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta property="og:image:url" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta property="og:image:secure_url"
+  content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+
+  <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+  <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
 
   <title>Saito N64Wasm Port</title>
 
   <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
   <link rel="stylesheet" type="text/css" href="/saito/game.css" />
-  <link rel="stylesheet" type="text/css" href="css/style.css"></link>
+  <link rel="stylesheet" type="text/css" href="style.css"></link>
+
+  <script src="/nwasm/script.js"></script>
+  <script src="/nwasm/n64wasm.js"></script>
 
 </head>
 
+<body>
     <div id="maindiv" class="container text-center">
-
-
-        <h1 style="display:none">
+        <h1>
             N64 Wasm
         </h1>
         <div id="topPanel" style="display: none;">
 
             <!-- BEFORE LOAD -->
             <div rv-if="data.beforeEmulatorStarted">
-                <button style="display:none" id="btnPlayGame" class="btn btn-primary mt-4" onclick="myClass.loadRom();" rv-if="data.hasRoms"
+                <button id="btnPlayGame" class="btn btn-primary mt-4" onclick="myClass.loadRom();" rv-if="data.hasRoms"
                     rv-disabled="data.moduleInitializing">Play Game</button>
-                <button style="display:none" id="btnUploadRom" class="btn btn-primary mt-4" onclick="myApp.uploadBrowse()"
+                <button id="btnUploadRom" class="btn btn-primary mt-4" onclick="myApp.uploadBrowse()"
                         rv-disabled="data.moduleInitializing">Browse</button>
-                <button style="display:none" type="button" class="btn btn-primary mt-4" id="btnRemap" onclick="myApp.showRemapModal()">
+                <button type="button" class="btn btn-primary mt-4" id="btnRemap" onclick="myApp.showRemapModal()">
                     Remap Buttons
                 </button>
-                <span rv-if="data.showLogin" class="display:none">
+                <span rv-if="data.showLogin">
                     <button class="btn btn-primary mt-4" rv-if="data.loggedIn | ev '==false'"
                         onclick="myApp.loginModal()">Login</button>
                     <button class="btn btn-primary mt-4" rv-if="data.loggedIn | ev '==true'"  
                         onclick="myApp.logout()">Logout</button>
                 </span>
 
-                <div class="form-check" style="display: none; margin-top: 13px;" rv-if="data.settings.SHOWADVANCED">
+                <div class="form-check" style="margin-top: 13px;" rv-if="data.settings.SHOWADVANCED">
                     <label class="form-check-label" style="margin-right: 10px;">
                         <input type="checkbox" class="form-check-input" rv-checked="data.chkAdvanced" rv-disabled="data.moduleInitializing">
                         Advanced
                     </label>
                 </div>
 
-                <div style="display:none" class="card" style="width: 18rem;margin-left: auto;margin-right: auto;margin-top: 20px;margin-bottom: 31px;" 
+                <div class="card" style="width: 18rem;margin-left: auto;margin-right: auto;margin-top: 20px;margin-bottom: 31px;" 
                     rv-if="data.chkAdvanced">
                     <div class="card-body">
                         <h5 class="card-title">Advanced</h5>
@@ -82,19 +97,19 @@
                             
                             <button id="btnUploadEep" class="btn btn-secondary mt-4" onclick="myApp.uploadEepBrowse()">
                                 Import Save File (EEP)</button>
-                            <div rv-if="data.eepName | ev_string '.length > 0'">
+                            <div rv-if="data.eepName | ev_string '.length > 0'">
                                 { data.eepName }
                             </div>
 
                             <button id="btnUploadSra" class="btn btn-secondary mt-4" onclick="myApp.uploadSraBrowse()">
                                 Import Save File (SRA)</button>
-                            <div rv-if="data.sraName | ev_string '.length > 0'">
+                            <div rv-if="data.sraName | ev_string '.length > 0'">
                                 { data.sraName }
                             </div>
 
                             <button id="btnUploadFla" class="btn btn-secondary mt-4" onclick="myApp.uploadFlaBrowse()">
                                 Import Save File (FLA)</button>
-                            <div rv-if="data.flaName | ev_string '.length > 0'">
+                            <div rv-if="data.flaName | ev_string '.length > 0'">
                                 { data.flaName }
                             </div>
 
@@ -103,20 +118,22 @@
                     </div>
                 </div>
 
-                <input style="display:none" id="file-upload-eep" type="file" />
-                <input style="display:none" id="file-upload-sra" type="file" />
-                <input style="display:none" id="file-upload-fla" type="file" />
-                <input style="display:none" id="file-upload" type="file" />
+
+
+                <input id="file-upload-eep" type="file" />
+                <input id="file-upload-sra" type="file" />
+                <input id="file-upload-fla" type="file" />
+                <input id="file-upload" type="file" />
 
                 <!-- ROM LIST -->
-                <div style="display:none" class="form-group mt-2 mb-4" rv-if="data.hasRoms" style="width: 300px;margin-left: auto; margin-right:auto;">
+                <div class="form-group mt-2 mb-4" rv-if="data.hasRoms" style="width: 300px;margin-left: auto; margin-right:auto;">
                     <select class="form-control" id="romselect">
                         <option rv-each-rom="data.romList" rv-value="rom.url">{rom.title}</option>
                     </select>
                 </div>
 
                 <!-- SAVE STATES -->
-                <div style="display:none" id="dbSaveStates" rv-if="data.loggedIn | ev '==true'">
+                <div id="dbSaveStates" rv-if="data.loggedIn | ev '==true'">
                     <button id="btnLoadRomAndSaveState" class="btn btn-primary mt-2 mb-2" onclick="myApp.loadRomAndSavestate()"
                         rv-disabled="data.moduleInitializing">Load Savestate</button>
                     <div class="form-group mt-2 mb-4" style="width: 300px;margin-left: auto; margin-right:auto;">
@@ -129,7 +146,7 @@
 
 
             <!-- AFTER LOAD -->
-            <div  style="display:none" rv-hide="data.beforeEmulatorStarted">
+            <div rv-hide="data.beforeEmulatorStarted">
                 <button class="btn btn-primary mt-2 mb-2" 
                     onclick="myApp.newRom()" >New Rom</button>
                 <div class="btn-group mt-2 mb-2" rv-if="data.settings.SHOWADVANCED">
@@ -168,7 +185,7 @@
 
 
 
-            <div style="display:none; margin-top:40px;" rv-if="data.beforeEmulatorStarted">
+            <div style="margin-top:40px;" rv-if="data.beforeEmulatorStarted">
                 <div id="dropArea" style="width: 150px; height: 150px; border: gray 1px solid;margin-left: auto;
                     color: darkgrey;margin-right: auto; border-style: dashed;">
                     <br>
@@ -181,7 +198,7 @@
         </div>
 
         <div id="lblErrorOuter" style="display: none;">
-            <div rv-if="data.lblError | ev_string '.length > 0'"
+            <div rv-if="data.lblError | ev_string '.length > 0'"
                 class="alert alert-danger mt-4" id="lblError" role="alert" 
                 rv-html="data.lblError">
             </div>
@@ -190,14 +207,14 @@
         <div id="mydiv" class="mt-4"></div>
         <!-- ID has to be canvas it's hardcoded in the EM generated .js -->
         <div id="canvasDiv" style="display: none;">
-            <canvas id="canvas"></canvas>
+            <canvas id="canvas" style="width: 640px;"></canvas>
         </div>
 
-        <div id="bottomPanel" rv-hide="data.beforeEmulatorStarted" style="display:none">
+        <div id="bottomPanel" rv-hide="data.beforeEmulatorStarted">
             <!-- <div>{ data.audioSkipCount}</div> -->
         </div>
 
-        <h6 class="card-title mt-4"  style="display:none">
+        <h6 class="card-title mt-4">
             <a href="https://github.com/nbarkhina/n64wasm" target="_blank" style="color: black;">
                 View source on GitHub
                 <img src="github_logo.png" style="height: 25px; padding-bottom: 5px; padding-left: 10px;">
@@ -208,7 +225,7 @@
 
     <!--  Login Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
-        aria-hidden="true"  style="display:none">
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -233,7 +250,7 @@
 
 
     <!-- Keymapping Modal -->
-    <div  style="display:none" class="modal fade" id="buttonsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="buttonsModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">

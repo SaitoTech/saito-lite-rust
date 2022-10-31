@@ -2,6 +2,13 @@ var AUDIOBUFFSIZE = 1024;
 
 class MyClass {
     constructor() {
+
+	//
+	// saito vars
+	//
+	this.app = null;
+	this.mod = null;
+
         this.rom_name = '';
         this.mobileMode = false;
         this.allSaveStates = [];
@@ -52,9 +59,9 @@ class MyClass {
             showFPS: true,
             settings: {
                 CLOUDSAVEURL: "",
-                SHOWADVANCED: false,
-                SHOWOPTIONS: false,
-                SHOWFPS: true
+                SHOWADVANCED: true,
+                SHOWOPTIONS: true,
+                SHOWFPS: false
             }
         };
 
@@ -502,7 +509,13 @@ class MyClass {
     }
 
     resizeCanvas() {
-        $('#canvas').width(this.canvasSize);
+        //$('#canvas').width(this.canvasSize);
+	try {
+          $('#canvas').style.width = "auto";
+          $('#canvas').style.height = "100vh";
+	} catch (err) {
+
+	}
     }
 
     zoomOut() {
@@ -655,7 +668,7 @@ class MyClass {
 
     
 
-    saveStateLocal(){
+    saveStateLocal() {
         console.log('saveStateLocal');
         this.rivetsData.noLocalSave = false;
         Module._neil_serialize();
@@ -663,7 +676,28 @@ class MyClass {
 
     loadStateLocal(){
         console.log('loadStateLocal');
-        myClass.loadFromDatabase();
+
+	let myapp_self = this;
+
+        var request = indexedDB.open('N64WASMDB');
+        request.onsuccess = function (ev) {
+            var db = ev.target.result;
+            var romStore = db.transaction("N64WASMSTATES", "readwrite").objectStore("N64WASMSTATES");
+            var rom = romStore.get(myClass.rom_name);
+            rom.onsuccess = function (event) {
+                let byteArray = myapp_self.mod.active_game;
+                FS.writeFile('/savestate.gz',byteArray);
+                Module._neil_unserialize();
+            };
+            rom.onerror = function (event) {
+                toastr.error('error getting rom from store');
+            }
+        }
+        request.onerror = function (ev) {
+            toastr.error('error loading from db')
+        }
+
+//        myClass.loadFromDatabase();
     }
 
     createDB() {
@@ -833,7 +867,6 @@ class MyClass {
                 let byteArray = rom.result; //Uint8Array
                 FS.writeFile('/savestate.gz',byteArray);
                 Module._neil_unserialize();
-
             };
             rom.onerror = function (event) {
                 toastr.error('error getting rom from store');
@@ -861,17 +894,83 @@ class MyClass {
 
     }
     
+    //
+    // HACK
+    //
+    initializeRom(bytearray, app, mod) {
+      this.app = app;
+      this.mod = mod;
+      var ba = new Uint8Array(bytearray);
+      myClass.LoadEmulator(ba);
+    }
 
-    exportEep(){
-        Module._neil_export_eep();
+    //
+    // HACKt
+    //
+    importStateLocal() {
+        var byteArray = this.mod.active_game;
+        var request = indexedDB.open('N64WASMDB');
+        request.onsuccess = function (ev) {
+            var db = ev.target.result;
+            var romStore = db.transaction("N64WASMSTATES", "readwrite").objectStore("N64WASMSTATES");
+            var rom = romStore.get(myClass.rom_name);
+            rom.onsuccess = function (event) {
+                FS.writeFile('/savestate.gz',byteArray);
+                Module._neil_unserialize();
+            };
+            rom.onerror = function (event) {
+                toastr.error('error getting rom from store');
+            }
+        }
+        request.onerror = function (ev) {
+            toastr.error('error loading from db')
+        }
+    }
+
+    //
+    // HACK
+    //
+    exportStateLocal() {
+      console.log('js savestate event');
+      let compressed = FS.readFile('/savestate.gz'); //this is a Uint8Array
+      console.log('js savestate event 2');
+      this.mod.active_game = compressed;
+      //
+      // exporting saves
+      //
+      this.mod.saveGameFile(compressed);
+    }
+
+    //
+    // HACK
+    //
+    // we use this to export the game state into something that can be saved as a file
+    // and/or bundled into a transaction. We now return the JS file object instead of 
+    // pushing it out to the browser as something to be saved.
+    //
+    // return added in exportEep !
+    //
+    importEep(filearray) {
+      var byteArray = new Uint8Array(filearray);
+      myClass.eepData = byteArray;
+      FS.writeFile(
+        "game.eep", // file name
+        byteArray
+      );
+      FS.writeFile('/savestate.gz',byteArray);
+      Module._neil_unserialize();
+    }
+    exportEep(saito) {
+        return Module._neil_export_eep();
     }
     ExportEepEvent()
     {
-        console.log('js eep event');
-
-        let filearray = FS.readFile("/game.eep");   
-        var file = new File([filearray], "game.eep", {type: "text/plain; charset=x-user-defined"});
-        saveAs(file);
+      let filearray = FS.readFile('/game.eep')
+      if (this.app != null) {
+        this.app.connection.emit("nwasm-export-game-save", filearray);
+      } else {
+        alert("Error: Saito not available...");
+      }
     }
     exportSra(){
         Module._neil_export_sra();
@@ -896,15 +995,26 @@ class MyClass {
         saveAs(file);
     }
 
+    // 
+    // HACK
+    //
     //when it returns from emscripten
     SaveStateEvent()
     {
         console.log('js savestate event');
         let compressed = FS.readFile('/savestate.gz'); //this is a Uint8Array
+        console.log('js savestate event 2');
+
+	if (this.mod != null) {
+console.log("SAVE ACTIVE GAME!");
+	  this.mod.active_game = compressed;
+	  return;
+	}
 
         //use local db
         if (!myClass.rivetsData.loggedIn)
         {
+
             myClass.saveToDatabase(compressed);
             return;
         }

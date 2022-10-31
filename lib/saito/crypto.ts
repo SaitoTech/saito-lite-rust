@@ -45,7 +45,10 @@ class Crypto {
     //
     // 64-bit hash
     //
-    return this.app.hash(data);
+console.log("HASH START: " + (new Date().getTime()));
+    let hash = this.app.hash(data);
+console.log("HASH STOP: " + (new Date().getTime()));
+    return hash;
   }
 
   //////////////////////////
