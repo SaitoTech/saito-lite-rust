@@ -1,3 +1,8 @@
+module.exports = (app, mod) => {
+
+  return `
+    
+
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 
@@ -18,24 +23,23 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="msapplication-starturl" content="/index.html" />
 
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:site" content="@SaitoOfficial" />
-  <meta name="twitter:creator" content="@SaitoOfficial" />
-  <meta name="twitter:title" content="Saito - Enabling a paradigm shift in blockchain applications" />
-  <meta name="twitter:url" content="https://saito.tech/" />
-  <meta name="twitter:description" content="Saito RedSquare - Web3 Social." />
-  <meta name="twitter:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
 
-  <meta property="og:title" content="🟥 Saito Red Square" />
-  <meta property="og:url" content="https://saito.io/redsquare" />
-  <meta property="og:type" content="website" />
-  <meta property="og:description" content="Peer to peer social and more" />
-  <meta property="og:site_name" content="🟥 Saito Red Square" />
-  <meta property="og:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
-  <meta property="og:image:url" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
-  <meta property="og:image:secure_url"
-    content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta name="twitter:card" content="${mod.social.twitter_card}" />
+  <meta name="twitter:site" content="${mod.social.twitter_site}" />
+  <meta name="twitter:creator" content="${mod.social.twitter_creator}" />
+  <meta name="twitter:title" content="${mod.social.twitter_title}" />
+  <meta name="twitter:url" content="${mod.social.twitter_url}" />
+  <meta name="twitter:description" content="${mod.social.twitter_description}" />
+  <meta name="twitter:image" content="${mod.social.twitter_image}" />
 
+  <meta property="og:title" content="${mod.social.og_title}" />
+  <meta property="og:url" content="${mod.social.og_url}" />
+  <meta property="og:type" content="${mod.social.og_type}" />
+  <meta property="og:description" content="${mod.social.og_description}" />
+  <meta property="og:site_name" content="${mod.social.og_site_name}" />
+  <meta property="og:image" content="${mod.social.og_image}" />
+  <meta property="og:image:url" content="${mod.social.og_image_url}" />
+  <meta property="og:image:secure_url" content="${mod.social.og_image_secure_url}" />
 
   <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
@@ -116,3 +120,7 @@
 
 
 </html>
+
+`;
+
+}
