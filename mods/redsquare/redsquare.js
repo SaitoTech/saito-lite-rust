@@ -798,7 +798,7 @@ class RedSquare extends ModTemplate {
   ///////////////////////////////////////
   // fetching curated tweets from peer //
   ///////////////////////////////////////
-  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false) {
+  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false, is_server_request = false) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -838,7 +838,10 @@ class RedSquare extends ModTemplate {
           }
 
         }
-        mod.saito_loader.remove(app, mod);
+
+        if (is_server_request == false) {
+          mod.saito_loader.remove(app, mod);
+        }
       }
     );
   }
@@ -1340,6 +1343,7 @@ class RedSquare extends ModTemplate {
     this.app.storage.saveOptions();
   }
 
+
   webServer(app, expressapp, express) {
     //super.webServer(app, expressapp, express);
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
@@ -1349,23 +1353,80 @@ class RedSquare extends ModTemplate {
 
     let redsquare_self = this;
 
-    let img = "data:image/jpeg;base64,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";
-    redsquare_self.social.og_image = img;
-    redsquare_self.social.og_image_url = img;
-    redsquare_self.social.og_image_secure_url = img;
-    redsquare_self.social.twitter_image = img;
+    expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
+      
+      if (Object.keys(req.query).length > 0) {
+        let query_params = req.query;
 
-    expressapp.get('/' + encodeURI(this.returnSlug()), function (req, res) {
-      redsquare_self.social.twitter_card = 'this is a test';
+        if (typeof query_params.tweet_id != "undefined" || typeof query_params.thread_id != "undefined") {
+          let sig = query_params.tweet_id || query_params.thread_id;
+          let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+
+          let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
+          
+          for (let i = 0; i < rows.length; i++) {
+            let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+            let txmsg = tx.returnMessage();
+            let text = tx.msg.data.text;
+            let img_url = "https://test.saito.io/" + encodeURI(redsquare_self.returnSlug() + '?img_sig=' + sig);
+
+            redsquare_self.social.twitter_description = text;
+            redsquare_self.social.og_description = text;
+            redsquare_self.twitter_description = text;
+            redsquare_self.social.og_url = "https://test.saito.io/" + encodeURI(redsquare_self.returnSlug());
+            redsquare_self.social.og_image = img_url;
+            redsquare_self.social.og_image_url = img_url;
+            redsquare_self.social.og_image_secure_url = img_url;
+            redsquare_self.social.twitter_image = img_url;
+          }
+        } // if query param has tweet id
+
+        if (typeof query_params.img_sig != "undefined") {
+          let img_sig = query_params.img_sig;
+          let sql = `SELECT * FROM tweets WHERE sig = '${img_sig}' OR parent_id = '${img_sig}'`;
+
+          let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
+          for (let i = 0; i < rows.length; i++) {
+            let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+            let txmsg = tx.returnMessage();
+            let text = tx.msg.data.text;
+
+            if (typeof tx.msg.data.images != "undefined") {
+              let image = tx.msg.data?.images[0];
+            } else {
+              let publickey = tx.transaction.from[0].add;
+              let image = app.keys.returnIdenticon(publickey);
+            }
+
+            if (image != null) {
+              res.setHeader("Content-type", "text/html");
+              res.send(Buffer.from(`
+                <a id="download-img" href="`+ image +`" download>
+                  <img src="`+ image +`">
+                </a>
+
+                <script>
+                  document.getElementById('download-img').click();
+                </script>
+                `
+              ));;
+              res.end();
+              return;
+            }
+          }
+        }
+
+      }
+
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
       res.write(redsquareHome(app, redsquare_self));
       res.end();
       return;
+
     });
 
     expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
-
   }
 
 }
