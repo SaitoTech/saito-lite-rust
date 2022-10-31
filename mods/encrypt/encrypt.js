@@ -41,6 +41,7 @@ class Encrypt extends ModTemplate {
 
 
   respondTo(type){
+
     let encrypt_self = this;
 
     if (type == "user-menu") {
@@ -48,8 +49,8 @@ class Encrypt extends ModTemplate {
         text: "Add Contact",
         icon: "far fa-id-card",
         callback: function (app, public_key) {
-            app.keys.saveKeys();
-            encrypt_self.initiate_key_exchange(public_key, 1);
+            encrypt_self.app.keys.saveKeys();
+            encrypt_self.initiate_key_exchange(public_key, 0);
         }
       }
     }
@@ -191,8 +192,10 @@ class Encrypt extends ModTemplate {
     let tx = null;
     try{
       tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient, (parties_to_exchange * this.app.wallet.wallet.default_fee));  
-    } catch(err) {}
-  
+    } catch(err) {
+console.log("error: " + err);
+    }  
+
     //
     // we had an issue creating the transaction, try zero-fee
     //
@@ -216,6 +219,9 @@ class Encrypt extends ModTemplate {
 
     tx = this.app.wallet.signTransaction(tx);
 
+    //
+    //
+    //
     if (offchain == 0) {
       this.app.network.propagateTransaction(tx);
     } else {
@@ -223,7 +229,9 @@ class Encrypt extends ModTemplate {
       data.module = "Encrypt";
       data.tx = tx;
       console.log("sending request on network");
-      this.app.network.sendPeerRequest("diffie hellman key exchange", data, peer);
+console.log("WHAT NAME IS THIS: " + this.name);
+      this.app.network.sendRequest("diffie hellman key exchange", data, peer);
+console.log("SENT THE REQUEST");
     }
     this.saveEncrypt();
 

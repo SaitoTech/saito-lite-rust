@@ -1,12 +1,12 @@
 import { Saito } from "../../apps/core";
 
-import * as blake3 from "blake3";
 import NetworkAPI from "./networkapi";
 import Binary from "./binary";
 import Wallet from "./wallet";
 import Crypto from "./crypto";
+import hashLoader from "../../apps/core/hash-loader";
 
-test("signBuffer", () => {
+test("signBuffer", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const mockApp: Saito = {};
@@ -21,9 +21,7 @@ test("signBuffer", () => {
   wallet.wallet.privatekey = "4a16ffa08e5fc440772ee962c1d730041f12c7008a6e5c704d13dfd3d1905e0d";
   wallet.wallet.publickey = "28Mh8nEhxymH9bFMhSKU51pnSQAnqURuPYkXTUqY2ueDM";
 
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const testBuffer = Buffer.from("testing 123", "utf-8");
   const result = crypto.signBuffer(testBuffer, wallet.wallet.privatekey);

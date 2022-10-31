@@ -26,10 +26,11 @@ class UploadRomOverlay {
         (file) => {
 
           document.querySelector('.loader').style.display = "grid";
-          
-          // add file to txn
-          //console.log(file);
-	  //myApp.initializeRom(file);
+ 
+	  //         
+          // save ROM in archives
+	  //         
+	  mod.saveRomFile(file);
 
 	  mod.active_game = file;
 
@@ -42,7 +43,10 @@ class UploadRomOverlay {
             view[i] = b[i];
           }
 
-	  myApp.initializeRom(ab);	  
+	  //
+	  // initialize ROM gets the ROM the APP and the MOD
+	  //
+	  myApp.initializeRom(ab, app, mod);
 	  uploader.overlay.hide();
 
         },

@@ -5,7 +5,6 @@ const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const SaitoLoader = require("./../../../lib/saito/new-ui/saito-loader/saito-loader");
 const ModalAddPublicKey = require("./../../../lib/saito/new-ui/modals/confirm-add-publickey/confirm-add-publickey");
-const e = require("blake3-js");
 
 class RedSquareTweet {
 
@@ -48,8 +47,8 @@ class RedSquareTweet {
     this.retweet_link = null;
 
     //
-    // 
-    //  
+    //
+    //
     this.num_retweets = 0;
     this.num_likes = 0;
 
@@ -483,7 +482,7 @@ class RedSquareTweet {
     }
 
 
-    // 
+    //
     // reply
     //
     sel = ".tweet-reply-" + this.tx.transaction.sig;
@@ -665,7 +664,7 @@ class RedSquareTweet {
       // still here? add in unknown children
       //
       // this means we know the comment is supposed to be somewhere in this thread/parent
-      // but its own parent doesn't yet exist, so we are simply going to store it here 
+      // but its own parent doesn't yet exist, so we are simply going to store it here
       // until we possibly add the parent (where we will check all unknown children) for
       // placement then.
       //
