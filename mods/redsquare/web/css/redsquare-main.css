@@ -683,6 +683,10 @@ span.redsquare-home-red-square+span {
   display: block;
 }
 
+.saito-redsquare-actions-buttons {
+  position: relative;
+}
+
 /*  Responsive */
 
 @media only screen and (max-width: 535px) {

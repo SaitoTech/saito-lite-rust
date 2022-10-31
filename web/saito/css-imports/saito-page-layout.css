@@ -60,7 +60,7 @@
 
 .saito-sidebar.left.mobile {
     visibility: visible;
-    z-index: 2;
+    z-index: 3;
 }
 
 .saito-mobile-bar {
@@ -95,7 +95,18 @@
     border-bottom-right-radius: 0 !important;
 }
 
-
+.saito-page-header {
+    z-index: 2;
+    background: #fff;
+    padding-bottom: 0rem;
+    width: -webkit-fill-available;
+    top: 8rem;
+    padding: 1.5rem 0rem;
+    position: sticky;
+    top: 0rem;
+    padding-top: 2.5rem;
+    margin-top: -2rem;
+}
 /*
 
 .saito-sidebar.left .hamburger {
@@ -237,6 +248,7 @@
 
 .saito-sidebar>div:not(:last-child) {
     margin-bottom: 2rem;
+    min-height: 2rem;
 }
 
 /* ----------------------------------------------------------------

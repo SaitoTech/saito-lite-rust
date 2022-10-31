@@ -37,7 +37,6 @@
     "big.js": "^5.2.2",
     "bitwise-xor": "0.0.0",
     "blake3": "^2.1.7",
-    "blake3-js": "git+https://github.com:SaitoTech/blake3-js.git#fada80f",
     "body-parser": "^1.19.0",
     "chess.js": "^0.12.0",
     "chrono": "^1.0.5",
