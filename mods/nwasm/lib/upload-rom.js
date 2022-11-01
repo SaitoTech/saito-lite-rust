@@ -30,7 +30,7 @@ class UploadRomOverlay {
 	  //         
           // save ROM in archives
 	  //         
-	  mod.saveRomFile(file);
+	 // mod.saveRomFile(file);
 
 	  mod.active_game = file;
 

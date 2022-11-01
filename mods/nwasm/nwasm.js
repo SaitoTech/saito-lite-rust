@@ -22,6 +22,8 @@ class Nwasm extends GameTemplate {
     this.active_rom = null;
     this.active_game = null;
 
+    this.game_logs = [];
+
     return this;
   }
 
