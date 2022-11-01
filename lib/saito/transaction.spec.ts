@@ -3,11 +3,11 @@ import NetworkAPI from "./networkapi";
 import Crypto from "./crypto";
 import Binary from "./binary";
 import Wallet from "./wallet";
-import * as blake3 from "blake3";
 import Transaction, { TransactionType } from "./transaction";
 import Slip, { SlipType } from "./slip";
+import hashLoader from "../../apps/core/hash-loader";
 
-test("tx serialize deserialze", () => {
+test("tx serialize deserialze", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const mockApp: Saito = {};
@@ -22,9 +22,7 @@ test("tx serialize deserialze", () => {
   wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
   wallet.wallet.publickey = "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
 
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const tx = new Transaction();
   tx.transaction.ts = 1637034582666;
@@ -124,7 +122,7 @@ describe("serializeForSignature", () => {
      ***/
 });
 
-test("sign", () => {
+test("sign", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const mockApp: Saito = {};
@@ -139,9 +137,7 @@ test("sign", () => {
   wallet.wallet.privatekey = "4a16ffa08e5fc440772ee962c1d730041f12c7008a6e5c704d13dfd3d1905e0d";
   wallet.wallet.publickey = "28Mh8nEhxymH9bFMhSKU51pnSQAnqURuPYkXTUqY2ueDM";
 
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const tx = new Transaction();
   tx.transaction.ts = 1637034582666;

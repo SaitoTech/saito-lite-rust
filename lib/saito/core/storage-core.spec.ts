@@ -3,13 +3,13 @@ import StorageCore from "./storage-core";
 
 import fs from "fs-extra";
 
-import * as blake3 from "blake3";
 import Transaction, { TransactionType } from "../transaction";
 import NetworkAPI from "../networkapi";
 import Crypto from "../crypto";
 import Binary from "../binary";
 import Wallet from "../wallet";
 import Block from "../block";
+import hashLoader from "../../../apps/core/hash-loader";
 
 test("write_read_empty_block_to_file", async () => {
   fs.emptyDirSync("../data/blocks");
@@ -23,9 +23,7 @@ test("write_read_empty_block_to_file", async () => {
   mockApp.networkApi = networkApi;
   mockApp.crypto = crypto;
   mockApp.binary = binary;
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const block = new Block(mockApp);
   block.generateMetadata();
@@ -58,9 +56,7 @@ test("write_read_block_with_data_to_file", async () => {
   wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
   wallet.wallet.publickey = "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
 
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const block = new Block(mockApp);
   block.block.id = 10;
@@ -125,9 +121,7 @@ test.skip("read_block_from_disk (from rust generated block)", async () => {
   mockApp.networkApi = networkApi;
   mockApp.crypto = crypto;
   mockApp.binary = binary;
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const storage = new StorageCore(mockApp);
 

@@ -1,4 +1,5 @@
 const saito = require("./../../lib/saito/saito");
+const redsquareHome = require("./index");
 const InviteTemplate = require('../../lib/templates/invitetemplate');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
@@ -55,6 +56,25 @@ class RedSquare extends ModTemplate {
     this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
     this.icon_fa = "fas fa-square-full";
 
+    this.social = {
+      twitter_card: "summary",
+      twitter_site: "@SaitoOfficial",
+      twitter_creator: "@SaitoOfficial",
+      twitter_title: "Saito - Enabling a paradigm shift in blockchain applications",
+      twitter_url: "https://saito.tech/",
+      twitter_description: "Saito RedSquare - Web3 Social.",
+      twitter_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+      og_title: "🟥 Saito Red Square",
+      og_url: "https://saito.io/redsquare",
+      og_type: "website",
+      og_description: "Peer to peer social and more",
+      og_site_name: "🟥 Saito Red Square",
+      og_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+      og_image_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+      og_image_secure_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"
+    }
+    console.log(this.social.twitter_card);
+
     return this;
 
   }
@@ -71,7 +91,7 @@ class RedSquare extends ModTemplate {
 
       if (tweet_id != "") {
         this.viewing = tweet_id;
-        this.mode = "thread";
+        this.mode = "tweet";
       }
 
       if (user_id != "") {
@@ -821,7 +841,7 @@ class RedSquare extends ModTemplate {
   ///////////////////////////////////////
   // fetching curated tweets from peer //
   ///////////////////////////////////////
-  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false) {
+  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false, is_server_request = false) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
@@ -861,7 +881,10 @@ class RedSquare extends ModTemplate {
           }
 
         }
-        mod.saito_loader.remove(app, mod);
+
+        if (is_server_request == false) {
+          mod.saito_loader.remove(app, mod);
+        }
       }
     );
   }
@@ -961,6 +984,7 @@ class RedSquare extends ModTemplate {
       });
       id_list = id_list.slice(0, -3) + ");";
       //console.log(id_list);
+
       let sql = "select num_likes, num_retweets, num_replies, id, sig from tweets where num_likes + num_retweets + num_replies > 0 and sig in " + id_list;
       app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
         "RedSquare",
@@ -969,6 +993,13 @@ class RedSquare extends ModTemplate {
           const tweets = [];
           if (res.rows) {
             res.rows.forEach(row => {
+      
+              let optional = {};
+              optional.num_likes = row.num_likes;
+              optional.num_replies = row.num_replies;
+              optional.num_retweets = row.num_retweets;
+              app.storage.updateTransactionOptional(row.sig, app.wallet.returnPublicKey(), optional);
+
               let tweet_id = "tweet-box-" + row.sig;
               let obj = document.getElementById(tweet_id);
               if (obj) {
@@ -1141,6 +1172,8 @@ class RedSquare extends ModTemplate {
               if (!tx.optional) { tx.optional = {}; }
               if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
               tx.optional.num_replies++;
+              
+
               this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
               tweet.renderReplies();
             }
@@ -1361,6 +1394,65 @@ class RedSquare extends ModTemplate {
     this.redsquare.last_viewed_notifications_ts = this.last_viewed_notifications_ts;
     this.app.options.redsquare = this.redsquare;
     this.app.storage.saveOptions();
+  }
+
+
+  webServer(app, expressapp, express) {
+    //super.webServer(app, expressapp, express);
+    let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+    // let webdir = `${__dirname}/../../web`;
+    // console.log('webdir ', webdir, 'slug: ', this.returnSlug());
+    let fs = app?.storage?.returnFileSystem();
+
+    let redsquare_self = this;
+
+    expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
+      
+      if (Object.keys(req.query).length > 0) {
+        let query_params = req.query;
+
+        if (typeof query_params.tweet_id != "undefined" || typeof query_params.thread_id != "undefined") {
+          let sig = query_params.tweet_id || query_params.thread_id;
+          let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+
+          let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
+          
+          for (let i = 0; i < rows.length; i++) {
+            let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+            let txmsg = tx.returnMessage();
+            let text = tx.msg.data.text;
+
+            redsquare_self.social.twitter_description = text;
+            redsquare_self.social.og_description = text;
+            redsquare_self.twitter_description = text;
+            redsquare_self.social.og_url = "https://test.saito.io/" + encodeURI(redsquare_self.returnSlug());
+
+            if (typeof tx.msg.data.images != "undefined") {
+              let image = tx.msg.data?.images[0];
+            } else {
+              let publickey = tx.transaction.from[0].add;
+              let image = app.keys.returnIdenticon(publickey);
+            }
+
+            redsquare_self.social.og_image = image;
+            redsquare_self.social.og_image_url = image;
+            redsquare_self.social.og_image_secure_url = image;
+            redsquare_self.social.twitter_image = image;
+            
+          }
+        } // if query param has tweet id
+        
+      }
+
+      res.setHeader("Content-type", "text/html");
+      res.charset = "UTF-8";
+      res.write(redsquareHome(app, redsquare_self));
+      res.end();
+      return;
+
+    });
+
+    expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
   }
 
 }

@@ -391,7 +391,8 @@ class Transaction {
     if (this.dmsg !== "") {
       return this.dmsg;
     }
-    if (this.msg !== {}) {
+
+    if (Object.keys(this.msg).length > 0) {
       return this.msg;
     }
     try {

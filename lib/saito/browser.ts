@@ -255,6 +255,7 @@ class Browser {
 
   extractKeys(text = "") {
     let keys = [];
+    /*
     let w = text.split(/(\s+)/);
     for (let i = 0; i < w.length; i++) {
       if (w[i].length > 0) {
@@ -271,6 +272,26 @@ class Browser {
           }
         }
       }
+    }*/
+    let identifiers = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
+    let adds = text.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
+
+    if (adds) {
+      adds.forEach(add => {
+        if (this.app.crypto.isPublicKey(add) && !keys.includes(add)) {
+          keys.push(add);
+        }
+      });
+    }
+    if (identifiers) {
+      identifiers.forEach(id => {
+        let add = this.app.keys.returnPublicKeyByIdentifier(id);
+        if (this.app.crypto.isPublicKey(add)) {
+          if (!keys.includes(add)) {
+            keys.push(add);
+          }
+        }
+      });
     }
     return keys;
   }
@@ -669,7 +690,7 @@ class Browser {
     return { year, month, day, hours, minutes };
   }
 
-  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true) {
+  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true, read_as_array_buffer = false) {
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
@@ -704,7 +725,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-            reader.readAsDataURL(file);
+	    if (read_as_array_buffer) {
+              reader.readAsArrayBuffer(file);
+	    } else {
+              reader.readAsDataURL(file);
+	    }
           });
         },
         false
@@ -718,7 +743,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-            reader.readAsDataURL(file);
+	    if (read_as_array_buffer) {
+              reader.readAsArrayBuffer(file);
+	    } else {
+              reader.readAsDataURL(file);
+	    }
           });
         },
         false
@@ -741,7 +770,11 @@ class Browser {
               reader.addEventListener("load", (event) => {
                 handleFileDrop(event.target.result);
               });
-              reader.readAsDataURL(file);
+	      if (read_as_array_buffer) {
+                reader.readAsArrayBuffer(file);
+	      } else {
+                reader.readAsDataURL(file);
+	      }
             });
           }
         },
@@ -1194,8 +1227,11 @@ class Browser {
       if (text !== "") {
         text = marked.parseInline(text);
 
-        //trim trailing line breaks
-        text = text.replace(/[\r<br>]+$/, "");
+        //trim trailing line breaks - 
+        // commenting it out because no need for this now
+        // because of above marked parsing
+        //text = text.replace(/[\r<br>]+$/, ""); 
+
       }
 
       text = sanitizeHtml(text, {
@@ -1280,6 +1316,7 @@ class Browser {
         let html = el.textContent;
         let identifiers = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
         let keys = html.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
+        let mappedKeyIdentifiers = [];
         //remove duplcates
 
         if (!identifiers) { identifiers = [] };
@@ -1294,19 +1331,21 @@ class Browser {
             identifiers.forEach(async (identifier) => {
               let answer = this.app.keys.fetchPublicKey(identifier);
               console.log(answer + " - " + identifier);
-              if (answer != identifier) {
+              if (answer != identifier && answer != null) {
                 //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
                 html = html.replaceAll(identifier, answer);
-                keys.push(answer);
+                mappedKeyIdentifiers[answer] = identifier;
               }
             });
             //deduplicate keys list
             keys = [...new Set(keys)];
 
             const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
+            mappedKeyIdentifiers = Object.assign({},mappedKeyIdentifiers, answer);
+
             keys.forEach(k => {
               let matched = false;
-              Object.entries(answer).forEach(([key, value]) => {
+              Object.entries(mappedKeyIdentifiers).forEach(([key, value]) => {
                 if (key == k) {
                   html = html.replaceAll(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
                   matched = true;

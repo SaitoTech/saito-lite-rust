@@ -60,7 +60,7 @@
 
 .saito-sidebar.left.mobile {
     visibility: visible;
-    z-index: 2;
+    z-index: 3;
 }
 
 .saito-mobile-bar {
@@ -104,6 +104,8 @@
     padding: 1.5rem 0rem;
     position: sticky;
     top: 0rem;
+    padding-top: 2.5rem;
+    margin-top: -2rem;
 }
 /*
 
@@ -246,6 +248,7 @@
 
 .saito-sidebar>div:not(:last-child) {
     margin-bottom: 2rem;
+    min-height: 2rem;
 }
 
 /* ----------------------------------------------------------------

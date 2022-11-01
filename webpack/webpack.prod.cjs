@@ -160,7 +160,7 @@ webpack({
       },
       {
         test: /\.wasm$/,
-        type: "asset/inline",
+        type: "webassembly/sync",
       },
       {
         test: /\.zip$/,
@@ -169,7 +169,12 @@ webpack({
           path.resolve(__dirname, "../mods/appstore/mods")
         ]
       }
-    ]
+    ],
+    // parser: {
+    //   javascript: {
+    //     dynamicImportMode: 'eager'
+    //   }
+    // }
   },
   plugins: [
     // Work around for Buffer is undefined:

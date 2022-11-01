@@ -40,6 +40,8 @@ class Storage {
 
   loadTransactions(type = "all", num = 50, mycallback) {
 
+console.log("loading transactions...");
+
     const message = "archive";
     const data: any = {};
     data.request = "load";
@@ -47,10 +49,18 @@ class Storage {
     data.num = num;
     data.publickey = this.app.wallet.returnPublicKey();
 
+console.log("sending archive request...");
+
     this.app.network.sendRequestWithCallback(message, data, function (obj) {
+
+console.log("received response");
+
       let txs = [];
       if (obj) {
         if (obj.txs) {
+
+console.log("received response 2");
+
 	  for (let i = 0; i < obj.txs.length; i++) {
             let tx = new Transaction(JSON.parse(obj.txs[i].tx));
 	    tx.optional = {};
