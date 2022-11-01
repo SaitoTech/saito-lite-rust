@@ -451,6 +451,16 @@ class Keychain {
     return "data:image/svg+xml;base64," + data;
   }
 
+  returnIdenticonasPNG(publickey) {
+    const options = {
+      margin: 0.0, // 0% margin
+      size: 420, // 420px square
+      format: "png", // use SVG instead of PNG
+    };
+    const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
+    return "data:image/png;base64," + data;
+  }
+
   returnIdenticonColor(publickey) {
     // foreground defaults to last 7 chars as hue at 70% saturation, 50% brightness
     const hue = parseInt(this.app.crypto.hash(publickey).substr(-7), 16) / 0xfffffff;
