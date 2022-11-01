@@ -6,7 +6,13 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
     let league_mod = app.modules.returnModule("League");
     let leagues = league_mod.respondTo("user-leagues");
 
-    let html = `<div id="arcade-leagues" class="arcade-leagues">`;
+    let html = `<div id="arcade-leagues" class="arcade-leagues">
+				    <div class="arcade-league-header">
+				    	<div class="arcade-league-title">Community Leagues</div>
+				    	<div class="button saito-button-primary" id="goto-league-page">Create League</div>
+				    </div>
+				    <div class="arcade-league-boxes">
+    `;
 
     for (let league of leagues){
     	if (mod.viewing_game_homepage !== mod.name && mod.viewing_game_homepage !== league.game){
@@ -53,7 +59,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
 			}
 		}         
         
-        html += `
+        html += ` </div>
         		</div>
           	</div>
         </div>

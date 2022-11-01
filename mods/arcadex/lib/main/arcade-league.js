@@ -15,6 +15,13 @@ class ArcadeLeague{
 	}
 
 	attachEvents(app, mod){
+		let leaguePage = document.getElementById("goto-league-page");
+		if (leaguePage){
+			leaguePage.onclick = (e) =>{
+				window.location = "/league";
+			}
+		}
+
 		Array.from(document.querySelectorAll(".league-button")).forEach(btn =>{
 			btn.onclick = (e) =>{
 				e.stopPropagation();
