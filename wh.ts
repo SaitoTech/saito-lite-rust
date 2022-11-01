@@ -7,7 +7,7 @@ import * as JSON from "json-bigint";
 
 import mods_config from "./config/modules.config";
 import { readBlockUsers } from "mixin-node-sdk";
-import hashLoader from "./apps/core/hash-loader";
+import * as blake3 from "blake3";
 
 async function initCLI() {
   const app = new Saito({
@@ -18,9 +18,9 @@ async function initCLI() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   app.storage = new StorageCore(app);
-  // const blake3 = require("blake3-wasm");
-  // const blake3 = await import ("blake3");
-  await hashLoader(app);
+  app.hash = (data) => {
+    return blake3.hash(data).toString("hex");
+  };
 
   app.BROWSER = 0;
   app.SPVMODE = 0;
