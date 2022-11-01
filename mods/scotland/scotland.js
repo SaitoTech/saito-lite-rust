@@ -60,7 +60,7 @@ class Scotland extends GameTemplate {
 
     this.name = "Scotland";
     this.gamename = "Scotland Yard";
-    this.description = `Scotland Yard is a cat-and-mouse detective game set in London, England. Criminal mastermind Mister X must wind his way through the city while hiding from Scotland Yard.<p></p>The Saito edition of Scotland Yard is modified slightly to improve the balance of gameplay over the traditional version. If played with less than six players, the players controlling the detectives will control multiple detectives to increase the effectiveness of surround-and-capture strategies.`;
+    this.description = `Scotland Yard is a cat-and-mouse detective game set in London, England. Criminal mastermind Mister X must wind his way through the city while hiding from Scotland Yard.`;
     this.categories = "Games Boardgame Strategy";
     //
     // this sets the ratio used for determining

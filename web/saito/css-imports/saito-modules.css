@@ -90,6 +90,7 @@ Saito Module
 .saito-module.large > * > .saito-module-image { 
   height:20rem;
   width: 30rem;
+  background-size: cover;
 }
 
 .saito-module-title {

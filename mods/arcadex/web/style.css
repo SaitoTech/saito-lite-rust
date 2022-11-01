@@ -1,0 +1,255 @@
+:root {
+  --saito-red: #639;
+  --saito-nightscape: linear-gradient(-45deg, #324 50%, #1e1e1f 100%);
+  --saito-jester: linear-gradient(-45deg, #426 50%, #213 100%);
+  --saito-reverse-jester: linear-gradient(-45deg, #213 5%, #426 50%);
+  --tile-height: 8em;
+  --saito-width: 1500px;
+  --sidebar-width: 25rem;
+  --identicon-height: 1em;
+  --arcade-games-sidebar-height: 60%;
+}
+
+:root{
+  --saito-white: var(--saito-nightscape);
+  --saito-menu-background:  var(--saito-nightscape);
+  --saito-default-font-color: #eee;
+  --saito-skyline-grey: #999;
+  --saito-black:  #fff;
+}
+
+
+body {
+  height: 100vh;
+  background: var(--saito-nightscape);
+  justify-content: center;
+}
+
+
+.tip .tiptext {
+    visibility: hidden;
+    color: #444 !important;
+    position: absolute;
+    z-index: 10;
+}
+
+.tip:hover .tiptext {
+  visibility: visible;
+}
+
+.tiptext {
+  width: 90%;
+  min-width: 400px;
+  max-width: 750px;
+  padding: 0 1em;
+  background-color: #fefefe;
+  border-bottom: 1px solid var(--saito-primary);
+  line-height: 1.5em;
+  font-size: 1em;
+  font-style: italic;
+}
+
+
+
+.arcade-container {
+  gap: 1rem;
+  grid-template-columns: var(--sidebar-width) auto var(--sidebar-width);
+}
+
+
+
+/* overlay/game-create-menu */
+.arcade-games {
+  font-size: 1.4em;
+  min-width: 400px;
+}
+
+.arcade-games-wrapper {
+  background-color: black;
+  max-height: 90vh;
+  overflow-y: scroll;
+}
+
+.arcade-navigator-item {
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  padding: 5px 0 2px 10px;
+}
+
+.arcade-games .arcade-navigator-item {
+  padding: 10px 0px 10px 20px;
+  list-style: none;
+}
+
+.arcade-navigator-item:hover {
+  background-color: #33669999;
+}
+
+.arcade-navigator-item .tiptext {
+  width: fit-content;;
+  background-color: #000a;
+  color: #ffffff !important;
+  min-width: 0px;
+  padding: 3px;
+  pointer-events: none;
+  top: 5px;
+  right: 0;
+}
+
+
+
+
+
+/* APPSPACE COMPONENTS */
+/* Banner */
+
+.arcade-banner{
+  max-height: 35rem;
+}
+
+.arcade-main > div{
+  margin-bottom: 1rem;
+}
+
+
+/* Arcade-main tabbed pages */
+
+.arcade-tab-buttons {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 1fr);
+  justify-items: center;
+  overflow: hidden;
+  border-left: solid 2px var(--saito-red);
+  font-size: 2rem;
+  line-height: 4rem;
+  height: 4rem;
+  min-height: 4rem;
+  cursor: pointer;
+}
+
+.arcade-tab-buttons .tab-button {
+  border: solid 2px var(--saito-red);
+  font-weight: bold;
+  border-left: none;
+  border-bottom: none;
+  width: 100%;
+  display: none;
+  /*grid */
+  place-items: center;
+}
+
+.arcade-tab-buttons .tab-button.active-tab-button {
+  background: var(--saito-jester);
+}
+
+.arcade-tabs {
+  height: 30rem;
+  /*height: fit-content;*/
+  overflow-y: auto;
+}
+
+/* It would be nice if there was just a saito-hidden */
+.arcade-tab-hidden {
+  display: none !important;
+}
+
+.arcade-hero {
+  overflow-y: auto;
+  height: 100%;
+  background: linear-gradient(-45deg, #0002, #0004);
+  border: 1px solid var(--saito-red);
+  background-image: url(/arcade/img/dreamscape-logo.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+
+}
+
+
+
+/* game-create-menu */ 
+.game-selection-list-overlay {
+  font-size: 0.8em;
+  text-align: left;
+  background: var(--saito-jester);
+  padding-left: 15px;
+  padding-right: 15px;
+  border: 1px solid var(--saito-red);
+  border-bottom: 0px;
+  margin: unset;
+  display:flex; 
+  align-items:center;
+  justify-content: space-between
+}
+
+
+/* Fix Chat Coloring */
+.chat-input {
+  background-color: #8884;
+  color: white;
+}
+
+.chat-header, .chat-footer {
+  background: var(--saito-jester);
+}
+
+
+
+/* unset css-imports/saito-header.css */
+#saito-header {
+  background: none;
+}
+#saito-header #saito-header-menu-toggle span{
+  background: white;
+}
+
+.dark .saito-header-hamburger-contents{
+  background: var(--saito-nightscape);
+}
+
+
+#alert-box {
+  background: var(--saito-nightscape);
+}
+
+
+.arcade-leagues{
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    flex-flow: wrap;
+    justify-content: space-between;
+
+}
+
+/* Dark mode for (old) header hamburger menu */
+.wallet-action-row {
+  color: white;
+}
+
+
+
+.saito-sidebar-left{
+  width: var(--sidebar-width);
+  grid-row: 1/3;
+}
+
+.saito-sidebar-right{
+  width: var(--sidebar-width);
+  grid-column-start: 3;
+  grid-row: 1/3;
+  cursor: pointer;
+}
+
+.arcade-menu-item.selected{
+  color: red;
+  background: whitesmoke;
+}
+
+
+.dark .saito-module{
+  background: unset;
+}
+
