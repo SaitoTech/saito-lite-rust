@@ -743,7 +743,10 @@ button.add-games {
 
 .chat-input {
   background-color: #8884;
-  color: white;
+}
+
+.chat-footer input {
+  color: whitesmoke;
 }
 
 .chat-header, .chat-footer {
