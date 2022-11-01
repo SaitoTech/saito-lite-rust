@@ -60,8 +60,8 @@ class RedSquare extends ModTemplate {
       twitter_card: "summary",
       twitter_site: "@SaitoOfficial",
       twitter_creator: "@SaitoOfficial",
-      twitter_title: "Saito - Enabling a paradigm shift in blockchain applications",
-      twitter_url: "https://saito.tech/",
+      twitter_title: "🟥 Saito Red Square",
+      twitter_url: "https://saito.io/redsquare/",
       twitter_description: "Saito RedSquare - Web3 Social.",
       twitter_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
       og_title: "🟥 Saito Red Square",
@@ -1405,7 +1405,8 @@ class RedSquare extends ModTemplate {
     let redsquare_self = this;
 
     expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
-      
+      let reqBaseURL = req.protocol + "://" + req.headers.host + "/"; 
+
       if (Object.keys(req.query).length > 0) {
         let query_params = req.query;
 
@@ -1419,10 +1420,13 @@ class RedSquare extends ModTemplate {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
             let txmsg = tx.returnMessage();
             let text = tx.msg.data.text;
+            let publickey = tx.transaction.from[0].add;
+            let user = app.keys.returnIdentifierByPublicKey(publickey, true);
+            //let user = await app.keys.fetchIdentifierPromise(publickey);
 
             redsquare_self.social.twitter_description = text;
             redsquare_self.social.og_description = text;
-            redsquare_self.social.og_url = "https://test.saito.io/" + encodeURI(redsquare_self.returnSlug());
+            redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
 
             // if (typeof tx.msg.data.images != "undefined") {
             //   let image = tx.msg.data?.images[0];
@@ -1431,7 +1435,9 @@ class RedSquare extends ModTemplate {
             //   let image = app.keys.returnIdenticon(publickey);
             // }
 
-            let image = redsquare_self.social.og_url = "https://test.saito.io/" + encodeURI(redsquare_self.returnSlug()) + '?og_img_sig='+sig;
+            let image = redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug()) + '?og_img_sig='+sig;
+            redsquare_self.social.og_title = user + " posted on Saito 🟥";
+            redsquare_self.social.twitter_title = user + " posted on Saito 🟥"
             redsquare_self.social.og_image = image;
             redsquare_self.social.og_image_url = image;
             redsquare_self.social.og_image_secure_url = image;
@@ -1470,7 +1476,7 @@ class RedSquare extends ModTemplate {
             } else {
 
               let publickey = tx.transaction.from[0].add;
-              let img_uri = app.keys.returnIdenticon(publickey);
+              let img_uri = app.keys.returnIdenticonasPNG(publickey);
               let base64Data = img_uri.replace(/^data:image\/png;base64,/, '');
               let img = Buffer.from(base64Data, 'base64');
               let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
