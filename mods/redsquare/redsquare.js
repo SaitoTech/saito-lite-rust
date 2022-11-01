@@ -1400,8 +1400,6 @@ class RedSquare extends ModTemplate {
   webServer(app, expressapp, express) {
     //super.webServer(app, expressapp, express);
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
-    // let webdir = `${__dirname}/../../web`;
-    // console.log('webdir ', webdir, 'slug: ', this.returnSlug());
     let fs = app?.storage?.returnFileSystem();
 
     let redsquare_self = this;
@@ -1413,7 +1411,7 @@ class RedSquare extends ModTemplate {
 
         if (typeof query_params.tweet_id != "undefined" || typeof query_params.thread_id != "undefined") {
           let sig = query_params.tweet_id || query_params.thread_id;
-          let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+          let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
 
           let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
           
@@ -1424,16 +1422,16 @@ class RedSquare extends ModTemplate {
 
             redsquare_self.social.twitter_description = text;
             redsquare_self.social.og_description = text;
-            redsquare_self.twitter_description = text;
             redsquare_self.social.og_url = "https://test.saito.io/" + encodeURI(redsquare_self.returnSlug());
 
-            if (typeof tx.msg.data.images != "undefined") {
-              let image = tx.msg.data?.images[0];
-            } else {
-              let publickey = tx.transaction.from[0].add;
-              let image = app.keys.returnIdenticon(publickey);
-            }
+            // if (typeof tx.msg.data.images != "undefined") {
+            //   let image = tx.msg.data?.images[0];
+            // } else {
+            //   let publickey = tx.transaction.from[0].add;
+            //   let image = app.keys.returnIdenticon(publickey);
+            // }
 
+            let image = redsquare_self.social.og_url = "https://test.saito.io/" + encodeURI(redsquare_self.returnSlug()) + '?og_img_sig='+sig;
             redsquare_self.social.og_image = image;
             redsquare_self.social.og_image_url = image;
             redsquare_self.social.og_image_secure_url = image;
@@ -1441,6 +1439,65 @@ class RedSquare extends ModTemplate {
             
           }
         } // if query param has tweet id
+
+
+        console.log('query params');
+        console.log(query_params);
+
+        if (typeof query_params.og_img_sig != "undefined") {
+          
+
+          let sig = query_params.og_img_sig;
+          let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
+
+          let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
+          
+          for (let i = 0; i < rows.length; i++) {
+            let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+            let txmsg = tx.returnMessage();
+
+            if (typeof tx.msg.data.images != "undefined") {
+              let img_uri = tx.msg.data?.images[0];
+
+
+
+              let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
+
+              let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+              let img = Buffer.from(base64Data, 'base64');
+
+
+            } else {
+
+              let publickey = tx.transaction.from[0].add;
+              let img_uri = app.keys.returnIdenticon(publickey);
+              let base64Data = img_uri.replace(/^data:image\/png;base64,/, '');
+              let img = Buffer.from(base64Data, 'base64');
+              let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
+            }
+
+            
+            console.log('base64 data');
+            console.log(base64Data);
+
+            console.log('img');
+            console.log(img);
+
+            console.log('img format');
+            console.log(img_type);    
+
+            if (img_type == 'image/svg+xml') {
+              img_type = 'image/svg';
+            }        
+
+            res.writeHead(200, {
+             'Content-Type': img_type,
+             'Content-Length': img.length
+            });
+            res.end(img); 
+            return;
+          }
+        }
         
       }
 
