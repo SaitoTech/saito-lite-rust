@@ -141,7 +141,13 @@ class MyClass {
 
 
     processPrintStatement(text) {
-        console.log(text);
+        //console.log(text);
+
+         if (this.mod != null && text != "") {
+            this.mod.game_logs.push(text);
+            console.log("AFTER inside game_logs");
+            console.log(this.mod.game_logs);
+        }
 
         //emulator has started event
         if (text.includes('mupen64plus: Starting R4300 emulator: Cached Interpreter')) {

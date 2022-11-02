@@ -141,7 +141,7 @@ input:checked+.saito-switch-slider:before {
 
 /* Rounded sliders */
 .saito-switch-slider.round {
-    border-radius: 34px;
+    border-radius: 0.5rem;
 }
 
 .saito-switch-slider.round:before {

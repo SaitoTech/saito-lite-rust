@@ -14,11 +14,7 @@
   padding-top: 5px;
   padding-bottom: 5px;
   text-align: center;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-box-shadow: rgba(0,0,0,0.2) 0px 1px 3px;
-  -moz-box-shadow: rgba(0,0,0,0.2) 0px 1px 3px;
+  border-radius: 0.5rem;
   box-shadow: rgba(0,0,0,0.2) 0px 1px 3px;
   z-index: 900000;
 }

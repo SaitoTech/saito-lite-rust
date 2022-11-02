@@ -5,7 +5,6 @@ const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const SaitoLoader = require("./../../../lib/saito/new-ui/saito-loader/saito-loader");
 const ModalAddPublicKey = require("./../../../lib/saito/new-ui/modals/confirm-add-publickey/confirm-add-publickey");
-const e = require("blake3-js");
 
 class RedSquareTweet {
 
@@ -48,8 +47,8 @@ class RedSquareTweet {
     this.retweet_link = null;
 
     //
-    // 
-    //  
+    //
+    //
     this.num_retweets = 0;
     this.num_likes = 0;
 
@@ -231,6 +230,7 @@ class RedSquareTweet {
     });
     this.attachEvents(app, mod);
     app.browser.addModalIdentifierAddPublickey(app, mod);
+    app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + this.tx.transaction.sig));
   }
 
   renderWithChildren(app, mod, selector = "") {
@@ -259,6 +259,7 @@ class RedSquareTweet {
 
     // app.browser.addIdentifiersToDom();
     this.attachEvents(app, mod);
+    app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + this.tx.transaction.sig));
   }
 
   renderWithParents(app, mod, selector = "", num = -1) {
@@ -324,6 +325,7 @@ class RedSquareTweet {
     }
     this.attachEvents(app, mod);
     app.browser.addModalIdentifierAddPublickey(app, mod);
+    app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + this.tx.transaction.sig));
   }
 
   attachEvents(app, mod) {
@@ -346,7 +348,7 @@ class RedSquareTweet {
       //
       // add back button
       //
-console.log("about to hit INNERHTML in TWEET");
+      console.log("about to hit INNERHTML in TWEET");
       document.querySelector(".redsquare-list").innerHTML = "";
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> RED SQUARE</div>`, "saito-page-header-title");
       document.querySelector(".saito-back-button").onclick = (e) => {
@@ -480,7 +482,7 @@ console.log("about to hit INNERHTML in TWEET");
     }
 
 
-    // 
+    //
     // reply
     //
     sel = ".tweet-reply-" + this.tx.transaction.sig;
@@ -498,7 +500,7 @@ console.log("about to hit INNERHTML in TWEET");
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
-      // app.browser.addIdentifiersToDom();
+      app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + tweet_self.tx.transaction.sig));
     };
 
 
@@ -533,6 +535,7 @@ console.log("about to hit INNERHTML in TWEET");
 
       let html = TweetTemplate(app, mod, this, 0);
       app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, "#redsquare-tweet-overlay-" + this.tx.transaction.sig);
+      app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + this.tx.transaction.sig));
     }
 
 
@@ -584,11 +587,21 @@ console.log("about to hit INNERHTML in TWEET");
 
       let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + this.tx.transaction.sig;
       navigator.clipboard.writeText(tweetUrl).then(() => {
-        siteMessageNew("Link copied to clipboard.", 2000);
+        siteMessage("Link copied to clipboard.", 2000);
       });
     };
 
+    //add linkes to keys and identifiers found in text.
+    /*
+    sel = "saito-active-key";
+    document.querySelectorAll(sel).forEach(el => {
+      e.addEventListener("click", (e) => {
+        console.log('clicked on active tweet');
+        app.connection.emit('redquare-show-user-feed', public_key);
+      });
+    });
 
+    */
 
   }
 
@@ -651,7 +664,7 @@ console.log("about to hit INNERHTML in TWEET");
       // still here? add in unknown children
       //
       // this means we know the comment is supposed to be somewhere in this thread/parent
-      // but its own parent doesn't yet exist, so we are simply going to store it here 
+      // but its own parent doesn't yet exist, so we are simply going to store it here
       // until we possibly add the parent (where we will check all unknown children) for
       // placement then.
       //

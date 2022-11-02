@@ -22,6 +22,8 @@ class Nwasm extends GameTemplate {
     this.active_rom = null;
     this.active_game = null;
 
+    this.game_logs = [];
+
     return this;
   }
 
@@ -168,13 +170,16 @@ console.log("data: " + data);
     myApp.initializeRom(bytearray);
   }
 
-  saveGameFile(data) {
 
-    console.log("save game file: " + data);
+
+
+  saveRomFile(data) {
+
+    console.log("save rom file: " + data);
 
     let base64data = this.convertByteArrayToBase64(data);
 
-    console.log("save game file: " + base64data);
+    console.log("save rom file: " + base64data);
 
     let obj = {
       module: this.name,
@@ -185,7 +190,32 @@ console.log("data: " + data);
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     // temp not signing
-    newtx.presign(this.app);
+console.log("BEFORE SIGN TX");
+    newtx = this.app.wallet.signTransaction(newtx);
+console.log("AFTER SIGN TX");
+    this.app.storage.saveTransaction(newtx);
+
+  }
+  saveGameFile(data) {
+
+    console.log("save game file: " + data);
+
+    let base64data = this.convertByteArrayToBase64(data);
+
+    console.log("save game file: " + base64data);
+
+    let obj = {
+      module: this.name,
+      request: "upload savegame",
+      data: base64data,
+    };
+
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    // temp not signing
+console.log("BEFORE SIGN TX");
+    newtx = this.app.wallet.signTransaction(newtx);
+console.log("AFTER SIGN TX");
     this.app.storage.saveTransaction(newtx);
 
   }

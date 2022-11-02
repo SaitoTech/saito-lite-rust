@@ -15241,13 +15241,16 @@ console.log("GETNAME 2: " + this.name);
   			});
   		},DownloadAsset:function (asset, onprogress, onload) {
   			var root = SYSC.GetCDN();
+console.log("asset name is: " + asset.name);
   			var name = asset.name.replace(/(.+\/|)(.+?)$/, '$1' + asset.checksum + '-$2');
 
 			//
 			// HACK - shift to HTTPS
 			//
-  			var url = 'https://' + root + '/assets/' + name;
-  
+  			//var url = 'https://' + root + '/assets/' + name;
+  			var url = 'https://q3-us.saito.io/assets/' + name;
+console.log("URL IS: " + url); 
+ 
   			SYS.DoXHR(url, {
   				dataType: 'arraybuffer',
   				onprogress: onprogress,

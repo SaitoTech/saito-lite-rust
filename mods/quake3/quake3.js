@@ -4,8 +4,8 @@ const QuakeControls = require('./lib/controls');
 
 
 class Quake3 extends GameTemplate {
-
-  constructor(app) {
+ 
+ constructor(app) {
 
     super(app);
 
@@ -15,7 +15,8 @@ class Quake3 extends GameTemplate {
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
-    this.controls = this.returnDefaults();
+    this.controls = {};
+    this.controls = new QuakeControls(app, this);
 
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
@@ -107,7 +108,7 @@ class Quake3 extends GameTemplate {
 	      ticker
 	    );
 	  }
-	}
+v	}
         return 1;
       }
 
@@ -203,6 +204,7 @@ class Quake3 extends GameTemplate {
     if (app.BROWSER == 0) { return; }
     super.initialize(app);
 
+
     if (this.browser_active == 1) {
       //
       // bind console.log to track outside app
@@ -221,7 +223,6 @@ class Quake3 extends GameTemplate {
     }
   }
 
-
   //
   // for the love of God don't add console.logs within this function
   //
@@ -234,6 +235,12 @@ class Quake3 extends GameTemplate {
       if (logline.indexOf("entered the game") > 0) {
         let name = this.app.wallet.returnPublicKey().toLowerCase();
 	this.registerPlayerName();
+	      
+	// load & apply saved controls while here
+	// since this block only happens on client startup
+	this.controls.loadSavedControls();
+	this.controls.writeControls();
+	this.controls.applyControls();
       }
     }
 
@@ -357,12 +364,15 @@ class Quake3 extends GameTemplate {
       id : "game-controls",
       class : "game-game-controls",
       callback : async function(app, game_mod) {
+
         game_mod.menu.hideSubMenus();
-	if (game_mod.controls) { game_mod.controls.overlay.hide(); }
-        game_mod.controls = new QuakeControls(app, game_mod);
-	controls.render(app, game_mod);
+	//if (!game_mod.controls) {game_mod.controls = new QuakeControls(app, game_mod);}
+        //game_mod.controls = new QuakeControls(app, game_mod);
+	game_mod.controls.overlay.hide();
+	game_mod.controls.render(app, game_mod);
     	SAITO_COMPONENT_ACTIVE = true;
     	SAITO_COMPONENT_CLICKED = true;
+	
       },
     });
 
@@ -474,7 +484,6 @@ return;
     //var args = ['+set', 'fs_cdn', 'content.quakejs.com:80', '+set', 'sv_master1', 'master.quakejs.com:27950']; //original args to list the servers from master.quakejs.com
     //var args = ['+set', 'fs_cdn', 'content.quakejs.com:80', '+set', 'sv_master1', 'master.quakejs.com:27950', '+connect', 'YOUR_SERVER_HERE:27960']; //additional +connect arguement to connect to a specific server
     //var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
-    //var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+set', 'sv_enable_bots', '1', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
     var args = ['+set', 'fs_cdn', this.content_server, '+connect', this.game_server];
     args.push.apply(args, getQueryCommands());
 
@@ -485,11 +494,6 @@ return;
 
   }
 
-
-
-  returnDefaults() {
-    return {};
-  }
 
   load() {
     this.quake3 = this.app.options.quake3;
@@ -503,4 +507,3 @@ return;
 }
 
 module.exports = Quake3;
-

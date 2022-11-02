@@ -60,7 +60,7 @@
 
 .saito-sidebar.left.mobile {
     visibility: visible;
-    z-index: 2;
+    z-index: 3;
 }
 
 .saito-mobile-bar {
@@ -72,30 +72,41 @@
 }
 
 .dockedLeft {
-    border-left: 5px solid orangered !important;
+    border-left: 3px solid orangered !important;
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
 }
 
 .dockedRight {
-    border-right: 5px solid orangered !important;
+    border-right: 3px solid orangered !important;
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
 }
 
 .dockedTop {
-    border-top: 5px solid orangered !important;
+    border-top: 3px solid orangered !important;
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
 }
 
 .dockedBottom {
-    border-bottom: 5px solid orangered !important;
+    border-bottom: 3px solid orangered !important;
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
 }
 
-
+.saito-page-header {
+    z-index: 2;
+    background: #fff;
+    padding-bottom: 0rem;
+    width: -webkit-fill-available;
+    top: 8rem;
+    padding: 1.5rem 0rem;
+    position: sticky;
+    top: 0rem;
+    padding-top: 2.5rem;
+    margin-top: -2rem;
+}
 /*
 
 .saito-sidebar.left .hamburger {
@@ -237,6 +248,7 @@
 
 .saito-sidebar>div:not(:last-child) {
     margin-bottom: 2rem;
+    min-height: 2rem;
 }
 
 /* ----------------------------------------------------------------

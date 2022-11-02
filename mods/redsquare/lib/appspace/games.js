@@ -21,10 +21,7 @@ class RedSquareAppspaceGames {
     this.overlay = new SaitoOverlay(app);
 
     document.getElementById("redsquare-create-game").onclick = (e) => {
-      try {
-        let arcade_mod = app.modules.returnModule("Arcade");
-        arcade_mod.createGameSelector();
-      } catch (err) { alert("Arcade not installed..."); }
+      app.connection.emit("launch-game-selector", true);
     }
 
     //
@@ -32,11 +29,8 @@ class RedSquareAppspaceGames {
     //
     Array.from(document.querySelectorAll('.create-game-link')).forEach(game => {
       game.onclick = (e) => {
-
         let modname = e.currentTarget.getAttribute("data-id");
-        let arcade_mod = app.modules.returnModule("Arcade");
-	arcade_mod.createGameWizard(modname);
-
+        app.connection.emit("launch-game-wizard", {game: modname});
       };
     });
 
