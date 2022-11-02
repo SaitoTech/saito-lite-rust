@@ -463,7 +463,7 @@ class RedSquare extends ModTemplate {
 
   renderMainPage(app, mod, promote_images = false) {
     this.reorganizeTweets(app, mod, promote_images);
-    console.log("redsquare innerHTML");
+    //console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
@@ -472,7 +472,7 @@ class RedSquare extends ModTemplate {
   }
 
   renderMainFeed(app, mod) {
-    console.log("redsquare innerHTML");
+    //console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
@@ -487,7 +487,7 @@ class RedSquare extends ModTemplate {
   renderParentWithChildren(app, mod, sig) {
     //this.viewing = sig;
     //this.reorganizeTweets(app, mod);
-    console.log("redsquare innerHTML");
+    //console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     for (let i = 0; i < this.tweets.length; i++) {
@@ -515,7 +515,7 @@ class RedSquare extends ModTemplate {
   //
   renderWithParents(app, mod, sig, num = -1) {
     //this.viewing = sig;
-    console.log("redsquare innerHTML");
+    //console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     let t = this.returnTweet(app, mod, sig);
@@ -547,7 +547,7 @@ class RedSquare extends ModTemplate {
 
     this.reorganizeTweets(app, mod);
     document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
-    console.log("redsquare innerHTML");
+    //console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     for (let i = 0; i < this.tweets.length; i++) {
@@ -596,7 +596,7 @@ class RedSquare extends ModTemplate {
     }
 
     this.reorganizeTweets(app, mod, false);
-    console.log("redsquare innerHTML");
+    //console.log("redsquare innerHTML");
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].sender == key) {
@@ -754,7 +754,7 @@ class RedSquare extends ModTemplate {
       
             mod.addNotification(mod.app, mod, txs[i]);
           }
-          console.log('notific after ', mod.ntfs)
+         // console.log('notific after ', mod.ntfs)
         })
 
       // this.loadNotificationTransactions(app, mod);
@@ -1004,7 +1004,7 @@ class RedSquare extends ModTemplate {
               let obj = document.getElementById(tweet_id);
               if (obj) {
                 if (obj.querySelector('.redsquare-tweet-tools')) {
-                  console.log("redsquare innerHTML");
+                  //console.log("redsquare innerHTML");
                   if (row.num_likes > parseInt(obj.querySelector(".tweet-tool-like-count-" + row.sig).innerHTML)) {
                     obj.querySelector(".tweet-tool-like-count-" + row.sig).innerHTML = row.num_likes;
                   }
@@ -1092,7 +1092,7 @@ class RedSquare extends ModTemplate {
       //
       // add notification for unviewed
       //
-      console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
+      //console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       } else {
@@ -1211,7 +1211,7 @@ class RedSquare extends ModTemplate {
       //
       // add notification for unviewed
       //
-      console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
+      //console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       } else {

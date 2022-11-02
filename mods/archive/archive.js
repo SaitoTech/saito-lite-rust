@@ -69,9 +69,11 @@ class Archive extends ModTemplate {
         this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
       }
       if (req.data.request === "save") {
+        console.log("archive save");
         this.saveTransaction(req.data.tx, req.data.type);
       }
       if (req.data.request === "update") {
+        console.log("archive update");
         this.updateTransaction(req.data.tx);
       }
       if (req.data.request === "save_key") {
@@ -92,14 +94,15 @@ class Archive extends ModTemplate {
         this.incrementTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key);
       }
       if (req.data.request === "load") {
-console.log("received REQUEST to load");
+//console.log("received REQUEST to load");
+        console.log("archive load");
         let type = "";
         let num  = 50;
         if (req.data.num != "")  { num = req.data.num; }
         if (req.data.type != "") { type = req.data.type; }
-console.log("TESTING");
+//console.log("TESTING");
         txs = await this.loadTransactions(req.data.publickey, req.data.sig, type, num);
-console.log("TESETING WRETURNED: " + JSON.stringify(txs));
+//console.log("TESETING WRETURNED: " + JSON.stringify(txs));
         response.err = "";
         response.txs = txs;
         mycallback(response);

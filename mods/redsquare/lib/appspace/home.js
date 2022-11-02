@@ -25,12 +25,12 @@ class RedSquareAppspaceHome {
 
     //not used - keeping for legacy
     app.connection.on("new-tweet-render-request", (tweet) => {
-      console.log("ADDING TRR: " + tweet.tx.transaction.sig);
+      //console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list", false);
     });
 
     app.connection.on("tweet-render-request", (tweet, append = true) => {
-      console.log("ADDING TRR: " + tweet.tx.transaction.sig);
+      //console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list", append);
     });
 
