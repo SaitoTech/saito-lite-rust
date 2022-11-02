@@ -1,6 +1,6 @@
 
 body {
-  font-family: arial, helvetica, sans-serif;
+  font-family: cursive;
   font-size: 13px;
   padding: 0px;
   margin: 0px;
@@ -59,7 +59,7 @@ body {
 .bonus_tokens{
   display: grid;
   grid-template-columns: repeat(3, minmax(122px, 1fr));
-  grid-template-rows: repeat(3, minmax(122px, 1fr));
+  grid-template-rows: repeat(3, minmax(125px, 1fr));
   width: 100px;
   height: 275px; 
   }
@@ -67,7 +67,7 @@ body {
 .token{
   width: 100px;
   filter: drop-shadow(5px -5px 5px maroon);
-}
+  }
 
 .card_count{
   width: 100%;
@@ -80,8 +80,7 @@ body {
   font-size: min(6vw,80px);
   line-height: 8vw;
   text-align: center;
-  text-shadow: 2px 2px black;  
-  position: relative;
+  text-shadow: 2px 2px black;
 }
 
 
@@ -104,7 +103,7 @@ body {
 #discard .card{
   width: 100px;
   border: solid black;
-  position: relative; left: 30px; top: 10px;
+  position: relative; left: 30px;
   box-shadow: 10px -5px 20px white;
 }
 
@@ -168,7 +167,7 @@ body {
   width: fit-content;
   min-width: 600px;
   width: 80vw;
-  max-height: 90vh;
+  max-height: 1000px;
   background-color: 372512;
   color: ghostwhite;
   border: 2px #c9945c solid;
@@ -178,7 +177,7 @@ body {
 
 .grid_display{
   width: 100%;
-  height: 400px;
+  height: 500px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
@@ -304,6 +303,7 @@ body {
 #opponentbox{
   position: absolute;
   top: 20px;
+  gap: 100px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -317,8 +317,10 @@ body {
   border: 2px solid transparent;
   border-radius: 18px;
   box-shadow: -5px 3px 4px black;
+  
 }
 
 .opponents > .player-box.active{
-  border-color: silver;
-}
+  border-color: yellow;
+  background-color: red
+  }
