@@ -8,8 +8,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
 
     let html = `<div id="arcade-leagues" class="arcade-leagues">
 				    <div class="arcade-league-header">
-				    	<div class="arcade-league-title">Community Leagues</div>
-				    	<div class="button saito-button-primary" id="goto-league-page">Create League</div>
+				    	<div class="arcade-league-title" id="goto-league-page">Community Leagues</div>
 				    </div>
 				    <div class="arcade-league-boxes">
     `;

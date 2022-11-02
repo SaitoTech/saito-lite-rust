@@ -128,7 +128,7 @@
 .arcade-tile .button {
   background: linear-gradient(45deg, #540e81, #b539e8);
   border: 1px solid var(--saito-red);
-  border-radius: 15px;
+  border-radius: 10px;
   flex-grow: 1;
   min-width: 120px;
 }

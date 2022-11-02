@@ -6,7 +6,7 @@ module.exports = ArcadeLeaderboardTemplate = (app, mod) => {
 	let leagueFound = false;
 
 	let html = `<div id="arcade-leaderboard" class="saito-sidebar-right">
-				<div class="leaderboard-header">Global Rankings</div>`;
+				<div class="leaderboard-header">Saito Leaderboard</div>`;
     
 	for (let i = 0; i < league_mod.leagues.length; i++){
 		if (league_mod.leagues[i].id == league_id){

@@ -12,16 +12,23 @@ class ArcadeBanner {
 		let html = `<div id="arcade-banner" class="arcade-banner">
 						${SaitoModuleIntro(app, app.modules.returnModule(mod.viewing_game_homepage))}
 						<div class="saito-box-buttons">
-							<div class="saito-button-primary saito-module-overlay-btn" data-cmd="create">Create Game</div>
-							<div class="saito-button-primary saito-module-overlay-btn" data-cmd="learn">Learn</div>
+							<div class="saito-button-primary button" data-cmd="create">Create Game</div>
+							<div class="saito-button-primary button" data-cmd="learn">Learn</div>
 						</div>
 					</div>`;
+		if (mod.viewing_game_homepage === mod.name){
+			html = `<div id="arcade-banner" class="arcade-banner">
+						<div class="saito-box-buttons">
+							<div class="saito-button-primary button" data-cmd="create">Create Game</div>
+						</div>
+					</div>`;
+		}
 		app.browser.replaceElementById(html, "arcade-banner");
 		this.attachEvents(app, mod);
 	}
 
 	attachEvents(app, mod){
-		Array.from(document.querySelectorAll("#arcade-banner .saito-module-overlay-btn")).forEach(btn => {
+		Array.from(document.querySelectorAll("#arcade-banner .button")).forEach(btn => {
 			btn.onclick = (e) =>{
 				let cmd = e.currentTarget.getAttribute("data-cmd");
 				if (cmd == "create"){

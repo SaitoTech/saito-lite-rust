@@ -167,6 +167,17 @@ body {
 }
 
 
+.dark .button {
+  background: linear-gradient(45deg, #540e81, #b539e8);
+  border: 1px solid var(--saito-red);
+}
+
+.dark .button:hover {
+  background: linear-gradient(-45deg, #537 50%, #324 100%);
+}
+
+
+
 
 /* game-create-menu */ 
 .game-selection-list-overlay {
@@ -219,10 +230,13 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   font-size: 2rem;
 }
 
+.arcade-league-title{
+  cursor: pointer;
+}
 
 
 .arcade-league-boxes{
