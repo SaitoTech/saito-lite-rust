@@ -182,6 +182,10 @@ Saito Module Boxes
     width: calc(50% - 1rem);
 }
 
+.saito-game.minimize{
+    min-height: unset;
+}
+
 .saito-game-controls {
     display: grid;
     grid-template-columns: 1fr min-content;

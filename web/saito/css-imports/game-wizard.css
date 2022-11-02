@@ -136,7 +136,7 @@
   background: none;
 }
 
-.game-wizard-options .saito-select select {
+.rs-create-game-players.dark .saito-select select, .game-wizard-options .saito-select select {
   border-color: var(--saito-purple);
   background: var(--saito-light-dark-transparent);
   color: var(--saito-white);

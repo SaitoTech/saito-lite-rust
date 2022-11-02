@@ -221,9 +221,10 @@ module.exports = ArcadeMain = {
 
       if (numGamesDisplayed == 0) {
         let carousel = new SaitoCarousel(app);
-        carousel.render(app, mod, "arcade", "arcade-hero");
-        carousel.attachEvents(app, mod);
-        if (mod.viewing_game_homepage) { //Overwrite the carousel to only show the relevant game
+        carousel.render(app, "arcade-hero");
+        if (mod.viewing_game_homepage === mod.name) {
+            carousel.addLeaves(app);
+        }else{
           let gamemod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
           let cdiv = document.getElementById("saito-carousel");
           if (cdiv) {

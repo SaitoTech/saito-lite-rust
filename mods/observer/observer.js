@@ -100,7 +100,7 @@ class Observer extends ModTemplate {
   renderArcadeTab(app, params){
     if (!app.BROWSER) { return; }
     
-
+    let numShown = 0;
     let elem_id = params.selector || "observer-hero";
     let tab = document.getElementById(elem_id);
     if (tab){
@@ -122,9 +122,14 @@ class Observer extends ModTemplate {
           if (print_game){
             let ob = new ArcadeObserver(app, observe);
             ob.render(app, this, elem_id);
+            numShown++
           }
 
         });
+
+        if (numShown == 0){
+          app.browser.addElementToId(`<div class="saito-carousel"></div>` ,elem_id);
+        }
       }catch(err){
         console.log(err);
       }

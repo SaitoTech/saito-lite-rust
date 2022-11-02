@@ -4,26 +4,36 @@ Saito Module Stubs - horizontal bar with image left
 .saito-module-imagebox {
     min-height: 240px;
     min-width: 300px;
-    position: relative;
     border: 1px solid;
-    border-top: none;
     background: url(/saito/img/dreamscape.png);
     background-size: cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
+
+.minimize .saito-module-imagebox{
+    min-height: unset;
+    height: fit-content;
+}
+
 .saito-module-imagebox-titlebar {
-    position: absolute;
     color: rgb(255, 255, 255);
     background: rgba(0, 0, 0, 0.5);
+    /*margin-top: 1px;*/
     font-size: 1.6em;
     font-weight: bold;
     width: 100%;
     overflow: hidden;
     padding: 1rem 1.5rem;
     height: min-content;
-    bottom: 0px;
 }
+
+.minimize .saito-module-imagebox-titlebar{
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
 .saito-module-imagebox-title {
-    margin-top: 0.8rem;
     float: left;
 }
 .saito-module-imagebox-button {

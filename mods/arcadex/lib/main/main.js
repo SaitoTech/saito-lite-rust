@@ -190,19 +190,10 @@ class ArcadeMain {
 
       if (numGamesDisplayed == 0) {
         let carousel = new SaitoCarousel(app);
-        carousel.render(app, mod, "arcade", "arcade-hero");
-        carousel.attachEvents(app, mod);
-        if (mod.viewing_game_homepage !== "Arcade") { //Overwrite the carousel to only show the relevant game
-          let gamemod = app.modules.returnModule(mod.viewing_game_homepage);
-          let cdiv = document.getElementById("saito-carousel");
-          if (cdiv) {
-            let name = gamemod.gamename || gamemod.name;
-            cdiv.innerHTML = `<div class="big">${name}</div>`;
-            cdiv.style.backgroundImage = `url('${gamemod.respondTo("arcade-carousel")?.background}')`;
-            cdiv.style.backgroundSize = "cover";
-          }
+        carousel.render(app, "arcade-hero");
+        if (mod.viewing_game_homepage === mod.name) {
+            carousel.addLeaves(app);
         }
-
       }
 
     }
