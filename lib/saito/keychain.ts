@@ -109,7 +109,7 @@ class Keychain {
       this.keys.push(tmpkey);
     }
 
-    console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
+    //console.log("IS THIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
 
     for (let key in data) {
       if (key === "identifiers") {

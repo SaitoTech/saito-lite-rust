@@ -108,6 +108,26 @@ class RedSquare extends ModTemplate {
           app.storage.saveOptions();
         }
       }
+
+      let redsquare_self = this;
+
+      if (this.app.BROWSER == 1) {
+
+        let tweet_timeout = 20000 + (Math.random() * 5000);
+        let stats_timeout = 20000 + (Math.random() * 10000);
+
+        setInterval(function () {
+          if (redsquare_self.viewing == "feed") {
+            redsquare_self.fetchNewTweets(app, redsquare_self);
+          }
+        }, tweet_timeout);
+
+        setInterval(function () {
+          if (redsquare_self.viewing == "feed") {
+            redsquare_self.fetchStatsUpdate(app, redsquare_self);
+          }
+        }, stats_timeout);
+      }
     }
   }
 
@@ -791,6 +811,8 @@ class RedSquare extends ModTemplate {
   async onConfirmation(blk, tx, conf, app) {
 
     if (app.BROWSER === 1) {
+      /*
+      console.log("run updates");
       if (blk != null) {
         //random time in milliseconds)
         let tweet_timeout = 10000 + (Math.random() * 5000);
@@ -799,15 +821,18 @@ class RedSquare extends ModTemplate {
         setTimeout(function () {
           if (this.viewing == "feed") {
             this.fetchNewTweets(app, mod_self);
+            console.log('feed update');
           }
         }, tweet_timeout);
 
         setTimeout(function () {
           if (this.viewing == "feed") {
             this.fetchStatsUpdate(app, mod_self);
+            console.log('status update');
           }
         }, stats_timeout);
       }
+      */
     }
 
     let txmsg = tx.returnMessage();
