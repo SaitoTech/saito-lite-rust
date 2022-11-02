@@ -167,8 +167,12 @@ Saito List,Saito User List and Saito User
     overflow: hidden;
 }
 
-.identicon-empty{
-    background: var(--saito-dark-transparent);
+/*.identicon-needed{
+    border: 1px solid var(--saito-red); 
+}*/
+
+.identicon-optional{
+     border: 1px solid var(--saito-green); 
 }
 
 .saito-module-identicon-box i {

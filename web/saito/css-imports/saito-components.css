@@ -149,3 +149,25 @@ input:checked+.saito-switch-slider:before {
 }
 
 
+/*********************
+ * Mouseover tool tips
+**********************/
+.tip:hover .tiptext {
+  visibility: visible;
+}
+
+.tiptext {
+  visibility: hidden;
+  position: absolute;
+  z-index: 10;
+  width: 90%;
+  min-width: 400px;
+  max-width: 750px;
+  padding: 0 1em;
+  background-color: #fefefe;
+  border-bottom: 1px solid var(--saito-primary);
+  line-height: 1.5em;
+  font-size: 1em;
+  font-style: italic;
+}
+

@@ -107,6 +107,17 @@ class RedSquare extends ModTemplate {
           app.options.homeModule = this.returnSlug();
           app.storage.saveOptions();
         }
+
+        //
+        // this is a hack to refresh the game invite sidebar if we are returning to the page after
+        // it has been dormant for a while
+        //
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden) {
+            app.connection.emit("game-invite-list-update");
+          }
+        });
+
       }
 
       let redsquare_self = this;
@@ -460,7 +471,7 @@ class RedSquare extends ModTemplate {
     this.saito_loader.render(app, this, '', true);
   }
 
-  render(app, mod, selector = "") {
+  render(app, mod) {
 
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
