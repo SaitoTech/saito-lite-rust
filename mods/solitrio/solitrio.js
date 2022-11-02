@@ -849,13 +849,7 @@ no status atm, but this is to update the hud
     this.loadGame(game_id);
     this.game.over = 2;
     this.saveGame(game_id);
-    //Refresh Arcade if in it
-    let arcade = this.app.modules.returnModule("Arcade");
-    if (arcade){
-      arcade.checkCloseQueue(game_id);
-      //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
-      arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
-    }
+    this.app.connection.emit("arcade-remove-game", game_id);
   }
 
   receiveGameoverRequest(blk, tx, conf, app) {

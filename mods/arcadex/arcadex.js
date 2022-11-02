@@ -169,6 +169,7 @@ class Arcade extends ModTemplate {
       }
     });
 
+
     app.connection.on("join-game", (game_id)=>{
       this.joinGame(game_id);
     });
@@ -239,6 +240,10 @@ class Arcade extends ModTemplate {
     app.connection.on("arcade-issue-challenge", (gameDetails) =>{
       let tx = this.createChallengeTransaction(gameDetails);
       app.connection.emit("send-relay-message", {recipient: gameDetails.players, request: "arcade spv update", data: tx});
+    });
+
+    app.connection.on("arcade-remove-game", (game_id)=>{
+      this.removeGameFromOpenList(game_id);
     });
 
     app.connection.on("arcade-close-game", (gameid)=>{

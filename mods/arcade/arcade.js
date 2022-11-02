@@ -192,6 +192,12 @@ class Arcade extends ModTemplate {
       }
     });
 
+    app.connection.on("arcade-close-game", (game_id)=>{
+      this.removeGameFromOpenList(game_id);
+    });
+
+
+
     app.connection.on("launch-game-wizard", (obj)=>{
       if (obj.game){
         this.createGameWizard(obj.game, obj);
