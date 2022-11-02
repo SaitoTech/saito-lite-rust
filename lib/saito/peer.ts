@@ -8,6 +8,14 @@ class Peer {
   public keep_alive_timer: any;
   public app: Saito;
   public id: number;
+  public uses_stun  = false;
+
+  public stun  = {
+    publicKey: "",
+    data_channel: null,
+    peer_connection: null
+  }
+
   public peer = {
     host: "localhost",
     port: "12101",
@@ -23,6 +31,7 @@ class Peer {
       publickey: "",
       protocol: "http",
     },
+  
     receiveblks: 1,
     receivetxs: 1,
     receivegts: 1,
@@ -150,11 +159,20 @@ class Peer {
     await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, data);
   }
 
-  sendRequest(message: string, data: any = "") {
+  sendRequest( message: string, data: any = "" ) {
+
+
+    if(this.uses_stun){
+      let dc = this.stun.data_channel;
+      console.log('data channel', dc)
+       this.app.networkApi.send(dc, message, data);
+       return;
+    }else {
     //
     // respect prohibitions
     //
     // block as Block.serialize(BlockType.Header)
+
     if (message === "SNDBLOCK") {
       this.app.networkApi.send(this.socket, "SNDBLOCK", data);
       return;
@@ -210,6 +228,8 @@ class Peer {
     } else {
       this.sendRequestWithCallbackAndRetry(message, data);
     }
+    }
+
   }
 
   //

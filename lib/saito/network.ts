@@ -143,6 +143,31 @@ class Network {
     peer.keepAlive();
   }
 
+
+  addStunPeer(stun_object){
+    // add data channels 
+    let pc = stun_object.peer_connection;
+    let publicKey = stun_object.publicKey
+    const data_channel = pc.createDataChannel('channel');
+    pc.dc = data_channel;
+    pc.dc.onmessage = (e) => {
+        console.log('new message from client : ', e.data);
+    };
+    pc.dc.onopen = (e) => {
+        console.log('connection opened');
+    }
+
+    const peer = new Peer(this.app);
+    peer.stun = {peer_connection:pc, data_channel: pc.dc, publicKey};
+
+    peer.socket = this.app.network.initializeWebSocket(peer, false, this.app.BROWSER == 1);
+    peer.uses_stun = true;
+    this.peers.push(peer);
+    
+    console.log('adding stun peer', peer);
+
+  }
+
   //
   // addRemotePeer
   //
@@ -356,6 +381,8 @@ class Network {
   }
 
   cleanupDisconnectedPeer(peer, force = 0) {
+  
+
     for (let c = 0; c < this.peers.length; c++) {
       // it has to be this peer, and the socket must be closed
       if (
@@ -862,6 +889,7 @@ class Network {
   }
 
   pollPeers() {
+
     let network_self = this;
 
     // console.debug(
@@ -876,7 +904,7 @@ class Network {
       // or reconnect if they're in our list of peers
       // to which to connect.
       //
-      if (peer.socket.readyState === peer.socket.CLOSED) {
+      if (peer.socket.readyState === peer?.socket?.CLOSED) {
         if (!this.dead_peers.includes(peer)) {
           this.cleanupDisconnectedPeer(peer);
         }
