@@ -145,25 +145,31 @@ class Network {
 
 
   addStunPeer(stun_object){
-    // add data channels 
     let pc = stun_object.peer_connection;
     let publicKey = stun_object.publicKey
-    const data_channel = pc.createDataChannel('channel');
-    pc.dc = data_channel;
-    pc.dc.onmessage = (e) => {
-        console.log('new message from client : ', e.data);
+    let data_channel = stun_object.data_channel
+
+    data_channel.onmessage = (e) => {
+      console.log('new mesage from ', publicKey)
     };
-    pc.dc.onopen = (e) => {
-        console.log('connection opened');
+   
+    data_channel.onopen = (e) => {
+        console.log('stun connection opened with '+publicKey, "opened ");
     }
 
     const peer = new Peer(this.app);
-    peer.stun = {peer_connection:pc, data_channel: pc.dc, publicKey};
-
-    peer.socket = this.app.network.initializeWebSocket(peer, false, this.app.BROWSER == 1);
+    peer.stun = {peer_connection:pc, data_channel, publicKey};
     peer.uses_stun = true;
+
+   let index = this.peers.findIndex(peer => peer.stun.publicKey === publicKey);
+    if(index === -1){
+     this.peers.push(peer)
+    }else {
+      this.peers[index] = peer
+    }
     this.peers.push(peer);
-    
+    this.peers_connected++;
+
     console.log('adding stun peer', peer);
 
   }
@@ -382,6 +388,9 @@ class Network {
 
   cleanupDisconnectedPeer(peer, force = 0) {
   
+    if(peer.uses_stun){
+      return;
+    }
 
     for (let c = 0; c < this.peers.length; c++) {
       // it has to be this peer, and the socket must be closed
@@ -890,6 +899,7 @@ class Network {
 
   pollPeers() {
 
+
     let network_self = this;
 
     // console.debug(
@@ -899,6 +909,10 @@ class Network {
     // loop through peers to see if disconnected
     //
     this.app.network.peers.forEach((peer) => {
+
+      if(peer.uses_stun){
+        return;
+      }
       //
       // if disconnected, cleanupDisconnectedSocket
       // or reconnect if they're in our list of peers
@@ -1075,6 +1089,7 @@ class Network {
     }
     this.peers.forEach((peer) => {
       //&& fees >= peer.peer.minfee
+      // console.log('peer ', pe)
       if (peer.peer.receivetxs === 0) {
         return;
       }

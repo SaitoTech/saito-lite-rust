@@ -49,8 +49,8 @@ class Encrypt extends ModTemplate {
         text: "Add Contact",
         icon: "far fa-id-card",
         callback: function (app, public_key) {
-            // encrypt_self.app.keys.saveKeys();
-            // encrypt_self.initiate_key_exchange(public_key, 0);
+            encrypt_self.app.keys.saveKeys();
+            encrypt_self.initiate_key_exchange(public_key, 0);
             let stunx_mod = app.modules.returnModule("Stunx");
             stunx_mod.createStunConnectionWithPeers([public_key]);
         }

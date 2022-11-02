@@ -160,11 +160,8 @@ class Peer {
   }
 
   sendRequest( message: string, data: any = "" ) {
-
-
-    if(this.uses_stun){
+  if(this.uses_stun){
       let dc = this.stun.data_channel;
-      console.log('data channel', dc)
        this.app.networkApi.send(dc, message, data);
        return;
     }else {
