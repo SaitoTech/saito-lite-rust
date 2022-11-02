@@ -204,7 +204,7 @@ hr {
 
 .email-compose {
   padding: 1em;
-  border: 1px solid var(--saito-cyber-black-wash);
+  border: 1px solid var(--saito-black-faded);
   margin: 1em 0;
   box-shadow: 0px 0px 3px 1px rgba(220, 220, 220, 0.75);
 }
@@ -225,7 +225,7 @@ hr {
 
 .email-form input[type="text"] {
   border: none;
-  border-bottom: 1px solid var(--saito-cyber-black-wash);
+  border-bottom: 1px solid var(--saito-black-faded);
   padding: 10px 3px;
   outline: none;
 }
@@ -591,7 +591,7 @@ hr {
     padding: 5px;
   }
   .email-apps-item:active {
-    background-color: var(--saito-cyber-black-wash);
+    background-color: var(--saito-black-faded);
   }
   .email-navigator-item {
     padding: 5px;
