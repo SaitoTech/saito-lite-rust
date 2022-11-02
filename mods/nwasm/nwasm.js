@@ -62,11 +62,12 @@ console.log("data: " + data);
       this.game.queue.push("READY");
     }
 
+    //
+    // when games are saved in the emulator
+    //
     this.app.connection.on("nwasm-export-game-save", (savegame) => {
       nwasm_self.active_game = savegame;
-      console.log("EXPORTED 1: " + nwasm_self.active_game);
       nwasm_self.saveGameFile(savegame);
-      console.log("EXPORTED 2: " + nwasm_self.active_game);
     });
 
   }
@@ -157,39 +158,6 @@ console.log("data: " + data);
     this.menu.render(app, this);
   }
 
-  saveState() {
-    myApp.saveStateLocal();
-  }
-
-  loadState() {
-    myApp.loadStateLocal();
-  }
-
-  exportState() {
-    myApp.saveStateLocal();
-    myApp.exportStateLocal();
-  }
-
-  importState() {
-    if (this.active_game == null) {
-      alert("Load from Transaction not done yet!");
-    } else {
-      myApp.importStateLocal();
-    }
-  }
-
-  save() {
-    this.app.options.nwasm = this.roms;
-    this.app.storage.saveOptions();
-  }
-
-  load() {
-    if (this.app.options.nwasm) {
-      this.roms = this.app.options.nwasm;
-      return;
-    }
-    this.roms = {};
-  }
 
   uploadRom(app) {
     let upload_rom = new UploadRom(app, this);
@@ -234,6 +202,39 @@ console.log("data: " + data);
       view[i] = b[i];
     }
     return ab;
+  }
+
+  saveState() {
+    myApp.saveStateLocal();
+  }
+
+  loadState() {
+    myApp.loadStateLocal();
+  }
+
+  exportState() {
+    myApp.saveStateLocal();
+    myApp.exportStateLocal();
+  }
+
+  importState() {
+    if (this.active_game == null) {
+      alert("Load from Transaction not done yet!");
+    } else {
+      myApp.importStateLocal();
+    }
+  }
+  save() {
+    this.app.options.nwasm = this.roms;
+    this.app.storage.saveOptions();
+  }
+
+  load() {
+    if (this.app.options.nwasm) {
+      this.roms = this.app.options.nwasm;
+      return;
+    }
+    this.roms = {};
   }
 
 }
