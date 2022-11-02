@@ -54,7 +54,18 @@ class League extends ModTemplate {
           slug: this.returnSlug()
       };
     }
-      
+
+    if (type == "user-leagues"){
+      let user_created_leagues = [];
+
+      for (let league of this.leagues){
+        if (league.admin !== "saito"){
+          user_created_leagues.push(league);
+        }        
+      }
+
+      return user_created_leagues;
+    }
     return super.respondTo(type);
   }
 
@@ -75,6 +86,18 @@ class League extends ModTemplate {
            bs.render(app, this, league); 
          }        
        }
+    });
+
+    app.connection.on("join-league", (id)=>{
+      this.sendJoinLeagueTransaction(id);
+    });
+
+    app.connection.on("start-league-game", (id)=>{
+      let league = this.leagues.find((g) => g.id === id);
+      if (league){
+        this.createLeagueGame(league);
+      }
+
     });
 
     if (app.BROWSER == 0){

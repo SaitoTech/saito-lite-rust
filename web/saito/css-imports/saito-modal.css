@@ -99,7 +99,6 @@
   margin-bottom: 1rem;
 }
 
-
 #saito-confirm-add-publickey > .saito-contact-status {
   text-align: center;
 }
@@ -110,4 +109,8 @@
 }
 .saito-modal-title .saito-user .saito-address{
   font-size: 4rem;
+}
+
+.share-link {
+  color: #ddd;
 }
