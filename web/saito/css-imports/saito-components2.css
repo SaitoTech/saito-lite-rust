@@ -69,6 +69,7 @@ i.saito-back-button {
     height: auto;
     border: 1px solid var(--saito-border);
     padding: 1rem;
+    white-space: initial;
 }
 
 .saito-leaderboard-gamename {
