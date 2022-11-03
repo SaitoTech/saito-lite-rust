@@ -25,28 +25,23 @@ body {
 }
 
 .jaipur_board{
-  /*display: flex;
-  flex-direction: row;
+ /* display: grid;
+  grid-template-columns: min-content auto;
   align-items: center;
-  justify-content: space-around;
-  */
-  display: grid;
-  grid-template-columns: minmax(120px, 1fr) minmax(80px, 1fr) 4fr;
+  grid-gap: 210px;*/
+  display: flex;
   align-items: center;
-  grid-gap: 210px;
+  justify-content: space-between;
 
   max-height: 60vh;
-  max-width: 100vw;
-  min-width: 80vw;
+  width: 100vw;
+
+  padding: 30px;
   position: absolute;
-  top: 30vh;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translateY(-60%);
 }
 
-/*.jaipur_board > div{
-  margin: 15px;
-}*/
 
 .pb_sub_info{
   font-size: 0.8em;
@@ -58,69 +53,61 @@ body {
 }
 .bonus_tokens{
   display: grid;
-  grid-template-columns: repeat(3, minmax(122px, 1fr));
-  grid-template-rows: repeat(3, minmax(125px, 1fr));
-  width: 100px;
-  height: 275px; 
-  }
+  grid-template-columns: repeat(3, minmax(50px, 1fr));
+  grid-template-rows: repeat(3, minmax(50px, 1fr));
+  grid-gap: min(5px,0.4vw);
+  min-width: 165px;
+  width: fit-content;
+  max-width: 245px;
+  height: fit-content;
+  padding: min(10px,1vw);
+  background-color: #652A0E99;
+  border-radius: 10px; 
+  position: relative;
+}
+
+.bonus_tokens::before{
+  content:  "Bonus Tokens";
+  font-size: 3rem;
+  position: absolute;
+  color: whitesmoke;
+  text-shadow: 2px 2px black;
+  top: calc(-4px - 3rem);
+}
 
 .token{
-  width: 100px;
+  width: 100%;
   filter: drop-shadow(5px -5px 5px maroon);
   }
 
-.card_count{
-  width: 100%;
-  color: yellowgreen;
-  border-style: solid;
-  height: auto;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  font-size: min(6vw,80px);
-  line-height: 8vw;
-  text-align: center;
-  text-shadow: 2px 2px black;
+.token.empty{
+  filter: grayscale(1) brightness(0.35) opacity(50%);
 }
-
 
 .card_count.disabled{
   filter: brightness(0.35);  
 }
 
-.draw_decks{
-  max-width: 200px;
-  position:relative; left:70px;
-}
 
-#draw{
-  color: maroon;
-  width: 8vw;
-  box-shadow: 10px -5px 20px white;
-}
-
-
-#discard .card{
-  width: 100px;
-  border: solid black;
-  position: relative; left: 30px;
-  box-shadow: 10px -5px 20px white;
-}
 
 .market{
   display: grid;
-  grid-template-columns: repeat(5, fit-content(100px));
-  max-width: 100px;
-  min-width: max(100px, 64vw);
-  column-gap: 70px;
-  position:relative; top:40px;
-
+  grid-template-columns: repeat(auto-fit, minmax(100px,1fr));
+  grid-gap: 10px;
+  background-color: #3F1651cc;
+  border-radius: 15px;
+  padding: 2rem;
+  max-width: 1050px;
+  position: relative;
 }
 
-.market .card{
-  width: 190;
-  box-shadow: 10px -5px 20px brown;
-  border: solid black;
+.market::before{
+  content:  "Market";
+  font-size: 3rem;
+  position: absolute;
+  color: whitesmoke;
+  text-shadow: 2px 2px black;
+  top: calc(-4px - 3rem);
 }
 
 .player-box-graphic{
@@ -136,12 +123,6 @@ body {
   margin: 0.25em 0.5em;
 }
 
-.camel_train{
-  width: 110px;
-  color: cadetblue;
-  box-shadow: 5px 5px 20px black;
-  position:relative; top:-25px; left:-5px
-}
 
 .camel_bonus{
   position: absolute;
@@ -154,6 +135,7 @@ body {
 .tip .tiptext{
   min-width: 100px;
   z-index: 100;
+  text-shadow: none;
 }
 
 .player-box-info, .plog{
@@ -212,19 +194,63 @@ body {
   justify-content: flex-end;
 }
 
+
+
 .card, .card_count{
+  width: 100%;
   cursor: pointer;
   border-radius: 10%;
+  border: solid whitesmoke 3px;
 }
+
+.market .card, .market .card_count{
+  /*box-shadow: 10px -5px 20px tan;*/
+}
+
+
+.card_count{
+  height: auto;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-size: min(6vw,80px);
+  line-height: 2em;
+  text-align: center;
+  text-shadow: 2px 2px black;
+}
+
+
+.camel_train{
+  width: 75px;
+  color: cadetblue;
+  position:relative; 
+  left:-5px;
+}
+.camel_train .card_count{
+  line-height: 105px;
+}
+
+#draw{
+  color: maroon;
+  cursor: default;
+  /*background-image:url('${this.card_img_dir}card_back.png');*/
+  background-color: #ffffffaa;
+}
+
+#discard .card{
+  cursor: default;
+  filter: grayscale(1) brightness(0.4);
+}
+
 
 .card_group{
   display: flex;
   flex-direction: row;
 }
 
-.card_group img.card{
-  width: 146px;
-  margin: unset;
+.card_group .card_count, .card_group img.card{
+  width: 120px;
+  height: 177px;
 }
 
 
@@ -321,6 +347,5 @@ body {
 }
 
 .opponents > .player-box.active{
-  border-color: yellow;
-  background-color: red
-  }
+  background-color: red;
+}

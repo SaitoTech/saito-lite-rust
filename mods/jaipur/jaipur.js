@@ -81,8 +81,8 @@ class Jaipur extends GameTemplate {
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    //this.log.render(app, this);
+    //this.log.attachEvents(app, this);
 
     this.playerbox.render(app, this);
     this.playerbox.attachEvents(app, this);
@@ -104,7 +104,7 @@ class Jaipur extends GameTemplate {
 initializeGame(game_id) {
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
-  this.restoreLog();
+  //this.restoreLog();
 
   //
   // initialize
@@ -724,7 +724,7 @@ initializeQueue(first_player = 1){
   camelHTML(herd1, herd2){
     let camel_bonus = (herd1 > herd2) ? `<img class="camel_bonus" src="${this.token_img_dir}camel_token.png" />` : "";
     if (herd1 > 0){
-      return `<div class="camel_train card_count" style="background-image: url('${this.card_img_dir}camel.png');">${herd1}${camel_bonus}</div>`;
+      return `<div class="camel_train"><div class="card_count" style="background-image: url('${this.card_img_dir}camel.png');">${herd1}</div>${camel_bonus}</div>`;
     }else{
       return "";
     }
@@ -820,7 +820,7 @@ initializeQueue(first_player = 1){
                  </div>`;
         this.game.state.tokens[token].push(value);      
       }else{
-        html += `<img class="token" src="${this.token_img_dir}empty.jpg"/>`;
+        html += `<img class="token empty" src="${this.token_img_dir}${token}_token.png"/>`;
       }
     }
     for (let i = 3; i <= 5; i++){
@@ -835,21 +835,19 @@ initializeQueue(first_player = 1){
     }
 
     html += "</div>";
-    
-    html += `<div class="draw_decks">
-                <div id="draw" class="tip card_count" style="background-image:url('${this.card_img_dir}card_back.png');">
+        
+    html +=`<div class="market">
+                <div id="discard">${this.cardToHTML(this.game.state.last_discard)}</div>
+                <div id="draw" class="tip card_count">
                   ${this.game.deck[0].crypt.length}
                   <div class="tiptext">${this.game.deck[0].crypt.length} cards left in draw pile.</div>
-                </div>
-                <div id="discard">${this.cardToHTML(this.game.state.last_discard)}</div>
-              </div>`;
-    
-    html +=`<div class="market">`;
+                </div>`;
     for (let res of this.game.state.market){
       html += this.cardToHTML(res);
     }
 
     html += `</div>
+          <div class="invisible_item"></div>
           </div>`;
 
     $(".gameboard").html(html);
