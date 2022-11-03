@@ -359,6 +359,23 @@ v	}
       }
     });
 
+    this.menu.addMenuOption({
+      text : "Settings",
+      id : "game-controls",
+      class : "game-game-controls",
+      callback : async function(app, game_mod) {
+
+        game_mod.menu.hideSubMenus();
+	//if (!game_mod.controls) {game_mod.controls = new QuakeControls(app, game_mod);}
+        //game_mod.controls = new QuakeControls(app, game_mod);
+	game_mod.controls.overlay.hide();
+	game_mod.controls.render(app, game_mod);
+    	SAITO_COMPONENT_ACTIVE = true;
+    	SAITO_COMPONENT_CLICKED = true;
+	
+      },
+    });
+/*
     this.menu.addSubMenuOption("game-game", {
       text : "Controls",
       id : "game-controls",
@@ -375,7 +392,7 @@ v	}
 	
       },
     });
-
+*/
     this.menu.addSubMenuOption("game-game", {
         text : "Screenshot",
         id : "game-post",
