@@ -799,7 +799,7 @@ class RedSquare extends ModTemplate {
           });
         } else {
           //let sql = `SELECT * FROM tweets WHERE sig = '${mod.viewing}' OR parent_id = '${mod.viewing}'`;
-          if (this.mode == "thread") {
+          if (this.mode == "thread" || this.mode == "tweet") {
             let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${mod.viewing}' OR parent_id = '${mod.viewing}' OR thread_id = '${mod.viewing}'`;
             this.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, mod.viewing); });
 
