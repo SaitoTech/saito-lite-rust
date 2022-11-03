@@ -836,7 +836,7 @@ span.redsquare-home-red-square+span {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border: 1px solid var(--saito-cyber-black-wash);
+  border: 1px solid var(--saito-black-faded);
 }
 
 #localStream {
