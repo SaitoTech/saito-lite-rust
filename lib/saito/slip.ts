@@ -143,7 +143,7 @@ class Slip {
     const slip_ordinal = app.binary.u8AsByte(this.sid);
     const amount = app.binary.u128AsBytes(this.amt.toString());
 
-    console.debug(`Generating UTXOKey for ${this.block_id}, ${this.tx_ordinal}, ${this.sid}`);
+    //console.debug(`Generating UTXOKey for ${this.block_id}, ${this.tx_ordinal}, ${this.sid}`);
     let arr = new Uint8Array([...publickey, ...block_id, ...tx_ordinal, slip_ordinal, ...amount]);
     console.assert(arr.length == 66, "UTXO Key Length is not 66");
     this.key = arr.toString();
@@ -209,7 +209,8 @@ class Slip {
 
   validate(app:Saito) : boolean {
     if (this.amt > BigInt(0)) {
-      return false; // TODO : isSpendable is not implemented. so returning false here for now just to catch bugs.
+      return true;
+      //return false; // TODO : isSpendable is not implemented. so returning false here for now just to catch bugs.
       // return !!app.utxoset.isSpendable(this.returnKey());
     } else {
       return true;

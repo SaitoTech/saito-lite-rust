@@ -1462,11 +1462,11 @@ class Block {
     ret.set(block_header_data, 0);
     let next_tx_location = BLOCK_HEADER_SIZE;
     for (let i = 0; i < transactions.length; i++) {
-      console.debug(
-        `block.serialize : tx ${i} starting = ${next_tx_location}, length = ${
-          transactions[i].length
-        }, sig = ${this.transactions[i].returnSignature(this.app)}`
-      );
+      // console.debug(
+      //   `block.serialize : tx ${i} starting = ${next_tx_location}, length = ${
+      //     transactions[i].length
+      //   }, sig = ${this.transactions[i].returnSignature(this.app)}`
+      // );
       ret.set(transactions[i], next_tx_location);
       next_tx_location += transactions[i].length;
     }

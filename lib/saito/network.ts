@@ -292,6 +292,8 @@ class Network {
         }
         this.app.connection.emit("connection_dropped", peer);
         this.app.connection.emit("peer_disconnect", peer);
+        peer.initiated_handshake = false;
+        peer.peer.publickey = "";
       };
       peer.socket.onerror = (event) => {
         if (this.debugging) {
@@ -600,25 +602,25 @@ class Network {
         }
         break;
       }
-      case MessageType.HandshakeCompletion: {
-        await this.app.handshake.handleHandshakeCompletion(peer, message.message_data);
-
-        //
-        // prune older peers
-        //
-        const publickey = peer.peer.publickey;
-        let count = 0;
-        for (let i = this.peers.length - 1; i >= 0; i--) {
-          if (this.peers[i].peer.publickey === publickey) {
-            count++;
-          }
-          if (count > 1) {
-            this.cleanupDisconnectedPeer(this.peers[i], 1);
-            i--;
-          }
-        }
-        break;
-      }
+      // case MessageType.HandshakeCompletion: {
+      //   await this.app.handshake.handleHandshakeCompletion(peer, message.message_data);
+      //
+      //   //
+      //   // prune older peers
+      //   //
+      //   const publickey = peer.peer.publickey;
+      //   let count = 0;
+      //   for (let i = this.peers.length - 1; i >= 0; i--) {
+      //     if (this.peers[i].peer.publickey === publickey) {
+      //       count++;
+      //     }
+      //     if (count > 1) {
+      //       this.cleanupDisconnectedPeer(this.peers[i], 1);
+      //       i--;
+      //     }
+      //   }
+      //   break;
+      // }
       case MessageType.Ping:
         // console.log("received ping...");
         // job already done!
@@ -818,8 +820,8 @@ class Network {
       // this delivers the block as block_hash
       //
       case MessageType.BlockHeaderHash:
-        block_hash = Buffer.from(message.message_data, "hex").toString("hex");
-
+        block_hash = Buffer.from(message.message_data.slice(0,32), "hex").toString("hex");
+        console.log("BlockHeaderHash received : " + block_hash);
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
           await this.fetchBlock(block_hash, peer);
@@ -982,7 +984,8 @@ class Network {
     const data = { bhash: blk.returnHash(), bid: blk.block.id };
     for (let i = 0; i < this.peers.length; i++) {
       if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
-        this.sendRequest("SNDBLKHH", Buffer.from(blk.returnHash(), "hex"), this.peers[i]);
+        let blockheader = Buffer.concat([Buffer.from(blk.returnHash(), "hex"), this.app.binary.u64AsBytes(blk.returnId())]);
+        this.sendRequest("SNDBLKHH", blockheader, this.peers[i]);
       }
     }
   }
@@ -1103,9 +1106,9 @@ class Network {
       if (peer.peer.receivetxs === 0) {
         return;
       }
-      if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
+      if (!peer.inTransactionPath(tx) && !!peer.returnPublicKey()) {
         const tmptx = peer.addPathToTransaction(tx);
-        if (peer.socket && peer.socket.readyState === peer.socket.OPEN) {
+        if (peer.socket && peer.socket.readyState === peer.socket.OPEN ) {
           // 1 = WebSocket Open
           this.sendRequest("SNDTRANS", tmptx.serialize(this.app), peer);
         } else {
@@ -1137,10 +1140,10 @@ class Network {
       }
     }
     if (!latest_block_id) {
-      latest_block_hash = "";
+      latest_block_hash = "0000000000000000000000000000000000000000000000000000000000000000";
     }
     if (!fork_id) {
-      fork_id = "";
+      fork_id = "0000000000000000000000000000000000000000000000000000000000000000";
     }
 
     if (this.debugging) {

@@ -64,7 +64,7 @@ class Transaction {
     // are behind the transactions.
 
     this.optional = {}; // non-signed field for users
-    this.msg = null;
+    this.msg = {};
     this.dmsg = "";
     this.size = 0;
     this.is_valid = 1;
@@ -256,8 +256,9 @@ class Transaction {
       }
       //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
     } catch (err) {
-      console.log("buffer length = " + this.transaction.m.byteLength);
-      console.error("error trying to parse this.msg: ", err);
+      //console.log("buffer length = " + this.transaction.m.byteLength);
+      //console.error("error trying to parse this.msg: ", err);
+      console.error("error trying to parse the message as JSON, tx : ", this.transaction.sig);
     }
   }
 
@@ -419,7 +420,7 @@ class Transaction {
     if (this.dmsg !== "") {
       return this.dmsg;
     }
-    if (this.msg !== {} && this.msg !== null) {
+    if (this.msg !== null) {
       return this.msg;
     }
     try {
@@ -676,9 +677,9 @@ class Transaction {
       next_hop_location += HOP_SIZE;
     }
 
-    console.debug(
-      `transaction.serialize length : ${ret.length}, inputs : ${inputs.length}, outputs : ${outputs.length}, message len : ${this.transaction.m.byteLength}, path len : ${this.transaction.path.length}`
-    );
+    // console.debug(
+    //   `transaction.serialize length : ${ret.length}, inputs : ${inputs.length}, outputs : ${outputs.length}, message len : ${this.transaction.m.byteLength}, path len : ${this.transaction.path.length}`
+    // );
 
     return ret;
   }

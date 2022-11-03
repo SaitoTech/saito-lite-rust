@@ -10,6 +10,7 @@ class Peer {
   public app: Saito;
   public id: number;
   public challenge : any;
+  public initiated_handshake : boolean;
   public peer = {
     host: "localhost",
     port: "12101",
@@ -45,6 +46,7 @@ class Peer {
 
     this.id = new Date().getTime();
     this.keep_alive_timer = null;
+    this.initiated_handshake = false;
 
     if (peerjson !== "") {
       try {
@@ -70,10 +72,10 @@ class Peer {
     hop.from = this.app.crypto.fromBase58(this.app.wallet.returnPublicKey());
     hop.to = this.app.crypto.fromBase58(this.returnPublicKey());
     let buffer = Buffer.concat([Buffer.from(tx.transaction.sig, "hex"), Buffer.from(hop.to, "hex")]);
-    let hash = this.app.crypto.hash(buffer);
+    //let hash = this.app.crypto.hash(buffer);
 
-    hop.sig = this.app.crypto.signBuffer(Buffer.from(hash,"hex"), this.app.wallet.returnPrivateKey());
-
+    hop.sig = this.app.crypto.signBuffer(buffer, this.app.wallet.returnPrivateKey());
+    //console.debug("addPathToTransaction - Tx sign : " + tx.transaction.sig + ", hop from : " + hop.from + ", hop to : " + hop.to + ", : hash :" + this.app.crypto.hash(buffer) + ", hop sign : " + hop.sig);
     tmptx.transaction.path.push(hop);
     return tmptx;
   }
