@@ -395,11 +395,13 @@ class Transaction {
     if (Object.keys(this.msg).length > 0) {
       return this.msg;
     }
+    const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
     try {
-      const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
       this.msg = JSON.parse(reconstruct);
     } catch (err) {
-      console.error(err);
+      //console.error(err);
+      console.log("Json.Parse() message failed. Raw message is: " + reconstruct);
+      this.msg = reconstruct;
     }
     return this.msg;
   }

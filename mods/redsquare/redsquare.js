@@ -966,7 +966,7 @@ class RedSquare extends ModTemplate {
   }
 
   fetchNewTweets(app, mod) {
-    console.log("Fetching New Tweets");
+    console.log("Fetching New Posts");
     if (!mod.trackedTweet) { return; }
     let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
