@@ -1,5 +1,5 @@
 const EmailAppspaceTemplate = require('./email-appspace.template.js');
-//const ModalRegisterUsername = require('./../../../../lib/saito/ui/modal-register-username/modal-register-username');
+//const ModalRegisterUsername = require('./../../../../lib/saito/new-ui/modals/modal-register-username/modal-register-username');
 //const ModalRegisterEmail = require('./../../../../lib/saito/ui/modal-register-email/modal-register-email');
 
 class SettingsEmailAppspace {
