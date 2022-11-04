@@ -224,17 +224,7 @@ module.exports = ArcadeMain = {
         carousel.render(app, "arcade-hero");
         if (mod.viewing_game_homepage === mod.name) {
             carousel.addLeaves(app);
-        }else{
-          let gamemod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
-          let cdiv = document.getElementById("saito-carousel");
-          if (cdiv) {
-            let name = gamemod.gamename || gamemod.name;
-            cdiv.innerHTML = `<div class="big">${name}</div>`;
-            cdiv.style.backgroundImage = `url('${gamemod.respondTo("arcade-carousel")?.background}')`;
-            cdiv.style.backgroundSize = "cover";
-          }
         }
-
       }
 
     }
