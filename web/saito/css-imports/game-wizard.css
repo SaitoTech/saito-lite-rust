@@ -323,7 +323,7 @@
 .saito-select:hover::after {
   color: var(--saito-red);
 }
-option {
+.dark option {
   background: var(--saito-black);
 }
 
