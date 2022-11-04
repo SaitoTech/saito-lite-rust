@@ -141,13 +141,8 @@ class MyClass {
 
 
     processPrintStatement(text) {
-        //console.log(text);
 
-         if (this.mod != null && text != "") {
-            this.mod.game_logs.push(text);
-            console.log("AFTER inside game_logs");
-            console.log(this.mod.game_logs);
-        }
+        console.log(text);
 
         //emulator has started event
         if (text.includes('mupen64plus: Starting R4300 emulator: Cached Interpreter')) {
@@ -689,6 +684,10 @@ class MyClass {
         request.onsuccess = function (ev) {
             var db = ev.target.result;
             var romStore = db.transaction("N64WASMSTATES", "readwrite").objectStore("N64WASMSTATES");
+
+console.log("romStore: " + romStore);
+
+
             var rom = romStore.get(myClass.rom_name);
             rom.onsuccess = function (event) {
                 let byteArray = myapp_self.mod.active_game;

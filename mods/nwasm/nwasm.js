@@ -20,6 +20,8 @@ class Nwasm extends GameTemplate {
     this.load();
 
     this.active_rom = null;
+    this.active_rom_name = "";
+    this.active_rom_manufacturer = "";
     this.active_game = null;
 
     this.game_logs = [];
@@ -32,22 +34,64 @@ class Nwasm extends GameTemplate {
   }
 
 
+
+  initialize(app) {
+
+    if (app.BROWSER == 0) { return; }
+    super.initialize(app);
+
+    //
+    // monitor log to extra game name
+    //
+    if (this.browser_active == 1) {
+      {
+        const log = console.log.bind(console)
+        console.log = (...args) => {
+          if (args.length > 0) {
+            if (typeof args[0] === 'string') {
+              this.processNwasmLog(args[0], log);
+            }
+            log(...args);
+          }
+        }
+      }
+    }
+  }
+
+  //
+  // for the love of God don't add console.logs within this function
+  //
+  processNwasmLog(logline="", log) {
+
+    let x = logline;
+
+    if (logline.indexOf("mupen64plus: ") == 0) {
+      x = logline.substring(13);
+      if (x.indexOf("Name: ") == 0) {
+        x = x.substring(6);
+        this.active_rom_name = x;
+      }
+      if (x.indexOf("Manufacturer: ") == 0) {
+        x = x.substring(14);
+        this.active_rom_manufacturer = x;
+      }
+    }
+
+  }
+
+
+
   async onPeerHandshakeComplete(app, peer) {
 
     let nwasm_self = this;
 
-console.log("LOADING TXS FROM ARCHIVE");
     this.app.storage.loadTransactions("Nwasm", 10, (txs) => {
-console.log("retrieved tx from storage");
       if (txs.length > 0) {
-console.log("length > 0");
         let tx = txs[0];
         let txmsg = tx.returnMessage();
         let data = txmsg.data;
-console.log("data: " + data);
 	let binary_data = nwasm_self.convertBase64ToByteArray(data);
 	nwasm_self.active_game = binary_data;
-        console.log("LOADED: " + data);
       }
     });
 
@@ -171,8 +215,9 @@ console.log("data: " + data);
   }
 
 
-
-
+  //////////////////
+  // transactions //
+  //////////////////
   saveRomFile(data) {
 
     console.log("save rom file: " + data);
@@ -183,43 +228,41 @@ console.log("data: " + data);
 
     let obj = {
       module: this.name,
+      name: this.active_rom_name ,
+      manufacturer: this.active_rom_manufacturer,
       request: "upload rom",
       data: base64data,
     };
 
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
-    // temp not signing
-console.log("BEFORE SIGN TX");
     newtx = this.app.wallet.signTransaction(newtx);
-console.log("AFTER SIGN TX");
     this.app.storage.saveTransaction(newtx);
 
   }
   saveGameFile(data) {
 
-    console.log("save game file: " + data);
-
     let base64data = this.convertByteArrayToBase64(data);
-
-    console.log("save game file: " + base64data);
 
     let obj = {
       module: this.name,
+      name: this.active_rom_name ,
+      manufacturer: this.active_rom_manufacturer,
       request: "upload savegame",
       data: base64data,
     };
 
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
-    // temp not signing
-console.log("BEFORE SIGN TX");
     newtx = this.app.wallet.signTransaction(newtx);
-console.log("AFTER SIGN TX");
     this.app.storage.saveTransaction(newtx);
 
   }
 
+
+  /////////////////////
+  // data conversion //
+  /////////////////////
   convertByteArrayToBase64(data) {
     return Buffer.from(data, 'binary').toString('base64');;
   } 
@@ -234,6 +277,10 @@ console.log("AFTER SIGN TX");
     return ab;
   }
 
+
+  ////////////////////////
+  // saving and loading //
+  ////////////////////////
   saveState() {
     myApp.saveStateLocal();
   }
@@ -254,6 +301,7 @@ console.log("AFTER SIGN TX");
       myApp.importStateLocal();
     }
   }
+
   save() {
     this.app.options.nwasm = this.roms;
     this.app.storage.saveOptions();
