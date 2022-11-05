@@ -1302,7 +1302,7 @@ class Browser {
 
   async linkifyKeys(app, mod, element) {
     if (typeof element == "undefined") { return ;}
-    console.log("linkifyin' " + element.id)
+    //console.log("linkifyin' " + element.id)
     if (element.id == "") { return; }
     let elements = element.childNodes;
     elements.forEach(async el => {

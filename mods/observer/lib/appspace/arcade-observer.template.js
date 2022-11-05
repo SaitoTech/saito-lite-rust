@@ -1,65 +1,39 @@
+const SaitoModuleLong = require("./../../../../lib/saito/new-ui/templates/saito-module-long.template");
 
 module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
 
-  //TODO: LEAGUES!
+  if (!msg || !msg.module){ return ""; }
 
-  let gameModule = app.modules.returnModule(msg.module);
-  let slug = gameModule.returnSlug();
-
-  let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${msg.players_array.split("_").length}, 1fr);">`;
-  let gameName= gameModule.gamename || gameModule.name;
-  
-  let datetime = app.browser.formatDate(msg.latest_move);
-
+  let playersHtml = `<div class="playerInfo">`;
   msg.players_array.split("_").forEach((player) => {
     let identicon = app.keys.returnIdenticon(player);
-    playersHtml += `<div class="player-slot tip id-${player}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(player)}</div></div>`;
+    playersHtml += `<div class="player-slot`;
+    if (msg.winner && msg.winner.includes(player)){
+      playersHtml += " winner";
+    }
+    playersHtml += ` tip"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(player)}</div></div>`;
   });
   playersHtml += '</div>';
 
-  let bannerBack = gameModule.respondTo("arcade-carousel")?.background || `/${slug}/img/arcade.jpg`;
-  let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
+  let id=`observe-${msg.game_id}`;
+  let buttonsHtml = `<button data-sig="${msg.game_id}" data-cmd="watch" class="button observe-game-btn">${(msg.game_status == "over")?"REVIEW":"WATCH"}</button>`;
 
-  let gameIndicator = `<i class="game_status_indicator game_${msg.game_status} fas fa-circle" title="This game is ${msg.game_status}"></i>`;
+  let datetime = app.browser.formatDate(msg.latest_move);
 
-  let inviteHtml = `
-    <div id="observe-${msg.game_id}" class="arcade-tile" style="background-image: url('${bannerBack}');">
-      <div class="invite-tile-wrapper">
-        <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
-        <div class="invite-col-2">
-          <div class="gameName">${gameName}</div>
-          <div style="font-size:0.9em">${msg.step} moves as of ${datetime.hours}:${datetime.minutes}, ${datetime.day} ${datetime.month} ${datetime.year}</div>
-          ${playersHtml}
-        </div>
-        <div class="gameShortDescription">${makeDescription(gameModule, msg.msg?.options)}</div>
-	      <div class="gameButtons" style="position:relative;">
-          <button data-sig="${msg.game_id}" data-cmd="watch" class="button observe-game-btn">WATCH</button>
-          ${gameIndicator}
-        </div>
-      </div>
-    </div>
-    `;
+  let detailsHtml = `
+  <div class="gameShortDescriptionRow">
+    <div class="gameShortDescriptionKey">Moves:</div>
+    <div class="gameShortDescriptionValue">${msg.step}</div>
+  </div>
+  <div class="gameShortDescriptionRow">
+    <div class="gameShortDescriptionKey">Last:</div>
+    <div class="gameShortDescriptionValue">${datetime.hours}:${datetime.minutes}</div>
+  </div>
+  `;
 
-  return inviteHtml;
-}
-
-
-let makeDescription = (game_mod, options) => {
-
-  let html = '';
-
-  if (options) {
-    let sgoa = game_mod.returnShortGameOptionsArray(options);
-    for (let i in sgoa) {
-      let output_me = 1;
-      if (output_me == 1) {
-        html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i}: </div><div class="gameShortDescriptionValue">${sgoa[i]}</div></div>`;
-      }
-    }
-  }
-
-  return html;
+  return SaitoModuleLong(app, app.modules.returnModule(msg.module), id, playersHtml, detailsHtml, buttonsHtml);
 
 }
+
 
 

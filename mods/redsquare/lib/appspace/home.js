@@ -25,12 +25,12 @@ class RedSquareAppspaceHome {
 
     //not used - keeping for legacy
     app.connection.on("new-tweet-render-request", (tweet) => {
-      console.log("ADDING TRR: " + tweet.tx.transaction.sig);
+      //console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list", false);
     });
 
     app.connection.on("tweet-render-request", (tweet, append = true) => {
-      console.log("ADDING TRR: " + tweet.tx.transaction.sig);
+      //console.log("ADDING TRR: " + tweet.tx.transaction.sig);
       tweet.render(app, mod, ".redsquare-list", append);
     });
 
@@ -65,6 +65,7 @@ class RedSquareAppspaceHome {
       });
     }, options);
 
+    this.ptweet = new PostTweet(app, mod);
   }
 
   async render(app, mod) {
@@ -91,8 +92,7 @@ class RedSquareAppspaceHome {
     // since it is a class, we put an element in the overlay and render into that.
     //
     document.getElementById("redsquare-new-tweet").onclick = (e) => {
-      let ptweet = new PostTweet(app, mod);
-      ptweet.render(app, mod);
+      this.ptweet.render(app, mod);
       // app.browser.addIdentifiersToDom();
     }
     document.getElementById("redsquare-my-profile").onclick = (e) => {

@@ -171,7 +171,7 @@
   padding: 10px 5px;
   border-radius: 0px;
   font-size: 1.2em;
-  border-bottom: 1px solid var(--saito-cyber-black-wash);
+  border-bottom: 1px solid var(--saito-black-faded);
   margin-bottom: 20px;
   background-color: whitesmoke;
 }
@@ -187,7 +187,7 @@
 
 .post-create-link-input {
   padding: 10px 5px;
-  border-bottom: 1px solid var(--saito-cyber-black-wash);
+  border-bottom: 1px solid var(--saito-black-faded);
   background-color: whitesmoke;
 }
 
@@ -231,7 +231,7 @@
   border: 1px solid #9c1010;
 }
 .post-view-parent-comment-textarea {
-  border: 1px solid var(--saito-cyber-black-wash);
+  border: 1px solid var(--saito-black-faded);
   padding: 1em;
   height: 220px;
   margin-bottom: 20px;
@@ -241,7 +241,7 @@
   font-size: 1.15em;
 }
 .post-view-comment-textarea {
-  border: 1px solid var(--saito-cyber-black-wash);
+  border: 1px solid var(--saito-black-faded);
   padding: 1em;
   height: 220px;
   margin-bottom: 20px;
@@ -251,7 +251,7 @@
   font-size: 1.15em;
 }
 .post-create-textarea {
-  border: 1px solid var(--saito-cyber-black-wash);
+  border: 1px solid var(--saito-black-faded);
   padding: 1em;
   height: 220px;
   margin-bottom: 20px;
@@ -410,7 +410,7 @@
 }
 
 .post-view-textarea {
-  border: 1px solid var(--saito-cyber-black-wash);
+  border: 1px solid var(--saito-black-faded);
   padding: 1em;
   height: 220px;
   margin-bottom: 20px;
@@ -744,7 +744,7 @@
     display: none;
   }
   .post-create-textarea {
-    border: 1px solid var(--saito-cyber-black-wash);
+    border: 1px solid var(--saito-black-faded);
     padding: 1em;
     height: 420px;
     margin-bottom: 20px;

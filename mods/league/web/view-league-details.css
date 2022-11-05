@@ -14,10 +14,6 @@
   background: var(--saito-white);
 }
 
-.dark .league-details-overlay{
-   background: var(--saito-cyber-black);
-} 
-
 
 .league-details-overlay h2 {
   text-align: center;

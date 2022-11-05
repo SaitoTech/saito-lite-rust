@@ -13,7 +13,7 @@
     right: 0px;
 
     border: 1px solid var(--saito-border);
-    background-color: var(--saito-white);
+    background: var(--saito-white);
     color: var(--saito-default-font-color);
 
 }
@@ -194,7 +194,7 @@
 
 /* Dark Mode */
 .dark .chat-container, .dark .chat-footer, .dark .chat-header {
-  background-color: var(--saito-cyber-black);
+  background: #1c1c23;
   border-color: var(--saito-red);
   color: var(--saito-white);
 }

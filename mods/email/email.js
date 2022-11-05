@@ -22,7 +22,7 @@ class Email extends ModTemplate {
 
     this.count = 0;
 
-    this.styles = [`/${this.returnSlug()}/css/appspace.css`];
+    //this.styles = [`/${this.returnSlug()}/css/appspace.css`];
 
   }
 

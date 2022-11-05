@@ -1,28 +1,6 @@
 
-.tip .tiptext {
-    visibility: hidden;
-    color: #444 !important;
-    position: absolute;
-    z-index: 10;
-}
 
-.tip:hover .tiptext {
-  visibility: visible;
-}
-
-.tiptext {
-  width: 90%;
-  min-width: 400px;
-  max-width: 750px;
-  padding: 0 1em;
-  background-color: #fefefe;
-  border-bottom: 1px solid var(--saito-primary);
-  line-height: 1.5em;
-  font-size: 1em;
-  font-style: italic;
-}
-
-/* Overlay */
+/* Overlay -- in case we still have a link to game rules from game creation wizard*/
 
 .rules-overlay{
   padding: 1em;
@@ -36,7 +14,6 @@
   color: var(--saito-white);
 }
 
-
 .rules-overlay p, .rules-overlay h1, .rules-overlay h2,
 .rules-overlay h3, .rules-overlay h4 {
   color: #fff;
@@ -45,6 +22,7 @@
 .rules-overlay p{
   margin-top: 0.5em;
 }
+
 
 /* Game Advanced Options Styling*/
 .game-wizard-advanced-options-overlay .overlay-title {
@@ -67,10 +45,6 @@
 }
 
 
-.invite-tile-button-join {
-  height: 5em;
-}
-
 
 .game-wizard {
   color:  rgb(234, 234, 239);;
@@ -83,15 +57,6 @@
   max-height: 50vh;
   /*overflow-y: scroll;*/
 }
-.game-wizard-post-description {
-  font-size: 0.9em;
-  margin-left: 10px;
-  display: inline-block;
-}
-.game-home-link {
-  border-bottom: 1px dashed whitesmoke;
-  cursor: pointer;
-}
 
 .game-wizard-advanced-box {
   display: block;
@@ -100,45 +65,15 @@
 .game-wizard-advanced-box .list-header:nth-of-type(n + 2) {
   margin-top: 1.2rem;
 }
-.game-wizard-main {
-  padding: 50px;
-}
-.game-wizard-header {
-  display: grid;
-  grid-template-columns: 3fr 7fr;
-}
-.game-wizard-intro {
-  padding: 10px;
-}
-.game-wizard-title {
-  font-size: 1.6em;
-  font-weight: bold;
-  position: relative;
-}
-.game-wizard-description {
-  font-size: 1.2em;
-  line-height: 1.5em;
-}
-.game-wizard-status {
-  display: inline-block;
-  position: absolute;
-  right: 0;
-  font-size: 0.8em;
-  font-style: italic;
-  font-weight: normal;
-}
 
-.game-wizard-image {
-  padding: 10px;
-}
-.game-image {
-  width: 100%;
-}
+
+
+
 .game-wizard-controls {
   display: grid;
   grid-template-columns: 3fr 7fr;
   grid-gap: 1rem;
-  margin: 2rem 0;
+  margin-top: 2rem;
 }
 
 .game-wizard-controls option {
@@ -192,27 +127,29 @@
 }
 
 
-.game-wizard-players-select.dark {
-  background: var(--saito-light-dark-transparent);
-  color: var(--saito-white);
-  border-color: var(--saito-purple);
-}
 
-.rs-create-game-players.dark > .saito-select::after {
+.game-wizard-options > .saito-select::after {
   background: var(--saito-purple);
 }
 
-.rs-create-game-players.dark .saito-select::after {
+.game-wizard-options .saito-select::after {
   background: none;
 }
 
-.rs-create-game-players.dark .saito-select select {
+.rs-create-game-players.dark .saito-select select, .game-wizard-options .saito-select select {
   border-color: var(--saito-purple);
   background: var(--saito-light-dark-transparent);
   color: var(--saito-white);
 }
 
-.game-wizard-players-select.dark option {
+
+.game-wizard-players-select {
+  background: var(--saito-light-dark-transparent);
+  color: var(--saito-white);
+  border-color: var(--saito-purple);
+}
+
+.game-wizard-players-select option {
   background: var(--saito-black);
   color: var(--saito-white);
 }
@@ -386,8 +323,8 @@
 .saito-select:hover::after {
   color: var(--saito-red);
 }
-option {
-  background: var(--saito-cyber-black);
+.dark option {
+  background: var(--saito-black);
 }
 
 
@@ -401,54 +338,13 @@ option {
   color: #fff;
 }
 
-.game-wizard-advanced-options {
-  display: none;
-}
-.game-wizard-basic-options {
-  display: none;
-}
-.game-buttons {
-  padding-top: 20px;
-  margin-left: 10%;
-}
+
 .game-wizard-form {
   display: grid;
   grid-gap: 1em;
   grid-template-columns: 1fr;
 }
-.game-wizard-content::-webkit-scrollbar {
-  /* WebKit */
-  width: 3;
-}
-.game-info-container {
-  display: grid;
-  grid-gap: 1em;
-  grid-template-columns: 1fr 1fr;
-}
-.game-start-controls {
-  display: grid;
-  grid-gap: 1em;
-  grid-template-columns: 1fr 4fr;
-}
-.return-to-arcade {
-  cursor: pointer;
-  display: inline-block;
-  position: absolute;
-  right: -16px;
-  top: -16px;
-}
 
-
-.arcade-games {
-  font-size: 1.4em;
-  min-width: 400px;
-}
-
-.start-game-btn {
-  max-width: 240px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 
 
@@ -476,112 +372,53 @@ option {
   cursor: pointer;
 }
 
-.arcade-game-thumbnail {
-  margin-bottom: 1rem;
-}
-
 .saito-module-intro {
   display: grid;
   grid-template-columns: 3fr 7fr;
+  grid-gap: 1rem;
 }
-.saito-module-intro-image {
+
+/*.saito-module-intro-image {
   padding-top: 1rem;
   padding-right: 1rem;
   padding-bottom: 1rem;
+  margin-right: 1rem;
+}*/
+
+.saito-module-intro-image > img {
+  width: 100%;
 }
-.saito-module-intro-details > div:nth-child(1) {
-  border-bottom: 1px dashed var(--saito-default-font-color);
+
+.saito-module-intro-text{
+  margin-left: 1.5rem;
+}
+
+.saito-module-intro-title {
   font-size: 2.5rem;
-  width: min-content;
+  font-weight: bold;
+  position: relative;
   white-space: nowrap;
   margin-bottom: 0.5rem;
   padding-top: 0.5rem;
 }
-.saito-module-intro > div:nth-child(2) {
-  font-size: 1.8rem;
-  line-height: 2.8rem;
-  margin-top: 0.5rem;
-}
-.saito-module-intro-title {
-  font-size: 1.6rem;
-  font-weight: bold;
-  position: relative;
-}
+
 .saito-module-intro-description {
-  font-size: 1.2em;
-  line-height: 1.3em;
-  margin: 0.45em 0;
+  font-size: 1.9rem;
+  line-height: 2.8rem;
 }
 
-.saito-module-intro-image .saito-select-content {
-  width: 100%;
-}
 
 .arcade-game-publisher-message {
   margin-top: 10px;
   font-size: 1em;
 }
 
-.arcade-game-publisher-message span {
-  font-weight: bold;
-}
-
-.arcade-advance-opt {
+#arcade-advance-opt {
   margin-top: 1rem;
   text-transform: lowercase;
 }
 
-.redsquare-sidebar-observer .saito-table .saito-table-row {
-  display: grid;
-  grid-template-columns: 15rem 1fr min-content;
-  border-width: 2px 0;
-  border-color: #fff;
-  border-style: solid;
-  cursor: pointer;
-  background-color: var(--saito-gray);
-  padding: 0.5rem 1rem;
-}
 
-
-.observer-info .playerInfo {
-  display: flex;
-  margin-top: 0.5rem;
-}
-
-
-.observer-info .playerInfo .player-slot {
-  display: inline-block;
-  margin-right: 0.5em;
-}
-
-.observer-info .playerInfo .player-slot .identicon {
-  border: 0px;
-  width: 100%;
-  height: 100%;
-  width: 2rem;
-  min-width: 2.5rem;
-  height: 2.5rem;
-}
-
-.observer-info div {
-  font-size: 1.8rem;
-}
-
-.redsquare-sidebar-observer .saito-table .observer-action {
-  text-align: center;
-}
-
-.redsquare-sidebar-observer .saito-table .observer-details {
-  font-size: 1.5rem;
-}
-
-.observer-action {
-  text-align: right;
-}
-
-.observer-action a {
-  color: var(--saito-primary);
-}
 
 .game-help-link {
   position: absolute;
@@ -590,21 +427,12 @@ option {
   color: #FFFD;
 }
 
-.rs-btn-create-game-wrapper {
-  display: flex;
-  margin-top: 2rem;
+
+
+.game-wizard-advanced-return-btn {
+  font-size: 1.4em;
+  margin-top: 20px;
+  padding: 16px 30px 12px;
+  text-align: center;
+  text-transform: uppercase;
 }
-
-.rs-create-game-desc {
-  font-size: 1.9rem;
-}
-
-.rs-create-game-players { 
-  padding-right: 1rem;
-} 
-
-.rs-create-game-desc-wrapper {
-  margin-left: 1rem;
-}
-
-
