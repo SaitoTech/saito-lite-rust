@@ -35,10 +35,39 @@ class Nwasm extends GameTemplate {
 
 
 
+  respondTo(type="") {
+
+    if (super.respondTo(type) != null) {
+      return super.respondTo(type);
+    }
+
+    if (type === "library-collection") {
+      let m = { collection : "Nwasm" };
+    }
+
+    return null;
+
+  }
+
+
+
   initialize(app) {
 
     if (app.BROWSER == 0) { return; }
     super.initialize(app);
+
+    //
+    // query for collection info
+    //
+    let message = {};
+        message.request = "library collection";
+        message.data = {};
+        message.data.collection = "Nwasm";
+        app.network.sendRequestWithCallback(message.request, message.data, function(res) {
+console.log("received callback as: " + JSON.stringify(res));
+	});
+
+
 
     //
     // monitor log to extra game name
@@ -228,7 +257,8 @@ class Nwasm extends GameTemplate {
 
     let obj = {
       module: this.name,
-      name: this.active_rom_name ,
+      id: this.app.crypto.hash(this.active_rom_name) ,
+      title: this.active_rom_name ,
       manufacturer: this.active_rom_manufacturer,
       request: "upload rom",
       data: base64data,

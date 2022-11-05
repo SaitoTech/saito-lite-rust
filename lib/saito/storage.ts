@@ -209,6 +209,8 @@ console.log("received response 2");
     data.tx = tx;
     data.type = txmsg.module;
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
+
+    this.app.connection.emit("save-transaction", tx);
   }
   saveTransactionByKey(key, tx) {
     const txmsg = tx.returnMessage();
@@ -219,6 +221,8 @@ console.log("received response 2");
     data.key = key;
     data.type = txmsg.module;
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
+
+    this.app.connection.emit("save-transaction", tx);
   }
 
   /**
