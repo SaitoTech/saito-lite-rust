@@ -359,7 +359,7 @@ v	}
       }
     });
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuOption({
       text : "Controls",
       id : "game-controls",
       class : "game-game-controls",

@@ -40,13 +40,13 @@ class QuakeControls {
     "s_volume":     [0.23, 's_volume 0.23'],
     }
     this.controls = {};
-
+    this.loadSavedControls();
   }
 
   render(app, mod) {
     this.overlay.show(app, mod, ControlsTemplate(app, mod, this));
     this.attachEvents(app, mod);
-    this.loadSavedControls();
+//    this.loadSavedControls();
     // render menu with saved or default config
     this.fill_menu()
   }
@@ -57,7 +57,10 @@ class QuakeControls {
 
     document.querySelectorAll(".quake-control-trigger").forEach((el) => {
       el.onclick = (e) => {
-        let setting = e.currentTarget.getAttribute("data-id");
+        document.getElementById("cover-indicator").innerHTML = e.currentTarget.children[0].innerHTML;
+        document.getElementById("screen-cover").style.zIndex = 100;
+
+        let setting = e.currentTarget.getAttribute("id");
 	//console.log("setting: " + setting);
         thisobj.current_setting = setting;
 
@@ -88,17 +91,17 @@ class QuakeControls {
 
     defaultButton.addEventListener("click", () => {
 	console.log("restore default clicked");
-	this.controls = {...this.default_config};
-	this.render();
+	thisobj.defaults();
     });
 
     let finishButton = document.getElementById("finish-controls-button");
 
     finishButton.addEventListener("click", () => {
 	console.log("clicked button 'finish' button");
-	this.writeControls();
-	this.applyControls();
 	this.overlay.remove();
+	this.applyControls();
+	this.writeControls();
+	this.saveSettings();
     });
 
 
@@ -142,6 +145,11 @@ class QuakeControls {
 
 
     // End of attachEvents() object
+  }
+
+  defaults() {
+      this.controls = structuredClone(this.default_config);
+      this.fill_menu();
   }
 
   // useful to update this.controls from within function
@@ -191,16 +199,12 @@ class QuakeControls {
       this.mod.load();
       // if no saved controls
       if (!this.mod.quake3) {
-	  console.log("No config found/loaded. Loading default q3 configuration.")
-	  console.log("default_config: " + this.default_config);
 	  this.controls = {...this.default_config};
       }
       else {
-	  console.log("Loading saved q3 config: ");
 	  this.controls = {...this.mod.quake3['controls']};
 
       }
-      console.log(this.controls);
   }
 
   fill_menu() {
@@ -208,22 +212,26 @@ class QuakeControls {
     console.log(this.controls);
     for (const [key, value] of Object.entries(this.controls)) {
 	var elem = document.getElementById(key);
-	
 	// for keybinds
-	if (elem.tagName == "TR") {
+
+	// DON'T ALLOW THIS TO PASS - doesn't work for some reason
+	// if you actually allow this block to run
+	// UI disallows key inputs to pass behind menu thus breaking applyControls()
+	// only works if you just let the error ride - no idea why
+	if (elem === null && false) {
+	    continue;
+	}
+	else if (elem.tagName == "TR") {
 	    elem.children[1].innerHTML = value[0];
 	}
 	// for sliders
 	else {
 	    let s_elem = document.getElementsByClassName(key)
-	    console.log("else");
-	    console.log(key);
-	    console.log(s_elem);
-	    console.log(value);
 	    s_elem[0].value = value[0];
 	    s_elem[1].value = value[0];
-	     }
+	}
     }
+    console.log("end of fill_menu()");
   }
 
   saveSettings() {
@@ -235,6 +243,7 @@ class QuakeControls {
   }
 
   handleInput(input) {
+    document.getElementById("screen-cover").style.zIndex = -100;
 
     q3_bind = this.toQuakeBind(input);
     
@@ -251,20 +260,13 @@ class QuakeControls {
     this.controls[this.current_setting] = [q3_bind, q3_bindCommand];
     
     // update HTML table to reflect current settings
-    document.getElementById(this.current_setting).children[1].innerHTML = q3_bind
-    
-    this.saveSettings()
-
-/*
-    if (!this.mod.quake3) {
-	this.mod.quake3 = {};
+    // if that element exists
+    let tag = document.getElementById(this.current_setting)
+    if (tag != null) {
+	tag.children[1].innerHTML = q3_bind;
     }
-
-    this.mod.quake3['controls'] = this.controls
-    this.mod.save()
-
-    return q3_bindCommand;
-*/
+    else {console.log("tag is null: " + this.current_setting);}
+    this.saveSettings();
   }
 
   toQuakeBind(input) {
