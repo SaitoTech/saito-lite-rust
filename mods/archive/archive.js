@@ -119,9 +119,10 @@ class Archive extends ModTemplate {
         console.log("PeerRequest: load TX by Sig");
         if (!req.data.sig) { return; }
         console.log("PeerRequest: load TX by Sig 2");
-        txs = await this.loadTransactionBySig(req.data);
+        txs = await this.loadTransactionBySig(req.data.sig);
         response.err = "";
         response.txs = txs;
+console.log("TXS is the object returned!");
         mycallback(response);
       }
     }
@@ -428,7 +429,7 @@ console.log("SAVING TX");
 
   }
 
-  async loadTransactionBySig({sig=""}) {
+  async loadTransactionBySig(sig="") {
 
     let sql = "";
     let params = {};
@@ -443,13 +444,19 @@ console.log("SAVING TX");
       params = Object.assign(params, { $sig : sig });
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
       let txs = [];
+
+console.log("ROWS: " + rows.length);
+
       if (rows?.length > 0) {
         for (let row of rows){
+console.log("push TX and optional!");
           txs.push({ tx : row.tx , optional : row.optional });
         }
       }
+console.log("TXS returned: " + txs.length);
       return txs;
     } catch (err) {
+console.log("ERROR WITH TXS returned");
       console.log(err);
       return [];
     }

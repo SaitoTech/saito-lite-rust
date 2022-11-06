@@ -169,6 +169,10 @@ console.log("adding my titles!");
 
 
 
+
+
+
+
   async onPeerHandshakeComplete(app, peer) {
 
     let nwasm_self = this;
@@ -306,6 +310,38 @@ console.log("adding my titles!");
   //////////////////
   // transactions //
   //////////////////
+  loadRomFile(tx) {
+
+console.log("trying to load ROM from TX 1");
+
+    let txmsg = tx.returnMessage();
+    let filebase64 = txmsg.data;
+    let b = Buffer.from(filebase64, 'base64');
+
+console.log("trying to load ROM from TX 2");
+
+    let ab = new ArrayBuffer(b.length);
+    let view = new Uint8Array(ab);
+    for (let i = 0; i < b.length; ++i) {
+      view[i] = b[i];
+    }
+
+console.log("trying to load ROM from TX 3");
+
+    //
+    // prevents us saving the file, this is an already uploaded rom
+    //
+    this.uploaded_rom = true;
+
+    //
+    // initialize ROM gets the ROM the APP and the MOD
+    //
+    myApp.initializeRom(ab, this.app, this);
+
+console.log("initialized ROM!");
+
+  }
+
   saveRomFile(data) {
 
     let base64data = this.convertByteArrayToBase64(data);

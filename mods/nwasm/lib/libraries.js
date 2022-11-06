@@ -1,3 +1,5 @@
+const saito = require('./../../../lib/saito/saito');
+const JSON = require('json-bigint');
 const NwasmLibraryTemplate = require("./libraries.template");
 
 
@@ -74,17 +76,55 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 		  let collection = obj.getAttribute("data-id");
 
 alert("checking out game with sig: " + sig);
-
 		  let library_mod = this.app.modules.returnModule("Library");
-		  library_mod.checkout(collection, sig, this.app.wallet.returnPublicKey(), function(txs) {
+		  library_mod.checkout("Nwasm", sig, this.app.wallet.returnPublicKey(), function(txs) {
 console.log("======== RECEIVED TX BACK! ======");
 console.log("======== RECEIVED TX BACK! ======");
 console.log("======== RECEIVED TX BACK! ======");
-		    alert("Playing your game.");
+console.log("TXS: " + JSON.stringify(txs));
+
+		    if (txs.length > 0) {
+		      try {
+		        alert("Playing your game.");
+		        let tx = new saito.default.transaction(txs[0].transaction);
+console.log("TX READY TO SUBMIT: ");
+		        mod.loadRomFile(tx);
+		      } catch (err) {
+		        console.log("ERROR LOADING GAME: " + err);
+		      }
+		    } else {
+		      alert("Error Checkout");
+		    }
 	          });
 
 		} else {
+
 		  alert("Requesting permission to play.");
+		  let nwasm_mod = mod;
+	          let message = {};
+	              message.request = "library collection";
+        	      message.data = {};
+     	              message.data.collection = "Nwasm";
+     	              message.data.sig = sig;
+
+		  let peer = null;
+		  for (let i = 0; i < app.network.peers.length; i++) {
+		    //
+		    // libraries organized by publickey
+		    //
+		    if (app.network.peers[i].returnPublicKey() === key) {
+		      let peer = app.network.peers[i];
+		      i = app.network.peers.length + 100; // buffer against connect/disconnect
+		    }
+		  }
+
+        	  app.network.sendRequestWithCallback(message.request, message.data, function(res) {
+console.log("======-----======");
+console.log("======-----======");
+console.log("======-----======");
+console.log("received callback as: " + JSON.stringify(res));
+
+                  }, peer);
 	        }
 	      }
 	    }
