@@ -27,14 +27,19 @@ class NwasmLibrary {
         for (let i = 0; i < collection.length; i++) {
 
 	  let status = "available";
-	  if (collection[i].num == 0) { status = "loaned out"; }
+	  let available = collection[i].available;;
+	  if (available == 0) {
+	    status = "loaned out";
+	  } else {
+	    available = available.toString() + "/" + collection[i].num.toString();
+          }
 
 	  if (collection[i].title != "") {
 	    if (header_inserted == false) {
 	      app.browser.addElementToSelector(`<div id="nwasm-libraries-header" class="saito-table-row saito-table-header nwasm-libraries-header"><div>title</div><div>copies</div><div>status</div></div>`, ".nwasm-libraries");
 	      header_inserted = true;
 	    }
-	    app.browser.addElementToSelector(`<div id="${collection[i].sig}" data-id="${key}" class="saito-table-row"><div>${collection[i].title}</div><div>${collection[i].num}</div><div>${status}</div></div>`, ".nwasm-libraries");
+	    app.browser.addElementToSelector(`<div id="${collection[i].sig}" data-id="${key}" class="saito-table-row"><div>${collection[i].title}</div><div>${available}</div><div>${status}</div></div>`, ".nwasm-libraries");
 	  }
 	}
       }
@@ -82,6 +87,10 @@ console.log("======== RECEIVED TX BACK! ======");
 console.log("======== RECEIVED TX BACK! ======");
 console.log("======== RECEIVED TX BACK! ======");
 console.log("TXS: " + JSON.stringify(txs));
+
+		    if (txs == null) {
+alert("Cannot checkout item...");
+		    }
 
 		    if (txs.length > 0) {
 		      try {

@@ -3,6 +3,11 @@ const NwasmGameOptionsTemplate = require("./lib/nwasm-game-options.template");
 const UploadRom = require("./lib/upload-rom");
 const NwasmLibrary = require("./lib/libraries");
 
+
+//
+// ROMS -- saved as 'Nwams' modules
+// SAVEGAMES --- saved as 'NwasmGAMESIG' (hash of title)
+//
 class Nwasm extends GameTemplate {
 
   constructor(app) {
@@ -25,6 +30,7 @@ class Nwasm extends GameTemplate {
 
     this.active_rom = null;
     this.active_rom_name = "";
+    this.active_rom_sig = "";
     this.active_rom_manufacturer = "";
     this.active_game = null;
 
@@ -147,7 +153,8 @@ console.log("adding my titles!");
       x = logline.substring(13);
       if (x.indexOf("Name: ") == 0) {
         x = x.substring(6);
-        this.active_rom_name = x;
+        this.active_rom_name = x.trim();
+        this.active_rom_sig = this.app.crypto.hash(x.trim());
       }
       if (x.indexOf("Manufacturer: ") == 0) {
         x = x.substring(14);
@@ -363,12 +370,42 @@ console.log("submitting tx w/ " + JSON.stringify(obj));
     this.app.storage.saveTransaction(newtx);
 
   }
+  loadGameFile() {
+
+    let module_type = "Nwasm"+this.active_rom_sig;
+
+    this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 1, function(txs) {
+
+try {
+      if (txs.length <= 0) { alert("No Saved Games Available"); }
+
+      let tx = new saito.default.transaction(txs[0].transaction);
+      let txmsg = tx.returnMessage();
+      let byteArray = this.convertBase64ToByteArray(txmsg.data);
+
+      //
+      // set this to game byteArray
+      //
+      this.active_game = byteArray;
+
+      //
+      // then load
+      //
+      myApp.importStateLocal();
+} catch (err) {
+console.log("error loading Nwasm game...");
+}
+
+    });
+
+
+  }
   saveGameFile(data) {
 
     let base64data = this.convertByteArrayToBase64(data);
 
     let obj = {
-      module: this.name,
+      module: (this.name + this.active_rom_sig),
       name: this.active_rom_name.trim() ,
       manufacturer: this.active_rom_manufacturer.trim(),
       request: "upload savegame",

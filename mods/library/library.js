@@ -19,6 +19,8 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 //	title : "" , 
 //	description : "" , 
 //	num : 1 , 
+//	available : 1,
+//	checkout : [],
 //	sig : ""
 //    }
 // }
@@ -33,6 +35,11 @@ class Library extends ModTemplate {
     this.name = "Library";
     this.description = "Adds digital rights management (DRM) and curation and lending functionality, permitting users to create curated collections of content and share it in rights-permitting fashion.";
     this.categories = "Core Utilities DRM";
+
+    //
+    // any library borrowing coded for 2 hour minimum increments
+    //
+    this.return_milliseconds = 7200000;
 
     this.library = {};
     this.monitor = [];
@@ -103,12 +110,16 @@ class Library extends ModTemplate {
 	      {
 		id : id ,
 		title : txmsg.title ,
+		description : "" ,
 		num : 1 ,
+		available : 1 ,
+		checkout : [] ,
 		sig : sig ,
 	      }
 	    );
 	  } else {
 	    library_self.library[module][idx].num++;
+	    library_self.library[module][idx].available++;
 	  }
 	  library_self.save();
 	}
@@ -154,12 +165,42 @@ class Library extends ModTemplate {
   } 
 
 
+  cleanupLibrary() {
+
+    let ts = new Date().getTime();
+
+console.log("cleanup 1");
+
+    for (let key in this.library) {
+      for (let i = 0; i < this.library[key].length; i++) {
+
+	let item = this.library[key][i];
+
+	if (item.checkout.length > 0) {
+	  for (let z = 0; z < item.checkout.length; z++) {
+
+	    if (item.checkout[z].ts < (ts-this.return_milliseconds)) {
+
+	      //
+	      // process return
+	      //
+	      item.checkout.splice(z, 1);
+	      item.available++;
+	      // should never happen, but safety-catch
+	      if (item.available > item.num) { item.available = item.num; }
+
+	    }
+
+	  }
+	}
+      }
+    }
+
+  }
+
   checkout(collection, sig, publickey, mycallback) {
 
-console.log("in checkout funntion!");
-console.log(collection);
-console.log(sig);
-console.log(publickey);
+console.log("at start of checkout function!");
 
     let idx = -1;
 
@@ -173,8 +214,39 @@ console.log(publickey);
       }
     }
 
+console.log("at start of checkout function 2!");
+
     if (idx != -1) {
-console.log("loadTransactionBySig!");
+      
+      let item = this.library[collection][idx];
+
+      //
+      // current user may checkout again, but we need to 
+      // update the time they checked it out
+      //
+      let is_already_borrowed = 0;
+console.log("at start of checkout function 2.5!");
+      for (let i = 0; i < item.checkout.length; i++) {
+        if (item.checkout[i].publickey === publickey) {
+	  item.checkout[i].ts = new Date().getTime();
+          is_already_borrowed = 1;
+	}	
+      }
+
+console.log("at start of checkout function 3!");
+
+      if (!is_already_borrowed) {
+
+        if (item.available < 1) { return; }
+        if (item.checkout.length > item.num) { return; }
+        //
+        // record the checkout
+        //
+        item.checkout.push({ publickey : publickey , ts : new Date().getTime() });
+        item.available--;
+      }
+
+      this.save();
       this.app.storage.loadTransactionBySig(sig, mycallback);
     }
 
@@ -182,7 +254,17 @@ console.log("loadTransactionBySig!");
 
   returnCollection(collection) {
     if (this.library[collection]) {
-      return this.library[collection];
+      let c = [];
+console.log("RETURN COLLECTION: " + collection);
+      for (let i = 0; i < this.library[collection].length; i++) {
+        let item = this.library[collection][i];
+	if (item.title != "") {
+console.log("push: " + item.title);
+	  c.push({ title : item.title , available : item.available , num : item.num , sig : item.sig });
+        }
+      }
+console.log("AND RETURNING: " + JSON.stringify(c));
+      return c;
     }
     return [];
   }
