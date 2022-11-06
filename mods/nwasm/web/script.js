@@ -676,23 +676,30 @@ class MyClass {
     }
 
     loadStateLocal(){
+
         console.log('loadStateLocal');
 
 	let myapp_self = this;
 
+console.log("loadStateLocal 2");
+
         var request = indexedDB.open('N64WASMDB');
+console.log("loadStateLocal 2");
         request.onsuccess = function (ev) {
             var db = ev.target.result;
             var romStore = db.transaction("N64WASMSTATES", "readwrite").objectStore("N64WASMSTATES");
 
 console.log("romStore: " + romStore);
 
-
             var rom = romStore.get(myClass.rom_name);
             rom.onsuccess = function (event) {
+console.log("ON SUCCESS HERE...?");
                 let byteArray = myapp_self.mod.active_game;
+console.log("LOADING WHICH BYTE ARRAY: " + myapp_self.app.crypto.hash(myapp_self.mod.active_game));
                 FS.writeFile('/savestate.gz',byteArray);
+console.log("now unserialize...");
                 Module._neil_unserialize();
+console.log("and done...");
             };
             rom.onerror = function (event) {
                 toastr.error('error getting rom from store');
@@ -702,7 +709,6 @@ console.log("romStore: " + romStore);
             toastr.error('error loading from db')
         }
 
-//        myClass.loadFromDatabase();
     }
 
     createDB() {
@@ -907,29 +913,6 @@ console.log("romStore: " + romStore);
       this.mod = mod;
       var ba = new Uint8Array(bytearray);
       myClass.LoadEmulator(ba);
-    }
-
-    //
-    // HACKt
-    //
-    importStateLocal() {
-        var byteArray = this.mod.active_game;
-        var request = indexedDB.open('N64WASMDB');
-        request.onsuccess = function (ev) {
-            var db = ev.target.result;
-            var romStore = db.transaction("N64WASMSTATES", "readwrite").objectStore("N64WASMSTATES");
-            var rom = romStore.get(myClass.rom_name);
-            rom.onsuccess = function (event) {
-                FS.writeFile('/savestate.gz',byteArray);
-                Module._neil_unserialize();
-            };
-            rom.onerror = function (event) {
-                toastr.error('error getting rom from store');
-            }
-        }
-        request.onerror = function (ev) {
-            toastr.error('error loading from db')
-        }
     }
 
     //

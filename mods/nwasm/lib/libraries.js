@@ -80,23 +80,17 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 		  let sig = obj.getAttribute("id");
 		  let collection = obj.getAttribute("data-id");
 
-alert("checking out game with sig: " + sig);
 		  let library_mod = this.app.modules.returnModule("Library");
 		  library_mod.checkout("Nwasm", sig, this.app.wallet.returnPublicKey(), function(txs) {
-console.log("======== RECEIVED TX BACK! ======");
-console.log("======== RECEIVED TX BACK! ======");
-console.log("======== RECEIVED TX BACK! ======");
-console.log("TXS: " + JSON.stringify(txs));
-
 		    if (txs == null) {
-alert("Cannot checkout item...");
+		      alert("Cannot checkout item...");
+		      return;
 		    }
 
 		    if (txs.length > 0) {
 		      try {
-		        alert("Playing your game.");
 		        let tx = new saito.default.transaction(txs[0].transaction);
-console.log("TX READY TO SUBMIT: ");
+			mod.hideLibrary();
 		        mod.loadRomFile(tx);
 		      } catch (err) {
 		        console.log("ERROR LOADING GAME: " + err);
@@ -108,7 +102,6 @@ console.log("TX READY TO SUBMIT: ");
 
 		} else {
 
-		  alert("Requesting permission to play.");
 		  let nwasm_mod = mod;
 	          let message = {};
 	              message.request = "library collection";
@@ -129,7 +122,7 @@ console.log("TX READY TO SUBMIT: ");
 
         	  app.network.sendRequestWithCallback(message.request, message.data, function(res) {
 console.log("======-----======");
-console.log("======-----======");
+console.log("======--1--======");
 console.log("======-----======");
 console.log("received callback as: " + JSON.stringify(res));
 
