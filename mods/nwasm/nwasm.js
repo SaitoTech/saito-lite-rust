@@ -1,6 +1,7 @@
 const GameTemplate = require('./../../lib/templates/gametemplate');
 const NwasmGameOptionsTemplate = require("./lib/nwasm-game-options.template");
 const UploadRom = require("./lib/upload-rom");
+const NwasmLibrary = require("./lib/libraries");
 
 class Nwasm extends GameTemplate {
 
@@ -19,12 +20,16 @@ class Nwasm extends GameTemplate {
 
     this.load();
 
+
+    this.libraries = {}; // ANY available libraries of games. 
+
     this.active_rom = null;
     this.active_rom_name = "";
     this.active_rom_manufacturer = "";
     this.active_game = null;
 
-    this.game_logs = [];
+    this.uploaded_rom = false;
+
 
     return this;
   }
@@ -42,7 +47,7 @@ class Nwasm extends GameTemplate {
     }
 
     if (type === "library-collection") {
-      let m = { collection : "Nwasm" };
+      return { module : "Nwasm" , collection : "Nwasm" };
     }
 
     return null;
@@ -51,10 +56,11 @@ class Nwasm extends GameTemplate {
 
 
 
-  initialize(app) {
+  onPeerHandshakeComplete(app, peer) {
 
-    if (app.BROWSER == 0) { return; }
-    super.initialize(app);
+    if (!app.BROWSER) { return; }
+
+    let nwasm_mod = this;
 
     //
     // query for collection info
@@ -63,9 +69,52 @@ class Nwasm extends GameTemplate {
         message.request = "library collection";
         message.data = {};
         message.data.collection = "Nwasm";
+console.log("sending request for library info...");
         app.network.sendRequestWithCallback(message.request, message.data, function(res) {
+console.log("======-----======");
+console.log("======-----======");
+console.log("======-----======");
 console.log("received callback as: " + JSON.stringify(res));
-	});
+          nwasm_mod.addCollectionToLibrary(peer.peer.publickey, res);
+          nwasm_mod.updateVisibleLibrary();
+	}, peer);
+ 
+  }
+
+  updateVisibleLibrary() {
+console.log("======-----======");
+console.log("======--2--======");
+console.log("======-----======");
+    let nlib = new NwasmLibrary(this.app, this);
+    nlib.render(this.app, this);
+  }
+
+  addCollectionToLibrary(publickey, collection) {
+    this.libraries[publickey] = collection;
+  }
+
+  initialize(app) {
+
+    if (app.BROWSER == 0) { return; }
+    super.initialize(app);
+
+
+    //
+    // if we have a library, we may have games...
+    //
+    // this is not the purest way to handle cross-module interactivity, but it is fast
+    // and we should come back and clean this up once we know exactly how we want modules
+    // to work.
+    //
+    let library_mod = app.modules.returnModule("Library");
+    if (library_mod) {
+      let collection = library_mod.returnCollection("Nwasm");
+      if (collection.length > 0) {
+console.log("adding my titles!");
+        this.addCollectionToLibrary(app.wallet.returnPublicKey(), collection);
+        this.updateVisibleLibrary();
+      }
+    }   
 
 
 
@@ -106,6 +155,16 @@ console.log("received callback as: " + JSON.stringify(res));
       }
     }
 
+    //
+    // upload the rom
+    //
+    if (this.uploaded_rom == false && this.active_rom_name != "" && this.active_rom_manufacturer != "") {
+      //
+      // save ROM in archives --dynamically is best
+      //
+      this.uploaded_rom = true;
+      this.saveRomFile(this.active_rom);
+    }
   }
 
 
@@ -120,7 +179,7 @@ console.log("received callback as: " + JSON.stringify(res));
         let txmsg = tx.returnMessage();
         let data = txmsg.data;
 	let binary_data = nwasm_self.convertBase64ToByteArray(data);
-	nwasm_self.active_game = binary_data;
+	nwasm_self.active_rom = binary_data;
       }
     });
 
@@ -249,20 +308,18 @@ console.log("received callback as: " + JSON.stringify(res));
   //////////////////
   saveRomFile(data) {
 
-    console.log("save rom file: " + data);
-
     let base64data = this.convertByteArrayToBase64(data);
-
-    console.log("save rom file: " + base64data);
 
     let obj = {
       module: this.name,
-      id: this.app.crypto.hash(this.active_rom_name) ,
-      title: this.active_rom_name ,
-      manufacturer: this.active_rom_manufacturer,
+      id: this.app.crypto.hash(this.active_rom_name.trim()) ,
+      title: this.active_rom_name.trim() ,
+      manufacturer: this.active_rom_manufacturer.trim(),
       request: "upload rom",
       data: base64data,
     };
+
+console.log("submitting tx w/ " + JSON.stringify(obj));
 
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
@@ -276,8 +333,8 @@ console.log("received callback as: " + JSON.stringify(res));
 
     let obj = {
       module: this.name,
-      name: this.active_rom_name ,
-      manufacturer: this.active_rom_manufacturer,
+      name: this.active_rom_name.trim() ,
+      manufacturer: this.active_rom_manufacturer.trim(),
       request: "upload savegame",
       data: base64data,
     };

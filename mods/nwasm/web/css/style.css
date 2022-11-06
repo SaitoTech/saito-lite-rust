@@ -3,6 +3,40 @@ body {
   background-color: black !important;
 }
 
+.nwasm-libraries {
+  position: absolute;
+  top: 7.5rem;
+  left: 2.5rem;
+  padding: 2rem;
+}
+.nwasm-introduction {
+  color: whitesmoke;
+  font-size: 1.5rem;
+}
+.nwasm-libraries .nwasm-libraries-header.saito-table-row {
+ grid-template-columns: 1fr 1fr 1fr;
+ font-size: 2rem;
+ color: whitesmoke;
+ min-width: 100%;
+ font-weight: bold;
+}
+.nwasm-libraries .saito-table-row {
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  font-size: 4rem;
+  color: whitesmoke;
+  width: 1;
+  min-width: 100%;
+  padding: 0.75rem;
+  padding-left: 1.5rem;
+}
+.nwasm-libraries-header.saito-table-row:hover {
+  background-color: #000;
+}
+.saito-table-row:hover {
+  background-color: #222;
+  cursor: pointer;
+}
 .container {
   max-width: unset;
   max-height: unset;

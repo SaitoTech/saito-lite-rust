@@ -48,47 +48,49 @@ class Library extends ModTemplate {
   //
   initialize(app) {
 
+    let library_self = this;
+
+    library_self.load();
+
     //
     // setup library
     //
-    let mods = app.modules.respondTo("library-collection");
-    for (let i = 0; i < mods.length; i++) {
-      let m = mods[i].respondTo("library-collection");
-      if (!this.library[m.collection]) {
-	this.library[m.collection] = [];
+    for (let i = 0; i < app.modules.mods.length; i++) {
+      let m = app.modules.mods[i].respondTo("library-collection");
+      if (m) {
+        if (!library_self.library[m.collection]) {
+	  library_self.library[m.collection] = [];
+          library_self.save();
+        }
       }
     }
 
     //
     // listen for publications / modifications
     //
-    this.app.connection.on("save-transaction", function (tx) {
-
-console.log("save transaction!");
+    app.connection.on("save-transaction", function (tx) {
 
       //
       // library exists?
       //
-      if (this.library[m.collection]) {
+      let txmsg = tx.returnMessage();
+      let id = txmsg.id;
+      let title = txmsg.title;
+      let module = txmsg.module;
+      let request = txmsg.request;
+      let sig = tx.transaction.sig;
 
-console.log("collection exists! " + m.collection);
-
-        let txmsg = tx.returnMessage();
-        let id = txmsg.id;
-        let title = txmsg.title;
-        let module = txmsg.module;
-        let request = txmsg.request;
-        let sig = tx.transaction.sig;
+      if (library_self.library[module]) {
 
 	let idx = -1;
 	let contains_item = false;
 
-        for (let i = 0; i < this.library[m.collection].length; i++) {
-	  let item = this.library[m.collection][i];
+        for (let i = 0; i < library_self.library[module].length; i++) {
+	  let item = library_self.library[module][i];
 	  if (item.id == id) {
-	    contains_item = true;
+	    contains_item =	 true;
 	    idx = i;
-	    i = this.library[m.collection].length+1;
+	    i = library_self.library[module].length+1;
 	  }
 	}
 
@@ -97,23 +99,18 @@ console.log("collection exists! " + m.collection);
 	//
 	if (request === "upload rom") {
 	  if (contains_item == false) {
-console.log("adding item!");
-	    this.library[m.collection].push(
+	    library_self.library[module].push(
 	      {
 		id : id ,
-		title : title ,
+		title : txmsg.title ,
 		num : 1 ,
 		sig : sig ,
 	      }
 	    );
 	  } else {
-console.log("incrementing item!");
-	    this.library[m.collection][idx].num++;
+	    library_self.library[module][idx].num++;
 	  }
-
-console.log("saving");
-	  this.save();
-console.log(JSON.stringify(this.library));
+	  library_self.save();
 	}
       }
     });
@@ -134,10 +131,54 @@ console.log(JSON.stringify(this.library));
 	}
       
 	if (this.library[collection]) {
-	  mycallback(returnCollection(collection));
+	  mycallback(this.returnCollection(collection));
+	}
+    }
+
+    if (message.request === "library checkout") {
+
+        let collection = null;
+        let sig = null;
+
+        if (message.data?.collection && message.data?.sig) {
+	  collection = message.data.collection;
+	  sig = message.data.sig;
+        } else {
+	  return;
+	}
+      
+	if (this.library[collection]) {
+	  this.checkout(collection, sig, publickey, mycallback);
 	}
     }
   } 
+
+
+  checkout(collection, sig, publickey, mycallback) {
+
+console.log("in checkout funntion!");
+console.log(collection);
+console.log(sig);
+console.log(publickey);
+
+    let idx = -1;
+
+    if (this.library[collection]) {
+      for (let i = 0; i < this.library[collection].length; i++) {
+        let sig = this.library[collection][i].sig;
+	if (sig === sig) {
+	  idx = i;
+	  i = this.library[collection].length+1;
+	}
+      }
+    }
+
+    if (idx != -1) {
+console.log("loadTransactionBySig!");
+      this.app.storage.loadTransactionBySig(sig, mycallback);
+    }
+
+  }
 
   returnCollection(collection) {
     if (this.library[collection]) {
@@ -200,6 +241,7 @@ console.log(JSON.stringify(this.library));
       return;
     }
     this.library = {};
+    this.save();
   }
 
   save() {

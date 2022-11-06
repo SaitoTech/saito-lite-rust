@@ -27,12 +27,7 @@ class UploadRomOverlay {
 
           document.querySelector('.loader').style.display = "grid";
  
-	  //         
-          // save ROM in archives
-	  //         
-	 // mod.saveRomFile(file);
-
-	  mod.active_game = file;
+	  mod.active_rom = file;
 
 	  let a = Buffer.from(file, 'binary').toString('base64');;
 	  let b = Buffer.from(a, 'base64');
