@@ -122,7 +122,7 @@ class RedSquare extends ModTemplate {
 
       let redsquare_self = this;
 
-      if (this.app.BROWSER == 1) {
+      if (this.app.BROWSER == 1 && this.browser_active == 1) {
 
         let tweet_timeout = 20000 + (Math.random() * 5000);
         let stats_timeout = 20000 + (Math.random() * 10000);
