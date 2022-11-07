@@ -2,12 +2,11 @@ const LeagueComponentExistingLeagueTemplate = require("./existing-league.templat
 
 module.exports = ExistingLeague = {
 
-  render(app, mod, league) {
+  render(app, mod, league, id) {
     if (!document.getElementById(league.id)) {
-      app.browser.addElementToId(LeagueComponentExistingLeagueTemplate(app, mod, league), "league-component-existing-league");
-
+      app.browser.addElementToId(LeagueComponentExistingLeagueTemplate(app, mod, league), id);
     } else {
-      document.getElementById(league.id).outerHTML = LeagueComponentExistingLeagueTemplate(app, mod, league);
+      app.browser.replaceElementById(LeagueComponentExistingLeagueTemplate(app, mod, league), league.id);
     }
     this.attachEvents(app, mod);
   },

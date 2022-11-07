@@ -1,6 +1,6 @@
 const LeagueMainContainerTemplate    = require("./container.template");
-const LeagueComponentAdminBox = require("./../components/admin-box");
-const LeagueComponentExistingLeague = require("./../components/existing-league");
+const LeagueWizard = require("./../components/league-wizard");
+const ListSelectionModal = require('./../../../../lib/saito/new-ui/modals/list-selection-modal/list-selection-modal');
 
 
 class Container {
@@ -12,28 +12,40 @@ class Container {
 
   }
 
+  render(app, mod) {
 
-  render(app, mod, template=null) {
+    let leagues_to_display = mod.filterLeagues(app, false);
 
     //
     // Wipe the main container and create a fresh build render main template
     //
-    if (!document.getElementById("league-main-container")) {
-      app.browser.addElementToDom(LeagueMainContainerTemplate(app, mod));
+    app.browser.replaceElementById(LeagueMainContainerTemplate(app, mod, leagues_to_display), "league-main-container");
+
+    this.attachEvents(app, mod);
+  }
+
+
+  attachEvents(app, mod){
+
+    if (document.getElementById('create-new-league')){
+      document.getElementById('create-new-league').onclick = () =>{
+
+        let html = "";
+        app.modules.respondTo("arcade-games").forEach(game_mod => {
+          html += `<li data-id="${game_mod.name}">${game_mod.gamename || game_mod.name}</li>`;
+        });
+
+        let selector = new ListSelectionModal(app, (gamename) =>{
+          console.log(gamename);
+          let gameMod = app.modules.returnModule(gamename);
+          if (!gameMod){ console.log("No game module"); return;}
+          let wizard = new LeagueWizard(app, mod, gameMod);
+          wizard.render(app, mod);
+        });
+
+        selector.render(app, "Games", "Select a game for your league", html);
+      }
     }
-
-    //
-    // render league creation boxes
-    //
-    LeagueComponentAdminBox.render(app, mod, this.mod.games);
-
-    //
-    // render existing league componenets
-    //
-    let leagues_to_display = mod.filterLeagues(app);
-    leagues_to_display.forEach((game, i) => {
-      LeagueComponentExistingLeague.render(app, mod, game);
-    });
   }
 }
 

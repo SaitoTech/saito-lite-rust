@@ -1,4 +1,3 @@
-const saito = require('./../../../../lib/saito/saito');
 const GameCreateMenuTemplate= require('./game-create-menu.template');
 const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 

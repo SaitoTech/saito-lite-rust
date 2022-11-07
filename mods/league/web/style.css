@@ -9,8 +9,6 @@ body {
   max-width: 94em;
   margin: 6em auto 0;
   padding: 0 2em;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
 }
 
 
@@ -255,4 +253,28 @@ i.link_icon.private {
   .league-main-container {
     grid-template-columns: 1fr;
   }
+}
+
+
+.league-main-container .saito-module{
+  font-size: 2rem;
+  background: transparent;
+  display: flex;
+  flex-direction: row;
+  align-items: center ;
+  justify-content: space-between;
+}
+
+.league-main-container .saito-module-action{
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
+  border-radius: 1rem;
+  padding: 1rem;
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
+}
+
+.saito-module-title{
+  font-size: 1.2em;
 }

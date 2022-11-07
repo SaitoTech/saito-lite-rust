@@ -3,7 +3,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const LeagueMainContainer = require('./lib/main/container');
 const ArcadeLeague = require('./lib/components/arcade-league');
 const ForumLeague = require('./lib/components/forum-league');
-const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ViewLeagueDetails = require("./lib/overlays/view-league-details");
 const InvitationLink = require("./../../lib/saito/new-ui/modals/invitation-link/invitation-link");
@@ -183,26 +183,29 @@ class League extends ModTemplate {
 
   render(app, mod) {
 
-    super.render(app);
-
-    if (this.header == null) {
-      this.header = new SaitoHeader(app);
+    if (!this.ui_initialized) {
       this.main = new LeagueMainContainer(app, this)
+      this.addComponent(this.main);
+      this.addComponent(new SaitoHeader(app, this));
+
+      this.ui_initialized = true;
     }
+
+    super.render(app, this);
 
     if (this.overlay == null) {
       this.overlay = new SaitoOverlay(app);
     }
 
-    this.header.render(app, this);
-    this.main.render(app, this);
-
   }
 
-  filterLeagues(app){
+  filterLeagues(app, include_default = true){
     let leagues_to_display = [];
     //filter leagues to display
     for (let le of this.leagues){
+      if (!include_default && le.admin === "saito"){
+        continue;
+      }
       if (le.admin == app.wallet.returnPublicKey() || le.myRank > 0){
         leagues_to_display.push(le);
       }else if (le.type == "public"){
