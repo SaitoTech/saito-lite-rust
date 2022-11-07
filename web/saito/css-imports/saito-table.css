@@ -51,6 +51,16 @@ Saito Table
     overflow: hidden;
 }
 
+
+.saito-table-header {
+  display: grid;
+  grid-column-gap: 1rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+}
+
 .saito-table-body {
   height: auto;
   overflow-y: scroll;
