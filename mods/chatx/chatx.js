@@ -209,6 +209,9 @@ class Chatx extends ModTemplate {
                     }
                     this.openChatBox(app.options.auto_open_chat_box);
                 } 
+            }else{
+                //Under mobile use, always wait for user to open chat box
+                this.mute = true;
             }
         }
 
