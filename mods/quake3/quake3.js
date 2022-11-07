@@ -21,6 +21,12 @@ class Quake3 extends GameTemplate {
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
 
+    //
+    // something specific for this implementation
+    //
+    this.crypto_msg      = "tribute per kill";
+
+
     // ask chat not to start on launch
     this.request_no_interrupts = true;
 
@@ -260,7 +266,7 @@ class Quake3 extends GameTemplate {
 	        let killer = i;
 	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
                   this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
-                  this.addMove(`ROUNDOVER\t${JSON.stringify([this.game.players[killer]])}\t${JSON.stringify([this.game.players[victim])}`);
+                  this.addMove(`ROUNDOVER\t${JSON.stringify([this.game.players[killer]])}\t${JSON.stringify([this.game.players[victim]])}`);
                   this.endTurn();
 	        }
 	      }
