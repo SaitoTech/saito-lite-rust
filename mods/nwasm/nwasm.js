@@ -3,6 +3,7 @@ const GameTemplate = require('./../../lib/templates/gametemplate');
 const NwasmGameOptionsTemplate = require("./lib/nwasm-game-options.template");
 const UploadRom = require("./lib/upload-rom");
 const NwasmLibrary = require("./lib/libraries");
+const SaveGameOverlay = require("./lib/save-games");
 const JSON = require("json-bigint");
 
 //
@@ -34,81 +35,35 @@ class Nwasm extends GameTemplate {
     this.active_rom_sig = "";
     this.active_rom_manufacturer = "";
     this.active_game = new ArrayBuffer(8);
+    this.active_game_img = "";
+    this.active_game_saves = [];
+
 
     this.uploaded_rom = false;
-
 
     return this;
   }
 
-  returnGameOptionsHTML() {
-    return NwasmGameOptionsTemplate(this.app, this);
-  }
-
-
-
   respondTo(type="") {
-
     if (super.respondTo(type) != null) {
       return super.respondTo(type);
     }
-
     if (type === "library-collection") {
       return { module : "Nwasm" , collection : "Nwasm" };
     }
-
     return null;
-
   }
 
-
-
-  onPeerHandshakeComplete(app, peer) {
-
-    if (!app.BROWSER) { return; }
-
-    let nwasm_mod = this;
-
-    //
-    // query for collection info
-    //
-    let message = {};
-        message.request = "library collection";
-        message.data = {};
-        message.data.collection = "Nwasm";
-        app.network.sendRequestWithCallback(message.request, message.data, function(res) {
-          nwasm_mod.addCollectionToLibrary(peer.peer.publickey, res);
-          nwasm_mod.updateVisibleLibrary();
-	}, peer);
- 
-  }
-
-  hideLibrary() {
-    let obj = document.getElementById("nwasm-libraries");
-    if (obj) { obj.style.display = "none"; }
-  }
-
-  updateVisibleLibrary() {
-    let nlib = new NwasmLibrary(this.app, this);
-    nlib.render(this.app, this);
-  }
-
-  addCollectionToLibrary(publickey, collection) {
-    this.libraries[publickey] = collection;
-  }
-
+  ////////////////////
+  // initialization //
+  ////////////////////
   initialize(app) {
 
     if (app.BROWSER == 0) { return; }
     super.initialize(app);
 
-
     //
     // if we have a library, we may have games...
-    //
-    // this is not the purest way to handle cross-module interactivity, but it is fast
-    // and we should come back and clean this up once we know exactly how we want modules
-    // to work.
     //
     let library_mod = app.modules.returnModule("Library");
     if (library_mod) {
@@ -119,10 +74,8 @@ class Nwasm extends GameTemplate {
       }
     }   
 
-
-
     //
-    // monitor log to extra game name
+    // monitor log
     //
     if (this.browser_active == 1) {
       {
@@ -137,55 +90,6 @@ class Nwasm extends GameTemplate {
         }
       }
     }
-  }
-
-  //
-  // for the love of God don't add console.logs within this function
-  //
-  processNwasmLog(logline="", log) {
-
-    let x = logline;
-
-    if (logline.indexOf("mupen64plus: ") == 0) {
-      x = logline.substring(13);
-      if (x.indexOf("Name: ") == 0) {
-        x = x.substring(6);
-        this.active_rom_name = x.trim();
-        this.active_rom_sig = this.app.crypto.hash(x.trim());
-      }
-      if (x.indexOf("Manufacturer: ") == 0) {
-        x = x.substring(14);
-        this.active_rom_manufacturer = x;
-      }
-    }
-
-    //
-    // upload the rom
-    //
-    if (this.uploaded_rom == false && this.active_rom_name != "" && this.active_rom_manufacturer != "") {
-      //
-      // save ROM in archives --dynamically is best
-      //
-      this.uploaded_rom = true;
-      this.saveRomFile(this.active_rom);
-    }
-  }
-
-
-  async onPeerHandshakeComplete(app, peer) {
-
-    let nwasm_self = this;
-
-    this.app.storage.loadTransactions("Nwasm", 10, (txs) => {
-      if (txs.length > 0) {
-        let tx = txs[0];
-        let txmsg = tx.returnMessage();
-        let data = txmsg.data;
-	let binary_data = nwasm_self.convertBase64ToByteArray(data);
-	nwasm_self.active_rom = binary_data;
-      }
-    });
-
   }
 
   initializeGame(game_id) {
@@ -208,26 +112,6 @@ class Nwasm extends GameTemplate {
     });
 
   }
-
-  handleGameLoop(msg=null) {
-
-    ///////////
-    // QUEUE //
-    ///////////
-    if (this.game.queue.length > 0) {
-      let qe = this.game.queue.length-1;
-      let mv = this.game.queue[qe].split("\t");
-      let shd_continue = 1;
-      if (mv[0] === "round") {
-        this.game.queue.splice(this.game.queue.length-1, 1);
-      }
-      if (shd_continue == 0) {
-        return 0;
-      }
-    }
-    return 1;
-  }
-
 
   initializeHTML(app) {
     mod_self = this;
@@ -288,24 +172,145 @@ class Nwasm extends GameTemplate {
       class : "game-import",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-	game_mod.importState();
+	let x = new SaveGameOverlay(app, game_mod);
+	x.render(app, game_mod);
+	//game_mod.importState();
       }
     });
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
   }
 
+  initializeRom(bytearray) {
+    myApp.initializeRom(bytearray);
+    this.active_game_saves = [];
+    this.hideLibrary();
+  }
+
+  returnGameOptionsHTML() {
+    return NwasmGameOptionsTemplate(this.app, this);
+  }
+
+  onPeerHandshakeComplete(app, peer) {
+
+    if (!app.BROWSER) { return; }
+
+    let nwasm_mod = this;
+
+    //
+    // query for collection info
+    //
+    let message = {};
+        message.request = "library collection";
+        message.data = {};
+        message.data.collection = "Nwasm";
+        app.network.sendRequestWithCallback(message.request, message.data, function(res) {
+          nwasm_mod.addCollectionToLibrary(peer.peer.publickey, res);
+          nwasm_mod.updateVisibleLibrary();
+	}, peer);
+ 
+  }
+
+  hideLibrary() {
+    let obj = document.getElementById("nwasm-libraries");
+    if (obj) { obj.style.display = "none"; }
+  }
+
+  updateVisibleLibrary() {
+    let nlib = new NwasmLibrary(this.app, this);
+    nlib.render(this.app, this);
+  }
+
+  addCollectionToLibrary(publickey, collection) {
+    this.libraries[publickey] = collection;
+  }
+
+  //
+  // for the love of God don't add console.logs within this function
+  //
+  processNwasmLog(logline="", log) {
+
+    let x = logline;
+    let nwasm_self = this;
+
+    if (logline.indexOf("mupen64plus: ") == 0) {
+      x = logline.substring(13);
+      if (x.indexOf("Name: ") == 0) {
+        x = x.substring(6);
+        this.active_rom_name = x.trim();
+        this.active_rom_sig = this.app.crypto.hash(x.trim());
+
+	//
+	// load 10 saved games
+	//
+        this.app.storage.loadTransactions(("Nwasm"+mod.active_rom_sig), 10, function(txs) {
+          try {
+	    for (let z = 0; z < txs.length; z++) {
+              let newtx = new saito.default.transaction(txs[z].transaction);
+              nwasm_self.active_game_saves.push(newtx);
+            }
+          } catch (err) {
+            console.log("error loading Nwasm game...: " + err);
+          }
+        });
+
+      }
+      if (x.indexOf("Manufacturer: ") == 0) {
+        x = x.substring(14);
+        this.active_rom_manufacturer = x;
+      }
+    }
+
+    //
+    // upload the rom
+    //
+    if (this.uploaded_rom == false && this.active_rom_name != "" && this.active_rom_manufacturer != "") {
+      //
+      // save ROM in archives --dynamically is best
+      //
+      this.uploaded_rom = true;
+      this.saveRomFile(this.active_rom);
+    }
+  }
+
+  async onPeerHandshakeComplete(app, peer) {
+
+    let nwasm_self = this;
+
+    this.app.storage.loadTransactions("Nwasm", 10, (txs) => {
+      if (txs.length > 0) {
+        let tx = txs[0];
+        let txmsg = tx.returnMessage();
+        let data = txmsg.data;
+	let binary_data = nwasm_self.convertBase64ToByteArray(data);
+	nwasm_self.active_rom = binary_data;
+      }
+    });
+  }
+
+  handleGameLoop(msg=null) {
+
+    ///////////
+    // QUEUE //
+    ///////////
+    if (this.game.queue.length > 0) {
+      let qe = this.game.queue.length-1;
+      let mv = this.game.queue[qe].split("\t");
+      let shd_continue = 1;
+      if (mv[0] === "round") {
+        this.game.queue.splice(this.game.queue.length-1, 1);
+      }
+      if (shd_continue == 0) {
+        return 0;
+      }
+    }
+    return 1;
+  }
 
   uploadRom(app) {
     let upload_rom = new UploadRom(app, this);
     upload_rom.render(app, this);
   }
-
-  initializeRom(bytearray) {
-    myApp.initializeRom(bytearray);
-    this.hideLibrary();
-  }
-
 
   //////////////////
   // transactions //
@@ -326,6 +331,7 @@ class Nwasm extends GameTemplate {
     // prevents us saving the file, this is an already uploaded rom
     //
     this.uploaded_rom = true;
+    this.active_game_saves = [];
 
     //
     // initialize ROM gets the ROM the APP and the MOD
@@ -333,7 +339,6 @@ class Nwasm extends GameTemplate {
     myApp.initializeRom(ab, this.app, this);
 
   }
-
   saveRomFile(data) {
 
     let base64data = this.convertByteArrayToBase64(data);
@@ -353,47 +358,45 @@ class Nwasm extends GameTemplate {
     this.app.storage.saveTransaction(newtx);
 
   }
+  loadSaveGame(sig) {
+    for (let i = 0; i < this.active_game_saves.length; i++) {
+      let newtx = this.active_game_saves[i];
+      if (sig === newtx.transaction.sig) {
+        let txmsg = newtx.returnMessage();
+        let byteArray = this.convertBase64ToByteArray(txmsg.data);
+        this.active_game = byteArray;
+        myApp.loadStateLocal();
+      }
+    }
+  }
   loadGameFile() {
 
     let nwasm_mod = this;
     let module_type = "Nwasm"+this.active_rom_sig;
 
     this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 1, function(txs) {
-
-try {
-      if (txs.length <= 0) { alert("No Saved Games Available"); }
-
-      let newtx = new saito.default.transaction(txs[0].transaction);
-      let txmsg = newtx.returnMessage();
-
-      let byteArray = nwasm_mod.convertBase64ToByteArray(txmsg.data);
-
-      //
-      // set this to game byteArray
-      //
-      nwasm_mod.active_game = byteArray;
-
-      //
-      // then load
-      //
-      myApp.loadStateLocal();
-
-} catch (err) {
-console.log("error loading Nwasm game...: " + err);
-}
-
+      try {
+        if (txs.length <= 0) { alert("No Saved Games Available"); }
+        let newtx = new saito.default.transaction(txs[0].transaction);
+        let txmsg = newtx.returnMessage();
+        let byteArray = nwasm_mod.convertBase64ToByteArray(txmsg.data);
+        nwasm_mod.active_game = byteArray;
+        myApp.loadStateLocal();
+      } catch (err) {
+        console.log("error loading Nwasm game...: " + err);
+      }
     });
-
-
   }
-  saveGameFile(data) {
+  async saveGameFile(data) {
 
     let base64data = this.convertByteArrayToBase64(data);
+    let screenshot = await this.app.browser.resizeImg(this.active_game_img);
 
     let obj = {
       module: (this.name + this.active_rom_sig),
       name: this.active_rom_name.trim() ,
       manufacturer: this.active_rom_manufacturer.trim(),
+      screenshot: screenshot,
       request: "upload savegame",
       data: base64data,
     };
@@ -403,8 +406,9 @@ console.log("error loading Nwasm game...: " + err);
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.storage.saveTransaction(newtx);
 
-  }
+    this.active_game_saves.push(newtx);
 
+  }
 
   /////////////////////
   // data conversion //
@@ -422,7 +426,6 @@ console.log("error loading Nwasm game...: " + err);
     return b2;
   }
 
-
   ////////////////////////
   // saving and loading //
   ////////////////////////
@@ -435,8 +438,14 @@ console.log("error loading Nwasm game...: " + err);
   }
 
   exportState() {
-    myApp.saveStateLocal();
-    myApp.exportStateLocal();
+console.log("before image is saved");
+    let nwasm_mod = this;
+    this.app.browser.screenshotCanvasElementById("canvas", function(img) {
+console.log("image is saved");
+      nwasm_mod.active_game_img = img;
+      myApp.saveStateLocal();
+      myApp.exportStateLocal();
+    });
   }
 
   importState() {

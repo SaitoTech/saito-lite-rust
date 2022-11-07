@@ -3,6 +3,15 @@ body {
   background-color: black !important;
 }
 
+.nwasm-saved-games {
+  cursor: pointer;
+  background-color: white;
+  padding: 2.5rem;
+  font-size: 3rem;
+  width: max-content;
+  max-width: 90vw;
+  max-height: 90vh;
+}
 .nwasm-libraries {
   position: absolute;
   top: 7.5rem;
