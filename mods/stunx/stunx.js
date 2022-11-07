@@ -898,7 +898,7 @@ class Stunx extends ModTemplate {
     sendRequest(message, data, public_key){
     //     console.log('sending request to ', public_key)
        let peer =  this.app.network.peers.find(peer => peer.stun.publicKey === public_key.trim());
-       peer.sendRequest( message,data); 
+       peer.sendRequest(message,data); 
       console.log(this.peer_connections[public_key])
 
     }

@@ -169,9 +169,7 @@ class Network {
     }
     this.peers.push(peer);
     this.peers_connected++;
-
     console.log('adding stun peer', peer);
-
   }
 
   //
