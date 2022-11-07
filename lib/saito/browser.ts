@@ -66,8 +66,8 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-        /******
 
+/******
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {

@@ -1,7 +1,6 @@
 module.exports = UploadRomOverlayTemplate = (app, mod) => {
 
   return `
-
     <div class="nwasm-upload-overlay" id="nwasm-upload-overlay">
       <div class="nwasm-upload-rom-box" id="nwasm-upload-rom-box">
       
@@ -10,7 +9,6 @@ module.exports = UploadRomOverlayTemplate = (app, mod) => {
 
       <div class="loader"></div>
     </div>
-
   `;
 
 }
