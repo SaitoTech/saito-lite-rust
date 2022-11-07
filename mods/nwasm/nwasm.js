@@ -123,14 +123,7 @@ class Nwasm extends GameTemplate {
     //
     // ADD MENU
     //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
+    this.menu.addMenuOption("game-game", "Game");
     this.menu.addSubMenuOption("game-game",{
       text : "Upload ROM",
       id : "game-upload-rom",

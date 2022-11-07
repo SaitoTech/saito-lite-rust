@@ -5,6 +5,7 @@
 /*  chat / Popup  */
 .chat-container {
     margin-right: 1rem;
+    height: 66rem;
     width: 44rem;
     border-radius: 0.5rem;
     z-index: 1000;
@@ -85,10 +86,9 @@
 .chat-body {
     padding: 1rem;
     display: block;
-    max-height: 56rem;
-    height: 56rem;
+    height: calc(100% - 10.4rem);
     overflow: auto;
-    margin-bottom: 5.5rem;
+    margin-bottom: 5.8rem; /* Height of chat-footer*/
 }
 
 .chat-body>.saito-user {
@@ -116,7 +116,6 @@
     background-color: rgb(236, 236, 236);
     position: absolute;
     bottom: 0;
-    margin-top: 1rem;
     width: 100%;
     padding: 1rem;
     border-top: var(--saito-border);
@@ -186,9 +185,6 @@
         left: .1rem;
     }
 
-    .chat-body {
-        height: auto;
-    }
 }
 
 

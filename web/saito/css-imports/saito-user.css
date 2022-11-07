@@ -167,13 +167,6 @@ Saito List,Saito User List and Saito User
     overflow: hidden;
 }
 
-/*.identicon-needed{
-    border: 1px solid var(--saito-red); 
-}*/
-
-.identicon-optional{
-     border: 1px solid var(--saito-green); 
-}
 
 .saito-module-identicon-box i {
     font-size: 2.2rem;
@@ -197,6 +190,15 @@ Saito List,Saito User List and Saito User
 .saito-module-identicon.small {
     width: 2.5rem;
     height: 2.5rem;
+}
+
+.player-slot-ellipsis{
+    position: relative;
+}
+
+.player-slot-ellipsis i{
+    position: absolute;
+    bottom: 0;
 }
 
 /*** SATIO Identicons ***/

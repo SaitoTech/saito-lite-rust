@@ -1967,10 +1967,8 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    if (options["game-wizard-players-select-max"] && options["game-wizard-players-select-max"] < players_needed){
-      options["game-wizard-players-select"] = options["game-wizard-players-select-max"];
+    if (options["game-wizard-players-select-max"] && !options["open_table"]){
       options["game-wizard-players-select-max"] = players_needed;
-      players_needed = options["game-wizard-players-select"];      
     }
 
 

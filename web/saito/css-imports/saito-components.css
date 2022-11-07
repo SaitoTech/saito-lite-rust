@@ -159,15 +159,14 @@ input:checked+.saito-switch-slider:before {
 .tiptext {
   visibility: hidden;
   position: absolute;
+  box-sizing: content-box !important;
   z-index: 10;
   width: 90%;
-  min-width: 400px;
+  min-width: 300px;
   max-width: 750px;
-  padding: 0 1em;
+  padding: 0.25em 0.5em;
   background-color: #fefefe;
   border-bottom: 1px solid var(--saito-primary);
-  line-height: 1.5em;
-  font-size: 1em;
   font-style: italic;
 }
 
