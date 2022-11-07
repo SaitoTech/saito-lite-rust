@@ -75,6 +75,24 @@ class Stunx extends ModTemplate {
 
         if (type == "game-menu") {
 
+            return {    
+                id: "game-chat",
+                text: "Chat",
+                submenus: [
+                    {
+                        text: "Video Chat",
+                        id: "game-video-chat",
+                        class: "game-video-chat",
+                        callback: function (app, game_mod) {
+                            console.log('all players ', game_mod.game.players);
+                            app.connection.emit('game-start-video-call', [...game_mod.game.players]);
+                        },
+                    }
+                ],
+            };
+
+
+            /*
             return {
                 init: (app, game_mod) => {
                     game_mod.menu.addMenuOption({
@@ -116,7 +134,9 @@ class Stunx extends ModTemplate {
 
                 },
                 menus: []
+            
             }
+            */
         }
 
         if (type === 'user-menu') {

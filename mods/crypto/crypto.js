@@ -29,32 +29,26 @@ class Crypto extends ModTemplate {
       if (gm.losable == 0) { return null; }
 
       let ac = this.app.wallet.returnActivatedCryptos();
-      let menus = [];
+      let cm = this;
+      let menu = { id: "game-crypto",
+                   text: "Crypto",
+                   submenus: []};
+
       for (let i = 0; i < ac.length; i++) {
-	menus[i] = {};
-        menus[i].menu_option = {
-	text: "Crypto",
-	  id: "game-crypto",
-	  class : "game-crypto",
-      	  callback : async function(app, game_mod) {
-	    game_mod.menu.showSubMenu("game-crypto");
-          }
-        };
-	menus[i].sub_menu_option = {
+      	menu.submenus.push({
           text : ac[i].ticker,
           id : "game-crypto-"+ac[i].ticker,
-          class : "game-crypto-"+ac[i].ticker,
+          class : "game-crypto-ticker",
           callback : async function(app, game_mod) {
             game_mod.menu.hideSubMenus();
-	    let cm = app.modules.returnModule("Crypto");
-	    let game_id = game_mod.game.id;
-	    cm.enableCrypto(game_mod, game_id, ac[i].ticker);
+      	    cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker);
           }
-        };
+        });
       }
-      return { menus : menus };
+      return menu;
     }
-    return null;
+
+    return super.respondTo(type);
   }
 
 
