@@ -96,6 +96,15 @@
   position: relative;
 }
 
+.player-slot.player-slot-ellipsis{
+  background-color: unset;
+}
+
+.player-slot-ellipsis i{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
 
 .saito-identicon-box.winner::before, .player-slot.winner::before {
     content: "♕";
