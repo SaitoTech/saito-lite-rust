@@ -69,7 +69,7 @@ class Arcade extends ModTemplate {
 
       let game_mod = this.app.modules.returnModule(gamename);
       let tx = new saito.default.transaction();
-      tx.msg.game = gamename;
+      tx.msg = {game:gamename};
 
       if (game_mod) {
         let x = new GameWizard(this.app, this, game_mod, tx);

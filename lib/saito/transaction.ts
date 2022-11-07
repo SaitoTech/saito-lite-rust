@@ -64,7 +64,7 @@ class Transaction {
     // are behind the transactions.
 
     this.optional = {}; // non-signed field for users
-    this.msg = {};
+    this.msg = null;
     this.dmsg = "";
     this.size = 0;
     this.is_valid = 1;
