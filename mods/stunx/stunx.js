@@ -584,7 +584,7 @@ class Stunx extends ModTemplate {
                         data_channel.send("new message");
                         console.log("connection opened")
                         // let stunx_mod = app.modules.returnModule("Stunx");
-                      app.network.addStunPeer({publicKey:offer_creator, peer_connection: pc, data_channel });
+                      app.network.addStunPeer({publickey:offer_creator, peer_connection: pc, data_channel });
                     }
                 }
 
@@ -895,11 +895,11 @@ class Stunx extends ModTemplate {
         }
     }
 
-    sendRequest(message, data, public_key){
-    //     console.log('sending request to ', public_key)
-       let peer =  this.app.network.peers.find(peer => peer.stun.publicKey === public_key.trim());
+    sendRequest(message, data, publickey){
+    //     console.log('sending request to ', publickey)
+       let peer =  this.app.network.peers.find(peer => peer.stun.publickey === publickey.trim());
        peer.sendRequest(message,data); 
-      console.log(this.peer_connections[public_key])
+      console.log(this.peer_connections[publickey])
 
     }
 

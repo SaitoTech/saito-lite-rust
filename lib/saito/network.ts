@@ -146,22 +146,23 @@ class Network {
 
   addStunPeer(stun_object){
     let pc = stun_object.peer_connection;
-    let publicKey = stun_object.publicKey
+    let publickey = stun_object.publickey
     let data_channel = stun_object.data_channel
 
     data_channel.onmessage = (e) => {
-      console.log('new mesage from ', publicKey)
+      console.log('new mesage from ', publickey)
     };
    
     data_channel.onopen = (e) => {
-        console.log('stun connection opened with '+publicKey, "opened ");
+        console.log('stun connection opened with '+publickey, "opened ");
     }
 
     const peer = new Peer(this.app);
-    peer.stun = {peer_connection:pc, data_channel, publicKey};
+    peer.stun = {peer_connection:pc, data_channel, publickey};
+    peer.peer.publickey = publickey;
     peer.uses_stun = true;
 
-   let index = this.peers.findIndex(peer => peer.stun.publicKey === publicKey);
+   let index = this.peers.findIndex(peer => peer.stun.publickey === publickey);
     if(index === -1){
      this.peers.push(peer)
     }else {

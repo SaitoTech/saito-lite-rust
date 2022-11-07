@@ -11,7 +11,7 @@ class Peer {
   public uses_stun  = false;
 
   public stun  = {
-    publicKey: "",
+    publickey: "",
     data_channel: null,
     peer_connection: null
   }
