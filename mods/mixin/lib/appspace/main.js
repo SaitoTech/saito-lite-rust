@@ -66,19 +66,19 @@ class MixinAppspace {
             let amount = trans.amount;
             let indicator = (type == 'Deposit') ? '+' : '';
 
-            html = "<div class='mixin-item mixin-his-created-at'>"+ created_at +"</div>" +
-            "<div class='mixin-item'>"+ type +"</div>" +
-            "<div class='mixin-item'>"+ ticker +"</div>" +
-            "<div class='mixin-item "+ type.toLowerCase() +"'>"+ indicator + " " + amount +"</div>" +
-            "<div class='mixin-item'>Success</div>"; /* right now we dont get `status` in /snapshot api, all trans are `success`*/
+            html = "<div class='saito-table-row'><div class='mixin-his-created-at'>"+ created_at +"</div>" +
+            "<div>"+ type +"</div>" +
+            "<div>"+ ticker +"</div>" +
+            "<div class='"+ type.toLowerCase() +"'>"+ indicator + " " + amount +"</div>" +
+            "<div>Success</div></div>"; /* right now we dont get `status` in /snapshot api, all trans are `success`*/
             
             document.getElementById('mixin-history-button').setAttribute("class", "hide-btn");
-            document.querySelector("#mixin-txn-his-container").innerHTML += html;
-            document.querySelector("#mixin-txn-his-container").style.display = 'flex';
+            document.querySelector(".mixin-txn-his-container .saito-table-body").innerHTML += html;
+            //document.querySelector(".mixin-txn-his-container").style.display = 'flex';
             }
           } else {
-            document.querySelector("#mixin-txn-his-container").innerHTML += '<p class="mixin-no-history">No account history found.</p>';
-            document.querySelector("#mixin-txn-his-container").style.display = 'flex';
+            document.querySelector(".mixin-txn-his-container .saito-table-body").innerHTML += '<p class="mixin-no-history">No account history found.</p>';
+            //document.querySelector("#mixin-txn-his-container").style.display = 'flex';
             document.getElementById('mixin-history-button').setAttribute("class", "hide-btn");            
           }
         });
@@ -88,9 +88,11 @@ class MixinAppspace {
     } catch (err) {}
 
     try {
-      document.querySelector(".mixin-balances_withdraw").onclick = (e) => {
+      const withdraw = document.querySelectorAll('.mixin-balances_withdraw');
+      withdraw.forEach(function(el) {
+      el.addEventListener('click', function (event) {
 
-        let overlay = new SaitoOverlay(app);
+        let overlay = new SaitoOverlay(app, true, true);
         let ticker = event.target.getAttribute("data-ticker");
         let asset_id = event.target.getAttribute("data-assetid");
         let balance = event.target.getAttribute("data-balance");
@@ -164,36 +166,41 @@ class MixinAppspace {
           document.querySelector("#withdraw_amount").value = amount_avl;
         }
 
-      }
+      });
+    });
 
-      document.querySelector(".mixin-balances_deposit").onclick = (e) => {
+//      document.querySelector(".mixin-balances_deposit").onclick = (e) => {
 
-        let overlay = new SaitoOverlay(app);
-        let address = event.target.getAttribute("data-address").split("|")[0];
-        let confs = event.target.getAttribute("data-confs");
-        let ticker = event.target.getAttribute("data-ticker");
+    const deposit = document.querySelectorAll('.mixin-balances_deposit');
+    deposit.forEach(function(el) {
+      el.addEventListener('click', function (event) {
+          let overlay = new SaitoOverlay(app, true, true);
+          let address = event.target.getAttribute("data-address").split("|")[0];
+          let confs = event.target.getAttribute("data-confs");
+          let ticker = event.target.getAttribute("data-ticker");
 
-        overlay.show(app, mod, MixinDepositTemplate(app, address, confs, ticker), function() {
-        });
+          overlay.show(app, mod, MixinDepositTemplate(app, address, confs, ticker), function() {
+          });
 
-        document.querySelector("#copy-deposit-add").onclick = (e) => {
-          let public_key = document.querySelector(".public-address").value;
-          
-          navigator.clipboard.writeText(public_key);
-          document.querySelector("#copy-deposit-add").classList.add("copy-check");
+          document.querySelector("#copy-deposit-add").onclick = (e) => {
+            let public_key = document.querySelector(".public-address").value;
+            
+            navigator.clipboard.writeText(public_key);
+            document.querySelector("#copy-deposit-add").classList.add("copy-check");
 
-          setTimeout(() => {
-            document.querySelector("#copy-deposit-add").classList.remove("copy-check");            
-          }, 400);
-        };
+            setTimeout(() => {
+              document.querySelector("#copy-deposit-add").classList.remove("copy-check");            
+            }, 400);
+          };
 
-        const QRCode = require('../../../../lib/helpers/qrcode');
-        return new QRCode(
-          document.getElementById("qrcode"),
-          address
-        );
+          const QRCode = require('../../../../lib/helpers/qrcode');
+          return new QRCode(
+            document.getElementById("qrcode"),
+            address
+          );
 
-      }
+      });
+    })
 
 
     } catch (err) {}
