@@ -61,6 +61,7 @@ class Nwasm extends GameTemplate {
 
     if (app.BROWSER == 0) { return; }
     super.initialize(app);
+    if (this.browser_active == 0) { return; }
 
     //
     // if we have a library, we may have games...

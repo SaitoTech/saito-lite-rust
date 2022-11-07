@@ -5,7 +5,7 @@
  * @property {number} message_id - The index of the API call, similar to JSON RPC's id.
  * @property {array} message_data - the data being send to the remote procedure
  */
-export class APIMessage {
+export class APIMessage {z
   message_name: string;
   message_id = 0;
   message_data = [];

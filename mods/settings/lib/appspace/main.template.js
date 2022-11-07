@@ -77,10 +77,6 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   </div>
 
   <div class="saito-page-header-title">SETTINGS
-  <div class="saito-page-header-text">
-      Configure and personalise your Saito experience. Add/remove modules, setup wallet.
-      Get informed on latest versions. Reach out to us on social media platforms in case of any queries.
-  </div>
   </div>
 </div>
 

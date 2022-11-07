@@ -48,30 +48,6 @@ i.saito-back-button {
     float: right;
 }
 
-.saito-page-header-text {
-    font-size: 1.6rem;
-    line-height: 2.1rem;
-    clear: both;
-    position: absolute;
-    background: var(--saito-white);
-    margin: 1rem 0;
-    border-radius: 0.5rem;
-    transition: min-height 0.3s ease-in-out;
-    height: 0;
-    overflow: hidden;
-    padding: 0;
-    border: none;
-    z-index: 9;
-}
-
-.saito-page-header-title:hover .saito-page-header-text {
-    min-height: 3rem;
-    height: auto;
-    border: 1px solid var(--saito-border);
-    padding: 1rem;
-    white-space: initial;
-}
-
 .saito-leaderboard-gamename {
     width: 100%;
     overflow: hidden;

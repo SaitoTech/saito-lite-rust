@@ -14,9 +14,6 @@ module.exports = MixinAppspaceTemplate = (app) => {
     }
 
     html += `    <div class="saito-page-header-title">CRYPTO WALLET
-    <div class="saito-page-header-text">
-      Saito supports third-party crypto balances. Send and receive tokens to your Saito wallet, or transfer them using applications on the Saito network. Please note this service is in BETA. And be sure to backup your entire wallet to avoid losing access to your funds.
-    </div>
     </div>
   </div>
 

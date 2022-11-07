@@ -19,6 +19,15 @@ class Crypto extends ModTemplate {
   
   respondTo(type = "") {
     if (type == "game-menu") {
+
+      //
+      // only show if games are winable
+      //
+      let gm = this.app.modules.returnActiveModule();
+      if (gm.winable == 0) { return null; }
+      if (gm.cooperative == 1) { return null; }
+      if (gm.losable == 0) { return null; }
+
       let ac = this.app.wallet.returnActivatedCryptos();
       let menus = [];
       for (let i = 0; i < ac.length; i++) {
