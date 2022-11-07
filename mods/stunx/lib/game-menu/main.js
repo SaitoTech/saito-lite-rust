@@ -29,7 +29,7 @@ class StunxGameMenu {
             this.app.connection.emit('render-remote-stream-placeholder-request', peer, "small");
         })
 
-        stunx_mod.createStunConnectionWithPeers(peers, 'small');
+        stunx_mod.createVideoConnectionWithPeers(peers, 'small');
 
     }
 
@@ -43,7 +43,7 @@ class StunxGameMenu {
             // stunx_mod.setChatType("game");
             this.app.connection.emit('show-video-chat-request', this.app, this, "small");
             this.app.connection.emit('render-local-stream-request', localStream, "small");
-            stunx_mod.acceptPeerConnectionOffer(app, offer_creator, offer, 'small');
+            stunx_mod.acceptVideoConnectionOffer(app, offer_creator, offer, 'small');
         }).catch(error => {
             salert("Video call rejected");
         })
