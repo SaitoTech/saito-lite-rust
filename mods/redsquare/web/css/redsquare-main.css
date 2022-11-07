@@ -107,6 +107,10 @@ span.redsquare-home-red-square+span {
   padding-bottom: 3rem;
 }
 
+.redsquare-list-open {
+  position: fixed;
+  top: 14rem
+}
 
 #redsquare-intersection {
   opacity: 1;
