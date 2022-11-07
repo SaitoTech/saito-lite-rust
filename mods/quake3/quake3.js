@@ -378,16 +378,9 @@ console.log("THIS ONE IS ON US");
     //
     // ADD MENU
     //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
+    this.menu.addMenuOption("game-game", "Game");
 
-    this.menu.addMenuOption({
+    this.menu.addMenuIcon({
       text : "Controls",
       id : "game-controls",
       class : "game-game-controls",

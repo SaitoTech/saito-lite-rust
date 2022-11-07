@@ -20,14 +20,10 @@
     //
     // menu
     //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
+
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
     this.menu.addSubMenuOption("game-game", {
       text : "Save",
       id : "game-save",
@@ -38,7 +34,7 @@
 	game_mod.endTurn();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -50,7 +46,7 @@
 
 
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Rules",
       id : "game-rules",
       class : "game-rules",
@@ -104,14 +100,8 @@
     //
     // factions
     //
-    this.menu.addMenuOption({
-      text : "Factions",
-      id : "game-factions",
-      class : "game-factions",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-factions");
-      }
-    });
+    this.menu.addMenuOption("game-factions", "Factions");
+
     for (let i = 0; i < this.game.players.length; i++) {
       this.menu.addSubMenuOption("game-factions", {
         text : this.returnFactionNickname(i+1),
@@ -127,14 +117,8 @@
 
 
 
-    this.menu.addMenuOption({
-      text : "Cards",
-      id : "game-cards",
-      class : "game-cards",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-cards");
-      }
-    });
+    this.menu.addMenuOption("game-cards", "Cards");
+
     this.menu.addSubMenuOption("game-cards", {
       text : "Strategy",
       id : "game-strategy-cardlist",
@@ -187,14 +171,8 @@
 
 
 
-    this.menu.addMenuOption({
-      text : "Reference",
-      id : "game-reference",
-      class : "game-reference",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-reference");
-      }
-    });
+    this.menu.addMenuOption("game-reference", "Reference");
+    
     this.menu.addSubMenuOption("game-reference", {
       text : "Action",
       id : "game-action-cardlist",

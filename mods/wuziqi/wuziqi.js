@@ -34,7 +34,6 @@ class Wuziqi extends GameTemplate {
 
     initializeHTML(app) {
 
-        console.log("HTML 1");
         if (!this.browser_active) { return; }
         if (this.initialize_game_run) { return 0; }
 
@@ -43,17 +42,11 @@ class Wuziqi extends GameTemplate {
 
         //Define black and white so can use in menus        
         this.game.sides = ["black", "white"];
-        console.log("HTML 2");
 
-        this.menu.addMenuOption({
-            text: "Game",
-            id: "game-game",
-            class: "game-game",
-            callback: function (app, game_mod) {
-                game_mod.menu.showSubMenu("game-game");
-            }
-        });
-        this.menu.addSubMenuOption("game-game", {
+        this.menu.addMenuOption("game-game", "Game");
+        this.menu.addMenuOption("game-info", "Info");
+
+        this.menu.addSubMenuOption("game-info", {
             text: "How to Play",
             id: "game-intro",
             class: "game-intro",

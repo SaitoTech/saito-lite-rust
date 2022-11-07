@@ -83,14 +83,8 @@ class Beleaguered extends GameTemplate {
     //
     // ADD MENU
     //
-    this.menu.addMenuOption({
-      text: "Game",
-      id: "game-game",
-      class: "game-game",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
+    this.menu.addMenuOption("game-game", "Game");
+
     this.menu.addSubMenuOption("game-game", {
       text: "Start New Game",
       id: "game-new",
@@ -111,8 +105,9 @@ class Beleaguered extends GameTemplate {
       }
     });
 
+    this.menu.addMenuOption("game-info", "Info");
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "How to Play",
       id: "game-intro",
       class: "game-intro",
@@ -122,7 +117,7 @@ class Beleaguered extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",

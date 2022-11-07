@@ -26,7 +26,8 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
     } else if (i < invite.msg.players_needed) {
       playersHtml += `<div class="player-slot identicon-empty"></div>`;  
     }else{
-      playersHtml += `<div class="player-slot saito-module-identicon-box"></div>`;  
+      playersHtml += `<div class="tip player-slot player-slot-ellipsis"><i class="fas fa-ellipsis-h"></i><div class="tiptext">More players may join this game after it starts</div></div>`;  
+      break;
     }
   }
   playersHtml += '</div>';
