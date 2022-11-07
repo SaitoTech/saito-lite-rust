@@ -43,6 +43,7 @@ class Mixin extends ModTemplate {
     this.withdrawals    = [];
     this.deposits       = [];
 
+    this.styles = ['/mixin/css/appspace.css'];
   }
 
 
@@ -55,8 +56,8 @@ class Mixin extends ModTemplate {
   respondTo(type = "") {
     let mixin_self = this;
 
-    if (type === 'appspace' && this.mixin.app_id != "") {
-      this.scripts['/mixin/css/appspace.css'];
+    if (type === 'appspace') {
+      
       super.render(this.app, this); // for scripts + styles
       return new MixinAppspace(this.app, this);
     }
@@ -80,6 +81,7 @@ class Mixin extends ModTemplate {
       if (app.BROWSER == 0) {
 
         m = JSON.parse(process.env.MIXIN);
+ 
         
 	if (m.appId) {
 
@@ -699,9 +701,9 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
 	mixin_publickey :	user_public_key 
       };
 
-console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+//console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
       mixin_self.app.network.peers[0].sendRequestWithCallback("mixin create account", data, function(res) {
-console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+//console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
 	mixin_self.createAccountCallback(res, callback);
       });
 

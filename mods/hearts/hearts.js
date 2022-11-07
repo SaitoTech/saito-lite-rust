@@ -93,15 +93,10 @@ class Hearts extends GameTemplate {
     //
     // ADD MENU
     //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -111,27 +106,7 @@ class Hearts extends GameTemplate {
       }
     });
 
-
-    if (app.modules.returnModule("RedSquare")) {
-    this.menu.addSubMenuOption("game-game", {
-      text : "Screenshot",
-      id : "game-post",
-      class : "game-post",
-      callback : async function(app, game_mod) {
-        let log = document.querySelector(".log");
-        let log_lock = document.querySelector(".log_lock");
-        if (!log_lock && log) { log.style.display = "none"; }
-        await app.browser.captureScreenshot(function(image) {
-          if (!log_lock && log) { log.style.display = "block"; }
-          let m = game_mod.app.modules.returnModule("RedSquare");
-          if (m) { m.tweetImage(image); }
-        });
-      },
-    });
-    }
-
-
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
@@ -140,14 +115,7 @@ class Hearts extends GameTemplate {
         game_mod.handleStatsMenu();
       }
     });
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
+
     this.menu.addChatMenu(app, this);
 
     this.menu.render(app, this);

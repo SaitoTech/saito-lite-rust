@@ -423,14 +423,8 @@ class Twilight extends GameTemplate {
       }
     } catch (err) {}
 
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-      	game_mod.menu.showSubMenu("game-game");
-      }
-    });
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
    
     this.menu.addSubMenuOption("game-game", {
       text : "Play Mode",
@@ -474,7 +468,7 @@ class Twilight extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "How to Play",
       id : "game-rules",
       class : "game-rules",
@@ -484,7 +478,7 @@ class Twilight extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
@@ -517,13 +511,13 @@ class Twilight extends GameTemplate {
     });
 ****/
 
-    this.menu.addMenuOption({
-      text : "Cards",
-      id : "game-cards",
-      class : "game-cards",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-cards");
-	     }
+    this.menu.addSubMenuOption("game-info", {
+      text: "Cards",
+      id: "game-cards",
+      class: "game-cards",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-cards");
+      }
     });
     this.menu.addSubMenuOption("game-cards",{
       text: "My Hand",
@@ -563,16 +557,7 @@ class Twilight extends GameTemplate {
     });
 
 
-    this.menu.addMenuOption({
-      text : "Display",
-      id : "game-display",
-      class : "game-display",
-      callback : function(app, game_mod) {
-	       game_mod.menu.showSubMenu("game-display");
-      }
-    });
-
-    this.menu.addSubMenuOption("game-display",{
+    this.menu.addSubMenuOption("game-game",{
       text: "Language",
       id: "game-language",
       class: "game-language",
@@ -622,7 +607,7 @@ class Twilight extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-display", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -631,15 +616,7 @@ class Twilight extends GameTemplate {
         game_mod.log.toggleLog();
       }
     });
-    this.menu.addSubMenuOption("game-display", {
-      text : "HUD",
-      id : "game-display-hud",
-      class : "game-display-hud",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.hud.toggleHud();
-      }
-    });
+
     this.menu.addChatMenu(app, this);
 
     this.menu.render(app, this);

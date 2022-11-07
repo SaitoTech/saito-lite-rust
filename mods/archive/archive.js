@@ -115,6 +115,16 @@ class Archive extends ModTemplate {
         response.txs = txs;
         mycallback(response);
       }
+      if (req.data.request === "load_sig") {
+        console.log("PeerRequest: load TX by Sig");
+        if (!req.data.sig) { return; }
+        console.log("PeerRequest: load TX by Sig 2");
+        txs = await this.loadTransactionBySig(req.data.sig);
+        response.err = "";
+        response.txs = txs;
+console.log("TXS is the object returned!");
+        mycallback(response);
+      }
     }
 
     super.handlePeerRequest(app, req, peer, mycallback);
@@ -413,6 +423,40 @@ console.log("SAVING TX");
       }
       return txs;
     } catch (err) {
+      console.log(err);
+      return [];
+    }
+
+  }
+
+  async loadTransactionBySig(sig="") {
+
+    let sql = "";
+    let params = {};
+
+    let count = 0;
+    let paramkey = '';
+    let where_statement_array = [];
+
+    try {
+
+      sql = `SELECT * FROM txs WHERE sig = $sig`;
+      params = Object.assign(params, { $sig : sig });
+      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      let txs = [];
+
+console.log("ROWS: " + rows.length);
+
+      if (rows?.length > 0) {
+        for (let row of rows){
+console.log("push TX and optional!");
+          txs.push({ tx : row.tx , optional : row.optional });
+        }
+      }
+console.log("TXS returned: " + txs.length);
+      return txs;
+    } catch (err) {
+console.log("ERROR WITH TXS returned");
       console.log(err);
       return [];
     }

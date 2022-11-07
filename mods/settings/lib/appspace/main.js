@@ -28,7 +28,12 @@ class SettingsAppspace {
     let el = document.querySelector(".settings-appspace-debug-content");
 
     try {
-      var tree = jsonTree.create(JSON.parse(JSON.stringify(app.options)), el);
+      let optjson = JSON.parse(JSON.stringify(app.options, (key, value) =>
+            typeof value === 'bigint'
+                ? value.toString()
+                : value // return everything else unchanged
+        ));
+      var tree = jsonTree.create(optjson, el);
     } catch (err) {
       console.log("error creating jsonTree: " + err);
     }

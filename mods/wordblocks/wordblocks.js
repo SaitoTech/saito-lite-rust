@@ -45,12 +45,10 @@ class Wordblocks extends GameTemplate {
 
     super.initializeHTML(app);
 
-    this.menu.addMenuOption({
-      text: "Game",
-      id: "game-game",
-      class: "game-game",
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
+    this.menu.addSubMenuOption("game-info", {
       text: "How to Play",
       id: "game-intro",
       class: "game-intro",
@@ -64,7 +62,7 @@ class Wordblocks extends GameTemplate {
       },
     });
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Log",
       id: "game-log",
       class: "game-log",
@@ -75,7 +73,7 @@ class Wordblocks extends GameTemplate {
     });
 
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
