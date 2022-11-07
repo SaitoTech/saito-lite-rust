@@ -116,16 +116,12 @@ class Settlers extends GameTemplate {
       $(".diceroll").css("display", "none");
     }
 
-    this.menu.addMenuOption({
-      text: "Game",
-      id: "game-game",
-      class: "game-game",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Instructions",
+
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
+    this.menu.addSubMenuOption("game-info", {
+      text: "How to Play",
       id: "game-help",
       class: "game-help",
       callback: function (app, game_mod) {
@@ -133,7 +129,7 @@ class Settlers extends GameTemplate {
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       },
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
@@ -143,7 +139,7 @@ class Settlers extends GameTemplate {
       },
     });
     
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Log",
       id: "game-log",
       class: "game-log",
@@ -157,14 +153,7 @@ class Settlers extends GameTemplate {
     this.menu.addChatMenu(this.app, this);
     
     if (this.game.player > 0){
-      this.menu.addMenuOption({
-        text: "Trade",
-        id: "game-trade",
-        class: "game-trade",
-        callback: function (app, game_mod) {
-          game_mod.menu.showSubMenu("game-trade");
-        },
-      });
+      this.menu.addMenuOption("game-trade", "Trade");
       
       this.menu.addSubMenuOption("game-trade", {
         text: "Make Offer",

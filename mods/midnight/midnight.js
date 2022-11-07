@@ -45,14 +45,9 @@ class Midnight extends GameTemplate {
       // Override the game template initializeHTML function
       super.initializeHTML(app);
 
-      this.menu.addMenuOption({
-          text: "Game",
-          id: "game-game",
-          class: "game-game",
-          callback: function (app, game_mod) {
-              game_mod.menu.showSubMenu("game-game");
-          }
-      });
+      this.menu.addMenuOption("game-game", "Game");
+      this.menu.addMenuOption("game-info", "Info");
+
       this.menu.addSubMenuOption("game-game", {
           text: "Restart",
           id: "game-restart",
@@ -75,7 +70,7 @@ class Midnight extends GameTemplate {
           }
       });
 
-      this.menu.addSubMenuOption("game-game", {
+      this.menu.addSubMenuOption("game-info", {
           text: "How to Play",
           id: "game-intro",
           class: "game-intro",
