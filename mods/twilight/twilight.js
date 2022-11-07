@@ -24,7 +24,6 @@ var original_selected_card = null;
   Every selection of a card on your turn (regardless of whether played for ops or event, yours or opponents) will
   add (2) and (3) to the moves. Except 3 is resolve\tplay, so that isn't exactly a duplication since resolve checks for a card 
   (not the key word play) 
-
 */
 
 

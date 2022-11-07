@@ -108,7 +108,7 @@ class Quake3 extends GameTemplate {
 	      ticker
 	    );
 	  }
-v	}
+	}
         return 1;
       }
 
@@ -260,6 +260,7 @@ v	}
 	        let killer = i;
 	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
                   this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
+                  this.addMove(`ROUNDOVER\t${JSON.stringify([this.game.players[killer]])}\t${JSON.stringify([this.game.players[victim])}`);
                   this.endTurn();
 	        }
 	      }
