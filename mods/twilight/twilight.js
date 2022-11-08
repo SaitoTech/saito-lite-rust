@@ -427,7 +427,7 @@ class Twilight extends GameTemplate {
     this.menu.addMenuOption("game-info", "Info");
    
     this.menu.addSubMenuOption("game-game", {
-      text : "Play Mode",
+      text : "Difficulty",
       id : "game-confirm",
       class : "game-confirm",
       callback : function(app, game_mod) {
@@ -2589,9 +2589,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["summit", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["missileenvy", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["brezhnev", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -11427,7 +11427,7 @@ playerTurnHeadlineSelected(card, player) {
 
           let card = this.game.deck[0].cards[available_cards[i]];
 
-          if (this.modifyOps(card.ops) == selected_ops) {
+          if (this.modifyOps(card.ops, available_cards[i], opponent) == selected_ops) {
             multiple_cards = 1;
           }
 
@@ -11454,7 +11454,8 @@ playerTurnHeadlineSelected(card, player) {
           //
           let html = "<ul>";
           for (let i = 0; i < available_cards.length; i++) {
-            if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops) == selected_ops && available_cards[i] != "china") {
+console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " + this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], opponent));
+            if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], opponent) == selected_ops && available_cards[i] != "china") {
               html += `<li class="card" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
             }
           }
