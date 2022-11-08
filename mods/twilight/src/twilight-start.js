@@ -427,7 +427,7 @@ class Twilight extends GameTemplate {
     this.menu.addMenuOption("game-info", "Info");
    
     this.menu.addSubMenuOption("game-game", {
-      text : "Play Mode",
+      text : "Difficulty",
       id : "game-confirm",
       class : "game-confirm",
       callback : function(app, game_mod) {
