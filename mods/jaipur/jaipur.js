@@ -24,7 +24,9 @@ class Jaipur extends GameTemplate {
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
 
-    this.slug         = this.name.toLowerCase();
+    this.seats         =  [7, 4]; //Alternate player box arrangement
+
+    this.slug   = this.name.toLowerCase();
     this.card_img_dir = `/${this.slug}/img/cards/`;
     this.token_img_dir = `/${this.slug}/img/tokens/`;
     this.categories 	 = "Games Boardgame Cardgame";
@@ -56,16 +58,10 @@ class Jaipur extends GameTemplate {
 
     super.initializeHTML(app);
 
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-      	game_mod.menu.showSubMenu("game-game");
-      }
-    });
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
    
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "How to Play",
       id : "game-rules",
       class : "game-rules",
@@ -76,21 +72,19 @@ class Jaipur extends GameTemplate {
     });
 
 
+
     this.menu.addChatMenu(app, this);
 
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
-    //this.log.render(app, this);
-    //this.log.attachEvents(app, this);
+    this.log.render(app, this);
+    this.log.attachEvents(app, this);
 
     this.playerbox.render(app, this);
     this.playerbox.attachEvents(app, this);
-    this.playerbox.groupOpponents(false);
-
-    //this.scoreboard.render(app, this);
-    //this.scoreboard.attachEvents(app, this);
-
+    this.playerbox.addClassAll("poker-seat-",true);
+    
     this.hud.card_width = 120;
     this.hud.render(app, this);
     this.hud.attachEvents(app, this); //Enable dragging
@@ -104,13 +98,13 @@ class Jaipur extends GameTemplate {
 initializeGame(game_id) {
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
-  //this.restoreLog();
+  this.restoreLog();
 
   //
   // initialize
   //
   if (!this.game.state) {
-    this.game.state = this.returnState();
+    this.game.state = {};
 
     console.log("\n\n\n\n");
     console.log("---------------------------");
@@ -127,7 +121,9 @@ initializeGame(game_id) {
   }
 
   if (this.browser_active){
-     this.displayBoard();
+     $(".Jaipur_board").attr("style","");
+     this.updateTokens();
+     this.updateMarket();
      this.displayPlayers();
 
   }
@@ -136,6 +132,9 @@ initializeGame(game_id) {
 
 
 initializeQueue(first_player = 1){
+
+    Object.assign(this.game.state, this.returnState());
+
     this.game.queue = [];
     this.game.queue.push(`turn\t${first_player}`);
     this.game.queue.push("READY");
@@ -170,7 +169,6 @@ initializeQueue(first_player = 1){
     if (this.game.queue.length > 0) {
 
       if (this.browser_active){
-         this.displayBoard();
          this.displayPlayers();
       }
 
@@ -192,6 +190,10 @@ initializeQueue(first_player = 1){
           }else{
             this.game.state.hand.push(card);
           }
+        }
+
+        if (this.browser_active){
+          this.updateMarket();
         }
       }
 
@@ -222,8 +224,13 @@ initializeQueue(first_player = 1){
         while (this.game.pool[0].hand.length > 0){
           let card = this.game.pool[0].hand.pop();
           this.game.state.market.push(this.game.deck[0].cards[card].type);
+
+          if (this.browser_active){
+            $(this.cardToHTML(this.game.deck[0].cards[card].type)).hide().appendTo(".market").fadeIn("slow");
+          }
         }
 
+        this.updateLog(`There are ${this.game.deck[0].crypt.length} cards left`);
       }
 
       if (mv[0] == "revealbonus"){
@@ -235,8 +242,8 @@ initializeQueue(first_player = 1){
           for (let i = 1; i < 4; i++){
             while(this.game.deck[i].hand.length > 0){
               let token = this.game.deck[i].hand.pop();
-              console.log(`Deck ${i}, token: ${token}, value: ${this.game.deck[i].cards[token]}`);
-              tokens.push(this.game.deck[i].cards[token]);
+              console.log(`Deck ${i}, value: ${this.game.deck[i].cards[token]}`);
+              tokens.push({"type": i, "value": this.game.deck[i].cards[token]});
             }
           }
           this.game.state.mybonustokens = tokens;
@@ -251,24 +258,27 @@ initializeQueue(first_player = 1){
         let tokens = JSON.parse(mv[2]);
         if (this.game.player !== player){
           this.game.state.enemytokens = tokens;
-          if (tokens.length !== this.game.state.enemybonus){
+          if (tokens.length !== this.game.state.enemybonus.length){
             console.log("Bonus token mismatch");
           }
+          this.game.state.enemybonus = [];
         }
         this.game.queue.splice(qe, 1);
       }
 
       if (mv[0] == "endround"){
         let winner = 0;
-        let myscore = this.game.state.mybonustokens.reduce((a,b)=>a+b);
+        
+        let myscore = (this.game.state.herd > this.game.state.enemyherd) ? 5 : 0;
         myscore += this.game.state.vp[this.game.player - 1];
-        myscore += (this.game.state.herd > this.game.state.enemyherd) ? 5 : 0;
+        myscore += this.reduceScore(this.game.state.mybonustokens);
 
-        let opponent_score = this.game.state.enemytokens.reduce((a,b)=>a+b);
+        let opponent_score = (this.game.state.enemyherd > this.game.state.herd) ? 5 : 0;        
         opponent_score += this.game.state.vp[2 - this.game.player];
-        opponent_score += (this.game.state.enemyherd > this.game.state.herd) ? 5 : 0;        
+        opponent_score += this.reduceScore(this.game.state.enemytokens);
 
         this.updateLog(`You scored ${myscore} points versus ${opponent_score} for your opponent`);
+
         let method = "score";
         if (myscore > opponent_score){
           winner = this.game.player;
@@ -285,7 +295,7 @@ initializeQueue(first_player = 1){
         }
         if (!winner){
           this.updateLog(`Both players have ${this.game.state.mybonustokens.length} bonus tokens, checking second tiebreaker...`);
-          winner = (this.game.state.goodtokens[2] > this.game.state.goodtokens[1])? 2 : 1;
+          winner = (this.game.state.goodtokens[0].length > this.game.state.goodtokens[1].length)? 1 : 2;
           method = "good token count";
         }
 
@@ -296,15 +306,11 @@ initializeQueue(first_player = 1){
           this.endGame(this.game.players[winner-1], "excellence");
           return 0;
         }else{
-          this.initializeQueue(3-winner);            
+          this.game.state[`winner${winner}`] = 1;
+          this.displayPlayers();
+          this.initializeQueue(3-winner);
         }
 
-        let temp = this.game.state[`winner${3-winner}`];
-        this.game.state = this.returnState();
-        this.game.state[`winner${winner}`] = 1;
-        if (temp){
-          this.game.state[`winner${3-winner}`] = 1;
-        }
 
         this.game.queue.push(`ACKNOWLEDGE\t${my_name} the round by ${method}`);
 
@@ -365,6 +371,10 @@ initializeQueue(first_player = 1){
           this.game.state.hand.push(card);
         }else{
           this.game.state.enemyhand++;
+          $(`.market .card[data-id="${card}"]`).first().fadeOut("slow", function() {
+            $(this).remove();
+          });
+
         }
 
         let my_name = (this.game.player == player) ? "You" : "Your opponent";
@@ -397,6 +407,7 @@ initializeQueue(first_player = 1){
             good_token++;
             let profit = this.game.state.tokens[card].pop();
             this.game.state.vp[player-1] += profit;
+            this.game.state.goodtokens[player-1].push({"type": card, "value":profit});
           }
         }
 
@@ -405,13 +416,12 @@ initializeQueue(first_player = 1){
           bonus_deck = Math.min(count-1, 4); //In case selling more than 5
           this.game.queue.push(`DEAL\t${bonus_deck}\t${player}\t1`);
           if (this.game.player !== player){
-            this.game.state.enemybonus++;
+            this.game.state.enemybonus.push(bonus_deck);
           }
         }
 
-        this.game.state.goodtokens[player-1] += good_token;
-
         let my_name = (this.game.player == player) ? "You" : "Your opponent";
+        this.updateTokens();
         this.updateLog(`${my_name} sold ${count} ${card}${(count>1)?"s":""}, gaining ${good_token} goods token${(good_token>1)?"s":""}${(bonus_deck>0)?" and a bonus token":""}.`);
 
       }
@@ -425,7 +435,7 @@ initializeQueue(first_player = 1){
         this.game.queue.push("turn\t"+(3-player));
 
         for (let i = 0; i < from_market.length; i++){
-          console.log(JSON.stringify(this.game.state.hand),JSON.stringify(this.game.state.market));
+          //console.log(JSON.stringify(this.game.state.hand),JSON.stringify(this.game.state.market));
           if (this.game.player === player){
             this.game.state.hand.push(from_market[i]);
           }else{
@@ -438,10 +448,14 @@ initializeQueue(first_player = 1){
               break;
             }
           }
+          $(`.market .card[data-id="${from_market[i]}"]`).first().attr("data-id","").fadeOut("slow", function() {
+            $(this).remove();
+          });
+
         }
 
         for (let i = 0; i < to_market.length; i++){
-          console.log(JSON.stringify(this.game.state.hand),JSON.stringify(this.game.state.market));
+          //console.log(JSON.stringify(this.game.state.hand),JSON.stringify(this.game.state.market));
           this.game.state.market.push(to_market[i]);
           if (this.game.player === player){
             if (to_market[i] === "camel"){
@@ -461,6 +475,8 @@ initializeQueue(first_player = 1){
               this.game.state.enemyhand--;
             }
           }
+
+          $(this.cardToHTML(to_market[i])).hide().appendTo(".market").fadeIn("slow");
         }
 
         let my_name = (this.game.player == player) ? "You" : "Your opponent";
@@ -482,11 +498,16 @@ initializeQueue(first_player = 1){
 
         if (this.game.player === player){
           this.game.state.herd += numCamels;
-          this.updateLog(`You added ${numCamels} to your herd.`);
+          this.updateLog(`You added ${numCamels} camels to your herd.`);
         }else{
           this.game.state.enemyherd += numCamels;
-          this.updateLog(`Your opponent added ${numCamels} to their herd.`);
+          this.updateLog(`Your opponent added ${numCamels} camels to their herd.`);
         }
+
+        $(`.market .card[data-id="camel"]`).fadeOut("slow", function() {
+          $(this).remove();
+        });
+
 
         this.game.queue.push("marketdeal");
         this.game.queue.push(`POOLDEAL\t1\t${numCamels}\t1`);
@@ -540,6 +561,9 @@ initializeQueue(first_player = 1){
         game_self.endTurn();
       }else{
         if (game_self.game.state.hand.length < 7 ){
+           $(this).fadeOut("slow", function() {
+              $(this).remove();
+           });
           game_self.addMove(`take\t${game_self.game.player}\t${card}`);
           game_self.endTurn();
         }else{
@@ -730,6 +754,55 @@ initializeQueue(first_player = 1){
     }
   }
 
+  bonusTokensToHTML(player){
+    let html = `<div class="player-box-tokens">`;
+
+    if (this.game.state.goodtokens[player-1].length > 0){
+      for (let token of this.game.state.goodtokens[player-1]){
+        html += `<div class="token" style="background-image:url('${this.token_img_dir}${token.type}_token.png');">${token.value}</div>`
+      }
+    }
+
+    if (this.game.player == player){
+      for (let j = 1; j <= 3; j ++ ){
+        for (let i = 0; i < this.game.deck[j].hand.length; i++){
+          html += `<div class="token" style='background-image:url("${this.token_img_dir}${j+2}_card_token.png");'>${this.game.deck[j].cards[this.game.deck[j].hand[i]]}</div>`;
+        }
+      }
+      for (let bt of this.game.state.mybonustokens){
+        html += `<div class="token" style='background-image:url("${this.token_img_dir}${bt.type+2}_card_token.png");'>${bt.value}</div>`;
+      }
+    }else{
+      for (let bt of this.game.state.enemybonus){
+        html += `<div class="token" style='background-image:url("${this.token_img_dir}${bt+1}_card_token.png");'></div>`;
+      }
+      for (let bt of this.game.state.enemytokens){
+        html += `<div class="token" style='background-image:url("${this.token_img_dir}${bt.type+2}_card_token.png");'>${bt.value}</div>`;
+      }
+
+    }
+
+    return html + "</div>";
+  }
+
+  reduceScore(bonusToken){
+    let score = 0;
+    for (let obj of bonusToken){
+      score += obj.value;
+    }
+    return score;
+  }
+
+  calculateBonus(){
+    let bonus = 0;
+    for (let j = 1; j <= 3; j ++ ){
+      for (let i = 0; i < this.game.deck[j].hand.length; i++){
+        bonus += this.game.deck[j].cards[this.game.deck[j].hand[i]];
+      }
+    }
+    return bonus;
+  }
+
   displayPlayers(){
 
     let crown = `<i class="fas fa-crown"></i>`;
@@ -738,20 +811,26 @@ initializeQueue(first_player = 1){
     this.playerbox.refreshGraphic(this.camelHTML(this.game.state.enemyherd, this.game.state.herd), 3-this.game.player);
 
     let my_score = (this.game.state.herd > this.game.state.enemyherd) ? 5:0;
-    my_score +=   this.game.state.vp[this.game.player-1];
-    let bonus = this.game.deck[1].hand.length + this.game.deck[2].hand.length + this.game.deck[3].hand.length;
-    let bonus_text = (bonus>0)? `*<div class="tiptext">Score does not included ${bonus} bonus token(s).</div>`: "";
+    my_score += this.game.state.vp[this.game.player-1];
+    my_score += this.calculateBonus();
+    my_score += this.reduceScore(this.game.state.mybonustokens);
 
-    html = `<div class="score tip">Me: ${my_score}${bonus_text}</div>`;
+
+    html = `<div class="score tip">Me: ${my_score}</div>`;
     if (this.game.state[`winner${this.game.player}`]){
       html = crown + html;
     }
+
     this.playerbox.refreshInfo(html);
+    this.playerbox.refreshLog(this.bonusTokensToHTML(this.game.player));
 
     let enemy_score = (this.game.state.herd < this.game.state.enemyherd) ? 5:0;
     enemy_score += this.game.state.vp[2 - this.game.player];
-    bonus_text = (this.game.state.enemybonus>0)? `*<div class="tiptext">Score does not included ${this.game.state.enemybonus} bonus token(s).</div>`: "";
-    html = `<div class="score tip">Opponent: ${enemy_score}${bonus_text}</div>`;
+    enemy_score += this.reduceScore(this.game.state.enemytokens);
+
+
+    let bonus_text = (this.game.state.enemybonus.length>0)? `*<div class="tiptext">Score does not include ${this.game.state.enemybonus.length} bonus token(s).</div>`: "";
+    html = `<div class="score tip">Opponent: ${enemy_score}${bonus_text}, ${this.game.state.enemyhand} cards</div>`;
  
     if (this.game.state[`winner${3-this.game.player}`]){
       html = crown + html;
@@ -759,12 +838,7 @@ initializeQueue(first_player = 1){
 
     this.playerbox.refreshInfo(html, 3-this.game.player);
 
-    let html = `<div class="pb_info">${this.game.state.enemyhand} cards</div>`;
-    if (this.game.state.enemybonus>0){
-      html += `<div class="pb_sub_info">${this.game.state.enemybonus} bonus token${(this.game.state.enemybonus > 1)?"s":""}</div>`;
-    }
-    this.playerbox.refreshLog(html, 3-this.game.player);
-
+    this.playerbox.refreshLog(this.bonusTokensToHTML(3-this.game.player), 3-this.game.player);
   }
 
 
@@ -805,17 +879,14 @@ initializeQueue(first_player = 1){
     }
   }
 
+  updateTokens(){
 
-  displayBoard(){
-    let html = `<div class="jaipur_board">`;
-        
-
-    html += `<div class="bonus_tokens">`;
+    let html = `<div class="bonus_tokens">`;
     for (let token in this.game.state.tokens){
       if (this.game.state.tokens[token].length > 0){
         let value = this.game.state.tokens[token].pop();
         html += `<div class="tip">
-                    <img class="token" src="${this.token_img_dir}${token}_token.png"/>
+                    <div class="token" style="background-image:url('${this.token_img_dir}${token}_token.png');">${value}</div>
                     <div class="tiptext">${this.game.state.tokens[token].length + 1} ${token} token(s) left</div>
                  </div>`;
         this.game.state.tokens[token].push(value);      
@@ -826,32 +897,37 @@ initializeQueue(first_player = 1){
     for (let i = 3; i <= 5; i++){
       if (this.game.deck[i-2].crypt.length > 0){
         html +=   `<div class="tip">
-                    <img class="token" src= "${this.token_img_dir}${i}_card_token.png" />
+                    <div class="token" style='background-image:url("${this.token_img_dir}${i}_card_token.png");'></div>
                     <div class="tiptext">${this.game.deck[i-2].crypt.length} ${i} bonus token(s) left</div>
                   </div>`;
       }else{
-        html += `<img class="token" src="${this.token_img_dir}empty.jpg"/>`;
+        html += `<img class="token empty" src="${this.token_img_dir}${i}_card_token.png"/>`;
       }
     }
-
     html += "</div>";
+
+    this.app.browser.replaceElementBySelector(html, ".bonus_tokens");
+  }
+
+
+  updateMarket(){
         
-    html +=`<div class="market">
-                <div id="discard">${this.cardToHTML(this.game.state.last_discard)}</div>
-                <div id="draw" class="tip card_count">
-                  ${this.game.deck[0].crypt.length}
-                  <div class="tiptext">${this.game.deck[0].crypt.length} cards left in draw pile.</div>
-                </div>`;
+    /*
+    <div id="discard">${this.cardToHTML(this.game.state.last_discard)}</div>
+      <div id="draw" class="tip card_count">
+        ${this.game.deck[0].crypt.length}
+        <div class="tiptext">${this.game.deck[0].crypt.length} cards left in draw pile.</div>
+      </div>
+    */
+
+    let html =`<div class="market">`;
     for (let res of this.game.state.market){
       html += this.cardToHTML(res);
     }
 
-    html += `</div>
-          <div class="invisible_item"></div>
-          </div>`;
-
-    $(".gameboard").html(html);
-
+    html += `</div>`;
+          
+    this.app.browser.replaceElementBySelector(html, ".market");
   }
 
 
@@ -869,8 +945,10 @@ initializeQueue(first_player = 1){
     state.enemyherd = 0;
     state.enemyhand = 5;
     state.vp = [0, 0];
-    state.enemybonus = 0;
-    state.goodtokens = [0, 0];
+    state.enemybonus = [];
+    state.goodtokens = [[], []];
+    state.mybonustokens = [];
+    state.enemytokens = [];
 
     state.tokens = {cloth: [1, 1, 2, 2, 3, 3, 5],
                     leather:[1, 1, 1, 1, 1, 1, 2, 3, 4],
@@ -917,7 +995,6 @@ initializeQueue(first_player = 1){
       start++;
     }
 
-    console.log(JSON.parse(JSON.stringify(deck)));
     return deck;
   }
 
