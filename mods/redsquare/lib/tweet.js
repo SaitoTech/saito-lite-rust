@@ -349,11 +349,15 @@ class RedSquareTweet {
       // add back button
       //
       console.log("about to hit INNERHTML in TWEET");
-      document.querySelector(".redsquare-list").innerHTML = "";
+
+
+      document.querySelector('.redsquare-list').style.opacity = "0"
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> RED SQUARE</div>`, "saito-page-header-title");
+
       document.querySelector(".saito-back-button").onclick = (e) => {
         app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
-        mod.renderMainPage(app, mod);
+        document.querySelector('.redsquare-list-open').innerHTML = ""
+        document.querySelector('.redsquare-list').style.opacity = "1"
         let redsquareUrl = window.location.origin + window.location.pathname;
         window.history.pushState({}, document.title, redsquareUrl);
         mod.viewing = "feed";
