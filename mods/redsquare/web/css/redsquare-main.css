@@ -691,6 +691,10 @@ span.redsquare-home-red-square+span {
   position: relative;
 }
 
+.saito-arcade-new-game {
+  margin-bottom: 2rem;
+}
+
 /*  Responsive */
 
 @media only screen and (max-width: 535px) {
