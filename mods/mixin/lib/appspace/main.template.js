@@ -62,6 +62,11 @@ if (!account_created) {
                 Withdraw
                 </a>
             </div>
+            <div>
+                <a href="#" class="mixin-balance-history" data-assetid="${xmod.asset_id}" data-ticker="${xmod.ticker}" data-balance="${xmod.balance}" data-sender="${xmod.returnAddress()}">
+                    History
+                </a>
+            </div>
         </div>
     `;
   }
@@ -70,21 +75,7 @@ if (!account_created) {
 html += `
         </div>
     </div>
-      
-
-    <h5 class="transaction-header">Transaction History</h5>
-    <div class="mixin-txn-his-container saito-table">
-        <div class="saito-table-header">
-            <div>Time</div>
-             <div>Type</div>
-             <div>Asset</div>
-             <div>Amount</div>
-             <div>Status</div>
-        </div>
-        <div class="saito-table-body">
-            <div class="saito-button-secondary small mixin-history-button" id="mixin-history-button" >Load Account History</div>
-        </div
-    </div>`;
+      `;
 
 }
 
