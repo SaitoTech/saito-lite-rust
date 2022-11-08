@@ -470,6 +470,7 @@ class RedSquare extends ModTemplate {
 
   initializeHTML(app) {
     this.saito_loader.render(app, this, '', true);
+
   }
 
   render(app, mod) {
@@ -759,6 +760,8 @@ class RedSquare extends ModTemplate {
 
       if (mod.viewing == "feed" || mod.viewing == "notifications") {
         mod.saito_loader.render(app, mod, 'redsquare-home-header', false);
+      } else {
+        mod.saito_loader.remove();
       }
 
       mod.app.storage.loadTransactions("RedSquare", 50, (txs) => {
