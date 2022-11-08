@@ -79,7 +79,8 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-notifications');
     if (obj) {
       obj.onclick = (e) => {
-        removeLeftSidebar()
+        removeLeftSidebar();
+        mod.viewing = "notifications";
         this_menu.renderItem(app, mod, "notifications");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
@@ -87,7 +88,8 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-settings');
     if (obj) {
       obj.onclick = (e) => {
-        removeLeftSidebar()
+        removeLeftSidebar();
+        mod.viewing = "settings";
         this_menu.renderItem(app, mod, "settings");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
@@ -95,7 +97,8 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-contacts');
     if (obj) {
       obj.onclick = (e) => {
-        removeLeftSidebar()
+        removeLeftSidebar();
+        mod.viewing = "contacts";
         this_menu.renderItem(app, mod, "contacts");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
@@ -103,7 +106,8 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-games');
     if (obj) {
       obj.onclick = (e) => {
-        removeLeftSidebar()
+        removeLeftSidebar();
+        mod.viewing = "games";
         this_menu.renderItem(app, mod, "games");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
