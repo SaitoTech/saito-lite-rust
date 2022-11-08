@@ -6,14 +6,10 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
   
     <div id="withdrawl-form-cont" class="decision-cont">
       
-      <div class="mixin-withdraw-token-wrapper">
-        <div class="input-heading">Token</div>
-        <p>${deposit_ticker}</p>
-      </div>
         
         <form class="withdrawal-form" id="withdrawal-form" action="/" method="POST">
           <div class="mixin-withdraw-input">
-            <div class="input-heading">Receiving Address</div>
+            <div class="input-heading">Receiving Address (${deposit_ticker})</div>
             <input type="text" class="input-elem withdraw_address" value="" required>
           </div>
 

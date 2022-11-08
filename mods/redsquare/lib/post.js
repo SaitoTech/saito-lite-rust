@@ -122,15 +122,16 @@ class Post {
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
           if (post_self.render_after_submit == 1) {
             mod.prependTweetFromTransaction(app, mod, newtx, true);
-            if (thread_id !== "") {
-              mod.renderWithChildren(app, mod, thread_id);
-            } else {
-              if (parent_id !== "") {
-                mod.renderWithChildren(app, mod, parent_id);
-              } else {
-                mod.renderMainPage(app, mod);
-              }
-            }
+            document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
+            // if (thread_id !== "") {
+            //   mod.renderWithChildren(app, mod, thread_id);
+            // } else {
+            //   if (parent_id !== "") {
+            //     mod.renderWithChildren(app, mod, parent_id);
+            //   } else {
+            //     mod.renderMainPage(app, mod);
+            //   }
+            // }
           }
           post_self.overlay.hide();
         }, 1000);
