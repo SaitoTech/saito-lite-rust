@@ -758,7 +758,7 @@ class RedSquare extends ModTemplate {
   loadTweets(app, mod) {
     if (mod.app.BROWSER == 1) {
 
-      if (mod.viewing == "feed" || mod.viewing == "notifications") {
+      if (mod.viewing == "feed") {
         mod.saito_loader.render(app, mod, 'redsquare-home-header', false);
       } else {
         mod.saito_loader.remove();
