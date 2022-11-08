@@ -470,7 +470,6 @@ class RedSquare extends ModTemplate {
 
   initializeHTML(app) {
     this.saito_loader.render(app, this, '', true);
-
   }
 
   render(app, mod) {
