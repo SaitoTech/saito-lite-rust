@@ -518,6 +518,7 @@ class Mempool {
     for (let b = 0; b < blk.transactions.length; b++) {
       delete this.transactions_hmap[blk.transactions[b].transaction.sig];
       for (let i = 0; i < blk.transactions[b].transaction.from.length; i++) {
+        blk.transactions[b].transaction.from[i].generateKey(this.app);
         delete this.transactions_inputs_hmap[blk.transactions[b].transaction.from[i].returnKey()];
       }
     }

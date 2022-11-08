@@ -901,7 +901,7 @@ class Network {
           console.error("Unhandled command received by client... " + message.message_type);
         }
         await this.app.networkApi.sendAPIResponse(
-          this.socket,
+          peer.socket,
           MessageType.Error,
           message.message_id,
           Buffer.from("NO SUCH", "utf-8")
