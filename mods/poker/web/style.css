@@ -56,11 +56,19 @@ body {
   position: relative;
 }
 
+.poker-seat-1 .hand{
+  display: block;
+  right: 15vh;
+  top: 8vh;
+}
+
+
 /* display chips */
 .chip_stack{
   position: relative;
   top: 100%;
   left: 100%;
+  filter: drop-shadow(6px 6px 4px #000A);
 }
 
 .poker-seat-1 .chip_stack{
@@ -108,6 +116,36 @@ body {
   left: unset;
   right: 100px;
 }
+
+.flip-card{
+  width: max(11vw,100px);
+  max-width: min(13vh,150px);
+  position: relative;
+}
+
+.flip-card .card{
+  position: absolute;
+}
+
+.cardFront, .cardBack{
+  transition: transform 0.5s ease;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cardFront{
+  transform: rotateY(180deg);
+}
+.flipped .cardFront{
+  transform: rotateY(0deg);
+}
+.cardBack{
+  transform: rotateY(0deg);
+}
+.flipped .cardBack{
+  transform: rotateY(-180deg);
+}
+
 
 .deal .card {
   width: max(11vw,100px);
