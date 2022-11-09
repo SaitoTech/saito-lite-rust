@@ -15,6 +15,10 @@ Saito Table
   align-items: center;
 }
 
+.saito-table-row.odd {
+    background: var(--saito-gray);
+}
+
 .saito-address {
     overflow: hidden;
     text-overflow: ellipsis;

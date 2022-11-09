@@ -756,7 +756,12 @@ class RedSquare extends ModTemplate {
 
   loadTweets(app, mod) {
     if (mod.app.BROWSER == 1) {
-      mod.saito_loader.render(app, mod, 'redsquare-home-header', false);
+
+      if (mod.viewing == "feed") {
+        mod.saito_loader.render(app, mod, 'redsquare-home-header', false);
+      } else {
+        mod.saito_loader.remove();
+      }
 
       mod.app.storage.loadTransactions("RedSquare", 50, (txs) => {
         mod.ntfs_num = txs.length;

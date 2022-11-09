@@ -89,6 +89,10 @@
   margin-top: 2rem;
 }
 
+.saito-module-overlay-info-table .saito-table-row {
+  grid-template-columns: 50% 50%;
+}
+
 .saito-module-overlay-btn {
   margin-top: 2rem;
 }
