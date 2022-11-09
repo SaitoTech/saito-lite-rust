@@ -219,6 +219,23 @@ class RedSquare extends ModTemplate {
     return null;
   }
 
+  //
+  // this is called if we have a tweet but suspect that the content in 
+  // the tweet is out-of-date. it can happen if we have an empty retweet
+  // and need to get the comments and share info for the original if possible
+  //
+  fetchAndUpdateTweetOptionalContent(tweet) {
+
+    let sql = `SELECT * FROM tweets WHERE sig = tweet.sig`;
+    let mod = this;
+    let app = this.app;
+    this.fetchTweets(app, mod, sql, function (app, mod) {
+      console.log("we have fetched and updated the tweet.");
+    });
+
+  }
+
+
   addTweet(app, mod, tweet, prepend = 0) {
 
     //
@@ -233,6 +250,7 @@ class RedSquare extends ModTemplate {
         t.notice = "retweeted by " + app.browser.returnAddressHTML(tweet.sender);
         t.retweeters.push(tweet.sender);
         this.addTweet(app, mod, t);
+        this.fetchAndUpdateTweetOptionalContent(t);
       }
       return;
     }
@@ -265,6 +283,19 @@ class RedSquare extends ModTemplate {
           this.tweets.splice(0, 0, tweet);
         }
         this.txmap[tweet.tx.transaction.sig] = 1;
+      } else {
+
+        for (let i = 0; i < this.tweets.length; i++) {
+          if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+
+            this.tweets[i].num_replies = tweet.num_replies;
+            this.tweets[i].num_retweets = tweet.num_retweets;
+            this.tweets[i].num_likes = tweet.num_likes;
+	    this.tweets[i].renderOptional();
+          }
+        }
+
+
       }
       //
       // comment-level
