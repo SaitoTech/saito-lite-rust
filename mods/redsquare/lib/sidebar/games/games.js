@@ -57,11 +57,11 @@ class RedSquareGames {
       }
     }); 
   
-    if (document.getElementById("redsquare-create-game")){
-       document.getElementById("redsquare-create-game").onclick = (e) => {
-	     app.connection.emit("launch-game-selector", true);
-      }
-    }
+//    if (document.getElementById("redsquare-create-game")){
+//       document.getElementById("redsquare-create-game").onclick = (e) => {
+//	     app.connection.emit("launch-game-selector", true);
+//      }
+//    }
 
 
   }
