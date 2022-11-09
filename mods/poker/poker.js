@@ -562,23 +562,18 @@ class Poker extends GameTableTemplate {
             console.log("GO TO SHOWDOWN");
             $(".player-box.active").removeClass("active");
 
-            this.game.state.player_cards = {};
-            this.game.state.player_cards_reported = 0;
-            this.game.state.player_cards_required = 0;
             this.game.queue = [];
-            let first_scorer = -1;
+            let first_scorer = 0;
 
-            for (let i = 0; i < this.game.state.passed.length; i++) {
-              if (this.game.state.passed[i] == 0) {
-                if (first_scorer == -1) {
-                  first_scorer = i;
-                }
+            for (let i = 1; i <= this.game.state.passed.length; i++) {
+              if (this.game.state.passed[i-1] == 0) {
+                first_scorer = first_scorer || i;
                 this.game.state.player_cards_required++;
                 this.game.state.player_cards[i] = [];
               }
             }
 
-            if (first_scorer == this.game.player - 1) {
+            if (first_scorer == this.game.player) {
               this.addMove(`reveal\t${this.game.player}\t${this.game.deck[0].hand[0]}\t${this.game.deck[0].hand[1]}`);
               this.endTurn();
             }
@@ -669,10 +664,10 @@ class Poker extends GameTableTemplate {
         this.game.queue.splice(qe,1);
 
         //Pocket
-        this.game.state.player_cards[scorer - 1].push(
+        this.game.state.player_cards[scorer].push(
           this.returnCardFromDeck(card1)
         );
-        this.game.state.player_cards[scorer - 1].push(
+        this.game.state.player_cards[scorer].push(
           this.returnCardFromDeck(card2)
         );
 
@@ -685,9 +680,9 @@ class Poker extends GameTableTemplate {
         this.playerbox.refreshGraphic(playercards, scorer);
    
 
-        //Pool
+        //Everyone can use the pool
         for (let i = 0; i < 5; i ++){
-          this.game.state.player_cards[scorer - 1].push(this.returnCardFromDeck(this.game.pool[0].hand[i]));  
+          this.game.state.player_cards[scorer].push(this.returnCardFromDeck(this.game.pool[0].hand[i]));  
         }
         
 
@@ -696,16 +691,15 @@ class Poker extends GameTableTemplate {
         if (this.game.state.player_cards_reported !== this.game.state.player_cards_required) {
 
           //If not everyone has reported there hand yet, find the next in sequence from this scorer
-          let next_scorer = -1;
+          let next_scorer = 0;
           for (let i = scorer; i < this.game.state.passed.length; i++) {
             if (this.game.state.passed[i] == 0) {
-              if (next_scorer == -1) {
-                next_scorer = i;
-              }
+              next_scorer = i + 1;
+              break;
             }
           }
 
-          if (this.game.player - 1 == next_scorer) {
+          if (this.game.player == next_scorer) {
             this.addMove(`reveal\t${this.game.player}\t${this.game.deck[0].hand[0]}\t${this.game.deck[0].hand[1]}`);
             this.endTurn();
           }
@@ -721,44 +715,51 @@ class Poker extends GameTableTemplate {
         let winners = [];
         let winner_keys = [];
 
-        let deck = null;
+
         var updateHTML = "";
         var winlist = [];
 
+        //Sort hands from low to high
+        console.log(JSON.parse(JSON.stringify(this.game.state.player_cards)));
         for (var key in this.game.state.player_cards) {
-          deck = this.game.state.player_cards[key];
+          let deck = this.game.state.player_cards[key];
 
           if (winlist.length == 0) {
             winlist.splice(0, 0, {
-              player: parseInt(key) + 1,
+              player: parseInt(key),
               player_hand: this.scoreHand(deck),
             });
           } else {
+            let score = this.scoreHand(deck);
             let winlist_length = winlist.length;
             let place = 0;
+            
             for (let k = 0; k < winlist_length; k++) {
-              let w = this.pickWinner(winlist[k].player_hand, this.scoreHand(deck));
+              let w = this.pickWinner(winlist[k].player_hand, score);
               if (w > 1) {
                 place = k + 1;
               }
             }
             winlist.splice(place, 0, {
-              player: parseInt(key) + 1,
-              player_hand: this.scoreHand(deck),
+              player: parseInt(key),
+              player_hand: score,
             });
           }
-
-          //need to specify two winners differently not just on identical hands.
+          console.log("*** Low-high ranking: " + JSON.stringify(winlist));
         }
+
         // Populate winners with winning players
-        winners.push(winlist[winlist.length - 1].player - 1);
-        for (let p = winlist.length - 1; p > 0; p--) {
-          if (this.pickWinner(winlist[winlist.length - 1].player_hand, winlist[p - 1].player_hand) == 3) {
-            winners.push(winlist[p - 1].player - 1);
-            winner_keys.push(this.game.players[winlist[p - 1].player - 1]);
+        let topPlayer = winlist[winlist.length-1];
+
+        // ... and anyone else who ties
+        for (let p = 0; p < winlist.length; p++) {
+          if (this.pickWinner(topPlayer.player_hand, winlist[p].player_hand) == 3) {
+            winners.push(winlist[p].player - 1);
+            winner_keys.push(this.game.players[winlist[p].player - 1]);
           }
         }
 
+        console.log(" * Winners (0-index): " + JSON.stringify(winners));
         // split winnings among winners ***TO DO: examine possibility of fractional chips
         let pot_size = Math.floor(this.game.state.pot / winners.length);
         let winnerStr = "";
@@ -770,7 +771,6 @@ class Poker extends GameTableTemplate {
           this.game.state.player_credit[winners[i]] += pot_size;
         }
         winnerStr = this.prettifyList(winnerStr); //works with one player
-        console.log(winners.length+ " WINNERS: ",winners);
 
         // update logs and splash!
         let winner_html = `<div class="h2">` + winnerStr;
@@ -1119,7 +1119,7 @@ class Poker extends GameTableTemplate {
     match_required = Math.max(0,match_required); 
 
     let can_call = (this.game.state.player_credit[this.game.player - 1] >= match_required);
-    let can_raise = !this.game.state.all_in; //(this.game.state.player_credit[this.game.player - 1] > match_required /*+ this.game.state.last_raise*/);
+    let can_raise = !this.game.state.all_in && (this.game.state.player_credit[this.game.player - 1] > match_required /*+ this.game.state.last_raise*/);
 
     //cannot raise more than everyone can call.
     let smallest_stack = poker_self.game.options.num_chips * poker_self.game.players.length; //Start with total amount of money in the game
@@ -1753,16 +1753,16 @@ class Poker extends GameTableTemplate {
 /* Functions to analyze hands and compare them*/
 
   pickWinner(score1, score2) {
-    let hands_differ = 0;
+    let hands_differ = false;
 
     //Check if hands are different
     for (let i = 0; i < score1.cards_to_score.length; i++) {
       if (score1.cards_to_score[i] !== score2.cards_to_score[i]) {
-        hands_differ = 1;
+        hands_differ = true;
       }
     }
-    if (hands_differ == 0) {
-      return 3;
+    if (!hands_differ) {
+      return 3; // == tie
     }
 
     if (score1.hand_description == "royal flush" &&  score2.hand_description == "royal flush") {
@@ -2606,7 +2606,7 @@ class Poker extends GameTableTemplate {
     for (let i = 0; i < val.length; i++) {
       if (noval.includes(suite[i] + val[i])) {
         //if the case id not in the exclude list
-        console.log("you are barred from the pub");
+        //console.log("you are barred from the pub");
       } else {
         if (val[i] == 1) {
           //if the candidate is an ace
