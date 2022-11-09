@@ -212,7 +212,8 @@ console.log("SELECTOR: " + selector);
       if (appendToSelector) {
         if (document.querySelector(selector).childElementCount > 1) {
           if (document.querySelector(selector).lastElementChild.previousElementSibling && document.querySelector(selector).lastElementChild.previousElementSibling.classList.contains("thread-" + this.thread_id)) {
-            app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+            // we do not add ellipsis here as we are unsure if child will be rendered -- Nov 9
+            //app.browser.addElementToSelector('<div class="asdfasdf redsquare-ellipsis"></div>', selector);
             app.browser.addElementToSelector(html, selector);
           } else {
             app.browser.addElementToSelector(html, selector);
@@ -233,13 +234,15 @@ console.log("SELECTOR: " + selector);
 
     if ((this.critical_child != null || this.in_thread) && this.flagged != 1) {
       if (obj) {
-        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+        app.browser.addElementToDom('<div class=" lkjlkj redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
         if (appendToSelector) {
-          app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+          app.browser.addElementToSelector('<div class=" uiaouiasdf redsquare-ellipsis"></div>', selector);
+          let obj = document.getElementById("tweet-box-" + this.tx.transaction.sig);
+          if (obj) { obj.classList.add("before-ellipsis"); }
         } else {
-          app.browser.prependElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+          app.browser.prependElementToSelector('<div class=" oiuaousdf redsquare-ellipsis"></div>', selector);
         }
         this.critical_child.render(app, mod, selector);
       }
@@ -352,10 +355,10 @@ console.log("ADD ELIPSIS 6");
       if (obj) {
         obj.classList.add("before-ellipsis");
         obj.nextSibling.classList.add("after-ellipsis");
-        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+        app.browser.addElementToDom('<div class=" lllll redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
-        app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+        app.browser.addElementToSelector('<div class=" aaaa redsquare-ellipsis"></div>', selector);
         this.critical_child.render(app, mod, my_selector);
         try {
           document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
