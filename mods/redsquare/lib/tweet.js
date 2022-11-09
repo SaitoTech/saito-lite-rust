@@ -49,6 +49,7 @@ class RedSquareTweet {
     //
     //
     //
+    this.num_replies = 0;
     this.num_retweets = 0;
     this.num_likes = 0;
 
@@ -82,8 +83,11 @@ class RedSquareTweet {
     if (tx.optional?.updated_at) {
       this.updated_at = tx.optional.updated_at;
     }
+    if (tx.optional?.num_replies) {
+      this.num_replies = tx.optional.num_replies;
+    }
     if (tx.optional?.num_likes) {
-      this.updated_at = tx.optional.num_likes;
+      this.num_likes = tx.optional.num_likes;
     }
     if (tx.optional?.num_retweets) {
       this.num_retweets = tx.optional.num_retweets;
@@ -156,14 +160,38 @@ class RedSquareTweet {
     return false;
   }
 
+  renderOptional() {
+
+    let apparent_replies = this.children.length;
+    if (this.num_replies > apparent_replies) { apparent_replies = this.num_replies; }
+
+    try {
+      let obj;
+      obj = document.querySelector(`.tweet-tool-comment-count-${this.tx.transaction.sig}`);
+      if (obj) { obj.innerHTML = apparent_replies; }
+      obj = document.querySelector(`.tweet-tool-retweet-count-${this.tx.transaction.sig}`);
+      if (obj) { obj.innerHTML = this.num_retweets; }
+      obj = document.querySelector(`.tweet-tool-like-count-${this.tx.transaction.sig}`);
+      if (obj) { obj.innerHTML = this.num_likes; }
+    } catch (err) {
+      console.log("ERROR: " + err);
+    }
+
+  }
+
   render(app, mod, selector = "", appendToSelector = true) {
 
+console.log("SELECTOR: " + selector);
+
     let tweet_id = "tweet-box-" + this.tx.transaction.sig;
+    let tweet_div = "#" + tweet_id;
 
     //
     // do not double-render
     //
-    if (document.getElementById(tweet_id)) { return; }
+    if (document.getElementById(tweet_id)) {
+      document.getElementById(tweet_id).remove();
+    }
 
     //
     // retweets with no comments?
@@ -175,9 +203,7 @@ class RedSquareTweet {
       return;
     }
 
-
     let html = TweetTemplate(app, mod, this);
-    let tweet_div = "#" + tweet_id;
     let obj = document.getElementById(tweet_div);
 
     if (obj) {
@@ -186,7 +212,8 @@ class RedSquareTweet {
       if (appendToSelector) {
         if (document.querySelector(selector).childElementCount > 1) {
           if (document.querySelector(selector).lastElementChild.previousElementSibling && document.querySelector(selector).lastElementChild.previousElementSibling.classList.contains("thread-" + this.thread_id)) {
-            app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+            // we do not add ellipsis here as we are unsure if child will be rendered -- Nov 9
+            //app.browser.addElementToSelector('<div class="asdfasdf redsquare-ellipsis"></div>', selector);
             app.browser.addElementToSelector(html, selector);
           } else {
             app.browser.addElementToSelector(html, selector);
@@ -207,27 +234,38 @@ class RedSquareTweet {
 
     if ((this.critical_child != null || this.in_thread) && this.flagged != 1) {
       if (obj) {
-        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+        app.browser.addElementToDom('<div class=" lkjlkj redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
         if (appendToSelector) {
-          app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+          app.browser.addElementToSelector('<div class=" uiaouiasdf redsquare-ellipsis"></div>', selector);
+          let obj = document.getElementById("tweet-box-" + this.tx.transaction.sig);
+          if (obj) { obj.classList.add("before-ellipsis"); }
         } else {
-          app.browser.prependElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+          app.browser.prependElementToSelector('<div class=" oiuaousdf redsquare-ellipsis"></div>', selector);
         }
         this.critical_child.render(app, mod, selector);
       }
     }
+
+
+/***
+ *
+ * removing this prevents ellipsis between siblings
+ *
     document.querySelector(selector).querySelectorAll('.redsquare-ellipsis').forEach(el => {
       if (el.previousElementSibling) {
         if (el.previousElementSibling.previousElementSibling) {
+console.log("ADD ELIPSIS 5");
           el.previousElementSibling.previousElementSibling.classList.add("before-ellipsis");
         }
       }
       if (el.nextElementSibling) {
+console.log("ADD ELIPSIS 6");
         el.nextElementSibling.classList.add("after-ellipsis");
       }
     });
+***/
     this.attachEvents(app, mod);
     app.browser.addModalIdentifierAddPublickey(app, mod);
     app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + this.tx.transaction.sig));
@@ -249,7 +287,13 @@ class RedSquareTweet {
 
     if (this.children.length > 0) {
       if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
-        this.children[0].renderWithChildren(app, mod, my_selector);
+	if (this.children[0].children.length > 0) {
+          this.children[0].renderWithChildren(app, mod, my_selector);
+	} else {
+          for (let i = 0; i < this.children.length; i++) {
+            this.children[i].render(app, mod, my_selector);
+          }
+	}
       } else {
         for (let i = 0; i < this.children.length; i++) {
           this.children[i].render(app, mod, my_selector);
@@ -311,10 +355,10 @@ class RedSquareTweet {
       if (obj) {
         obj.classList.add("before-ellipsis");
         obj.nextSibling.classList.add("after-ellipsis");
-        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+        app.browser.addElementToDom('<div class=" lllll redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
-        app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+        app.browser.addElementToSelector('<div class=" aaaa redsquare-ellipsis"></div>', selector);
         this.critical_child.render(app, mod, my_selector);
         try {
           document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
@@ -349,11 +393,15 @@ class RedSquareTweet {
       // add back button
       //
       console.log("about to hit INNERHTML in TWEET");
-      document.querySelector(".redsquare-list").innerHTML = "";
+
+
+      document.querySelector('.redsquare-list').style.opacity = "0"
       app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-angle-left'></i> RED SQUARE</div>`, "saito-page-header-title");
+
       document.querySelector(".saito-back-button").onclick = (e) => {
         app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
-        mod.renderMainPage(app, mod);
+        document.querySelector('.redsquare-list-open').innerHTML = ""
+        document.querySelector('.redsquare-list').style.opacity = "1"
         let redsquareUrl = window.location.origin + window.location.pathname;
         window.history.pushState({}, document.title, redsquareUrl);
         mod.viewing = "feed";
@@ -564,12 +612,9 @@ class RedSquareTweet {
     //
     sel = ".tweet-flag-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
-
       e.preventDefault();
       e.stopImmediatePropagation();
-
       mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig }, this.tx);
-
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");
       document.querySelector('#tweet-box-' + this.tx.transaction.sig).style.display = 'none';
@@ -636,7 +681,12 @@ class RedSquareTweet {
           return 0;
         }
       }
-      this.updated_at = tweet.updated_at;
+// new HACK
+      if (this.isCriticalChild(app, mod, tweet) || tweet.tx.transaction.ts > this.updated_at && this.critical_child == null) {
+        this.critical_child = tweet;
+        this.updated_at = tweet.updated_at;
+      }
+// end new
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
         this.children.unshift(tweet);
         return 1;

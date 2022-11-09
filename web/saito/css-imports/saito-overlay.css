@@ -89,6 +89,10 @@
   margin-top: 2rem;
 }
 
+.saito-module-overlay-info-table .saito-table-row {
+  grid-template-columns: 50% 50%;
+}
+
 .saito-module-overlay-btn {
   margin-top: 2rem;
 }
@@ -390,27 +394,27 @@
     margin-left: 2rem;
   }
 
-  #mixin-txn-his-container {
-   display: none;
+  .mixin-txn-his-container {
+    margin-top: 1rem;
+  }
+
+  .mixin-txn-his-container .saito-table-body {
+    height: auto;
   }
 
   .mixin-txn-his-container .saito-table-header {
-    grid-template-columns: 15rem 15rem 15rem 15rem 15rem;
+    grid-template-columns: 15rem 15rem  15rem 15rem;
     text-align: center;
   }
 
   .mixin-txn-his-container .saito-table-row {
-    grid-template-columns: 16rem 16rem 16rem 14rem 16rem;
+    grid-template-columns: 16rem 16rem 14rem 16rem;
     text-align: center;
   }
 
   .hide-btn {
     display: none;
   }
-
-.mixin-balances-header, .transaction-header {
-    margin-top: 40px;
-}
 
 .mixin-items-container .saito-table-header,
 .mixin-txn-his-container .saito-table-header {
@@ -422,7 +426,7 @@
 
 
 .mixin-items-container .saito-table-header {
-  grid-template-columns: 15rem 15rem;
+  grid-template-columns: 14rem 14rem;
 }
 
 .mixin-items-container .saito-table-body {
@@ -430,7 +434,7 @@
 }
 
 .mixin-items-container .saito-table-row {
-  grid-template-columns: 15rem 15rem 15rem 15rem;
+  grid-template-columns: 14rem 14rem 14rem 14rem 14rem;
   text-align: center;
   margin-bottom: 1rem;
 
@@ -537,6 +541,13 @@
     font-size: 1.15rem;
 }
 
-.mixin-balances_deposit, .mixin-balances_withdraw {
+.mixin-balances_deposit, .mixin-balances_withdraw, .mixin-balance-history {
     color: var(--saito-primary);
+}
+
+.mixin-overlay-history {
+  background: #fff;
+  min-height: 20rem;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
 }

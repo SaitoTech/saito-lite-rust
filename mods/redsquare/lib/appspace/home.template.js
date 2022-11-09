@@ -20,6 +20,7 @@ module.exports = (app, mod) => {
           </div>
         </div>
 
+        <div class="redsquare-list-open" id="redsquare-list-open"> </div>
         <div class="redsquare-list" id="redsquare-list">
 	  <div class="saito-loader"></div> 
 	  </p></p>

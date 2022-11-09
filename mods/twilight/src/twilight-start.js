@@ -427,7 +427,7 @@ class Twilight extends GameTemplate {
     this.menu.addMenuOption("game-info", "Info");
    
     this.menu.addSubMenuOption("game-game", {
-      text : "Play Mode",
+      text : "Difficulty",
       id : "game-confirm",
       class : "game-confirm",
       callback : function(app, game_mod) {
@@ -2589,9 +2589,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["summit", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["missileenvy", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["brezhnev", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
 
       	//this.game.state.round = 1;

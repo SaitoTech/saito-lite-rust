@@ -107,6 +107,10 @@ span.redsquare-home-red-square+span {
   padding-bottom: 3rem;
 }
 
+.redsquare-list-open {
+  position: fixed;
+  top: 14rem
+}
 
 #redsquare-intersection {
   opacity: 1;
@@ -685,6 +689,24 @@ span.redsquare-home-red-square+span {
 
 .saito-redsquare-actions-buttons {
   position: relative;
+}
+
+.saito-arcade-new-game {
+  margin-bottom: 2rem;
+}
+
+.saito-game-content .saito-leaderboard {
+  margin-top: 1rem;
+}
+
+.saito-game-content .saito-leaderboard .saito-table-row {
+  grid-template-columns: 50% 50%;
+  width: 100%;
+  padding: 0.5rem 1rem;
+}
+
+.saito-game-content .saito-leaderboard .saito-table-row > div:nth-child(2) {
+  text-align: right;
 }
 
 /*  Responsive */

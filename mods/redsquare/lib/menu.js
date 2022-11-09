@@ -9,6 +9,7 @@ class RedSquareMenu {
   constructor(app, mod) {
     this.name = "RedSquareMenu";
     this.numberOfNotifications = 0;
+    this.mod = mod;
 
     app.connection.on('redsquare-menu-notification-request', (obj) => {
       let menu_item = obj.menu;
@@ -71,7 +72,6 @@ class RedSquareMenu {
       obj.onclick = (e) => {
         removeLeftSidebar()
         window.history.replaceState({}, "Saito RedSquare", "/redsquare/");
-        mod.viewing = "feed";
         this_menu.renderItem(app, mod, "home");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
@@ -79,7 +79,7 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-notifications');
     if (obj) {
       obj.onclick = (e) => {
-        removeLeftSidebar()
+        removeLeftSidebar();
         this_menu.renderItem(app, mod, "notifications");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
@@ -87,7 +87,7 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-settings');
     if (obj) {
       obj.onclick = (e) => {
-        removeLeftSidebar()
+        removeLeftSidebar();
         this_menu.renderItem(app, mod, "settings");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
@@ -95,7 +95,7 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-contacts');
     if (obj) {
       obj.onclick = (e) => {
-        removeLeftSidebar()
+        removeLeftSidebar();
         this_menu.renderItem(app, mod, "contacts");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
@@ -103,7 +103,7 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-games');
     if (obj) {
       obj.onclick = (e) => {
-        removeLeftSidebar()
+        removeLeftSidebar();
         this_menu.renderItem(app, mod, "games");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
       }
@@ -142,12 +142,14 @@ class RedSquareMenu {
         mod.home.render(app, mod, ".appspace");
         window.location.hash = url;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
+        mod.viewing = "feed";
         break;
       case "notifications":
         mod.notifications.render(app, mod, ".appspace");
         window.location.hash = url;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         matched = 1;
+        mod.viewing = "notifications";
         break;
       case "settings":
         // re-render sidebar
@@ -159,18 +161,21 @@ console.log("menu INNERHTML");
         window.location.hash = url;
         settings_self.respondTo("appspace").render(settings_self.app, settings_self);
         matched = 1;
+        mod.viewing = "settings";
         break;
       case "contacts":
         mod.contacts.render(app, mod, ".appspace");
         window.location.hash = url;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         matched = 1;
+        mod.viewing = "contacts";
         break;
       case "games":
         mod.games.render(app, mod, ".appspace");
         window.location.hash = url;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         matched = 1;
+        mod.viewing = "games";
         break;
       default:
         //
