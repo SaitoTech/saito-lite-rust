@@ -2,7 +2,7 @@
 
 /* Overlay -- in case we still have a link to game rules from game creation wizard*/
 
-.rules-overlay{
+.dark .rules-overlay{
   padding: 1em;
   font-size: 20px;
   border-radius: 0.5rem;
@@ -14,9 +14,9 @@
   color: var(--saito-white);
 }
 
-.rules-overlay p, .rules-overlay h1, .rules-overlay h2,
-.rules-overlay h3, .rules-overlay h4 {
-  color: #fff;
+.dark .rules-overlay p, .dark .rules-overlay h1, .dark .rules-overlay h2,
+.dark .rules-overlay h3, .dark .rules-overlay h4 {
+  color: var(--saito-white);
 }
 
 .rules-overlay p{
