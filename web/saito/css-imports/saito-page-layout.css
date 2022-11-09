@@ -248,7 +248,6 @@
 
 .saito-sidebar>div:not(:last-child) {
     margin-bottom: 2rem;
-    min-height: 2rem;
 }
 
 /* ----------------------------------------------------------------

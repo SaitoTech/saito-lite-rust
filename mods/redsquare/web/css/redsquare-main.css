@@ -691,6 +691,9 @@ span.redsquare-home-red-square+span {
   position: relative;
 }
 
+.saito-arcade-new-game {
+  margin-bottom: 2rem;
+}
 
 .saito-game-content .saito-leaderboard {
   margin-top: 1rem;
