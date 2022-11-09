@@ -691,6 +691,21 @@ span.redsquare-home-red-square+span {
   position: relative;
 }
 
+
+.saito-game-content .saito-leaderboard {
+  margin-top: 1rem;
+}
+
+.saito-game-content .saito-leaderboard .saito-table-row {
+  grid-template-columns: 50% 50%;
+  width: 100%;
+  padding: 0.5rem 1rem;
+}
+
+.saito-game-content .saito-leaderboard .saito-table-row > div:nth-child(2) {
+  text-align: right;
+}
+
 /*  Responsive */
 
 @media only screen and (max-width: 535px) {
