@@ -11,11 +11,11 @@ module.exports = RedSquareGamesTemplate = (app, mod) => {
       return arcade_mod.isMyGame(invite, app);
     });
 
-    if (window.location.hash !== "#games" && mygames.length == 0) {
-      html += `<div class="saito-arcade-new-game">
-                 <div id="redsquare-create-game" class="saito-button-secondary small">New Game</div>
-               </div>`;
-    }
+//    if (window.location.hash !== "#games" && mygames.length == 0) {
+//      html += `<div class="saito-arcade-new-game">
+//                 <div id="redsquare-create-game" class="saito-button-secondary small">New Game</div>
+//               </div>`;
+//    }
 
     if (mygames.length > 0) {
       html += `<h6>My Games:</h6>
