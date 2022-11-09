@@ -609,12 +609,9 @@ console.log("ADD ELIPSIS 6");
     //
     sel = ".tweet-flag-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
-
       e.preventDefault();
       e.stopImmediatePropagation();
-
       mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig }, this.tx);
-
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");
       document.querySelector('#tweet-box-' + this.tx.transaction.sig).style.display = 'none';
@@ -681,7 +678,12 @@ console.log("ADD ELIPSIS 6");
           return 0;
         }
       }
-      this.updated_at = tweet.updated_at;
+// new HACK
+      if (this.isCriticalChild(app, mod, tweet) || tweet.tx.transaction.ts > this.updated_at && this.critical_child == null) {
+        this.critical_child = tweet;
+        this.updated_at = tweet.updated_at;
+      }
+// end new
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
         this.children.unshift(tweet);
         return 1;
