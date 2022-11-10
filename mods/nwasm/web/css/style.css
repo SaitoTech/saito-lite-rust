@@ -3,6 +3,22 @@ body {
   background-color: black !important;
 }
 
+.nwasm-lib-title {
+  text-align: left;
+}
+.nwasm-lib-copies {
+  text-align: right;
+}
+.nwasm-lib-status {
+  text-align: right;
+}
+.nwasm-library-introduction {
+  color: whitesmoke;
+  font-size: 1.5rem;
+  font-size: 2.5rem;
+  margin-left: 2rem;
+  padding-bottom: 4rem;
+}
 .nwasm-instructions {
   margin-top: 10rem;
   font-size: 3rem;
@@ -30,6 +46,7 @@ body {
   top: 7.5rem;
   left: 2.5rem;
   padding: 2rem;
+  max-width: 95vw;
 }
 .nwasm-introduction {
   color: whitesmoke;
