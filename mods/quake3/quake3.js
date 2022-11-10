@@ -253,9 +253,11 @@ class Quake3 extends GameTemplate {
 	// load & apply saved controls while here
 	// since this block only happens on client startup
 try {
-	//this.controls.loadSavedControls();
-	//this.controls.writeControls();
-	//this.controls.applyControls();
+	setTimeout(function() {
+	  this.controls.loadSavedControls();
+	  this.controls.writeControls();
+	  this.controls.applyControls();
+	}, 1500);
 } catch (err) {
   console.log("ERROR LOADING CONTROLS: " + err);
 }
