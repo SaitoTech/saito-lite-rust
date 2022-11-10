@@ -6,7 +6,7 @@ class RedSquareImageOverlay {
 
   constructor(app, img) {
     this.app = app;
-    this.saito_overlay = new SaitoOverlay(app, true, true);
+    this.saito_overlay = new SaitoOverlay(app, false, true);
     this.img = img;
     this.img_index = img.getAttribute("data-index");;
     this.selected = 1;
@@ -85,9 +85,10 @@ class RedSquareImageOverlay {
       this.hideArrowRight();
     }
 
+    let buffer = (window.innerWidth > 535) ? 30 : 0;
     let img_pos = img.getBoundingClientRect();
-    let left_arrow_pos = img_pos.x;
-    let right_arrow_pos = window.innerWidth - img_pos.x - img_pos.width;
+    let left_arrow_pos = img_pos.x - buffer;
+    let right_arrow_pos = window.innerWidth - img_pos.x - img_pos.width - buffer;
 
     document.querySelector('#tweet-img-arrow-box-left').style.left = '-'+ left_arrow_pos + 'px';
     document.querySelector('#tweet-img-arrow-box-right').style.right = '-'+ right_arrow_pos + 'px';

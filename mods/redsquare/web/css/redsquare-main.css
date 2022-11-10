@@ -669,7 +669,7 @@ span.redsquare-home-red-square+span {
 }
 
 .tweet-img-icon {
-  font-size: 2rem;
+  font-size: 3rem;
   color: #fff;
   background: var(--saito-black-faded);
   padding: 1.5rem;
@@ -786,6 +786,10 @@ span.redsquare-home-red-square+span {
 
   .tweet-overlay-img-cont img {
     max-width: 100vw;
+  }
+
+  .tweet-img-icon {
+    font-size: 2rem;
   }
 
 }
