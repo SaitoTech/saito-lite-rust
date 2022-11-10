@@ -5,6 +5,7 @@ const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const SaitoLoader = require("./../../../lib/saito/new-ui/saito-loader/saito-loader");
 const ModalAddPublicKey = require("./../../../lib/saito/new-ui/modals/confirm-add-publickey/confirm-add-publickey");
+const ImageOverlay = require("./appspace/image-overlay");
 
 class RedSquareTweet {
 
@@ -512,19 +513,9 @@ console.log("ADD ELIPSIS 6");
       document.querySelectorAll(sel).forEach(img => {
         img.onclick = (e) => {
           let img = e.target;
-          let imgdata_uri = img.style.backgroundImage.slice(4, -1).replace(/"/g, "");
-          let imgId = Math.floor(Math.random() * 10000);
-          tweet_self.img_overlay.show(app, mod, "<div class='tweet-overlay-img-cont' id='tweet-overlay-img-cont-" + imgId + "'></div>");
-          let oImg = document.createElement("img");
-          oImg.setAttribute('src', imgdata_uri);
-          document.querySelector("#tweet-overlay-img-cont-" + imgId).appendChild(oImg);
-
-          let img_width = oImg.width;
-          let img_height = oImg.height;
-          let aspRatio = img_width / img_height;
-
-          let winHeight = window.innerHeight;
-          let winWidth = window.innerWidth;
+          
+          let img_overlay = new ImageOverlay(app, img);
+          img_overlay.render(app, mod);
         }
       })
     }

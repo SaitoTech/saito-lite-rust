@@ -14,10 +14,10 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
 
   if (typeof tweet.tx.msg.data.images != 'undefined' && tweet.tx.msg.data.images.length > 0) {
     let imgs = tweet.tx.msg.data.images;
-    tweet_img += `<div class="redsquare-image-container">`;
+    tweet_img += `<div class="redsquare-image-container" data-img-count="${imgs.length}">`;
     let img_class = (imgs.length > 1) ? 'tweet-multiple-img' : '';
     for (let i = 0; i < imgs.length; i++) {
-      tweet_img += `<div  data-id='${tweet.tx.transaction.sig}' id='tweet-img-${tweet.tx.transaction.sig}' class='${img_class} tweet-img tweet-img-${tweet.tx.transaction.sig} ' style="background-image: url(${imgs[i]});"></div>`;
+      tweet_img += `<div data-index='${i+1}'  data-id='${tweet.tx.transaction.sig}' id='tweet-img-${tweet.tx.transaction.sig}' class='${img_class} tweet-img tweet-img-${tweet.tx.transaction.sig} ' style="background-image: url(${imgs[i]});"></div>`;
     }
     tweet_img += `</div>`;
   }
