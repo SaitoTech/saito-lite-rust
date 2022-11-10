@@ -123,6 +123,13 @@ class RedSquareAppspaceHome {
       e.target.style.display = "none";
       document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
     }
+
+    if (document.getElementById("redsquare-create-game")){
+       document.getElementById("redsquare-create-game").onclick = (e) => {
+       app.connection.emit("launch-game-selector", true);
+      }
+    }
+
   }
 
 }

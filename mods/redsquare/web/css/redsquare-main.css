@@ -736,6 +736,11 @@ span.redsquare-home-red-square+span {
   text-align: right;
 }
 
+
+.saito-sidebar-right h6{
+  color: var(--saito-black);
+}
+
 /*  Responsive */
 
 @media only screen and (max-width: 535px) {

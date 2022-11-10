@@ -62,6 +62,7 @@
   width: 30%;
   background-color: #f7d3d9;
   background-size: cover;
+  background-position: center;
 }
 
 .saito-module-overlay-info-box {
