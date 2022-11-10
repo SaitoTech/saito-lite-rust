@@ -3,6 +3,19 @@ body {
   background-color: black !important;
 }
 
+.nwasm-instructions {
+  margin-top: 10rem;
+  font-size: 3rem;
+  color: white;
+  text-align: left;
+  line-height: 5rem;
+  max-width: 800px;
+  margin-left: 5rem;
+}
+.nwasm-instructions p {
+  height: 3rem;
+}
+
 .nwasm-saved-games {
   cursor: pointer;
   background-color: white;

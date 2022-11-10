@@ -30,18 +30,14 @@ class UploadRomOverlay {
 	  mod.active_rom = file;
 
 	  let a = Buffer.from(file, 'binary').toString('base64');;
-	  let b = Buffer.from(a, 'base64');
-
-          let ab = new ArrayBuffer(b.length);
-          let view = new Uint8Array(ab);
-          for (let i = 0; i < b.length; ++i) {
-            view[i] = b[i];
-          }
+	  let ab = mod.convertBase64ToByteArray(a);
 
 	  //
 	  // initialize ROM gets the ROM the APP and the MOD
 	  //
 	  myApp.initializeRom(ab, app, mod);
+	  mod.hideSplashScreen();
+	  mod.hideLibrary();
 	  uploader.overlay.hide();
 
         },

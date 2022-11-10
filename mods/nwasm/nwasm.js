@@ -19,14 +19,14 @@ class Nwasm extends GameTemplate {
     this.name = "Nwasm";
 
     this.gamename = "Nintendo";
-    this.description = "The Saito N64 module provides a user-friendly N64 emulator that allows players to backup and play the N64 games you own directly in your browser. Game files are encrypted so only you can access them and uploaded for storage to the cloud.";
+    this.description = "The Saito Nintendo 64 emulator provides a user-friendly in-browser N64 emulator that allows players to archive and play the N64 games you own directly in your browser. Game files are encrypted so only you can access them and archived in your private transaction store.";
     this.categories = "Games Entertainment";
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
+    this.winnable        = 0;
 
     this.load();
-
 
     this.libraries = {}; // ANY available libraries of games. 
 
@@ -38,7 +38,6 @@ class Nwasm extends GameTemplate {
     this.active_game_img = "";
     this.active_game_saves = [];
 
-
     this.uploaded_rom = false;
 
     return this;
@@ -49,7 +48,7 @@ class Nwasm extends GameTemplate {
       return super.respondTo(type);
     }
     if (type === "library-collection") {
-      return { module : "Nwasm" , collection : "Nwasm" };
+      return { module : "Nwasm" , collection : "Nwasm" , key : this.nwasm.random };
     }
     return null;
   }
@@ -205,12 +204,29 @@ class Nwasm extends GameTemplate {
  
   }
 
+  hideSplashScreen() {
+
+    let obj = null;
+
+    obj = document.querySelector(".nwasm-instructions");
+    if (obj) { obj.style.display = "none"; }
+
+    obj = document.querySelector(".afterLoad");
+    if (obj) { obj.style.display = "none"; }
+    
+  }
+
   hideLibrary() {
+
+    this.hideSplashScreen();
+
     let obj = document.getElementById("nwasm-libraries");
     if (obj) { obj.style.display = "none"; }
+
   }
 
   updateVisibleLibrary() {
+    this.hideSplashScreen();
     let nlib = new NwasmLibrary(this.app, this);
     nlib.render(this.app, this);
   }
@@ -312,6 +328,10 @@ class Nwasm extends GameTemplate {
   loadRomFile(tx) {
 
     let txmsg = tx.returnMessage();
+    let filebase64 = this.convertBase64ToByteArray(txmsg.data);
+
+/***
+    let txmsg = tx.returnMessage();
     let filebase64 = txmsg.data;
     let b = Buffer.from(filebase64, 'base64');
 
@@ -320,6 +340,7 @@ class Nwasm extends GameTemplate {
     for (let i = 0; i < b.length; ++i) {
       view[i] = b[i];
     }
+***/
 
     //
     // prevents us saving the file, this is an already uploaded rom
@@ -432,10 +453,8 @@ class Nwasm extends GameTemplate {
   }
 
   exportState() {
-console.log("before image is saved");
     let nwasm_mod = this;
     this.app.browser.screenshotCanvasElementById("canvas", function(img) {
-console.log("image is saved");
       nwasm_mod.active_game_img = img;
       myApp.saveStateLocal();
       myApp.exportStateLocal();
@@ -446,23 +465,23 @@ console.log("image is saved");
     if (this.active_game == null) {
       alert("Load from Transaction not done yet!");
     } else {
-      // we might want to show a menu with fetch, for now just
-      // load whatever is there...
       this.loadGameFile();
     }
   }
 
   save() {
-    this.app.options.nwasm = this.roms;
+    this.app.options.nwasm = this.nwasm;
     this.app.storage.saveOptions();
   }
 
   load() {
     if (this.app.options.nwasm) {
-      this.roms = this.app.options.nwasm;
+      this.nwasm = this.app.options.nwasm;
       return;
     }
-    this.roms = {};
+    this.nwasm = {};
+    this.nwasm.random = this.app.crypto.generateRandomNumber();
+    this.save();
   }
 
 }

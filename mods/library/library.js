@@ -4,14 +4,16 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 //
 // Library module is used to index material that I have saved in my own transaction
 // archives for curation, personal use, and lending as possible. It listens for saved
-// transactions and processes them into collections.
+// transactions and processes them into collections. It then provides meta-data about
+// the status of items in the collection, and permits the checkout of those items, 
+// while enforcing non-availability of borrowed materials to others.
 //
 // Modules that wish to take advantage of the existence of the library should respondTo
-// the "library-collection" with the template object they wish to index (i.e. which fields
-// should be indexed and how they are saved). The Library will then listen for saved
-// transactions and add them to the index if any of them match a collection. 
+// the "library-collection" to inform it that it should listen for transactions of a 
+// specific type, which will then listen for saved transactions and add them to the index
+// in the event of a content-match.
 //
-// Library indexes are currently stored in the wallet.
+// Library indexes are currently stored in the wallet. backup Wallet to save index.
 //
 // library['collection'] = [
 //    { 
@@ -169,8 +171,6 @@ class Library extends ModTemplate {
 
     let ts = new Date().getTime();
 
-console.log("cleanup 1");
-
     for (let key in this.library) {
       for (let i = 0; i < this.library[key].length; i++) {
 
@@ -200,8 +200,6 @@ console.log("cleanup 1");
 
   checkout(collection, sig, publickey, mycallback) {
 
-console.log("at start of checkout function!");
-
     let idx = -1;
 
     if (this.library[collection]) {
@@ -214,8 +212,6 @@ console.log("at start of checkout function!");
       }
     }
 
-console.log("at start of checkout function 2!");
-
     if (idx != -1) {
       
       let item = this.library[collection][idx];
@@ -225,7 +221,6 @@ console.log("at start of checkout function 2!");
       // update the time they checked it out
       //
       let is_already_borrowed = 0;
-console.log("at start of checkout function 2.5!");
       for (let i = 0; i < item.checkout.length; i++) {
         if (item.checkout[i].publickey === publickey) {
 	  item.checkout[i].ts = new Date().getTime();
@@ -255,15 +250,12 @@ console.log("at start of checkout function 3!");
   returnCollection(collection) {
     if (this.library[collection]) {
       let c = [];
-console.log("RETURN COLLECTION: " + collection);
       for (let i = 0; i < this.library[collection].length; i++) {
         let item = this.library[collection][i];
 	if (item.title != "") {
-console.log("push: " + item.title);
 	  c.push({ title : item.title , available : item.available , num : item.num , sig : item.sig });
         }
       }
-console.log("AND RETURNING: " + JSON.stringify(c));
       return c;
     }
     return [];
