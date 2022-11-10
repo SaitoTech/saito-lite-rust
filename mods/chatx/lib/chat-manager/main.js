@@ -75,9 +75,6 @@ class ChatManager {
 			let txmsg = tx.returnMessage();
 			last_msg = this.app.browser.stripHtml(txmsg.message);
 			last_ts = txmsg.timestamp;
-
-			console.log("Chat preview msg");
-			console.log(last_msg);
 		}
 
 		let html = SaitoUserGroup(this.app, group.name, last_msg, last_ts, group.id, notifications);
