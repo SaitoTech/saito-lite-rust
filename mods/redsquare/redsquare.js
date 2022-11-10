@@ -800,14 +800,18 @@ class RedSquare extends ModTemplate {
           this.fetchTweets(app, mod, sql, function (app, mod) {
             console.log("Main - TWEETS FETCH FROM PEER: " + mod.tweets.length);
             mod.renderMainPage(app, mod);
-	    mod.fetchSavedTweets(app, mod);
+	    mod.fetchSavedTweets(app, mod, function() {
+              mod.renderMainPage(app, mod);
+	    });
           });
         } else {
           //let sql = `SELECT * FROM tweets WHERE sig = '${mod.viewing}' OR parent_id = '${mod.viewing}'`;
           if (this.mode == "thread" || this.mode == "tweet") {
             let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${mod.viewing}' OR parent_id = '${mod.viewing}' OR thread_id = '${mod.viewing}'`;
             mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, mod.viewing); });
-	    mod.fetchSavedTweets(app, mod);
+	    mod.fetchSavedTweets(app, mod, function() {
+              mod.renderMainPage(app, mod);
+	    });
           }
           if (this.mode == "user") {
             let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
