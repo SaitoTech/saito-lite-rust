@@ -1,6 +1,7 @@
 const LeagueMainContainerTemplate    = require("./container.template");
 const LeagueWizard = require("./../components/league-wizard");
 const ListSelectionModal = require('./../../../../lib/saito/new-ui/modals/list-selection-modal/list-selection-modal');
+const LeagueComponentExistingLeague = require("./../components/existing-league");
 
 
 class Container {
@@ -14,14 +15,42 @@ class Container {
 
   render(app, mod) {
 
-    let leagues_to_display = mod.filterLeagues(app, false);
-
     //
     // Wipe the main container and create a fresh build render main template
     //
-    app.browser.replaceElementById(LeagueMainContainerTemplate(app, mod, leagues_to_display), "league-main-container");
+    app.browser.replaceElementById(LeagueMainContainerTemplate(), "league-main-container");
+
+    let leagues = mod.filterLeagues(app, false);
+    let filter1 = leagues.filter( l => l.admin == app.wallet.returnPublicKey() );
+    let filter2 = leagues.filter( l => l.myRank > 0 && l.admin != app.wallet.returnPublicKey());
+    let filter3 = leagues.filter( l => l.myRank == 0 && l.admin != app.wallet.returnPublicKey());
+
+    if (filter1.length > 0){
+      filter1.forEach((game) => {
+        LeagueComponentExistingLeague.render(app, mod, game, "leagues-for-admin");
+      });
+    }else{
+      document.getElementById("leagues-for-admin").style.display = "none";
+    }  
+
+    if (filter2.length > 0){
+      filter2.forEach((game) => {
+        LeagueComponentExistingLeague.render(app, mod, game, "leagues-for-play");
+      });
+    }else{
+      document.getElementById("leagues-for-play").style.display = "none";
+    }  
+
+    if (filter3.length > 0){
+      filter3.forEach((game) => {
+        LeagueComponentExistingLeague.render(app, mod, game, "leagues-for-join");
+      });
+    }else{
+      document.getElementById("leagues-for-join").style.display = "none";
+    }  
 
     this.attachEvents(app, mod);
+    LeagueComponentExistingLeague.attachEvents(app, mod);
   }
 
 

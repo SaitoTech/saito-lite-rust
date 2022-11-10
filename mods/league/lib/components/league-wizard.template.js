@@ -34,7 +34,7 @@ module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
       <div class="game-wizard-invite">
         <div class="saito-multi-select_btn saito-select dark">
           <div class="saito-multi-select_btn_options saito-slct dark">
-            <button type="button" class="saito-multi-btn game-invite-btn" data-type="open">Create Public League</button>
+            <button type="button" class="saito-multi-btn game-invite-btn" data-type="public">Create Public League</button>
             <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private League</button>
           </div>
         </div>

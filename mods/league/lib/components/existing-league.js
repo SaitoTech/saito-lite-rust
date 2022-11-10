@@ -8,7 +8,6 @@ module.exports = ExistingLeague = {
     } else {
       app.browser.replaceElementById(LeagueComponentExistingLeagueTemplate(app, mod, league), league.id);
     }
-    this.attachEvents(app, mod);
   },
 
   //Not good programming to nest loops like this, define functions then immediately overwriting them

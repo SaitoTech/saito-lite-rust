@@ -10,12 +10,14 @@ class LeagueWizard {
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app);
+    this.super_overlay = new SaitoOverlay(app, false, false);
+
   }
 
   render(app, mod) {
 
     //Create the game wizard overlay
-    this.overlay.show(app, mod, LeagueWizardTemplate(app, mod, this.game_mod));
+    this.overlay.show(app, mod, LeagueWizardTemplate(app, mod, this.game_mod), ()=>{ this.super_overlay.remove(); });
 
     //Create (hidden) the advanced options window
     this.meta_overlay = new SaitoOverlay(app, false, false);
@@ -50,20 +52,21 @@ class LeagueWizard {
         e.target.innerHTML = "";
       }
     };
-
+    const restorePlaceHolder = (e) =>{
+      if (e.target.innerHTML == ""){
+        e.target.innerHTML = e.target.getAttribute("data-placeholder");
+      }
+    }
 
     let desc = document.getElementById("league-desc");
     if (desc) {
-      desc.addEventListener("focus", function (e) {
-        let value = e.target.innerHTML;
-        if (value == e.target.getAttribute("data-placeholder")) {
-          e.target.innerHTML = "";
-        }
-      });
+      desc.addEventListener("focus", clearPlaceHolder);
+      desc.addEventListener("blur", restorePlaceHolder);
     }
     let title = document.getElementById("league-name");
     if (title) {
       title.addEventListener("focus", clearPlaceHolder);
+      title.addEventListener("blur", restorePlaceHolder);
     }
 
     
@@ -75,18 +78,15 @@ class LeagueWizard {
       advancedOptionsToggle.onclick = (e) => {
 
         //Requery advancedOptions on the click so it can dynamically update based on # of players
-        let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small">Accept</div>`;
-        let advancedOptionsHTML = LeagueAdvancedOptions();
-        if (!advancedOptionsHTML.includes(accept_button)){
-          advancedOptionsHTML += accept_button;
-        }
-        this.meta_overlay.show(app, this.game_mod, advancedOptionsHTML);
+        this.meta_overlay.show(app, this.game_mod, LeagueAdvancedOptions());
         this.attachAdvancedOptionsEventListeners();
         this.meta_overlay.blockClose();
 
-        if (document.getElementById("game-wizard-advanced-return-btn")) {
-          document.querySelector(".game-wizard-advanced-return-btn").onclick = (e) => {
-            this.meta_overlay.hide();
+        if (document.getElementById("league-wizard-advanced-return-btn")) {
+          document.getElementById("league-wizard-advanced-return-btn").onclick = (e) => {
+            if (this.validateDate(document.getElementById("startdate"), document.getElementById("enddate"))){
+              this.meta_overlay.hide();              
+            }
           };
         }
       }
@@ -96,20 +96,235 @@ class LeagueWizard {
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
       gameButton.addEventListener("click", async (e) => {
         e.stopPropagation();
-        
-        //let options = this.getOptions();
-        let isPrivateGame = e.currentTarget.getAttribute("data-type");
 
+        if (!this.validateLeague()){
+          return;
+        }
         
+        let options = this.getOptions();
+
+        let newLeague = {
+          game: this.game_mod.name,
+          type: e.currentTarget.getAttribute("data-type"),
+          admin: app.wallet.returnPublicKey(),
+          name: sanitize(document.getElementById("league-name").innerHTML),
+          description: sanitize(document.getElementById("league-desc")),
+          ranking: document.getElementById("ranking").value,
+          starting_score: parseInt(document.getElementById("starting_score").value),
+          max_players: parseInt(document.getElementById("max_players").value),
+          options: (document.getElementById("fixedoptions").checked) ? options : {},
+          startdate: document.getElementById("startdate").value,
+          enddate: document.getElementById("enddate").value,
+          allowlate: (document.getElementById("lateregister").checked) ? '1' : '0',
+        };
+
+        mod.sendCreateLeagueTransaction(newLeague);
 
         //Destroy both overlays
         this.overlay.remove();
-
+        this.super_overlay.remove();
         return false;
       });
     });
   
 
+  }
+
+
+  attachAdvancedOptionsEventListeners(){
+    let playerCheck = document.getElementById("limit_players");
+    let playerObj = document.getElementById("max_player_option");
+    let playerDefault = 25;
+
+    if (playerCheck && playerObj){
+      playerCheck.onchange = (e) =>{
+        if (playerCheck.checked){
+          playerObj.style.display = "block";
+          document.getElementById("max_players").value = playerDefault;
+        }else{
+          playerObj.style.display = "none";
+          playerDefault = document.getElementById("max_players").value;
+          document.getElementById("max_players").value = 0;
+        }
+      }
+    }
+
+    let startDiv = document.getElementById("starting_score");
+    let startObj = document.getElementById("starting_score_option");
+    let rankDiv = document.querySelector("#ranking");
+    if (startDiv && rankDiv && startObj) {
+      rankDiv.onchange = (e) => {
+        if (rankDiv.value == "elo") {
+          startDiv.value = 1000;
+          startObj.style.display = "block";
+        } else {
+          startDiv.value = 0;
+          startObj.style.display = "none";
+        }
+      };
+    }
+
+    const seasonObj = document.getElementById("season_option");
+    const seasonCheck = document.getElementById("limit_season");
+
+    if (seasonObj && seasonCheck){
+      seasonCheck.onchange = (e) => {
+        if (seasonCheck.checked){
+          seasonObj.style.display = "block";
+        }else{
+          seasonObj.style.display = "none";
+          document.getElementById("startdate").value = "";
+          document.getElementById("enddate").value = "";
+          document.getElementById("lateregister").checked = false;
+        }
+      }
+    }
+
+    let exclusiveObj = document.getElementById("exclusive");
+    let optionsToggle = document.getElementById("fixedoptions");
+    let optionsSelect = document.getElementById("selectoptions");
+
+
+    if (optionsSelect && optionsToggle && exclusiveObj){
+      exclusiveObj.onchange = (e) =>{
+        if (exclusiveObj.value == "inclusive"){
+          optionsToggle.checked = false;
+        }
+      }
+
+      optionsSelect.onclick = (e) => {
+        try{
+          optionsToggle.checked = true;
+          exclusiveObj.value = "exclusive";
+
+          let advancedOptions = this.game_mod.returnGameOptionsHTML();
+          let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+          let moreOptions = this.game_mod.returnPlayerSelectHTML();
+
+          if (advancedOptions.includes(accept_button)){
+            advancedOptions = advancedOptions.replace(accept_button, moreOptions+accept_button);
+          }else{
+            advancedOptions += moreOptions + accept_button; 
+          }
+
+          let html = `<div class="game_option_league_wizard">
+                      <form id="game-wizard-form" class="game-wizard-form">
+                      ${advancedOptions}
+                      </form>
+                      </div>
+                      `;
+
+          //Display Game Options
+          this.super_overlay.show(this.app, this.mod, html);  
+          //Attach dynamic listeners
+          this.game_mod.attachAdvancedOptionsEventListeners();
+          //Hide overlay if clicking button
+          if (document.getElementById("game-wizard-advanced-return-btn")) {
+            document.getElementById("game-wizard-advanced-return-btn").onclick = (e) => {
+              this.super_overlay.hide();
+            };
+          }
+        }catch(err){
+          console.log(err);
+        }
+      }
+
+      optionsToggle.onclick = (e) =>{
+        if (optionsToggle.checked){
+          exclusiveObj.value = "exclusive";
+        }
+
+        if (!document.getElementById("game-wizard-form")){
+          let html = `<div class="game_option_league_wizard">
+                      <form id="game-wizard-form" class="game-wizard-form">
+                      ${this.game_mod.returnGameOptionsHTML()}
+                      ${this.game_mod.returnPlayerSelectHTML()}
+                      </form>
+                      </div>`;
+          this.super_overlay.show(this.app, this.mod, html);  
+          this.super_overlay.hide();
+        }
+      };
+    }
+
+
+  }
+
+  getOptions(){
+    let options = "";
+   
+    document.querySelectorAll("form#game-wizard-form input, form#game-wizard-form select").forEach((element) => {
+      if (!options){
+        options = {};
+      }
+      if (element.type == "checkbox") {
+        if (element.checked) {
+          options[element.name] = 1;
+        }
+      } else if (element.type == "radio") {
+        if (element.checked) {
+          options[element.name] = element.value;
+        }
+      } else {
+        options[element.name] = element.value;
+      }
+    });
+   
+    return options;
+  }
+
+  validateLeague(){
+    let title = document.getElementById("league-name");
+    
+    if (!title || !title.innerHTML || title.innerHTML == title.getAttribute("data-placeholder")){
+      salert("Your league must have a name");
+      return false;
+    }
+
+    if (title.innerHTML == this.game_mod.name || title.innerHTML == this.game_mod.gamename){
+      salert("You can't just name your league after the game");
+      return false;
+    }
+
+    let desc = document.getElementById("league-desc");
+    if (!desc || !desc.innerHTML || desc.innerHTML == desc.getAttribute("data-placeholder")){
+      salert("Your league must have a description");
+      return false;
+    }
+
+    return true;
+  }
+
+  validateDate(start, end){
+    let today = new Date().getTime();
+
+    if (start){
+      let startTime = Date.parse(start);
+
+      if (startTime < today){
+        salert("Invalid Start Date! Must be after today, otherwise leave blank for League to take immediate effect.");
+        return false;
+      }
+
+      if (end){
+        let endTime = Date.parse(end);
+        if (endTime < startTime){
+          salert("Invalid Date Range!");
+          return false;
+        }
+      }
+
+    }
+
+    if (end){
+      let endTime = Date.parse(end);
+      if (endTime < today){
+        salert("Invalid End Date!");
+        return false;
+      }
+    }
+
+    return true;
   }
 
 }
