@@ -73,8 +73,11 @@ class ChatManager {
 		if (group.txs.length > 0) { 
 			let tx = group.txs[group.txs.length - 1];
 			let txmsg = tx.returnMessage();
-			last_msg = txmsg.message;
+			last_msg = this.app.browser.stripHtml(txmsg.message);
 			last_ts = txmsg.timestamp;
+
+			console.log("Chat preview msg");
+			console.log(last_msg);
 		}
 
 		let html = SaitoUserGroup(this.app, group.name, last_msg, last_ts, group.id, notifications);
