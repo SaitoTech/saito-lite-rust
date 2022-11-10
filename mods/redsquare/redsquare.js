@@ -794,42 +794,24 @@ class RedSquare extends ModTemplate {
         mod.saito_loader.remove();
       }
 
-      mod.app.storage.loadTransactions("RedSquare", 50, (txs) => {
-        mod.ntfs_num = txs.length;
-        console.log(mod.max_ntfs_num, mod.ntfs_num, txs, "notifications");
-
-          for (let i = 0; i < txs.length; i++) {
-            //console.log(i + ": " + JSON.stringify(txs[i].optional));
-            txs[i].decryptMessage(app);
-            let txmsg = txs[i].returnMessage();
-            if (txmsg.request == "create tweet") {
-              let tweet = new Tweet(mod.app, mod, txs[i]);
-              mod.addTweet(mod.app, mod, tweet);
-              mod.txmap[tweet.tx.transaction.sig] = 1;
-            }
-    
-      
-            mod.addNotification(mod.app, mod, txs[i]);
-          }
-         // console.log('notific after ', mod.ntfs)
-        })
-
-      // this.loadNotificationTransactions(app, mod);
-  
-  
       if (document.querySelector(".redsquare-list")) {
         if (mod.viewing == "feed") {
           let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
           this.fetchTweets(app, mod, sql, function (app, mod) {
             console.log("Main - TWEETS FETCH FROM PEER: " + mod.tweets.length);
             mod.renderMainPage(app, mod);
+	    mod.fetchSavedTweets(app, mod, function() {
+              mod.renderMainPage(app, mod);
+	    });
           });
         } else {
           //let sql = `SELECT * FROM tweets WHERE sig = '${mod.viewing}' OR parent_id = '${mod.viewing}'`;
           if (this.mode == "thread" || this.mode == "tweet") {
             let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${mod.viewing}' OR parent_id = '${mod.viewing}' OR thread_id = '${mod.viewing}'`;
-            this.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, mod.viewing); });
-
+            mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, mod.viewing); });
+	    mod.fetchSavedTweets(app, mod, function() {
+              mod.renderMainPage(app, mod);
+	    });
           }
           if (this.mode == "user") {
             let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
@@ -903,6 +885,27 @@ class RedSquare extends ModTemplate {
   ///////////////////////////////////////
   // fetching curated tweets from peer //
   ///////////////////////////////////////
+  fetchSavedTweets(app, mod, mycallback = null) {
+    mod.app.storage.loadTransactions("RedSquare", 50, (txs) => {
+      mod.ntfs_num = txs.length;
+      console.log(mod.max_ntfs_num, mod.ntfs_num, txs, "notifications");
+
+      for (let i = 0; i < txs.length; i++) {
+        txs[i].decryptMessage(app);
+        let txmsg = txs[i].returnMessage();
+        if (txmsg.request == "create tweet") {
+          let tweet = new Tweet(mod.app, mod, txs[i]);
+          mod.addTweet(mod.app, mod, tweet);
+          mod.txmap[tweet.tx.transaction.sig] = 1;
+        }
+    
+        mod.addNotification(mod.app, mod, txs[i]);
+      }
+
+      if (mycallback != null) { mycallback(); }
+    })
+  };
+
   fetchTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false, is_server_request = false) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
