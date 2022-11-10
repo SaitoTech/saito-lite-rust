@@ -35,25 +35,18 @@ class RedSquareImageOverlay {
       oImg.setAttribute('class', "tweet-overlay-img");
       oImg.setAttribute('id', "tweet-overlay-img-"+img_index);
 
+      document.querySelector("#tweet-overlay-img-cont").appendChild(oImg);
+   
       // show img that was clicked, hide others on first render
       if (this_self.img_index == img_index) {
-        
+
         // keep track of which img is being shown to help in left right arrow click
         this_self.selected = Number(img_index);
-
-        if (img_index == 1) {
-          this_self.hideArrowLeft();
-        }
-
-        if (img_index == this_self.tweetImgs.length) {
-          this_self.hideArrowRight();
-        }        
+        this_self.checkArrows(document.getElementById("tweet-overlay-img-"+img_index));        
       
       } else {
         oImg.style.display = 'none';
       }
-      
-      document.querySelector("#tweet-overlay-img-cont").appendChild(oImg);
     });
 
     this.attachEvents(app, mod);
@@ -66,20 +59,22 @@ class RedSquareImageOverlay {
       this_self.hideAllImgs();
       this_self.selected = this_self.selected - 1; 
 
-      document.querySelector("#tweet-overlay-img-"+this_self.selected).style.display = 'block';
-      this_self.checkArrows();
+      let img_showing = document.querySelector("#tweet-overlay-img-"+this_self.selected);
+      img_showing.style.display = 'block';
+      this_self.checkArrows(img_showing);
     });
 
     document.getElementById("tweet-img-arrow-box-right").addEventListener('click', function(e){
       this_self.hideAllImgs();
       this_self.selected = this_self.selected + 1; 
 
-      document.querySelector("#tweet-overlay-img-"+this_self.selected).style.display = 'block';
-      this_self.checkArrows();
+      let img_showing = document.querySelector("#tweet-overlay-img-"+this_self.selected);
+      img_showing.style.display = 'block';
+      this_self.checkArrows(img_showing);
     });
   }
 
-  checkArrows(){
+  checkArrows(img){
     this.showArrows();
 
     if (this.selected == 1) {
@@ -88,7 +83,14 @@ class RedSquareImageOverlay {
 
     if (this.selected == this.tweetImgs.length) {
       this.hideArrowRight();
-    }        
+    }
+
+    let img_pos = img.getBoundingClientRect();
+    let left_arrow_pos = img_pos.x;
+    let right_arrow_pos = window.innerWidth - img_pos.x - img_pos.width;
+
+    document.querySelector('#tweet-img-arrow-box-left').style.left = '-'+ left_arrow_pos + 'px';
+    document.querySelector('#tweet-img-arrow-box-right').style.right = '-'+ right_arrow_pos + 'px';
   }
 
   hideAllImgs(){
