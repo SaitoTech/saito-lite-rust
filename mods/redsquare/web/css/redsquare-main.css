@@ -664,7 +664,6 @@ span.redsquare-home-red-square+span {
 
 
 .tweet-overlay-img-cont img {
-  min-width: 66vw;
   max-height: 90vh;
   max-width: 90vw;
 }
@@ -735,11 +734,6 @@ span.redsquare-home-red-square+span {
 
 .saito-game-content .saito-leaderboard .saito-table-row > div:nth-child(2) {
   text-align: right;
-}
-
-
-.saito-sidebar-right h6{
-  color: var(--saito-black);
 }
 
 /*  Responsive */

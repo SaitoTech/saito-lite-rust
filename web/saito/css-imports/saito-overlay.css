@@ -5,7 +5,8 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #000C;
+  background-color: #444;
+  opacity: 0.4;
   z-index: 100;
 }
 
@@ -61,7 +62,6 @@
   width: 30%;
   background-color: #f7d3d9;
   background-size: cover;
-  background-position: center;
 }
 
 .saito-module-overlay-info-box {

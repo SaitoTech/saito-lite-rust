@@ -43,7 +43,7 @@ class Mixin extends ModTemplate {
     this.withdrawals    = [];
     this.deposits       = [];
 
-    this.styles = ['/crypto/css/appspace.css'];
+    this.styles = ['/mixin/css/appspace.css'];
   }
 
 
