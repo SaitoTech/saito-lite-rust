@@ -24,7 +24,7 @@ class Settlers extends GameTemplate {
     this.cardbox.skip_card_prompt = 0;
     this.minPlayers = 2;
     this.maxPlayers = 4;
-
+    this.game_length = 20; //Estimated number of minutes to complete a game
     this.tradeWindowOpen = false;
     this.is_sleeping = true;
     this.confirm_moves = true;

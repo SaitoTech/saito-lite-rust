@@ -64,55 +64,11 @@ class ArcadeMain {
       this.userLeagues.render(app, mod);
     }
 
-    let tabNames = ["arcade"];
-
-    if (app.modules.returnModule("Observer")){
-      tabNames.push("observer-live");
-      tabNames.push("observer-review");
-    }
-
-    if (tabNames.length > 1){
-      document.getElementById("arcade-tab-buttons").style.gridTemplateColumns = `repeat(${tabNames.length}, auto)`;
-
-      tabNames.forEach((tabButtonName, i) => {
-        //Add click event to tab
-        let tab = document.querySelector("#tab-button-" + tabButtonName);
-        tab.style.display = "grid";
-        tab.onclick = () => {
-          app.browser.logMatomoEvent("Arcade", "ArcadeTabNavigationClick", tabButtonName);
-          tabNames.forEach((tabName, i) => {
-            if (tabName === tabButtonName) {
-              mod.active_tab = tabName;
-              document.querySelector(`#${tabName}-hero`).classList.remove("arcade-tab-hidden");
-              document.querySelector("#tab-button-"+tabName).classList.add("active-tab-button");
-            }else{
-              document.querySelector(`#${tabName}-hero`).classList.add("arcade-tab-hidden");
-              document.querySelector("#tab-button-"+tabName).classList.remove("active-tab-button");
-            }
-            
-          });
-        };
-
-        //Set default tab to display
-        tabNames.forEach((tabName, i) => {
-          if (tabName === mod.active_tab) {
-            document.querySelector(`#${tabName}-hero`).classList.remove("arcade-tab-hidden");
-            document.querySelector("#tab-button-"+tabName).classList.add("active-tab-button");
-          } 
-        });
-
-      });
-    
-    }else{
-      //Hide Tabs
-      document.getElementById("arcade-tab-buttons").style = "display: none";
-      document.getElementById("arcade-hero").classList.remove("arcade-tab-hidden");
-    }
-    
     //
     // add games
     //
     this.renderArcadeTab(app, mod);
+
     let game_filter = (mod.viewing_game_homepage == mod.name) ? "" : mod.viewing_game_homepage;
     app.connection.emit("observer-render-arcade-tabs", {selector: "observer-live-hero", game_filter, live_games: true});
     app.connection.emit("observer-render-arcade-tabs", {selector: "observer-review-hero", game_filter, live_games: false});
@@ -188,11 +144,14 @@ class ArcadeMain {
         }
       });
 
-      if (numGamesDisplayed == 0) {
-        let carousel = new SaitoCarousel(app);
-        carousel.render(app, "arcade-hero");
-        if (mod.viewing_game_homepage === mod.name) {
-            carousel.addLeaves(app);
+      if (mod.viewing_game_homepage == "Arcade" && numGamesDisplayed == 0) {
+        let observer = app.modules.returnModule("Observer");
+        if (!observer || observer.games.length == 0){
+          let carousel = new SaitoCarousel(app);
+          carousel.render(app, "arcade-hero");
+          if (mod.viewing_game_homepage === mod.name) {
+              carousel.addLeaves(app);
+          }
         }
       }
 
