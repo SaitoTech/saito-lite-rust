@@ -17,7 +17,7 @@ class ArcadeBanner {
 			html = `<div id="arcade-banner" class="arcade-banner">
 						<div class="arcade_welcome">
 							Welcome to the Saito Arcade, a place to create game invitations, join games, view live and recently finished games, and see how you stack up against other Saitozens!
-							Explore the games we have available throught the navigation menu on the left or see what is happening right now below.
+							Explore the games we have available through the navigation menu on the left or see what is happening right now below.
 						</div>
 						<!--div class="saito-box-buttons">
 							<div class="saito-button-primary button" data-cmd="create">Create Game</div>
