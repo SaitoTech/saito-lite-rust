@@ -11,16 +11,17 @@ class ArcadeBanner {
 
 		let html = `<div id="arcade-banner" class="arcade-banner">
 						${SaitoModuleIntro(app, app.modules.returnModule(mod.viewing_game_homepage))}
-						<div class="saito-box-buttons">
-							<div class="saito-button-primary button" data-cmd="create">Create Game</div>
-							<div class="saito-button-primary button" data-cmd="learn">Learn</div>
-						</div>
+						<i id="game_help" class="fa fa-question-circle"></i>
 					</div>`;
 		if (mod.viewing_game_homepage === mod.name){
 			html = `<div id="arcade-banner" class="arcade-banner">
-						<div class="saito-box-buttons">
-							<div class="saito-button-primary button" data-cmd="create">Create Game</div>
+						<div class="arcade_welcome">
+							Welcome to the Saito Arcade, a place to create game invitations, join games, view live and recently finished games, and see how you stack up against other Saitozens!
+							Explore the games we have available throught the navigation menu on the left or see what is happening right now below.
 						</div>
+						<!--div class="saito-box-buttons">
+							<div class="saito-button-primary button" data-cmd="create">Create Game</div>
+						</div-->
 					</div>`;
 		}
 		app.browser.replaceElementById(html, "arcade-banner");
@@ -28,23 +29,23 @@ class ArcadeBanner {
 	}
 
 	attachEvents(app, mod){
-		Array.from(document.querySelectorAll("#arcade-banner .button")).forEach(btn => {
-			btn.onclick = (e) =>{
-				let cmd = e.currentTarget.getAttribute("data-cmd");
-				if (cmd == "create"){
-					if (mod.viewing_game_homepage == mod.name){
-						app.connection.emit("launch-game-selector");
-						//mod.createGameSelector();
-					}else{
-						mod.createGameWizard(mod.viewing_game_homepage);
-					}
-				}
-				if (cmd == "learn"){
-					let overlay = new SaitoOverlay(app);
-					overlay.show(app, mod, app.modules.returnModule(mod.viewing_game_homepage).returnGameRulesHTML());
-				}
+		if (document.getElementById("game_help")){
+			document.getElementById("game_help").onclick = (e) =>{
+				e.stopPropagation();
+				let overlay = new SaitoOverlay(app);
+				overlay.show(app, mod, app.modules.returnModule(mod.viewing_game_homepage).returnGameRulesHTML());
+				return;
 			}
-		});
+		}
+
+		document.getElementById("arcade-banner").onclick = (e) => {
+			if (mod.viewing_game_homepage == mod.name){
+				app.connection.emit("launch-game-selector");
+				//mod.createGameSelector();
+			}else{
+				mod.createGameWizard(mod.viewing_game_homepage);
+			}
+		}
 
 	}
 }

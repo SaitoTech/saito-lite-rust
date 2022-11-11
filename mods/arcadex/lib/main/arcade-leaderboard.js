@@ -19,12 +19,14 @@ class ArcadeLeaderboard{
 	}
 
 	attachEvents(app, mod){
-	  
-	  document.getElementById("arcade-leaderboard").onclick = function (e) {
-	  	e.stopPropagation();
-	    let league_id = (mod.viewing_game_homepage == mod.name)? "SAITOLICIOUS" : mod.viewing_game_homepage.toUpperCase(); 
-	   	app.connection.emit("view-league-details", league_id);
+	  if (document.querySelector(".leaderboard-header")){
+		  document.querySelector(".leaderboard-header").onclick = function (e) {
+		  	e.stopPropagation();
+		    let league_id = (mod.viewing_game_homepage == mod.name)? "SAITOLICIOUS" : mod.viewing_game_homepage.toUpperCase(); 
+		   	app.connection.emit("view-league-details", league_id);
+		  }	
 	  }
+	  
 	}
 
 }

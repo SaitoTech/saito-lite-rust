@@ -82,7 +82,20 @@ body {
 /* Banner */
 
 .arcade-banner{
+  position: relative;
   max-height: 35rem;
+  cursor: pointer;
+}
+
+.arcade-banner:hover{
+  filter: brightness(0.5);
+}
+
+#game_help{
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font-size: 2rem;
 }
 
 .arcade-main > div{
@@ -242,16 +255,32 @@ body {
   width: var(--sidebar-width);
   grid-column-start: 3;
   grid-row: 1/3;
-  cursor: pointer;
+
 }
 
 .leaderboard-header{
   font-size: 2.4rem;
   text-decoration: underline;
+  cursor: pointer;  
+}
+
+.leaderboard-header:hover{
+  color: black;
+  background: ghostwhite;
 }
 
 #arcade-leaderboard .saito-table-row{
   margin: 0.4rem 0;
+  cursor: pointer;
+}
+
+#arcade-leaderboard .saito-table-row .me::before{
+  content: "Me: ";
+}
+
+#arcade-leaderboard .saito-table-row:hover{
+  color: black;
+  background: ghostwhite;
 }
 
 .arcade-menu-item.selected{

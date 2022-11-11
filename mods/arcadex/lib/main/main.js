@@ -66,10 +66,10 @@ class ArcadeMain {
 
     let tabNames = ["arcade"];
 
-    if (app.modules.returnModule("Observer")){
-      tabNames.push("observer-live");
-      tabNames.push("observer-review");
-    }
+    //if (app.modules.returnModule("Observer")){
+    //  tabNames.push("observer-live");
+    //  tabNames.push("observer-review");
+    //}
 
     if (tabNames.length > 1){
       document.getElementById("arcade-tab-buttons").style.gridTemplateColumns = `repeat(${tabNames.length}, auto)`;
@@ -114,8 +114,8 @@ class ArcadeMain {
     //
     this.renderArcadeTab(app, mod);
     let game_filter = (mod.viewing_game_homepage == mod.name) ? "" : mod.viewing_game_homepage;
-    app.connection.emit("observer-render-arcade-tabs", {selector: "observer-live-hero", game_filter, live_games: true});
-    app.connection.emit("observer-render-arcade-tabs", {selector: "observer-review-hero", game_filter, live_games: false});
+    app.connection.emit("observer-render-arcade-tabs", {selector: "arcade-hero"/*"observer-live-hero"*/, game_filter, live_games: true});
+    app.connection.emit("observer-render-arcade-tabs", {selector: "arcade-hero"/*"observer-review-hero"*/, game_filter, live_games: false});
   }
 
 
