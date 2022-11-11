@@ -93,37 +93,6 @@ class SaitoMania extends GameTemplate {
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
-    this.menu.addMenuOption("game-info", "Info");
-
-    this.menu.addSubMenuOption("game-game",{
-      text : "Start New Game",
-      id : "game-new",
-      class : "game-new",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.endGame();
-        game_mod.newRound();
-        game_mod.endTurn();
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Play Mode",
-      id : "game-play",
-      class : "game-play",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubSubMenu("game-play"); 
-      }
-    });
-
-    this.menu.addSubMenuOption("game-info", {
-      text : "How to Play",
-      id : "game-intro",
-      class : "game-intro",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
-      }
-    });
 
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
