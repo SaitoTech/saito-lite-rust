@@ -269,6 +269,10 @@ body {
   background: ghostwhite;
 }
 
+#arcade-leaderboard{
+  padding: 0.5rem 0 0.9rem;
+}
+
 #arcade-leaderboard .saito-table-row{
   margin: 0.4rem 0;
   cursor: pointer;
@@ -293,3 +297,58 @@ body {
   background: unset;
 }
 
+@media screen and (max-width: 1500px){
+  .saito-mobile-bar > div:nth-child(1) {
+      display: none;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .saito-sidebar-right{
+    visibility: hidden;
+    position: fixed;
+    right: 0;
+    background: var(--saito-nightscape);
+    height: calc(100vh - var(--saito-header-height) - 7rem);
+  }
+
+  .saito-mobile-bar > div:nth-child(4) {
+      display: flex;
+  }
+  .saito-container{
+    grid-template-columns: min-content auto;
+  }
+}
+
+@media screen and (max-width: 650px){
+  .saito-sidebar-left{
+    position: fixed;
+    visibility: hidden;
+    background: var(--saito-nightscape);
+    height: calc(100vh - var(--saito-header-height) - 7rem);
+  }
+
+  .saito-mobile-bar > div:nth-child(1) {
+      display: flex;
+  }
+  .saito-container{
+    grid-template-columns: auto;
+  }
+
+}
+
+@media screen and (max-width: 515px){
+   .saito-mobile-bar > div:nth-child(2) {
+      display: none;
+  }
+
+}
+
+.saito-sidebar-left.mobile{
+  visibility: visible;
+  z-index: 2;
+}
+.saito-sidebar-right.mobile{
+  visibility: visible;
+  z-index: 2;
+}
