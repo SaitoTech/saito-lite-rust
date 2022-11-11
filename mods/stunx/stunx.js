@@ -86,7 +86,13 @@ class Stunx extends ModTemplate {
                         class: "game-video-chat",
                         callback: function (app, game_mod) {
                             console.log('all players ', game_mod.game.players);
-                            app.connection.emit('game-start-video-call', [...game_mod.game.players]);
+                            if (game_mod.game.player.length > 1){
+                                app.connection.emit('game-start-video-call', [...game_mod.game.players]);    
+                            }else{
+                                //Open a modal to invite someone to a video chat
+                                
+                            }
+                            
                         },
                     }
                 ],
