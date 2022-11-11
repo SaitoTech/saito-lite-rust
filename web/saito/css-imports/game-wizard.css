@@ -372,25 +372,27 @@
   cursor: pointer;
 }
 
+
+.game-create-new-overlay .saito-module-intro{
+  min-height: 17rem;
+}
+
 .saito-module-intro {
   display: grid;
   grid-template-columns: 3fr 7fr;
   grid-gap: 1rem;
 }
 
-/*.saito-module-intro-image {
-  padding-top: 1rem;
-  padding-right: 1rem;
-  padding-bottom: 1rem;
-  margin-right: 1rem;
-}*/
-
-.saito-module-intro-image > img {
-  width: 100%;
+.saito-module-intro-image {
+  background-color: grey;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
+
 .saito-module-intro-text{
-  margin-left: 1.5rem;
+  margin: 0 1.5rem;
 }
 
 .saito-module-intro-title {
@@ -407,6 +409,13 @@
   line-height: 2.8rem;
 }
 
+.saito-module-intro-details{
+  font-size: 1.6rem;
+  margin: 0.4rem;
+}
+.saito-module-intro-details .detail_row{
+  margin: 0.4rem 0;
+}
 
 .arcade-game-publisher-message {
   margin-top: 10px;

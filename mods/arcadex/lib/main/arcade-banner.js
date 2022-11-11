@@ -10,7 +10,7 @@ class ArcadeBanner {
 	render(app, mod){
 
 		let html = `<div id="arcade-banner" class="arcade-banner">
-						${SaitoModuleIntro(app, app.modules.returnModule(mod.viewing_game_homepage))}
+						${SaitoModuleIntro(app, app.modules.returnModule(mod.viewing_game_homepage), false)}
 						<i id="game_help" class="fa fa-question-circle"></i>
 					</div>`;
 		if (mod.viewing_game_homepage === mod.name){
