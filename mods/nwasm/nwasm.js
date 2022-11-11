@@ -34,7 +34,6 @@ class Nwasm extends GameTemplate {
     this.active_rom = null;
     this.active_rom_name = "";
     this.active_rom_sig = "";
-    this.active_rom_manufacturer = "";
     this.active_game = new ArrayBuffer(8);
     this.active_game_img = "";
     this.active_game_saves = [];
@@ -222,13 +221,10 @@ class Nwasm extends GameTemplate {
         message.data = {};
         message.data.collection = "Nwasm";
         message.data.publickey = this.app.wallet.returnPublicKey();
-console.log("about to delete...");
 
 	let library_mod = this.app.modules.returnModule("Library");
 	if (library_mod) {
-console.log("callback pre send!");
 	  library_mod.handlePeerRequest(this.app, message, null, function() {
-console.log("callback success!");
             nwasm_mod.libraries = {};
 	    nwasm_mod.save();
             nwasm_mod.updateVisibleLibrary();
@@ -237,8 +233,9 @@ console.log("callback success!");
   }
 
   initializeRom(bytearray) {
-    myApp.initializeRom(bytearray);
+console.log("REMOVE ACTIVE GAME SAVES");
     this.active_game_saves = [];
+    myApp.initializeRom(bytearray);
     this.hideLibrary();
   }
 
@@ -308,56 +305,58 @@ console.log("callback success!");
     if (logline.indexOf("mupen64plus: ") == 0) {
       x = logline.substring(13);
       if (x.indexOf("Name: ") == 0) {
-log("THIS IS THE NAME!");
-
         x = x.substring(6);
 	if (x.indexOf("muopen") > -1) {
 	  x = x.substring(0, x.indexOf("muopen"));
 	}
-log(x);
 
+	let len = x.trim().length; if (len > 6) { len = 6; }
 
-        this.active_rom_name = x.trim();
-log("active rom name: " + this.active_rom_name);
-        this.active_rom_sig = this.app.crypto.hash(x.trim());
+	if (this.active_rom_name.indexOf(x.trim().substring(0, len)) != 0) {
 
-        //
-        // archive the rom
-        //
-        if (this.uploaded_rom == false && this.active_rom_name !== "") {
+          this.active_rom_name = x.trim();
+          this.active_rom_sig = this.app.crypto.hash(this.active_rom_name);
+
+log("---->"+this.active_rom_name+"<-----");//active_rom_sig
+log("---->"+this.active_rom_sig+"<-----");//active_rom_sig
+
           //
-          // save ROM in archives --dynamically is best
+          // archive the rom
           //
-log("ARCHIVE ROM");
-          this.uploaded_rom = true;
-          this.saveRomFile(this.active_rom);
-        }
-
-	//
-	// load 10 saved games
-	//
-log("TRYING TO RESTORE TXS");
-/***
-        this.app.storage.loadTransactions(("Nwasm"+mod.active_rom_sig), 10, function(txs) {
-          try {
-	    for (let z = 0; z < txs.length; z++) {
-              let newtx = new saito.default.transaction(txs[z].transaction);
-              nwasm_self.active_game_saves.push(newtx);
-            }
-          } catch (err) {
-            console.log("error loading Nwasm game...: " + err);
+          if (this.uploaded_rom == false && this.active_rom_name !== "") {
+            //
+            // save ROM in archives --dynamically is best
+            //
+            this.uploaded_rom = true;
+log("1 * * * * * * * * * ");
+            this.saveRomFile(this.active_rom);
+log("2 * * * * * * * * * ");
           }
-        });
-***/
-log(" ... done");
 
-      }
-      if (x.indexOf("Manufacturer: ") == 0) {
-        x = x.substring(14);
-        this.active_rom_manufacturer = x;
-      }
+log("3 * * * * * * * * * ");
 
-log(this.uploaded_rom + " -- " + this.active_rom_name);
+	  //
+	  // load 5 saved games
+	  //
+log("===============================");
+log(`=====Nwasm${this.active_rom_sig}=====`);
+log("===============================");
+
+          this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 5, function(txs) {
+log("########=> got txs!");
+            try {
+	      for (let z = 0; z < txs.length; z++) {
+                let newtx = new saito.default.transaction(txs[z].transaction);
+log("z ))) " + z);
+                nwasm_self.active_game_saves.push(newtx);
+              }
+            } catch (err) {
+              log("error loading Nwasm game...: " + err);
+            }
+          });
+
+	}
+      }
     }
 
   }
@@ -427,9 +426,8 @@ log(this.uploaded_rom + " -- " + this.active_rom_name);
 
     let obj = {
       module: this.name,
-      id: this.app.crypto.hash(this.active_rom_name.trim()) ,
+      id: this.app.crypto.hash(this.active_rom_name) ,
       title: this.active_rom_name.trim() ,
-      manufacturer: this.active_rom_manufacturer.trim(),
       request: "upload rom",
       data: base64data,
     };
@@ -437,7 +435,6 @@ log(this.uploaded_rom + " -- " + this.active_rom_name);
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     newtx = this.app.wallet.signTransaction(newtx);
-console.log("SAVE ROM FILE!");
     this.app.storage.saveTransaction(newtx);
 
   }
@@ -478,16 +475,19 @@ console.log("SAVE ROM FILE!");
     let obj = {
       module: (this.name + this.active_rom_sig),
       name: this.active_rom_name.trim() ,
-      manufacturer: this.active_rom_manufacturer.trim(),
       screenshot: screenshot,
       request: "upload savegame",
       data: base64data,
     };
 
+console.log("SAVING AS: " + obj.module);
+
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.storage.saveTransaction(newtx);
+
+console.log("SAVED TX");
 
     this.active_game_saves.push(newtx);
 

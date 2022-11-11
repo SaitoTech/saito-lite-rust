@@ -89,7 +89,11 @@ class Library extends ModTemplate {
       let request = txmsg.request;
       let sig = tx.transaction.sig;
 
+console.log("doesn the library exist?");
+
       if (library_self.library[module]) {
+
+console.log("yes");
 
 	let idx = -1;
 	let contains_item = false;
@@ -113,8 +117,8 @@ class Library extends ModTemplate {
 		id : id ,
 		title : txmsg.title ,
 		description : "" ,
-		num : 1 ,
-		available : 1 ,
+		num : 1 ,			// total
+		available : 1 ,			// total available
 		checkout : [] ,
 		sig : sig ,
 	      }
@@ -198,7 +202,7 @@ console.log(JSON.stringify(this.library));
     // remove from library
     //
     if (this.library[collection]) {
-      delete this.library[collection];
+      this.library[collection] = [];
       this.save();
     }
 

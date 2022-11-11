@@ -97,7 +97,9 @@ class Archive extends ModTemplate {
         if (!req.data.publickey) { return; }
         console.log("archive delete / purge");
         await this.deleteTransactions(req.data.type, req.data.publickey);
-        mycallback();
+        response.err = "";
+        response.txs = [];
+        mycallback(response);
       }
       if (req.data.request === "load") {
         console.log("archive load");
