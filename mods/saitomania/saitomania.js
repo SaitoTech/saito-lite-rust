@@ -80,6 +80,17 @@ class SaitoMania extends GameTemplate {
     //
     this.menu.addMenuOption("game-game", "Game");
 
+
+    this.menu.addSubMenuOption("game-game", {
+        text : "Screenshot",
+        id : "game-post",
+        class : "game-post",
+        callback : async function(app, game_mod) {
+	  alert("Sorry, not available!");
+        },
+    });
+
+
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
 

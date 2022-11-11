@@ -1212,6 +1212,16 @@ class Browser {
     });
   }
 
+  async screenshotCanvasElementBySelector(selector = "", callback = null) {
+    let canvas = document.querySelector(selector);
+    if (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      if (callback != null) {
+        callback(img);
+      }
+    }
+  }
+
   async screenshotCanvasElementById(id = "", callback = null) {
     let canvas = document.getElementById(id);
     if (canvas) {
