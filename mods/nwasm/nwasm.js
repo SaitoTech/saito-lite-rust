@@ -128,6 +128,8 @@ class Nwasm extends GameTemplate {
       id : "game-upload-rom",
       class : "game-upload-rom",
       callback : function(app, game_mod) {
+	game_mod.uploaded_rom = false;
+	game_mod.active_rom_name = "";
         game_mod.menu.hideSubMenus();
         game_mod.uploadRom(app, game_mod);
       }
@@ -233,7 +235,6 @@ class Nwasm extends GameTemplate {
   }
 
   initializeRom(bytearray) {
-console.log("REMOVE ACTIVE GAME SAVES");
     this.active_game_saves = [];
     myApp.initializeRom(bytearray);
     this.hideLibrary();
@@ -329,7 +330,21 @@ log("---->"+this.active_rom_sig+"<-----");//active_rom_sig
             //
             this.uploaded_rom = true;
 log("1 * * * * * * * * * ");
-            this.saveRomFile(this.active_rom);
+	    let similar_rom_exists = false;
+	    for (let item in this.libraries[this.app.wallet.returnPublicKey()]) {
+console.log("LOOKING FOR DUPE OF: ");
+	      if (item.title === this.active_rom_name) { similar_rom_exists = true; }
+	    }
+	    if (this.browser_active) {
+	      if (similar_rom_exists) {
+	        let c = confirm("Archive: ROM with this name already archived - is this a separate lawful copy?");
+	        if (c) {
+                  this.saveRomFile(this.active_rom);
+	        }
+	      } else {
+                this.saveRomFile(this.active_rom);
+	      }
+	    }
 log("2 * * * * * * * * * ");
           }
 
@@ -343,11 +358,9 @@ log(`=====Nwasm${this.active_rom_sig}=====`);
 log("===============================");
 
           this.app.storage.loadTransactions(("Nwasm"+this.active_rom_sig), 5, function(txs) {
-log("########=> got txs!");
             try {
 	      for (let z = 0; z < txs.length; z++) {
                 let newtx = new saito.default.transaction(txs[z].transaction);
-log("z ))) " + z);
                 nwasm_self.active_game_saves.push(newtx);
               }
             } catch (err) {

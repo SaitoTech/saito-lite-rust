@@ -137,8 +137,6 @@ console.log("yes");
 
   async handlePeerRequest(app, message, peer, mycallback = null) {
 
-console.log("RECEIVED HANDLE PEER REQUEST");
-
     if (message.request === "library collection") {
 
         let collection = null;
@@ -151,7 +149,6 @@ console.log("RECEIVED HANDLE PEER REQUEST");
       
 	if (this.library[collection]) {
 	  let publickey = peer.returnPublicKey();
-console.log("COLLECTION TO RETURN: " + JSON.stringify(this.returnCollection(collection, publickey)));
 	  mycallback(this.returnCollection(collection, publickey));
 	}
     }
@@ -314,16 +311,11 @@ console.log("AND EVERYTHING SUPPOSEDLY DELETED");
         this.save();
         this.app.storage.loadTransactionBySig(sig, mycallback);
       }
-
-console.log("load TX by sig: " + sig);
-
     }
 
   }
 
   returnCollection(collection, publickey = null) {
-
-console.log("CHECKING FOR PUBLICKEY: " + publickey);
 
     if (this.library[collection]) {
       let c = [];
@@ -333,7 +325,6 @@ console.log("CHECKING FOR PUBLICKEY: " + publickey);
         let available = item.available;
 
 	for (let z = 0; z < item.checkout.length; z++) {
-console.log("CHECKED OUT? " + item.checkout[z].publickey);
 	  if (item.checkout[z].publickey === publickey && publickey != null) {
 	    available++;
 	  }
