@@ -664,6 +664,7 @@ span.redsquare-home-red-square+span {
 
 
 .tweet-overlay-img-cont img {
+  min-width: 66vw;
   max-height: 90vh;
   max-width: 90vw;
 }
