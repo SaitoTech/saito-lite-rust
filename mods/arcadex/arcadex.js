@@ -1898,15 +1898,9 @@ class Arcade extends ModTemplate {
     }
 
     //Create invite link from the game_sig 
-    let inviteLink = window.location.href;
-    if (!inviteLink.includes("#")) {
-      inviteLink += "#";
-    }
-    if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&jid=" + game_sig);
-    } else {
-      inviteLink = inviteLink.replace("#", "?jid=" + game_sig);
-    }
+    let inviteLink = window.location.origin;
+
+    inviteLink += "/arcade?jid=" + game_sig;
 
     data.invite_link = inviteLink;
 
