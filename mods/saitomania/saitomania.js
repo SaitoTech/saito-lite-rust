@@ -1,7 +1,5 @@
 var saito = require('../../lib/saito/saito');
 var GameTemplate = require('../../lib/templates/gametemplate');
-const SaitoManiaGameRulesTemplate = require("./lib/saitomania-game-rules.template");
-const SaitoManiaGameOptionsTemplate = require("./lib/saitomania-game-options.template");
 
 
 //////////////////
@@ -33,18 +31,6 @@ class SaitoMania extends GameTemplate {
       return obj;
     }
     return super.respondTo(type);
-  }
-
-
-  returnGameRulesHTML(){
-    return SaitoManiaGameRulesTemplate(this.app, this);
-  }
-
-
-  
-  //Single player games don't allow game-creation and options prior to join
-  returnGameOptionsHTML() {
-    return SaitoManiaGameOptionsTemplate(this.app, this);
   }
 
 
