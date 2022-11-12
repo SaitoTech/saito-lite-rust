@@ -7,6 +7,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
     let leagues = league_mod.respondTo("user-leagues");
 
     let all_games = (mod.viewing_game_homepage == mod.name);
+    let number_leagues_displayed = 0;
 
     let html = `<div id="arcade-leagues" class="arcade-leagues">
 				    <div class="arcade-league-header">
@@ -21,7 +22,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
     	}
     	let gameMod = app.modules.returnModule(league.game);
     	let modimage = `/${gameMod.returnSlug()}/img/arcade/arcade.jpg`;
-
+    	number_leagues_displayed++;
         html += `
         	<div class="saito-game${(all_games)?"":" minimize"}">
 	        	${SaitoModuleImageBoxTemplate(league.name, modimage)}
@@ -70,6 +71,11 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
 
     html += `</div>`;
 
-    return html;
+    if (number_leagues_displayed > 0){
+    	return html;	
+    }else{
+    	return `<div id="arcade-leagues" class="arcade-leagues"></div>`;
+    }
+    
 }
 

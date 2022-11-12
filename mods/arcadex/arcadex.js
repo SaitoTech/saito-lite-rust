@@ -3,6 +3,7 @@ const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/main/main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
+const SaitoMobileBar = require('../../lib/saito/new-ui/saito-mobile-bar/saito-mobile-bar')
 const GameCreateMenu = require("./lib/overlay/game-create-menu");
 const ChallengeModal = require("./../../lib/saito/new-ui/modals/game-challenge/game-challenge");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
@@ -384,6 +385,10 @@ class Arcade extends ModTemplate {
 
       this.addComponent(this.main);
       this.addComponent(new SaitoHeader(app, this));
+      let mobileBar = new SaitoMobileBar(app);
+      mobileBar.leftSelector = ".saito-sidebar-left";
+      mobileBar.rightSelector = ".saito-sidebar-right";
+      this.addComponent(mobileBar);
       //this.styles.unshift("/saito/css-imports/saito-header.css");
       this.ui_initialized = true;
     }

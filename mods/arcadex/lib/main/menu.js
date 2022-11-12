@@ -48,6 +48,7 @@ class ArcadeMenu {
         let gameName = e.currentTarget.id;
         console.log(gameName);
         mod.viewing_game_homepage = gameName;
+        mod.viewing_arcade_initialization_page = false;
         mod.render(app);
 
       });
