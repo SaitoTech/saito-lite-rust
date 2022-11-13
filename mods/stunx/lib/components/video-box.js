@@ -8,27 +8,33 @@ class VideoBox {
     stream_id = null;
     stream = null;
     placeholderRendered = false;
-    constructor(app, mod) {
+    constructor(app, mod, chat_type) {
         this.app = app;
         this.mod = mod;
+        this.chat_type = chat_type;
     }
 
     render(stream, streamId, containerClass) {
         // if (!containerClass) return console.log("Please insert a container class to render the stream");
-
-
         this.stream_id = streamId;
         this.containerClass = containerClass;
         this.stream = stream
         console.log(this);
+
+
+
+        // if (this.stream === null) {
+        //     this.renderPlaceholder();
+        // }
+
         if (this.stream_id === 'local' && stream !== null) {
             this.renderStream({ muted: true });
-
+        }else {
+            this.renderStream({muted: false})
         }
 
-        if (this.stream === null) {
-            this.renderPlaceholder();
-        }
+        
+
 
 
     }
@@ -41,16 +47,29 @@ class VideoBox {
     }
 
     renderStream({ muted }) {
-        if (!document.querySelector(`#stream${this.stream_id}`)) {
-            if (this.containerClass) {
-                this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted), this.containerClass);
-            } else {
-                this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, muted));
-                this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
+        if(!this.stream){
+            this.renderPlaceholder();
+        }else {
+            if (!document.querySelector(`#stream${this.stream_id}`)) {
+                if (this.containerClass) {
+                    this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted), this.containerClass);
+                } else {
+                    this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, muted));
+                    this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
+                }
+            }
+    
+            const videoBox = document.querySelector(`#stream${this.stream_id}`);
+            console.log('chat type', this.chat_type)
+            if(this.chat_type === "audio"){
+                videoBox.insertAdjacentHTML('beforeend', `<div class="audo-stream"> <p> Audio Chat </p> <span class="lds-dual-ring"> </span></div> `);
+            }else if(this.chat_type === "video") {
+                videoBox.firstElementChild.srcObject = this.stream;
             }
         }
-        const videoBox = document.querySelector(`#stream${this.stream_id}`);
-        videoBox.firstElementChild.srcObject = this.stream;
+      
+      
+       
 
     }
 
@@ -59,6 +78,7 @@ class VideoBox {
             if (this.containerClass) {
                 this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false), this.containerClass);
             } else {
+
                 this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, false));
                 this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
             }
@@ -82,7 +102,7 @@ class VideoBox {
             case "connected":
                 if (this.stream) {
                     document.querySelector('#connection-message').parentElement.remove(document.querySelector('#connection-message'));
-                    this.renderStream({ muted: null });
+                    this.renderStream({ muted: false });
                 }
                 break;
             // case "disconnected":

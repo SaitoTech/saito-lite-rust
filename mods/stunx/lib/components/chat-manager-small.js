@@ -17,29 +17,29 @@ class ChatManagerSmall {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        this.app.connection.on('show-video-chat-request', (app, mod, type) => {
-            if (type !== "small") return
+        this.app.connection.on('show-video-chat-request', (app, mod, ui_type) => {
+            if (ui_type !== "small") return
             console.log('showing')
             this.show(app, mod);
         })
-        this.app.connection.on('render-local-stream-request', (localStream, type) => {
-            if (type !== "small") return
+        this.app.connection.on('render-local-stream-request', (localStream, ui_type) => {
+            if (ui_type !== "small") return
             console.log('rendering local strem')
             this.renderLocalStream(localStream)
         })
-        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, type) => {
-            if (type !== "small") return
+        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
+            if (ui_type !== "small") return
             this.addRemoteStream(peer, remoteStream, pc)
         });
-        this.app.connection.on('render-remote-stream-placeholder-request', (peer, type) => {
-            console.log('type ', type);
-            if (type !== "small") return
-            this.renderRemoteStreamPlaceholder(peer);
+        this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type, chat_type) => {
+            console.log('ui_type ', ui_type);
+            if (ui_type !== "small") return
+            this.renderRemoteStreamPlaceholder(peer, ui_type, chat_type);
         });
 
-        this.app.connection.on('change-connection-state-request', (peer, state, type) => {
-            if (type !== "small") return
-            this.updateConnectionState(peer, state)
+        this.app.connection.on('change-connection-state-request', (peer, state, ui_type, chat_type) => {
+            if (ui_type !== "small") return
+            this.updateConnectionState(peer, state, chat_type)
         })
     }
 
@@ -110,7 +110,6 @@ class ChatManagerSmall {
     }
 
     addRemoteStream(peer, remoteStream, pc) {
-
         this.video_boxes[peer].video_box.addStream(remoteStream);
         this.video_boxes[peer].peer_connection = pc;
 
@@ -125,9 +124,10 @@ class ChatManagerSmall {
 
 
 
-    renderRemoteStreamPlaceholder(peer) {
+    renderRemoteStreamPlaceholder(peer, ui_type, chat_type) {
+
         if (!this.video_boxes[peer]) {
-            const videoBox = new VideoBox(this.app, this.mod);
+            const videoBox = new VideoBox(this.app, this.mod, chat_type);
             this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         }
         this.video_boxes[peer].video_box.render(null, peer, null);

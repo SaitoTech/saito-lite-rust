@@ -124,7 +124,7 @@
     height: 100%;
   }
   
-  .video-box-container>div {
+  .video-box-container> #connection-message {
     color: white;
     width: 50%;
     line-height: 1.5;
@@ -134,7 +134,7 @@
     justify-content: center;
   }
   
-  .video-box-container>div>p {
+  .video-box-container> #connection-message>p {
     color: white;
   }
   
