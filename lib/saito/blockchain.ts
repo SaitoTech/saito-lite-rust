@@ -962,7 +962,7 @@ class Blockchain {
   }
 
   returnGenesisPeriod(): bigint {
-    return BigInt(this.blockchain.genesis_period);
+    return BigInt(this.blockchain.genesis_period || 0);
   }
 
   //  TODO fix
