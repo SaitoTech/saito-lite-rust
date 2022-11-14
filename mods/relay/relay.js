@@ -19,6 +19,13 @@ class Relay extends ModTemplate {
         this.busy = false;
 
         app.connection.on("send-relay-message", (obj)=>{
+            if (obj.recipient === "PEERS"){
+                let peers = [];
+                for (let i = 0; i < app.network.peers.length; i++) {
+                  peers.push(app.network.peers[i].returnPublicKey());
+                }
+                obj.recipient = peers;
+            }
             this.sendRelayMessage(obj.recipient, obj.request, obj.data);
         })
         app.connection.on("set-relay-status-to-busy", ()=>{

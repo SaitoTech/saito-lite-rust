@@ -9,6 +9,18 @@ class InvitesAppspace {
 
   render(app, mod, container = "") {
 
+console.log("MOD IS: " + mod.name);
+
+    app.connection.on("event-render-request", (invite_obj) => {
+      if (!document.querySelector(".invite-email-appspace")) {
+        app.browser.replaceElementBySelector(InvitesAppspaceTemplate(app, mod), ".appspace");
+        this.attachEvents(app, mod);
+	return;
+      }
+    });
+
+
+
     if (!document.querySelector(".invite-email-appspace")) {
       app.browser.addElementToSelector(InvitesAppspaceTemplate(app, mod), ".appspace");
     }
@@ -18,14 +30,31 @@ class InvitesAppspace {
         app.browser.addElementToSelector(InviteTemplate(app, mod, mod.invites[i]), ".invites-list");
       }
       for (let i = 0; i < mod.invites.length; i++) {
-        if (mod.invites[i].adds.includes(app.wallet.returnPublicKey())) {
-          let qs = `#invites-invitation-join-${mod.invites[i].invite_id}`;
-          document.querySelector(qs).style.display = "none";
-        }
-        if (!mod.isPendingMe(mod.invites[i], app.wallet.returnPublicKey())) {
-          let qs = `#invites-invitation-accept-${mod.invites[i].invite_id}`;
-          document.querySelector(qs).style.display = "none";
-        }
+
+	// hide join
+        let qs = `#invites-invitation-join-${mod.invites[i].invite_id}`;
+        document.querySelector(qs).style.display = "none";
+
+	// hide accept
+        qs = `#invites-invitation-accept-${mod.invites[i].invite_id}`;
+        document.querySelector(qs).style.display = "none";
+
+	for (let z = 0; z < mod.invites[i].adds.length; z++) {
+	  if (mod.invites[i].adds[z] === app.wallet.returnPublicKey()) {
+	    have_i_accepted = 0;
+	    try {
+	      if (mod.invites[i].sigs.length >= (z+1)) {
+	        if (mod.invites[i].sigs[z] != "") {
+	  	  have_i_accepted = 1;
+	        }
+	      }
+	    } catch (err) { }
+            if (have_i_accepted == 0) {
+              qs = `#invites-invitation-accept-${mod.invites[i].invite_id}`;
+              document.querySelector(qs).style.display = "block";
+            }
+	  }
+	}
       }
     }
 
@@ -37,13 +66,10 @@ class InvitesAppspace {
   attachEvents(app, mod) {
 
     document.getElementById("invites-new-invite").onclick = (e) => {
-
       let sc = new SaitoScheduler(app, mod);
       sc.render(app, mod, function(data) {
-        let gc = new GameCreator(app, mod);
-        gc.render(app, mod);
+        //Need some callback???
       });
-
     }
 
     //
@@ -61,15 +87,26 @@ class InvitesAppspace {
     //
     // buttons to respond
     //
-    // document.querySelectorAll(".invites-invitation-accept").forEach((el) => {
-    //   el.onclick = (e) => {
-    //     let index = el.getAttr("data-id");
-    //     alert("accept: " + index);
-    //   }
-    // });
+    document.querySelectorAll(".invites-invitation-accept").forEach((el) => {
+       el.onclick = (e) => {
+         let sig = e.currentTarget.getAttribute("data-id");
+         let idx = -1;
+	 for (let i = 0; i < mod.invites.length; i++) {
+	   if (mod.invites[i].invite_id === sig) { idx = i; }
+	 }
+	 if (idx == -1) { alert("ERROR: cannot find invite!"); }
+	 let invite_obj = mod.invites[idx];
+console.log("INVITE OBJ is: " + JSON.stringify(invite_obj));
+	 mod.createAcceptTransaction(invite_obj);
+         alert("sent accept!");
+         let qs = `#invites-invitation-accept-${mod.invites[idx].invite_id}`;
+         document.querySelector(qs).style.display = "none";
+       }
+    });
+
     // document.querySelectorAll(".invites-invitation-cancel").forEach((el) => {
     //   el.onclick = (e) => {
-    //     let index = el.getAttr("data-id");
+    //     let index = e.currentTarget.getAttribute("data-id");
     //     alert("cancel: " + index);
     //   }
     // });

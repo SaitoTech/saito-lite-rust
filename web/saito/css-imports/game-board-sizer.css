@@ -21,7 +21,7 @@
   -webkit-appearance: none;
   width: 100%;
   border: 1px solid var(--saito-primary);
-  border-radius: 5px;
+  border-radius: 0.5rem;
   margin: 1.25rem;
   z-index: 99999;
   padding: 1rem;

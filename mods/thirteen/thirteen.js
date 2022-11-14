@@ -62,15 +62,10 @@ class Thirteen extends GameTemplate {
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);
 
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -80,7 +75,7 @@ class Thirteen extends GameTemplate {
       }
     });
 
-    this.menu.addMenuOption({
+    this.menu.addSubMenuOption("game-info", {
       text : "Cards",
       id : "game-cards",
       class : "game-cards",

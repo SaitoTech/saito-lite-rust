@@ -47,6 +47,11 @@ pre {
   display: inline;
 }
 
+.saito-active-key {
+  border-bottom: 1px dashed var(--saito-primary);
+  display: inline !important;
+}
+
 /* ----------------------------------------------------------------
  Link
 -----------------------------------------------------------------*/

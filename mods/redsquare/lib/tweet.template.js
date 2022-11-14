@@ -9,13 +9,15 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
   let tweet_text = "";
   let link_preview = '';
   let youtube_preview = "";
+  let apparent_replies = tweet.children.length;
+  if (tweet.num_replies > apparent_replies) { apparent_replies = tweet.num_replies; }
 
   if (typeof tweet.tx.msg.data.images != 'undefined' && tweet.tx.msg.data.images.length > 0) {
     let imgs = tweet.tx.msg.data.images;
-    tweet_img += `<div class="redsquare-image-container">`;
+    tweet_img += `<div class="redsquare-image-container" data-img-count="${imgs.length}">`;
     let img_class = (imgs.length > 1) ? 'tweet-multiple-img' : '';
     for (let i = 0; i < imgs.length; i++) {
-      tweet_img += `<div  data-id='${tweet.tx.transaction.sig}' id='tweet-img-${tweet.tx.transaction.sig}' class='${img_class} tweet-img tweet-img-${tweet.tx.transaction.sig} ' style="background-image: url(${imgs[i]});"></div>`;
+      tweet_img += `<div data-index='${i+1}'  data-id='${tweet.tx.transaction.sig}' id='tweet-img-${tweet.tx.transaction.sig}' class='${img_class} tweet-img tweet-img-${tweet.tx.transaction.sig} ' style="background-image: url(${imgs[i]});"></div>`;
     }
     tweet_img += `</div>`;
   }
@@ -74,7 +76,7 @@ console.log("Error processing image/link: " + err);
   let saito_tweet_retweeted = "saito-tweet-no-activity";
   let saito_tweet_flagged = "saito-tweet-no-activity";
 
-  if (tweet.children.length > 0) { saito_tweet_replied = "saito-tweet-activity"; }
+  if (apparent_replies > 0) { saito_tweet_replied = "saito-tweet-activity"; }
   if (tweet.num_likes > 0) { saito_tweet_liked = "saito-tweet-activity" }
   if (tweet.num_retweets > 0) { saito_tweet_retweeted = "saito-tweet-activity" }
   if (tweet.flagged > 0) { saito_tweet_flagged = "saito-tweet-activity" }
@@ -86,7 +88,7 @@ console.log("Error processing image/link: " + err);
     if (tweet.notice != "") {
       html += `<div class="redsquare-item-notice">${tweet.notice}</div>`;
     }
-    html += SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline);
+    html += SaitoUser(app, tweet.tx.transaction.from[0].add, userline);
   }
   html += `
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
@@ -99,7 +101,7 @@ console.log("Error processing image/link: " + err);
 
   html += `
     <div class="tweet-body">
-      <div class="tweet" id="tweet-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}" >${app.browser.sanitize(tweet_text)}</div>
+      <div class="tweet" id="tweet-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}" >${app, mod, app.browser.sanitize(tweet_text)}</div>
       ${tweet_img}
       <div class="youtube-embed-container">${youtube_preview}</div>
       <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
@@ -108,7 +110,7 @@ console.log("Error processing image/link: " + err);
   if (include_controls == 1) {
     html += `
         <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
-           <div class="tweet-tool tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig} ${saito_tweet_replied}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
+           <div class="tweet-tool tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig} ${saito_tweet_replied}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${apparent_replies}</span> <i class="far fa-comment"></i></div>
            <div class="tweet-tool tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig} ${saito_tweet_retweeted}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">${tweet.num_retweets || 0}</span> <i class="fa fa-repeat"></i></div>
            <div class="tweet-tool tweet-tool-like tweet-like-${tweet.tx.transaction.sig} ${saito_tweet_liked}"><span class="tweet-tool-like-count  tweet-tool-like-count-${tweet.tx.transaction.sig}">${tweet.num_likes || 0}</span> <i class="far fa-heart"></i></div>
            <div class="tweet-tool tweet-tool-share tweet-share-${tweet.tx.transaction.sig}"><i class="fa fa-arrow-up-from-bracket"></i></div>

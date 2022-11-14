@@ -40,6 +40,8 @@ class Storage {
 
   loadTransactions(type = "all", num = 50, mycallback) {
 
+console.log("loading transactions...");
+
     const message = "archive";
     const data: any = {};
     data.request = "load";
@@ -47,7 +49,51 @@ class Storage {
     data.num = num;
     data.publickey = this.app.wallet.returnPublicKey();
 
+console.log("sending archive request...");
+
     this.app.network.sendRequestWithCallback(message, data, function (obj) {
+
+console.log("received response");
+
+      let txs = [];
+      if (obj) {
+        if (obj.txs) {
+
+console.log("received response 2");
+
+	  for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+	    tx.optional = {};
+	    if (obj.txs[i].optional) {
+	      try { tx.optional = JSON.parse(obj.txs[i].optional); } catch (err) { console.log("error loading optional data into tx"); }
+	    }
+	    txs.push(tx);
+	  }
+        }
+      }
+      mycallback(txs);
+    });
+  }
+
+  loadTransactionBySig(sig, mycallback) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "load_sig";
+    data.sig = sig;
+
+    this.app.network.sendRequestWithCallback(message, data, function (obj) {
+      if (obj == undefined) {
+        mycallback([]);
+        return;
+      }
+      if (obj.txs == undefined) {
+        mycallback([]);
+        return;
+      }
+      if (obj.txs.length == 0) {
+        mycallback([]);
+        return;
+      }
       let txs = [];
       if (obj) {
         if (obj.txs) {
@@ -192,13 +238,20 @@ class Storage {
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
   saveTransaction(tx) {
+    console.log("savig tx 1");
     const txmsg = tx.returnMessage();
     const message = "archive";
     const data: any = {};
     data.request = "save";
     data.tx = tx;
     data.type = txmsg.module;
+    console.log("savig tx 2");
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
+    console.log("savig tx 3");
+
+    this.app.connection.emit("save-transaction", tx);
+console.log("save-transaction'd the tx");
+
   }
   saveTransactionByKey(key, tx) {
     const txmsg = tx.returnMessage();
@@ -209,6 +262,8 @@ class Storage {
     data.key = key;
     data.type = txmsg.module;
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
+
+    this.app.connection.emit("save-transaction", tx);
   }
 
   /**

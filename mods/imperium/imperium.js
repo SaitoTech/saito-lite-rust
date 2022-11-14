@@ -11666,14 +11666,10 @@ ACTION CARD - types
     //
     // menu
     //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
+
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
     this.menu.addSubMenuOption("game-game", {
       text : "Save",
       id : "game-save",
@@ -11684,7 +11680,7 @@ ACTION CARD - types
 	game_mod.endTurn();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -11696,7 +11692,7 @@ ACTION CARD - types
 
 
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Rules",
       id : "game-rules",
       class : "game-rules",
@@ -11750,14 +11746,8 @@ ACTION CARD - types
     //
     // factions
     //
-    this.menu.addMenuOption({
-      text : "Factions",
-      id : "game-factions",
-      class : "game-factions",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-factions");
-      }
-    });
+    this.menu.addMenuOption("game-factions", "Factions");
+
     for (let i = 0; i < this.game.players.length; i++) {
       this.menu.addSubMenuOption("game-factions", {
         text : this.returnFactionNickname(i+1),
@@ -11773,14 +11763,8 @@ ACTION CARD - types
 
 
 
-    this.menu.addMenuOption({
-      text : "Cards",
-      id : "game-cards",
-      class : "game-cards",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-cards");
-      }
-    });
+    this.menu.addMenuOption("game-cards", "Cards");
+
     this.menu.addSubMenuOption("game-cards", {
       text : "Strategy",
       id : "game-strategy-cardlist",
@@ -11833,14 +11817,8 @@ ACTION CARD - types
 
 
 
-    this.menu.addMenuOption({
-      text : "Reference",
-      id : "game-reference",
-      class : "game-reference",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-reference");
-      }
-    });
+    this.menu.addMenuOption("game-reference", "Reference");
+    
     this.menu.addSubMenuOption("game-reference", {
       text : "Action",
       id : "game-action-cardlist",

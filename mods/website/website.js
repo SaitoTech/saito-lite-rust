@@ -1,3 +1,4 @@
+const path = require('path');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 
@@ -27,13 +28,10 @@ class Website extends ModTemplate {
   }
   
   webServer(app, expressapp, express) {
-    expressapp.use("/", express.static(`${__dirname}/../../mods/website/web`));
+    expressapp.use("/", express.static(`${__dirname}/../../mods/${this.dirname}/web`));
     // TODO: change every reference in the site from /website/* to /* and remove this line
-    expressapp.use("/website/", express.static(`${__dirname}/../../mods/website/web`));
-    expressapp.get('/website/*', async (req, res) => {
-      // use website/* here so that website.js will be initialized, i.e. we are still operating within the website module
-      res.sendFile(path.join(__dirname + '/web/subpage/index.html'));
-    });
+    expressapp.use(`/${this.dirname}/`, express.static(`${__dirname}/../../mods/${this.dirname}/web`));
   }
+
 }
 module.exports = Website;

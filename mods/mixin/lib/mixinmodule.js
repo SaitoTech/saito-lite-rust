@@ -164,7 +164,7 @@ MixinModule.prototype.renderModalSelectCrypto = function() {
       while our network is under development.
       </div>
 
-      <div class="mixin_risk_acknowledge button">i understand</div>
+      <button class="mixin_risk_acknowledge button">i understand</button>
 
     </div>
   `;

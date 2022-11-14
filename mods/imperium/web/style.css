@@ -14,6 +14,10 @@
 }
 
 
+
+#status::-webkit-scrollbar { width: 0 !important }
+
+
 .status-header > status-content ,
 .status-message > #status-content {
   line-height: 1.5em;

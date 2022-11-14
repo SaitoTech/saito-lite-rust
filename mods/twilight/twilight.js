@@ -423,17 +423,11 @@ class Twilight extends GameTemplate {
       }
     } catch (err) {}
 
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-      	game_mod.menu.showSubMenu("game-game");
-      }
-    });
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
    
     this.menu.addSubMenuOption("game-game", {
-      text : "Play Mode",
+      text : "Difficulty",
       id : "game-confirm",
       class : "game-confirm",
       callback : function(app, game_mod) {
@@ -474,7 +468,7 @@ class Twilight extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "How to Play",
       id : "game-rules",
       class : "game-rules",
@@ -484,7 +478,7 @@ class Twilight extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
@@ -517,13 +511,13 @@ class Twilight extends GameTemplate {
     });
 ****/
 
-    this.menu.addMenuOption({
-      text : "Cards",
-      id : "game-cards",
-      class : "game-cards",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-cards");
-	     }
+    this.menu.addSubMenuOption("game-info", {
+      text: "Cards",
+      id: "game-cards",
+      class: "game-cards",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-cards");
+      }
     });
     this.menu.addSubMenuOption("game-cards",{
       text: "My Hand",
@@ -563,16 +557,7 @@ class Twilight extends GameTemplate {
     });
 
 
-    this.menu.addMenuOption({
-      text : "Display",
-      id : "game-display",
-      class : "game-display",
-      callback : function(app, game_mod) {
-	       game_mod.menu.showSubMenu("game-display");
-      }
-    });
-
-    this.menu.addSubMenuOption("game-display",{
+    this.menu.addSubMenuOption("game-game",{
       text: "Language",
       id: "game-language",
       class: "game-language",
@@ -622,7 +607,7 @@ class Twilight extends GameTemplate {
       }
     });
 
-    this.menu.addSubMenuOption("game-display", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -631,15 +616,7 @@ class Twilight extends GameTemplate {
         game_mod.log.toggleLog();
       }
     });
-    this.menu.addSubMenuOption("game-display", {
-      text : "HUD",
-      id : "game-display-hud",
-      class : "game-display-hud",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.hud.toggleHud();
-      }
-    });
+
     this.menu.addChatMenu(app, this);
 
     this.menu.render(app, this);
@@ -2612,9 +2589,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["summit", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["missileenvy", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["naziscientist", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["brezhnev", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
 
       	//this.game.state.round = 1;
@@ -11450,7 +11427,7 @@ playerTurnHeadlineSelected(card, player) {
 
           let card = this.game.deck[0].cards[available_cards[i]];
 
-          if (this.modifyOps(card.ops) == selected_ops) {
+          if (this.modifyOps(card.ops, available_cards[i], opponent) == selected_ops) {
             multiple_cards = 1;
           }
 
@@ -11477,7 +11454,8 @@ playerTurnHeadlineSelected(card, player) {
           //
           let html = "<ul>";
           for (let i = 0; i < available_cards.length; i++) {
-            if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops) == selected_ops && available_cards[i] != "china") {
+console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " + this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], opponent));
+            if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], opponent) == selected_ops && available_cards[i] != "china") {
               html += `<li class="card" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
             }
           }

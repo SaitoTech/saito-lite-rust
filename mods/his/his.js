@@ -1570,16 +1570,10 @@ console.log("adding stuff!");
       }
     } catch (err) {}
 
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
 
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-	game_mod.menu.showSubMenu("game-game");
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -1609,7 +1603,7 @@ console.log("adding stuff!");
 	}
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
@@ -1618,15 +1612,8 @@ console.log("adding stuff!");
         game_mod.handleStatsMenu();
       }
     });
-    this.menu.addMenuOption({
-      text : "Info",
-      id : "game-cards",
-      class : "game-cards",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-	game_mod.menu.showSubMenu("game-cards");
-      }
-    });
+    this.menu.addMenuOption("game-cards", "Cards");
+    
     this.menu.addSubMenuOption("game-cards", {
       text : "Religion",
       id : "game-religious-conflict",
@@ -1664,15 +1651,8 @@ console.log("adding stuff!");
       }
     });
 
-    this.menu.addMenuOption({
-      text : "Factions",
-      id : "game-factions",
-      class : "game-factions",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-	game_mod.menu.showSubMenu("game-factions");
-      }
-    });
+    this.menu.addMenuOption("game-factions", "Factions");
+    
     this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburgs",

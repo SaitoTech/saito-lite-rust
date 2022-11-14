@@ -52,7 +52,7 @@
 
 /* Chat / Manager */
 
-.chat-manager-list > .saito-user > .saito-identicon-container {
+.chat-manager-list > .saito-user > .saito-identicon-box {
     padding-left: 0.7rem;
     padding-right: 0.4rem;
 }
@@ -107,6 +107,10 @@ span.redsquare-home-red-square+span {
   padding-bottom: 3rem;
 }
 
+.redsquare-list-open {
+  position: fixed;
+  top: 14rem
+}
 
 #redsquare-intersection {
   opacity: 1;
@@ -221,7 +225,6 @@ span.redsquare-home-red-square+span {
 
 .redsquare-invite-title {
   color: var(--saito-default-font-color);
-  background-color: white;
   font-weight: bold;
   font-size: 2.2rem;
   padding-top: 1rem;
@@ -665,6 +668,33 @@ span.redsquare-home-red-square+span {
   max-width: 90vw;
 }
 
+.tweet-img-icon {
+  font-size: 3rem;
+  color: #fff;
+  background: var(--saito-black-faded);
+  padding: 1.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.tweet-img-arrow-box {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tweet-overlay-img-cont > img {
+  transition: all 0.2s ease-in-out;
+}
+
+.tweet-img-arrow-box.left {
+  left: -10rem;
+}
+
+.tweet-img-arrow-box.right {
+  right: -10rem;
+}
+
 /* Hacks to stop old arcade and chat content from ruining display */
 
 .chat-box,
@@ -682,6 +712,28 @@ span.redsquare-home-red-square+span {
 
 .link-preview .redsquare-item-contents {
   display: block;
+}
+
+.saito-redsquare-actions-buttons {
+  position: relative;
+}
+
+.saito-arcade-new-game {
+  margin-bottom: 2rem;
+}
+
+.saito-game-content .saito-leaderboard {
+  margin-top: 1rem;
+}
+
+.saito-game-content .saito-leaderboard .saito-table-row {
+  grid-template-columns: 50% 50%;
+  width: 100%;
+  padding: 0.5rem 1rem;
+}
+
+.saito-game-content .saito-leaderboard .saito-table-row > div:nth-child(2) {
+  text-align: right;
 }
 
 /*  Responsive */
@@ -734,6 +786,10 @@ span.redsquare-home-red-square+span {
 
   .tweet-overlay-img-cont img {
     max-width: 100vw;
+  }
+
+  .tweet-img-icon {
+    font-size: 2rem;
   }
 
 }
@@ -833,7 +889,7 @@ span.redsquare-home-red-square+span {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border: 1px solid var(--saito-cyber-black-wash);
+  border: 1px solid var(--saito-black-faded);
 }
 
 #localStream {

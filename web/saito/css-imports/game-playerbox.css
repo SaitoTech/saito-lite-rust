@@ -26,6 +26,10 @@
   border: 1px solid silver;
 }
 
+.player-box.winner{
+ border: 2px solid gold; 
+}
+
 
 .player-box-head{
    width: 100%;

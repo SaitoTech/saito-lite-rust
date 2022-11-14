@@ -1,12 +1,12 @@
 import saito from "./saito";
 
-import * as blake3 from "blake3";
 import { Saito } from "../../apps/core";
 import Transaction, { TransactionType } from "./transaction";
 import Crypto from "./crypto";
 import Block from "./block";
 import Binary from "./binary";
 import NetworkAPI from "./networkapi";
+import hashLoader from "../../apps/core/hash-loader";
 
 test("write_read_empty_block_to_file", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -18,9 +18,7 @@ test("write_read_empty_block_to_file", async () => {
   mockApp.networkApi = networkApi;
   mockApp.crypto = crypto;
   mockApp.binary = binary;
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const block = new Block(mockApp);
   block.generateMetadata();
@@ -52,9 +50,7 @@ test("write_read_block_with_data_to_file", async () => {
   wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
   wallet.wallet.publickey = "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
 
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const block = new Block(mockApp);
   block.block.id = BigInt(10);
@@ -111,7 +107,7 @@ test("write_read_block_with_data_to_file", async () => {
 });
 
 describe("serializeForSignature", function () {
-  test("empty block", () => {
+  test("empty block", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
@@ -121,9 +117,8 @@ describe("serializeForSignature", function () {
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
-    mockApp.hash = (data: Uint8Array) => {
-      return blake3.hash(data).toString("hex");
-    };
+
+    await hashLoader(mockApp);
 
     const block = new Block(mockApp);
 
@@ -131,7 +126,7 @@ describe("serializeForSignature", function () {
     expect(buffer).toEqual(Buffer.alloc(177));
   });
 
-  test("block with data", () => {
+  test("block with data", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
@@ -141,9 +136,7 @@ describe("serializeForSignature", function () {
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
-    mockApp.hash = (data) => {
-      return blake3.hash(data).toString("hex");
-    };
+    await hashLoader(mockApp);
 
     const block = new Block(mockApp);
     block.block.id = BigInt(10);

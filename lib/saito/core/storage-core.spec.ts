@@ -3,13 +3,13 @@ import StorageCore from "./storage-core";
 
 import fs from "fs-extra";
 
-import * as blake3 from "blake3";
 import Transaction, { TransactionType } from "../transaction";
 import NetworkAPI from "../networkapi";
 import Crypto from "../crypto";
 import Binary from "../binary";
 import Wallet from "../wallet";
 import Block from "../block";
+import hashLoader from "../../../apps/core/hash-loader";
 
 test("write_read_empty_block_to_file", async () => {
   fs.emptyDirSync("../data/blocks");
@@ -23,9 +23,7 @@ test("write_read_empty_block_to_file", async () => {
   mockApp.networkApi = networkApi;
   mockApp.crypto = crypto;
   mockApp.binary = binary;
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const block = new Block(mockApp);
   block.generateMetadata();
@@ -58,9 +56,7 @@ test("write_read_block_with_data_to_file", async () => {
   wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
   wallet.wallet.publickey = "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
 
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const block = new Block(mockApp);
   block.block.id = BigInt(10);
@@ -109,9 +105,9 @@ test("write_read_block_with_data_to_file", async () => {
 
   expect(block2.transactions.length).toEqual(block.transactions.length);
 
-  console.log("prehash = "+block.prehash);
-  console.log("prev = "+block.block.previous_block_hash);
-  console.log("buffer for sig = "+block.serializeForSignature().toString("hex"));
+  console.log("prehash = " + block.prehash);
+  console.log("prev = " + block.block.previous_block_hash);
+  console.log("buffer for sig = " + block.serializeForSignature().toString("hex"));
 
   const tx2 = block2.transactions[0];
   expect(tx2.transaction.ts).toEqual(tx.transaction.ts);
@@ -129,9 +125,7 @@ test.skip("read_block_from_disk (from rust generated block)", async () => {
   mockApp.networkApi = networkApi;
   mockApp.crypto = crypto;
   mockApp.binary = binary;
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const storage = new StorageCore(mockApp);
 
@@ -146,7 +140,7 @@ test.skip("read_block_from_disk (from rust generated block)", async () => {
   expect(block2.block.burnfee).toEqual(block2.block.burnfee);
 });
 
-test.skip("rust integration",async ()=>{
+test.skip("rust integration", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const mockApp: Saito = {};
@@ -156,34 +150,29 @@ test.skip("rust integration",async ()=>{
   mockApp.networkApi = networkApi;
   mockApp.crypto = crypto;
   mockApp.binary = binary;
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const storage = new StorageCore(mockApp);
 
-
   const block = await storage.loadBlockFromDisk(
-      "./data/blocks/1658721610288-ee3d5a38ea7f2dce29c2332cb8bec457a23ae4e328725f55e3a07600bc041894.sai"
+    "./data/blocks/1658721610288-ee3d5a38ea7f2dce29c2332cb8bec457a23ae4e328725f55e3a07600bc041894.sai"
   );
 
-
-  console.log("signature = "+block.block.signature);
-  console.log("creator = "+block.block.creator);
+  console.log("signature = " + block.block.signature);
+  console.log("creator = " + block.block.creator);
 
   let result = mockApp.crypto.verifyHash(
-      block.serializeForSignature(),
-      block.block.signature,
-      block.block.creator
+    block.serializeForSignature(),
+    block.block.signature,
+    block.block.creator
   );
-expect(result).toBeTruthy();
+  expect(result).toBeTruthy();
 
-let tx = block.transactions[0];
-console.log(tx);
+  let tx = block.transactions[0];
+  console.log(tx);
 });
 
-
-test("hashing test",()=>{
+test("hashing test", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const mockApp: Saito = {};
@@ -193,12 +182,11 @@ test("hashing test",()=>{
   mockApp.networkApi = networkApi;
   mockApp.crypto = crypto;
   mockApp.binary = binary;
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
-  let h1 = Buffer.from("fa761296cdca6b5c0e587e8bdc75f86223072780533a8edeb90fa51aea597128","hex");
-  let h2 = Buffer.from("8f1717d0f4a244f805436633897d48952c30cb35b3941e5d36cb371c68289d25","hex");
-  let h3 = Buffer.concat([h1,h2]);
+  await hashLoader(mockApp);
+
+  let h1 = Buffer.from("fa761296cdca6b5c0e587e8bdc75f86223072780533a8edeb90fa51aea597128", "hex");
+  let h2 = Buffer.from("8f1717d0f4a244f805436633897d48952c30cb35b3941e5d36cb371c68289d25", "hex");
+  let h3 = Buffer.concat([h1, h2]);
   let hash = mockApp.hash(h3);
-  console.log("hash = "+hash);
+  console.log("hash = " + hash);
 });

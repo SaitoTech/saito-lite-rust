@@ -36,7 +36,7 @@ module.exports = RedSquareObserverTemplate = (app, mod) => {
 			    let gameName= gameModule.gamename || gameModule.name;
 			  
 			  	let gameState = JSON.parse(g.game_state)
-			    let numSeats = gameState?.options?.max_players || players.length;
+			    let numSeats = /*gameState?.options?.max_players ||*/ players.length;
 			    //console.log(JSON.parse(JSON.stringify(gameState)));
 			    //console.log(numSeats);
 

@@ -6,13 +6,14 @@
   width: 100%;
   min-width: min(600px, 100vw);
   max-height: 95vh;
-  border: 1px solid var(--saito-cyber-grey);
+  border: 1px solid;
   border-radius: 5px;
-  background: var(--saito-cyber-black);
   padding: 10px;
   user-select: none;
   cursor: default;
+  background: var(--saito-white);
 }
+
 
 .league-details-overlay h2 {
   text-align: center;
@@ -107,16 +108,6 @@
   text-overflow: ellipsis;
 }
 
-.newfriend {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.newfriend.online{
-  cursor: crosshair;
-  color: green;
-}
 
 .league-overview-box .info-item {
   display: flex;

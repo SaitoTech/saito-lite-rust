@@ -14,6 +14,7 @@ class Post {
     this.images = [];
     this.tweet = tweet;
     this.render_after_submit = 1;
+    this.file_event_added = false;
   }
 
   render(app, mod) {
@@ -32,23 +33,25 @@ class Post {
   attachEvents(app, mod) {
 
     let post_self = this;
-
-    app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay",
-      (file) => {
-        if (this.images.length >= 4) {
-          salert("Maximum 4 images allowed per tweet.");
-        } else {
-          let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
-          if (mod.allowed_upload_types.includes(type)) {
-            this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
+    post_self.images = [];
+    if (post_self.file_event_added == false) {
+      app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay",
+        (file) => {
+          if (this.images.length >= 4) {
+            salert("Maximum 4 images allowed per tweet.");
           } else {
-            salert("allowed file types: " + mod.allowed_upload_types.join(', '));
+            let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
+            if (mod.allowed_upload_types.includes(type)) {
+              this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
+            } else {
+              salert("allowed file types: " + mod.allowed_upload_types.join(', '));
+            }
           }
-        }
-      },
+          
+          post_self.file_event_added = true;
+        },
       false);
-
-
+    }
 
     document.querySelector('.redsquare-tweet-overlay').onclick = (e) => {
 
@@ -119,15 +122,16 @@ class Post {
           let newtx = mod.sendTweetTransaction(app, mod, data, keys);
           if (post_self.render_after_submit == 1) {
             mod.prependTweetFromTransaction(app, mod, newtx, true);
-            if (thread_id !== "") {
-              mod.renderWithChildren(app, mod, thread_id);
-            } else {
-              if (parent_id !== "") {
-                mod.renderWithChildren(app, mod, parent_id);
-              } else {
-                mod.renderMainPage(app, mod);
-              }
-            }
+            document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
+            // if (thread_id !== "") {
+            //   mod.renderWithChildren(app, mod, thread_id);
+            // } else {
+            //   if (parent_id !== "") {
+            //     mod.renderWithChildren(app, mod, parent_id);
+            //   } else {
+            //     mod.renderMainPage(app, mod);
+            //   }
+            // }
           }
           post_self.overlay.hide();
         }, 1000);
@@ -136,7 +140,10 @@ class Post {
 
     }
 
-    document.querySelector(".my-form").style.display = "none";
+    if (typeof document.querySelector(".my-form") != "undefined" && 
+      document.querySelector(".my-form") != null) {
+      document.querySelector(".my-form").style.display = "none";
+    }
     document.onclick = function (e) {
       if (typeof (e.target.classList) != 'undefined') {
         if (e.target.classList.contains('post-tweet-img-preview-close')) {
@@ -168,8 +175,6 @@ class Post {
 
     self.images.push(resized_img);
     return resized_img;
-    //    }
-
   }
 
 

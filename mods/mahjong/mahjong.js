@@ -249,17 +249,9 @@ class Mahjong extends GameTemplate {
     
     super.initializeHTML(app);
 
-    //
-    // Want Menus ?
-    //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
     this.menu.addSubMenuOption("game-game",{
       text : "Start New Game",
       id : "game-new",
@@ -270,7 +262,7 @@ class Mahjong extends GameTemplate {
         game_mod.newRound();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "How to Play",
       id : "game-intro",
       class : "game-intro",
@@ -279,7 +271,7 @@ class Mahjong extends GameTemplate {
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
@@ -585,7 +577,6 @@ class Mahjong extends GameTemplate {
 
         if (this.game.player === player){
           super.exitGame();
-          //window.location.href = "/arcade";
         }else{
           this.updateStatus("Player has exited the building");
         }
@@ -673,13 +664,7 @@ class Mahjong extends GameTemplate {
     this.loadGame(game_id);
     this.game.over = 2;
     this.saveGame(game_id);
-    //Refresh Arcade if in it
-    let arcade = this.app.modules.returnModule("Arcade");
-    if (arcade){
-      arcade.checkCloseQueue(game_id);
-      //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
-      arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
-    }
+    this.app.connection.emit("arcade-remove-game", game_id);
   }
 
 

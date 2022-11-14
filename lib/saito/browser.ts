@@ -66,8 +66,8 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-        /******
 
+/******
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {
@@ -236,13 +236,12 @@ class Browser {
         if (
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
-
           e.preventDefault();
           let public_key = e.target.getAttribute("data-id");
-          if (!public_key || public_key.length < 44) {
+          if (!public_key || !app.crypto.isPublicKey(public_key)) {
             return;
           }
-          if (public_key !== app.wallet.returnPublicKey()){
+          if (public_key !== app.wallet.returnPublicKey()) {
             let userMenu = new UserMenu(app, public_key);
             userMenu.render(app);
           }
@@ -256,6 +255,7 @@ class Browser {
 
   extractKeys(text = "") {
     let keys = [];
+    /*
     let w = text.split(/(\s+)/);
     for (let i = 0; i < w.length; i++) {
       if (w[i].length > 0) {
@@ -272,6 +272,26 @@ class Browser {
           }
         }
       }
+    }*/
+    let identifiers = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
+    let adds = text.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
+
+    if (adds) {
+      adds.forEach(add => {
+        if (this.app.crypto.isPublicKey(add) && !keys.includes(add)) {
+          keys.push(add);
+        }
+      });
+    }
+    if (identifiers) {
+      identifiers.forEach(id => {
+        let add = this.app.keys.returnPublicKeyByIdentifier(id);
+        if (this.app.crypto.isPublicKey(add)) {
+          if (!keys.includes(add)) {
+            keys.push(add);
+          }
+        }
+      });
     }
     return keys;
   }
@@ -293,7 +313,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {}
+    } catch (err) { }
     return "";
   }
 
@@ -304,7 +324,7 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) {}
+    } catch (err) { }
     return "en";
   }
 
@@ -524,7 +544,7 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
-        console.warn(`cannot find ${id} to replace, so adding to DOM`);
+        console.warn(`cannot find ${selector} to replace, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -539,7 +559,7 @@ class Browser {
       if (container) {
         this.app.browser.addElementToElement(html, container);
       } else {
-        console.warn(`cannot find ${id} to add to, so adding to DOM`);
+        console.warn(`cannot find ${selector} to add to, so adding to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -554,7 +574,7 @@ class Browser {
       if (container) {
         this.app.browser.prependElementToDom(html, container);
       } else {
-        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
+        console.warn(`cannot find ${selector} to prepend to, so adding to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
@@ -562,6 +582,7 @@ class Browser {
 
   replaceElementByClass(html, classname = "") {
     if (classname === "") {
+      console.warn("no classname provided to replace, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       let classname = "." + classname;
@@ -569,6 +590,7 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
+        console.warn(`cannot find classname ${classname} provided to prepend to, so adding direct to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -576,6 +598,7 @@ class Browser {
 
   addElementToClass(html, classname = "") {
     if (classname === "") {
+      console.warn("no classname provided to add to, so adding direct to DOM");
       this.app.browser.addElementToDom(html);
     } else {
       classname = "." + classname;
@@ -583,6 +606,7 @@ class Browser {
       if (container) {
         this.app.browser.addElementToElement(html, container);
       } else {
+        console.warn(`cannot find classname ${classname} provided to add to, so adding direct to DOM`);
         this.app.browser.addElementToDom(html);
       }
     }
@@ -590,6 +614,7 @@ class Browser {
 
   prependElementToClass(html, classname = "") {
     if (classname === "") {
+      console.warn("no classname provided to prepend to, so adding direct to DOM");
       this.app.browser.prependElementToDom(html);
     } else {
       classname = "." + classname;
@@ -597,6 +622,7 @@ class Browser {
       if (container) {
         this.app.browser.prependElementToDom(html, container);
       } else {
+        console.warn(`cannot find classname ${classname} provided to prepend to, so adding direct to DOM`);
         this.app.browser.prependElementToDom(html);
       }
     }
@@ -664,7 +690,7 @@ class Browser {
     return { year, month, day, hours, minutes };
   }
 
-  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true) {
+  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true, read_as_array_buffer = false) {
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
@@ -699,7 +725,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-            reader.readAsDataURL(file);
+	    if (read_as_array_buffer) {
+              reader.readAsArrayBuffer(file);
+	    } else {
+              reader.readAsDataURL(file);
+	    }
           });
         },
         false
@@ -713,7 +743,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-            reader.readAsDataURL(file);
+	    if (read_as_array_buffer) {
+              reader.readAsArrayBuffer(file);
+	    } else {
+              reader.readAsDataURL(file);
+	    }
           });
         },
         false
@@ -736,7 +770,11 @@ class Browser {
               reader.addEventListener("load", (event) => {
                 handleFileDrop(event.target.result);
               });
-              reader.readAsDataURL(file);
+	      if (read_as_array_buffer) {
+                reader.readAsArrayBuffer(file);
+	      } else {
+                reader.readAsDataURL(file);
+	      }
             });
           }
         },
@@ -761,8 +799,8 @@ class Browser {
   }
 
   makeDraggable(id_to_move, id_to_drag = "", dockable = false, mycallback = null) {
-    console.log("make draggable: " + id_to_drag);
-    console.log(" and move? " + id_to_move);
+    //console.log("make draggable: " + id_to_drag);
+    //console.log(" and move? " + id_to_move);
 
     try {
       const element_to_move = document.getElementById(id_to_move);
@@ -852,6 +890,7 @@ class Browser {
         document.onmousemove = function (e) {
           e = e || window.event;
           e.preventDefault();
+          const threshold = 25;
 
           mouse_current_left = e.clientX;
           mouse_current_top = e.clientY;
@@ -867,22 +906,22 @@ class Browser {
 
           //if dockable show docking edge
           if (dockable) {
-            if (element_to_move.getBoundingClientRect().x < 50) {
+            if (Math.abs(element_to_move.getBoundingClientRect().x) < threshold) {
               element_to_move.classList.add("dockedLeft");
             } else {
               element_to_move.classList.remove("dockedLeft");
             }
 
-            if (element_to_move.getBoundingClientRect().y < 50) {
+            if (Math.abs(element_to_move.getBoundingClientRect().y < threshold)) {
               element_to_move.classList.add("dockedTop");
             } else {
               element_to_move.classList.remove("dockedTop");
             }
 
             if (
-              element_to_move.getBoundingClientRect().x +
-                element_to_move.getBoundingClientRect().width >
-              window.innerWidth - 50
+              Math.abs(element_to_move.getBoundingClientRect().x +
+              element_to_move.getBoundingClientRect().width -
+              window.innerWidth) < threshold
             ) {
               element_to_move.classList.add("dockedRight");
             } else {
@@ -890,9 +929,9 @@ class Browser {
             }
 
             if (
-              element_to_move.getBoundingClientRect().y +
-                element_to_move.getBoundingClientRect().height >
-              window.innerHeight - 50
+              Math.abs(element_to_move.getBoundingClientRect().y +
+              element_to_move.getBoundingClientRect().height -
+              window.innerHeight) < threshold
             ) {
               element_to_move.classList.add("dockedBottom");
             } else {
@@ -900,20 +939,21 @@ class Browser {
             }
 
             // set the element's new position:
-
-            if (newPosX <= 0) {
+            
+            if (Math.abs(newPosX) < threshold) {
               newPosX = 0;
             }
-            if (newPosX + element_to_move.getBoundingClientRect().width >= window.innerWidth) {
+            if (Math.abs(newPosX + element_to_move.getBoundingClientRect().width - window.innerWidth) < threshold) {
               newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
             }
 
-            if (newPosY <= 0) {
+            if (Math.abs(newPosY) < threshold) {
               newPosY = 0;
             }
-            if (newPosY + element_to_move.getBoundingClientRect().height >= window.innerHeight) {
+            if (Math.abs(newPosY + element_to_move.getBoundingClientRect().height - window.innerHeight) < threshold) {
               newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
             }
+            
           }
 
           element_to_move.style.left = newPosX + "px";
@@ -1066,7 +1106,7 @@ class Browser {
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) {}
+    } catch (err) { }
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1150,7 +1190,6 @@ class Browser {
     return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
   }
 
-
   //////////////////////////////////////////////////////////////////////////////
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -1188,8 +1227,11 @@ class Browser {
       if (text !== "") {
         text = marked.parseInline(text);
 
-        //trim trailing line breaks
-        text = text.replace(/[\r<br>]+$/, "");
+        //trim trailing line breaks - 
+        // commenting it out because no need for this now
+        // because of above marked parsing
+        //text = text.replace(/[\r<br>]+$/, ""); 
+
       }
 
       text = sanitizeHtml(text, {
@@ -1258,6 +1300,76 @@ class Browser {
     }
   }
 
+  async linkifyKeys(app, mod, element) {
+    if (typeof element == "undefined") { return ;}
+    //console.log("linkifyin' " + element.id)
+    if (element.id == "") { return; }
+    let elements = element.childNodes;
+    elements.forEach(async el => {
+      const new_el = document.createElement("span");
+      if (el.childNodes.length > 0) {
+        const tags = ['P', 'SPAN', 'DIV', 'BLOCKQUOTE'];
+        if (tags.includes(el.tagName)) {
+          app.browser.linkifyKeys(el);
+        }
+      } else {
+        let html = el.textContent;
+        let identifiers = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
+        let keys = html.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
+        let mappedKeyIdentifiers = [];
+        //remove duplcates
+
+        if (!identifiers) { identifiers = [] };
+        if (!keys) { keys = [] }
+
+        if (identifiers.length + keys.length > 0) {
+          //deduplicate identifier list
+          identifiers = [...new Set(identifiers)];
+          
+          try {
+
+            identifiers.forEach(async (identifier) => {
+              let answer = this.app.keys.fetchPublicKey(identifier);
+              console.log(answer + " - " + identifier);
+              if (answer != identifier && answer != null) {
+                //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
+                html = html.replaceAll(identifier, answer);
+                mappedKeyIdentifiers[answer] = identifier;
+              }
+            });
+            //deduplicate keys list
+            keys = [...new Set(keys)];
+
+            const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
+            mappedKeyIdentifiers = Object.assign({},mappedKeyIdentifiers, answer);
+
+            keys.forEach(k => {
+              let matched = false;
+              Object.entries(mappedKeyIdentifiers).forEach(([key, value]) => {
+                if (key == k) {
+                  html = html.replaceAll(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
+                  matched = true;
+                }
+              });
+              if (!matched) {
+                html = html.replaceAll(k, `<span data-id="${k}" class="saito-active-key saito-address">${k}</span>`);
+              }
+            });
+            if (typeof el.tagName == "undefined") {
+              new_el.innerHTML = html;
+              el.replaceWith(new_el);
+            } else {
+              el.innerHTML = html;
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        };
+      }
+    })
+  };
+
+
   activatePublicKeyObserver(app) {
     let mutaionObserver = new MutationObserver((entries) => {
       entries.forEach((entry) => {
@@ -1277,9 +1389,9 @@ class Browser {
                 let identifier = app.keys.returnIdentifierByPublicKey(address, true);
                 if (identifier) {
                   try {
-                      document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
-                        item.innerHTML = identifier;
-                      });
+                    document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
+                      item.innerHTML = identifier;
+                    });
                   } catch (err) {
                     console.log("An error occurred with adding identifiers ", err);
                   }
@@ -1287,7 +1399,7 @@ class Browser {
               }
             });
           }
-          
+
         } else {
           if (node && node.children && Array.from(node.children).length > 0) {
             Array.from(node.children).forEach((child_node) => {
@@ -1304,7 +1416,7 @@ class Browser {
     });
   }
 
-  async resizeImg(img, targetSize = 512, maxDimensions = {w: 1920, h: 1024}) {
+  async resizeImg(img, targetSize = 512, maxDimensions = { w: 1920, h: 1024 }) {
     let self = this;
     var dimensions = await this.getImageDimensions(img);
     var new_img = "";

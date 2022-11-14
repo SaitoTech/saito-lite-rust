@@ -67,6 +67,11 @@ class Observer extends ModTemplate {
       }
     });
 
+    app.connection.on("observer-render-arcade-tabs", (obj)=>{
+      this.renderArcadeTab(app, obj);
+    });
+
+
     if (this.app.BROWSER){
       return;
     }
@@ -92,25 +97,43 @@ class Observer extends ModTemplate {
     }, 24*60*60*1000);
   }
 
-  renderArcadeTab(app, mod){
+  renderArcadeTab(app, params){
     if (!app.BROWSER) { return; }
     
-    let elem_id = "observer-hero";
+    let numShown = 0;
+    let elem_id = params.selector || "observer-hero";
     let tab = document.getElementById(elem_id);
     if (tab){
       tab.innerHTML = "";
       try{
         this.games.forEach((observe) => {
-          let ob = new ArcadeObserver(app, observe);
-          ob.render(app, this, elem_id);
+          let print_game = true;
+          if (params.game_filter && params.game_filter !== observe.module){
+            print_game = false;
+          }
+
+          if (params.live_games !== null){
+            if ((params.live_games && observe.game_status == "over") ||
+                (!params.live_games && observe.game_status == "live")){
+              print_game = false;
+            }
+          }
+
+          if (print_game){
+            let ob = new ArcadeObserver(app, observe);
+            ob.render(app, this, elem_id);
+            numShown++
+          }
+
         });
+
+        if (numShown == 0){
+          app.browser.addElementToId(`<div class="saito-carousel"></div>` ,elem_id);
+        }
       }catch(err){
         console.log(err);
       }
 
-    }else{
-      //Probably on game_initialization screen
-      //console.error("Observer cannot render in Arcade");
     }
   }
 
@@ -143,7 +166,7 @@ class Observer extends ModTemplate {
       game: game.module,
       options: gameState.options,
       players: players,
-      players_needed: gameState?.options?.max_players || players.length,
+      players_needed: /*gameState?.options?.max_players ||*/ players.length,
       //extra observer info
       latest_move: game.latest_move,
       step: game.step,
@@ -333,7 +356,12 @@ class Observer extends ModTemplate {
           this.games[i].latest_move = msg.step.ts;
         }
         if (msg.request == "gameover" || msg.request == "stopgame"){
+          console.log("Observer: game over");
           this.games[i].game_status = "over";
+          if (msg.winner){
+            console.log("Observer: winner is: " + msg.winner);
+            this.games[i].winner = msg.winner;
+          }
         }
 
         this.app.connection.emit("observer-add-game-render-request",this.games);

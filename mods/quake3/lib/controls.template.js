@@ -3,103 +3,113 @@ module.exports = (app, mod, ui) => {
   let html = `
 
     <div id="quake-controls" class="quake-controls">
+
+    <div id="screen-cover"">
+        <div id="cover-content">
+          <center>Press button for:</center>
+          <center id="cover-indicator"></center>
+        </div>
+    </div>
+
+    <div id="table-div">
     <table oncontextmenu="return false">
-        <tr id="+attack">
-            <td class="quake-control-trigger" data-id="+attack">Attack</td>
-            <td> </td>
-        <tr id="+zoom">
-            <td class="quake-control-trigger" data-id="+zoom">Zoom</td>
-            <td> </td>
-            
-        <tr class="blank_row">
-            <td colspan="3"></td>
-        </tr>
 
-        <tr id="+forward">
-            <td class="quake-control-trigger" data-id="+forward">Move Forward</td>
+        <tr id="+attack" class="quake-control-trigger">
+            <td>Attack</td>
             <td> </td>
-        <tr id="+back">
-            <td class="quake-control-trigger" data-id="+back">Move Backward</td>
+        <tr id="+zoom" class="quake-control-trigger">
+            <td>Zoom</td>
             <td> </td>
-        <tr id="+moveleft">
-            <td class="quake-control-trigger" data-id="+moveleft">Move Left</td>
+        <tr id="+forward" class="quake-control-trigger">
+            <td>Move Forward</td>
             <td> </td>
-        <tr id="+moveright">
-            <td class="quake-control-trigger" data-id="+moveright">Move Right</td>
+        <tr id="+back" class="quake-control-trigger">
+            <td>Move Backward</td>
             <td> </td>
-        <tr id="+moveup">
-            <td class="quake-control-trigger" data-id="+moveup">Jump</td>
+        <tr id="+moveleft" class="quake-control-trigger">
+            <td>Move Left</td>
             <td> </td>
-        <tr id="+speed">
-            <td class="quake-control-trigger" data-id="+speed">Walk</td>
+        <tr id="+moveright" class="quake-control-trigger">
+            <td>Move Right</td>
             <td> </td>
-        <tr id="+movedown">
-            <td class="quake-control-trigger" data-id="+movedown">Crouch</td>
+        <tr id="+moveup" class="quake-control-trigger">
+            <td>Jump</td>
             <td> </td>
-                        
-        <tr class="blank_row">
-            <td colspan="3"></td>
-        </tr>
-
-        <tr id="weapnext">
-            <td class="quake-control-trigger" data-id="weapnext">Next Weapon </td>
+        <tr id="+speed" class="quake-control-trigger">
+            <td>Walk</td>
             <td> </td>
-        <tr id="weapprev">
-            <td class="quake-control-trigger" data-id="weapprev">Previous Weapon </td>
+        <tr id="+movedown" class="quake-control-trigger">
+            <td>Crouch</td>
             <td> </td>
-        <tr id="weapon 1">
-            <td class="quake-control-trigger" data-id="weapon 1">Gauntlet (melee) </td>
+        <tr id="weapnext" class="quake-control-trigger">
+            <td>Next Weapon </td>
             <td> </td>
-        <tr id="weapon 2">
-            <td class="quake-control-trigger" data-id="weapon 2">Machine Gun</td>
+        <tr id="weapprev" class="quake-control-trigger">
+            <td>Previous Weapon </td>
             <td> </td>
-        <tr id="weapon 3">
-            <td class="quake-control-trigger" data-id="weapon 3">Super Shotgun</td>
+        <tr id="weapon 1" class="quake-control-trigger">
+            <td>Gauntlet (melee) </td>
             <td> </td>
-        <tr id="weapon 4">
-            <td class="quake-control-trigger" data-id="weapon 4">Grenade Launcher</td>
+        <tr id="weapon 2" class="quake-control-trigger">
+            <td>Machine Gun</td>
             <td> </td>
-        <tr id="weapon 5">
-            <td class="quake-control-trigger" data-id="weapon 5">Rocket Launcher</td>
+        <tr id="weapon 3" class="quake-control-trigger">
+            <td>Super Shotgun</td>
             <td> </td>
-        <tr id="weapon 6">
-            <td class="quake-control-trigger" data-id="weapon 6">Lightning Gun</td>
+        <tr id="weapon 4" class="quake-control-trigger">
+            <td>Grenade Launcher</td>
             <td> </td>
-        <tr id="weapon 7">
-            <td class="quake-control-trigger" data-id="weapon 7">Railgun</td>
+        <tr id="weapon 5" class="quake-control-trigger">
+            <td>Rocket Launcher</td>
             <td> </td>
-        <tr id="weapon 8">
-            <td class="quake-control-trigger" data-id="weapon 8">Plasma Gun</td>
+        <tr id="weapon 6" class="quake-control-trigger">
+            <td>Lightning Gun</td>
             <td> </td>
-        <tr id="weapon 9">
-            <td class="quake-control-trigger" data-id="weapon 9">BFG</td>
+        <tr id="weapon 7" class="quake-control-trigger">
+            <td>Railgun</td>
             <td> </td>
-                        
-        <tr class="blank_row">
-            <td colspan="3"></td>
-        </tr>
-
-        <tr id="messagemode">
-            <td class="quake-control-trigger" data-id="messagemode">Game Chat</td>
+        <tr id="weapon 8" class="quake-control-trigger">
+            <td>Plasma Gun</td>
             <td> </td>
-        <tr id="messagemode2">
-            <td class="quake-control-trigger" data-id="messagemode2">Team Chat</td>
+        <tr id="weapon 9" class="quake-control-trigger">
+            <td>BFG</td>
             <td> </td>
-        <tr id="+scores">
-            <td class="quake-control-trigger" data-id="+scores">Scoreboard</td>
+        <tr id="messagemode" class="quake-control-trigger">
+            <td>Game Chat</td>
             <td> </td>
-        <tr id="togglemenu">
-            <td class="quake-control-trigger" data-id="togglemenu">Game Menu</td>
+        <tr id="messagemode2" class="quake-control-trigger">
+            <td>Team Chat</td>
             <td> </td>
-        <tr id="screenshot">
-            <td class="quake-control-trigger" data-id="tweet">Tweet (in-game)</td>
+        <tr id="+scores" class="quake-control-trigger">
+            <td>Scoreboard</td>
+            <td> </td>
+        <tr id="togglemenu" class="quake-control-trigger">
+            <td>Game Menu</td>
+            <td> </td>
+        <tr id="screenshot" class="quake-control-trigger">
+            <td>Tweet (in-game)</td>
             <td> </td>
         </tr>
     </table>
-    <button type="button" id="finish-controls-button">Finish</button>
     </div>
-
-
+    <div id="controls-bottom">
+    
+      <label for="sensitivity">Mouse sensitivity</label>
+      <input type="field" class="sensitivity" id="sensitivity_indicator" value="5">
+      <input type="range" id="sensitivity" class="sensitivity" min="0" max="10" step="0.01">
+  
+      <br>
+      
+      <label for="cg_fov">Field of View</label>
+      <input type="field" class="cg_fov" id="fov_indicator" value="90">
+      <input type="range" id="cg_fov" class="cg_fov" min="10" max="200" value="90">
+  
+      <div>
+        <button type="button" id="finish-controls-button">Finish</button>
+        <button type="button" id="default-controls-button">Restore Defaults</button>
+      </div>
+    </div>
+  </div>
   `;
 
   return html;

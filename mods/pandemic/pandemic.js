@@ -13,8 +13,8 @@ class Pandemic extends GameTemplate {
   constructor(app) {
     super(app);
 
-    this.name = "CDC";
-    this.gamename = "Centers for Disease Control"
+    this.name = "Epidemic";
+    this.gamename = "Epidemic"
     this.description = `${this.gamename} is a cooperative multiplayer board game in which players work together to try and fend off a global <em>pandemic</em>.`;
     this.categories = "Games Boardgame Strategy Cooperative";
     this.maxPlayers = 4;
@@ -156,15 +156,10 @@ class Pandemic extends GameTemplate {
 
     let pandemic_self = this;
 
-    this.menu.addMenuOption({
-      text: "Game",
-      id: "game-game",
-      class: "game-game",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
+    this.menu.addSubMenuOption("game-info", {
       text: "Welcome",
       id: "game-welcome",
       class: "game-welcome",
@@ -222,7 +217,7 @@ class Pandemic extends GameTemplate {
       }
     });*/
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Log",
       id: "game-log",
       class: "game-log",
@@ -231,7 +226,7 @@ class Pandemic extends GameTemplate {
         game_mod.log.toggleLog();
       },
     });
-    this.menu.addMenuOption({
+    this.menu.addSubMenuOption("game-info",{
       text: "Cards",
       id: "game-cards",
       class: "game-cards",

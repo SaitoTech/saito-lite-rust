@@ -2,7 +2,7 @@
 Saito Table
 -----------------------------------------------------------------*/
 .saito-table {
-    background-color: #fff;
+    /*background-color: #fff;*/
     display: grid;
     grid-template-columns: auto;
     width: 100%;
@@ -10,8 +10,13 @@ Saito Table
 }
 
 .saito-table-row {
-    align-items: center;
-    background-color: var(--saito-gray);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3rem, min-content));
+  align-items: center;
+}
+
+.saito-table-row.odd {
+    background: var(--saito-gray);
 }
 
 .saito-address {
@@ -27,19 +32,21 @@ Saito Table
 }
 
 /* ----------------------------------------------------------------
-Saito Leaderboard
+     RED SQUARE SIDEBAR  Saito Leaderboard
 -----------------------------------------------------------------*/
-.saito-leaderboard .saito-table .saito-table-row {
+.redsquare-sidebar-league .saito-table-row {
     display: grid;
     grid-template-columns: 1fr min-content;
     padding-left: 1rem;
     padding-right: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-    border-width: 2px 0;
+    cursor: pointer;
+
     border-color: #fff;
     border-style: solid;
-    cursor: pointer;
+    border-width: 2px 0;
+    background-color: var(--saito-gray);
 }
 
 
@@ -49,16 +56,11 @@ Saito Leaderboard
 }
 
 
-
-
 .saito-table-header {
   display: grid;
-  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
   grid-column-gap: 1rem;
   margin-bottom: 1rem;
-  position: absolute;
-  left: 0px;
-  top: 0px;
+  font-weight: bold;
   width: 100%;
   text-align: center;
 }
@@ -72,11 +74,27 @@ Saito Leaderboard
   text-align: center;
 }
 
-.saito-table-row {
-  display: grid;
+
+
+/* ----------------------------------------------------------------
+     LEAGUE DETAILS OVERLAY  Saito Leaderboard
+-----------------------------------------------------------------*/
+
+.leaderboard-box .saito-table-header {
   display: grid;
   grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
   grid-column-gap: 1rem;
-  margin-bottom: 0.5rem;
-  background-color: var(--saito-gray);
+  margin-bottom: 1rem;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  text-align: center;
 }
+
+.leaderboard-box .saito-table-row{
+  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
+  grid-column-gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+

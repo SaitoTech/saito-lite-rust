@@ -60,7 +60,7 @@ class Scotland extends GameTemplate {
 
     this.name = "Scotland";
     this.gamename = "Scotland Yard";
-    this.description = `Scotland Yard is a cat-and-mouse detective game set in London, England. Criminal mastermind Mister X must wind his way through the city while hiding from Scotland Yard.<p></p>The Saito edition of Scotland Yard is modified slightly to improve the balance of gameplay over the traditional version. If played with less than six players, the players controlling the detectives will control multiple detectives to increase the effectiveness of surround-and-capture strategies.`;
+    this.description = `Scotland Yard is a cat-and-mouse detective game set in London, England. Criminal mastermind Mister X must wind his way through the city while hiding from Scotland Yard.`;
     this.categories = "Games Boardgame Strategy";
     //
     // this sets the ratio used for determining
@@ -106,15 +106,10 @@ class Scotland extends GameTemplate {
 
     super.initializeHTML(app);
     
-    this.menu.addMenuOption({
-      text: "Game",
-      id: "game-game",
-      class: "game-game",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
+    this.menu.addSubMenuOption("game-info", {
       text: "How to Play",
       id: "game-rules",
       class: "game-rules",
@@ -123,7 +118,7 @@ class Scotland extends GameTemplate {
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       },
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Log",
       id: "game-log",
       class: "game-log",
@@ -133,14 +128,8 @@ class Scotland extends GameTemplate {
       },
     });
 
-    this.menu.addMenuOption({
-      text: "Clues",
-      id: "game-clues",
-      callback: function(app, game_mod){
-        game_mod.menu.showSubMenu("game-clues");
-      }
-    });
-
+    this.menu.addMenuOption("game-clues", "Clues");
+    
     this.menu.addSubMenuOption("game-clues",{
       text: "Clues",
       id: "game-clue-list",

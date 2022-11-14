@@ -4,8 +4,8 @@ const QuakeControls = require('./lib/controls');
 
 
 class Quake3 extends GameTemplate {
-
-  constructor(app) {
+ 
+ constructor(app) {
 
     super(app);
 
@@ -15,10 +15,17 @@ class Quake3 extends GameTemplate {
     this.categories = "Games Entertainment";
     this.publisher_message = "Quake 3 is owned by ID Software. This module is made available under an open source license. Your browser will use data-files distributed freely online but please note that the publisher requires purchase of the game to play. Saito recommends GOG.com for purchase.";
 
-    this.controls = this.returnDefaults();
+    this.controls = {};
+    this.controls = new QuakeControls(app, this);
 
     this.minPlayers      = 1;
     this.maxPlayers      = 4;
+
+    //
+    // something specific for this implementation
+    //
+    this.crypto_msg      = "tribute per kill";
+
 
     // ask chat not to start on launch
     this.request_no_interrupts = true;
@@ -182,7 +189,6 @@ class Quake3 extends GameTemplate {
       //
       // when we join a game, we remember the name
       //
-      this.game.player_name_identified = false;
       this.game.player_name = "";
       this.game.all_player_names = [];
 
@@ -195,6 +201,11 @@ class Quake3 extends GameTemplate {
         }
       }
     }
+
+    //
+    // if older game, force re-registration on reload
+    //
+    this.game.player_name_identified = false;
   }
 
 
@@ -202,6 +213,7 @@ class Quake3 extends GameTemplate {
 
     if (app.BROWSER == 0) { return; }
     super.initialize(app);
+
 
     if (this.browser_active == 1) {
       //
@@ -221,7 +233,6 @@ class Quake3 extends GameTemplate {
     }
   }
 
-
   //
   // for the love of God don't add console.logs within this function
   //
@@ -232,8 +243,24 @@ class Quake3 extends GameTemplate {
     //
     if (this.game.player_name_identified == false) {
       if (logline.indexOf("entered the game") > 0) {
-        let name = this.app.wallet.returnPublicKey().toLowerCase();
-	this.registerPlayerName();
+
+        let q3self = this;
+
+	setTimeout(function() {
+	  q3self.registerPlayerName();
+	}, 500);
+      
+	// load & apply saved controls while here
+	// since this block only happens on client startup
+try {
+	setTimeout(function() {
+	  this.controls.loadSavedControls();
+	  this.controls.writeControls();
+	  this.controls.applyControls();
+	}, 1500);
+} catch (err) {
+  console.log("ERROR LOADING CONTROLS: " + err);
+}
       }
     }
 
@@ -243,16 +270,26 @@ class Quake3 extends GameTemplate {
     if (this.game?.all_player_names) {
     for (let z = 0; z < this.game.all_player_names.length; z++) {
       let pn = this.game.all_player_names[z].toLowerCase().substring(0, 15);
+
+//log("1::: " + logline);
+
       let pos = logline.indexOf(pn);
         if (pos == 0) {
+//log("2::: " + logline);
           for (let i = 0; i < this.game.all_player_names.length; i++) {
             let pn2 = this.game.all_player_names[i].toLowerCase().substring(0, 15);
+//log("searching for pn2: " + pn2);
 	    if (pn !== pn2) {
+//log("not the same as pn");
               if (logline.indexOf(pn2) > -1) {
+//log("3::: " + logline);
 	        let victim = z;
 	        let killer = i;
+//log(this.game.players[victim] + " --- " + this.app.wallet.returnPublicKey());
 	        if (this.game.players[victim] === this.app.wallet.returnPublicKey()) {
+console.log("THIS ONE IS ON US");
                   this.addMove("player_kill\t"+this.game.players[victim]+"\t"+this.game.players[killer]);
+                  this.addMove(`ROUNDOVER\t${JSON.stringify([this.game.players[killer]])}\t${JSON.stringify([this.game.players[victim]])}`);
                   this.endTurn();
 	        }
 	      }
@@ -343,25 +380,22 @@ class Quake3 extends GameTemplate {
     //
     // ADD MENU
     //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
+    this.menu.addMenuOption("game-game", "Game");
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuIcon({
       text : "Controls",
       id : "game-controls",
       class : "game-game-controls",
       callback : async function(app, game_mod) {
+
         game_mod.menu.hideSubMenus();
-        let controls = new QuakeControls(app, game_mod);
-	controls.render(app, game_mod);
+	//if (!game_mod.controls) {game_mod.controls = new QuakeControls(app, game_mod);}
+        //game_mod.controls = new QuakeControls(app, game_mod);
+	game_mod.controls.overlay.hide();
+	game_mod.controls.render(app, game_mod);
     	SAITO_COMPONENT_ACTIVE = true;
     	SAITO_COMPONENT_CLICKED = true;
+	
       },
     });
 
@@ -405,12 +439,10 @@ class Quake3 extends GameTemplate {
 
 if (app.BROWSER != 0) {
     if (this.game.options.server === "as") {
-alert("Asian Game Server - use advanced options to change");
       this.content_server = "q3.saito.io";
       this.game_server = "q3.saito.io:27960";
     }
     if (this.game.options.server === "na") {
-alert("North American Game Server - use advanced options to change");
       this.content_server = "q3-us.saito.io";
       this.game_server = "q3-us.saito.io:27959";
     }
@@ -473,7 +505,6 @@ return;
     //var args = ['+set', 'fs_cdn', 'content.quakejs.com:80', '+set', 'sv_master1', 'master.quakejs.com:27950']; //original args to list the servers from master.quakejs.com
     //var args = ['+set', 'fs_cdn', 'content.quakejs.com:80', '+set', 'sv_master1', 'master.quakejs.com:27950', '+connect', 'YOUR_SERVER_HERE:27960']; //additional +connect arguement to connect to a specific server
     //var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
-    //var args = ['+set', 'fs_cdn', '18.163.184.251:80', '+set', 'sv_enable_bots', '1', '+connect', '18.163.184.251:27960']; //custom args list targeting a local content server and local game server both at the address 'quakejs'
     var args = ['+set', 'fs_cdn', this.content_server, '+connect', this.game_server];
     args.push.apply(args, getQueryCommands());
 
@@ -484,11 +515,6 @@ return;
 
   }
 
-
-
-  returnDefaults() {
-    return {};
-  }
 
   load() {
     this.quake3 = this.app.options.quake3;
@@ -502,4 +528,3 @@ return;
 }
 
 module.exports = Quake3;
-

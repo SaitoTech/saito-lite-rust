@@ -116,7 +116,7 @@ Saito backdrop
 .saito-switch-slider:before {
     position: absolute;
     content: "";
-    height: 1.2rem;
+    height: 1.3rem;
     width: 1.5rem;
     left: .132rem;
     bottom: 1.5px;
@@ -141,11 +141,32 @@ input:checked+.saito-switch-slider:before {
 
 /* Rounded sliders */
 .saito-switch-slider.round {
-    border-radius: 34px;
+    border-radius: 0.5rem;
 }
 
 .saito-switch-slider.round:before {
     border-radius: 50%;
 }
 
+
+/*********************
+ * Mouseover tool tips
+**********************/
+.tip:hover .tiptext {
+  visibility: visible;
+}
+
+.tiptext {
+  visibility: hidden;
+  position: absolute;
+  box-sizing: content-box !important;
+  z-index: 10;
+  width: 90%;
+  min-width: 300px;
+  max-width: 750px;
+  padding: 0.25em 0.5em;
+  background-color: #fefefe;
+  border-bottom: 1px solid var(--saito-primary);
+  font-style: italic;
+}
 

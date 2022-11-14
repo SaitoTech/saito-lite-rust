@@ -8,7 +8,7 @@ class QuakeControls {
     this.mod = mod;
     this.overlay = new SaitoOverlay(app);
     this.current_setting = "";
-    this.controls = {};
+    //this.controls = {};
     this.default_config = {
     "+attack":      ["MOUSE1", 'bind MOUSE1 +attack'],
     "+zoom":        ["MOUSE2", 'bind MOUSE2 +zoom'],
@@ -33,21 +33,20 @@ class QuakeControls {
     "messagemode":  ["t", 'bind t messagemode'],
     "messagemode2": ["y", 'bind y messagemode2'],
     "+scores":      ["TAB", 'bind TAB +scores'],
-    "togglemenu":   ["ESCAPE", 'bind ESC togglemenu'],
+    "togglemenu":   ["ESCAPE", 'bind ESCAPE togglemenu'],
     "screenshot":   ["p", 'bind p screenshot'],
     "sensitivity":  [5, 'sensitivity 5'],
     "cg_fov":       [90, 'cg_fov 90'],
     "s_volume":     [0.23, 's_volume 0.23'],
     }
-
-    
-     // defined after defaults in case default_config is needed
-     this.loadSavedControls();
+    this.controls = {};
+    this.loadSavedControls();
   }
 
   render(app, mod) {
     this.overlay.show(app, mod, ControlsTemplate(app, mod, this));
     this.attachEvents(app, mod);
+//    this.loadSavedControls();
     // render menu with saved or default config
     this.fill_menu()
   }
@@ -58,7 +57,10 @@ class QuakeControls {
 
     document.querySelectorAll(".quake-control-trigger").forEach((el) => {
       el.onclick = (e) => {
-        let setting = e.currentTarget.getAttribute("data-id");
+        document.getElementById("cover-indicator").innerHTML = e.currentTarget.children[0].innerHTML;
+        document.getElementById("screen-cover").style.zIndex = 100;
+
+        let setting = e.currentTarget.getAttribute("id");
 	//console.log("setting: " + setting);
         thisobj.current_setting = setting;
 
@@ -79,8 +81,17 @@ class QuakeControls {
 	window.addEventListener('mousedown', thisobj.handleMouse);
         // scroll wheel
         window.addEventListener('wheel', thisobj.handleWheel);
-
+	  
+	////
       }
+    });
+
+    // reset defaults
+    let defaultButton = document.getElementById("default-controls-button");
+
+    defaultButton.addEventListener("click", () => {
+	console.log("restore default clicked");
+	thisobj.defaults();
     });
 
     let finishButton = document.getElementById("finish-controls-button");
@@ -89,25 +100,74 @@ class QuakeControls {
 	console.log("clicked button 'finish' button");
 	this.overlay.remove();
 	this.applyControls();
+	this.writeControls();
+	this.saveSettings();
     });
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // slider / feild sync EVENTs
+
+    let sens_slider = document.getElementById("sensitivity");
+    let sens_indicator = document.getElementById("sensitivity_indicator");
+
+    sens_slider.oninput = function() {
+	let v = sens_slider.value
+        thisobj.updateControls(["sensitivity"], [v, "sensitivity " + v]);
+	sens_indicator.value = v;
+	thisobj.saveSettings();
+    }
+
+    sens_indicator.oninput = function() {
+	var v = sens_indicator.value
+        thisobj.updateControls(["sensitivity"], [v, "sensitivity " + v]);
+	sens_slider.value = v;
+	thisobj.saveSettings();
+    }
+      
+    let fov_slider = document.getElementById("cg_fov");
+    let fov_indicator = document.getElementById("fov_indicator");
+
+    fov_slider.oninput = function() {
+	var v = fov_slider.value
+        thisobj.updateControls(["cg_fov"], [v, "cg_fov " + v]);
+	fov_indicator.value = v;
+	thisobj.saveSettings();
+    }
+
+    fov_indicator.oninput = function() {
+	var v = fov_indicator.value
+        thisobj.updateControls(["cg_fov"], [v, "cg_fov " + v]);
+	fov_slider.value = v;
+	thisobj.saveSettings();
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+
+    // End of attachEvents() object
   }
 
+  defaults() {
+      this.controls = structuredClone(this.default_config);
+      this.fill_menu();
+  }
+
+  // useful to update this.controls from within function
+  updateControls(key, value) {
+      this.controls[key] = value;
+  }
+
+  // Apply menu controls in game
+  // first write a config file, then exec console command to run file in game
   applyControls() {
       function type(key) {
 	  document.dispatchEvent(new KeyboardEvent("keydown",{
 	      keyCode: key
 	  }))
       }
-      // must be single quotes to escape implicit double quotes
-      // from this.controls values
-      let cfg_file = '';
-
-      for (const [object, key] of Object.entries(this.controls)) {
-	  cfg_file = cfg_file.concat(key[1] + ';')
-      }
-
-      FS.writeFile('base/baseq3/sqc.cfg', cfg_file);
+     
       // `exec sqc` into game console
+      // will fail if game console already open
       type(192) // ~
       type(191) // /
       type(69)  // e
@@ -122,21 +182,29 @@ class QuakeControls {
       type(192) // ~
   }
 
+  writeControls() {
+
+    // must be single quotes to escape implicit double quotes
+    // from this.controls values
+    let cfg_file = '';
+
+    for (const [object, key] of Object.entries(this.controls)) {
+	cfg_file = cfg_file.concat(key[1] + ';')
+    }
+    FS.writeFile('base/baseq3/sqc.cfg', cfg_file);
+
+  }
+
   loadSavedControls() {
       this.mod.load();
       // if no saved controls
       if (!this.mod.quake3) {
-	  console.log("No config found/loaded. Loading default q3 configuration.")
-	  console.log("default_config: " + this.default_config);
 	  this.controls = {...this.default_config};
       }
       else {
-	  console.log("Loading saved q3 config: ");
 	  this.controls = {...this.mod.quake3['controls']};
 
       }
-      console.log(this.controls);
-      //this.fill_menu(this.controls);
   }
 
   fill_menu() {
@@ -144,34 +212,38 @@ class QuakeControls {
     console.log(this.controls);
     for (const [key, value] of Object.entries(this.controls)) {
 	var elem = document.getElementById(key);
-	
 	// for keybinds
-	if (elem.tagName == "TR") {
+
+	// DON'T ALLOW THIS TO PASS - doesn't work for some reason
+	// if you actually allow this block to run
+	// UI disallows key inputs to pass behind menu thus breaking applyControls()
+	// only works if you just let the error ride - no idea why
+	if (elem === null && false) {
+	    continue;
+	}
+	else if (elem.tagName == "TR") {
 	    elem.children[1].innerHTML = value[0];
 	}
 	// for sliders
 	else {
-	    console.log("else");
-	    elem.value = value[0];
-	     }
+	    let s_elem = document.getElementsByClassName(key)
+	    s_elem[0].value = value[0];
+	    s_elem[1].value = value[0];
+	}
     }
-  }
-/****
-  handleKey(event) {
-    return this.handleInput(event.key);
+    console.log("end of fill_menu()");
   }
 
-  handleMouse(event) {
-    return this.handleInput(event.button);
+  saveSettings() {
+    if (!this.mod.quake3) {
+	this.mod.quake3 = {};
+    }
+    this.mod.quake3['controls'] = this.controls
+    this.mod.save()
   }
-
-  handleWheel(event) {
-    scroll = (-5) * Math.sign(event.deltaY);
-    return this.handleInput(scroll);
-  }
-****/
 
   handleInput(input) {
+    document.getElementById("screen-cover").style.zIndex = -100;
 
     q3_bind = this.toQuakeBind(input);
     
@@ -188,17 +260,13 @@ class QuakeControls {
     this.controls[this.current_setting] = [q3_bind, q3_bindCommand];
     
     // update HTML table to reflect current settings
-    document.getElementById(this.current_setting).children[1].innerHTML = q3_bind
-      
-    if (!this.mod.quake3) {
-	this.mod.quake3 = {};
-}
-
-    this.mod.quake3['controls'] = this.controls
-    this.mod.save()
-
-    return q3_bindCommand;
-
+    // if that element exists
+    let tag = document.getElementById(this.current_setting)
+    if (tag != null) {
+	tag.children[1].innerHTML = q3_bind;
+    }
+    else {console.log("tag is null: " + this.current_setting);}
+    this.saveSettings();
   }
 
   toQuakeBind(input) {

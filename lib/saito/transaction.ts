@@ -420,9 +420,11 @@ class Transaction {
     if (this.dmsg !== "") {
       return this.dmsg;
     }
-    if (this.msg !== null) {
+
+    if (Object.keys(this.msg).length > 0) {
       return this.msg;
     }
+    const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
     try {
       if (this.transaction.m && this.transaction.m.byteLength > 0) {
         const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");

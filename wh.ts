@@ -1,12 +1,11 @@
 // import "source-map-support/register";
-import Server from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
 import { Saito } from "./apps/core";
 import fs from "fs-extra";
-import * as JSON from "json-bigint";
+
 
 import mods_config from "./config/modules.config";
-import { readBlockUsers } from "mixin-node-sdk";
+import * as blake3 from "blake3";
 
 async function initCLI() {
   const app = new Saito({
@@ -17,11 +16,10 @@ async function initCLI() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   app.storage = new StorageCore(app);
-  const blake3 = require("blake3");
-  // const blake3 = await import ("blake3");
   app.hash = (data) => {
     return blake3.hash(data).toString("hex");
   };
+
   app.BROWSER = 0;
   app.SPVMODE = 0;
 
@@ -67,7 +65,7 @@ async function initCLI() {
   }
 
   function count(what, dir) {
-    var x = 0;
+    let x = 0;
     const files = fs.readdirSync(dir);
     if (what == "blocks") {
       x = files.length;
@@ -175,7 +173,7 @@ async function initCLI() {
   }
 
   function printHelp() {
-    var help = `
+    let help = `
     Commands:
 
      block <path and file name>     print block;

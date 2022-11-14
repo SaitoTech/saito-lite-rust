@@ -109,7 +109,7 @@ class Keychain {
       this.keys.push(tmpkey);
     }
 
-    console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
+    //console.log("IS THIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
 
     for (let key in data) {
       if (key === "identifiers") {
@@ -449,6 +449,16 @@ class Keychain {
     };
     const data = new Identicon(this.app.crypto.hash(Buffer.from(publickey,"hex")), options).toString();
     return "data:image/svg+xml;base64," + data;
+  }
+
+  returnIdenticonasPNG(publickey) {
+    const options = {
+      margin: 0.0, // 0% margin
+      size: 420, // 420px square
+      format: "png", // use SVG instead of PNG
+    };
+    const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
+    return "data:image/png;base64," + data;
   }
 
   returnIdenticonColor(publickey) {

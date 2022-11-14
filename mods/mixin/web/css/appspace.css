@@ -1,116 +1,236 @@
-.hide-btn {
-    display: none;
-}
+.email-appspace-deposit-overlay {
+    padding: 2rem;
+    background-image: linear-gradient(to bottom right, #EA4843, #f78754);
+    color: #fff;
+    background-image: url(/saito/img/dreamscape.png);
+    background-position: 0em;
+    background-size: 120% 100%;
+    color: white;
+    border-radius: 1rem;
+    width: 40vw;
+  }
 
-.transaction-header {
-    margin-top: 40px;
-}
+  .email-appspace-deposit-overlay p {
+    font-size: 17px;
+  }
 
-.history_container {
-  border-radius: 8px;
-  position: relative;
-  border: 1px solid #e7ebed;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  text-align: center;
-  line-height: 50px;
-  flex-wrap: wrap; 
-}
+  .input-cont {
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+  }
 
-.item {
-  height: 50px;
-  width: calc(100% * (1/5));
-  flex-grow: 1;
-}
+  .input-cont p {
+    color: #fff;
+  }
 
-.item-header {
-  background-color: #e7ebed;
-  font-weight: 700;
-}
+  .input-heading{
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 18px;
+  }
 
-.activity_button {
-  margin-top: 20px;
-  max-width: 200px;
-  text-align: center;
-}
+  .input-elem {
+    width: 99%;
+    height: 35px;
+    padding: 7px 10px;
+    position:relative;
+  }
 
-.balances_container {
-    box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 2px 1px -1px rgb(0 0 0 / 12%);
-    border-radius: 4px;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 1.5rem;
-    font-weight: 400;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    line-height: 1.35417em;
-    padding: 15px;
-}
-.balances_header {
-    display: flex;
-}
-.balances_header_title {
-    flex: 1 1 auto;
-}
-.balances_header_icons {
-}
-.balances_header_icon {
-    fill: currentColor;
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    font-size: 24px;
-    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    user-select: none;
-    flex-shrink: 0;
-    display: none;
-}
-.balances_table {
-    width: 100%;
-    display: table;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    border-spacing: 0;
-    border-collapse: collapse;
-}
-.balances_tablehead {
-    display: table-header-group;
-}
-.balances_tablerow {
-    color: inherit;
-    height: 48px;
-    display: table-row;
-    outline: none;
-    vertical-align: middle;
-    box-sizing: inherit;
-}
-.balances_tablerow:hover {
-    background-color: #e7e7e7;
-}
-.balances_tablecell {
+  #copy-deposit-add {
+    position: absolute;
+    top: 54%;
+    right: 4%;
+    color: #444;
     cursor: pointer;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 1.2rem;
-    font-weight: 400;
-    display: table-cell;
-    padding: 4px 56px 4px 24px;
-    text-align: left;
-    border-bottom: 1px solid rgba(224, 224, 224, 1);
-    vertical-align: inherit;
-}
-.balances_link {
-    font-size: 1.2rem;
-    font-weight: 400;
-}
-.balances_withdraw {
-}
-.balances_deposit {
-}
+  }
 
-.deposit {
-    color: #14b214;
-}
+  .copy-check::before {
+    content:  "\f00c";
+  }
 
-.withdrawal {
-    color: #e34927;
-}
+  .info-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .info-item {
+  }
+
+  .info-item-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .info-item-detail {
+    font-size: 12px;
+  }
+
+  .note {
+    margin-top: 30px;
+    font-size: 13px;
+  }
+
+  .add-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .add-item-cont {
+  }
+
+  #qrcode img {
+    height: 17vh;
+  }
+
+  .add-input-box {
+    width: 70%;
+  }
+
+  .email-appspace-deposit-overlay {
+    max-width: 80vw;
+  }
+  .deposit_title {
+    font-size: 2em;
+  }
+  .deposit_desc {
+    font-size: 1.2em;
+    line-height: 1.6em;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .deposit_qrcode {
+    clear:both;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  .deposit_address {
+    font-size: 1.2em;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+  }
+
+
+
+
+
+   #withdrawl-confirm-cont, #withdrawl-sent-cont {
+    display: none;
+  }
+
+  .decision-cont a {
+    color: #fff;
+    transition: all 0.1s ease-in-out;
+  }
+
+  .decision-cont a:hover {
+    color: #333;
+  }
+
+  .email-appspace-withdraw-overlay {
+    width: 38vw;
+    padding: 2rem;
+    background-image: linear-gradient(to bottom right, #EA4843, #f78754);
+    color: #fff;
+    background-image: url(/saito/img/dreamscape.png);
+    background-position: 0em;
+    background-size: 120% 100%;
+    color: white;
+    border-radius: 1rem;
+  }
+
+  .mixin-withdraw-token-wrapper {
+    margin-bottom: 2rem;
+  }
+
+  .mixin-withdraw-token-wrapper p {
+    color: #fff;
+  }
+
+  .mixin-withdraw-input {
+    margin-bottom: 1rem;
+    position: relative;
+    padding-bottom: 20px;
+  }
+
+  .no-margin {
+    margin: 0px;
+  }
+
+  .max-amount-error {
+    display: none;
+    color: #5d1919;
+  }
+
+  .input-heading{
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  .input-elem {
+    width: 100% !important;
+    height: 45px;
+    padding: 10px 10px !important;
+    font-size: 16px !important;
+  }
+
+  .info-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .info-item {
+  }
+
+  .info-item-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .info-item-detail {
+    font-size: 12px;
+  }
+
+  .note {
+    margin-top: 30px;
+    font-size: 12px;
+  }
+
+  .note.withdrawl {
+    font-size: 15px;
+    margin-top: 25px;
+    margin-bottom: 30px;
+  }
+
+  .add-cont {
+    display: flex;
+    justify-content: space-between;
+  } 
+
+  .add-input-box {
+  }
+
+  .withdraw_submit {
+    cursor: pointer;
+    background-color: #fff;
+    color: var(--saito-primary);
+    font-size: 1.5rem;
+  }
+
+  .amount-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .max-amount-btn {
+    display: inline-block;
+    background-color: #fff;
+    color: #222;
+    position: absolute;
+    right: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    top: 50%;
+    transform: translateY(-10%);
+  }

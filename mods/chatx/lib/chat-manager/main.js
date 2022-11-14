@@ -1,5 +1,5 @@
 const ChatManagerTemplate = require("./main.template");
-const SaitoUserWithTime = require('./../../../../lib/saito/new-ui/templates/saito-user-with-time.template');
+const SaitoUserGroup = require('./../../../../lib/saito/new-ui/templates/saito-user-group.template');
 const JSON = require('json-bigint');
 
 class ChatManager {
@@ -24,11 +24,10 @@ class ChatManager {
 			}
 		});
 
-		app.connection.on("chat-render-request-notify", (gid) => {
+		app.connection.on("chat-render-request-notify", (chat_group) => {
 			if (this.rendered){
-				let group = mod.returnGroup(gid);
-				if (group){
-					this.makeGroupHeader(group, group.unread);
+				if (chat_group){
+					this.makeGroupHeader(chat_group, chat_group.unread);
 				}
 
 				this.attachEvents(app, this.chat_mod);
@@ -78,7 +77,7 @@ class ChatManager {
 			last_ts = txmsg.timestamp;
 		}
 
-		let html = SaitoUserWithTime(this.app, this.chat_mod, group.name, last_msg, last_ts, group.id, notifications);
+		let html = SaitoUserGroup(this.app, group.name, last_msg, last_ts, group.id, notifications);
 		let divid = "saito-user-" + group.id;
 		let obj = document.getElementById(divid);
 

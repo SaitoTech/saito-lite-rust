@@ -49,14 +49,9 @@ class Chessgame extends GameTemplate {
     //
     // ADD MENU
     //
-    this.menu.addMenuOption({
-      text: "Game",
-      id: "game-game",
-      class: "game-game",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      },
-    });
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
     this.menu.addSubMenuOption("game-game", {
       text : "Play Mode",
       id : "game-confirm",
@@ -93,7 +88,7 @@ class Chessgame extends GameTemplate {
         }
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Rules",
       id: "game-rules",
       class: "game-rules",
@@ -102,7 +97,7 @@ class Chessgame extends GameTemplate {
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       },
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Log",
       id: "game-log",
       class: "game-log",
