@@ -1345,6 +1345,7 @@ class Settlers extends GameTemplate {
         this.animateDiceRoll(roll);
         $("#diceroll").off();
         $("#diceroll").on("click", ()=>{ this.animateDiceRoll(roll);});
+
         //Regardless of outcome, player gets a turn
         this.game.queue.push(`player_actions\t${player}`);
         this.game.queue.push("enable_trading"); //Enable trading after resolving bandit
@@ -1720,6 +1721,7 @@ class Settlers extends GameTemplate {
         //Select a player to steal from
         $(".option").off();
         $(".option").on("click", function () {
+          $(".option").off();
           let victim = $(this).attr("id");
           robPlayer(victim);
         });
@@ -2569,6 +2571,7 @@ class Settlers extends GameTemplate {
         $(".undo").on("click",function(){
           //Make sure the confirm popup goes away
           $(".action").off();
+          $(".undo").off();
           $(".popup-confirm-menu").remove();
           $(".road.empty").off();
           $(".rhover").removeClass("rhover");
