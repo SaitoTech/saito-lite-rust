@@ -967,6 +967,10 @@ console.log("returning activated cryptos num: " + activeMods.length);
         console.log("setting cryptomod");
         cryptomod = mods[i];
         can_we_do_this = 1;
+
+        if (mods[i].options.isActivated == true) {
+          show_overlay = 0;
+        }
       }
     }
 
