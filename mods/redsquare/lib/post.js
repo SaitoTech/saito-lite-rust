@@ -31,7 +31,6 @@ class Post {
     this.emoji = new SaitoEmoji(app, mod, 'post-tweet-textarea');
     this.emoji.render(app, mod);
 
-    post_self = this;
     app.modules.mods.forEach(mod => {
       if (mod.name == "Giphy") {
         post_self.gif = new SaitoGif(app, mod, "post-tweet-textarea", function (img) { post_self.addImg(img) });

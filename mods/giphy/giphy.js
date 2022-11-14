@@ -8,8 +8,6 @@ Modules must provide an input id to attach the gif selector to.
 Modules can also provide a callback to determine how the image (url) is processed.
 
 */
-
-
 const { GiphyFetch } = require('@giphy/js-fetch-api')
 const { renderGif, renderGrid } = require('@giphy/js-components');
 const SaitoOverlay = require("./../../lib/saito/new-ui/saito-overlay/saito-overlay");
@@ -34,6 +32,7 @@ class Giphy extends ModTemplate {
         this.initialize(app);
 
     }
+
 
     initialize(app) {
         super.initialize(app);

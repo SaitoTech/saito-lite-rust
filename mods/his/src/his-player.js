@@ -106,6 +106,14 @@
       players[i].captured = [];
       players[i].num = i;
 
+      //
+      // Each power's VP total is derived from base, special, and bonus VP. 
+      // The base VP total is shown in the lower-left of the power card.
+      //
+      players[i].vp_base = 0;
+      players[i].vp_special = 0;
+      players[i].vp_bonus = 0;
+
     }
 
 
@@ -353,6 +361,13 @@
       name : "Move formation over pass",
       check : this.canPlayerMoveFormationOverPass,
       fnct : this.playerMoveFormationOverPass,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2],
+      name : "Naval transport",
+      check : this.canPlayerNavalTransport,
+      fnct : this.playerNavalTransport,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
@@ -756,7 +771,8 @@ console.log("OPS ARE ZERO!");
 	//
         let html = `<ul>`;
         for (let i = 0; i < menu.length; i++) {
-          if (menu[i].check(this, this.game.player, selected_faction)) {
+	  // added ops to check() for naval transport
+          if (menu[i].check(this, this.game.player, selected_faction, ops)) {
             for (let z = 0; z < menu[i].factions.length; z++) {
               if (menu[i].factions[z] === selected_faction) {
   	        if (menu[i].cost[z] <= ops) {
@@ -1482,6 +1498,70 @@ console.log("units length: " + space.units[defender].length);
 
   }
 
+
+  canPlayerNavalTransport(his_self, player, faction, ops) {
+    if (ops < 2) { return 0; }
+    let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < spaces_with_infantry.length; i++) {
+      if (!his_self.game.spaces[spaces_with_infantry[i]].ports.length > 0) {
+	spaces_with_infantry.splice(i, 1);
+	i--;
+      }
+    }
+    
+    if (spaces_with_infantry.length == 0) { return 0; }
+
+    for (let i = 0; i < spaces_with_infantry.length; i++) {
+      let dest = this.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops);
+      if (dest.length > 0) { return 1; }
+    }
+
+    return 0;
+
+  }
+  async playerNavalTransport(his_self, player, faction) {
+
+    let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < spaces_with_infantry.length; i++) {
+      if (!his_self.game.spaces[spaces_with_infantry[i]].ports.length > 0) {
+	spaces_with_infantry.splice(i, 1);
+	i--;
+      }
+    }
+
+    let html = `<ul>`;
+    for (let i = 0; i < spaces_with_infantry.length; i++) {
+      html    += `<li class="option" id="${i}">${spaces_with_infantry[i]}</li>`;
+    }
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Transport from Which Port?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+
+      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], ops);
+       
+      let html = `<ul>`;
+      for (let i = 0; i < dest.length; i++) {
+        html    += `<li class="option" id="${i}">${dest[i].key} (${desk[i].cost} CP)</li>`;
+      }
+      html    += `</ul>`;
+
+      his_self.updateStatusWithOptions(`Select Destination:`, html);
+      his_self.attachCardboxEvents(function(destination) {
+
+	alert(user_choice + " -- " + destination);
+        his_self.endTurn();
+
+      });
+    });
+
+  }
+
+
+  async playerNavalTransport(his_self, player, faction) {
+    his_self.endTurn();
+    return;
+  }
 
 
   canPlayerMoveFormationOverPass(his_self, player, faction) {

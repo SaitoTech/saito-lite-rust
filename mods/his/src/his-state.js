@@ -21,6 +21,59 @@
     return -1;
   }
 
+  returnNavalTransportDestinations(faction, space, ops) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let viable_destinations = [];
+    let viable_navalspaces = [];
+    let options = [];
+    let ops_remaining = ops-1;    
+
+    for (let i = 0; i < space.ports.length; i++) {
+      if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
+	viable_navalspaces.push({key : space.ports[i] , ops_remaining : ops_remaining});
+      }
+    }
+
+    //
+    // TODO check for blocking fleet
+    //
+    while (ops_remaining > 1) {
+      ops_remaining--;
+      for (let i = 0; i < viable_navalspaces.length; i++) {
+	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i]].neighbours.length; z++) {
+          if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
+	    let ns = this.game.navalspaces[viable_navalspace[i].key].neighbours[z];
+	    let already_included = 0;
+	    for (let z = 0; z < viable_navalspaces.length; z++) {
+	      if (viable_navalspaces[z].key == ns) { already_included = 1; }
+	    }
+	    if (aready_included == 0) {
+	      viable_navalspaces.push({ key : ns , ops_remaining : ops_remaining });
+	    }
+	  }
+	}
+      }
+    }
+
+    //
+    //
+    //
+    for (let i = 0; i < viable_navalspaces.length; i++) {
+      let key = viable_navalspaces[i].key;
+      for (let z = 0; z < this.game.navalspaces[key].ports.length; z++) {      
+	let port = this.game.navalspaces[key].ports[z];
+	if (port != space.key) {
+	  viable_destinations.push({ key : port , cost : (ops - ops_remaining)});
+	}
+      }
+    }
+
+    return viable_destinations;
+
+  }
+
+
   returnFactionNavalUnitsToMove(faction) {
 
     let units = [];
@@ -82,8 +135,6 @@
         }
       }
     }
-
-console.log("A2 ");
 
     //
     // add ships and leaders out-of-port
@@ -357,7 +408,9 @@ console.log("A2 ");
     }
   }
 
-  // figure out how many points people have
+  //
+  // figure out how many base points people have
+  //
   calculateVictoryPoints() {
 
     let factions = {};
@@ -379,7 +432,10 @@ console.log("A2 ");
     // let factions calculate their VP
     //
     for (let f in factions) {
-      factions[f].vp = this.factions[f].calculateVictoryPoints(this);
+      factions[f].vp_base = this.factions[f].calculateBaseVictoryPoints(this);
+      factions[f].vp_bonus = this.factions[f].calculateBonusVictoryPoints(this);
+      factions[f].vp_special = this.factions[f].calculateSpecialVictoryPoints(this);
+      factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
 
     //
@@ -566,6 +622,28 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       }
     }
     return num;
+  }
+
+  doesFactionHaveNavalUnitsInSpace(faction, key) {
+    if (this.game.spaces[key]) {
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.space[key].units[faction].length; i++) {
+          if (this.game.space[key].units[faction][i].type === "squadron" || this.game.space[key].units[faction][i].type === "corsair") {
+  	    return 1;
+          }
+        }
+      }
+    }
+    if (this.game.navalspaces[key]) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let i = 0; i < this.game.navalspace[key].units[faction].length; i++) {
+          if (this.game.navalspace[key].units[faction][i].type === "squadron" || this.game.navalspace[key].units[faction][i].type === "corsair") {
+  	    return 1;
+          }
+        }
+      }
+    }
+    return 0;
   }
 
   doesFactionHaveNavalUnitsOnBoard(faction) {
@@ -3790,7 +3868,7 @@ console.log("this is a space: " + spacekey)
 	    if (game_mod.game.state.french_chateaux_vp < 6) {
 	      game_mod.updateLog("SUCCESS: France gains 1VP from Patron of the Arts");
 	      game_mod.game.state.french_chateaux_vp++;
-              game_mod.gainVP("france", 1);
+              game_mod.gainVictoryPoints("france", 1);
 	    }
 	  }
 
@@ -4221,10 +4299,10 @@ console.log("this is a space: " + spacekey)
 
 	for (let key in f) {
 	  if (f[key] >= 4) {
-	    game_mod.gainVP(faction, 3);
+	    game_mod.gainVictoryPoints(faction, 3);
 	  }
 	  if (f[key] == 3) {
-	    game_mod.gainVP(faction, 2);
+	    game_mod.gainVictoryPoints(faction, 2);
 	  }
 	  if (f[key] == 2) {
 	    let faction_hand_idx = game_mod.returnFactionHandIdx(player, key);

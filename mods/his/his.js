@@ -136,7 +136,13 @@ class HereIStand extends GameTemplate {
 	return base;
 
       },
-      calculateVictoryPoints  :	function(game_mod) {
+      calculateBonusVictoryPoints  :	function(game_mod) {
+        return this.bonus_vp;
+      },
+      calculateSpecialVictoryPoints  :	function(game_mod) {
+        return this.special_vp;
+      },
+      calculateBaseVictoryPoints  :	function(game_mod) {
 
         let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
         let base = this.vp;
@@ -215,7 +221,7 @@ class HereIStand extends GameTemplate {
         return base;
 
       },
-      calculateVictoryPoints  : function(game_mod) {
+      calculateBaseVictoryPoints  : function(game_mod) {
 
         let kc = game_mod.returnNumberOfKeysControlledByFaction("france");
         let base = 0;
@@ -235,6 +241,12 @@ class HereIStand extends GameTemplate {
         
         return base;
         
+      },
+      calculateBonusVictoryPoints  :    function(game_mod) {
+        return this.bonus_vp;
+      },
+      calculateSpecialVictoryPoints  :  function(game_mod) {
+        return this.special_vp;
       },
     });
  
@@ -292,7 +304,7 @@ class HereIStand extends GameTemplate {
         return base;
 
       },
-      calculateVictoryPoints  : function(game_mod) {
+      calculateBaseVictoryPoints  : function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("hapsburg");
         let base = this.vp;
@@ -315,6 +327,12 @@ class HereIStand extends GameTemplate {
         
         return base;
 
+      },
+      calculateBonusVictoryPoints  :    function(game_mod) {
+        return this.bonus_vp;
+      },
+      calculateSpecialVictoryPoints  :  function(game_mod) {
+        return this.special_vp;
       },
     });
  
@@ -381,7 +399,7 @@ class HereIStand extends GameTemplate {
         return base;
 
       },
-      calculateVictoryPoints  : function(game_mod) {
+      calculateBaseVictoryPoints  : function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("ottoman");
         let base = this.vp;
@@ -402,7 +420,12 @@ class HereIStand extends GameTemplate {
         return base;
 
       },
-
+      calculateBonusVictoryPoints  :    function(game_mod) {
+        return this.bonus_vp;
+      },
+      calculateSpecialVictoryPoints  :  function(game_mod) {
+        return this.special_vp;
+      },
     });
  
 
@@ -453,7 +476,7 @@ class HereIStand extends GameTemplate {
         return base;
 
       },
-      calculateVictoryPoints  : function(game_mod) {
+      calculateBaseVictoryPoints  : function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("papacy");
         let base = this.vp;
@@ -469,6 +492,12 @@ class HereIStand extends GameTemplate {
         
         return base;
 
+      },
+      calculateBonusVictoryPoints  :    function(game_mod) {
+        return this.bonus_vp;
+      },
+      calculateSpecialVictoryPoints  :  function(game_mod) {
+        return this.special_vp;
       },
     });
  
@@ -501,7 +530,7 @@ class HereIStand extends GameTemplate {
 	return base; 
       
       },
-      calculateVictoryPoints  : function(game_mod) {
+      calculateBaseVictoryPoints  : function(game_mod) {
         
         let base = this.vp;
 
@@ -510,6 +539,12 @@ class HereIStand extends GameTemplate {
 
         return base;
 
+      },
+      calculateBonusVictoryPoints  :    function(game_mod) {
+        return this.bonus_vp;
+      },
+      calculateSpecialVictoryPoints  :  function(game_mod) {
+        return this.special_vp;
       },
     });
  
@@ -1874,6 +1909,59 @@ console.log("adding stuff!");
     return -1;
   }
 
+  returnNavalTransportDestinations(faction, space, ops) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let viable_destinations = [];
+    let viable_navalspaces = [];
+    let options = [];
+    let ops_remaining = ops-1;    
+
+    for (let i = 0; i < space.ports.length; i++) {
+      if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
+	viable_navalspaces.push({key : space.ports[i] , ops_remaining : ops_remaining});
+      }
+    }
+
+    //
+    // TODO check for blocking fleet
+    //
+    while (ops_remaining > 1) {
+      ops_remaining--;
+      for (let i = 0; i < viable_navalspaces.length; i++) {
+	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i]].neighbours.length; z++) {
+          if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
+	    let ns = this.game.navalspaces[viable_navalspace[i].key].neighbours[z];
+	    let already_included = 0;
+	    for (let z = 0; z < viable_navalspaces.length; z++) {
+	      if (viable_navalspaces[z].key == ns) { already_included = 1; }
+	    }
+	    if (aready_included == 0) {
+	      viable_navalspaces.push({ key : ns , ops_remaining : ops_remaining });
+	    }
+	  }
+	}
+      }
+    }
+
+    //
+    //
+    //
+    for (let i = 0; i < viable_navalspaces.length; i++) {
+      let key = viable_navalspaces[i].key;
+      for (let z = 0; z < this.game.navalspaces[key].ports.length; z++) {      
+	let port = this.game.navalspaces[key].ports[z];
+	if (port != space.key) {
+	  viable_destinations.push({ key : port , cost : (ops - ops_remaining)});
+	}
+      }
+    }
+
+    return viable_destinations;
+
+  }
+
+
   returnFactionNavalUnitsToMove(faction) {
 
     let units = [];
@@ -1935,8 +2023,6 @@ console.log("adding stuff!");
         }
       }
     }
-
-console.log("A2 ");
 
     //
     // add ships and leaders out-of-port
@@ -2210,7 +2296,9 @@ console.log("A2 ");
     }
   }
 
-  // figure out how many points people have
+  //
+  // figure out how many base points people have
+  //
   calculateVictoryPoints() {
 
     let factions = {};
@@ -2232,7 +2320,10 @@ console.log("A2 ");
     // let factions calculate their VP
     //
     for (let f in factions) {
-      factions[f].vp = this.factions[f].calculateVictoryPoints(this);
+      factions[f].vp_base = this.factions[f].calculateBaseVictoryPoints(this);
+      factions[f].vp_bonus = this.factions[f].calculateBonusVictoryPoints(this);
+      factions[f].vp_special = this.factions[f].calculateSpecialVictoryPoints(this);
+      factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
 
     //
@@ -2419,6 +2510,28 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       }
     }
     return num;
+  }
+
+  doesFactionHaveNavalUnitsInSpace(faction, key) {
+    if (this.game.spaces[key]) {
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.space[key].units[faction].length; i++) {
+          if (this.game.space[key].units[faction][i].type === "squadron" || this.game.space[key].units[faction][i].type === "corsair") {
+  	    return 1;
+          }
+        }
+      }
+    }
+    if (this.game.navalspaces[key]) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let i = 0; i < this.game.navalspace[key].units[faction].length; i++) {
+          if (this.game.navalspace[key].units[faction][i].type === "squadron" || this.game.navalspace[key].units[faction][i].type === "corsair") {
+  	    return 1;
+          }
+        }
+      }
+    }
+    return 0;
   }
 
   doesFactionHaveNavalUnitsOnBoard(faction) {
@@ -5643,7 +5756,7 @@ console.log("this is a space: " + spacekey)
 	    if (game_mod.game.state.french_chateaux_vp < 6) {
 	      game_mod.updateLog("SUCCESS: France gains 1VP from Patron of the Arts");
 	      game_mod.game.state.french_chateaux_vp++;
-              game_mod.gainVP("france", 1);
+              game_mod.gainVictoryPoints("france", 1);
 	    }
 	  }
 
@@ -6074,10 +6187,10 @@ console.log("this is a space: " + spacekey)
 
 	for (let key in f) {
 	  if (f[key] >= 4) {
-	    game_mod.gainVP(faction, 3);
+	    game_mod.gainVictoryPoints(faction, 3);
 	  }
 	  if (f[key] == 3) {
-	    game_mod.gainVP(faction, 2);
+	    game_mod.gainVictoryPoints(faction, 2);
 	  }
 	  if (f[key] == 2) {
 	    let faction_hand_idx = game_mod.returnFactionHandIdx(player, key);
@@ -12225,6 +12338,14 @@ this.updateLog("Catholics: " + c_rolls);
       players[i].captured = [];
       players[i].num = i;
 
+      //
+      // Each power's VP total is derived from base, special, and bonus VP. 
+      // The base VP total is shown in the lower-left of the power card.
+      //
+      players[i].vp_base = 0;
+      players[i].vp_special = 0;
+      players[i].vp_bonus = 0;
+
     }
 
 
@@ -12472,6 +12593,13 @@ this.updateLog("Catholics: " + c_rolls);
       name : "Move formation over pass",
       check : this.canPlayerMoveFormationOverPass,
       fnct : this.playerMoveFormationOverPass,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2],
+      name : "Naval transport",
+      check : this.canPlayerNavalTransport,
+      fnct : this.playerNavalTransport,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
@@ -12875,7 +13003,8 @@ console.log("OPS ARE ZERO!");
 	//
         let html = `<ul>`;
         for (let i = 0; i < menu.length; i++) {
-          if (menu[i].check(this, this.game.player, selected_faction)) {
+	  // added ops to check() for naval transport
+          if (menu[i].check(this, this.game.player, selected_faction, ops)) {
             for (let z = 0; z < menu[i].factions.length; z++) {
               if (menu[i].factions[z] === selected_faction) {
   	        if (menu[i].cost[z] <= ops) {
@@ -13601,6 +13730,70 @@ console.log("units length: " + space.units[defender].length);
 
   }
 
+
+  canPlayerNavalTransport(his_self, player, faction, ops) {
+    if (ops < 2) { return 0; }
+    let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < spaces_with_infantry.length; i++) {
+      if (!his_self.game.spaces[spaces_with_infantry[i]].ports.length > 0) {
+	spaces_with_infantry.splice(i, 1);
+	i--;
+      }
+    }
+    
+    if (spaces_with_infantry.length == 0) { return 0; }
+
+    for (let i = 0; i < spaces_with_infantry.length; i++) {
+      let dest = this.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops);
+      if (dest.length > 0) { return 1; }
+    }
+
+    return 0;
+
+  }
+  async playerNavalTransport(his_self, player, faction) {
+
+    let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < spaces_with_infantry.length; i++) {
+      if (!his_self.game.spaces[spaces_with_infantry[i]].ports.length > 0) {
+	spaces_with_infantry.splice(i, 1);
+	i--;
+      }
+    }
+
+    let html = `<ul>`;
+    for (let i = 0; i < spaces_with_infantry.length; i++) {
+      html    += `<li class="option" id="${i}">${spaces_with_infantry[i]}</li>`;
+    }
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Transport from Which Port?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+
+      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], ops);
+       
+      let html = `<ul>`;
+      for (let i = 0; i < dest.length; i++) {
+        html    += `<li class="option" id="${i}">${dest[i].key} (${desk[i].cost} CP)</li>`;
+      }
+      html    += `</ul>`;
+
+      his_self.updateStatusWithOptions(`Select Destination:`, html);
+      his_self.attachCardboxEvents(function(destination) {
+
+	alert(user_choice + " -- " + destination);
+        his_self.endTurn();
+
+      });
+    });
+
+  }
+
+
+  async playerNavalTransport(his_self, player, faction) {
+    his_self.endTurn();
+    return;
+  }
 
 
   canPlayerMoveFormationOverPass(his_self, player, faction) {
@@ -14403,8 +14596,20 @@ return;
     if (obj.capitals == null)	        { obj.capitals = []; }
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.vp == null)			{ obj.vp = 0; }
+    if (obj.vp_base == null)		{ obj.vp_base = 0; }
+    if (obj.vp_special == null)		{ obj.vp_special = 0; }
+    if (obj.vp_bonus == null)		{ obj.vp_bonus = 0; }
     if (obj.allies == null)		{ obj.allies = []; }
     if (obj.minor_allies == null)	{ obj.minor_allies = []; }
+    if (obj.calculateBaseVictoryPoints == null) {
+      obj.calculateBaseVictoryPoints = function() { return 0; }
+    }
+    if (obj.calculateBonusVictoryPoints == null) {
+      obj.calculateBonusVictoryPoints = function() { return 0; }
+    }
+    if (obj.calculateSpecialVictoryPoints == null) {
+      obj.calculateSpecialVictoryPoints = function() { return 0; }
+    }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {
         return `
@@ -14424,11 +14629,22 @@ return;
 
   }
 
-  gainVP(faction, points) {
+  gainVictoryPoints(faction, points, type="special") {
     for (let i = 0; i < this.game.players_info.length; i++) {
       for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
 	if (faction === this.game.players_info[i].factions[ii]) {
-          this.game.players_info[i].factions[ii].vp += points;
+	  if (type == "base") {
+            this.game.players_info[i].factions[ii].vp += points;
+            this.game.players_info[i].factions[ii].vp_base += points;
+	  }
+	  if (type == "special") {
+            this.game.players_info[i].factions[ii].vp += points;
+            this.game.players_info[i].factions[ii].vp_special += points;
+	  }
+	  if (type == "bonus") {
+            this.game.players_info[i].factions[ii].vp += points;
+            this.game.players_info[i].factions[ii].vp_bonus += points;
+	  }
 	  break;
         }
       }
