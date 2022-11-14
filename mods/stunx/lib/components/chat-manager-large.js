@@ -14,33 +14,36 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
+        
 
-        this.app.connection.on('show-video-chat-request', (app, mod, type) => {
-            if (type !== "large") return
+        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type) => {
+            if (ui_type !== "large") return
+            this.call_type = call_type
+            this.ui_type = ui_type;
             this.show(app, mod);
         })
-        this.app.connection.on('render-local-stream-request', (localStream, type) => {
-            if (type !== "large") return
+        this.app.connection.on('render-local-stream-request', (localStream, ui_type) => {
+            if (ui_type !== "large") return
             this.renderLocalStream(localStream)
         })
-        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, type) => {
-            if (type !== "large") return
+        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
+            if (ui_type !== "large") return
             this.addRemoteStream(peer, remoteStream, pc)
         });
-        this.app.connection.on('render-remote-stream-placeholder-request', (peer, type) => {
-            if (type !== "large") return
+        this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
+            if (ui_type !== "large") return
             this.renderRemoteStreamPlaceholder(peer);
         });
 
-        this.app.connection.on('change-connection-state-request', (peer, state, type) => {
-            if (type !== "large") return
+        this.app.connection.on('change-connection-state-request', (peer, state, ui_type) => {
+            if (ui_type !== "large") return
             this.updateConnectionState(peer, state)
         })
     }
 
 
     render() {
-        this.app.browser.addElementToDom(ChatManagerLargeTemplate(), document.getElementById('content__'));
+        this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type), document.getElementById('content__'));
     }
 
     attachEvents(app, mod) {
@@ -87,6 +90,7 @@ class VideoChatManager {
             console.log(track);
             console.log('stopping track');
         })
+        this.video_boxes = {}
         this.hide();
     }
 
@@ -97,17 +101,18 @@ class VideoChatManager {
     }
 
     renderLocalStream(localStream) {
-        const videoBox = new VideoBox(this.app, this.mod);
+        const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
         videoBox.render(localStream, 'local', 'large-wrapper');
         this.video_boxes['local'] = { video_box: videoBox, peer_connection: null }
         this.localStream = localStream;
+        this.addImages();
     }
 
 
 
     renderRemoteStreamPlaceholder(peer) {
         if (!this.video_boxes[peer]) {
-            const videoBox = new VideoBox(this.app, this.mod);
+            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
             this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         }
         this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper');
@@ -120,6 +125,21 @@ class VideoChatManager {
             return console.log("An error occured with updating connections state");
         }
         this.video_boxes[peer].video_box.handleConnectionStateChange(state);
+
+        switch (state) {
+            case "disconnected":
+                this.disconnect();     
+                console.log("video boxes: after ", this.video_boxes);
+                break;
+            case "connected":
+                // start counter
+                this.startTimer();
+                this.addImages();
+                break;
+
+            default:
+                break;
+        }
     }
 
 
@@ -160,6 +180,62 @@ class VideoChatManager {
             document.querySelector('.video_control').classList.add('fa-video')
         }
 
+    }
+
+
+    startTimer(){
+        if(this.timer_interval) {
+            return;
+        }
+        let  timerElement = document.querySelector(".stunx-chatbox .counter");
+        let seconds = 0;
+  
+        const timer = () => {
+            seconds++;
+          
+            // Get hours
+            let hours = Math.floor(seconds / 3600);
+            // Get minutes
+            let minutes = Math.floor((seconds - hours * 3600) / 60);
+            // Get seconds
+            let secs = Math.floor(seconds % 60);
+          
+            if (hours < 10) {
+              hours = `0${hours}`;
+            }
+            if (minutes < 10) {
+              minutes = `0${minutes}`;
+            }
+            if (secs < 10) {
+              secs = `0${secs}`;
+            }
+          
+            timerElement.innerHTML = `<sapn style="color:orangered; font-size: 3rem;" >${hours}:${minutes}:${secs} </sapn>`;
+          
+          };
+
+        this.timer_interval = setInterval(timer, 1000);
+    }
+
+
+    addImages(){
+        let images = ``;
+        let count = 0
+        console.log('video boxes ', this.video_boxes)
+        for(let i in this.video_boxes){
+            if(i === "local"){
+                let publickey =this.app.wallet.returnPublicKey()
+                let imgsrc = this.app.keys.returnIdenticon(publickey);
+                images+= `<img data-id="${publickey}" src="${imgsrc}"/>`         
+            }else {
+                let imgsrc = this.app.keys.returnIdenticon(i);
+                images+= `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`    
+            }
+            count++;
+
+        }
+        document.querySelector('.stunx-chatbox .image-list').innerHTML = images;
+        document.querySelector('.stunx-chatbox .users-on-call-count').innerHTML = count
     }
 
 
