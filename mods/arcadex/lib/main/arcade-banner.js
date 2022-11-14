@@ -14,7 +14,8 @@ class ArcadeBanner {
 						<i id="game_help" class="fa fa-question-circle"></i>
 					</div>`;
 		if (mod.viewing_game_homepage === mod.name){
-			html = `<div id="arcade-banner" class="arcade-banner">
+			html = `<div id="arcade-banner" class="arcade-banner"></div>`;
+					/*`<div id="arcade-banner" class="arcade-banner">
 						<div class="arcade_welcome">
 							Welcome to the Saito Arcade, a place to create game invitations, join games, view live and recently finished games, and see how you stack up against other Saitozens!
 							Explore the games we have available through the navigation menu on the left or see what is happening right now below.
@@ -23,6 +24,7 @@ class ArcadeBanner {
 							<div class="saito-button-primary button" data-cmd="create">Create Game</div>
 						</div-->
 					</div>`;
+					*/
 		}
 		app.browser.replaceElementById(html, "arcade-banner");
 		this.attachEvents(app, mod);

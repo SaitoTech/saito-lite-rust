@@ -8,7 +8,7 @@ const SaitoSidebar = require('./../../../../lib/saito/new-ui/saito-sidebar/saito
 const ArcadeMenu = require("./menu");
 
 const ArcadeBanner = require("./arcade-banner");
-const ArcadeLeaderboard = require("./arcade-leaderboard");
+const ArcadeLeaderboard = require("./meta-leaderboard"); //require("./arcade-leaderboard");
 const ArcadeLeague = require("./arcade-league");
 
 class ArcadeMain {
@@ -49,6 +49,16 @@ class ArcadeMain {
     }else{
       app.browser.replaceElementById(ArcadeMainTemplate(app, mod), "saito-container");
     }
+
+    //Check hash for game page
+    var hash = window.location.hash;
+    if (hash){
+      hash = hash.substring(1).toLowerCase();
+      mod.viewing_game_homepage = hash[0].toUpperCase() + hash.substring(1);
+    }else{
+      mod.viewing_game_homepage = "Arcade";
+    }
+
 
     this.sidebar.render(app, mod);
     this.banner.render(app, mod);
