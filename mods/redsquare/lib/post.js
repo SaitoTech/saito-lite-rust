@@ -1,7 +1,6 @@
 const PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const SaitoEmoji = require("./../../../lib/saito/new-ui/saito-emoji/saito-emoji");
-const SaitoGif = require("./../../giphy/giphy");
 
 const JSON = require('json-bigint');
 
@@ -33,9 +32,14 @@ class Post {
 
     post_self = this;
     app.modules.mods.forEach(mod => {
-      if (mod.name == "Giphy") {
-        post_self.gif = new SaitoGif(app, mod, "post-tweet-textarea", function (img) { post_self.addImg(img) });
-        post_self.gif.render(app, mod);
+      try {
+        const SaitoGif = require("./../../giphy/giphy");
+        if (mod.name == "Giphy") {
+          post_self.gif = new SaitoGif(app, mod, "post-tweet-textarea", function (img) { post_self.addImg(img) });
+          post_self.gif.render(app, mod);
+        }
+      } catch {
+        console.log(err);
       }
     });
   }
