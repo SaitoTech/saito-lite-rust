@@ -352,3 +352,9 @@ body {
   visibility: visible;
   z-index: 2;
 }
+
+.saito-leaderboard .saito-table-row{
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  
+}

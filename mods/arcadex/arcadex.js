@@ -888,12 +888,14 @@ class Arcade extends ModTemplate {
     }
 
     //Force close in wallet if game was created
-    app.options.games.forEach(g => {
-      if (g.id === game_id && g.over !== 1) {
-        console.log("Mark game closed in options");
-        g.over = 1;
-      }
-    });
+    if (app.options?.games){
+      app.options.games.forEach(g => {
+        if (g.id === game_id && g.over !== 1) {
+          console.log("Mark game closed in options");
+          g.over = 1;
+        }
+      });
+    }
 
     //Refresh Arcade Main
     this.main.renderArcadeTab(app, this);

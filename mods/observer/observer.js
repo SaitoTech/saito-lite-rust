@@ -133,6 +133,12 @@ class Observer extends ModTemplate {
         //if (numShown == 0){
         //  app.browser.addElementToId(`<div class="saito-carousel"></div>` ,elem_id);
         //}
+        if (numShown > 0){
+          if (document.getElementById("saito-carousel")){
+            document.getElementById("saito-carousel").remove();
+          }
+        }
+
       }catch(err){
         console.log(err);
       }

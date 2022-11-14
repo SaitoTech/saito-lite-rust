@@ -46,10 +46,19 @@ class ArcadeMenu {
     Array.from(document.getElementsByClassName('arcade-menu-item')).forEach(game => {
       game.addEventListener('click', (e) => {
         let gameName = e.currentTarget.id;
-        console.log(gameName);
-        mod.viewing_game_homepage = gameName;
-        mod.viewing_arcade_initialization_page = false;
-        mod.render(app);
+
+        //mod.viewing_game_homepage = "Arcade"; //gameName;
+        //mod.viewing_arcade_initialization_page = false;
+        //mod.render(app);
+
+        if (gameName !== mod.name){
+          mod.createGameWizard(gameName); 
+        }else{
+          mod.createGameSelector();
+          //mod.viewing_game_homepage = "Arcade";
+          //window.location.hash = "";
+          //mod.render(app);          
+        }
 
       });
     });
