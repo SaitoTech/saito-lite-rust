@@ -223,9 +223,9 @@ class ChatManagerSmall {
 
 
     startTimer(){
-        if(this.timer_interval) {
-            return;
-        }
+        // if(this.timer_interval) {
+        //     return;
+        // }
         let  timerElement = document.querySelector(".small-video-chatbox .counter");
         let seconds = 0;
   
