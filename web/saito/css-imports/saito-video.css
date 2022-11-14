@@ -8,7 +8,7 @@
     max-width: 60vw;
     left: 0;
     bottom: 4.2rem;
-    width: 42.8rem;
+    width:  70rem;
     border-radius: .5rem;
     background-color: #ffffff;
     position: fixed;
@@ -23,18 +23,18 @@
   .small-video-chatbox .heading {
     padding: 1rem;
   }
-  
+/*   
   .small-video-chatbox .disconnect_btn {
     transform: matrix(1, 0, 0, -1, 0, 0);
     background-color: var(--saito-white);
     margin:  0;
-  }
+  } */
   
   
-  .small-video-chatbox .disconnect_btn:hover {
+  /* .small-video-chatbox .disconnect_btn:hover {
     color: black
   }
-  
+   */
   .small-video-chatbox .small-wrapper {
     display: grid;
     grid-template-columns: 1fr;
@@ -48,7 +48,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border: 1px solid var(--saito-black-faded);
+
   
   }
   
@@ -90,11 +90,7 @@
   }
   
   
-  .small-video-chatbox .disconnect_btn {
-    margin-left: auto;
-    background-color: white;
-    color: var(--saito-primary);
-  }
+
   
   .small-video-chatbox .footer .fa, .small-video-chatbox .footer .fas   {
     color: white;
@@ -103,6 +99,42 @@
     transform: matrix(1, 0, 0, -1, 0, 0);
     margin-right: 3rem;
   }
+
+
+
+  /*  video box */
+.video-box-container-large {
+  background-color: black;
+  display: flex;
+  height: 100%;
+  /* height: 30rem; */
+  resize: both;
+  overflow: auto;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 1rem;
+}
+
+.video-box-container-large  video {
+  width: 100%;
+  height: 100%;
+}
+
+.video-box-container-large> #connection-message {
+  color: white;
+  width: 50%;
+  line-height: 1.5;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-box-container-large> #connection-message>p {
+  color: white;
+}
+
 
 
   .video-box-container {
@@ -189,6 +221,87 @@
     }
   }
   
+
+
+  .control-panel {
+    padding: 2rem 2rem;
+    display: flex;
+   justify-content: space-between;
+   align-items: center;
+    background-color: #060505;
+    
+  }
+
+  .control-panel .timer {
+      display: flex;
+      flex-direction: column;
+   
+  }
+
+  .timer p {
+    color: var(--saito-white);
+  }
+  .timer .counter {
+    font-size: 3rem;
+    margin-bottom: .5rem;
+   
+  }
+
+  .users-on-call {
+     display: flex;
+     align-items: center;
+  }
+
+  .users-on-call  .image-list {
+    display: flex;
+    margin-right: 2rem;
+  }
+
+
+
+  
+
+  .image-list img {
+    width: 4rem;
+    height: 4rem;
+    margin-right: -1rem;
+    border-radius: 50%;
+  }
+
+  .control-list {
+    display: flex;
+  }
+
+  .control-list span {
+    margin-right: 1rem;
+    border-radius: 50%;
+    padding: 1rem;
+    width: 5rem;
+    height: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+  }
+
+  .control-list i {
+    color: green;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 2rem;
+
+  }
+
+
+  .control-list i:hover {
+    transform: scale(1.2);
+  }
+
+.control-list .disconnect_btn {
+    background-color: white;
+    color: var(--saito-primary);
+  }
+
   
   
 
@@ -210,15 +323,7 @@
     padding: 1rem;
 }
 
-.stunx-chatbox .disconnect_btn {
-    transform: matrix(1, 0, 0, -1, 0, 0);
-    background-color: var(--saito-white);
-}
 
-
-.stunx-chatbox .disconnect_btn:hover {
-    color: black
-}
 
 .stunx-chatbox .large-wrapper {
     display: grid;
@@ -226,7 +331,8 @@
     grid-auto-rows: minmax(100px, 30vh);
     grid-gap: 1rem;
     padding: 1rem;
-    background: var(--saito-skyline-grey);
+    background: black;
+
 }
 
 .stunx-chatbox .video-box {
@@ -234,8 +340,11 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border: 1px solid var(--saito-black-faded);
 
+}
+
+.audio-stream i {
+  font-size: 4rem;
 }
 
 #localStream {
@@ -257,36 +366,8 @@
     background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
 }
 
-.stunx-chatbox .footer {
-    display: grid;
-    grid-gap: 1rem;
-    padding: 20px;
-    background: radial-gradient(100.52% 47851.24% at 0% 0%, #f66659 0%, #f21d3b 51.56%, #f66659 100%)
-        /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */
-    ;
-    transform: matrix(1, 0, 0, -1, 0, 0);
-    color: white;
-    align-items: center;
-    grid-template-columns: 2em 2em 1fr;
-}
 
 
-.stunx-chatbox p {
-    margin: 0;
-}
-
-
-.stunx-chatbox .disconnect_btn {
-    margin-left: auto;
-}
-
-.stunx-chatbox .footer .fa {
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-    transform: matrix(1, 0, 0, -1, 0, 0);
-    margin-right: 3rem;
-}
 
 
 

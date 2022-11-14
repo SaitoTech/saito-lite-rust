@@ -141,13 +141,21 @@ class Stunx extends ModTemplate {
         }
 
         if (type === 'user-menu') {
-            return {
+            return [{
                 text: "Video Call",
                 icon: "fas fa-video",
                 callback: function (app, public_key) {
                     app.connection.emit('game-start-video-call', public_key);
                 }
+            },
+            {
+                text: "Audio Call",
+                icon: "fas fa-microphone",
+                callback: function (app, public_key) {
+                    app.connection.emit('game-start-audio-call', public_key);
+                }
             }
+        ]
         }
         return null;
     }
@@ -163,7 +171,7 @@ class Stunx extends ModTemplate {
         let txmsg = tx.returnMessage();
         if (conf === 0) {
             if (txmsg.module === 'Stunx') {
-                if (tx.msg.request === "video answer") {
+                if (tx.msg.request === "media answer") {
                     this.receiveMediaAnswerTransaction(blk, tx, conf, app)
                 }
                 if (tx.msg.request === "stun answer") {
@@ -175,7 +183,7 @@ class Stunx extends ModTemplate {
                 if (tx.msg.request === "stun offer") {
                     this.receiveStunOfferTransaction(blk, tx, conf, app)
                 }
-                if (tx.msg.request === "open video chat") {
+                if (tx.msg.request === "open media chat") {
                     this.receiveOpenMediaChatTransaction(blk, tx, conf, app)
                 }
             }
@@ -311,6 +319,7 @@ class Stunx extends ModTemplate {
 
 
     createMediaConnectionOffer(publicKey, ui_type, call_type) {
+        console.log('call type ', call_type)
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async () => {
@@ -464,8 +473,8 @@ class Stunx extends ModTemplate {
     
 
 
-    acceptMediaConnectionOffer(app, offer_creator, offer, ui_type) {
-        this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, ui_type);
+    acceptMediaConnectionOffer(app, offer_creator, offer) {
+        this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, offer.ui_type, offer.call_type );
         const createPeerConnection = async () => {
             let reply = {
                 answer: "",
@@ -489,16 +498,16 @@ class Stunx extends ModTemplate {
                     console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
                         case "connecting":
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, ui_type);
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type);
                             break;
                         case "connected":
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, ui_type);
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type);
                             break;
                         case "disconnected":
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, ui_type);
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type);
                             break;
                         case "failed":
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, ui_type);
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type);
                             break;
                         default:
                             ""
@@ -530,7 +539,7 @@ class Stunx extends ModTemplate {
                         remoteStream.addTrack(track);
                     });
 
-                    this.app.connection.emit('add-remote-stream-request', offer_creator, remoteStream, pc, ui_type);
+                    this.app.connection.emit('add-remote-stream-request', offer_creator, remoteStream, pc, offer.ui_type);
 
 
                 });
@@ -667,7 +676,7 @@ class Stunx extends ModTemplate {
             console.log('an error occurred with peer connection creation', error);
         }
         console.log("peer connections ", this.peer_connections);
-        siteMessage("Starting video connection", 5000);
+        siteMessage(`Starting ${call_type} connection`, 5000);
     }
 
 
@@ -762,7 +771,7 @@ class Stunx extends ModTemplate {
         }
 
        if(offer.ui_type== "large"){
-        this.acceptMediaConnectionOffer(app, offer_creator, offer,  offer.ui_type);
+        this.acceptMediaConnectionOffer(app, offer_creator, offer);
        }
 
       
@@ -785,7 +794,7 @@ class Stunx extends ModTemplate {
         console.log('broadcasting answer to ', offer_creator);
         newtx.transaction.to.push(new saito.default.slip(offer_creator));
         newtx.msg.module = "Stunx";
-        newtx.msg.request = "video answer"
+        newtx.msg.request = "media answer"
         newtx.msg.answer = {
             answer_creator,
             offer_creator,
@@ -897,14 +906,15 @@ class Stunx extends ModTemplate {
 
 
 
-    sendOpenMediaChatTransaction(peer, ui_type) {
+    sendOpenMediaChatTransaction(peer, ui_type, call_type) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         newtx.transaction.to.push(new saito.default.slip(peer));
         newtx.msg.module = "Stunx";
-        newtx.msg.request = "open video chat"
+        newtx.msg.request = "open media chat"
         newtx.msg.data = {
             ui_type,
-            peer
+            peer,
+            call_type
         };
         newtx = this.app.wallet.signTransaction(newtx);
         console.log(this.app.network);
@@ -915,7 +925,7 @@ class Stunx extends ModTemplate {
         let stunx_self = app.modules.returnModule("Stunx");
         let my_pubkey = app.wallet.returnPublicKey();
         if (my_pubkey === tx.msg.data.peer) {
-            // open video chat
+            // open media chat
             this.app.connection.emit('show-video-chat-request', this.app, this, tx.msg.data.ui_type);
         }
     }

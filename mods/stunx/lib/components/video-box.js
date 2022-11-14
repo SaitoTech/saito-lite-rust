@@ -8,10 +8,11 @@ class VideoBox {
     stream_id = null;
     stream = null;
     placeholderRendered = false;
-    constructor(app, mod, chat_type) {
+    constructor(app, mod, ui_type, call_type) {
         this.app = app;
         this.mod = mod;
-        this.chat_type = chat_type;
+        this.ui_type = ui_type
+        this.call_type = call_type;
     }
 
     render(stream, streamId, containerClass) {
@@ -52,18 +53,18 @@ class VideoBox {
         }else {
             if (!document.querySelector(`#stream${this.stream_id}`)) {
                 if (this.containerClass) {
-                    this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted), this.containerClass);
+                    this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted, this.ui_type), this.containerClass);
                 } else {
-                    this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, muted));
+                    this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, muted, this.ui_type));
                     this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
                 }
             }
     
             const videoBox = document.querySelector(`#stream${this.stream_id}`);
-            console.log('chat type', this.chat_type)
-            if(this.chat_type === "audio"){
-                videoBox.insertAdjacentHTML('beforeend', `<div class="audo-stream"> <p> Audio Chat </p> <span class="lds-dual-ring"> </span></div> `);
-            }else if(this.chat_type === "video") {
+            console.log('call type', this.call_type)
+            if(this.call_type === "audio"){
+                videoBox.insertAdjacentHTML('beforeend', `<div class="audio-stream"> <i class="fas fa-microphone"></i></div> `);
+            }else if(this.call_type === "video") {
                 videoBox.firstElementChild.srcObject = this.stream;
             }
         }
@@ -76,10 +77,10 @@ class VideoBox {
     renderPlaceholder() {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
             if (this.containerClass) {
-                this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false), this.containerClass);
+                this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false, this.ui_type), this.containerClass);
             } else {
 
-                this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, false));
+                this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, false, this.ui_type));
                 this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
             }
 
@@ -97,7 +98,7 @@ class VideoBox {
     handleConnectionStateChange(connectionState) {
         switch (connectionState) {
             case "connecting":
-                document.querySelector('#connection-message').innerHTML = "<p>Starting Video Chat </p> <span class='lds-dual-ring'>"
+                document.querySelector('#connection-message').innerHTML = `<p>Starting ${this.call_type} Chat </p> <span class='lds-dual-ring'>`
                 break;
             case "connected":
                 if (this.stream) {
