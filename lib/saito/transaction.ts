@@ -98,7 +98,6 @@ class Transaction {
           fslip.block_id,
           fslip.tx_ordinal
         );
-
       }
       for (let i = 0; i < this.transaction.to.length; i++) {
         const fslip = this.transaction.to[i];
@@ -421,7 +420,7 @@ class Transaction {
       return this.dmsg;
     }
 
-    if (Object.keys(this.msg).length > 0) {
+    if (!!this.msg && Object.keys(this.msg).length > 0) {
       return this.msg;
     }
     const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
