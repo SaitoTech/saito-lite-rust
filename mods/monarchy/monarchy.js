@@ -120,6 +120,7 @@ class Monarchy extends GameTemplate {
 
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);
+    this.cardbox.makeDraggable();
 
     this.sizer.render(this.app, this);
     this.sizer.attachEvents(this.app, this, ".cardstacks");
@@ -1200,7 +1201,21 @@ initializeGame(game_id) {
     this.attachCardboxEvents();
 
     //Show Discard/DrawPiles
+    //>>>>>
     html = `<div class="player_decks">`;
+    html += `<div class="drawpile cardpile">`;
+    for (let i = 0; i < this.game.deck[this.game.player-1].crypt.length; i++){
+      html += `<img src="/${this.name.toLowerCase()}/img/cards/blank.jpg" style="bottom:${i}px;right:${i}px;">`;
+    }
+    html += `</div>
+            <div class="discardpile cardpile">
+    `;
+    let shift = 0;
+    for (let card in this.game.deck[this.game.player-1].discards){
+      let c = this.game.deck[this.game.player-1].discards[card];
+      html += `<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
+      shift++;
+    }
 
     html += "</div>";
     if (document.querySelector(".player_decks")){
