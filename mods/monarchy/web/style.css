@@ -46,6 +46,18 @@ body {
   background-color: whitesmoke;*/
 }
 
+.cardpile img{
+  width: 100%;
+  position: absolute;
+  border: 1px solid;
+  border-radius: 2.5%;
+}
+
+.cardpile img:first-child{
+  filter: drop-shadow(-8px 1px 6px #000A);
+}
+
+
 .passivecard{
   width: 100%;
   filter: brightness(0.8);
@@ -53,31 +65,52 @@ body {
 .passivecard:hover{
  filter:  brightness(1.0); 
 }
-.passivecard.dim{
-  filter: brightness(0.35);  
-}
 
 .cardstacks{
+  position: absolute;
   display: grid;
   grid-gap: 5px;
   grid-template-columns: repeat(30, minmax(auto, 20px));
-  width: fit-content;
   max-width: min(80vw,65vh);
-  margin: 60px auto;
-  box-shadow: 0 0 10px 5px black;
+  right: 1rem;
+  top: 60px;
+  transition: opacity 1s ease;
+  z-index: 505; /* Position higher than menu*/
+  /*box-shadow: 0 0 10px 5px black;
   background-color: #f5f5f555;
-  padding: 0.5em;
+  padding: 0.5em;*/
+}
+
+#log-wrapper{
+  z-index: 510;
 }
 
 .cardpile{
+  width: 13vw;
   max-width: 100px;
+  height: 21vw;
+  max-height: 160px;
   grid-column: span 5;
+  position: relative;
 }
 
 .cardpile:nth-child(n+7){
   grid-column: span 6;
   /*margin-left: 10px;*/
+  width: 16vw;
   max-width: 120px;
+  height: 25vw;
+  max-height: 192px;
+}
+
+.player_decks{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 240px;
+  height: 180px;
 }
 
 
@@ -85,9 +118,9 @@ body {
   font-weight: bold;
 }
 
-.showcard .tiptext{
+/*.showcard .tiptext{
   display: none;
-}
+}*/
 
 .tip .tiptext{
   width: calc(100% + 30px);
@@ -97,7 +130,7 @@ body {
 }
 
 .cardimg {
-      width: 100%;
+  width: 100%;
 }
 
 .hud-long{
@@ -255,14 +288,16 @@ body {
 @media screen and (min-width: 1200px){
   .cardstacks{
     max-width: 1200px;
-    width: 75vw;
     grid-template-columns: repeat(26, 1fr);
     grid-template-rows: repeat(12, 1fr);
   }
 
   .cardpile{
     margin: 2px;
+    width: 8.65vw;
     max-width: 120px;
+    height: 13.85vw;
+    max-height: 190px;
     grid-row-end: span 4;
     grid-column-end: span 3;
   }
@@ -270,7 +305,10 @@ body {
  .cardpile:nth-child(n+7){
     grid-column: span 4;
     grid-row-end: span 6;
+    width: 11.5vw;
     max-width: 180px;
+    height: 18.5vw;
+    max-height: 270px;
   } 
 
   .cardpile:nth-child(1){
@@ -297,4 +335,13 @@ body {
     grid-column-start: 4;
     grid-row-start: 9;
   }
+}
+
+
+.game-cardbox {
+  left: 1rem;
+  top: 50%;
+  width: 30vh;
+  max-width: 250px;
+  transform: translateY(-50%);
 }

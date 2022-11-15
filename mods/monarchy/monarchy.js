@@ -27,7 +27,7 @@ class Monarchy extends GameTemplate {
     this.categories 	 = "Games Boardgame Strategy Deckbuilding";
 
     this.hud.mode = 0;  // long-horizontal
-    this.hud.enable_mode_change = 1;
+    //this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
     this.hud.respectDocking = true;
     
@@ -121,12 +121,17 @@ class Monarchy extends GameTemplate {
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);
 
+    this.sizer.render(this.app, this);
+    this.sizer.attachEvents(this.app, this, ".cardstacks");
+
+
     //
     // add card events -- text shown and callback run if there
     //
+    this.cardbox.skip_card_prompt = 0;
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("logcard", "", null);
-    this.cardbox.addCardType("card", "play", this.cardbox_callback);
+    this.cardbox.addCardType("card", "", this.cardbox_callback);
     this.cardbox.addCardType("handy-help", "", function(){});
 
     //Test for mobile
@@ -147,9 +152,6 @@ class Monarchy extends GameTemplate {
 
     let hh = document.querySelector(".hud-header");
     if (hh){
-      if (!document.getElementById("zoom")){
-        this.app.browser.addElementToElement(`<i id="zoom" class="fas fa-search hud-controls" aria-hidden="true"" title="Toggle Zoom on Card Hover"></i>`, hh);
-      }
       if (!document.getElementById("my_hand") && this.game.player > 0){
         this.app.browser.addElementToElement(`<i id="my_hand" class="handy-help hud-controls fas fa-fw fa-hand-paper" aria-hidden="true"></i>`, hh);  
       }
@@ -350,6 +352,7 @@ initializeGame(game_id) {
         if (this.game.player == player){
           this.playerTurn();
         }else{
+          $(".cardstacks").css("opacity", "1");
           this.sortHand();
           this.updateStatusAndListCards(`Waiting for Player ${player} to play a card`);
         }
@@ -1047,6 +1050,7 @@ initializeGame(game_id) {
   playerTurn(){
     let we_self = this;
     if ((this.game.state.throneroom || this.game.state.actions > 0) && this.hasActionCard()){
+      $(".cardstacks").css("opacity", "0");
       this.updateStatusAndListCards(`Pick a card to play${this.game.state.throneroom?" twice":""}`,[],true);
       this.attachCardboxEvents(function(action){
         if (we_self.deck[action].type.includes("action")){
@@ -1063,15 +1067,12 @@ initializeGame(game_id) {
             we_self.game.state.actions--;            
           }
           we_self.endTurn();
-
-          $(".dim").removeClass("dim");
         }
       });
       this.bindBackButtonFunction(()=>{
         we_self.game.state.actions = 0;
         we_self.endTurn();
       });
-      $(".gameboard .cardpile").addClass('dim');
       return;
     }
 
@@ -1080,7 +1081,7 @@ initializeGame(game_id) {
     if (this.game.state.buys > 0){
 
       let available_coins = this.countMoney();
-      this.updateStatusAndListCards(`You have ${available_coins} coins and ${this.game.state.buys} card${(this.game.state.buys>0)?"s":""} to buy`,[],true);
+      this.updateStatusAndListCards(`You have ${available_coins} coins and ${this.game.state.buys} card${(this.game.state.buys>1)?"s":""} to buy`,[],true);
       this.filterBoardDisplay(available_coins);
       this.cardbox.addCardType("cardpile","buy", function(newcard){
         if (we_self.game.state.supply[newcard] <= 0){
@@ -1126,7 +1127,7 @@ initializeGame(game_id) {
     this.updateStatus(this.formatStatusHeader(`You may select a card worth up to ${max_value}`));
     this.filterBoardDisplay(max_value);
 
-    this.cardbox.addCardType("cardpile","buy", function(newcard){
+    this.cardbox.addCardType("cardpile","take", function(newcard){
       if (we_self.game.state.supply[newcard] <= 0){
         we_self.displayModal(`No ${we_self.cardToText(newcard)} available!`);
         return;
@@ -1168,13 +1169,19 @@ initializeGame(game_id) {
   }
 
   displayBoard(){
-    let html = `<div class="cardstacks">`;
-    let cardClass = ($("#zoom").hasClass("active"))?" showcard":"";
+    let html = "";
+    let cardClass = " showcard";
     for (let c in this.game.state.supply){
       if (c !== "curse"){
         html += `<div class="cardpile tip${cardClass}" id="${c}">`;
-        if (this.game.state.supply[c] > 0){
-          html += `<img class="passivecard" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}">`;
+        let count = this.game.state.supply[c]; 
+        if (count > 0){
+          for (let i = 0; i < count - 1; i++){
+            let shift = (count > 12) ? i : i*2;
+            html += `<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;  
+          }
+            let shift = (count > 12) ? count : count*2;
+          html += `<img class="passivecard" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
           html += `<div class="tiptext">Remaining Supply: ${this.game.state.supply[c]}</div>`;
         }else{
           html += `<img class="passivecard" src="/${this.name.toLowerCase()}/img/cards/blank.jpg">`;
@@ -1183,46 +1190,39 @@ initializeGame(game_id) {
         html += "</div>";  
       }
     }
-    html += "</div>";
 
-    $(".gameboard").html(html);
+    if (document.querySelector(".cardstacks")){
+      $(".cardstacks").html(html);
+    }else{
+      this.app.browser.addElementToId(`<div class="cardstacks">${html}</div>`, "gameboard");
+      $(".cardstacks").draggable();
+    }
     this.attachCardboxEvents();
-    this.attachBoardEvents();
+
+    //Show Discard/DrawPiles
+    html = `<div class="player_decks">`;
+
+    html += "</div>";
+    if (document.querySelector(".player_decks")){
+      this.app.browser.replaceElementBySelector(html, ".player_decks");
+    }else{
+      this.app.browser.addElementToId(html, "gameboard");
+    }
+
   }
 
   filterBoardDisplay(max){
+    $(".cardstacks").css("opacity", "1");
+
     for (let c in this.game.state.supply){
       if (c !== "curse"){
         if (this.deck[c].cost > max){
-          $(`#${c}.cardpile img`).css("filter","brightness(0.15)");
+          $(`#${c}.cardpile img`).css("filter","brightness(0.45) grayscale(100%)");
         }else{
           $(`#${c}.cardpile img`).css("filter","brightness(0.95)");
         }
       }
     }
-  }
-
-  attachBoardEvents(){
-    let we_self = this;
-    $("#zoom").off();
-    $("#zoom").on("click",function(){
-      $("#zoom").toggleClass("active");
-      if ($("#zoom").hasClass("active")){
-        $(".cardpile").addClass("showcard");
-        $(".cardpile").removeClass("tip");
-      }else{
-        we_self.cardbox.detachCardEvents();
-        $(".cardpile").addClass("tip");
-        $(".cardpile").removeClass("showcard");
-      }
-      
-      //We don't use attachCardboxEvents because player may have events attached
-      //to the HUD that would be wiped out
-      we_self.cardbox.attachCardEvents();
-    });
-
-    $(".cardstacks").draggable();
-
   }
 
   returnPlayerVP(player){
