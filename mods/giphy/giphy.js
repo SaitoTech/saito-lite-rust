@@ -11,7 +11,7 @@ Modules can also provide a callback to determine how the image (url) is processe
 const { GiphyFetch } = require('@giphy/js-fetch-api')
 const { renderGif, renderGrid } = require('@giphy/js-components');
 const SaitoOverlay = require("./../../lib/saito/new-ui/saito-overlay/saito-overlay");
-const saitoGifTemplate = require('./giphy.template');
+const saitoGifTemplate = require('./lib/giphy.template');
 const SaitoLoader = require('./../../lib/saito/new-ui/saito-loader/saito-loader');
 const ModTemplate = require('../../lib/templates/modtemplate');
 
