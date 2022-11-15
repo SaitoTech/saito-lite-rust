@@ -32,7 +32,7 @@ class Arcade extends ModTemplate {
     this.request_no_interrupts = false; // ask other modules not to insert content
 
     this.viewing_arcade_initialization_page = 0;
-    this.viewing_game_homepage = this.name; 
+    this.viewing_game_homepage = this.name;
 
     this.icon_fa = "fas fa-gamepad";
 
@@ -40,7 +40,7 @@ class Arcade extends ModTemplate {
 
     this.active_tab = "arcade";
     this.manual_ordering = false; // Toggle this to either sort games by their categories or go by the module.config order
-    
+
     this.ui_initialized = false;
 
     this.styles = ['/saito/saito.css', "/arcade/carousel.css", "/arcade/style.css", "/arcade/saito-arcade-invites.css"];
@@ -186,7 +186,7 @@ class Arcade extends ModTemplate {
     app.connection.on("game-ready", (gameid)=>{
       this.launchGame(gameid);
     });
-    
+
     app.connection.on("arcade-gametable-addplayer", (game_id)=>{
 
       let accepted_game = this.games.find((g) => g.transaction.sig === game_id);
@@ -273,7 +273,7 @@ class Arcade extends ModTemplate {
   // load transactions into interface when the network is up
   onPeerHandshakeComplete(app, peer) {
     if (!app.BROWSER) {
-      return; 
+      return;
     }
     // fetch any usernames needed
     app.browser.addIdentifiersToDom();
@@ -295,6 +295,9 @@ class Arcade extends ModTemplate {
               if (arcade_self.debug) { console.log(JSON.parse(JSON.stringify(row))); };
               if (row.status == "open" || row.status == "private") {
                 let newtx = new saito.default.transaction(JSON.parse(row.tx));
+                if (!newtx.msg){
+                  newtx.msg = {};
+                }
                 //Update players/players_sigs in TX Message from SQL data
                 let player_info = row.players_array.split("_");
                 for (let pi of player_info){
@@ -336,6 +339,9 @@ class Arcade extends ModTemplate {
                 console.log(JSON.parse(row.tx));
               }
               let newtx = new saito.default.transaction(JSON.parse(row.tx));
+              if (!newtx.msg){
+                newtx.msg = {};
+              }
               //Update players/players_sigs in TX Message from SQL data
               let player_info = row.players_array.split("_");
               for (let pi of player_info){
@@ -467,10 +473,10 @@ class Arcade extends ModTemplate {
     if (this.debug) { console.log(JSON.parse(JSON.stringify(players))); }
 
     //Update Arcade hero to reflect new player
-    this.joinGameOnOpenList(tx) 
-    
-    if (this.debug) { 
-      console.log(JSON.parse(JSON.stringify(players))); 
+    this.joinGameOnOpenList(tx)
+
+    if (this.debug) {
+      console.log(JSON.parse(JSON.stringify(players)));
       this.checkGameDatabase();
     }
 
@@ -499,7 +505,7 @@ class Arcade extends ModTemplate {
     //
     // in this case the last player sends an accept request which triggers
     // the start of the game automatically.
-    
+
     let number_of_willing_players = accepted_game.msg.players.length;
     let number_of_players_needed = accepted_game.msg.players_needed;
 
@@ -522,7 +528,7 @@ class Arcade extends ModTemplate {
           peers.push(app.network.peers[i].returnPublicKey());
         }
 
-        
+
         //Creating an accepttransaction will push these back on the end of the array
         accepted_game.msg.players.splice(0, 1);
         accepted_game.msg.players_sigs.splice(0, 1);
@@ -554,7 +560,7 @@ class Arcade extends ModTemplate {
 
     let gamemod = this.app.modules.returnModule(txmsg.game);
     console.log(JSON.parse(JSON.stringify(txmsg)));
-    
+
     if (!gamemod){
       console.error("Game module not found!");
       return;
@@ -579,7 +585,7 @@ class Arcade extends ModTemplate {
       //console.log("TX not for me");
       return;
     }
-  
+
     this.addMyGamesToOpenList();
 
     // do not re-accept if game is really old (sanity check)
@@ -612,7 +618,7 @@ class Arcade extends ModTemplate {
         app.connection.emit("arcade-game-loading");
         siteMessage(txmsg.module + ' invite accepted.', 20000);
       }
-      
+
       if (this.debug){
         console.info("MY CREATED GAMES: ", this.app?.options?.games);
         console.log("telling game module to receiveAcceptTx");
@@ -620,9 +626,9 @@ class Arcade extends ModTemplate {
 
       //Create Game Here
       let game_id = await gamemod.processAcceptRequest(tx, this.app);
-      
+
       if (!game_id) {
-        console.log("Game template returned a null game_id"); 
+        console.log("Game template returned a null game_id");
         await sconfirm("Something went wrong with the game initialization, reload?");
         window.location.reload();
       }
@@ -707,14 +713,14 @@ class Arcade extends ModTemplate {
           if (this.debug) { console.log("onConfirmation: accept game received"); }
           this.acceptGame(app, tx);
         }
-      
+
       if (txmsg.request === "gameover") {
         //Process Gameovers
         this.viewing_arcade_initialization_page = 0; //Make sure can restore arcade main
         if (txmsg.reason == "cancellation") {
-          this.receiveCloseRequest(blk, tx, conf, app); //Update SQL Database  
+          this.receiveCloseRequest(blk, tx, conf, app); //Update SQL Database
         } else {
-          this.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database  
+          this.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
         }
         if (this.debug) { console.log("Game over (On Chain), removing game"); }
       }
@@ -743,6 +749,9 @@ class Arcade extends ModTemplate {
           tx = new saito.default.transaction(message.data.tx.transaction);
         }
 
+        if (!tx.msg){
+          tx.msg = {};
+        }
         let txmsg = tx.returnMessage();
         let conf = 0;
         let blk = null;
@@ -832,10 +841,10 @@ class Arcade extends ModTemplate {
       if (txmsg.request == "gameover"){
         this.viewing_arcade_initialization_page = 0; //Make sure can restore arcade main
         if (txmsg.reason == "cancellation") {
-          this.receiveCloseRequest(blk, tx, conf, app); //Update SQL Database  
+          this.receiveCloseRequest(blk, tx, conf, app); //Update SQL Database
         } else {
-          this.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database  
-        } 
+          this.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
+        }
         if (this.debug) { console.log("Game over (RELAY), removing game"); }
       }
 
@@ -1033,7 +1042,9 @@ class Arcade extends ModTemplate {
       if (res.rows && res.rows.length > 0) {
         let orig_status = res.rows[0].status;
         let newtx = new saito.default.transaction(JSON.parse(res.rows[0].tx));
-
+        if (!tx.msg){
+          tx.msg = {};
+        }
         if (this.debug) {
           console.log(res.rows[0]);
           console.log(`Changing status from ${orig_status} to ${new_status}`);
@@ -1294,6 +1305,9 @@ class Arcade extends ModTemplate {
               console.log("Pending Messages!?!");
               for (let j = 0; j < this.app.wallet.wallet.pending.length; j++) {
                 let thistx = new saito.default.transaction(JSON.parse(this.app.wallet.wallet.pending[j]));
+                if (!thistx.msg){
+                  thistx.msg = {};
+                }
                 let thistxmsg = thistx.returnMessage();
 
                 if (thistxmsg.module == this.app.options.games[i].module && thistxmsg.game_id == game_id && thistxmsg?.step?.game) {
@@ -1514,7 +1528,7 @@ class Arcade extends ModTemplate {
           this.games[i].msg.players_sigs.push(txmsg.invite_sig);
 
           this.updatePlayerList(txmsg.game_id, this.games[i].msg.players, this.games[i].msg.players_sigs);
-     
+
           if (this.debug) { console.log("Player should get added to arcade hero"); }
           this.main.renderArcadeTab(this.app, this);
           return true;
@@ -1523,7 +1537,7 @@ class Arcade extends ModTemplate {
     }
 
     return false;
-    
+
   }
 
   leaveGameOnOpenList(tx) {
@@ -1632,11 +1646,11 @@ class Arcade extends ModTemplate {
     });
 
     this.removeOldGames();
-    this.main.renderArcadeTab(this.app, this);      
+    this.main.renderArcadeTab(this.app, this);
 
   }
 
-  
+
   //
   // add my own games (as fake txs)
   //
@@ -1749,7 +1763,7 @@ class Arcade extends ModTemplate {
         let crypto_transfer_manager = new GameCryptoTransferManager(this.app);
         let success = await crypto_transfer_manager.confirmBalance(this.app, this, game_options.crypto, game_options.stake);
         if (!success){ return; }
-        
+
       }else{
         if (confirm_join){
           //We move the confirmation down here, so you don't have to click twice on crypto games
@@ -1784,7 +1798,7 @@ class Arcade extends ModTemplate {
     let { players } = accepted_game.returnMessage();
     let players_needed = parseInt(accepted_game.msg.players_needed);
     let players_available = players.length;
-    
+
 
     let newtx = this.createJoinTransaction(accepted_game);
     this.app.network.propagateTransaction(newtx);
@@ -1897,7 +1911,7 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    //Create invite link from the game_sig 
+    //Create invite link from the game_sig
     let inviteLink = window.location.href;
     if (!inviteLink.includes("#")) {
       inviteLink += "#";
@@ -1930,7 +1944,7 @@ class Arcade extends ModTemplate {
           let c = await sconfirm(`There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`);
           if (!c){
             return false;
-          } 
+          }
         }
       }
     }
@@ -1942,8 +1956,8 @@ class Arcade extends ModTemplate {
       if (options.crypto && parseFloat(options.stake) > 0) {
         let crypto_transfer_manager = new GameCryptoTransferManager(this.app);
         let success = await crypto_transfer_manager.confirmBalance(this.app, this, options.crypto, options.stake);
-        if (!success){ 
-          return false; 
+        if (!success){
+          return false;
         }
       }
     }catch(err){
@@ -2008,16 +2022,16 @@ class Arcade extends ModTemplate {
       }
 
       this.app.connection.emit("send-relay-message", {recipient: peers, request: "arcade spv update", data: newtx});
-  
+
       this.addGameToOpenList(newtx);
 
       this.active_tab = "arcade"; //So it refreshes to show the new game invite
-  
+
       //this.renderArcadeMain(this.app, this.mod);
 
       if (gameType == "private") {
         console.log(newtx);
-        //Create invite link from the game_sig 
+        //Create invite link from the game_sig
         this.showShareLink(newtx.transaction.sig);
       }
     }

@@ -796,6 +796,9 @@ class Arcade extends ModTemplate {
         if (tx == null) {
           tx = new saito.default.transaction(message.data.tx.transaction);
         }
+      if (!tx.msg){
+        tx.msg = {};
+      }
 
         let txmsg = tx.returnMessage();
         let conf = 0;
@@ -1087,7 +1090,9 @@ class Arcade extends ModTemplate {
       if (res.rows && res.rows.length > 0) {
         let orig_status = res.rows[0].status;
         let newtx = new saito.default.transaction(JSON.parse(res.rows[0].tx));
-
+        if (!newtx.msg){
+          newtx.msg = {};
+        }
         if (this.debug) {
           console.log(res.rows[0]);
           console.log(`Changing status from ${orig_status} to ${new_status}`);
@@ -1348,6 +1353,9 @@ class Arcade extends ModTemplate {
               console.log("Pending Messages!?!");
               for (let j = 0; j < this.app.wallet.wallet.pending.length; j++) {
                 let thistx = new saito.default.transaction(JSON.parse(this.app.wallet.wallet.pending[j]));
+                if (!thistx.msg){
+                  thistx.msg = {};
+                }
                 let thistxmsg = thistx.returnMessage();
 
                 if (thistxmsg.module == this.app.options.games[i].module && thistxmsg.game_id == game_id && thistxmsg?.step?.game) {

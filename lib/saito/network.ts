@@ -1,11 +1,11 @@
 import * as JSON from "json-bigint";
-import {Saito} from "../../apps/core";
+import { Saito } from "../../apps/core";
 import Peer from "./peer";
 import WSWebSocket from "ws";
 import fetch from "node-fetch";
 import Transaction from "./transaction";
 import Block from "./block";
-import {MessageType} from "./networkapi";
+import { MessageType } from "./networkapi";
 
 class Network {
   public app: Saito;
@@ -144,34 +144,33 @@ class Network {
     peer.keepAlive();
   }
 
-
-  addStunPeer(stun_object){
+  addStunPeer(stun_object) {
     let pc = stun_object.peer_connection;
-    let publickey = stun_object.publickey
-    let data_channel = stun_object.data_channel
+    let publickey = stun_object.publickey;
+    let data_channel = stun_object.data_channel;
 
     data_channel.onmessage = (e) => {
-      console.log('new mesage from ', publickey)
+      console.log("new mesage from ", publickey);
     };
-   
+
     data_channel.onopen = (e) => {
-        console.log('stun connection opened with '+publickey, "opened ");
-    }
+      console.log("stun connection opened with " + publickey, "opened ");
+    };
 
     const peer = new Peer(this.app);
-    peer.stun = {peer_connection:pc, data_channel, publickey};
+    peer.stun = { peer_connection: pc, data_channel, publickey };
     peer.peer.publickey = publickey;
     peer.uses_stun = true;
 
-   let index = this.peers.findIndex(peer => peer.stun.publickey === publickey);
-    if(index === -1){
-     this.peers.push(peer)
-    }else {
-      this.peers[index] = peer
+    let index = this.peers.findIndex((peer) => peer.stun.publickey === publickey);
+    if (index === -1) {
+      this.peers.push(peer);
+    } else {
+      this.peers[index] = peer;
     }
     this.peers.push(peer);
     this.peers_connected++;
-    console.log('adding stun peer', peer);
+    console.log("adding stun peer", peer);
   }
 
   //
@@ -249,10 +248,12 @@ class Network {
 
     let url = "";
     try {
-      if (!peer.peer.block_fetch_url){
+      if (!peer.peer.block_fetch_url) {
         console.error("peer block fetch url is not set");
       }
-      let base_url = peer.peer.block_fetch_url.endsWith('/')?peer.peer.block_fetch_url:peer.peer.block_fetch_url+"/";
+      let base_url = peer.peer.block_fetch_url.endsWith("/")
+        ? peer.peer.block_fetch_url
+        : peer.peer.block_fetch_url + "/";
       url = `${base_url}${block_hash}`;
       if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
         // TODO : Tharinda to fix. need to get endpoint details in handshake for this
@@ -260,10 +261,10 @@ class Network {
           peer.peer.port
         }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
       }
-      console.log("fetching url : "+url);
+      console.log("fetching url : " + url);
       const res = await fetch(url);
       if (res.ok) {
-        const blob = await res.blob();//arrayBuffer();
+        const blob = await res.blob(); //arrayBuffer();
         // const buffer = Buffer.from(Buffer.from(base64Buffer).toString("utf-8"), "base64");
         const buffer = Buffer.from(await blob.arrayBuffer());
         console.log("block fetched : " + block_hash + " size = " + buffer.length);
@@ -278,15 +279,17 @@ class Network {
         this.app.mempool.addBlock(block);
       } else {
         // if (this.debugging) {
-          console.error(`Error fetching block from :${url}: Status ${res.status} -- ${res.statusText}`);
+        console.error(
+          `Error fetching block from :${url}: Status ${res.status} -- ${res.statusText}`
+        );
         // }
       }
     } catch (err) {
       // if (this.debugging) {
-        console.error(`Error fetching block: ${url}`);
+      console.error(`Error fetching block: ${url}`);
       // }
       // if (this.debugging) {
-        console.error(err);
+      console.error(err);
       // }
     }
     return;
@@ -403,8 +406,7 @@ class Network {
   }
 
   cleanupDisconnectedPeer(peer, force = 0) {
-  
-    if(peer.uses_stun){
+    if (peer.uses_stun) {
       return;
     }
 
@@ -600,7 +602,7 @@ class Network {
     let block;
     let block_hash;
     let fork_id;
-    let block_id:bigint;
+    let block_id: bigint;
     let bytes;
     let response;
     let is_block_indexed;
@@ -609,11 +611,7 @@ class Network {
 
     switch (message.message_type) {
       case MessageType.HandshakeChallenge: {
-
-        await this.app.handshake.handleIncomingHandshakeChallenge(
-            peer,
-            message.message_data
-        );
+        await this.app.handshake.handleIncomingHandshakeChallenge(peer, message.message_data);
 
         break;
       }
@@ -701,7 +699,10 @@ class Network {
         let previous_block_hash = syncobj.start;
 
         for (let i = 0; i < syncobj.prehash.length; i++) {
-          let buf = Buffer.concat([Buffer.from(syncobj.prehash[i],"hex"),Buffer.from(previous_block_hash,"hex")]);
+          let buf = Buffer.concat([
+            Buffer.from(syncobj.prehash[i], "hex"),
+            Buffer.from(previous_block_hash, "hex"),
+          ]);
           let block_hash = this.app.crypto.hash(buf);
 
           //if (this.debugging) { console.log("block hash as: " + block_hash); }
@@ -812,7 +813,11 @@ class Network {
         syncobj.start =
           this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
 
-        for (let i = last_shared_ancestor + BigInt(1); i <= this.app.blockring.returnLatestBlockId(); i++) {
+        for (
+          let i = last_shared_ancestor + BigInt(1);
+          i <= this.app.blockring.returnLatestBlockId();
+          i++
+        ) {
           block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
           if (block_hash !== "") {
             if (this.app.blockchain.blocks.get(block_hash)) {
@@ -855,7 +860,7 @@ class Network {
       // this delivers the block as block_hash
       //
       case MessageType.BlockHeaderHash:
-        block_hash = Buffer.from(message.message_data.slice(0,32), "hex").toString("hex");
+        block_hash = Buffer.from(message.message_data.slice(0, 32), "hex").toString("hex");
         console.log("BlockHeaderHash received : " + block_hash);
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
@@ -920,7 +925,9 @@ class Network {
                     msg.data.transaction.msg = null;
                   } else {
                     msg.data.transaction.msg = JSON.parse(
-                        this.app.crypto.base64ToString(msg.data.transaction.m)
+                      this.app.crypto.base64ToString(
+                        Buffer.from(msg.data.transaction.m).toString("base64")
+                      )
                     );
                   }
                   msg.data.msg = msg.data.transaction.msg;
@@ -946,8 +953,6 @@ class Network {
   }
 
   pollPeers() {
-
-
     let network_self = this;
 
     // console.debug(
@@ -957,8 +962,7 @@ class Network {
     // loop through peers to see if disconnected
     //
     this.app.network.peers.forEach((peer) => {
-
-      if(peer.uses_stun){
+      if (peer.uses_stun) {
         return;
       }
       //
@@ -1025,7 +1029,10 @@ class Network {
     const data = { bhash: blk.returnHash(), bid: blk.block.id };
     for (let i = 0; i < this.peers.length; i++) {
       if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
-        let blockheader = Buffer.concat([Buffer.from(blk.returnHash(), "hex"), this.app.binary.u64AsBytes(blk.returnId())]);
+        let blockheader = Buffer.concat([
+          Buffer.from(blk.returnHash(), "hex"),
+          this.app.binary.u64AsBytes(blk.returnId()),
+        ]);
         this.sendRequest("SNDBLKHH", blockheader, this.peers[i]);
       }
     }
@@ -1095,7 +1102,7 @@ class Network {
       return;
     }
 
-    for (let i = 0 ; i < tx.transaction.from.length ; ++i) {
+    for (let i = 0; i < tx.transaction.from.length; ++i) {
       tx.transaction.from[i].generateKey(this.app);
     }
     //
@@ -1124,7 +1131,7 @@ class Network {
           return;
         } else {
           if (this.debugging) {
-            console.log(" ... added transaction : "+tx.transaction.sig);
+            console.log(" ... added transaction : " + tx.transaction.sig);
           }
         }
         if (this.app.mempool.canBundleBlock()) {
@@ -1133,7 +1140,7 @@ class Network {
       }
     }
 
-    console.log("propagating tx with sig: ",tx.transaction.sig);
+    console.log("propagating tx with sig: ", tx.transaction.sig);
 
     //
     // now send the transaction out with the appropriate routing hop
@@ -1150,7 +1157,7 @@ class Network {
       }
       if (!peer.inTransactionPath(tx) && !!peer.returnPublicKey()) {
         const tmptx = peer.addPathToTransaction(tx);
-        if (peer.socket && peer.socket.readyState === peer.socket.OPEN ) {
+        if (peer.socket && peer.socket.readyState === peer.socket.OPEN) {
           // 1 = WebSocket Open
           this.sendRequest("SNDTRANS", tmptx.serialize(this.app), peer);
         } else {
@@ -1173,7 +1180,9 @@ class Network {
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;
 
-    console.log(`requesting blockchain from peer : latest block id= ${latest_block_id} latest block hash = ${latest_block_hash} fork id = ${fork_id}`);
+    console.log(
+      `requesting blockchain from peer : latest block id= ${latest_block_id} latest block hash = ${latest_block_hash} fork id = ${fork_id}`
+    );
 
     if (this.app.BROWSER == 1) {
       if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {
@@ -1220,7 +1229,7 @@ class Network {
     }
   }
 
-  sendRequest(message : string, data: any = "", peer: Peer = null) {
+  sendRequest(message: string, data: any = "", peer: Peer = null) {
     if (peer !== null) {
       peer.sendRequest(message, data);
     } else {
@@ -1230,7 +1239,7 @@ class Network {
     }
   }
 
-  sendRequestWithCallback(message : string, data = "", callback, peer = null) {
+  sendRequestWithCallback(message: string, data = "", callback, peer = null) {
     if (peer !== null) {
       for (let x = this.peers.length - 1; x >= 0; x--) {
         if (this.peers[x] === peer) {

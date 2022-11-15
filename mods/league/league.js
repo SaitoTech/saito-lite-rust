@@ -61,7 +61,7 @@ class League extends ModTemplate {
       for (let league of this.leagues){
         if (league.admin !== "saito"){
           user_created_leagues.push(league);
-        }        
+        }
       }
 
       return user_created_leagues;
@@ -83,8 +83,8 @@ class League extends ModTemplate {
        for (let league of this.leagues){
          if (league.id == id){
            let bs = new ViewLeagueDetails(app);
-           bs.render(app, this, league); 
-         }        
+           bs.render(app, this, league);
+         }
        }
     });
 
@@ -137,7 +137,7 @@ class League extends ModTemplate {
 
    let sql = `INSERT OR REPLACE INTO leagues (id, game, type, admin, name, description, ranking, starting_score, max_players)
                   VALUES ($id, $game, "public", "saito", $name, $desc, $rank, $start, 0)`;
-   
+
    let params = {
     $id: modObj.module.toUpperCase(),
     $game: modObj.module,
@@ -177,7 +177,7 @@ class League extends ModTemplate {
 
   async pruneOldGames(app){
     let sql = `DELETE FROM games WHERE rank > 10`;
-    await app.storage.executeDatabase(sql, {}, "league");    
+    await app.storage.executeDatabase(sql, {}, "league");
   }
 
 
@@ -214,7 +214,7 @@ class League extends ModTemplate {
     }
 
     //sort leagues
-    leagues_to_display.sort((a, b) =>{ 
+    leagues_to_display.sort((a, b) =>{
       if (a.id === "SAITOLICIOUS") { return -1};
       if (b.id === "SAITOLICIOUS") { return 1};
       if (a.myRank < 0) {return 1;}
@@ -274,7 +274,7 @@ class League extends ModTemplate {
   //Lite clients only
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER == 0){ return; }
-    
+
     let league_self = this;
 
     //If following an invite link, look for the game_id in question
@@ -298,7 +298,7 @@ class League extends ModTemplate {
             league_self.leagues.push(row);
           });
 
-        } 
+        }
       }
     );
   }
@@ -323,7 +323,7 @@ class League extends ModTemplate {
           if (app.BROWSER){
             console.log("Receive League Create Request");
             this.addLeague(tx);
-          } 
+          }
         }
 
         if (txmsg.request === "join league") {
@@ -332,9 +332,9 @@ class League extends ModTemplate {
           //Update saito-lite, refresh UI
           if (app.BROWSER){
             console.log("Receive League Join Request");
-            this.addPlayer(tx);  
+            this.addPlayer(tx);
           }
-          
+
         }
 
         if (txmsg.request === "remove league") {
@@ -343,9 +343,9 @@ class League extends ModTemplate {
           //Update saito-lite, refresh UI
           if (app.BROWSER){
             console.log("Receive League Removal Request");
-            this.removeLeague(txmsg.request.league);  
+            this.removeLeague(txmsg.request.league);
           }
-          
+
         }
 
         if (txmsg.request === "quit league") {
@@ -354,9 +354,9 @@ class League extends ModTemplate {
           //Update saito-lite, refresh UI
           if (app.BROWSER){
             console.log("Receive Quit Request");
-            this.removePlayer(tx);  
+            this.removePlayer(tx);
           }
-        }        
+        }
 
         //Listen for gameovers
         if (txmsg.request === "gameover"){
@@ -442,7 +442,7 @@ class League extends ModTemplate {
       }
     }
     if (newLeague){
-      this.leagues.push(lobj);      
+      this.leagues.push(lobj);
     }
 
     //setTimeout(()=>{
@@ -470,7 +470,7 @@ class League extends ModTemplate {
     }
    // setTimeout(()=>{
    //   this.renderLeagues(this.app, this);
-   // },1000); 
+   // },1000);
   }
 
   removePlayer(tx){
@@ -482,7 +482,7 @@ class League extends ModTemplate {
     }
    // setTimeout(()=>{
    //   this.renderLeagues(this.app, this);
-   // },1000); 
+   // },1000);
 
   }
 
@@ -518,9 +518,9 @@ class League extends ModTemplate {
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
     setTimeout(()=>{
-      this.addPlayer(newtx);  
+      this.addPlayer(newtx);
     },1500);
-    
+
   }
 
   async receiveJoinLeagueTransaction(blk, tx, conf, app) {
@@ -531,7 +531,7 @@ class League extends ModTemplate {
     let publickey  = tx.transaction.from[0].add;
 
     let base_score = await this.getLeagueData(league_id, "starting_score");
-    
+
     let sql = `INSERT INTO players (
                 league_id,
                 pkey,
@@ -570,9 +570,9 @@ class League extends ModTemplate {
     this.app.network.propagateTransaction(newtx);
 
     setTimeout(()=>{
-      this.removePlayer(newtx);  
+      this.removePlayer(newtx);
     },2500);
-    
+
   }
 
   async receiveQuitLeagueTransaction(blk, tx, conf, app){
@@ -681,7 +681,7 @@ class League extends ModTemplate {
         }
       }
       this.countGameStart(publickeys, leag);
-    
+
     }
   }
 
@@ -755,7 +755,7 @@ class League extends ModTemplate {
       && gameover){
       return;
     }
-    
+
     let game = txmsg.module;
 
     //Which leagues may this gameover affect?
@@ -816,7 +816,7 @@ class League extends ModTemplate {
       //Update players in the league based on results
       if (leag.ranking == "elo"){
         //All players must belong to ELO league for points to change
-        
+
         let playerStats = await this.isELOeligible(publickeys, leag);
 
         if (!playerStats){
@@ -844,12 +844,12 @@ class League extends ModTemplate {
         console.log(winner, loser);
         for (let p of winner){
           let outcome = (winner.length == 1) ? "games_won" : "games_tied";
-          p.score += p.k * ( (1/winner.length) - (p.q / qsum)); 
+          p.score += p.k * ( (1/winner.length) - (p.q / qsum));
           await this.updatePlayerScore(p, outcome);
         }
         for (let p of loser){
-          p.score -= (p.k * p.q / qsum); 
-          await this.updatePlayerScore(p); 
+          p.score -= (p.k * p.q / qsum);
+          await this.updatePlayerScore(p);
         }
 
       }else if (leag.ranking == "exp"){
@@ -884,7 +884,7 @@ class League extends ModTemplate {
         //No idea what to do here, but should call a function of the game module/game engine
       }
     }
-    
+
   }
 
   //Our native ELO system
@@ -923,8 +923,8 @@ class League extends ModTemplate {
 
 
   /**
-   * 
-   */ 
+   *
+   */
   updateLeague(league, invitation = false){
     let lid = league.id;
     let pid = this.app.wallet.returnPublicKey();
@@ -944,7 +944,7 @@ class League extends ModTemplate {
           let cnt = 0;
           for (let p of res.rows){
             league.players.push(p.pkey); //Keep a list of who is in each league
-            cnt++; //Count number of players 
+            cnt++; //Count number of players
             if (p.pkey == pid){
               league.myRank = cnt; //I am the cnt player in the leaderboard
             }
@@ -958,7 +958,7 @@ class League extends ModTemplate {
         if (invitation){
           let myLocation = window.location.href;
           myLocation = myLocation.substring(0, myLocation.indexOf("?")-1);
-          myLocation = myLocation.replace("league","arcade"); 
+          myLocation = myLocation.replace("league","arcade");
 
           if (league.myRank < 0){
             if (league_self.checkDate(league.startdate) || league.allowlate){
@@ -971,14 +971,14 @@ class League extends ModTemplate {
                 }
                 let c = await sconfirm("League full, cannot join");
                 window.location = myLocation;
-              }   
+              }
             }else{
               let c = await sconfirm("We are past the signup phase for the league");
               window.location = myLocation;
             }
           }else{
             let c = await sconfirm("You are already a member of the league");
-          }              
+          }
         }
 
         //console.log(`League updated: ${league.myRank} / ${league.playerCnt}`);
@@ -1062,8 +1062,8 @@ class League extends ModTemplate {
       console.log("League not found!");
       return;
     }
-    
-    //Create invite link from the game_sig 
+
+    //Create invite link from the game_sig
     let inviteLink = window.location.href;
     if (inviteLink.includes("arcade")){
       inviteLink = inviteLink.replace("arcade", "league");
@@ -1087,7 +1087,7 @@ class League extends ModTemplate {
 
   /**
    * Wrapper function to help us launch a League specific game!
-   */ 
+   */
   async createLeagueGame(league){
 
     let arcade_mod = this.app.modules.returnModule("Arcade");
@@ -1100,10 +1100,13 @@ class League extends ModTemplate {
     }
 
     let options = (league.options) ? JSON.parse(league.options) : null;
-    
+
     //Get options if needed through the normal interface
     if (!options){
       let tx = new saito.default.transaction();
+      if (!tx.msg){
+        tx.msg = {};
+      }
       tx.msg.game = league.game;
       if (league.admin !== "saito"){
         tx.msg.league = league.id;
@@ -1117,13 +1120,13 @@ class League extends ModTemplate {
     if (!c){
       return;
     }
- 
+
     options.league = league.id;
     options.game = league.game;
 
     //Create invite
     arcade_mod.makeGameInvite(options, "public");
-    
+
   }
 
 
@@ -1131,7 +1134,7 @@ class League extends ModTemplate {
     /*
     let arcade_mod = this.app.modules.returnModule("Arcade");
     if (!arcade_mod) { return; }
-    
+
     //Check League Membership
     if (!this.isLeagueMember(league.id)){
       salert("You need to be a member of the League to create a League-only game invite");
@@ -1139,7 +1142,7 @@ class League extends ModTemplate {
     }
 
     let options = (league.options) ? JSON.parse(league.options) : null;
-    
+
     //Get options if needed
     if (!options){
       let selector = new GameOptionsSelect(this.app);
@@ -1158,7 +1161,7 @@ class League extends ModTemplate {
     if (!c){
       return;
     }
- 
+
     options.league = league.id;
     options.game = league.game;
 
@@ -1166,8 +1169,8 @@ class League extends ModTemplate {
     let challenge_overlay = new SaitoOverlay(this.app);
     let players = [this.app.wallet.returnPublicKey(), player_id];
     this.app.connection.emit("arcade-issue-challenge", {
-      game: league.game, 
-      players: players, 
+      game: league.game,
+      players: players,
       options: options
     });
 
@@ -1180,12 +1183,12 @@ class League extends ModTemplate {
 
     this.app.connection.on("arcade-reject-challenge", (game_id)=>{
       clearTimeout(timeout);
-      challenge_overlay.show(this.app, this, ChallengeRejectedTemplate());      
+      challenge_overlay.show(this.app, this, ChallengeRejectedTemplate());
     });
 
     this.app.connection.on("arcade-game-loading" , () =>{
       clearTimeout(timeout);
-      challenge_overlay.show(this.app, this, ChallengeAcceptedTemplate());      
+      challenge_overlay.show(this.app, this, ChallengeAcceptedTemplate());
     });
   */
   }

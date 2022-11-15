@@ -1492,6 +1492,9 @@ class RedSquare extends ModTemplate {
 
           for (let i = 0; i < rows.length; i++) {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+            if (!tx.msg){
+              tx.msg = {};
+            }
             let txmsg = tx.returnMessage();
             let text = tx.msg.data.text;
             let publickey = tx.transaction.from[0].add;
@@ -1534,6 +1537,9 @@ class RedSquare extends ModTemplate {
 
           for (let i = 0; i < rows.length; i++) {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+            if (!tx.msg){
+              tx.msg = {};
+            }
             let txmsg = tx.returnMessage();
 
             if (typeof tx.msg.data.images != "undefined") {

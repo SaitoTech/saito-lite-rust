@@ -526,7 +526,8 @@ class StorageCore extends Storage {
       }
       return rows;
     } catch (err) {
-      console.log(err);
+      console.log("failed executing sql : ", sql);
+      console.error(err);
       return [];
     }
   }

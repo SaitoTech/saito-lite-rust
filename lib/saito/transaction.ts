@@ -80,7 +80,9 @@ class Transaction {
           if (buffer.byteLength === 0) {
             this.msg = null;
           } else {
-            const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+            const reconstruct = this.base64ToString(
+              Buffer.from(this.transaction.m).toString("base64")
+            );
             this.msg = JSON.parse(reconstruct);
           }
         } catch (err) {
@@ -249,7 +251,9 @@ class Transaction {
         if (this.transaction.m.byteLength === 0) {
           this.msg = null;
         } else {
-          const reconstruct = this.transaction.m.toString("utf-8");
+          const reconstruct = app.crypto.base64ToString(
+            Buffer.from(this.transaction.m).toString("base64")
+          );
           this.msg = JSON.parse(reconstruct);
         }
       }
@@ -423,10 +427,10 @@ class Transaction {
     if (!!this.msg && Object.keys(this.msg).length > 0) {
       return this.msg;
     }
-    const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+
     try {
       if (this.transaction.m && this.transaction.m.byteLength > 0) {
-        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+        const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString("base64"));
         this.msg = JSON.parse(reconstruct);
       } else {
         this.msg = null;
