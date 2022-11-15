@@ -64,7 +64,7 @@ class Transaction {
     // are behind the transactions.
 
     this.optional = {}; // non-signed field for users
-    this.msg = null;
+    this.msg = {};
     this.dmsg = "";
     this.size = 0;
     this.is_valid = 1;
@@ -78,7 +78,7 @@ class Transaction {
         try {
           let buffer = Buffer.from(this.transaction.m);
           if (buffer.byteLength === 0) {
-            this.msg = null;
+            this.msg = {};
           } else {
             const reconstruct = this.base64ToString(
               Buffer.from(this.transaction.m).toString("base64")
@@ -249,7 +249,7 @@ class Transaction {
     try {
       if (this.transaction.type === TransactionType.Normal) {
         if (this.transaction.m.byteLength === 0) {
-          this.msg = null;
+          this.msg = {};
         } else {
           const reconstruct = app.crypto.base64ToString(
             Buffer.from(this.transaction.m).toString("base64")
@@ -433,7 +433,7 @@ class Transaction {
         const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString("base64"));
         this.msg = JSON.parse(reconstruct);
       } else {
-        this.msg = null;
+        this.msg = {};
       }
     } catch (err) {
       // TODO : handle this without printing an error
@@ -731,7 +731,7 @@ class Transaction {
     // transaction message
     //
     if (this.transaction.m.byteLength === 0) {
-      if (this.msg === null) {
+      if (Object.keys(this.msg).length === 0) {
         this.transaction.m = Buffer.alloc(0);
       } else {
         this.transaction.m = Buffer.from(

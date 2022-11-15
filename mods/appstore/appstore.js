@@ -463,7 +463,6 @@ try {
       if (tx.isFrom(this.app.wallet.returnPublicKey())) {
 
         let newtx = this.app.wallet.createUnsignedTransaction();
-        if (!newtx.msg) newtx.msg = {};
             newtx.msg.module       = "Email";
             newtx.msg.title        = "Saito Application Published";
             newtx.msg.message      = `

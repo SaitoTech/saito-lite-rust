@@ -1104,9 +1104,6 @@ class League extends ModTemplate {
     //Get options if needed through the normal interface
     if (!options){
       let tx = new saito.default.transaction();
-      if (!tx.msg){
-        tx.msg = {};
-      }
       tx.msg.game = league.game;
       if (league.admin !== "saito"){
         tx.msg.league = league.id;

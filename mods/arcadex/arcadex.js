@@ -295,9 +295,6 @@ class Arcade extends ModTemplate {
               if (arcade_self.debug) { console.log(JSON.parse(JSON.stringify(row))); };
               if (row.status == "open" || row.status == "private") {
                 let newtx = new saito.default.transaction(JSON.parse(row.tx));
-                if (!newtx.msg){
-                  newtx.msg = {};
-                }
                 //Update players/players_sigs in TX Message from SQL data
                 let player_info = row.players_array.split("_");
                 for (let pi of player_info){
@@ -339,9 +336,6 @@ class Arcade extends ModTemplate {
                 console.log(JSON.parse(row.tx));
               }
               let newtx = new saito.default.transaction(JSON.parse(row.tx));
-              if (!newtx.msg){
-                newtx.msg = {};
-              }
               //Update players/players_sigs in TX Message from SQL data
               let player_info = row.players_array.split("_");
               for (let pi of player_info){
@@ -749,9 +743,6 @@ class Arcade extends ModTemplate {
           tx = new saito.default.transaction(message.data.tx.transaction);
         }
 
-        if (!tx.msg){
-          tx.msg = {};
-        }
         let txmsg = tx.returnMessage();
         let conf = 0;
         let blk = null;
@@ -1042,9 +1033,6 @@ class Arcade extends ModTemplate {
       if (res.rows && res.rows.length > 0) {
         let orig_status = res.rows[0].status;
         let newtx = new saito.default.transaction(JSON.parse(res.rows[0].tx));
-        if (!tx.msg){
-          tx.msg = {};
-        }
         if (this.debug) {
           console.log(res.rows[0]);
           console.log(`Changing status from ${orig_status} to ${new_status}`);
@@ -1305,9 +1293,6 @@ class Arcade extends ModTemplate {
               console.log("Pending Messages!?!");
               for (let j = 0; j < this.app.wallet.wallet.pending.length; j++) {
                 let thistx = new saito.default.transaction(JSON.parse(this.app.wallet.wallet.pending[j]));
-                if (!thistx.msg){
-                  thistx.msg = {};
-                }
                 let thistxmsg = thistx.returnMessage();
 
                 if (thistxmsg.module == this.app.options.games[i].module && thistxmsg.game_id == game_id && thistxmsg?.step?.game) {

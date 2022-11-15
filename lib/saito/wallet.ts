@@ -830,7 +830,7 @@ console.log("---------------------");
       console.error("###   -revert-   ###");
       console.error("####################");
       console.error(err);
-      tx.msg = null;
+      tx.msg = {};
       return tx;
     }
 
@@ -879,7 +879,7 @@ console.log("---------------------");
       console.log("###   -revert-   ###");
       console.log("####################");
       console.log(err);
-      tx.msg = null;
+      tx.msg = {};
     }
 
     tx.sign(this.app);
@@ -936,14 +936,14 @@ console.log("---------------------");
   returnActivatedCryptos() {
     const allMods = this.returnInstalledCryptos();
     const activeMods = [];
-console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
+    console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
     for (let i = 0; i < allMods.length; i++) {
-console.log("checking if activated: " + allMods[i].name);
+      console.log("checking if activated: " + allMods[i].name);
       if (allMods[i].returnIsActivated()) {
         activeMods.push(allMods[i]);
       }
     }
-console.log("returning activated cryptos num: " + activeMods.length);
+    console.log("returning activated cryptos num: " + activeMods.length);
     return activeMods;
   }
 
@@ -992,7 +992,7 @@ console.log("returning activated cryptos num: " + activeMods.length);
       }
     }
 
-console.log("done in setPreferredCrypto");
+    console.log("done in setPreferredCrypto");
 
     return;
   }
@@ -1087,8 +1087,7 @@ console.log("done in setPreferredCrypto");
     mycallback = null,
     ticker
   ) {
-
-console.log("IN SEND PAYMENT IN WALLET!");
+    console.log("IN SEND PAYMENT IN WALLET!");
 
     console.log("wallet sendPayment");
     // validate inputs
@@ -1114,8 +1113,7 @@ console.log("IN SEND PAYMENT IN WALLET!");
     if (
       !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     ) {
-
-console.log("preferred transaction does not exist, so...");
+      console.log("preferred transaction does not exist, so...");
 
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
@@ -1123,10 +1121,10 @@ console.log("preferred transaction does not exist, so...");
           "senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress()
         );
 
-	//
-	// DEBUGGING - sender is address to which we send the crypto
-	// 	     - not our own publickey
-	//
+        //
+        // DEBUGGING - sender is address to which we send the crypto
+        // 	     - not our own publickey
+        //
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);

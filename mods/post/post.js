@@ -667,9 +667,6 @@ class Post extends ModTemplate {
 
   createCommentTransaction(parent_id, comment, images = null) {
     let newtx = this.app.wallet.createUnsignedTransaction();
-    if (!newtx.msg){
-      newtx.msg = {};
-    }
     newtx.msg.module = "Post";
     newtx.msg.type = "comment";
     newtx.msg.parent_id = parent_id;

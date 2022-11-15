@@ -136,9 +136,6 @@ class Registry extends ModTemplate {
       if (!regex.test(identifier)) {
         throw Error("Alphanumeric Characters only");
       }
-      if (!newtx.msg){
-        newtx.msg = {};
-      }
       newtx.msg.module = "Registry";
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
@@ -167,9 +164,6 @@ class Registry extends ModTemplate {
       var regex = /^[0-9A-Za-z]+$/;
       if (!regex.test(identifier)) { salert("Alphanumeric Characters only"); return false; }
 
-      if (!newtx.msg){
-        newtx.msg = {};
-      }
       newtx.msg.module = "Registry";
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
@@ -232,9 +226,6 @@ class Registry extends ModTemplate {
           if (res == 1) {
 
             let newtx = registry_self.app.wallet.createUnsignedTransaction(tx.transaction.from[0].add, 0, fee);
-            if (!newtx.msg){
-              newtx.msg = {};
-            }
             newtx.msg.module = "Email";
             newtx.msg.origin = "Registry";
             newtx.msg.title = "Address Registration Success!";
@@ -249,9 +240,6 @@ class Registry extends ModTemplate {
           } else {
 
             let newtx = registry_self.app.wallet.createUnsignedTransaction(tx.transaction.from[0].add, 0.0, fee);
-            if (!newtx.msg){
-              newtx.msg = {};
-            }
             newtx.msg.module = "Email";
             newtx.msg.title = "Address Registration Failed!";
             newtx.msg.message = "<p>The identifier you requested (<span class='boldred'>" + identifier + "</span>) has already been registered.</p>";

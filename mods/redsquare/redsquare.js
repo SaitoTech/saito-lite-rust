@@ -925,9 +925,6 @@ class RedSquare extends ModTemplate {
             if (new_tweet) {
               let tx = new saito.default.transaction(JSON.parse(row.tx));
               if (!tx.optional) { tx.optional = {}; }
-              if (!tx.msg){
-                tx.msg = {};
-              }
               tx.optional.parent_id = tx.msg.parent_id;
               tx.optional.thread_id = tx.msg.thread_id;
               tx.optional.num_replies = row.num_replies;
@@ -939,7 +936,7 @@ class RedSquare extends ModTemplate {
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
               } catch (err) { }
-              let txmsg = tx.returnMessage();
+              // let txmsg = tx.returnMessage();
               this.addTweetFromTransaction(app, mod, tx);
             }
           });
@@ -973,9 +970,6 @@ class RedSquare extends ModTemplate {
             if (new_tweet) {
               let tx = new saito.default.transaction(JSON.parse(row.tx));
               if (!tx.optional) { tx.optional = {}; }
-              if (!tx.msg){
-                tx.msg = {};
-              }
               tx.optional.parent_id = tx.msg.parent_id;
               tx.optional.thread_id = tx.msg.thread_id;
               tx.optional.num_replies = row.num_replies;
@@ -1023,9 +1017,6 @@ class RedSquare extends ModTemplate {
               if (new_tweet) {
                 let tx = new saito.default.transaction(JSON.parse(row.tx));
                 if (!tx.optional) { tx.optional = {}; }
-                if (!tx.msg){
-                  tx.msg = {};
-                }
                 tx.optional.parent_id = tx.msg.parent_id;
                 tx.optional.thread_id = tx.msg.thread_id;
                 tx.optional.num_replies = row.num_replies;
@@ -1492,9 +1483,6 @@ class RedSquare extends ModTemplate {
 
           for (let i = 0; i < rows.length; i++) {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
-            if (!tx.msg){
-              tx.msg = {};
-            }
             let txmsg = tx.returnMessage();
             let text = tx.msg.data.text;
             let publickey = tx.transaction.from[0].add;
@@ -1537,9 +1525,6 @@ class RedSquare extends ModTemplate {
 
           for (let i = 0; i < rows.length; i++) {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
-            if (!tx.msg){
-              tx.msg = {};
-            }
             let txmsg = tx.returnMessage();
 
             if (typeof tx.msg.data.images != "undefined") {
