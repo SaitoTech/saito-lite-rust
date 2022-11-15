@@ -40,7 +40,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("diplomacy_phase");
+//	  this.game.queue.push("diplomacy_phase");
 
 this.game.queue.push("is_testing");
 
@@ -3735,11 +3735,10 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	}
         if (mv[0] === "diplomacy_phase") {
 
+	  // multiplayer has diplomacy phase
+	  // this.playerOffer();
+	  // return 0;
 
-this.playerOffer();
-return 0;
-
-/***
 	  //
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
@@ -3776,7 +3775,6 @@ return 0;
 	  // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase
 	  //
           this.game.queue.push("papacy_diplomacy_phase_special_turn");
-***/
 
 	  this.game.queue.splice(qe, 1);
           return 1;
