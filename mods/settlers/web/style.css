@@ -99,17 +99,18 @@ dt{
 
 
 /*My Background*/
-body {
+.gameboard {
   background-color: #369 !important;
   background: radial-gradient(circle farthest-corner at 50% 0%, #369 40%, lightseagreen 45%, #369 50%);
   background-size: 25px 25px;
-  position: unset; /* fixed from game.css does weird stuff*/
+  position: absolute; /* fixed from game.css does weird stuff*/
+  width: 100vw;
+  height: 100vh;
   z-index: 0;
-  font-size: 16px;
 }
 
 /*Richard background*/
-body {
+.gameboard {
   background: linear-gradient(-75deg, #369, #58b, #58b, #369);
   background-size: 100% 100%;
   /*animation: gradient 20s ease infinite;*/

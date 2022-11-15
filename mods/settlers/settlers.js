@@ -205,7 +205,7 @@ class Settlers extends GameTemplate {
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-    this.hexgrid.render(app, this);
+    this.hexgrid.render(app, this, ".gameboard");
     this.hexgrid.attachEvents(app, this);
 
     try {
@@ -2138,18 +2138,16 @@ class Settlers extends GameTemplate {
                     </div>`;
         }
       }
-      if (cards){
-        this.cardfan.render(this.app, this, cards);
+      this.cardfan.render(this.app, this, cards);
 
-        if (usingDev){
-          this.cardfan.addClass("staggered-hand");
-          this.cardfan.removeClass("bighand");
-        }else{
-          this.cardfan.addClass("bighand");  
-          this.cardfan.removeClass("staggered-hand");
-        }
-        this.cardfan.attachEvents(this.app, this);  
+      if (usingDev){
+        this.cardfan.addClass("staggered-hand");
+        this.cardfan.removeClass("bighand");
+      }else{
+        this.cardfan.addClass("bighand");  
+        this.cardfan.removeClass("staggered-hand");
       }
+      this.cardfan.attachEvents(this.app, this);  
     } catch (err) {
       //console.log(err);
     }
