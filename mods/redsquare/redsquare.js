@@ -14,6 +14,7 @@ const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
 const PostTweet = require("./lib/post");
 const { convertCompilerOptionsFromJson } = require("typescript");
 //const { displace } = require("jimp/types");
+const JsStore = require("jsstore");
 
 class RedSquare extends ModTemplate {
 
@@ -39,7 +40,7 @@ class RedSquare extends ModTemplate {
     this.ntfs_counter = {}
     // "main" or sig if viewing page-specific
     this.viewing = "feed";
-  
+
 
     this.last_viewed_notifications_ts = 0;
     this.unviewed_notifications = 0;
@@ -80,7 +81,7 @@ class RedSquare extends ModTemplate {
   }
 
 
-  initialize(app) {
+  async initialize(app) {
     this.loadRedSquare();
     super.initialize(app);
 
@@ -119,6 +120,54 @@ class RedSquare extends ModTemplate {
         });
 
       }
+
+
+      var txs = {
+        name: "txs",
+        id: { primaryKey: true, autoIncriment: true },
+        sig: { notNull: true, dataType: "string" },
+        publickey: { unique: true, dataType: "string" },
+        tx: { unique: true, dataType: "string" },
+        optional: { dataType: "string" },
+        ts: { dataType: "number" },
+        preserve: { dataType: "number" },
+        type: { dataType: "string" }
+      }
+
+      var db = {
+        name: 'RedSquare',
+        tables: [txs]
+      }
+
+      this.connection = new JsStore.Connection(new Worker("/saito/lib/jsstore/jsstore.worker.js"));
+
+      var isDbCreated = await this.connection.initDb(db);
+
+      if (isDbCreated) {
+        console.log('Db Created & connection is opened');
+      }
+      else {
+        console.log('Connection is opened');
+      }
+
+      /*
+      var value = 
+      {
+        txt: "text content"
+      }
+  
+      var inserted = await this.connection.insert({
+        into: "testeroo",
+        values: [value]
+      })
+  
+      if (inserted > 0) {
+        console.log("Insert Successful");
+      }
+      */
+  
+
+
 
       let redsquare_self = this;
 
@@ -291,7 +340,7 @@ class RedSquare extends ModTemplate {
             this.tweets[i].num_replies = tweet.num_replies;
             this.tweets[i].num_retweets = tweet.num_retweets;
             this.tweets[i].num_likes = tweet.num_likes;
-	    this.tweets[i].renderOptional();
+            this.tweets[i].renderOptional();
           }
         }
 
@@ -752,29 +801,29 @@ class RedSquare extends ModTemplate {
   }
 
   loadNotificationTransactions(app, mod, increment = 1, post_load_callback) {
- 
+
     mod.app.storage.loadTransactions("RedSquare", (50 * increment), (txs) => {
       mod.ntfs_num = txs.length;
-      let first_index =  (increment - 1) * 50
+      let first_index = (increment - 1) * 50
       mod.max_ntfs_num = 50 * increment;
 
       console.log(mod.max_ntfs_num, mod.ntfs_num, txs, "notifications");
 
-      let tx_to_add =  txs.splice(first_index)
+      let tx_to_add = txs.splice(first_index)
 
-        for (let i = 0; i < tx_to_add.length; i++) {
-          //console.log(i + ": " + JSON.stringify(txs[i].optional));
-          tx_to_add[i].decryptMessage(app);
-          let txmsg = tx_to_add[i].returnMessage();
-          if (txmsg.request == "create tweet") {
-            let tweet = new Tweet(mod.app, mod, tx_to_add[i]);
-            mod.addTweet(mod.app, mod, tweet);
-            mod.txmap[tweet.tx.transaction.sig] = 1;
-          } 
-          mod.addNotification(mod.app, mod, tx_to_add[i]);
+      for (let i = 0; i < tx_to_add.length; i++) {
+        //console.log(i + ": " + JSON.stringify(txs[i].optional));
+        tx_to_add[i].decryptMessage(app);
+        let txmsg = tx_to_add[i].returnMessage();
+        if (txmsg.request == "create tweet") {
+          let tweet = new Tweet(mod.app, mod, tx_to_add[i]);
+          mod.addTweet(mod.app, mod, tweet);
+          mod.txmap[tweet.tx.transaction.sig] = 1;
         }
+        mod.addNotification(mod.app, mod, tx_to_add[i]);
+      }
 
-    
+
 
       if (post_load_callback) {
         post_load_callback(app, mod)
@@ -800,18 +849,18 @@ class RedSquare extends ModTemplate {
           this.fetchTweets(app, mod, sql, function (app, mod) {
             console.log("Main - TWEETS FETCH FROM PEER: " + mod.tweets.length);
             mod.renderMainPage(app, mod);
-	    mod.fetchSavedTweets(app, mod, function() {
+            mod.fetchSavedTweets(app, mod, function () {
               mod.renderMainPage(app, mod);
-	    });
+            });
           });
         } else {
           //let sql = `SELECT * FROM tweets WHERE sig = '${mod.viewing}' OR parent_id = '${mod.viewing}'`;
           if (this.mode == "thread" || this.mode == "tweet") {
             let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${mod.viewing}' OR parent_id = '${mod.viewing}' OR thread_id = '${mod.viewing}'`;
             mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, mod.viewing); });
-	    mod.fetchSavedTweets(app, mod, function() {
+            mod.fetchSavedTweets(app, mod, function () {
               mod.renderMainPage(app, mod);
-	    });
+            });
           }
           if (this.mode == "user") {
             let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
@@ -898,7 +947,7 @@ class RedSquare extends ModTemplate {
           mod.addTweet(mod.app, mod, tweet);
           mod.txmap[tweet.tx.transaction.sig] = 1;
         }
-    
+
         mod.addNotification(mod.app, mod, txs[i]);
       }
 
@@ -1058,7 +1107,7 @@ class RedSquare extends ModTemplate {
           const tweets = [];
           if (res.rows) {
             res.rows.forEach(row => {
-      
+
               let optional = {};
               optional.num_likes = row.num_likes;
               optional.num_replies = row.num_replies;
@@ -1182,7 +1231,7 @@ class RedSquare extends ModTemplate {
   }
 
 
-  sendTweetTransaction(app, mod, data, keys = []) {
+  async sendTweetTransaction(app, mod, data, keys = []) {
 
     let redsquare_self = this;
 
@@ -1204,6 +1253,35 @@ class RedSquare extends ModTemplate {
     }
     newtx = redsquare_self.app.wallet.signTransaction(newtx);
     redsquare_self.app.network.propagateTransaction(newtx);
+
+   // Store locally
+
+    let txjson = JSON.stringify(newtx.transaction);
+    let txoptional = JSON.stringify(newtx.optional);
+
+    var value = 
+    {
+      sig: newtx.transaction.sig,
+      publickey: newtx.transaction.from[0].add,
+      tx: txjson,
+      optional: txoptional,
+      ts: newtx.transaction.ts,
+      preserve: 0,
+      type: "0"
+    }
+
+    var inserted = await this.connection.insert({
+      into: "txs",
+      values: [value]
+    })
+
+    if (inserted > 0) {
+      console.log("Insert Successful");
+    }
+
+
+
+
 
     return newtx;
 
@@ -1237,7 +1315,7 @@ class RedSquare extends ModTemplate {
               if (!tx.optional) { tx.optional = {}; }
               if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
               tx.optional.num_replies++;
-              
+
 
               this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
               tweet.renderReplies();
@@ -1470,7 +1548,7 @@ class RedSquare extends ModTemplate {
     let redsquare_self = this;
 
     expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
-      let reqBaseURL = req.protocol + "://" + req.headers.host + "/"; 
+      let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
 
       if (Object.keys(req.query).length > 0) {
         let query_params = req.query;
@@ -1480,7 +1558,7 @@ class RedSquare extends ModTemplate {
           let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
 
           let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
-          
+
           for (let i = 0; i < rows.length; i++) {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
             let txmsg = tx.returnMessage();
@@ -1500,14 +1578,14 @@ class RedSquare extends ModTemplate {
             //   let image = app.keys.returnIdenticon(publickey);
             // }
 
-            let image = redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug()) + '?og_img_sig='+sig;
+            let image = redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug()) + '?og_img_sig=' + sig;
             redsquare_self.social.og_title = user + " posted on Saito 🟥";
             redsquare_self.social.twitter_title = user + " posted on Saito 🟥"
             redsquare_self.social.og_image = image;
             redsquare_self.social.og_image_url = image;
             redsquare_self.social.og_image_secure_url = image;
             redsquare_self.social.twitter_image = image;
-            
+
           }
         } // if query param has tweet id
 
@@ -1516,13 +1594,13 @@ class RedSquare extends ModTemplate {
         console.log(query_params);
 
         if (typeof query_params.og_img_sig != "undefined") {
-          
+
 
           let sig = query_params.og_img_sig;
           let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
 
           let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
-          
+
           for (let i = 0; i < rows.length; i++) {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
             let txmsg = tx.returnMessage();
@@ -1547,7 +1625,7 @@ class RedSquare extends ModTemplate {
               let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
             }
 
-            
+
             console.log('base64 data');
             console.log(base64Data);
 
@@ -1555,21 +1633,21 @@ class RedSquare extends ModTemplate {
             console.log(img);
 
             console.log('img format');
-            console.log(img_type);    
+            console.log(img_type);
 
             if (img_type == 'image/svg+xml') {
               img_type = 'image/svg';
-            }        
+            }
 
             res.writeHead(200, {
-             'Content-Type': img_type,
-             'Content-Length': img.length
+              'Content-Type': img_type,
+              'Content-Length': img.length
             });
-            res.end(img); 
+            res.end(img);
             return;
           }
         }
-        
+
       }
 
       res.setHeader("Content-type", "text/html");

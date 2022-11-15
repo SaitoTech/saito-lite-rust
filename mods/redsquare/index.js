@@ -53,6 +53,7 @@ module.exports = (app, mod) => {
 
 
 </body>
+
 <script type="module" src="/saito/lib/emoji-picker/index.js"></script>
 <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 
