@@ -233,13 +233,14 @@ console.log("SAVING TX");
     if (tx.optional) { optional = tx.optional; }
 
     for (let i = 0; i < tx.transaction.to.length; i++) {
-      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $type)";
+      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.to[i].add ,
         $tx		:	JSON.stringify(tx.transaction) ,
         $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
+        $preserve	:	0 ,
         $type		:	msgtype
       };
       await this.app.storage.executeDatabase(sql, params, "archive");
@@ -251,13 +252,14 @@ console.log("SAVING TX");
     // sanity check that we want to be saving this for the FROM fields
     //
     for (let i = 0; i < tx.transaction.from.length; i++) {
-      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $type)";
+      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.from[i].add ,
         $tx		:	JSON.stringify(tx.transaction) ,
         $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
+        $preserve	:	0 ,
         $type		:	msgtype
       };
       await this.app.storage.executeDatabase(sql, params, "archive");
@@ -309,7 +311,7 @@ console.log("SAVING TX");
     this.last_clean_on = Date.now();
 
     let ts = (new Date().getTime()) - 100000000;
-    let sql = "DELETE FROM txs WHERE ts < $ts AND type = $type";
+    let sql = "DELETE FROM txs WHERE ts < $ts AND type = $type AND preserve = 0";
     let params = {
         $ts		:	ts ,
         $type		:	"Chat"
@@ -323,13 +325,14 @@ console.log("SAVING TX");
     if (tx == null) { return; }
     let optional = (tx.optional) ? tx.optional : {};
 
-    let sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $type)";
+    let sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
     let params = {
       $sig:		tx.transaction.sig,
       $publickey:	key,
       $tx:		JSON.stringify(tx.transaction),
       $optional: 	optional,
       $ts:		tx.transaction.ts,
+      $preserve	:	0 ,
       $type:		type
     };
 

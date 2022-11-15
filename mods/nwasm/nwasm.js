@@ -38,9 +38,24 @@ class Nwasm extends GameTemplate {
     this.active_game_img = "";
     this.active_game_saves = [];
 
+    this.active_game_time_played = 0;
+    this.active_game_load_ts = 0;
+    this.active_game_save_ts = 0;
+
     this.uploaded_rom = false;
 
     return this;
+  }
+
+  startPlaying(ts=null) {
+    if (ts == null) { ts = new Date().getTime(); }
+    this.active_game_load_ts = ts;
+    this.active_game_save_ts = ts;
+  }
+  stopPlaying(ts=null) {
+    if (ts == null) { ts = new Date().getTime(); }
+    this.active_game_time_played += (ts - this.active_game_load_ts);
+    this.active_game_load_ts = ts;
   }
 
   respondTo(type="") {
@@ -427,6 +442,8 @@ log("===============================");
     this.uploaded_rom = true;
     this.active_game_saves = [];
 
+    this.startPlaying();
+
     //
     // initialize ROM gets the ROM the APP and the MOD
     //
@@ -474,6 +491,8 @@ log("===============================");
         let txmsg = newtx.returnMessage();
         let byteArray = nwasm_mod.convertBase64ToByteArray(txmsg.data);
         nwasm_mod.active_game = byteArray;
+        mwasm_mod.active_game_time_played = txmsg.time_played;
+	nwasm.startPlaying();
         myApp.loadStateLocal();
       } catch (err) {
         console.log("error loading Nwasm game...: " + err);
@@ -485,22 +504,21 @@ log("===============================");
     let base64data = this.convertByteArrayToBase64(data);
     let screenshot = await this.app.browser.resizeImg(this.active_game_img);
 
+    this.stopPlaying();
+
     let obj = {
       module: (this.name + this.active_rom_sig),
       name: this.active_rom_name.trim() ,
       screenshot: screenshot,
+      time_played: this.active_game_time_played ,
       request: "upload savegame",
       data: base64data,
     };
-
-console.log("SAVING AS: " + obj.module);
 
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.storage.saveTransaction(newtx);
-
-console.log("SAVED TX");
 
     this.active_game_saves.push(newtx);
 
