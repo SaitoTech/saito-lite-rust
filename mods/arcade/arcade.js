@@ -255,7 +255,9 @@ class Arcade extends ModTemplate {
       if (accepted_game){
 
         let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
-
+        if (!newtx.msg){
+          newtx.msg = {};
+        }
         let msg = {
           request: "close",
           module: "Arcade",
@@ -334,6 +336,9 @@ class Arcade extends ModTemplate {
               if (arcade_self.debug) { console.log(JSON.parse(JSON.stringify(row))); };
               if (row.status == "open" || row.status == "private") {
                 let newtx = new saito.default.transaction(JSON.parse(row.tx));
+                if (!newtx.msg){
+                  newtx.msg = {};
+                }
                 //Update players/players_sigs in TX Message from SQL data
                 let player_info = row.players_array.split("_");
                 for (let pi of player_info){
@@ -375,6 +380,9 @@ class Arcade extends ModTemplate {
                 console.log(JSON.parse(row.tx));
               }
               let newtx = new saito.default.transaction(JSON.parse(row.tx));
+              if (!newtx.msg){
+                newtx.msg = {};
+              }
               //Update players/players_sigs in TX Message from SQL data
               let player_info = row.players_array.split("_");
               for (let pi of player_info){

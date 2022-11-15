@@ -136,7 +136,9 @@ class Registry extends ModTemplate {
       if (!regex.test(identifier)) {
         throw Error("Alphanumeric Characters only");
       }
-
+      if (!newtx.msg){
+        newtx.msg = {};
+      }
       newtx.msg.module = "Registry";
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
@@ -165,6 +167,9 @@ class Registry extends ModTemplate {
       var regex = /^[0-9A-Za-z]+$/;
       if (!regex.test(identifier)) { salert("Alphanumeric Characters only"); return false; }
 
+      if (!newtx.msg){
+        newtx.msg = {};
+      }
       newtx.msg.module = "Registry";
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
@@ -200,7 +205,7 @@ class Registry extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
-      if (txmsg.module === "Registry") {
+      if (!!txmsg && txmsg.module === "Registry") {
 
         //
         // this is to us, and we are the main registry server
@@ -227,6 +232,9 @@ class Registry extends ModTemplate {
           if (res == 1) {
 
             let newtx = registry_self.app.wallet.createUnsignedTransaction(tx.transaction.from[0].add, 0, fee);
+            if (!newtx.msg){
+              newtx.msg = {};
+            }
             newtx.msg.module = "Email";
             newtx.msg.origin = "Registry";
             newtx.msg.title = "Address Registration Success!";
@@ -241,6 +249,9 @@ class Registry extends ModTemplate {
           } else {
 
             let newtx = registry_self.app.wallet.createUnsignedTransaction(tx.transaction.from[0].add, 0.0, fee);
+            if (!newtx.msg){
+              newtx.msg = {};
+            }
             newtx.msg.module = "Email";
             newtx.msg.title = "Address Registration Failed!";
             newtx.msg.message = "<p>The identifier you requested (<span class='boldred'>" + identifier + "</span>) has already been registered.</p>";
@@ -259,7 +270,7 @@ class Registry extends ModTemplate {
       }
 
 
-      if (txmsg.module == "Email") {
+      if (!!txmsg && txmsg.module == "Email") {
         if (tx.transaction.from[0].add == registry_self.publickey) {
           if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
             if (tx.msg.identifier != undefined && tx.msg.signed_message != undefined && tx.msg.sig != undefined) {
@@ -292,7 +303,7 @@ class Registry extends ModTemplate {
               // if i am server, save copy of record
               registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);
 
-              // if i am a server, i will notify lite-peers of 
+              // if i am a server, i will notify lite-peers of
               console.log("notifying lite-peers of registration!");
               this.notifyPeers(app, tx);
 
