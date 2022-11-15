@@ -16,6 +16,7 @@ class Solitrio extends GameTemplate {
     this.name            = "Solitrio";
     this.gamename        = "Solitrio";
     this.slug            = "solitrio";
+    this.game_length     = 5; //Estimated number of minutes to complete a game
     this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
     this.categories      = "Games Cardgame one-player";
 

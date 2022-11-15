@@ -101,10 +101,16 @@ ACTION CARD - types
 	},
         handleGameLoop : function(imperium_self, qe, mv) {
 
+console.log("hgl: " + mv[0]);
+
           if (mv[0] == "strategy_card_retained") {
+
+console.log("strategy card is retained!");
 
             let player = parseInt(mv[1]);
             let card = mv[2];
+console.log("queue length: " + imperium_self.game.queue.length);
+console.log("qe: " + qe);
             imperium_self.game.queue.splice(qe, 1);
 	    imperium_self.game.players_info[player-1].strategy_cards_retained.push(card);
 
@@ -765,7 +771,7 @@ ACTION CARD - types
 
 
 
-    this.importActionCard('Insubordination', {
+    this.importActionCard('insubordination', {
   	name : "Insubordination" ,
   	type : "action" ,
   	text : "ACTION: Select a player and remove 1 token from their command pool" ,
@@ -796,7 +802,7 @@ ACTION CARD - types
 
 
 
-    this.importActionCard('Lucky Shot', {
+    this.importActionCard('lucky-shot', {
   	name : "Lucky Shot" ,
   	type : "action" ,
   	text : "ACTION: Destroy a destroyer, cruiser or dreadnaught in a sector with a planet you control" ,

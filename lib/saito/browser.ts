@@ -662,6 +662,20 @@ class Browser {
     wrapper.append(tip);
   }
 
+  formatTime(milliseconds=0) {
+
+    let hours = parseInt(milliseconds / 3600000);
+    milliseconds = milliseconds % 3600000;
+
+    let minutes = parseInt(milliseconds / 60000);
+    milliseconds = milliseconds % 60000;
+
+    let seconds = parseInt(milliseconds / 1000);
+
+    return { hours : hours, minutes : minutes, seconds : seconds };
+
+  }
+
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
 
@@ -1212,6 +1226,16 @@ class Browser {
     });
   }
 
+  async screenshotCanvasElementBySelector(selector = "", callback = null) {
+    let canvas = document.querySelector(selector);
+    if (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      if (callback != null) {
+        callback(img);
+      }
+    }
+  }
+
   async screenshotCanvasElementById(id = "", callback = null) {
     let canvas = document.getElementById(id);
     if (canvas) {
@@ -1472,6 +1496,12 @@ class Browser {
       };
       i.src = file;
     });
+  }
+
+  stripHtml(html){
+     let tmp = document.createElement("DIV");
+     tmp.innerHTML = html;
+     return tmp.textContent || tmp.innerText || "";
   }
 }
 

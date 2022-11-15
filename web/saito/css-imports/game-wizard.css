@@ -372,25 +372,27 @@
   cursor: pointer;
 }
 
+
+.game-create-new-overlay .saito-module-intro{
+  min-height: 17rem;
+}
+
 .saito-module-intro {
   display: grid;
   grid-template-columns: 3fr 7fr;
   grid-gap: 1rem;
 }
 
-/*.saito-module-intro-image {
-  padding-top: 1rem;
-  padding-right: 1rem;
-  padding-bottom: 1rem;
-  margin-right: 1rem;
-}*/
-
-.saito-module-intro-image > img {
-  width: 100%;
+.saito-module-intro-image {
+  background-color: grey;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
+
 .saito-module-intro-text{
-  margin-left: 1.5rem;
+  margin: 0 1.5rem;
 }
 
 .saito-module-intro-title {
@@ -407,6 +409,13 @@
   line-height: 2.8rem;
 }
 
+.saito-module-intro-details{
+  font-size: 1.6rem;
+  margin: 0.4rem;
+}
+.saito-module-intro-details .detail_row{
+  margin: 0.4rem 0;
+}
 
 .arcade-game-publisher-message {
   margin-top: 10px;
@@ -445,4 +454,69 @@
   padding: 16px 30px 12px;
   text-align: center;
   text-transform: uppercase;
+}
+
+
+
+.redsquare-game-creator {
+  padding: 3rem;
+  border-radius: 0.5rem;
+  background-color: #0009;
+  color: var(--saito-white);
+  max-height: 90vh;
+  max-width: 100vw;
+  overflow-y: auto;
+}
+
+.redsquare-create-game-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
+}
+
+
+.redsquare-create-game-header {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.redsquare-game-container {
+  display: grid;
+  grid-template-columns: 12rem auto;
+  grid-template-rows: min-content 1fr;
+  grid-gap: 1rem;
+  min-height: 12rem;
+  max-height: 12rem;
+  padding: 0.5rem;
+  min-width: 35rem;
+  width: 50rem;
+  max-width: calc(100vw - 4rem);
+}
+
+.redsquare-game-container:hover {
+  cursor: pointer;
+  background-color: #0009;
+}
+
+.redsquare-game-image {
+  grid-row: span 2;
+  width: 12rem;
+  height: auto;
+}
+
+.redsquare-game-image>img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem
+}
+
+.redsquare-game-title {
+  font-size: 3rem;
+}
+
+.redsquare-game-description {
+  font-size: 1.5rem;
+  line-height: 1.9rem;
+  overflow: auto;
 }

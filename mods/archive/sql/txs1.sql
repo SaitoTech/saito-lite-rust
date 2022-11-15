@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS txs (
   tx TEXT,
   optional TEXT,
   ts INTEGER,
+  preserve INTEGER ,
   type TEXT,
   UNIQUE (publickey, tx)
 );

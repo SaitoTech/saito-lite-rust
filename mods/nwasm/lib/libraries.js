@@ -26,8 +26,11 @@ class NwasmLibrary {
         let collection = mod.libraries[key];
         for (let i = 0; i < collection.length; i++) {
 
+console.log("COLL: ");
+console.log(JSON.stringify(collection[i]));
+
 	  let status = "available";
-	  let available = collection[i].available;;
+	  let available = collection[i].available;
 	  if (available == 0) {
 	    status = "loaned out";
 	  } else {
@@ -36,10 +39,10 @@ class NwasmLibrary {
 
 	  if (collection[i].title != "") {
 	    if (header_inserted == false) {
-	      app.browser.addElementToSelector(`<div id="nwasm-libraries-header" class="saito-table-row saito-table-header nwasm-libraries-header"><div>title</div><div>copies</div><div>status</div></div>`, ".nwasm-libraries");
+	      app.browser.addElementToSelector(`<div id="nwasm-libraries-header" class="saito-table-row saito-table-header nwasm-libraries-header"><div class="nwasm-lib-title">title</div><div class="nwasm-lib-copies">copies</div><div class="nwasm-lib-status">status</div></div>`, ".nwasm-libraries");
 	      header_inserted = true;
 	    }
-	    app.browser.addElementToSelector(`<div id="${collection[i].sig}" data-id="${key}" class="saito-table-row"><div>${collection[i].title}</div><div>${available}</div><div>${status}</div></div>`, ".nwasm-libraries");
+	    app.browser.addElementToSelector(`<div id="${collection[i].sig}" data-id="${key}" class="saito-table-row"><div class="nwasm-lib-title">${collection[i].title}</div><div class="nwasm-lib-copies">${available}</div><div class="nwasm-lib-status">${status}</div></div>`, ".nwasm-libraries");
 	  }
 	}
       }
@@ -96,7 +99,7 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 		        console.log("ERROR LOADING GAME: " + err);
 		      }
 		    } else {
-		      alert("Error Checkout");
+		      alert("Error Checkout: " + txs.length + " txs");
 		    }
 	          });
 

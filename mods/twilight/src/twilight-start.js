@@ -2589,9 +2589,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["missileenvy", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
+          this.game.deck[0].hand = ["abmtreaty", "aldrichames", "shuttle", "teardown", "evilempire", "marshall", "northseaoil", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["brezhnev", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
+          this.game.deck[0].hand = ["che", "onesmallstep", "cambridge", "nato", "warsawpact", "mideast", "vietnamrevolts", "wargames", "china"];
         }
 
       	//this.game.state.round = 1;

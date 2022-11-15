@@ -70,7 +70,7 @@
 	    }
 	  }
 	  costs_per_hit.sort((a,b)=>a-b);
-          let html = '<p>Do you wish to boost hits with Flagship Ability?"';
+          let html = '<div class="status-message">Do you wish to boost hits with Flagship Ability?</div><ul>';
 	  let cumulative_cost = 0;
 	  let available_trade_goods = imperium_self.game.players_info[player - 1].goods;
 	  for (let i = 0; i < costs_per_hit.length && cumulative_cost <= available_trade_goods; i++) {
@@ -78,6 +78,7 @@
             html += '<li class="option" id="'+i+'">'+(i+1)+' extra hits - '+cumulative_cost+' trade goods</li>';
 	  }
           html += '<li class="option" id="no">skip ability</li>';
+	  html += '</ul>';
 
           imperium_self.updateStatus(html);
 
@@ -154,9 +155,10 @@
                 return 0;
 	      }
 
-              let html = '<p>Do you wish to refresh your commodities free-of-charge?"';
+              let html = '<div class="status-message">Do you wish to refresh your commodities free-of-charge?</div><ul>';
                   html += '<li class="option" id="yes">yes, of course</li>';
                   html += '<li class="option" id="no">no, perhaps not</li>';
+	          html += '</ul>';
 
               imperium_self.updateStatus(html);
 
