@@ -93,16 +93,21 @@ class Archive extends ModTemplate {
         if (!req.data.optional) { return; }
         this.incrementTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key);
       }
+      if (req.data.request === "delete") {
+        if (!req.data.publickey) { return; }
+        console.log("archive delete / purge");
+        await this.deleteTransactions(req.data.type, req.data.publickey);
+        response.err = "";
+        response.txs = [];
+        mycallback(response);
+      }
       if (req.data.request === "load") {
-//console.log("received REQUEST to load");
         console.log("archive load");
         let type = "";
         let num  = 50;
         if (req.data.num != "")  { num = req.data.num; }
         if (req.data.type != "") { type = req.data.type; }
-//console.log("TESTING");
         txs = await this.loadTransactions(req.data.publickey, req.data.sig, type, num);
-//console.log("TESETING WRETURNED: " + JSON.stringify(txs));
         response.err = "";
         response.txs = txs;
         mycallback(response);
@@ -385,6 +390,26 @@ console.log("SAVING TX");
       }
     }
     return txs;
+
+  }
+
+  async deleteTransactions(type="all", publickey = null) {
+
+    if (publickey == null) { return; }
+
+    let sql = "";
+    let params = {};
+
+    if (type === "all") {
+      sql = "DELETE FROM txs WHERE publickey = $publickey";
+      params = { $publickey : publickey };
+    } else {
+      sql = "DELETE FROM txs WHERE publickey = $publickey AND type = $type";
+      params = { $publickey : publickey , $type : type };
+    }
+
+    this.app.storage.executeDatabase(sql, params, "archive");
+    return;
 
   }
 

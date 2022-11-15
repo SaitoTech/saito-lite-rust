@@ -15,7 +15,8 @@ class Wuziqi extends GameTemplate {
 
         this.name = "Wuziqi";
         this.title = "五子棋"
-        this.description = "五子棋 aka Gokomu and Gobang! is a simple game where two players alternately place black and white tiles on a go board attempting to place 5 of them in adjacent positions."
+        this.game_length = 10; //Estimated number of minutes to complete a game
+        this.description = "五子棋, Gokomu, or Gobang -- whatever you call it, place five black or white tiles in a row to win."
         this.categories = "Games Boardgame Classic";
         //this.status = "Beta";
 

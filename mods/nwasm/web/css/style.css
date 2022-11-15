@@ -3,6 +3,35 @@ body {
   background-color: black !important;
 }
 
+.nwasm-upload-instructions {
+  font-size: 3rem;
+}
+.nwasm-saved-games-screenshot {
+  max-height:300px;
+  max-width: 300px;
+  padding: 1rem;
+}
+.nwasm-saved-games-screenshot img {
+  width: 100%;
+  height: 100%;
+}
+
+.nwasm-lib-title {
+  text-align: left;
+}
+.nwasm-lib-copies {
+  text-align: right;
+}
+.nwasm-lib-status {
+  text-align: right;
+}
+.nwasm-library-introduction {
+  color: whitesmoke;
+  font-size: 1.5rem;
+  font-size: 2.5rem;
+  margin-left: 2rem;
+  padding-bottom: 4rem;
+}
 .nwasm-instructions {
   margin-top: 10rem;
   font-size: 3rem;
@@ -21,15 +50,19 @@ body {
   background-color: white;
   padding: 2.5rem;
   font-size: 3rem;
-  width: max-content;
-  max-width: 90vw;
-  max-height: 90vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: min-content;
+  overflow-y: scroll;
+  height: 90vh;
+  width: 90vw;
 }
 .nwasm-libraries {
   position: absolute;
   top: 7.5rem;
   left: 2.5rem;
   padding: 2rem;
+  max-width: 95vw;
 }
 .nwasm-introduction {
   color: whitesmoke;
@@ -101,10 +134,13 @@ body {
 
 
 #nwasm-upload-overlay {
-width: 40vw;
-height: 20vw;
-background-color: #fff;
-padding: 1rem;
+  width: auto;
+  background-color: #fff;
+  padding: 2.5rem;
+  min-width: 20rem;
+  max-width: 30rem;
+  min-height: 30rem;
+  max-height: 40rem;
 }
 
 #nwasm-upload-rom-box {

@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.499,
+    version: 4.501,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -967,6 +967,10 @@ console.log("returning activated cryptos num: " + activeMods.length);
         console.log("setting cryptomod");
         cryptomod = mods[i];
         can_we_do_this = 1;
+
+        if (mods[i].options.isActivated == true) {
+          show_overlay = 0;
+        }
       }
     }
 

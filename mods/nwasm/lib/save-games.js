@@ -1,7 +1,7 @@
 const saito = require('./../../../lib/saito/saito');
 const SaveGamesTemplate = require("./save-games.template");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-
+const JSON = require('json-bigint');
 
 class SaveGamesOverlay {
 
@@ -14,15 +14,29 @@ class SaveGamesOverlay {
   render(app, mod, selector = "") {
     this.overlay.show(app, mod, SaveGamesTemplate(app, mod));
 
+console.log("ACTIVE GAME SAVES: " + mod.active_game_saves.length);
+
+    document.getElementById("nwasm-saved-games").innerHTML = "";
+
+
     for (let i = 0; i < mod.active_game_saves.length; i++) {
+console.log("i1: " + i);
       let s = mod.active_game_saves[i];
+console.log("i2: " + i);
+      let stxmsg = s.returnMessage();
+console.log("i3: " + i);
       let html = `
-        <div id="${s.transaction.sig}" class="nwasm-saved-games-item">
-          <div class="nwasm-saved-games-screenshot">${(i+1)}. SAVED GAME</div>
+        <div id="save_game_${i}" data-id="${s.transaction.sig}" class="nwasm-saved-games-item">
+          <div class="nwasm-saved-games-screenshot"><img src="${stxmsg.screenshot}" /></div>
         </div>
       `;
-      app.browser.addElementToId(html, "nwasm-saved-games");
+console.log("i4: " + i);
+      if (!document.getElementById(`save_game_${i}`)) {
+        app.browser.addElementToId(html, "nwasm-saved-games");
+      }
+console.log("i5: " + i);
     }
+console.log("DONE");
     this.attachEvents(app, mod);
   }
 
@@ -32,9 +46,12 @@ class SaveGamesOverlay {
 
     for (let i = 0; i < mod.active_game_saves.length; i++) {
       let s = mod.active_game_saves[i];
-      let obj = document.getElementById(s.transaction.sig);
+      let obj = document.getElementById(`save_game_${i}`);
       obj.onclick = (e) => {
-	let sig = e.currentTarget.id;
+	sgo.overlay.hide();	
+	sgo.overlay.remove();	
+	let sig = e.currentTarget.getAttribute("data-id");
+console.log(sig);
         mod.loadSaveGame(sig);
 	sgo.overlay.hide();
       };

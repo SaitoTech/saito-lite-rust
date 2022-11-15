@@ -285,15 +285,13 @@
     }
 
 
-
-
     .saito-sidebar .section>div:nth-child(2) {
         padding-left: 1rem;
     }
 }
 
 
-@media screen and (max-width: 1500px) and (min-width: 65rem)  {
+@media screen and (max-width: 1500px) and (min-width: 650px)  {
     .saito-sidebar.left{
         left: 0;
         width: 30rem;
@@ -339,7 +337,7 @@
 
 }
 
-@media screen and (max-width: 65rem) {
+@media screen and (max-width: 650px) {
 
     .saito-main.appspace {
         width: 100vw !important;
@@ -409,6 +407,7 @@
         font-size: 2.5rem;
     }
 
+
     .saito-mobile-bar > div:nth-child(2) {
         display: none;
     }
@@ -468,13 +467,10 @@
         display: flex;
     }
 
-    .saito-mobile-bar > div i {
-        color: var(--saito-white);
-        display: initial;
-        font-size: 2.5rem;
+
+    .saito-mobile-bar > div:nth-child(2) {
+        display: flex;
     }
-
-
 
     .display-actions {
         display: grid !important;
@@ -503,9 +499,6 @@
         display: block;
     }
 
-    .saito-mobile-bar > div:nth-child(2) {
-        display: flex;
-    }
 
 }
 
