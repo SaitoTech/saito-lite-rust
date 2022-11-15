@@ -86,8 +86,8 @@ class Transaction {
             this.msg = JSON.parse(reconstruct);
           }
         } catch (err) {
-          console.log(this.transaction);
-          console.error("failed converting buffer : ", err);
+          console.log("failed converting buffer in tx : ", this.transaction);
+          console.error(err);
         }
       }
       for (let i = 0; i < this.transaction.from.length; i++) {

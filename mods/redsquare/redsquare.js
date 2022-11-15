@@ -936,7 +936,7 @@ class RedSquare extends ModTemplate {
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
               } catch (err) { }
-              // let txmsg = tx.returnMessage();
+              let txmsg = tx.returnMessage();
               this.addTweetFromTransaction(app, mod, tx);
             }
           });
