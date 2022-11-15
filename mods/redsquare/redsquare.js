@@ -39,7 +39,7 @@ class RedSquare extends ModTemplate {
     this.ntfs_counter = {}
     // "main" or sig if viewing page-specific
     this.viewing = "feed";
-  
+
 
     this.last_viewed_notifications_ts = 0;
     this.unviewed_notifications = 0;
@@ -220,7 +220,7 @@ class RedSquare extends ModTemplate {
   }
 
   //
-  // this is called if we have a tweet but suspect that the content in 
+  // this is called if we have a tweet but suspect that the content in
   // the tweet is out-of-date. it can happen if we have an empty retweet
   // and need to get the comments and share info for the original if possible
   //
@@ -333,7 +333,7 @@ class RedSquare extends ModTemplate {
             this.tweets.splice(i, 0, tweet);
           break;
         }
-        // newTweet value is inverted as the render function defaults to 
+        // newTweet value is inverted as the render function defaults to
         // appending tweets to the list, we want to prepend new ones.
         mod.app.connection.emit('tweet-render-request', tweet, !updateTweet);
       }
@@ -628,7 +628,7 @@ class RedSquare extends ModTemplate {
       mod.renderWithChildren(app, mod, sig);
     });
   }
-  // 
+  //
   // render user page
   //
 
@@ -699,7 +699,7 @@ class RedSquare extends ModTemplate {
       };
 
       // fetch source code for link inside tweet
-      // (sites which uses firewall like Cloudflare shows Cloudflare loading 
+      // (sites which uses firewall like Cloudflare shows Cloudflare loading
       //  page when fetching page source)
       //
       try {
@@ -752,7 +752,7 @@ class RedSquare extends ModTemplate {
   }
 
   loadNotificationTransactions(app, mod, increment = 1, post_load_callback) {
- 
+
     mod.app.storage.loadTransactions("RedSquare", (50 * increment), (txs) => {
       mod.ntfs_num = txs.length;
       let first_index =  (increment - 1) * 50
@@ -770,11 +770,11 @@ class RedSquare extends ModTemplate {
             let tweet = new Tweet(mod.app, mod, tx_to_add[i]);
             mod.addTweet(mod.app, mod, tweet);
             mod.txmap[tweet.tx.transaction.sig] = 1;
-          } 
+          }
           mod.addNotification(mod.app, mod, tx_to_add[i]);
         }
 
-    
+
 
       if (post_load_callback) {
         post_load_callback(app, mod)
@@ -898,7 +898,7 @@ class RedSquare extends ModTemplate {
           mod.addTweet(mod.app, mod, tweet);
           mod.txmap[tweet.tx.transaction.sig] = 1;
         }
-    
+
         mod.addNotification(mod.app, mod, txs[i]);
       }
 
@@ -925,6 +925,9 @@ class RedSquare extends ModTemplate {
             if (new_tweet) {
               let tx = new saito.default.transaction(JSON.parse(row.tx));
               if (!tx.optional) { tx.optional = {}; }
+              if (!tx.msg){
+                tx.msg = {};
+              }
               tx.optional.parent_id = tx.msg.parent_id;
               tx.optional.thread_id = tx.msg.thread_id;
               tx.optional.num_replies = row.num_replies;
@@ -970,6 +973,9 @@ class RedSquare extends ModTemplate {
             if (new_tweet) {
               let tx = new saito.default.transaction(JSON.parse(row.tx));
               if (!tx.optional) { tx.optional = {}; }
+              if (!tx.msg){
+                tx.msg = {};
+              }
               tx.optional.parent_id = tx.msg.parent_id;
               tx.optional.thread_id = tx.msg.thread_id;
               tx.optional.num_replies = row.num_replies;
@@ -1017,6 +1023,9 @@ class RedSquare extends ModTemplate {
               if (new_tweet) {
                 let tx = new saito.default.transaction(JSON.parse(row.tx));
                 if (!tx.optional) { tx.optional = {}; }
+                if (!tx.msg){
+                  tx.msg = {};
+                }
                 tx.optional.parent_id = tx.msg.parent_id;
                 tx.optional.thread_id = tx.msg.thread_id;
                 tx.optional.num_replies = row.num_replies;
@@ -1058,7 +1067,7 @@ class RedSquare extends ModTemplate {
           const tweets = [];
           if (res.rows) {
             res.rows.forEach(row => {
-      
+
               let optional = {};
               optional.num_likes = row.num_likes;
               optional.num_replies = row.num_replies;
@@ -1237,7 +1246,7 @@ class RedSquare extends ModTemplate {
               if (!tx.optional) { tx.optional = {}; }
               if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
               tx.optional.num_replies++;
-              
+
 
               this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
               tweet.renderReplies();
@@ -1470,7 +1479,7 @@ class RedSquare extends ModTemplate {
     let redsquare_self = this;
 
     expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
-      let reqBaseURL = req.protocol + "://" + req.headers.host + "/"; 
+      let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
 
       if (Object.keys(req.query).length > 0) {
         let query_params = req.query;
@@ -1480,7 +1489,7 @@ class RedSquare extends ModTemplate {
           let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
 
           let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
-          
+
           for (let i = 0; i < rows.length; i++) {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
             let txmsg = tx.returnMessage();
@@ -1507,7 +1516,7 @@ class RedSquare extends ModTemplate {
             redsquare_self.social.og_image_url = image;
             redsquare_self.social.og_image_secure_url = image;
             redsquare_self.social.twitter_image = image;
-            
+
           }
         } // if query param has tweet id
 
@@ -1516,13 +1525,13 @@ class RedSquare extends ModTemplate {
         console.log(query_params);
 
         if (typeof query_params.og_img_sig != "undefined") {
-          
+
 
           let sig = query_params.og_img_sig;
           let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
 
           let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
-          
+
           for (let i = 0; i < rows.length; i++) {
             let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
             let txmsg = tx.returnMessage();
@@ -1547,7 +1556,7 @@ class RedSquare extends ModTemplate {
               let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
             }
 
-            
+
             console.log('base64 data');
             console.log(base64Data);
 
@@ -1555,21 +1564,21 @@ class RedSquare extends ModTemplate {
             console.log(img);
 
             console.log('img format');
-            console.log(img_type);    
+            console.log(img_type);
 
             if (img_type == 'image/svg+xml') {
               img_type = 'image/svg';
-            }        
+            }
 
             res.writeHead(200, {
              'Content-Type': img_type,
              'Content-Length': img.length
             });
-            res.end(img); 
+            res.end(img);
             return;
           }
         }
-        
+
       }
 
       res.setHeader("Content-type", "text/html");
