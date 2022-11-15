@@ -51,6 +51,7 @@ lib/saito/0.saito.js
 lib/modules/mods/*
 
 web/client.options
+web/saito/*saito.js
 web/saito/saito.js
 web/saito/saito.js.map
 web/saito/*.wasm
