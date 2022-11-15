@@ -358,7 +358,7 @@
 
 	  let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
 
-          let html = `<p>Do you wish to return your Sardaak Promissary for +1 combat bonus?</p><ul>`;
+          let html = `<div class="status-message">Do you wish to return your Sardaak Promissary for +1 combat bonus?</div><ul>`;
               html += '<li class="option" id="yes">Yes</li>';
               html += '<li class="option" id="no">No</li>';
               html += '</ul>';
@@ -399,7 +399,7 @@
       groundCombatEvent : function(imperium_self, player, sector, planet_idx) {
         if (imperium_self.game.player == player) {
 
-          let html = `<p>Do you wish to return your Sardaak Promissary for +1 combat bonus?</p><ul>`;
+          let html = `<div class="status-message">Do you wish to return your Sardaak Promissary for +1 combat bonus?</div><ul>`;
               html += '<li class="option" id="yes">Yes</li>';
               html += '<li class="option" id="no">No</li>';
               html += '</ul>';

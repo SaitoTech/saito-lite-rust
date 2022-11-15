@@ -30,7 +30,6 @@ class Post {
     this.emoji = new SaitoEmoji(app, mod, 'post-tweet-textarea');
     this.emoji.render(app, mod);
 
-    post_self = this;
     app.modules.mods.forEach(mod => {
       try {
         const SaitoGif = require("./../../giphy/giphy");

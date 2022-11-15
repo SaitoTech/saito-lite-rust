@@ -44,7 +44,7 @@
         return base;
 
       },
-      calculateVictoryPoints  : function(game_mod) {
+      calculateBaseVictoryPoints  : function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("papacy");
         let base = this.vp;
@@ -60,6 +60,12 @@
         
         return base;
 
+      },
+      calculateBonusVictoryPoints  :    function(game_mod) {
+        return this.bonus_vp;
+      },
+      calculateSpecialVictoryPoints  :  function(game_mod) {
+        return this.special_vp;
       },
     });
  

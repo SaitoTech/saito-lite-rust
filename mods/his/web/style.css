@@ -1,4 +1,64 @@
 
+
+.navalspace {
+  width: 190px;
+  height: 100px;
+  position: absolute;
+}
+#channel {
+  top: 1025px;
+  left: 1420px;
+}
+#north {
+  top: 80px;
+  left: 2250px;
+}
+#baltic {
+  top: 40px;
+  left: 3140px;
+}
+#biscay {
+  top: 1500px;
+  left: 1400px;
+}
+#atlantic {
+  top: 2880px;
+  left: 1100px;
+}
+#gulflyon {
+  top: 2150px;
+  left: 2600px;
+}
+#barbary {
+  top: 2550px;
+  left: 2450px;
+}
+#tyrrhenian {
+  top: 2100px;
+  left: 3050px
+}
+#africa {
+  top: 2775px;
+  left: 4200px
+}
+#adriatic {
+  top: 1800px;
+  left: 3450px;
+}
+#ionian {
+  top: 2385px;
+  left: 3750px;
+}
+#aegean {
+  top: 2500px;
+  left: 4450px;
+}
+#black {
+  top: 1465px;
+  left: 4750px;
+}
+
+
 .personage_tile {
   height: 25rem;
   width: 25rem;

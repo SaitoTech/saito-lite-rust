@@ -388,7 +388,10 @@ alert("removing unit not implement for sea");
 	    // source = land, destination = sea
 	    //
 	    if (this.game.spaces[source] && this.game.navalspaces[destination]) {
+console.log("A");
+console.log(JSON.stringify(this.game.spaces[source]));
 	      let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+console.log("UNIT TO MOVE: " + JSON.stringify(unit_to_move));
               this.game.navalspaces[destination].units[faction].push(unit_to_move);
               this.game.spaces[source].units[faction].splice(unitidx, 1);
 	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
@@ -400,26 +403,53 @@ alert("removing unit not implement for sea");
 	    // source = sea, destination = sea
 	    //
 	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
-	      let unit_to_move = this.game.navalspaces[source].units[faction][unitidx];
+
+console.log("B");
+
+	      let actual_unitidx = 0;
+	      for (let i = 0; i < this.game.navalspaces[source].units[faction].length; i++) {
+		if (this.game.navalspaces[source].units[faction][i].idx === unitidx) {
+		  actual_unitidx = i;
+		};
+	      }
+
+console.log("B");
+console.log(JSON.stringify(this.game.navalspaces[source]));
+	      let unit_to_move = this.game.navalspaces[source].units[faction][actual_unitidx];
+console.log("UNIT TO MOVE: " + JSON.stringify(unit_to_move));
               this.game.navalspaces[destination].units[faction].push(unit_to_move);
-              this.game.navalspaces[source].units[faction].splice(unitidx, 1);
+              this.game.navalspaces[source].units[faction].splice(actual_unitidx, 1);
 	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
+console.log("... 1");
 	      this.displayNavalSpace(source);
+console.log("... 2");
 	      this.displayNavalSpace(destination);
+console.log("... 3");
 	    }
 
 	    //
 	    // source = sea, destination = land
 	    //
-	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
-	      let unit_to_move = this.game.navalspaces[source].units[faction][unitidx];
+	    if (this.game.navalspaces[source] && this.game.spaces[destination]) {
+
+console.log("TESTING A");
+
+	      let actual_unitidx = 0;
+	      for (let i = 0; i < this.game.navalspaces[source].units[faction].length; i++) {
+		if (this.game.navalspaces[source].units[faction][i].idx === unitidx) {
+		  actual_unitidx = i;
+		};
+	      }
+
+	      let unit_to_move = this.game.navalspaces[source].units[faction][actual_unitidx];
               this.game.spaces[destination].units[faction].push(unit_to_move);
-              this.game.navalspaces[source].units[faction].splice(unitidx, 1);
+              this.game.navalspaces[source].units[faction].splice(actual_unitidx, 1);
 	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
 	      this.displayNavalSpace(source);
 	      this.displaySpace(destination);
 	    }
 
+console.log("JOLLY SEA BATTLE");
 	    //
 	    // do we have a jolly sea battle?
 	    //
@@ -432,6 +462,8 @@ alert("removing unit not implement for sea");
 	    }
 
             let anyone_else_here = 0;
+
+console.log("JOLLY SEA BATTLE 2");
 
             let lqe = qe-1;
             if (lqe >= 0) {
@@ -453,7 +485,9 @@ alert("removing unit not implement for sea");
                     }
                   }
                 }
+console.log("JOLLY SEA BATTLE 3");
               } else {
+console.log("JOLLY SEA BATTLE 4");
                 //
                 // we only update the occupier of the space if the next move is not a "move"
                 // as we require interception check to find out if there are units here already.
