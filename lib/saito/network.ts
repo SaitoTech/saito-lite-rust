@@ -145,22 +145,48 @@ class Network {
 
 
   addStunPeer(stun_object){
+    const peer = new Peer(this.app);
+    this.initializeStun(peer, stun_object)
+  }
+
+
+
+  initializeStun(peer, stun_object){
     let pc = stun_object.peer_connection;
     let publickey = stun_object.publickey
     let data_channel = stun_object.data_channel
 
-    data_channel.onmessage = (e) => {
-      console.log('new mesage from ', publickey)
-    };
-   
-    data_channel.onopen = (e) => {
-        console.log('stun connection opened with '+publickey, "opened ");
-    }
-
-    const peer = new Peer(this.app);
     peer.stun = {peer_connection:pc, data_channel, publickey};
     peer.peer.publickey = publickey;
+    peer.stun.data_channel.peer = peer
     peer.uses_stun = true;
+
+
+    peer.stun.data_channel.onmessage = async (e) => {
+      const data = await e.data;
+      const api_message = this.app.networkApi.deserializeAPIMessage(data);
+      if (api_message.message_name === "RESULT__") {
+        this.app.networkApi.receiveAPIResponse(api_message);
+      } else if (api_message.message_name === "ERROR___") {
+        this.app.networkApi.receiveAPIError(api_message);
+      } else {
+        await this.receiveRequest(peer, api_message);
+      }
+    };
+   
+    peer.stun.data_channel.onopen = (e) => {
+        // console.log('stun connection opened with '+publickey, "opened ");
+        if (this.debugging) {
+          console.log("direct data channel created with ", peer.peer.publickey);
+        }
+        this.app.handshake.initiateHandshake(peer.stun.data_channel);
+
+        this.app.network.requestBlockchain(peer);
+        this.app.connection.emit("peer_connect", peer);
+        this.app.connection.emit("connection_up", peer);
+        this.app.network.propagateServices(peer);
+    }
+    
 
    let index = this.peers.findIndex(peer => peer.stun.publickey === publickey);
     if(index === -1){

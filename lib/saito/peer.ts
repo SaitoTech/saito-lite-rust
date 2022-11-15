@@ -97,12 +97,20 @@ class Peer {
   }
 
   isConnected() {
-    if (this.socket) {
-      if (this.socket.readyState === this.socket.OPEN) {
-	return true;
+    if(this.uses_stun){
+      if(this.stun.data_channel.readyState === "open"){
+        return true;
       }
+      return false;
+    }else {
+      if (this.socket) {
+        if (this.socket.readyState === this.socket.OPEN) {
+           return true;
+        }
+      }
+      return false;
     }
-    return false;
+   
   }
 
   //
@@ -155,61 +163,63 @@ class Peer {
   ////////////////
   // NETWORKING //
   ////////////////
+
   async sendResponse(message_id, data) {
-    await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, data);
+    let channel = this.uses_stun? this.stun.data_channel : this.socket
+    await this.app.networkApi.sendAPIResponse(channel, "RESULT__", message_id, data);
   }
 
   sendRequest( message: string, data: any = "" ) {
-  if(this.uses_stun){
-      let dc = this.stun.data_channel;
-       this.app.networkApi.send(dc, message, data);
-       return;
-    }else {
+
     //
     // respect prohibitions
     //
     // block as Block.serialize(BlockType.Header)
 
+    let channel = this.uses_stun? this.stun.data_channel : this.socket
+
     if (message === "SNDBLOCK") {
-      this.app.networkApi.send(this.socket, "SNDBLOCK", data);
+      this.app.networkApi.send(channel, "SNDBLOCK", data);
       return;
     }
     // block as block_hash
     if (message === "SNDBLKHH") {
-      this.app.networkApi.send(this.socket, "SNDBLKHH", data);
+      this.app.networkApi.send(channel, "SNDBLKHH", data);
       return;
     }
     // transaction as Transaction.serialize()
     if (message === "SNDTRANS") {
-      this.app.networkApi.send(this.socket, "SNDTRANS", data);
+      this.app.networkApi.send(channel, "SNDTRANS", data);
       return;
     }
     // transaction as Transaction.serialize()
     if (message === "REQGSTCN") {
-      this.app.networkApi.send(this.socket, "REQGSTCN", data);
+      this.app.networkApi.send(channel, "REQGSTCN", data);
       return;
     }
     if (message === "REQCHAIN") {
-      this.app.networkApi.send(this.socket, "REQCHAIN", data);
+      this.app.networkApi.send(channel, "REQCHAIN", data);
       return;
     }
     if (message === "SPVCHAIN") {
-      this.app.networkApi.send(this.socket, "SPVCHAIN", data);
+      this.app.networkApi.send(channel, "SPVCHAIN", data);
       return;
     }
     if (message === "GSTCHAIN") {
-      this.app.networkApi.send(this.socket, "GSTCHAIN", data);
+      this.app.networkApi.send(channel, "GSTCHAIN", data);
       return;
     }
     // json list of services running on server
     if (message === "SERVICES") {
-      this.app.networkApi.send(this.socket, "SERVICES", data);
+      this.app.networkApi.send(channel, "SERVICES", data);
       return;
     }
     if (message === "PINGPING") {
-      this.app.networkApi.send(this.socket, "PINGPING", data);
+      this.app.networkApi.send(channel, "PINGPING", data);
       return;
     }
+ 
+
 
     //
     // alternately, we have a legacy transmission format, which is sent
@@ -219,13 +229,31 @@ class Peer {
     const data_to_send = { message: message, data: data };
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-    if (this.socket && this.socket.readyState === this.socket.OPEN) {
-      this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer).then(() => {
+
+    // if(channel){
+    //   this.app.networkApi.sendAPICall(channel, "SENDMESG", buffer).then(() => {
+    //   });
+    // }else {\
+    //   this.sendRequestWithCallbackAndRetry(message, data);
+    // }
+
+    if(this.uses_stun && this.stun.data_channel.readyState === "open"){
+      this.app.networkApi.sendAPICall(this.stun.data_channel, "SENDMESG", buffer).then(() => {
       });
-    } else {
-      this.sendRequestWithCallbackAndRetry(message, data);
+    }else {
+      if (this.socket && this.socket.readyState === this.socket.OPEN) {
+        this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer).then(() => {
+        });
+      } else {
+        this.sendRequestWithCallbackAndRetry(message, data);
+      }
+    
     }
-    }
+
+
+    
+   
+    
 
   }
 
@@ -253,31 +281,64 @@ class Peer {
     const data_to_send = { message: message, data: data };
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-    if (this.socket && this.socket.readyState === this.socket.OPEN) {
-      this.app.networkApi
-        .sendAPICall(this.socket, "SENDMESG", buffer)
-        .then((response: Buffer) => {
-          if (callback) {
-            let content = Buffer.from(response).toString("utf-8");
-            content = JSON.parse(content);
-            callback(content);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          if (callback) {
-            callback({ err: error.toString() });
-          }
-        });
-    } else {
-      if (loop) {
-        this.sendRequestWithCallbackAndRetry(message, data, callback);
+
+    if(this.uses_stun){
+      let data_channel = this.stun.data_channel
+      if (data_channel && data_channel.readyState === "open") {
+        this.app.networkApi
+          .sendAPICall(data_channel, "SENDMESG", buffer)
+          .then((response: Buffer) => {
+            if (callback) {
+              let content = Buffer.from(response).toString("utf-8");
+              content = JSON.parse(content);
+              callback(content);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            if (callback) {
+              callback({ err: error.toString() });
+            }
+          });
       } else {
-        if (callback) {
-          callback({ err: "Socket Not Connected" });
+        if (loop) {
+          this.sendRequestWithCallbackAndRetry(message, data, callback);
+        } else {
+          if (callback) {
+            callback({ err: "Socket Not Connected" });
+          }
+        }
+      }
+    }else if(this.socket){
+      if (this.socket && this.socket.readyState === this.socket.OPEN) {
+        this.app.networkApi
+          .sendAPICall(this.socket, "SENDMESG", buffer)
+          .then((response: Buffer) => {
+            if (callback) {
+              let content = Buffer.from(response).toString("utf-8");
+              content = JSON.parse(content);
+              callback(content);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            if (callback) {
+              callback({ err: error.toString() });
+            }
+          });
+      } else {
+        if (loop) {
+          this.sendRequestWithCallbackAndRetry(message, data, callback);
+        } else {
+          if (callback) {
+            callback({ err: "Socket Not Connected" });
+          }
         }
       }
     }
+
+   
+ 
   }
 
   //
