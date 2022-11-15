@@ -8,7 +8,7 @@
       ground_units	: 	["infantry","infantry","pds","spacedock"],
       // is_testing -- you can use this to preseed action cards and objectives
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
-      //action_cards	:	["upgrade", "tactical-bombardment", "diaspora-conflict"],
+      action_cards	:	["plague", "political-stability"],
       //objectives	:	["close-the-trap"],
       tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
@@ -97,7 +97,7 @@
 
               imperium_self.playerAcknowledgeNotice("The Tech strategy card has been played. You may expend a strategy token to research a technology. You can then purchase a second for 6 resources:", function() {
 
-                let html = '<p>Technology has been played. Do you wish to spend a strategy token to research a technology? </p><ul>';
+                let html = '<div class="status-message">Technology has been played. Do you wish to spend a strategy token to research a technology? </div><ul>';
                     html += '<li class="option" id="yes">Yes</li>';
                     html += '<li class="option" id="no">No</li>';
                     html += '</ul>';
@@ -137,13 +137,13 @@
 
 
 	  	    let resources_to_spend = 6;
-                    let html = '<p>Do you wish to spend 6 resources to research a second technology? </p><ul>';
+                    let html = '<div class="status-message">Do you wish to spend 6 resources to research a second technology? </div><ul>';
 
   	            if (
-        	      imperium_self.game.players_info[player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
-        	      imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 1
-        	    ) {
-        	      html = '<p>Do you wish to research a second technology for free?';
+	      imperium_self.game.players_info[player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
+	      imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 1
+	    ) {
+	      html = '<div class="status-message">Do you wish to research a second technology for free?</div><ul>';
         	      resources_to_spend = 0;
         	    }
 
@@ -326,7 +326,7 @@
       researchTechnologyEvent : function(imperium_self, researcher, player, tech) {
 	if (imperium_self.game.player === player) {
 
-              let html = `<p>Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </p><ul>`;
+              let html = `<div class="status-message">Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </div><ul>`;
                     html += '<li class="option" id="yes">Yes</li>';
                     html += '<li class="option" id="no">No</li>';
                     html += '</ul>';

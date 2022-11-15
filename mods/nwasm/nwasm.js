@@ -52,7 +52,7 @@ class Nwasm extends GameTemplate {
     this.active_game_load_ts = ts;
     this.active_game_save_ts = ts;
   }
-  stopPlaying() {
+  stopPlaying(ts=null) {
     if (ts == null) { ts = new Date().getTime(); }
     this.active_game_time_played += (ts - this.active_game_load_ts);
     this.active_game_load_ts = ts;

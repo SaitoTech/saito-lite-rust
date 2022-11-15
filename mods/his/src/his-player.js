@@ -938,7 +938,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
           function(space) {
             if (his_self.isSpaceFriendly(space, faction)) {
-              if (his_self.isSpaceConnectedToCapital(space, faction)) {
+              if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction)) {
                 if (!his_self.isSpaceFactionCapital(space, faction)) {
                   return 1;
 		}
