@@ -6,7 +6,7 @@ const ChatPopup = require("./lib/chat-manager/popup");
 
 const JSON = require('json-bigint');
 
-class Chatx extends ModTemplate {
+class Chat extends ModTemplate {
 
     constructor(app) {
 
@@ -791,4 +791,4 @@ class Chatx extends ModTemplate {
 }
 
 
-module.exports = Chatx;
+module.exports = Chat;
