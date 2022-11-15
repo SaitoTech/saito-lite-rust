@@ -605,6 +605,7 @@ class Wordblocks extends GameTemplate {
 
       $("#skipturn").off();
       $("#skipturn").on("click",function(){
+        wordblocks_self.clearBoard();
         wordblocks_self.addMove("turn\t" + wordblocks_self.game.player + "\t");
         wordblocks_self.endTurn();
       });
@@ -933,6 +934,7 @@ class Wordblocks extends GameTemplate {
   Move all temporary tiles from board back to rack
 */
   clearBoard() {
+    $(".tile-submit-controls").remove();
     let playedTiles = document.querySelectorAll(".slot .tempplacement");
     for (let t of playedTiles) {
       this.game.board[t.parentElement.id].letter = "_";

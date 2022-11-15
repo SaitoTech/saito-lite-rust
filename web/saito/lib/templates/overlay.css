@@ -9,7 +9,8 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #000C;
+  background-color: #444;
+  opacity: 0.4;
   z-index: 100;
   min-width: 350px;
 }

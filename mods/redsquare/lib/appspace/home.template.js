@@ -15,7 +15,6 @@ module.exports = (app, mod) => {
           <div class="redsquare-actions-container"> 
             <div id="redsquare-new-tweet" class="saito-button-secondary small">New Post</div>
             <div id="redsquare-my-profile" class="saito-button-secondary small">My Profile</div>
-            <div id="redsquare-create-game" class="saito-button-secondary small">New Game</div>
           </div>
           <div id="saito-page-header-title" class="saito-page-header-title">🟥 RED SQUARE</div>
           </div>

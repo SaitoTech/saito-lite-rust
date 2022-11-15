@@ -82,7 +82,7 @@ Saito Module
   width: 15rem;
   margin-right: 0.5rem;
   background-image: url('https://saito.io/saito/img/dreamscape.png');
-  background-size: cover;
+  background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -94,7 +94,7 @@ Saito Module
 
 .saito-module.small > * > .saito-module-image { 
     height: 5.4rem;
-    width: 9rem;
+    width: 10rem;
 }
 
 .saito-module.large > * > .saito-module-image { 
@@ -157,6 +157,7 @@ Saito Module X
 
 .saito-module-x .saito-module-action {
     font-size: 1.8rem;
+    border-bottom: 1px dotted var(--saito-primary);
     color: var(--saito-primary);
 }
 
