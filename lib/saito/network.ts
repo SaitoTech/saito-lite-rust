@@ -438,7 +438,6 @@ class Network {
             this.peers[i].stun.data_channel.readyState === "closed"
           ) {
           try {
-            console.log('peers before', this.peers)
             this.peers[i].stun.data_channel.close();
             this.peers.splice(i, 1);
           } catch (error) {
