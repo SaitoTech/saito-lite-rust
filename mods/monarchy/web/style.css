@@ -26,30 +26,23 @@ body {
   overflow: hidden;
 }
 
-/*#zoom{
-  border-radius: 25px;
-  /*position: absolute;
-  top: 8px;
-  right: 20px;
-  width: 20px;
-  height: 20px;
-  font-size: 20px;
-  text-align: center;
-  color: whitesmoke;
-  background-color: black;
-}*/
-
-#zoom.active{
-  /*border: 1px ghostwhite solid;*/
-  color: darkred; 
-  /*box-shadow: 0 0 5px 5px #f5f5f5f5;
-  background-color: whitesmoke;*/
+.active_card_zone{
+  position: absolute;
+  top: 40px;
+  left: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 300px;
 }
+
+.active_card_zone .cardimg{
+  width: 100px;
+}
+
 
 .cardimg {
   width: 100%;
 }
-
 
 .cardpile img{
   width: 100%;
@@ -80,7 +73,7 @@ body {
   right: 1rem;
   top: 60px;
   transition: opacity 1s ease;
-  z-index: 505; /* Position higher than menu*/
+  /*z-index: 505;  Position higher than menu*/
   /*box-shadow: 0 0 10px 5px black;
   background-color: #f5f5f555;
   padding: 0.5em;*/
@@ -115,6 +108,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
+
   /*width: 240px;
   height: 180px;*/
 }
@@ -122,6 +116,15 @@ body {
 .player_decks .cardpile{
   position: relative;
   width: 120px;
+  height: 190px;
+}
+
+.player_decks.tip .tiptext{
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: fit-content;
+  white-space: nowrap;
 }
 
 .logcard{
@@ -208,6 +211,7 @@ body {
 .attack_overlay{
   background-color: var(--dominion-dark);
   border-radius: 3px;
+  font-family: "Papyrus";
   border: solid var(--dominion-parchment) 1px;
   color: ghostwhite;
   padding: 1em;
