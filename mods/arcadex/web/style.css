@@ -25,7 +25,9 @@ body {
   justify-content: center;
 }
 
-
+h1, h2, h3, h4, h5, h6 {
+  color: var(--saito-white);
+}
 
 
 
@@ -102,8 +104,8 @@ body {
   font-size: 2rem;
 }
 
-.arcade-main > div{
-  margin-bottom: 1rem;
+.arcade-main > div {
+  margin-bottom: 4px;
 }
 
 
@@ -139,7 +141,7 @@ body {
 }
 
 .arcade-tabs {
-  max-height: 40rem;
+  max-height: calc(100vh - 6em);
   height: fit-content;
   overflow-y: auto;
 }
@@ -258,6 +260,20 @@ body {
 
 }
 
+.saito-menu>ul>li {
+  background-color: var(--saito-dark-purple);
+  border-bottom: 1px solid var(--saito-dark-purple);
+  margin: 0.5rem 0;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.saito-menu>ul>li:hover{
+  color: var(--saito-black);
+  background-color: var(--saito-dark-purple);
+  border-bottom: 1px solid var(--saito-primary);
+}
+
 .leaderboard-header{
   font-size: 2.4rem;
   text-decoration: underline;
@@ -265,17 +281,21 @@ body {
 }
 
 .leaderboard-header:hover{
-  color: black;
-  background: ghostwhite;
+  color: var(--saito-black);
+  border-bottom: 1px solid var(--saito-primary);
 }
 
 #arcade-leaderboard{
   padding: 0 0.5rem 0 0.9rem;
+  width: 30rem;
 }
 
 #arcade-leaderboard .saito-table-row{
-  margin: 0.4rem 0;
+  margin: 0 0 0.5rem 0;
   cursor: pointer;
+  padding: 0.5rem;
+  background-color: var(--saito-dark-purple);
+  border-bottom: 1px solid var(--saito-dark-purple);
 }
 
 #arcade-leaderboard .saito-table-row .me::before{
@@ -283,13 +303,13 @@ body {
 }
 
 #arcade-leaderboard .saito-table-row:hover{
-  color: black;
-  background: ghostwhite;
+  color: var(--saito-black);
+  border-bottom: 1px solid var(--saito-primary);
 }
 
 .arcade-menu-item.selected{
-  color: red;
-  background: whitesmoke;
+  color: var(--saito-black);
+  border-bottom: 1px solid var(--saito-primary);
 }
 
 
