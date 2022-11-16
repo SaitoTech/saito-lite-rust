@@ -15,7 +15,7 @@ class Jaipur extends GameTemplate {
 
     this.name  		       = "Bazaar";
 
-    this.description     = `${this.name} is a fast-paced two player card game where players acquire sets of resources to sell for the maximum profit.`;
+    this.description     = `Become the richest merchant in the kingdom of Jaipur by collecting sets of resources and selling them for maximum profit in this fast-paced 2-player card game.`;
     this.status          = "Alpha";
     
     this.card_height_ratio = 1.5;
