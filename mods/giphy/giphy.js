@@ -97,7 +97,7 @@ class Giphy extends ModTemplate {
             let onGifClick = (gif, e) => {
                 console.log(gif, e)
                 e.preventDefault();
-                this.parent_callback(gif.images.fixed_width.url);
+                this.parent_callback(gif.images.original.url);
                 //document.getElementById(self.input_id).value += `${gif.embed_url} \n `;
                 self.overlay.remove();
             }
@@ -131,7 +131,7 @@ class Giphy extends ModTemplate {
                 let onGifClick = (gif, e) => {
 
                     e.preventDefault();
-                    this.parent_callback(gif.images.fixed_width.url);
+                    this.parent_callback(gif.images.original.url);
                     //document.getElementById(self.input_id).value += `${gif.embed_url} \n `;
                     self.overlay.remove();
                 }
