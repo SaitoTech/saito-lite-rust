@@ -3735,6 +3735,10 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	}
         if (mv[0] === "diplomacy_phase") {
 
+	  // multiplayer has diplomacy phase
+	  // this.playerOffer();
+	  // return 0;
+
 	  //
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
@@ -3743,7 +3747,6 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
     	    this.game.queue.push("play_diplomacy_card\tpapacy");
     	    this.game.queue.push("play_diplomacy_card\tprotestant");
 	  }
-
 
 	  //
 	  // 2-player game? Diplomacy Deck
@@ -3772,7 +3775,6 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase
 	  //
           this.game.queue.push("papacy_diplomacy_phase_special_turn");
-
 
 	  this.game.queue.splice(qe, 1);
           return 1;

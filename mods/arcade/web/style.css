@@ -30,6 +30,11 @@ body {
   text-align: center;
 }
 
+.game-image {
+  height: 100%;
+  width: 100%;
+}
+
 .game-wizard-advanced-options-overlay .overlay-input {
   margin-bottom: 1rem;
 }
