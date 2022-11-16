@@ -435,8 +435,11 @@ try {
 
     //
     // delete unziped module
-    //
-    fs.unlink(path.resolve(__dirname, zip_path));
+    try{
+      fs.unlink(path.resolve(__dirname, zip_path));
+    }catch(error){
+      console.error(error);
+    }
     return { name, image , description, categories };
 
 } catch (err) {
