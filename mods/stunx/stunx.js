@@ -161,24 +161,24 @@ class Stunx extends ModTemplate {
                     app.connection.emit('game-start-audio-call', public_key);
                 }
             },
-            {
-                text: "Stun connect",
-                icon: "",
-                callback: function (app, public_key) {
-                    // app.connection.emit('game-start-audio-call', public_key);
-                    let stunx = app.modules.returnModule("Stunx");
-                    stunx.createStunConnectionWithPeers([public_key]);
-                }
-            },
-            {
-                text: "Send Message to peer",
-                icon: "",
-                callback: function (app, public_key) {
-                    // app.connection.emit('game-start-audio-call', public_key);
-                    let stunx = app.modules.returnModule("Stunx");
-                    stunx.sendRequest(public_key);
-                }
-            }
+            // {
+            //     text: "Stun connect",
+            //     icon: "",
+            //     callback: function (app, public_key) {
+            //         // app.connection.emit('game-start-audio-call', public_key);
+            //         let stunx = app.modules.returnModule("Stunx");
+            //         stunx.createStunConnectionWithPeers([public_key]);
+            //     }
+            // },
+            // {
+            //     text: "Send Message to peer",
+            //     icon: "",
+            //     callback: function (app, public_key) {
+            //         // app.connection.emit('game-start-audio-call', public_key);
+            //         let stunx = app.modules.returnModule("Stunx");
+            //         stunx.sendRequest(public_key);
+            //     }
+            // }
         ]
         }
         return null;
@@ -954,44 +954,31 @@ class Stunx extends ModTemplate {
         }
     }
 
-    sendRequest( publickey){
-      let newtx = this.app.wallet.createUnsignedTransaction();
-      // get recipient -- server in this case
-    //   let server_pub_key = 
+    // sendRequest( publickey){
+    //   let newtx = this.app.wallet.createUnsignedTransaction();
+    //   // get recipient -- server in this case
+    // //   let server_pub_key = 
 
 
-      let peer = this.app.network.peers.find(peer => peer.peer.publickey == publickey)
+    //   let peer = this.app.network.peers.find(peer => peer.peer.publickey == publickey)
 
-      newtx.transaction.to.push(new saito.default.slip(publickey));
-      newtx.msg.module = "Stunx";
-      newtx.msg.request = "testing stunx"
-      newtx.msg.data = {
-        name: 'i am davik'
-      }
-      newtx = this.app.wallet.signTransaction(newtx);
-      let message = {
-          data: {}
-      };
-      message.request = "testing stunx";
-      message.data.tx = newtx;
-      peer.sendRequest(message.request, message.data);
+    //   newtx.transaction.to.push(new saito.default.slip(publickey));
+    //   newtx.msg.module = "Stunx";
+    //   newtx.msg.request = "testing stunx"
+    //   newtx.msg.data = {
+    //     name: 'test'
+    //   }
+    //   newtx = this.app.wallet.signTransaction(newtx);
+    //   let message = {
+    //       data: {}
+    //   };
+    //   message.request = "testing stunx";
+    //   message.data.tx = newtx;
+    //   peer.sendRequest(message.request, message.data);
 
-    }
-
-
-    // initializeStun(pc){
-    //     const data_channel = pc.createDataChannel('channel');
-    //     pc.dc = data_channel;
-    //     pc.dc.onmessage = function(e) {
-    //         console.log('new message from client : ', e.data);
-    //     };
-    //     pc.dc.onopen = function(e){   
-    //     console.log("connection opened")
-
-    //     // pc.dc.send("New message ")
-    
-    // };
     // }
+
+
 
 
 }

@@ -186,6 +186,22 @@ class Network {
         this.app.connection.emit("connection_up", peer);
         this.app.network.propagateServices(peer);
     }
+
+    peer.stun.data_channel.onclose = (event) => {
+      if (this.debugging) {
+        console.log(
+          `[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`
+        );
+      }
+      this.app.connection.emit("connection_dropped", peer);
+      this.app.connection.emit("peer_disconnect", peer);
+    };
+
+    peer.stun.data_channel.onerror = (event) => {
+      if (this.debugging) {
+        console.log(`Peer Datachannel Error: [error] `);
+      }
+    };
     
 
    let index = this.peers.findIndex(peer => peer.stun.publickey === publickey);
@@ -196,7 +212,7 @@ class Network {
     }
     this.peers.push(peer);
     this.peers_connected++;
-    console.log('adding stun peer', peer);
+    console.log('adding stun peer');
   }
 
   //
@@ -412,10 +428,35 @@ class Network {
   }
 
   cleanupDisconnectedPeer(peer, force = 0) {
-  
     if(peer.uses_stun){
-      return;
+      // clean up peer
+      let publickey = peer.peer.publickey;
+      for (let i = 0; i < this.peers.length; i++) {
+
+        if(this.peers[i].peer.publickey === publickey) {
+          if (
+            this.peers[i].stun.data_channel.readyState === "closed"
+          ) {
+          try {
+            console.log('peers before', this.peers)
+            this.peers[i].stun.data_channel.close();
+            this.peers.splice(i, 1);
+          } catch (error) {
+            console.log("ERROR : error closing datachannel: " + error);
+          }
+        }
+        }
+
+       
+     
+
+     
+    
+  
     }
+    return;
+
+  }
 
     for (let c = 0; c < this.peers.length; c++) {
       // it has to be this peer, and the socket must be closed
@@ -1113,6 +1154,9 @@ class Network {
       fees = fees / BigInt(2);
     }
     this.peers.forEach((peer) => {
+      if(peer.uses_stun){
+        return;
+      }
       //&& fees >= peer.peer.minfee
       // console.log('peer ', pe)
       if (peer.peer.receivetxs === 0) {

@@ -139,7 +139,7 @@ class Peer {
   }
 
   //
-  // keepAlive
+  // keepAliverec
   //
   keepAlive() {
     if (this.keep_alive_timer != null) {
