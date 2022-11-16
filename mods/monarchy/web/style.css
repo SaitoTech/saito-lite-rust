@@ -26,25 +26,35 @@ body {
   overflow: hidden;
 }
 
-/*#zoom{
-  border-radius: 25px;
-  /*position: absolute;
-  top: 8px;
-  right: 20px;
-  width: 20px;
-  height: 20px;
-  font-size: 20px;
-  text-align: center;
-  color: whitesmoke;
-  background-color: black;
-}*/
-
-#zoom.active{
-  /*border: 1px ghostwhite solid;*/
-  color: darkred; 
-  /*box-shadow: 0 0 5px 5px #f5f5f5f5;
-  background-color: whitesmoke;*/
+.active_card_zone{
+  position: absolute;
+  top: 40px;
+  left: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 300px;
 }
+
+.active_card_zone .cardimg{
+  width: 100px;
+}
+
+
+.cardimg {
+  width: 100%;
+}
+
+.cardpile img{
+  width: 100%;
+  position: absolute;
+  border: 1px solid;
+  border-radius: 2.5%;
+}
+
+.cardpile img:first-child{
+  filter: drop-shadow(-8px 1px 6px #000A);
+}
+
 
 .passivecard{
   width: 100%;
@@ -53,51 +63,83 @@ body {
 .passivecard:hover{
  filter:  brightness(1.0); 
 }
-.passivecard.dim{
-  filter: brightness(0.35);  
-}
 
 .cardstacks{
+  position: absolute;
   display: grid;
   grid-gap: 5px;
   grid-template-columns: repeat(30, minmax(auto, 20px));
-  width: fit-content;
   max-width: min(80vw,65vh);
-  margin: 60px auto;
-  box-shadow: 0 0 10px 5px black;
+  right: 1rem;
+  top: 60px;
+  transition: opacity 1s ease;
+  /*z-index: 505;  Position higher than menu*/
+  /*box-shadow: 0 0 10px 5px black;
   background-color: #f5f5f555;
-  padding: 0.5em;
+  padding: 0.5em;*/
 }
 
-.cardpile{
+#log-wrapper{
+  z-index: 510;
+}
+
+.cardstacks .cardpile{
+  width: 13vw;
   max-width: 100px;
+  height: 21vw;
+  max-height: 160px;
   grid-column: span 5;
+  position: relative;
 }
 
-.cardpile:nth-child(n+7){
+.cardstacks .cardpile:nth-child(n+7){
   grid-column: span 6;
   /*margin-left: 10px;*/
+  width: 16vw;
   max-width: 120px;
+  height: 25vw;
+  max-height: 192px;
 }
 
+.player_decks{
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+
+  /*width: 240px;
+  height: 180px;*/
+}
+
+.player_decks .cardpile{
+  position: relative;
+  width: 120px;
+  height: 190px;
+}
+
+.player_decks.tip .tiptext{
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: fit-content;
+  white-space: nowrap;
+}
 
 .logcard{
   font-weight: bold;
 }
 
-.showcard .tiptext{
+/*.showcard .tiptext{
   display: none;
-}
+}*/
 
 .tip .tiptext{
   width: calc(100% + 30px);
   min-width: unset;
   color: black;
   background-color: var(--dominion-parchment);
-}
-
-.cardimg {
-      width: 100%;
 }
 
 .hud-long{
@@ -169,6 +211,7 @@ body {
 .attack_overlay{
   background-color: var(--dominion-dark);
   border-radius: 3px;
+  font-family: "Papyrus";
   border: solid var(--dominion-parchment) 1px;
   color: ghostwhite;
   padding: 1em;
@@ -235,19 +278,19 @@ body {
     grid-template-rows: 9vw 15vw;
     margin: 45px auto;
   }
-  .cardpile{
+  .cardstacks .cardpile{
     max-width: 9vw;
   }
 
-  .cardpile img{
+  .cardstacks .cardpile img{
     transform: rotate(-90deg) translate(34%, 20%);
   }
 
-  .cardpile:nth-child(n+7){
+  .cardstacks .cardpile:nth-child(n+7){
     grid-column: span 3;
     max-width: 100px;
   }
-  .cardpile:nth-child(n+7) img{
+  .cardstacks .cardpile:nth-child(n+7) img{
     transform: rotate(0deg);
   }
 }
@@ -255,46 +298,60 @@ body {
 @media screen and (min-width: 1200px){
   .cardstacks{
     max-width: 1200px;
-    width: 75vw;
     grid-template-columns: repeat(26, 1fr);
     grid-template-rows: repeat(12, 1fr);
   }
 
-  .cardpile{
+  .cardstacks .cardpile{
     margin: 2px;
+    width: 8.65vw;
     max-width: 120px;
+    height: 13.85vw;
+    max-height: 190px;
     grid-row-end: span 4;
     grid-column-end: span 3;
   }
 
- .cardpile:nth-child(n+7){
+ .cardstacks .cardpile:nth-child(n+7){
     grid-column: span 4;
     grid-row-end: span 6;
+    width: 11.5vw;
     max-width: 180px;
+    height: 18.5vw;
+    max-height: 270px;
   } 
 
-  .cardpile:nth-child(1){
+  .cardstacks .cardpile:nth-child(1){
     grid-column-start: 1;
     grid-row-start: 1;
   }
-  .cardpile:nth-child(2){
+  .cardstacks .cardpile:nth-child(2){
     grid-column-start: 1;
     grid-row-start: 5;
   }
-  .cardpile:nth-child(3){
+  .cardstacks .cardpile:nth-child(3){
     grid-column-start: 1;
     grid-row-start: 9;
   }
-  .cardpile:nth-child(4){
+  .cardstacks .cardpile:nth-child(4){
     grid-column-start: 4;
     grid-row-start: 1;
   }
-  .cardpile:nth-child(5){
+  .cardstacks .cardpile:nth-child(5){
     grid-column-start: 4;
     grid-row-start: 5;
   }
-  .cardpile:nth-child(6){
+  .cardstacks .cardpile:nth-child(6){
     grid-column-start: 4;
     grid-row-start: 9;
   }
+}
+
+
+.game-cardbox {
+  left: 1rem;
+  top: 50%;
+  width: 30vh;
+  max-width: 250px;
+  transform: translateY(-50%);
 }
