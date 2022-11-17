@@ -36,45 +36,6 @@ body {
 
 
 
-/* overlay/game-create-menu */
-.arcade-games {
-  font-size: 1.4em;
-  min-width: 400px;
-}
-
-.arcade-games-wrapper {
-  background-color: black;
-  max-height: 90vh;
-  overflow-y: scroll;
-}
-
-.arcade-navigator-item {
-  cursor: pointer;
-  border-bottom: 1px solid transparent;
-  padding: 5px 0 2px 10px;
-}
-
-.arcade-games .arcade-navigator-item {
-  padding: 10px 0px 10px 20px;
-  list-style: none;
-}
-
-.arcade-navigator-item:hover {
-  background-color: #33669999;
-}
-
-.arcade-navigator-item .tiptext {
-  width: fit-content;;
-  background-color: #000a;
-  color: #ffffff !important;
-  min-width: 0px;
-  padding: 3px;
-  pointer-events: none;
-  top: 5px;
-  right: 0;
-}
-
-
 
 
 
@@ -236,9 +197,7 @@ body {
     display: -ms-flex;
     display: -webkit-flex;
     display: flex;
-    flex-direction: row;
     flex-flow: wrap;
-    justify-content: space-between;
 }
 
 /* Dark mode for (old) header hamburger menu */

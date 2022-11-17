@@ -5,7 +5,8 @@ module.exports = MetaLeaderboardTemplate = (app, mod) => {
 	if (league_mod){
 
 	  let leagues = league_mod.filterLeagues(app);
-
+	  leagues = leagues.filter(l => l.admin == "saito");
+	  
 	  if (leagues.length > 0){
 	  	html += `
 			<div id="arcade-leaderboard" class="saito-sidebar-right">
