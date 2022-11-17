@@ -70,7 +70,6 @@ class Handshake {
       this.serializeHandshake(h)
     );
     const h2 = this.deserializeHandshake(peer_response);
-
     socket.peer.peer.publickey = h2.publickey;
     if (h2.lite === 1) {
       socket.peer.peer.synctype = "lite";
@@ -79,7 +78,6 @@ class Handshake {
 
   async handleIncomingHandshakeRequest(peer: Peer, buffer: Buffer) {
     const h2 = this.deserializeHandshake(buffer);
-
     peer.peer.publickey = h2.publickey;
     if (h2.lite === 1) {
       peer.peer.synctype = "lite";

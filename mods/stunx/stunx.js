@@ -160,7 +160,25 @@ class Stunx extends ModTemplate {
                 callback: function (app, public_key) {
                     app.connection.emit('game-start-audio-call', public_key);
                 }
-            }
+            },
+            // {
+            //     text: "Stun connect",
+            //     icon: "",
+            //     callback: function (app, public_key) {
+            //         // app.connection.emit('game-start-audio-call', public_key);
+            //         let stunx = app.modules.returnModule("Stunx");
+            //         stunx.createStunConnectionWithPeers([public_key]);
+            //     }
+            // },
+            // {
+            //     text: "Send Message to peer",
+            //     icon: "",
+            //     callback: function (app, public_key) {
+            //         // app.connection.emit('game-start-audio-call', public_key);
+            //         let stunx = app.modules.returnModule("Stunx");
+            //         stunx.sendRequest(public_key);
+            //     }
+            // }
         ]
         }
         return null;
@@ -214,7 +232,12 @@ class Stunx extends ModTemplate {
             if (tx.msg.request === "update room") {
                 this.receiveUpdateRoomTransaction(app, tx);
             }
+
         }
+        if(message.request === "testing stunx"){
+            console.log('message received ', message, message.data, message.data.tx);
+        }
+
         super.handlePeerRequest(app, message, peer, mycallback)
     }
 
@@ -408,7 +431,7 @@ class Stunx extends ModTemplate {
         return createPeerConnection;
 
     }
-    createStunConnectionOffer(publicKey,app) {
+    createStunConnectionOffer(publickey,app) {
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async (app) => {
@@ -421,7 +444,7 @@ class Stunx extends ModTemplate {
                         if (!ice || !ice.candidate || !ice.candidate.candidate) {
                             let offer_sdp = pc.localDescription;
                             console.log(offer_sdp)
-                            resolve({ recipient: publicKey, offer_sdp, ice_candidates, pc });
+                            resolve({ recipient: publickey, offer_sdp, ice_candidates, pc });
                             return;
                         } else {
                             ice_candidates.push(ice.candidate);
@@ -432,7 +455,7 @@ class Stunx extends ModTemplate {
                         console.log("connection state ", pc.connectionState);
                         switch (pc.connectionState) {
                             case "connected":
-                                // this.app.network.addStunPeer({publicKey, peer_connection: pc })
+                                // this.app.network.addStunPeer({publickey, peer_connection: pc })
                                 break;
                             default:
                                 ""
@@ -446,7 +469,7 @@ class Stunx extends ModTemplate {
                     // let stunx_mod = this.app.modules.returnModule("Stunx");
                     // pc.dc.onmessage = (e) => {
                         // console.log('new message from client : ', e.data);
-                    app.network.addStunPeer({publicKey, peer_connection: pc, data_channel });
+                    app.network.addStunPeer({publickey, peer_connection: pc, data_channel });
                     // };
                     // pc.dc.onopen = (e) =>  { 
                     //     pc.dc.send("new message");
@@ -615,12 +638,7 @@ class Stunx extends ModTemplate {
                 pc.ondatachannel = (e)=> {
                     console.log('new data channel', e.channel);
                     let data_channel = e.channel;
-                    data_channel.onopen = (e)=> {
-                        data_channel.send("new message");
-                        console.log("connection opened")
-                        // let stunx_mod = app.modules.returnModule("Stunx");
-                      app.network.addStunPeer({publickey:offer_creator, peer_connection: pc, data_channel });
-                    }
+                    app.network.addStunPeer({publickey:offer_creator, peer_connection: pc, data_channel });
                 }
 
                 await pc.setRemoteDescription(offer.offer_sdp);
@@ -936,28 +954,31 @@ class Stunx extends ModTemplate {
         }
     }
 
-    sendRequest(message, data, publickey){
-    //     console.log('sending request to ', publickey)
-       let peer =  this.app.network.peers.find(peer => peer.stun.publickey === publickey.trim());
-       peer.sendRequest(message,data); 
-      console.log(this.peer_connections[publickey])
-
-    }
+    // sendRequest( publickey){
+    //   let newtx = this.app.wallet.createUnsignedTransaction();
+    //   // get recipient -- server in this case
+    // //   let server_pub_key = 
 
 
-    // initializeStun(pc){
-    //     const data_channel = pc.createDataChannel('channel');
-    //     pc.dc = data_channel;
-    //     pc.dc.onmessage = function(e) {
-    //         console.log('new message from client : ', e.data);
-    //     };
-    //     pc.dc.onopen = function(e){   
-    //     console.log("connection opened")
+    //   let peer = this.app.network.peers.find(peer => peer.peer.publickey == publickey)
 
-    //     // pc.dc.send("New message ")
-    
-    // };
+    //   newtx.transaction.to.push(new saito.default.slip(publickey));
+    //   newtx.msg.module = "Stunx";
+    //   newtx.msg.request = "testing stunx"
+    //   newtx.msg.data = {
+    //     name: 'test'
+    //   }
+    //   newtx = this.app.wallet.signTransaction(newtx);
+    //   let message = {
+    //       data: {}
+    //   };
+    //   message.request = "testing stunx";
+    //   message.data.tx = newtx;
+    //   peer.sendRequest(message.request, message.data);
+
     // }
+
+
 
 
 }

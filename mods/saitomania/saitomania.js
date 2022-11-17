@@ -1,5 +1,5 @@
-var saito = require('../../lib/saito/saito');
-var GameTemplate = require('../../lib/templates/gametemplate');
+var saito = require('./../../lib/saito/saito');
+var GameTemplate = require('./../../lib/templates/gametemplate');
 
 
 //////////////////
@@ -14,9 +14,9 @@ class SaitoMania extends GameTemplate {
     this.name            = "SaitoMania";
     this.gamename        = "SaitoMania";
     this.slug            = "saitomania";
-    this.description     = 'Once you\'ve started playing SaitoMania, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
+    this.description     = 'Blast shitcoins, pick up superpowers, destroy rocks to collect Saito and learn about the Saito project while playing ;)';
     this.categories      = "Games Cardgame one-player";
-
+    this.request_no_interrupts = true; // don't popup chat
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
     this.app = app;

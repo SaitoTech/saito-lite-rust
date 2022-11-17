@@ -21,22 +21,6 @@ const getGameOptions = () => {
   return options;
 };
 
-const players = (app, mod) => {
-  let selection = "";
-  if (mod.minPlayers === mod.maxPlayers) {
-    selection = `<input type="hidden" class="game-wizard-players-select" name="game-wizard-players-select" value="${mod.minPlayers}">`;
-    selection += mod.returnSingularGameOption(app);
-  } else {
-    selection = `<div><label for="game-wizard-players-select">Number of Players:</label>
-                 <select class="game-wizard-players-select" name="game-wizard-players-select">`;
-    for (let p = mod.minPlayers; p <= mod.maxPlayers; p++) {
-      selection += `<option value="${p}">${p} player</option>`;
-    }
-    selection += `</select></div>`;
-  }
-
-  return selection;
-};
 
 
 const validateDate = (start, end) => {
@@ -181,7 +165,7 @@ module.exports = AdminBox = {
           let gamemod = app.modules.returnModule(gameName);
           let advancedOptions = gamemod.returnGameOptionsHTML();
           let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
-          let moreOptions = players(app, gamemod);
+          let moreOptions = gamemod.returnPlayerSelectHTML();
 
           if (advancedOptions.includes(accept_button)){
             advancedOptions = advancedOptions.replace(accept_button, moreOptions+accept_button);
@@ -220,7 +204,7 @@ module.exports = AdminBox = {
           let html = `<div class="game_option_league_wizard">
                       <form id="game-wizard-form" class="game-wizard-form">
                       ${gamemod.returnGameOptionsHTML()}
-                      ${players(app, gamemod)}
+                      ${gamemod.returnPlayerSelectHTML()}
                       </form>
                       </div>`;
           mod.overlay.show(app, mod, html);  
