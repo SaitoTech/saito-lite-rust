@@ -309,7 +309,6 @@ i.link_icon.private {
 .league-join-overlay-box {
   background: #fff;
   padding: 1.5rem;
-  width: 70rem;
   border-radius: 1rem;
 }
 
@@ -319,10 +318,14 @@ i.link_icon.private {
   width: 100%;
   margin-bottom: 0rem;
   margin-top: 1rem;
+  display: inline-block;
+  width: 20rem;
+  padding: 1.2rem !important;
 }
 
 .league-join-table {
   color: #222;
+  width: 30rem;
 }
 
 .league-join-table .saito-table-body {
@@ -330,7 +333,7 @@ i.link_icon.private {
 }
 
 .league-join-table .saito-table-row {
-  grid-template-columns: 45% 45%;
+  grid-template-columns: 45% 55%;
   margin-bottom: 1rem;
   text-align: left;
   font-size: 1.5rem;
@@ -341,12 +344,34 @@ i.link_icon.private {
   font-weight: bold;
 }
 
-.league-join-info-box .saito-module {
-  padding: 0rem;
-  color: var(--saito-black);
-  margin-bottom: 2.5rem;
+
+.league-join-overlay-box img {
+  width: 50rem;
+  margin-bottom: 1rem;
 }
 
-.league-join-info-box .saito-module .saito-module-image-box {
-  margin-right: 1rem;
+.league-join-overlay-box .title-box {
+    color: #222;
+    text-align: center;
+}
+
+.league-join-overlay-box .title-box .title {
+  display: inline-block;
+  font-size: 3rem;
+}
+
+.league-join-controls {
+  text-align: center;
+}
+
+.league-join-email-note {
+  font-size: 2rem;
+  font-style: italic;
+  color: #444;
+  margin-bottom: 1rem;
+}
+
+.league-join-controls input {
+  text-align: center;
+  width: 80%;
 }
