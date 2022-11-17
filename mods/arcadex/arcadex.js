@@ -1832,7 +1832,7 @@ class Arcade extends ModTemplate {
         existing_game.initialize_game_run = 0;
         this.app.storage.saveOptions();
 
-        let game_mod = app.modules.returnModule(existing_game.module);
+        let game_mod = this.app.modules.returnModule(existing_game.module);
         if (game_mod) {
           window.location = "/" + game_mod.returnSlug();
         }
