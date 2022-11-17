@@ -41,9 +41,9 @@ class Crypto {
    * initialization.
    */
 
-  hash(data: string|Uint8Array) {
+  hash(data: string | Uint8Array) {
     if (typeof data === "string") {
-     return this.app.hash(Buffer.from(data))
+      return this.app.hash(Buffer.from(data));
     }
     // 64-bit hash
     return this.app.hash(data);
@@ -239,6 +239,8 @@ class Crypto {
         Buffer.from(this.fromBase58(pubkey), "hex")
       );
     } catch (err) {
+      console.log("sig : ", sig);
+      console.log("key : ", pubkey);
       console.error(err);
       return false;
     }
@@ -257,6 +259,9 @@ class Crypto {
       // const hash = this.hash(Buffer.from(msg, "utf-8").toString("hex"));
       return this.verifyHash(Buffer.from(msg, "utf-8"), sig, pubkey);
     } catch (err) {
+      console.log("msg : ", msg);
+      console.log("sig : ", sig);
+      console.log("key : ", pubkey);
       console.log(err);
       return false;
     }
