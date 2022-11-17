@@ -273,6 +273,8 @@ class Registry extends ModTemplate {
               try {
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
                   registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
+                }else{
+                  console.debug("verification failed for sig : ", tx);
                 }
               } catch (err) {
                 console.log("ERROR verifying username registration message: " + err);
