@@ -57,13 +57,6 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
     
   `;
   
-  // message for licensed games
-  if (game_mod.publisher_message) {
-    html += `<div id="arcade-game-publisher-message" class="arcade-game-publisher-message">
-                <b>NOTE:</b>${game_mod.publisher_message}
-             </div>`;
-  }
-
   html += `</div>`; // overlay closing
 
   return html;

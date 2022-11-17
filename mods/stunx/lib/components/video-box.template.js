@@ -1,6 +1,6 @@
-module.exports = (streamId, muted) => {
+module.exports = (streamId, muted, ui_type) => {
     return `
-    <div id="stream${streamId}" class="video-box-container">
+    <div id="stream${streamId}" class="${ui_type === "large" ? "video-box-container-large": "video-box-container" }">
       <video ${muted ? "muted" : " "} autoplay class="video-box"></video>
     </div>`
 

@@ -5869,6 +5869,7 @@ console.log("K: " + z[k].name);
       }
 
       for (let i in z) {
+console.log("HGL 1: " + z[i].name);
         if (!z[i].handleGameLoop(imperium_self, qe, mv)) { return 0; }
       }
 

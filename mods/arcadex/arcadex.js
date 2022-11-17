@@ -3,6 +3,7 @@ const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeMain = require("./lib/main/main");
 const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
+const SaitoMobileBar = require('../../lib/saito/new-ui/saito-mobile-bar/saito-mobile-bar')
 const GameCreateMenu = require("./lib/overlay/game-create-menu");
 const ChallengeModal = require("./../../lib/saito/new-ui/modals/game-challenge/game-challenge");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
@@ -384,6 +385,10 @@ class Arcade extends ModTemplate {
 
       this.addComponent(this.main);
       this.addComponent(new SaitoHeader(app, this));
+      let mobileBar = new SaitoMobileBar(app);
+      mobileBar.leftSelector = ".saito-sidebar-left";
+      mobileBar.rightSelector = ".saito-sidebar-right";
+      this.addComponent(mobileBar);
       //this.styles.unshift("/saito/css-imports/saito-header.css");
       this.ui_initialized = true;
     }
@@ -883,12 +888,14 @@ class Arcade extends ModTemplate {
     }
 
     //Force close in wallet if game was created
-    app.options.games.forEach(g => {
-      if (g.id === game_id && g.over !== 1) {
-        console.log("Mark game closed in options");
-        g.over = 1;
-      }
-    });
+    if (app.options?.games){
+      app.options.games.forEach(g => {
+        if (g.id === game_id && g.over !== 1) {
+          console.log("Mark game closed in options");
+          g.over = 1;
+        }
+      });
+    }
 
     //Refresh Arcade Main
     this.main.renderArcadeTab(app, this);
@@ -1825,7 +1832,7 @@ class Arcade extends ModTemplate {
         existing_game.initialize_game_run = 0;
         this.app.storage.saveOptions();
 
-        let game_mod = app.modules.returnModule(existing_game.module);
+        let game_mod = this.app.modules.returnModule(existing_game.module);
         if (game_mod) {
           window.location = "/" + game_mod.returnSlug();
         }
@@ -1898,15 +1905,9 @@ class Arcade extends ModTemplate {
     }
 
     //Create invite link from the game_sig 
-    let inviteLink = window.location.href;
-    if (!inviteLink.includes("#")) {
-      inviteLink += "#";
-    }
-    if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&jid=" + game_sig);
-    } else {
-      inviteLink = inviteLink.replace("#", "?jid=" + game_sig);
-    }
+    let inviteLink = window.location.origin;
+
+    inviteLink += "/arcade?jid=" + game_sig;
 
     data.invite_link = inviteLink;
 

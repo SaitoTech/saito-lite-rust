@@ -254,9 +254,9 @@ class Quake3 extends GameTemplate {
 	// since this block only happens on client startup
 try {
 	setTimeout(function() {
-	  this.controls.loadSavedControls();
-	  this.controls.writeControls();
-	  this.controls.applyControls();
+	  q3self.controls.loadSavedControls();
+	  q3self.controls.writeControls();
+	  q3self.controls.applyControls();
 	}, 1500);
 } catch (err) {
   console.log("ERROR LOADING CONTROLS: " + err);
@@ -381,9 +381,10 @@ console.log("THIS ONE IS ON US");
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-controls-menu", "Controls");
 
-    this.menu.addMenuIcon({
-      text : "Controls",
+    this.menu.addSubMenuOption("game-controls-menu", {
+      text : "Settings",
       id : "game-controls",
       class : "game-game-controls",
       callback : async function(app, game_mod) {

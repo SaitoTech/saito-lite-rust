@@ -66,9 +66,8 @@ Saito Table
 }
 
 .saito-table-body {
+  max-height: 100%;
   height: auto;
-  overflow-y: scroll;
-  height: 78vh;
   position: relative;
   overflow-y: scroll;
   text-align: center;
@@ -76,25 +75,4 @@ Saito Table
 
 
 
-/* ----------------------------------------------------------------
-     LEAGUE DETAILS OVERLAY  Saito Leaderboard
------------------------------------------------------------------*/
-
-.leaderboard-box .saito-table-header {
-  display: grid;
-  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
-  grid-column-gap: 1rem;
-  margin-bottom: 1rem;
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  text-align: center;
-}
-
-.leaderboard-box .saito-table-row{
-  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
-  grid-column-gap: 1rem;
-  margin-bottom: 0.5rem;
-}
 

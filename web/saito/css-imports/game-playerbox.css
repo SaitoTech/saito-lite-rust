@@ -76,6 +76,16 @@
 /******************************/
 /*** Poker / Cardgame Boxes ***/
 /******************************/
+.poker-seat-8{
+  bottom: 1vh;
+  left: 1em;
+}
+
+.poker-seat-7{
+  bottom: 1vh;
+  right: 1em;
+}
+
 .poker-seat-6{
   left: 1em;
   top: 45vh;

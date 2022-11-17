@@ -16,18 +16,18 @@ class Monarchy extends GameTemplate {
 
     this.name  		       = "Dominion";
 
-    this.description     = `${this.name} is a strategy deck-building game, where players strive for dominion over the land by spending money on land and resources.`;
+    this.description     = `Strategy deck-building game: acquire money and land to assert dominion over the realm.`;
     this.status          = "Alpha";
     this.card_height_ratio = 1.6; // height is 1.6x width
 
     this.interface     = 1; //Display card graphics
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 4;
-
+    this.game_length   = 20; //Estimated number of minutes to complete a game
     this.categories 	 = "Games Boardgame Strategy Deckbuilding";
 
     this.hud.mode = 0;  // long-horizontal
-    this.hud.enable_mode_change = 1;
+    //this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
     this.hud.respectDocking = true;
     
@@ -120,13 +120,19 @@ class Monarchy extends GameTemplate {
 
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);
+    this.cardbox.makeDraggable();
+
+    this.sizer.render(this.app, this);
+    this.sizer.attachEvents(this.app, this, ".cardstacks");
+    //$(".cardstacks").draggable();
 
     //
     // add card events -- text shown and callback run if there
     //
+    this.cardbox.skip_card_prompt = 0;
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("logcard", "", null);
-    this.cardbox.addCardType("card", "play", this.cardbox_callback);
+    this.cardbox.addCardType("card", "", this.cardbox_callback);
     this.cardbox.addCardType("handy-help", "", function(){});
 
     //Test for mobile
@@ -140,20 +146,9 @@ class Monarchy extends GameTemplate {
       console.log("ERROR with Mobile: " + err);
     }
 
-
     
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
-
-    let hh = document.querySelector(".hud-header");
-    if (hh){
-      if (!document.getElementById("zoom")){
-        this.app.browser.addElementToElement(`<i id="zoom" class="fas fa-search hud-controls" aria-hidden="true"" title="Toggle Zoom on Card Hover"></i>`, hh);
-      }
-      if (!document.getElementById("my_hand") && this.game.player > 0){
-        this.app.browser.addElementToElement(`<i id="my_hand" class="handy-help hud-controls fas fa-fw fa-hand-paper" aria-hidden="true"></i>`, hh);  
-      }
-    }
 
     this.scoreboard.render(app, this);
     this.scoreboard.attachEvents(app, this);
@@ -189,6 +184,13 @@ initializeGame(game_id) {
 
     this.game.queue.push("turn\t1");
     this.game.queue.push("READY");
+
+    /*
+    Each player has their own deck that they draw from to build their hand.
+    The deck's are cross encrypted to prevent look ahead
+    When a player draws openly (to reveal card to all), they draw into a pool.
+    Otherwise, they just have their secret hand.
+    */
     for (let p = 1; p <= this.game.players.length; p++){
       this.game.queue.push(`DEAL\t${p}\t${p}\t5`);  
       
@@ -229,9 +231,9 @@ initializeGame(game_id) {
     ///////////
     if (this.game.queue.length > 0) {
 
-      if (this.browser_active){
-         this.displayBoard();
-      }
+      //if (this.browser_active){
+      //   this.displayBoard();
+     // }
       //console.log("LOOP DECK:",JSON.parse(JSON.stringify(this.game.deck)));
       //console.log("LOOP POOL:",JSON.parse(JSON.stringify(this.game.pool)));
 
@@ -350,8 +352,10 @@ initializeGame(game_id) {
         if (this.game.player == player){
           this.playerTurn();
         }else{
+          $(".cardstacks").css("opacity", "1");
+          this.displayBoard();
           this.sortHand();
-          this.updateStatusAndListCards(`Waiting for Player ${player} to play a card`);
+          this.updateStatusAndListCards(`Waiting for Player ${player} to take their turn`);
         }
 
         return 0;
@@ -411,6 +415,8 @@ initializeGame(game_id) {
         this.game.state.shuffled = false;
         this.game.state.merchant = false;
         this.game.state.throneroom = false;
+
+        this.clearActiveCards();
         
         console.log(this.game.player,player,JSON.parse(JSON.stringify(this.game.deck[player-1])));
         //Check for end game
@@ -522,7 +528,10 @@ initializeGame(game_id) {
           }
           this.updateScore();
         }
-        return 1;
+
+        this.animatePurchase(player, card_to_buy);
+        //Animate Purchase will kick queue off again when finished
+        return 0;
       }
 
       if (mv[0] == "play"){
@@ -531,6 +540,8 @@ initializeGame(game_id) {
         let card_to_play = mv[2];
 
         this.updateLog(`Player ${player} played ${this.cardToText(card_to_play)}`);
+        this.displayCardInZone(card_to_play);
+
         return this.playCard(player, card_to_play);
       }
 
@@ -605,7 +616,7 @@ initializeGame(game_id) {
             this.endTurn();
             return 0;
           }        
-
+//>>>>>
           //Other attacks only affect other players
           if (victim != player){
             this.overlay.show(this.app, this);
@@ -626,6 +637,7 @@ initializeGame(game_id) {
                   break;
                 case "militia":
                   this.addMove(`hand\t${victim}\t${this.game.deck[victim-1].hand.length-3}\tdiscards`);  
+                  this.addMove(`augment\tPlayer ${victim} must discard two cards`);
                   break;
                 case "thief":
                   this.addMove(`thief\t${player}\t${victim}\t`);
@@ -1047,6 +1059,9 @@ initializeGame(game_id) {
   playerTurn(){
     let we_self = this;
     if ((this.game.state.throneroom || this.game.state.actions > 0) && this.hasActionCard()){
+      $(".cardstacks").css("opacity", "0");
+      $(".showcard").removeClass("showcard");
+      this.cardbox.detachCardEvents();
       this.updateStatusAndListCards(`Pick a card to play${this.game.state.throneroom?" twice":""}`,[],true);
       this.attachCardboxEvents(function(action){
         if (we_self.deck[action].type.includes("action")){
@@ -1063,15 +1078,12 @@ initializeGame(game_id) {
             we_self.game.state.actions--;            
           }
           we_self.endTurn();
-
-          $(".dim").removeClass("dim");
         }
       });
       this.bindBackButtonFunction(()=>{
         we_self.game.state.actions = 0;
         we_self.endTurn();
       });
-      $(".gameboard .cardpile").addClass('dim');
       return;
     }
 
@@ -1080,15 +1092,16 @@ initializeGame(game_id) {
     if (this.game.state.buys > 0){
 
       let available_coins = this.countMoney();
-      this.updateStatusAndListCards(`You have ${available_coins} coins and ${this.game.state.buys} card${(this.game.state.buys>0)?"s":""} to buy`,[],true);
+      this.updateStatusAndListCards(`You have ${available_coins} coins and ${this.game.state.buys} card${(this.game.state.buys>1)?"s":""} to buy`,[],true);
+      this.cardbox.detachCardEvents();
       this.filterBoardDisplay(available_coins);
-      this.cardbox.addCardType("cardpile","buy", function(newcard){
+      this.cardbox.addCardType("buyme","buy", function(newcard){
         if (we_self.game.state.supply[newcard] <= 0){
           we_self.displayModal(`No ${we_self.cardToText(newcard)} available!`);
           return;
         }
         if (we_self.deck[newcard].cost <= available_coins){
-          we_self.cardbox.removeCardType("cardpile");
+          we_self.cardbox.removeCardType("buyme");
           we_self.addMove(`buy\t${we_self.game.player}\t${newcard}`);
           we_self.addMove(`NOTIFY\tPlayer ${we_self.game.player} bought a ${we_self.cardToText(newcard)}.`);
           we_self.game.state.buys--;
@@ -1096,7 +1109,7 @@ initializeGame(game_id) {
           we_self.spendMoney(we_self.deck[newcard].cost);
           we_self.endTurn();
         }
-      }, false);
+      });
       this.attachCardboxEvents();
 
       this.bindBackButtonFunction(()=>{
@@ -1124,27 +1137,28 @@ initializeGame(game_id) {
   acquireCard(max_value, target = ""){
     let we_self = this;
     this.updateStatus(this.formatStatusHeader(`You may select a card worth up to ${max_value}`));
+    this.cardbox.detachCardEvents();
     this.filterBoardDisplay(max_value);
 
-    this.cardbox.addCardType("cardpile","buy", function(newcard){
+    this.cardbox.addCardType("buyme","take", function(newcard){
       if (we_self.game.state.supply[newcard] <= 0){
         we_self.displayModal(`No ${we_self.cardToText(newcard)} available!`);
         return;
       }
       if (we_self.deck[newcard].cost <= max_value){
-        we_self.cardbox.removeCardType("cardpile");
+        we_self.cardbox.removeCardType("buyme");
         we_self.addMove(`buy\t${we_self.game.player}\t${newcard}\t${target}`);
         we_self.addMove(`NOTIFY\tPlayer ${we_self.game.player} acquired a ${we_self.cardToText(newcard)}.`);
         we_self.endTurn();
       }
-    }, false);
+    });
     this.attachCardboxEvents();
 
   }
 
   returnAttackOverlay(card){
     let html = `<div class="attack_overlay">
-                  <h2>Attack! -- ${this.deck[card].name}</h2>
+                  <div class="h2">Attack! -- ${this.deck[card].name}</div>
                   <div class="overlay_content">
                     <div class="overlay-img">${this.returnCardImage(card)}</div>
                     <div class="attack_details"></div>
@@ -1167,62 +1181,112 @@ initializeGame(game_id) {
     rCol.innerHTML = html;
   }
 
+  displayCardInZone(card){
+    $(this.returnCardImage(card)).hide().appendTo("#active_card_zone").fadeIn();
+  }
+
+  clearActiveCards(){
+    if (!this.browser_active){return;}
+
+    $("#active_card_zone .cardimg").fadeOut("slow", function() {
+            $(this).remove();
+          });
+  }
+
+  animatePurchase(player, card){
+    if (!this.browser_active){return;}
+    const game_self = this;
+
+    if (player == this.game.player){
+      $(`.cardstacks #${card}.passivecard`).animate({top: '800px', right: '300px', opacity: '0.2'}, 900, function(){
+        $(this).remove();
+        game_self.restartQueue();
+      });
+    }else{
+      $(`.cardstacks #${card}.passivecard`).animate({bottom: '500px', left:"300px", opacity: '0.2'}, 900, function(){
+        $(this).remove();
+        game_self.restartQueue();
+      });
+    }
+   
+  }
+
   displayBoard(){
-    let html = `<div class="cardstacks">`;
-    let cardClass = ($("#zoom").hasClass("active"))?" showcard":"";
+    console.log("Redrawing board");
+    let html = "";
+    let cardClass = " showcard";
     for (let c in this.game.state.supply){
       if (c !== "curse"){
         html += `<div class="cardpile tip${cardClass}" id="${c}">`;
-        if (this.game.state.supply[c] > 0){
-          html += `<img class="passivecard" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}">`;
+        let count = this.game.state.supply[c]; 
+        if (count > 0){
+          for (let i = 0; i < count - 1; i++){
+            let shift = (count > 12) ? i : i*2;
+            html += `<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;  
+          }
+            let shift = (count > 12) ? count : count*2;
+          html += `<img class="passivecard" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
           html += `<div class="tiptext">Remaining Supply: ${this.game.state.supply[c]}</div>`;
         }else{
-          html += `<img class="passivecard" src="/${this.name.toLowerCase()}/img/cards/blank.jpg">`;
+          //html += `<img class="passivecard" src="/${this.name.toLowerCase()}/img/cards/blank.jpg">`;
           html += `<div class="tiptext">No more ${this.cardToText(c,true)}</div>`;
         }
         html += "</div>";  
       }
     }
-    html += "</div>";
 
-    $(".gameboard").html(html);
+    if (document.querySelector(".cardstacks")){
+      $(".cardstacks").html(html);
+    }else{
+      this.app.browser.addElementToId(`<div class="cardstacks">${html}</div>`, "gameboard");
+      $(".cardstacks").draggable();
+    }
     this.attachCardboxEvents();
-    this.attachBoardEvents();
+
+    //Show Discard/DrawPiles
+
+    html = `<div class="player_decks tip">`;
+    html += `<div class="drawpile cardpile">`;
+    for (let i = 0; i < this.game.deck[this.game.player-1].crypt.length; i++){
+      html += `<img src="/${this.name.toLowerCase()}/img/cards/blank.jpg" style="bottom:${i}px;right:${i}px;">`;
+    }
+    html += `</div>
+            <div class="discardpile cardpile">
+    `;
+    let shift = 0;
+    for (let card in this.game.deck[this.game.player-1].discards){
+      let c = this.game.deck[this.game.player-1].discards[card];
+      html += `<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
+      shift++;
+    }
+    html += `</div>
+            <div class="tiptext">
+              Deck: ${this.game.deck[this.game.player-1].crypt.length}, Discards: ${Object.keys(this.game.deck[this.game.player-1].discards).length}
+            </div>
+          </div>`
+
+    if (document.querySelector(".player_decks")){
+      this.app.browser.replaceElementBySelector(html, ".player_decks");
+    }else{
+      this.app.browser.addElementToId(html, "gameboard");
+    }
+
   }
 
   filterBoardDisplay(max){
+    this.displayBoard();
+    $(".cardstacks").css("opacity", "1");
+    $(".showcard").removeClass("showcard");
     for (let c in this.game.state.supply){
       if (c !== "curse"){
         if (this.deck[c].cost > max){
-          $(`#${c}.cardpile img`).css("filter","brightness(0.15)");
+          $(`#${c}.cardpile img`).css("filter","brightness(0.45) grayscale(100%)");
         }else{
           $(`#${c}.cardpile img`).css("filter","brightness(0.95)");
+          $(`#${c}.cardpile`).addClass("buyme");
         }
       }
     }
-  }
-
-  attachBoardEvents(){
-    let we_self = this;
-    $("#zoom").off();
-    $("#zoom").on("click",function(){
-      $("#zoom").toggleClass("active");
-      if ($("#zoom").hasClass("active")){
-        $(".cardpile").addClass("showcard");
-        $(".cardpile").removeClass("tip");
-      }else{
-        we_self.cardbox.detachCardEvents();
-        $(".cardpile").addClass("tip");
-        $(".cardpile").removeClass("showcard");
-      }
-      
-      //We don't use attachCardboxEvents because player may have events attached
-      //to the HUD that would be wiped out
-      we_self.cardbox.attachCardEvents();
-    });
-
-    $(".cardstacks").draggable();
-
   }
 
   returnPlayerVP(player){
@@ -1359,6 +1423,11 @@ initializeGame(game_id) {
         this.lastCardKey = this.game.deck[pi].hand[i];
         this.lastCardValue = card;
         this.game.deck[pi].hand.splice(i, 1);
+
+        $(`#status #${card}`).first().fadeOut("fast", function() {
+            $(this).remove();
+          });
+
         return; //Only remove one copy
       }
     }
@@ -1444,7 +1513,7 @@ initializeGame(game_id) {
       this.game.state.actions++;
       if (this.game.player == player){
         let number = 0;
-        this.updateStatusAndListCards(`Select cards to discard:`,[],true);
+        this.updateStatusAndListCards(`Select cards to discard (X to finish):`,[],true);
         this.bindBackButtonFunction(()=>{
           if (number > 0){
             we_self.prependMove(`SAFEDEAL\t${player}\t${player}\t${number}`);  
@@ -1565,7 +1634,7 @@ initializeGame(game_id) {
         if (tcards.length == 0){
           this.endTurn();
         }else{
-          this.updateStatusAndListCards(`You may trash a treasure to acquire one costing 3 more than it.`, tcards, true);
+          this.updateStatusAndListCards(`You may trash a treasure to acquire one costing 3 more than it. (X to skip)`, tcards, true);
           this.attachCardboxEvents(function(tc){
             we_self.removeCardFromHand(tc);
             if (tc == "copper"){
@@ -1698,26 +1767,6 @@ initializeGame(game_id) {
   returnCardImage(cardname){
     if (this.deck[cardname]?.img){
       return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/cards/${this.deck[cardname].img}" />`;
-    }else if (cardname === "my_hand"){
-    
-      //Draw and discard pile
-      let pooled_cards = 0;
-      if (this.game.pool?.length >= this.game.player){
-        if (this.game.pool[this.game.player-1]?.hand){
-          pooled_cards = this.game.pool[this.game.player-1].hand.length;
-        }
-      }
-      let html = `<div id="mydecks">
-               <div class="drawdeck">Deck: ${this.game.deck[this.game.player-1].crypt.length}</div>
-               <div class="drawdeck">Hand: ${this.game.deck[this.game.player-1].hand.length}</div>
-               <div class="drawdeck">Used: ${this.cards_in_play.length + pooled_cards}</div>
-               <div class="discardpile">Discards: ${Object.keys(this.game.deck[this.game.player-1].discards).length}</div>
-               <div class="drawdeck">Total: ${Object.keys(this.game.deck[this.game.player-1].cards).length}</div>`;
-      if (this.last_discard){
-        html += `<div>Last: ${this.cardToText(this.last_discard)}</div>`;
-      }
-      html += `</div>`;
-      return html;
     }else{
       return ""
     }

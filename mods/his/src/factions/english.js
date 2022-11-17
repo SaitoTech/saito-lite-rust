@@ -51,7 +51,13 @@
 	return base;
 
       },
-      calculateVictoryPoints  :	function(game_mod) {
+      calculateBonusVictoryPoints  :	function(game_mod) {
+        return this.bonus_vp;
+      },
+      calculateSpecialVictoryPoints  :	function(game_mod) {
+        return this.special_vp;
+      },
+      calculateBaseVictoryPoints  :	function(game_mod) {
 
         let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
         let base = this.vp;

@@ -1130,6 +1130,8 @@ class League extends ModTemplate {
     let arcade_mod = this.app.modules.returnModule("Arcade");
     if (!arcade_mod) { return; }
 
+    console.log(JSON.parse(JSON.stringify(league)));
+
     //Check League Membership
     if (!this.isLeagueMember(league.id)){
       salert("You need to be a member of the League to create a League-only game invite");

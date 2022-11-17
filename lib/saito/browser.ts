@@ -662,6 +662,20 @@ class Browser {
     wrapper.append(tip);
   }
 
+  formatTime(milliseconds=0) {
+
+    let hours = parseInt(milliseconds / 3600000);
+    milliseconds = milliseconds % 3600000;
+
+    let minutes = parseInt(milliseconds / 60000);
+    milliseconds = milliseconds % 60000;
+
+    let seconds = parseInt(milliseconds / 1000);
+
+    return { hours : hours, minutes : minutes, seconds : seconds };
+
+  }
+
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
 
@@ -804,6 +818,7 @@ class Browser {
 
     try {
       const element_to_move = document.getElementById(id_to_move);
+      let timeout = null;
       let element_to_drag = element_to_move;
       if (id_to_drag) {
         element_to_drag = document.getElementById(id_to_drag);
@@ -819,6 +834,9 @@ class Browser {
       let element_start_top = 0;
 
       element_to_drag.onmousedown = function (e) {
+        if (timeout){
+          clearTimeout(timeout);
+        }
         let resizeable = ["both", "vertical", "horizontal"];
         //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
 
@@ -876,6 +894,13 @@ class Browser {
               element_to_move.style.top =
                 window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
             }
+          
+            timeout = setTimeout(()=>{
+              element_to_move.classList.remove("dockedBottom");
+              element_to_move.classList.remove("dockedTop");
+              element_to_move.classList.remove("dockedRight");
+              element_to_move.classList.remove("dockedLeft");
+            }, 1200);
           }
 
           document.onmouseup = null;
@@ -1212,6 +1237,16 @@ class Browser {
     });
   }
 
+  async screenshotCanvasElementBySelector(selector = "", callback = null) {
+    let canvas = document.querySelector(selector);
+    if (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      if (callback != null) {
+        callback(img);
+      }
+    }
+  }
+
   async screenshotCanvasElementById(id = "", callback = null) {
     let canvas = document.getElementById(id);
     if (canvas) {
@@ -1474,7 +1509,6 @@ class Browser {
     });
   }
 
-  
   stripHtml(html){
      let tmp = document.createElement("DIV");
      tmp.innerHTML = html;
