@@ -925,6 +925,40 @@ class League extends ModTemplate {
   }
 
 
+  /*
+  *  Get league data from league id
+  */
+  async getAllLeagueData(league_id){
+    console.log("inside getAllLeagueData");
+    console.log(league_id);
+    console.log(this.leagues);
+
+    if (!league_id){return null;}
+
+    if (this.app.BROWSER == 1){
+      for (let l of this.leagues){
+        if (l.id == league_id){
+          return l;
+        }
+      }
+      console.log('inside if ');
+    }else{
+
+      console.log('inside elese');
+
+      let row = await this.app.storage.queryDatabase(`SELECT * FROM leagues WHERE id = ?`, [league_id], "league");
+      console.log("row");
+      console.log(row);
+
+      if (row?.length > 0){
+        return row[0];
+      }
+    }
+    console.log('inside end');
+    return null;
+  }
+
+
   /**
    * 
    */ 

@@ -1473,6 +1473,13 @@ class Browser {
       i.src = file;
     });
   }
+
+  
+  stripHtml(html){
+     let tmp = document.createElement("DIV");
+     tmp.innerHTML = html;
+     return tmp.textContent || tmp.innerText || "";
+  }
 }
 
 export default Browser;

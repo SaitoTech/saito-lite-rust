@@ -302,3 +302,51 @@ i.link_icon.private {
 .saito-module-title{
   font-size: 1.2em;
 }
+
+
+/* temprorarily adding css for join league overlay here */
+
+.league-join-overlay-box {
+  background: #fff;
+  padding: 1.5rem;
+  width: 70rem;
+  border-radius: 1rem;
+}
+
+.league-join-btn {
+  color: #fff;
+  margin-left: 0rem;
+  width: 100%;
+  margin-bottom: 0rem;
+  margin-top: 1rem;
+}
+
+.league-join-table {
+  color: #222;
+}
+
+.league-join-table .saito-table-body {
+  height: auto;
+}
+
+.league-join-table .saito-table-row {
+  grid-template-columns: 45% 45%;
+  margin-bottom: 1rem;
+  text-align: left;
+  font-size: 1.5rem;
+  font-weight: normal;
+}
+
+.league-join-table .saito-table-row div:nth-child(1) {
+  font-weight: bold;
+}
+
+.league-join-info-box .saito-module {
+  padding: 0rem;
+  color: var(--saito-black);
+  margin-bottom: 2.5rem;
+}
+
+.league-join-info-box .saito-module .saito-module-image-box {
+  margin-right: 1rem;
+}
