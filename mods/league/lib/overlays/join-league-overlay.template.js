@@ -25,46 +25,9 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 		</div>
 
 		<div class="league-join-controls">
-    	    <input type="text" placeholder="Enter your email...">
-				<button class="saito-button-secondary league-join-btn" id="league-join-btn" data-cmd="join" data-league-id="">JOIN LEAGUE</button> 
+		    	<input type="text" placeholder="Enter your email...">
+			<button class="saito-button-secondary league-join-btn" id="league-join-btn" data-cmd="join" data-league-id="">JOIN LEAGUE</button> 
 		</div>
-
-
-<!--
-    		<div class="saito-table league-join-table">
-	          <div class="saito-table-body" id="league-table-ranking-body">
-	            
-	          	<div class="saito-table-row">
-	          		<div>League Name</div>
-	          		<div> ${league.name}</div>
-	          	</div>
-
-	          	<div class="saito-table-row">
-	          		<div>League Game</div>
-	          		<div> ${league.game}</div>
-	          	</div>
-
-	          	<div class="saito-table-row">
-	          		<div>Type</div>
-	          		<div> ${league.type}</div>
-	          	</div>
-
-	          	<div class="saito-table-row">
-	          		<div>Players</div>
-	          		<div> ${league.playerCnt}</div>
-	          	</div>
-
-	          	<div class="saito-table-row">
-	          		<div>League Info</div>
-	          		<div> ${app.browser.stripHtml(league.description)}</div>
-	          	</div>
-
-	          </div>
-	        </div>
-
--->
-
-
 
         </div>
    	`;
