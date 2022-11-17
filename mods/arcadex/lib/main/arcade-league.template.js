@@ -13,6 +13,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
 				    <div class="arcade-league-header">
 				    	<div class="arcade-league-title" id="goto-league-page">Community Leagues</div>
 				    </div>
+				    
 				    <div class="arcade-league-boxes">
     `;
 
@@ -35,15 +36,16 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
 	        let player = (i <= league.top3.length) ? league.top3[i-1] : null;
 	        if (player){
 	            html += `<div class="saito-table-row ${(i%2 == 1)?"odd":""}">
-	                      <div class="saito-leaderboard-gamename">${SaitoUser(app, player)}</div>
-	                      <div class="saito-leaderboard-rank">${i}</div>
-	                    </div>`;     
+	                        <div class="saito-leaderboard-gamename">${SaitoUser(app, player)}</div>
+	                        <div class="saito-leaderboard-rank">${i}</div>
+	                     </div>`;     
 	       	}
         }
 
 	   	html += `
               		</div>
              	</div>
+             	
              	<div class="saito-box-buttons">
                 	<div class="button saito-button-primary league-button" data-cmd="view" data-id="${league.id}">VIEW</div>
 		`;
@@ -55,7 +57,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
 			if (league.max_players == 0 || league?.playerCnt < league.max_players){
 			  if (league_mod.checkDate(league.startdate) || league.allowlate){
 			  	if (league.type === "public"){
-				    html += `<div data-id="${league.id}" data-cmd="join" class="button saito-button-primary league-button">JOIN</button>`;			  		
+				    html += `<div data-id="${league.id}" data-cmd="join" class="button saito-button-primary league-button">JOIN</div>`;			  		
 			  	}
 			  }
 			}
@@ -63,13 +65,13 @@ module.exports = ArcadeLeagueTemplate = (app, mod) => {
         
         html += ` </div>
         		</div>
+          
           	</div>
-        </div>
       	`;
 
     }
 
-    html += `</div>`;
+    html += `</div></div>`;
 
     if (number_leagues_displayed > 0){
     	return html;	

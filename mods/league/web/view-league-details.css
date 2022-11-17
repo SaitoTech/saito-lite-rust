@@ -3,12 +3,12 @@
  * **/
 
 .league-details-overlay {
-  width: 100%;
-  min-width: min(600px, 100vw);
-  max-height: 95vh;
+  width: min(1000px, 90vw);
+  height: min(600px, 90vh);
+
   border: 1px solid;
   border-radius: 5px;
-  padding: 10px;
+  padding: 1.5rem;
   user-select: none;
   cursor: default;
   background: var(--saito-white);
@@ -116,13 +116,10 @@
   justify-content: space-between;
 }
 
-.league-details-overlay {
-  width: 85vw;
-  padding: 1.5rem;
-  height: 85vh;
-}
 
-.leaderboard-box {
+
+
+.league-leaderboard-box {
   display: grid;
   grid-gap: 0.5rem;
   grid-template-columns: 65% 34%;
@@ -130,68 +127,24 @@
   height: 100%;
 }
 
-.leaderboard-details-box {
-  padding-right: 1rem;
-  margin-right: 2rem;
+
+.league-details-box{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .saito-module-details-box {
   margin-left: 1rem;
 }
 
-#leaderboard-btn-create-game {
-  display: inline-block;
-  width: 22rem;
-}
 
-.saito-tool-tip {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 1.5rem;
-  color: #fff;
-  text-align: center;
-  line-height: 3rem;
-  font-weight: bold;
-  display: inline-block;
-  border: 1px solid var(--saito-primary);
-  color: var(--saito-primary);
-  cursor: pointer;
-}
-
-.observer-sidebar {
-  margin-top: 1.5rem;
-}
-
-.observer-sidebar h6 {
-  font-size: 2.2rem;
-  margin-bottom: 0.8rem;
-  display: inline-block;
-  color: var(--saito-black-faded);
-}
-
-.recent-games-box {
-  display: grid;
-  grid-column-gap: 2rem;
-}
 
 .saito-module-custom-box {
   min-width: 20rem;
 }
 
-.league-table-ranking {
-  padding-top: 3rem; 
-  margin-top: 1rem;
-}
 
-#league-table-ranking {
-  height: 77rem;
-}
-
-#league-table-ranking::-webkit-scrollbar {
-  background: transparent;
-  width: 0px;
-  display:none;
-}
 
 #leaderboard-btn-create-game {
   margin-left: 0px; 
@@ -202,7 +155,74 @@
 }
 
 #recent-games-box {
+  display: grid;
+  grid-gap: 1rem;
   overflow-y: scroll;
-  height: 47rem;
-  padding-right: 1rem; 
+  max-height: 47rem;
+  padding-right: 1rem;
+  grid-template-columns: repeat(4, minmax(min-content,1fr));
+  height: 50%; 
+}
+
+#recent-games-box > div {
+  width: fit-content;
+  align-self: center;
+}
+
+/* ----------------------------------------------------------------
+     LEAGUE DETAILS OVERLAY  Saito Leaderboard
+-----------------------------------------------------------------*/
+#league-table-ranking {
+  height: 100%;
+  padding-top: 3rem; 
+  margin-top: 1rem;
+}
+
+#league-table-ranking-body::-webkit-scrollbar {
+  background: transparent;
+  width: 0px;
+  display:none;
+}
+
+
+.leaderboard-box .saito-table-header {
+  display: grid;
+  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
+  grid-column-gap: 1rem;
+  margin-bottom: 1rem;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  text-align: center;
+}
+
+.leaderboard-box .saito-table-row{
+  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
+  grid-column-gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.identicon{
+  width: 100%;
+}
+
+.league-player-list{
+  display: flex;
+  min-width: 9rem;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.recent-games-box .player-slot{
+  width: 3rem;
+  height: 3rem;
+  position: relative;
+}
+
+.button.challenge-btn{
+  min-width: 12rem;
+  margin: unset;
+  font-size: 1.6rem;
+  padding: 0.8rem 1.2rem;
 }

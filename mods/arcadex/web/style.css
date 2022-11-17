@@ -197,9 +197,7 @@ body {
     display: -ms-flex;
     display: -webkit-flex;
     display: flex;
-    flex-direction: row;
     flex-flow: wrap;
-    justify-content: space-between;
 }
 
 /* Dark mode for (old) header hamburger menu */
