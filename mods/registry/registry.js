@@ -89,9 +89,11 @@ class Registry extends ModTemplate {
         if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
           registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: registry_self.app.blockchain.returnLatestBlockId(), block_hash: registry_self.app.blockchain.returnLatestBlockHash(), lc: 1 });
           registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
+        } else {
+          console.debug("failed verifying message for username registration : ", tx);
         }
       } catch (err) {
-        console.log("ERROR verifying username registration message: " + err);
+        console.error("ERROR verifying username registration message: " , err);
       }
     }
 
@@ -277,7 +279,7 @@ class Registry extends ModTemplate {
                   console.debug("verification failed for sig : ", tx);
                 }
               } catch (err) {
-                console.log("ERROR verifying username registration message: " + err);
+                console.error("ERROR verifying username registration message: " , err);
               }
             }
           } else {
