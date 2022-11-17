@@ -1,18 +1,34 @@
-const ChatManagerLargeTemplate = () => {
+const ChatManagerLargeTemplate = (call_type) => {
   return `
     <div class="stunx-chatbox" id="stunx-chatbox">
       <main>
-        <section>
-        <h6 class="heading" style="color: white;">Video Chat </h6>
-        </section>
         <section class="large-wrapper">
       
         </section>
 
         <section class="footer">
-          <i class="audio_control fa fa-microphone" aria-hidden="true"></i>
-          <i class="video_control fas fa-video" aria-hidden="true"></i>
-          <div class="disconnect_btn saito-button-secondary">Disconnect</div>
+        <div class="control-panel">
+        <div class="timer">
+            <p class="counter"> 00.00 </p>
+            <div class="users-on-call">
+                <div class="image-list">
+                    
+                </div>
+                <p > <span class="users-on-call-count">1</span> on call </p>
+            </div>
+        </div>  
+        <div class="control-list">
+           <span>
+            <i class=" audio_control fa fa-microphone" > </i>
+            </span>
+            <span  style=" background-color: ${call_type === "audio" ?  "grey" : "white"}">
+            <i  style=" cursor :${call_type === "audio" ? "none" : "pointer" }; color:${call_type === "audio" ? "black" : "green" }  " class=" video_control  fas fa-video"> </i>
+            </span>
+            <span>
+            <i class="disconnect_btn  fas fa-phone"> </i>
+            </span>
+        </div>
+    </div>
         </section>
       </main>
 

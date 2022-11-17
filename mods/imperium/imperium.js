@@ -1452,7 +1452,7 @@ class Imperium extends GameTemplate {
 	    }
 	  }
 	  costs_per_hit.sort((a,b)=>a-b);
-          let html = '<p>Do you wish to boost hits with Flagship Ability?"';
+          let html = '<div class="status-message">Do you wish to boost hits with Flagship Ability?</div><ul>';
 	  let cumulative_cost = 0;
 	  let available_trade_goods = imperium_self.game.players_info[player - 1].goods;
 	  for (let i = 0; i < costs_per_hit.length && cumulative_cost <= available_trade_goods; i++) {
@@ -1460,6 +1460,7 @@ class Imperium extends GameTemplate {
             html += '<li class="option" id="'+i+'">'+(i+1)+' extra hits - '+cumulative_cost+' trade goods</li>';
 	  }
           html += '<li class="option" id="no">skip ability</li>';
+	  html += '</ul>';
 
           imperium_self.updateStatus(html);
 
@@ -1536,9 +1537,10 @@ class Imperium extends GameTemplate {
                 return 0;
 	      }
 
-              let html = '<p>Do you wish to refresh your commodities free-of-charge?"';
+              let html = '<div class="status-message">Do you wish to refresh your commodities free-of-charge?</div><ul>';
                   html += '<li class="option" id="yes">yes, of course</li>';
                   html += '<li class="option" id="no">no, perhaps not</li>';
+	          html += '</ul>';
 
               imperium_self.updateStatus(html);
 
@@ -1850,7 +1852,7 @@ class Imperium extends GameTemplate {
       ground_units	: 	["infantry","infantry","pds","spacedock"],
       // is_testing -- you can use this to preseed action cards and objectives
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
-      //action_cards	:	["upgrade", "tactical-bombardment", "diaspora-conflict"],
+      action_cards	:	["plague", "political-stability"],
       //objectives	:	["close-the-trap"],
       tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
@@ -1939,7 +1941,7 @@ class Imperium extends GameTemplate {
 
               imperium_self.playerAcknowledgeNotice("The Tech strategy card has been played. You may expend a strategy token to research a technology. You can then purchase a second for 6 resources:", function() {
 
-                let html = '<p>Technology has been played. Do you wish to spend a strategy token to research a technology? </p><ul>';
+                let html = '<div class="status-message">Technology has been played. Do you wish to spend a strategy token to research a technology? </div><ul>';
                     html += '<li class="option" id="yes">Yes</li>';
                     html += '<li class="option" id="no">No</li>';
                     html += '</ul>';
@@ -1979,13 +1981,13 @@ class Imperium extends GameTemplate {
 
 
 	  	    let resources_to_spend = 6;
-                    let html = '<p>Do you wish to spend 6 resources to research a second technology? </p><ul>';
+                    let html = '<div class="status-message">Do you wish to spend 6 resources to research a second technology? </div><ul>';
 
   	            if (
-        	      imperium_self.game.players_info[player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
-        	      imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 1
-        	    ) {
-        	      html = '<p>Do you wish to research a second technology for free?';
+	      imperium_self.game.players_info[player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
+	      imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 1
+	    ) {
+	      html = '<div class="status-message">Do you wish to research a second technology for free?</div><ul>';
         	      resources_to_spend = 0;
         	    }
 
@@ -2168,7 +2170,7 @@ class Imperium extends GameTemplate {
       researchTechnologyEvent : function(imperium_self, researcher, player, tech) {
 	if (imperium_self.game.player === player) {
 
-              let html = `<p>Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </p><ul>`;
+              let html = `<div class="status-message">Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </div><ul>`;
                     html += '<li class="option" id="yes">Yes</li>';
                     html += '<li class="option" id="no">No</li>';
                     html += '</ul>';
@@ -2852,7 +2854,7 @@ class Imperium extends GameTemplate {
 
 	  let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
 
-          let html = `<p>Do you wish to return your Sardaak Promissary for +1 combat bonus?</p><ul>`;
+          let html = `<div class="status-message">Do you wish to return your Sardaak Promissary for +1 combat bonus?</div><ul>`;
               html += '<li class="option" id="yes">Yes</li>';
               html += '<li class="option" id="no">No</li>';
               html += '</ul>';
@@ -2893,7 +2895,7 @@ class Imperium extends GameTemplate {
       groundCombatEvent : function(imperium_self, player, sector, planet_idx) {
         if (imperium_self.game.player == player) {
 
-          let html = `<p>Do you wish to return your Sardaak Promissary for +1 combat bonus?</p><ul>`;
+          let html = `<div class="status-message">Do you wish to return your Sardaak Promissary for +1 combat bonus?</div><ul>`;
               html += '<li class="option" id="yes">Yes</li>';
               html += '<li class="option" id="no">No</li>';
               html += '</ul>';
@@ -4064,7 +4066,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       groundCombatEvent : function(imperium_self, player, sector, planet_idx) {
         if (imperium_self.game.player == player) {
 
-          let html = `<p>Do you wish to return your Yin Promissary to convert 1 opponent infantry?</p><ul>`;
+          let html = `<div class="status-message">Do you wish to return your Yin Promissary to convert 1 opponent infantry?</div><ul>`;
               html += '<li class="option" id="yes">Yes</li>';
               html += '<li class="option" id="no">No</li>';
               html += '</ul>';
@@ -4543,10 +4545,10 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
   	    );
 	  }
 
+          return 0;
 	}
 
-        return 0;
-
+	return 1;
       },
 
     });
@@ -5200,7 +5202,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
             return 0;
 	  }
 
-          html = '<p>Technology has been played. Do you wish to spend 4 resources and a strategy token to research a technology? </p><ul>';
+          html = '<div class="status-message">Technology has been played. Do you wish to spend 4 resources and a strategy token to research a technology? </div><ul>';
           if (imperium_self.game.state.round == 1) {
             html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Technology strategy card. You may spend 4 resources and a strategy token to gain a permanent new unit or ability. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability?</p><ul>`;
           }
@@ -5209,7 +5211,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 	    imperium_self.game.players_info[player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
 	    imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 1
 	  ) { 
-            html = '<p>Technology has been played. Do you wish to spend a strategy token to research a technology? </p><ul>';
+            html = '<div class="status-message">Technology has been played. Do you wish to spend a strategy token to research a technology? </div><ul>';
 	    resources_to_spend = 0;
 	  }
 
@@ -9152,10 +9154,16 @@ ACTION CARD - types
 	},
         handleGameLoop : function(imperium_self, qe, mv) {
 
+console.log("hgl: " + mv[0]);
+
           if (mv[0] == "strategy_card_retained") {
+
+console.log("strategy card is retained!");
 
             let player = parseInt(mv[1]);
             let card = mv[2];
+console.log("queue length: " + imperium_self.game.queue.length);
+console.log("qe: " + qe);
             imperium_self.game.queue.splice(qe, 1);
 	    imperium_self.game.players_info[player-1].strategy_cards_retained.push(card);
 
@@ -9816,7 +9824,7 @@ ACTION CARD - types
 
 
 
-    this.importActionCard('Insubordination', {
+    this.importActionCard('insubordination', {
   	name : "Insubordination" ,
   	type : "action" ,
   	text : "ACTION: Select a player and remove 1 token from their command pool" ,
@@ -9847,7 +9855,7 @@ ACTION CARD - types
 
 
 
-    this.importActionCard('Lucky Shot', {
+    this.importActionCard('lucky-shot', {
   	name : "Lucky Shot" ,
   	type : "action" ,
   	text : "ACTION: Destroy a destroyer, cruiser or dreadnaught in a sector with a planet you control" ,
@@ -19664,6 +19672,7 @@ console.log("K: " + z[k].name);
       }
 
       for (let i in z) {
+console.log("HGL 1: " + z[i].name);
         if (!z[i].handleGameLoop(imperium_self, qe, mv)) { return 0; }
       }
 

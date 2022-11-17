@@ -426,7 +426,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       groundCombatEvent : function(imperium_self, player, sector, planet_idx) {
         if (imperium_self.game.player == player) {
 
-          let html = `<p>Do you wish to return your Yin Promissary to convert 1 opponent infantry?</p><ul>`;
+          let html = `<div class="status-message">Do you wish to return your Yin Promissary to convert 1 opponent infantry?</div><ul>`;
               html += '<li class="option" id="yes">Yes</li>';
               html += '<li class="option" id="no">No</li>';
               html += '</ul>';

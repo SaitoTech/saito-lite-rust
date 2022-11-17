@@ -101,18 +101,18 @@ class LeagueWizard {
           return;
         }
         
-        let options = this.getOptions();
+        let options = (document.getElementById("fixedoptions").checked) ? JSON.stringify(this.getOptions()) : "";
 
         let newLeague = {
           game: this.game_mod.name,
           type: e.currentTarget.getAttribute("data-type"),
           admin: app.wallet.returnPublicKey(),
           name: sanitize(document.getElementById("league-name").innerHTML),
-          description: sanitize(document.getElementById("league-desc")),
+          description: sanitize(document.getElementById("league-desc").innerHTML),
           ranking: document.getElementById("ranking").value,
           starting_score: parseInt(document.getElementById("starting_score").value),
           max_players: parseInt(document.getElementById("max_players").value),
-          options: (document.getElementById("fixedoptions").checked) ? options : {},
+          options:  options,
           startdate: document.getElementById("startdate").value,
           enddate: document.getElementById("enddate").value,
           allowlate: (document.getElementById("lateregister").checked) ? '1' : '0',
@@ -196,23 +196,26 @@ class LeagueWizard {
         try{
           optionsToggle.checked = true;
           exclusiveObj.value = "exclusive";
+          let html = "";
 
-          let advancedOptions = this.game_mod.returnGameOptionsHTML();
-          let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
-          let moreOptions = this.game_mod.returnPlayerSelectHTML();
+          if (!document.getElementById("game-wizard-form")){
+            let advancedOptions = this.game_mod.returnGameOptionsHTML();
+            let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+            let moreOptions = this.game_mod.returnPlayerSelectHTML();
 
-          if (advancedOptions.includes(accept_button)){
-            advancedOptions = advancedOptions.replace(accept_button, moreOptions+accept_button);
-          }else{
-            advancedOptions += moreOptions + accept_button; 
-          }
+            if (advancedOptions.includes(accept_button)){
+              advancedOptions = advancedOptions.replace(accept_button, moreOptions+accept_button);
+            }else{
+              advancedOptions += moreOptions + accept_button; 
+            }
 
-          let html = `<div class="game_option_league_wizard">
-                      <form id="game-wizard-form" class="game-wizard-form">
-                      ${advancedOptions}
-                      </form>
-                      </div>
-                      `;
+            html = `<div class="game_option_league_wizard">
+                        <form id="game-wizard-form" class="game-wizard-form">
+                        ${advancedOptions}
+                        </form>
+                        </div>
+                        `;
+          }          
 
           //Display Game Options
           this.super_overlay.show(this.app, this.mod, html);  
@@ -235,12 +238,22 @@ class LeagueWizard {
         }
 
         if (!document.getElementById("game-wizard-form")){
+          let advancedOptions = this.game_mod.returnGameOptionsHTML();
+          let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+          let moreOptions = this.game_mod.returnPlayerSelectHTML();
+
+          if (advancedOptions.includes(accept_button)){
+            advancedOptions = advancedOptions.replace(accept_button, moreOptions+accept_button);
+          }else{
+            advancedOptions += moreOptions + accept_button; 
+          }
+
           let html = `<div class="game_option_league_wizard">
                       <form id="game-wizard-form" class="game-wizard-form">
-                      ${this.game_mod.returnGameOptionsHTML()}
-                      ${this.game_mod.returnPlayerSelectHTML()}
+                      ${advancedOptions}
                       </form>
-                      </div>`;
+                      </div>
+                      `;
           this.super_overlay.show(this.app, this.mod, html);  
           this.super_overlay.hide();
         }
@@ -251,12 +264,9 @@ class LeagueWizard {
   }
 
   getOptions(){
-    let options = "";
+    let options = {};
    
     document.querySelectorAll("form#game-wizard-form input, form#game-wizard-form select").forEach((element) => {
-      if (!options){
-        options = {};
-      }
       if (element.type == "checkbox") {
         if (element.checked) {
           options[element.name] = 1;

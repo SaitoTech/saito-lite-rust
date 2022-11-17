@@ -19,8 +19,12 @@
 
 }
 
+.chat-container.minimize{
+    height: 4.6rem;
+}
 .chat-container.minimize .chat-body, .chat-container.minimize .chat-footer{
     display: none;
+
 }
 
 .chat-header {

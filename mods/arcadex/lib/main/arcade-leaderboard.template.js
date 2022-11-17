@@ -6,7 +6,7 @@ module.exports = ArcadeLeaderboardTemplate = (app, mod) => {
 	let leagueFound = false;
 
 	let html = `<div id="arcade-leaderboard" class="saito-sidebar-right">
-				<div class="leaderboard-header">Saito Leaderboard</div>`;
+				<div class="leaderboard-header tip">Saito Leaderboard<div class="tiptext">View full leaderboard</div></div>`;
     
 	for (let i = 0; i < league_mod.leagues.length; i++){
 		if (league_mod.leagues[i].id == league_id){
@@ -16,7 +16,7 @@ module.exports = ArcadeLeaderboardTemplate = (app, mod) => {
 				if (j < 50 || player == app.wallet.returnPublicKey()){
 					html += `<div class="saito-table-row">
 		              			 <div>${j+1}</div>
-		              			 <div class="saito-address saito-address-${player}" data-id="${player}">${player}</div>
+		              			 <div class="saito-address saito-address-${player} ${(player ==app.wallet.returnPublicKey())?"me":""}" data-id="${player}">${player}</div>
 		              		</div>`;
 				}
 			}

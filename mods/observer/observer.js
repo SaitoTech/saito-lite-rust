@@ -117,6 +117,9 @@ class Observer extends ModTemplate {
                 (!params.live_games && observe.game_status == "live")){
               print_game = false;
             }
+            if (params.live_games && observe.players_array.includes(app.wallet.returnPublicKey())){
+              print_game = false;
+            }
           }
 
           if (print_game){
@@ -127,9 +130,15 @@ class Observer extends ModTemplate {
 
         });
 
-        if (numShown == 0){
-          app.browser.addElementToId(`<div class="saito-carousel"></div>` ,elem_id);
+        //if (numShown == 0){
+        //  app.browser.addElementToId(`<div class="saito-carousel"></div>` ,elem_id);
+        //}
+        if (numShown > 0){
+          if (document.getElementById("saito-carousel")){
+            document.getElementById("saito-carousel").remove();
+          }
         }
+
       }catch(err){
         console.log(err);
       }
