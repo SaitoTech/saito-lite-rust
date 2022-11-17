@@ -16,14 +16,14 @@ class Monarchy extends GameTemplate {
 
     this.name  		       = "Dominion";
 
-    this.description     = `${this.name} is a strategy deck-building game, where players strive for dominion over the land by spending money on land and resources.`;
+    this.description     = `Strategy deck-building game: acquire money and land to assert dominion over the realm.`;
     this.status          = "Alpha";
     this.card_height_ratio = 1.6; // height is 1.6x width
 
     this.interface     = 1; //Display card graphics
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 4;
-
+    this.game_length   = 20; //Estimated number of minutes to complete a game
     this.categories 	 = "Games Boardgame Strategy Deckbuilding";
 
     this.hud.mode = 0;  // long-horizontal
