@@ -40,8 +40,6 @@ class Storage {
 
   loadTransactions(type = "all", num = 50, mycallback) {
 
-console.log("loading transactions...");
-
     const message = "archive";
     const data: any = {};
     data.request = "load";
@@ -49,17 +47,11 @@ console.log("loading transactions...");
     data.num = num;
     data.publickey = this.app.wallet.returnPublicKey();
 
-console.log("sending archive request...");
-
     this.app.network.sendRequestWithCallback(message, data, function (obj) {
-
-console.log("received response");
 
       let txs = [];
       if (obj) {
         if (obj.txs) {
-
-console.log("received response 2");
 
 	  for (let i = 0; i < obj.txs.length; i++) {
             let tx = new Transaction(JSON.parse(obj.txs[i].tx));
@@ -72,6 +64,22 @@ console.log("received response 2");
         }
       }
       mycallback(txs);
+    });
+  }
+
+  deleteTransactions(type = "all", publickey = "", mycallback = null) {
+
+console.log("DELETING OUR TRANSACTIONS IN STORAGE!");
+
+    const message = "archive";
+    const data: any = {};
+    data.request = "delete";
+    data.type = type;
+    data.publickey = publickey;
+
+    this.app.network.sendRequestWithCallback(message, data, function (obj) {
+console.log("AND BACK IN CALLBACK");
+      mycallback();
     });
   }
 
@@ -245,10 +253,10 @@ console.log("received response 2");
     data.request = "save";
     data.tx = tx;
     data.type = txmsg.module;
-    console.log("savig tx 2");
+console.log("=============");
+console.log("SAVING THE TX");
+console.log("=============");
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
-    console.log("savig tx 3");
-
     this.app.connection.emit("save-transaction", tx);
 console.log("save-transaction'd the tx");
 

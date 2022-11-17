@@ -36,6 +36,7 @@ class UploadRomOverlay {
 	  // initialize ROM gets the ROM the APP and the MOD
 	  //
 	  myApp.initializeRom(ab, app, mod);
+	  mod.startPlaying();
 	  mod.hideSplashScreen();
 	  mod.hideLibrary();
 	  uploader.overlay.hide();

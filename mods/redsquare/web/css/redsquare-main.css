@@ -109,7 +109,15 @@ span.redsquare-home-red-square+span {
 
 .redsquare-list-open {
   position: fixed;
-  top: 14rem
+  top: 14rem;
+  overflow-y: scroll;
+  width: 54rem
+
+
+}
+
+.redsquare-list-open::-webkit-scrollbar {
+  display: none;
 }
 
 #redsquare-intersection {
@@ -232,69 +240,6 @@ span.redsquare-home-red-square+span {
 }
 
 
-
-.redsquare-game-creator {
-  padding: 3rem;
-  border-radius: 0.5rem;
-  background-color: #0009;
-  color: var(--saito-white);
-  max-height: 90vh;
-  max-width: 100vw;
-  overflow-y: auto;
-}
-
-.redsquare-create-game-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 1rem;
-}
-
-
-.redsquare-create-game-header {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  padding: 1rem;
-}
-
-.redsquare-game-container {
-  display: grid;
-  grid-template-columns: 12rem auto;
-  grid-template-rows: min-content 1fr;
-  grid-gap: 1rem;
-  min-height: 12rem;
-  max-height: 12rem;
-  padding: 0.5rem;
-  min-width: 35rem;
-  width: 50rem;
-  max-width: calc(100vw - 4rem);
-}
-
-.redsquare-game-container:hover {
-  cursor: pointer;
-  background-color: #0009;
-}
-
-.redsquare-game-image {
-  grid-row: span 2;
-  width: 12rem;
-  height: auto;
-}
-
-.redsquare-game-image>img {
-  width: 100%;
-  height: 100%;
-  border-radius: 0.5rem
-}
-
-.redsquare-game-title {
-  font-size: 3rem;
-}
-
-.redsquare-game-description {
-  font-size: 1.5rem;
-  line-height: 1.9rem;
-  overflow: auto;
-}
 
 @media only screen and (max-width: 535px) {
   
@@ -664,6 +609,7 @@ span.redsquare-home-red-square+span {
 
 
 .tweet-overlay-img-cont img {
+  min-width: 50vw;
   max-height: 90vh;
   max-width: 90vw;
 }
@@ -849,7 +795,7 @@ span.redsquare-home-red-square+span {
 /*  stunx */
 /*  video chat */
 
-.stunx-chatbox {
+/* .stunx-chatbox {
   max-width: 60vw;
   top: 50%;
   left: 50%;
@@ -865,15 +811,6 @@ span.redsquare-home-red-square+span {
   padding: 1rem;
 }
 
-.stunx-chatbox .disconnect_btn {
-  transform: matrix(1, 0, 0, -1, 0, 0);
-  background-color: var(--saito-white);
-}
-
-
-.stunx-chatbox .disconnect_btn:hover {
-  color: black
-}
 
 .stunx-chatbox .large-wrapper {
   display: grid;
@@ -909,41 +846,13 @@ span.redsquare-home-red-square+span {
 
 .stunx-chatbox .heading {
   background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
-}
+} */
 
-.stunx-chatbox .footer {
-  display: grid;
-  grid-gap: 1rem;
-  padding: 20px;
-  background: radial-gradient(100.52% 47851.24% at 0% 0%, #f66659 0%, #f21d3b 51.56%, #f66659 100%)
-    /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */
-  ;
-  transform: matrix(1, 0, 0, -1, 0, 0);
-  color: white;
-  align-items: center;
-  grid-template-columns: 2em 2em 1fr;
-}
-
-.stunx-chatbox p {
-  margin: 0;
-}
-
-.stunx-chatbox .disconnect_btn {
-  margin-left: auto;
-}
-
-.stunx-chatbox .footer .fa {
-  color: white;
-  font-size: 2rem;
-  cursor: pointer;
-  transform: matrix(1, 0, 0, -1, 0, 0);
-  margin-right: 3rem;
-}
 
 /* video chat */
 
 /*  video box */
-.video-box-container {
+/* .video-box-container {
   background-color: black;
   display: flex;
   height: 100%;
@@ -1009,7 +918,7 @@ span.redsquare-home-red-square+span {
   100% {
     transform: scale(.97);
   }
-}
+} */
 
 
 

@@ -89,7 +89,11 @@ class Library extends ModTemplate {
       let request = txmsg.request;
       let sig = tx.transaction.sig;
 
+console.log("doesn the library exist?");
+
       if (library_self.library[module]) {
+
+console.log("yes");
 
 	let idx = -1;
 	let contains_item = false;
@@ -113,8 +117,8 @@ class Library extends ModTemplate {
 		id : id ,
 		title : txmsg.title ,
 		description : "" ,
-		num : 1 ,
-		available : 1 ,
+		num : 1 ,			// total
+		available : 1 ,			// total available
 		checkout : [] ,
 		sig : sig ,
 	      }
@@ -144,7 +148,8 @@ class Library extends ModTemplate {
 	}
       
 	if (this.library[collection]) {
-	  mycallback(this.returnCollection(collection));
+	  let publickey = peer.returnPublicKey();
+	  mycallback(this.returnCollection(collection, publickey));
 	}
     }
 
@@ -164,8 +169,48 @@ class Library extends ModTemplate {
 	  this.checkout(collection, sig, publickey, mycallback);
 	}
     }
+
+
+    if (message.request === "library delete") {
+
+        let collection = null;
+        let publickey = null;
+
+        if (message.data?.collection && message.data?.publickey) {
+	  collection = message.data.collection;
+	  publickey = message.data.publickey;
+        } else {
+console.log("returning as no collection or publickey");
+	  return;
+	}
+      
+console.log("do we have a collection?");
+console.log(JSON.stringify(this.library));
+	if (this.library[collection]) {
+	  this.deleteCollection(collection, publickey);
+	}
+    }
+
   } 
 
+  deleteCollection(collection, publickey) {
+
+    //
+    // remove from library
+    //
+    if (this.library[collection]) {
+      this.library[collection] = [];
+      this.save();
+    }
+
+    //
+    // trigger delete from TX archive of anything owned by this publickey
+    //
+    this.app.storage.deleteTransactions("Nwasm", publickey, function() {
+console.log("AND EVERYTHING SUPPOSEDLY DELETED");
+    });
+
+  }
 
   cleanupLibrary() {
 
@@ -228,7 +273,27 @@ class Library extends ModTemplate {
 	}	
       }
 
-console.log("at start of checkout function 3!");
+      //
+      // the one condition we permit borrowing is if this user is the 
+      // one who has borrowed the item previously and has it in their
+      // possession. in that case they have simply rebooted their 
+      // machine and should be provided with the data. we 
+      //
+      if (is_already_borrowed) {
+        for (let i = 0; i < item.checkout.length; i++) {
+          if (item.checkout[i].publickey === publickey) {
+	    item.checkout.splice(i, 1);
+
+	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+	    // be careful that item.available //
+	    // is not removed below for legal //
+	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+	    item.available++;
+            this.save();
+            is_already_borrowed = 0;
+	  }	
+        }
+      }
 
       if (!is_already_borrowed) {
 
@@ -238,22 +303,35 @@ console.log("at start of checkout function 3!");
         // record the checkout
         //
         item.checkout.push({ publickey : publickey , ts : new Date().getTime() });
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+	// be careful that item.available //
+	// is not removed above for legal //
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
         item.available--;
+        this.save();
+        this.app.storage.loadTransactionBySig(sig, mycallback);
       }
-
-      this.save();
-      this.app.storage.loadTransactionBySig(sig, mycallback);
     }
 
   }
 
-  returnCollection(collection) {
+  returnCollection(collection, publickey = null) {
+
     if (this.library[collection]) {
       let c = [];
       for (let i = 0; i < this.library[collection].length; i++) {
         let item = this.library[collection][i];
+        let num = item.num;
+        let available = item.available;
+
+	for (let z = 0; z < item.checkout.length; z++) {
+	  if (item.checkout[z].publickey === publickey && publickey != null) {
+	    available++;
+	  }
+	}
+
 	if (item.title != "") {
-	  c.push({ title : item.title , available : item.available , num : item.num , sig : item.sig });
+	  c.push({ title : item.title , available : available , num : num , sig : item.sig });
         }
       }
       return c;
@@ -273,6 +351,7 @@ console.log("at start of checkout function 3!");
   }
 
 
+/***************
   async handlePeerRequest(app, message, peer, mycallback = null) {
 
     let response = {};
@@ -299,6 +378,11 @@ console.log("at start of checkout function 3!");
       }
     }
 
+    if (message.request === 'library delete request') {
+      let tx = message.data.tx;
+      let library_self = app.modules.returnModule("Library");
+    }
+
     if (message.request === 'library checkout request') {
       let tx = message.data.tx;
       let library_self = app.modules.returnModule("Library");
@@ -306,7 +390,7 @@ console.log("at start of checkout function 3!");
 
     super.handlePeerRequest(app, message, peer, mycallback);
   }
-
+***************/
 
 
   load() {

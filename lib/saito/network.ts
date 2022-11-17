@@ -106,7 +106,7 @@ class Network {
       // }
       if (this.app.options.server.host === peerhost && this.app.options.server.port === peerport) {
         if (this.debugging) {
-          console.error(
+          console.log(
             "ERROR 185203: not adding " +
               this.app.options.server.host +
               " as peer since it is our server."
@@ -120,7 +120,7 @@ class Network {
           this.app.options.server.endpoint.port === peerport
         ) {
           if (this.debugging) {
-            console.error(
+            console.log(
               "ERROR 185204: not adding " +
                 this.app.options.server.host +
                 " as peer since it is our server."
@@ -145,22 +145,60 @@ class Network {
   }
 
   addStunPeer(stun_object) {
+    const peer = new Peer(this.app);
+    this.initializeStun(peer, stun_object);
+  }
+
+  initializeStun(peer, stun_object) {
     let pc = stun_object.peer_connection;
     let publickey = stun_object.publickey;
     let data_channel = stun_object.data_channel;
 
-    data_channel.onmessage = (e) => {
-      console.log("new mesage from ", publickey);
-    };
-
-    data_channel.onopen = (e) => {
-      console.log("stun connection opened with " + publickey, "opened ");
-    };
-
-    const peer = new Peer(this.app);
     peer.stun = { peer_connection: pc, data_channel, publickey };
     peer.peer.publickey = publickey;
+    peer.stun.data_channel.peer = peer;
     peer.uses_stun = true;
+
+    peer.stun.data_channel.onmessage = async (e) => {
+      const data = await e.data;
+      const api_message = this.app.networkApi.deserializeAPIMessage(data);
+      if (api_message.message_type === MessageType.Result) {
+        this.app.networkApi.receiveAPIResponse(api_message);
+      } else if (api_message.message_type === MessageType.Error) {
+        this.app.networkApi.receiveAPIError(api_message);
+      } else {
+        await this.receiveRequest(peer, api_message);
+      }
+    };
+
+    peer.stun.data_channel.onopen = (e) => {
+      // console.log('stun connection opened with '+publickey, "opened ");
+      if (this.debugging) {
+        console.log("direct data channel created with ", peer.peer.publickey);
+      }
+      this.app.handshake.initiateHandshake(peer.stun.data_channel);
+
+      this.app.network.requestBlockchain(peer);
+      this.app.connection.emit("peer_connect", peer);
+      this.app.connection.emit("connection_up", peer);
+      this.app.network.propagateServices(peer);
+    };
+
+    peer.stun.data_channel.onclose = (event) => {
+      if (this.debugging) {
+        console.log(
+          `[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`
+        );
+      }
+      this.app.connection.emit("connection_dropped", peer);
+      this.app.connection.emit("peer_disconnect", peer);
+    };
+
+    peer.stun.data_channel.onerror = (event) => {
+      if (this.debugging) {
+        console.log(`Peer Datachannel Error: [error] `);
+      }
+    };
 
     let index = this.peers.findIndex((peer) => peer.stun.publickey === publickey);
     if (index === -1) {
@@ -407,6 +445,20 @@ class Network {
 
   cleanupDisconnectedPeer(peer, force = 0) {
     if (peer.uses_stun) {
+      // clean up peer
+      let publickey = peer.peer.publickey;
+      for (let i = 0; i < this.peers.length; i++) {
+        if (this.peers[i].peer.publickey === publickey) {
+          if (this.peers[i].stun.data_channel.readyState === "closed") {
+            try {
+              this.peers[i].stun.data_channel.close();
+              this.peers.splice(i, 1);
+            } catch (error) {
+              console.log("ERROR : error closing datachannel: " + error);
+            }
+          }
+        }
+      }
       return;
     }
 
@@ -1150,6 +1202,9 @@ class Network {
       fees = fees / BigInt(2);
     }
     this.peers.forEach((peer) => {
+      if (peer.uses_stun) {
+        return;
+      }
       //&& fees >= peer.peer.minfee
       // console.log('peer ', pe)
       if (peer.peer.receivetxs === 0) {

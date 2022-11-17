@@ -17,8 +17,20 @@
     if (obj.capitals == null)	        { obj.capitals = []; }
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.vp == null)			{ obj.vp = 0; }
+    if (obj.vp_base == null)		{ obj.vp_base = 0; }
+    if (obj.vp_special == null)		{ obj.vp_special = 0; }
+    if (obj.vp_bonus == null)		{ obj.vp_bonus = 0; }
     if (obj.allies == null)		{ obj.allies = []; }
     if (obj.minor_allies == null)	{ obj.minor_allies = []; }
+    if (obj.calculateBaseVictoryPoints == null) {
+      obj.calculateBaseVictoryPoints = function() { return 0; }
+    }
+    if (obj.calculateBonusVictoryPoints == null) {
+      obj.calculateBonusVictoryPoints = function() { return 0; }
+    }
+    if (obj.calculateSpecialVictoryPoints == null) {
+      obj.calculateSpecialVictoryPoints = function() { return 0; }
+    }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {
         return `
@@ -38,11 +50,22 @@
 
   }
 
-  gainVP(faction, points) {
+  gainVictoryPoints(faction, points, type="special") {
     for (let i = 0; i < this.game.players_info.length; i++) {
       for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
 	if (faction === this.game.players_info[i].factions[ii]) {
-          this.game.players_info[i].factions[ii].vp += points;
+	  if (type == "base") {
+            this.game.players_info[i].factions[ii].vp += points;
+            this.game.players_info[i].factions[ii].vp_base += points;
+	  }
+	  if (type == "special") {
+            this.game.players_info[i].factions[ii].vp += points;
+            this.game.players_info[i].factions[ii].vp_special += points;
+	  }
+	  if (type == "bonus") {
+            this.game.players_info[i].factions[ii].vp += points;
+            this.game.players_info[i].factions[ii].vp_bonus += points;
+	  }
 	  break;
         }
       }

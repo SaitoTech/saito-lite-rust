@@ -32,6 +32,11 @@ class GameWizard {
 
       //Create (hidden) the advanced options window
       this.meta_overlay = new SaitoOverlay(app, false, false);
+      let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small">Accept</div>`;
+      if (!advancedOptions.includes(accept_button)){
+        advancedOptions += accept_button;
+      }
+
       this.meta_overlay.show(app, mod, advancedOptions);
       this.meta_overlay.hide();      
 
@@ -71,13 +76,7 @@ class GameWizard {
     if (advancedOptionsToggle){
       advancedOptionsToggle.onclick = (e) => {
 
-        //Requery advancedOptions on the click so it can dynamically update based on # of players
-        let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small">Accept</div>`;
-        let advancedOptionsHTML = this.game_mod.returnGameOptionsHTML();
-        if (!advancedOptionsHTML.includes(accept_button)){
-          advancedOptionsHTML += accept_button;
-        }
-        this.meta_overlay.show(app, this.game_mod, advancedOptionsHTML);
+        this.meta_overlay.show(app, this.game_mod);
         this.game_mod.attachAdvancedOptionsEventListeners();
         this.meta_overlay.blockClose();
 

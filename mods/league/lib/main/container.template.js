@@ -1,24 +1,20 @@
+const SaitoModuleTemplate = require("./../../../../lib/saito/new-ui/templates/saito-module.template");
 
-module.exports = (app, mod) => {
+module.exports = () => {
 
-  let html = `
+  return `
     <div class="league-main-container" id="league-main-container">
-      <div id="league-main-container-header" class="container-header">
-        <h1>Saito League</h1>
-        <p>Create leagues to compete against other players, through rankings, and win prizes</p>
-      </div>
+    <div class="saito-module">
       <div></div>
-      
-      <div class="league-main-container-games" id="league-main-container-games">
-        <h2>Create a New League</h2>
-        <p class="para">Select a game to get started</p>
+      <div class="saito-module-details-box">
+        <div class="saito-module-title">Community Leagues</div>
+        <div class="saito-module-description">Create and join leagues to compete against other players in specific games, chat, and make friends</div>
       </div>
-      <div class="league-component-existing-league" id="league-component-existing-league">
-        <h2>Current Leagues</h2>
-        <p class="para">Join leagues to compete</p>
-      </div>
+      <div class="saito-module-action" id="create-new-league">New League</div>
     </div>
-  `;
-
-  return html;
+    <div class="league-component-existing-league" id="leagues-for-admin"></div>
+    <div class="league-component-existing-league" id="leagues-for-play"></div>
+    <div class="league-component-existing-league" id="leagues-for-join"></div>
+    `;
 }
+

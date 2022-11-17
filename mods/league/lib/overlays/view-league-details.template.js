@@ -6,6 +6,9 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
     return "";
   }
 
+  console.log(JSON.parse(JSON.stringify(league)));
+
+
   // let html = `<div class="league-details-overlay">
     
   //   <h2>${league.name}</h2>
@@ -58,29 +61,40 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
     
   // html += `</div>`;
 
+  let info = (league.admin == "saito") ? "This is a global leaderboard" : "";
+  let buttons = "";
+  if (league.admin !== "saito"){
+    if (league.max_players == 0 || league.playerCnt < league.max_players){
+       if (mod.checkDate(league.startdate) || league.allowlate){
+         if (league.myRank <=0){
+           buttons += `<div class='button saito-button-primary' id='join-btn'>JOIN</div>`;
+         }else{
+          buttons += `<div class='button saito-button-primary' id='play-btn'>PLAY</div>`;
+          buttons += `<div class='button saito-button-primary' id='report-btn'>REPORT MATCH</div>`;
+         }
+         if (app.wallet.returnPublicKey() == league.admin){
+          buttons += `<div class='button saito-button-primary' id='invite-btn'>INVITE</div>`; 
+         }else{
+          buttons += `<div class='button saito-button-primary' id='contact-btn'>CONTACT ADMIN</div>`; 
+         }
+       }
+     }
+  }
+
+
   let league_img = league.game != null ? '/'+league.game.toLowerCase()+'/img/arcade/arcade.jpg' : '';
-  let html = `
+  return `
     <div class="league-details-overlay">
-      <div class="leaderboard-box">
+      <div class="league-leaderboard-box">
         
-        <div class="leaderboard-details-box">
+        <div class="league-details-box">
           ${SaitoModuleTemplate(league.name, league.description, league_img, "", "")}
-
-          <!--<div id="leaderboard-btn-create-game" class="saito-button-secondary small">Create game</div>-->
-          <!--div class="saito-tool-tip">?</div>
-          <div class="saito-tool-tip">i</div-->
-      
-        
-        <div class="observer-sidebar">
-          <h6>Recent games</h6>
-          <div class="recent-games-box" id="recent-games-box">
-
-          </div>
+          <div class="league-info">${info}</div>
+          <div class="recent-games-box" id="recent-games-box"></div>
+          <div class="league-actions saito-box-buttons">${buttons}</div>
         </div>
-      </div>
-      <!-- leaderboard-box end -->
 
-        <div class="saito-table league-table-ranking" id="league-table-ranking">
+        <div class="saito-table leaderboard-box" id="league-table-ranking">
           <div class="saito-table-header">
             <div><b>Rank</b></div>
             <div><b>Player</b></div>
@@ -89,16 +103,13 @@ module.exports = ViewLeagueDetailsTemplate = (app, mod, league) => {
             <div><b>Loss</b></div>
           </div>
           <div class="saito-table-body" id="league-table-ranking-body">
-            
           </div>
         </div>
 
+      </div>
     </div>
-    <!-- league-details-overlay -->
   `;  
 
-
-  return html;
 }
 
 

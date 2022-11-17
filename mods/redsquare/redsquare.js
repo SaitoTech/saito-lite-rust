@@ -579,8 +579,10 @@ class RedSquare extends ModTemplate {
     //this.viewing = sig;
     //console.log("redsquare innerHTML");
     // document.querySelector(".redsquare-list").innerHTML = "";
+
     let tweet_shown = 0;
     let t = this.returnTweet(app, mod, sig);
+    document.querySelector('.redsquare-list-open').style.bottom = 0;
     if (t != null) {
       t.renderWithParents(app, mod, ".redsquare-list-open", num);
     } else {
@@ -601,7 +603,9 @@ class RedSquare extends ModTemplate {
     // document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
     //console.log("redsquare innerHTML");
     // document.querySelector(".redsquare-list").innerHTML = "";
+
     let tweet_shown = 0;
+    document.querySelector('.redsquare-list-open').style.bottom = 0;
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].tx.transaction.sig === sig) {
         tweet_shown = 1;

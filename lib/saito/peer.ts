@@ -107,12 +107,20 @@ class Peer {
   }
 
   isConnected() {
-    if (this.socket) {
-      if (this.socket.readyState === this.socket.OPEN) {
+    if(this.uses_stun){
+      if(this.stun.data_channel.readyState === "open"){
         return true;
       }
+      return false;
+    }else {
+      if (this.socket) {
+        if (this.socket.readyState === this.socket.OPEN) {
+           return true;
+        }
+      }
+      return false;
     }
-    return false;
+
   }
 
   //
@@ -165,7 +173,8 @@ class Peer {
   // NETWORKING //
   ////////////////
   async sendResponse(message_id, data) {
-    await this.app.networkApi.sendAPIResponse(this.socket, MessageType.Result, message_id, data);
+    let channel = this.uses_stun? this.stun.data_channel : this.socket;
+    await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
   }
 
   sendRequest(message: string, data: any = "") {
@@ -228,14 +237,31 @@ class Peer {
     const data_to_send = { message: message, data: data };
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-    if (this.socket && this.socket.readyState === this.socket.OPEN) {
-      this.app.networkApi.sendAPICall(socket, MessageType.ApplicationMessage, buffer).then(() => {
-        //console.debug("message sent with sendRequest");
+
+    // if(channel){
+    //   this.app.networkApi.sendAPICall(channel, "SENDMESG", buffer).then(() => {
+    //   });
+    // }else {\
+    //   this.sendRequestWithCallbackAndRetry(message, data);
+    // }
+
+    if (this.uses_stun && this.stun.data_channel.readyState === "open") {
+      this.app.networkApi.sendAPICall(this.stun.data_channel, MessageType.ApplicationMessage, buffer).then(() => {
       });
     } else {
-      this.sendRequestWithCallbackAndRetry(message, data);
+      if (this.socket && this.socket.readyState === this.socket.OPEN) {
+        this.app.networkApi.sendAPICall(this.socket, MessageType.ApplicationMessage, buffer).then(() => {
+        });
+      } else {
+        this.sendRequestWithCallbackAndRetry(message, data);
+      }
+
     }
+
   }
+
+
+
 
   //
   // new default implementation
@@ -261,33 +287,64 @@ class Peer {
     const data_to_send = { message: message, data: data };
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-    if (this.socket && this.socket.readyState === this.socket.OPEN) {
-      this.app.networkApi
-        .sendAPICall(this.socket, MessageType.ApplicationMessage, buffer)
-        .then((response: Buffer) => {
-          //console.log("RESPONSE RECEIVED: ", response);
-          if (callback) {
-            let content = Buffer.from(response).toString("utf-8");
-            content = JSON.parse(content);
-            callback(content);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          if (callback) {
-            callback({ err: error.toString() });
-          }
-        });
-    } else {
-      if (loop) {
-        //console.log("send request with callback and retry!");
-        this.sendRequestWithCallbackAndRetry(message, data, callback);
+
+    if(this.uses_stun){
+      let data_channel = this.stun.data_channel
+      if (data_channel && data_channel.readyState === "open") {
+        this.app.networkApi
+          .sendAPICall(data_channel, MessageType.ApplicationMessage, buffer)
+          .then((response: Buffer) => {
+            if (callback) {
+              let content = Buffer.from(response).toString("utf-8");
+              content = JSON.parse(content);
+              callback(content);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            if (callback) {
+              callback({ err: error.toString() });
+            }
+          });
       } else {
-        if (callback) {
-          callback({ err: "Socket Not Connected" });
+        if (loop) {
+          this.sendRequestWithCallbackAndRetry(message, data, callback);
+        } else {
+          if (callback) {
+            callback({ err: "Socket Not Connected" });
+          }
+        }
+      }
+    }else if(this.socket){
+      if (this.socket && this.socket.readyState === this.socket.OPEN) {
+        this.app.networkApi
+          .sendAPICall(this.socket, MessageType.ApplicationMessage, buffer)
+          .then((response: Buffer) => {
+            if (callback) {
+              let content = Buffer.from(response).toString("utf-8");
+              content = JSON.parse(content);
+              callback(content);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            if (callback) {
+              callback({ err: error.toString() });
+            }
+          });
+      } else {
+        if (loop) {
+          this.sendRequestWithCallbackAndRetry(message, data, callback);
+        } else {
+          if (callback) {
+            callback({ err: "Socket Not Connected" });
+          }
         }
       }
     }
+
+
+
   }
 
   //
