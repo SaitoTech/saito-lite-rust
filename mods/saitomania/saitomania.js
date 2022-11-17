@@ -16,7 +16,7 @@ class SaitoMania extends GameTemplate {
     this.slug            = "saitomania";
     this.description     = 'Blast shitcoins, pick up superpowers, destroy rocks to collect Saito and learn about the Saito project while playing ;)';
     this.categories      = "Games Cardgame one-player";
-
+    this.request_no_interrupts = true; // don't popup chat
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
     this.app = app;
