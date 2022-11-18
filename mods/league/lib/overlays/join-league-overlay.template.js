@@ -1,24 +1,49 @@
 module.exports = JoinLeagueTemplate = (app, mod, league) => {
 
 	let game = league.game.toLowerCase();
+	let pubKey = app.wallet.returnPublicKey();
+	let user_email = app.keys.returnEmail(pubKey);
 
 	let info_html = `<span class="saito-tooltip-box"></span>`;
 	let html = 	`
     	<div class="league-join-overlay-box">
 
-    		<img src="/poker/img/arcade/arcade.jpg">
+    		<img src="/${game}/img/arcade/arcade.jpg">
     		<div class="title-box">
 			<div class="title">${league.name}</div> ${info_html}
 		</div>
     		<div class="league-join-controls">
+    	`;
 
-		    <p class="league-join-email-note">Joining a league requires an email address</p>
-    
-		    <input type="text" placeholder="Enter your email...">
-		<button class="saito-button-primary small league-join-btn" id="league-join-btn" data-cmd="join" data-league-id="">JOIN LEAGUE</button> 
-		</div>
+    	if (typeof league.myRank != "undefined" && league.myRank > 0) {
 
-        <div>
+		html += `	<p class="league-join-email-note">You've joined this league</p>  
+				<p class="league-join-email-note">Challenge other players at <a href="/arcade">Arcade</a> , <a href="/redsquare">Redsquare</a><a> </a></p>
+		`;	    	
+	} else {
+
+		if (user_email == '') {
+			html += `
+			<p class="league-join-email-note">Joining a league requires an email address</p>    
+			<input id="join-league-user-email" type="text" placeholder="Enter your email...">`;
+		} else {
+			html += `<p class="league-join-email-note">Joining will share your email address with admin</p>
+			<input id="join-league-user-email" type="hidden" value="${user_email}">
+			`;
+		}
+
+		html += `
+
+			<button class="saito-button-primary small league-join-btn" id="league-join-btn" data-cmd="join" data-league-id="${league.id}">JOIN LEAGUE</button> 
+			
+		`;
+
+	}
+
+	html += `
+	    
+	    </div>
+        </div>
 
    	`;
  

@@ -317,7 +317,7 @@ i.link_icon.private {
   margin-left: 0rem;
   width: 100%;
   margin-bottom: 0rem;
-  margin-top: 1rem;
+  margin-top: 0rem;
   display: inline-block;
   width: 20rem;
   padding: 1.2rem !important;
@@ -353,6 +353,7 @@ i.link_icon.private {
 .league-join-overlay-box .title-box {
     color: #222;
     text-align: center;
+    margin: 1rem 0rem;
 }
 
 .league-join-overlay-box .title-box .title {
@@ -368,10 +369,15 @@ i.link_icon.private {
   font-size: 2rem;
   font-style: italic;
   color: #444;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.league-join-email-note a {
+  color: var(--saito-primary);
 }
 
 .league-join-controls input {
   text-align: center;
   width: 80%;
+  margin-bottom: 1.5rem;
 }

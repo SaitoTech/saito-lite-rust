@@ -51,11 +51,28 @@ class JoinLeagueOverlay {
           </div>`;
 
     this.saito_tooltip.render(app, mod, ".saito-tooltip-box");
+  
+    this.attachEvents(app, mod);
   }
 
 
   attachEvents(app, mod) {
+      
+    const league_join_btn = document.getElementById('league-join-btn');
+
+    league_join_btn.addEventListener('click', function(e){
+      let league_id = e.target.getAttribute("data-league-id");
+      let email = document.getElementById("join-league-user-email").value;
+
+      mod.sendJoinLeagueTransaction(league_id, {"email": email});
     
+      salert("League join request sent");
+
+      setTimeout(function(){
+        window.location = window.location.origin+"/arcade";
+      }, 2500);
+    });  
+
   }
 }
 

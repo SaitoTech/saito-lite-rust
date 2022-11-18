@@ -507,16 +507,22 @@ class League extends ModTemplate {
   }
 
 
-  sendJoinLeagueTransaction(league_id="") {
+  sendJoinLeagueTransaction(league_id="", data = null) {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
 
-    newtx.msg = {
+    let tx_obj = {
       module:    "League",
       league_id: league_id,
       request:   "join league",
       timestamp: new Date().getTime()
     };
+
+    if (data != null && typeof data == "object"){
+      tx_obj = Object.assign(tx_obj, data);
+    }
+
+    newtx.msg = tx_obj;
 
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
