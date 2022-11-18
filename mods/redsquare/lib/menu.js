@@ -139,10 +139,11 @@ class RedSquareMenu {
     let matched = 0;
     switch (component) {
       case "home":
+        mod.viewing = "feed";
         mod.home.render(app, mod, ".appspace");
         window.location.hash = url;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
-        mod.viewing = "feed";
+       
         break;
       case "notifications":
         mod.viewing = "notifications";
@@ -157,12 +158,13 @@ class RedSquareMenu {
         mod.settsidebar.render(app, mod, ".saito-sidebar-right");
 console.log("menu INNERHTML");
         // settings can render into appspace
+        mod.viewing = "settings";
         document.querySelector(".appspace").innerHTML = "";
         let settings_self = app.modules.returnModule("Settings");
         window.location.hash = url;
         settings_self.respondTo("appspace").render(settings_self.app, settings_self);
         matched = 1;
-        mod.viewing = "settings";
+        
         break;
       case "contacts":
         mod.contacts.render(app, mod, ".appspace");
