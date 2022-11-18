@@ -14,6 +14,11 @@
 }
 
 
+.chat-body>.saito-user>.saito-userline {
+  font-family: sans-serif;
+}
+
+
 
 #status::-webkit-scrollbar { width: 0 !important }
 
