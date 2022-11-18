@@ -107,13 +107,13 @@
 
 	  resources_to_spend = imperium_self.game.players_info[imperium_self.game.player-1].cost_of_technology_primary;
 
-          html = '<p>Do you wish to spend '+resources_to_spend+' resources to research an additional technology? </p><ul>';
+          html = '<div class="status-message">Do you wish to spend '+resources_to_spend+' resources to research an additional technology? </div><ul>';
 
 	  if (
 	    imperium_self.game.players_info[imperium_self.game.player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
 	    imperium_self.game.players_info[imperium_self.game.player-1].temporary_research_technology_card_must_not_spend_resources == 1
 	  ) { 
-            html = '<p>Do you wish to research an additional technology? </p><ul>';
+            html = '<div class="status-message">Do you wish to research an additional technology? </div><ul>';
 	    resources_to_spend = 0;
 	  }
 

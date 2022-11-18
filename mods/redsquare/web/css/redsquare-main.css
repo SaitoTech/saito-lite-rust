@@ -109,7 +109,15 @@ span.redsquare-home-red-square+span {
 
 .redsquare-list-open {
   position: fixed;
-  top: 14rem
+  top: 14rem;
+  overflow-y: scroll;
+  width: 54rem
+
+
+}
+
+.redsquare-list-open::-webkit-scrollbar {
+  display: none;
 }
 
 #redsquare-intersection {
