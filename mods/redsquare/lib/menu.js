@@ -145,11 +145,12 @@ class RedSquareMenu {
         mod.viewing = "feed";
         break;
       case "notifications":
+        mod.viewing = "notifications";
         mod.notifications.render(app, mod, ".appspace");
         window.location.hash = url;
         mod.rsidebar.render(app, mod, ".saito-sidebar-right");
         matched = 1;
-        mod.viewing = "notifications";
+        
         break;
       case "settings":
         // re-render sidebar
