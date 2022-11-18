@@ -513,6 +513,7 @@ class StorageCore extends Storage {
         return await db.run(sql, params, mycallback);
       }
     } catch (err) {
+      console.log("sql : ", sql);
       console.log(err);
     }
   }
