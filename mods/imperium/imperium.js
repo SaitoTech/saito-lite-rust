@@ -4648,9 +4648,9 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
 
         if (imperium_self.game.player != strategy_card_player && imperium_self.game.player == player) {
 
-          let html = '<p>Do you wish to spend 1 strategy token to unexhaust two planet cards? </p><ul>';
+          let html = '<div class="status-message">Do you wish to spend 1 strategy token to unexhaust two planet cards? </div><ul>';
 	  if (imperium_self.game.state.round == 1) {
-            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens.</p><ul>`;
+            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens.</div><ul>`;
           }
           if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
 	    html += '<li class="option" id="yes">Yes</li>';
@@ -4671,7 +4671,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
               let choices_selected = 0;
               let max_choices = 0;
 
-              let html  = "<p>Select planets to unexhaust: </p><ul>";
+              let html  = '<div class="status-message">Select planets to unexhaust: </div><ul>';
               let divname = ".cardchoice";
               for (let z = 0; z < array_of_cards.length; z++) {
                 max_choices++;
@@ -5026,7 +5026,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
           let html = '<p>Trade has been played. Do you wish to spend 1 strategy token to refresh your commodities? </p><ul>';
           if (imperium_self.game.state.round == 1) {
-            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Trade strategy card. You may spend 1 strategy token to refresh your faction commodities, which may be exchanged with your neighbours on the board for trade goods. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </p><ul>`;
+            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Trade strategy card. You may spend 1 strategy token to refresh your faction commodities, which may be exchanged with your neighbours on the board for trade goods. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </div><ul>`;
           }
           if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
             html += '<li class="option" id="yes">Yes</li>';
@@ -5204,7 +5204,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
           html = '<div class="status-message">Technology has been played. Do you wish to spend 4 resources and a strategy token to research a technology? </div><ul>';
           if (imperium_self.game.state.round == 1) {
-            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Technology strategy card. You may spend 4 resources and a strategy token to gain a permanent new unit or ability. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability?</p><ul>`;
+            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Technology strategy card. You may spend 4 resources and a strategy token to gain a permanent new unit or ability. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability?</div><ul>`;
           }
 
 	  if (
