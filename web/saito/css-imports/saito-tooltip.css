@@ -1,0 +1,23 @@
+.saito-tooltip {
+	display: inline-block;
+	position: relative;
+}
+
+.saito-tooltip .saito-tooltip-icon {
+	margin: 0rem 1rem;
+    color: #2020d7;
+    cursor: pointer;
+    font-size: 2rem;
+}
+
+.saito-tooltip .saito-tooltip-info {
+	border-radius: 1rem;
+    position: fixed;
+    background: #fff;
+    padding: 1rem;
+    box-shadow: 1px 1px 4px #747474;
+}
+
+.tooltip-info-hide {
+	display: none;
+}

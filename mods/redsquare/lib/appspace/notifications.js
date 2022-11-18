@@ -12,6 +12,9 @@ class RedSquareAppspaceNotifications {
   }
 
   render(app, mod) {
+    if(mod.viewing !== "notifications"){
+      return;
+    }
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceNotificationsTemplate(app, mod), "appspace");
 
@@ -34,6 +37,7 @@ class RedSquareAppspaceNotifications {
     }else if(num_ntfs >= max_ntfs) {
       this.increment++;
       mod.loadNotificationTransactions(app, mod, this.increment, (app, mod)=> {
+        
         self.render(app, mod)
       })
     }
