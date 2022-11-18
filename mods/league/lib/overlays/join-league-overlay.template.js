@@ -22,10 +22,11 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 		`;	    	
 	} else {
 
+		html += `<form id="league-join-form" data-league-id="${league.id}">`;
 		if (user_email == '') {
 			html += `
 			<p class="league-join-email-note">Joining a league requires an email address</p>    
-			<input id="join-league-user-email" type="text" placeholder="Enter your email...">`;
+			<input id="join-league-user-email" type="email" required placeholder="Enter your email...">`;
 		} else {
 			html += `<p class="league-join-email-note">Joining will share your email address with admin</p>
 			<input id="join-league-user-email" type="hidden" value="${user_email}">
@@ -34,8 +35,8 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 
 		html += `
 
-			<button class="saito-button-primary small league-join-btn" id="league-join-btn" data-cmd="join" data-league-id="${league.id}">JOIN LEAGUE</button> 
-			
+			<button type="submit" class="saito-button-primary small league-join-btn" id="league-join-btn" data-cmd="join" >JOIN LEAGUE</button> 
+			</form>
 		`;
 
 	}

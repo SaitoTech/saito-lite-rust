@@ -58,9 +58,11 @@ class JoinLeagueOverlay {
 
   attachEvents(app, mod) {
       
-    const league_join_btn = document.getElementById('league-join-btn');
+    const league_join_form = document.getElementById('league-join-form');
 
-    league_join_btn.addEventListener('click', function(e){
+    league_join_form.addEventListener('submit', function(e){
+      e.preventDefault();
+
       let league_id = e.target.getAttribute("data-league-id");
       let email = document.getElementById("join-league-user-email").value;
 
