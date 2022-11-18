@@ -1597,7 +1597,7 @@ this.game.state.end_round_scoring = 0;
 	//
 	// ENABLE TESTINGvMODE
 	//
-        this.game.queue.push("is_testing");
+        //this.game.queue.push("is_testing");
 
   
   	//
@@ -1864,11 +1864,12 @@ this.game.state.end_round_scoring = 0;
           }
         }
 
-
   	this.game.queue.splice(qe, 1);
   	return 1;
 
       }
+
+
 
       if (mv[0] === "score") {
 
