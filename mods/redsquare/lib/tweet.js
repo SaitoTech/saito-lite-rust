@@ -402,6 +402,7 @@ console.log("ADD ELIPSIS 6");
       document.querySelector(".saito-back-button").onclick = (e) => {
         app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
         document.querySelector('.redsquare-list-open').innerHTML = ""
+        document.querySelector('.redsquare-list-open').style.bottom = "";
         document.querySelector('.redsquare-list').style.opacity = "1"
         let redsquareUrl = window.location.origin + window.location.pathname;
         window.history.pushState({}, document.title, redsquareUrl);
@@ -414,6 +415,7 @@ console.log("ADD ELIPSIS 6");
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${tweet_sig_id}' OR parent_id = '${tweet_sig_id}' OR thread_id = '${tweet_sig_id}'`;
 
       // false - don't track tweet
+     
       mod.fetchTweets(app, mod, sql, function (app, mod) {
         let t = mod.returnTweet(app, mod, tweet_sig_id);
 
@@ -421,6 +423,7 @@ console.log("ADD ELIPSIS 6");
           console.log("TWEET IS NULL OR NOT STORED");
           return;
         }
+      
         if (t.children.length > 0) {
           mod.renderWithChildren(app, mod, tweet_sig_id);
         } else {
