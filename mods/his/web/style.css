@@ -1,4 +1,7 @@
 
+img {
+  width: unset;
+}
 
 .navalspace {
   width: 190px;
