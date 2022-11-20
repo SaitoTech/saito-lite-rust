@@ -718,7 +718,9 @@
 
       let html = `<ul>`;
       html    += `<li class="card" id="ops">play for ops</li>`;
-      html    += `<li class="card" id="event">play for event</li>`;
+      if (this.deck[card].canEvent(his_self, faction)) {
+        html    += `<li class="card" id="event">play for event</li>`;
+      }
       html    += `</ul>`;
 
       this.updateStatusWithOptions('Playing card:', html, true);

@@ -51,6 +51,9 @@
     if (obj.onEvent == null) {
       obj.onEvent = function(his_self, player) { return 1; }
     }
+    if (obj.canEvent == null) {
+      obj.canEvent = function(his_self, faction) { return 0; } // 0 means cannot event
+    }
     if (obj.handleGameLoop == null) {
       obj.handleGameLoop = function(his_self, qe, mv) { return 1; }
     }
