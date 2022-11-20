@@ -386,6 +386,8 @@ class Blockchain {
 
   async addBlockSuccess(block) {
 
+console.log("ADD BLOCK SUCCESS!");
+
     let block_id = block.returnId();
 
     //
