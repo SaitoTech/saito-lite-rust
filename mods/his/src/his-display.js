@@ -1097,14 +1097,20 @@ console.log("!!!!! VP TRACK !!!!!");
 console.log("!!!!!!!!!!!!!!!!!!!!");
 
     let factions_and_scores = this.calculateVictoryPoints();
+
+console.log(JSON.stringify(factions_and_scores));
+
     let x = this.returnVictoryPointTrack();
 
     for (f in factions_and_scores) {
-      let total_vp = factions_and_scores[f].vp
+      let total_vp = factions_and_scores[f].vp;
+console.log("total VP: " + total_vp);
+
       let ftile = f + "_vp_tile";
+console.log("for ftile: " + ftile);
       obj = document.getElementById(ftile);
-      obj.style.left = x[total_vp].left + "px";
-      obj.style.top = x[total_vp].top + "px";
+      obj.style.left = x[total_vp.toString()].left + "px";
+      obj.style.top = x[total_vp.toString()].top + "px";
       obj.style.display = "block";
     }
 

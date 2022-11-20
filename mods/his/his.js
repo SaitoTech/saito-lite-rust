@@ -494,7 +494,7 @@ class HereIStand extends GameTemplate {
 
       },
       calculateBonusVictoryPoints  :    function(game_mod) {
-        return this.bonus_vp;
+        return 0;
       },
       calculateSpecialVictoryPoints  :  function(game_mod) {
 
@@ -2334,7 +2334,6 @@ console.log("adding stuff!");
 	};
       }
     }
-
     //
     // let factions calculate their VP
     //
@@ -2344,6 +2343,7 @@ console.log("adding stuff!");
       factions[f].vp_special = this.factions[f].calculateSpecialVictoryPoints(this);
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
+
 
     //
     // calculate keys controlled
@@ -2403,13 +2403,13 @@ console.log("adding stuff!");
     // PROCESS BONUS VP
     //
     //• Copernicus (2 VP) or Michael Servetus (1 VP) event
-    if (this.game.state.events.michael_servetus != "") {
+    if (this.game.state.events.michael_servetus) {
       factions[this.game.state.events.michael_servetus].vp_special++;
       factions[this.game.state.events.michael_servetus].vp++;
     }
-    if (this.game.state.events.copernicus != "") {
-      factions[this.game.state.events.copernicus].vp_special++;
-      factions[this.game.state.events.copernicus].vp++;
+    if (this.game.state.events.copernicus) {
+      factions[this.game.state.events.copernicus].vp_special += this.game.state.events.copernicus_vp;
+      factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
     }
 
 
@@ -3274,6 +3274,10 @@ console.log("this is a space: " + spacekey)
 
     state.papal_debaters_disgraced_vp = 0;
     state.protestant_debaters_burned_vp = 0;
+
+    state.events.michael_servetus = "";  // faction that gets VP
+    state.events.copernicus = "";        // faction that gets VP
+    state.events.copernicus_vp = 0;     // 1 or 2 VP
 
     state.french_chateaux_vp = 0;
 
@@ -7315,9 +7319,13 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 	  // faction will gain when counted
 	  his_self.game.state.events.copernicus = faction;
+	  his_self.game.state.events.copernicus_vp = 2;
 	  his_self.displayVictoryTrack();
 
 	} else {
+
+	  his_self.game.state.events.copernicus = faction;
+	  his_self.game.state.events.copernicus_vp = 2;
 
 	  let p = his_self.returnPlayerOfFaction(faction);
 
@@ -7515,6 +7523,29 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	if (his_self.isDebaterComitted("luther-debater")) {
+
+	  alert("Luther is already committed -- skipping A Mighty Fortress");
+
+	} else {
+
+	  player = game_mod.returnPlayerOfFaction("protestant");
+
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+          his_self.game.queue.push("ACKNOWLEDGE\tThe Protestants - A Mighty Fortress - 6 Reformation Attempts in German Zone");
+	  his_self.commitDebater("protestant", "luther-debater");
+
+	}
+
+	return 1;
+      },
     }
     deck['066'] = { 
       img : "cards/HIS-066.svg" , 
@@ -12100,6 +12131,11 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  //
 	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
 
+console.log("CARDS IN DECK: ");
+for (let key in new_cards) {
+  console.log(key);
+}
+
 	  
 	  //
 	  // re-add discards
@@ -15714,6 +15750,15 @@ return;
 
 
 
+  isDebaterCommitted(debater) {
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key == debater) {
+	if (this.game.state.debaters[i].committed == 1) { return 1; }
+      }
+    }
+    return 0;
+  }
+
   commitDebater(faction, debater) {
     let his_self = this;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
@@ -16845,14 +16890,20 @@ console.log("!!!!! VP TRACK !!!!!");
 console.log("!!!!!!!!!!!!!!!!!!!!");
 
     let factions_and_scores = this.calculateVictoryPoints();
+
+console.log(JSON.stringify(factions_and_scores));
+
     let x = this.returnVictoryPointTrack();
 
     for (f in factions_and_scores) {
-      let total_vp = factions_and_scores[f].vp
+      let total_vp = factions_and_scores[f].vp;
+console.log("total VP: " + total_vp);
+
       let ftile = f + "_vp_tile";
+console.log("for ftile: " + ftile);
       obj = document.getElementById(ftile);
-      obj.style.left = x[total_vp].left + "px";
-      obj.style.top = x[total_vp].top + "px";
+      obj.style.left = x[total_vp.toString()].left + "px";
+      obj.style.top = x[total_vp.toString()].top + "px";
       obj.style.display = "block";
     }
 

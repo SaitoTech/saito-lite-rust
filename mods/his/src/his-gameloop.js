@@ -3846,6 +3846,11 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  //
 	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
 
+console.log("CARDS IN DECK: ");
+for (let key in new_cards) {
+  console.log(key);
+}
+
 	  
 	  //
 	  // re-add discards

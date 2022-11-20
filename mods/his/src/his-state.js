@@ -429,7 +429,6 @@
 	};
       }
     }
-
     //
     // let factions calculate their VP
     //
@@ -439,6 +438,7 @@
       factions[f].vp_special = this.factions[f].calculateSpecialVictoryPoints(this);
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
+
 
     //
     // calculate keys controlled
@@ -498,13 +498,13 @@
     // PROCESS BONUS VP
     //
     //• Copernicus (2 VP) or Michael Servetus (1 VP) event
-    if (this.game.state.events.michael_servetus != "") {
+    if (this.game.state.events.michael_servetus) {
       factions[this.game.state.events.michael_servetus].vp_special++;
       factions[this.game.state.events.michael_servetus].vp++;
     }
-    if (this.game.state.events.copernicus != "") {
-      factions[this.game.state.events.copernicus].vp_special++;
-      factions[this.game.state.events.copernicus].vp++;
+    if (this.game.state.events.copernicus) {
+      factions[this.game.state.events.copernicus].vp_special += this.game.state.events.copernicus_vp;
+      factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
     }
 
 
@@ -1369,6 +1369,10 @@ console.log("this is a space: " + spacekey)
 
     state.papal_debaters_disgraced_vp = 0;
     state.protestant_debaters_burned_vp = 0;
+
+    state.events.michael_servetus = "";  // faction that gets VP
+    state.events.copernicus = "";        // faction that gets VP
+    state.events.copernicus_vp = 0;     // 1 or 2 VP
 
     state.french_chateaux_vp = 0;
 
@@ -5410,9 +5414,13 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 	  // faction will gain when counted
 	  his_self.game.state.events.copernicus = faction;
+	  his_self.game.state.events.copernicus_vp = 2;
 	  his_self.displayVictoryTrack();
 
 	} else {
+
+	  his_self.game.state.events.copernicus = faction;
+	  his_self.game.state.events.copernicus_vp = 2;
 
 	  let p = his_self.returnPlayerOfFaction(faction);
 
@@ -5610,6 +5618,29 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	if (his_self.isDebaterComitted("luther-debater")) {
+
+	  alert("Luther is already committed -- skipping A Mighty Fortress");
+
+	} else {
+
+	  player = game_mod.returnPlayerOfFaction("protestant");
+
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+          his_self.game.queue.push("ACKNOWLEDGE\tThe Protestants - A Mighty Fortress - 6 Reformation Attempts in German Zone");
+	  his_self.commitDebater("protestant", "luther-debater");
+
+	}
+
+	return 1;
+      },
     }
     deck['066'] = { 
       img : "cards/HIS-066.svg" , 
