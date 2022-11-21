@@ -7916,7 +7916,7 @@ playerTurnHeadlineSelected(card, player) {
 
 
 
-  advanceSpaceRace(player) {
+  advanceSpaceRace(player, withOSS = false) {
 
     this.displayModal(`${player.toUpperCase()} advances in the Space Race`);
 
@@ -7962,6 +7962,12 @@ playerTurnHeadlineSelected(card, player) {
         break;
     }
 
+    this.updateSpaceRace();
+
+    if (withOSS){
+      return;
+    }
+
     if (player == "us"){
       this.game.state.vp += vp_change;  
     } else {
@@ -7969,7 +7975,11 @@ playerTurnHeadlineSelected(card, player) {
     }
     
     this.updateVictoryPoints();
-    this.updateSpaceRace();
+    if (vp_change > 0){
+      this.updateLog(`${player.toUpperCase()} gains ${vp_change} VP for advancing in the space race.`);  
+    }
+    
+
   }
 
 
@@ -8717,9 +8727,9 @@ playerTurnHeadlineSelected(card, player) {
 
       // NATO
       if (this.game.state.events.marshall == 1 || this.game.state.events.warsawpact == 1) {
-	this.uncancelEvent("nato");
+	       this.uncancelEvent("nato");
       } else {
-	this.cancelEvent("nato");
+	       this.cancelEvent("nato");
       }
 
       // cambridge-five late war
@@ -8734,17 +8744,17 @@ playerTurnHeadlineSelected(card, player) {
       }
       // onesmallstep - if we are behind/ahead
       if (this.game.player == 2) { 
-	if (this.game.state.space_race_us >= this.game.state.space_race_ussr) {
-	  this.cancelEvent("onesmallstep");
-        } else {
-	  this.uncancelEvent("onesmallstep");
-	}
+      	if (this.game.state.space_race_us >= this.game.state.space_race_ussr) {
+      	  this.cancelEvent("onesmallstep");
+              } else {
+      	  this.uncancelEvent("onesmallstep");
+      	}
       } else {
-	if (this.game.state.space_race_ussr >= this.game.state.space_race_us) {
-	  this.cancelEvent("onesmallstep");
-        } else {
-	  this.uncancelEvent("onesmallstep");
-	}
+      	if (this.game.state.space_race_ussr >= this.game.state.space_race_us) {
+      	  this.cancelEvent("onesmallstep");
+              } else {
+      	  this.uncancelEvent("onesmallstep");
+      	}
       }
   }
 
@@ -11925,13 +11935,13 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
       if (player == "us") {
         if (this.game.state.space_race_us < this.game.state.space_race_ussr) {
           this.updateLog("US takes one small step into space...");
-          this.advanceSpaceRace("us");
+          this.advanceSpaceRace("us", true);
           this.advanceSpaceRace("us");
         }
       } else {
         if (this.game.state.space_race_ussr < this.game.state.space_race_us) {
           this.updateLog("USSR takes one small step into space...");
-          this.advanceSpaceRace("ussr");
+          this.advanceSpaceRace("ussr", true);
           this.advanceSpaceRace("ussr");
         }
       }
