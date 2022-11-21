@@ -333,7 +333,7 @@ class Registry extends ModTemplate {
       $identifier: identifier,
       $publickey: publickey,
       $unixtime: unixtime,
-      $bid: bid,
+      $bid: Number(bid),
       $bsh: bsh,
       $lock_block: lock_block,
       $sig: sig,
