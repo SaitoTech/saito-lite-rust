@@ -1,0 +1,77 @@
+/* ----------------------------------------------------------------
+font imports
+-----------------------------------------------------------------*/
+
+@font-face {
+  font-family: "visuelt-black";
+  src: url("/saito/fonts/visuelt-black.eot");
+  src: url("/saito/fonts/visuelt-black.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-black.woff2") format("woff2"), url("/saito/fonts/visuelt-black.woff") format("woff"), url("/saito/fonts/visuelt-black.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "visuelt-light";
+  src: url("/saito/fonts/visuelt-light.eot");
+  src: url("/saito/fonts/visuelt-light.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-light.woff2") format("woff2"), url("/saito/fonts/visuelt-light.woff") format("woff"), url("/saito/fonts/visuelt-light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "visuelt-medium";
+  src: url("/saito/fonts/visuelt-medium.eot");
+  src: url("/saito/fonts/visuelt-medium.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-medium.woff2") format("woff2"), url("/saito/fonts/visuelt-medium.woff") format("woff"), url("/saito/fonts/visuelt-medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "p-word";
+  src: url("/saito/fonts/password.ttf") format("truetype");
+}
+
+:root {
+  --saito-font: 'visuelt-light';
+  --saito-gray: #eaeaef45;
+  --saito-green: rgb(47, 188, 47);
+  --saito-primary: #f71f3d;
+  --saito-secondary: #ff8235;
+  --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
+  --saito-tertiary: rgb(234, 234, 239);
+  --saito-header-height: 5em;
+  --saito-width: 1500px;
+  --saito-breakpoint-xl: 1920px;
+  --saito-breakpoint-lg: 1280px;
+  --saito-breakpoint-md: 768px;
+  --saito-breakpoint-sm: 375px;
+  --saito-white: #fff;
+
+
+
+  --saito-blue: #35b2ff;
+  --saito-default-font-color: #555;
+  --saito-paper: #f2f0f0;
+
+  --saito-black: #1c1c23;
+  --saito-black-faded: #1c1c23b5;
+  --saito-box-shadow: 4px 4px 20px #a5a5a5f5;
+  --saito-menu-background: #fff;
+  --saito-profile-background: #fff;
+  --saito-border: #a5a5a5bb;
+  --saito-border-light: #a5a5a533;
+  --saito-chat-background: #fff;
+  --saito-box-padding: 3rem 2rem;
+
+/* 
+  --saito-default-border-radius: .5rem;
+  --saito-secondary-black: #626161;
+  --saito-thumbBG: #f71f3d;
+  --saito-scrollbarBG: #444;
+  --saito-dark-transparent: rgba(0,0,0,0.5);
+  --saito-light-dark-transparent: rgba(0,0,0,0.1);
+  --saito-purple:  #639;
+  --saito-dark-purple:  #47226c; */
+  --saito-left-sidebar-width: 26rem;
+  --saito-main-appspace-width: 70rem;
+}
