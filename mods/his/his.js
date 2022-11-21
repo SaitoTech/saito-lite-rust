@@ -6034,6 +6034,9 @@ console.log("this is a space: " + spacekey)
       type : "normal" , 
       faction : "papacy" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(game_mod, faction) {
+	return 1;
+      },
       onEvent : function(game_mod, faction) {
 
 	let p = game_mod.returnPlayerOfFaction("papacy");
@@ -6139,6 +6142,7 @@ console.log("this is a space: " + spacekey)
       },
 
     }
+
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
       name : "Here I Stand" ,
@@ -6147,6 +6151,65 @@ console.log("this is a space: " + spacekey)
       type : "normal" ,
       faction : "protestant" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(game_mod, faction) {
+	if (game_mod.game.state.leaders.luther == 1) { return 1; }
+	if (Object.keys(game_mod.game.deck[0].discards).length > 0) { return 1; }
+	return 0;
+      },
+      onEvent : function(game_mod, faction) {
+
+	let p = game_mod.returnPlayerOfFaction(faction);
+
+	if (game_mod.game.player === p) {
+
+	  let msg = "Retrieve Card from Discard Pile: ";
+          let html = '<ul>';
+	  for (let key in game_mod.game.deck[0].discards) {
+            html += '<li class="option" id="${key}">${game_mod.game.deck[0].cards[key].name}</li>';
+	  }
+          html += '</ul>';
+
+    	  game_mod.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+	  $('.option').on('click', function () {
+
+	    $('.option').off();
+	    let card = $(this).attr("id");
+
+	    let msg = "Play or Hold Card? ";
+            let html = '<ul>';
+            html += '<li class="option" id="play}">play card</li>';
+            html += '<li class="option" id="hold}">hold card</li>';
+            html += '</ul>';
+
+            game_mod.updateStatusWithOptions(msg, html);
+
+	    $('.option').off();
+	    $('.option').on('click', function () {
+
+	      $('.option').off();
+	      let action = $(this).attr("id");
+
+	      if (action == "play") {
+
+		game_mod.addMove("card\tprotestant\t"+card);
+		game_mod.addMove("here_i_stand_event\t"+card);
+		game_mod.endTurn();
+
+	      } else {
+
+		game_mod.addMove("here_i_stand_event\t"+card);
+		game_mod.endTurn();
+
+	      }
+
+	    });
+	  });
+	}
+
+	return 0;
+      },
       menuOption  :       function(his_self, menu, player) {
         if (menu === "debate") {
           return { faction : "protestant" , event : 'substitute_luther', html : `<li class="option" id="substitute_luther">Here I Stand (assign Luther)</li>` };
@@ -6165,21 +6228,45 @@ console.log("this is a space: " + spacekey)
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "debate") {
-	  his_self.addMove("here_i_stand");
+	  his_self.addMove("here_i_stand_response");
 	  his_seld.endTurn();
         }
         return 0;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
-        if (mv[0] == "here_i_stand") {
-
-          his_self.game.queue.splice(qe, 1);
+        if (mv[0] === "here_i_stand_event") {
 
 	  //
 	  // first option not implemented
 	  //
+          let card = mv[1];
 
+	  if (his_self.game.deck[0].discards[card]) {
+
+	    let p = his_self.returnPlayerOfFaction("protestant");
+
+	    //
+	    // player returns to hand
+	    //
+	    if (his_self.game.player === p) {
+              let fhand_idx = this.returnFactionHandIdx(p, faction);
+	      his_self.game.deck[0].fhand[fhand_idx].push(card);
+	    }
+
+	    //
+	    // everyone removes from discards
+	    //
+	    delete his_self.game.deck[0].discards[card];
+
+	  }
+
+	  return 1;
+	}
+
+        if (mv[0] === "here_i_stand_response") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  //
 	  // second option -- only possible if Wartburg not in-play
@@ -8660,6 +8747,23 @@ alert("removing unit not implement for sea");
 	  return 1;
 	}
 
+
+        if (mv[0] === "card") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let card = mv[2];
+
+	  let p = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player === p) {
+	    this.playerPlayCard(card, p, faction);
+	  }
+	  
+	  return 0;
+
+	}
 
         if (mv[0] === "ops") {
 

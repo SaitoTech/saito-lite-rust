@@ -322,6 +322,23 @@ alert("removing unit not implement for sea");
 	}
 
 
+        if (mv[0] === "card") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let card = mv[2];
+
+	  let p = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player === p) {
+	    this.playerPlayCard(card, p, faction);
+	  }
+	  
+	  return 0;
+
+	}
+
         if (mv[0] === "ops") {
 
 	  this.game.queue.splice(qe, 1);
