@@ -1852,7 +1852,7 @@ class Imperium extends GameTemplate {
       ground_units	: 	["infantry","infantry","pds","spacedock"],
       // is_testing -- you can use this to preseed action cards and objectives
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
-      action_cards	:	["plague", "political-stability"],
+      //action_cards	:	["plague", "political-stability"],
       //objectives	:	["close-the-trap"],
       tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
@@ -4648,9 +4648,9 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
 
         if (imperium_self.game.player != strategy_card_player && imperium_self.game.player == player) {
 
-          let html = '<p>Do you wish to spend 1 strategy token to unexhaust two planet cards? </p><ul>';
+          let html = '<div class="status-message">Do you wish to spend 1 strategy token to unexhaust two planet cards? </div><ul>';
 	  if (imperium_self.game.state.round == 1) {
-            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens.</p><ul>`;
+            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens.</div><ul>`;
           }
           if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
 	    html += '<li class="option" id="yes">Yes</li>';
@@ -4671,7 +4671,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
               let choices_selected = 0;
               let max_choices = 0;
 
-              let html  = "<p>Select planets to unexhaust: </p><ul>";
+              let html  = '<div class="status-message">Select planets to unexhaust: </div><ul>';
               let divname = ".cardchoice";
               for (let z = 0; z < array_of_cards.length; z++) {
                 max_choices++;
@@ -4922,9 +4922,9 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
         if (imperium_self.game.player != strategy_card_player && imperium_self.game.player == player) {
 
-          let html = '<p>Construction has been played. Do you wish to spend 1 strategy token to build a PDS or Space Dock? This will activate the sector (if unactivated): </p><ul>';
+          let html = '<div class="status-message">Construction has been played. Do you wish to spend 1 strategy token to build a PDS or Space Dock? This will activate the sector (if unactivated): </div><ul>';
           if (imperium_self.game.state.round == 1) { 
-	    html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Construction strategy card. You may spend 1 strategy token to build a PDS or Space Dock on a planet you control (this will activate the sector). You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </p><ul>`;
+	    html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Construction strategy card. You may spend 1 strategy token to build a PDS or Space Dock on a planet you control (this will activate the sector). You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </div><ul>`;
 	  }
           if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
             html += '<li class="option" id="yes">Yes</li>';
@@ -5026,7 +5026,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
           let html = '<p>Trade has been played. Do you wish to spend 1 strategy token to refresh your commodities? </p><ul>';
           if (imperium_self.game.state.round == 1) {
-            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Trade strategy card. You may spend 1 strategy token to refresh your faction commodities, which may be exchanged with your neighbours on the board for trade goods. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </p><ul>`;
+            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Trade strategy card. You may spend 1 strategy token to refresh your faction commodities, which may be exchanged with your neighbours on the board for trade goods. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </div><ul>`;
           }
           if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
             html += '<li class="option" id="yes">Yes</li>';
@@ -5121,9 +5121,9 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 	    return 0;
 	  }
 
-          let html = '<p>Do you wish to spend 1 strategy token to produce in your home sector? </p><ul>';
+          let html = '<div class="status-message">Do you wish to spend 1 strategy token to produce in your home sector? </div><ul>';
           if (imperium_self.game.state.round == 1) {
-            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Warfare strategy card. You may spend 1 strategy token to produce in your Homeworld without activating the sector. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </p><ul>`;
+            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Warfare strategy card. You may spend 1 strategy token to produce in your Homeworld without activating the sector. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </div><ul>`;
           }
           if (imperium_self.game.players_info[player-1].strategy_tokens > 0 ) { 
             html += '<li class="option" id="yes">Yes</li>';
@@ -5204,7 +5204,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
           html = '<div class="status-message">Technology has been played. Do you wish to spend 4 resources and a strategy token to research a technology? </div><ul>';
           if (imperium_self.game.state.round == 1) {
-            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Technology strategy card. You may spend 4 resources and a strategy token to gain a permanent new unit or ability. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability?</p><ul>`;
+            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Technology strategy card. You may spend 4 resources and a strategy token to gain a permanent new unit or ability. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability?</div><ul>`;
           }
 
 	  if (
@@ -5270,13 +5270,13 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
 	  resources_to_spend = imperium_self.game.players_info[imperium_self.game.player-1].cost_of_technology_primary;
 
-          html = '<p>Do you wish to spend '+resources_to_spend+' resources to research an additional technology? </p><ul>';
+          html = '<div class="status-message">Do you wish to spend '+resources_to_spend+' resources to research an additional technology? </div><ul>';
 
 	  if (
 	    imperium_self.game.players_info[imperium_self.game.player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
 	    imperium_self.game.players_info[imperium_self.game.player-1].temporary_research_technology_card_must_not_spend_resources == 1
 	  ) { 
-            html = '<p>Do you wish to research an additional technology? </p><ul>';
+            html = '<div class="status-message">Do you wish to research an additional technology? </div><ul>';
 	    resources_to_spend = 0;
 	  }
 
@@ -15400,7 +15400,7 @@ this.game.state.end_round_scoring = 0;
 	//
 	// ENABLE TESTINGvMODE
 	//
-        this.game.queue.push("is_testing");
+        //this.game.queue.push("is_testing");
 
   
   	//
@@ -15667,11 +15667,12 @@ this.game.state.end_round_scoring = 0;
           }
         }
 
-
   	this.game.queue.splice(qe, 1);
   	return 1;
 
       }
+
+
 
       if (mv[0] === "score") {
 

@@ -6,6 +6,7 @@
   grid-gap: 0px;
 }*/
 
+
 .cancel_x {
   opacity: 0.5;
 }
@@ -512,6 +513,7 @@ body {
 .event_tile {
   display: none;
   float: right;
+  width: unset;
 }
 
 

@@ -9,7 +9,7 @@ const saito = require("./../../../lib/saito/saito");
 
 class RedSquareNotification {
 
-  constructor(app, mod, tx=null) {
+  constructor(app, mod, tx = null) {
     this.tx = tx;
   }
 
@@ -21,13 +21,13 @@ class RedSquareNotification {
     let txmsg = this.tx.returnMessage();
 
     if (txmsg.request == "like tweet") {
-let qs = `.likedd-tweet-${txmsg.data.sig}`;
-let obj = document.querySelector(qs);
-if (obj) {
-  obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
-  return;
-} else {
-  html = LikeNotificationTemplate(app, mod, this.tx);
+      let qs = `.likedd-tweet-${txmsg.data.sig}`;
+      let obj = document.querySelector(qs);
+      if (obj) {
+        obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
+        return;
+      } else {
+        html = LikeNotificationTemplate(app, mod, this.tx);
       }
     }
 
@@ -39,33 +39,33 @@ if (obj) {
         let retweet_tx = new saito.default.transaction(JSON.parse(txmsg.data.retweet_tx));
         let retweet_txmsg = retweet_tx.returnMessage();
         html = RetweetNotificationTemplate(app, mod, this.tx, retweet_tx, retweet_txmsg);
-      //
-      // or reply
-      //
+        //
+        // or reply
+        //
       } else {
         html = ReplyNotificationTemplate(app, mod, this.tx, txmsg);
       }
     }
 
     if (this.tx.transaction.ts > mod.last_viewed_notifications_ts) {
-mod.last_viewed_notifications_ts = this.tx.transaction.ts;
-mod.saveRedSquare();
+      mod.last_viewed_notifications_ts = this.tx.transaction.ts;
+      mod.saveRedSquare();
     }
 
     app.browser.addElementToSelector(html, ".redsquare-list");
     this.attachEvents(app, mod);
   }
 
-  attachEvents(app, mod) { 
+  attachEvents(app, mod) {
 
-    let qs = ".notification-item-"+this.tx.transaction.sig;
+    let qs = ".notification-item-" + this.tx.transaction.sig;
     let obj = document.querySelector(qs);
 
     if (obj) {
       obj.onclick = (e) => {
-  let sig = e.currentTarget.getAttribute("data-id");
-  mod.renderParentWithChildren(app, mod, sig);
-}
+        let sig = e.currentTarget.getAttribute("data-id");
+        mod.renderParentWithChildren(app, mod, sig);
+      }
     }
 
   }

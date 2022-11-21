@@ -2,7 +2,7 @@ const LeagueMainContainerTemplate    = require("./container.template");
 const LeagueWizard = require("./../components/league-wizard");
 const ListSelectionModal = require('./../../../../lib/saito/new-ui/modals/list-selection-modal/list-selection-modal');
 const LeagueComponentExistingLeague = require("./../components/existing-league");
-
+const LeagueJoinOverlay = require("./../overlays/join-league-overlay");
 
 class Container {
 
@@ -48,6 +48,17 @@ class Container {
     }else{
       document.getElementById("leagues-for-join").style.display = "none";
     }  
+
+
+    let url = new URL(window.location.href);
+    let league_id = url.searchParams.get("league_id");
+    let action = url.searchParams.get("action");
+
+    if (league_id != null && action == "join") {
+      let league_join_overlay = new LeagueJoinOverlay(app);
+      league_join_overlay.render(app, mod, league_id);
+    }
+
 
     this.attachEvents(app, mod);
     LeagueComponentExistingLeague.attachEvents(app, mod);
