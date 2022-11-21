@@ -80,10 +80,18 @@ class Transaction {
           if (buffer.byteLength === 0) {
             this.msg = {};
           } else {
-            const reconstruct = this.base64ToString(
-              Buffer.from(this.transaction.m).toString("base64")
-            );
-            this.msg = JSON.parse(reconstruct);
+            try {
+              const reconstruct = this.base64ToString(
+                Buffer.from(this.transaction.m).toString("base64")
+              );
+              this.msg = JSON.parse(reconstruct);
+            } catch (error) {
+              console.log("failed parsing the msg as base64. trying as a utf8");
+              console.error(error);
+
+              const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+              this.msg = JSON.parse(reconstruct);
+            }
           }
         } catch (err) {
           console.log("failed converting buffer in tx : ", this.transaction);
