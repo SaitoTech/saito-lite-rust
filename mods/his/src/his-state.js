@@ -418,6 +418,9 @@
       for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
         factions[this.game.players_info[i].factions[ii]] = {
 	  faction : this.game.players_info[i].factions[ii] ,
+	  vp_base : 0 ,
+	  vp_bonus : 0 ,
+	  vp_special : 0 ,
 	  vp : 0 ,
 	  keys : 0 ,
 	  religious : 0 ,
@@ -426,7 +429,6 @@
 	};
       }
     }
-
     //
     // let factions calculate their VP
     //
@@ -436,6 +438,7 @@
       factions[f].vp_special = this.factions[f].calculateSpecialVictoryPoints(this);
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
+
 
     //
     // calculate keys controlled
@@ -481,7 +484,9 @@
       }
     }
 
+    //
     // religious victory
+    //
     if (factions['protestant']) {
       if (factions['protestant'].religious >= 50) {
         factions['papacy'].victory = 1;
@@ -489,20 +494,33 @@
       }
     }
 
+    //
+    // PROCESS BONUS VP
+    //
+    //• Copernicus (2 VP) or Michael Servetus (1 VP) event
+    if (this.game.state.events.michael_servetus) {
+      factions[this.game.state.events.michael_servetus].vp_special++;
+      factions[this.game.state.events.michael_servetus].vp++;
+    }
+    if (this.game.state.events.copernicus) {
+      factions[this.game.state.events.copernicus].vp_special += this.game.state.events.copernicus_vp;
+      factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
+    }
+
+
     // base
 
     // protestant spaces
 
     // bonus vp
-    //• Protestant debater burned (1 per debate rating)
-    //• Papal debater disgraced (1 per debate rating)
+    //• Bible translation completed (1 VP for each language)    ***
+    //• Protestant debater burned (1 per debate rating)         ***
+    //• Papal debater disgraced (1 per debate rating)           ***
     //• Successful voyage of exploration
     //• Successful voyage of conquest
-    //• Copernicus (2 VP) or Michael Servetus (1 VP) event
     //• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
     //• War Winner marker received during Peace Segment
     //• Master of Italy VP marker received during Action Phase
-    //• Bible translation completed (1 VP for each language)
 
     return factions;
 
@@ -1201,6 +1219,15 @@ console.log("this is a space: " + spacekey)
     return false;
   }
 
+  returnSpacesWithFilter(filter_func) {
+    let spaces = [];
+    for (let spacekey in this.game.spaces) {
+      if (filter_func(spacekey) == 1) { spaces.push(spacekey); }
+    }
+    return spaces;
+  }
+
+
   returnNumberOfUncommittedDebaters(faction) {
     let num = 0;
     for (let i = 0; i < this.game.state.debaters.length; i++) {
@@ -1340,6 +1367,13 @@ console.log("this is a space: " + spacekey)
     state.saint_peters_cathedral['state'] = 0;
     state.saint_peters_cathedral['vp'] = 0;    
 
+    state.papal_debaters_disgraced_vp = 0;
+    state.protestant_debaters_burned_vp = 0;
+
+    state.events.michael_servetus = "";  // faction that gets VP
+    state.events.copernicus = "";        // faction that gets VP
+    state.events.copernicus_vp = 0;     // 1 or 2 VP
+
     state.french_chateaux_vp = 0;
 
     state.tmp_reformations_this_turn = [];
@@ -1394,8 +1428,7 @@ console.log("this is a space: " + spacekey)
     state.events.papacy_may_found_jesuit_universities = 0;
     state.events.schmalkaldic_league = 0;
     state.events.edward_vi_born = 0;
-
-
+    state.events.wartburg = 0;
 
     return state;
 
@@ -4182,47 +4215,59 @@ console.log("this is a space: " + spacekey)
         if (mv[0] == "here_i_stand") {
 
           his_self.game.queue.splice(qe, 1);
-	  his_self.updateLog("Luther accepts the Debate Challenge - Here I Stand");
 
 	  //
-	  // existing protestant debater is committed
+	  // first option not implemented
 	  //
-	  for (let i = 0; i < his_self.game.state.debaters.length; i++) {
-	    let d = his_self.game.state.debaters[i];
-	    if (this.game.state.theological_debate.attacker === "papacy") {
-	      if (this.game.state.theological_debate.round == 1) {
-	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_defender_debater) {
-		  his_self.commitDebater(d.key);
+
+
+	  //
+	  // second option -- only possible if Wartburg not in-play
+	  //
+	  if (his_self.game.state.events.wartburg == 0) {
+
+	    his_self.updateLog("Luther accepts the Debate Challenge - Here I Stand");
+
+	    //
+	    // existing protestant debater is committed
+	    //
+	    for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+	      let d = his_self.game.state.debaters[i];
+	      if (this.game.state.theological_debate.attacker === "papacy") {
+	        if (this.game.state.theological_debate.round == 1) {
+	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_defender_debater) {
+	  	    his_self.commitDebater(d.key);
+	          }
+	        } else {
+	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_defender_debater) {
+		    his_self.commitDebater(d.key);
+	          }
 	        }
 	      } else {
-	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_defender_debater) {
-		  his_self.commitDebater(d.key);
-	        }
-	      }
-	    } else {
-	      if (this.game.state.theological_debate.round == 1) {
-	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_attacker_debater) {
-		  his_self.commitDebater(d.key);
-	        }
-	      } else {
-	        if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_attacker_debater) {
-		  his_self.commitDebater(d.key);
+	        if (this.game.state.theological_debate.round == 1) {
+	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round1_attacker_debater) {
+		    his_self.commitDebater(d.key);
+	          }
+	        } else {
+	          if (his_self.game.state.debaters[i].key === his_self.game.state.theological_debate.round2_attacker_debater) {
+		    his_self.commitDebater(d.key);
+	          }
 	        }
 	      }
 	    }
-	  }
 
-	  if (his_self.game.state.theological_debate.attacker === "papacy") {
-	    if (his_self.game.state.theological_debate.round == 1) {
-              his_self.game.state.theological_debate.round1_defender_debater = "luther-debater";
+	    if (his_self.game.state.theological_debate.attacker === "papacy") {
+	      if (his_self.game.state.theological_debate.round == 1) {
+                his_self.game.state.theological_debate.round1_defender_debater = "luther-debater";
+	      } else {
+                his_self.game.state.theological_debate.round2_defender_debater = "luther-debater";
+	      }
 	    } else {
-              his_self.game.state.theological_debate.round2_defender_debater = "luther-debater";
-	    }
-	  } else {
-	    if (his_self.game.state.theological_debate.round == 1) {
-              his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
-	    } else {
-              his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
+	      if (his_self.game.state.theological_debate.round == 1) {
+                his_self.game.state.theological_debate.round1_attacker_debater = "luther-debater";
+	      } else {
+                his_self.game.state.theological_debate.round2_attacker_debater = "luther-debater";
+	      }
 	    }
 	  }
 
@@ -5164,6 +5209,67 @@ console.log("this is a space: " + spacekey)
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player, card="") {
+        if (menu == "event") {
+
+	  let p = his_self.returnPlayerOfFaction();
+
+          if (his_self.game.state.leaders.luther !== 1) { return {}; }
+          if (card === "") { return {}; }
+          if (!his_self.game.deck[0]) { return {}; }
+
+	  //
+	  // card evented
+	  //
+	  let cardobj = his_self.game.deck[0].cards[card];
+
+	  //
+	  // cannot cancel non-papal home cards
+	  //
+	  if (card === "001" || card == "002" || card == "003" || card == "004") { return {}; }
+
+	  //
+	  // cannot cancel these three types of cards
+	  //
+	  if (cardobj.type === "response") { return {}; }
+	  if (cardobj.type === "mandatory") { return {}; }
+	  if (cardobj.type === "combat") { return {}; }
+	  
+          return { faction : "protestant" , event : 'wartburg', html : `<li class="option" id="wartburg">jwartburg (protestant)</li>` };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "event") {
+alert("Wartburg Triggers");
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "event") {
+          his_self.addMove("wartburg");
+	  his_self.endTurn();
+	  his_self.updateStatus("wartburg acknowledge");
+        }
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "wartburg") {
+
+	  //
+	  // 
+	  //
+	  his_self.game.state.events.wartburg = 1;
+	  his_self.commitDebater("protestant", "luther-debater");
+
+	  his_self.updateLog("Wartburg Updated!");
+          his_self.game.queue.splice(qe, 1);
+
+	  return 1;
+
+        }
+      },
     }
     deck['038'] = { 
       img : "cards/HIS-038.svg" , 
@@ -5188,7 +5294,41 @@ console.log("this is a space: " + spacekey)
       turn : 3 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+
+	if (player == game_mod.game.player) {
+
+	  let powers = game_mod.returnImpulseOrder();
+	  let msg = "Declare War on which Power?";
+
+          let html = '<ul>';
+	  for (let i = 0; i < powers.length; i++) {
+            html += '<li class="option" id="${powers[i]}">${powers[i]}</li>';
+	  }
+          html += '</ul>';
+
+    	  game_mod.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+	  $('.option').on('click', function () {
+
+	    $('.option').off();
+	    let action = $(this).attr("id");
+
+            game_mod.addMove("ops\t"+faction+"\t"+"004"+"\t"+2);
+            game_mod.addMove("declare_war\t"+faction+"\t"+action);
+	    game_mod.endTurn();
+
+	  });
+
+          return 0;
+
+        }
+
+	return 1;
+      },
     }
+
     deck['041'] = { 
       img : "cards/HIS-041.svg" , 
       name : "Marburg Colloquy" ,
@@ -5244,6 +5384,89 @@ console.log("this is a space: " + spacekey)
       turn : 5 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+        let home_spaces = his_self.returnSpacesWithFilter(
+	  function(spacekey) {
+	    if (his_self.game.spaces[spacekey].home === faction) {
+	    }
+	  }
+	);
+
+	let total = home_spaces.length;
+	let count = 0;
+	let double_vp = 0;
+
+	for (let i = 0; i < home_spaces.length; i++) {
+	  if (his_self.game.spaces[home_spaces[i]].religion === "protestant") { count++; }
+	}
+
+	if (count >= (total/2)) {
+	  double_vp = 1;
+	}
+
+console.log(faction + " has " + total + " home spaces, protestant count is " + count + " for " + (double_vp+1) + " VP");
+
+	//
+	//
+	//
+	if (double_vp == 1) {
+
+	  // faction will gain when counted
+	  his_self.game.state.events.copernicus = faction;
+	  his_self.game.state.events.copernicus_vp = 2;
+	  his_self.displayVictoryTrack();
+
+	} else {
+
+	  his_self.game.state.events.copernicus = faction;
+	  his_self.game.state.events.copernicus_vp = 2;
+
+	  let p = his_self.returnPlayerOfFaction(faction);
+
+	  //
+	  // player processes and adds move / ends turn
+	  //
+	  if (his_self.game.player == p) {
+
+	    let msg = "Which would you prefer?";
+    	    let html = '<ul>';
+                html += '<li class="option" id="draw">draw 1 card</li>';
+                html += '<li class="option" id="discard">protestants discard</li>';
+    		html += '</ul>';
+
+    	    game_mod.updateStatusWithOptions(msg, html);
+
+	    $('.option').off();
+	    $('.option').on('click', function () {
+	      let action = $(this).attr("id");
+
+	      if (action === "draw") {
+
+	 	//	
+	 	// deal a card	
+	 	//
+	        let cardnum = 1;
+
+                his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
+                his_self.addMove("DEAL\t1\t"+p+"\t"+(cardnum));
+		his_self.endTurn();
+
+	      } else {
+
+                his_self.addMove("discard_random\tprotestant\t1");
+		his_self.endTurn();
+
+	      }
+	    });
+
+	  }
+	}
+
+	return 0;
+
+      },
+
     }
     deck['048'] = { 
       img : "cards/HIS-048.svg" , 
@@ -5276,6 +5499,13 @@ console.log("this is a space: " + spacekey)
       turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, faction) {
+
+	game_mod.updateLog(faction + " gets 1 VP from Michael Servetus");
+	game_mod.game.state.events.michael_servetus = faction;
+	game_mod.game.queue.push("discard\tprotestant\tcard");
+
+      }
     }
     deck['052'] = { 
       img : "cards/HIS-052.svg" , 
@@ -5388,6 +5618,29 @@ console.log("this is a space: " + spacekey)
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	if (his_self.isDebaterComitted("luther-debater")) {
+
+	  alert("Luther is already committed -- skipping A Mighty Fortress");
+
+	} else {
+
+	  player = game_mod.returnPlayerOfFaction("protestant");
+
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+          his_self.game.queue.push("ACKNOWLEDGE\tThe Protestants - A Mighty Fortress - 6 Reformation Attempts in German Zone");
+	  his_self.commitDebater("protestant", "luther-debater");
+
+	}
+
+	return 1;
+      },
     }
     deck['066'] = { 
       img : "cards/HIS-066.svg" , 
@@ -6044,4 +6297,5 @@ console.log("this is a space: " + spacekey)
     return diplomacy;
 
   }
+
 

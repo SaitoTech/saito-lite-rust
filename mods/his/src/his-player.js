@@ -166,7 +166,6 @@
     this.game.state.tmp_papacy_may_specify_debater = 0;
     this.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
-
     for (let s in this.game.spaces) {
       if (this.game.spaces[s].besieged == 2) {
 	this.game.spaces[s].besieged = 1;
@@ -618,7 +617,6 @@
 
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-
     this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
     this.attachCardboxEvents(function(card) {
       this.playerPlayCard(card, this.game.player, faction);
@@ -710,8 +708,10 @@
     //
     // mandatory event cards effect first, then 2 OPS
     //
+
     if (this.deck[card].type === "mandatory") {
       // event before ops
+      this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
     } else {
@@ -858,7 +858,7 @@ console.log("OPS ARE ZERO!");
   }
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
-    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + card + " for the event\tevent\tcard");
+    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + card + " for the event\tevent\t"+card);
     this.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
@@ -2328,7 +2328,7 @@ return;
       function(spacekey) {
 
 	his_self.removeUnit(faction, spacekey, unittype);
-        his_self.addMove("remove\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);	
+        his_self.addMove("remove_unit\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);	
 
 	if (num == 1) {
           his_self.endTurn();

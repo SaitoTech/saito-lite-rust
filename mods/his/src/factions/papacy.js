@@ -62,10 +62,18 @@
 
       },
       calculateBonusVictoryPoints  :    function(game_mod) {
-        return this.bonus_vp;
+        return 0;
       },
       calculateSpecialVictoryPoints  :  function(game_mod) {
-        return this.special_vp;
+
+	// protestant spaces track
+	let base = game_mod.returnProtestantSpacesTrackVictoryPoints().papacy;
+
+	// saint peters cathedral
+ 	base += game_mod.game.state.saint_peters_cathedral['vp'] = 0;
+
+        return base;
+
       },
     });
  

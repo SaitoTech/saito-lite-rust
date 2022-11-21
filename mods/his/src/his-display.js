@@ -83,8 +83,6 @@
 
   displayTheologicalDebater(debater, attacker=true) {
 
-console.log("DEBATER: " + debater);
-
     let tile_f = "/his/img/tiles/debaters/" + this.debaters[debater].img;
     let tile_b = tile_f.replace('.svg', '_back.svg');
 
@@ -133,7 +131,7 @@ console.log("DEBATER: " + debater);
     let cid = "s" + num_protestant_spaces;
 
     let html = `
-      <div class="religious_conflict_sheet" id="religious_conflict_sheet" style="background-image: url('/his/img/religious.jpg')">
+      <div class="religious_conflict_sheet" id="religious_conflict_sheet" style="background-image: url('/his/img/reference/religious.jpg')">
 	<div class="religious_conflict_sheet_tile" id="religious_conflict_sheet_tile"></div>
 	<div class="papal_debaters"></div>
 	<div class="lutheran_debaters"></div>
@@ -171,6 +169,41 @@ console.log("DEBATER: " + debater);
 
   }
 
+  returnProtestantSpacesTrackVictoryPoints() {
+
+    let num_protestant_spaces = 0;
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion === "protestant") {
+        num_protestant_spaces++;
+      }
+    }
+    if (num_protestant_spaces > 50) { num_protestant_spaces = 50; }
+
+    let x = [];
+    for (let i = 0; i < 51; i++) { 
+
+      x[i] = {}; x[i].protestant = 0; x[i].papacy = 15;
+
+      if (i >= 4) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 7) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 10) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 14) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 17) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 20) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 24) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 27) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 30) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 34) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 37) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 40) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 44) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 47) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 50) { x[i].protestant+=100; x[i].papacy--; }
+    }
+
+    return x[num_protestant_spaces];
+
+  }
 
 
   displayFactionSheet(faction) {
@@ -1059,15 +1092,25 @@ console.log("nk: " + key);
 
   displayVictoryTrack() {
 
+console.log("!!!!!!!!!!!!!!!!!!!!");
+console.log("!!!!! VP TRACK !!!!!");
+console.log("!!!!!!!!!!!!!!!!!!!!");
+
     let factions_and_scores = this.calculateVictoryPoints();
+
+console.log(JSON.stringify(factions_and_scores));
+
     let x = this.returnVictoryPointTrack();
 
     for (f in factions_and_scores) {
-      let total_vp = factions_and_scores[f].vp
+      let total_vp = factions_and_scores[f].vp;
+console.log("total VP: " + total_vp);
+
       let ftile = f + "_vp_tile";
+console.log("for ftile: " + ftile);
       obj = document.getElementById(ftile);
-      obj.style.left = x[total_vp].left + "px";
-      obj.style.top = x[total_vp].top + "px";
+      obj.style.left = x[total_vp.toString()].left + "px";
+      obj.style.top = x[total_vp.toString()].top + "px";
       obj.style.display = "block";
     }
 

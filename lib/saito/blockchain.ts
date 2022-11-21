@@ -392,6 +392,8 @@ class Blockchain {
     //console.log("blockchain.addBlockSuccess : ", block.returnHash());
     this.app.blockring.print();
 
+console.log("ADD BLOCK SUCCESS!");
+
     let block_id = block.returnId();
 
     //

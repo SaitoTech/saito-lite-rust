@@ -100,7 +100,7 @@ this.game.queue.push("is_testing");
 
 	}
 
-	if (mv[0] === "remove") {
+	if (mv[0] === "remove_unit") {
 
 	  let land_or_sea = mv[1];
 	  let faction = mv[2];
@@ -312,6 +312,7 @@ alert("removing unit not implement for sea");
 
 	  let player = parseInt(mv[1]);
 	  let card = mv[2];
+	  let faction = mv[3];
 
 	  this.game.queue.splice(qe, 1);
 
@@ -1326,6 +1327,8 @@ console.log(JSON.stringify(mv));
 
 	  let msg = mv[1];
 	  let stage = mv[2];
+	  let extra = "";
+	  if (mv[3]) { extra = mv[3]; }
 
 	  //
 	  // this is run when players have the opportunity to counter
@@ -1349,8 +1352,8 @@ console.log(JSON.stringify(mv));
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
 console.log(i + " --- " + z[i].name);
-            if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
-              let x = z[i].menuOption(this, stage, this.game.player);
+            if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
+              let x = z[i].menuOption(this, stage, this.game.player, extra);
               html += x.html;
 	      z[i].faction = x.faction; // add faction
 	      menu_index.push(i);
@@ -3795,6 +3798,20 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 
         }
 
+
+	if (mv[0] === "declare_war") {
+
+	  let f1 = mv[1];
+	  let f2 = mv[2];
+
+  	  this.setEnemies(f1, f2);
+	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+
+	}
+
+
         if (mv[0] === "card_draw_phase") {
 
 	  //
@@ -3828,6 +3845,11 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  // new cards this turn
 	  //
 	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
+
+console.log("CARDS IN DECK: ");
+for (let key in new_cards) {
+  console.log(key);
+}
 
 	  
 	  //
@@ -3925,6 +3947,105 @@ console.log("----------------------------");
 	  this.game.deck[0].cards['008'] = d['008'];
 	  this.game.queue.splice(qe, 1);
           return 1;
+	}
+
+	// removes from game
+	if (mv[0] === "remove") {
+
+	  let faction = mv[1];
+	  let card = mv[2];
+
+	  this.game.queue.splice(qe, 1);
+
+	  this.game.updateLog("removing " + this.game.deck[0].cards[card].name + " from deck");
+	  this.removeCardFromGame(card);
+
+	  return 1;
+
+	}
+
+	// random card discard
+	if (mv[0] === "random_discard") {
+
+	  let faction = mv[1];
+	  let num = mv[2];
+	  let player_of_faction = this.returnPlayerOfFaction(faction);
+
+	  this.game.queue.splice(qe, 1);
+
+
+	  return 0;
+	}
+
+	// moves into discard pile
+	if (mv[0] === "discard") {
+
+	  let faction = mv[1];
+	  let card = mv[2];
+	  let player_of_faction = this.returnPlayerOfFaction(faction);
+
+	  //
+	  // move into discards
+	  //
+	  this.game.deck[0].discards[card] = this.game.deck[0].cards[card];
+
+	  //
+	  // and remove from hand
+	  //
+	  if (this.game.player === player_of_faction) {
+            let fhand_idx = this.returnFactionHandIdx(player_of_faction, faction);
+	    for (let i = 0; i < this.game.deck[0].fhands[fhand_idx].length; i++) {
+	      if (this.game.deck[0].fhands[fhand_idx][i] === card) {
+		this.game.deck[0].fhands[fhand_idx].splice(i, 1);
+	      }
+	    }
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
+	// discards N cards from faction hand
+	if (mv[0] === "discard_random") {
+
+	  let faction = mv[1];
+	  let num = mv[2];
+	  let player_of_faction = this.returnPlayerOfFaction(faction);
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (type == "card") {
+	    if (this.game.player === player_of_faction) {
+
+              let fhand_idx = this.returnFactionHandIdx(player_of_faction, faction);
+	      let num_cards = this.game.deck[0].fhands[fhand_idx].length;
+	      let discards = [];
+
+	      // cannot discard more than maximum
+	      if (num_cards < num) { num = num_cards; }
+
+	      for (let z = 0; z < num; z++) {
+	        let roll = this.rollDice(num_cards) - 1;
+		while (discards.includes(roll)) {
+	          roll = this.rollDice(num_cards) - 1;
+		}
+		discards.push(roll);
+	      }
+
+	      discards.sort();
+
+	      for (let zz = 0; zz < discards.length; zz++) {
+	        this.addMove("discard\t"+faction+"\t"+this.game.deck[0].fhand_idx[discards[zz]]);
+	      }
+	      this.endTurn();
+
+	    }
+	  }
+
+	  return 0;
+
 	}
 
         if (mv[0] === "play") {
