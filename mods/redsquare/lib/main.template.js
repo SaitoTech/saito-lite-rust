@@ -6,11 +6,9 @@ module.exports = (app, mod) => {
       <div class="saito-sidebar left">
         Left sidebar
       </div>
-      
-      <div class="saito-main appspace" id="redsquare-appspace">
+      <div class="saito-main">
         Main Container
       </div>
-      
       <div class="saito-sidebar right">
         Right sidebar
       </div>

@@ -51,12 +51,15 @@ class RedSquare extends ModTemplate {
   initialize(app) {
 
     super.initialize(app);
+
     this.load();
 
     this.header = new SaitoHeader(app, this);
     this.main = new SaitoMain(app, this);
-    this.addComponent(this.main);
+
     this.addComponent(this.header);
+    this.addComponent(this.main);
+
   }
 
 
@@ -66,11 +69,6 @@ class RedSquare extends ModTemplate {
   addTweet(tx) {
   }
 
-  loadTweets() {
-  }
-
-  loadNotifications() {
-  }
 
   render(app, mod) {
     super.render(app, this);
