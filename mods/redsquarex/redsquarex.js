@@ -1,12 +1,13 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
+const RedSquareMain = require('./lib/main');
 
 /*
 const redsquareHome = require("./index");
 const InviteTemplate = require('../../lib/templates/invitetemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const SaitoMobileBar = require('../../lib/saito/new-ui/saito-mobile-bar/saito-mobile-bar')
-const RedSquareMain = require('./lib/main');
+
 const Tweet = require('./lib/tweet');
 const JSON = require("json-bigint");
 const fetch = require('node-fetch');
