@@ -545,7 +545,7 @@ console.log("done add block success...");
   async deleteBlocks(delete_block_id: bigint) {
     let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
     if (this.debugging) {
-      console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
+      //console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
     }
     for (let i = 0; i < block_hashes.length; i++) {
       if (this.blocks.has(block_hashes[i])) {
@@ -558,7 +558,7 @@ console.log("done add block success...");
 
   async downgradeBlockchainData() {
     if (this.debugging) {
-      console.debug("blockchain.downgradeBlockchainData");
+      //console.debug("blockchain.downgradeBlockchainData");
     }
     //
     // downgrade blocks still on the chain
@@ -665,7 +665,7 @@ console.log("done add block success...");
   // deletes a single block
   async deleteBlock(deletedBlockId: bigint, deletedBlockHash: string) {
     if (this.debugging) {
-      console.debug("blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash);
+      //console.debug("blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash);
     }
     //
     // ask block to delete itself / utxo-wise
@@ -882,7 +882,7 @@ console.log("done add block success...");
         return this.blocks.get(block_hash);
       }
       if (this.debugging) {
-        console.debug(`loading block from disk : ${block_hash}`);
+        //console.debug(`loading block from disk : ${block_hash}`);
       }
       let block = await this.app.storage.loadBlockByHash(block_hash);
       if (!block) {
