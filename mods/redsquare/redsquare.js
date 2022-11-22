@@ -1,19 +1,5 @@
 const saito = require("./../../lib/saito/saito");
-const redsquareHome = require("./index");
-const InviteTemplate = require('../../lib/templates/invitetemplate');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
-const SaitoMobileBar = require('../../lib/saito/new-ui/saito-mobile-bar/saito-mobile-bar')
-const RedSquareMain = require('./lib/main');
-const Tweet = require('./lib/tweet');
-const JSON = require("json-bigint");
-const fetch = require('node-fetch');
-const HTMLParser = require('node-html-parser');
-const prettify = require('html-prettify');
-const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
-const PostTweet = require("./lib/post");
-const { convertCompilerOptionsFromJson } = require("typescript");
-//const { displace } = require("jimp/types");
 
 class RedSquare extends ModTemplate {
 
@@ -25,36 +11,16 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
-    this.saito_loader = new SaitoLoader(app, this);
     this.redsquare = {}; // where settings go, saved to options file
+    this.icon_fa = "fas fa-square-full";
 
-    this.sqlcache_enabled = 1;
-
-    this.txmap = {}; // associative array sigs => txs
     this.tweets = [];
-    this.newTweets = []; // tmp holder for new tweets before renering
-    this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
-    this.ntfs_num = 0;
-    this.max_ntfs_num = 50
-    this.ntfs_counter = {}
-    // "main" or sig if viewing page-specific
-    this.viewing = "feed";
-
-
-    this.last_viewed_notifications_ts = 0;
-    this.unviewed_notifications = 0;
-
-    this.results_per_page = 10;
-    this.page_number = 1;
+    this.notifications = [];
 
     this.styles = [
       '/saito/saito.css',
-      '/redsquare/css/redsquare-main.css',
+      '/redsquare/style.css',
     ];
-    this.ui_initialized = false;
-
-    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
-    this.icon_fa = "fas fa-square-full";
 
     this.social = {
       twitter_card: "summary",
@@ -73,7 +39,6 @@ class RedSquare extends ModTemplate {
       og_image_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
       og_image_secure_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"
     }
-    console.log(this.social.twitter_card);
 
     return this;
 
