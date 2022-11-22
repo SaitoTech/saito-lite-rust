@@ -20,11 +20,11 @@
 .saito-menu>ul>li:hover,
 .saito-menu>ul>li:hover>i{
     background-color: var(--saito-primary);
-    color: var(--saito-white);
+    color: var(--saito-background-color);
 }
 
 .saito-menu>ul>li:hover p  {
-    background-color: var(--saito-white);
+    background-color: var(--saito-background-color);
     color: var(--saito-default-font-color);
    
 }
@@ -46,7 +46,7 @@
     height: 2rem;
     border-radius: 0.5rem;
     background-color: var(--saito-primary);
-    color: var(--saito-white);
+    color: var(--saito-background-color);
     position: absolute;
     bottom: 25px;
     left: 3.5rem;

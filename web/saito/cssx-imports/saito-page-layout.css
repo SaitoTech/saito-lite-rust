@@ -19,27 +19,26 @@
 }
 
 .saito-main {
-    background-color: var(--saito-white);
+    background-color: var(--saito-background-color);
     padding: 2rem 0;
 }
 
 .saito-sidebar {
-    background-color: var(--saito-white);
+    background-color: var(--saito-background-color);
     top: calc(var(--saito-header-height) + 1rem);
 }
 
 .saito-sidebar.left {
-    position: fixed;
+    /* position: fixed; */
     width: inherit;
 }
 
 .saito-sidebar.right {
-    min-width: 26rem;
     padding: 1rem;
-    background-color: var(--saito-white);
+    background-color: var(--saito-background-color);
     grid-column-start: 3;
     grid-row: 1/2;
-    background-color: var(--saito-white);
+    background-color: var(--saito-background-color);
 }
 
 .saito-sidebar.right.mobile {
