@@ -3,18 +3,20 @@ import { Saito } from "../../apps/core";
 import * as JSON from "json-bigint";
 import Hop from "./hop";
 import Transaction from "./transaction";
+import { MessageType } from "./networkapi";
 
 class Peer {
   public keep_alive_timer: any;
   public app: Saito;
   public id: number;
-  public uses_stun  = false;
-
-  public stun  = {
+  public challenge: any;
+  public initiated_handshake: boolean;
+  public uses_stun = false;
+  public stun = {
     publickey: "",
     data_channel: null,
-    peer_connection: null
-  }
+    peer_connection: null,
+  };
 
   public peer = {
     host: "localhost",
@@ -23,6 +25,7 @@ class Peer {
     version: "",
     protocol: "http",
     synctype: "full", // full : full blocks
+    block_fetch_url: "",
     services: [],
     // lite : lite blocks
     endpoint: {
@@ -31,7 +34,7 @@ class Peer {
       publickey: "",
       protocol: "http",
     },
-  
+
     receiveblks: 1,
     receivetxs: 1,
     receivegts: 1,
@@ -51,6 +54,7 @@ class Peer {
 
     this.id = new Date().getTime();
     this.keep_alive_timer = null;
+    this.initiated_handshake = false;
 
     if (peerjson !== "") {
       try {
@@ -75,8 +79,14 @@ class Peer {
     const hop = new Hop();
     hop.from = this.app.crypto.fromBase58(this.app.wallet.returnPublicKey());
     hop.to = this.app.crypto.fromBase58(this.returnPublicKey());
-    hop.sig = this.app.crypto.signMessage(hop.to, this.app.wallet.returnPrivateKey());
+    let buffer = Buffer.concat([
+      Buffer.from(tx.transaction.sig, "hex"),
+      Buffer.from(hop.to, "hex"),
+    ]);
+    //let hash = this.app.crypto.hash(buffer);
 
+    hop.sig = this.app.crypto.signBuffer(buffer, this.app.wallet.returnPrivateKey());
+    //console.debug("addPathToTransaction - Tx sign : " + tx.transaction.sig + ", hop from : " + hop.from + ", hop to : " + hop.to + ", : hash :" + this.app.crypto.hash(buffer) + ", hop sign : " + hop.sig);
     tmptx.transaction.path.push(hop);
     return tmptx;
   }
@@ -110,7 +120,7 @@ class Peer {
       }
       return false;
     }
-   
+
   }
 
   //
@@ -139,7 +149,7 @@ class Peer {
   }
 
   //
-  // keepAliverec
+  // keepAlive
   //
   keepAlive() {
     if (this.keep_alive_timer != null) {
@@ -159,67 +169,65 @@ class Peer {
     return this.peer.publickey;
   }
 
-
   ////////////////
   // NETWORKING //
   ////////////////
-
   async sendResponse(message_id, data) {
-    let channel = this.uses_stun? this.stun.data_channel : this.socket
-    await this.app.networkApi.sendAPIResponse(channel, "RESULT__", message_id, data);
+    let channel = this.uses_stun? this.stun.data_channel : this.socket;
+    await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
   }
 
-  sendRequest( message: string, data: any = "" ) {
-
+  sendRequest(message: string, data: any = "") {
+    let socket = this.socket;
+    if (this.uses_stun) {
+      socket = this.stun.data_channel;
+    }
     //
     // respect prohibitions
     //
+    // console.debug("peer.sendRequest : " + message);
     // block as Block.serialize(BlockType.Header)
 
-    let channel = this.uses_stun? this.stun.data_channel : this.socket
-
     if (message === "SNDBLOCK") {
-      this.app.networkApi.send(channel, "SNDBLOCK", data);
+      this.app.networkApi.send(socket, MessageType.Block, data);
       return;
     }
     // block as block_hash
     if (message === "SNDBLKHH") {
-      this.app.networkApi.send(channel, "SNDBLKHH", data);
+      this.app.networkApi.send(socket, MessageType.BlockHeaderHash, data);
       return;
     }
     // transaction as Transaction.serialize()
     if (message === "SNDTRANS") {
-      this.app.networkApi.send(channel, "SNDTRANS", data);
+      this.app.networkApi.send(socket, MessageType.Transaction, data);
       return;
     }
     // transaction as Transaction.serialize()
     if (message === "REQGSTCN") {
-      this.app.networkApi.send(channel, "REQGSTCN", data);
+      this.app.networkApi.send(socket, MessageType.GhostChainRequest, data);
       return;
     }
     if (message === "REQCHAIN") {
-      this.app.networkApi.send(channel, "REQCHAIN", data);
+      this.app.networkApi.send(socket, MessageType.BlockchainRequest, data);
       return;
     }
     if (message === "SPVCHAIN") {
-      this.app.networkApi.send(channel, "SPVCHAIN", data);
+      this.app.networkApi.send(socket, MessageType.SPVChain, data);
       return;
     }
     if (message === "GSTCHAIN") {
-      this.app.networkApi.send(channel, "GSTCHAIN", data);
+      this.app.networkApi.send(socket, MessageType.GhostChain, data);
       return;
     }
     // json list of services running on server
     if (message === "SERVICES") {
-      this.app.networkApi.send(channel, "SERVICES", data);
+      this.app.networkApi.send(socket, MessageType.Services, data);
       return;
     }
     if (message === "PINGPING") {
-      this.app.networkApi.send(channel, "PINGPING", data);
+      this.app.networkApi.send(socket, MessageType.Ping, data);
       return;
     }
- 
-
 
     //
     // alternately, we have a legacy transmission format, which is sent
@@ -237,30 +245,28 @@ class Peer {
     //   this.sendRequestWithCallbackAndRetry(message, data);
     // }
 
-    if(this.uses_stun && this.stun.data_channel.readyState === "open"){
-      this.app.networkApi.sendAPICall(this.stun.data_channel, "SENDMESG", buffer).then(() => {
+    if (this.uses_stun && this.stun.data_channel.readyState === "open") {
+      this.app.networkApi.sendAPICall(this.stun.data_channel, MessageType.ApplicationMessage, buffer).then(() => {
       });
-    }else {
+    } else {
       if (this.socket && this.socket.readyState === this.socket.OPEN) {
-        this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer).then(() => {
+        this.app.networkApi.sendAPICall(this.socket, MessageType.ApplicationMessage, buffer).then(() => {
         });
       } else {
         this.sendRequestWithCallbackAndRetry(message, data);
       }
-    
+
     }
 
-
-    
-   
-    
-
   }
+
+
+
 
   //
   // new default implementation
   //
-  sendRequestWithCallback(message, data: any = "", callback = null, loop = true) {
+  sendRequestWithCallback(message: string, data: any = "", callback = null, loop = true) {
     //console.log("sendRequestWithCallback : " + message);
     //
     // respect prohibitions
@@ -286,7 +292,7 @@ class Peer {
       let data_channel = this.stun.data_channel
       if (data_channel && data_channel.readyState === "open") {
         this.app.networkApi
-          .sendAPICall(data_channel, "SENDMESG", buffer)
+          .sendAPICall(data_channel, MessageType.ApplicationMessage, buffer)
           .then((response: Buffer) => {
             if (callback) {
               let content = Buffer.from(response).toString("utf-8");
@@ -312,7 +318,7 @@ class Peer {
     }else if(this.socket){
       if (this.socket && this.socket.readyState === this.socket.OPEN) {
         this.app.networkApi
-          .sendAPICall(this.socket, "SENDMESG", buffer)
+          .sendAPICall(this.socket, MessageType.ApplicationMessage, buffer)
           .then((response: Buffer) => {
             if (callback) {
               let content = Buffer.from(response).toString("utf-8");
@@ -337,8 +343,8 @@ class Peer {
       }
     }
 
-   
- 
+
+
   }
 
   //
@@ -354,6 +360,7 @@ class Peer {
     initialDelay = 1000,
     delayFalloff = 1.3
   ) {
+    //console.debug("sendRequestWithCallbackAndRetry");
     const callbackWrapper = (res) => {
       if (!res.err) {
         if (callback != null) {

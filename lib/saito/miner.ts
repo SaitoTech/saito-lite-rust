@@ -74,7 +74,7 @@ class Miner {
 
   async mine() {
     if (this.mining_active) {
-      console.log("mining loop...");
+      // console.debug("mining loop...");
       const random_hash = this.app.crypto.generateRandomNumber();
       if (
         this.app.goldenticket.validate(

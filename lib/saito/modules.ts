@@ -56,7 +56,7 @@ class Mods {
     }
 
     for (let i = 0; i < this.mods.length; i++) {
-      if (message.module != undefined) {
+      if (!!message && message.module != undefined) {
         if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);

@@ -30,6 +30,7 @@ class Server {
     publickey: "",
     protocol: "",
     name: "",
+    block_fetch_url : "",
     endpoint: {
       host: "",
       port: 0,
@@ -71,7 +72,8 @@ class Server {
     });
 
     server.on("connection", (wsocket, request) => {
-      this.app.network.addRemotePeer(wsocket);
+      //console.log("new connection received by server", request);
+      this.app.network.addRemotePeer(wsocket).then(r => {return;});
     });
   }
 
@@ -137,6 +139,15 @@ class Server {
       this.app.storage.saveOptions();
     }
 
+    let url = this.server.endpoint.protocol;
+    url += "://";
+    url += this.server.endpoint.host;
+    url += ":";
+    url += this.server.endpoint.port
+    url += "/block/";
+
+    this.server.block_fetch_url = url;
+
     //
     // save options
     //
@@ -166,7 +177,7 @@ class Server {
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const blk = this.app.blockchain.blocks[bhash];
+        const blk = this.app.blockchain.blocks.get(bhash);
         if (!blk) {
           return;
         }
@@ -205,7 +216,7 @@ class Server {
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const blk = server_self.app.blockchain.blocks[bhash];
+        const blk = server_self.app.blockchain.blocks.get(bhash);
         if (!blk) {
           return;
         }
@@ -281,10 +292,10 @@ class Server {
       //
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const block = this.app.blockchain.blocks[bsh];
+      const block = this.app.blockchain.blocks.get(bsh);
 
       if (block) {
-        if (block.hasKeylistTransactions(bsh, keylist) === 0) {
+        if (!block.hasKeylistTransactions(keylist)) {
           res.writeHead(200, {
             "Content-Type": "text/plain",
             "Content-Transfer-Encoding": "utf8",
@@ -292,7 +303,7 @@ class Server {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
+          const buffer = Buffer.from(liteblock.serialize());//.toString("base64");
 
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.write(buffer, "utf8");
@@ -308,12 +319,13 @@ class Server {
         const blk = await this.app.storage.loadBlockByHash(bsh);
 
         if (blk == null) {
-          res.writeHead(200, {
-            "Content-Type": "text/plain",
-            "Content-Transfer-Encoding": "utf8",
-          });
-          res.send("{}");
-          res.end();
+          // res.writeHead(200, {
+          //   "Content-Type": "text/plain",
+          //   "Content-Transfer-Encoding": "utf8",
+          // });
+          // res.send("{}");
+          // res.end();
+          res.sendStatus(404);
           return;
         } else {
           const newblk = blk.returnLiteBlock(keylist);
@@ -324,8 +336,8 @@ class Server {
           });
 
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
-          res.write(buffer, "utf8");
+          const buffer = Buffer.from(liteblock.serialize())//, "binary").toString("base64");
+          res.write(buffer);
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.end();
           return;
@@ -342,7 +354,7 @@ class Server {
     app.get("/block/:hash", async (req, res) => {
       try {
         const hash = req.params.hash;
-        console.debug("server giving out block : " + hash);
+        console.log("server giving out block : " + hash);
         if (!hash) {
           console.warn("hash not provided");
           return res.sendStatus(400); // Bad request
@@ -354,10 +366,11 @@ class Server {
           return res.sendStatus(404); // Not Found
         }
         let buffer = block.serialize();
-        let bufferString = Buffer.from(buffer).toString("base64");
+        let bufferString = Buffer.from(buffer);//.toString("base64");
 
         res.status(200);
-        res.end(bufferString);
+        console.log("serving block : " + hash + " , buffer size : " + buffer.length);
+        res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
       }
@@ -391,6 +404,7 @@ class Server {
         buffer = Buffer.from(buffer, "utf-8");
 
         res.status(200);
+        console.log("serving block : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
@@ -423,6 +437,7 @@ class Server {
         buffer = Buffer.from(buffer, "utf-8");
 
         res.status(200);
+        console.log("serving block : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block ");

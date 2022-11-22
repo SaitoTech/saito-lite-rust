@@ -23,17 +23,20 @@ test("signBuffer", async () => {
 
   await hashLoader(mockApp);
 
-  const testBuffer = Buffer.from("testing 123", "utf-8");
+  const testBuffer = Buffer.from("5a16ffa08e5fc440772ee962c1d730041f12c7008a6e5c704d13dfd3d1906e0d", "hex");
+
+  const hex = crypto.hash(testBuffer);
+  expect(hex).toEqual("f8b1f22222bdbd2e0bce06707a51f5fffa0753b11483c330e3bfddaf5bacabd6");
   const result = crypto.signBuffer(testBuffer, wallet.wallet.privatekey);
 
   const signedBuffer = Buffer.concat([testBuffer, Buffer.from(result, "hex")]);
 
   expect(result).toEqual(
-    "0125bcc960bcd9d31129a9ec93d31f40a65ad853b3799ccea5a238e6e2ccc67715575eb886fd642548951102b3137f3aadd57b742f0c08a1ab007c7c8042e989"
+    "11c0e19856726c42c8ac3ec8e469057f5f8a882f7206377525db00899835b03f6ec3010d19534a5703dd9b1004b4f0e31d19582cdd5aec794541d0d0f339db7c"
   );
 
   const verificationResult = crypto.verifyHash(
-    crypto.hash(testBuffer.toString("hex")),
+    testBuffer,
     result,
     wallet.wallet.publickey
   );

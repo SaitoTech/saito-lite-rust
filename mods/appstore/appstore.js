@@ -182,9 +182,9 @@ try {
           let zip = fs.readFileSync(mod_path, { encoding: 'base64' });
 
 	  //
-	  // TODO - fix 
+	  // TODO - fix
 	  //
-	  // massive zip files bypassing tx size limits cause issues with 
+	  // massive zip files bypassing tx size limits cause issues with
 	  // some versions of NodeJS. In others they over-size and fail
 	  // elegantly. adding this check to prevent issues with server
 	  // on start, particularly with Red Imperium.
@@ -286,8 +286,8 @@ try {
             } catch (err) {
             }
           }
-          if (!tx.isTo(app.wallet.returnPublicKey())) { 
-	    return; 
+          if (!tx.isTo(app.wallet.returnPublicKey())) {
+	    return;
 	  }
           this.requestBundle(blk, tx);
           break;
@@ -368,7 +368,7 @@ try {
 
 	let found_name = 0;
 	let found_description = 0;
-	let found_categories = 0;	
+	let found_categories = 0;
 
 	for (let i = 0; i < zip_lines.length && i < 50 && (found_name == 0 || found_description == 0 || found_categories == 0); i++) {
 
@@ -392,7 +392,7 @@ try {
 	  if (/this.description/.test(zip_lines[i]) && found_description == 0) {
 	    found_description = 1;
 	    if (zip_lines[i].indexOf("=") > 0) {
-	      description = zip_lines[i].substring(zip_lines[i].indexOf("="))    
+	      description = zip_lines[i].substring(zip_lines[i].indexOf("="))
 	      description = cleanString(description);
 	      description = description.replace(/^\s+|\s+$/gm,'');
 	    }
@@ -404,7 +404,7 @@ try {
 	  if (/this.categories/.test(zip_lines[i]) && found_categories == 0) {
 	    found_categories = 1;
 	    if (zip_lines[i].indexOf("=") > 0) {
-	      categories = zip_lines[i].substring(zip_lines[i].indexOf("="))    
+	      categories = zip_lines[i].substring(zip_lines[i].indexOf("="))
 	      categories = cleanString(categories);
 	      categories = categories.replace(/^\s+|\s+$/gm,'');
 	    }
@@ -435,8 +435,11 @@ try {
 
     //
     // delete unziped module
-    //
-    fs.unlink(path.resolve(__dirname, zip_path));
+    try{
+      fs.unlink(path.resolve(__dirname, zip_path));
+    }catch(error){
+      console.error(error);
+    }
     return { name, image , description, categories };
 
 } catch (err) {
@@ -452,9 +455,10 @@ try {
 
   async submitModule(blk, tx) {
 
+
 try {
 
-    if (this.app.BROWSER == 1) { 
+    if (this.app.BROWSER == 1) {
 
 ////console.log("we are browser submit module...");
 //console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
@@ -492,7 +496,7 @@ try {
 
       }
 
-      return; 
+      return;
 
     }
 
@@ -595,8 +599,8 @@ try {
     let module_list = txmsg.list;
 
     //
-    // module_list consists of a list of the modules to bundle, these contain a name or 
-    // version number (or both) depending on how they were originally issued to the 
+    // module_list consists of a list of the modules to bundle, these contain a name or
+    // version number (or both) depending on how they were originally issued to the
     // client.
     //
     // module list = [
@@ -747,7 +751,7 @@ try {
 
     let bash_script_create = `mods/compile-${ts}-${hash}-create`;
     let bash_script = `mods/compile-${ts}-${hash}`;
-    
+
     let newappdir = `${ts}-${hash}`;
 
 ////console.log("into new app dir: " + newappdir);
@@ -1069,7 +1073,7 @@ try {
             mycallback(res.rows);
           } else {
             mycallback([]);
-	  }  
+	  }
         }
       );
 
