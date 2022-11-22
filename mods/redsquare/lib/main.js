@@ -9,9 +9,19 @@ class RedSquareMain {
   }
 
   render(app, mod) {
-     
-    app.browser.replaceElementBySelector(RedSquareMainTemplate(app, mod), this.selector);
-  
+
+    if (document.querySelector(".saito-container")) {
+      
+      app.browser.replaceElementBySelector(RedSquareMainTemplate(app, mod), ".saito-container");
+    } else {
+
+      if (this.selector) {
+        app.browser.addElementToSelector(RedSquareMainTemplate(app, mod), this.selector);
+      } else {
+        app.browser.addElementToDom(RedSquareMainTemplate(app, mod));
+      }
+    }
+
     this.attachEvents(app, mod);
   }  
 
