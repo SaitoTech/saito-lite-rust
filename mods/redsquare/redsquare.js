@@ -1,5 +1,7 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
+const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
+const SaitoMain = require("./lib/main");
 
 class RedSquare extends ModTemplate {
 
@@ -49,9 +51,12 @@ class RedSquare extends ModTemplate {
   initialize(app) {
 
     super.initialize(app);
-
     this.load();
 
+    this.header = new SaitoHeader(app, this);
+    this.main = new SaitoMain(app, this);
+    this.addComponent(this.main);
+    this.addComponent(this.header);
   }
 
 
@@ -73,8 +78,6 @@ class RedSquare extends ModTemplate {
 
   async onConfirmation(blk, tx, conf, app) {
   }
-
-
 
 
   sendLikeTransaction(app, mod, data, tx = null) {

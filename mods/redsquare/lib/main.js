@@ -2,23 +2,23 @@ const RedSquareMainTemplate = require("./main.template");
 
 class RedSquareMain {
 
-  constructor(app, selector = "") {
+  constructor(app, mod, container = "") {
     this.app = app;
     this.name = "RedSquareMain";
-    this.selector = selector;
+    this.container = container;
   }
 
-  render(app, mod) {
+  render() {
 
     if (document.querySelector(".saito-container")) {
       
-      app.browser.replaceElementBySelector(RedSquareMainTemplate(app, mod), ".saito-container");
+      app.browser.replaceElementBySelector(RedSquareMainTemplate(this.app, this.mod), ".saito-container");
     } else {
 
-      if (this.selector) {
-        app.browser.addElementToSelector(RedSquareMainTemplate(app, mod), this.selector);
+      if (this.container) {
+        app.browser.addElementToSelector(RedSquareMainTemplate(this.app, this.mod), this.container);
       } else {
-        app.browser.addElementToDom(RedSquareMainTemplate(app, mod));
+        app.browser.addElementToDom(RedSquareMainTemplate(this.app, this.mod));
       }
     }
 
