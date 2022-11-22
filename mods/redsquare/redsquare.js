@@ -480,25 +480,16 @@ class RedSquare extends ModTemplate {
 
   }
 
-  loadRedSquare() {
-
+  load() {
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;
-      if (this.redsquare.last_viewed_notifications_ts) {
-        this.last_viewed_notifications_ts = this.redsquare.last_viewed_notifications_ts;
-      }
-      return;
+    } else {
+      this.redsquare = {};
     }
-
-    this.redsquare = {};
-    this.redsquare.last_checked_notifications_timestamp = new Date().getTime();
-    this.redsquare.last_viewed_notifications_ts = 0;
-    this.redsquare.last_liked_tweets = [];
   }
 
-  saveRedSquare() {
-    this.redsquare.last_viewed_notifications_ts = this.last_viewed_notifications_ts;
-    this.app.options.redsquare = this.redsquare;
+  save() {
+    this.app.options.redsquare = this.redsquare;    
     this.app.storage.saveOptions();
   }
 }
