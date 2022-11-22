@@ -9,13 +9,9 @@ class RedSquareMain {
   }
 
   render(app, mod) {
-
-    if (document.querySelector(this.selector) != "" && document.querySelector(this.selector) != null) {
-      app.browser.addElementToDom(RedSquareMainTemplate(app, mod));
-    } else {
-      app.browser.addElementToDom(RedSquareMainTemplate(app, mod), this.selector);
-    }
-   
+     
+    app.browser.replaceElementBySelector(RedSquareMainTemplate(app, mod), this.selector);
+  
     this.attachEvents(app, mod);
   }  
 
