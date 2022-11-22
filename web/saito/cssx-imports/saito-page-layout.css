@@ -1,0 +1,53 @@
+
+
+.saito-container {
+    width: 100vw;
+    height: calc(100vh - var(--saito-header-height)); /* Should factor in top margin so it fits the screen */
+    display: grid;
+    grid-template-columns: min-content 1fr min-content;
+    padding: 0 calc((100vw - var(--saito-width)) / 2);
+    z-index: 0;
+    margin: 0;
+    position: absolute;
+    top: var(--saito-header-height);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.saito-container div {
+  box-sizing: border-box;
+}
+
+.saito-main {
+    background-color: var(--saito-white);
+    padding: 2rem 0;
+}
+
+.saito-sidebar {
+    background-color: var(--saito-white);
+    top: calc(var(--saito-header-height) + 1rem);
+}
+
+.saito-sidebar.left {
+    position: fixed;
+    width: inherit;
+}
+
+.saito-sidebar.right {
+    min-width: 26rem;
+    padding: 1rem;
+    background-color: var(--saito-white);
+    grid-column-start: 3;
+    grid-row: 1/2;
+}
+
+.saito-sidebar.right.mobile {
+    visibility: visible;
+    z-index: 2;
+}
+
+.saito-sidebar.left.mobile {
+    visibility: visible;
+    z-index: 3;
+}
+
