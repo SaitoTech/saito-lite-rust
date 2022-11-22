@@ -98,8 +98,12 @@ class Peer {
     if (tx.isFrom(this.peer.publickey)) {
       return 1;
     }
+    if (this.returnPublicKey() === "") {
+      console.log("Anonymous peer publickey found, not forwarding!");
+      return 1; // don't forward to anonymous peers
+    }
     for (let i = 0; i < tx.transaction.path.length; i++) {
-      if (tx.transaction.path[i].from === this.peer.publickey) {
+      if (tx.transaction.path[i].from === this.returnPublicKey()) {
         return 1;
       }
     }
