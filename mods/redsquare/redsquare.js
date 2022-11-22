@@ -226,7 +226,7 @@ class RedSquare extends ModTemplate {
   //
   fetchAndUpdateTweetOptionalContent(tweet) {
 
-    let sql = `SELECT * FROM tweets WHERE sig = tweet.sig`;
+    let sql = `SELECT * FROM tweets WHERE sig = "${tweet.sig}"`;
     let mod = this;
     let app = this.app;
     this.fetchTweets(app, mod, sql, function (app, mod) {
