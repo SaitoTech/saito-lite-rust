@@ -8,7 +8,7 @@ import Transaction, { TransactionType } from "./transaction";
 import Block from "./block";
 
 const CryptoModule = require("../templates/cryptomodule");
-const ModalSelectCrypto = require("./ui/modal-select-crypto/modal-select-crypto");
+const ModalSelectCrypto = require("./new-ui/modals/modal-select-crypto/modal-select-crypto");
 
 /**
  * A Saito-lite wallet.
