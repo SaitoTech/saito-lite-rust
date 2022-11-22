@@ -366,9 +366,13 @@ class Blockchain {
         await this.addBlockSuccess(block);
 
 console.log("trying to set LC");
+	try {
 
-        this.blocks.get(block_hash).lc = 1;
+          this.blocks.get(block_hash).lc = 1;
 
+	} catch (err) {
+console.log("block is not stored locally...");
+	}
 console.log("emitting stuff");
 
         this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
@@ -377,24 +381,24 @@ console.log("emitting stuff");
           difficulty: block_difficulty,
         });
         this.indexing_active = false;
-console.log("return 1!");
         return 1;
       } else {
-console.log("return failure 1!");
         await this.addBlockFailure(block);
-console.log("return failure 2!");
-        this.blocks.get(block_hash).lc = 0;
-console.log("return failure 3!");
+
+	try {
+          this.blocks.get(block_hash).lc = 0;
+	} catch (err) {
+console.log("block is not stored locally...");
+	}
+
         this.app.connection.emit("BlockchainAddBlockFailure", block_hash);
         this.indexing_active = false;
         return 0;
       }
     } else {
-console.log("return unknown 1!");
       await this.addBlockSuccess(block);
       this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
       this.indexing_active = false;
-console.log("return unknown 2!");
       return 1;
     }
   }
