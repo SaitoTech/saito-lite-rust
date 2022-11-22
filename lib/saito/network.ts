@@ -293,7 +293,7 @@ class Network {
         ? peer.peer.block_fetch_url
         : peer.peer.block_fetch_url + "/";
       url = `${base_url}${block_hash}`;
-      if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+      if (this.app.SPVMODE == 1) {
         url = `${peer.peer.protocol}://${peer.peer.host}:${
           peer.peer.port
         }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
@@ -1265,7 +1265,7 @@ class Network {
 
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
-        if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+        if (this.app.SPVMODE == 1) {
           this.sendRequest("REQGSTCN", buffer_to_send, peer);
         } else {
           this.sendRequest("REQCHAIN", buffer_to_send, peer);
@@ -1275,7 +1275,7 @@ class Network {
     }
 
     if (this.peers.length > 0) {
-      if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+      if (this.app.SPVMODE == 1) {
         this.sendRequest("REQGSTCN", buffer_to_send, this.peers[0]);
       } else {
         this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);

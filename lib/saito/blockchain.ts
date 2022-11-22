@@ -364,7 +364,16 @@ class Blockchain {
 
       if (does_new_chain_validate) {
         await this.addBlockSuccess(block);
-        this.blocks.get(block_hash).lc = 1;
+
+console.log("trying to set LC");
+	try {
+
+          this.blocks.get(block_hash).lc = 1;
+
+	} catch (err) {
+console.log("block is not stored locally...");
+	}
+console.log("emitting stuff");
 
         this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
         this.app.connection.emit("BlockchainNewLongestChainBlock", {
@@ -375,7 +384,13 @@ class Blockchain {
         return 1;
       } else {
         await this.addBlockFailure(block);
-        this.blocks.get(block_hash).lc = 0;
+
+	try {
+          this.blocks.get(block_hash).lc = 0;
+	} catch (err) {
+console.log("block is not stored locally...");
+	}
+
         this.app.connection.emit("BlockchainAddBlockFailure", block_hash);
         this.indexing_active = false;
         return 0;
@@ -390,7 +405,7 @@ class Blockchain {
 
   async addBlockSuccess(block: Block) {
     //console.log("blockchain.addBlockSuccess : ", block.returnHash());
-    this.app.blockring.print();
+    //this.app.blockring.print();
 
     console.log("ADD BLOCK SUCCESS!");
 
@@ -440,6 +455,8 @@ class Blockchain {
       // this block is initialized with zero-confs processed
       //
       block.affixCallbacks();
+
+console.log("done affixing callbacks!");
 
       //
       // don't run callbacks if reloading (force!)
@@ -503,11 +520,15 @@ class Blockchain {
         }
       }
 
+console.log("moving into onNewBlock");
+
       //
       // callback
       //
       this.app.modules.onNewBlock(block, true /*i_am_the_longest_chain*/); // TODO : undefined i_am_the_longest_chain ???
     }
+
+console.log("done add block success...");
   }
 
   async addBlockFailure(block: Block) {
