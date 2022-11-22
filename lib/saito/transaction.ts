@@ -352,12 +352,12 @@ class Transaction {
     return this.returnSlipsTo(receiverPublicKey).length > 0;
   }
 
-  onChainReorganization(app: Saito, lc, block_id) {
+  onChainReorganization(app: Saito, lc, block_id: bigint) {
     let input_slip_value = 1;
     let output_slip_value = 0;
 
     if (lc) {
-      input_slip_value = block_id;
+      input_slip_value = Number(block_id);
       output_slip_value = 1;
     }
 
@@ -484,8 +484,8 @@ class Transaction {
     return this.transaction.sig;
   }
 
-  returnSlipsFrom(publickey: string) {
-    const x = [];
+  returnSlipsFrom(publickey: string): Array<Slip> {
+    const x = new Array<Slip>();
     if (this.transaction.from != null) {
       for (let v = 0; v < this.transaction.from.length; v++) {
         if (this.transaction.from[v].add === publickey) {
@@ -496,10 +496,11 @@ class Transaction {
     return x;
   }
 
-  returnSlipsToAndFrom(publickey: string) {
-    let x: any = {};
-    x.from = [];
-    x.to = [];
+  returnSlipsToAndFrom(publickey: string): { from: Array<Slip>; to: Array<Slip> } {
+    let x = {
+      from: new Array<Slip>(),
+      to: new Array<Slip>(),
+    };
     if (this.transaction.from != null) {
       for (let v = 0; v < this.transaction.from.length; v++) {
         if (this.transaction.from[v].add === publickey) {
@@ -517,8 +518,8 @@ class Transaction {
     return x;
   }
 
-  returnSlipsTo(publickey: string) {
-    let x = [];
+  returnSlipsTo(publickey: string): Array<Slip> {
+    let x = new Array<Slip>();
     if (this.transaction.to != null) {
       for (let v = 0; v < this.transaction.to.length; v++) {
         if (this.transaction.to[v].add === publickey) {

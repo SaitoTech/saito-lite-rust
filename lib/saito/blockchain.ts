@@ -51,7 +51,7 @@ class Blockchain {
     //
     // downgrade blocks after N blocks
     //
-    this.prune_after_blocks = 100;
+    this.prune_after_blocks = 6;
 
     //
     // set to true when adding blocks to disk (must be done one at a time!)
@@ -392,7 +392,7 @@ class Blockchain {
     //console.log("blockchain.addBlockSuccess : ", block.returnHash());
     this.app.blockring.print();
 
-console.log("ADD BLOCK SUCCESS!");
+    console.log("ADD BLOCK SUCCESS!");
 
     let block_id = block.returnId();
 
@@ -542,7 +542,7 @@ console.log("ADD BLOCK SUCCESS!");
     //
     // downgrade blocks still on the chain
     //
-    if (this.prune_after_blocks > this.app.blockring.returnLatestBlockId()) {
+    if (BigInt(this.prune_after_blocks) > this.app.blockring.returnLatestBlockId()) {
       return;
     }
 
