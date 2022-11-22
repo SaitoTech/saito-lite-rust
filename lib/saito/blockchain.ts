@@ -364,7 +364,12 @@ class Blockchain {
 
       if (does_new_chain_validate) {
         await this.addBlockSuccess(block);
+
+console.log("trying to set LC");
+
         this.blocks.get(block_hash).lc = 1;
+
+console.log("emitting stuff");
 
         this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
         this.app.connection.emit("BlockchainNewLongestChainBlock", {
@@ -372,18 +377,24 @@ class Blockchain {
           difficulty: block_difficulty,
         });
         this.indexing_active = false;
+console.log("return 1!");
         return 1;
       } else {
+console.log("return failure 1!");
         await this.addBlockFailure(block);
+console.log("return failure 2!");
         this.blocks.get(block_hash).lc = 0;
+console.log("return failure 3!");
         this.app.connection.emit("BlockchainAddBlockFailure", block_hash);
         this.indexing_active = false;
         return 0;
       }
     } else {
+console.log("return unknown 1!");
       await this.addBlockSuccess(block);
       this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
       this.indexing_active = false;
+console.log("return unknown 2!");
       return 1;
     }
   }
@@ -440,6 +451,8 @@ console.log("ADD BLOCK SUCCESS!");
       // this block is initialized with zero-confs processed
       //
       block.affixCallbacks();
+
+console.log("done affixing callbacks!");
 
       //
       // don't run callbacks if reloading (force!)
@@ -503,11 +516,15 @@ console.log("ADD BLOCK SUCCESS!");
         }
       }
 
+console.log("moving into onNewBlock");
+
       //
       // callback
       //
       this.app.modules.onNewBlock(block, true /*i_am_the_longest_chain*/); // TODO : undefined i_am_the_longest_chain ???
     }
+
+console.log("done add block success...");
   }
 
   async addBlockFailure(block: Block) {
