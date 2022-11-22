@@ -15,19 +15,19 @@ class RedSquareMain {
     // replace element or insert into page
     //
     if (document.querySelector(".saito-container")) {
-      app.browser.replaceElementBySelector(RedSquareMainTemplate(this.app, this.mod), ".saito-container");
+      this.app.browser.replaceElementBySelector(RedSquareMainTemplate(this.app, this.mod), ".saito-container");
     } else {
       if (this.container) {
-        app.browser.addElementToSelector(RedSquareMainTemplate(this.app, this.mod), this.container);
+        this.app.browser.addElementToSelector(RedSquareMainTemplate(this.app, this.mod), this.container);
       } else {
-        app.browser.addElementToDom(RedSquareMainTemplate(this.app, this.mod));
+        this.app.browser.addElementToDom(RedSquareMainTemplate(this.app, this.mod));
       }
     }
 
-    this.attachEvents(app, mod);
+    this.attachEvents();
   }  
 
-  attachEvents(app, mod) {
+  attachEvents() {
 
   }
 
