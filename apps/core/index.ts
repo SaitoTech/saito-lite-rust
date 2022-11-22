@@ -46,7 +46,7 @@ class Saito {
   blockchain: Blockchain;
   blockring: Blockring;
   handshake: Handshake;
-  hash: (data: string) => string;
+  hash: (data: Uint8Array) => string;
   server: Server;
 
   constructor(config = {}) {
@@ -126,10 +126,10 @@ class Saito {
         this.server.initialize();
       }
     } catch (err) {
-      console.log(
+      console.error(
         "Error occured initializing your Saito install. The most likely cause of this is a module that is throwing an error on initialization. You can debug this by removing modules from your config file to test which ones are causing the problem and restarting."
       );
-      console.log(err);
+      console.error(err);
     }
   }
 
