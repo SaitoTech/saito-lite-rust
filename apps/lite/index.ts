@@ -6,6 +6,7 @@ import mods_config from "../../config/modules.config";
 async function init() {
   const saito = new Saito({ mod_paths: mods_config.lite });
   saito.BROWSER = 1;
+  saito.SPVMODE = 1;
   await saito.init();
 }
 
