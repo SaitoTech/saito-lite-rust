@@ -463,8 +463,7 @@ class Keychain {
 
   returnIdenticonColor(publickey) {
     // foreground defaults to last 7 chars as hue at 70% saturation, 50% brightness
-    const hue =
-      parseInt(this.app.crypto.hash(Buffer.from(publickey, "hex")).substr(-7), 16) / 0xfffffff;
+    const hue = parseInt(this.app.crypto.hash(publickey).substr(-7), 16) / 0xfffffff;
     const saturation = 0.7;
     const brightness = 0.5;
     const values = this.hsl2rgb(hue, saturation, brightness).map(Math.round);
