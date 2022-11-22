@@ -30,6 +30,8 @@ class Blockchain {
   public blocks: Map<string, Block>;
   // public utxoset: any;
   public prune_after_blocks: number;
+  public parent_blocks_fetched : number;
+  public parent_blocks_fetched_limit : number;
   public indexing_active: boolean;
   public run_callbacks: any;
   public callback_limit: number;
@@ -52,6 +54,13 @@ class Blockchain {
     // downgrade blocks after N blocks
     //
     this.prune_after_blocks = 100;
+
+    //
+    // sanity check on endless looping to fetch parents
+    //
+    this.parent_blocks_fetched = 0;
+    this.parent_blocks_fetched_limit = 10;
+
 
     //
     // set to true when adding blocks to disk (must be done one at a time!)
@@ -174,8 +183,17 @@ class Blockchain {
         if (this.debugging) {
           console.log("parent block hash is not indexed...");
         }
-        await this.app.network.fetchBlock(parent_block_hash);
+
+	if (this.parent_blocks_fetched < this.parent_blocks_fetched_limit) {
+          await this.app.network.fetchBlock(parent_block_hash);
+	  this.parent_blocks_fetched++;
+	} else {
+	  console.log("OFF CHAIN -- not looping back endlessly.");
+	  return;
+	}
       }
+    } else {
+      this.parent_blocks_fetched = 0;
     }
 
     // pre-validation
