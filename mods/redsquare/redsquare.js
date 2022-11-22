@@ -50,23 +50,15 @@ class RedSquare extends ModTemplate {
 
   initialize(app) {
 
-console.log("initialize here...")
-
     super.initialize(app);
-
-console.log("initialize here... 2")
 
     this.load();
 
     this.header = new SaitoHeader(app, this);
-console.log("initialize here... 3")
     this.main = new SaitoMain(app, this);
-console.log("initialize here... 4")
 
     this.addComponent(this.header);
-console.log("initialize here... 5")
     this.addComponent(this.main);
-console.log("initialize here... 5")
 
   }
 
@@ -79,9 +71,7 @@ console.log("initialize here... 5")
 
 
   render() {
-console.log("render 1");
     super.render();
-console.log("render 2");
   }
 
   async onConfirmation(blk, tx, conf, app) {
