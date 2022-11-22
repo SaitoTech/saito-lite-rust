@@ -1266,7 +1266,7 @@ class Network {
 
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
-        if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+        if (this.app.SPVMODE == 1) {
           this.sendRequest("REQGSTCN", buffer_to_send, peer);
         } else {
           this.sendRequest("REQCHAIN", buffer_to_send, peer);
@@ -1276,7 +1276,7 @@ class Network {
     }
 
     if (this.peers.length > 0) {
-      if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+      if (this.app.SPVMODE == 1) {
         this.sendRequest("REQGSTCN", buffer_to_send, this.peers[0]);
       } else {
         this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);
