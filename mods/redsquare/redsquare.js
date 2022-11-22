@@ -45,66 +45,13 @@ class RedSquare extends ModTemplate {
   }
 
 
+
   initialize(app) {
-    this.loadRedSquare();
+
     super.initialize(app);
 
-    if (app.BROWSER === 1) {
+    this.load();
 
-      let tweet_id = app.browser.returnURLParameter('tweet_id');
-      let user_id = app.browser.returnURLParameter('user_id');
-
-      if (tweet_id != "") {
-        this.viewing = tweet_id;
-        this.mode = "tweet";
-      }
-
-      if (user_id != "") {
-        this.viewing = user_id;
-        this.mode = "user";
-      }
-
-
-      if (this.browser_active == 1) {
-        //Leave a cookie trail to return to Redsquare when you enter a game
-        if (app.options.homeModule !== this.returnSlug()) {
-          console.log("Update homepage to " + this.returnSlug());
-          app.options.homeModule = this.returnSlug();
-          app.storage.saveOptions();
-        }
-
-        //
-        // this is a hack to refresh the game invite sidebar if we are returning to the page after
-        // it has been dormant for a while
-        //
-        document.addEventListener("visibilitychange", () => {
-          if (!document.hidden) {
-            app.connection.emit("game-invite-list-update");
-          }
-        });
-
-      }
-
-      let redsquare_self = this;
-
-      if (this.app.BROWSER == 1 && this.browser_active == 1) {
-
-        let tweet_timeout = 20000 + (Math.random() * 5000);
-        let stats_timeout = 20000 + (Math.random() * 10000);
-
-        setInterval(function () {
-          if (redsquare_self.viewing == "feed") {
-            redsquare_self.fetchNewTweets(app, redsquare_self);
-          }
-        }, tweet_timeout);
-
-        setInterval(function () {
-          if (redsquare_self.viewing == "feed") {
-            redsquare_self.fetchStatsUpdate(app, redsquare_self);
-          }
-        }, stats_timeout);
-      }
-    }
   }
 
 
@@ -114,18 +61,14 @@ class RedSquare extends ModTemplate {
   addTweet(tx) {
   }
 
-  loadNotifications() {
+  loadTweets() {
   }
 
-  loadTweets() {
+  loadNotifications() {
   }
 
   render(app, mod) {
     super.render(app, this);
-  }
-
-  async onPeerHandshakeComplete(app, peer) {
-    this.loadTweets(app, this);
   }
 
   async onConfirmation(blk, tx, conf, app) {
