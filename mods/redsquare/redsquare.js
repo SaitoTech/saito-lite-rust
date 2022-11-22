@@ -18,7 +18,7 @@ class RedSquare extends ModTemplate {
     this.notifications = [];
 
     this.styles = [
-      '/saito/saito.css',
+      '/saito/saitox.css',
       '/redsquare/style.css',
     ];
 
