@@ -203,7 +203,7 @@ class ExplorerCore extends ModTemplate {
 
 console.log("Latest Block ID: " + latest_block_id);
 
-    for (var mb = latest_block_id; mb >= 0 && mb > latest_block_id - 200; mb--) {
+    for (var mb = Number(latest_block_id); mb >= 0 && mb > Number(latest_block_id) - 200; mb--) {
 
       let longest_chain_hash = explorer_self.app.blockring.returnLongestChainBlockHashAtBlockId(mb);
       let hashes_at_block_id = explorer_self.app.blockring.returnBlockHashesAtBlockId(mb);
