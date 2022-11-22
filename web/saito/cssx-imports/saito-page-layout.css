@@ -39,7 +39,6 @@
     background-color: var(--saito-white);
     grid-column-start: 3;
     grid-row: 1/2;
-    background-color: var(--saito-white);
 }
 
 .saito-sidebar.right.mobile {
