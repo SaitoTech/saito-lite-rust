@@ -498,7 +498,7 @@ console.log("---------------------");
     return valid;
   }
 
-  onChainReorganization(block: Block, lc: boolean) {
+  onChainReorganization(block, lc: boolean) {
     const block_id = block.returnId();
     const block_hash = block.returnHash();
 
