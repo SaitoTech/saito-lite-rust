@@ -31,7 +31,6 @@ Saito Username
 Saito User
 -----------------------------------------------------------------*/
 
-
 .saito-user {
     display: grid;
     cursor: pointer;
@@ -42,8 +41,6 @@ Saito User
     width: 100%;
     position: relative;
 }
-
-
 
 
 /*  saito-identicon-box  */
@@ -72,7 +69,6 @@ Saito User
     grid-row-start: 2;
     grid-row-end: span 1;
     font-size: 1.4rem;
-    color: #888;
 }
 
 .saito-user.small>div:nth-child(3) {
@@ -99,6 +95,10 @@ Saito User
     font-size: 1.4rem;
     align-items: top;
 }
+
+
+
+
 
 
 

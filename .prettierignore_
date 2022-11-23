@@ -14,7 +14,7 @@ mods/his
 lib/templates/lib/game-stack
 *.js
 *.md
-*.html
+# *.html
 *.css
 *.*rc
 *.json

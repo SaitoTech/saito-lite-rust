@@ -14,13 +14,14 @@
     overflow-x: hidden;
 }
 
-.saito-container div {
-  box-sizing: border-box;
-}
-
 .saito-main {
     background-color: var(--saito-background-color);
     padding: 2rem 0;
+    min-width: 54rem;
+}
+
+.saito-mobile-bar {
+    display: none;
 }
 
 .saito-sidebar {
@@ -29,12 +30,12 @@
 }
 
 .saito-sidebar.left {
-    /* position: fixed; */
     width: inherit;
+    padding-top: 2rem;
 }
 
 .saito-sidebar.right {
-    padding: 1rem;
+    padding-top:2rem;
     background-color: var(--saito-background-color);
     grid-column-start: 3;
     grid-row: 1/2;
@@ -46,11 +47,172 @@
 
 .saito-sidebar.right.mobile {
     visibility: visible;
-    z-index: 2;
+    z-index: 3;
 }
 
 .saito-sidebar.left.mobile {
     visibility: visible;
     z-index: 3;
 }
+
+.saito-page-header {
+    z-index: 2;
+    background: #fff;
+    padding-bottom: 0rem;
+    width: -webkit-fill-available;
+    top: 8rem;
+    padding: 1.5rem 0rem;
+    position: sticky;
+    top: 0rem;
+    padding-top: 2.5rem;
+    margin-top: -2rem;
+}
+
+
+@media screen and (max-width: 1500px) {
+    .saito-container {
+        grid-template-columns: 1fr min-content;
+    }
+
+    .saito-sidebar.left {
+        position: fixed;
+        top: calc(var(--saito-header-height));
+        visibility: hidden;
+        width: 35rem;
+        height: 100vh;
+        background-color: var(--saito-background-color);
+        left: 0;
+        border-right: 1px solid var(--saito-primary);
+    }
+
+}
+
+
+
+@media screen and (max-width: 1500px) and (min-width: 768px)  {
+    .saito-sidebar.left{
+        left: 0;
+        width: 30rem;
+    }
+
+    .saito-mobile-bar {
+        height: 7rem;
+        content: " ";
+        width: 10%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+        display: flex;
+        flex-flow: row;
+        justify-content: space-around;
+        align-items: center;
+    } 
+
+
+     .saito-mobile-bar > div {
+        content: "";
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 0.5rem;
+        background-color: var(--saito-primary);
+        cursor: pointer;
+        justify-content: center;
+        align-items: center;
+        display: none;
+    }
+
+    .saito-mobile-bar > div:nth-child(1) {
+        display: flex;
+    }
+
+    .saito-mobile-bar > div i {
+        color: var(--saito-background-color);
+        display: initial;
+        font-size: 2.5rem;
+    }
+
+}
+
+@media screen and (max-width: 768px) {
+
+    .saito-main.appspace {
+        min-width: 0;
+        width: 100vw !important;
+        margin-left: 0rem !important;
+        margin-right: 0rem;
+        padding: 1rem;
+    }
+
+    .saito-sidebar.left {
+        left: 0;
+        width: 100% !important;
+    }
+
+    .saito-sidebar.right {
+        position: fixed;
+        left: 0;
+        width: 100%;
+        top: 0;
+        visibility: hidden;
+        margin-top: var(--saito-header-height);
+        ;
+        background-color: var(--saito-background-color);
+        height: 100vh;
+        z-index: 12;
+    }
+
+
+    .saito-mobile-bar {
+        background: #0009;
+        z-index: 1;
+        height: 7rem;
+        content: " ";
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+        display: flex;
+        flex-flow: row;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+
+    .saito-mobile-bar > div {
+        content: "";
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 0.5rem;
+        background-color: var(--saito-primary);
+        cursor: pointer;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+    }
+
+    .saito-mobile-bar > div i {
+        color: var(--saito-background-color);
+        display: initial;
+        font-size: 2.5rem;
+    }
+
+
+    .saito-mobile-bar > div:nth-child(2) {
+        display: none;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
