@@ -1,0 +1,19 @@
+.saito-arcade-container {
+	width: 100vw;
+	height: calc(100vh - var(--saito-header-height));
+	display: grid;
+	grid-template-columns: min-content 1fr min-content;
+	padding: 0 calc((100vw - var(--saito-width)) / 2);
+	z-index: 0;
+	margin: 0;
+	position: absolute;
+	top: var(--saito-header-height);
+	overflow-y: auto;
+	overflow-x: hidden;
+	border: 1px solid red;
+}
+
+.saito-arcade-sidebar {
+	border: 1px solid red;
+	width: 30rem;
+}

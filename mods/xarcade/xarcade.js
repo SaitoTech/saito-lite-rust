@@ -12,7 +12,7 @@ class xArcade extends ModTemplate {
     this.name = "Arcade";
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment";
-    this.slug = "arcade";
+    this.slug = "xarcade";
 
     this.styles = [
       '/saito/saito.css',
@@ -30,7 +30,9 @@ class xArcade extends ModTemplate {
 
     if (this.main == null) {
       this.main = new ArcadeMain(app, mod);
+      this.header = new SaitoHeader(app, mod);
 
+      this.addComponent(this.header);
       this.addComponent(this.main);
     }
 
