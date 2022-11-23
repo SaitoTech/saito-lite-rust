@@ -19,9 +19,10 @@
   }
 
 
-  .saito-sidebar-left {
+  .saito-sidebar.left {
     width: 250px;
   }
+
 
   .saito-main.appspace {
     margin: 0 2rem 15rem;
@@ -29,7 +30,8 @@
   }
   
   
-  .saito-sidebar-right {
+  .saito-sidebar.right {
+    min-width: 26rem;
     width: 50rem;
     overflow-y: auto;
     height: inherit;

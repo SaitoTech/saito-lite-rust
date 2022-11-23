@@ -46,7 +46,7 @@
     height: 4px;
     margin-bottom: 5px;
     position: relative;
-    background: var(--saito-white);
+    background: var(--saito-background-color);
     border-radius: 3px;
     z-index: 1;
     transform-origin: 4px 0px;
@@ -62,4 +62,3 @@
 #saito-header-menu-toggle span:nth-last-child(2) {
     transform-origin: 0% 100%;
 }
-=
