@@ -26,7 +26,6 @@ class Transaction {
     from: new Array<Slip>(),
     ts: 0,
     sig: "",
-    path: new Array<Hop>(),
     r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
     type: TransactionType.Normal,
     m: Buffer.alloc(0),
@@ -40,7 +39,7 @@ class Transaction {
   public dmsg: any;
   public size: number;
   public is_valid: any;
-  public path: Hop[];
+  public path: Array<Hop>;
 
   constructor(jsonobj = null) {
     /////////////////////////
@@ -68,12 +67,10 @@ class Transaction {
     this.dmsg = "";
     this.size = 0;
     this.is_valid = 1;
+    this.path = new Array<Hop>();
 
     if (jsonobj != null) {
       this.transaction = jsonobj;
-      if (!this.transaction.path) {
-        this.transaction.path = [];
-      }
       if (this.transaction.type === TransactionType.Normal) {
         try {
           let buffer = Buffer.from(this.transaction.m);
@@ -145,9 +142,9 @@ class Transaction {
     }
     tx.transaction.ts = this.transaction.ts;
     tx.transaction.sig = this.transaction.sig;
-    tx.transaction.path = [];
-    for (let i = 0; i < this.transaction.path.length; i++) {
-      tx.transaction.path.push(this.transaction.path[i].clone());
+    tx.path = new Array<Hop>();
+    for (let i = 0; i < this.path.length; i++) {
+      tx.path.push(this.path[i].clone());
     }
     tx.transaction.r = this.transaction.r;
     tx.transaction.type = this.transaction.type;
@@ -218,7 +215,7 @@ class Transaction {
     const start_of_message = start_of_outputs + outputs_len * SLIP_SIZE;
     const start_of_path = start_of_message + message_len;
 
-    const inputs = [];
+    const inputs = new Array<Slip>();
     for (let i = 0; i < inputs_len; i++) {
       const start_of_slip = start_of_inputs + i * SLIP_SIZE;
       const end_of_slip = start_of_slip + SLIP_SIZE;
@@ -226,7 +223,7 @@ class Transaction {
       input.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
       inputs.push(input);
     }
-    const outputs = [];
+    const outputs = new Array<Slip>();
     for (let i = 0; i < outputs_len; i++) {
       const start_of_slip = start_of_outputs + i * SLIP_SIZE;
       const end_of_slip = start_of_slip + SLIP_SIZE;
@@ -236,7 +233,7 @@ class Transaction {
     }
     const message = buffer.slice(start_of_message, start_of_message + message_len);
 
-    const path = [];
+    const path = new Array<Hop>();
     for (let i = 0; i < path_len; i++) {
       const start_of_data = start_of_path + i * HOP_SIZE;
       const end_of_data = start_of_data + HOP_SIZE;
@@ -249,7 +246,7 @@ class Transaction {
     this.transaction.to = outputs;
     this.transaction.ts = Number(timestamp);
     this.transaction.sig = signature;
-    this.transaction.path = path;
+    this.path = path;
     this.transaction.r = Number(r);
     this.transaction.type = transaction_type;
     this.transaction.m = Buffer.from(message);
@@ -352,12 +349,12 @@ class Transaction {
     return this.returnSlipsTo(receiverPublicKey).length > 0;
   }
 
-  onChainReorganization(app: Saito, lc, block_id) {
+  onChainReorganization(app: Saito, lc, block_id: bigint) {
     let input_slip_value = 1;
     let output_slip_value = 0;
 
     if (lc) {
-      input_slip_value = block_id;
+      input_slip_value = Number(block_id);
       output_slip_value = 1;
     }
 
@@ -466,7 +463,7 @@ class Transaction {
 
   returnRoutingWorkAvailableToPublicKey() {
     let uf = this.returnFeesTotal();
-    for (let i = 0; i < this.transaction.path.length; i++) {
+    for (let i = 0; i < this.path.length; i++) {
       let d = 1;
       for (let j = i; j > 0; j--) {
         d = d * 2;
@@ -484,8 +481,8 @@ class Transaction {
     return this.transaction.sig;
   }
 
-  returnSlipsFrom(publickey: string) {
-    const x = [];
+  returnSlipsFrom(publickey: string): Array<Slip> {
+    const x = new Array<Slip>();
     if (this.transaction.from != null) {
       for (let v = 0; v < this.transaction.from.length; v++) {
         if (this.transaction.from[v].add === publickey) {
@@ -496,10 +493,11 @@ class Transaction {
     return x;
   }
 
-  returnSlipsToAndFrom(publickey: string) {
-    let x: any = {};
-    x.from = [];
-    x.to = [];
+  returnSlipsToAndFrom(publickey: string): { from: Array<Slip>; to: Array<Slip> } {
+    let x = {
+      from: new Array<Slip>(),
+      to: new Array<Slip>(),
+    };
     if (this.transaction.from != null) {
       for (let v = 0; v < this.transaction.from.length; v++) {
         if (this.transaction.from[v].add === publickey) {
@@ -517,8 +515,8 @@ class Transaction {
     return x;
   }
 
-  returnSlipsTo(publickey: string) {
-    let x = [];
+  returnSlipsTo(publickey: string): Array<Slip> {
+    let x = new Array<Slip>();
     if (this.transaction.to != null) {
       for (let v = 0; v < this.transaction.to.length; v++) {
         if (this.transaction.to[v].add === publickey) {
@@ -600,7 +598,8 @@ class Transaction {
     const inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
     const outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
     const message_len = app.binary.u32AsBytes(this.transaction.m.byteLength);
-    const path_len = app.binary.u32AsBytes(this.transaction.path.length);
+    const path_len = this.path ? this.path.length : 0;
+    const path_len_buffer = app.binary.u32AsBytes(path_len);
     const signature = app.binary.hexToSizedArray(this.transaction.sig, 64);
     const timestamp = app.binary.u64AsBytes(this.transaction.ts);
     const r = app.binary.u32AsBytes(this.transaction.r);
@@ -637,14 +636,14 @@ class Transaction {
       TRANSACTION_SIZE +
       (this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE +
       this.transaction.m.byteLength +
-      this.transaction.path.length * HOP_SIZE;
+      path_len * HOP_SIZE;
     const ret = new Uint8Array(size_of_tx_data);
     ret.set(
       new Uint8Array([
         ...inputs_len,
         ...outputs_len,
         ...message_len,
-        ...path_len,
+        ...path_len_buffer,
         ...signature,
         ...timestamp,
         ...r,
@@ -680,8 +679,8 @@ class Transaction {
 
     ret.set(this.transaction.m, start_of_message);
 
-    for (let i = 0; i < this.transaction.path.length; i++) {
-      const serialized_hop = this.transaction.path[i].serialize(app);
+    for (let i = 0; i < path_len; i++) {
+      const serialized_hop = this.path[i].serialize(app);
       path.push(serialized_hop);
     }
     let next_hop_location = start_of_path;
@@ -907,7 +906,7 @@ class Transaction {
     for (let i = 0; i < this.path.length; i++) {
       let buffer = Buffer.concat([
         Buffer.from(this.transaction.sig, "hex"),
-        Buffer.from(this.path[i].to, "hex"),
+        Buffer.from(app.crypto.fromBase58(this.path[i].to), "hex"),
       ]);
       let hash = app.crypto.hash(buffer);
 

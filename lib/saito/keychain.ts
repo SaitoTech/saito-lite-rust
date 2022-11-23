@@ -445,7 +445,7 @@ class Keychain {
       size: 420, // 420px square
       format: "svg", // use SVG instead of PNG
     };
-    console.debug("publickey for identicon 1 : ", publickey);
+    // console.debug("publickey for identicon 1 : ", publickey);
     const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
     return "data:image/svg+xml;base64," + data;
   }
@@ -456,7 +456,7 @@ class Keychain {
       size: 420, // 420px square
       format: "png", // use SVG instead of PNG
     };
-    console.debug("publickey for identicon 2 : ", publickey);
+    // console.debug("publickey for identicon 2 : ", publickey);
     const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
     return "data:image/png;base64," + data;
   }
