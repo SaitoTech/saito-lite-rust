@@ -10,10 +10,57 @@
 	top: var(--saito-header-height);
 	overflow-y: auto;
 	overflow-x: hidden;
-	border: 1px solid red;
 }
 
 .saito-arcade-sidebar {
-	border: 1px solid red;
 	width: 30rem;
+	padding-top: 2rem;
+}
+
+.saito-arcade-main {
+	padding: 2rem 1rem;
+}
+
+.arcade-menu {
+	list-style-type: none;
+	overflow-x: hidden;
+}
+
+.arcade-menu.left > li {
+	font-size: 2.1rem;
+    padding: 1.2rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.arcade-menu.left > li:hover, .arcade-menu.left > li.selected { 
+	background-color: var(--saito-primary);
+	color: var(--saito-white);
+}
+
+
+.arcade-leaderboard {
+	list-style-type: none;
+	padding: 0rem;
+	margin-top: 1.5rem;
+	position: relative;
+}
+
+.arcade-leaderboard li {
+	font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.arcade-leaderboard li > .rank {
+	margin-right: 1rem;
+}
+
+.arcade-leaderboard li > .publickey {
+	display: inline-block;
+    width: 90%;
+    text-overflow: ellipsis;
+}
+
+.arcade-game-info-box .saito-module .saito-module-image {
+	margin-right: 1rem;
 }

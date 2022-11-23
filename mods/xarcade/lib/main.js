@@ -2,7 +2,7 @@ const ArcadeMainTemplate = require('./main.template');
 
 class ArcadeMain {
 
-	constructor(app, mod, container) {
+	constructor(app, mod, container = "") {
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
@@ -11,13 +11,13 @@ class ArcadeMain {
 	render() {
 
 		if (document.querySelector('.saito-arcade-container') != null) {
-			document.addElementToSelector(ArcadeMainTemplate(this.app, this.mod), '.saito-arcade-container');
+			this.app.browser.addElementToSelector(ArcadeMainTemplate(this.app, this.mod), '.saito-arcade-container');
 		} else {
 
-			if (container != "") {
-				document.addElementToSelector(ArcadeMainTemplate(this.app, this.mod), container);
+			if (this.container != "") {
+				this.app.browser.addElementToSelector(ArcadeMainTemplate(this.app, this.mod), this.container);
 			} else {
-				document.addElementToDom(ArcadeMainTemplate(this.app, this.mod));
+				this.app.browser.addElementToDom(ArcadeMainTemplate(this.app, this.mod));
 			}
 		}
 
