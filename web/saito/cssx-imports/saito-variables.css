@@ -45,6 +45,7 @@ font imports
   --saito-default-font-color: #555;
   --saito-box-padding: 3rem 2rem; 
   --saito-profile-background: #fff;
+  --saito-border: #a5a5a5bb;
 
   /* --saito-blue: #35b2ff;
 
@@ -55,7 +56,7 @@ font imports
   --saito-box-shadow: 4px 4px 20px #a5a5a5f5;
   --saito-menu-background: #fff;
   --saito-profile-background: #fff;
-  --saito-border: #a5a5a5bb;
+
   --saito-border-light: #a5a5a533;
   --saito-chat-background: #fff;
 

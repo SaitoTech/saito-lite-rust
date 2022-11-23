@@ -111,6 +111,7 @@ span.redsquare-home-red-square+span {
   position: fixed;
   top: 14rem;
   overflow-y: scroll;
+  /* bottom: 0; */
   width: 54rem
 
 
