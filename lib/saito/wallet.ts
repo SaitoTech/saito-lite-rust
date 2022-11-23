@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.541,
+    version: 4.545,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -498,7 +498,7 @@ console.log("---------------------");
     return valid;
   }
 
-  onChainReorganization(block, lc) {
+  onChainReorganization(block, lc: boolean) {
     const block_id = block.returnId();
     const block_hash = block.returnHash();
 
@@ -519,7 +519,7 @@ console.log("---------------------");
       //
       // refresh inputs (allow respending)
       //
-      if (block_id == 0) {
+      if (block_id == BigInt(0)) {
         for (let i = 0; i < this.wallet.inputs.length; i++) {
           if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
             this.wallet.spends[i] = 0;
