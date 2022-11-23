@@ -77,17 +77,15 @@ class Peer {
 
     // add our path
     const hop = new Hop();
-    hop.from = this.app.crypto.fromBase58(this.app.wallet.returnPublicKey());
-    hop.to = this.app.crypto.fromBase58(this.returnPublicKey());
+    hop.from = this.app.wallet.returnPublicKey();
+    hop.to = this.returnPublicKey();
     let buffer = Buffer.concat([
       Buffer.from(tx.transaction.sig, "hex"),
-      Buffer.from(hop.to, "hex"),
+      Buffer.from(this.app.crypto.fromBase58(hop.to), "hex"),
     ]);
-    //let hash = this.app.crypto.hash(buffer);
 
     hop.sig = this.app.crypto.signBuffer(buffer, this.app.wallet.returnPrivateKey());
-    //console.debug("addPathToTransaction - Tx sign : " + tx.transaction.sig + ", hop from : " + hop.from + ", hop to : " + hop.to + ", : hash :" + this.app.crypto.hash(buffer) + ", hop sign : " + hop.sig);
-    tmptx.transaction.path.push(hop);
+    tmptx.path.push(hop);
     return tmptx;
   }
 
@@ -98,8 +96,8 @@ class Peer {
     if (tx.isFrom(this.peer.publickey)) {
       return 1;
     }
-    for (let i = 0; i < tx.transaction.path.length; i++) {
-      if (tx.transaction.path[i].from === this.peer.publickey) {
+    for (let i = 0; i < tx.path.length; i++) {
+      if (tx.path[i].from === this.peer.publickey) {
         return 1;
       }
     }
@@ -107,20 +105,19 @@ class Peer {
   }
 
   isConnected() {
-    if(this.uses_stun){
-      if(this.stun.data_channel.readyState === "open"){
+    if (this.uses_stun) {
+      if (this.stun.data_channel.readyState === "open") {
         return true;
       }
       return false;
-    }else {
+    } else {
       if (this.socket) {
         if (this.socket.readyState === this.socket.OPEN) {
-           return true;
+          return true;
         }
       }
       return false;
     }
-
   }
 
   //
@@ -173,7 +170,7 @@ class Peer {
   // NETWORKING //
   ////////////////
   async sendResponse(message_id, data) {
-    let channel = this.uses_stun? this.stun.data_channel : this.socket;
+    let channel = this.uses_stun ? this.stun.data_channel : this.socket;
     await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
   }
 
@@ -237,7 +234,6 @@ class Peer {
     const data_to_send = { message: message, data: data };
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-
     // if(channel){
     //   this.app.networkApi.sendAPICall(channel, "SENDMESG", buffer).then(() => {
     //   });
@@ -246,22 +242,19 @@ class Peer {
     // }
 
     if (this.uses_stun && this.stun.data_channel.readyState === "open") {
-      this.app.networkApi.sendAPICall(this.stun.data_channel, MessageType.ApplicationMessage, buffer).then(() => {
-      });
+      this.app.networkApi
+        .sendAPICall(this.stun.data_channel, MessageType.ApplicationMessage, buffer)
+        .then(() => {});
     } else {
       if (this.socket && this.socket.readyState === this.socket.OPEN) {
-        this.app.networkApi.sendAPICall(this.socket, MessageType.ApplicationMessage, buffer).then(() => {
-        });
+        this.app.networkApi
+          .sendAPICall(this.socket, MessageType.ApplicationMessage, buffer)
+          .then(() => {});
       } else {
         this.sendRequestWithCallbackAndRetry(message, data);
       }
-
     }
-
   }
-
-
-
 
   //
   // new default implementation
@@ -287,9 +280,8 @@ class Peer {
     const data_to_send = { message: message, data: data };
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-
-    if(this.uses_stun){
-      let data_channel = this.stun.data_channel
+    if (this.uses_stun) {
+      let data_channel = this.stun.data_channel;
       if (data_channel && data_channel.readyState === "open") {
         this.app.networkApi
           .sendAPICall(data_channel, MessageType.ApplicationMessage, buffer)
@@ -315,7 +307,7 @@ class Peer {
           }
         }
       }
-    }else if(this.socket){
+    } else if (this.socket) {
       if (this.socket && this.socket.readyState === this.socket.OPEN) {
         this.app.networkApi
           .sendAPICall(this.socket, MessageType.ApplicationMessage, buffer)
@@ -342,9 +334,6 @@ class Peer {
         }
       }
     }
-
-
-
   }
 
   //

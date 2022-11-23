@@ -1197,7 +1197,7 @@ class Network {
     // now send the transaction out with the appropriate routing hop
     //
     let fees = tx.returnFeesTotal();
-    for (let i = 0; i < tx.transaction.path.length; i++) {
+    for (let i = 0; i < tx.path.length; i++) {
       fees = fees / BigInt(2);
     }
     this.peers.forEach((peer) => {
@@ -1209,7 +1209,7 @@ class Network {
       if (peer.peer.receivetxs === 0) {
         return;
       }
-      if (!peer.inTransactionPath(tx) && !!peer.returnPublicKey()) {
+      if (!!tx.path && !peer.inTransactionPath(tx) && !!peer.returnPublicKey()) {
         const tmptx = peer.addPathToTransaction(tx);
         if (peer.socket && peer.socket.readyState === peer.socket.OPEN) {
           // 1 = WebSocket Open

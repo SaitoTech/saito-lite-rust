@@ -5,6 +5,7 @@ import { Saito } from "../../apps/core";
 import Goldenticket from "./goldenticket";
 import GoldenTicket from "./goldenticket";
 import UtxoSet from "./utxoset";
+import Hop from "./hop";
 
 const BLOCK_HEADER_SIZE = 301;
 
