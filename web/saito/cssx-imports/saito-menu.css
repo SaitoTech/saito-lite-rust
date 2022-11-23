@@ -14,15 +14,13 @@
     position: relative;
 }
 
-.saito-menu>ul>li:hover,
-.saito-menu>ul>li:hover>i{
+.saito-menu>ul>li:hover{
     background-color: var(--saito-primary);
     color: var(--saito-white);
 }
 
-.saito-menu>ul>li:hover p  {
-    background-color: var(--saito-white);
-    color: var(--saito-default-font-color);   
+.saito-menu>ul>li:hover>span, .saito-menu>ul>li:hover>i:before {
+    color: var(--saito-white);   
 }
 
 .saito-menu>ul>li>span {
@@ -35,4 +33,17 @@
 	-webkit-text-stroke: var(--saito-default-font-color) 1px;
     color: transparent;
     font-size: smaller;
+}
+
+.saito-notification-dot {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+    position: absolute;
+    bottom: 25px;
+    left: 3.5rem;
+    text-align: center;
+    line-height: 2.2rem;
 }
