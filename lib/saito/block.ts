@@ -907,7 +907,12 @@ class Block {
       // this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i));
       if (!this.transactions[i].isFeeTransaction()) {
         for (let k = 0; k < this.transactions[i].transaction.from.length; k++) {
-          this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i));
+          this.transactions[i].generateMetadata(
+            this.app,
+            this.block.id,
+            BigInt(i),
+            this.returnHash()
+          );
           // this.transactions[i].transaction.from[k].generateKey(this.app);
           // TODO : add this check
           this.slips_spent_this_block[this.transactions[i].transaction.from[k].returnKey()] = 1;
@@ -979,7 +984,7 @@ class Block {
     //
     const creator_publickey = this.returnCreator();
     this.transactions.map((tx, index) =>
-      tx.generateMetadata(this.app, this.block.id, BigInt(index))
+      tx.generateMetadata(this.app, this.block.id, BigInt(index), this.returnHash())
     );
 
     //
@@ -1755,7 +1760,12 @@ class Block {
       // block-specific data in the same way that all the transactions in
       // the block have been. we must do this prior to comparing them.
       //
-      cv.fee_transaction.generateMetadata(this.app, this.block.id, BigInt(cv.ft_idx));
+      cv.fee_transaction.generateMetadata(
+        this.app,
+        this.block.id,
+        BigInt(cv.ft_idx),
+        this.returnHash()
+      );
 
       const hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature(this.app));
       const hash2 = this.app.crypto.hash(cv.fee_transaction.serializeForSignature(this.app));
@@ -1857,17 +1867,17 @@ class Block {
       //
       // lite-browsers cannot load from disk
       //
-      //if (this.app.BROWSER == 0) {
-      let block = await this.app.storage.loadBlockByFilename(
-        this.app.storage.generateBlockFilename(this)
-      );
-      block.generateHashes();
-      this.transactions = block.transactions;
-      this.generateMetadata();
-      this.block_type = BlockType.Full;
-      //} else {
-      //return false;
-      //}
+      if (this.app.BROWSER == 0) {
+        let block = await this.app.storage.loadBlockByFilename(
+          this.app.storage.generateBlockFilename(this)
+        );
+        block.generateHashes();
+        this.transactions = block.transactions;
+        this.generateMetadata();
+        this.block_type = BlockType.Full;
+      } else {
+        return false;
+      }
 
       return true;
     }

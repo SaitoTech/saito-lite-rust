@@ -22,6 +22,7 @@ class Slip {
   //public uuid: string;
   public sid: number;
   public block_id: bigint;
+  public block_hash: string;
   public tx_ordinal: bigint;
   public lc: boolean;
   public timestamp: number;
@@ -36,7 +37,8 @@ class Slip {
     slip_ordinal = 0,
     block_id = BigInt(0),
     tx_ordinal = BigInt(0),
-    lc = true
+    lc = true,
+    block_hash = ""
   ) {
     //
     // consensus variables
@@ -55,6 +57,7 @@ class Slip {
     this.timestamp = 0; // timestamp
     this.key = ""; // index in utxoset hashmap
     this.from = new Array<Slip>();
+    this.block_hash = block_hash;
   }
 
   returnAmount(): bigint {
@@ -111,7 +114,9 @@ class Slip {
       this.type,
       this.sid,
       this.block_id,
-      this.tx_ordinal
+      this.tx_ordinal,
+      this.lc,
+      this.block_hash
     );
   }
 

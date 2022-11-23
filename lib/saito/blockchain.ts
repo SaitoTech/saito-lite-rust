@@ -30,8 +30,8 @@ class Blockchain {
   public blocks: Map<string, Block>;
   // public utxoset: any;
   public prune_after_blocks: number;
-  public parent_blocks_fetched : number;
-  public parent_blocks_fetched_limit : number;
+  public parent_blocks_fetched: number;
+  public parent_blocks_fetched_limit: number;
   public indexing_active: boolean;
   public run_callbacks: any;
   public callback_limit: number;
@@ -60,7 +60,6 @@ class Blockchain {
     //
     this.parent_blocks_fetched = 0;
     this.parent_blocks_fetched_limit = 10;
-
 
     //
     // set to true when adding blocks to disk (must be done one at a time!)
@@ -108,7 +107,7 @@ class Blockchain {
     //
     if (this.isBlockIndexed(block.hash)) {
       if (this.debugging) {
-        console.error("ERROR 581023: block exists in blockchain index");
+        console.error("ERROR 581023: block exists in blockchain index : " + block.hash);
       }
       this.indexing_active = false;
       return;
@@ -163,7 +162,7 @@ class Blockchain {
     //
     if (this.isBlockIndexed(block_hash)) {
       if (this.debugging) {
-        console.error("ERROR 581023: block exists in blockchain index");
+        console.error("ERROR 581024: block exists in blockchain index : " + block_hash);
       }
       this.indexing_active = false;
       return;
@@ -184,13 +183,13 @@ class Blockchain {
           console.log("parent block hash is not indexed...");
         }
 
-	if (this.parent_blocks_fetched < this.parent_blocks_fetched_limit) {
+        if (this.parent_blocks_fetched < this.parent_blocks_fetched_limit) {
           await this.app.network.fetchBlock(parent_block_hash);
-	  this.parent_blocks_fetched++;
-	} else {
-	  console.log("OFF CHAIN -- not looping back endlessly.");
-	  return;
-	}
+          this.parent_blocks_fetched++;
+        } else {
+          console.log("OFF CHAIN -- not looping back endlessly.");
+          return;
+        }
       }
     } else {
       this.parent_blocks_fetched = 0;
@@ -383,15 +382,13 @@ class Blockchain {
       if (does_new_chain_validate) {
         await this.addBlockSuccess(block);
 
-console.log("trying to set LC");
-	try {
-
+        console.log("trying to set LC");
+        try {
           this.blocks.get(block_hash).lc = 1;
-
-	} catch (err) {
-console.log("block is not stored locally...");
-	}
-console.log("emitting stuff");
+        } catch (err) {
+          console.log("block is not stored locally...");
+        }
+        console.log("emitting stuff");
 
         this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
         this.app.connection.emit("BlockchainNewLongestChainBlock", {
@@ -403,11 +400,11 @@ console.log("emitting stuff");
       } else {
         await this.addBlockFailure(block);
 
-	try {
+        try {
           this.blocks.get(block_hash).lc = 0;
-	} catch (err) {
-console.log("block is not stored locally...");
-	}
+        } catch (err) {
+          console.log("block is not stored locally...");
+        }
 
         this.app.connection.emit("BlockchainAddBlockFailure", block_hash);
         this.indexing_active = false;
@@ -474,7 +471,7 @@ console.log("block is not stored locally...");
       //
       block.affixCallbacks();
 
-console.log("done affixing callbacks!");
+      console.log("done affixing callbacks!");
 
       //
       // don't run callbacks if reloading (force!)
@@ -538,7 +535,7 @@ console.log("done affixing callbacks!");
         }
       }
 
-console.log("moving into onNewBlock");
+      console.log("moving into onNewBlock");
 
       //
       // callback
@@ -546,7 +543,7 @@ console.log("moving into onNewBlock");
       this.app.modules.onNewBlock(block, true /*i_am_the_longest_chain*/); // TODO : undefined i_am_the_longest_chain ???
     }
 
-console.log("done add block success...");
+    console.log("done add block success...");
   }
 
   async addBlockFailure(block: Block) {

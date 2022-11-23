@@ -943,12 +943,13 @@ class Transaction {
     return true;
   }
 
-  generateMetadata(app: Saito, block_id: bigint, tx_ordinal: bigint) {
+  generateMetadata(app: Saito, block_id: bigint, tx_ordinal: bigint, block_hash: string) {
     for (let i = 0; i < this.transaction.from.length; i++) {
       this.transaction.from[i].generateKey(app);
     }
     for (let i = 0; i < this.transaction.to.length; i++) {
       this.transaction.to[i].block_id = block_id;
+      this.transaction.to[i].block_hash = block_hash;
       this.transaction.to[i].tx_ordinal = tx_ordinal;
       this.transaction.to[i].sid = i;
       this.transaction.to[i].generateKey(app);

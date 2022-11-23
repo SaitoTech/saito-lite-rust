@@ -99,7 +99,9 @@ class Mempool {
   }
 
   addBlock(block) {
-    console.log("Mempool : adding block... : " + block.returnHash());
+    console.log(
+      "Mempool : adding block... : " + block.returnHash() + " of type : " + block.block_type
+    );
     if (!block) {
       console.warn("ERROR 529384: mempool add.block is not provided");
       return false;
