@@ -528,7 +528,7 @@ class Network {
           this.dead_peers.push(peer);
         }
 
-        console.debug("keep_peer = " + keep_peer);
+        //console.debug("keep_peer = " + keep_peer);
         //
         // close and destroy socket, and stop timers
         //
@@ -1069,7 +1069,7 @@ class Network {
     if (this.app.BROWSER) {
       return;
     }
-    console.debug("network.propagateBlock", blk.returnHash());
+    //console.debug("network.propagateBlock", blk.returnHash());
     if (!blk) {
       return;
     }

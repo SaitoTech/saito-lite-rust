@@ -138,7 +138,7 @@ class Block {
    * @returns {Block}
    */
   deserialize(buffer?) {
-    console.debug("deserializing block");
+    //console.debug("deserializing block");
     const transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
 
     this.block.id = this.app.binary.u64FromBytes(buffer.slice(4, 12)); // TODO : fix this to support correct ranges.
@@ -230,7 +230,7 @@ class Block {
     if (block_type === "Pruned") {
       this.block_type = BlockType.Pruned;
       this.transactions = [];
-      console.debug(`block ${this.returnHash()} type set as pruned`);
+      //console.debug(`block ${this.returnHash()} type set as pruned`);
       return true;
     }
     return false;
@@ -540,7 +540,7 @@ class Block {
         }
       }
     } else {
-      console.debug("previous block not found");
+      //console.debug("previous block not found");
       //
       // if there is no previous block, the difficulty is not adjusted. validation
       // rules will cause the block to fail unless it is the first block.
@@ -562,7 +562,7 @@ class Block {
     // calculate payments to miners / routers
     //
     if (cv.gt_num > 0) {
-      console.debug("golden ticket found at index : " + cv.gt_idx);
+      //console.debug("golden ticket found at index : " + cv.gt_idx);
       const golden_ticket_transaction = this.transactions[cv.gt_idx];
       const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
@@ -571,7 +571,7 @@ class Block {
 
       // miner payout is fees from previous block, no staking treasury
       if (previous_block) {
-        console.debug("checking fees from previous block : " + previous_block.hash);
+        //console.debug("checking fees from previous block : " + previous_block.hash);
         // limit previous block payout to avg income
         let previous_block_payout = previous_block.returnFeesTotal();
         if (
