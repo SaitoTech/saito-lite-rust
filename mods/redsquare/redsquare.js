@@ -2,6 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoMain = require("./lib/main");
+const SaitoMenu = require("./lib/menu");
 
 class RedSquare extends ModTemplate {
 
@@ -50,24 +51,9 @@ class RedSquare extends ModTemplate {
 
   initialize(app) {
 
-console.log("initialize here...")
-
     super.initialize(app);
-
-console.log("initialize here... 2")
-
     this.load();
-
-    this.header = new SaitoHeader(app, this);
-console.log("initialize here... 3")
-    this.main = new SaitoMain(app, this);
-console.log("initialize here... 4")
-
-    this.addComponent(this.header);
-console.log("initialize here... 5")
-    this.addComponent(this.main);
-console.log("initialize here... 5")
-
+  
   }
 
 
@@ -79,9 +65,18 @@ console.log("initialize here... 5")
 
 
   render() {
-console.log("render 1");
+
+    if (this.main == null) {
+      this.header = new SaitoHeader(this.app, this);
+      this.main = new SaitoMain(this.app, this);
+      this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
+
+      this.addComponent(this.header);
+      this.addComponent(this.main);
+      this.addComponent(this.menu);
+    }
+
     super.render();
-console.log("render 2");
   }
 
   async onConfirmation(blk, tx, conf, app) {
