@@ -31,11 +31,6 @@ Saito Username
 Saito User
 -----------------------------------------------------------------*/
 
-.saito-userline {
-    color: #888;
-}
-
-
 .saito-user {
     display: grid;
     cursor: pointer;
@@ -48,12 +43,6 @@ Saito User
 }
 
 
-.saito-user.small {
-    grid-template-columns: min-content 1fr;
-    grid-template-rows: 1fr;
-    align-items: center;
-}
-
 /*  saito-identicon-box  */
 .saito-user>div:nth-child(1) {
     margin-right: 1rem;
@@ -62,9 +51,7 @@ Saito User
     grid-row: span 2;
 }
 
-/* this hack is required in chrome to force */
-/* the name to steal the upper row from the */
-/* timebox, so the name does not cut off    */
+
 .saito-user>.saito-address-long:nth-child(2) {
     grid-column-end: 4;
 }
@@ -111,133 +98,8 @@ Saito User
 
 
 
-/* ----------------------------------------------------------------
-Saito List,Saito User List and Saito User 
------------------------------------------------------------------*/
-
-.saito-list {
-    padding: 1rem;
-    z-index: 1;
-}
-
-.saito-list.horizontal {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min-content, 20rem));
-    grid-gap: 1rem;
-}
-
-/*  Default Size */
-
-.saito-list>div:not(:last-child) {
-    margin-bottom: 1rem;
-}
-
-.saito-list.horizontal>div:not(:last-child) {
-    margin-bottom: 0;
-}
 
 
-.saito-user-dropdown {
-    position: absolute;
-    right: 2rem;
-    top: 1rem;
-    width: 20rem;
-    background-color: var(--saito-gray);
-    z-index: 2;
-    display: none;
-}
-
-.saito-user-dropdown.show {
-    display: block;
-}
-
-/*** SATIO Identicons ***/
-
-.saito-module-description-identicon-box {
-    display: flex;
-    flex-direction: row;   
-}
-
-.saito-module-identicon-box {
-    height: 2.5rem;
-    width: 2.5rem;
-    background-image: url(/saito/img/no-profile.png);
-    background-size: 100%;
-    margin-right: 1rem;
-    overflow: hidden;
-}
 
 
-.saito-module-identicon-box i {
-    font-size: 2.2rem;
-    line-height: 2.5rem;
-    width: 2.5rem;
-    text-align: center;
-}
-
-.saito-module-identicon-box i:hover {
-    transform: scale(1.1);
-}
-
-.saito-module-identicon-box img {
-    margin-right: 0.7rem;
-    border: 0px;
-    width: 2rem;
-    min-width: 2.5rem;
-    height: 2.5rem;
-}
-
-.saito-module-identicon.small {
-    width: 2.5rem;
-    height: 2.5rem;
-}
-
-.player-slot-ellipsis{
-    position: relative;
-}
-
-.player-slot-ellipsis i{
-    position: absolute;
-    bottom: 0;
-}
-
-/*** SATIO Identicons ***/
-
-@media screen and (max-width: 1200px) {}
-
-@media screen and (max-width: 768px) {
-    .item-info {
-        width: 70%;
-    }
-
-    .item-info span {
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .saito-list>div>img {
-        width: 3.5rem;
-        height: 3.5rem;
-    }
-
-    .saito-list.rectangle .item-info {
-        width: 70%;
-    }
-
-    .saito-list.rectangle .item-info span {
-        max-width: 80%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .saito-list.rectangle>div>img {
-        width: 5rem;
-        height: 3.5rem;
-    }
-}
-
-@media screen and (max-width: 320px) {}
 
