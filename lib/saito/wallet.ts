@@ -498,7 +498,7 @@ console.log("---------------------");
     return valid;
   }
 
-  onChainReorganization(block, lc) {
+  onChainReorganization(block, lc: boolean) {
     const block_id = block.returnId();
     const block_hash = block.returnHash();
 
@@ -519,7 +519,7 @@ console.log("---------------------");
       //
       // refresh inputs (allow respending)
       //
-      if (block_id == 0) {
+      if (block_id == BigInt(0)) {
         for (let i = 0; i < this.wallet.inputs.length; i++) {
           if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
             this.wallet.spends[i] = 0;

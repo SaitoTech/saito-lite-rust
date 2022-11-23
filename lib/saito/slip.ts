@@ -1,7 +1,7 @@
-import {Saito} from "../../apps/core";
+import { Saito } from "../../apps/core";
 import block from "./block";
 import assert from "assert";
-import {SLIP_SIZE} from "./transaction";
+import { SLIP_SIZE } from "./transaction";
 
 export enum SlipType {
   Normal = 0,
@@ -21,11 +21,12 @@ class Slip {
   public type: SlipType;
   //public uuid: string;
   public sid: number;
-  public block_id : bigint;
-  public tx_ordinal : bigint;
-  public lc: number;
+  public block_id: bigint;
+  public tx_ordinal: bigint;
+  public lc: boolean;
   public timestamp: number;
   public key: string;
+  public from: Array<Slip>;
 
   // amount can be a string in NOLAN or a BigInt
   constructor(
@@ -35,7 +36,7 @@ class Slip {
     slip_ordinal = 0,
     block_id = BigInt(0),
     tx_ordinal = BigInt(0),
-    lc = 1,
+    lc = true
   ) {
     //
     // consensus variables
@@ -53,9 +54,10 @@ class Slip {
     this.lc = lc; // longest-chain
     this.timestamp = 0; // timestamp
     this.key = ""; // index in utxoset hashmap
+    this.from = new Array<Slip>();
   }
 
-  returnAmount() :bigint {
+  returnAmount(): bigint {
     return this.amt;
   }
 
@@ -72,7 +74,7 @@ class Slip {
   // 2 = other is bigger
   // 3 = same
   //
-  compare(other_slip:Slip):number {
+  compare(other_slip: Slip): number {
     const x = BigInt("0x" + this.returnPublicKey());
     const y = BigInt("0x" + other_slip.returnPublicKey());
 
@@ -103,10 +105,17 @@ class Slip {
   }
 
   clone() {
-    return new Slip(this.add, BigInt(this.amt.toString()), this.type, this.sid, this.block_id, this.tx_ordinal);
+    return new Slip(
+      this.add,
+      BigInt(this.amt.toString()),
+      this.type,
+      this.sid,
+      this.block_id,
+      this.tx_ordinal
+    );
   }
 
-  deserialize(app:Saito, buffer) {
+  deserialize(app: Saito, buffer) {
     this.add = app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
     // this.uuid = Buffer.from(buffer.slice(33, 65)).toString("hex");
     this.amt = app.binary.u128FromBytes(buffer.slice(33, 49));
@@ -126,7 +135,7 @@ class Slip {
     return 1;
   }
 
-  onChainReorganization(app:Saito, lc, slip_value) {
+  onChainReorganization(app: Saito, lc, slip_value: number) {
     if (this.isNonZeroAmount()) {
       app.utxoset.update(this.returnKey(), slip_value);
     }
@@ -136,7 +145,7 @@ class Slip {
     return `         ${this.sid} | ${this.add} | ${this.amt.toString()}`;
   }
 
-  generateKey(app : Saito) {
+  generateKey(app: Saito) {
     const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
     const block_id = app.binary.u64AsBytes(this.block_id.toString());
     const tx_ordinal = app.binary.u64AsBytes(this.tx_ordinal.toString());
@@ -164,8 +173,7 @@ class Slip {
    * @param app
    * @param uuid
    */
-  serialize(app:Saito) {
-
+  serialize(app: Saito) {
     const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
 
     const amount = app.binary.u128AsBytes(this.amt.toString());
@@ -174,12 +182,19 @@ class Slip {
     const slip_ordinal = app.binary.u8AsByte(this.sid);
     const slip_type = [this.type as number];
 
-    let arr = new Uint8Array([...publickey, ...amount, ...block_id, ...tx_ordinal, slip_ordinal, ...slip_type]);
+    let arr = new Uint8Array([
+      ...publickey,
+      ...amount,
+      ...block_id,
+      ...tx_ordinal,
+      slip_ordinal,
+      ...slip_type,
+    ]);
     console.assert(arr.length == SLIP_SIZE, "Slip Size is incorrect");
     return arr;
   }
 
-  serializeInputForSignature(app:Saito) : Uint8Array {
+  serializeInputForSignature(app: Saito): Uint8Array {
     const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
 
     const amount = app.binary.u128AsBytes(this.amt.toString());
@@ -193,7 +208,7 @@ class Slip {
     return arr;
   }
 
-  serializeOutputForSignature(app:Saito) : Uint8Array {
+  serializeOutputForSignature(app: Saito): Uint8Array {
     const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add), 33);
 
     const amount = app.binary.u128AsBytes(this.amt.toString());
@@ -207,7 +222,7 @@ class Slip {
     return arr;
   }
 
-  validate(app:Saito) : boolean {
+  validate(app: Saito): boolean {
     if (this.amt > BigInt(0)) {
       return true;
       //return false; // TODO : isSpendable is not implemented. so returning false here for now just to catch bugs.

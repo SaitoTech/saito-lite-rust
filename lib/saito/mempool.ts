@@ -312,7 +312,10 @@ class Mempool {
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (this.mempool.transactions.length === 0 && this.app.blockchain.returnLatestBlockId() > 1) {
+    if (
+      this.mempool.transactions.length === 0 &&
+      this.app.blockchain.returnLatestBlockId() > BigInt(1)
+    ) {
       console.log("CANNOT PRODUCE AS MEMPOLL HAS NO TXS AND LAST_BID > 1");
       return false;
     }

@@ -53,7 +53,7 @@ class Blockchain {
     //
     // downgrade blocks after N blocks
     //
-    this.prune_after_blocks = 100;
+    this.prune_after_blocks = 6;
 
     //
     // sanity check on endless looping to fetch parents
@@ -425,7 +425,7 @@ console.log("block is not stored locally...");
     //console.log("blockchain.addBlockSuccess : ", block.returnHash());
     //this.app.blockring.print();
 
-console.log("ADD BLOCK SUCCESS!");
+    console.log("ADD BLOCK SUCCESS!");
 
     let block_id = block.returnId();
 
@@ -581,7 +581,7 @@ console.log("done add block success...");
     //
     // downgrade blocks still on the chain
     //
-    if (this.prune_after_blocks > this.app.blockring.returnLatestBlockId()) {
+    if (BigInt(this.prune_after_blocks) > this.app.blockring.returnLatestBlockId()) {
       return;
     }
 

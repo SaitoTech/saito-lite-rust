@@ -5,6 +5,7 @@ import { Saito } from "../../apps/core";
 import Goldenticket from "./goldenticket";
 import GoldenTicket from "./goldenticket";
 import UtxoSet from "./utxoset";
+import Hop from "./hop";
 
 const BLOCK_HEADER_SIZE = 301;
 
@@ -112,8 +113,6 @@ class Block {
 
   affixCallbacks() {
     for (let z = 0; z < this.transactions.length; z++) {
-let txmsg = this.transactions[z].returnMessage();
-console.log("checking tx " + (z+1) + " " + txmsg.module);
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
         const txmsg = this.transactions[z].returnMessage();
         console.log("txmsg length: ", txmsg ? JSON.stringify(txmsg).length : txmsg);
@@ -125,7 +124,6 @@ console.log("checking tx " + (z+1) + " " + txmsg.module);
           this.callbackTxs
         );
       }
-console.log("done checking tx " + (z+1) + " " + txmsg.module);
     }
   }
 
@@ -1134,12 +1132,12 @@ console.log("done checking tx " + (z+1) + " " + txmsg.module);
   onChainReorganization(lc) {
     const block_id = this.returnId();
     for (let i = 0; i < this.transactions.length; i++) {
-console.log("tx ocr " + i);
+      console.log("tx ocr " + i);
       this.transactions[i].onChainReorganization(this.app, lc, block_id);
     }
-console.log("done tx ocr 1");
+    console.log("done tx ocr 1");
     this.lc = lc;
-console.log("done tx ocr 2");
+    console.log("done tx ocr 2");
   }
 
   asReadableString() {
