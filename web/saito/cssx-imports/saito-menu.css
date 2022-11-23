@@ -1,3 +1,38 @@
-.redsquare-menu {
+.saito-menu>ul {
+    padding: 0;
+    list-style-type: none;
+}
 
+.saito-menu>ul>li {
+    padding: 1rem;
+    display: flex;
+    list-style: none;
+    cursor: pointer;
+    transition: all .2s;
+    align-items: center;
+    font-size: 2.5rem;
+    position: relative;
+}
+
+.saito-menu>ul>li:hover,
+.saito-menu>ul>li:hover>i{
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+
+.saito-menu>ul>li:hover p  {
+    background-color: var(--saito-white);
+    color: var(--saito-default-font-color);   
+}
+
+.saito-menu>ul>li>span {
+	margin-left: 2rem;
+    font-size: 2.2rem;
+    transform: translateY(8%);
+}
+
+.saito-menu>ul>li>i:before {
+	-webkit-text-stroke: var(--saito-default-font-color) 1px;
+    color: transparent;
+    font-size: smaller;
 }
