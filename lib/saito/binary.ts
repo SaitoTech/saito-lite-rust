@@ -66,6 +66,38 @@ class Binary {
   }
 
   /**
+   * Converts from big-endian binary encoded u128(from the wire)
+   * into a BigInt
+   * @param {Array} bytes - array of bytes
+   * @returns BigInt
+   */
+  u128FromBytes(bytes): bigint {
+    const top = BigInt(this.u64FromBytes(bytes.slice(0, 8)));
+    const bottom = BigInt(this.u64FromBytes(bytes.slice(8, 16)));
+    const max_u64 = BigInt(18446744073709551616);
+    return top * max_u64 + bottom;
+  }
+
+  /**
+   * Converts from a JS Number, treated as an integery, into
+   * a big-endian binary encoded u128(for the wire)
+   * @param {BigInt|number|string} bigValue - BigInt
+   * @returns array of bytes
+   */
+  u128AsBytes(bigValue) {
+    bigValue = BigInt(bigValue); // force into Big
+    const max_u64 = BigInt(18446744073709551616);
+    const top = bigValue / max_u64;
+    const bottom = bigValue - BigInt(max_u64 * top);
+    const top_bytes = this.u64AsBytes(Number(top));
+    const bottom_bytes = this.u64AsBytes(Number(bottom));
+    return Buffer.concat([
+      Buffer.from(new Uint8Array(top_bytes)),
+      Buffer.from(new Uint8Array(bottom_bytes)),
+    ]);
+  }
+
+  /**
    * Converts from big-endian binary encoded u64(from the wire)
    * into a JS Number(as an integer).
    * @param {array} bytes - array of 4 bytes

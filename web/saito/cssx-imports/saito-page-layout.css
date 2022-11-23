@@ -1,5 +1,3 @@
-
-
 .saito-container {
     width: 100vw;
     height: calc(100vh - var(--saito-header-height)); /* Should factor in top margin so it fits the screen */
@@ -39,10 +37,7 @@
     background-color: var(--saito-background-color);
     grid-column-start: 3;
     grid-row: 1/2;
-<<<<<<< HEAD
-=======
     background-color: var(--saito-background-color);
->>>>>>> bb0e8a4f2f4366880e8b8059f7d9678d7200b472
 }
 
 .saito-sidebar.right.mobile {
@@ -204,15 +199,4 @@
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
 

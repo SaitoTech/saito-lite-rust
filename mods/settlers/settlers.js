@@ -1,5 +1,5 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
-const GameHexGrid = require("../../lib/saito/ui/game-hexgrid/game-hexgrid");
+const GameHexGrid = require("../../lib/saito/new-ui/game-hexgrid/game-hexgrid");
 const SettlersSkin = require("./lib/settlers.skin.js");
 const SettlersGameoptionsTemplate = require("./lib/settlers-game-options.template");
 const SettlersTradeHelpOverlayTemplate = require("./lib/settlers-trade-help-overlay.template");

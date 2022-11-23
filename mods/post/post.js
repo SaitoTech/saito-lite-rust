@@ -131,7 +131,7 @@ class Post extends ModTemplate {
         if (confirmed) {
           let delete_tx = this.createDeleteTransaction(this.urlParams.get("delete"));
           this.app.network.propagateTransaction(delete_tx);
-        }  
+        }
       }
       confirmIt();
     }
@@ -190,7 +190,7 @@ class Post extends ModTemplate {
       }
     }
 
-    
+
     //
     // fetch posts from server
     //
@@ -280,7 +280,7 @@ class Post extends ModTemplate {
         }
       );
     }
-    
+
   }
 
   render() {
@@ -344,7 +344,7 @@ class Post extends ModTemplate {
 
     return this.app.wallet.signTransaction(newtx);
   }
- 
+
   async receivePostTransaction(tx) {
     let txmsg = tx.returnMessage();
     let pfulltx = JSON.stringify(tx.transaction);
@@ -400,10 +400,10 @@ class Post extends ModTemplate {
     await this.app.storage.executeDatabase(csql, cparams, "post");
 
     // insert replacement row first_posts
-    let fpsql = `INSERT INTO first_posts 
-            (id, thread_id, parent_id, type, publickey, title, img, text, forum, link, tx, lite_tx, ts, children, flagged, deleted, post_num) 
+    let fpsql = `INSERT INTO first_posts
+            (id, thread_id, parent_id, type, publickey, title, img, text, forum, link, tx, lite_tx, ts, children, flagged, deleted, post_num)
             VALUES ($pid , $pthread_id , $pparent_id , $ptype , $ppublickey , $ptitle , $pimg , $ptext , $pforum , $plink , $pfulltx , $plitetx ,  $pts ,  $pchildren , $pflagged , $pdeleted , $post_num);`;
- 
+
     let fpparams = {
       $pid: tx.transaction.sig,
       $pthread_id: tx.transaction.sig,
@@ -449,7 +449,7 @@ class Post extends ModTemplate {
 
     return this.app.wallet.signTransaction(newtx);
   }
-  
+
   async receiveEditPostTransaction(tx) {
     console.log("########Edit POST########");
 
@@ -460,8 +460,8 @@ class Post extends ModTemplate {
     plitetx.msg.images = [];
     plitetx = this.app.wallet.signTransaction(plitetx);
     plitetx = JSON.stringify(plitetx.transaction);
-    
-    
+
+
     let sql = `SELECT * FROM posts WHERE id = $id`;
     let params = { $id: txmsg.post_id };
     let rows = await this.app.storage.queryDatabase(sql, params, "post");
@@ -481,7 +481,7 @@ class Post extends ModTemplate {
           };
           await this.app.storage.executeDatabase(sql, params, "post");
           //Also update first_posts
-          
+
           /*
           //Read the number of posts (stored in a second table)
           let sql2 = `SELECT * FROM first_posts WHERE id = $pid;`;
@@ -496,7 +496,7 @@ class Post extends ModTemplate {
                   $ptext: txmsg.comment,
                   $pfulltx: pfulltx,
                   $plitetx: plitetx,
-                };  
+                };
                 await this.app.storage.executeDatabase(sql, params, "post");
               }
           }
@@ -504,7 +504,7 @@ class Post extends ModTemplate {
         }
       }
     }
-    
+
 
     /*if (txmsg.title == "") {
       return;
@@ -540,8 +540,8 @@ class Post extends ModTemplate {
 
           await this.app.storage.executeDatabase(sql, params, "post");
 
-          sql = `INSERT INTO 
-            posts (id, thread_id, parent_id, type, publickey, title, img, text, forum, link, tx, lite_tx, ts, children, flagged, deleted) 
+          sql = `INSERT INTO
+            posts (id, thread_id, parent_id, type, publickey, title, img, text, forum, link, tx, lite_tx, ts, children, flagged, deleted)
             VALUES ($pid , $pthread_id , $pparent_id , $ptype , $ppublickey , $ptitle , $pimg ,  $ptext , $pforum , $plink , $pfulltx , $plitetx , $pts , $pchildren , $pflagged , $pdeleted);        `;
           params = {
             $pid: tx.transaction.sig,
@@ -667,7 +667,6 @@ class Post extends ModTemplate {
 
   createCommentTransaction(parent_id, comment, images = null) {
     let newtx = this.app.wallet.createUnsignedTransaction();
-
     newtx.msg.module = "Post";
     newtx.msg.type = "comment";
     newtx.msg.parent_id = parent_id;
@@ -744,7 +743,7 @@ class Post extends ModTemplate {
     return this.app.wallet.signTransaction(newtx);
   }
 
-  /*  TODO: 
+  /*  TODO:
       idea: send to admin email instead of flagging database
   */
   async receiveReportTransaction(tx) {

@@ -1,6 +1,6 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
 const ModalRegisterUsername = require('./../../../../lib/saito/new-ui/modals/modal-register-username/modal-register-username');
-const ModalRegisterEmail = require('./../../../../lib/saito/ui/modal-register-email/modal-register-email');
+//const ModalRegisterEmail = require('./../../../../lib/saito/ui/modal-register-email/modal-register-email');
 const jsonTree = require('json-tree-viewer');
 
 class SettingsAppspace {
@@ -56,12 +56,12 @@ class SettingsAppspace {
         }
       }
 
-      document.getElementById("register-email-btn").onclick = function (e) {
-        mod.modal_register_email = new ModalRegisterEmail(app, function () {
-        });
-        mod.modal_register_email.render(app, mod, ModalRegisterEmail.MODES.REGISTEREMAIL);
-        mod.modal_register_email.attachEvents(app, mod);
-      }
+      // document.getElementById("register-email-btn").onclick = function (e) {
+      //   mod.modal_register_email = new ModalRegisterEmail(app, function () {
+      //   });
+      //   mod.modal_register_email.render(app, mod, ModalRegisterEmail.MODES.REGISTEREMAIL);
+      //   mod.modal_register_email.attachEvents(app, mod);
+      // }
 
       document.getElementById("register-identifier-btn").onclick = function (e) {
         mod.modal_register_username = new ModalRegisterUsername(app);

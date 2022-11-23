@@ -130,7 +130,7 @@ class StorageCore extends Storage {
     for (let i = 0; i < files.length; i++) {
       try {
         const fileID = files[i];
-        if (fileID !== "empty") {
+        if (fileID !== "empty" && fileID.includes(".sai")) {
           const blk = await this.loadBlockByFilename(dir + fileID);
           if (blk == null) {
             console.log("block is null: " + fileID);
@@ -213,10 +213,10 @@ class StorageCore extends Storage {
   }
 
   async loadBlockByHash(bsh) {
-    if (!this.app.blockchain.blocks[bsh]) {
+    if (!this.app.blockchain.blocks.get(bsh)) {
       return null;
     }
-    const blk = this.app.blockchain.blocks[bsh];
+    const blk = this.app.blockchain.blocks.get(bsh);
     const filename = blk.returnFilename();
     const block = await this.loadBlockByFilename(filename);
     return block;
@@ -513,6 +513,7 @@ class StorageCore extends Storage {
         return await db.run(sql, params, mycallback);
       }
     } catch (err) {
+      console.log("sql : ", sql);
       console.log(err);
     }
   }
@@ -526,7 +527,8 @@ class StorageCore extends Storage {
       }
       return rows;
     } catch (err) {
-      console.log(err);
+      console.log("failed executing sql : ", sql);
+      console.error(err);
       return [];
     }
   }
