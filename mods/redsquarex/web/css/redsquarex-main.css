@@ -83,7 +83,7 @@
 }
 
 .redsquare-ellipsis::after {
-  border-left: 3px solid var(--saito-border);
+  border-left: 2px solid var(--saito-border);
   height: 100%;
   position: absolute;
   top: -2rem;
@@ -91,8 +91,8 @@
   margin-left: 2.5rem;
 }
 .redsquare-ellipsis::before {
-  border-left: 3px dotted var(--saito-border);
-  height: 17%;
+  border-left: 2px dotted var(--saito-border);
+  height: 38%;
   position: absolute;
   top: 4.5rem;
   content: " ";
