@@ -55,10 +55,10 @@
     position: relative;
   }
    
-  .redsquare-item.redsquare-item.has-child {
+  .redsquare-item.redsquare-item.has-reply {
     border-bottom: none;
   }
-  .redsquare-item.has-child::after {
+  .redsquare-item.has-reply::after {
     content: "";
     position: absolute;
     width: 2px;
