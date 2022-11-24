@@ -394,32 +394,32 @@ class Mempool {
     return false;
   }
 
-  containsBlock(block) {
-    if (block == null) {
-      return 0;
+  containsBlock(block): boolean {
+    if (!block) {
+      return false;
     }
-    if (block.block == null) {
-      return 0;
+    if (!block.block) {
+      return false;
     }
-    if (block.is_valid === 0) {
-      return 0;
+    if (!block.is_valid) {
+      return false;
     }
 
     return this.blocks_hmap[block.block.sig] === 1;
   }
 
-  containsTransaction(tx) {
-    if (tx == null) {
-      return 0;
+  containsTransaction(tx): boolean {
+    if (!tx) {
+      return false;
     }
-    if (tx.transaction == null) {
-      return 0;
+    if (!tx.transaction) {
+      return false;
     }
-    if (tx.transaction.from == null) {
-      return 0;
+    if (!tx.transaction.from) {
+      return false;
     }
 
-    if (this.transactions_hmap[tx.transaction.sig] === 1) {
+    if (this.transactions_hmap.get(tx.transaction.sig) === 1) {
       return true;
     }
 
@@ -438,7 +438,7 @@ class Mempool {
     return this.mempool.golden_tickets.length > 0;
   }
 
-  containsValidGoldenTicket(target_hash) {
+  containsValidGoldenTicket(target_hash: string): boolean {
     if (this.mempool.golden_tickets.length > 0) {
       for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
         const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
@@ -486,7 +486,7 @@ class Mempool {
     this.clearing_active = false;
   }
 
-  removeBlockAndTransactions(blk = null) {
+  removeBlockAndTransactions(blk: Block | null = null) {
     if (blk == null) {
       return;
     }
@@ -525,7 +525,7 @@ class Mempool {
 
     // and delete utxo references too
     for (let b = 0; b < blk.transactions.length; b++) {
-      delete this.transactions_hmap[blk.transactions[b].transaction.sig];
+      this.transactions_hmap.delete(blk.transactions[b].transaction.sig);
       for (let i = 0; i < blk.transactions[b].transaction.from.length; i++) {
         blk.transactions[b].transaction.from[i].generateKey(this.app);
         this.transactions_inputs_hmap.delete(blk.transactions[b].transaction.from[i].returnKey());
@@ -536,7 +536,7 @@ class Mempool {
     this.clearing_active = false;
   }
 
-  returnRoutingWorkAvailable() {
+  returnRoutingWorkAvailable(): bigint {
     let v = BigInt(0);
 
     for (let i = 0; i < this.mempool.transactions.length; i++) {
