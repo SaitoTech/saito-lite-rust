@@ -422,7 +422,7 @@ class Blockchain {
     //console.log("blockchain.addBlockSuccess : ", block.returnHash());
     //this.app.blockring.print();
 
-    console.log("ADD BLOCK SUCCESS!");
+    console.log("ADD BLOCK SUCCESS : " + block.returnHash());
 
     let block_id = block.returnId();
 
@@ -543,7 +543,7 @@ class Blockchain {
       this.app.modules.onNewBlock(block, true /*i_am_the_longest_chain*/); // TODO : undefined i_am_the_longest_chain ???
     }
 
-    console.log("done add block success...");
+    console.log("done add block success... : " + block.returnHash());
   }
 
   async addBlockFailure(block: Block) {
