@@ -131,7 +131,7 @@ class Blockchain {
     return;
   }
 
-  async addBlockToBlockchain(block: Block, force = 0) {
+  async addBlockToBlockchain(block: Block, force = false) {
     //
     //
     //
@@ -252,7 +252,7 @@ class Blockchain {
 
     while (!shared_ancestor_found) {
       if (this.blocks.has(new_chain_hash)) {
-        if (this.blocks.get(new_chain_hash).lc === 1) {
+        if (this.blocks.get(new_chain_hash).lc) {
           shared_ancestor_found = true;
           break;
         } else {
@@ -326,7 +326,7 @@ class Blockchain {
               this.app.blockring.onChainReorganization(i, disconnected_block_hash, false);
               let disconnected_block = await this.loadBlockAsync(disconnected_block_hash);
               if (disconnected_block) {
-                disconnected_block.lc = 0;
+                disconnected_block.lc = false;
               }
             }
           }
@@ -349,7 +349,7 @@ class Blockchain {
       }
     }
     if (am_i_the_longest_chain) {
-      block.lc = 1;
+      block.lc = true;
     }
     block.force = force;
 
@@ -384,7 +384,7 @@ class Blockchain {
 
         console.log("trying to set LC");
         try {
-          this.blocks.get(block_hash).lc = 1;
+          this.blocks.get(block_hash).lc = true;
         } catch (err) {
           console.log("block is not stored locally...");
         }
@@ -401,7 +401,7 @@ class Blockchain {
         await this.addBlockFailure(block);
 
         try {
-          this.blocks.get(block_hash).lc = 0;
+          this.blocks.get(block_hash).lc = false;
         } catch (err) {
           console.log("block is not stored locally...");
         }
@@ -476,7 +476,7 @@ class Blockchain {
       //
       // don't run callbacks if reloading (force!)
       //
-      if (block.lc === 1 && block.force !== 1) {
+      if (block.lc && !block.force) {
         let block_id_from_which_to_run_callbacks =
           block.returnId() - BigInt(this.callback_limit + 1);
         let block_id_in_which_to_delete_callbacks =
@@ -502,7 +502,7 @@ class Blockchain {
             //
             if (block.returnId() < this.blockchain.last_block_id) {
               if (block.returnTimestamp() < this.blockchain.last_timestamp) {
-                if (block.lc === 1) {
+                if (block.lc) {
                   run_callbacks = 0;
                 }
               }

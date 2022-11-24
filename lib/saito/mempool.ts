@@ -19,17 +19,17 @@ class Mempool {
   public bundling_active: boolean;
   public bundling_speed: number;
   public bundling_timer: any;
-  public blocks_hmap: any;
-  public transactions_hmap: any;
-  public transactions_inputs_hmap: any;
+  public blocks_hmap: Map<string, number>;
+  public transactions_hmap: Map<string, number>;
+  public transactions_inputs_hmap: Map<string, number>;
   public downloads: any;
   public downloads_hmap: any;
-  public downloading_active: any;
+  public downloading_active: boolean;
   public transaction_size_limit: number;
   public block_size_limit: number;
-  public blocks: any;
+  public blocks: Array<Block>;
 
-  constructor(app) {
+  constructor(app: Saito) {
     this.app = app;
 
     //
@@ -78,16 +78,16 @@ class Mempool {
     //
     // hashmap
     //
-    this.blocks_hmap = []; // index is block.block.sig
-    this.transactions_hmap = []; // index is tx.transaction.sig
-    this.transactions_inputs_hmap = []; // index is slip returnKey()
+    this.blocks_hmap = new Map<string, number>(); // index is block.block.sig
+    this.transactions_hmap = new Map<string, number>(); // index is tx.transaction.sig
+    this.transactions_inputs_hmap = new Map<string, number>(); // index is slip returnKey()
 
     //
     // downloads
     //
     this.downloads = {};
     this.downloads_hmap = {};
-    this.downloading_active = 0;
+    this.downloading_active = false;
 
     //
     // size limits
@@ -98,7 +98,7 @@ class Mempool {
     this.block_size_current = 0;
   }
 
-  addBlock(block) {
+  addBlock(block: Block): boolean {
     console.log(
       "Mempool : adding block... : " + block.returnHash() + " of type : " + block.block_type
     );
@@ -140,13 +140,13 @@ class Mempool {
     //
     // sort our block queue before adding to chain
     //
-    this.mempool.blocks.sort((a, b) => a.block.id - b.block.id);
+    this.mempool.blocks.sort((a, b) => Number(a.block.id - b.block.id));
 
     try {
       this.processing_timer = setInterval(() => {
         if (this.mempool.blocks.length > 0) {
           if (this.app.blockchain.indexing_active === false) {
-            const block = this.mempool.blocks.shift();
+            const block: Block = this.mempool.blocks.shift();
             this.app.blockchain.addBlockToBlockchain(block).then((r) => {
               return;
             });
@@ -421,8 +421,8 @@ class Mempool {
 
     for (let i = 0; i < tx.transaction.from.length; i++) {
       if (tx.transaction.from[i].isNonZeroAmount()) {
-        const slip_index = tx.transaction.from[i].returnKey();
-        if (this.transactions_inputs_hmap[slip_index] === 1) {
+        const key = tx.transaction.from[i].returnKey();
+        if (this.transactions_inputs_hmap.get(key) === 1) {
           return true;
         }
       }
@@ -524,7 +524,7 @@ class Mempool {
       delete this.transactions_hmap[blk.transactions[b].transaction.sig];
       for (let i = 0; i < blk.transactions[b].transaction.from.length; i++) {
         blk.transactions[b].transaction.from[i].generateKey(this.app);
-        delete this.transactions_inputs_hmap[blk.transactions[b].transaction.from[i].returnKey()];
+        this.transactions_inputs_hmap.delete(blk.transactions[b].transaction.from[i].returnKey());
       }
     }
 

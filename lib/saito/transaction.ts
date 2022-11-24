@@ -349,7 +349,7 @@ class Transaction {
     return this.returnSlipsTo(receiverPublicKey).length > 0;
   }
 
-  onChainReorganization(app: Saito, lc, block_id: bigint) {
+  onChainReorganization(app: Saito, lc: boolean, block_id: bigint) {
     let input_slip_value = 1;
     let output_slip_value = 0;
 
@@ -450,7 +450,7 @@ class Transaction {
     return this.msg;
   }
 
-  returnPaymentTo(publickey: string) {
+  returnPaymentTo(publickey: string): string {
     const slips = this.returnSlipsToAndFrom(publickey);
     let x = BigInt(0);
     for (let v = 0; v < slips.to.length; v++) {
@@ -461,7 +461,7 @@ class Transaction {
     return x.toString();
   }
 
-  returnRoutingWorkAvailableToPublicKey() {
+  returnRoutingWorkAvailableToPublicKey(): bigint {
     let uf = this.returnFeesTotal();
     for (let i = 0; i < this.path.length; i++) {
       let d = 1;
@@ -473,7 +473,7 @@ class Transaction {
     return uf;
   }
 
-  returnSignature(app: Saito, force = 0) {
+  returnSignature(app: Saito, force = 0): string {
     if (this.transaction.sig !== "" && force != 1) {
       return this.transaction.sig;
     }
@@ -527,10 +527,10 @@ class Transaction {
     return x;
   }
 
-  returnWinningRoutingNode(random_number: string) {
+  returnWinningRoutingNode(random_number: string): string {
     //
     // if there are no routing paths, we return the sender of
-    // the payment, as they're got all of the routing work by
+    // the payment, as they're got all the routing work by
     // definition. this is the edge-case where sending a tx
     // can make you money.
     //
@@ -761,7 +761,7 @@ class Transaction {
     );
   }
 
-  validate(app: Saito) {
+  validate(app: Saito): boolean {
     //
     // Fee Transactions are validated in the block class. There can only
     // be one per block, and they are checked by ensuring the transaction hash
@@ -897,7 +897,7 @@ class Transaction {
     return true;
   }
 
-  validateRoutingPath(app: Saito) {
+  validateRoutingPath(app: Saito): boolean {
     console.log("JS needs to validate routing paths still...");
 
     if (!this.path) {
@@ -908,7 +908,6 @@ class Transaction {
         Buffer.from(this.transaction.sig, "hex"),
         Buffer.from(app.crypto.fromBase58(this.path[i].to), "hex"),
       ]);
-      let hash = app.crypto.hash(buffer);
 
       if (!app.crypto.verifyHash(buffer, this.path[i].sig, this.path[i].from)) {
         console.warn(`transaction path is not valid`);
@@ -925,7 +924,7 @@ class Transaction {
     return true;
   }
 
-  validateSignature(app: Saito) {
+  validateSignature(app: Saito): boolean {
     //
     // validate signature
     //
@@ -956,11 +955,11 @@ class Transaction {
     }
   }
 
-  generateMetadataCumulativeFees() {
+  generateMetadataCumulativeFees(): bigint {
     return BigInt(0);
   }
 
-  generateMetadataCumulativeWork() {
+  generateMetadataCumulativeWork(): bigint {
     return BigInt(0);
   }
 
@@ -973,11 +972,11 @@ class Transaction {
   }
 
   /* stolen from app crypto to avoid including app */
-  stringToBase64(str: string) {
+  stringToBase64(str: string): string {
     return Buffer.from(str, "utf-8").toString("base64");
   }
 
-  base64ToString(str: string) {
+  base64ToString(str: string): string {
     return Buffer.from(str, "base64").toString("utf-8");
   }
 }

@@ -34,9 +34,9 @@ class Block {
     avg_atr_income: BigInt(0),
     avg_atr_variance: BigInt(0),
   };
-  public lc: number;
-  public force: any;
-  public transactions: Transaction[];
+  public lc: boolean;
+  public force: boolean;
+  public transactions: Array<Transaction>;
   public block_type: BlockType;
   public hash: string;
   public prehash: string;
@@ -75,10 +75,10 @@ class Block {
     // consensus variables
     //
 
-    this.lc = 0;
-    this.force = 0; // set to 1 if "force" loaded -- used to avoid duplicating callbacks
+    this.lc = false;
+    this.force = false; // set to true if "force" loaded -- used to avoid duplicating callbacks
 
-    this.transactions = [];
+    this.transactions = new Array<Transaction>();
 
     this.block_type = BlockType.Full;
     this.hash = "";
@@ -1134,7 +1134,7 @@ class Block {
     return false;
   }
 
-  onChainReorganization(lc) {
+  onChainReorganization(lc: boolean) {
     const block_id = this.returnId();
     for (let i = 0; i < this.transactions.length; i++) {
       console.log("tx ocr " + i);

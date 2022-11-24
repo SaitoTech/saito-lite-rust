@@ -493,7 +493,7 @@ console.log("---------------------");
     const isSlipSpent = this.wallet.spends[index];
     const isSlipLC = slip.lc;
     const isSlipGtLVB = slip.block_id >= this.app.blockchain.returnLowestSpendableBlock();
-    const isSlipinTX = this.app.mempool.transactions_inputs_hmap[slip.returnKey()] != 1;
+    const isSlipinTX = this.app.mempool.transactions_inputs_hmap.get(slip.returnKey()) !== 1;
     const valid = !isSlipSpent && isSlipLC && isSlipGtLVB && isSlipinTX;
     return valid;
   }
@@ -722,7 +722,7 @@ console.log("---------------------");
       if (this.wallet.spends[i] == 0 || i >= this.wallet.spends.length) {
         const slip = this.wallet.inputs[i];
         if (slip.lc && slip.block_id >= lowest_block) {
-          if (this.app.mempool.transactions_inputs_hmap[slip.returnKey()] != 1) {
+          if (this.app.mempool.transactions_inputs_hmap.get(slip.returnKey()) != 1) {
             slipIndexes.push(i);
             utxiset.push(slip);
             value += slip.returnAmount();

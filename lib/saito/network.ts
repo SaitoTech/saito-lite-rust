@@ -51,7 +51,7 @@ class Network {
     //
     this.downloads = {};
     this.downloads_hmap = {};
-    this.downloading_active = 0;
+    this.downloading_active = false;
     this.block_sample_size = 15;
 
     //

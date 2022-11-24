@@ -140,7 +140,7 @@ class Slip {
     return 1;
   }
 
-  onChainReorganization(app: Saito, lc, slip_value: number) {
+  onChainReorganization(app: Saito, lc: boolean, slip_value: number) {
     if (this.isNonZeroAmount()) {
       app.utxoset.update(this.returnKey(), slip_value);
     }

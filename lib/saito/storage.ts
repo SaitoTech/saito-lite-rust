@@ -39,7 +39,6 @@ class Storage {
   }
 
   loadTransactions(type = "all", num = 50, mycallback) {
-
     const message = "archive";
     const data: any = {};
     data.request = "load";
@@ -48,19 +47,21 @@ class Storage {
     data.publickey = this.app.wallet.returnPublicKey();
 
     this.app.network.sendRequestWithCallback(message, data, function (obj) {
-
       let txs = [];
       if (obj) {
         if (obj.txs) {
-
-	  for (let i = 0; i < obj.txs.length; i++) {
+          for (let i = 0; i < obj.txs.length; i++) {
             let tx = new Transaction(JSON.parse(obj.txs[i].tx));
-	    tx.optional = {};
-	    if (obj.txs[i].optional) {
-	      try { tx.optional = JSON.parse(obj.txs[i].optional); } catch (err) { console.log("error loading optional data into tx"); }
-	    }
-	    txs.push(tx);
-	  }
+            tx.optional = {};
+            if (obj.txs[i].optional) {
+              try {
+                tx.optional = JSON.parse(obj.txs[i].optional);
+              } catch (err) {
+                console.log("error loading optional data into tx");
+              }
+            }
+            txs.push(tx);
+          }
         }
       }
       mycallback(txs);
@@ -68,8 +69,7 @@ class Storage {
   }
 
   deleteTransactions(type = "all", publickey = "", mycallback = null) {
-
-console.log("DELETING OUR TRANSACTIONS IN STORAGE!");
+    console.log("DELETING OUR TRANSACTIONS IN STORAGE!");
 
     const message = "archive";
     const data: any = {};
@@ -78,7 +78,7 @@ console.log("DELETING OUR TRANSACTIONS IN STORAGE!");
     data.publickey = publickey;
 
     this.app.network.sendRequestWithCallback(message, data, function (obj) {
-console.log("AND BACK IN CALLBACK");
+      console.log("AND BACK IN CALLBACK");
       mycallback();
     });
   }
@@ -105,14 +105,18 @@ console.log("AND BACK IN CALLBACK");
       let txs = [];
       if (obj) {
         if (obj.txs) {
-	  for (let i = 0; i < obj.txs.length; i++) {
+          for (let i = 0; i < obj.txs.length; i++) {
             let tx = new Transaction(JSON.parse(obj.txs[i].tx));
-	    tx.optional = {};
-	    if (obj.txs[i].optional) {
-	      try { tx.optional = JSON.parse(obj.txs[i].optional); } catch (err) { console.log("error loading optional data into tx"); }
-	    }
-	    txs.push(tx);
-	  }
+            tx.optional = {};
+            if (obj.txs[i].optional) {
+              try {
+                tx.optional = JSON.parse(obj.txs[i].optional);
+              } catch (err) {
+                console.log("error loading optional data into tx");
+              }
+            }
+            txs.push(tx);
+          }
         }
       }
       mycallback(txs);
@@ -143,14 +147,18 @@ console.log("AND BACK IN CALLBACK");
       let txs = [];
       if (obj) {
         if (obj.txs) {
-	  for (let i = 0; i < obj.txs.length; i++) {
+          for (let i = 0; i < obj.txs.length; i++) {
             let tx = new Transaction(JSON.parse(obj.txs[i].tx));
-	    tx.optional = {};
-	    if (obj.txs[i].optional) {
-	      try { tx.optional = JSON.parse(obj.txs[i].optional); } catch (err) { console.log("error loading optional data into tx"); }
-	    }
-	    txs.push(tx);
-	  }
+            tx.optional = {};
+            if (obj.txs[i].optional) {
+              try {
+                tx.optional = JSON.parse(obj.txs[i].optional);
+              } catch (err) {
+                console.log("error loading optional data into tx");
+              }
+            }
+            txs.push(tx);
+          }
         }
       }
       mycallback(txs);
@@ -253,13 +261,12 @@ console.log("AND BACK IN CALLBACK");
     data.request = "save";
     data.tx = tx;
     data.type = txmsg.module;
-console.log("=============");
-console.log("SAVING THE TX");
-console.log("=============");
+    console.log("=============");
+    console.log("SAVING THE TX");
+    console.log("=============");
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
     this.app.connection.emit("save-transaction", tx);
-console.log("save-transaction'd the tx");
-
+    console.log("save-transaction'd the tx");
   }
   saveTransactionByKey(key, tx) {
     const txmsg = tx.returnMessage();
@@ -319,7 +326,7 @@ console.log("save-transaction'd the tx");
     return [];
   }
 
-  returnBlockFilenameByHashPromise(block_hash) {}
+  returnBlockFilenameByHashPromise(block_hash: string) {}
 
   async queryDatabase(sql, params, database) {}
 
