@@ -23,23 +23,28 @@ class UploadRomOverlay {
 
       // upload rom file 
       app.browser.addDragAndDropFileUploadToElement("nwasm-upload-overlay",
-        (file) => {
+        async (file) => {
 
-          document.querySelector('.loader').style.display = "grid";
+          await uploader.showLoader();          
  
-	  mod.active_rom = file;
+      	  
+          setTimeout(function(){
+            mod.active_rom = file;
 
-	  let a = Buffer.from(file, 'binary').toString('base64');;
-	  let ab = mod.convertBase64ToByteArray(a);
+            let a = Buffer.from(file, 'binary').toString('base64');;
+            let ab = mod.convertBase64ToByteArray(a);
 
-	  //
-	  // initialize ROM gets the ROM the APP and the MOD
-	  //
-	  myApp.initializeRom(ab, app, mod);
-	  mod.startPlaying();
-	  mod.hideSplashScreen();
-	  mod.hideLibrary();
-	  uploader.overlay.hide();
+            //
+            // initialize ROM gets the ROM the APP and the MOD
+            
+            myApp.initializeRom(ab, app, mod);
+            mod.startPlaying();
+            mod.hideSplashScreen();
+            mod.hideLibrary();
+
+            uploader.overlay.hide();  
+          }, 1000);      	  
+          
 
         },
       false, true); // true = read as array buffer
@@ -49,6 +54,10 @@ class UploadRomOverlay {
       console.log('ROM file upload error: '+err);
     }
 
+  }
+
+  async showLoader() {
+    document.querySelector('.loader').style.display = "block";
   }
 
 }

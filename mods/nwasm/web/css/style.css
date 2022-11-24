@@ -168,8 +168,8 @@ margin-top: 2rem;
 
 
 .loader {
-width: 100%;
-height: 100%;
+    width: 25rem;
+    height: 25rem;
 display: none;
 place-items: center;
 --f-w: 2vmin;
@@ -206,37 +206,28 @@ font-size: 10vmin;
 background: rgba(0,0,0,0.7);
 }
 .loader:before {
-/* Label properties */
-content: "uploading file...";
-color: #fff;
-display: block;
-width: 40vmin;
-height: 20vmin;
-position: absolute;
-text-align: center;
-font-size: 2.5rem;
-margin-top: 5rem;
+  content: "uploading file...";
+  color: #fff;
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  text-align: center;
+  font-size: 2.5rem;
+  margin-top: 5rem;
+  left: 0rem;
 }
 .loader:after {
-display: block;
-content: " ";
-background: #f000;
-/* Overall sizes */
-width: var(--f-w);
-height: var(--f-w);
-/* Initial position of the blocks */
-box-shadow: 
-  var(--x-1) var(--y-3) var(--c-1-3), 
-  var(--x-1) var(--y-2) var(--c-1-2), 
-  var(--x-2) var(--y-2) var(--c-2-2),
-  var(--x-3) var(--y-2) var(--c-3-2), 
-  var(--x-4) var(--y-2) var(--c-4-2),
-  var(--x-5) var(--y-2) var(--c-5-2), 
-  var(--x-6) var(--y-2) var(--c-6-2),
-  var(--x-6) var(--y-1) var(--c-6-1);
-animation: 6s infinite loader;
-position: absolute;
-top: 15rem;
+    display: block;
+    content: " ";
+    background: #f000;
+    width: var(--f-w);
+    height: var(--f-w);
+    box-shadow: var(--x-1) var(--y-3) var(--c-1-3), var(--x-1) var(--y-2) var(--c-1-2), var(--x-2) var(--y-2) var(--c-2-2), var(--x-3) var(--y-2) var(--c-3-2), var(--x-4) var(--y-2) var(--c-4-2), var(--x-5) var(--y-2) var(--c-5-2), var(--x-6) var(--y-2) var(--c-6-2), var(--x-6) var(--y-1) var(--c-6-1);
+    animation: 6s infinite loader;
+    position: absolute;
+    top: 15rem;
+    left: 45%;
 }
 
 @keyframes loader {
