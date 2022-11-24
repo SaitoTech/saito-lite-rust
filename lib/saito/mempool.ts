@@ -4,7 +4,11 @@ import Transaction from "./transaction";
 
 class Mempool {
   public app: Saito;
-  public mempool: any;
+  public mempool: {
+    blocks: Array<Block>;
+    transactions: Array<Transaction>;
+    golden_tickets: Array<Transaction>;
+  };
   public routing_work_needed: bigint;
   public routing_work_in_mempool: bigint;
   public transaction_size_cap: number;
@@ -468,14 +472,14 @@ class Mempool {
     }
   }
 
-  removeBlock(blk = null) {
+  removeBlock(blk: Block | null = null) {
     if (blk == null) {
       return;
     }
     this.clearing_active = true;
     for (let b = this.mempool.blocks.length - 1; b >= 0; b--) {
       if (this.mempool.blocks[b] && this.mempool.blocks[b].returnHash() === blk.returnHash()) {
-        this.block_size_current -= this.mempool.blocks[b].size;
+        // this.block_size_current -= this.mempool.blocks[b].size;
         this.mempool.blocks.splice(b, 1);
       }
     }
