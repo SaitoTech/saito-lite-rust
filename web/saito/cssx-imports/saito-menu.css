@@ -31,7 +31,8 @@
 .saito-menu>ul>li>i {
     font-size: 2.6rem;
     width: 2rem;
-    padding-left: 1.2rem
+    padding-left: 1.2rem;
+    margin-bottom: 4px;
 }
 
 .saito-menu>ul>li>span {
@@ -57,3 +58,18 @@
 .saito-menu>ul>li>i+span {
     margin-left: 3.8rem;
 }
+
+
+.saito-menu i::before {
+    -webkit-text-stroke: var(--saito-default-font-color) 1px;
+    color: transparent;
+    font-size: smaller;
+  }
+  
+  .saito-menu li:hover i::before {
+    -webkit-text-stroke: #fff 1px;
+  }
+  
+ 
+
+  

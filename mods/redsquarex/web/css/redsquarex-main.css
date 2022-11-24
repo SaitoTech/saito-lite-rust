@@ -1,16 +1,4 @@
-.saito-menu i::before {
-  -webkit-text-stroke: var(--saito-default-font-color) 1px;
-  color: transparent;
-  font-size: smaller;
-}
 
-.saito-menu li:hover i::before {
-  -webkit-text-stroke: #fff 1px;
-}
-
-.saito-menu li i {
-  margin-bottom: 4px;
-}
 
 .saito-sidebar.left {
   width: 250px;
@@ -102,22 +90,6 @@
 
 
 
-/*  Redsquare Custom Menu  */
-.saito-menu i::before {
-  -webkit-text-stroke: var(--saito-default-font-color) 1px;
-  color: transparent;
-  font-size: smaller;
-}
-
-.saito-menu li:hover i::before {
-  -webkit-text-stroke: #fff 1px;
-}
-
-.saito-menu li i {
-  margin-bottom: 4px;
-}
-
-/*  Redsquare Custom Menu  */
 
 
 

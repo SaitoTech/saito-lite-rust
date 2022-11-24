@@ -10,7 +10,6 @@ class RedSquareMain {
   }
 
   render() {
-
     //
     // replace element or insert into page
     //
