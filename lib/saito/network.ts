@@ -1065,7 +1065,7 @@ class Network {
   //
   // propagate block
   //
-  propagateBlock(blk, peer = null) {
+  propagateBlock(blk: Block | null, peer = null) {
     if (this.app.BROWSER) {
       return;
     }
@@ -1229,7 +1229,7 @@ class Network {
     });
   }
 
-  requestBlockchain(peer = null) {
+  requestBlockchain(peer: Peer | null = null) {
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;
