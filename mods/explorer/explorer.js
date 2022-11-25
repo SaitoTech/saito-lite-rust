@@ -19,7 +19,7 @@ class ExplorerCore extends ModTemplate {
     ///////////////////
     // web resources //
     ///////////////////
-    expressapp.get("/explorer/", function(req, res) {
+    expressapp.get("/explorer/", function (req, res) {
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
       res.write(explorer_self.returnIndexHTML(app));
@@ -27,12 +27,12 @@ class ExplorerCore extends ModTemplate {
       return;
     });
 
-    expressapp.get("/explorer/style.css", function(req, res) {
+    expressapp.get("/explorer/style.css", function (req, res) {
       res.sendFile(__dirname + "/web/style.css");
       return;
     });
 
-    expressapp.get("/explorer/utils.js", function(req, res) {
+    expressapp.get("/explorer/utils.js", function (req, res) {
       res.sendFile(__dirname + "/web/utils.js");
       return;
     });
@@ -40,7 +40,7 @@ class ExplorerCore extends ModTemplate {
     ///////////////////
     // web requests //
     ///////////////////
-    expressapp.get("/explorer/block", function(req, res) {
+    expressapp.get("/explorer/block", function (req, res) {
 
       var hash = sanitizer.sanitize(req.query.hash);
 
@@ -63,7 +63,7 @@ class ExplorerCore extends ModTemplate {
       }
     });
 
-    expressapp.get("/explorer/mempool", function(req, res) {
+    expressapp.get("/explorer/mempool", function (req, res) {
 
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
@@ -73,7 +73,7 @@ class ExplorerCore extends ModTemplate {
 
     });
 
-    expressapp.get("/explorer/blocksource", function(req, res) {
+    expressapp.get("/explorer/blocksource", function (req, res) {
 
       var hash = sanitizer.sanitize(req.query.hash);
 
@@ -88,7 +88,7 @@ class ExplorerCore extends ModTemplate {
 
         if (hash != null) {
 
-          let blk = explorer_self.app.storage.loadBlockByHash(hash);
+          //let blk = explorer_self.app.storage.loadBlockByHash(hash);
 
           res.setHeader("Content-type", "text/html");
           res.charset = "UTF-8";
@@ -135,7 +135,7 @@ class ExplorerCore extends ModTemplate {
     return '<div class="explorer-main"> \
         <div class="block-table"> \
           <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">'+ this.app.wallet.returnPublicKey() + '</div> \
-          <div class="explorer-data"><h4>Balance:</h4> </div><div>'+ this.app.wallet.returnBalance()+ '</div> \
+          <div class="explorer-data"><h4>Balance:</h4> </div><div>'+ this.app.wallet.returnBalance() + '</div> \
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">'+ this.app.mempool.mempool.transactions.length + ' txs</a></div> \
         </div>' + '\
         <div class="explorer-data"><h4>Search for Block (by hash):</h4> \
@@ -177,7 +177,7 @@ class ExplorerCore extends ModTemplate {
     html += "<a class=\"button\" href=\"/explorer/block?hash=" + hash + "\"><i class=\"fas fa-cubes\"></i> back to block</a>";
     html += "<h3>Block Source (" + hash + "):</h3><div class=\"blockJson\"><div class=\"loader\"></div></div>";
     html += "<script> \
-        fetchBlock(\"" + hash + "\"); \
+        fetchRawBlock(\"" + hash + "\"); \
       </script>";
     html += this.returnPageClose();
     return html;
@@ -201,26 +201,26 @@ class ExplorerCore extends ModTemplate {
     var html = '<div class="blockchain-table">';
     html += '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div>';
 
-console.log("Latest Block ID: " + latest_block_id);
+    console.log("Latest Block ID: " + latest_block_id);
 
-    for (var mb = latest_block_id; mb >= 0 && mb > latest_block_id - 200; mb--) {
+    for (var mb = latest_block_id; mb >= BigInt(0) && mb > latest_block_id - BigInt(200); mb--) {
 
       let longest_chain_hash = explorer_self.app.blockring.returnLongestChainBlockHashAtBlockId(mb);
       let hashes_at_block_id = explorer_self.app.blockring.returnBlockHashesAtBlockId(mb);
 
-console.log(longest_chain_hash + " -- " + JSON.stringify(hashes_at_block_id));
+      console.log(longest_chain_hash + " -- " + JSON.stringify(hashes_at_block_id));
 
       for (let i = 0; i < hashes_at_block_id.length; i++) {
 
-	let txs_in_block = 0;
-	let previous_block_hash = "";
+        let txs_in_block = 0;
+        let previous_block_hash = "";
 
-	let block = explorer_self.app.blockchain.blocks[hashes_at_block_id[i]];
+        let block = explorer_self.app.blockchain.blocks.get(hashes_at_block_id[i]);
 
- 	if (block) {
-	  txs_in_block = block.transactions.length;
-	  previous_block_hash = block.returnPreviousBlockHash();
-	}
+        if (block) {
+          txs_in_block = block.transactions.length;
+          previous_block_hash = block.returnPreviousBlockHash();
+        }
         if (longest_chain_hash === hashes_at_block_id[i]) {
           html += '<div>*</div>';
         } else {
