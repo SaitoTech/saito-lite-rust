@@ -463,6 +463,7 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
     let nwasm_self = this;
 
     let base64data = this.xorBase64(this.convertByteArrayToBase64(data));
+    let added_to_library = 0;
 
     let obj = {
       module: this.name,
@@ -494,7 +495,9 @@ console.log("SIZE OF TX: " + newtx.transaction.m.length);
 console.log("^^^^^^^^");
 console.log("^^^4^^^^");
 console.log("^^^^^^^^");
-      nwasm_self.app.connection.emit("save-transaction", tx);
+      if (added_to_library == 1) { return; }
+      added_to_library = 1;
+      nwasm_self.app.connection.emit("save-transaction", newtx);
 console.log("^^^^^^^^");
 console.log("^^^5^^^^");
 console.log("^^^^^^^^");
