@@ -160,7 +160,7 @@ class Slip {
     //console.debug(`Generating UTXOKey for ${this.block_id}, ${this.tx_ordinal}, ${this.sid}`);
     let arr = new Uint8Array([...publickey, ...block_id, ...tx_ordinal, slip_ordinal, ...amount]);
     console.assert(arr.length == 66, "UTXO Key Length is not 66");
-    this.key = arr.toString();
+    this.key = Buffer.from(arr).toString("hex");
   }
 
   returnKey() {
