@@ -735,9 +735,6 @@ class Transaction {
       if (Object.keys(this.msg).length === 0) {
         this.transaction.m = Buffer.alloc(0);
       } else {
-console.log("pre JSONify: " + new Date().getTime());
-        let jsonstr = JSON.stringify(this.msg);
-console.log("post JSONify: " + new Date().getTime());
         this.transaction.m = Buffer.from(JSON.stringify(this.msg), "utf-8");
       }
     }

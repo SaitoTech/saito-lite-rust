@@ -932,13 +932,6 @@ class Network {
 
       case MessageType.ApplicationTransaction: {
 
-console.log("^^^^^^^^^^^^^^^^^^^^^^^");
-console.log("^^^^^^^^^^^^^^^^^^^^^^^");
-console.log("^^^^^^^^^^^^^^^^^^^^^^^");
-console.log("RECEIVED APPLICATION TX");
-console.log("^^^^^^^^^^^^^^^^^^^^^^^");
-console.log("^^^^^^^^^^^^^^^^^^^^^^^");
-console.log("^^^^^^^^^^^^^^^^^^^^^^^");
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
@@ -947,18 +940,13 @@ console.log("^^^^^^^^^^^^^^^^^^^^^^^");
         if (!txmsg.request) { break; }
         if (!txmsg.data) { break; }
 
-console.log("we have information in this transaction");
-
         let reconstructed_message = txmsg.request;
         let reconstructed_data = txmsg.data;
-
-console.log(JSON.stringify(txmsg));
 
         const msg: any = {};
         msg.request = "";
         msg.data = {};
 
-console.log("we have information in this transaction 2");
         if (reconstructed_message) {
           msg.request = reconstructed_message;
         }
@@ -974,7 +962,6 @@ console.log("we have information in this transaction 2");
 
         switch (message.message_type) {
           default:
-console.log("reconstructed data: " + reconstructed_data);
             if (reconstructed_data) {
               if (reconstructed_data.transaction) {
                 if (reconstructed_data.transaction.m) {
@@ -992,8 +979,6 @@ console.log("reconstructed data: " + reconstructed_data);
                 }
               }
             }
-console.log("heading into modules HPR");
-console.log(JSON.stringify(msg));
             await this.app.modules.handlePeerRequest(msg, peer, mycallback);
         }
         break;
