@@ -218,9 +218,7 @@ class Mempool {
         mempool_contains_golden_ticket
       );
 
-    //
     // stop if inadequate golden ticket support?
-    //
     if (!does_chain_meet_golden_ticket_requirements) {
       console.log(
         "ERROR 850293: we do not have enough golden ticket support, waiting before bundling..."
@@ -231,17 +229,13 @@ class Mempool {
       return;
     }
 
-    //
     // stop if already bundling?
-    //
     if (this.bundling_active === true) {
       console.log("ERROR 850293: mempool already bundling a block, not bundling another");
       return;
     }
 
-    //
     // and don't spam the public network
-    //
     if (this.mempool.transactions.length === 0) {
       if (!this.app.network.isPrivateNetwork()) {
         if (this.app.network.isProductionNetwork()) {
@@ -251,38 +245,26 @@ class Mempool {
       }
     }
 
-    //
     // start bundling
-    //
     this.bundling_active = true;
 
-    //
     // create block
-    //
     try {
-      //
       // create the block
-      //
       const block = new Block(this.app);
       const previous_block_hash = this.app.blockring.returnLatestBlockHash();
 
-      //
       // generate and sign
-      //
       console.log("blockring reports PBH: " + previous_block_hash);
-      await block.generate(previous_block_hash, this.app.mempool);
+      await block.generate(previous_block_hash);
 
-      //
       // and add to mempool
-      //
       this.addBlock(block);
     } catch (err) {
       console.error("ERROR 781029: unexpected problem bundling block in mempool: ", err);
     }
 
-    //
     // reset
-    //
     this.bundling_active = false;
   }
 
@@ -357,9 +339,7 @@ class Mempool {
       }
     }
 
-    //
     // made it this far? see if we have enough work
-    //
     const previous_block = this.app.blockchain.returnLatestBlock();
     if (previous_block != null) {
       this.routing_work_needed = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(

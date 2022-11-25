@@ -167,7 +167,7 @@ test("sign", async () => {
 
   //TODO : FIX THIS
   expect(tx.transaction.sig).toEqual(
-    "fc0f76d12be1a36406e2dbfa7a4e7134ff691bc823bd59a5dcce1204982c4efc1aa42677c82c9c2f49968aee683d818ed7f34269a4dd8268d6f14dd90ef09a73"
+    "56f604952f5b325b445bd31e6fd62746532e5a568393315e661d0f944239cad845e402ffe8ff0a413d6835bae88efd7a8bb6313d72fa91c7af4cc18515578d7c"
   );
 
   expect(tx.validateSignature(mockApp)).toBeTruthy();

@@ -311,6 +311,10 @@ class Network {
         console.debug("block deserialized : " + block_hash);
         block.generateMetadata();
         await block.generateConsensusValues();
+        console.assert(
+          block_hash === block.hash,
+          `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
+        );
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;

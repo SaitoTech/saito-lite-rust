@@ -767,7 +767,7 @@ class Block {
     return cv;
   }
 
-  async generate(previous_block_hash, mempool = null) {
+  async generate(previous_block_hash: string) {
     //
     // fetch consensus values from preceding block
     //
@@ -779,7 +779,7 @@ class Block {
     let previous_block_staking_treasury = BigInt(0);
     const current_timestamp = new Date().getTime();
 
-    const previous_block = await mempool.app.blockchain.loadBlockAsync(previous_block_hash);
+    const previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
 
     if (previous_block) {
       previous_block_id = previous_block.block.id;
@@ -812,8 +812,8 @@ class Block {
     // object, so we can hot-swap using pass-by-reference. these
     // modifications change the mempool in real-time.
     //
-    this.transactions = mempool.mempool.transactions;
-    mempool.mempool.transactions = [];
+    this.transactions = this.app.mempool.mempool.transactions;
+    this.app.mempool.mempool.transactions = new Array<Transaction>();
 
     //
     // first block gets issuance
@@ -839,19 +839,19 @@ class Block {
     // modifications change the mempool in real-time.
     //
     console.log("-----------------------------------");
-    console.log("how many gts to check? " + mempool.mempool.golden_tickets.length);
-    for (let i = 0; i < mempool.mempool.golden_tickets.length; i++) {
+    console.log("how many gts to check? " + this.app.mempool.mempool.golden_tickets.length);
+    for (let i = 0; i < this.app.mempool.mempool.golden_tickets.length; i++) {
       console.log("checking GT: " + i);
       const gt = this.app.goldenticket.deserializeFromTransaction(
-        mempool.mempool.golden_tickets[i]
+        this.app.mempool.mempool.golden_tickets[i]
       );
       console.log("comparing " + gt.target_hash + " -- " + previous_block_hash);
       if (gt.target_hash === previous_block_hash) {
         console.log("ADDING GT TX TO BLOCK");
-        this.transactions.unshift(mempool.mempool.golden_tickets[i]);
+        this.transactions.unshift(this.app.mempool.mempool.golden_tickets[i]);
         this.has_golden_ticket = true;
-        mempool.mempool.golden_tickets.splice(i, 1);
-        i = mempool.mempool.golden_tickets.length + 2;
+        this.app.mempool.mempool.golden_tickets.splice(i, 1);
+        i = this.app.mempool.mempool.golden_tickets.length + 2;
       }
     }
     console.log("-----------------------------------");
@@ -1121,7 +1121,7 @@ class Block {
     return this.has_issuance_transaction;
   }
 
-  hasKeylistTransactions(keylist): boolean {
+  hasKeylistTransactions(keylist: string[]): boolean {
     if (!this.txs_hmap_generated) {
       console.log("generating tx hashmap for " + JSON.stringify(keylist));
       this.generateTransactionsHashmap();
