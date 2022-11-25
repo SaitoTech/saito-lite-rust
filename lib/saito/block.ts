@@ -51,7 +51,7 @@ class Block {
   public gt_idx: number;
   public has_issuance_transaction: boolean;
   public has_hashmap_of_slips_spent_this_block: boolean;
-  public slips_spent_this_block: any;
+  public slips_spent_this_block: Map<string, number>;
   public rebroadcast_hash: string;
   public total_rebroadcast_slips: number;
   public total_rebroadcast_nolan: bigint;
@@ -96,7 +96,7 @@ class Block {
     this.gt_idx = 0;
     this.has_issuance_transaction = false;
     this.has_hashmap_of_slips_spent_this_block = false;
-    this.slips_spent_this_block = {};
+    this.slips_spent_this_block = new Map<string, number>();
     this.rebroadcast_hash = "";
     this.total_rebroadcast_slips = 0;
     this.total_rebroadcast_nolan = BigInt(0);
@@ -915,7 +915,7 @@ class Block {
           );
           // this.transactions[i].transaction.from[k].generateKey(this.app);
           // TODO : add this check
-          this.slips_spent_this_block[this.transactions[i].transaction.from[k].returnKey()] = 1;
+          this.slips_spent_this_block.set(this.transactions[i].transaction.from[k].returnKey(), 1);
         }
       }
       // for (let k = 0; k < this.transactions[i].transaction.to.length; k++) {
@@ -1034,7 +1034,7 @@ class Block {
         if (transaction.transaction.type !== TransactionType.Fee) {
           for (let i = 0; i < transaction.transaction.from.length; i++) {
             const key = transaction.transaction.from[i].returnKey();
-            this.slips_spent_this_block[key] = 1;
+            this.slips_spent_this_block.set(key, 1);
           }
           this.has_hashmap_of_slips_spent_this_block = true;
         }
