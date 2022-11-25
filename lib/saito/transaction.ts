@@ -78,15 +78,12 @@ class Transaction {
             this.msg = {};
           } else {
             try {
-              const reconstruct = this.base64ToString(
-                Buffer.from(this.transaction.m).toString("base64")
-              );
+              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
               this.msg = JSON.parse(reconstruct);
             } catch (error) {
               console.log("failed parsing the msg as base64. trying as a utf8");
               console.error(error);
-
-              const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
               this.msg = JSON.parse(reconstruct);
             }
           }
@@ -256,13 +253,10 @@ class Transaction {
         if (this.transaction.m.byteLength === 0) {
           this.msg = {};
         } else {
-          const reconstruct = app.crypto.base64ToString(
-            Buffer.from(this.transaction.m).toString("base64")
-          );
+          const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
           this.msg = JSON.parse(reconstruct);
         }
       }
-      //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
     } catch (err) {
       //console.log("buffer length = " + this.transaction.m.byteLength);
       //console.error("error trying to parse this.msg: ", err);
@@ -435,7 +429,7 @@ class Transaction {
 
     try {
       if (this.transaction.m && this.transaction.m.byteLength > 0) {
-        const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString("base64"));
+        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
         this.msg = JSON.parse(reconstruct);
       } else {
         this.msg = {};
@@ -741,10 +735,10 @@ class Transaction {
       if (Object.keys(this.msg).length === 0) {
         this.transaction.m = Buffer.alloc(0);
       } else {
-        this.transaction.m = Buffer.from(
-          app.crypto.stringToBase64(JSON.stringify(this.msg)),
-          "base64"
-        );
+console.log("pre JSONify: " + new Date().getTime());
+        let jsonstr = JSON.stringify(this.msg);
+console.log("post JSONify: " + new Date().getTime());
+        this.transaction.m = Buffer.from(JSON.stringify(this.msg), "utf-8");
       }
     }
   }

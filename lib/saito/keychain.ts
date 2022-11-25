@@ -221,10 +221,10 @@ class Keychain {
   }
 
   encryptMessage(publickey, msg) {
-    const jsonmsg = JSON.stringify(msg);
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey == publickey) {
         if (this.keys[x].aes_secret != "") {
+          const jsonmsg = JSON.stringify(msg);
           return this.app.crypto.aesEncrypt(jsonmsg, this.keys[x].aes_secret);
         }
       }
