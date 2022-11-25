@@ -62,7 +62,7 @@
     content: "";
     position: absolute;
     width: 2px;
-    height: 11.65rem;
+    height: 100%;
     background-color: rgba(0,0,0,.1);
     top: 5.5rem;
     left: 1.7rem;
@@ -179,6 +179,15 @@
   }
   
   @media screen and (max-width: 768px) {
+    .redsquare-page-header-title {
+      font-size: 2rem;
+    }
+    .redsquare-item {
+      padding: 1rem 0 0;
+    }
+    .redsquare-item.has-reply::after {
+      top: 4.5rem;
+  }
     .redsquare-actions-container {
       position: fixed;
       bottom: 7rem;
