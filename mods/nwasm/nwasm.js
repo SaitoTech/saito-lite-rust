@@ -27,6 +27,8 @@ class Nwasm extends GameTemplate {
     this.minPlayers      = 1;
     this.winnable        = 0;
 
+    this.uploader        = null;
+
     this.load();
 
     this.libraries = {}; // ANY available libraries of games. 
@@ -352,6 +354,12 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
     let x = logline;
     let nwasm_self = this;
 
+    if (logline.indexOf("detected emulator started") == 0) {
+      if (this.uploader != null) {
+        this.uploader.overlay.hide();
+      }
+    }
+
     if (logline.indexOf("mupen64plus: ") == 0) {
       x = logline.substring(13);
       if (x.indexOf("Name: ") == 0) {
@@ -432,8 +440,8 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
   }
 
   uploadRom(app) {
-    let upload_rom = new UploadRom(app, this);
-    upload_rom.render(app, this);
+    this.uploader = new UploadRom(app, this);
+    this.uploader.render(app, this);
   }
 
   //////////////////
@@ -464,6 +472,8 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
 
     let base64data = this.xorBase64(this.convertByteArrayToBase64(data));
     let added_to_library = 0;
+    let iobj = document.querySelector(".nwasm-upload-instructions");
+
 
     let obj = {
       module: this.name,
@@ -477,6 +487,8 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
 console.log("^^^^^^^^");
 console.log("^^^1^^^^");
 console.log("^^^^^^^^");
+    if (iobj) { iobj.innerHTML = "bundling ROM into archive file..."; }
+
 
  
     let newtx = this.app.wallet.createUnsignedTransaction();
@@ -485,26 +497,31 @@ console.log("^^^^^^^^");
 console.log("^^^2^^^^");
 console.log("^^^^^^^^");
     
-    await nwasm_self.sleep(300);
+//    await nwasm_self.sleep(300);
     document.querySelector('.loader').classList.add("steptwo");
 
+    if (iobj) { iobj.innerHTML = "cryptographically signing archive file..."; }
     newtx = this.app.wallet.signTransaction(newtx);
 console.log("^^^^^^^^");
 console.log("^^^3^^^^");
 console.log("^^^^^^^^");
     //this.app.storage.saveTransaction(newtx);
 
-    await nwasm_self.sleep(300);
-    document.querySelector('.loader').classList.add("stepthree");
-console.log("SIZE OF TX: " + newtx.transaction.m.length);
+//    await nwasm_self.sleep(300);
+
+    if (iobj) { iobj.innerHTML = "uploading archive file: "+newtx.transaction.m.length+" bytes"; }
 
     this.app.network.sendTransactionWithCallback(newtx, async function (res) {
+
+      if (iobj) { iobj.innerHTML = "archive upload completed..."; }
+
+
 console.log("^^^^^^^^");
 console.log("^^^4^^^^");
 console.log("^^^^^^^^");
 
-      await nwasm_self.sleep(300);
-      document.querySelector('.loader').classList.add("stepfour");
+//      await nwasm_self.sleep(300);
+//      document.querySelector('.loader').classList.add("stepfour");
 
       if (added_to_library == 1) { return; }
       added_to_library = 1;
@@ -512,15 +529,17 @@ console.log("^^^^^^^^");
 console.log("^^^^^^^^");
 console.log("^^^5^^^^");
 console.log("^^^^^^^^");
-    
-      await nwasm_self.sleep(300);
-      document.querySelector('.loader').classList.add("stepfive");
 
-      setTimeout(function(){
-        document.querySelector('.saito-overlay').remove();
-        document.querySelector('.saito-overlay-backdrop').remove();
-        
-      }, 300)
+        if (iobj) { iobj.innerHTML = "adding to personal library..."; }    
+
+//      await nwasm_self.sleep(300);
+//      document.querySelector('.loader').classList.add("stepfive");
+
+//      setTimeout(function(){
+//        document.querySelector('.saito-overlay').remove();
+//        document.querySelector('.saito-overlay-backdrop').remove();
+//        
+//      }, 300)
     });
 
   }

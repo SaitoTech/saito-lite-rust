@@ -7,7 +7,7 @@ class UploadRomOverlay {
   constructor(app, mod = null, selector = "") {
     this.app = app;
     this.mod = mod;
-    this.overlay = new SaitoOverlay(app);
+    this.overlay = new SaitoOverlay(app, false);
   }
 
   render(app, mod, selector = "") {
@@ -21,14 +21,27 @@ class UploadRomOverlay {
 
     try {
 
+      //
       // upload rom file 
+      //
       app.browser.addDragAndDropFileUploadToElement("nwasm-upload-overlay",
         async (file) => {
 
-           document.querySelector('.loader').style.display = "block";
-          document.querySelector('.loader').classList.add("stepone");
+	  let obj;
 
-          //setTimeout(function(){
+	  obj = document.querySelector(".nwasm-upload-overlay");
+          obj.classList.add("nwasm-upload-overlay-dark");
+
+	  obj = document.querySelector(".preloader");
+          obj.classList.add("nwasm-preloader-dark");
+	  obj.innerHTML = "initializing may take a minute...";
+
+	  obj = document.querySelector(".nwasm-upload-instructions");
+          obj.innerHTML = "uploading ROM file...";
+
+	  obj = document.querySelector(".loader");
+          obj.style.display = "block";
+
           mod.active_rom = file;
 
           let a = Buffer.from(file, 'binary').toString('base64');;
@@ -36,7 +49,6 @@ class UploadRomOverlay {
 
           //
           // initialize ROM gets the ROM the APP and the MOD
-          
           myApp.initializeRom(ab, app, mod);
           mod.startPlaying();
           mod.hideSplashScreen();
