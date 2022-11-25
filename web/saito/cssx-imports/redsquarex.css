@@ -87,7 +87,7 @@
     border: 1px solid var(--saito-border);
     margin-top: 1rem;
     padding: 1rem 1.5rem;
-    border-radius: 1rem;
+    border-radius: var(--saito-border-radius);
   }
   
   .redsquare-quoted-tweet-contents{
