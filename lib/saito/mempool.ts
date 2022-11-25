@@ -405,7 +405,7 @@ class Mempool {
       return false;
     }
 
-    return this.blocks_hmap[block.block.sig] === 1;
+    return this.blocks_hmap.get(block.block.sig) === 1;
   }
 
   containsTransaction(tx): boolean {
@@ -499,14 +499,14 @@ class Mempool {
 
     // create hashmap for mempool transactions
     for (let b = 0; b < this.mempool.transactions.length; b++) {
-      mempool_transactions[this.mempool.transactions[b].transaction.sig] = b;
+      mempool_transactions.set(this.mempool.transactions[b].transaction.sig, b);
     }
 
     // set hashmap value to -1 for all txs in block
     for (let b = 0; b < blk.transactions.length; b++) {
-      const location_in_mempool = mempool_transactions[blk.transactions[b].transaction.sig];
+      const location_in_mempool = mempool_transactions.get(blk.transactions[b].transaction.sig);
       if (location_in_mempool !== undefined) {
-        mempool_transactions[blk.transactions[b].transaction.sig] = -1;
+        mempool_transactions.set(blk.transactions[b].transaction.sig, -1);
         this.transaction_size_current -= this.mempool.transactions[location_in_mempool].size;
       }
     }
@@ -516,7 +516,7 @@ class Mempool {
 
     // fill our replacement array with all non -1 values
     for (let t = 0; t < this.mempool.transactions.length; t++) {
-      if (mempool_transactions[this.mempool.transactions[t].transaction.sig] > -1) {
+      if (mempool_transactions.get(this.mempool.transactions[t].transaction.sig) > -1) {
         replacement.push(this.mempool.transactions[t]);
       }
     }
