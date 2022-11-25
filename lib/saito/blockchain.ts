@@ -419,10 +419,10 @@ class Blockchain {
   }
 
   async addBlockSuccess(block: Block) {
-    //console.log("blockchain.addBlockSuccess : ", block.returnHash());
-    //this.app.blockring.print();
+    console.log("blockchain.addBlockSuccess : ", block.returnHash());
+    this.app.blockring.print();
 
-    console.log("ADD BLOCK SUCCESS : " + block.returnHash());
+    // console.log("ADD BLOCK SUCCESS : " + block.returnHash());
 
     let block_id = block.returnId();
 
