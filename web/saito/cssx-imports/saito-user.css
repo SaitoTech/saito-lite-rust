@@ -20,6 +20,7 @@ Saito Username
     font-size: 1.6rem;
     display: flex;
     align-items: center;
+    color: var(--saito-font-color-heavy);
 }
 
 .saito-address>*:first-child , .saito-username>*:first-child {
@@ -69,6 +70,7 @@ Saito User
     grid-row-start: 2;
     grid-row-end: span 1;
     font-size: 1.4rem;
+    color: var(--saito-font-color-light);
 }
 
 .saito-user.small>div:nth-child(3) {

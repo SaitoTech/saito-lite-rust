@@ -40,7 +40,7 @@ font imports
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
   --saito-tertiary: rgb(234, 234, 239);
   --saito-blue: #35b2ff;
-  --saito-default-font-color: #555;
+  --saito-font-color: #555;
   --saito-paper: #f2f0f0;
   --saito-white: #fff;
   --saito-black: #1c1c23;

@@ -42,7 +42,9 @@ font imports
   --saito-width: 1500px;
 
   --saito-background-color: #fff;
-  --saito-default-font-color: #555;
+  --saito-font-color: #3D3D3D;
+  --saito-font-color-heavy: #222;
+  --saito-font-color-light: #555;
   --saito-box-padding: 3rem 2rem; 
   --saito-profile-background: #fff;
   --saito-border: #c5c5c5bb;

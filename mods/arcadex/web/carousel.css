@@ -2,7 +2,7 @@
     padding: 5% 5%;
     font-size: 5.5vw;
     font-weight: 900;
-    -webkit-text-fill-color: var(--saito-default-font-color);
+    -webkit-text-fill-color: var(--saito-font-color);
     -webkit-text-stroke-width: 3px;
     -webkit-text-stroke-color: #0003;
     font-family: visuelt-medium;

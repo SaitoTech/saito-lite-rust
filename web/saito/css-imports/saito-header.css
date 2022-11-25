@@ -71,7 +71,7 @@
 .saito-header-hamburger-contents {
     display: block;
     pointer-events: none;
-    color: var(--saito-default-font-color);
+    color: var(--saito-font-color);
     background-color: var(--saito-menu-background);
     position: absolute;
     right: 0;

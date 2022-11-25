@@ -21,7 +21,7 @@
 
 body {
   line-height: 1.2;
-  color: var(--saito-default-font-color);
+  color: var(--saito-font-color);
   font-family: var(--saito-font);
   margin: 0;
   font-size: 1.6rem;
@@ -125,7 +125,7 @@ Divider
 -----------------------------------------------------------------*/
 
 hr {
-  color: var(--saito-default-font-color);
+  color: var(--saito-font-color);
   margin: 2.5rem;
 }
 

@@ -36,7 +36,7 @@ input[type="datetime-local"] {
   padding: 1rem 1.5rem;
   font-size: 1.6rem;
   width: 20rem;
-  color: var(--saito-default-font-color);
+  color: var(--saito-font-color);
   border-radius: .5rem;
 }
 

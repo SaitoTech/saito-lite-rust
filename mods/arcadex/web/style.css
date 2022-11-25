@@ -13,7 +13,7 @@
 :root{
   --saito-white: var(--saito-nightscape);
   --saito-menu-background:  var(--saito-nightscape);
-  --saito-default-font-color: #eee;
+  --saito-font-color: #eee;
   --saito-skyline-grey: #999;
   --saito-black:  #fff;
 }
