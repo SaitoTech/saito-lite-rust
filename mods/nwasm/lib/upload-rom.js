@@ -25,26 +25,22 @@ class UploadRomOverlay {
       app.browser.addDragAndDropFileUploadToElement("nwasm-upload-overlay",
         async (file) => {
 
-          await uploader.showLoader();          
- 
-      	  
-          setTimeout(function(){
-            mod.active_rom = file;
+           document.querySelector('.loader').style.display = "block";
+          document.querySelector('.loader').classList.add("stepone");
 
-            let a = Buffer.from(file, 'binary').toString('base64');;
-            let ab = mod.convertBase64ToByteArray(a);
+          //setTimeout(function(){
+          mod.active_rom = file;
 
-            //
-            // initialize ROM gets the ROM the APP and the MOD
-            
-            myApp.initializeRom(ab, app, mod);
-            mod.startPlaying();
-            mod.hideSplashScreen();
-            mod.hideLibrary();
+          let a = Buffer.from(file, 'binary').toString('base64');;
+          let ab = mod.convertBase64ToByteArray(a);
 
-            uploader.overlay.hide();  
-          }, 1000);      	  
+          //
+          // initialize ROM gets the ROM the APP and the MOD
           
+          myApp.initializeRom(ab, app, mod);
+          mod.startPlaying();
+          mod.hideSplashScreen();
+          mod.hideLibrary();
 
         },
       false, true); // true = read as array buffer
@@ -55,11 +51,6 @@ class UploadRomOverlay {
     }
 
   }
-
-  async showLoader() {
-    document.querySelector('.loader').style.display = "block";
-  }
-
 }
 
 

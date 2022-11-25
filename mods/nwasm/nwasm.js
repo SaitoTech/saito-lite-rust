@@ -458,7 +458,7 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
     myApp.initializeRom(ab, this.app, this);
 
   }
-  saveRomFile(data) {
+  async saveRomFile(data) {
 
     let nwasm_self = this;
 
@@ -478,32 +478,59 @@ console.log("^^^^^^^^");
 console.log("^^^1^^^^");
 console.log("^^^^^^^^");
 
+ 
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
 console.log("^^^^^^^^");
 console.log("^^^2^^^^");
 console.log("^^^^^^^^");
+    
+    await nwasm_self.sleep(300);
+    document.querySelector('.loader').classList.add("steptwo");
+
     newtx = this.app.wallet.signTransaction(newtx);
 console.log("^^^^^^^^");
 console.log("^^^3^^^^");
 console.log("^^^^^^^^");
     //this.app.storage.saveTransaction(newtx);
 
+    await nwasm_self.sleep(300);
+    document.querySelector('.loader').classList.add("stepthree");
 console.log("SIZE OF TX: " + newtx.transaction.m.length);
 
-    this.app.network.sendTransactionWithCallback(newtx, function (res) {
+    this.app.network.sendTransactionWithCallback(newtx, async function (res) {
 console.log("^^^^^^^^");
 console.log("^^^4^^^^");
 console.log("^^^^^^^^");
+
+      await nwasm_self.sleep(300);
+      document.querySelector('.loader').classList.add("stepfour");
+
       if (added_to_library == 1) { return; }
       added_to_library = 1;
       nwasm_self.app.connection.emit("save-transaction", newtx);
 console.log("^^^^^^^^");
 console.log("^^^5^^^^");
 console.log("^^^^^^^^");
+    
+      await nwasm_self.sleep(300);
+      document.querySelector('.loader').classList.add("stepfive");
+
+      setTimeout(function(){
+        document.querySelector('.saito-overlay').remove();
+        document.querySelector('.saito-overlay-backdrop').remove();
+        
+      }, 300)
     });
 
   }
+
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+
   loadSaveGame(sig) {
     for (let i = 0; i < this.active_game_saves.length; i++) {
       let newtx = this.active_game_saves[i];
