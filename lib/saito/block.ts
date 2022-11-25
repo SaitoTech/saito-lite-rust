@@ -64,7 +64,7 @@ class Block {
   public fee_transaction_idx: number;
   public golden_ticket_idx: number;
   public issuance_transaction_idx: number;
-  public txs_hmap: any;
+  public txs_hmap: Map<string, number>;
   public txs_hmap_generated: boolean;
   public has_examined_block: boolean;
 
@@ -101,7 +101,7 @@ class Block {
     this.total_rebroadcast_slips = 0;
     this.total_rebroadcast_nolan = BigInt(0);
 
-    this.txs_hmap = [];
+    this.txs_hmap = new Map<string, number>();
     this.txs_hmap_generated = false;
 
     this.callbacks = [];
@@ -1094,11 +1094,11 @@ class Block {
     if (!this.txs_hmap_generated) {
       for (let i = 0; i < this.transactions.length; i++) {
         for (let ii = 0; ii < this.transactions[i].transaction.from.length; ii++) {
-          this.txs_hmap[this.transactions[i].transaction.from[ii].add] = 1;
+          this.txs_hmap.set(this.transactions[i].transaction.from[ii].add, 1);
         }
         for (let ii = 0; ii < this.transactions[i].transaction.to.length; ii++) {
           // console.log("setting txhmap for " + this.transactions[i].transaction.to[ii].add);
-          this.txs_hmap[this.transactions[i].transaction.to[ii].add] = 1;
+          this.txs_hmap.set(this.transactions[i].transaction.to[ii].add, 1);
         }
       }
       this.txs_hmap_generated = true;
@@ -1127,7 +1127,7 @@ class Block {
       this.generateTransactionsHashmap();
     }
     for (let i = 0; i < keylist.length; i++) {
-      if (this.txs_hmap[keylist[i]] == 1) {
+      if (this.txs_hmap.get(keylist[i]) == 1) {
         return true;
       }
     }

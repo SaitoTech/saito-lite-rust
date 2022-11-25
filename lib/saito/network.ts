@@ -309,6 +309,7 @@ class Network {
         const block = new Block(this.app);
         block.deserialize(buffer);
         console.debug("block deserialized : " + block_hash);
+        block.generateMetadata();
         await block.generateConsensusValues();
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
