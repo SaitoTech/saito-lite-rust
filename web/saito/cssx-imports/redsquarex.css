@@ -84,7 +84,7 @@
 
   
   .redsquare-quoted-tweet {
-    border: 1px solid var(--saito-border);
+    border: 1px solid var(--saito-border-color);
     margin-top: 1rem;
     padding: 1rem 1.5rem;
     border-radius: var(--saito-border-radius);
@@ -94,8 +94,6 @@
     display: grid;
     grid-template-columns: 4.5rem 1fr;
   }
-  
-  
   
   .redsquare-item-notice {
     box-sizing: border-box;
@@ -117,11 +115,41 @@
     line-height: 2.2rem;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    max-height: 30rem;
-    overflow: auto;
+    max-height: 22.1rem;
+    overflow: hidden;
   }
-  
-  
+
+  .tweet.full {
+    max-height: unset;
+  }
+
+  .tweet.full::after {
+    content: "collapse tweet";
+    position: absolute;
+    bottom: 5rem;
+    right: 2rem;
+    background-color: var(--saito-background-light);
+    border-radius: var(--saito-border-radius);
+    color: var(--saito-font-inverse);
+    font-size: smaller;
+    padding: 0 0.5rem;
+}
+
+  .tweet.preview {
+    margin-bottom: 3rem;
+  }
+
+  .tweet.preview::after {
+    content: "view full tweet";
+    position: absolute;
+    bottom: 5rem;
+    right: 2rem;
+    background-color: var(--saito-background-light);
+    border-radius: var(--saito-border-radius);
+    color: var(--saito-font-inverse);
+    font-size: smaller;
+    padding: 0 0.5rem;
+}
   
   .redsquare-tweet-tools {
     display: flex;

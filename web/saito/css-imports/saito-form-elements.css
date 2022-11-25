@@ -32,7 +32,7 @@ input[type="text"],
 input[type="password"],
 input[type="date"],
 input[type="datetime-local"] {
-  border: 1px solid var(--saito-border);
+  border: 1px solid var(--saito-border-color);
   padding: 1rem 1.5rem;
   font-size: 1.6rem;
   width: 20rem;
@@ -48,7 +48,7 @@ input[type="datetime-local"] {
 
 input[type="text"]::placeholder,
 input[type="password"]::placeholder {
-  color: var(--saito-border);
+  color: var(--saito-border-color);
 }
 
 /* ----------------------------------------------------------------
@@ -150,7 +150,7 @@ input[type="range"]::-webkit-slider-runnable-track {
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
   border-radius: .5rempx;
-  border: var(--saito-border);
+  border: var(--saito-border-color);
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -172,7 +172,7 @@ input[type="range"]::-moz-range-track {
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
   border-radius: .5rempx;
-  border: var(--saito-border);
+  border: var(--saito-border-color);
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -204,14 +204,14 @@ input[type="range"]::-ms-track {
 
 input[type="range"]::-ms-fill-lower {
   background: var(--saito-primary);
-  border: var(--saito-border);
+  border: var(--saito-border-color);
   border-radius: .5rempx;
   box-shadow: var(--saito-box-shadow);
 }
 
 input[type="range"]::-ms-fill-upper {
   background: #3071a9;
-  border: var(--saito-border);
+  border: var(--saito-border-color);
   border-radius: .5rempx;
   box-shadow: var(--saito-box-shadow);
 }
@@ -246,7 +246,7 @@ Text area
 
 textarea {
   background-color: white;
-  border: 1px solid var(--saito-border);
+  border: 1px solid var(--saito-border-color);
   display: block;
   padding: 1rem;
   border-radius: .5rem;
@@ -256,7 +256,7 @@ textarea {
 }
 
 textarea::placeholder {
-  color: var(--saito-border);
+  color: var(--saito-border-color);
 }
 
 .dropdown {
@@ -307,7 +307,7 @@ Selects
   align-items: center;
   height: 4.5rem;
   position: relative;
-  border: 1px solid var(--saito-border);
+  border: 1px solid var(--saito-border-color);
   border-radius: .5rem;
   border-bottom-left-radius: 0;
   font-size: 1.6rem;
@@ -347,7 +347,7 @@ Selects
   background-color: var(--saito-white);
   justify-content: start;
   display: none;
-  border: 1px solid var(--saito-border);
+  border: 1px solid var(--saito-border-color);
   border-top-left-radius: 0;
   border-bottom-left-radius: .5rem;
   border-bottom-right-radius: .5rem;

@@ -45,12 +45,17 @@ font imports
   --saito-font-color: #3D3D3D;
   --saito-font-color-heavy: #222;
   --saito-font-color-light: #555;
+  --saito-font-color-inverse: #efefef;
   --saito-box-padding: 3rem 2rem; 
   --saito-profile-background: #fff;
-  --saito-border: #c5c5c5bb;
+  --saito-border-color: #c5c5c5bb;
+
+  --saito-border: 1px solid #c5c5c5bb;
 
 
   --saito-border-radius: 0.5rem;
+
+  --saito-background-light: #dedede;
 
   /* --saito-blue: #35b2ff;
 

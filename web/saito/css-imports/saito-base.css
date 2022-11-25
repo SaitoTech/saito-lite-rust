@@ -161,7 +161,7 @@ Scrollbars
 
 ::-webkit-scrollbar-track {
   background: transparent;
-  background: linear-gradient(90deg, transparent 0 45%, var(--saito-border) 45% 55%, transparent 55% 100%);
+  background: linear-gradient(90deg, transparent 0 45%, var(--saito-border-color) 45% 55%, transparent 55% 100%);
 }
 
 ::-webkit-scrollbar-thumb {

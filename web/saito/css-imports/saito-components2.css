@@ -153,7 +153,7 @@ Saito Module Boxes
     grid-template-rows: 1fr min-content;
     position: relative;
     border-radius: 0.5rem;
-    border: 1px solid var(--saito-border);
+    border: 1px solid var(--saito-border-color);
     overflow: hidden;
     margin-bottom: 2rem;
     width: calc(50% - 1rem);

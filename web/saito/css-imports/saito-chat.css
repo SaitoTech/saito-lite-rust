@@ -13,7 +13,7 @@
     bottom: 0px;
     right: 0px;
 
-    border: 1px solid var(--saito-border);
+    border: 1px solid var(--saito-border-color);
     background: var(--saito-white);
     color: var(--saito-font-color);
 
@@ -30,7 +30,7 @@
 .chat-header {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid var(--saito-border);
+    border-bottom: 1px solid var(--saito-border-color);
     cursor: grab;
 }
 
@@ -122,7 +122,7 @@
     bottom: 0;
     width: 100%;
     padding: 1rem;
-    border-top: var(--saito-border);
+    border-top: var(--saito-border-color);
     display: grid;
     grid-template-columns: 1fr max-content;
     grid-gap: 1rem;
