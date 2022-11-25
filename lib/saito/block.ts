@@ -1164,11 +1164,11 @@ class Block {
     return html;
   }
 
-  returnBurnFee() {
+  returnBurnFee(): bigint {
     return this.block.burnfee;
   }
 
-  returnCreator() {
+  returnCreator(): string {
     return this.block.creator;
   }
 
