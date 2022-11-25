@@ -33,8 +33,8 @@ class UploadRomOverlay {
           obj.classList.add("nwasm-upload-overlay-dark");
 
 	  obj = document.querySelector(".preloader");
-          obj.classList.add("nwasm-preloader-dark");
 	  obj.innerHTML = "initializing may take a minute...";
+          obj.classList.add("nwasm-preloader-dark");
 
 	  obj = document.querySelector(".nwasm-upload-instructions");
           obj.innerHTML = "uploading ROM file...";

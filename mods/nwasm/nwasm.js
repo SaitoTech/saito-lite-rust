@@ -474,7 +474,10 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
     let added_to_library = 0;
     let iobj = document.querySelector(".nwasm-upload-instructions");
 
-
+    //
+    // larger tx, so we use subrequest and manually handle the save
+    // transaction process...
+    //
     let obj = {
       module: this.name,
       id: this.app.crypto.hash(this.active_rom_name) ,
@@ -484,30 +487,15 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
       data: base64data,
     };
 
-console.log("^^^^^^^^");
-console.log("^^^1^^^^");
-console.log("^^^^^^^^");
     if (iobj) { iobj.innerHTML = "bundling ROM into archive file..."; }
 
-
- 
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
-console.log("^^^^^^^^");
-console.log("^^^2^^^^");
-console.log("^^^^^^^^");
     
-//    await nwasm_self.sleep(300);
     document.querySelector('.loader').classList.add("steptwo");
 
     if (iobj) { iobj.innerHTML = "cryptographically signing archive file..."; }
     newtx = this.app.wallet.signTransaction(newtx);
-console.log("^^^^^^^^");
-console.log("^^^3^^^^");
-console.log("^^^^^^^^");
-    //this.app.storage.saveTransaction(newtx);
-
-//    await nwasm_self.sleep(300);
 
     if (iobj) { iobj.innerHTML = "uploading archive file: "+newtx.transaction.m.length+" bytes"; }
 
@@ -515,31 +503,12 @@ console.log("^^^^^^^^");
 
       if (iobj) { iobj.innerHTML = "archive upload completed..."; }
 
-
-console.log("^^^^^^^^");
-console.log("^^^4^^^^");
-console.log("^^^^^^^^");
-
-//      await nwasm_self.sleep(300);
-//      document.querySelector('.loader').classList.add("stepfour");
-
       if (added_to_library == 1) { return; }
       added_to_library = 1;
       nwasm_self.app.connection.emit("save-transaction", newtx);
-console.log("^^^^^^^^");
-console.log("^^^5^^^^");
-console.log("^^^^^^^^");
 
-        if (iobj) { iobj.innerHTML = "adding to personal library..."; }    
+      if (iobj) { iobj.innerHTML = "adding to personal library..."; }    
 
-//      await nwasm_self.sleep(300);
-//      document.querySelector('.loader').classList.add("stepfive");
-
-//      setTimeout(function(){
-//        document.querySelector('.saito-overlay').remove();
-//        document.querySelector('.saito-overlay-backdrop').remove();
-//        
-//      }, 300)
     });
 
   }
