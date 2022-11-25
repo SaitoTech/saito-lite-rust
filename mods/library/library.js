@@ -87,6 +87,7 @@ class Library extends ModTemplate {
       let title = txmsg.title;
       let module = txmsg.module;
       let request = txmsg.request;
+      let subrequest = txmsg.subrequest;
       let sig = tx.transaction.sig;
 
       if (library_self.library[module]) {
@@ -106,7 +107,7 @@ class Library extends ModTemplate {
 	//
 	// add ROM or update library
 	//
-	if (request === "upload rom") {
+	if (request === "archive rom" || subrequest === "archive rom") {
 	  if (contains_item == false) {
 	    library_self.library[module].push(
 	      {

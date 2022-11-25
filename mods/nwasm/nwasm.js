@@ -284,14 +284,17 @@ class Nwasm extends GameTemplate {
     //
     // query for collection info
     //
-    //let message = {};
-    //    message.request = "library collection";
-    //    message.data = {};
-    //    message.data.collection = "Nwasm";
-    //    app.network.sendRequestWithCallback(message.request, message.data, function(res) {
-    //      nwasm_mod.addCollectionToLibrary(peer.peer.publickey, res);
-    //      nwasm_mod.updateVisibleLibrary();
-    //	}, peer);
+    let message = {};
+        message.request = "library collection";
+        message.data = {};
+        message.data.collection = "Nwasm";
+        app.network.sendRequestWithCallback(message.request, message.data, function(res) {
+console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
+	  if (res.length > 0) {
+            nwasm_mod.addCollectionToLibrary(peer.peer.publickey, res);
+            nwasm_mod.updateVisibleLibrary();
+	  }
+    	}, peer);
  
 
     //
@@ -466,7 +469,7 @@ class Nwasm extends GameTemplate {
       id: this.app.crypto.hash(this.active_rom_name) ,
       title: this.active_rom_name.trim() ,
       request: "archive save",
-      subrequest: "upload rom",
+      subrequest: "archive rom",
       data: base64data,
     };
 

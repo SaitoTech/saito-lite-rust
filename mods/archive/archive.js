@@ -67,6 +67,7 @@ class Archive extends ModTemplate {
     if (req.request === "archive save") {
       console.log("archive save as request specifically");
       this.saveTransaction(req.data.tx, req.data.type);
+      mycallback(response);
     }
     if (req.request === "archive") {
       if (req.data.request === "delete") {
