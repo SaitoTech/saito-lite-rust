@@ -245,18 +245,29 @@ console.log("AND BACK IN CALLBACK");
     data.optional = optional;
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
-  saveTransaction(tx) {
+  saveTransaction(tx : Transaction) {
     console.log("savig tx 1");
-    const txmsg = tx.returnMessage();
-    const message = "archive";
-    const data: any = {};
-    data.request = "save";
-    data.tx = tx;
-    data.type = txmsg.module;
+
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx.msg = {
+      request : "archive save",
+      data : tx.serialize(this.app),
+    }
+console.log("signing tx...");
+    newtx = this.app.wallet.signTransaction(newtx);
+console.log("signed tx...");
+    this.app.network.sendTransactionWithCallback(newtx, function (res) {});
+
+//    const txmsg = tx.returnMessage();
+//    const message = "archive";
+//    const data: any = {};
+//    data.request = "save";
+//    data.tx = tx;
+//    data.type = txmsg.module;
 console.log("=============");
 console.log("SAVING THE TX");
 console.log("=============");
-    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+//    this.app.network.sendRequestWithCallback(message, data, function (res) {});
     this.app.connection.emit("save-transaction", tx);
 console.log("save-transaction'd the tx");
 

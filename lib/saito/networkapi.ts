@@ -4,6 +4,7 @@ export enum MessageType {
     HandshakeResponse,
     //HandshakeCompletion,
     ApplicationMessage= 4,
+    ApplicationTransaction,
     Block,
     Transaction,
     BlockchainRequest,

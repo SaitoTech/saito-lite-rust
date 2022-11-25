@@ -89,11 +89,7 @@ class Library extends ModTemplate {
       let request = txmsg.request;
       let sig = tx.transaction.sig;
 
-console.log("doesn the library exist?");
-
       if (library_self.library[module]) {
-
-console.log("yes");
 
 	let idx = -1;
 	let contains_item = false;
