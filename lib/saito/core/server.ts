@@ -371,8 +371,15 @@ class Server {
         let bufferString = Buffer.from(buffer); //.toString("base64");
 
         res.status(200);
-        console.log("serving block 1 : " + hash + " , buffer size : " + buffer.length);
+        console.log("serving block . : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
+
+        // let block1 = new Block(this.app);
+        // block1.deserialize(buffer);
+        // block1.generateMetadata();
+        // if (block1.returnHash() !== hash) {
+        //   console.log("error in buffer");
+        // }
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
       }
@@ -406,7 +413,7 @@ class Server {
         buffer = Buffer.from(buffer, "utf-8");
 
         res.status(200);
-        console.log("serving block 2 : " + hash + " , buffer size : " + buffer.length);
+        console.log("serving block .. : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");

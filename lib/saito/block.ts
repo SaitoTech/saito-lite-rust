@@ -907,12 +907,7 @@ class Block {
       // this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i));
       if (!this.transactions[i].isFeeTransaction()) {
         for (let k = 0; k < this.transactions[i].transaction.from.length; k++) {
-          this.transactions[i].generateMetadata(
-            this.app,
-            this.block.id,
-            BigInt(i),
-            this.returnHash()
-          );
+          this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i), "");
           // this.transactions[i].transaction.from[k].generateKey(this.app);
           // TODO : add this check
           this.slips_spent_this_block.set(this.transactions[i].transaction.from[k].returnKey(), 1);
