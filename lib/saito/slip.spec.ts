@@ -5,6 +5,7 @@ import Crypto from "./crypto";
 import Binary from "./binary";
 import Wallet from "./wallet";
 import Slip from "./slip";
+import {SLIP_SIZE} from "./transaction";
 import hashLoader from "../../apps/core/hash-loader";
 
 test("slip serialize deserialze", async () => {
@@ -36,8 +37,7 @@ test("slip serialize deserialze", async () => {
   slip.type = 3;
 
   const buffer = slip.serialize(
-    mockApp,
-    "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b"
+    mockApp
   );
 
   const slip2 = new Slip(wallet.wallet.privatekey);
@@ -77,6 +77,6 @@ describe("serializeForSignature", () => {
 
     const buffer = slip.serializeInputForSignature(mockApp);
 
-    expect(buffer).toEqual(Uint8Array.from(Buffer.alloc(78)));
+    expect(buffer).toEqual(Uint8Array.from(Buffer.alloc(SLIP_SIZE)));
   });
 });

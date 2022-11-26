@@ -3,6 +3,8 @@ import { Saito } from "../../apps/core";
 import saito from "./saito";
 import hashLoader from "../../apps/core/hash-loader";
 
+import GoldenTicket from "./goldenticket";
+
 test("golden ticket serialization", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -24,8 +26,46 @@ test("golden ticket serialization", async () => {
   const random_hash = "03bf1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce";
   const golden_ticket = new saito.goldenticket(mockApp);
   const buffer = golden_ticket.serialize(target_hash, random_hash);
+  console.log("gt = " + buffer.toString("hex"));
   const result = golden_ticket.deserialize(buffer);
   expect(result.target_hash).toEqual(target_hash);
   expect(result.random_hash).toEqual(random_hash);
   expect(result.creator).toEqual(wallet.wallet.publickey);
+});
+
+test("difficulty test", () => {
+  expect(GoldenTicket.generateHash(0).toUpperCase()).toEqual(
+    "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+  );
+  expect(GoldenTicket.generateHash(1).toUpperCase()).toEqual(
+    "7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+  );
+  expect(GoldenTicket.generateHash(2).toUpperCase()).toEqual(
+    "3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+  );
+  expect(GoldenTicket.generateHash(3).toUpperCase()).toEqual(
+    "1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+  );
+  expect(GoldenTicket.generateHash(4).toUpperCase()).toEqual(
+    "0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+  );
+  expect(GoldenTicket.generateHash(16).toUpperCase()).toEqual(
+    "0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+  );
+  expect(GoldenTicket.generateHash(17).toUpperCase()).toEqual(
+    "00007FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+  );
+
+  expect(
+    GoldenTicket.verifyHash(
+      "4523d0eb05233434b42de74a99049decb6c4347da2e7cde9fb49330e905da1e2",
+      "7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+    )
+  ).toBeTruthy();
+  expect(
+    GoldenTicket.verifyHash(
+      "4523d0eb05233434b42de74a99049decb6c4347da2e7cde9fb49330e905da1e2",
+      "3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+    )
+  ).toBeFalsy();
 });

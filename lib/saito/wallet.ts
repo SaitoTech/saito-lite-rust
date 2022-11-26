@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.521,
+    version: 4.545,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -498,7 +498,7 @@ console.log("---------------------");
     return valid;
   }
 
-  onChainReorganization(block, lc) {
+  onChainReorganization(block, lc: boolean) {
     const block_id = block.returnId();
     const block_hash = block.returnHash();
 
@@ -519,7 +519,7 @@ console.log("---------------------");
       //
       // refresh inputs (allow respending)
       //
-      if (block_id == 0) {
+      if (block_id == BigInt(0)) {
         for (let i = 0; i < this.wallet.inputs.length; i++) {
           if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
             this.wallet.spends[i] = 0;
@@ -571,7 +571,6 @@ console.log("---------------------");
         // update slips prior to insert
         //
         for (let ii = 0; ii < to_slips.length; ii++) {
-          to_slips[ii].uuid = block.returnHash();
           to_slips[ii].lc = lc; // longest-chain
           to_slips[ii].ts = block.returnTimestamp(); // timestamp
           to_slips[ii].from = JSON.parse(JSON.stringify(tx.transaction.from)); // from slips
@@ -599,7 +598,7 @@ console.log("---------------------");
             } else {
               if (ptx.transaction.type == TransactionType.GoldenTicket) {
                 this.wallet.pending.splice(i, 1);
-                this.unspendInputSlips(ptx);
+                this.unspendInputSlips(this.app, ptx);
                 i--;
                 removed_pending_slips = 1;
               } else {
@@ -612,7 +611,7 @@ console.log("---------------------");
 
                   if (ptx_ts + 12000000 < blk_ts) {
                     this.wallet.pending.splice(i, 1);
-                    this.unspendInputSlips(ptx);
+                    this.unspendInputSlips(this.app, ptx);
                     removed_pending_slips = 1;
                     i--;
                   }
@@ -656,12 +655,8 @@ console.log("---------------------");
             const s = from_slips[m];
             for (let c = 0; c < this.wallet.inputs.length; c++) {
               const qs = this.wallet.inputs[c];
-              if (
-                s.uuid == qs.uuid &&
-                s.sid == qs.sid &&
-                s.amt.toString() == qs.amt.toString() &&
-                s.add == qs.add
-              ) {
+              console.assert(s.returnKey().length > 0 && qs.returnKey().length > 0, "sss");
+              if (s.returnKey() === qs.returnKey()) {
                 if (!this.containsOutput(s)) {
                   this.addOutput(s);
                 }
@@ -684,17 +679,17 @@ console.log("---------------------");
   }
 
   returnAdequateInputs(amt) {
-    const utxiset = [];
+    const utxiset = new Array<Slip>();
     let value = BigInt(0);
     const bigamt = BigInt(amt) * BigInt(100_000_000);
 
     //
     // this adds a 1 block buffer so that inputs are valid in the future block included
     //
-    const lowest_block =
+    const lowest_block: bigint =
       this.app.blockchain.blockchain.last_block_id -
       this.app.blockchain.blockchain.genesis_period +
-      2;
+      BigInt(2);
 
     //
     // check pending txs to avoid slip reuse if necessary
@@ -824,9 +819,6 @@ console.log("---------------------");
       return null;
     }
 
-    //
-    // convert tx.msg to base64 tx.transaction.m
-    //
     try {
       tx.sign(this.app);
     } catch (err) {
@@ -870,11 +862,19 @@ console.log("---------------------");
     // limits in NodeJS!
     //
     try {
+
       if (this.app.keys.hasSharedSecret(tx.transaction.to[0].add)) {
         tx.msg = this.app.keys.encryptMessage(tx.transaction.to[0].add, tx.msg);
       }
-      // nov 30 - set in tx.sign() now
-      tx.transaction.m = this.app.crypto.stringToBase64(JSON.stringify(tx.msg));
+      //
+      // nov 25 2022 - eliminate base64 formatting for TXS
+      //
+      //tx.transaction.m = Buffer.from(
+      //  this.app.crypto.stringToBase64(JSON.stringify(tx.msg)),
+      //  "base64"
+      //);
+      tx.transaction.m = Buffer.from(JSON.stringify(tx.msg), "utf-8");
+
     } catch (err) {
       console.log("####################");
       console.log("### OVERSIZED TX ###");
@@ -889,11 +889,12 @@ console.log("---------------------");
     return tx;
   }
 
-  unspendInputSlips(tmptx = null) {
+  unspendInputSlips(app: Saito, tmptx = null) {
     if (tmptx == null) {
       return;
     }
     for (let i = 0; i < tmptx.transaction.from.length; i++) {
+      tmptx.transaction.from[i].generateKey(app);
       const fsidx = tmptx.transaction.from[i].returnKey();
       for (let z = 0; z < this.wallet.inputs.length; z++) {
         if (fsidx == this.wallet.inputs[z].returnKey()) {
@@ -937,14 +938,14 @@ console.log("---------------------");
   returnActivatedCryptos() {
     const allMods = this.returnInstalledCryptos();
     const activeMods = [];
-console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
+    console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
     for (let i = 0; i < allMods.length; i++) {
-console.log("checking if activated: " + allMods[i].name);
+      console.log("checking if activated: " + allMods[i].name);
       if (allMods[i].returnIsActivated()) {
         activeMods.push(allMods[i]);
       }
     }
-console.log("returning activated cryptos num: " + activeMods.length);
+    console.log("returning activated cryptos num: " + activeMods.length);
     return activeMods;
   }
 
@@ -997,7 +998,7 @@ console.log("returning activated cryptos num: " + activeMods.length);
       }
     }
 
-console.log("done in setPreferredCrypto");
+    console.log("done in setPreferredCrypto");
 
     return;
   }
@@ -1092,8 +1093,7 @@ console.log("done in setPreferredCrypto");
     mycallback = null,
     ticker
   ) {
-
-console.log("IN SEND PAYMENT IN WALLET!");
+    console.log("IN SEND PAYMENT IN WALLET!");
 
     console.log("wallet sendPayment");
     // validate inputs
@@ -1104,7 +1104,7 @@ console.log("IN SEND PAYMENT IN WALLET!");
     }
     if (senders.length !== 1) {
       // We have no code which exercises multiple senders/receivers so can't implement it yet.
-      console.log("sendPayment ERROR: Only supports one transaction");
+      console.error("sendPayment ERROR: Only supports one transaction");
       //mycallback({err: "Only supports one transaction"});
       return;
     }
@@ -1119,8 +1119,7 @@ console.log("IN SEND PAYMENT IN WALLET!");
     if (
       !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     ) {
-
-console.log("preferred transaction does not exist, so...");
+      console.log("preferred transaction does not exist, so...");
 
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
@@ -1128,10 +1127,10 @@ console.log("preferred transaction does not exist, so...");
           "senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress()
         );
 
-	//
-	// DEBUGGING - sender is address to which we send the crypto
-	// 	     - not our own publickey
-	//
+        //
+        // DEBUGGING - sender is address to which we send the crypto
+        // 	     - not our own publickey
+        //
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
@@ -1314,11 +1313,14 @@ console.log("preferred transaction does not exist, so...");
     ticker
   ) {
     return this.app.crypto.hash(
-      JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        unique_hash +
-        ticker
+      Buffer.from(
+        JSON.stringify(senders) +
+          JSON.stringify(receivers) +
+          JSON.stringify(amounts) +
+          unique_hash +
+          ticker,
+        "utf-8"
+      )
     );
   }
   savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {

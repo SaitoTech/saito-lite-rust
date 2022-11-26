@@ -79,6 +79,12 @@ class Library extends ModTemplate {
     //
     app.connection.on("save-transaction", function (tx) {
 
+console.log("---------------------");
+console.log("---------------------");
+console.log("IN LIBRARY ON SAVE TX");
+console.log("---------------------");
+console.log("---------------------");
+
       //
       // library exists?
       //
@@ -87,13 +93,10 @@ class Library extends ModTemplate {
       let title = txmsg.title;
       let module = txmsg.module;
       let request = txmsg.request;
+      let subrequest = txmsg.subrequest;
       let sig = tx.transaction.sig;
 
-console.log("doesn the library exist?");
-
       if (library_self.library[module]) {
-
-console.log("yes");
 
 	let idx = -1;
 	let contains_item = false;
@@ -101,7 +104,7 @@ console.log("yes");
         for (let i = 0; i < library_self.library[module].length; i++) {
 	  let item = library_self.library[module][i];
 	  if (item.id == id) {
-	    contains_item =	 true;
+	    contains_item = true;
 	    idx = i;
 	    i = library_self.library[module].length+1;
 	  }
@@ -110,7 +113,7 @@ console.log("yes");
 	//
 	// add ROM or update library
 	//
-	if (request === "upload rom") {
+	if (request === "archive rom" || subrequest === "archive rom") {
 	  if (contains_item == false) {
 	    library_self.library[module].push(
 	      {
@@ -123,11 +126,15 @@ console.log("yes");
 		sig : sig ,
 	      }
 	    );
+	    library_self.save();
 	  } else {
-	    library_self.library[module][idx].num++;
-	    library_self.library[module][idx].available++;
+	    let c = confirm("Your library already contains a copy of this game. Is this a new copy?");
+	    if (c) {
+	      library_self.library[module][idx].num++;
+	      library_self.library[module][idx].available++;
+	      library_self.save();
+	    }
 	  }
-	  library_self.save();
 	}
       }
     });

@@ -53,7 +53,7 @@ test("write_read_block_with_data_to_file", async () => {
   await hashLoader(mockApp);
 
   const block = new Block(mockApp);
-  block.block.id = 10;
+  block.block.id = BigInt(10);
   block.block.timestamp = 1637034582666;
   block.block.previous_block_hash =
     "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
@@ -117,12 +117,13 @@ describe("serializeForSignature", function () {
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
+
     await hashLoader(mockApp);
 
     const block = new Block(mockApp);
 
     const buffer = block.serializeForSignature();
-    expect(buffer).toEqual(Buffer.alloc(145));
+    expect(buffer).toEqual(Buffer.alloc(177));
   });
 
   test("block with data", async () => {
@@ -138,7 +139,7 @@ describe("serializeForSignature", function () {
     await hashLoader(mockApp);
 
     const block = new Block(mockApp);
-    block.block.id = 10;
+    block.block.id = BigInt(10);
     block.block.timestamp = 1637034582666;
     block.block.previous_block_hash =
       "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";

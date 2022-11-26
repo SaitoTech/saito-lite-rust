@@ -27,7 +27,6 @@ class Keychain {
   }
 
   initialize() {
-
     if (this.app.options.keys == null) {
       this.app.options.keys = [];
     }
@@ -77,10 +76,9 @@ class Keychain {
 
     if (this.app.options.groups == null) {
       this.app.options.groups = [];
-    }else{
+    } else {
       this.groups = this.app.options.groups;
     }
-
   }
 
   //
@@ -223,10 +221,10 @@ class Keychain {
   }
 
   encryptMessage(publickey, msg) {
-    const jsonmsg = JSON.stringify(msg);
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey == publickey) {
         if (this.keys[x].aes_secret != "") {
+          const jsonmsg = JSON.stringify(msg);
           return this.app.crypto.aesEncrypt(jsonmsg, this.keys[x].aes_secret);
         }
       }
@@ -423,7 +421,7 @@ class Keychain {
     this.saveKeys();
   }
 
-  returnIdenticon(publickey) {
+  returnIdenticon(publickey: string) {
     if (this.keys != undefined) {
       for (let x = 0; x < this.keys.length; x++) {
         if (this.keys[x].publickey === publickey) {
@@ -447,16 +445,18 @@ class Keychain {
       size: 420, // 420px square
       format: "svg", // use SVG instead of PNG
     };
+    // console.debug("publickey for identicon 1 : ", publickey);
     const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
     return "data:image/svg+xml;base64," + data;
   }
 
-  returnIdenticonasPNG(publickey) {
+  returnIdenticonasPNG(publickey: string) {
     const options = {
       margin: 0.0, // 0% margin
       size: 420, // 420px square
       format: "png", // use SVG instead of PNG
     };
+    // console.debug("publickey for identicon 2 : ", publickey);
     const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
     return "data:image/png;base64," + data;
   }

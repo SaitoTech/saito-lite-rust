@@ -301,7 +301,7 @@ var ChessBoard = function (containerElOrId, cfg) {
         if (cfg.showErrors === 'console' &&
             typeof console === 'object' &&
             typeof console.log === 'function') {
-            console.log(errorText);
+            console.error(errorText);
             if (arguments.length >= 2) {
                 console.log(obj);
             }

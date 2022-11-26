@@ -2,8 +2,12 @@ import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
 import Transaction, { HOP_SIZE, SLIP_SIZE, TRANSACTION_SIZE, TransactionType } from "./transaction";
 import { Saito } from "../../apps/core";
+import Goldenticket from "./goldenticket";
+import GoldenTicket from "./goldenticket";
+import UtxoSet from "./utxoset";
+import Hop from "./hop";
 
-const BLOCK_HEADER_SIZE = 245;
+const BLOCK_HEADER_SIZE = 301;
 
 export enum BlockType {
   Ghost = 0,
@@ -15,7 +19,7 @@ export enum BlockType {
 class Block {
   public app: Saito;
   public block = {
-    id: 0,
+    id: BigInt(0),
     timestamp: 0,
     previous_block_hash: "",
     merkle: "",
@@ -111,6 +115,7 @@ class Block {
     for (let z = 0; z < this.transactions.length; z++) {
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
         const txmsg = this.transactions[z].returnMessage();
+        console.log("txmsg length: ", txmsg ? JSON.stringify(txmsg).length : txmsg);
         this.app.modules.affixCallbacks(
           this.transactions[z],
           z,
@@ -123,7 +128,7 @@ class Block {
   }
 
   // called when a block is deleted from the chain for good
-  deleteBlock(utxoset) {
+  deleteBlock(utxoset: UtxoSet) {
     // remove from disk, etc.
   }
 
@@ -133,9 +138,10 @@ class Block {
    * @returns {Block}
    */
   deserialize(buffer?) {
+    //console.debug("deserializing block");
     const transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
 
-    this.block.id = parseInt(this.app.binary.u64FromBytes(buffer.slice(4, 12)).toString()); // TODO : fix this to support correct ranges.
+    this.block.id = this.app.binary.u64FromBytes(buffer.slice(4, 12)); // TODO : fix this to support correct ranges.
     this.block.timestamp = parseInt(this.app.binary.u64FromBytes(buffer.slice(12, 20)).toString());
     this.block.previous_block_hash = Buffer.from(buffer.slice(20, 52)).toString("hex");
     this.block.creator = this.app.crypto.toBase58(
@@ -144,18 +150,18 @@ class Block {
     this.block.merkle = Buffer.from(buffer.slice(85, 117)).toString("hex");
     this.block.signature = Buffer.from(buffer.slice(117, 181)).toString("hex");
 
-    this.block.treasury = this.app.binary.u64FromBytes(buffer.slice(181, 189));
-    this.block.staking_treasury = BigInt(this.app.binary.u64FromBytes(buffer.slice(189, 197)));
-    this.block.burnfee = BigInt(this.app.binary.u64FromBytes(buffer.slice(197, 205)));
+    this.block.treasury = this.app.binary.u128FromBytes(buffer.slice(181, 197));
+    this.block.staking_treasury = BigInt(this.app.binary.u128FromBytes(buffer.slice(197, 213)));
+    this.block.burnfee = BigInt(this.app.binary.u128FromBytes(buffer.slice(213, 229)));
 
     this.block.difficulty = parseInt(
-      this.app.binary.u64FromBytes(buffer.slice(205, 213)).toString()
+      this.app.binary.u64FromBytes(buffer.slice(229, 237)).toString()
     );
 
-    this.block.avg_income = BigInt(this.app.binary.u64FromBytes(buffer.slice(213, 221)));
-    this.block.avg_variance = BigInt(this.app.binary.u64FromBytes(buffer.slice(221, 229)));
-    this.block.avg_atr_income = BigInt(this.app.binary.u64FromBytes(buffer.slice(229, 237)));
-    this.block.avg_atr_variance = BigInt(this.app.binary.u64FromBytes(buffer.slice(237, 245)));
+    this.block.avg_income = BigInt(this.app.binary.u128FromBytes(buffer.slice(237, 253)));
+    this.block.avg_variance = BigInt(this.app.binary.u128FromBytes(buffer.slice(253, 269)));
+    this.block.avg_atr_income = BigInt(this.app.binary.u128FromBytes(buffer.slice(269, 285)));
+    this.block.avg_atr_variance = BigInt(this.app.binary.u128FromBytes(buffer.slice(285, 301)));
 
     let start_of_transaction_data = BLOCK_HEADER_SIZE;
 
@@ -182,7 +188,7 @@ class Block {
     ) {
       this.block.signature = "";
     }
-
+    console.log(`block.deserialize tx length = ${transactions_length}`);
     for (let i = 0; i < transactions_length; i++) {
       const inputs_len = this.app.binary.u32FromBytes(
         buffer.slice(start_of_transaction_data, start_of_transaction_data + 4)
@@ -208,6 +214,7 @@ class Block {
       this.transactions.push(transaction);
       start_of_transaction_data = end_of_transaction_data;
     }
+    console.log("block deserialized");
   }
 
   //
@@ -223,7 +230,7 @@ class Block {
     if (block_type === "Pruned") {
       this.block_type = BlockType.Pruned;
       this.transactions = [];
-      console.debug(`block ${this.returnHash()} type set as pruned`);
+      //console.debug(`block ${this.returnHash()} type set as pruned`);
       return true;
     }
     return false;
@@ -276,7 +283,7 @@ class Block {
     //
     // hash random number to pick routing node
     //
-    const rn = this.app.crypto.hash(random_number);
+    const rn = this.app.crypto.hash(random_number.toString());
 
     //
     // and pick from path, if exists
@@ -300,7 +307,7 @@ class Block {
   }
 
   async generateConsensusValues() {
-    //
+    console.log("generating consensus values for block : ", this.hash);
     // this is the number of blocks we will recurse backwards to issue the
     // staker payout. if this permits strings of blocks that are less than
     // the theoretical maximum number of golden-ticket free blocks that can
@@ -311,30 +318,53 @@ class Block {
     //
     // return obj w/ default values
     //
-    const cv: any = {};
-
-    cv.total_fees = BigInt(0);
-    cv.ft_num = 0;
-    cv.gt_num = 0;
-    cv.it_num = 0;
-    cv.ft_idx = 0;
-    cv.gt_idx = 0;
-    cv.it_idx = 0;
-    cv.expected_difficulty = 1;
-    cv.total_rebroadcast_nolan = BigInt(0);
-    cv.total_rebroadcast_fees_nolan = BigInt(0);
-    cv.total_rebroadcast_staking_payouts_nolan = BigInt(0);
-    cv.total_rebroadcast_slips = 0;
-    cv.nolan_falling_off_chain = BigInt(0);
-    cv.rebroadcast_hash = "";
-    cv.staking_treasury = BigInt(0);
-    cv.rebroadcasts = [];
-    cv.block_payouts = [];
-    cv.fee_transaction = null;
-    cv.avg_income = BigInt(0);
-    cv.avg_variance = BigInt(0);
-    cv.avg_atr_income = BigInt(0);
-    cv.avg_atr_variance = BigInt(0);
+    const cv: {
+      total_rebroadcast_staking_payouts_nolan: bigint;
+      staking_treasury: bigint;
+      total_fees: bigint;
+      gt_num: number;
+      avg_income: bigint;
+      ft_num: number;
+      rebroadcast_hash: string;
+      block_payouts: any[];
+      avg_atr_income: bigint;
+      avg_atr_variance: bigint;
+      it_num: number;
+      fee_transaction: Transaction | null;
+      avg_variance: bigint;
+      expected_difficulty: number;
+      ft_idx: number;
+      total_rebroadcast_slips: number;
+      rebroadcasts: Transaction[];
+      it_idx: number;
+      gt_idx: number;
+      nolan_falling_off_chain: bigint;
+      total_rebroadcast_fees_nolan: bigint;
+      total_rebroadcast_nolan: bigint;
+    } = {
+      total_fees: BigInt(0),
+      ft_num: 0,
+      gt_num: 0,
+      it_num: 0,
+      ft_idx: 0,
+      gt_idx: 0,
+      it_idx: 0,
+      expected_difficulty: 1,
+      total_rebroadcast_nolan: BigInt(0),
+      total_rebroadcast_fees_nolan: BigInt(0),
+      total_rebroadcast_staking_payouts_nolan: BigInt(0),
+      total_rebroadcast_slips: 0,
+      nolan_falling_off_chain: BigInt(0),
+      rebroadcast_hash: "",
+      staking_treasury: BigInt(0),
+      rebroadcasts: new Array<Transaction>(),
+      block_payouts: [],
+      fee_transaction: null,
+      avg_income: BigInt(0),
+      avg_variance: BigInt(0),
+      avg_atr_income: BigInt(0),
+      avg_atr_variance: BigInt(0),
+    };
 
     //
     // calculate total fees and indices
@@ -361,15 +391,15 @@ class Block {
           this.has_issuance_transaction = true;
         }
       } catch (err) {
-        console.log("ERROR: " + err);
-        console.log("ERROR W/: " + JSON.stringify(this.transactions[i]));
+        console.error(err);
+        console.error("ERROR W/: ", this.transactions[i]);
       }
     }
 
-    //
+    // console.log(`${typeof this.block.id} > ${typeof this.app.blockchain.returnGenesisPeriod()} + ${typeof this.app.blockchain.blockchain.genesis_period}`);
+
     // calculate automatic transaction rebroadcasts / ATR / atr
-    //
-    if (this.block.id > this.app.blockchain.returnGenesisPeriod() + 1) {
+    if (this.block.id > this.app.blockchain.returnGenesisPeriod() + BigInt(1)) {
       const pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
       const pruned_block_hash =
         this.app.blockring.returnLongestChainBlockHashByBlockId(pruned_block_id);
@@ -379,13 +409,11 @@ class Block {
 
       //
       // generate metadata should have already loaded this pruned-block into
-      // memory with all of the transactions that we will need to examine to
+      // memory with all the transactions that we will need to examine to
       // determine which should be rebroadcast.
       //
       if (pruned_block) {
-        //
         // only unspent UTXO eligible
-        //
         for (let i = 0; i < pruned_block.transactions.length; i++) {
           const tx = pruned_block.transactions[i];
 
@@ -426,17 +454,17 @@ class Block {
                   STAKING_SUBSIDY
                 );
 
-                //
                 // update cryptographic hash of all ATRs
-                //
                 cv.rebroadcast_hash = this.app.crypto.hash(
-                  cv.rebroadcast_hash +
-                    rebroadcast_transaction.serializeForSignature(this.app).toString("hex")
+                  Buffer.concat([
+                    Buffer.from(cv.rebroadcast_hash, "hex"),
+                    rebroadcast_transaction.serializeForSignature(this.app),
+                  ])
                 );
               } else {
                 //
                 // rebroadcast dust is either collected into the treasury or
-                // distributed as a fee for the next block producer. for now
+                // distributed as a fee for the next block producer. for now,
                 // we will simply distribute it as a fee. we may need to
                 // change this if the DUST becomes a significant enough amount
                 // each block to reduce consensus security.
@@ -454,9 +482,7 @@ class Block {
     //
     const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
     if (previous_block) {
-      //
       // difficulty depends on previous block
-      //
       const difficulty = previous_block.returnDifficulty();
 
       if (previous_block.hasGoldenTicket() && cv.gt_num === 0) {
@@ -514,6 +540,7 @@ class Block {
         }
       }
     } else {
+      //console.debug("previous block not found");
       //
       // if there is no previous block, the difficulty is not adjusted. validation
       // rules will cause the block to fail unless it is the first block.
@@ -534,30 +561,28 @@ class Block {
     //
     // calculate payments to miners / routers
     //
-    if (cv.gt_idx > 0) {
+    if (cv.gt_num > 0) {
+      //console.debug("golden ticket found at index : " + cv.gt_idx);
       const golden_ticket_transaction = this.transactions[cv.gt_idx];
       const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
       let next_random_number = this.app.crypto.hash(gt.random_hash);
       const miner_publickey = gt.creator;
 
-      //
-      // limit previous block payout to avg income
-      //
-      let previous_block_payout = previous_block.returnFeesTotal();
-      if (
-        previous_block_payout > previous_block.block.avg_income * 1.25 &&
-        previous_block_payout > 50
-      ) {
-        previous_block_payout = previous_block.block.avg_income * 1.24;
-      }
-
-      //
       // miner payout is fees from previous block, no staking treasury
-      //
       if (previous_block) {
+        //console.debug("checking fees from previous block : " + previous_block.hash);
+        // limit previous block payout to avg income
+        let previous_block_payout = previous_block.returnFeesTotal();
+        if (
+          previous_block_payout > BigInt(Number(previous_block.block.avg_income) * 1.25) &&
+          previous_block_payout > 50
+        ) {
+          previous_block_payout = BigInt(Number(previous_block.block.avg_income) * 1.24);
+        }
+
         const miner_payment = previous_block_payout / BigInt(2);
-        const router_payment = previous_block_payout / BigInt(2);
+        const router_payment = previous_block_payout - miner_payment;
 
         //
         // calculate miner and router payments
@@ -580,20 +605,15 @@ class Block {
         block_payout.miner_payout = miner_payment;
         block_payout.router_payout = router_payment;
 
-        //
         // these two from find_winning_router - 3, 4
-        //
         next_random_number = this.app.crypto.hash(next_random_number);
         next_random_number = this.app.crypto.hash(next_random_number);
 
-        //
         // add these payouts to consensus values
-        //
+        // console.debug("adding block payout : ", block_payout);
         cv.block_payouts.push(block_payout);
 
-        //
         // loop backwards until MAX recursion OR golden ticket
-        //
         let cont = 1;
         let loop_idx = 0;
         let did_the_block_before_our_staking_block_have_a_golden_ticket =
@@ -623,21 +643,20 @@ class Block {
               staking_block_hash = staking_block.returnPreviousBlockHash();
 
               if (!did_the_block_before_our_staking_block_have_a_golden_ticket) {
-                //
                 // update with this block info in case of next loop
-                //
                 did_the_block_before_our_staking_block_have_a_golden_ticket =
                   staking_block.hasGoldenTicket();
 
-                //
                 // calculate staker block payments
-                //
                 let previous_staking_block_payout = staking_block.returnFeesTotal();
                 if (
-                  previous_staking_block_payout > staking_block.block.avg_income * 1.25 &&
+                  previous_staking_block_payout >
+                    BigInt(Number(staking_block.block.avg_income) * 1.25) &&
                   previous_staking_block_payout > 50
                 ) {
-                  previous_staking_block_payout = staking_block.block.avg_income * 1.24;
+                  previous_staking_block_payout = BigInt(
+                    Number(staking_block.block.avg_income) * 1.24
+                  );
                 }
 
                 const sp = previous_staking_block_payout / BigInt(2);
@@ -663,6 +682,7 @@ class Block {
                 next_random_number = this.app.crypto.hash(next_random_number);
                 next_random_number = this.app.crypto.hash(next_random_number);
 
+                // console.debug("adding block payout : ", block_payout);
                 cv.block_payouts.push(block_payout);
               }
             }
@@ -679,19 +699,19 @@ class Block {
       transaction.transaction.type = TransactionType.Fee;
 
       for (let i = 0; i < cv.block_payouts.length; i++) {
-        if (cv.block_payout[i].miner !== "") {
+        if (cv.block_payouts[i].miner !== "") {
           const output = new Slip();
-          output.add = cv.block_payout[i].miner;
-          output.amt = cv.block_payout[i].miner_payout;
+          output.add = cv.block_payouts[i].miner;
+          output.amt = cv.block_payouts[i].miner_payout;
           output.type = SlipType.MinerOutput;
           output.sid = slip_ordinal;
           transaction.addOutput(output.clone());
           slip_ordinal += 1;
         }
-        if (cv.block_payout[i].router !== "") {
+        if (cv.block_payouts[i].router !== "") {
           const output = new Slip();
-          output.add = cv.block_payout[i].router;
-          output.amt = cv.block_payout[i].router_payout;
+          output.add = cv.block_payouts[i].router;
+          output.amt = cv.block_payouts[i].router_payout;
           output.type = SlipType.RouterOutput;
           output.sid = slip_ordinal;
           transaction.addOutput(output.clone());
@@ -700,6 +720,8 @@ class Block {
       }
 
       cv.fee_transaction = transaction;
+    } else {
+      console.log("no GTs in block");
     }
 
     //
@@ -720,7 +742,7 @@ class Block {
           break;
         }
 
-        const bid = this.returnId() - i;
+        const bid: bigint = this.returnId() - BigInt(i);
         const previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
         if (previous_block_hash !== "") {
           const previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
@@ -749,7 +771,7 @@ class Block {
     //
     // fetch consensus values from preceding block
     //
-    let previous_block_id = 0;
+    let previous_block_id = BigInt(0);
     let previous_block_timestamp = 0;
     let previous_block_difficulty = 0;
     let previous_block_burnfee = BigInt(0);
@@ -777,7 +799,7 @@ class Block {
     //
     // set our values
     //
-    this.block.id = previous_block_id + 1;
+    this.block.id = previous_block_id + BigInt(1);
     this.block.previous_block_hash = previous_block_hash;
     this.block.burnfee = current_burnfee;
     this.block.timestamp = current_timestamp;
@@ -796,7 +818,7 @@ class Block {
     //
     // first block gets issuance
     //
-    if (this.block.id === 1) {
+    if (this.block.id === BigInt(1)) {
       let tokens_issued = BigInt(0);
       let slips = this.app.storage.returnTokenSupplySlipsFromDisk();
       let newtx = this.app.wallet.createUnsignedTransaction();
@@ -852,7 +874,11 @@ class Block {
     //
     const rlen = cv.rebroadcasts.length;
     for (let i = 0; i < rlen; i++) {
-      cv.rebroadcasts[i].generateMetadata(this.app.wallet.returnPublicKey());
+      // cv.rebroadcasts[i].generateMetadata(
+      //   this.app,
+      //   this.block.id,
+      //   BigInt(this.transactions.length)
+      // );
       this.transactions.push(cv.rebroadcasts[i]);
     }
 
@@ -860,11 +886,14 @@ class Block {
     // fee transactions
     //
     if (cv.fee_transaction != null) {
-      //
+      // cv.fee_transaction.generateMetadata(
+      //   this.app,
+      //   this.block.id,
+      //   BigInt(this.transactions.length)
+      // );
       // creator signs fee transaction
-      //
       cv.fee_transaction.sign(this.app);
-      this.add_transaction(cv.fee_transaction);
+      this.transactions.push(cv.fee_transaction);
     }
 
     //
@@ -875,11 +904,18 @@ class Block {
     // that is also paid this block otherwise.
     //
     for (let i = 0; i < this.transactions.length; i++) {
+      // this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i));
       if (!this.transactions[i].isFeeTransaction()) {
         for (let k = 0; k < this.transactions[i].transaction.from.length; k++) {
+          this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i));
+          // this.transactions[i].transaction.from[k].generateKey(this.app);
+          // TODO : add this check
           this.slips_spent_this_block[this.transactions[i].transaction.from[k].returnKey()] = 1;
         }
       }
+      // for (let k = 0; k < this.transactions[i].transaction.to.length; k++) {
+      //   this.transactions[i].transaction.to[k].generateKey(this.app);
+      // }
     }
     this.created_hashmap_of_slips_spent_this_block = true;
 
@@ -891,14 +927,14 @@ class Block {
     //
     // set treasury
     //
-    if (cv.nolan_falling_off_chain !== 0) {
+    if (cv.nolan_falling_off_chain !== BigInt(0)) {
       this.block.treasury = previous_block_treasury + cv.nolan_falling_off_chain;
     }
 
     //
     // set staking treasury
     //
-    if (cv.staking_treasury !== 0) {
+    if (cv.staking_treasury !== BigInt(0)) {
       let adjusted_staking_treasury = previous_block_staking_treasury;
       if (cv.staking_treasury < 0) {
         const x: bigint = cv.staking_treasury * BigInt(-1);
@@ -942,7 +978,9 @@ class Block {
     // and the routing work.
     //
     const creator_publickey = this.returnCreator();
-    this.transactions.map((tx) => tx.generateMetadata());
+    this.transactions.map((tx, index) =>
+      tx.generateMetadata(this.app, this.block.id, BigInt(index))
+    );
 
     //
     // we need to calculate the cumulative figures AFTER the
@@ -997,38 +1035,28 @@ class Block {
         }
       }
 
-      //
       // also check the transactions for golden ticket and fees
-      //
-      switch (transaction.transaction.type) {
-        case TransactionType.Issuance:
-          has_issuance_transaction = true;
-          issuance_transaction_idx = i;
-          break;
-        case TransactionType.Fee:
-          has_fee_transaction = true;
-          fee_transaction_idx = i;
-          break;
-        case TransactionType.GoldenTicket:
-          has_golden_ticket = true;
-          golden_ticket_idx = i;
-          break;
-        case TransactionType.ATR: {
-          const bytes = Buffer.concat([
-            Buffer.from(this.rebroadcast_hash, "hex"),
-            transaction.serializeForSignature(this.app),
-          ]);
-          this.rebroadcast_hash = this.app.crypto.hash(bytes.toString("hex"));
+      if (transaction.transaction.type === TransactionType.Issuance) {
+        has_issuance_transaction = true;
+        issuance_transaction_idx = i;
+      } else if (transaction.transaction.type === TransactionType.Fee) {
+        has_fee_transaction = true;
+        fee_transaction_idx = i;
+      } else if (transaction.transaction.type === TransactionType.GoldenTicket) {
+        has_golden_ticket = true;
+        golden_ticket_idx = i;
+      } else if (transaction.transaction.type === TransactionType.ATR) {
+        const bytes = Buffer.concat([
+          Buffer.from(this.rebroadcast_hash, "hex"),
+          transaction.serializeForSignature(this.app),
+        ]);
+        this.rebroadcast_hash = this.app.crypto.hash(bytes.toString("hex"));
 
-          for (let i = 0; i < transaction.transaction.from.length; i++) {
-            const input = transaction.transaction.from[i];
-            this.total_rebroadcast_slips += 1;
-            this.total_rebroadcast_nolan += input.returnAmount();
-          }
-          break;
+        for (let i = 0; i < transaction.transaction.from.length; i++) {
+          const input = transaction.transaction.from[i];
+          this.total_rebroadcast_slips += 1;
+          this.total_rebroadcast_nolan += input.returnAmount();
         }
-        default:
-          break;
       }
     }
 
@@ -1064,6 +1092,7 @@ class Block {
           this.txs_hmap[this.transactions[i].transaction.from[ii].add] = 1;
         }
         for (let ii = 0; ii < this.transactions[i].transaction.to.length; ii++) {
+          // console.log("setting txhmap for " + this.transactions[i].transaction.to[ii].add);
           this.txs_hmap[this.transactions[i].transaction.to[ii].add] = 1;
         }
       }
@@ -1087,7 +1116,7 @@ class Block {
     return this.has_issuance_transaction;
   }
 
-  hasKeylistTransactions(keylist) {
+  hasKeylistTransactions(keylist): boolean {
     if (!this.txs_hmap_generated) {
       console.log("generating tx hashmap for " + JSON.stringify(keylist));
       this.generateTransactionsHashmap();
@@ -1103,9 +1132,12 @@ class Block {
   onChainReorganization(lc) {
     const block_id = this.returnId();
     for (let i = 0; i < this.transactions.length; i++) {
+      console.log("tx ocr " + i);
       this.transactions[i].onChainReorganization(this.app, lc, block_id);
     }
+    console.log("done tx ocr 1");
     this.lc = lc;
+    console.log("done tx ocr 2");
   }
 
   asReadableString() {
@@ -1174,12 +1206,15 @@ class Block {
     if (this.hash) {
       return this.hash;
     }
-    this.prehash = this.app.crypto.hash(this.serializeForSignature().toString("hex"));
-    this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
+    this.prehash = this.app.crypto.hash(this.serializeForSignature());
+    let previous = this.app.binary.hexToSizedArray(this.block.previous_block_hash, 32);
+    let prehash = this.app.binary.hexToSizedArray(this.prehash, 32);
+    let hashed_buffer = Buffer.concat([previous, prehash]);
+    this.hash = this.app.crypto.hash(hashed_buffer);
     return this.hash;
   }
 
-  returnId() {
+  returnId(): bigint {
     return this.block.id;
   }
 
@@ -1188,15 +1223,15 @@ class Block {
   }
 
   async runCallbacks(conf, run_callbacks = 1) {
-    if (this.confirmations && this.callbacks) {
-      for (let i = this.confirmations + 1; i <= conf; i++) {
+    if (Number(this.confirmations) && this.callbacks) {
+      for (let i = Number(this.confirmations) + 1; i <= conf; i++) {
         for (let ii = 0; ii < this.callbacks.length; ii++) {
           try {
             if (run_callbacks === 1) {
               await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
             }
           } catch (err) {
-            console.log("ERROR 567567: ", err);
+            console.error("ERROR 567567: ", err);
           }
         }
       }
@@ -1204,7 +1239,8 @@ class Block {
     this.confirmations = conf;
   }
 
-  generateMerkleRoot() {
+  generateMerkleRoot(): string {
+    console.log("generating merkle root of block : " + this.hash);
     //
     // if we are lite-client and have been given a block without transactions
     // we accept the merkle root since it is what has been provided. users who
@@ -1213,35 +1249,34 @@ class Block {
     // as in any other blockchains/SPV/MR implementation.
     //
     if (this.transactions.length === 0 && (this.app.BROWSER === 1 || this.app.SPVMODE === 1)) {
+      console.log("returning block's merkle without calculating");
       return this.block.merkle;
     }
 
     let mr = "";
-    let txs = [];
+    let txs: string[] = [];
 
     for (let i = 0; i < this.transactions.length; i++) {
       if (this.transactions[i].transaction.type === TransactionType.SPV) {
         txs.push(this.transactions[i].transaction.sig);
       } else {
-        txs.push(
-          this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app).toString("hex"))
-        );
+        txs.push(this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app)));
       }
     }
 
-    while (mr === "") {
-      const tx2 = [];
+    while (!mr) {
+      const tx2: string[] = [];
 
       if (txs.length <= 2) {
         if (txs.length === 1) {
           mr = txs[0];
         } else {
-          mr = this.app.crypto.hash("" + txs[0] + txs[1]);
+          mr = this.app.crypto.hash(Buffer.from("" + txs[0] + txs[1], "hex"));
         }
       } else {
         for (let i = 0; i < txs.length; i++) {
           if (i <= txs.length - 2) {
-            tx2.push(this.app.crypto.hash("" + txs[i] + txs[i + 1]));
+            tx2.push(this.app.crypto.hash(Buffer.from("" + txs[i] + txs[i + 1], "hex")));
             i++;
           } else {
             tx2.push(txs[i]);
@@ -1284,7 +1319,7 @@ class Block {
         spv.transaction.r = 1;
         // the sig contains the hash of this TX
         spv.transaction.sig = this.app.crypto.hash(
-          this.transactions[i].serializeForSignature(this.app).toString("hex")
+          this.transactions[i].serializeForSignature(this.app)
         );
 
         //delete spv.transaction.to;
@@ -1371,10 +1406,9 @@ class Block {
     const block_creator = this.block.creator;
     const block_signature = this.block.signature;
 
-    let transactions_length = this.app.binary.u32AsBytes(0);
-    if (this.transactions.length > 0) {
-      transactions_length = this.app.binary.u32AsBytes(this.transactions.length);
-    }
+    console.log(`block.serialize : tx count = ${this.transactions.length} for ${this.hash}`);
+    let transactions_length = this.app.binary.u32AsBytes(this.transactions.length);
+
     const id = this.app.binary.u64AsBytes(this.block.id);
     const timestamp = this.app.binary.u64AsBytes(this.block.timestamp);
 
@@ -1383,15 +1417,15 @@ class Block {
     const merkle_root = this.app.binary.hexToSizedArray(block_merkle, 32);
     const signature = this.app.binary.hexToSizedArray(block_signature, 64);
 
-    const treasury = this.app.binary.u64AsBytes(this.block.treasury.toString());
-    const staking_treasury = this.app.binary.u64AsBytes(this.block.staking_treasury.toString());
-    const burnfee = this.app.binary.u64AsBytes(this.block.burnfee.toString());
+    const treasury = this.app.binary.u128AsBytes(this.block.treasury.toString());
+    const staking_treasury = this.app.binary.u128AsBytes(this.block.staking_treasury.toString());
+    const burnfee = this.app.binary.u128AsBytes(this.block.burnfee.toString());
     const difficulty = this.app.binary.u64AsBytes(this.block.difficulty);
 
-    const avg_income = this.app.binary.u64AsBytes(this.block.avg_income.toString());
-    const avg_variance = this.app.binary.u64AsBytes(this.block.avg_variance.toString());
-    const avg_atr_income = this.app.binary.u64AsBytes(this.block.avg_atr_income.toString());
-    const avg_atr_variance = this.app.binary.u64AsBytes(this.block.avg_atr_variance.toString());
+    const avg_income = this.app.binary.u128AsBytes(this.block.avg_income.toString());
+    const avg_variance = this.app.binary.u128AsBytes(this.block.avg_variance.toString());
+    const avg_atr_income = this.app.binary.u128AsBytes(this.block.avg_atr_income.toString());
+    const avg_atr_variance = this.app.binary.u128AsBytes(this.block.avg_atr_variance.toString());
 
     const block_header_data = new Uint8Array([
       ...transactions_length,
@@ -1432,6 +1466,11 @@ class Block {
     ret.set(block_header_data, 0);
     let next_tx_location = BLOCK_HEADER_SIZE;
     for (let i = 0; i < transactions.length; i++) {
+      // console.debug(
+      //   `block.serialize : tx ${i} starting = ${next_tx_location}, length = ${
+      //     transactions[i].length
+      //   }, sig = ${this.transactions[i].returnSignature(this.app)}`
+      // );
       ret.set(transactions[i], next_tx_location);
       next_tx_location += transactions[i].length;
     }
@@ -1446,14 +1485,14 @@ class Block {
       this.app.binary.hexToSizedArray(this.block.previous_block_hash, 32),
       this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(this.block.creator), 33),
       this.app.binary.hexToSizedArray(this.block.merkle, 32),
-      this.app.binary.u64AsBytes(this.block.treasury.toString()),
-      this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
-      this.app.binary.u64AsBytes(this.block.burnfee.toString()),
+      this.app.binary.u128AsBytes(this.block.treasury.toString()),
+      this.app.binary.u128AsBytes(this.block.staking_treasury.toString()),
+      this.app.binary.u128AsBytes(this.block.burnfee.toString()),
       this.app.binary.u64AsBytes(this.block.difficulty),
-      this.app.binary.u64AsBytes(this.block.avg_income),
-      this.app.binary.u64AsBytes(this.block.avg_variance),
-      this.app.binary.u64AsBytes(this.block.avg_atr_income),
-      this.app.binary.u64AsBytes(this.block.avg_atr_variance),
+      this.app.binary.u128AsBytes(this.block.avg_income),
+      this.app.binary.u128AsBytes(this.block.avg_variance),
+      this.app.binary.u128AsBytes(this.block.avg_atr_income),
+      this.app.binary.u128AsBytes(this.block.avg_atr_variance),
     ]);
   }
 
@@ -1463,23 +1502,11 @@ class Block {
   }
 
   async validate() {
-    //
+    this.generateMetadata();
+
     // TODO - lite-client validation
-    //
     if (this.app.BROWSER == 1) {
       const cv = await this.generateConsensusValues();
-      return true;
-    }
-
-    //
-    // if this is our first / genesis block, it is valid
-    //
-    if (
-      this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash ||
-      this.app.blockchain.blockchain.genesis_block_hash === ""
-    ) {
-      console.log("DEBUG SERVER CRASH: saved genesis_block_hash is: " + this.app.blockchain.blockchain.genesis_block_hash);
-      console.log(`approving ${this.returnHash()} as genesis block`);
       return true;
     }
 
@@ -1488,68 +1515,67 @@ class Block {
       return true;
     }
 
-    //
     // invalid if no transactions
-    //
     if (this.transactions.length === 0) {
-      console.log("ERROR 582034: no transactions in blocks, thus invalid");
+      console.error("ERROR 582034: no transactions in blocks, thus invalid");
       return false;
     }
 
-    //
     // verify creator signed
-    //
     if (
       !this.app.crypto.verifyHash(
-        this.app.crypto.hash(this.serializeForSignature().toString("hex")),
+        this.serializeForSignature(),
         this.block.signature,
         this.block.creator
       )
     ) {
-      console.log("ERROR 582039: block is not signed by creator or signature does not validate");
+      console.error("ERROR 582039: block is not signed by creator or signature does not validate");
       return false;
     }
 
-    //
+    // if this is our first / genesis block, it is valid
+    if (
+      this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash ||
+      this.app.blockchain.blockchain.genesis_block_hash === ""
+    ) {
+      console.log(
+        "DEBUG SERVER CRASH: saved genesis_block_hash is: " +
+          this.app.blockchain.blockchain.genesis_block_hash
+      );
+      console.log(`approving ${this.returnHash()} as genesis block`);
+      return true;
+    }
+
     // generate consensus values
-    //
     const cv = await this.generateConsensusValues();
 
-    //
     // average income and average income variance
-    //
     if (cv.avg_income !== this.block.avg_income) {
-      console.log("ERROR 712923: block is mis-reporting its average income");
+      console.error("ERROR 712923: block is mis-reporting its average income");
       return false;
     }
     if (cv.avg_variance !== this.block.avg_variance) {
-      console.log("ERROR 712923: block is mis-reporting its average variance");
+      console.error("ERROR 712923: block is mis-reporting its average variance");
       return false;
     }
 
-    //
     // average atr income and average atr income variance
-    //
     if (cv.avg_atr_income !== this.block.avg_atr_income) {
-      console.log("ERROR 712923: block is mis-reporting its average atr income");
+      console.error("ERROR 712923: block is mis-reporting its average atr income");
       return false;
     }
     if (cv.avg_atr_variance !== this.block.avg_atr_variance) {
-      console.log("ERROR 712923: block is mis-reporting its average atr variance");
+      console.error("ERROR 712923: block is mis-reporting its average atr variance");
       return false;
     }
 
-    //
     // only block #1 can have an issuance transaction
-    //
-    if (cv.it_num > 0 && this.block.id > 1) {
-      console.log("ERROR 712923: blockchain contains issuance after block 1 in chain");
+    if (cv.it_num > 0 && this.block.id > BigInt(1)) {
+      console.error("ERROR 712923: blockchain contains issuance after block 1 in chain");
       return false;
     }
 
-    //
     // checks against previous block
-    //
     const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
 
     if (previous_block) {
@@ -1574,9 +1600,9 @@ class Block {
       let adjusted_staking_treasury = previous_block.returnStakingTreasury();
       const cv_st = cv.staking_treasury;
       if (cv_st < BigInt(0)) {
-        const x = cv_st * -1;
-        if (adjusted_staking_treasury < x) {
-          adjusted_staking_treasury = adjusted_staking_treasury - BigInt(x);
+        const x: bigint = cv_st * BigInt(-1);
+        if (adjusted_staking_treasury > x) {
+          adjusted_staking_treasury = adjusted_staking_treasury - x;
         } else {
           adjusted_staking_treasury = BigInt(0);
         }
@@ -1629,13 +1655,23 @@ class Block {
       // which was generated using this solution. If the solution is invalid
       // we find that out now, and it invalidates the block.
       //
-      if (cv.gt_idx > 0) {
+      if (cv.gt_num > 0) {
         const golden_ticket_transaction = this.transactions[cv.gt_idx];
         const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
-        //
-        // TODO : validate golden ticket
-        //
+        const solution = new GoldenTicket(this.app);
+        if (
+          !solution.validate(
+            previous_block.returnHash(),
+            gt.random_hash,
+            gt.creator,
+            previous_block.returnDifficulty()
+          )
+        ) {
+          console.error("ERROR 801923: golden ticket included in block is invalid");
+          return false;
+        }
+
         // const solution = this.app.goldenticket.generateSolution(
         //   previous_block.returnHash(),
         //   gt.target_hash,
@@ -1688,11 +1724,12 @@ class Block {
       return false;
     }
 
-    //
+    let generated_merkle_root = this.generateMerkleRoot();
     // validate merkle root
-    //
-    if (this.block.merkle !== this.generateMerkleRoot()) {
-      console.log("merkle root is unset or is invalid false 1");
+    if (this.block.merkle !== generated_merkle_root) {
+      console.log(
+        `merkle root : ${this.block.merkle} is different from expected : ${generated_merkle_root}`
+      );
       return false;
     }
 
@@ -1705,9 +1742,7 @@ class Block {
     // that should collect payment.
     //
     if (cv.ft_num > 0) {
-      //
       // no golden ticket? invalid
-      //
       if (cv.gt_num === 0) {
         console.log("ERROR 48203: fee transaction exists but no golden ticket, thus invalid");
         return false;
@@ -1717,18 +1752,25 @@ class Block {
 
       //
       // the fee transaction we receive from the CV needs to be updated with
-      // block-specific data in the same way that all of the transactions in
+      // block-specific data in the same way that all the transactions in
       // the block have been. we must do this prior to comparing them.
       //
-      cv.fee_transaction.generateMetadata(this.returnCreator());
+      cv.fee_transaction.generateMetadata(this.app, this.block.id, BigInt(cv.ft_idx));
 
-      const hash1 = this.app.crypto.hash(
-        fee_transaction.serializeForSignature(this.app).toString("hex")
-      );
-      const hash2 = this.app.crypto.hash(cv.fee_transaction.serialize_for_signature());
+      const hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature(this.app));
+      const hash2 = this.app.crypto.hash(cv.fee_transaction.serializeForSignature(this.app));
 
       if (hash1 !== hash2) {
-        console.log("ERROR 892032: block {} fee transaction doesn't match cv fee transaction");
+        console.error(
+          `ERROR 892032: block ${this.hash} fee transaction doesn't match cv fee transaction`
+        );
+        console.log("expected: ", cv.fee_transaction);
+        console.log("actual: ", fee_transaction);
+        console.log(
+          `gt count = ${cv.gt_num} gt index = ${
+            cv.gt_idx
+          } has gt = ${this.hasGoldenTicket()} index from block = ${this.golden_ticket_idx}`
+        );
         return false;
       }
     }

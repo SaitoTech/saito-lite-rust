@@ -89,9 +89,11 @@ class Registry extends ModTemplate {
         if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
           registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: registry_self.app.blockchain.returnLatestBlockId(), block_hash: registry_self.app.blockchain.returnLatestBlockHash(), lc: 1 });
           registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
+        } else {
+          console.debug("failed verifying message for username registration : ", tx);
         }
       } catch (err) {
-        console.log("ERROR verifying username registration message: " + err);
+        console.error("ERROR verifying username registration message: " , err);
       }
     }
 
@@ -136,7 +138,6 @@ class Registry extends ModTemplate {
       if (!regex.test(identifier)) {
         throw Error("Alphanumeric Characters only");
       }
-
       newtx.msg.module = "Registry";
       //newtx.msg.request	= "register";
       newtx.msg.identifier = identifier + domain;
@@ -200,7 +201,7 @@ class Registry extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
-      if (txmsg.module === "Registry") {
+      if (!!txmsg && txmsg.module === "Registry") {
 
         //
         // this is to us, and we are the main registry server
@@ -259,7 +260,7 @@ class Registry extends ModTemplate {
       }
 
 
-      if (txmsg.module == "Email") {
+      if (!!txmsg && txmsg.module == "Email") {
         if (tx.transaction.from[0].add == registry_self.publickey) {
           if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
             if (tx.msg.identifier != undefined && tx.msg.signed_message != undefined && tx.msg.sig != undefined) {
@@ -274,9 +275,11 @@ class Registry extends ModTemplate {
               try {
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
                   registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
+                }else{
+                  console.debug("verification failed for sig : ", tx);
                 }
               } catch (err) {
-                console.log("ERROR verifying username registration message: " + err);
+                console.error("ERROR verifying username registration message: " , err);
               }
             }
           } else {
@@ -292,7 +295,7 @@ class Registry extends ModTemplate {
               // if i am server, save copy of record
               registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);
 
-              // if i am a server, i will notify lite-peers of 
+              // if i am a server, i will notify lite-peers of
               console.log("notifying lite-peers of registration!");
               this.notifyPeers(app, tx);
 
@@ -330,7 +333,7 @@ class Registry extends ModTemplate {
       $identifier: identifier,
       $publickey: publickey,
       $unixtime: unixtime,
-      $bid: bid,
+      $bid: Number(bid),
       $bsh: bsh,
       $lock_block: lock_block,
       $sig: sig,

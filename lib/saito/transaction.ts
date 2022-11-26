@@ -6,7 +6,7 @@ import Hop from "./hop";
 import { Saito } from "../../apps/core";
 
 export const TRANSACTION_SIZE = 93;
-export const SLIP_SIZE = 75;
+export const SLIP_SIZE = 67;
 export const HOP_SIZE = 130;
 
 export enum TransactionType {
@@ -22,14 +22,13 @@ export enum TransactionType {
 
 class Transaction {
   public transaction = {
-    to: [],
-    from: [],
+    to: new Array<Slip>(),
+    from: new Array<Slip>(),
     ts: 0,
     sig: "",
-    path: [],
     r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
     type: TransactionType.Normal,
-    m: "",
+    m: Buffer.alloc(0),
   };
   public optional: any;
   public fees_total: bigint;
@@ -40,7 +39,7 @@ class Transaction {
   public dmsg: any;
   public size: number;
   public is_valid: any;
-  public path: Hop[];
+  public path: Array<Hop>;
 
   constructor(jsonobj = null) {
     /////////////////////////
@@ -68,28 +67,40 @@ class Transaction {
     this.dmsg = "";
     this.size = 0;
     this.is_valid = 1;
+    this.path = new Array<Hop>();
 
     if (jsonobj != null) {
       this.transaction = jsonobj;
       if (this.transaction.type === TransactionType.Normal) {
         try {
-          const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
-          this.msg = JSON.parse(reconstruct);
+          let buffer = Buffer.from(this.transaction.m);
+          if (buffer.byteLength === 0) {
+            this.msg = {};
+          } else {
+            try {
+              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+              this.msg = JSON.parse(reconstruct);
+            } catch (error) {
+              console.log("failed parsing the msg as base64. trying as a utf8");
+              console.error(error);
+              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+              this.msg = JSON.parse(reconstruct);
+            }
+          }
         } catch (err) {
-          console.log(this.transaction);
+          console.log("failed converting buffer in tx : ", this.transaction);
           console.error(err);
         }
       }
-
       for (let i = 0; i < this.transaction.from.length; i++) {
         const fslip = this.transaction.from[i];
         this.transaction.from[i] = new Slip(
           fslip.add,
           fslip.amt,
           fslip.type,
-          fslip.uuid,
           fslip.sid,
-          fslip.lc
+          fslip.block_id,
+          fslip.tx_ordinal
         );
       }
       for (let i = 0; i < this.transaction.to.length; i++) {
@@ -98,9 +109,9 @@ class Transaction {
           fslip.add,
           fslip.amt,
           fslip.type,
-          fslip.uuid,
           fslip.sid,
-          fslip.lc
+          fslip.block_id,
+          fslip.tx_ordinal
         );
       }
     }
@@ -108,11 +119,11 @@ class Transaction {
     return this;
   }
 
-  addInput(slip) {
+  addInput(slip: Slip) {
     this.transaction.from.push(slip);
   }
 
-  addOutput(slip) {
+  addOutput(slip: Slip) {
     this.transaction.to.push(slip);
   }
 
@@ -128,9 +139,9 @@ class Transaction {
     }
     tx.transaction.ts = this.transaction.ts;
     tx.transaction.sig = this.transaction.sig;
-    tx.transaction.path = [];
-    for (let i = 0; i < this.transaction.path.length; i++) {
-      tx.transaction.path.push(this.transaction.path[i].clone());
+    tx.path = new Array<Hop>();
+    for (let i = 0; i < this.path.length; i++) {
+      tx.path.push(this.path[i].clone());
     }
     tx.transaction.r = this.transaction.r;
     tx.transaction.type = this.transaction.type;
@@ -139,17 +150,25 @@ class Transaction {
     return tx;
   }
 
-  decryptMessage(app) {
+  decryptMessage(app: Saito) {
     if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
       try {
-        const parsed_msg = this.msg;
-        this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
+        if (this.msg === null) {
+          this.dmsg = "";
+        } else {
+          const parsed_msg = this.msg;
+          this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
+        }
       } catch (e) {
-        console.log("ERROR: " + e);
+        console.error("ERROR: " + e);
       }
       return;
     }
     try {
+      if (this.msg === null) {
+        this.dmsg = "";
+        return;
+      }
       this.dmsg = app.keys.decryptMessage(this.transaction.to[0].add, this.msg);
     } catch (e) {
       this.dmsg = "";
@@ -164,7 +183,7 @@ class Transaction {
    * @param {number} start_of_transaction_data - where in the buffer does the tx data begin
    * @returns {Transaction}
    */
-  deserialize(app: Saito, buffer, start_of_transaction_data) {
+  deserialize(app: Saito, buffer: Uint8Array, start_of_transaction_data) {
     const inputs_len = app.binary.u32FromBytes(
       buffer.slice(start_of_transaction_data, start_of_transaction_data + 4)
     );
@@ -187,13 +206,13 @@ class Transaction {
     const r = app.binary.u32FromBytes(
       buffer.slice(start_of_transaction_data + 88, start_of_transaction_data + 92)
     );
-    const transaction_type = buffer[start_of_transaction_data + 92];
+    const transaction_type = Number(buffer[start_of_transaction_data + 92]) as TransactionType;
     const start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
     const start_of_outputs = start_of_inputs + inputs_len * SLIP_SIZE;
     const start_of_message = start_of_outputs + outputs_len * SLIP_SIZE;
     const start_of_path = start_of_message + message_len;
 
-    const inputs = [];
+    const inputs = new Array<Slip>();
     for (let i = 0; i < inputs_len; i++) {
       const start_of_slip = start_of_inputs + i * SLIP_SIZE;
       const end_of_slip = start_of_slip + SLIP_SIZE;
@@ -201,7 +220,7 @@ class Transaction {
       input.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
       inputs.push(input);
     }
-    const outputs = [];
+    const outputs = new Array<Slip>();
     for (let i = 0; i < outputs_len; i++) {
       const start_of_slip = start_of_outputs + i * SLIP_SIZE;
       const end_of_slip = start_of_slip + SLIP_SIZE;
@@ -211,7 +230,7 @@ class Transaction {
     }
     const message = buffer.slice(start_of_message, start_of_message + message_len);
 
-    const path = [];
+    const path = new Array<Hop>();
     for (let i = 0; i < path_len; i++) {
       const start_of_data = start_of_path + i * HOP_SIZE;
       const end_of_data = start_of_data + HOP_SIZE;
@@ -224,23 +243,33 @@ class Transaction {
     this.transaction.to = outputs;
     this.transaction.ts = Number(timestamp);
     this.transaction.sig = signature;
-    this.transaction.path = path;
+    this.path = path;
     this.transaction.r = Number(r);
     this.transaction.type = transaction_type;
-    this.transaction.m = Buffer.from(message).toString();
+    this.transaction.m = Buffer.from(message);
 
     try {
       if (this.transaction.type === TransactionType.Normal) {
-        const reconstruct = app.crypto.base64ToString(Buffer.from(this.transaction.m).toString());
-        this.msg = JSON.parse(reconstruct);
+        if (this.transaction.m.byteLength === 0) {
+          this.msg = {};
+        } else {
+          const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+          this.msg = JSON.parse(reconstruct);
+        }
       }
-      //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
     } catch (err) {
-      console.error("error trying to parse this.msg: ", err);
+      //console.log("buffer length = " + this.transaction.m.byteLength);
+      //console.error("error trying to parse this.msg: ", err);
+      console.error("error trying to parse the message as JSON, tx : ", this.transaction.sig);
     }
   }
 
-  generateRebroadcastTransaction(app, output_slip_to_rebroadcast, with_fee, with_staking_subsidy) {
+  generateRebroadcastTransaction(
+    app: Saito,
+    output_slip_to_rebroadcast,
+    with_fee,
+    with_staking_subsidy
+  ) {
     const transaction = new Transaction();
 
     let output_payment = BigInt(0);
@@ -257,7 +286,9 @@ class Transaction {
     output.add = output_slip_to_rebroadcast.add;
     output.amt = output_payment;
     output.type = SlipType.ATR;
-    output.uuid = output_slip_to_rebroadcast.uuid;
+    // output.block_id = output_slip_to_rebroadcast.block_id;
+    // output.tx_ordinal = output_slip_to_rebroadcast.tx_ordinal;
+    // output.sid = output_slip_to_rebroadcast.sid;
 
     //
     // if this is the FIRST time we are rebroadcasting, we copy the
@@ -312,12 +343,12 @@ class Transaction {
     return this.returnSlipsTo(receiverPublicKey).length > 0;
   }
 
-  onChainReorganization(app, lc, block_id) {
+  onChainReorganization(app: Saito, lc, block_id: bigint) {
     let input_slip_value = 1;
     let output_slip_value = 0;
 
     if (lc) {
-      input_slip_value = block_id;
+      input_slip_value = Number(block_id);
       output_slip_value = 1;
     }
 
@@ -374,8 +405,8 @@ class Transaction {
         // do not count outputs in GT and FEE txs create outputs that cannot be counted.
         //
         if (
-          this.transaction.to[v].type !== TransactionType.Fee &&
-          this.transaction.to[v].type !== TransactionType.GoldenTicket
+          this.transaction.to[v].type !== SlipType.ATR &&
+          this.transaction.to[v].type !== SlipType.VipInput
         ) {
           outputs += this.transaction.to[v].returnAmount();
         }
@@ -392,22 +423,29 @@ class Transaction {
       return this.dmsg;
     }
 
-    if (Object.keys(this.msg).length > 0) {
+    if (!!this.msg && Object.keys(this.msg).length > 0) {
       return this.msg;
     }
-    const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+
     try {
-      this.msg = JSON.parse(reconstruct);
+      if (this.transaction.m && this.transaction.m.byteLength > 0) {
+        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+        this.msg = JSON.parse(reconstruct);
+      } else {
+        this.msg = {};
+      }
     } catch (err) {
-      //console.error(err);
-      console.log("Json.Parse() message failed. Raw message is: " + reconstruct);
-      this.msg = reconstruct;
+      // TODO : handle this without printing an error
+      console.log(
+        `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
+      );
+      console.error("error parsing return message", err);
     }
     return this.msg;
   }
 
-  returnPaymentTo(publickey) {
-    let slips = this.returnSlipsToAndFrom(publickey);
+  returnPaymentTo(publickey: string) {
+    const slips = this.returnSlipsToAndFrom(publickey);
     let x = BigInt(0);
     for (let v = 0; v < slips.to.length; v++) {
       if (slips.to[v].add === publickey) {
@@ -419,7 +457,7 @@ class Transaction {
 
   returnRoutingWorkAvailableToPublicKey() {
     let uf = this.returnFeesTotal();
-    for (let i = 0; i < this.transaction.path.length; i++) {
+    for (let i = 0; i < this.path.length; i++) {
       let d = 1;
       for (let j = i; j > 0; j--) {
         d = d * 2;
@@ -429,7 +467,7 @@ class Transaction {
     return uf;
   }
 
-  returnSignature(app, force = 0) {
+  returnSignature(app: Saito, force = 0) {
     if (this.transaction.sig !== "" && force != 1) {
       return this.transaction.sig;
     }
@@ -437,8 +475,8 @@ class Transaction {
     return this.transaction.sig;
   }
 
-  returnSlipsFrom(publickey) {
-    let x = [];
+  returnSlipsFrom(publickey: string): Array<Slip> {
+    const x = new Array<Slip>();
     if (this.transaction.from != null) {
       for (let v = 0; v < this.transaction.from.length; v++) {
         if (this.transaction.from[v].add === publickey) {
@@ -449,10 +487,11 @@ class Transaction {
     return x;
   }
 
-  returnSlipsToAndFrom(publickey) {
-    let x: any = {};
-    x.from = [];
-    x.to = [];
+  returnSlipsToAndFrom(publickey: string): { from: Array<Slip>; to: Array<Slip> } {
+    let x = {
+      from: new Array<Slip>(),
+      to: new Array<Slip>(),
+    };
     if (this.transaction.from != null) {
       for (let v = 0; v < this.transaction.from.length; v++) {
         if (this.transaction.from[v].add === publickey) {
@@ -470,8 +509,8 @@ class Transaction {
     return x;
   }
 
-  returnSlipsTo(publickey) {
-    let x = [];
+  returnSlipsTo(publickey: string): Array<Slip> {
+    let x = new Array<Slip>();
     if (this.transaction.to != null) {
       for (let v = 0; v < this.transaction.to.length; v++) {
         if (this.transaction.to[v].add === publickey) {
@@ -482,7 +521,7 @@ class Transaction {
     return x;
   }
 
-  returnWinningRoutingNode(random_number) {
+  returnWinningRoutingNode(random_number: string) {
     //
     // if there are no routing paths, we return the sender of
     // the payment, as they're got all of the routing work by
@@ -547,13 +586,14 @@ class Transaction {
    * @returns {array} raw bytes
    * @param app
    */
-  serialize(app: Saito) {
+  serialize(app: Saito): Uint8Array {
     //console.log("tx.serialize", this.transaction);
 
     const inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
     const outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
-    const message_len = app.binary.u32AsBytes(this.transaction.m.length);
-    const path_len = app.binary.u32AsBytes(this.transaction.path.length);
+    const message_len = app.binary.u32AsBytes(this.transaction.m.byteLength);
+    const path_len = this.path ? this.path.length : 0;
+    const path_len_buffer = app.binary.u32AsBytes(path_len);
     const signature = app.binary.hexToSizedArray(this.transaction.sig, 64);
     const timestamp = app.binary.u64AsBytes(this.transaction.ts);
     const r = app.binary.u32AsBytes(this.transaction.r);
@@ -585,19 +625,19 @@ class Transaction {
     const start_of_path =
       TRANSACTION_SIZE +
       (this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE +
-      this.transaction.m.length;
+      this.transaction.m.byteLength;
     const size_of_tx_data =
       TRANSACTION_SIZE +
       (this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE +
-      this.transaction.m.length +
-      this.transaction.path.length * HOP_SIZE;
+      this.transaction.m.byteLength +
+      path_len * HOP_SIZE;
     const ret = new Uint8Array(size_of_tx_data);
     ret.set(
       new Uint8Array([
         ...inputs_len,
         ...outputs_len,
         ...message_len,
-        ...path_len,
+        ...path_len_buffer,
         ...signature,
         ...timestamp,
         ...r,
@@ -631,10 +671,10 @@ class Transaction {
     // binary requires 1/2 length of hex string
     const tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
 
-    ret.set(tm, start_of_message);
+    ret.set(this.transaction.m, start_of_message);
 
-    for (let i = 0; i < this.transaction.path.length; i++) {
-      const serialized_hop = this.transaction.path[i].serialize(app);
+    for (let i = 0; i < path_len; i++) {
+      const serialized_hop = this.path[i].serialize(app);
       path.push(serialized_hop);
     }
     let next_hop_location = start_of_path;
@@ -643,10 +683,14 @@ class Transaction {
       next_hop_location += HOP_SIZE;
     }
 
+    // console.debug(
+    //   `transaction.serialize length : ${ret.length}, inputs : ${inputs.length}, outputs : ${outputs.length}, message len : ${this.transaction.m.byteLength}, path len : ${this.transaction.path.length}`
+    // );
+
     return ret;
   }
 
-  serializeForSignature(app): Buffer {
+  serializeForSignature(app: Saito): Buffer {
     let buffer = Buffer.from(app.binary.u64AsBytes(this.transaction.ts));
 
     for (let i = 0; i < this.transaction.from.length; i++) {
@@ -668,9 +712,7 @@ class Transaction {
       Buffer.from(app.binary.u32AsBytes(this.transaction.type)),
     ]);
 
-    const m_as_hex = Buffer.from(this.transaction.m).toString("hex");
-    const tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
-    buffer = Buffer.concat([buffer, tm]);
+    buffer = Buffer.concat([buffer, this.transaction.m]);
 
     return buffer;
   }
@@ -678,7 +720,7 @@ class Transaction {
   //
   // everything but the signature
   //
-  presign(app) {
+  presign(app: Saito) {
     //
     // set slip ordinals
     //
@@ -689,11 +731,16 @@ class Transaction {
     //
     // transaction message
     //
-    if (this.transaction.m == "") {
-      this.transaction.m = app.crypto.stringToBase64(JSON.stringify(this.msg));
+    if (this.transaction.m.byteLength === 0) {
+      if (Object.keys(this.msg).length === 0) {
+        this.transaction.m = Buffer.alloc(0);
+      } else {
+        this.transaction.m = Buffer.from(JSON.stringify(this.msg), "utf-8");
+      }
     }
   }
-  sign(app) {
+
+  sign(app: Saito) {
     //
     // everything but the signature
     //
@@ -705,7 +752,7 @@ class Transaction {
     );
   }
 
-  validate(app) {
+  validate(app: Saito) {
     //
     // Fee Transactions are validated in the block class. There can only
     // be one per block, and they are checked by ensuring the transaction hash
@@ -841,22 +888,41 @@ class Transaction {
     return true;
   }
 
-  validateRoutingPath(app) {
+  validateRoutingPath(app: Saito) {
     console.log("JS needs to validate routing paths still...");
 
-    //
-    // return true;
-    //
+    if (!this.path) {
+      return true;
+    }
+    for (let i = 0; i < this.path.length; i++) {
+      let buffer = Buffer.concat([
+        Buffer.from(this.transaction.sig, "hex"),
+        Buffer.from(app.crypto.fromBase58(this.path[i].to), "hex"),
+      ]);
+      let hash = app.crypto.hash(buffer);
+
+      if (!app.crypto.verifyHash(buffer, this.path[i].sig, this.path[i].from)) {
+        console.warn(`transaction path is not valid`);
+        return false;
+      }
+      if (i > 0) {
+        if (this.path[i].from !== this.path[i - 1].to) {
+          console.warn(`transaction path is not valid`);
+          return false;
+        }
+      }
+    }
+
     return true;
   }
 
-  validateSignature(app) {
+  validateSignature(app: Saito) {
     //
     // validate signature
     //
     if (
       !app.crypto.verifyHash(
-        app.crypto.hash(this.serializeForSignature(app).toString("hex")),
+        this.serializeForSignature(app),
         this.transaction.sig,
         this.transaction.from[0].add
       )
@@ -868,8 +934,16 @@ class Transaction {
     return true;
   }
 
-  generateMetadata() {
-    // TODO
+  generateMetadata(app: Saito, block_id: bigint, tx_ordinal: bigint) {
+    for (let i = 0; i < this.transaction.from.length; i++) {
+      this.transaction.from[i].generateKey(app);
+    }
+    for (let i = 0; i < this.transaction.to.length; i++) {
+      this.transaction.to[i].block_id = block_id;
+      this.transaction.to[i].tx_ordinal = tx_ordinal;
+      this.transaction.to[i].sid = i;
+      this.transaction.to[i].generateKey(app);
+    }
   }
 
   generateMetadataCumulativeFees() {
@@ -880,7 +954,7 @@ class Transaction {
     return BigInt(0);
   }
 
-  hasPublicKey(publickey) {
+  hasPublicKey(publickey: string) {
     const slips = this.returnSlipsToAndFrom(publickey);
     if (slips.to.length > 0 || slips.from.length > 0) {
       return true;
@@ -889,11 +963,11 @@ class Transaction {
   }
 
   /* stolen from app crypto to avoid including app */
-  stringToBase64(str) {
+  stringToBase64(str: string) {
     return Buffer.from(str, "utf-8").toString("base64");
   }
 
-  base64ToString(str) {
+  base64ToString(str: string) {
     return Buffer.from(str, "base64").toString("utf-8");
   }
 }
