@@ -2,6 +2,7 @@ const saito = require('./../../lib/saito/saito');
 const GameTemplate = require('./../../lib/templates/gametemplate');
 const NwasmGameOptionsTemplate = require("./lib/nwasm-game-options.template");
 const UploadRom = require("./lib/upload-rom");
+const ControlsOverlay = require("./lib/controls");
 const NwasmLibrary = require("./lib/libraries");
 const SaveGameOverlay = require("./lib/save-games");
 const JSON = require("json-bigint");
@@ -165,6 +166,15 @@ class Nwasm extends GameTemplate {
 	game_mod.active_rom_name = "";
         game_mod.menu.hideSubMenus();
         game_mod.uploadRom(app, game_mod);
+      }
+    });
+    this.menu.addSubMenuOption("game-game",{
+      text : "Controls",
+      id : "game-controls",
+      class : "game-controls",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.editControls(app, game_mod);
       }
     });
     this.menu.addSubMenuOption("game-game",{
@@ -439,6 +449,10 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
     return 1;
   }
 
+  editControls(app) {
+    this.controls = new ControlsOverlay(app, this);
+    this.controls.render(app, this);
+  }
   uploadRom(app) {
     this.uploader = new UploadRom(app, this);
     this.uploader.render(app, this);

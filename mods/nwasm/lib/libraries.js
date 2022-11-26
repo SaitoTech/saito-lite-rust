@@ -99,6 +99,7 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 		        console.log("ERROR LOADING GAME: " + err);
 		      }
 		    } else {
+console.log("ERROR TXS LIBRARY: " + JSON.stringify(txs));
 		      alert("Error Checkout: " + txs.length + " txs");
 		    }
 	          });

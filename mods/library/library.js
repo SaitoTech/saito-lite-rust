@@ -79,6 +79,12 @@ class Library extends ModTemplate {
     //
     app.connection.on("save-transaction", function (tx) {
 
+console.log("---------------------");
+console.log("---------------------");
+console.log("IN LIBRARY ON SAVE TX");
+console.log("---------------------");
+console.log("---------------------");
+
       //
       // library exists?
       //
@@ -98,7 +104,7 @@ class Library extends ModTemplate {
         for (let i = 0; i < library_self.library[module].length; i++) {
 	  let item = library_self.library[module][i];
 	  if (item.id == id) {
-	    contains_item =	 true;
+	    contains_item = true;
 	    idx = i;
 	    i = library_self.library[module].length+1;
 	  }
@@ -120,11 +126,15 @@ class Library extends ModTemplate {
 		sig : sig ,
 	      }
 	    );
+	    library_self.save();
 	  } else {
-	    library_self.library[module][idx].num++;
-	    library_self.library[module][idx].available++;
+	    let c = confirm("Your library already contains a copy of this game. Is this a new copy?");
+	    if (c) {
+	      library_self.library[module][idx].num++;
+	      library_self.library[module][idx].available++;
+	      library_self.save();
+	    }
 	  }
-	  library_self.save();
 	}
       }
     });
