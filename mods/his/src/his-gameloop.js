@@ -3981,6 +3981,60 @@ console.log("----------------------------");
 
 	}
 
+
+	// pull card
+	if (mv[0] === "pull_card") {
+
+	  let faction_taking = mv[1];
+	  let faction_giving = mv[2];
+
+	  let p1 = this.returnPlayerOfFaction(faction_taking);
+	  let p2 = this.returnPlayerOfFaction(faction_giving);
+
+	  if (this.game.player == p2) {
+            let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);
+	    let roll = this.rollDice(this.game.deck[0].fhands[fhand_idx].length) - 1;
+	    let card = this.game.deck[0].fhands[fhand_idx][roll];
+	    this.addMove("give_card\t"+faction_taking+"\t"+faction_giving+"\t"+card);
+	    this.endTurn();
+	  } else {
+	    this.rollDice();
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+        }
+
+	// give card
+	if (mv[0] === "give_card") {
+
+	  let faction_taking = mv[1];
+	  let faction_giving = mv[2];
+	  let card = mv[3];
+
+	  this.updateLog(faction_taking + " pulls card " + card);
+
+	  let p1 = this.returnPlayerOfFaction(faction_taking);
+	  let p2 = this.returnPlayerOfFaction(faction_giving);
+
+	  if (this.game.player == p2) {
+            let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);
+	    this.game.deck[0].fhands[fhand_idx].push(card);
+	  }
+
+	  if (this.game.player == p1) {
+            let fhand_idx = this.returnFactionHandIdx(p2, faction_taking);
+	    this.game.deck[0].fhands[fhand_idx].push(card);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+        }
+
+
+
 	// random card discard
 	if (mv[0] === "random_discard") {
 
@@ -3990,6 +4044,18 @@ console.log("----------------------------");
 
 	  this.game.queue.splice(qe, 1);
 
+	  return 0;
+	}
+
+
+	// random card discard
+	if (mv[0] === "random_discard") {
+
+	  let faction = mv[1];
+	  let num = mv[2];
+	  let player_of_faction = this.returnPlayerOfFaction(faction);
+
+	  this.game.queue.splice(qe, 1);
 
 	  return 0;
 	}

@@ -330,6 +330,28 @@
     }
   }
 
+  returnAllies(faction) { 
+    let f = [];
+    let io = this.returnImpulseOrder();
+    for (let i = 0; i < io.length; i++) {
+      if (io[i] !== faction) {
+        if (this.areAllies(faction, io[i])) { f.push(io[i]); }
+      }
+    }
+    return f;
+  }
+
+  returnEnemies(faction) { 
+    let f = [];
+    let io = this.returnImpulseOrder();
+    for (let i = 0; i < io.length; i++) {
+      if (io[i] !== faction) {
+        if (this.areEnemies(faction, io[i])) { f.push(io[i]); }
+      }
+    }
+    return f;
+  }
+
   areAllies(faction1, faction2) {
     try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
@@ -3621,6 +3643,30 @@ console.log("this is a space: " + spacekey)
   }
 
 
+  isOccupied(space) {
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    for (let key in this.game.spaces[space].units) {
+      if (this.game.spaces[space].units[key].length > 0) { return 1; }
+    }
+
+    return 0;
+  }
+
+  isElectorate(spacekey) {
+
+    try { if (spacekey.key) { spacekey = spacekey.key; } } catch (err) {}
+
+    if (spacekey === "augsburg") { return 1; }
+    if (spacekey === "trier") { return 1; }
+    if (spacekey === "cologne") { return 1; }
+    if (spacekey === "wittenberg") { return 1; }
+    if (spacekey === "mainz") { return 1; }
+    if (spacekey === "brandenburg") { return 1; }
+    return 0;
+  }
+
   returnElectorateDisplay() {
 
     let electorates = {};
@@ -4428,7 +4474,7 @@ console.log("this is a space: " + spacekey)
       removeFromDeck : function(his_self, player) { return 1; } ,
       canEvent : function(game_mod, faction) {
 	return 1;
-      }
+      },
       onEvent : function(game_mod, faction) {
 
 	// set player to protestant
@@ -4556,7 +4602,7 @@ console.log("this is a space: " + spacekey)
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
-      canEvent : function(game_mod, faction) { return 1; }
+      canEvent : function(game_mod, faction) { return 1; },
       onEvent : function(game_mod, faction) {
 
 	// algiers space is now in play
@@ -4578,7 +4624,7 @@ console.log("this is a space: " + spacekey)
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(game_mod, faction) { return 1; }
+      canEvent : function(game_mod, faction) { return 1; },
       onEvent : function(game_mod, faction) {
 	game_mod.game.state.leaders.leo_x = 0;
 	game_mod.game.state.leaders.clement_vii = 1;
@@ -4593,7 +4639,7 @@ console.log("this is a space: " + spacekey)
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
-      canEvent : function(game_mod, faction) { return 1; }
+      canEvent : function(game_mod, faction) { return 1; },
       onEvent : function(game_mod, faction) {
 
 	let papacy = game_mod.returnPlayerOfFaction("papacy");
@@ -5793,6 +5839,127 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+
+	let enemies = his_self.returnEnemies("ottoman");
+	let neighbours = [];
+	let spaces = his_self.returnSpacesWithFilter(
+	  function(spacekey) {
+	    if (his_self.game.spaces[spacekey].units["ottoman"].length > 0) {
+	      for (let z = 0; z < his_self.game.spaces[spacekey].units["ottoman"].length; z++) {
+	        if (his_self.game.spaces[spacekey].units["ottoman"][z].type === "cavalry") {
+	          if (his_self.isSpaceControlledByFaction(spacekey, "ottoman")) {
+		    return 1;
+		  }
+	        }
+	      }
+	    }
+	  }
+        );
+
+	//
+	// two hops !
+	//
+	for (let i = 0; i < spaces.length; i++) {
+	  let s = his_self.game.spaces[spaces[i]];
+	  for (let ii = 0; ii < s.neighbours.length; ii++) {
+	    if (!neighbours.includes(s.neighbours[ii])) { neighbours.push(s.neighbours[ii]); }
+	  }
+	}
+	for (let i = 0; i < neighbours.length; i++) {
+	  let s = his_self.game.spaces[neighbours[i]];
+	  for (let ii = 0; ii < neighbours.length; ii++) {
+	    if (his_self.isSpaceControlledByFaction(neighbours[ii], "ottoman")) {
+	      if (!neighbours.includes(s.neighbours[ii])) { neighbours.push(s.neighbours[ii]); }
+	    }
+	  }
+	}
+	
+	//
+	// enemy control any of these neighbours?
+	//
+	for (let i = 0; i < neighbours.length; i++) {
+	  for (let ii = 0; ii < enemies.length; ii++) {
+	    if (his_self.isSpaceControlledByFaction(neighbours[i], enemies[ii])) {
+	      return 1;
+	    }
+	  }
+	}
+
+	return 0;
+      },
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction(faction);
+	let target_which_faction = [];
+
+	if (his_self.game.player == p) {
+
+	  let enemies = his_self.returnEnemies("ottoman");
+	  let neighbours = [];
+	  let spaces = his_self.returnSpacesWithFilter(function(spacekey) {
+	    if (his_self.game.spaces[spacekey].units["ottoman"].length > 0) {
+	      for (let z = 0; z < his_self.game.spaces[spacekey].units["ottoman"].length; z++) {
+	        if (his_self.game.spaces[spacekey].units["ottoman"][z].type === "cavalry") {
+	          if (his_self.isSpaceControlledByFaction(spacekey, "ottoman")) {
+	  	    return 1;
+		  }
+	        }     
+	      }
+	    }
+	  });
+
+	  //
+	  // two hops !
+	  //
+	  for (let i = 0; i < spaces.length; i++) {
+	    let s = his_self.game.spaces[spaces[i]];
+	    for (let ii = 0; ii < s.neighbours.length; ii++) {
+	      if (!neighbours.includes(s.neighbours[ii])) { neighbours.push(s.neighbours[ii]); }
+	    }
+	  }
+	  for (let i = 0; i < neighbours.length; i++) {
+	    let s = his_self.game.spaces[neighbours[i]];
+	    for (let ii = 0; ii < neighbours.length; ii++) {
+	      if (his_self.isSpaceControlledByFaction(neighbours[ii], "ottoman")) {
+	        if (!neighbours.includes(s.neighbours[ii])) { neighbours.push(s.neighbours[ii]); }
+	      }
+	    }
+	  }
+
+	  //
+	  // enemy control any of these neighbours?
+	  //
+	  for (let i = 0; i < neighbours.length; i++) {
+	    for (let ii = 0; ii < enemies.length; ii++) {
+	      if (his_self.isSpaceControlledByFaction(neighbours[i], enemies[ii])) {
+	        if (!target_which_faction.includes(enemies[ii])) { target_which_faction.push(enemies[ii]); }
+	      }
+	    }
+	  }
+	}
+
+
+        let msg = "Steal Random Card from Which Faction?";
+        let html = '<ul>';
+        for (let i = 0; i < target_which_faction.length; i++) {
+           html += '<li class="option" id="${target_which_faction}">${target_which_faction[i]}</li>';
+	}
+	html += '</ul>';
+
+    	his_self.updateStatusWithOptions(msg, html);
+
+	$('.option').off();
+	$('.option').on('click', function () {
+
+	  let action = $(this).attr("id");
+	  his_self.addMove("pull_card\tottoman\t"+action);
+          his_self.endTurn();
+
+	});
+
+        return 0;
+      }
     }
     deck['067'] = { 
       img : "cards/HIS-067.svg" , 
@@ -5801,6 +5968,57 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	return 1;
+      },
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.selectPlayerOfFaction(faction);
+	if (p == his_self.game.player) {
+
+          his_self.playerSelectSpaceWithFilter(
+
+	    "Select First Space to Convert", 
+
+	    function(spacekey) {
+	      if (his_self.game.spaces[spacekey].religion === "protestant" && his_self.isOccupied(his_self.game.spaces[spacekey]) == 0 && his_self.isElectorate(spacekey)) {
+		return 1;
+	      }
+	      return 0;
+	    },
+
+	    function(space) {
+
+	      let first_choice = space.key;
+
+              his_self.playerSelectSpaceWithFilter(
+
+	        "Select Second Space to Convert", 
+
+	        function(spacekey) {
+	          if (spacekey !== first_choice && his_self.game.spaces[spacekey].religion === "protestant" && his_self.isOccupied(his_self.game.spaces[spacekey]) == 0 && his_self.isElectorate(spacekey)) {
+		    return 1;
+	          }
+	          return 0;
+	        },
+
+	        function(space) {
+
+	          let second_choice = space.key;
+
+		  his_self.addMove("convert\t"+second_choice+"\tcatholic");
+		  his_self.addMove("convert\t"+first_choice+"\tcatholic");
+		  his_self.endTurn();
+
+	        },
+	      );
+	    }
+	  );
+	}
+
+	return 0;
+
+      }
     }
     deck['068'] = { 
       img : "cards/HIS-068.svg" , 
