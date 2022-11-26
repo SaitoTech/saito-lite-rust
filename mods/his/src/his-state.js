@@ -310,6 +310,15 @@
     return null;
   }
 
+  returnAllyOfMinorPower(power) {
+    if (!this.game.state.minor_activated_powers.includes(power)) { return ""; }
+    for (let key in this.game.state.activated_powers) {
+      if (this.game.state.activated_powers[key].includes(power)) {
+	return key;
+      }
+    }
+  }
+
   activateMinorPower(faction, power) {
     this.setAllies(faction, power);
     this.game.state.activated_powers[faction].push(power);
@@ -5980,15 +5989,16 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 	    "Select First Space to Convert", 
 
-	    function(spacekey) {
-	      if (his_self.game.spaces[spacekey].religion === "protestant" && his_self.isOccupied(his_self.game.spaces[spacekey]) == 0 && his_self.isElectorate(spacekey)) {
+	    function(space) {
+	      if (space.religion === "protestant" && his_self.isOccupied(space) == 0 && his_self.isElectorate(space)) {
 		return 1;
 	      }
 	      return 0;
 	    },
 
-	    function(space) {
+	    function(spacekey) {
 
+	      let space = his_self.game.spaces[spacekey];`
 	      let first_choice = space.key;
 
               his_self.playerSelectSpaceWithFilter(
@@ -6027,6 +6037,17 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+        let f = his_self.returnAllyOfMinorPower("genoa") {
+	if (faction !== f) { return 1; }
+	return 0;
+      },
+      onEvent : function(his_self, faction) {
+        let f = his_self.returnAllyOfMinorPower("genoa") {
+	his_self.deactivateMinorPower(f, "genoa");
+	his_self.activateMinorPower(faction, "genoa");
+	return 1;
+      },
     }
     deck['069'] = { 
       img : "cards/HIS-069.svg" , 
@@ -6035,6 +6056,70 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+        let f = his_self.returnAllyOfMinorPower("scotland") {
+        if (faction === "france") {
+	  return 1;
+	}
+        if (faction === "england" && f !== "") {
+	  return 1;
+	} 
+	return 0;
+      },
+      onEvent : function(his_self, faction) {
+        let f = his_self.returnAllyOfMinorPower("scotland") {
+	if (faction === "england") {
+ 	  if (f !== "") {
+	    his_self.deactivateMinorPower(f, "scotland");
+	  }
+	}
+	if (faction === "france") {
+	  if (f == "") {
+	    his_self.activateMinorPower(faction, "scotland");
+	  } else {
+	    if (f === "france") {
+
+
+	      let p = his_self.returnPlayerOfFaction("france");
+	      if (p === his_self.game.player) {
+
+	        //
+	        // add upto 3 new French regulars in any Scottishhome space under French control that isnot under siege.
+	        //
+   	        his_self.playerSelectSpaceWithFilter(
+
+	  	  "Select Unbesieged Scottish Home Space Under French Control", 
+
+		  function(space) {
+		    if (space.home == "scotland") {
+		      if (his_self.isSpaceControlledByFaction(space, "france")) {
+		        if (!space.besieged) {
+		          return 1;
+		        }
+		      }
+		    }
+		  },
+
+		  function(spacekey) {
+	            his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+	            his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+	            his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+		    his_self.endTurn();
+		  }
+	        );
+
+		return 0;
+
+	      } else {
+		return 0;
+	      }
+	    } else {
+	      his_self.deactivateMinorPower(f, "scotland");
+	    }
+	  }
+	}
+	return 1;
+      },
     }
     deck['070'] = { 
       img : "cards/HIS-070.svg" , 
