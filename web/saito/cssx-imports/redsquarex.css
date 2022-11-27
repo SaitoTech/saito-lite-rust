@@ -108,14 +108,14 @@
     padding-bottom: .5rem;
     position: relative;
     font-size: 1.4rem;
-    color: gray;
+    color: #444;
   }
   .redsquare-item-notice .saito-address {
     display: inline;
     margin-left: 0.25rem;
     font-weight: bold;
     font-size: 1.4rem;
-    color: gray;
+    color: #444;
 }
   .tweet-text {
     padding-top: 0.5rem;
@@ -231,7 +231,7 @@
   }
 
   .link-preview {
-    margin: 15px 0px;
+
   }
   
   .link-img {
@@ -243,7 +243,7 @@
   }
   
   .link-info {
-    padding: 20px;
+    padding: 2rem;
     border: 1px solid #ccc;
     border-radius: 0.5rem;
     border-top: none;
@@ -253,22 +253,19 @@
   
   .link-title {
     color: #000;
-    margin: 3px 0px;
+    margin: .3rem 0px;
   }
   
   .link-url {
-    font-size: 1.4rem;
     color: #444;
   }
   
   .link-description {
-    font-size: 1.6rem;
     color: #444;
   }
 
   .youtube-embed-container > iframe{
     width: 100%;
-    margin: 15px 0px;
     height: 25rem;
   }
 
