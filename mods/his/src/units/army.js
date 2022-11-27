@@ -120,4 +120,14 @@
       command_value     :       6,
     });
 
+    this.importArmyLeader('renegade', {
+      type              :       "renegade" ,
+      name              :       "Renegade Leader",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "Renegade.svg",
+      battle_rating     :       1,
+      command_value     :       6,
+    });
+
 

@@ -214,7 +214,72 @@
   }
 
 
+  //
+  // 1 hits to destroy everything, opt-in for naval units
+  //
+  playerAssignHits(faction, spacekey, hits_to_assign, naval_hits_acceptable=0) {
+/****
+    let space = spacekey;
+    try { if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; } } catch (err) {}
 
+    let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
+
+      let msg = "Hits Remaining: " + hits_to_assign;
+      let html = "<ul>";
+      let targets = 0;
+
+      for (let i = 0; i < space.units[faction].length; i++) {
+        if (!units_to_destroy.includes(parseInt(i))) {
+
+	  let is_fodder = true;
+          if (space.units[faction][i].land_or_sea === "sea" && naval_hits_acceptable == 0) { is_fodder = false; }
+          if (space.units[faction][i].personage == true) { is_fodder = false; }
+
+	  if (is_fodder == true) {
+	    targets++;
+            html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+          }
+	}
+      }
+      html += "</ul>";
+
+      if (targets <= 0 || hits_to_assign <= 0) {
+	this.addMove("destroy_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
+	this.endTurn();
+	return;
+      }
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (!units_to_destroy.includes(id)) {
+          units_to_destroy.push(parseInt(id));
+        }
+
+	if (units_available[id].type == "regular") { hits_to_assign -= 1; }
+	if (units_available[id].type == "mercenary") { hits_to_assign -= 1; }
+	if (units_available[id].type == "squadron") { hits_to_assign -= 1; }
+	if (units_available[id].type == "corsair") { hits_to_assign -= 1; }
+	if (units_available[id].type == "cavalry") { hits_to_assign -= 1; }
+
+        selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
+
+      });
+    }
+
+    selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
+***/
+    return 0;
+
+  }
+
+  //
+  // 2 hits to destroy a squadron, 1 for a corsair
+  //
   playerAssignNavalHits(faction, hits_to_assign, spacekey) {
 
     let space;
@@ -240,13 +305,11 @@
         }
       }
 
-
       if (targets <= 0 || hits_to_assign <= 0) {
 	this.addMove("destroy_naval_units\t"+faction+"\t"+spacekey+"\t"+JSON.stringify(units_to_destroy));
 	this.endTurn();
 	return;
       }
-
 
       his_self.updateStatusWithOptions(msg, html);
 

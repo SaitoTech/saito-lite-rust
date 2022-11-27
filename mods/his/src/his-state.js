@@ -282,6 +282,8 @@
     return 0;
   }
 
+
+
   captureLeader(winning_faction, losing_faction, space, unit) {
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -308,35 +310,6 @@
       }
     }
     return null;
-  }
-
-  returnAllyOfMinorPower(power) {
-    if (!this.game.state.minor_activated_powers.includes(power)) { return ""; }
-    for (let key in this.game.state.activated_powers) {
-      if (this.game.state.activated_powers[key].includes(power)) {
-	return key;
-      }
-    }
-  }
-
-  activateMinorPower(faction, power) {
-    this.setAllies(faction, power);
-    this.game.state.activated_powers[faction].push(power);
-    this.game.state.minor_activated_powers.push(power);
-  }
-
-  deactivateMinorPower(faction, power) {
-    this.unsetAllies(faction, power);
-    for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
-      if (this.game.state.activated_powers[faction][i] === power) {
-	this.game.state.activated_powers[faction].splice(i, 1);
-      }
-    }
-    for (let i = 0; i < this.game.state.minor_activated_powers.length; i++) {
-      if (this.game.state.minor_activated_powers[i] === power) {
-	this.game.state.minor_activated_powers.splice(i, 1);
-      }
-    }
   }
 
   returnAllies(faction) { 
@@ -1104,6 +1077,68 @@ console.log("this is a space: " + spacekey)
     return 0;
   }
 
+  returnMinorPowers() {
+    return ["genoa", "hungary", "scotland", "venice"];
+  }
+
+  returnAllyOfMinorPower(power) {
+    if (!this.game.state.minor_activated_powers.includes(power)) { return ""; }
+    for (let key in this.game.state.activated_powers) {
+      if (this.game.state.activated_powers[key].includes(power)) {
+	return key;
+      }
+    }
+    return power;
+  }
+
+  activateMinorPower(faction, power) {
+    this.setAllies(faction, power);
+    this.game.state.activated_powers[faction].push(power);
+    this.game.state.minor_activated_powers.push(power);
+  }
+
+  deactivateMinorPower(faction, power) {
+    this.unsetAllies(faction, power);
+    for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
+      if (this.game.state.activated_powers[faction][i] === power) {
+	this.game.state.activated_powers[faction].splice(i, 1);
+      }
+    }
+    for (let i = 0; i < this.game.state.minor_activated_powers.length; i++) {
+      if (this.game.state.minor_activated_powers[i] === power) {
+	this.game.state.minor_activated_powers.splice(i, 1);
+      }
+    }
+  }
+
+  canFactionDeactivateMinorPower(faction, power) {
+    if (power == "genoa") { return 1; }
+    if (power == "scotland") { return 1; }
+    if (power == "venice") { return 1; }
+    return 0;
+  }
+
+  canFactionActivateMinorPower(faction, power) {
+    if (power == "genoa") {
+      if (faction == "france") { return 1; }
+      if (faction == "hapsburg") { return 1; }
+      if (faction == "papacy") { return 1; }
+    }
+    if (power == "hungary") {
+      if (faction == "hapsburg") { return 1; }
+    }
+    if (power == "scotland") {
+      if (faction == "france") { return 1; }
+      if (faction == "england") { return 1; }
+    }
+    if (power == "venice") {
+      if (faction == "france") { return 1; }
+      if (faction == "hapsburg") { return 1; }
+      if (faction == "papacy") { return 1; }
+    }
+    return 0;
+  }
+
   isMinorActivatedPower(power) {
     for (let i = 0; i < this.game.state.minor_activated_powers.length; i++) {
       if (power === this.game.state.minor_activated_powers[i]) {
@@ -1121,6 +1156,14 @@ console.log("this is a space: " + spacekey)
     return 0;
   }
 
+  returnFactionControllingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let factions = this.returnImpulseOrder(); 
+    for (let i = 0; i < factions.length; i++) {
+      if (this.isSpaceControlledByFaction(space, factions[i])) { return factions[i]; }
+    }
+    return space.political;  
+  }
   isSpaceControlledByFaction(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.home === faction) { return true; }
@@ -5984,7 +6027,6 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 	let p = his_self.selectPlayerOfFaction(faction);
 	if (p == his_self.game.player) {
-
           his_self.playerSelectSpaceWithFilter(
 
 	    "Select First Space to Convert", 
@@ -5998,8 +6040,9 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 	    function(spacekey) {
 
-	      let space = his_self.game.spaces[spacekey];`
+	      let space = his_self.game.spaces[spacekey];
 	      let first_choice = space.key;
+
 
               his_self.playerSelectSpaceWithFilter(
 
@@ -6025,9 +6068,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	    }
 	  );
 	}
-
 	return 0;
-
       }
     }
     deck['068'] = { 
@@ -6038,12 +6079,12 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-        let f = his_self.returnAllyOfMinorPower("genoa") {
+        let f = his_self.returnAllyOfMinorPower("genoa");
 	if (faction !== f) { return 1; }
 	return 0;
       },
       onEvent : function(his_self, faction) {
-        let f = his_self.returnAllyOfMinorPower("genoa") {
+        let f = his_self.returnAllyOfMinorPower("genoa");
 	his_self.deactivateMinorPower(f, "genoa");
 	his_self.activateMinorPower(faction, "genoa");
 	return 1;
@@ -6057,7 +6098,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-        let f = his_self.returnAllyOfMinorPower("scotland") {
+        let f = his_self.returnAllyOfMinorPower("scotland");
         if (faction === "france") {
 	  return 1;
 	}
@@ -6067,7 +6108,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	return 0;
       },
       onEvent : function(his_self, faction) {
-        let f = his_self.returnAllyOfMinorPower("scotland") {
+        let f = his_self.returnAllyOfMinorPower("scotland");
 	if (faction === "england") {
  	  if (f !== "") {
 	    his_self.deactivateMinorPower(f, "scotland");
@@ -6128,6 +6169,38 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	return 1;
+      },
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction(faction);
+
+	if (p == his_self.game.player) {
+
+	  his_self.playerSelectSpaceWithFilter(
+
+	    "Select Unbeseiged Space You Control",
+
+	    function(space) {
+	      if (space.beseiged) { return 0; }
+	      if (his_self.isSpaceControlledByFaction(space, faction)) { return 1; }
+	      return 0;
+	    },
+
+	    function(spacekey) {
+	      let space = his_self.game.spaces[spacekey];
+	      his_self.addMove("add_army_leader\t"+faction+"\t"+spacekey+"\t"+"renegade");
+              his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+spacekey);
+	      his_self.endTurn();
+	    }
+	  );
+	}
+
+	return 0;
+      },
     }
     deck['071'] = { 
       img : "cards/HIS-071.svg" , 
@@ -6136,6 +6209,116 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	return 1;
+      },
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction(faction);
+
+	if (p == his_self.game.player) {
+
+	  his_self.playerSelectSpaceWithFilter(
+
+	    "Select Space to Target",
+
+	    function(space) {
+
+	      // captured key
+	      if (space.home === "independent" && space.political != space.home) { return 1; }
+
+	      // captured non-allied home
+	      if (space.home !== space.political && space.political !== "") {
+		if (!space.beseiged) {
+	          if (!his_self.areAllies(space.home, space.political)) { return 1; }
+	        }
+	      }
+
+	      // electorate under hapsburg control
+	      if (his_self.game.state.events.schmalkaldic_league == 1) {
+		if (his_self.isElectorate(space.key)) {
+		  if (his_self.isSpaceControlledByFaction(space.key, "hapsburg")) { return 1; }
+		}
+	      }
+
+	      return 0;
+	    },
+
+	    function(spacekey) {
+	      his_self.addMove("city-state-rebels\t"+faction+"\t"+spacekey);
+	      his_self.endTurn();
+	    }
+	  );
+	}
+
+	return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "city-state-rebels") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let respondent = his_self.returnFactionControllingSpace(spacekey);
+
+          his_self.game.queue.splice(qe, 1);
+
+          his_self.updateLog(faction + " plays City State Rebels against " + spacekey);
+
+	  let hits = 0;
+	  for (let i = 0; i < 5; i++) {
+	    let roll = his_self.rollDice(6);
+	    if (roll >= 5) {
+	      hits++;
+	    }
+	  }
+
+	  //
+	  // TODO, return zero and add choice of unit removal, for now remove army before navy
+	  //
+	  let p = his_self.returnPlayerOfFaction(respondent);	  
+	  if (his_self.game.player == p) {
+	    his_self.addMove("finish-city-state-rebels\t"+faction+"\t"+respondent+"\t"+spacekey);
+	    his_self.playerAssignHits(faction, spacekey, hits, 1);
+	  }
+	  
+	  return 0;
+        }
+
+
+	if (mv[0] === "finish-city-state-rebels") {
+
+	  let faction    = mv[1];
+	  let respondent = mv[2];
+	  let spacekey   = mv[3];
+	  let space      = his_self.game.spaces[spacekey];
+
+	  // do land or naval units remain
+	  let anything_left = 0; 
+	  for (let i = 0; i < space.units[respondent].length; i++) {
+	    if (!space.units[respondent][i].personage) { anything_left = 1; }
+	  }
+
+	  if (!anything_left) {
+            for (let i = 0; i < space.units[f].length; i++) {
+              his_self.captureLeader(faction, respondent, spacekey, space.units[f][i]);
+              space.units[f].splice(i, 1);
+              i--;
+            }
+          }
+
+	  let who_gets_control = his_self.returnAllyOfMinorPower(space.home);
+	  space.political = who_gets_control;
+
+	  // add 1 regular - to home minor ally if needed
+          this.addRegular(space.home, space.key, 1);
+
+	  return 1;
+	}
+
+	return 1;
+
+      },
     }
     deck['072'] = { 
       img : "cards/HIS-072.svg" , 
@@ -6144,6 +6327,130 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	return 1;
+      },
+      onEvent : function(his_self, faction) {
+
+	if (his_self.isSpaceControlledByFaction("calais", "england") && his_self.isSpaceControlledByFaction("antwerp", "hapsburg")) {
+
+          let p1 = game_mod.returnPlayerOfFaction("england");
+          let p2 = game_mod.returnPlayerOfFaction("hapsburg");
+
+          his_self.game.queue.push("cloth-prices-fluctuate-option1\t"+faction);
+
+          his_self.game.queue.push("hand_to_fhand\t1\t"+p1+"\t"+"england");
+          his_self.game.queue.push("DEAL\t1\t"+p1+"\t"+1);
+
+          his_self.game.queue.push("hand_to_fhand\t1\t"+p2+"\t"+"hapsburg");
+          his_self.game.queue.push("DEAL\t1\t"+p2+"\t"+1);
+
+	} else {
+
+          his_self.game.queue.push("cloth-prices-fluctuate-option2\t"+faction);
+
+	}
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "cloth-prices-fluctuate-option1") {
+
+	  let faction = mv[1];
+	  let p = his_self.returnPlayerOfFaction(faction);
+
+	  if (faction === "ottoman") {
+
+	    //
+	    // place 2 cavalry in home space not under seige
+	    //
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select Home Space not under Seige",
+	      function(space) {
+	        if (space.beseiged) { return 0; }
+	        if (his_self.isSpaceControlledByFaction(space, faction)) { return 1; }
+	        return 0;
+	      },
+	      function(spacekey) {
+	        let space = his_self.game.spaces[spacekey];
+                his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+spacekey);
+                his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+spacekey);
+	        his_self.endTurn();
+	      }
+	    );
+
+	  } else {
+
+	    //
+	    // place 2 mercenaries in home space not under seige
+	    //
+	    his_self.playerSelectSpaceWithFilter(
+	      "Select Home Space not under Seige",
+	      function(space) {
+	        if (space.beseiged) { return 0; }
+	        if (his_self.isSpaceControlledByFaction(space, faction)) { return 1; }
+	        return 0;
+	      },
+	      function(spacekey) {
+	        let space = his_self.game.spaces[spacekey];
+                his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
+                his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
+	        his_self.endTurn();
+	      }
+	    );
+	  }
+        }
+
+
+        if (mv[0] == "cloth-prices-fluctuate-option2") {
+
+	  let faction = mv[1];
+	  let f = his_self.returnFactionControllingSpace("antwerp");
+	  if (f === "") { f = his_self.game.spaces["antwerp"].home; }
+
+	  // f discards a card
+          his_self.addMove("discard_random\t"+f+"\t"+1);
+
+	  //
+	  // add unrest
+	  //
+          his_self.playerSelectSpaceWithFilter(
+	    "Add Unrest",
+	    function(space) {
+	      if (space.key == "antwerp") { return 1; }
+	      if (space.key == "brussels") { return 1; }
+	      if (space.key == "amsterdam") { return 1; }
+	      if (space.language == "italian") { return 1; }
+	      if (space.home == "hapsburg" && space.language == "italian") { return 1; }
+	      if (space.home == "hapsburg" && space.language == "german") { return 1; }
+	      return 0;
+	    },
+	    function(unrest_spacekey1) {
+              his_self.addMove("unrest\t"+unrest_spacekey1);
+              his_self.playerSelectSpaceWithFilter(
+  	        "Add Unrest",
+	        function(space) {
+	          if (space.key == unrest_spacekey1) { return 1; }
+	          if (space.key == "antwerp") { return 1; }
+	          if (space.key == "brussels") { return 1; }
+	          if (space.key == "amsterdam") { return 1; }
+	          if (space.language == "italian") { return 1; }
+	          if (space.home == "hapsburg" && space.language == "italian") { return 1; }
+	          if (space.home == "hapsburg" && space.language == "german") { return 1; }
+	        return 0;
+	        },
+	        function(unrest_spacekey2) {
+                  his_self.addMove("unrest\t"+unrest_spacekey2);
+	          his_self.endTurn();
+	        }
+              );
+	    }
+          );
+	  return 0;
+	}
+
+	return 1;
+
+      },
     }
     deck['073'] = { 
       img : "cards/HIS-073.svg" , 
@@ -6152,6 +6459,52 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	return 1;
+      },
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction(faction);
+        if (his_self.game.player == 0) {
+
+	  let mp = his_self.returnMinorPowers();
+	  let ca = [];
+	  let cd = [];
+
+	  for (let i = 0; i < mp.length; i++) {
+	    if (his_self.canFactionActivateMinorPower(faction, mp[i])) {
+	      if (his_self.returnAllyOfMinorPower(mp[i]) == faction) {
+	        ca.push(mp[i]);
+	      } else {
+	        cd.push(mp[i]);
+	      }
+	    }
+	  }
+	
+    	  let html = '<ul>';
+	  for (let i = 0; i < ca.length; i++) {
+            html += `<li class="option" id="${ca[i]}">activate ${ca[i]}</li>`;
+	  }
+	  for (let i = 0; i < cd.length; i++) {
+            html += `<li class="option" id="${cd[i]}">deactivate ${cd[i]}</li>`;
+	  }
+          game_mod.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+	  $('.option').on('click', function () {
+
+	    let action = $(this).attr("id");
+	    if (ca.includes(action)) {
+	      his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+	    } else {
+	      his_self.addMove("deactivate_minor_power\t"+faction+"\t"+action);
+	    }
+	    his_self.endTurn();
+	  });
+	}
+
+	return 0;
+      },
     }
     deck['074'] = { 
       img : "cards/HIS-074.svg" , 

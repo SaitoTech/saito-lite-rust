@@ -100,6 +100,38 @@ this.game.queue.push("is_testing");
 
 	}
 
+
+
+	if (mv[0] === "activate_minor_power") {
+
+	  let faction = mv[1];
+	  let power = mv[2];
+
+	  this.activateMinorPower(faction, power);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
+
+	if (mv[0] === "deactivate_minor_power") {
+
+	  let faction = mv[1];
+	  let power = mv[2];
+
+	  this.deactivateMinorPower(faction, power);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
+
+
+
 	if (mv[0] === "remove_unit") {
 
 	  let land_or_sea = mv[1];
@@ -262,6 +294,32 @@ alert("removing unit not implement for sea");
 
         }
 
+	if (mv[0] === "add_army_leader") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let type = mv[3];
+
+	  this.addArmyLeader(faction, spacekey, type);
+
+    	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+	}
+
+	if (mv[0] === "add_navy_leader") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let type = mv[3];
+
+	  this.addNavyLeader(faction, spacekey, type);
+
+    	  this.game.queue.splice(qe, 1);
+
+	  return 1;
+	}
+
 
 
 	if (mv[0] === "is_testing") {
@@ -303,7 +361,6 @@ alert("removing unit not implement for sea");
     	  this.game.spaces['graz'].occupier = 'protestant';
 
     	  this.game.queue.splice(qe, 1);
-
 
 	  return 1;
 	}
@@ -406,10 +463,7 @@ alert("removing unit not implement for sea");
 	    // source = land, destination = sea
 	    //
 	    if (this.game.spaces[source] && this.game.navalspaces[destination]) {
-console.log("A");
-console.log(JSON.stringify(this.game.spaces[source]));
 	      let unit_to_move = this.game.spaces[source].units[faction][unitidx];
-console.log("UNIT TO MOVE: " + JSON.stringify(unit_to_move));
               this.game.navalspaces[destination].units[faction].push(unit_to_move);
               this.game.spaces[source].units[faction].splice(unitidx, 1);
 	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
@@ -421,9 +475,6 @@ console.log("UNIT TO MOVE: " + JSON.stringify(unit_to_move));
 	    // source = sea, destination = sea
 	    //
 	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
-
-console.log("B");
-
 	      let actual_unitidx = 0;
 	      for (let i = 0; i < this.game.navalspaces[source].units[faction].length; i++) {
 		if (this.game.navalspaces[source].units[faction][i].idx === unitidx) {
@@ -431,26 +482,18 @@ console.log("B");
 		};
 	      }
 
-console.log("B");
-console.log(JSON.stringify(this.game.navalspaces[source]));
 	      let unit_to_move = this.game.navalspaces[source].units[faction][actual_unitidx];
-console.log("UNIT TO MOVE: " + JSON.stringify(unit_to_move));
               this.game.navalspaces[destination].units[faction].push(unit_to_move);
               this.game.navalspaces[source].units[faction].splice(actual_unitidx, 1);
 	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
-console.log("... 1");
 	      this.displayNavalSpace(source);
-console.log("... 2");
 	      this.displayNavalSpace(destination);
-console.log("... 3");
 	    }
 
 	    //
 	    // source = sea, destination = land
 	    //
 	    if (this.game.navalspaces[source] && this.game.spaces[destination]) {
-
-console.log("TESTING A");
 
 	      let actual_unitidx = 0;
 	      for (let i = 0; i < this.game.navalspaces[source].units[faction].length; i++) {
@@ -467,7 +510,6 @@ console.log("TESTING A");
 	      this.displaySpace(destination);
 	    }
 
-console.log("JOLLY SEA BATTLE");
 	    //
 	    // do we have a jolly sea battle?
 	    //
@@ -480,8 +522,6 @@ console.log("JOLLY SEA BATTLE");
 	    }
 
             let anyone_else_here = 0;
-
-console.log("JOLLY SEA BATTLE 2");
 
             let lqe = qe-1;
             if (lqe >= 0) {
@@ -503,9 +543,7 @@ console.log("JOLLY SEA BATTLE 2");
                     }
                   }
                 }
-console.log("JOLLY SEA BATTLE 3");
               } else {
-console.log("JOLLY SEA BATTLE 4");
                 //
                 // we only update the occupier of the space if the next move is not a "move"
                 // as we require interception check to find out if there are units here already.
@@ -2279,6 +2317,35 @@ console.log("done");
           return 1;
 
         }
+
+ 	if (mv[0] === "destroy_units") {
+
+          this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let units_to_destroy = JSON.parse(mv[3]);
+
+	  let space;
+
+	  if (this.game.space[spacekey]) { space = this.game.space[spacekey]; }
+
+	  units_to_destroy.sort();
+	  if (units_to_destroy[0] < units_to_destroy[units_to_destroy.length-1]) {
+	    units_to_destroy.reverse();
+	  }
+
+	  //
+	  // remove from max to minimum to avoid index-out-of-array errors
+	  //
+	  for (let i = 0; i < units_to_destroy.length; i++) {
+	    space.units[faction].splice(i, 1);
+	  }
+
+	  return 1;
+
+	}
+
 
 
 
@@ -4308,6 +4375,19 @@ alert("ASSAULT UNIMPLEMENTED");
 	  return 1;
 
 	}
+
+
+ 	if (mv[0] === "unrest") {
+
+	  let spacekey = mv[1];
+	  this.game.spaces[spaceley].unrest = 1;
+	  this.displaySpace(spacekey);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
 
 	if (mv[0] === "pacify" || mv[0] === "control") {
 
