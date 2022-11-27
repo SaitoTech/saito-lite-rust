@@ -218,7 +218,7 @@
   .tweet-picture {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(25rem,1fr));
-    grid-gap: .5rem;
+    grid-gap: .3rem;
     width: 100%;
    
   }
@@ -229,7 +229,48 @@
     border-radius:   .5rem;
     object-fit: cover;
   }
+
+  .link-preview {
+    margin: 15px 0px;
+  }
   
+  .link-img {
+    width: 100%;
+    height: 25rem;
+    background-size: cover !important;
+    border-top-left-radius: .5rem;
+    border-top-right-radius: .5rem;
+  }
+  
+  .link-info {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    border-top: none;
+    border-top-right-radius: unset;
+    border-top-left-radius: unset;
+  }
+  
+  .link-title {
+    color: #000;
+    margin: 3px 0px;
+  }
+  
+  .link-url {
+    font-size: 1.4rem;
+    color: #444;
+  }
+  
+  .link-description {
+    font-size: 1.6rem;
+    color: #444;
+  }
+
+  .youtube-embed-container > iframe{
+    width: 100%;
+    margin: 15px 0px;
+    height: 25rem;
+  }
 
 
 
@@ -285,7 +326,12 @@
       .tweet-picture > img {
         height: 15rem;
       }
+
+      .preview-img {
+        height: 15rem;
+      }
   
+
   }
   @media screen and (max-width: 375px) {
       .tweet-picture {
