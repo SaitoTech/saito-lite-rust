@@ -17,7 +17,6 @@ Saito Username
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 1.6rem;
     display: flex;
     align-items: center;
     color: var(--saito-font-color-heavy);
@@ -45,7 +44,7 @@ Saito User
 
 
 /*  saito-identicon-box  */
-.saito-user>div:nth-child(1) {
+.saito-user> .saito-identicon-box {
     margin-right: 1rem;
     grid-column-start: 1;
     grid-column-end: span 1;
@@ -53,18 +52,14 @@ Saito User
 }
 
 
-.saito-user>.saito-address-long:nth-child(2) {
-    grid-column-end: 4;
-}
-
-.saito-user>div:nth-child(2) {
+.saito-user > .saito-address {
     grid-column-start: 2;
     grid-column-end: span 1;
     grid-row-start: 1;
     grid-row-end: span 1;
 }
 
-.saito-user>div:nth-child(3) {
+.saito-user> .saito-user-timestamp {
     grid-column-start: 2;
     grid-column-end: span 1;
     grid-row-start: 2;
@@ -73,30 +68,6 @@ Saito User
     color: var(--saito-font-color-light);
 }
 
-.saito-user.small>div:nth-child(3) {
-    line-height: 1.8rem;
-    padding-top: 0.5rem;
-}
-
-.saito-user>div:nth-child(4).saito-user-alert,
-.saito-user-alert {
-    grid-row-start: 1;
-    grid-row-end: 3;
-    font-size: 3rem;
-    background-color: var(--saito-primary);
-    color: white;
-    padding: 1rem;
-    white-space: nowrap;
-}
-
-.saito-user>div:nth-child(4) {
-    cursor: pointer;
-    grid-column-start: 3;
-    grid-column-end: span 1;
-    grid-row: span 2;
-    font-size: 1.4rem;
-    align-items: top;
-}
 
 
 

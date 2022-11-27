@@ -152,7 +152,7 @@ Media Queries
 
 @media screen and (max-width: 768px) {
   body {
-    font-size: 1.4rem;
+    font-size: 1.45rem;
   }
 
   .saito-container {
@@ -200,8 +200,9 @@ Media Queries
 
 
 
-@media screen and (max-width: 320px) {
+@media screen and (max-width: 375px) {
   body {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
+
 }
