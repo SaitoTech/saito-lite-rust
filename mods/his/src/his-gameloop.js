@@ -3904,6 +3904,15 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  for (let i = this.game.players_info.length-1; i >= 0; i--) {
 	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
               let cardnum = this.factions[this.game.players_info[i].factions[z]].returnCardsDealt(this);
+
+	      //
+	      // fuggers card -1
+	      //
+              if (this.game.state.events.fuggers === this.game.players_info[i].factions[z]) {
+		cardnum--;
+		this.game.state.events.fuggers = "";
+	      }
+
     	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
     	      this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
     	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));

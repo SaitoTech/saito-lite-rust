@@ -218,7 +218,7 @@
   // 1 hits to destroy everything, opt-in for naval units
   //
   playerAssignHits(faction, spacekey, hits_to_assign, naval_hits_acceptable=0) {
-/****
+
     let space = spacekey;
     try { if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; } } catch (err) {}
 
@@ -272,7 +272,7 @@
     }
 
     selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
-***/
+
     return 0;
 
   }
@@ -576,6 +576,53 @@
 
   }
 
+
+  playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+
+    let factions = this.returnImpulseOrder();
+    let f = [];
+
+    for (let i = 0; i < factions.length; i++) {
+      if (filter_func(factions[i])) { f.push(factions[i]); }
+    }
+
+    let html = "<ul>";
+    for (let i = 0; i < f.length; i++) {
+      html += `<li class="option" id="${f[i]}">${f[i]}</li>`;
+    }
+    html += "</ul>";
+
+    his_self.updateStatusWithOptions(msg, html);
+     
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let id = $(this).attr("id");
+      $('.option').off();
+      mycallback(id);
+    });
+
+    return 0;
+  }
+
+
+  playerFactionSelectCardWithFilter(faction, msg, filter_func, mycallback = null, cancel_func = null) {
+
+    let cards = [];
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+
+    for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
+      if (filter_func(this.game.deck[0].fhand[faction_hand_idx])) {
+	cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
+      }
+    }
+
+    this.updateStatusAndListCards(msg, cards);
+    this.attachCardboxEvents(function(card) {
+      mycallback(card, faction);
+    });
+
+  }
 
 
 
