@@ -46,18 +46,18 @@
   position: relative;
 }
 
-.redsquare-item {
+.tweet {
   cursor: pointer;
   padding: 2rem 1rem 0 0;
   border-bottom: 1px solid #a5a5a533;
   position: relative;
 }
 
-.redsquare-item.redsquare-item.has-reply {
+.tweet.has-reply {
   border-bottom: none;
 }
 
-.redsquare-item.has-reply::after {
+.tweet.has-reply::after {
   content: "";
   position: absolute;
   width: 2px;
@@ -67,11 +67,11 @@
   left: 1.7rem;
 }
 
-.redsquare-item:hover {
+.tweet:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-.tweet {
+.tweet-body {
   display: grid;
   grid-template-columns: 4.5rem 1fr;
 }
@@ -79,7 +79,7 @@
 .quoted-tweet {
   border: 1px solid var(--saito-border-color);
   margin-top: 1rem;
-  padding: 1rem 1.5rem;
+  padding:.5rem;
   border-radius: var(--saito-border-radius);
 }
 
@@ -88,7 +88,7 @@
   grid-template-columns: 4.5rem 1fr;
 }
 
-.redsquare-item-notice {
+.tweet-notice {
   box-sizing: border-box;
   color: rgba(0, 0, 0, 1.00);
   font-family: var(--saito-font);
@@ -99,7 +99,7 @@
   color: #444;
 }
 
-.redsquare-item-notice .saito-address {
+.tweet-notice .saito-address {
   display: inline;
   margin-left: 0.25rem;
   font-weight: bold;
@@ -278,10 +278,10 @@
   .redsquare-page-header-title {
     font-size: 2rem;
   }
-  .redsquare-item {
+  .tweet {
     padding: 1rem 0 0;
   }
-  .redsquare-item.has-reply::after {
+  .tweet.has-reply::after {
     top: 4.5rem;
   }
   .redsquare-actions-container {
