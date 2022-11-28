@@ -1207,6 +1207,14 @@ class Network {
     if (tx === null) {
       return;
     }
+    if (!tx.transaction) {
+console.log("TX not found in propagate transaction");
+      return;
+    }
+    if (!tx.transaction.from) {
+console.log("TX FROM not found in propagate transaction");
+      return;
+    }
     if (!tx.is_valid) {
       console.warn("tx is not valid. not propagating", tx);
       return;
