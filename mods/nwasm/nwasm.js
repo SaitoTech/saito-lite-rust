@@ -569,8 +569,6 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
     let base64data = this.convertByteArrayToBase64(data);
     let screenshot = await this.app.browser.resizeImg(this.active_game_img);
 
-console.log("screenshot: " + screenshot);
-
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     this.stopPlaying();
