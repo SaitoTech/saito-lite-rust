@@ -5991,7 +5991,6 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	  }
 	}
 
-
         let msg = "Steal Random Card from Which Faction?";
         let html = '<ul>';
         for (let i = 0; i < target_which_faction.length; i++) {
@@ -6800,6 +6799,18 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	return 1;
+      }
+      onEvent : function(his_self, faction) {
+
+	  his_self.addMove("pull_card\tottoman\t"+action);
+          his_self.endTurn();
+
+	});
+
+        return 0;
+      }
     }
     deck['082'] = { 
       img : "cards/HIS-082.svg" , 
