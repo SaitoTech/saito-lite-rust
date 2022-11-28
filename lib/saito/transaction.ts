@@ -81,10 +81,7 @@ class Transaction {
               const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
               this.msg = JSON.parse(reconstruct);
             } catch (error) {
-              console.log("failed parsing the msg as base64. trying as a utf8");
               console.error(error);
-              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-              this.msg = JSON.parse(reconstruct);
             }
           }
         } catch (err) {
