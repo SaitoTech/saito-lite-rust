@@ -1,23 +1,21 @@
-
 export enum MessageType {
-    HandshakeChallenge = 1,
-    HandshakeResponse,
-    //HandshakeCompletion,
-    ApplicationMessage= 4,
-    ApplicationTransaction,
-    Block,
-    Transaction,
-    BlockchainRequest,
-    BlockHeaderHash,
-    Ping,
-    SPVChain,
-    Services,
-    GhostChain,
-    GhostChainRequest,
-    Result,
-    Error
+  HandshakeChallenge = 1,
+  HandshakeResponse,
+  //HandshakeCompletion,
+  ApplicationMessage = 4,
+  Block,
+  Transaction,
+  BlockchainRequest,
+  BlockHeaderHash,
+  Ping,
+  SPVChain,
+  Services,
+  GhostChain,
+  GhostChainRequest,
+  Result,
+  Error,
+  ApplicationTransaction,
 }
-
 
 /**
  * An APIMessage
@@ -82,7 +80,7 @@ class NetworkAPI {
    * @param {array} message_bytes - byte Vector - the message to be passed to the procedure.
    * @returns
    */
-  send(ws, command : MessageType, message_bytes) {
+  send(ws, command: MessageType, message_bytes) {
     const serialized_api_message = this.serializeAPIMessage(
       command,
       this.api_call_index,
@@ -106,7 +104,7 @@ class NetworkAPI {
    * @param {array} message_bytes - byte Vector - the message to be passed to the procedure.
    * @returns
    */
-  sendAPICall(ws, command : MessageType, message_bytes : Buffer) {
+  sendAPICall(ws, command: MessageType, message_bytes: Buffer) {
     //console.debug("sendAPICall : " + command);
     return new Promise((resolve, reject) => {
       this.api_callbacks[this.api_call_index] = {
@@ -124,7 +122,7 @@ class NetworkAPI {
     });
   }
 
-  sendAPIResponse(ws, command : MessageType, message_id, message_bytes) {
+  sendAPIResponse(ws, command: MessageType, message_id, message_bytes) {
     //console.debug("sendAPIResponse : " + command + " : " + message_id);
     const serialized_api_message = this.serializeAPIMessage(command, message_id, message_bytes);
     ws.send(serialized_api_message);
@@ -176,7 +174,7 @@ class NetworkAPI {
    * @param {array} data - data to be sent
    * @returns array - bytes for the wire
    */
-  serializeAPIMessage(command : MessageType, index, data : Buffer) {
+  serializeAPIMessage(command: MessageType, index, data: Buffer) {
     const enc = new TextEncoder();
     /*const command_bytes = enc.encode(command);*/
     const command_byte = this.app.binary.u8AsByte(command);
@@ -191,16 +189,16 @@ class NetworkAPI {
    * @param {Uint8Array} bytes - raw bytes from the wire
    * @returns APIMessage
    */
-  deserializeAPIMessage(bytes:Uint8Array) {
-      // if (bytes.length === 0) {
-      //     console.warn("API message cannot be deserialized from empty buffer");
-      // }
-      return new APIMessage(
-          /*Buffer.from(bytes.slice(0, 8)).toString("utf-8"),*/
-          this.app.binary.u8FromByte(bytes[0]),
-          this.app.binary.u32FromBytes(Array.from(bytes.slice(1, 5))),
-          new Uint8Array(bytes.slice(5))
-      );
+  deserializeAPIMessage(bytes: Uint8Array) {
+    // if (bytes.length === 0) {
+    //     console.warn("API message cannot be deserialized from empty buffer");
+    // }
+    return new APIMessage(
+      /*Buffer.from(bytes.slice(0, 8)).toString("utf-8"),*/
+      this.app.binary.u8FromByte(bytes[0]),
+      this.app.binary.u32FromBytes(Array.from(bytes.slice(1, 5))),
+      new Uint8Array(bytes.slice(5))
+    );
   }
 
   /**

@@ -355,9 +355,13 @@ class Network {
         if (this.debugging) {
           console.log("connected to network", event);
         }
-        this.app.connection.emit("peer_connect", peer);
-        this.app.connection.emit("connection_up", peer);
-        this.app.network.propagateServices(peer);
+        try {
+          this.app.connection.emit("peer_connect", peer);
+          this.app.connection.emit("connection_up", peer);
+          this.app.network.propagateServices(peer);
+        } catch (error) {
+          console.error(error);
+        }
       };
       peer.socket.onclose = (event) => {
         if (this.debugging) {
@@ -376,15 +380,19 @@ class Network {
         }
       };
       peer.socket.onmessage = async (event) => {
-        const data = new Uint8Array(await event.data.arrayBuffer());
-        // console.log("data buffer 2 first: ", data[0]);
-        const api_message = this.app.networkApi.deserializeAPIMessage(data);
-        if (api_message.message_type == MessageType.Result) {
-          this.app.networkApi.receiveAPIResponse(api_message);
-        } else if (api_message.message_type == MessageType.Error) {
-          this.app.networkApi.receiveAPIError(api_message);
-        } else {
-          await this.receiveRequest(peer, api_message);
+        try {
+          const data = new Uint8Array(await event.data.arrayBuffer());
+          // console.log("data buffer 2 first: ", data[0]);
+          const api_message = this.app.networkApi.deserializeAPIMessage(data);
+          if (api_message.message_type == MessageType.Result) {
+            this.app.networkApi.receiveAPIResponse(api_message);
+          } else if (api_message.message_type == MessageType.Error) {
+            this.app.networkApi.receiveAPIError(api_message);
+          } else {
+            await this.receiveRequest(peer, api_message);
+          }
+        } catch (error) {
+          console.error(error);
         }
       };
 
@@ -408,7 +416,11 @@ class Network {
       // default ws websocket
       //
       peer.socket.on("open", async (event) => {
-        this.app.network.propagateServices(peer);
+        try {
+          this.app.network.propagateServices(peer);
+        } catch (error) {
+          console.error(error);
+        }
       });
       peer.socket.on("close", (event) => {
         if (this.debugging) {
@@ -433,14 +445,17 @@ class Network {
       //   return;
       // }
       // console.log("data buffer 1 first: ", data[0]);
-
-      const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
-      if (api_message.message_type == MessageType.Result) {
-        this.app.networkApi.receiveAPIResponse(api_message);
-      } else if (api_message.message_type == MessageType.Error) {
-        this.app.networkApi.receiveAPIError(api_message);
-      } else {
-        await this.receiveRequest(peer, api_message);
+      try {
+        const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
+        if (api_message.message_type == MessageType.Result) {
+          this.app.networkApi.receiveAPIResponse(api_message);
+        } else if (api_message.message_type == MessageType.Error) {
+          this.app.networkApi.receiveAPIError(api_message);
+        } else {
+          await this.receiveRequest(peer, api_message);
+        }
+      } catch (error) {
+        console.error(error);
       }
     });
 
@@ -936,14 +951,19 @@ class Network {
       //   break;
 
       case MessageType.ApplicationTransaction: {
-
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
-	let txmsg = tx.returnMessage();
-        if (!txmsg) { break; }
-        if (!txmsg.request) { break; }
-        if (!txmsg.data) { break; }
+        let txmsg = tx.returnMessage();
+        if (!txmsg) {
+          break;
+        }
+        if (!txmsg.request) {
+          break;
+        }
+        if (!txmsg.data) {
+          break;
+        }
 
         let reconstructed_message = txmsg.request;
         let reconstructed_data = txmsg.data;
@@ -1208,11 +1228,11 @@ class Network {
       return;
     }
     if (!tx.transaction) {
-console.log("TX not found in propagate transaction");
+      console.log("TX not found in propagate transaction");
       return;
     }
     if (!tx.transaction.from) {
-console.log("TX FROM not found in propagate transaction");
+      console.log("TX FROM not found in propagate transaction");
       return;
     }
     if (!tx.is_valid) {
