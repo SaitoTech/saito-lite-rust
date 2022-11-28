@@ -935,6 +935,60 @@ class Network {
       //   //await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
       //   break;
 
+      case MessageType.ApplicationTransaction: {
+
+        tx = new Transaction();
+        tx.deserialize(this.app, message.message_data, 0);
+
+	let txmsg = tx.returnMessage();
+        if (!txmsg) { break; }
+        if (!txmsg.request) { break; }
+        if (!txmsg.data) { break; }
+
+        let reconstructed_message = txmsg.request;
+        let reconstructed_data = txmsg.data;
+
+        const msg: any = {};
+        msg.request = "";
+        msg.data = {};
+
+        if (reconstructed_message) {
+          msg.request = reconstructed_message;
+        }
+        if (reconstructed_data) {
+          msg.data = reconstructed_data;
+        }
+        const mycallback = function (response_object) {
+          peer.sendResponse(
+            message.message_id,
+            Buffer.from(JSON.stringify(response_object), "utf-8")
+          );
+        };
+
+        switch (message.message_type) {
+          default:
+            if (reconstructed_data) {
+              if (reconstructed_data.transaction) {
+                if (reconstructed_data.transaction.m) {
+                  // backwards compatible - in case modules try the old fashioned way
+                  if (msg.data.transaction.m.byteLength === 0) {
+                    msg.data.transaction.msg = {};
+                  } else {
+                    msg.data.transaction.msg = JSON.parse(
+                      this.app.crypto.base64ToString(
+                        Buffer.from(msg.data.transaction.m).toString("base64")
+                      )
+                    );
+                  }
+                  msg.data.msg = msg.data.transaction.msg;
+                }
+              }
+            }
+            await this.app.modules.handlePeerRequest(msg, peer, mycallback);
+        }
+        break;
+      }
+
       case MessageType.ApplicationMessage: {
         let mdata;
         let reconstructed_obj;
@@ -1295,6 +1349,33 @@ class Network {
       for (let x = this.peers.length - 1; x >= 0; x--) {
         this.peers[x].sendRequest(message, data);
       }
+    }
+  }
+
+  sendTransaction(tx: any = "", peer: Peer = null) {
+    if (peer !== null) {
+      peer.sendTransactionWithCallback(tx);
+    } else {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        this.peers[x].sendTransactionWithCallback(tx);
+      }
+    }
+  }
+
+  //
+  // a request formatted as a transaction with request / data (tx)
+  //
+  sendTransactionWithCallback(tx: any = "", callback, peer = null) {
+    if (peer !== null) {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        if (this.peers[x] === peer) {
+          this.peers[x].sendTransactionWithCallback(tx, callback);
+        }
+      }
+      return;
+    }
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendTransactionWithCallback(tx, callback);
     }
   }
 

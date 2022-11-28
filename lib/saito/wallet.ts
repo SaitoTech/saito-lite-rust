@@ -822,9 +822,6 @@ console.log("---------------------");
       return null;
     }
 
-    //
-    // convert tx.msg to base64 tx.transaction.m
-    //
     try {
       tx.sign(this.app);
     } catch (err) {
@@ -868,14 +865,19 @@ console.log("---------------------");
     // limits in NodeJS!
     //
     try {
+
       if (this.app.keys.hasSharedSecret(tx.transaction.to[0].add)) {
         tx.msg = this.app.keys.encryptMessage(tx.transaction.to[0].add, tx.msg);
       }
-      // nov 30 - set in tx.sign() now
-      tx.transaction.m = Buffer.from(
-        this.app.crypto.stringToBase64(JSON.stringify(tx.msg)),
-        "base64"
-      );
+      //
+      // nov 25 2022 - eliminate base64 formatting for TXS
+      //
+      //tx.transaction.m = Buffer.from(
+      //  this.app.crypto.stringToBase64(JSON.stringify(tx.msg)),
+      //  "base64"
+      //);
+      tx.transaction.m = Buffer.from(JSON.stringify(tx.msg), "utf-8");
+
     } catch (err) {
       console.log("####################");
       console.log("### OVERSIZED TX ###");
