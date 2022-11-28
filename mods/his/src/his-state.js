@@ -6804,13 +6804,27 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       }
       onEvent : function(his_self, faction) {
 
-	  his_self.addMove("pull_card\tottoman\t"+action);
-          his_self.endTurn();
+	his_self.game.queue.push("indulgence-vendor\t"+faction);
+	his_self.game.queue.push("pull_card\t"+faction+"\tprotestant");
 
-	});
+        return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
 
-        return 0;
-      }
+        if (mv[0] == "indulgence-vendor") {
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.updateLog("Ottoman Empire plays Janissaries");
+	  his_self.game.state.field_battle.attacker_rolls += 5;
+	  his_self.game.state.field_battle.attacker_results.push(his_self.rollDice(6));
+
+	  return 1;
+
+        }
+      },
+      canEvent : function(his_self, faction) {
+	return 1;
+      },
     }
     deck['082'] = { 
       img : "cards/HIS-082.svg" , 
