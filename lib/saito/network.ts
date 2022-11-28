@@ -51,7 +51,7 @@ class Network {
     //
     this.downloads = {};
     this.downloads_hmap = {};
-    this.downloading_active = 0;
+    this.downloading_active = false;
     this.block_sample_size = 15;
 
     //
@@ -309,7 +309,12 @@ class Network {
         const block = new Block(this.app);
         block.deserialize(buffer);
         console.debug("block deserialized : " + block_hash);
+        block.generateMetadata();
         await block.generateConsensusValues();
+        console.assert(
+          block_hash === block.hash,
+          `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
+        );
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;
@@ -1119,7 +1124,7 @@ class Network {
   //
   // propagate block
   //
-  propagateBlock(blk, peer = null) {
+  propagateBlock(blk: Block | null, peer = null) {
     if (this.app.BROWSER) {
       return;
     }
@@ -1283,7 +1288,7 @@ class Network {
     });
   }
 
-  requestBlockchain(peer = null) {
+  requestBlockchain(peer: Peer | null = null) {
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;

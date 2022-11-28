@@ -46,6 +46,10 @@ import transaction0 from "./transaction";
 
 import wallet0 from "./wallet";
 
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 export default class SaitoCommon {
   static binary = binary0;
   static block = block0;

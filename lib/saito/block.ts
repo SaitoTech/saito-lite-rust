@@ -34,9 +34,9 @@ class Block {
     avg_atr_income: BigInt(0),
     avg_atr_variance: BigInt(0),
   };
-  public lc: number;
-  public force: any;
-  public transactions: Transaction[];
+  public lc: boolean;
+  public force: boolean;
+  public transactions: Array<Transaction>;
   public block_type: BlockType;
   public hash: string;
   public prehash: string;
@@ -51,7 +51,7 @@ class Block {
   public gt_idx: number;
   public has_issuance_transaction: boolean;
   public has_hashmap_of_slips_spent_this_block: boolean;
-  public slips_spent_this_block: any;
+  public slips_spent_this_block: Map<string, number>;
   public rebroadcast_hash: string;
   public total_rebroadcast_slips: number;
   public total_rebroadcast_nolan: bigint;
@@ -64,7 +64,7 @@ class Block {
   public fee_transaction_idx: number;
   public golden_ticket_idx: number;
   public issuance_transaction_idx: number;
-  public txs_hmap: any;
+  public txs_hmap: Map<string, number>;
   public txs_hmap_generated: boolean;
   public has_examined_block: boolean;
 
@@ -75,10 +75,10 @@ class Block {
     // consensus variables
     //
 
-    this.lc = 0;
-    this.force = 0; // set to 1 if "force" loaded -- used to avoid duplicating callbacks
+    this.lc = false;
+    this.force = false; // set to true if "force" loaded -- used to avoid duplicating callbacks
 
-    this.transactions = [];
+    this.transactions = new Array<Transaction>();
 
     this.block_type = BlockType.Full;
     this.hash = "";
@@ -96,12 +96,12 @@ class Block {
     this.gt_idx = 0;
     this.has_issuance_transaction = false;
     this.has_hashmap_of_slips_spent_this_block = false;
-    this.slips_spent_this_block = {};
+    this.slips_spent_this_block = new Map<string, number>();
     this.rebroadcast_hash = "";
     this.total_rebroadcast_slips = 0;
     this.total_rebroadcast_nolan = BigInt(0);
 
-    this.txs_hmap = [];
+    this.txs_hmap = new Map<string, number>();
     this.txs_hmap_generated = false;
 
     this.callbacks = [];
@@ -767,7 +767,7 @@ class Block {
     return cv;
   }
 
-  async generate(previous_block_hash, mempool = null) {
+  async generate(previous_block_hash: string) {
     //
     // fetch consensus values from preceding block
     //
@@ -779,7 +779,7 @@ class Block {
     let previous_block_staking_treasury = BigInt(0);
     const current_timestamp = new Date().getTime();
 
-    const previous_block = await mempool.app.blockchain.loadBlockAsync(previous_block_hash);
+    const previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
 
     if (previous_block) {
       previous_block_id = previous_block.block.id;
@@ -812,8 +812,8 @@ class Block {
     // object, so we can hot-swap using pass-by-reference. these
     // modifications change the mempool in real-time.
     //
-    this.transactions = mempool.mempool.transactions;
-    mempool.mempool.transactions = [];
+    this.transactions = this.app.mempool.mempool.transactions;
+    this.app.mempool.mempool.transactions = new Array<Transaction>();
 
     //
     // first block gets issuance
@@ -839,19 +839,19 @@ class Block {
     // modifications change the mempool in real-time.
     //
     console.log("-----------------------------------");
-    console.log("how many gts to check? " + mempool.mempool.golden_tickets.length);
-    for (let i = 0; i < mempool.mempool.golden_tickets.length; i++) {
+    console.log("how many gts to check? " + this.app.mempool.mempool.golden_tickets.length);
+    for (let i = 0; i < this.app.mempool.mempool.golden_tickets.length; i++) {
       console.log("checking GT: " + i);
       const gt = this.app.goldenticket.deserializeFromTransaction(
-        mempool.mempool.golden_tickets[i]
+        this.app.mempool.mempool.golden_tickets[i]
       );
       console.log("comparing " + gt.target_hash + " -- " + previous_block_hash);
       if (gt.target_hash === previous_block_hash) {
         console.log("ADDING GT TX TO BLOCK");
-        this.transactions.unshift(mempool.mempool.golden_tickets[i]);
+        this.transactions.unshift(this.app.mempool.mempool.golden_tickets[i]);
         this.has_golden_ticket = true;
-        mempool.mempool.golden_tickets.splice(i, 1);
-        i = mempool.mempool.golden_tickets.length + 2;
+        this.app.mempool.mempool.golden_tickets.splice(i, 1);
+        i = this.app.mempool.mempool.golden_tickets.length + 2;
       }
     }
     console.log("-----------------------------------");
@@ -907,10 +907,10 @@ class Block {
       // this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i));
       if (!this.transactions[i].isFeeTransaction()) {
         for (let k = 0; k < this.transactions[i].transaction.from.length; k++) {
-          this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i));
+          this.transactions[i].generateMetadata(this.app, this.block.id, BigInt(i), "");
           // this.transactions[i].transaction.from[k].generateKey(this.app);
           // TODO : add this check
-          this.slips_spent_this_block[this.transactions[i].transaction.from[k].returnKey()] = 1;
+          this.slips_spent_this_block.set(this.transactions[i].transaction.from[k].returnKey(), 1);
         }
       }
       // for (let k = 0; k < this.transactions[i].transaction.to.length; k++) {
@@ -979,7 +979,7 @@ class Block {
     //
     const creator_publickey = this.returnCreator();
     this.transactions.map((tx, index) =>
-      tx.generateMetadata(this.app, this.block.id, BigInt(index))
+      tx.generateMetadata(this.app, this.block.id, BigInt(index), this.returnHash())
     );
 
     //
@@ -1029,7 +1029,7 @@ class Block {
         if (transaction.transaction.type !== TransactionType.Fee) {
           for (let i = 0; i < transaction.transaction.from.length; i++) {
             const key = transaction.transaction.from[i].returnKey();
-            this.slips_spent_this_block[key] = 1;
+            this.slips_spent_this_block.set(key, 1);
           }
           this.has_hashmap_of_slips_spent_this_block = true;
         }
@@ -1089,11 +1089,11 @@ class Block {
     if (!this.txs_hmap_generated) {
       for (let i = 0; i < this.transactions.length; i++) {
         for (let ii = 0; ii < this.transactions[i].transaction.from.length; ii++) {
-          this.txs_hmap[this.transactions[i].transaction.from[ii].add] = 1;
+          this.txs_hmap.set(this.transactions[i].transaction.from[ii].add, 1);
         }
         for (let ii = 0; ii < this.transactions[i].transaction.to.length; ii++) {
           // console.log("setting txhmap for " + this.transactions[i].transaction.to[ii].add);
-          this.txs_hmap[this.transactions[i].transaction.to[ii].add] = 1;
+          this.txs_hmap.set(this.transactions[i].transaction.to[ii].add, 1);
         }
       }
       this.txs_hmap_generated = true;
@@ -1116,20 +1116,20 @@ class Block {
     return this.has_issuance_transaction;
   }
 
-  hasKeylistTransactions(keylist): boolean {
+  hasKeylistTransactions(keylist: string[]): boolean {
     if (!this.txs_hmap_generated) {
       console.log("generating tx hashmap for " + JSON.stringify(keylist));
       this.generateTransactionsHashmap();
     }
     for (let i = 0; i < keylist.length; i++) {
-      if (this.txs_hmap[keylist[i]] == 1) {
+      if (this.txs_hmap.get(keylist[i]) == 1) {
         return true;
       }
     }
     return false;
   }
 
-  onChainReorganization(lc) {
+  onChainReorganization(lc: boolean) {
     const block_id = this.returnId();
     for (let i = 0; i < this.transactions.length; i++) {
       console.log("tx ocr " + i);
@@ -1159,11 +1159,11 @@ class Block {
     return html;
   }
 
-  returnBurnFee() {
+  returnBurnFee(): bigint {
     return this.block.burnfee;
   }
 
-  returnCreator() {
+  returnCreator(): string {
     return this.block.creator;
   }
 
@@ -1755,7 +1755,12 @@ class Block {
       // block-specific data in the same way that all the transactions in
       // the block have been. we must do this prior to comparing them.
       //
-      cv.fee_transaction.generateMetadata(this.app, this.block.id, BigInt(cv.ft_idx));
+      cv.fee_transaction.generateMetadata(
+        this.app,
+        this.block.id,
+        BigInt(cv.ft_idx),
+        this.returnHash()
+      );
 
       const hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature(this.app));
       const hash2 = this.app.crypto.hash(cv.fee_transaction.serializeForSignature(this.app));
@@ -1857,17 +1862,17 @@ class Block {
       //
       // lite-browsers cannot load from disk
       //
-      //if (this.app.BROWSER == 0) {
-      let block = await this.app.storage.loadBlockByFilename(
-        this.app.storage.generateBlockFilename(this)
-      );
-      block.generateHashes();
-      this.transactions = block.transactions;
-      this.generateMetadata();
-      this.block_type = BlockType.Full;
-      //} else {
-      //return false;
-      //}
+      if (this.app.BROWSER == 0) {
+        let block = await this.app.storage.loadBlockByFilename(
+          this.app.storage.generateBlockFilename(this)
+        );
+        block.generateHashes();
+        this.transactions = block.transactions;
+        this.generateMetadata();
+        this.block_type = BlockType.Full;
+      } else {
+        return false;
+      }
 
       return true;
     }
