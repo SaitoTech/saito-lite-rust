@@ -117,12 +117,13 @@ class Binary {
    * @param {number} val
    * @returns array of 4 bytes
    */
-  u32AsBytes(val=-1) {
-    if (val == -1) { 
+  u32AsBytes(val) {
+    if (!val) {
       console.log("DEBUG NEEDED: something is sending u32AsBytes an undefined value");
-      val = 0;
+      val = BigInt(0);
+    } else {
+      val = BigInt(val);
     }
-    val = BigInt(val);
     const bytes = [];
     let i = 4;
     do {
