@@ -69,25 +69,27 @@
     overflow-wrap: anywhere;
     max-height: 17.7rem;
     margin-bottom: 1rem;
+    overflow: hidden;
+    transition: all 2.5s cubic-bezier(0, 1, 0, 1);
 }
 
 .tweet-text.full {
-    max-height: unset;
+    transition: all 1s ease-in-out;
+    max-height: 50rem;
+    overflow-y: auto;
+    margin-bottom: 2rem;
 }
 
 .tweet-text.full::after {
     content: "Collapse tweet";
     position: absolute;
     bottom: 5rem;
-    right: 2rem;
-    border-radius: var(--saito-border-radius);
+    left: 50%;
+    transform: translateX(-50%);
     color: var(--saito-primary);
     font-size: smaller;
     padding: 0 0.5rem;
-}
-
-.tweet-text.preview {
-    margin-bottom: 3rem;
+    transition: all 1s ease;
 }
 
 .tweet-text.preview::before {
@@ -98,21 +100,25 @@
     height: 27.1rem;
     width: 100%;
     background: linear-gradient(180deg, transparent, #ffff);
+    transition: all 2s ease;
 }
 
 .tweet-text.preview::after {
     content: "View full tweet";
     position: absolute;
-    bottom: 1rem;
-    left: 0;
+    bottom: 5rem;
     color: var(--saito-primary);
     font-size: smaller;
     background: #fff;
     height: 3rem;
-    width: 100%;
     z-index: 999;
     text-align: center;
     line-height: 2rem;
+    padding: 0.3rem 1rem;
+    border-radius: var(--saito-border-radius);
+    left: 50%;
+    transform: translateX(-50%);
+    transition: all 1s ease;
 }
 
 .tweet-controls {

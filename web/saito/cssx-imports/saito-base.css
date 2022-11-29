@@ -17,6 +17,7 @@
 /* @custom-media --breakpoint-xl (max-width: 1920px);
 @custom-media --breakpoint-lg (max-width: 1280px);
 @custom-media --breakpoint-md (max-width: 768px);
+@custom-media --breakpoint-md (max-width: 590px);
 @custom-media --breakpoint-sm (max-width: 375px); */
 
 body {
@@ -146,6 +147,11 @@ Scrollbars
   border-radius: 1rem;
 }
 
+/* utils */
+
+.saito-deemphasize {
+  opacity: 0.66;
+}
 /* ----------------------------------------------------------------
 Media Queries
 -----------------------------------------------------------------*/

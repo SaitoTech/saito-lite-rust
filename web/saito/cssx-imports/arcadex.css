@@ -1,0 +1,134 @@
+/*  Appspace */
+.arcade-tile {
+  width: 100%;
+  overflow-y: hidden;
+  border: solid 1px #c89af6;
+  background-size: cover;
+  background-position: center;
+  height: fit-content;
+}
+
+.invite-tile-wrapper {
+  width: 100%;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 11em auto auto 11em;
+  overflow: hidden;
+  height: 11.2rem;
+}
+
+.game-inset-img {
+  background-size: cover;
+  background-position: center;
+  border: 1px solid darkorange;
+  height: calc(100% - 1rem);
+  margin: 0.5rem;
+}
+
+.game-name {
+  margin-left: 0.2em;
+  font-size: 2.5em;
+  font-weight: bold;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+
+.game-short-description .key {
+  display: inline-block;
+}
+
+.game-short-description .value {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.game-short-description {
+  display: grid;
+  height: 100%;
+  align-content: center;
+  justify-items: start;
+  margin-right: 0.4em;
+  font-size: 1em;
+  overflow: auto;
+  background-color: #0005;
+  color: white;
+  padding: 0.5rem;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  font-size: 1.2em;
+  height: 2.4em;
+  border-radius: 3px;
+}
+
+.identicon {
+  border: 1px solid indigo;
+  width: 100%;
+  height: 100%;
+  max-width: 2em;
+  min-width: 2em;
+}
+
+.player-slot {
+  background-color: #8884;
+  width: 2em;
+  height: 2em;
+  margin: 0.2em 0.2em;
+  float: left;
+  position: relative;
+}
+
+.invite-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.invite-tile-wrapper .tiptext {
+  top: 0;
+  left: 100%;
+  background-color: #444a;
+  color: #efefef !important;
+  width: fit-content;
+  display: none;
+  border: unset;
+}
+
+
+/*  Right sidebar */
+
+.arcade-leaderboard {
+  padding: 0 0.5rem 0 0.9rem;
+}
+
+.arcade-leaderboard .saito-table-row {
+  margin: 0.4rem 0;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr min-content;
+}
+
+.arcade-leaderboard .saito-table-row .me::before {
+  content: "Me: ";
+}
+
+.arcade-leaderboard .saito-table-row:hover {
+  color: black;
+  background: ghostwhite;
+}
+
+@media screen and (max-width: 590px) {
+  .invite-tile-wrapper {
+    grid-template-columns: 15rem auto auto;
+  }
+  .game-short-description {
+    display: none;
+  }
+}
