@@ -49,6 +49,8 @@ font imports
   --saito-box-padding: 3rem 2rem; 
   --saito-profile-background: #fff;
   --saito-border-color: #c5c5c5bb;
+  --saito-border-color-dark: #a5a5a5bb;
+  --saito-border-color-highlight: #f71f3d;
 
   --saito-border: 1px solid #c5c5c5bb;
 
