@@ -12,39 +12,49 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
   let apparent_replies = tweet.children.length;
   if (tweet.num_replies > apparent_replies) { apparent_replies = tweet.num_replies; }
 
-  if (typeof tweet.tx.msg.data.images != 'undefined' && tweet.tx.msg.data.images.length > 0) {
-    let imgs = tweet.tx.msg.data.images;
-    tweet_img += `<div class="redsquare-image-container" data-img-count="${imgs.length}">`;
-    let img_class = (imgs.length > 1) ? 'tweet-multiple-img' : '';
-    for (let i = 0; i < imgs.length; i++) {
-      tweet_img += `<div data-index='${i+1}'  data-id='${tweet.tx.transaction.sig}' id='tweet-img-${tweet.tx.transaction.sig}' class='${img_class} tweet-img tweet-img-${tweet.tx.transaction.sig} ' style="background-image: url(${imgs[i]});"></div>`;
+  try {
+    if (typeof tweet.tx.msg.data.images != 'undefined' && tweet.tx.msg.data.images.length > 0) {
+      let imgs = tweet.tx.msg.data.images;
+      tweet_img += `<div class="redsquare-image-container" data-img-count="${imgs.length}">`;
+      let img_class = (imgs.length > 1) ? 'tweet-multiple-img' : '';
+      for (let i = 0; i < imgs.length; i++) {
+        tweet_img += `<div data-index='${i + 1}'  data-id='${tweet.tx.transaction.sig}' id='tweet-img-${tweet.tx.transaction.sig}' class='${img_class} tweet-img tweet-img-${tweet.tx.transaction.sig} ' style="background-image: url(${imgs[i]});"></div>`;
+      }
+      tweet_img += `</div>`;
     }
-    tweet_img += `</div>`;
+  } catch (err) {
+    console.log("Tweet render failed with error: " + err);
   }
-  if (typeof tweet.text != 'undefined' && tweet.text != "") {
-    tweet_text = tweet.text;
+  try {
+    if (typeof tweet.text != 'undefined' && tweet.text != "") {
+      tweet_text = tweet.text;
+    }
+  } catch (err) {
+    console.log("Tweet render failed with error: " + err);
   }
-  if (tweet.youtube_id != null) {
-    youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
+  try {
+    if (tweet.youtube_id != null) {
+      youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
+    }
+  } catch (err) {
+    console.log("Tweet render failed with error: " + err);
   }
+  try {
+    if (tweet.retweet_html != null) {
+      link_preview = tweet.retweet_html;
+    } else {
 
+      if (tweet.link_properties != null) {
 
-  if (tweet.retweet_html != null) {
-    link_preview = tweet.retweet_html;
-  } else {
-
-    if (tweet.link_properties != null) {
-
-      //
-      // if link properties
-      //
-      try {
-      if (typeof tweet.link_properties != 'undefined') {
-        if (tweet.link_properties['og:exists'] !== false) {
-          let d = tweet.link_properties;
-          if (d['og:url'] != '' && d['og:image'] != '') {
-            let link = new URL(d['og:url']);
-            link_preview = `
+        //
+        // if link properties
+        //
+        if (typeof tweet.link_properties != 'undefined') {
+          if (tweet.link_properties['og:exists'] !== false) {
+            let d = tweet.link_properties;
+            if (d['og:url'] != '' && d['og:image'] != '') {
+              let link = new URL(d['og:url']);
+              link_preview = `
                         <a target="_blank" class="saito-og-link" href="${d['og:url']}">
                         <div class="preview-container">
                             <div class='preview-img' style="background: url(${d['og:image']})"></div>
@@ -56,14 +66,15 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
                         </div>
                         </a>
                         `;
+            }
           }
         }
       }
-      } catch (err) {
-console.log("Error processing image/link: " + err);
-      }
     }
+  } catch (err) {
+    console.log("Error processing image/link: " + err);
   }
+
 
   let dt = app.browser.formatDate(tweet.tx.transaction.ts);
   let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
