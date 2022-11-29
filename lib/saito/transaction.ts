@@ -77,12 +77,8 @@ class Transaction {
           if (buffer.byteLength === 0) {
             this.msg = {};
           } else {
-            try {
-              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-              this.msg = JSON.parse(reconstruct);
-            } catch (error) {
-              console.error(error);
-            }
+            const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+            this.msg = JSON.parse(reconstruct);
           }
         } catch (err) {
           console.log("failed converting buffer in tx : ", this.transaction);
