@@ -3,6 +3,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoMain = require("./lib/main");
 const SaitoMenu = require("./lib/menu");
+const Tweet = require("./lib/tweet");
 
 class RedSquare extends ModTemplate {
 
@@ -70,16 +71,73 @@ class RedSquare extends ModTemplate {
       this.header = new SaitoHeader(this.app, this);
       this.main = new SaitoMain(this.app, this);
       this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
+      //this.tweet = new Tweet(this.app, this, '.saito-main');
 
       this.addComponent(this.header);
       this.addComponent(this.main);
       this.addComponent(this.menu);
+      //this.addComponent(this.tweet);
     }
 
     super.render();
   }
 
   async onConfirmation(blk, tx, conf, app) {
+  }
+
+  async onPeerHandshakeComplete(app, peer) {
+
+    redsquare_self = this;
+   if (app.BROWSER == 1) {
+
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC;`;
+      
+
+      app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
+        "RedSquare",
+        sql,
+         (res) => {
+
+          // console.log('rows');
+          // console.log(res);
+
+          if (res.rows) {
+            
+
+            res.rows.forEach(row => {
+            
+                let tx = new saito.default.transaction(JSON.parse(row.tx));
+                if (!tx.optional) { tx.optional = {}; }
+                tx.optional.parent_id = tx.msg.parent_id;
+                tx.optional.thread_id = tx.msg.thread_id;
+                tx.optional.num_replies = row.num_replies;
+                tx.optional.num_retweets = row.num_retweets;
+                tx.optional.num_likes = row.num_likes;
+                tx.optional.flagged = row.flagged;
+                tx.optional.link_properties = {};
+                try {
+                  let x = JSON.parse(row.link_properties);
+                  tx.optional.link_properties = x;
+                } catch (err) { }
+                let txmsg = tx.returnMessage();
+
+                // console.log("*** TX ********");
+                // console.log(tx);
+
+                let tweet = new Tweet(app, redsquare_self, '.saito-main', tx);
+                tweet.render();
+
+                //this.addTweetFromTransaction(app, mod, tx);
+              
+            });
+
+          }
+
+        }
+      );
+      
+
+    }
   }
 
 
