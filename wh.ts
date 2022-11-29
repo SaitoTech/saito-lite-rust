@@ -143,6 +143,10 @@ async function initCLI() {
               if (blk.transactions[i].msg.module) {
                 tmodule = blk.transactions[i].msg.module;
               }
+	      let tx_from = "";
+	      if (blk.transactions[i].transaction.from.length > 0) {
+		      tx_from = blk.transactions[i].transaction.from[0].add;
+	      }
               let params = {
                 $address: blk.transactions[i].transaction.to[ii].add,
                 $amt: blk.transactions[i].transaction.to[ii].amt,
@@ -156,7 +160,7 @@ async function initCLI() {
                 $ts: blk.transactions[i].transaction.ts,
                 $block_ts: blk.block.ts,
                 $type: ttype,
-                $tx_from: blk.transactions[i].transaction.from[0].add,
+                $tx_from: tx_from,
                 $tx_to: blk.transactions[i].transaction.to[ii].add,
                 $name: tname,
                 $module: tmodule,

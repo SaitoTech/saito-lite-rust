@@ -30,7 +30,7 @@ class Server {
     publickey: "",
     protocol: "",
     name: "",
-    block_fetch_url : "",
+    block_fetch_url: "",
     endpoint: {
       host: "",
       port: 0,
@@ -73,7 +73,10 @@ class Server {
 
     server.on("connection", (wsocket, request) => {
       //console.log("new connection received by server", request);
-      this.app.network.addRemotePeer(wsocket).then(r => {return;});
+      this.app.network.addRemotePeer(wsocket).catch((error) => {
+        console.log("failed adding remote peer");
+        console.error(error);
+      });
     });
   }
 
@@ -143,7 +146,7 @@ class Server {
     url += "://";
     url += this.server.endpoint.host;
     url += ":";
-    url += this.server.endpoint.port
+    url += this.server.endpoint.port;
     url += "/block/";
 
     this.server.block_fetch_url = url;
@@ -303,7 +306,7 @@ class Server {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize());//.toString("base64");
+          const buffer = Buffer.from(liteblock.serialize()); //.toString("base64");
 
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.write(buffer, "utf8");
@@ -336,7 +339,7 @@ class Server {
           });
 
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize())//, "binary").toString("base64");
+          const buffer = Buffer.from(liteblock.serialize()); //, "binary").toString("base64");
           res.write(buffer);
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.end();
@@ -366,11 +369,18 @@ class Server {
           return res.sendStatus(404); // Not Found
         }
         let buffer = block.serialize();
-        let bufferString = Buffer.from(buffer);//.toString("base64");
+        let bufferString = Buffer.from(buffer); //.toString("base64");
 
         res.status(200);
-        console.log("serving block : " + hash + " , buffer size : " + buffer.length);
+        console.log("serving block . : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
+
+        // let block1 = new Block(this.app);
+        // block1.deserialize(buffer);
+        // block1.generateMetadata();
+        // if (block1.returnHash() !== hash) {
+        //   console.log("error in buffer");
+        // }
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
       }
@@ -404,43 +414,10 @@ class Server {
         buffer = Buffer.from(buffer, "utf-8");
 
         res.status(200);
-        console.log("serving block : " + hash + " , buffer size : " + buffer.length);
+        console.log("serving block .. : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
-      }
-    });
-
-    app.get("/json-block/:hash", async (req, res) => {
-      try {
-        const hash = req.params.hash;
-        console.debug("server giving out block : " + hash);
-
-        if (!hash) {
-          console.warn("hash not provided");
-          return res.sendStatus(400); // Bad request
-        }
-
-        const block = await this.app.blockchain.loadBlockAsync(hash);
-        if (!block) {
-          console.warn("block not found for : " + hash);
-          return res.sendStatus(404); // Not Found
-        }
-
-        let block_to_return = { block: null, transactions: null };
-
-        block_to_return.block = JSON.parse(JSON.stringify(block.block));
-        block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
-
-        let buffer = JSON.stringify(block_to_return).toString("utf-8");
-        console.log("buffer is created!");
-        buffer = Buffer.from(buffer, "utf-8");
-
-        res.status(200);
-        console.log("serving block : " + hash + " , buffer size : " + buffer.length);
-        res.end(buffer);
-      } catch (err) {
-        console.log("ERROR: server cannot feed out block ");
       }
     });
 

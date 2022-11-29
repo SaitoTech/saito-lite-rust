@@ -51,7 +51,7 @@ class Network {
     //
     this.downloads = {};
     this.downloads_hmap = {};
-    this.downloading_active = 0;
+    this.downloading_active = false;
     this.block_sample_size = 15;
 
     //
@@ -309,7 +309,12 @@ class Network {
         const block = new Block(this.app);
         block.deserialize(buffer);
         console.debug("block deserialized : " + block_hash);
+        block.generateMetadata();
         await block.generateConsensusValues();
+        console.assert(
+          block_hash === block.hash,
+          `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
+        );
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;
@@ -350,9 +355,13 @@ class Network {
         if (this.debugging) {
           console.log("connected to network", event);
         }
-        this.app.connection.emit("peer_connect", peer);
-        this.app.connection.emit("connection_up", peer);
-        this.app.network.propagateServices(peer);
+        try {
+          this.app.connection.emit("peer_connect", peer);
+          this.app.connection.emit("connection_up", peer);
+          this.app.network.propagateServices(peer);
+        } catch (error) {
+          console.error(error);
+        }
       };
       peer.socket.onclose = (event) => {
         if (this.debugging) {
@@ -371,15 +380,19 @@ class Network {
         }
       };
       peer.socket.onmessage = async (event) => {
-        const data = new Uint8Array(await event.data.arrayBuffer());
-        // console.log("data buffer 2 first: ", data[0]);
-        const api_message = this.app.networkApi.deserializeAPIMessage(data);
-        if (api_message.message_type == MessageType.Result) {
-          this.app.networkApi.receiveAPIResponse(api_message);
-        } else if (api_message.message_type == MessageType.Error) {
-          this.app.networkApi.receiveAPIError(api_message);
-        } else {
-          await this.receiveRequest(peer, api_message);
+        try {
+          const data = new Uint8Array(await event.data.arrayBuffer());
+          // console.log("data buffer 2 first: ", data[0]);
+          const api_message = this.app.networkApi.deserializeAPIMessage(data);
+          if (api_message.message_type == MessageType.Result) {
+            this.app.networkApi.receiveAPIResponse(api_message);
+          } else if (api_message.message_type == MessageType.Error) {
+            this.app.networkApi.receiveAPIError(api_message);
+          } else {
+            await this.receiveRequest(peer, api_message);
+          }
+        } catch (error) {
+          console.error(error);
         }
       };
 
@@ -403,7 +416,11 @@ class Network {
       // default ws websocket
       //
       peer.socket.on("open", async (event) => {
-        this.app.network.propagateServices(peer);
+        try {
+          this.app.network.propagateServices(peer);
+        } catch (error) {
+          console.error(error);
+        }
       });
       peer.socket.on("close", (event) => {
         if (this.debugging) {
@@ -428,14 +445,17 @@ class Network {
       //   return;
       // }
       // console.log("data buffer 1 first: ", data[0]);
-
-      const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
-      if (api_message.message_type == MessageType.Result) {
-        this.app.networkApi.receiveAPIResponse(api_message);
-      } else if (api_message.message_type == MessageType.Error) {
-        this.app.networkApi.receiveAPIError(api_message);
-      } else {
-        await this.receiveRequest(peer, api_message);
+      try {
+        const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
+        if (api_message.message_type == MessageType.Result) {
+          this.app.networkApi.receiveAPIResponse(api_message);
+        } else if (api_message.message_type == MessageType.Error) {
+          this.app.networkApi.receiveAPIError(api_message);
+        } else {
+          await this.receiveRequest(peer, api_message);
+        }
+      } catch (error) {
+        console.error(error);
       }
     });
 
@@ -930,6 +950,65 @@ class Network {
       //   //await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
       //   break;
 
+      case MessageType.ApplicationTransaction: {
+        tx = new Transaction();
+        tx.deserialize(this.app, message.message_data, 0);
+
+        let txmsg = tx.returnMessage();
+        if (!txmsg) {
+          break;
+        }
+        if (!txmsg.request) {
+          break;
+        }
+        if (!txmsg.data) {
+          break;
+        }
+
+        let reconstructed_message = txmsg.request;
+        let reconstructed_data = txmsg.data;
+
+        const msg: any = {};
+        msg.request = "";
+        msg.data = {};
+
+        if (reconstructed_message) {
+          msg.request = reconstructed_message;
+        }
+        if (reconstructed_data) {
+          msg.data = reconstructed_data;
+        }
+        const mycallback = function (response_object) {
+          peer.sendResponse(
+            message.message_id,
+            Buffer.from(JSON.stringify(response_object), "utf-8")
+          );
+        };
+
+        switch (message.message_type) {
+          default:
+            if (reconstructed_data) {
+              if (reconstructed_data.transaction) {
+                if (reconstructed_data.transaction.m) {
+                  // backwards compatible - in case modules try the old fashioned way
+                  if (msg.data.transaction.m.byteLength === 0) {
+                    msg.data.transaction.msg = {};
+                  } else {
+                    msg.data.transaction.msg = JSON.parse(
+                      this.app.crypto.base64ToString(
+                        Buffer.from(msg.data.transaction.m).toString("base64")
+                      )
+                    );
+                  }
+                  msg.data.msg = msg.data.transaction.msg;
+                }
+              }
+            }
+            await this.app.modules.handlePeerRequest(msg, peer, mycallback);
+        }
+        break;
+      }
+
       case MessageType.ApplicationMessage: {
         let mdata;
         let reconstructed_obj;
@@ -1065,7 +1144,7 @@ class Network {
   //
   // propagate block
   //
-  propagateBlock(blk, peer = null) {
+  propagateBlock(blk: Block | null, peer = null) {
     if (this.app.BROWSER) {
       return;
     }
@@ -1146,6 +1225,14 @@ class Network {
   //
   propagateTransaction(tx: Transaction) {
     if (tx === null) {
+      return;
+    }
+    if (!tx.transaction) {
+      console.log("TX not found in propagate transaction");
+      return;
+    }
+    if (!tx.transaction.from) {
+      console.log("TX FROM not found in propagate transaction");
       return;
     }
     if (!tx.is_valid) {
@@ -1229,7 +1316,7 @@ class Network {
     });
   }
 
-  requestBlockchain(peer = null) {
+  requestBlockchain(peer: Peer | null = null) {
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;
@@ -1290,6 +1377,33 @@ class Network {
       for (let x = this.peers.length - 1; x >= 0; x--) {
         this.peers[x].sendRequest(message, data);
       }
+    }
+  }
+
+  sendTransaction(tx: any = "", peer: Peer = null) {
+    if (peer !== null) {
+      peer.sendTransactionWithCallback(tx);
+    } else {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        this.peers[x].sendTransactionWithCallback(tx);
+      }
+    }
+  }
+
+  //
+  // a request formatted as a transaction with request / data (tx)
+  //
+  sendTransactionWithCallback(tx: any = "", callback, peer = null) {
+    if (peer !== null) {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        if (this.peers[x] === peer) {
+          this.peers[x].sendTransactionWithCallback(tx, callback);
+        }
+      }
+      return;
+    }
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendTransactionWithCallback(tx, callback);
     }
   }
 

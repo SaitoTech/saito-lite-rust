@@ -78,16 +78,10 @@ class Transaction {
             this.msg = {};
           } else {
             try {
-              const reconstruct = this.base64ToString(
-                Buffer.from(this.transaction.m).toString("base64")
-              );
+              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
               this.msg = JSON.parse(reconstruct);
             } catch (error) {
-              console.log("failed parsing the msg as base64. trying as a utf8");
               console.error(error);
-
-              const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
-              this.msg = JSON.parse(reconstruct);
             }
           }
         } catch (err) {
@@ -256,13 +250,10 @@ class Transaction {
         if (this.transaction.m.byteLength === 0) {
           this.msg = {};
         } else {
-          const reconstruct = app.crypto.base64ToString(
-            Buffer.from(this.transaction.m).toString("base64")
-          );
+          const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
           this.msg = JSON.parse(reconstruct);
         }
       }
-      //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
     } catch (err) {
       //console.log("buffer length = " + this.transaction.m.byteLength);
       //console.error("error trying to parse this.msg: ", err);
@@ -349,7 +340,7 @@ class Transaction {
     return this.returnSlipsTo(receiverPublicKey).length > 0;
   }
 
-  onChainReorganization(app: Saito, lc, block_id: bigint) {
+  onChainReorganization(app: Saito, lc: boolean, block_id: bigint) {
     let input_slip_value = 1;
     let output_slip_value = 0;
 
@@ -435,7 +426,7 @@ class Transaction {
 
     try {
       if (this.transaction.m && this.transaction.m.byteLength > 0) {
-        const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString("base64"));
+        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
         this.msg = JSON.parse(reconstruct);
       } else {
         this.msg = {};
@@ -450,7 +441,7 @@ class Transaction {
     return this.msg;
   }
 
-  returnPaymentTo(publickey: string) {
+  returnPaymentTo(publickey: string): string {
     const slips = this.returnSlipsToAndFrom(publickey);
     let x = BigInt(0);
     for (let v = 0; v < slips.to.length; v++) {
@@ -461,7 +452,7 @@ class Transaction {
     return x.toString();
   }
 
-  returnRoutingWorkAvailableToPublicKey() {
+  returnRoutingWorkAvailableToPublicKey(): bigint {
     let uf = this.returnFeesTotal();
     for (let i = 0; i < this.path.length; i++) {
       let d = 1;
@@ -473,7 +464,7 @@ class Transaction {
     return uf;
   }
 
-  returnSignature(app: Saito, force = 0) {
+  returnSignature(app: Saito, force = 0): string {
     if (this.transaction.sig !== "" && force != 1) {
       return this.transaction.sig;
     }
@@ -527,10 +518,10 @@ class Transaction {
     return x;
   }
 
-  returnWinningRoutingNode(random_number: string) {
+  returnWinningRoutingNode(random_number: string): string {
     //
     // if there are no routing paths, we return the sender of
-    // the payment, as they're got all of the routing work by
+    // the payment, as they're got all the routing work by
     // definition. this is the edge-case where sending a tx
     // can make you money.
     //
@@ -741,10 +732,7 @@ class Transaction {
       if (Object.keys(this.msg).length === 0) {
         this.transaction.m = Buffer.alloc(0);
       } else {
-        this.transaction.m = Buffer.from(
-          app.crypto.stringToBase64(JSON.stringify(this.msg)),
-          "base64"
-        );
+        this.transaction.m = Buffer.from(JSON.stringify(this.msg), "utf-8");
       }
     }
   }
@@ -761,7 +749,7 @@ class Transaction {
     );
   }
 
-  validate(app: Saito) {
+  validate(app: Saito): boolean {
     //
     // Fee Transactions are validated in the block class. There can only
     // be one per block, and they are checked by ensuring the transaction hash
@@ -897,7 +885,7 @@ class Transaction {
     return true;
   }
 
-  validateRoutingPath(app: Saito) {
+  validateRoutingPath(app: Saito): boolean {
     console.log("JS needs to validate routing paths still...");
 
     if (!this.path) {
@@ -908,7 +896,6 @@ class Transaction {
         Buffer.from(this.transaction.sig, "hex"),
         Buffer.from(app.crypto.fromBase58(this.path[i].to), "hex"),
       ]);
-      let hash = app.crypto.hash(buffer);
 
       if (!app.crypto.verifyHash(buffer, this.path[i].sig, this.path[i].from)) {
         console.warn(`transaction path is not valid`);
@@ -925,7 +912,7 @@ class Transaction {
     return true;
   }
 
-  validateSignature(app: Saito) {
+  validateSignature(app: Saito): boolean {
     //
     // validate signature
     //
@@ -943,23 +930,24 @@ class Transaction {
     return true;
   }
 
-  generateMetadata(app: Saito, block_id: bigint, tx_ordinal: bigint) {
+  generateMetadata(app: Saito, block_id: bigint, tx_ordinal: bigint, block_hash: string) {
     for (let i = 0; i < this.transaction.from.length; i++) {
       this.transaction.from[i].generateKey(app);
     }
     for (let i = 0; i < this.transaction.to.length; i++) {
       this.transaction.to[i].block_id = block_id;
+      this.transaction.to[i].block_hash = block_hash;
       this.transaction.to[i].tx_ordinal = tx_ordinal;
       this.transaction.to[i].sid = i;
       this.transaction.to[i].generateKey(app);
     }
   }
 
-  generateMetadataCumulativeFees() {
+  generateMetadataCumulativeFees(): bigint {
     return BigInt(0);
   }
 
-  generateMetadataCumulativeWork() {
+  generateMetadataCumulativeWork(): bigint {
     return BigInt(0);
   }
 
@@ -972,11 +960,11 @@ class Transaction {
   }
 
   /* stolen from app crypto to avoid including app */
-  stringToBase64(str: string) {
+  stringToBase64(str: string): string {
     return Buffer.from(str, "utf-8").toString("base64");
   }
 
-  base64ToString(str: string) {
+  base64ToString(str: string): string {
     return Buffer.from(str, "base64").toString("utf-8");
   }
 }
