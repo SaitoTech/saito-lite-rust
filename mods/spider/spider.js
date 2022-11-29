@@ -121,13 +121,13 @@ class Spider extends GameTemplate {
               <div class='draw-pile'>New Game</div>
             </div>
             `;
-    console.log(html);
     return html;
   }
 
 
   /* Want to copy info from game.state.board onto DOM*/
   displayBoard() {
+    //console.log("REFRESH BOARD");
     if (this.browser_active == 0) { return; }
      
     for (let i = 0; i < 10; i++){
@@ -136,10 +136,10 @@ class Spider extends GameTemplate {
       let html = "";
       for (let j = 0; j < cardStack.length; j ++){
         let card = cardStack[j];
-        html += `<div class="card ${(this.isFaceDown(card))?"facedown":"flipped"}" id="${i}_${j+1}">${this.returnCardImageHTML(card)}</div>`;
+        html += `<div class="card ${(this.isFaceDown(card))?"facedown":"flipped"}" id="c${i}_${j+1}">${this.returnCardImageHTML(card)}</div>`;
       }
       if (!html){
-        html = `<div class="card empty_slot" id="${i}_0"></div>`
+        html = `<div class="card empty_slot" id="c${i}_0"></div>`
       }
       document.getElementById(divname).innerHTML = html;
         
@@ -430,35 +430,43 @@ class Spider extends GameTemplate {
   attachEventsToBoardAutomatic(){
     let spider_self = this;
     let selected_stack_size = 0;
+
     //Manipulate cards
     $('.card').off();
     $('.card').on('click', function(e) {
       e.stopPropagation();
 
-      let card_pos = $(this).attr("id");
-      
+      let card_pos = $(this).attr("id").replace("c","");
+
       selected_stack_size = spider_self.canSelectStack(card_pos);
+      
       if (selected_stack_size > 0){
-        for (let i = 0; i < 10; i++){
-          if (card_pos[0] != i){  
-            if (spider_self.canMoveStack(card_pos, i.toString())){
-              spider_self.untoggleAll();
-              spider_self.updateScore();
-              spider_self.prependMove(`move\t${card_pos}\t${i}\t${selected_stack_size}`);
-              spider_self.moveStack(card_pos, i.toString());
-              let key = spider_self.revealCard(card_pos[0]); 
-              if (key){
-                spider_self.prependMove(`flip\t${card_pos[0]}\t${key}`);  
-              }
-              spider_self.displayBoard();
-              spider_self.checkStack(i);
-              return;
-            }
-          }   
+
+        for (let i = 1; i < 10; i++){
+          let colInd = (parseInt(card_pos[0]) + i) % 10
+          if (spider_self.canMoveStack(card_pos, colInd.toString())){
+            spider_self.commitMove(card_pos, colInd, selected_stack_size);
+            return;
+          }
         }
       }
 
     });
+
+  }
+
+  commitMove(source, target, count){
+
+    this.untoggleAll();
+    this.updateScore();
+    this.prependMove(`move\t${source}\t${target}\t${count}`);
+    this.moveStack(source, target.toString());
+
+    let key = this.revealCard(source[0]); 
+    if (key){
+      this.prependMove(`flip\t${source[0]}\t${key}`);  
+    }
+    this.checkStack(target);
 
   }
 
@@ -469,8 +477,8 @@ class Spider extends GameTemplate {
     let selected_stack_size = 0;
    
 
-    $(".card-stack").off();
-    $(".card-stack").on('click', function(){
+    $(".card-stack-array").off();
+    $(".card-stack-array").on('click', function(){
       spider_self.untoggleAll();
       selected_stack = null;
     });
@@ -480,36 +488,18 @@ class Spider extends GameTemplate {
     $('.card').on('click', function(e) {
       e.stopPropagation();
 
-      let card_pos = $(this).attr("id");
+      let card_pos = $(this).attr("id").replace("c","");
 
       if (selected_stack){
         
         //Deselect/Change
         if (card_pos[0] == selected_stack[0]){ // Same stack
           spider_self.untoggleAll();
-          if (card_pos == selected_stack){
-            selected_stack = null;
-          }else{
-            //Can we select this stack
-            selected_stack_size = spider_self.canSelectStack(card_pos);
-            if (selected_stack_size > 0){
-              selected_stack = card_pos;
-              spider_self.toggleCard(selected_stack);
-            }
-          }
+          selected_stack = null;
         }else{
           //Can we move the selected_stack to this place
           if (spider_self.canMoveStack(selected_stack, card_pos)){
-            spider_self.untoggleAll();
-            spider_self.updateScore();
-            spider_self.prependMove(`move\t${selected_stack}\t${card_pos[0]}\t${selected_stack_size}`);
-            spider_self.moveStack(selected_stack, card_pos);
-            let key = spider_self.revealCard(selected_stack[0]); 
-            if (key){
-              spider_self.prependMove(`flip\t${selected_stack[0]}\t${key}`);  
-            }
-            spider_self.displayBoard();
-            spider_self.checkStack(parseInt(card_pos[0]));
+            spider_self.commitMove(selected_stack, parseInt(card_pos[0]), selected_stack_size);
           }else{
             spider_self.displayWarning("Invalid Move");
           }            
@@ -519,7 +509,7 @@ class Spider extends GameTemplate {
         selected_stack_size = spider_self.canSelectStack(card_pos);
         if (selected_stack_size > 0){
           selected_stack = card_pos;
-          spider_self.toggleCard(selected_stack);
+          spider_self.toggleCard(selected_stack, e);
         }
       }
     });
@@ -558,7 +548,6 @@ class Spider extends GameTemplate {
   Can click the column to move the stack
   */
   canMoveStack(card, slot) {
-    
     let indices = slot.split("_");
     let stackNum = parseInt(indices[0]);
 
@@ -595,6 +584,7 @@ class Spider extends GameTemplate {
       this.game.state.board[newstackNum].push(c);
     }
           
+    this.displayBoard();
     this.game.state.moves++;
   }
 
@@ -605,6 +595,10 @@ class Spider extends GameTemplate {
       let topCard = this.game.state.board[stackNum].pop();
       if (this.isFaceDown(topCard)){
         this.game.state.board[stackNum].push(this.game.deck[0].cards[topCard]);
+        let index = `#c${stackNum}_${this.game.state.board[stackNum].length}`; 
+        $(index).append($(this.returnCardImageHTML(this.game.deck[0].cards[topCard]))).delay(30).queue(function (){ 
+          $(index).removeClass("facedown").addClass("flipped").dequeue(); 
+        });
         return topCard;
       }else{
         this.game.state.board[stackNum].push(topCard);
@@ -650,6 +644,7 @@ class Spider extends GameTemplate {
       this.updateScore(50);
       await this.animateStackVictory(stackNum);
       this.game.state.completed_stacks.push(suit);
+      this.displayBoard();
       console.log(this.game.state.completed_stacks);
       this.prependMove(`complete\t${stackNum}\t${suit}`);
       let temp = this.revealCard(stackNum);
@@ -661,7 +656,7 @@ class Spider extends GameTemplate {
         this.endTurn();
       }
     }
-    this.displayBoard();
+    
   }
 
 
@@ -669,8 +664,8 @@ class Spider extends GameTemplate {
     const timeout = ms => new Promise(res => setTimeout(res, ms));
     for (let i = 0; i < 10; i++){
       this.revealCard(i);
-      await timeout(150);
-      this.displayBoard();
+      await timeout(250);
+      //this.displayBoard();
     }
   }
 
@@ -741,45 +736,41 @@ class Spider extends GameTemplate {
     return false;
   }
 
-  toggleCard(index) {
+  toggleCard(index, e) {
     let coord = index.split("_");
     let stack = parseInt(coord[0]);
 
+    this.source = "#card-stack"+coord[0];
+
+    if (!document.getElementById("helper")){
+      $(".gameboard").append(`<div id="helper" class="card-stack"></div>`);      
+    }
+
+    let offsetY = e.clientY - Math.round(e.currentTarget.getBoundingClientRect().y) - 10;
+    let offsetX = e.clientX - Math.round(e.currentTarget.getBoundingClientRect().x) - 10;
+
+    $("#helper").css({ top: e.clientY - offsetY, left: e.clientX - offsetX });
+
     for (let i = parseInt(coord[1]); i <= this.game.state.board[stack].length; i++){
-      let divname = '#' + stack + "_" + i;
-      //console.log(divname);  
+      let divname = '#c' + stack + "_" + i;
       $(divname).addClass("selected");
-    }    
+      $("#helper").append($(divname));
+    }
+
+    $(document).on("mousemove", function (e) {
+        $("#helper").css({ top: e.clientY - offsetY, left: e.clientX - offsetX });
+    });
+
+    
   }
 
   untoggleAll(){
     $(".selected").removeClass("selected");
+    $(this.source).append($("#helper").children());
+    $("#helper").remove();
+    $(document).off();
   }
 
-  untoggleCard(index) {
-    let coord = index.split("_");
-    let stack = parseInt(coord[0]);
-
-    for (let i = parseInt(coord[1]); i < this.game.state.board[stack].length; i++){
-      let divname = '#' + stack + "_" + i;  
-      $(divname).removeClass("selected");
-    }  
-    
-  }
-
-  hideCard(divname){
-    divname = '#' + divname;
-    $(divname).css('opacity', '0.0'); 
-  }
-
-  
-
-  parseIndex(slot){
-    let coords = slot.split("_");
-    let x = coords[0].replace("row","");
-    let y = coords[1].replace("slot","");
-    return 10*(parseInt(x)-1)+parseInt(y)-1;
-  }
 
 
   handleGameLoop(msg=null) {
@@ -867,8 +858,8 @@ class Spider extends GameTemplate {
       if (mv[0] === "flip"){
         this.game.queue.splice(qe, 1);
         if (this.game.player !== 1){
-          this.revealCard(mv[1]);
           this.displayBoard();
+          this.revealCard(mv[1]);
         }
       }
 
@@ -889,7 +880,6 @@ class Spider extends GameTemplate {
 
         if (this.game.player !== 1){
           this.moveStack(card, emptySlot);
-          this.displayBoard();
         }
 
       }
@@ -923,14 +913,15 @@ class Spider extends GameTemplate {
     console.log(mv);
     let pseudoSelect = this.game.state.board[slot].length - stackSize + 1;
     this.moveStack(`${slot}_${pseudoSelect}`, original_card_pos);
-    this.displayBoard();
   }
 
 
 
   returnCardImageHTML(name) {
-    if ('SHCD'.includes(name[0])) { return '<img src="/spider/img/cards/'+name+'.png" />';  }
-    else { return '<img src="/spider/img/cards/red_back.png" />';}
+    if ('SHCD'.includes(name[0])) { 
+      return `<img class="cardFront" src="/spider/img/cards/${name}.png" />
+              <img class="cardBack" src="/spider/img/cards/red_back.png" />`;
+    } else { return '<img class="cardBack" src="/spider/img/cards/red_back.png" />';}
   }
 
 
@@ -951,7 +942,7 @@ class Spider extends GameTemplate {
         }  
       }
     }
-    //console.log("Deck Length:"+Object.keys(deck).length);
+
     return deck;
    }
 
