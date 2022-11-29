@@ -85,6 +85,10 @@ class RedSquare extends ModTemplate {
   async onConfirmation(blk, tx, conf, app) {
   }
 
+
+  // temporary method to render tweet.js
+  // will be removed
+
   async onPeerHandshakeComplete(app, peer) {
 
     redsquare_self = this;
@@ -121,13 +125,8 @@ class RedSquare extends ModTemplate {
                 } catch (err) { }
                 let txmsg = tx.returnMessage();
 
-                // console.log("*** TX ********");
-                // console.log(tx);
-
                 let tweet = new Tweet(app, redsquare_self, '.saito-main', tx);
                 tweet.render();
-
-                //this.addTweetFromTransaction(app, mod, tx);
               
             });
 
