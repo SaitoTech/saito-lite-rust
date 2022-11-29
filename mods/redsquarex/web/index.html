@@ -169,13 +169,33 @@
             <div class="tweet-sidebar">
             </div>
             <div class="tweet-main">
-              <div class="tweet-text preview">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
+              <div class="tweet-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
                 asperiores dignissimos praesentium sit porro nisi blanditiis esse id vero ex quod, ipsam eveniet?
                 Officia, reprehenderit consectetur velit voluptatum non molestiae?
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
                 similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
                 nulla
                 rerum illum facere autem suscipit.<br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.
+                <br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.
+                <br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.
+                <br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.
+                <br>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
                 similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
                 nulla
@@ -312,7 +332,7 @@
             <div class="tweet-sidebar">
             </div>
             <div class="tweet-main">
-              <div class="tweet-text preview">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
+              <div class="tweet-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
                 asperiores dignissimos praesentium sit porro nisi blanditiis esse id vero ex quod, ipsam
                 eveniet?
                 Officia, reprehenderit consectetur velit voluptatum non molestiae?
@@ -360,7 +380,7 @@
             <div class="tweet-sidebar">
             </div>
             <div class="tweet-main">
-              <div class="tweet-text full">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
+              <div class="tweet-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
                 asperiores dignissimos praesentium sit porro nisi blanditiis esse id vero ex quod, ipsam
                 eveniet?
                 Officia, reprehenderit consectetur velit voluptatum non molestiae?
@@ -570,5 +590,22 @@
   </div>
 </body>
 <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
+<script>
+
+document.querySelectorAll(".tweet-text").forEach(el => {
+  if(el.clientHeight < el.scrollHeight) {
+    el.classList.add("preview");
+  }
+});
+
+document.querySelectorAll(".tweet-text.preview").forEach(el => {
+  el.addEventListener("click", e => {
+    e.target.classList.toggle("preview");
+    e.target.classList.toggle("full");
+  });
+});
+
+
+</script>
 
 </html>
