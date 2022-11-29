@@ -59,10 +59,18 @@ body {
   max-width: 1600px;
 }
 
+#helper{
+  position: absolute;
+  cursor: grabbing;
+  width: min(130px, calc(10vw - 10px));
+  pointer-events: none;
+}
 
 .card-stack{
   display: grid;
   grid-template-rows: repeat(auto-fit, min(0.7vw, 9px));
+  height: calc(100vh - 200px);
+
 }
 
 .spider-footer{
@@ -131,16 +139,30 @@ body {
   width: 100%;
 }
 
-.card img{
+.card{
   width: 100%;
+  position: relative;
+  perspective: 500px;
+  transform-style: preserve-3d;
 }
 
+.card img{
+  width: 100%;
+  position: absolute;
+  pointer-events: none;
+}
+
+.card-stack .card:last-child img{
+ pointer-events: unset; 
+} 
+
 .card.selected{
-  filter: brightness(0.75);
+  filter: brightness(0.85);
 }
 
 .card.flipped{
   grid-area: span 4;
+  cursor: grab;
 }
 
 .card.empty_slot{
@@ -148,6 +170,31 @@ body {
   border: 1px var(--saito-red) dashed;
   width: 100%;
 }
+
+
+.cardFront, .cardBack{
+  transition: transform .6s linear;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cardFront{
+  transform: rotateY(180deg);
+}
+
+.cardBack{
+  transform: rotateY(0deg);
+}
+
+.flipped .cardFront, .completed_card .cardFront{
+  transform: rotateY(0deg);
+}
+
+
+.flipped .cardBack, .completed_card .cardBack{
+  transform: rotateY(-180deg);
+}
+
 
 
 @media screen and (orientation: landscape) and (max-height: 600px) {

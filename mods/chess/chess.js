@@ -3,10 +3,10 @@ const saito = require("../../lib/saito/saito");
 const ChessGameRulesTemplate = require("./lib/chess-game-rules.template");
 const ChessGameOptions = require("./lib/chess-game-options.template");
 const ChessSingularGameOptions = require("./lib/chess-singular-game-options.template");
+const chess = require('./lib/chess.js');
+const chessboard = require('./lib/chessboard');
 
 var this_chess = null;
-var chess = null;
-var chessboard = null;
 
 class Chessgame extends GameTemplate {
 
@@ -180,8 +180,6 @@ class Chessgame extends GameTemplate {
       return;
     }
 
-    chess = require('./lib/chess.js');
-    chessboard = require('./lib/chessboard');
     this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
     this.engine = new chess.Chess();
 
@@ -191,12 +189,17 @@ class Chessgame extends GameTemplate {
       this.game.position = this.engine.fen();
     }
 
-    this.updateStatusMessage("White moves first");
-    if (this.game.target == this.game.player) {
-      this.setBoard(this.engine.fen());
-      if (this.useClock) { this.startClock(); }
-    } else {
+    if (this.game.over){
       this.lockBoard(this.engine.fen());
+    }else{
+      this.setBoard(this.engine.fen());      
+    }
+    
+    //
+    //game.target is initialized to 1, which is white (switched above if "player 1" wanted to be black)
+    //
+    if (this.game.target == this.game.player) {
+      if (this.useClock) { this.startClock(); }
     }
 
     //Plug Opponent Information into the Controls 
@@ -288,26 +291,26 @@ class Chessgame extends GameTemplate {
     //
     let data = JSON.parse(msg.extra.data);
     this.game.position = data.position;
+
     this.game.target = msg.extra.target;
+
+    this.updateLog(data.move);
 
     if (this.browser_active == 1) {
       
-      this.updateLog(data.move);
+      this.updateBoard(this.game.position);
+      //this.setBoard(this.game.position);
 
       if (msg.extra.target == this.game.player) {
-        this.setBoard(this.game.position);
         if (this.useClock) { this.startClock(); }
         if (this.engine.in_checkmate() === true) {
           this.game.over = 1;
           this.resignGame(this.game.id, "checkmate");
-          this.lockBoard(this.game.position);
           return 0;
         }else if (this.engine.in_draw() === true) {
           this.tieGame(this.game.id, "draw");
           return 0;
         }
-      } else {
-        this.lockBoard(this.game.position);
       }
     }
     this.updateStatusMessage();
@@ -359,7 +362,6 @@ class Chessgame extends GameTemplate {
         if (c) {
           this.game.over = 1;
         	this.resignGame(this.game.id, "resignation");
-          this.lockBoard(this.game.position);
         	//window.location.href = '/arcade';
         	return;
         }
@@ -400,10 +402,13 @@ class Chessgame extends GameTemplate {
 
     if (move_reject){
       move_reject.onclick = () => {
+        document.getElementById('buttons').style.display = "none";
         this.setBoard(this.game.position);
 
         move_accept.disabled = true;
         move_reject.disabled = true;
+
+        document.getElementById('promotion').style.display = "none";
       };
     }
     window.onresize = () => this.board.resize();
@@ -461,9 +466,19 @@ class Chessgame extends GameTemplate {
     
   };
 
+  updateBoard(position){
+    console.log("MOVING PIECE");
+
+    this.engine.load(position);
+    this.board.position(position, true);
+
+  }
+
   setBoard(position) {
 
-    this.game.moveStartPosition = position;
+    console.log("SETTING BOARD");
+
+    this.engine.load(position);
 
     if (this.board != undefined) {
       if (this.board.destroy != undefined) {
@@ -480,23 +495,23 @@ class Chessgame extends GameTemplate {
       onDrop: this.onDrop,
       onMouseoutSquare: this.onMouseoutSquare,
       onMouseoverSquare: this.onMouseoverSquare,
-      onSnapEnd: this.onSnapEnd,
-      onMoveEnd: this.onMoveEnd,
-      onChange: this.onChange
+      onChange: this.onChange,
+      moveSpeed: 400
     };
 
     if (this.browser_active == 1) {
       this.board = new chessboard('board', cfg);
-    }
-    this.engine.load(position);
 
-    if (this.game.player == 2 && this.browser_active == 1) {
-      this.board.orientation('black');
-    }
+      if (this.game.player == 2) {
+        this.board.orientation('black');
+      }
 
+    }
   }
 
   lockBoard(position) {
+
+    console.log("LOCKING BOARD");
 
     if (this.board != undefined) {
       if (this.board.destroy != undefined) {
@@ -524,7 +539,10 @@ class Chessgame extends GameTemplate {
   //////////////////
   onDragStart(source, piece, position, orientation) {
 
-    if (this_chess.engine.game_over() === true ||
+    if (this_chess.game.target !== this_chess.game.player){
+      return false;
+    }
+    if (this_chess.engine.game_over() === true || this_chess.game.over ||
       (this_chess.engine.turn() === 'w' && piece.search(/^b/) !== -1) ||
       (this_chess.engine.turn() === 'b' && piece.search(/^w/) !== -1)) {
       return false;
@@ -566,14 +584,9 @@ class Chessgame extends GameTemplate {
       promotion: piece
     });
 
-    //document.getElementById('promotion').style.display = "none";
-
-    this_chess.updateStatusMessage("Confirm Move to Send!");
-
     // legal move - make it
     this_chess.game.move += `${this_chess.pieces(move.piece)} - ${move.san}`;
-    this_chess.updateStatusMessage('Pawn promoted to ' + this_chess.pieces(piece) + '.');
-
+  
     if (this_chess.confirm_moves == 0){
       var data = {};
       data.white = this.game.white;
@@ -582,8 +595,10 @@ class Chessgame extends GameTemplate {
       data.position = this.engine.fen();
       data.move = this.game.move;
       this.endTurn(data);
+      this_chess.updateStatusMessage('Pawn promoted to ' + this_chess.pieces(piece) + '.');
     }else{
       document.getElementById('buttons').style.display = "flex";
+      this_chess.updateStatusMessage("Confirm Move to Send!");
     }
 
   };
@@ -631,10 +646,6 @@ class Chessgame extends GameTemplate {
     this_chess.removeGreySquares();
   };
 
-  onSnapEnd() {
-    this_chess.board.position(this_chess.engine.fen());
-  };
-
   removeGreySquares() {
     let grey_squares = document.querySelectorAll('#board .square-55d63');
     Array.from(grey_squares).forEach(square => square.style.background = '');
@@ -654,8 +665,6 @@ class Chessgame extends GameTemplate {
   };
 
   onChange(oldPos, newPos) {
-
-    this_chess.lockBoard(this_chess.engine.fen(newPos));
 
     if (this_chess.confirm_moves){
       document.getElementById('buttons').style.display = "flex";
