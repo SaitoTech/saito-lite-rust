@@ -771,8 +771,8 @@ class Network {
 
         for (let i = 0; i < syncobj.prehash.length; i++) {
           let buf = Buffer.concat([
-            Buffer.from(syncobj.prehash[i], "hex"),
             Buffer.from(previous_block_hash, "hex"),
+            Buffer.from(syncobj.prehash[i], "hex"),
           ]);
           let block_hash = this.app.crypto.hash(buf);
 
