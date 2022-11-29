@@ -7664,7 +7664,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 	game_mod.updateLog(faction + " gets 1 VP from Michael Servetus");
 	game_mod.game.state.events.michael_servetus = faction;
-	game_mod.game.queue.push("discard\tprotestant\tcard");
+	game_mod.game.queue.push("discard_random\tprotestant\t1");
 
       }
     }
@@ -7905,7 +7905,6 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	    }
 	  }
 	}
-
 
         let msg = "Steal Random Card from Which Faction?";
         let html = '<ul>';
@@ -8715,6 +8714,41 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	return 1;
+      }
+      onEvent : function(his_self, faction) {
+
+	his_self.game.queue.push("indulgence-vendor\t"+faction);
+	his_self.game.queue.push("pull_card\t"+faction+"\tprotestant");
+
+        return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "indulgence-vendor") {
+
+	  let faction = mv[1];
+  
+	  let p = this.returnPlayerOfFaction(faction);
+          let fhand_idx = this.returnFactionHandIdx(p, faction);
+	  let card = this.game.state.last_pulled_card;
+	  let ops = this.game.deck[0].cards[card].ops;
+
+	  for (let i = 0; i < card.ops; i++) {
+  	    his_self.game.queue.push("build_saint_peters");
+	  }
+
+  	  his_self.game.queue.push("discard\t"+faction+"\t"+card);
+          his_self.game.queue.splice(qe, 1);
+
+	  return 1;
+
+        }
+
+	return 1;
+
+      },
     }
     deck['082'] = { 
       img : "cards/HIS-082.svg" , 
@@ -13014,7 +13048,6 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 
 
 
-
         if (mv[0] === "build_saint_peters") {
 
 	  this.game.queue.splice(qe, 1);
@@ -13422,6 +13455,7 @@ console.log("----------------------------");
 
 	  let p1 = this.returnPlayerOfFaction(faction_taking);
 	  let p2 = this.returnPlayerOfFaction(faction_giving);
+	  this.game.state.last_pulled_card = card;
 
 	  if (this.game.player == p2) {
             let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);
@@ -14795,7 +14829,6 @@ this.updateLog("Catholics: " + c_rolls);
     //
     // mandatory event cards effect first, then 2 OPS
     //
-
     if (this.deck[card].type === "mandatory") {
       // event before ops
       this.addMove("remove\t"+faction+"\t"+card);

@@ -3685,7 +3685,6 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 
 
 
-
         if (mv[0] === "build_saint_peters") {
 
 	  this.game.queue.splice(qe, 1);
@@ -4093,6 +4092,7 @@ console.log("----------------------------");
 
 	  let p1 = this.returnPlayerOfFaction(faction_taking);
 	  let p2 = this.returnPlayerOfFaction(faction_giving);
+	  this.game.state.last_pulled_card = card;
 
 	  if (this.game.player == p2) {
             let fhand_idx = this.returnFactionHandIdx(p2, faction_giving);

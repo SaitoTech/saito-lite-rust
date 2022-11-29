@@ -818,7 +818,6 @@
     //
     // mandatory event cards effect first, then 2 OPS
     //
-
     if (this.deck[card].type === "mandatory") {
       // event before ops
       this.addMove("remove\t"+faction+"\t"+card);
@@ -1288,6 +1287,74 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
   }
 
+
+/******
+  async playerSelectMultipleChoicesFromOptions(his_self, player, faction, options, num=1, must_select_max=true) {
+
+    let options_selected = [];
+    let cancel_func = null;
+
+    let selectOptionsInterface = function(his_self, options_selected, selectOptionsInterface) {
+
+      let remaining = num - options_selected.length;
+
+      let msg = `Select From Options: (${remaining} remaining)`;
+      let html = "<ul>";
+      for (let i = 0; i < options.length; i++) {
+        if (options_selected.includes(parseInt(i))) {
+	  html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	} else {
+          html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+	  his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (idx > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      if (!units_to_move.includes(parseInt(id))) {
+	        units_to_move.push(parseInt(id));
+	      } else {
+		for (let i = 0; i < units_to_move.length; i++) {
+		  if (units_to_move[i] === parseInt(id)) {
+		    units_to_move.splice(i, 1);
+		    break;
+		  }
+		}
+	      }
+	    }
+
+	    selectOptionsInterface(his_self, options_selected, selectOptionsInterface);
+	  });
+	}
+	selectOptionsInterface(his_self, options_selected, selectUnitsInterface);
+	
+      },
+
+      cancel_func,
+
+      true,
+
+    );
+
+  }
+*****/
 
 
   playerEvaluateNavalRetreatOpportunity(faction, spacekey) {

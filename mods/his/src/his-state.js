@@ -5749,7 +5749,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 	game_mod.updateLog(faction + " gets 1 VP from Michael Servetus");
 	game_mod.game.state.events.michael_servetus = faction;
-	game_mod.game.queue.push("discard\tprotestant\tcard");
+	game_mod.game.queue.push("discard_random\tprotestant\t1");
 
       }
     }
@@ -6813,17 +6813,26 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
         if (mv[0] == "indulgence-vendor") {
 
+	  let faction = mv[1];
+  
+	  let p = this.returnPlayerOfFaction(faction);
+          let fhand_idx = this.returnFactionHandIdx(p, faction);
+	  let card = this.game.state.last_pulled_card;
+	  let ops = this.game.deck[0].cards[card].ops;
+
+	  for (let i = 0; i < card.ops; i++) {
+  	    his_self.game.queue.push("build_saint_peters");
+	  }
+
+  	  his_self.game.queue.push("discard\t"+faction+"\t"+card);
           his_self.game.queue.splice(qe, 1);
-	  his_self.updateLog("Ottoman Empire plays Janissaries");
-	  his_self.game.state.field_battle.attacker_rolls += 5;
-	  his_self.game.state.field_battle.attacker_results.push(his_self.rollDice(6));
 
 	  return 1;
 
         }
-      },
-      canEvent : function(his_self, faction) {
+
 	return 1;
+
       },
     }
     deck['082'] = { 
@@ -6833,6 +6842,42 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) {
+	return 1;
+      },
+      onEvent : function(his_self, faction) {
+
+	let at_war = false;
+	let f = his_self.returnImpulseOrder();
+	for (let i = 0; i < f.length; i++) {
+	  if (f[i] !== "ottoman") {
+	    if (his_self.areEnemies(f[1], "ottoman")) {
+	      at_war = true;
+	    }
+	  }
+	}
+
+	let p = his_self.returnPlayerOfFaction(faction);
+	if (p == his_self.game.player) {
+
+          let res = his_self.returnSpacesWithFilter(function(spacekey) {
+	    if (his_self.game.spaces[spacekey].home !== "ottoman") { return 0; }
+	    if (his_self.game.spaces[spacekey].unrest) { return 0; }
+	    if (his_self.isOccupied(his_self.game.spaces[spacekey])) { return 0; }
+	    return 1;
+	  });
+
+	  let spaces_to_select = 4;
+	  if (at_war) { spaces_to_select = 2; }
+
+	  // HACK 
+	  his_self.endTurn();
+
+	}
+
+
+	return 0;
+      }
     }
     deck['083'] = { 
       img : "cards/HIS-083.svg" , 
