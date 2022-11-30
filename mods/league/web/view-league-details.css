@@ -12,6 +12,8 @@
   user-select: none;
   cursor: default;
   background: var(--saito-white);
+  overflow-y: auto;
+
 }
 
 
