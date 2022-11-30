@@ -11,6 +11,8 @@ class AppspaceHome {
 
   render() {
 
+console.log("RENDERING HOME!");
+
     //
     // replace element or insert into page
     //
@@ -22,6 +24,14 @@ class AppspaceHome {
       } else {
         this.app.browser.addElementToDom(AppspaceHomeTemplate());
       }
+    }
+
+    //
+    //
+    //
+    for (let i = 0; i < this.mod.tweets.length; i++) {
+      this.mod.tweets[i].container = ".redsquare-home";
+      this.mod.tweets[i].render();
     }
 
     this.attachEvents();

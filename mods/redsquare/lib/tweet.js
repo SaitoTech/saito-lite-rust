@@ -7,13 +7,34 @@ class RedSquareTweet {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareTweet";
+
     this.tx = tx;
+
+    this.parent_id = "";
+    this.thread_id = "";
+    this.updated_at = 0;
+
+    this.retweet = null;
+    this.retweeters = [];
+    this.retweet_tx = null;
+    this.retweet_tx_sig = null;
 
     this.setKeys(tx.msg.data);
     this.setKeys(tx.optional);
+
+    //
+    // create retweet if exists, and set its render container as our preview-box
+    //
+    if (this.retweet != null) {
+      let newtx = new saito.default.transaction(JSON.parse(this.retweet_tx));
+      this.retweet = new RedSquareTweet(app, mod, (".tweet-preview-"+this.tx.transaction.sig), newtx);
+    }
+
   }
 
   render() {
+
+console.log("rendering into: " + this.container);
 
     //
     // replace element or insert into page
@@ -28,8 +49,17 @@ class RedSquareTweet {
       }
     //}
 
+    //
+    // this should render any (re)tweet into the tweet-preview.
+    //
+    if (this.retweet != null) {
+      this.retweet.render();
+    }
+
+
     this.attachEvents();
-  }  
+
+  }
 
 
   setKeys(obj) {

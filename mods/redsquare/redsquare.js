@@ -19,7 +19,14 @@ class RedSquare extends ModTemplate {
     this.icon_fa = "fas fa-square-full";
 
     this.tweets = [];
+    this.tweets_sigs_hmap = {};
     this.notifications = [];
+    //
+    // is this a notification?
+    //
+    this.notifications_last_viewed_ts = new Date().getTime();
+    this.notifications_number_unviewed = 0;
+
 
     this.styles = [
       '/saito/saitox.css',
@@ -58,10 +65,85 @@ class RedSquare extends ModTemplate {
   }
 
 
-  addNotification(tx) {
-  }
+  addTweet(tx, prepend = 0) {
 
-  addTweet(tx) {
+
+    //
+    // create the tweet
+    //
+    let tweet = new Tweet(this.app, this, "", tx);
+   
+    //
+    // add tweet to tweet and tweets_sigs_hmap for easy-reference
+    //
+    //
+    // this is a post
+    //
+    if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
+
+      let new_tweet = 1;
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+          new_tweet = 0;
+        }
+      }
+      if (new_tweet == 1) {
+        let insertion_index = 0;
+        for (let i = 0; i < this.tweets.length; i++) {
+          if (this.tweets[i].updated_at > tweet.updated_at) {
+            insertion_index++;
+            break;
+          } else {
+            insertion_index++;
+          }
+        }
+
+        if (prepend == 0) {
+          this.tweets.splice(insertion_index, 0, tweet);
+        } else {
+          this.tweets.splice(0, 0, tweet);
+        }
+
+        this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
+
+      } else {
+
+        for (let i = 0; i < this.tweets.length; i++) {
+console.log("4");
+          if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+            this.tweets[i].num_replies = tweet.num_replies;
+            this.tweets[i].num_retweets = tweet.num_retweets;
+            this.tweets[i].num_likes = tweet.num_likes;
+//
+// EVENT HERE
+//
+//            this.tweets[i].renderOptional();
+          }
+        }
+      }
+
+    //
+    // this is a comment
+    //
+    } else {
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
+          if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
+            this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
+            break;
+          }
+        }
+      }
+    }
+
+
+    this.main.render();
+
+
+    //
+    // add tweet to tweets_sigs_hmap
+    //
+
   }
 
 
@@ -91,25 +173,29 @@ class RedSquare extends ModTemplate {
 
   async onPeerHandshakeComplete(app, peer) {
 
-    redsquare_self = this;
+   redsquare_self = this;
+
    if (app.BROWSER == 1) {
 
-      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC;`;
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10;`;
       
-
       app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
-        "RedSquare",
-        sql,
-         (res) => {
 
-          // console.log('rows');
-          // console.log(res);
+        "RedSquare",
+
+        sql,
+
+        (res) => {
+
+          console.log('rows');
 
           if (res.rows) {
             
-
             res.rows.forEach(row => {
-            
+
+		//
+		// create transaction
+		//
                 let tx = new saito.default.transaction(JSON.parse(row.tx));
                 if (!tx.optional) { tx.optional = {}; }
                 tx.optional.parent_id = tx.msg.parent_id;
@@ -123,11 +209,12 @@ class RedSquare extends ModTemplate {
                   let x = JSON.parse(row.link_properties);
                   tx.optional.link_properties = x;
                 } catch (err) { }
-                let txmsg = tx.returnMessage();
 
-                let tweet = new Tweet(app, redsquare_self, '.saito-main', tx);
-                tweet.render();
-              
+		//
+		// add it to our list of tweets
+		//
+		redsquare_self.addTweet(tx);
+
             });
 
           }
@@ -185,7 +272,7 @@ class RedSquare extends ModTemplate {
         // save optional likes
         //
         let txmsg = tx.returnMessage();
-        if (this.txmap[txmsg.data.sig]) {
+        if (this.tweets_sigs_hmap[txmsg.data.sig]) {
           let tweet = this.returnTweet(app, this, txmsg.data.sig);
           if (tweet == null) { return; }
           let tx = tweet.tx;
@@ -276,10 +363,10 @@ class RedSquare extends ModTemplate {
         // if replies
         //
         if (txmsg.data?.parent_id) {
-          if (this.txmap[txmsg.data.parent_id]) {
+          if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
             let tweet = this.returnTweet(app, this, txmsg.data.sig);
             if (tweet == null) { return; }
-            let tx = this.txmap[parent_id];
+            let tx = this.tweets_sigs_hmap[parent_id];
             if (tx.isTo(app.wallet.returnPublicKey())) {
               if (!tx.optional) { tx.optional = {}; }
               if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
@@ -304,7 +391,7 @@ class RedSquare extends ModTemplate {
             let rtxobj = JSON.parse(txmsg.data.retweet_tx);
             let rtxsig = rtxobj.sig;
 
-            if (this.txmap[rtxsig]) {
+            if (this.tweets_sigs_hmap[rtxsig]) {
               let tweet2 = this.returnTweet(app, this, rtxsig);
               if (tweet2 == null) { return; }
               let tx = tweet2.tx;
@@ -489,12 +576,18 @@ class RedSquare extends ModTemplate {
   load() {
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;
+      this.notifications_last_viewed_ts = this.redsquare.notifications_last_viewed_ts;
+      this.notifications_number_unviewed = this.redsquare.notifications_number_unviewed;
     } else {
       this.redsquare = {};
+      this.notifications_last_viewed_ts = new Date().getTime();
+      this.notifications_number_unviewed = 0;
     }
   }
 
   save() {
+    this.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
+    this.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
     this.app.options.redsquare = this.redsquare;    
     this.app.storage.saveOptions();
   }

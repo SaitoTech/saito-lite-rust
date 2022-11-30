@@ -3,11 +3,12 @@ module.exports = (app, mod, tweet) => {
   console.log("inside tweet template");
   console.log(tweet);
 
-  let txMsg = tweet.tx.msg;
+  let txmsg = tweet.tx.msg;
   let optional = tweet.tx.optional;
+  let notice = "";
   let publickey = tweet.tx.transaction.from[0].add || "";
-  let images = txMsg.data.images || [];
-  let text = txMsg.data.text || "";
+  let images = txmsg.data.images || [];
+  let text = txmsg.data.text || "";
   let flagged =  optional.flagged ||  null;
   let link_properties =  optional.link_properties ||  null;
   let num_likes =  optional.num_likes ||  0;
@@ -21,12 +22,26 @@ module.exports = (app, mod, tweet) => {
     profileImg = app.keys.returnIdenticon(publickey);
   }
 
+  
+  if (text == "" && tweet.retweet_tx != "") {
+    //
+    // set tweet preview
+    //
+
+    //
+    // set notice
+    // 
+    notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.transaction.from[0].add);
+  }
+
+
+
   let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
 
   return `
 
-        <div class="tweet">
-          <div class="tweet-notice"></div>
+        <div class="tweet tweet-${tweet.tx.transaction.sig}">
+          <div class="tweet-notice">${notice}</div>
           <div class="tweet-header">
             <div class="saito-user">
               <div class="saito-identicon-box"><img alt="saito dynamic image" class="saito-identicon"
@@ -41,11 +56,9 @@ module.exports = (app, mod, tweet) => {
             </div>
             <div class="tweet-main">
               <div class="tweet-text">${text}</div>
-              <div class="tweet-preview">
+              <div class="tweet-preview tweet-previous-${tweet.tx.transaction.sig}">
 
-
-              ${returnImages()}  
-
+                ${returnImages()}  
 
               </div>
               <div class="tweet-controls">
