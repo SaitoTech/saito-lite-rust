@@ -1093,12 +1093,14 @@ class Wordblocks extends GameTemplate {
     cards_needed = cards_needed - this.game.deck[0].hand.length;
 
     if (cards_needed > this.game.deck[0].crypt.length) {
+      this.prependMove(`report_tiles\t${this.game.player}\t${this.game.deck[0].hand.length + this.game.deck[0].crypt.length}`);
       cards_needed = this.game.deck[0].crypt.length;
     }
-
+    
     if (cards_needed > 0) {
       this.addMove("DEAL\t1\t" + this.game.player + "\t" + cards_needed);
     }
+
   }
 
   /*
@@ -2185,6 +2187,21 @@ class Wordblocks extends GameTemplate {
         return 0;
       }
 
+      if (mv[0] === "report_tiles"){
+        let player = parseInt(mv[1]);
+        let tileCt = parseInt(mv[2]);
+        this.game.queue.splice(this.game.queue.length - 1, 1);
+        console.log(player, tileCt);
+        if (this.browser_active){
+          this.playerbox.appendLog(`<div class="lastmove"><span>Tiles:</span><span class="playerscore">${tileCt}</span></div>`, player);
+        }
+
+        let name = (player === this.game.player)? "You are" : `Player ${player} is`;
+        this.updateLog(`${name} down to ${tileCt} tiles`);
+
+        return 1;
+      }
+
       //
       // place word player x y [horizontal/vertical]
       //
@@ -2246,8 +2263,8 @@ class Wordblocks extends GameTemplate {
           wordblocks_self.returnNextPlayer(player)
         );
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
-        console.log("New Queue:",JSON.stringify(this.game.queue));
-        return 0; // remove word and wait for next
+        //console.log("New Queue:",JSON.stringify(this.game.queue));
+        return 1; // remove word and wait for next
       }
 
       //Actually tile discarding action
@@ -2316,8 +2333,8 @@ class Wordblocks extends GameTemplate {
         $("player-box").removeClass("active");
         this.playerbox.addClass("active", wordblocks_self.returnNextPlayer(player));
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
-        console.log("New Queue:",JSON.stringify(this.game.queue));
-        return 0;
+        //console.log("New Queue:",JSON.stringify(this.game.queue));
+        return 1;
       }
       
     }
