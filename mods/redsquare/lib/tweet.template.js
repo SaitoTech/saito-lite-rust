@@ -20,9 +20,10 @@ module.exports = (app, mod, tweet) => {
   if (app.crypto.isPublicKey(publickey)) {
     profileImg = app.keys.returnIdenticon(publickey);
   }
+
   let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
 
-   return `
+  return `
 
         <div class="tweet">
           <div class="tweet-notice"></div>
