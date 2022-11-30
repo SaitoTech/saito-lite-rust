@@ -1,3 +1,5 @@
+const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
+
 module.exports = (app, mod, tweet) => {
 
   console.log("inside tweet template");
@@ -43,13 +45,9 @@ module.exports = (app, mod, tweet) => {
         <div class="tweet tweet-${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header">
-            <div class="saito-user">
-              <div class="saito-identicon-box"><img alt="saito dynamic image" class="saito-identicon"
-                  src="${profileImg}">
-              </div>
-              <div class="saito-address">${publickey}</div>
-              <div class="saito-user-timestamp">${userline}</div>
-            </div>
+
+            ${SaitoUser(app, publickey, userline)}
+
           </div>
           <div class="tweet-body">
             <div class="tweet-sidebar">
