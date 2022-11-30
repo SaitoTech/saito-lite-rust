@@ -27,7 +27,6 @@ class RedSquare extends ModTemplate {
     this.notifications_last_viewed_ts = new Date().getTime();
     this.notifications_number_unviewed = 0;
 
-
     this.styles = [
       '/saito/saitox.css',
       '/redsquare/style.css',
@@ -66,7 +65,6 @@ class RedSquare extends ModTemplate {
 
 
   addTweet(tx, prepend = 0) {
-
 
     //
     // create the tweet
@@ -109,7 +107,6 @@ class RedSquare extends ModTemplate {
       } else {
 
         for (let i = 0; i < this.tweets.length; i++) {
-console.log("4");
           if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
             this.tweets[i].num_replies = tweet.num_replies;
             this.tweets[i].num_retweets = tweet.num_retweets;
@@ -136,9 +133,8 @@ console.log("4");
       }
     }
 
-
     this.main.render();
-
+    this.menu.render();
 
     //
     // add tweet to tweets_sigs_hmap
@@ -161,6 +157,7 @@ console.log("4");
       //this.addComponent(this.tweet);
     }
 
+console.log("RENDER WITH MENU HERE!");
     super.render();
   }
 
@@ -216,13 +213,9 @@ console.log("4");
 		redsquare_self.addTweet(tx);
 
             });
-
           }
-
         }
       );
-      
-
     }
   }
 

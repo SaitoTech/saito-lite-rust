@@ -14,12 +14,17 @@ class RedSquareMenu {
     //
     // replace element or insert into page
     //
+console.log("rendering menu... 1");
     if (document.querySelector(".redsquare-menu")) {
+console.log("rendering menu... 1 2");
       this.app.browser.replaceElementBySelector(RedSquareMenuTemplate(this.app, this.mod), ".redsquare-menu");
     } else {
+console.log("rendering menu... 2 3");
       if (this.container) {
+console.log("rendering menu... 2 4");
         this.app.browser.addElementToSelector(RedSquareMenuTemplate(this.app, this.mod), this.container);
       } else {
+console.log("rendering menu... 2 4");
         this.app.browser.addElementToDom(RedSquareMenuTemplate(this.app, this.mod));
       }
     }
