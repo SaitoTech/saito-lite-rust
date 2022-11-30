@@ -139,7 +139,7 @@ class RedSquare extends ModTemplate {
     } else {
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
-          if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
+          if (this.tweets[i].addTweet(tweet) == 1) {
             this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
             break;
           }

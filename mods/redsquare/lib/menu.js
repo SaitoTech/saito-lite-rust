@@ -23,6 +23,7 @@ console.log("rendering menu... 2 3");
       if (this.container) {
 console.log("rendering menu... 2 4");
         this.app.browser.addElementToSelector(RedSquareMenuTemplate(this.app, this.mod), this.container);
+console.log("rendering menu... 2 4 -2");
       } else {
 console.log("rendering menu... 2 4");
         this.app.browser.addElementToDom(RedSquareMenuTemplate(this.app, this.mod));

@@ -1,4 +1,4 @@
-module.exports = (app, mod) => {
+module.exports = () => {
 
    return `
       <div class="saito-menu">

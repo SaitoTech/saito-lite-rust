@@ -14,6 +14,10 @@ class RedSquareTweet {
     this.thread_id = "";
     this.updated_at = 0;
 
+    this.children = [];
+    this.unknown_children = [];
+    this.critical_child = null;
+
     this.retweet = null;
     this.retweeters = [];
     this.retweet_tx = null;
@@ -27,10 +31,93 @@ class RedSquareTweet {
     //
     if (this.retweet != null) {
       let newtx = new saito.default.transaction(JSON.parse(this.retweet_tx));
-      this.retweet = new RedSquareTweet(app, mod, (".tweet-preview-"+this.tx.transaction.sig), newtx);
+      this.retweet = new RedSquareTweet(this.app, this.mod, (".tweet-preview-"+this.tx.transaction.sig), newtx);
     }
 
   }
+
+  addTweet(tweet) {
+
+   //
+    // maybe we have some parentless children?
+    //
+    // this can happen when a sub-comment has a more recent updated_at timestamp than
+    // the parent comment it is replying to, and thus it gets fed to us out-of-order
+    // such that this algorithm has trouble reconstructing the chain.
+    //
+    for (let i = 0; i < this.unknown_children.length; i++) {
+      if (this.unknown_children[i].parent_id === tweet.tx.transaction.sig) {
+        if (this.isCriticalChild(this.unknown_children[i])) {
+          this.critical_child = this.unknown_children[i];
+          this.updated_at = this.critical_child;
+        }
+        this.unknown_children[i].parent_tweet = this;
+        tweet.children.push(this.unknown_children[i]);
+        this.unknown_children.splice(i, 0);
+      }
+    }
+
+
+    if (tweet.parent_id == this.tx.transaction.sig) {
+      for (let i = 0; i < this.children.length; i++) {
+        if (this.children[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+          return 0;
+        }
+      }
+      if (this.isCriticalChild(tweet) || tweet.tx.transaction.ts > this.updated_at && this.critical_child == null) {
+        this.critical_child = tweet;
+        this.updated_at = tweet.updated_at;
+      }
+      if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
+        this.children.unshift(tweet);
+        return 1;
+      } else {
+        if (this.isCriticalChild(tweet)) {
+          this.critical_child = tweet;
+        }
+        tweet.parent_tweet = this;
+        this.children.push(tweet);
+        return 1;
+      }
+    } else {
+      for (let i = 0; i < this.children.length; i++) {
+        if (this.isCriticalChild(tweet)) {
+          this.critical_child = tweet;
+        }
+        let x = this.children[i].addTweet(this.app, this.mod, tweet);
+        if (x == 1) {
+          this.updated_at = tweet.updated_at;
+        }
+        return x;
+      }
+
+      //
+      // still here? add in unknown children
+      //
+      // this means we know the comment is supposed to be somewhere in this thread/parent
+      // but its own parent doesn't yet exist, so we are simply going to store it here
+      // until we possibly add the parent (where we will check all unknown children) for
+      // placement then.
+      //
+      this.unknown_children.push(tweet);
+
+    }
+
+  }
+
+
+  isCriticalChild(tweet) {
+    for (let i = 0; i < tweet.tx.transaction.to.length; i++) {
+      if (tweet.tx.transaction.to[i].add === this.app.wallet.returnPublicKey()) {
+        if (this.critical_child == null) { return true; }
+        if (tweet.tx.transaction.ts > this.critical_child.tx.transaction.tx) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 
   render() {
 
