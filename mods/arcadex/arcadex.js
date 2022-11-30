@@ -1315,22 +1315,6 @@ class Arcade extends ModTemplate {
 
             if (ready_to_go){
 
-              if (this.browser_active){
-                let gameLoader = new GameLoader(this.app, this, game_id);
-                gameLoader.render(this.app, this, "#arcade-main", "Your game is ready to start!");
-              }else{
-                let gm = this.app.modules.returnModule(this.app.options.games[i].module);
-                if (gm){
-                  let game_name = gm.gamename || gm.name;
-                  this.app.connection.emit("arcade-game-ready-play", {game_id, game_name});
-                  let go = await sconfirm(`${game_name} is ready. Join now?`);
-                  if (go){
-                    this.app.browser.logMatomoEvent("Arcade", "SaitoConfirmStartGame", this.app.options.games[i].module);
-                    window.location = "/" + gm.returnSlug();
-                  }
-                }
-              }
-
               let hidden = "hidden";
               if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
                 hiddenTab = "hidden";
@@ -1345,6 +1329,27 @@ class Arcade extends ModTemplate {
               if (document[hidden]) {
                 this.ringTone();
               }
+
+              if (this.browser_active){
+                let gameLoader = new GameLoader(this.app, this, game_id);
+                gameLoader.render(this.app, this, "#arcade-main", "Your game is ready to start!");
+              }else{
+                let gm = this.app.modules.returnModule(this.app.options.games[i].module);
+                if (gm){
+                  let game_name = gm.gamename || gm.name;
+                  
+                  if (this.app.connection.listeners("arcade-game-ready-play")?.length > 0) {
+                    this.app.connection.emit("arcade-game-ready-play", {game_id, game_name});
+                  }else{
+                    let go = await sconfirm(`${game_name} is ready. Join now?`);
+                    if (go){
+                      this.app.browser.logMatomoEvent("Arcade", "SaitoConfirmStartGame", this.app.options.games[i].module);
+                      window.location = "/" + gm.returnSlug();
+                    }
+                  }
+                }
+              }
+
             }
           }
         }
