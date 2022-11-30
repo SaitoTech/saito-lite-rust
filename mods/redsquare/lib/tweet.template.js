@@ -42,7 +42,7 @@ module.exports = (app, mod, tweet) => {
 
   return `
 
-        <div class="tweet tweet-${tweet.tx.transaction.sig}">
+        <div class="tweet" id="tweet-${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header">
 
@@ -83,7 +83,7 @@ module.exports = (app, mod, tweet) => {
 
     if (images.length > 1) {
       for (let i = 0; i < images.length; i++) {
-        imgs += `<img alt="saito dymamic image" src="${images[i]}">`
+        imgs += `<img data-index="${i+1}" alt="saito dymamic image" src="${images[i]}">`
       }
     }
     

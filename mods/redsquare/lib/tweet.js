@@ -1,4 +1,5 @@
 const RedSquareTweetTemplate = require("./tweet.template");
+const ImageOverlay = require("./appspace/image-overlay");
 
 class RedSquareTweet {
 
@@ -161,6 +162,22 @@ console.log("rendering into: " + this.container);
 
   attachEvents() {
     tweet_self = this;
+
+    ///
+    // view image
+    //
+    sel = `.tweet-picture > img`;
+    if (document.querySelectorAll(sel)) {
+      document.querySelectorAll(sel).forEach(img => {
+        img.onclick = (e) => {
+          let img = e.target;
+          
+          let img_overlay = new ImageOverlay(this.app, img);
+          img_overlay.render(this.app, this.mod);
+        }
+      });
+    }
+
   }
 
 }
