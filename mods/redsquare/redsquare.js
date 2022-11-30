@@ -64,6 +64,31 @@ class RedSquare extends ModTemplate {
   }
 
 
+  isNewTweet(tweet) {
+    let new_tweet = 1;
+    for (let i = 0; i < this.tweets.length; i++) {
+      if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+        new_tweet = 0;
+      }
+    }
+
+    return new_tweet;
+  }
+
+  checkTweetIndex(tweet) {
+    let insertion_index = 0;
+    for (let i = 0; i < this.tweets.length; i++) {
+      if (this.tweets[i].updated_at > tweet.updated_at) {
+        insertion_index++;
+        break;
+      } else {
+        insertion_index++;
+      }
+    }
+
+    return insertion_index;
+  }
+
   addTweet(tx, prepend = 0) {
 
     //
@@ -79,22 +104,11 @@ class RedSquare extends ModTemplate {
     //
     if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
 
-      let new_tweet = 1;
-      for (let i = 0; i < this.tweets.length; i++) {
-        if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-          new_tweet = 0;
-        }
-      }
+      let new_tweet = this.isNewTweet(tweet);
+      
       if (new_tweet == 1) {
-        let insertion_index = 0;
-        for (let i = 0; i < this.tweets.length; i++) {
-          if (this.tweets[i].updated_at > tweet.updated_at) {
-            insertion_index++;
-            break;
-          } else {
-            insertion_index++;
-          }
-        }
+        
+        let insertion_index = this.checkTweetIndex(tweet);
 
         if (prepend == 0) {
           this.tweets.splice(insertion_index, 0, tweet);
@@ -111,10 +125,10 @@ class RedSquare extends ModTemplate {
             this.tweets[i].num_replies = tweet.num_replies;
             this.tweets[i].num_retweets = tweet.num_retweets;
             this.tweets[i].num_likes = tweet.num_likes;
-//
-// EVENT HERE
-//
-//            this.tweets[i].renderOptional();
+            //
+            // EVENT HERE
+            //
+            // this.tweets[i].renderOptional();
           }
         }
       }
