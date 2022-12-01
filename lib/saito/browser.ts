@@ -535,6 +535,13 @@ class Browser {
     }
   }
 
+  removeElementBySelector(selector = "") {
+    let obj = document.querySelector(selector);
+    if (obj) {
+      obj.remove();
+    }
+  }
+
   replaceElementBySelector(html, selector = "") {
     if (selector === "") {
       console.warn("no selector provided to replace, so adding direct to DOM");
