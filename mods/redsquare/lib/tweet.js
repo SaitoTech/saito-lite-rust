@@ -204,9 +204,12 @@ console.log("rendering into: " + this.container);
       if (fetch_open_graph == 1) {
         console.log("Fetching open graph*************************");
         let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
+        
+        
+        console.log("RESULT open graph*************************");
+        console.log(res);
+        
         if (res != '') {
-          console.log("RESULT open graph*************************");
-          console.log(res);
           this.link_properties = res;
         }
       }

@@ -240,7 +240,10 @@ console.log("RENDER WITH MENU HERE!");
   async fetchOpenGraphProperties(app, mod, link) {
 
     console.log("INSIDEEE open graph*************************");
-    if (this.app.BROWSER == 0) {
+    console.log(link);
+    console.log(app.BROWSER);
+
+    if (app.BROWSER != 1) {
 
       console.log("INSIDEEE IFFF*************************");
       // required og properties for link preview
