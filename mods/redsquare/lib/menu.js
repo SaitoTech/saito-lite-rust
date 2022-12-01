@@ -27,13 +27,12 @@ class RedSquareMenu {
     //
     // appspace modules
     //
-    this.app.modules.getRespondTos("appspace").forEach((mod, i) => {
-      let m = this.app.modules.mods[i];
-      if (!document.querySelector(`.redsquare-menu-${m.returnSlug()}`)) {
+    this.app.modules.returnModulesRespondingTo("appspace").forEach((mod) => {
+      if (!document.querySelector(`.redsquare-menu-${mod.returnSlug()}`)) {
         this.app.browser.addElementToSelector(
-          `<li class="redsquare-menu-${m.returnSlug()}">
-            <i class="${m.icon}"></i>
-            <span>${m.returnName()}</span>
+          `<li class="redsquare-menu-${mod.returnSlug()}">
+            <i class="${mod.icon}"></i>
+            <span>${mod.returnName()}</span>
           </li>`,
 	  ".saito-menu-list"
 	);
@@ -67,10 +66,9 @@ class RedSquareMenu {
     //
     // appspace modules
     //
-    this.app.modules.getRespondTos("appspace").forEach((mod, i) => {
-      let m = this.app.modules.mods[i];
-      document.querySelector(`.redsquare-menu-${m.returnSlug()}`).onclick = (e) => {
-        let y = m.respondTo("appspace");
+    this.app.modules.returnModulesRespondingTo("appspace").forEach((mod) => {
+      document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
+        let y = mod.respondTo("appspace");
         y.container = "saito-main";
 	y.render();
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});

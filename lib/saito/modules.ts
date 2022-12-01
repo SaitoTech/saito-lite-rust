@@ -233,6 +233,12 @@ class Mods {
     return null;
   }
 
+  returnModulesRespondingTo(request) {
+    return this.mods.filter((mod) => {
+      return mod.respondTo(request) != null;
+    });
+  }
+
   respondTo(request) {
     return this.mods.filter((mod) => {
       return mod.respondTo(request) != null;
