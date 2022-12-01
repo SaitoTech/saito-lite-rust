@@ -115,8 +115,8 @@
   grid-template-columns: 1fr min-content;
 }
 
-.arcade-leaderboard .saito-table-row .me::before {
-  content: "Me: ";
+.arcade-leaderboard .saito-table-row .me {
+  color: var(--saito-primary);
 }
 
 .arcade-leaderboard .saito-table-row:hover {
