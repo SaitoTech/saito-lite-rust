@@ -244,7 +244,9 @@ class Mods {
     this.mods.forEach((mod) => {
       const itnerface = mod.respondTo(request);
       if (itnerface != null) {
-        compliantInterfaces.push({ ...itnerface, modname: mod.name });
+        if (Object.keys(itnerface)) {
+          compliantInterfaces.push({ ...itnerface, modname: mod.returnName() });
+        }
       }
     });
     return compliantInterfaces;

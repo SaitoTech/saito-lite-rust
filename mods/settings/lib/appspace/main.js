@@ -5,21 +5,24 @@ const jsonTree = require('json-tree-viewer');
 
 class SettingsAppspace {
 
-  constructor(app) {
+  constructor(app, mod, container="") {
+    this.app = app;
+    this.mod = mod;
+    this.container = container;
   }
 
-  render(app, mod) {
+  render() {
 
     if (!document.querySelector(".settings-appspace")) {
-      app.browser.addElementToSelector(SettingsAppspaceTemplate(app, mod), ".appspace");
+      this.app.browser.addElementToSelector(SettingsAppspaceTemplate(this.app, this.mod), ".appspace");
     }
 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
-      for (let i = 0; i < app.modules.mods.length; i++) {
-        if (app.modules.mods[i].respondTo("settings-appspace") != null) {
-          let mod_settings_obj = app.modules.mods[i].respondTo("settings-appspace");
-          mod_settings_obj.render(app, mod);
+      for (let i = 0; i < this.app.modules.mods.length; i++) {
+        if (this.app.modules.mods[i].respondTo("settings-appspace") != null) {
+          let mod_settings_obj = this.app.modules.mods[i].respondTo("settings-appspace");
+          mod_settings_obj.render(this.app, this.mod);
         }
       }
     }
@@ -28,7 +31,7 @@ class SettingsAppspace {
     let el = document.querySelector(".settings-appspace-debug-content");
 
     try {
-      let optjson = JSON.parse(JSON.stringify(app.options, (key, value) =>
+      let optjson = JSON.parse(JSON.stringify(this.app.options, (key, value) =>
             typeof value === 'bigint'
                 ? value.toString()
                 : value // return everything else unchanged
@@ -38,7 +41,7 @@ class SettingsAppspace {
       console.log("error creating jsonTree: " + err);
     }
 
-    this.attachEvents(app, mod);
+    this.attachEvents(this.app, this.mod);
 
   }
 
