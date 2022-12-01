@@ -67,31 +67,6 @@ class RedSquare extends ModTemplate {
   }
 
 
-  isNewTweet(tweet) {
-    let new_tweet = 1;
-    for (let i = 0; i < this.tweets.length; i++) {
-      if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-        new_tweet = 0;
-      }
-    }
-
-    return new_tweet;
-  }
-
-  checkTweetIndex(tweet) {
-    let insertion_index = 0;
-    for (let i = 0; i < this.tweets.length; i++) {
-      if (this.tweets[i].updated_at > tweet.updated_at) {
-        insertion_index++;
-        break;
-      } else {
-        insertion_index++;
-      }
-    }
-
-    return insertion_index;
-  }
-
   addTweet(tx, prepend = 0) {
 
     //
@@ -107,18 +82,30 @@ class RedSquare extends ModTemplate {
     //
     if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
 
-      let new_tweet = this.isNewTweet(tweet);
-      
-      if (new_tweet == 1) {
-        
-        let insertion_index = this.checkTweetIndex(tweet);
+      //
+      // we do not have this tweet indexed, it's new
+      //
+      if (!this.tweets_sigs_hmap[tweet.tx.transaction.sig]) {
 
+	//
+	// check where we insert the tweet
+	//
+        let insertion_index = 0;
         if (prepend == 0) {
-          this.tweets.splice(insertion_index, 0, tweet);
-        } else {
-          this.tweets.splice(0, 0, tweet);
+          for (let i = 0; i < this.tweets.length; i++) {
+            if (this.tweets[i].updated_at > tweet.updated_at) {
+              insertion_index++;
+              break;
+            } else {
+              insertion_index++;
+            }
+          }
         }
 
+	//
+	// and insert it
+	//
+        this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
       } else {
@@ -150,6 +137,9 @@ class RedSquare extends ModTemplate {
       }
     }
 
+    //
+    // 
+    //
     this.main.render();
     this.menu.render();
 
