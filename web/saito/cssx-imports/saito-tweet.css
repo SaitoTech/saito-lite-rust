@@ -70,11 +70,10 @@
     max-height: 17.7rem;
     margin-bottom: 1rem;
     overflow: hidden;
-    transition: all 2.5s cubic-bezier(0, 1, 0, 1);
 }
 
 .tweet-text.full {
-    transition: all 1s ease-in-out;
+    transition: all .2s linear;
     max-height: 50rem;
     overflow-y: auto;
     margin-bottom: 2rem;
@@ -89,7 +88,7 @@
     color: var(--saito-primary);
     font-size: smaller;
     padding: 0 0.5rem;
-    transition: all 1s ease;
+    transition: all .2s linear;
 }
 
 .tweet-text.preview::before {
@@ -118,7 +117,7 @@
     border-radius: var(--saito-border-radius);
     left: 50%;
     transform: translateX(-50%);
-    transition: all 1s ease;
+    transition: all 1s l;
 }
 
 .tweet-controls {
