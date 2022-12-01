@@ -1,5 +1,6 @@
 const RedSquareTweetTemplate = require("./tweet.template");
 const ImageOverlay = require("./appspace/image-overlay");
+const LinkPreview = require("./link-preview");
 
 class RedSquareTweet {
 
@@ -39,11 +40,12 @@ class RedSquareTweet {
     }
 
     this.text =  "Og Link preview https://stackoverflow.com/questions/9346211/how-to-kill-a-process-on-a-port-on-ubuntu";
-
     this.generateTweetProperties(app, mod, 1);
 
-    console.log("tweet properties");
-    console.log(this);
+
+    // subcomponents
+    let tweet_container = "#tweet-"+this.tx.transaction.sig+ " > .tweet-body .tweet-preview";
+    this.link_preview = new LinkPreview(app, mod, tweet_container, this);
   }
 
   render() {
@@ -66,6 +68,11 @@ class RedSquareTweet {
     //
     if (this.retweet != null) {
       this.retweet.render();
+    }
+
+
+    if (this.link_preview != null) {
+      this.link_preview.render();
     }
 
 

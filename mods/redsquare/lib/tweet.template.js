@@ -1,5 +1,4 @@
 const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
-const RSLinkPreview = require('./appspace/link-preview.template');
 
 module.exports = (app, mod, tweet) => {
 
@@ -55,8 +54,6 @@ module.exports = (app, mod, tweet) => {
               <div class="tweet-preview tweet-previous-${tweet.tx.transaction.sig}">
 
                 ${returnImages()}  
-
-                ${RSLinkPreview(app, mod, tweet)}
 
               </div>
               <div class="tweet-controls">
