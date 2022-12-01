@@ -1,10 +1,6 @@
 const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tweet) => {
-
-  console.log("inside tweet template");
-  console.log(tweet);
-
   let txmsg = tweet.tx.msg;
   let optional = tweet.tx.optional;
   let notice = "";
@@ -17,11 +13,6 @@ module.exports = (app, mod, tweet) => {
   let num_retweets = optional.num_retweets || 0;
   let parent_id = optional.parent_id || "";
   let dt = app.browser.formatDate(tweet.tx.transaction.ts);
-
-  let profileImg = '/saito/img/no-profile.png';
-  if (app.crypto.isPublicKey(publickey)) {
-    profileImg = app.keys.returnIdenticon(publickey);
-  }
   
   if (text == "" && tweet.retweet_tx != "") {
     //
@@ -37,7 +28,6 @@ module.exports = (app, mod, tweet) => {
   let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
 
   return `
-
         <div class="tweet" id="tweet-${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header">
@@ -51,8 +41,6 @@ module.exports = (app, mod, tweet) => {
             <div class="tweet-main">
               <div class="tweet-text">${text}</div>
               <div class="tweet-preview tweet-previous-${tweet.tx.transaction.sig}">
-
-   
 
               </div>
               <div class="tweet-controls">
@@ -72,22 +60,6 @@ module.exports = (app, mod, tweet) => {
           </div>
         </div>
   `;
-
-
-  function returnImages() {
-    let imgs = ``;
-
-    if (images.length > 1) {
-      for (let i = 0; i < images.length; i++) {
-        imgs += `<img data-index="${i+1}" alt="saito dymamic image" src="${images[i]}">`
-      }
-    }
-    
-    return `<div class="tweet-picture">
-                ${imgs}
-            </div>`;
-  }  
-
 }
 
 

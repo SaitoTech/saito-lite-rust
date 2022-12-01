@@ -1,5 +1,4 @@
 const RedSquareTweetTemplate = require("./tweet.template");
-const ImageOverlay = require("./appspace/image-overlay");
 const LinkPreview = require("./link-preview");
 const ImgPreview = require("./img-preview");
 
@@ -75,12 +74,14 @@ class RedSquareTweet {
 
 
     // render subcomponents
-    if (this.link_preview != null) {
-      this.link_preview.render();
-    }
-
+    // position of subcomponents within post is controlled by which components is rendered first
     if (this.img_preview != null) {
       this.img_preview.render();
+    }
+
+
+    if (this.link_preview != null) {
+      this.link_preview.render();
     }
 
 
@@ -90,21 +91,6 @@ class RedSquareTweet {
 
   attachEvents() {
     tweet_self = this;
-
-    ///
-    // view image
-    //
-    sel = `.tweet-picture > img`;
-    if (document.querySelectorAll(sel)) {
-      document.querySelectorAll(sel).forEach(img => {
-        img.onclick = (e) => {
-          let img = e.target;
-          
-          let img_overlay = new ImageOverlay(this.app, img);
-          img_overlay.render(this.app, this.mod);
-        }
-      });
-    }
 
   }
 

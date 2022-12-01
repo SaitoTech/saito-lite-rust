@@ -1,3 +1,4 @@
+const ImageOverlay = require("./appspace/image-overlay");
 const RedSquareImgPreviewTemplate = require("./img-preview.template");
 
 class RedSquareImgPreview {
@@ -10,6 +11,7 @@ class RedSquareImgPreview {
     this.name = "RedSquareImgPreview";
     let txmsg = tweet.tx.msg;
     this.images = txmsg.data.images || [];
+    this.img_overlay = null;
   }
 
   render() {
@@ -36,7 +38,22 @@ class RedSquareImgPreview {
 
 
   attachEvents() {
+    tweet_self = this;
 
+    ///
+    // view image
+    //
+    let sel = "#tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-preview .tweet-picture > img";
+    if (document.querySelectorAll(sel)) {
+      document.querySelectorAll(sel).forEach(img => {
+        img.onclick = (e) => {
+          let img = e.target;
+          
+          tweet_self.img_overlay = new ImageOverlay(this.app, this.mod, img);
+          tweet_self.img_overlay.render();
+        }
+      });
+    }
   }
 
 }
