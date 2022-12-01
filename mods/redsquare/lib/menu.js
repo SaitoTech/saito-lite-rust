@@ -24,8 +24,25 @@ class RedSquareMenu {
       }
     }
 
+    //
+    // appspace modules
+    //
+    this.app.modules.getRespondTos("appspace").forEach((mod, i) => {
+      if (!document.querySelector(`.redsquare-menu-${mod.returnSlug()}`)) {
+        this.app.browser.addElementToSelector(
+          `<li class="redsquare-menu-${mod.returnSlug()}">
+            <i class="${mods.icon}"></i>
+            <span>${mod.returnName()}</span>
+          </li>`,
+	  ".saito-menu-list"
+	);
+      }
+    });
+
     this.attachEvents();
   }  
+
+
 
   attachEvents() {
 
@@ -44,6 +61,19 @@ class RedSquareMenu {
     document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
       this.app.connection.emit("redsquare-contacts-render-request");
     }
+
+
+    //
+    // appspace modules
+    //
+    this.app.modules.getRespondTos("appspace").forEach((mod, i) => {
+      document.querySelector(`.redsquare-menu-${this.app.modules.mods[i].returnSlug()}`).onclick = (e) => {
+        let y = this.app.modules.mods[i].respondTo("appspace");
+        y.container = "saito-main";
+	y.render();
+        document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
+      }
+    });
 
   }
 
