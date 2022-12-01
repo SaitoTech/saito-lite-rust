@@ -3,6 +3,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoMain = require("./lib/main");
 const SaitoMenu = require("./lib/menu");
+const RedSquareSidebar = require("./lib/sidebar");
 const Tweet = require("./lib/tweet");
 const fetch = require('node-fetch');
 const HTMLParser = require('node-html-parser');
@@ -156,12 +157,12 @@ class RedSquare extends ModTemplate {
       this.header = new SaitoHeader(this.app, this);
       this.main = new SaitoMain(this.app, this);
       this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
-      //this.tweet = new Tweet(this.app, this, '.saito-main');
+      this.sidebar = new RedSquareSidebar(this.app, this, '.saito-sidebar.right');
 
       this.addComponent(this.header);
       this.addComponent(this.main);
       this.addComponent(this.menu);
-      //this.addComponent(this.tweet);
+      this.addComponent(this.sidebar);
     }
 
 console.log("RENDER WITH MENU HERE!");

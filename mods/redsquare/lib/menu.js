@@ -14,15 +14,13 @@ class RedSquareMenu {
     //
     // replace element or insert into page
     //
-    let template = RedSquareMenuTemplate(this.app, this.mod);
-
     if (document.querySelector(".redsquare-menu")) {
-      this.app.browser.replaceElementBySelector(template, ".redsquare-menu");
+      this.app.browser.replaceElementBySelector( RedSquareMenuTemplate(this.app, this.mod), ".redsquare-menu");
     } else {
       if (this.container) {
-        this.app.browser.addElementToSelector(template, this.container);
+        this.app.browser.addElementToSelector( RedSquareMenuTemplate(this.app, this.mod), this.container);
       } else {
-        this.app.browser.addElementToDom(template);
+        this.app.browser.addElementToDom( RedSquareMenuTemplate(this.app, this.mod));
       }
     }
 
