@@ -10,6 +10,7 @@
   top: var(--saito-header-height);
   overflow-y: auto;
   overflow-x: hidden;
+
 }
 
 .saito-main {
@@ -25,6 +26,7 @@
 .saito-sidebar {
   background-color: var(--saito-background-color);
   top: calc(var(--saito-header-height) + 1rem);
+
 }
 
 .saito-sidebar > div:not(:last-child) {
@@ -34,6 +36,12 @@
 .saito-sidebar.left {
   width: inherit;
   padding-top: 2rem;
+  position: sticky;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  width: 25rem;
+
 }
 
 .saito-sidebar.right {
@@ -42,6 +50,8 @@
   grid-column-start: 3;
   grid-row: 1/2;
   background-color: var(--saito-background-color);
+  position: sticky;
+  top: 0;
 }
 
 .saito-sidebar.right.mobile {
@@ -65,6 +75,17 @@
   top: 0rem;
   padding-top: 2.5rem;
   margin-top: -2rem;
+}
+
+.saito-page-header-title {
+  color: #222;
+  font-size: 2.5rem;
+  padding-top: 0rem;
+  text-transform: uppercase;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media screen and (max-width: 1500px) {
@@ -126,6 +147,8 @@
     font-size: 2.5rem;
   }
 }
+
+
 
 @media screen and (max-width: 768px) {
   .saito-main.appspace {

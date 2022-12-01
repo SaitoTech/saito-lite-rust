@@ -1,5 +1,5 @@
 /*  Appspace */
-.arcade-tile {
+.game-tile {
   width: 100%;
   overflow-y: hidden;
   border: solid 1px #c89af6;
@@ -8,7 +8,7 @@
   height: fit-content;
 }
 
-.invite-tile-wrapper {
+.game-tile-content {
   width: 100%;
   display: grid;
   grid-template-rows: 1fr;
@@ -17,7 +17,7 @@
   height: 11.2rem;
 }
 
-.game-inset-img {
+.game-tile-image {
   background-size: cover;
   background-position: center;
   border: 1px solid darkorange;
@@ -25,7 +25,7 @@
   margin: 0.5rem;
 }
 
-.game-name {
+.game-tile-game-name {
   margin-left: 0.2em;
   font-size: 2.5em;
   font-weight: bold;
@@ -36,16 +36,16 @@
   color: #fff;
 }
 
-.game-short-description .key {
+.game-tile-game-short-description .key {
   display: inline-block;
 }
 
-.game-short-description .value {
+.game-tile-game-short-description .value {
   display: inline-block;
   margin-left: 8px;
 }
 
-.game-short-description {
+.game-tile-game-short-description {
   display: grid;
   height: 100%;
   align-content: center;
@@ -85,13 +85,13 @@
   position: relative;
 }
 
-.invite-col {
+.game-tile-info {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
 }
 
-.invite-tile-wrapper .tiptext {
+.game-tile-content .tiptext {
   top: 0;
   left: 100%;
   background-color: #444a;
@@ -99,6 +99,11 @@
   width: fit-content;
   display: none;
   border: unset;
+}
+.game-tile-game-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 
 
@@ -125,10 +130,10 @@
 }
 
 @media screen and (max-width: 590px) {
-  .invite-tile-wrapper {
+  .game-tile-content {
     grid-template-columns: 15rem auto auto;
   }
-  .game-short-description {
+  .game-tile-game-short-description {
     display: none;
   }
 }
