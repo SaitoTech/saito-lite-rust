@@ -1,6 +1,7 @@
 const RedSquareTweetTemplate = require("./tweet.template");
 const ImageOverlay = require("./appspace/image-overlay");
 const LinkPreview = require("./link-preview");
+const ImgPreview = require("./img-preview");
 
 class RedSquareTweet {
 
@@ -46,6 +47,7 @@ class RedSquareTweet {
     // subcomponents
     let tweet_container = "#tweet-"+this.tx.transaction.sig+ " > .tweet-body .tweet-preview";
     this.link_preview = new LinkPreview(app, mod, tweet_container, this);
+    this.img_preview = new ImgPreview(app, mod, tweet_container, this);
   }
 
   render() {
@@ -71,8 +73,14 @@ class RedSquareTweet {
     }
 
 
+
+    // render subcomponents
     if (this.link_preview != null) {
       this.link_preview.render();
+    }
+
+    if (this.img_preview != null) {
+      this.img_preview.render();
     }
 
 

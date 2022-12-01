@@ -1,13 +1,15 @@
-const RedSquareLinkPreviewTemplate = require("./link-preview.template");
+const RedSquareImgPreviewTemplate = require("./img-preview.template");
 
-class RedSquareLinkPreview {
+class RedSquareImgPreview {
 
   constructor(app, mod, container = "", tweet) {
     this.app = app;
     this.mod = mod;
     this.container = container;
     this.tweet = tweet;
-    this.name = "RedSquareLinkPreview";
+    this.name = "RedSquareImgPreview";
+    let txmsg = tweet.tx.msg;
+    this.images = txmsg.data.images || [];
   }
 
   render() {
@@ -15,8 +17,8 @@ class RedSquareLinkPreview {
     //
     // replace element or insert into page
     //
-    let element = "#tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .link-preview";
-    let template = RedSquareLinkPreviewTemplate(this.app, this.mod)
+    let element = "#tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .tweet-picture";
+    let template = RedSquareImgPreviewTemplate(this.app, this.mod, this.images);
 
     if (document.querySelector(element)) {
       this.app.browser.replaceElementBySelector(template, element);
@@ -39,5 +41,5 @@ class RedSquareLinkPreview {
 
 }
 
-module.exports = RedSquareLinkPreview;
+module.exports = RedSquareImgPreview;
 

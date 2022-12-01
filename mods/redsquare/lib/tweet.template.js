@@ -9,7 +9,6 @@ module.exports = (app, mod, tweet) => {
   let optional = tweet.tx.optional;
   let notice = "";
   let publickey = tweet.tx.transaction.from[0].add || "";
-  let images = txmsg.data.images || [];
   let text = txmsg.data.text || "";
   let flagged =  optional.flagged ||  null;
   let link_properties =  optional.link_properties ||  null;
@@ -53,7 +52,7 @@ module.exports = (app, mod, tweet) => {
               <div class="tweet-text">${text}</div>
               <div class="tweet-preview tweet-previous-${tweet.tx.transaction.sig}">
 
-                ${returnImages()}  
+   
 
               </div>
               <div class="tweet-controls">

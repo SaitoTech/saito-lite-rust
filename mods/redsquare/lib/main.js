@@ -61,13 +61,16 @@ class RedSquareMain {
     //
     // render framework for app
     //
+
+    let template = RedSquareMainTemplate(this.app, this.mod);
+
     if (document.querySelector(".saito-container")) {
-      this.app.browser.replaceElementBySelector(RedSquareMainTemplate(this.app, this.mod), ".saito-container");
+      this.app.browser.replaceElementBySelector(template, ".saito-container");
     } else {
       if (this.container) {
-        this.app.browser.addElementToSelector(RedSquareMainTemplate(this.app, this.mod), this.container);
+        this.app.browser.addElementToSelector(template, this.container);
       } else {
-        this.app.browser.addElementToDom(RedSquareMainTemplate(this.app, this.mod));
+        this.app.browser.addElementToDom(template);
       }
     }
 
