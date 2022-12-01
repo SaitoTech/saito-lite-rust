@@ -1150,14 +1150,14 @@ class Blockchain {
     //
     // make sure we have enough golden tickets
     //
-    if (
-      golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR &&
-      search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR
-    ) {
-      if (current_block_has_golden_ticket) {
-        golden_tickets_found++;
-      }
-    }
+    // if (
+    //   golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR &&
+    //   search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR
+    // ) {
+    //   if (current_block_has_golden_ticket) {
+    //     golden_tickets_found++;
+    //   }
+    // }
 
     if (
       golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR &&
