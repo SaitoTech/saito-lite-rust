@@ -41,7 +41,6 @@ font imports
   --saito-header-height: 5em;
   --saito-width: 1500px;
 
-  --saito-background-color: #fff;
   --saito-font-color: #3D3D3D;
   --saito-font-color-heavy: #222;
   --saito-font-color-light: #555;
@@ -57,7 +56,8 @@ font imports
 
   --saito-border-radius: 0.5rem;
 
-  --saito-background-light: #dedede;
+  --saito-background-color: #fff;
+  --saito-background-light: #efefef;
 
   /* --saito-blue: #35b2ff;
 
