@@ -1,4 +1,5 @@
 const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
+const RSLinkPreview = require('./appspace/link-preview.template');
 
 module.exports = (app, mod, tweet) => {
 
@@ -23,7 +24,6 @@ module.exports = (app, mod, tweet) => {
   if (app.crypto.isPublicKey(publickey)) {
     profileImg = app.keys.returnIdenticon(publickey);
   }
-
   
   if (text == "" && tweet.retweet_tx != "") {
     //
@@ -35,8 +35,6 @@ module.exports = (app, mod, tweet) => {
     // 
     notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.transaction.from[0].add);
   }
-
-
 
   let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
 
@@ -57,6 +55,8 @@ module.exports = (app, mod, tweet) => {
               <div class="tweet-preview tweet-previous-${tweet.tx.transaction.sig}">
 
                 ${returnImages()}  
+
+                ${RSLinkPreview(app, mod, tweet)}
 
               </div>
               <div class="tweet-controls">
@@ -91,6 +91,7 @@ module.exports = (app, mod, tweet) => {
                 ${imgs}
             </div>`;
   }  
+
 }
 
 

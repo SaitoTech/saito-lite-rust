@@ -23,6 +23,7 @@ class RedSquareTweet {
     this.retweeters = [];
     this.retweet_tx = null;
     this.retweet_tx_sig = null;
+    this.link_properties = null;
 
     this.setKeys(tx.msg.data);
     this.setKeys(tx.optional);
@@ -35,6 +36,13 @@ class RedSquareTweet {
       this.retweet = new RedSquareTweet(this.app, this.mod, (".tweet-preview-"+this.tx.transaction.sig), newtx);
     }
 
+    //this.text = tx.msg.data.text;
+    this.text =  "Og Link preview https://stackoverflow.com/questions/9346211/how-to-kill-a-process-on-a-port-on-ubuntu";
+
+    this.generateTweetProperties(app, mod, 1);
+
+    console.log("tweet properties");
+    console.log(this);
   }
 
   addTweet(tweet) {
@@ -159,6 +167,59 @@ console.log("rendering into: " + this.container);
       }
     }
   }
+
+
+  async generateTweetProperties(app, mod, fetch_open_graph = 0) {
+
+    if (this.text == null) { return this; }
+
+    let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
+    let links = this.text.match(expression);
+
+    if (links != null && links.length > 0) {
+
+      //
+      // save the first link
+      //
+      let link = new URL(links[0]);
+      this.link = link.toString();
+
+      //
+      // youtube link
+      //
+      if (this.link.indexOf("youtube.com") != -1) {
+
+        let urlParams = new URLSearchParams(link.search);
+        let videoId = urlParams.get('v');
+
+        this.youtube_id = videoId;
+
+        return this;
+
+      }
+
+      //
+      // normal link
+      //
+      if (fetch_open_graph == 1) {
+        console.log("Fetching open graph*************************");
+        let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
+        if (res != '') {
+          console.log("RESULT open graph*************************");
+          console.log(res);
+          this.link_properties = res;
+        }
+      }
+
+      return this;
+
+    }
+
+    return this;
+
+  }
+
+
 
   attachEvents() {
     tweet_self = this;

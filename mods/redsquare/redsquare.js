@@ -4,6 +4,9 @@ const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoMain = require("./lib/main");
 const SaitoMenu = require("./lib/menu");
 const Tweet = require("./lib/tweet");
+const fetch = require('node-fetch');
+const HTMLParser = require('node-html-parser');
+const prettify = require('html-prettify');
 
 class RedSquare extends ModTemplate {
 
@@ -230,6 +233,64 @@ console.log("RENDER WITH MENU HERE!");
           }
         }
       );
+    }
+  }
+
+
+  async fetchOpenGraphProperties(app, mod, link) {
+
+    console.log("INSIDEEE open graph*************************");
+    if (this.app.BROWSER == 0) {
+
+      console.log("INSIDEEE IFFF*************************");
+      // required og properties for link preview
+      let og_tags = {
+        'og:exists': false,
+        'og:title': '',
+        'og:description': '',
+        'og:url': '',
+        'og:image': '',
+        'og:site_name': ''
+      };
+
+      console.log(og_tags);
+
+      // fetch source code for link inside tweet
+      // (sites which uses firewall like Cloudflare shows Cloudflare loading
+      //  page when fetching page source)
+      //
+      try {
+        return fetch(link)
+          .then(res => res.text())
+          .then(data => {
+
+            // prettify html - unminify html if minified
+            let html = prettify(data);
+
+            // parse string html to DOM html
+            let dom = HTMLParser.parse(html);
+
+            // fetch meta element for og tags
+            let meta_tags = dom.getElementsByTagName('meta');
+
+            // loop each meta tag and fetch required og properties
+            for (let i = 0; i < meta_tags.length; i++) {
+              let property = meta_tags[i].getAttribute('property');
+              let content = meta_tags[i].getAttribute('content');
+              // get required og properties only, discard others
+              if (property in og_tags) {
+                og_tags[property] = content;
+                og_tags['og:exists'] = true;
+              }
+            }
+
+            return og_tags;
+          });
+      } catch (err) {
+        return {};
+      }
+    } else {
+      return {};
     }
   }
 
