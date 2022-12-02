@@ -1,7 +1,7 @@
 module.exports = () => {
 
    return `
-      <div class="saito-menu">
+      <div class="saito-menu redsquare-menu">
         <ul class="saito-menu-list">
           <li class="redsquare-menu-home">
             <i class="fa-solid fa-house"></i>

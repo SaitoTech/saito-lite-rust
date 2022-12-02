@@ -11,22 +11,37 @@ class RedSquareSidebar {
 
   render() {
 
-    if (document.querySelector(".redsquare-menu")) {
-      this.app.browser.replaceElementBySelector(RedSquareSidebarTemplate(this.app, this.mod), ".redsquare-sidebar");
+console.log("-----------------");
+console.log("RENDERING SIDEBAR");
+console.log("-----------------");
+
+    if (document.querySelector(".redsquare-sidebar")) {
+console.log("-----------------1");
+      this.app.browser.replaceElementBySelector(RedSquareSidebarTemplate(), ".redsquare-sidebar");
     } else {
       if (this.container) {
-        this.app.browser.addElementToSelector(RedSquareSidebarTemplate(this.app, this.mod), this.container);
+console.log("-----------------2");
+console.log(this.container);
+console.log(RedSquareSidebarTemplate());
+
+        this.app.browser.addElementToSelector(RedSquareSidebarTemplate(), this.container);
       } else {
-        this.app.browser.addElementToDom(RedSquareSidebarTemplate(this.app, this.mod));
+console.log("-----------------3");
+        this.app.browser.addElementToDom(RedSquareSidebarTemplate());
       }
     }
+
+console.log("and done");
 
     //
     // appspace modules
     //
-    this.app.modules.returnModulesRespondingTo("redsquare-sidebar").forEach((mod) => {
-      mod.container = ".redsquare-sidebar";
-      mod.render();
+    this.app.modules.returnModulesRespondingTo("rankings").forEach((mod) => {
+console.log("MODULE FOR SIDEBAR: " + mod.returnName());
+      let obj = mod.respondTo("rankings");
+      obj.container = ".redsquare-sidebar";
+      obj.render();
+console.log("we have rendered league");
     });
 
     this.attachEvents();

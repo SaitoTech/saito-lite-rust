@@ -7,18 +7,27 @@ class LeagueRankings {
     this.mod = mod;
     this.container = container;
 
+
+console.log("creating League Rankings");
+ 
     app.connection.on('league-update', (obj) => {
-    })
+console.log("$$$$$$$$");
+console.log("$$$LU$$$");
+console.log("$$$$$$$$");
+    });
 
 
   }
 
   render() {
 
+console.log("RENDERING LEAGUES");
+
     if (document.querySelector(".league-rankings")) {
       this.app.browser.replaceElementBySelector(LeagueRankingsTemplate(), ".league-rankings");
     } else {
       if (this.container) {
+console.log("rendering into: " + this.container);
         this.app.browser.addElementToSelector(LeagueRankingsTemplate(), this.container);
       } else {
         this.app.browser.addElementToDom(LeagueRankingsTemplate());
@@ -30,8 +39,8 @@ class LeagueRankings {
     // add content to league rankings
     //
     let leagues = this.mod.filterLeagues(this.app);
+    let html = "";
     if (leagues.length > 0){
-      let html = "";
       let cnt = 0;
       leagues.forEach(l => {
         if (l.myRank > 0) {
@@ -53,7 +62,8 @@ class LeagueRankings {
         }
       });
     }
-    this.app.browser.addElementToSelector(html, "league-rankings > saito-table");
+console.log("ADDING HTML: " + html);
+    this.app.browser.addElementToSelector(html, ".league-rankings .saito-table");
 
 
     this.attachEvents();

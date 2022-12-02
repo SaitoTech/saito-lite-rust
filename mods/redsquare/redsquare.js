@@ -143,6 +143,7 @@ class RedSquare extends ModTemplate {
     //
     this.main.render();
     this.menu.render();
+    this.sidebar.render();
 
     //
     // add tweet to tweets_sigs_hmap
