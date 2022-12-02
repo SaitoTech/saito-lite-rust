@@ -5,6 +5,7 @@ const ImgPreview = require("./img-preview");
 class RedSquareTweet {
 
   constructor(app, mod, container = "", tx) {
+
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -51,39 +52,29 @@ class RedSquareTweet {
 
   render() {
 
-    //
-    // replace element or insert into page
-    //
-    // if (document.querySelector(".redsquare-menu")) {
-    //   this.app.browser.replaceElementBySelector(RedSquareTweetTemplate(this.app, this.mod), ".redsquare-menu");
-    // } else {
-      if (this.container) {
-        this.app.browser.addElementToSelector(RedSquareTweetTemplate(this.app, this.mod, this), this.container);
-      } else {
-        this.app.browser.addElementToDom(RedSquareTweetTemplate(this.app, this.mod, this));
-      }
-    //}
+    let myqs = `.tweet-${this.tx.transaction.sig}`;
 
     //
-    // this should render any (re)tweet into the tweet-preview.
+    // replace or add
+    //
+    if (document.querySelector(myqs)) {
+       this.app.browser.replaceElementBySelector(RedSquareTweetTemplate(this.app, this.mod), myqs);
+    } else {
+      this.app.browser.addElementToSelector(RedSquareTweetTemplate(this.app, this.mod, this), this.container);
+    }
+
+    //
+    // create possible subcomponents
     //
     if (this.retweet != null) {
       this.retweet.render();
     }
-
-
-
-    // render subcomponents
-    // position of subcomponents within post is controlled by which components is rendered first
     if (this.img_preview != null) {
       this.img_preview.render();
     }
-
-
     if (this.link_preview != null) {
       this.link_preview.render();
     }
-
 
     this.attachEvents();
 

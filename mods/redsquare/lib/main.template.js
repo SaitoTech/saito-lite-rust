@@ -1,5 +1,5 @@
 
-module.exports = (app, mod) => {
+module.exports = () => {
 
    return `
     <div id="saito-container" class="saito-container">

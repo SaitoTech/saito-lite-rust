@@ -22,11 +22,7 @@ console.log("league update processed here!");
     if (document.querySelector(".league-rankings")) {
       this.app.browser.replaceElementBySelector(LeagueRankingsTemplate(), ".league-rankings");
     } else {
-      if (this.container) {
-        this.app.browser.addElementToSelector(LeagueRankingsTemplate(), this.container);
-      } else {
-        this.app.browser.addElementToDom(LeagueRankingsTemplate());
-      }
+      this.app.browser.addElementToSelector(LeagueRankingsTemplate(), this.container);
     }
 
 

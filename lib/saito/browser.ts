@@ -498,9 +498,6 @@ class Browser {
       let obj = document.getElementById(id);
       if (obj) {
         obj.outerHTML = html;
-      } else {
-        console.warn(`cannot find ${id} to replace, so adding to DOM`);
-        this.app.browser.addElementToDom(html);
       }
     }
   }
@@ -513,9 +510,6 @@ class Browser {
       let obj = document.getElementById(id);
       if (obj) {
         this.app.browser.addElementToDom(html, obj);
-      } else {
-        console.warn(`cannot find ${id} to add to, so adding to DOM`);
-        this.app.browser.addElementToDom(html);
       }
     }
   }
@@ -528,9 +522,6 @@ class Browser {
       let obj = document.getElementById(id);
       if (obj) {
         this.app.browser.prependElementToDom(html, obj);
-      } else {
-        console.warn(`cannot find ${id} to prepend to, so adding to DOM`);
-        this.app.browser.prependElementToDom(html);
       }
     }
   }
@@ -550,9 +541,18 @@ class Browser {
       let obj = document.querySelector(selector);
       if (obj) {
         obj.outerHTML = html;
-      } else {
-        console.warn(`cannot find ${selector} to replace, so adding to DOM`);
-        this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
+  addElementToSelectorOrDom(html, selector = "") {
+    if (selector === "") {
+      console.warn("no selector provided to add to, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
       }
     }
   }
@@ -565,9 +565,6 @@ class Browser {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
-      } else {
-        console.warn(`cannot find ${selector} to add to, so adding to DOM`);
-        this.app.browser.addElementToDom(html);
       }
     }
   }
@@ -580,9 +577,6 @@ class Browser {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.prependElementToDom(html, container);
-      } else {
-        console.warn(`cannot find ${selector} to prepend to, so adding to DOM`);
-        this.app.browser.prependElementToDom(html);
       }
     }
   }
@@ -596,9 +590,6 @@ class Browser {
       let obj = document.querySelector(classname);
       if (obj) {
         obj.outerHTML = html;
-      } else {
-        console.warn(`cannot find classname ${classname} provided to prepend to, so adding direct to DOM`);
-        this.app.browser.addElementToDom(html);
       }
     }
   }
@@ -612,9 +603,6 @@ class Browser {
       let container = document.querySelector(classname);
       if (container) {
         this.app.browser.addElementToElement(html, container);
-      } else {
-        console.warn(`cannot find classname ${classname} provided to add to, so adding direct to DOM`);
-        this.app.browser.addElementToDom(html);
       }
     }
   }
@@ -628,9 +616,6 @@ class Browser {
       let container = document.querySelector(classname);
       if (container) {
         this.app.browser.prependElementToDom(html, container);
-      } else {
-        console.warn(`cannot find classname ${classname} provided to prepend to, so adding direct to DOM`);
-        this.app.browser.prependElementToDom(html);
       }
     }
   }

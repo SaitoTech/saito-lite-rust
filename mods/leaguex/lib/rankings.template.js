@@ -1,4 +1,4 @@
-module.exports = LeagueRankingsTemplate = (app, mod) => {
+module.exports = LeagueRankingsTemplate = () => {
 
     return `
 
@@ -12,4 +12,6 @@ module.exports = LeagueRankingsTemplate = (app, mod) => {
 
     `;
 };
+
+
 
