@@ -3,8 +3,6 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const LeagueRankings = require("./lib/rankings");
 
 
-
-
 class League extends ModTemplate {
 
   constructor(app) {
@@ -40,6 +38,7 @@ class League extends ModTemplate {
 
 
   respondTo(type){
+console.log("resptoname: " + this.returnName());
     if (type == "rankings") {
 console.log("returning new Rankings element...");
       let r = new LeagueRankings(this.app, this);
@@ -172,7 +171,7 @@ console.log("returning new Rankings element...");
       }
       if (le.admin == app.wallet.returnPublicKey() || le.myRank > 0){
         leagues_to_display.push(le);
-      }else if (le.type == "public"){
+      } else if (le.type == "public"){
         //Only show public leagues if there are available slots or I am a member
         if (le.max_players == 0 || le?.playerCnt < le.max_players){
           leagues_to_display.push(le);

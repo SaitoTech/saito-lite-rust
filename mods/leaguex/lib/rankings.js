@@ -31,6 +31,8 @@ console.log("league update processed here!");
     //
     let leagues = this.mod.filterLeagues(this.app);
     let html = "";
+console.log("LEAGUES LENGTH: " + leagues.length);
+console.log(JSON.stringify(leagues));
     if (leagues.length > 0){
       let cnt = 0;
       leagues.forEach(l => {
@@ -53,6 +55,7 @@ console.log("league update processed here!");
         }
       });
     }
+console.log("HTML: " + html);
     this.app.browser.addElementToSelector(html, ".league-rankings .saito-table");
 
 

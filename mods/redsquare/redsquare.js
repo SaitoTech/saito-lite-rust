@@ -169,8 +169,8 @@ class RedSquare extends ModTemplate {
   render() {
 
     if (this.main == null) {
-      this.header = new SaitoHeader(this.app, this);
       this.main = new SaitoMain(this.app, this);
+      this.header = new SaitoHeader(this.app, this);
       this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
       this.sidebar = new RedSquareSidebar(this.app, this, '.saito-sidebar.right');
 
@@ -185,13 +185,13 @@ class RedSquare extends ModTemplate {
 
 
 
-  loadNotifications(increment = 1, post_load_callback) {
+  loadNotifications(increment = 1, post_load_callback=null) {
 
-    mod.app.storage.loadTransactions("RedSquare", (50 * increment), (txs) => {
+    this.app.storage.loadTransactions("RedSquare", (50 * increment), (txs) => {
 
-      mod.ntfs_num = txs.length;
+      //mod.ntfs_num = txs.length;
       let first_index = (increment - 1) * 50
-      mod.max_ntfs_num = 50 * increment;
+      //mod.max_ntfs_num = 50 * increment;
 
       let tx_to_add = txs.splice(first_index)
 
@@ -206,6 +206,11 @@ class RedSquare extends ModTemplate {
 
 
   loadTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false, is_server_request = false) {
+
+console.log("FETCHING TWEETS");
+    let render_home = false;
+    if (this.tweets.length == 0) { render_home = true; }
+
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
 
       "RedSquare",
@@ -213,6 +218,7 @@ class RedSquare extends ModTemplate {
       sql,
 
       async (res) => {
+console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
         if (res.rows) {
           res.rows.forEach(row => {
             let tx = new saito.default.transaction(JSON.parse(row.tx));
@@ -233,6 +239,9 @@ class RedSquare extends ModTemplate {
           });
         }
 
+	if (render_home) {
+	  app.connection.emit("redsquare-home-render-request");
+	}
       }
     );
   }
@@ -247,17 +256,17 @@ class RedSquare extends ModTemplate {
   //
   async onPeerHandshakeComplete(app, peer) {
 
-    if (mod.app.BROWSER == 1) {
-
+    if (this.app.BROWSER == 1) {
 
       if (this.tweets.length == 0) {
-
+	
+	let mod = this;
         let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-        this.loadTweets(app, mod, sql, function (app, mod) {
+        this.loadTweets(this.app, this, sql, function (app, mod) {
           console.log("Main - TWEETS FETCH FROM PEER: " + mod.tweets.length);
           this.app.connection.emit("redsquare-tweet-render-request");
         });
-	this.loadTransactions();
+	this.loadNotifications();
 
       }
 
