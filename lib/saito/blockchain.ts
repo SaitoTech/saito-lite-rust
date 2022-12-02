@@ -420,7 +420,7 @@ class Blockchain {
 
   async addBlockSuccess(block: Block) {
     console.log("blockchain.addBlockSuccess : ", block.returnHash());
-    // this.app.blockring.print();
+    this.app.blockring.print();
 
     // console.log("ADD BLOCK SUCCESS : " + block.returnHash());
 
@@ -1171,9 +1171,9 @@ class Blockchain {
       //
       // TODO - browsers might want to implement this check somehow
       //
-      if (this.app.BROWSER != 1 && this.app.SPVMODE == 0) {
+      // if (this.app.BROWSER != 1 && this.app.SPVMODE == 0) {
         return false;
-      }
+      // }
     }
 
     return true;

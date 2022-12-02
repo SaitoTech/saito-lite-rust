@@ -94,6 +94,7 @@ class Miner {
           transaction.sign(this.app);
           this.app.network.propagateTransaction(transaction);
           this.stopMining();
+          return;
         }
       }
     }
