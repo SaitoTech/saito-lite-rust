@@ -30,8 +30,6 @@ module.exports = LeagueRankingsTemplate = (app, mod) => {
 			}
 		});
 
-	  }
-
 	  html += `</div>`;
 	}
     return html;
