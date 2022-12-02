@@ -44,6 +44,7 @@
 
 .saito-redsquare-actions-buttons {
   position: relative;
+  display: flex;
 }
 
 
@@ -51,6 +52,7 @@
   display: flex;
   flex-flow: row-reverse;
   right: 1rem;
+  margin-left: auto;
 }
 
 .redsquare-actions-container .saito-button-secondary {
