@@ -124,7 +124,6 @@ class Monarchy extends GameTemplate {
 
     this.sizer.render(this.app, this);
     this.sizer.attachEvents(this.app, this, ".cardstacks");
-    //$(".cardstacks").draggable();
 
     //
     // add card events -- text shown and callback run if there
@@ -1235,13 +1234,29 @@ initializeGame(game_id) {
       }
     }
 
+    html += `<i id="board-display" class="board-display fas fa-recycle"></i>`;
+
     if (document.querySelector(".cardstacks")){
       $(".cardstacks").html(html);
     }else{
-      this.app.browser.addElementToId(`<div class="cardstacks">${html}</div>`, "gameboard");
+      this.app.browser.addElementToId(`<div class="cardstacks">${html}</div>`, "main");
       $(".cardstacks").draggable();
     }
     this.attachCardboxEvents();
+
+    //Toggle card pile configuration
+
+    $("#board-display").off();
+    $("#board-display").on("click", ()=>{
+      if ($(".cardstacks").hasClass("large")){
+        $(".cardstacks").removeClass("large");
+        $(".cardstacks").addClass("long");
+      }else if ($(".cardstacks").hasClass("long")){
+        $(".cardstacks").removeClass("long");
+      }else{
+        $(".cardstacks").addClass("large");
+      }
+    });
 
     //Show Discard/DrawPiles
 
@@ -1268,7 +1283,7 @@ initializeGame(game_id) {
     if (document.querySelector(".player_decks")){
       this.app.browser.replaceElementBySelector(html, ".player_decks");
     }else{
-      this.app.browser.addElementToId(html, "gameboard");
+      this.app.browser.addElementToId(html, "main");
     }
 
   }
