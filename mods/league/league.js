@@ -9,7 +9,6 @@ const ViewLeagueDetails = require("./lib/overlays/view-league-details");
 const InvitationLink = require("./../../lib/saito/new-ui/modals/invitation-link/invitation-link");
 const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const GameOptionsSelect = require("./../../lib/saito/new-ui/game-options-select/game-options-select");
-const Rankings = require("./lib/rankings");
 
 class League extends ModTemplate {
 
@@ -46,10 +45,6 @@ class League extends ModTemplate {
 
 
   respondTo(type){
-    if (type == "rankings") {
-      let r = new Rankings(this.app, this);
-      return r;
-    }
     if (type == 'header-dropdown'){
       return {
           name: this.appname ? this.appname : this.name,

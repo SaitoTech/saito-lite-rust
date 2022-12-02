@@ -45,14 +45,22 @@ class RedSquareMain {
       this.components[this.render_component].render();
     });
 
-    this.app.connection.on("redsquare-tweet-render-request", (tweet) => {
+    //
+    // this fires when a tweet is added to our tree
+    //
+    this.app.connection.on("redsquare-tweet-added", (tweet_sig) => {
       //this.app.browser.removeElementBySelector(this.components[this.render_component].container);
       //if (this.render_component == "home") {
       //  tweet.render();
       //}
     });
 
-
+    //
+    // this fires when the user has asked to view a tweet / thread
+    //
+    this.app.connection.on("redsquare-tweet-render-request", (tweet_sig) => {
+      tweet.render();
+    });
 
   }
 

@@ -50,6 +50,11 @@ class RedSquareTweet {
     this.img_preview = new ImgPreview(app, mod, tweet_container, this);
   }
 
+  //
+  async generateTweetProperties() {
+    return;
+  }
+
   render() {
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
