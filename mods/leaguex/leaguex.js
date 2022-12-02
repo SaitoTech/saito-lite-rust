@@ -1,15 +1,9 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
-const LeagueMainContainer = require('./lib/main/container');
-const ArcadeLeague = require('./lib/components/arcade-league');
-const ForumLeague = require('./lib/components/forum-league');
-const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
-const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
-const ViewLeagueDetails = require("./lib/overlays/view-league-details");
-const InvitationLink = require("./../../lib/saito/new-ui/modals/invitation-link/invitation-link");
-const GameCryptoTransferManager = require("./../../lib/saito/new-ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
-const GameOptionsSelect = require("./../../lib/saito/new-ui/game-options-select/game-options-select");
-const Rankings = require("./lib/rankings");
+const LeagueRankings = require("./lib/rankings");
+
+
+
 
 class League extends ModTemplate {
 
@@ -47,28 +41,9 @@ class League extends ModTemplate {
 
   respondTo(type){
     if (type == "rankings") {
-      let r = new Rankings(this.app, this);
+console.log("returning new Rankings element...");
+      let r = new LeagueRankings(this.app, this);
       return r;
-    }
-    if (type == 'header-dropdown'){
-      return {
-          name: this.appname ? this.appname : this.name,
-          icon_fa: this.icon_fa,
-          browser_active: this.browser_active,
-          slug: this.returnSlug()
-      };
-    }
-
-    if (type == "user-leagues"){
-      let user_created_leagues = [];
-
-      for (let league of this.leagues){
-        if (league.admin !== "saito"){
-          user_created_leagues.push(league);
-        }
-      }
-
-      return user_created_leagues;
     }
     return super.respondTo(type);
   }
@@ -186,21 +161,6 @@ class League extends ModTemplate {
 
 
   render(app, mod) {
-
-    if (!this.ui_initialized) {
-      this.main = new LeagueMainContainer(app, this)
-      this.addComponent(this.main);
-      this.addComponent(new SaitoHeader(app, this));
-
-      this.ui_initialized = true;
-    }
-
-    super.render(app, this);
-
-    if (this.overlay == null) {
-      this.overlay = new SaitoOverlay(app);
-    }
-
   }
 
   filterLeagues(app, include_default = true){
@@ -231,54 +191,11 @@ class League extends ModTemplate {
     return leagues_to_display;
   }
 
-  /**
-    Create the html for an arcade-style list of my leagues and open leagues,
-    inserted into elem
-  */
-  renderArcadeTab(app, mod){
-    if (!app.BROWSER) { return; }
-
-    let tab = document.getElementById("league-hero");
-
-    if (tab){
-      tab.innerHTML = "";
-
-      let leagues_to_display = this.filterLeagues(app);
-      for (let le of leagues_to_display){
-        if (le.admin === "saito"){
-          let altElm = document.getElementById(`forum-topic-${le.id.toLowerCase()}`);
-          let al = new ForumLeague(app, this, le);
-          al.render(app, this, altElm);
-        }
-
-        if (le.myRank > 0 || le.admin !== "saito"){
-          let al = new ArcadeLeague(app, this, le);
-          al.render(app, this, tab);
-        }
-      }
-    }else{
-      //Probably on initialization screen
-      //console.error("League cannot render in Arcade");
-    }
-  }
-
-  renderLeagues(app, mod){
-    if (this.app.BROWSER == 0){return;}
-
-    if (this.browser_active){
-      this.main.render(app, this);
-    } else {
-      app.connection.emit("league-update", {});
-    }
-  }
-
   resetLeagues(){
     this.leagues = [];
     this.leagueCount = 0;
   }
 
-
-  //Lite clients only
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER == 0){ return; }
 
@@ -467,6 +384,17 @@ class League extends ModTemplate {
     }
     this.renderLeagues(this.app, this);
   }
+
+  renderLeagues(app, mod){
+    if (this.app.BROWSER == 0){return;}
+
+    if (this.browser_active){
+      this.main.render(app, this);
+    } else {
+      app.connection.emit("league-update", {});
+    }
+  }
+
 
   addPlayer(tx){
     let txmsg = tx.returnMessage();

@@ -233,6 +233,12 @@ class Mods {
     return null;
   }
 
+  returnModulesRespondingTo(request) {
+    return this.mods.filter((mod) => {
+      return mod.respondTo(request) != null;
+    });
+  }
+
   respondTo(request) {
     return this.mods.filter((mod) => {
       return mod.respondTo(request) != null;
@@ -244,7 +250,9 @@ class Mods {
     this.mods.forEach((mod) => {
       const itnerface = mod.respondTo(request);
       if (itnerface != null) {
-        compliantInterfaces.push({ ...itnerface, modname: mod.name });
+        if (Object.keys(itnerface)) {
+          compliantInterfaces.push({ ...itnerface, modname: mod.returnName() });
+        }
       }
     });
     return compliantInterfaces;

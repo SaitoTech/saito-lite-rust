@@ -4,8 +4,9 @@ const RedSquareImageOverlayTemplate = require('./image-overlay.template');
 
 class RedSquareImageOverlay {
 
-  constructor(app, img) {
+  constructor(app, mod, img) {
     this.app = app;
+    this.mod = mod;
     this.saito_overlay = new SaitoOverlay(app, false, true);
     this.img = img;
     this.img_index = img.getAttribute("data-index");;
@@ -17,9 +18,9 @@ class RedSquareImageOverlay {
     this.setImgCount();
   }
 
-  render(app, mod) {
+  render() {
     this_self = this;
-    this.saito_overlay.show(app, mod, RedSquareImageOverlayTemplate(app, mod));
+    this.saito_overlay.show(this.app, this.mod, RedSquareImageOverlayTemplate(this.app, this.mod));
 
     // if tweet has only one img, hide left right arrows
     if (this.tweetImgs.length == 1) {
@@ -58,11 +59,11 @@ class RedSquareImageOverlay {
 
     });
 
-    this.attachEvents(app, mod);
+    this.attachEvents();
   }
 
 
-  attachEvents(app, mod) {
+  attachEvents() {
     this_self = this;
     document.getElementById("tweet-img-arrow-box-left").addEventListener('click', function(e){
       this_self.hideAllImgs();

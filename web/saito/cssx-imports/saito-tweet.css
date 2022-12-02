@@ -1,6 +1,6 @@
 .tweet {
     cursor: pointer;
-    padding: 2rem 1rem 0 0;
+    padding: 2rem 1rem 0;
     border-top: 1px solid transparent;
     border-bottom: 1px solid #a5a5a533;
     position: relative;
@@ -17,7 +17,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, .1);
     top: 5.5rem;
-    left: 1.7rem;
+    left: 2.7rem;
 }
 
 .tweet:hover {
@@ -98,7 +98,7 @@
     left: 0;
     height: 27.1rem;
     width: 100%;
-    background: linear-gradient(180deg, transparent, #ffff);
+    background: linear-gradient(180deg, transparent, var(--saito-background-color));
     transition: all 2s ease;
 }
 
@@ -108,7 +108,7 @@
     bottom: 5rem;
     color: var(--saito-primary);
     font-size: smaller;
-    background: #fff;
+    background: var(--saito-background-color);
     height: 3rem;
     z-index: 999;
     text-align: center;
@@ -118,6 +118,14 @@
     left: 50%;
     transform: translateX(-50%);
     transition: all 1s l;
+}
+
+.tweet:hover {
+    background-color: var(--saito-background-light);
+}
+
+.tweet:hover .tweet-text.preview::before {
+    background: linear-gradient(180deg, transparent, var(--saito-background-light));
 }
 
 .tweet-controls {
