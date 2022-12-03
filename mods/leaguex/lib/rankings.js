@@ -8,7 +8,8 @@ class LeagueRankings {
     this.container = container;
 
     app.connection.on('league-update', (obj) => {
-console.log("league update processed here!");
+console.log("ON LEAGUE UPDATE");
+      this.render();
     });
 
 

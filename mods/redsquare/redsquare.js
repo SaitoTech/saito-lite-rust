@@ -76,7 +76,7 @@ class RedSquare extends ModTemplate {
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, "", tx);
-   
+
     //
     // maybe this needs to go into notifications too
     //
@@ -109,9 +109,9 @@ class RedSquare extends ModTemplate {
       //
       if (!this.tweets_sigs_hmap[tweet.tx.transaction.sig]) {
 
-	//
-	// check where we insert the tweet
-	//
+        //
+        // check where we insert the tweet
+        //
         let insertion_index = 0;
         if (prepend == 0) {
           for (let i = 0; i < this.tweets.length; i++) {
@@ -124,9 +124,9 @@ class RedSquare extends ModTemplate {
           }
         }
 
-	//
-	// and insert it
-	//
+        //
+        // and insert it
+        //
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
@@ -145,9 +145,9 @@ class RedSquare extends ModTemplate {
         }
       }
 
-    //
-    // this is a comment
-    //
+      //
+      // this is a comment
+      //
     } else {
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
@@ -234,7 +234,7 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
               let x = JSON.parse(row.link_properties);
               tx.optional.link_properties = x;
             } catch (err) { }
-	    // this will render the event
+            // this will render the event
             this.addTweet(tx);
           });
         }
@@ -256,7 +256,7 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
   //
   async onPeerHandshakeComplete(app, peer) {
 
-    if (this.app.BROWSER == 1) {
+    if (app.BROWSER == 1) {
 
       if (this.tweets.length == 0) {
 	
@@ -705,7 +705,7 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
   save() {
     this.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
     this.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
-    this.app.options.redsquare = this.redsquare;    
+    this.app.options.redsquare = this.redsquare;
     this.app.storage.saveOptions();
   }
 }
