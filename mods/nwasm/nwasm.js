@@ -303,7 +303,6 @@ class Nwasm extends GameTemplate {
         message.data = {};
         message.data.collection = "Nwasm";
         app.network.sendRequestWithCallback(message.request, message.data, function(res) {
-console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
 	  if (res.length > 0) {
             nwasm_mod.addCollectionToLibrary(peer.peer.publickey, res);
             nwasm_mod.updateVisibleLibrary();
