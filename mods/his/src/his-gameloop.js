@@ -115,7 +115,6 @@ this.game.queue.push("is_testing");
 	}
 
 
-
 	if (mv[0] === "deactivate_minor_power") {
 
 	  let faction = mv[1];
@@ -2249,8 +2248,6 @@ console.log("d");
 	  this.updateLog("Attacker Units Remaining: "+attacker_land_units_remaining);
 	  this.updateLog("Defender Units Remaining: "+defender_land_units_remaining);
 
-console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
-
           //
           // conduct retreats
           //
@@ -2259,17 +2256,12 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
             for (let f in faction_map) {
               let can_faction_retreat = 0;
               if (faction_map[f] === attacker_faction) {
-console.log("evaluating for: " + f);
                 for (let z = 0; z < space.neighbours.length; z++) {
-console.log("evaluating for retreat to: " + space.neighbours[z]);
                   let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], "");
                   if (fluis > 0) {
-console.log("yes, we can retreat here...");
                     can_faction_retreat = 1;
                   }
                 }
-
-console.log("can the attackers retreat: " + can_faction_retreat);
 
                 if (can_faction_retreat == 1) {
                   this.game.queue.push("purge_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
@@ -2286,12 +2278,9 @@ console.log("can the attackers retreat: " + can_faction_retreat);
             for (let f in faction_map) {
               let can_faction_retreat = 0;
               if (faction_map[f] === defender_faction) {
-console.log("evaluating for 2: " + f);
                 for (let z = 0; z < space.neighbours.length; z++) {
-console.log("evaluating for retreat to 2: " + space.neighbours[z]);
                   let fluis = this.canFactionRetreatToSpace(f, space.neighbours[z], his_self.game.state.attacker_comes_from_this_spacekey);
                   if (fluis > 0) {
-console.log("yes, we can retreat 2");
                     can_faction_retreat = 1;
                   }
                 }
@@ -2304,11 +2293,6 @@ console.log("yes, we can retreat 2");
             this.game.queue.push("player_evaluate_fortification\t"+attacker_faction+"\t"+his_self.returnPlayerOfFaction(defender_faction)+"\t"+defender_faction+"\t"+space.key);
           }
 
-console.log("about to go into player evaluate fortification");
-console.log(JSON.stringify(this.game.queue));
-console.log("done");
-
-
           //
           // redisplay
           //
@@ -2317,6 +2301,22 @@ console.log("done");
           return 1;
 
         }
+
+
+ 	if (mv[0] === "destroy_unit") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let unit_idx = parseInt(mv[3]);
+
+	  if (this.game.space[spacekey]) {
+	    this.game.space[spacekey].units[faction].splice(i, 1);
+	  }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
 
  	if (mv[0] === "destroy_units") {
 

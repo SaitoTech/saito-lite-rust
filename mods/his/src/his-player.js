@@ -401,6 +401,104 @@
   }
 
 
+  playerRetainUnitsWithFilter(faction, filter_func, num_to_retain) {
+
+    let units_available = [];
+    let units_to_retain = [];
+
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units[faction]) {
+	for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (filter_func(key, i) {
+	    units_available.push({spacekey : key, idx : i});
+	  }
+	}
+      }
+    }
+
+    let selectUnitsInterface = function(his_self, units_to_retain, units_available, selectUnitsInterface) {
+
+      let msg = "Select Units to Retain: ";
+      let html = "<ul>";
+      for (let i = 0; i < units_available.length; i++) {
+	let spacekey = units_available[i].spacekey;
+	let unit = his_self.game.spaces[spacekey].units[faction][units_available[i].idx];
+        if (units_to_retain.includes(parseInt(i))) {
+          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} - (${units_available[i].spacekey})</li>`;
+        } else {
+          html += `<li class="option" id="${i}">${units_available[i].name} - (${units_available[i].spacekey})</li>`;
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+
+console.log("UNITS AVAILABLE: " + JSON.stringify(units_available));
+console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
+
+	  //
+	  // moves prepended to last removed first
+	  //
+	  for (let i = units_available.length; i >= 0; i--) {
+	    if (!units_to_retain.includes(i)) {
+	      his_self.prependMove("destroy_unit\t"+faction+"\t"+units_available[i].idx);
+	    }
+	  }
+	  his_self.endTurn();
+	  return;
+
+	}
+
+
+	//
+	// add unit to units available
+	//
+        if (units_to_retain.includes(id)) {
+          let idx = units_to_retain.indexOf(id);
+          if (idx > -1) {
+            units_to_move.splice(idx, 1);
+          }
+        } else {
+	  units_to_retain.push(id);
+	}
+
+	//
+	// if this is max to retain, we end as well
+	//
+	if (units_to_retain.length === num_to_retain) {
+
+	  //
+	  // moves prepended to last removed first
+	  //
+	  for (let i = units_available.length; i >= 0; i--) {
+	    if (!units_to_retain.includes(i)) {
+	      his_self.prependMove("destroy_unit\t"+faction+"\t"+units_available[i].idx);
+	    }
+	  }
+	  his_self.endTurn();
+	  return;
+
+	}
+
+      });
+    }
+
+    selectUnitsInterface(his_self, units_to_retain, units_available, selectUnitsInterface);
+
+    return 0;
+
+  }
+
+
+
 
   returnPlayerFactions(player) {
     return this.game.players_info[player-1].factions;
@@ -1288,13 +1386,13 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
   }
 
 
-/******
-  async playerSelectMultipleChoicesFromOptions(his_self, player, faction, options, num=1, must_select_max=true) {
+  async playerSelectOptions(options, num=1, must_select_max=true, mycallback=null) {
 
+    let his_self = this;
     let options_selected = [];
     let cancel_func = null;
 
-    let selectOptionsInterface = function(his_self, options_selected, selectOptionsInterface) {
+    let selectOptionsInterface = async function(his_self, options_selected, selectOptionsInterface) {
 
       let remaining = num - options_selected.length;
 
@@ -1310,51 +1408,56 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       html += `<li class="option" id="end">finish</li>`;
       html += "</ul>";
 
-	  his_self.updateStatusWithOptions(msg, html);
+      his_self.updateStatusWithOptions(msg, html);
 
-          $('.option').off();
-          $('.option').on('click', function () {
+      $('.option').off();
+      $('.option').on('click', function () {
 
-            let id = $(this).attr("id");
+          let id = $(this).attr("id");
 
-	    if (id === "end") {
-	      selectDestinationInterface(his_self, units_to_move);
+	  if (id === "end") {
+	    if (mycallback != null) {
+	      mycallback(options_selected);
 	      return;
-	    }
-
-	    if (units_to_move.includes(id)) {
-	      let idx = units_to_move.indexOf(id);
-	      if (idx > -1) {
-  		units_to_move.splice(idx, 1);
-	      }
 	    } else {
-	      if (!units_to_move.includes(parseInt(id))) {
-	        units_to_move.push(parseInt(id));
-	      } else {
-		for (let i = 0; i < units_to_move.length; i++) {
-		  if (units_to_move[i] === parseInt(id)) {
-		    units_to_move.splice(i, 1);
-		    break;
-		  }
+	      return options_selected;
+	    }
+	  }
+
+          if (options_selected.includes(id)) {
+	    let idx = options_selected.indexOf(id);
+	    if (idx > -1) {
+  	      options_selected.splice(idx, 1);
+	    }
+	  } else {
+	    if (!options_selected.includes(id)) {
+	      options_selected.push(id);
+	    } else {
+	      for (let i = 0; i < options_selected.length; i++) {
+	        if (options_selected[i] === id) {
+		  options_selected.splice(i, 1);
+		  break;
 		}
 	      }
 	    }
+	  }
 
-	    selectOptionsInterface(his_self, options_selected, selectOptionsInterface);
-	  });
-	}
-	selectOptionsInterface(his_self, options_selected, selectUnitsInterface);
+	  if (options_selected.length == num) {
+	    if (mycallback != null) {
+	      mycallback(options_selected);
+	      return;
+	    } else {
+	      return options_selected;
+	    }
+	  }
+
+
+	  return await selectOptionsInterface(his_self, options_selected, selectOptionsInterface);
+      });
+
+    return await selectOptionsInterface(his_self, options_selected, selectUnitsInterface);
 	
-      },
-
-      cancel_func,
-
-      true,
-
-    );
-
   }
-*****/
 
 
   playerEvaluateNavalRetreatOpportunity(faction, spacekey) {

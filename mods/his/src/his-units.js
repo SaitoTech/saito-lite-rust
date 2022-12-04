@@ -308,7 +308,7 @@
   }
 
 
-
+  isCommitted(debater) { return isDebaterCommitted(debater); }
   isDebaterCommitted(debater) {
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
