@@ -12724,11 +12724,12 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
             });
           return 0;
         } else {
-          this.updateLog(`${this.cardToText(card)} doesn't trigger because UK not controlled by US`);
         }
 
         return 0;
-
+      
+      } else {
+        this.updateLog(`${this.cardToText(card)} doesn't trigger because UK not controlled by US`);
       }
 
       return 1;

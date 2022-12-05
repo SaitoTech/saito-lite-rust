@@ -55,11 +55,12 @@
             });
           return 0;
         } else {
-          this.updateLog(`${this.cardToText(card)} doesn't trigger because UK not controlled by US`);
         }
 
         return 0;
-
+      
+      } else {
+        this.updateLog(`${this.cardToText(card)} doesn't trigger because UK not controlled by US`);
       }
 
       return 1;
