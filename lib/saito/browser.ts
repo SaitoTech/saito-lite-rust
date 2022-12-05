@@ -9,7 +9,7 @@ var marked = require("marked");
 var sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
-const UserMenu = require("./new-ui/modals/user-menu/user-menu");
+const UserMenu = require("./ui/modals/user-menu/user-menu");
 
 class Browser {
   public app: any;
