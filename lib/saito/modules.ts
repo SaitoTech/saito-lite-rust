@@ -71,7 +71,6 @@ class Mods {
   }
 
   async handlePeerRequest(message, peer: Peer, mycallback = null) {
-    // console.log("HPR");
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
         this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);
