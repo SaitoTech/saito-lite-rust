@@ -8,7 +8,7 @@ class LeagueRankings {
     this.container = container;
 
     app.connection.on('league-update', (obj) => {
-console.log("league update processed here!");
+      this.render();
     });
 
 
@@ -25,26 +25,25 @@ console.log("league update processed here!");
       this.app.browser.addElementToSelector(LeagueRankingsTemplate(), this.container);
     }
 
-
     //
     // add content to league rankings
     //
-    let leagues = this.mod.filterLeagues(this.app);
+    let leagues = this.mod.returnLeagues(this.app);
     let html = "";
     if (leagues.length > 0){
       let cnt = 0;
       leagues.forEach(l => {
-        if (l.myRank > 0) {
+        if (l.rank > 0) {
           html += `
 	    <div id="league_${l.id}" class="saito-table-row league-leaderboard-ranking${(cnt%2 == 1)?" odd":""}">
               <div class="saito-table-gamename">${l.name}</div>
-              <div class="saito-table-rank">${l.myRank}</div>
+              <div class="saito-table-rank">${l.rank}</div>
             </div>
                   `;
         }
       });
       leagues.forEach(l => {
-        if (l.myRank <= 0) {
+        if (l.rank <= 0) {
           html += `
 	    <div id="league_${l.id}" class="saito-table-row league-leaderboard-ranking${(cnt%2 == 1)?" odd":""}">
               <div class="saito-table-gamename">${l.name}</div>
@@ -53,10 +52,11 @@ console.log("league update processed here!");
         }
       });
     }
+
     this.app.browser.addElementToSelector(html, ".league-rankings .saito-table");
 
-
     this.attachEvents();
+
   }
 
   attachEvents() {

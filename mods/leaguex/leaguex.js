@@ -3,8 +3,6 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const LeagueRankings = require("./lib/rankings");
 
 
-
-
 class League extends ModTemplate {
 
   constructor(app) {
@@ -41,12 +39,50 @@ class League extends ModTemplate {
 
   respondTo(type){
     if (type == "rankings") {
-console.log("returning new Rankings element...");
       let r = new LeagueRankings(this.app, this);
       return r;
     }
     return super.respondTo(type);
   }
+
+  //
+  // the league is an array of objects with the following structure
+  //
+  // {
+  //   id   : $LEAGUE_ID ,
+  //   name : $LEAGUE_NAME ,
+  //   rank : $MY_RANK_IN_LEAGUE ,
+  // }
+  //
+  // we auto-create it based on the games that are installed and then
+  // modify it based on the contents of our wallet so that it also 
+  // reflects private leagues.
+  //
+  returnLeagues() {
+    let leagues = [];
+    this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
+        leagues.push({ 
+	  id   : this.app.crypto.hash(mod.returnName()),
+	  name : mod.returnName() , 
+	  rank : "" 
+	});
+    });
+    return leagues;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   initialize(app) {
 
@@ -172,7 +208,7 @@ console.log("returning new Rankings element...");
       }
       if (le.admin == app.wallet.returnPublicKey() || le.myRank > 0){
         leagues_to_display.push(le);
-      }else if (le.type == "public"){
+      } else if (le.type == "public"){
         //Only show public leagues if there are available slots or I am a member
         if (le.max_players == 0 || le?.playerCnt < le.max_players){
           leagues_to_display.push(le);
