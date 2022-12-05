@@ -632,12 +632,16 @@ console.log("trying to open chat box via function in mod... replacing with event
 
     returnGroup(group_id) {
 
+console.log("requested w/ id: " + group_id);
+
         for (let i = 0; i < this.groups.length; i++) {
             if (group_id === this.groups[i].id) {
+console.log("FOUND RETURNING GROUP");
                 return this.groups[i];
             }
         }
 
+console.log("NOT FOUND NOT RETURNING GROUP");
         return null;
 
     }

@@ -4,22 +4,18 @@ const ChatPopupTemplate = require("./popup.template");
 class ChatPopup {
 
   constructor(app, mod, container = "") {
-
-console.log("CP 1");
-
     this.app = app;
     this.mod = mod;
     this.container = container;
     this.emoji = new SaitoEmoji(app, mod, `chat-input`);
     this.minimized = false;
     this.group = null;
-console.log("CP 2");
-
-
   }
 
   render() {
-console.log("popup render 1");
+
+console.log("RENDER POPUP");
+
     //
     // if group is unset, we do not know which chat group to render
     //
@@ -28,7 +24,7 @@ console.log("popup render 1");
       return;
     }
 
-console.log("popup render 2");
+console.log("RENDER POPUP 2");
 
     //
     // replace element or insert into page
@@ -43,24 +39,22 @@ console.log("popup render 2");
     //
     // make it draggable
     //
-    app.browser.makeDraggable(`chat-popup`, `chat-header`, true);
+    this.app.browser.makeDraggable(`chat-popup`, `chat-header`, true);
 
     //
     // emojis
     //
-    //this.emoji.render(app, mod);
+    //this.emoji.render(this.app, this.mod);
 
     //
     // scroll to bottom
     //
     //document.querySelector(".chat-body").scroll(0, 1000000000);
 
-console.log("chat popup render 3");
-
     //
     // attach events
     //
-    this.attachEvents(app, mod);
+    this.attachEvents();
       
   }
 
@@ -71,14 +65,13 @@ console.log("chat popup render 3");
     }
 
     let group = mod.returnGroup(gid);
-
-    //Insert new tab
-    app.browser.addElementToSelector(`<div id="chat-group-${gid}" class="chat-group">${group.name}</div>`, ".chat-group-tabs");
     this.attachEvents(app, mod);
-
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
 try {
 

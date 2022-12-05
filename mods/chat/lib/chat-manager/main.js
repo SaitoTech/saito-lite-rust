@@ -36,12 +36,16 @@ class ChatManager {
 	  //
 	  // handle requests to re-render chat popups
 	  //
-	  app.connection.on("chat-popup-render-request", (group_id) => {
+	  app.connection.on("chat-popup-render-request", (group) => {
 	    if (this.render_popups_to_screen) {
-	      if (!this.popups[group_id]) {
-		this.popups[group_id] = new ChatPopup(this.app, this.mod, "");
+	      if (!this.popups[group.id]) {
+console.log("CREATING CHAT POPUP and SETTING GROUP");
+		this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
+		this.popups[group.id].group = group;
+console.log("DONE INTO RENDER");
 	      }
-	      this.popups[group_id].render();
+	      this.popups[group.id].render();
+console.log("DONE RENDER");
 	    }
           });
 
