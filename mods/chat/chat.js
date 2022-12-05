@@ -26,79 +26,13 @@ class Chat extends ModTemplate {
 
         this.debug = false;
 
-        this.popup = null;  //We define these when we initialize
-
         this.mute = false;
 
-        //This needs to be defined so that it other modules (A-, B- can initialize)
-        this.chat_manager = new ChatManager(app, this);
-
-    }
-
-
-
-    returnServices() {
-
-        let services = [];
-
-        // servers with chat service run plaintext community chat groups
-        if (this.app.BROWSER == 0) { services.push({ service: "chat" }); }
-
-        return services;
-    }
-
-
-    respondTo(type) {
-        switch (type) {
-
-            //Left Sidebar wants a widget that can manage a list of ongoing chats
-            //ChatManager will only be rendered by a module which asks for it 
-            case 'chat-manager':
-                //We could insert specific CSS here, e.g. this.styles.push()
-                return this.chat_manager;
-            default:
-                return super.respondTo(type);
-        }
-    }
-
-
-
-    initialize(app) {
-
-        super.initialize(app);
-        
-        this.popup = new ChatPopup(app, this);
-        
-        if (!app.BROWSER){return;}
-
-        //
-        // create chatgroups from keychain -- friends only
-        //
-        let keys = app.keys.returnKeys();
-        for (let i = 0; i < keys.length; i++) {
-            if (keys[i].aes_publickey) {
-                this.createChatGroup([keys[i].publickey, app.wallet.returnPublicKey()], keys[i].name);
-            }
-        }
-
-        //
-        // create chatgroups from groups
-        //
-        let g = app.keys.returnGroups();
-        for (let i = 0; i < g.length; i++) {
-            this.createChatGroup(g[i].members, g[i].name);
-        }
-
-
-        app.connection.on("encrypt-key-exchange-confirm", (data) => {
+        this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
             this.createChatGroup(data?.members);
         });
 
-        //
-        // Convenience API for games, forces a ChatPopup open
-        // Can provide a single public key or an array of them, + optional chat group name
-        //
-        app.connection.on("open-chat-with", (data) => {
+        this.app.connection.on("open-chat-with", (data) => {
 
             if (!data){
                 this.openChatBox(app.auto_open_chat_box)    
@@ -120,8 +54,61 @@ class Chat extends ModTemplate {
         app.connection.on("open-chat-with-community", ()=>{
             this.openChatBox();
         });
+    }
+
+
+
+    returnServices() {
+
+        let services = [];
+
+        // servers with chat service run plaintext community chat groups
+        if (this.app.BROWSER == 0) { services.push({ service: "chat" , name : "Saito Community Chat" }); }
+
+        return services;
+    }
+
+
+    respondTo(type) {
+        switch (type) {
+            case 'chat-manager':
+        	return new ChatManager(this.app, this);
+            default:
+                return super.respondTo(type);
+        }
+    }
+
+
+
+    initialize(app) {
+
+        super.initialize(app);
+        
+        if (!app.BROWSER){return;}
+
+console.log("INITIALIZING CHAT: ");
+
+        //
+        // create chatgroups from keychain -- friends only
+        //
+        let keys = app.keys.returnKeys();
+        for (let i = 0; i < keys.length; i++) {
+            if (keys[i].aes_publickey) {
+                this.createChatGroup([keys[i].publickey, app.wallet.returnPublicKey()], keys[i].name);
+            }
+        }
+
+        //
+        // create chatgroups from groups
+        //
+        let g = app.keys.returnGroups();
+        for (let i = 0; i < g.length; i++) {
+            this.createChatGroup(g[i].members, g[i].name);
+        }
 
     }
+
+
 
 
 
@@ -134,13 +121,26 @@ class Chat extends ModTemplate {
         //
         if (peer.isMainPeer()) {
 
+
+console.log("lllllllllllllll");
+console.log("lllllllllllllll");
+console.log("lllllllllllllll");
+console.log("lllllllllllllll");
+
             //
             // We wait until we establish a peer connection to create the community chat
             // Now that we have all the chat groups from our wallet + peer
             // We can load the previously messages from our local storage
             //
             this.createChatGroup([peer.peer.publickey], this.communityGroupName);
+
+console.log("and loading chat manager render request...");
+
+	    this.app.connection.emit("chat-manager-render-request");
+
+
             this.loadChats();
+
 
             //
             //Now we send queries to the Archive to load the last N chats per group
@@ -178,21 +178,6 @@ class Chat extends ModTemplate {
             }
 
         } 
-
-
-        //
-        // check identifiers
-        //
-        if (this.added_identifiers_post_load == 0) {
-            try {
-                setTimeout(() => {
-                    this.app.browser.addIdentifiersToDom();
-                    this.added_identifiers_post_load = 1;
-                }, 1200);
-            } catch (err) {
-                console.warn("error adding identifiers post-chat");
-            }
-        }
 
         //
         // See if we want to auto open a chatpopup
@@ -412,7 +397,7 @@ class Chat extends ModTemplate {
 
             this.addTransactionToGroup(group, tx);
             
-            app.connection.emit('chat-render-request', txmsg.group_id);
+            app.connection.emit('chat-popup-render-request', txmsg.group_id);
 
         }else if (tx.isTo(app.wallet.returnPublicKey())) {
             //
@@ -432,7 +417,7 @@ class Chat extends ModTemplate {
             
             if (this.debug) { console.log("emitting render request to new group: " + proper_group.id); }
             
-            app.connection.emit('chat-render-request', proper_group.id);
+            app.connection.emit('chat-popup-render-request', proper_group.id);
 
         }else{
             if (this.debug) { console.log("Chat message not for me"); }            
@@ -590,8 +575,8 @@ class Chat extends ModTemplate {
     // This is a function to open a chat popup, and create it if necessary
     //
     openChatBox(group_id = null) {
-        if (!this.app.BROWSER) {return;}
 
+        if (!this.app.BROWSER) {return;}
 
         if (!group_id || group_id == -1) {
 
@@ -612,7 +597,8 @@ class Chat extends ModTemplate {
         
         this.mute = false;
 
-        this.popup.render(this.app, this, group_id);
+console.log("trying to open chat box via function in mod... replacing with event.");
+	this.app.connection.emit("chat-popup-render-request", (group.id));
 
     }
 

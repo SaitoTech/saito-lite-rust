@@ -27,7 +27,8 @@ class ChatManager {
 	  // handle requests to re-render chat manager
 	  //
 	  app.connection.on("chat-manager-render-request", () => {
-	    if (this.render_chat_manager_to_screen) {
+	    if (this.render_manager_to_screen) {
+console.log("rendering chat manager!");
 	      this.render();
 	    }
 	  });
@@ -49,10 +50,14 @@ class ChatManager {
 
 	render() {
 
+console.log("we are being asked to render CHAT MANAGER!");
+
 	  //
 	  // some applications do not want chat-manager appearing (games!)
 	  //
-	  if (this.render_to_screen == 0) { return; }
+	  if (this.render_manager_to_screen == 0) { return; }
+
+console.log("WHAT ARE OUR GROUPS: " + JSON.stringify(this.mod.groups));
 
           //
           // replace element or insert into page
@@ -63,12 +68,18 @@ class ChatManager {
    	    this.app.browser.addElementToSelectorOrDom(ChatManagerTemplate(this.app, this.mod), this.container);
    	  }
 
+	  //
+	  // render community chat
+	  //
+
 
 	  //
 	  // render chat groups
 	  //
-
 	  for (let group of this.mod.groups) {
+
+console.log("WE HAVE GROUP: " + JSON.stringify(group));
+	    if (!group.unread) { group.unread = 0; }
 
             // {
             //   id: id,
@@ -90,14 +101,18 @@ class ChatManager {
             //
             // TODO -- lets turn this into a CHAT COMPONENT
             //
-            let html = SaitoUserGroup(this.app, group.name, last_msg, last_ts, group.id, notifications);
+console.log("PRE SUG!");
+            let html = SaitoUserGroup(this.app, group.name, last_msg, last_ts, group.id, group.unread);
+console.log("HTML is: " + html);
             let divid = "saito-user-" + group.id;
-            let obj = document.getElementById(divid);
 
+            let obj = document.getElementById(divid);
             if (obj) {
+console.log("1");
               this.app.browser.replaceElementById(html, divid);
             } else {
               if (document.querySelector(".chat-manager-list")){
+console.log("2");
                 this.app.browser.addElementToSelector(html, ".chat-manager-list");
               }
             }
