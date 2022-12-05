@@ -5,17 +5,21 @@ class ChatPopup {
 
   constructor(app, mod, container = "") {
 
+console.log("CP 1");
+
     this.app = app;
     this.mod = mod;
     this.container = container;
     this.emoji = new SaitoEmoji(app, mod, `chat-input`);
     this.minimized = false;
     this.group = null;
+console.log("CP 2");
+
 
   }
 
   render() {
-
+console.log("popup render 1");
     //
     // if group is unset, we do not know which chat group to render
     //
@@ -23,6 +27,8 @@ class ChatPopup {
       console.log("Chat Popup: requested rendering of unspecified group");
       return;
     }
+
+console.log("popup render 2");
 
     //
     // replace element or insert into page
@@ -48,6 +54,8 @@ class ChatPopup {
     // scroll to bottom
     //
     //document.querySelector(".chat-body").scroll(0, 1000000000);
+
+console.log("chat popup render 3");
 
     //
     // attach events

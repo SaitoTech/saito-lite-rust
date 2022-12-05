@@ -1,3 +1,4 @@
+const ChatPopup = require("./popup");
 const ChatManagerTemplate = require("./main.template");
 const SaitoUserGroup = require('./../../../../lib/saito/new-ui/templates/saito-user-group.template');
 const JSON = require('json-bigint');
@@ -28,7 +29,6 @@ class ChatManager {
 	  //
 	  app.connection.on("chat-manager-render-request", () => {
 	    if (this.render_manager_to_screen) {
-console.log("rendering chat manager!");
 	      this.render();
 	    }
 	  });
@@ -39,7 +39,7 @@ console.log("rendering chat manager!");
 	  app.connection.on("chat-popup-render-request", (group_id) => {
 	    if (this.render_popups_to_screen) {
 	      if (!this.popups[group_id]) {
-		this.popups[group_id] = ChatPopup(this.app, this.mod, "");
+		this.popups[group_id] = new ChatPopup(this.app, this.mod, "");
 	      }
 	      this.popups[group_id].render();
 	    }
@@ -124,10 +124,17 @@ console.log("2");
 	}
 
 
-	attachEvents(app, mod) {
+	attachEvents() {
+
+	  let cm = this;
+
 	  document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 	    item.onclick = (e) => {
-	      this.app.connection.emit("chat-popup-render-request", amod.returnGroup(gid));  
+console.log("A 1");
+	      let gid = e.currentTarget.getAttribute("data-id");
+console.log("A 2: " + gid);
+	      cm.app.connection.emit("chat-popup-render-request", cm.mod.returnGroup(gid));  
+console.log("A 3: " + gid);
 	    }
 	  });
 	}
