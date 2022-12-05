@@ -76,7 +76,7 @@ class RedSquare extends ModTemplate {
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, "", tx);
-   
+
     //
     // maybe this needs to go into notifications too
     //
@@ -109,9 +109,9 @@ class RedSquare extends ModTemplate {
       //
       if (!this.tweets_sigs_hmap[tweet.tx.transaction.sig]) {
 
-	//
-	// check where we insert the tweet
-	//
+        //
+        // check where we insert the tweet
+        //
         let insertion_index = 0;
         if (prepend == 0) {
           for (let i = 0; i < this.tweets.length; i++) {
@@ -124,9 +124,9 @@ class RedSquare extends ModTemplate {
           }
         }
 
-	//
-	// and insert it
-	//
+        //
+        // and insert it
+        //
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
@@ -145,9 +145,9 @@ class RedSquare extends ModTemplate {
         }
       }
 
-    //
-    // this is a comment
-    //
+      //
+      // this is a comment
+      //
     } else {
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
@@ -169,8 +169,8 @@ class RedSquare extends ModTemplate {
   render() {
 
     if (this.main == null) {
-      this.header = new SaitoHeader(this.app, this);
       this.main = new SaitoMain(this.app, this);
+      this.header = new SaitoHeader(this.app, this);
       this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
       this.sidebar = new RedSquareSidebar(this.app, this, '.saito-sidebar.right');
 
@@ -178,20 +178,32 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.main);
       this.addComponent(this.menu);
       this.addComponent(this.sidebar);
+
+      //
+      // chat manager can insert itself into left-sidebar if exists
+      //
+      this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
+console.log("ADDING CHAT MANAGER");
+        let cm = mod.respondTo("chat-manager");
+        cm.container = ".saito-sidebar.left";
+	this.addComponent(cm);
+console.log("DONE CHAT MANAGER");
+      });
+
     }
 
     super.render();
+
   }
 
 
+  loadNotifications(increment = 1, post_load_callback=null) {
 
-  loadNotifications(increment = 1, post_load_callback) {
+    this.app.storage.loadTransactions("RedSquare", (50 * increment), (txs) => {
 
-    mod.app.storage.loadTransactions("RedSquare", (50 * increment), (txs) => {
-
-      mod.ntfs_num = txs.length;
+      //mod.ntfs_num = txs.length;
       let first_index = (increment - 1) * 50
-      mod.max_ntfs_num = 50 * increment;
+      //mod.max_ntfs_num = 50 * increment;
 
       let tx_to_add = txs.splice(first_index)
 
@@ -206,6 +218,11 @@ class RedSquare extends ModTemplate {
 
 
   loadTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false, is_server_request = false) {
+
+console.log("FETCHING TWEETS");
+    let render_home = false;
+    if (this.tweets.length == 0) { render_home = true; }
+
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
 
       "RedSquare",
@@ -213,6 +230,7 @@ class RedSquare extends ModTemplate {
       sql,
 
       async (res) => {
+console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
         if (res.rows) {
           res.rows.forEach(row => {
             let tx = new saito.default.transaction(JSON.parse(row.tx));
@@ -228,11 +246,14 @@ class RedSquare extends ModTemplate {
               let x = JSON.parse(row.link_properties);
               tx.optional.link_properties = x;
             } catch (err) { }
-	    // this will render the event
+            // this will render the event
             this.addTweet(tx);
           });
         }
 
+	if (render_home) {
+	  app.connection.emit("redsquare-home-render-request");
+	}
       }
     );
   }
@@ -247,18 +268,17 @@ class RedSquare extends ModTemplate {
   //
   async onPeerHandshakeComplete(app, peer) {
 
-   
-    if (this.app.BROWSER == 1) {
-
+    if (app.BROWSER == 1) {
 
       if (this.tweets.length == 0) {
-
+	
+	let mod = this;
         let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-        this.loadTweets(app, this, sql, function (app, mod) {
+        this.loadTweets(this.app, this, sql, function (app, mod) {
           console.log("Main - TWEETS FETCH FROM PEER: " + mod.tweets.length);
           this.app.connection.emit("redsquare-tweet-render-request");
         });
-	this.loadTransactions();
+	this.loadNotifications();
 
       }
 
@@ -697,7 +717,7 @@ class RedSquare extends ModTemplate {
   save() {
     this.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
     this.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
-    this.app.options.redsquare = this.redsquare;    
+    this.app.options.redsquare = this.redsquare;
     this.app.storage.saveOptions();
   }
 }

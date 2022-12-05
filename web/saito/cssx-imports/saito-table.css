@@ -7,12 +7,15 @@ Saito Table
     grid-template-columns: auto;
     width: 100%;
     position: relative;
+
 }
 
 .saito-table-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(3rem, min-content));
   align-items: center;
+  margin: 0.4rem 0;
+  cursor: pointer;
+  grid-template-columns: 1fr min-content;
 }
 
 .saito-table-row.odd {

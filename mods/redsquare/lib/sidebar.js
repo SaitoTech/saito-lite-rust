@@ -21,6 +21,7 @@ class RedSquareSidebar {
     // appspace modules
     //
     this.app.modules.returnModulesRespondingTo("rankings").forEach((mod) => {
+console.log("responding to rankings: " + mod.returnName());
       let obj = mod.respondTo("rankings");
       obj.container = ".redsquare-sidebar";
       obj.render();
