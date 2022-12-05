@@ -28,7 +28,7 @@ module.exports = (app, mod, tweet) => {
   let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
 
   return `
-        <div class="tweet tweet-${tweet.tx.transaction.sig}">
+        <div class="tweet" id="tweet-${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header">
 
