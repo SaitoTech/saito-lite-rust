@@ -176,7 +176,7 @@ class Mempool {
       for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
         const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
         if (gt.target_hash === new_gt.target_hash) {
-          console.warn("similar golden tickets already exists");
+          console.warn("similar golden tickets already exists for target : " + gt.target_hash);
           this.app.miner.stopMining();
           return false;
         }

@@ -1063,13 +1063,13 @@ class RedSquare extends ModTemplate {
             const tweets = [];
             if (res.rows) {
               res.rows.forEach(row => {
-  
+
                 let optional = {};
                 optional.num_likes = row.num_likes;
                 optional.num_replies = row.num_replies;
                 optional.num_retweets = row.num_retweets;
                 app.storage.updateTransactionOptional(row.sig, app.wallet.returnPublicKey(), optional);
-  
+
                 let tweet_id = "tweet-box-" + row.sig;
                 let obj = document.getElementById(tweet_id);
                 if (obj) {
@@ -1090,7 +1090,7 @@ class RedSquare extends ModTemplate {
             }
           }
         );
-  
+
       }
     }
   }
@@ -1557,14 +1557,14 @@ class RedSquare extends ModTemplate {
               }
 
 
-              console.log('base64 data');
-              console.log(base64Data);
+              // console.log('base64 data');
+              // console.log(base64Data);
 
-              console.log('img');
-              console.log(img);
+              // console.log('img');
+              // console.log(img);
 
-              console.log('img format');
-              console.log(img_type);
+              // console.log('img format');
+              // console.log(img_type);
 
               if (img_type == 'image/svg+xml') {
                 img_type = 'image/svg';

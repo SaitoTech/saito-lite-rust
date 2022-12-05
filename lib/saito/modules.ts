@@ -75,7 +75,7 @@ class Mods {
       try {
         this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);
       } catch (err) {
-        console.log("handlePeerRequest Unknown Error: \n" + err);
+        console.log("handlePeerRequest Unknown Error: ", err);
       }
     }
     return;

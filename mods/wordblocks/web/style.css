@@ -63,6 +63,7 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  margin: 1px 0;
 }
 
 .playedword{
@@ -408,11 +409,15 @@ thead,  tfoot{
 .rack-controls > div {
   display: flex;
   align-items: center;
+  justify-content: space-evenly;
+}
+
+.rack-controls i {
+  padding: 0.6em;
 }
 
 
-
-.shuffle {
+.shuffle, #skipturn, #deletectrl i {
   cursor: pointer;
 }
 
@@ -454,7 +459,6 @@ thead,  tfoot{
 
 .hud-status-update-message, .subrack {
   width: 100%;
-  margin: 0.6em auto;
 }
 
 
@@ -621,9 +625,6 @@ Resize board on smaller screens
   cursor: grabbing;
 }
 
-#deletectrl i{
-  margin: 0px 1em;
-}
 
 .tiles .tile.todelete{
   position: relative;
