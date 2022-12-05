@@ -38,14 +38,51 @@ class League extends ModTemplate {
 
 
   respondTo(type){
-console.log("resptoname: " + this.returnName());
     if (type == "rankings") {
-console.log("returning new Rankings element...");
       let r = new LeagueRankings(this.app, this);
       return r;
     }
     return super.respondTo(type);
   }
+
+  //
+  // the league is an array of objects with the following structure
+  //
+  // {
+  //   id   : $LEAGUE_ID ,
+  //   name : $LEAGUE_NAME ,
+  //   rank : $MY_RANK_IN_LEAGUE ,
+  // }
+  //
+  // we auto-create it based on the games that are installed and then
+  // modify it based on the contents of our wallet so that it also 
+  // reflects private leagues.
+  //
+  returnLeagues() {
+    let leagues = [];
+    this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
+        leagues.push({ 
+	  id   : this.app.crypto.hash(mod.returnName()),
+	  name : mod.returnName() , 
+	  rank : "" 
+	});
+    });
+    return leagues;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   initialize(app) {
 
