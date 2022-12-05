@@ -1,0 +1,285 @@
+
+.saito-modal {
+  width: 70rem;
+  height: min-content;
+  max-width: 80vw;
+  font-size: 1.5rem;
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  background-image: url(/saito/img/dreamscape.png);
+  background-position: 0em;
+  background-size: 120% 100%;
+  color: white;
+  display: grid;
+  grid-template-rows: min-content auto;
+  padding: 2rem;
+}
+.saito-modal-title {
+  font-size: 5rem;
+  margin-left: 3rem;
+}
+.saito-modal-subtitle {
+  font-size: 2.2rem;
+  margin-left: 3rem;
+}
+.saito-modal-content {
+  margin-top: 1.5rem;
+  font-size: 1.8rem;
+}
+.saito-modal-option {
+  margin-left: 2rem;
+  height: 8rem;
+  font-size: 4rem;
+  margin-right: 2rem;
+  padding: 1.5rem;
+}
+.saito-modal-option:hover {
+  background-color: #0005;
+  cursor: pointer;
+}
+.saito-modal-option > i {
+  float: left;
+  margin-right: 2rem;
+}
+.saito-modal-option > div {
+  float: left;
+  margin-right: 2rem;
+  font-size: 2rem;
+  padding-top: 1rem;
+}
+.saito-modal-text-input {
+    margin-left: 3rem;
+    margin-right: 3rem;
+    width: 50rem;
+    max-width: 50rem;
+    margin-top: 0.75rem;
+}
+.saito-modal-button {
+    background-color: white;
+    margin-top: 3rem;
+    margin-left: 3rem;
+    max-width: min-content;
+    padding-left: 4rem;
+    padding-right: 4rem;
+}
+.saito-modal-button:hover {
+    border: 1px solid white;
+}
+
+
+#saito-confirm-add-publickey {
+  background-color: #fff;
+  height: auto;
+  width: 30vh;
+  border-radius: 1.5rem;
+  padding: 2rem;
+}
+
+#saito-confirm-add-publickey  .saito-identicon-box {
+  display: inline-block;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+#saito-confirm-add-publickey  .saito-identicon-box .saito-identicon {
+  width: 8rem;
+  height: 8rem; 
+}
+
+#saito-confirm-add-publickey > .saito-address{
+  width: 100%;
+  max-width: 100%;
+  overflow: inherit;
+  display: block;
+  height: auto;
+  word-break: break-word;
+  text-overflow: inherit;
+  white-space: break-spaces;
+  text-align: center;
+  margin-top: 5rem;
+  margin-bottom: 1rem;
+}
+
+#saito-confirm-add-publickey > .saito-contact-status {
+  text-align: center;
+}
+
+.saito-modal-title .saito-user .saito-identicon{
+  width: 4rem;
+  height: 4rem;
+}
+.saito-modal-title .saito-user .saito-address{
+  font-size: 4rem;
+}
+
+.share-link {
+  color: #ddd;
+}
+
+
+.welcome-modal-wrapper {
+  width: 900px;
+  max-width: 80vw;
+  /*display: grid;
+  grid-template-columns: 6fr 1fr;*/
+  font-size: 1.5em;
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  background: var(--saito-white);
+}
+
+.welcome-modal__input-container {
+  display: flex;
+  align-items: center;
+}
+
+
+
+.welcome-modal__input {
+  background: #efefef;
+  font-size: 2.5rem !important;
+}
+
+.dark .welcome-modal__input{
+  background: #8884;
+}
+
+/* Exclusively for modal-add-user-confirm.template */
+.confirm-modal-wrapper {
+  font-size: 1.5em;
+  padding: 1.5em;
+  color: white;
+  font-weight: bold;
+}
+
+.welcome-invite-box {
+  min-width: 200px;
+  min-height: 120px;
+  max-width: 325px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 25px;
+  border: 1px solid;
+  margin: 1em;
+}
+
+.welcome-invite-box i {
+  margin: 1em;
+}
+
+.welcome-modal-header {
+  font-size: 3rem;
+}
+
+.welcome-modal-main p {
+  font-size: 1.8rem;
+}
+
+.welcome-modal-info {
+  clear: both;
+}
+
+.welcome-modal-action {
+  padding: 1.5em;
+}
+
+.welcome-modal-action p {
+  line-height: 1.5em;
+}
+
+.welcome-modal-signup {
+  margin: 1em 0;
+  display: flex;
+}
+
+.welcome-modal-explanation {
+  font-size: 0.8em;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 1em;
+  line-height: 1.3em;
+}
+
+.register-modal-controls {
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 1rem 0;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#signup {
+  margin: 0;
+  width: 15px;
+  height: 21px;
+}
+
+.welcome-modal-action button:hover {
+  border-color: #fff;
+}
+
+/* mobile modals */
+
+@media only screen and (max-width: 1000px) {
+  .welcome-modal-wrapper {
+    /*grid-template-columns: 1fr;*/
+    width: 90vw;
+  }
+
+  .modal-content-blank {
+    width: 100%;
+  }
+
+  .welcome-modal-action {
+    padding: 0.81em;
+  }
+
+  i.fas.fa-arrow-right {
+    right: -1em;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .saito-overlay {
+    width: 95vw;
+  }
+
+}
+
+
+
+/* LIST SELECTION MODAL */
+
+.game-selection-list-overlay {
+  background-color: black;
+  max-height: 90vh;
+  overflow-y: scroll;
+  font-size: 2rem;
+  min-width: 400px;
+
+}
+
+.selection-list li {
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  padding: 5px 0 2px 10px;
+  padding: 10px 0px 10px 20px;
+  list-style: none;
+}
+
+.selection-list li:hover {
+  background-color: #33669999;
+}
+
+.selection-list li .tiptext {
+  width: fit-content;;
+  background-color: #000a;
+  color: #ffffff !important;
+  min-width: 0px;
+  padding: 3px;
+  pointer-events: none;
+  top: 5px;
+  right: 0;
+}
+
+

@@ -247,13 +247,14 @@ class RedSquare extends ModTemplate {
   //
   async onPeerHandshakeComplete(app, peer) {
 
-    if (mod.app.BROWSER == 1) {
+   
+    if (this.app.BROWSER == 1) {
 
 
       if (this.tweets.length == 0) {
 
         let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-        this.loadTweets(app, mod, sql, function (app, mod) {
+        this.loadTweets(app, this, sql, function (app, mod) {
           console.log("Main - TWEETS FETCH FROM PEER: " + mod.tweets.length);
           this.app.connection.emit("redsquare-tweet-render-request");
         });
