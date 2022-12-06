@@ -94,25 +94,24 @@
 .tweet-text.preview::before {
     content: " ";
     position: absolute;
-    top: 0;
+    bottom: 4rem;
     left: 0;
-    height: 27.1rem;
+    height: 11rem;
     width: 100%;
     background: linear-gradient(180deg, transparent, var(--saito-background-color));
     transition: all 2s ease;
 }
 
-.tweet-text.preview::after {
+.tweet-text.preview:hover::after {
     content: "View full tweet";
     position: absolute;
     bottom: 5rem;
     color: var(--saito-primary);
     font-size: smaller;
-    background: var(--saito-background-color);
     height: 3rem;
     z-index: 999;
     text-align: center;
-    line-height: 2rem;
+    line-height: 2.7rem;
     padding: 0.3rem 1rem;
     border-radius: var(--saito-border-radius);
     left: 50%;
