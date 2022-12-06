@@ -56,9 +56,6 @@ class RedSquareTweet {
     if (document.querySelector(myqs)) {
        this.app.browser.replaceElementBySelector(RedSquareTweetTemplate(this.app, this.mod), myqs);
     } else {
-
-      console.log("inside render");
-      console.log(this);
       this.app.browser.addElementToSelector(RedSquareTweetTemplate(this.app, this.mod, this), this.container);
     }
 
@@ -105,7 +102,44 @@ class RedSquareTweet {
 
               let ptweet = new PostTweet(tweet_self.app, tweet_self.mod, tweet_self);
               ptweet.parent_id = tweet_sig;
-              ptweet.source = 'reply';
+              ptweet.source = 'Reply';
+              ptweet.render(tweet_self.app, tweet_self.mod);
+
+              tweet_self.app.browser.prependElementToSelector(`
+                <div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" 
+                data-id="${tweet_sig}"></div>`, 
+              ".redsquare-tweet-overlay");
+
+              tweet.container = "#post-tweet-preview-"+tweet_sig;
+              tweet.show_controls = 0;
+              tweet.render();
+            }
+          });
+        }
+
+      });
+    });
+
+
+    //
+    // retweet
+    //
+    sel = ".tweet-tool-retweet";
+    document.querySelectorAll(sel).forEach(elem => { 
+      elem.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        let tweet_div = e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+        let tweet_sig = tweet_div.getAttribute("data-id");
+
+        if (tweet_sig != null) {
+          tweet_self.mod.tweets.forEach(tweet => {
+            if (tweet.tx.transaction.sig == tweet_sig) {
+
+              let ptweet = new PostTweet(tweet_self.app, tweet_self.mod, tweet_self);
+              ptweet.parent_id = tweet_sig;
+              ptweet.source = 'Retweet / Share';
               ptweet.render(tweet_self.app, tweet_self.mod);
 
               tweet_self.app.browser.prependElementToSelector(`

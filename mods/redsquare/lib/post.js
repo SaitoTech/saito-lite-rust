@@ -17,7 +17,7 @@ class Post {
     this.render_after_submit = 1;
     this.file_event_added = false;
     this.publickey = app.wallet.returnPublicKey();
-    this.source = 'post';
+    this.source = 'Tweet';
   }
 
   render() {
@@ -104,6 +104,11 @@ class Post {
       if (parent_id !== "") {
         data = { text: text, parent_id: parent_id, thread_id: thread_id };
       }
+
+      if (source == 'Retweet / Share') {
+        data.retweet_tx = JSON.stringify(post_self.tweet.tx.transaction);
+      }
+
       if (post_self.images.length > 0) {
         data['images'] = post_self.images;
       }
