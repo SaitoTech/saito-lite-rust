@@ -11,19 +11,10 @@ class AppspaceHome {
 
   render() {
 
-console.log("RENDERING HOME!");
-
-    //
-    // replace element or insert into page
-    //
     if (document.querySelector(".redsquare-home")) {
       this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
     } else {
-      if (this.container) {
-        this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);
-      } else {
-        this.app.browser.addElementToDom(AppspaceHomeTemplate());
-      }
+      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
     }
 
     //

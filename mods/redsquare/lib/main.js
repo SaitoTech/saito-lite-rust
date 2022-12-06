@@ -16,7 +16,6 @@ class RedSquareMain {
     this.components = {};
     this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
     this.components['notifications'] = new RedSquareAppspaceNotifications(app, mod, ".saito-main");
-    this.components['games'] = new RedSquareAppspaceGames(app, mod, ".saito-main");
     this.components['contacts'] = new RedSquareAppspaceContacts(app, mod, ".saito-main");
     this.render_component = 'home';
 
@@ -25,24 +24,24 @@ class RedSquareMain {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'home';
       this.components[this.render_component].render();
+      document.querySelector(".saito-sidebar.right").innerHTML = "";
+      this.mod.sidebar.render();
     });
 
     this.app.connection.on("redsquare-notifications-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'notifications';
       this.components[this.render_component].render();
+      document.querySelector(".saito-sidebar.right").innerHTML = "";
+      this.mod.sidebar.render();
     });
 
     this.app.connection.on("redsquare-contacts-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'contacts';
       this.components[this.render_component].render();
-    });
-
-    this.app.connection.on("redsquare-games-render-request", (tx) => {
-      document.querySelector(".saito-main").innerHTML = "";
-      this.render_component = 'games';
-      this.components[this.render_component].render();
+      document.querySelector(".saito-sidebar.right").innerHTML = "";
+      this.mod.sidebar.render();
     });
 
     //
@@ -72,7 +71,6 @@ class RedSquareMain {
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(RedSquareMainTemplate(), ".saito-container");
     } else {
-console.log("rendering to: " + this.container);
       this.app.browser.addElementToSelectorOrDom(RedSquareMainTemplate(), this.container);
     }
 

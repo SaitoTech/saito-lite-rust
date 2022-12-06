@@ -1,6 +1,6 @@
 const ChatPopup = require("./popup");
 const ChatManagerTemplate = require("./main.template");
-const SaitoUserGroup = require('./../../../../lib/saito/new-ui/templates/saito-user-group.template');
+const ChatTeaser = require('./teaser.template');
 const JSON = require('json-bigint');
 
 class ChatManager {
@@ -39,13 +39,10 @@ class ChatManager {
 	  app.connection.on("chat-popup-render-request", (group) => {
 	    if (this.render_popups_to_screen) {
 	      if (!this.popups[group.id]) {
-console.log("CREATING CHAT POPUP and SETTING GROUP");
 		this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
 		this.popups[group.id].group = group;
-console.log("DONE INTO RENDER");
 	      }
 	      this.popups[group.id].render();
-console.log("DONE RENDER");
 	    }
           });
 
@@ -54,14 +51,10 @@ console.log("DONE RENDER");
 
 	render() {
 
-console.log("we are being asked to render CHAT MANAGER!");
-
 	  //
 	  // some applications do not want chat-manager appearing (games!)
 	  //
 	  if (this.render_manager_to_screen == 0) { return; }
-
-console.log("WHAT ARE OUR GROUPS: " + JSON.stringify(this.mod.groups));
 
           //
           // replace element or insert into page
@@ -81,8 +74,6 @@ console.log("WHAT ARE OUR GROUPS: " + JSON.stringify(this.mod.groups));
 	  // render chat groups
 	  //
 	  for (let group of this.mod.groups) {
-
-console.log("WE HAVE GROUP: " + JSON.stringify(group));
 	    if (!group.unread) { group.unread = 0; }
 
             // {
@@ -105,18 +96,14 @@ console.log("WE HAVE GROUP: " + JSON.stringify(group));
             //
             // TODO -- lets turn this into a CHAT COMPONENT
             //
-console.log("PRE SUG!");
-            let html = SaitoUserGroup(this.app, group.name, last_msg, last_ts, group.id, group.unread);
-console.log("HTML is: " + html);
+            let html = ChatTeaser(this.app, group.name, last_msg, last_ts, group.id, group.unread);
             let divid = "saito-user-" + group.id;
 
             let obj = document.getElementById(divid);
             if (obj) {
-console.log("1");
               this.app.browser.replaceElementById(html, divid);
             } else {
               if (document.querySelector(".chat-manager-list")){
-console.log("2");
                 this.app.browser.addElementToSelector(html, ".chat-manager-list");
               }
             }
@@ -134,11 +121,8 @@ console.log("2");
 
 	  document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 	    item.onclick = (e) => {
-console.log("A 1");
 	      let gid = e.currentTarget.getAttribute("data-id");
-console.log("A 2: " + gid);
 	      cm.app.connection.emit("chat-popup-render-request", cm.mod.returnGroup(gid));  
-console.log("A 3: " + gid);
 	    }
 	  });
 	}
