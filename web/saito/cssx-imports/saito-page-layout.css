@@ -13,6 +13,7 @@
 
 }
 
+
 .saito-main {
   background-color: var(--saito-background-color);
   padding: 2rem 0;
@@ -33,14 +34,20 @@
   margin-bottom: 2rem;
 }
 
-.saito-sidebar.left {
-  width: inherit;
-  padding-top: 2rem;
-  position: sticky;
-  height: 100vh;
-  left: 0;
-  top: 0;
+.saito-sidebar-container {
   width: 25rem;
+  position: relative;
+}
+
+
+.saito-sidebar.left {
+  padding-top: 2rem;
+  position: fixed;
+  height: 100vh;
+  width: 100%;
+  top: var(--saito-header-height);
+
+
 
 }
 
