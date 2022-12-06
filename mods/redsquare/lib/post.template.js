@@ -1,16 +1,17 @@
 const SaitoUserTemplate = require('./../../../lib/saito/new-ui/templates/saito-user.template');
 
 
-module.exports = (app, mod, publickey, parent_id = "", thread_id = "") => {
+module.exports = (app, mod, post) => {
 
   return `
 
-    ${SaitoUserTemplate(app, publickey, "create a text-tweet or drag-and-drop images...")}
+    ${SaitoUserTemplate(app, post.publickey, "create a text-tweet or drag-and-drop images...")}
 
     <textarea rows="7" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="What's happening" cols="60"></textarea>
 
-    <input type="hidden" id="parent_id" name="parent_id" value="${parent_id}" />
-    <input type="hidden" id="thread_id" name="thread_id" value="${thread_id}" />
+    <input type="hidden" id="parent_id" name="parent_id" value="${post.parent_id}" />
+    <input type="hidden" id="thread_id" name="thread_id" value="${post.thread_id}" />
+    <input type="hidden" id="source" name="source" value="${post.source}" />
 
     <div id="post-tweet-img-preview-container"></div>
 

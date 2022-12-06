@@ -105,6 +105,7 @@ class RedSquareTweet {
 
               let ptweet = new PostTweet(tweet_self.app, tweet_self.mod, tweet_self);
               ptweet.parent_id = tweet_sig;
+              ptweet.source = 'reply';
               ptweet.render(tweet_self.app, tweet_self.mod);
 
               tweet_self.app.browser.prependElementToSelector(`
