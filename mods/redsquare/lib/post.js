@@ -1,5 +1,6 @@
 const PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoEmoji = require("./../../../lib/saito/new-ui/saito-emoji/saito-emoji");
 
 const JSON = require('json-bigint');
 
@@ -27,6 +28,22 @@ class Post {
     this.app.browser.addElementToSelector(
       PostTemplate(this.app, this.mod, this)
     , "#redsquare-tweet-overlay");
+
+    this.emoji = new SaitoEmoji(this.app, this.mod, 'post-tweet-textarea');
+    this.emoji.render(this.app, this.mod);
+
+    let post_self = this;
+    this.app.modules.mods.forEach(mod => {
+      try {
+        if (mod.name == "Giphy") {
+          const SaitoGif = require("./../../giphy/giphy");
+          post_self.gif = new SaitoGif(post_self.app, post_self.mod, "post-tweet-textarea", function (img) { post_self.addImg(img) });
+          post_self.gif.render(app, mod);
+        }
+      } catch {
+        console.log(err);
+      }
+    });
   
     this.attachEvents(); 
   }
@@ -35,6 +52,25 @@ class Post {
 
     let post_self = this;
     post_self.images = [];
+
+    if (post_self.file_event_added == false) {
+      post_self.app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay",
+        (file) => {
+          if (post_self.images.length >= 4) {
+            salert("Maximum 4 images allowed per tweet.");
+          } else {
+            let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
+            if (post_self.mod.allowed_upload_types.includes(type)) {
+              post_self.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
+            } else {
+              salert("allowed file types: " + mod.allowed_upload_types.join(', '));
+            }
+          }
+
+          post_self.file_event_added = true;
+        },
+        false);
+    }
 
     document.getElementById('post-tweet-button').addEventListener('click', function(e) {
       let text = document.getElementById('post-tweet-textarea').value;
@@ -81,6 +117,22 @@ class Post {
       }, 1000);
     });
 
+
+    document.onclick = function (e) {
+      if (typeof (e.target.classList) != 'undefined') {
+        if (e.target.classList.contains('post-tweet-img-preview-close')) {
+          let array_position = e.target.getAttribute("data-id");
+          e.target.parentNode.remove();
+          (post_self.images).splice(array_position, 1);
+          document.querySelectorAll('.post-tweet-img-preview-close').forEach(el2 => {
+            let array_position2 = el2.getAttribute("data-id");
+            if (array_position2 > array_position) {
+              el2.setAttribute("data-id", (array_position2 - 1));
+            }
+          });
+        }
+      }
+    };
   }
 
   addImg(img) {

@@ -24,7 +24,7 @@ class RedSquare extends ModTemplate {
 
     this.tweets = [];
     this.tweets_sigs_hmap = {};
-    this.results_per_page = 10;
+    this.results_per_page = 1000;
     this.notifications = [];
     this.notifications_sigs_hmap = {};
     //
@@ -35,6 +35,8 @@ class RedSquare extends ModTemplate {
 
     this.load_more_tweets = 1;
     this.load_more_notifications = 1;
+
+    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
 
     this.styles = [
       '/saito/saitox.css',
