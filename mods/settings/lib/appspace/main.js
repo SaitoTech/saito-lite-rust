@@ -1,5 +1,5 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
-const ModalRegisterUsername = require('./../../../../lib/saito/new-ui/modals/modal-register-username/modal-register-username');
+//const ModalRegisterUsername = require('./../../../../lib/saito/new-ui/modals/modal-register-username/modal-register-username');
 //const ModalRegisterEmail = require('./../../../../lib/saito/ui/modal-register-email/modal-register-email');
 const jsonTree = require('json-tree-viewer');
 
@@ -13,8 +13,10 @@ class SettingsAppspace {
 
   render() {
 
-    if (!document.querySelector(".settings-appspace")) {
-      this.app.browser.addElementToSelector(SettingsAppspaceTemplate(this.app, this.mod), ".appspace");
+    if (document.querySelector(".settings-appspace")) {
+      this.app.browser.replaceElementBySelector(SettingsAppspaceTemplate(this.app, this.mod), ".settings-appspace");
+    } else {
+      this.app.browser.addElementToSelectorOrDom(SettingsAppspaceTemplate(this.app, this.mod), this.container);
     }
 
     let settings_appspace = document.querySelector(".settings-appspace");
@@ -41,11 +43,14 @@ class SettingsAppspace {
       console.log("error creating jsonTree: " + err);
     }
 
-    this.attachEvents(this.app, this.mod);
+    this.attachEvents();
 
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     try {
 
@@ -66,11 +71,11 @@ class SettingsAppspace {
       //   mod.modal_register_email.attachEvents(app, mod);
       // }
 
-      document.getElementById("register-identifier-btn").onclick = function (e) {
-        mod.modal_register_username = new ModalRegisterUsername(app);
-        mod.modal_register_username.render(app, mod);
-        mod.modal_register_username.attachEvents(app, mod);
-      }
+      //document.getElementById("register-identifier-btn").onclick = function (e) {
+      //  mod.modal_register_username = new ModalRegisterUsername(app);
+      //  mod.modal_register_username.render(app, mod);
+      //  mod.modal_register_username.attachEvents(app, mod);
+      //}
 
       document.querySelector(".settings-appspace-privatekey").onclick = function (e) {
         document.querySelector(".settings-appspace-privatekey").toggleClass("saito-password");

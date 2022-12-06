@@ -1,6 +1,5 @@
 const SettingsAppspace = require('./lib/appspace/main');
-const SettingsAppspaceSidebar = require('./lib/appspace/main');
-const SettingsEmailAppspace = require('./lib/email-appspace/settings-appspace');
+const SettingsAppspaceSidebar = require('./lib/appspace-sidebar/main');
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
 
@@ -40,24 +39,12 @@ class Settings extends ModTemplate {
 
   respondTo(type) {
     if (type === 'appspace') {
-      this.scripts['/settings/new-style.css'];
       super.render(this.app, this); // for scripts + styles
-      return new SettingsAppspace(this.app, this);
+      return new SettingsAppspace(this.app, this, ".saito-main");
     }
     if (type === 'appspace-sidebar') {
-      this.scripts['/settings/new-style.css'];
       super.render(this.app, this); // for scripts + styles
       return new SettingsAppspaceSidebar(this.app, this);
-    }
-    if (type === 'email-appspace') {
-      let obj = {};
-      obj.render = function (app, data) {
-        SettingsEmailAppspace.render(app, data);
-      }
-      obj.attachEvents = function (app, data) {
-        SettingsEmailAppspace.attachEvents(app, data);
-      }
-      return obj;
     }
     return null;
   }

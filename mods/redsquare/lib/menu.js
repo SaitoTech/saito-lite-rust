@@ -50,10 +50,6 @@ class RedSquareMenu {
       this.app.connection.emit("redsquare-notifications-render-request");
     }
 
-    document.querySelector(".redsquare-menu-games").onclick = (e) => {
-      this.app.connection.emit("redsquare-games-render-request");
-    }
-
     document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
       this.app.connection.emit("redsquare-contacts-render-request");
     }
@@ -64,10 +60,25 @@ class RedSquareMenu {
     //
     this.app.modules.returnModulesRespondingTo("appspace").forEach((mod) => {
       document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
+
+	//
+	// main panel
+	//
+        document.querySelector(".saito-main").innerHTML = "";
         let y = mod.respondTo("appspace");
-        y.container = "saito-main";
+        y.container = ".saito-main";
 	y.render();
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
+	
+	//
+	// sidebar
+	//
+	let z = mod.respondTo("appspace-sidebar");
+	if (z) {
+          document.querySelector(".saito-sidebar.right").innerHTML = "";
+          z.container = ".saito-sidebar.right";
+	  z.render();
+	}
       }
     });
 

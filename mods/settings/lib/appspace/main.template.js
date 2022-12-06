@@ -61,7 +61,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   let html = `
 
   
-  <div class="saito-page-header">
+  <div class="settings-appspace saito-page-header">
 
 
   <div class="saito-redsquare-actions-buttons">

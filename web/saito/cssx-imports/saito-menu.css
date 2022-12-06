@@ -1,4 +1,6 @@
-.saito-menu {}
+.saito-menu {
+    margin-top: -1rem;
+}
 
 .saito-menu>ul {
     padding: 0;

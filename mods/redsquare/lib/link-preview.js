@@ -15,20 +15,22 @@ class RedSquareLinkPreview {
     //
     // replace element or insert into page
     //
-    let element = "#tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .link-preview";
-    let template = RedSquareLinkPreviewTemplate(this.app, this.mod)
+    if (typeof this.tweet.link != "undefined") {
+      let element = "#tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .link-preview";
+      let template = RedSquareLinkPreviewTemplate(this.app, this.mod)
 
-    if (document.querySelector(element)) {
-      this.app.browser.replaceElementBySelector(template, element);
-    } else {
-      if (this.container) {
-        this.app.browser.addElementToSelector(template, this.container);
+      if (document.querySelector(element)) {
+        this.app.browser.replaceElementBySelector(template, element);
       } else {
-        this.app.browser.addElementToDom(template);
+        if (this.container) {
+          this.app.browser.addElementToSelector(template, this.container);
+        } else {
+          this.app.browser.addElementToDom(template);
+        }
       }
-    }
 
-    this.attachEvents();
+      this.attachEvents();
+    }
   }  
 
 

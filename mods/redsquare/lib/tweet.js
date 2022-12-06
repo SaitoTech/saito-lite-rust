@@ -40,7 +40,7 @@ class RedSquareTweet {
       this.retweet = new RedSquareTweet(this.app, this.mod, (".tweet-preview-"+this.tx.transaction.sig), newtx);
     }
 
-    this.text =  "Og Link preview https://stackoverflow.com/questions/9346211/how-to-kill-a-process-on-a-port-on-ubuntu";
+    //this.text =  "Og Link preview https://stackoverflow.com/questions/9346211/how-to-kill-a-process-on-a-port-on-ubuntu";
     this.generateTweetProperties(app, mod, 1);
 
 
@@ -48,6 +48,9 @@ class RedSquareTweet {
     let tweet_container = "#tweet-"+this.tx.transaction.sig+ " > .tweet-body .tweet-preview";
     this.link_preview = new LinkPreview(app, mod, tweet_container, this);
     this.img_preview = new ImgPreview(app, mod, tweet_container, this);
+
+    console.log("IMG ImgPreview***************************");
+    console.log(this.img_preview);
   }
 
   //
@@ -87,6 +90,31 @@ class RedSquareTweet {
 
   attachEvents() {
     tweet_self = this;
+
+     //
+    // reply
+    //
+    //let sel = ".tweet-reply-" + this.tx.transaction.sig;
+    
+    console.log("ATTACK EVENTS");
+    console.log(tweet_self);
+    let sel = "#tweet-"+tweet_self.tx.transaction.sig+ " > .tweet-body .tweet-preview .tweet-picture > img";
+    console.log(sel);
+    // if (document.querySelectorAll(sel)) {
+    //   document.querySelectorAll(sel).forEach(img => {
+    //     img.onclick = (e) => {
+    //       let ptweet = new PostTweet(app, mod, tweet_self);
+    //       ptweet.parent_id = this.tx.transaction.sig;
+    //       ptweet.thread_id = this.thread_id;
+    //       ptweet.render(app, mod);
+
+    //       let html = TweetTemplate(app, mod, this, 0);
+    //       app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
+    //       app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + tweet_self.tx.transaction.sig));
+    //     }
+    //   });
+
+    // }
 
   }
 
