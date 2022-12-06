@@ -42,7 +42,6 @@ class RedSquareTweet {
       this.retweet = new RedSquareTweet(this.app, this.mod, (".tweet-preview-"+this.tx.transaction.sig), newtx);
     }
 
-    //this.text =  "Og Link preview https://stackoverflow.com/questions/9346211/how-to-kill-a-process-on-a-port-on-ubuntu";
     this.generateTweetProperties(app, mod, 1);
     
   }
@@ -67,10 +66,7 @@ class RedSquareTweet {
     // create possible subcomponents
     //
     let subcomponent_container = ( this.container != ".redsquare-home") ? this.container+ " .tweet .tweet-body .tweet-preview"
-                          : "#tweet-"+this.tx.transaction.sig+ " > .tweet-body .tweet-preview";
-    console.log("CONTAINERRR");
-    console.log(subcomponent_container);      
-
+                          : "#tweet-"+this.tx.transaction.sig+ " > .tweet-body .tweet-preview";   
     this.link_preview = new LinkPreview(this.app, this.mod, subcomponent_container, this);
     this.img_preview = new ImgPreview(this.app, this.mod, subcomponent_container, this);
 
