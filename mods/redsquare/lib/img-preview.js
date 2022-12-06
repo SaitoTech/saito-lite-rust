@@ -19,7 +19,7 @@ class RedSquareImgPreview {
     //
     // replace element or insert into page
     //
-    let element = "#tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .tweet-picture";
+    let element = "#tweett-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .tweet-picture";
     let template = RedSquareImgPreviewTemplate(this.app, this.mod, this.images);
 
     if (document.querySelector(element)) {

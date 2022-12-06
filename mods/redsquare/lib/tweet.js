@@ -1,6 +1,7 @@
 const RedSquareTweetTemplate = require("./tweet.template");
 const LinkPreview = require("./link-preview");
 const ImgPreview = require("./img-preview");
+const PostTweet = require("./post");
 
 class RedSquareTweet {
 
@@ -28,6 +29,7 @@ class RedSquareTweet {
     this.retweet_tx = null;
     this.retweet_tx_sig = null;
     this.link_properties = null;
+    this.show_controls = 1;
 
     this.setKeys(tx.msg.data);
     this.setKeys(tx.optional);
@@ -42,25 +44,12 @@ class RedSquareTweet {
 
     //this.text =  "Og Link preview https://stackoverflow.com/questions/9346211/how-to-kill-a-process-on-a-port-on-ubuntu";
     this.generateTweetProperties(app, mod, 1);
-
-
-    // subcomponents
-    let tweet_container = "#tweet-"+this.tx.transaction.sig+ " > .tweet-body .tweet-preview";
-    this.link_preview = new LinkPreview(app, mod, tweet_container, this);
-    this.img_preview = new ImgPreview(app, mod, tweet_container, this);
-
-    console.log("IMG ImgPreview***************************");
-    console.log(this.img_preview);
-  }
-
-  //
-  async generateTweetProperties() {
-    return;
+    
   }
 
   render() {
-
-    let myqs = `.tweet-${this.tx.transaction.sig}`;
+    
+    let myqs = `#tweett-${this.tx.transaction.sig}`;
 
     //
     // replace or add
@@ -68,12 +57,23 @@ class RedSquareTweet {
     if (document.querySelector(myqs)) {
        this.app.browser.replaceElementBySelector(RedSquareTweetTemplate(this.app, this.mod), myqs);
     } else {
+
+      console.log("inside render");
+      console.log(this);
       this.app.browser.addElementToSelector(RedSquareTweetTemplate(this.app, this.mod, this), this.container);
     }
 
     //
     // create possible subcomponents
     //
+    let subcomponent_container = ( this.container != ".redsquare-home") ? this.container+ " .tweet .tweet-body .tweet-preview"
+                          : "#tweet-"+this.tx.transaction.sig+ " > .tweet-body .tweet-preview";
+    console.log("CONTAINERRR");
+    console.log(subcomponent_container);      
+
+    this.link_preview = new LinkPreview(this.app, this.mod, subcomponent_container, this);
+    this.img_preview = new ImgPreview(this.app, this.mod, subcomponent_container, this);
+
     if (this.retweet != null) {
       this.retweet.render();
     }
@@ -94,27 +94,37 @@ class RedSquareTweet {
      //
     // reply
     //
-    //let sel = ".tweet-reply-" + this.tx.transaction.sig;
-    
-    console.log("ATTACK EVENTS");
-    console.log(tweet_self);
-    let sel = "#tweet-"+tweet_self.tx.transaction.sig+ " > .tweet-body .tweet-preview .tweet-picture > img";
-    console.log(sel);
-    // if (document.querySelectorAll(sel)) {
-    //   document.querySelectorAll(sel).forEach(img => {
-    //     img.onclick = (e) => {
-    //       let ptweet = new PostTweet(app, mod, tweet_self);
-    //       ptweet.parent_id = this.tx.transaction.sig;
-    //       ptweet.thread_id = this.thread_id;
-    //       ptweet.render(app, mod);
+    let sel = ".tweet-tool-comment";
+    document.querySelectorAll(sel).forEach(elem => { 
+      elem.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        
+        let tweet_div = e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+        let tweet_sig = tweet_div.getAttribute("data-id");
 
-    //       let html = TweetTemplate(app, mod, this, 0);
-    //       app.browser.prependElementToSelector(`<div class="post-tweet-preview" data-id="${tweet_self.tx.transaction.sig}">${html}</div>`, ".redsquare-tweet-overlay");
-    //       app.browser.linkifyKeys(app, mod, document.querySelector("#tweet-" + tweet_self.tx.transaction.sig));
-    //     }
-    //   });
+        if (tweet_sig != null) {
+          tweet_self.mod.tweets.forEach(tweet => {
+            if (tweet.tx.transaction.sig == tweet_sig) {
 
-    // }
+              let ptweet = new PostTweet(tweet_self.app, tweet_self.mod, tweet_self);
+              ptweet.parent_id = tweet_sig;
+              ptweet.render(tweet_self.app, tweet_self.mod);
+
+              tweet_self.app.browser.prependElementToSelector(`
+                <div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" 
+                data-id="${tweet_sig}"></div>`, 
+              ".redsquare-tweet-overlay");
+
+              tweet.container = "#post-tweet-preview-"+tweet_sig;
+              tweet.show_controls = 0;
+              tweet.render();
+            }
+          });
+        }
+
+      });
+    });
 
   }
 

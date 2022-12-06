@@ -1,6 +1,10 @@
 const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tweet) => {
+
+  console.log('TWEET TEMPLATE **************');
+  console.log(tweet);
+
   let txmsg = tweet.tx.msg;
   let optional = tweet.tx.optional;
   let notice = "";
@@ -13,6 +17,7 @@ module.exports = (app, mod, tweet) => {
   let num_retweets = optional.num_retweets || 0;
   let parent_id = optional.parent_id || "";
   let dt = app.browser.formatDate(tweet.tx.transaction.ts);
+  let show_controls = tweet.show_controls;
   
   if (text == "" && tweet.retweet_tx != "") {
     //
@@ -26,9 +31,23 @@ module.exports = (app, mod, tweet) => {
   }
 
   let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+  let controls = `
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">${num_replies}</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">${num_retweets}</span>
+                  <i class="fa fa-repeat"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">${num_likes}</span> <i
+                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>`;
 
   return `
-        <div class="tweet" id="tweet-${tweet.tx.transaction.sig}">
+        <div class="tweet" id="tweet-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header">
 
@@ -43,19 +62,9 @@ module.exports = (app, mod, tweet) => {
               <div class="tweet-preview tweet-previous-${tweet.tx.transaction.sig}">
 
               </div>
-              <div class="tweet-controls">
-                <div class="tweet-tool tweet-tool-comment">
-                  <span class="tweet-tool-comment-count">${num_replies}</span> <i class="far fa-comment"></i>
-                </div>
-                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">${num_retweets}</span>
-                  <i class="fa fa-repeat"></i>
-                </div>
-                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">${num_likes}</span> <i
-                    class="far fa-heart"></i></div>
-                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i>
-                </div>
-                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
-              </div>
+
+              ${(show_controls) ? controls : ``}
+
             </div>
           </div>
         </div>
