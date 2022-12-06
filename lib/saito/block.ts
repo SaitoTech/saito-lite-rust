@@ -188,7 +188,7 @@ class Block {
     ) {
       this.block.signature = "";
     }
-    console.log(`block.deserialize tx length = ${transactions_length}`);
+    // console.debug(`block.deserialize tx length = ${transactions_length}`);
     for (let i = 0; i < transactions_length; i++) {
       const inputs_len = this.app.binary.u32FromBytes(
         buffer.slice(start_of_transaction_data, start_of_transaction_data + 4)
@@ -214,7 +214,7 @@ class Block {
       this.transactions.push(transaction);
       start_of_transaction_data = end_of_transaction_data;
     }
-    console.log("block deserialized");
+    // console.debug("block deserialized");
   }
 
   //
@@ -307,7 +307,7 @@ class Block {
   }
 
   async generateConsensusValues() {
-    console.log("generating consensus values for block : ", this.hash);
+    // console.log("generating consensus values for block : ", this.hash);
     // this is the number of blocks we will recurse backwards to issue the
     // staker payout. if this permits strings of blocks that are less than
     // the theoretical maximum number of golden-ticket free blocks that can
@@ -1240,7 +1240,7 @@ class Block {
   }
 
   generateMerkleRoot(): string {
-    console.log("generating merkle root of block : " + this.hash);
+    // console.log("generating merkle root of block : " + this.hash);
     //
     // if we are lite-client and have been given a block without transactions
     // we accept the merkle root since it is what has been provided. users who

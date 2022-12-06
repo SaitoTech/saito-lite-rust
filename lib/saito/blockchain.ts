@@ -382,13 +382,13 @@ class Blockchain {
       if (does_new_chain_validate) {
         await this.addBlockSuccess(block);
 
-        console.log("trying to set LC");
+        // console.log("trying to set LC");
         try {
           this.blocks.get(block_hash).lc = true;
         } catch (err) {
           console.log("block is not stored locally...");
         }
-        console.log("emitting stuff");
+        // console.log("emitting stuff");
 
         this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
         this.app.connection.emit("BlockchainNewLongestChainBlock", {
@@ -543,7 +543,7 @@ class Blockchain {
       this.app.modules.onNewBlock(block, true /*i_am_the_longest_chain*/); // TODO : undefined i_am_the_longest_chain ???
     }
 
-    console.log("done add block success... : " + block.returnHash());
+    // console.log("done add block success... : " + block.returnHash());
   }
 
   async addBlockFailure(block: Block) {
