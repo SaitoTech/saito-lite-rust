@@ -357,7 +357,7 @@ class Server {
     app.get("/block/:hash", async (req, res) => {
       try {
         const hash = req.params.hash;
-        console.log("server giving out block : " + hash);
+        console.debug("server giving out block : " + hash);
         if (!hash) {
           console.warn("hash not provided");
           return res.sendStatus(400); // Bad request
@@ -369,7 +369,7 @@ class Server {
           return res.sendStatus(404); // Not Found
         }
         let buffer = block.serialize();
-        let bufferString = Buffer.from(buffer); //.toString("base64");
+        // let bufferString = Buffer.from(buffer); //.toString("base64");
 
         res.status(200);
         console.log("serving block . : " + hash + " , buffer size : " + buffer.length);

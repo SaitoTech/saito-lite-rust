@@ -889,7 +889,7 @@ class Transaction {
   }
 
   validateRoutingPath(app: Saito): boolean {
-    console.log("JS needs to validate routing paths still...");
+    // console.log("JS needs to validate routing paths still...");
 
     if (!this.path) {
       return true;
