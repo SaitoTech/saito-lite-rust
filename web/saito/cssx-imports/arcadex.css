@@ -113,12 +113,6 @@
   padding: 0 0.5rem 0 0.9rem;
 }
 
-.arcade-leaderboard .saito-table-row {
-  margin: 0.4rem 0;
-  cursor: pointer;
-  display: grid;
-  grid-template-columns: 1fr min-content;
-}
 
 .arcade-leaderboard .saito-table-row .me {
   color: var(--saito-primary);
