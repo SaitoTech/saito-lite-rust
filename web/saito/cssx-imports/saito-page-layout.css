@@ -42,10 +42,10 @@
 
 .saito-sidebar.left {
   padding-top: 2rem;
-  position: fixed;
-  height: 100vh;
+  position: sticky;
+  height: inherit;
   width: 100%;
-  top: var(--saito-header-height);
+  top:0;
 
 
 
