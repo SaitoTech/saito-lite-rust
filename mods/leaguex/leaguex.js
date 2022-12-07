@@ -1,6 +1,7 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const LeagueRankings = require("./lib/rankings");
+const LeagueLeaderboard = require("./lib/leaderboard");
 
 
 class League extends ModTemplate {
@@ -42,6 +43,10 @@ class League extends ModTemplate {
       let r = new LeagueRankings(this.app, this);
       return r;
     }
+    if (type == "leaderboard") {
+      let r = new LeagueLeaderboard(this.app, this);
+      return r;
+    }
     return super.respondTo(type);
   }
 
@@ -69,6 +74,21 @@ class League extends ModTemplate {
     });
     return leagues;
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

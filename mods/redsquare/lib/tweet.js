@@ -273,7 +273,7 @@ class RedSquareTweet {
         //
         // if still here, add to unknown children if top-level as we didn't add to any children
         //
-        if (level == 0) {
+        if (levels_deep == 0) {
           this.unknown_children.push(tweet);
           this.unknown_children_sigs_hmap[tweet.tx.transaction.sig] = 1;
         }
