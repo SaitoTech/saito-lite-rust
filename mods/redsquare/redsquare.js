@@ -24,7 +24,7 @@ class RedSquare extends ModTemplate {
 
     this.tweets = [];
     this.tweets_sigs_hmap = {};
-    this.results_per_page = 1000;
+    this.results_per_page = 10;
     this.notifications = [];
     this.notifications_sigs_hmap = {};
     //
