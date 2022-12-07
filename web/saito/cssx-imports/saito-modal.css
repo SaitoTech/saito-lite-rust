@@ -1,14 +1,13 @@
 .saito-modal {
+  font-size: 1.25rem;
+  color: var(--saito-white);
   width: 70rem;
   height: min-content;
   max-width: 80vw;
-  font-size: 1.25rem;
-  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  padding: 2rem;
   background: var(--dreamscape);
-  color: var(--saito-white);
   display: grid;
   grid-template-rows: min-content auto;
-  padding: 2rem;
 }
 
 .saito-modal-menu-option {
