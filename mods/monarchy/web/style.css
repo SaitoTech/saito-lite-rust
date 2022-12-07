@@ -14,7 +14,13 @@ body {
   height: 100vh;
 }
 
+.animation_helper{
+  position: absolute;
+}
 
+.animated_elem{
+  position: absolute;
+}
 
 .main{
   /* Default fill the background with image */
@@ -242,9 +248,11 @@ body {
   grid-column: span 6;
   width: 120px;
   height: 192px;
-  transform: translateX(5%);
 }
 
+.cardstacks .cardpile:nth-child(n+7) img{
+  transform: translateX(5%);
+}
 
 /* 16:9 configuration */  
 .cardstacks.long {
@@ -325,4 +333,44 @@ body {
   width: 30vh;
   max-width: 250px;
   transform: translateY(-50%);
+}
+
+
+
+/* Card Hud Deal animation */
+.freshdeal{
+  perspective: 500px;
+  transform-style: preserve-3d;
+}
+
+.flippable-card{
+  opacity: 0;
+  position: relative;
+  transition: opacity 1s;
+}
+
+
+.flippable-card .cardimg, .flippable-card .cardBack{
+  position: absolute;
+  left: 0;
+  transition: transform 0.5s ease;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* show back of card */
+.flippable-card .cardimg{
+  transform: rotateY(180deg);
+}
+
+.flippable-card .cardBack{
+  transform: rotateY(0deg);
+}
+
+.flippable-card.flipped .cardimg{
+  transform: rotateY(0deg);
+}
+
+.flippable-card.flipped .cardBack{
+  transform: rotateY(-180deg);
 }
