@@ -1,6 +1,6 @@
 .tweet {
     cursor: pointer;
-    padding: 2rem 1rem 0;
+    padding: 1rem  0;
     border-top: 1px solid transparent;
     border-bottom: 1px solid var(--saito-tweet-border);
     position: relative;

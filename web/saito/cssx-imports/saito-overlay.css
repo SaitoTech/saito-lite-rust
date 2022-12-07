@@ -23,7 +23,9 @@
   height: min-content;
   width: min-content;
   min-width: 50rem;
+  border-radius: .5rem;
   max-width: 90vw;
+  border: var(--saito-border);
 }
 
 .saito-overlay-closebox {

@@ -1,5 +1,3 @@
-
-
 .saito-sidebar.left {
   width: 250px;
 }
@@ -21,16 +19,16 @@
 }
 
 .redsquare-page-header {
-    z-index: 2;
-    background: #fff;
-    padding-bottom: 0rem;
-    width: -webkit-fill-available;
-    top: 8rem;
-    padding: 1.5rem 0rem;
-    position: sticky;
-    top: 0rem;
-    padding-top: 2.5rem;
-    margin-top: -2rem;
+  z-index: 2;
+  background: #fff;
+  padding-bottom: 0rem;
+  width: -webkit-fill-available;
+  top: 8rem;
+  padding: 1.5rem 0rem;
+  position: sticky;
+  top: 0rem;
+  padding-top: 2.5rem;
+  margin-top: -2rem;
 }
 
 .redsquare-page-header-title {
@@ -46,122 +44,74 @@
 
 .saito-redsquare-actions-buttons {
   position: relative;
-}
-
-.redsquare-item {
-  cursor: pointer;
-  padding: 2rem 3rem 0 0;
-  border-bottom: 1px solid #a5a5a533;
-}
-
-.redsquare-item:hover {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
-.redsquare-item-contents {
-  display: grid;
-  grid-template-columns: 4.5rem 1fr;
-}
-
-.redsquare-ellipsis {
-  height: 6rem;
-  left: -1rem;
-  margin-top: -6rem;
-  position: relative;
-}
-
-.redsquare-ellipsis::after {
-  border-left: 2px solid var(--saito-border-color);
-  height: 100%;
-  position: absolute;
-  top: -2rem;
-  content: " ";
-  margin-left: 2.5rem;
-}
-.redsquare-ellipsis::before {
-  border-left: 2px dotted var(--saito-border-color);
-  height: 38%;
-  position: absolute;
-  top: 4.5rem;
-  content: " ";
-  margin-left: 2.5rem;
-
-}
-
-
-
-
-
-
-.tweet {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  font-size: 1.7rem;
-  line-height: 2.2rem;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  max-height: 30rem;
-  overflow: auto;
-}
-
-
-
-.redsquare-tweet-tools {
   display: flex;
-  justify-content: space-between;
-  font-size: 1.5rem;
-  width: 100%;
-  margin-top: 1rem;
-  padding-bottom: 1rem;
-  cursor: default;
 }
 
-.redsquare-tweet-tools > div {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 0;
-  cursor: pointer;
-  color: rgba(83, 100, 113, 0.8);
-}
-
-.redsquare-tweet-tools > div:hover {
-  transform: scale(1.05);
-  color: var(--saito-primary);
-}
-
-.redsquare-tweet-tools span {
-  display: inline-block;
-  font-weight: bold;
-  z-index: 1;
-  font-size: 1.5rem;
-}
-
-.redsquare-tweet-tools i {
-  font-size: 1.7rem;
-  margin: 0 1rem;
-  text-align: center;
-}
-
-.tweet-tool-flag i {
-  font-weight: normal;
-}
 
 .redsquare-actions-container {
   display: flex;
   flex-flow: row-reverse;
-  position: absolute;
   right: 1rem;
+  margin-left: auto;
 }
 
 .redsquare-actions-container .saito-button-secondary {
-  margin-top: 0px;
+  margin-top: 00;
   padding: 0.5rem 0.7rem 0.4rem 0.7rem;
+}
 
+
+.link-img {
+  width: 100%;
+  height: 25rem;
+  background-size: cover !important;
+  border-top-left-radius: .5rem;
+  border-top-right-radius: .5rem;
+}
+
+.link-info {
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  border-top: none;
+  border-top-right-radius: unset;
+  border-top-left-radius: unset;
+}
+
+.link-title {
+  color: #000;
+  margin: .3rem 0px;
+}
+
+.link-url {
+  color: #444;
+}
+
+.link-description {
+  color: #444;
+}
+
+.youtube-embed-container>iframe {
+  width: 100%;
+  height: 25rem;
+}
+
+@media screen and (max-width: 1280px) {
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  }
 }
 
 @media screen and (max-width: 768px) {
+  .redsquare-page-header-title {
+    font-size: 2rem;
+  }
+  .tweet {
+    padding: 1rem 0 0;
+  }
+  .tweet.has-reply::after {
+    top: 4.5rem;
+  }
   .redsquare-actions-container {
     position: fixed;
     bottom: 7rem;
@@ -175,7 +125,29 @@
     padding: 1rem;
     z-index: 2;
   }
-
+  .tweet-text {
+    padding-bottom: 0;
+    line-height: 2rem;
+  }
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
+  }
 }
 
+@media screen and (max-width: 529px) {
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+  .tweet-picture>img {
+    height: 15rem;
+  }
+  .preview-img {
+    height: 15rem;
+  }
+}
 
+@media screen and (max-width: 375px) {
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+}

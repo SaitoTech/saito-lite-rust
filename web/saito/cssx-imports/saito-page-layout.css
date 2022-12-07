@@ -18,6 +18,7 @@
   background-color: var(--saito-background-color);
   padding: 2rem 0;
   min-width: 54rem;
+  margin:0 2rem 15rem;
 }
 
 .saito-mobile-bar {

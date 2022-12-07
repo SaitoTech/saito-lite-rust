@@ -2,7 +2,6 @@
 Saito Table
 -----------------------------------------------------------------*/
 .saito-table {
-    /*background-color: var(--saito-white);*/
     display: grid;
     grid-template-columns: auto;
     width: 100%;
@@ -21,7 +20,7 @@ Saito Table
   cursor: pointer;
   border-color: var(--saito-white);
   border-style: solid;
-  border-width: 2px 0;
+  border-width: 1px 0;
   background-color: var(--saito-gray);
   transition: all .2s;
 }
@@ -60,7 +59,7 @@ Saito Table
   max-height: 100%;
   height: auto;
   position: relative;
-  overflow-y: scroll;
+  overflow-y: auto;
   text-align: center;
 }
 
