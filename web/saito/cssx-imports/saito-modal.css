@@ -1,3 +1,5 @@
+/* generic modal look and feel */
+
 .saito-modal {
   font-size: 1.25rem;
   color: var(--saito-white);
@@ -10,6 +12,8 @@
   grid-template-rows: min-content auto;
 }
 
+/* saito-modal-menu
+/* theming for a simple menu with font-awesome icon and text in a two col grid */
 .saito-modal-menu-option {
   font-size: 3rem;
   height: 6rem;
@@ -24,3 +28,5 @@
   background-color: var(--saito-grey-transparent);
   cursor: pointer;
 }
+
+/* other modal layouts to come */
