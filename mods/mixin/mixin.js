@@ -57,8 +57,7 @@ class Mixin extends ModTemplate {
     let mixin_self = this;
 
     if (type === 'appspace') {
-      
-      super.render(this.app, this); // for scripts + styles
+      super.render(); // for scripts + styles
       return new MixinAppspace(this.app, this);
     }
 

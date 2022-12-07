@@ -6,17 +6,23 @@ const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito
 
 class MixinAppspace {
 
-  constructor(app) {
+  constructor(app, mod, container = "") {
+    this.app = app;
+    this.mod = mod;
+    this.container = container;
     this.history_overlay = new SaitoOverlay(app, true, true); 
   }
 
-  render(app, mod) {
-    document.querySelector(".appspace").innerHTML = MixinAppspaceTemplate(app, mod);
-  
-    this.attachEvents(app, mod);
+  render() {
+    document.querySelector(".appspace").innerHTML = MixinAppspaceTemplate(this.app, this.mod);
+    this.attachEvents();
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
+
     main_self = this;
     try {
       document.querySelector("#mixin-create-wallet").onclick = (e) => {
