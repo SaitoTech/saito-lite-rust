@@ -1,41 +1,25 @@
-module.exports = LeagueLeaderboardTemplate = (app, mod) => {
 
-    let html = "";
+module.exports = LeaderboardTemplate = () => {
 
-    let league_mod = app.modules.returnModule("League");
+  return `
+      <div class="league-leaderboard">
+        <h6>Leaderboard:</h6>
+        <div class="saito-table">
 
-	if (league_mod){
+          <div class="saito-table-header">
+            <div><b>Rank</b></div>
+            <div><b>Player</b></div>
+            <div><b>Score</b></div>
+            <div><b>Win</b></div>
+            <div><b>Loss</b></div>
+          </div>
 
-	  let leagues = league_mod.filterLeagues(app);
+          <div class="saito-table-body">
+          </div>
 
-	  if (leagues.length > 0){
-	  	html += `<div class="saito-leaderboard">
+        </div>
 
-	        <h6>Leaderboards:</h6>
-	        <div class="saito-table">`;
+  `;  
 
-		let cnt = 0;
-		leagues.forEach(l => {
-			if (l.myRank > 0) {
-				html += `<div id="league_${l.id}" class="saito-table-row league-leaderboard-ranking${(cnt%2 == 1)?" odd":""}">
-				<div class="saito-table-gamename">${l.name}</div>
-				<div class="saito-table-rank">${l.myRank}</div>
-			</div>`;
-			}
-		});
-		leagues.forEach(l => {
-			if (l.myRank <= 0) {
-				html += `<div <div id="league_${l.id}" class="saito-table-row league-leaderboard-ranking${(cnt%2 == 1)?" odd":""}">
-				<div class="saito-table-gamename">${l.name}</div>
-				<div class="saito-table-rank saito-deemphasize">…</div>
-			</div>`;
-			}
-		});
-
-	  }
-
-	  html += `</div>`;
-	}
-    return html;
-};
+}
 

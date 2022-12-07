@@ -7,7 +7,7 @@ class LeagueRankings {
     this.mod = mod;
     this.container = container;
 
-    app.connection.on('league-update', (obj) => {
+    app.connection.on('league-rankings-render-request', () => {
       this.render();
     });
 
@@ -28,7 +28,7 @@ class LeagueRankings {
     //
     // add content to league rankings
     //
-    let leagues = this.mod.returnLeagues(this.app);
+    let leagues = this.mod.leagues;
     let html = "";
     if (leagues.length > 0){
       let cnt = 0;
