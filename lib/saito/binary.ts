@@ -118,6 +118,7 @@ class Binary {
    * @returns array of 4 bytes
    */
   u32AsBytes(val) {
+    if (val == undefined) { val = 0; }
     val = BigInt(val);
     const bytes = [];
     let i = 4;
