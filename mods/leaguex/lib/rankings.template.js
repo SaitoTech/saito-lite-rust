@@ -2,7 +2,7 @@ module.exports = LeagueRankingsTemplate = () => {
 
     return `
 
- 	      <div class="saito-leaderboard league-rankings">
+ 	      <div class="league-rankings">
 
 	        <h6>Rankings:</h6>
 

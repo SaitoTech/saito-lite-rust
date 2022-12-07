@@ -2,7 +2,7 @@
 module.exports = LeaderboardTemplate = () => {
 
   return `
-      <div class="leaderboard">
+      <div class="league-leaderboard">
         <h6>Leaderboard:</h6>
         <div class="saito-table">
 

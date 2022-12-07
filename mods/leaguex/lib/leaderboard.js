@@ -33,7 +33,7 @@ class Leaderboard {
         </div>    
       `;
 
-      this.app.browser.addElementToSelector(html, ".leaderboard .saito-table-body");
+      this.app.browser.addElementToSelector(html, ".league-leaderboard .saito-table-body");
 
     }
   }
