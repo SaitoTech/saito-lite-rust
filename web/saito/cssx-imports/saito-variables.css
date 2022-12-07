@@ -40,59 +40,31 @@ font imports
   --saito-tertiary: rgb(234, 234, 239);
   --saito-header-height: 5em;
   --saito-width: 1500px;
-
   --saito-font-color: #3D3D3D;
   --saito-font-color-heavy: #222;
   --saito-font-color-light: #555;
   --saito-font-color-inverse: #efefef;
-  --saito-box-padding: 3rem 2rem; 
+  --saito-box-padding: 3rem 2rem;
   --saito-profile-background: #fff;
   --saito-border-color: #c5c5c5bb;
   --saito-border-color-dark: #a5a5a5bb;
   --saito-border-color-highlight: #f71f3d;
-
   --saito-border: 1px solid #c5c5c5bb;
-
-
   --saito-border-radius: 0.5rem;
-
   --saito-background-color: #fff;
   --saito-background-light: #efefef;
-
-  /* --saito-blue: #35b2ff;
-
-  --saito-paper: #f2f0f0;
-
-  --saito-black: #1c1c23;
-  --saito-black-faded: #1c1c23b5;
-  --saito-box-shadow: 4px 4px 20px #a5a5a5f5;
-  --saito-menu-background: #fff;
-  --saito-profile-background: #fff;
-
-  --saito-border-light: #a5a5a533;
-  --saito-chat-background: #fff;
-
-
-/* 
-  --saito-default-border-radius: .5rem;
-  --saito-secondary-black: #626161;
-  --saito-thumbBG: #f71f3d;
-  --saito-scrollbarBG: #444;
-  --saito-dark-transparent: rgba(0,0,0,0.5);
-  --saito-light-dark-transparent: rgba(0,0,0,0.1);
-  --saito-purple:  #639;
-  --saito-dark-purple:  #47226c; */
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
+  /* static colors for modals with fixed theme */
+  --saito-white: #fff;
+  --saito-grey-transparent: #5555;
 }
-
 
 html[data-theme='dark'] {
   --saito-gray: #eaeaef45;
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
   --saito-tertiary: rgb(234, 234, 239);
-
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #DDD;
   --saito-font-color-light: #AAA;
@@ -101,20 +73,16 @@ html[data-theme='dark'] {
   --saito-border-color: #343434;
   --saito-border-color-dark: #232323;
   --saito-border-color-highlight: #f71f3d;
-
   --saito-border: 1px solid #c5c5c5bb;
-
   --saito-background-color: #211f25;
   --saito-background-light: rgb(46, 38, 54);
 }
-
 
 html[data-theme='arcade'] {
   --saito-gray: #eaeaef45;
   --saito-primary: ##639;
   --saito-secondary: #ff8235;
   --saito-tertiary: rgb(234, 234, 239);
-
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #DDD;
   --saito-font-color-light: #AAA;
@@ -123,10 +91,7 @@ html[data-theme='arcade'] {
   --saito-border-color: #343434;
   --saito-border-color-dark: #232323;
   --saito-border-color-highlight: #f71f3d;
-
   --saito-border: 1px solid #c5c5c5bb;
-
   --saito-background-color: #324;
   --saito-background-light: #426;
-
 }

@@ -25,22 +25,22 @@
   margin-top: 1.5rem;
   font-size: 1.8rem;
 }
-.saito-modal-option {
+.saito-modal-menu-option {
   margin-left: 2rem;
   height: 8rem;
   font-size: 4rem;
   margin-right: 2rem;
   padding: 1.5rem;
 }
-.saito-modal-option:hover {
+.saito-modal-menu-option:hover {
   background-color: #0005;
   cursor: pointer;
 }
-.saito-modal-option > i {
+.saito-modal-menu-option > i {
   float: left;
   margin-right: 2rem;
 }
-.saito-modal-option > div {
+.saito-modal-menu-option > div {
   float: left;
   margin-right: 2rem;
   font-size: 2rem;

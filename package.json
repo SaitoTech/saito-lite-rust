@@ -8,7 +8,7 @@
     "dev-server": "./compile nuke ts-node-dev && npm run dev ",
     "cli": "ts-node cli.ts",
     "wh": "ts-node-dev --max_old_space_size=12216 wh.ts",
-    "start": "NODE_ENV=prod node --max_old_space_size=8144 built/start.js",
+    "start": "NODE_ENV=prod node --max_old_space_size=16288 built/start.js",
     "init": "node ./scripts/install.js",
     "nuke": " ./compile nuke",
     "reset": " ./compile reset",

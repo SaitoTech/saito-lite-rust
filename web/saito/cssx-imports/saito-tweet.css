@@ -20,10 +20,6 @@
     left: 2.7rem;
 }
 
-.tweet:hover {
-    border-bottom: 1px solid var(--saito-border-color-highlight);
-}
-
 .tweet-body {
     display: grid;
     grid-template-columns: 4.5rem 1fr;
