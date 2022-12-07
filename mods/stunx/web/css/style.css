@@ -6,7 +6,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     width: 80vw;
-    background-color: #ffffff;
+    background-color: var(--saito-white)fff;
     position: fixed;
     z-index: 100000;
 }
@@ -82,7 +82,7 @@
     transform: translate(-50%, -50%);
     justify-content: center;
     align-items: center;
-    color: white;
+    color: var(--saito-white);
     border-radius: 1rem;
   }
 
@@ -92,7 +92,7 @@
   }
   
   .video-box-container> #connection-message {
-    color: white;
+    color: var(--saito-white);
     width: 50%;
     line-height: 1.5;
     position: absolute;
@@ -102,7 +102,7 @@
   }
   
   .video-box-container> #connection-message>p {
-    color: white;
+    color: var(--saito-white);
   }
   
   .lds-dual-ring {
@@ -116,8 +116,8 @@
     height: 10px;
     margin: 8px;
     border-radius: 50%;
-    border: 6px solid #fff;
-    border-color: #fff transparent #fff transparent;
+    border: 6px solid var(--saito-white);
+    border-color: var(--saito-white) transparent var(--saito-white) transparent;
     animation: lds-dual-ring 1.2s linear infinite;
   }
 

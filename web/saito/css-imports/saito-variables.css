@@ -44,24 +44,26 @@ font imports
   --saito-paper: #f2f0f0;
   --saito-white: #fff;
   --saito-black: #1c1c23;
+  --saito-table-hover-background: #00000045;
   --saito-black-faded: #1c1c23b5;
   --saito-box-shadow: 4px 4px 20px #a5a5a5f5;
-  --saito-menu-background: #fff;
-  --saito-profile-background: #fff;
+  --saito-menu-background: var(--saito-white);
+  --saito-profile-background: var(--saito-white);
   --saito-border: #a5a5a5bb;
   --saito-border-light: #a5a5a533;
-  --saito-chat-background: #fff;
+  --saito-chat-background: var(--saito-white);
   --saito-box-padding: 3rem 2rem;
   --saito-header-height: 5em;
   --saito-width: 1500px;
   --saito-default-border-radius: .5rem;
   --saito-secondary-black: #626161;
   --saito-thumbBG: #f71f3d;
-  --saito-scrollbarBG: #444;
+  --saito-gray-mid: #444;
   --saito-dark-transparent: rgba(0,0,0,0.5);
   --saito-light-dark-transparent: rgba(0,0,0,0.1);
   --saito-purple:  #639;
   --saito-dark-purple:  #47226c;
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
+
 }

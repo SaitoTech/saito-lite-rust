@@ -18,7 +18,7 @@
   color: var(--saito-white);
   background-color: var(--saito-primary);
   overflow: hidden;
-  color: white;
+  color: var(--saito-white);
 }
 
 

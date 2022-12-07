@@ -2,7 +2,7 @@
     cursor: pointer;
     padding: 2rem 1rem 0;
     border-top: 1px solid transparent;
-    border-bottom: 1px solid #a5a5a533;
+    border-bottom: 1px solid var(--saito-tweet-border);
     position: relative;
 }
 
@@ -15,7 +15,7 @@
     position: absolute;
     width: 2px;
     height: 100%;
-    background-color: rgba(0, 0, 0, .1);
+    background-color: var(--saito-gray-mid);
     top: 5.5rem;
     left: 2.7rem;
 }
@@ -41,13 +41,13 @@
 
 .tweet-notice {
     box-sizing: border-box;
-    color: rgba(0, 0, 0, 1.00);
+    color: var(--saito-gray-mid);
     font-family: var(--saito-font);
     word-wrap: break-word;
     padding-bottom: 1rem;
     position: relative;
     font-size: 1.4rem;
-    color: #444;
+    color: var(--saito-gray-mid);
 }
 
 .tweet-notice .saito-address {
@@ -55,7 +55,7 @@
     margin-left: 0.25rem;
     font-weight: bold;
     font-size: 1.4rem;
-    color: #444;
+    color: var(--saito-gray-mid);
 }
 
 .tweet-text {
@@ -140,7 +140,7 @@
     justify-content: center;
     padding: 1rem 0;
     cursor: pointer;
-    color: rgba(83, 100, 113, 0.8);
+    color: var(--tweet-controls)
 }
 
 .tweet-controls>div:hover {

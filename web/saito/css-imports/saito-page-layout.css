@@ -97,7 +97,7 @@
 
 .saito-page-header {
     z-index: 2;
-    background: #fff;
+    background: var(--saito-white);
     padding-bottom: 0rem;
     width: -webkit-fill-available;
     top: 8rem;

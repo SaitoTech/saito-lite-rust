@@ -58,6 +58,10 @@ font imports
   /* static colors for modals with fixed theme */
   --saito-white: #fff;
   --saito-grey-transparent: #5555;
+  --saito-tweet-border: #a5a5a533;
+  --saito-table-hover-background: #00000045;
+  --saito-gray-mid: #444;
+  --tweet-controls: rgba(83, 100, 113, 0.8);
 }
 
 html[data-theme='dark'] {

@@ -73,7 +73,7 @@
 
 .saito-page-header {
   z-index: 2;
-  background: #fff;
+  background: var(--saito-white);
   padding-bottom: 0rem;
   width: -webkit-fill-available;
   top: 8rem;
@@ -85,7 +85,7 @@
 }
 
 .saito-page-header-title {
-  color: #222;
+  color: var(--saito-black-faded);
   font-size: 2.5rem;
   padding-top: 0rem;
   text-transform: uppercase;

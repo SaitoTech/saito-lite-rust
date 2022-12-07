@@ -118,10 +118,7 @@
   color: var(--saito-primary);
 }
 
-.arcade-leaderboard .saito-table-row:hover {
-  color: black;
-  background: ghostwhite;
-}
+
 
 @media screen and (max-width: 590px) {
   .game-tile-content {
