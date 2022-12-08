@@ -29,10 +29,11 @@ class RedSquare extends ModTemplate {
     // track which peers give me content / notifications to 
     // simplify fetching more content
     //
+    this.results_per_page = 10;
     this.peers_for_tweets = [];
     this.peers_for_notifications = [];
-
-    this.results_per_page = 10;
+    this.increment_for_tweets = 1;
+    this.increment_for_notifications = 1;
     this.notifications = [];
     this.notifications_sigs_hmap = {};
 
@@ -75,9 +76,19 @@ class RedSquare extends ModTemplate {
   }
 
 
-  ////////////////////
-  // initialization //
-  ////////////////////
+  //////////////////////////////
+  // initialization functions //
+  //////////////////////////////
+  //
+  // this gets the party started. note that we may not have
+  // any network connections to peers at this point. so most
+  // of the work is setting up the wallet and seeing if we 
+  // already have data there to load.
+  //
+  // we can also try to load content from any local storage
+  // so that we have something to show before the network is
+  // live.
+  //
   initialize(app) {
 
     super.initialize(app);
@@ -97,6 +108,9 @@ class RedSquare extends ModTemplate {
 
   }
 
+  //
+  // runs when archive peer connects
+  //
   async onArchiveHandshakeComplete(app, peer) {
 
     //
@@ -111,6 +125,9 @@ class RedSquare extends ModTemplate {
 
   }
 
+  //
+  // runs when normal peer connects
+  //
   async onPeerHandshakeComplete(app, peer) {
 
     //
@@ -134,60 +151,94 @@ console.log("LOADING: " + sql);
     super.onPeerHandshakeComplete(app, peer);
 
   }
+  //
+  // this initializes the DOM but does not necessarily show the loaded content 
+  // onto the page, as we are likely being asked to render the components on 
+  // the application BEFORE we have any peers capable of feeding us content.
+  //
+  render() {
+
+    if (this.main == null) {
+      this.main = new SaitoMain(this.app, this);
+      this.header = new SaitoHeader(this.app, this);
+      this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
+      this.sidebar = new RedSquareSidebar(this.app, this, '.saito-sidebar.right');
+
+      this.addComponent(this.header);
+      this.addComponent(this.main);
+      this.addComponent(this.menu);
+      this.addComponent(this.sidebar);
+
+      //
+      // chat manager can insert itself into left-sidebar if exists
+      //
+      this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
+        let cm = mod.respondTo("chat-manager");
+        cm.container = ".saito-sidebar.left";
+	this.addComponent(cm);
+      });
+
+    }
+
+    super.render();
+
+  }
 
 
+
+  ///////////////////////
+  // network functions //
+  ///////////////////////
   //
   // fetch tweets / notifications middleware
   //
+  // when we need more tweets or notifications, we can ask these functions, they 
+  // keep track of which peers have given us content in the past and simply ask 
+  // them for more data.
   //
-  // we have separate functions as notifications are mediated by our storage
-  // class, whereas tweets are simply fetched from other peers via SQL or 
-  // database request.
-  //
+  loadMoreTweets() {
+    this.increment_for_tweets++;
+    for (let i = 0; i < this.peers_for_tweets.length; i++) {
+      let peer = this.peers_for_tweets[i];
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1 }','${this.results_per_page}'`;
+      this.loadTweetsFromPeer(peer, sql, () => {
+        this.app.connection.emit("redsquare-home-render-request");
+      });
+    }
+  }
+  loadMoreNotifications() {
+    this.increment_for_notifications++;
+    for (let i = 0; i < this.peers_for_notifications.length; i++) {
+      let peer = this.peers_for_notifications[i];
+      this.loadNotificationsFromPeer(peer, this.increment_for_notifications, () => {
+        this.app.connection.emit("redsquare-notifications-render-request");
+      });
+    }
+  }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback=null) {
-
-console.log("((((");
-console.log("LOAD");
-console.log("((((");
-
     this.app.storage.loadTransactionsFromPeer("RedSquare", (50 * increment), peer, (txs) => {
-console.log("LOAD RES " + txs.length);
-
       if (!this.peers_for_notifications.includes(peer)) {
 	this.peers_for_notifications.push(peer);
       }
-
       for (let i = 0; i < txs.length; i++) {
         txs[i].decryptMessage(this.app);
         this.addTweet(txs[i]);
       }
+      if (post_load_callback != null) { post_load_callback(); }
     });
-
   }
 
-  loadTweetsFromPeer(peer, sql, post_fetch_tweets_callback = null, to_track_tweet = false, is_server_request = false) {
-
-console.log("((((");
-console.log("PEER");
-console.log("((((");
-
+  loadTweetsFromPeer(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
     let render_home = false;
     if (this.tweets.length == 0) { render_home = true; }
-
     this.app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
-
       "RedSquare",
-
       sql,
-
       async (res) => {
         if (res.rows) {
-console.log("PEER RES " + res.rows.length);
-
           if (!this.peers_for_tweets.includes(peer)) {
    	    this.peers_for_tweets.push(peer);
           }
-
           res.rows.forEach(row => {
             let tx = new saito.default.transaction(JSON.parse(row.tx));
             if (!tx.optional) { tx.optional = {}; }
@@ -209,19 +260,24 @@ console.log("PEER RES " + res.rows.length);
 	if (render_home) {
 	  this.app.connection.emit("redsquare-home-render-request");
 	}
+        if (post_load_callback != null) { post_load_callback(); }
       },
-
       (p) => { if (p == peer) { return 1; } return 0; }
-
     );
   }
+  
 
 
 
-
-  /////////////////////////////////////////////////////
-  // all tweets and notifications are added this way //
-  /////////////////////////////////////////////////////
+  //
+  // adding tweets and notifications
+  //
+  // all tweets and notifications are added as transactions. this function examines the
+  // tweet-tree ( this.tweets ) and inserts the transaction into the appropriate spot so 
+  // that when specific tweets are rendered their children will also display as wanted.
+  //
+  // notifications are added through this function. 
+  //
   addTweet(tx, prepend = 0) {
 
     //
@@ -318,33 +374,6 @@ console.log("PEER RES " + res.rows.length);
 
   }
 
-  render() {
-
-    if (this.main == null) {
-      this.main = new SaitoMain(this.app, this);
-      this.header = new SaitoHeader(this.app, this);
-      this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
-      this.sidebar = new RedSquareSidebar(this.app, this, '.saito-sidebar.right');
-
-      this.addComponent(this.header);
-      this.addComponent(this.main);
-      this.addComponent(this.menu);
-      this.addComponent(this.sidebar);
-
-      //
-      // chat manager can insert itself into left-sidebar if exists
-      //
-      this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
-        let cm = mod.respondTo("chat-manager");
-        cm.container = ".saito-sidebar.left";
-	this.addComponent(cm);
-      });
-
-    }
-
-    super.render();
-
-  }
 
 
 
