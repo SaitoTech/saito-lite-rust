@@ -954,30 +954,6 @@ class Network {
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
-        let txmsg = tx.returnMessage();
-        if (!txmsg) {
-          break;
-        }
-        if (!txmsg.request) {
-          break;
-        }
-        if (!txmsg.data) {
-          break;
-        }
-
-        let reconstructed_message = txmsg.request;
-        let reconstructed_data = txmsg.data;
-
-        const msg: any = {};
-        msg.request = "";
-        msg.data = {};
-
-        if (reconstructed_message) {
-          msg.request = reconstructed_message;
-        }
-        if (reconstructed_data) {
-          msg.data = reconstructed_data;
-        }
         const mycallback = function (response_object) {
           peer.sendResponse(
             message.message_id,
@@ -985,27 +961,7 @@ class Network {
           );
         };
 
-        switch (message.message_type) {
-          default:
-            if (reconstructed_data) {
-              if (reconstructed_data.transaction) {
-                if (reconstructed_data.transaction.m) {
-                  // backwards compatible - in case modules try the old fashioned way
-                  if (msg.data.transaction.m.byteLength === 0) {
-                    msg.data.transaction.msg = {};
-                  } else {
-                    msg.data.transaction.msg = JSON.parse(
-                      this.app.crypto.base64ToString(
-                        Buffer.from(msg.data.transaction.m).toString("base64")
-                      )
-                    );
-                  }
-                  msg.data.msg = msg.data.transaction.msg;
-                }
-              }
-            }
-            await this.app.modules.handlePeerRequest(msg, peer, mycallback);
-        }
+        await this.app.modules.handlePeerTransaction(tx, peer, mycallback);
         break;
       }
 

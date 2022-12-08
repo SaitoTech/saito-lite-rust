@@ -202,11 +202,13 @@ class Chat extends ModTemplate {
             if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600)) {
                 if (app.options.auto_open_chat_box !== -1){
                     let active_module = app.modules.returnActiveModule();
+console.log("NNO INTERUPPTS");
                     if (active_module.request_no_interrupts == true) {
                         // if the module has ASKED leave it alone
                         console.log("ASKED NOT TO INTERRUPT!");
                         return;
                     }
+console.log("NNO INTERUPPTS 2");
                     this.openChatBox(app.options.auto_open_chat_box);
                 } 
             }else{
