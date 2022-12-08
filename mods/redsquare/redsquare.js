@@ -24,9 +24,18 @@ class RedSquare extends ModTemplate {
 
     this.tweets = [];
     this.tweets_sigs_hmap = {};
+
+    //
+    // track which peers give me content / notifications to 
+    // simplify fetching more content
+    //
+    this.peers_for_tweets = [];
+    this.peers_for_notifications = [];
+
     this.results_per_page = 10;
     this.notifications = [];
     this.notifications_sigs_hmap = {};
+
     //
     // is this a notification?
     //
@@ -65,13 +74,154 @@ class RedSquare extends ModTemplate {
 
   }
 
+
+  ////////////////////
+  // initialization //
+  ////////////////////
   initialize(app) {
 
     super.initialize(app);
+
+    //
+    // fetch content from options file
+    //
     this.load();
+
+    //
+    // fetch content from local archive
+    //
+    
+    app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
+      for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
+    });
 
   }
 
+  async onArchiveHandshakeComplete(app, peer) {
+
+    //
+    // avoid network overhead if in other apps
+    //
+    if (!this.browser_active) { return; }
+
+    //
+    // check peer for any archived tweets
+    //
+    this.loadNotificationsFromPeer(peer);
+
+  }
+
+  async onPeerHandshakeComplete(app, peer) {
+
+    //
+    // avoid network overhead if in other apps
+    //
+    if (!this.browser_active) { return; }
+
+    //
+    // check peer for any tweets they want to send us
+    //
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+console.log("LOADING: " + sql);
+    this.loadTweetsFromPeer(peer, sql, () => {
+      console.log("Main - TWEETS FETCH FROM PEER: " + this.mod.tweets.length);
+      this.app.connection.emit("redsquare-tweet-render-request");
+    });
+
+    //
+    // this triggers onArchiveHandshakeComplete if peer is archive etc.
+    //
+    super.onPeerHandshakeComplete(app, peer);
+
+  }
+
+
+  //
+  // fetch tweets / notifications middleware
+  //
+  //
+  // we have separate functions as notifications are mediated by our storage
+  // class, whereas tweets are simply fetched from other peers via SQL or 
+  // database request.
+  //
+  loadNotificationsFromPeer(peer, increment = 1, post_load_callback=null) {
+
+console.log("((((");
+console.log("LOAD");
+console.log("((((");
+
+    this.app.storage.loadTransactionsFromPeer("RedSquare", (50 * increment), peer, (txs) => {
+console.log("LOAD RES " + txs.length);
+
+      if (!this.peers_for_notifications.includes(peer)) {
+	this.peers_for_notifications.push(peer);
+      }
+
+      for (let i = 0; i < txs.length; i++) {
+        txs[i].decryptMessage(this.app);
+        this.addTweet(txs[i]);
+      }
+    });
+
+  }
+
+  loadTweetsFromPeer(peer, sql, post_fetch_tweets_callback = null, to_track_tweet = false, is_server_request = false) {
+
+console.log("((((");
+console.log("PEER");
+console.log("((((");
+
+    let render_home = false;
+    if (this.tweets.length == 0) { render_home = true; }
+
+    this.app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
+
+      "RedSquare",
+
+      sql,
+
+      async (res) => {
+        if (res.rows) {
+console.log("PEER RES " + res.rows.length);
+
+          if (!this.peers_for_tweets.includes(peer)) {
+   	    this.peers_for_tweets.push(peer);
+          }
+
+          res.rows.forEach(row => {
+            let tx = new saito.default.transaction(JSON.parse(row.tx));
+            if (!tx.optional) { tx.optional = {}; }
+            tx.optional.parent_id = tx.msg.parent_id;
+            tx.optional.thread_id = tx.msg.thread_id;
+            tx.optional.num_replies = row.num_replies;
+            tx.optional.num_retweets = row.num_retweets;
+            tx.optional.num_likes = row.num_likes;
+            tx.optional.flagged = row.flagged;
+            tx.optional.link_properties = {};
+            try {
+              let x = JSON.parse(row.link_properties);
+              tx.optional.link_properties = x;
+            } catch (err) { }
+            // this will render the event
+            this.addTweet(tx);
+          });
+        }
+	if (render_home) {
+	  this.app.connection.emit("redsquare-home-render-request");
+	}
+      },
+
+      (p) => { if (p == peer) { return 1; } return 0; }
+
+    );
+  }
+
+
+
+
+  /////////////////////////////////////////////////////
+  // all tweets and notifications are added this way //
+  /////////////////////////////////////////////////////
   addTweet(tx, prepend = 0) {
 
     //
@@ -185,11 +335,9 @@ class RedSquare extends ModTemplate {
       // chat manager can insert itself into left-sidebar if exists
       //
       this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
-console.log("ADDING CHAT MANAGER");
         let cm = mod.respondTo("chat-manager");
         cm.container = ".saito-sidebar.left";
 	this.addComponent(cm);
-console.log("DONE CHAT MANAGER");
       });
 
     }
@@ -199,102 +347,7 @@ console.log("DONE CHAT MANAGER");
   }
 
 
-  loadNotifications(increment = 1, post_load_callback=null) {
 
-    this.app.storage.loadTransactions("RedSquare", (50 * increment), (txs) => {
-
-      //mod.ntfs_num = txs.length;
-      let first_index = (increment - 1) * 50
-      //mod.max_ntfs_num = 50 * increment;
-
-      let tx_to_add = txs.splice(first_index)
-
-      for (let i = 0; i < tx_to_add.length; i++) {
-        tx_to_add[i].decryptMessage(app);
-        let txmsg = tx_to_add[i].returnMessage();
-        mod.addTweet(tx_to_add[i]);
-      }
-    });
-
-  }
-
-
-  loadTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false, is_server_request = false) {
-
-console.log("FETCHING TWEETS");
-    let render_home = false;
-    if (this.tweets.length == 0) { render_home = true; }
-
-    app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
-
-      "RedSquare",
-
-      sql,
-
-      async (res) => {
-console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
-        if (res.rows) {
-          res.rows.forEach(row => {
-            let tx = new saito.default.transaction(JSON.parse(row.tx));
-            if (!tx.optional) { tx.optional = {}; }
-            tx.optional.parent_id = tx.msg.parent_id;
-            tx.optional.thread_id = tx.msg.thread_id;
-            tx.optional.num_replies = row.num_replies;
-            tx.optional.num_retweets = row.num_retweets;
-            tx.optional.num_likes = row.num_likes;
-            tx.optional.flagged = row.flagged;
-            tx.optional.link_properties = {};
-            try {
-              let x = JSON.parse(row.link_properties);
-              tx.optional.link_properties = x;
-            } catch (err) { }
-            // this will render the event
-            this.addTweet(tx);
-          });
-        }
-
-	if (render_home) {
-	  app.connection.emit("redsquare-home-render-request");
-	}
-      }
-    );
-  }
-
-
-  async onConfirmation(blk, tx, conf, app) {
-  }
-
-
-  //
-  // fetch tweets from any DB on remote peer
-  //
-  async onPeerHandshakeComplete(app, peer) {
-
-    if (app.BROWSER == 1) {
-
-      if (this.tweets.length == 0) {
-	
-	let mod = this;
-        let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-        this.loadTweets(this.app, this, sql, function (app, mod) {
-          console.log("Main - TWEETS FETCH FROM PEER: " + mod.tweets.length);
-          this.app.connection.emit("redsquare-tweet-render-request");
-        });
-	this.loadNotifications();
-
-      }
-
-      //
-      // tweet thread
-      //
-      //let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${mod.viewing}' OR parent_id = '${mod.viewing}' OR thread_id = '${mod.viewing}'`;
-
-      //
-      // user profile page
-      //
-      //let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-    }
-  }
 
   async fetchOpenGraphProperties(app, mod, link) {
 

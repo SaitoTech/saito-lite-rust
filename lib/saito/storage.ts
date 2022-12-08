@@ -38,6 +38,9 @@ class Storage {
     throw new Error("Method not implemented.");
   }
 
+  //
+  // hit up all peers
+  //
   loadTransactions(type = "all", num = 50, mycallback) {
 
     const message = "archive";
@@ -67,9 +70,78 @@ class Storage {
     });
   }
 
-  deleteTransactions(type = "all", publickey = "", mycallback = null) {
+  //
+  // hit up specific peer
+  //
+  loadTransactionsFromPeer(type = "all", num = 50, peer, mycallback) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "load";
+    data.type = type;
+    data.num = num;
+    data.publickey = this.app.wallet.returnPublicKey();
 
-console.log("DELETING OUR TRANSACTIONS IN STORAGE!");
+    peer.sendRequestWithCallback(message, data, (obj) => {
+      let txs = [];
+      if (obj) {
+        if (obj.txs) {
+          for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+            tx.optional = {};
+            if (obj.txs[i].optional) {
+              try {
+                tx.optional = JSON.parse(obj.txs[i].optional);
+              } catch (err) {
+                console.log("error loading optional data into tx");
+              }
+            }
+            txs.push(tx);
+          }
+        }
+      }
+      mycallback(txs);
+    });
+  }
+
+
+  //
+  // check local archive if exists
+  //
+  loadTransactionsFromLocal(type = "all", num = 50, peer, mycallback) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "load";
+    data.type = type;
+    data.num = num;
+    data.publickey = this.app.wallet.returnPublicKey();
+
+    let archive_mod = this.app.modules.returnModule("Archive");
+    if (archive_mod) {
+
+      let res = archive_mod.handlePeerRequest(this.app, message, null, (obj) => {
+        let txs = [];
+        if (obj) {
+          if (obj.txs) {
+            for (let i = 0; i < obj.txs.length; i++) {
+              let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+              tx.optional = {};
+              if (obj.txs[i].optional) {
+                try {
+                  tx.optional = JSON.parse(obj.txs[i].optional);
+                } catch (err) {
+                  console.log("error loading optional data into tx");
+                }
+              }
+              txs.push(tx);
+            }
+          }
+        }
+        mycallback(txs);
+      });
+    }
+  }
+
+  deleteTransactions(type = "all", publickey = "", mycallback = null) {
 
     const message = "archive";
     const data: any = {};
@@ -78,7 +150,6 @@ console.log("DELETING OUR TRANSACTIONS IN STORAGE!");
     data.publickey = publickey;
 
     this.app.network.sendRequestWithCallback(message, data, function (obj) {
-console.log("AND BACK IN CALLBACK");
       mycallback();
     });
   }
