@@ -2,9 +2,6 @@ const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template
 
 module.exports = (app, mod, tweet) => {
 
-  console.log('TWEET TEMPLATE **************');
-  console.log(tweet);
-
   let txmsg = tweet.tx.msg;
   let optional = tweet.tx.optional;
   let notice = "";

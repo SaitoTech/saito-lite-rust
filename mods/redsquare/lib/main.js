@@ -58,7 +58,7 @@ class RedSquareMain {
     // this fires when the user has asked to view a tweet / thread
     //
     this.app.connection.on("redsquare-tweet-render-request", (tweet_sig) => {
-      tweet.render();
+      //tweet.render();
     });
 
   }
