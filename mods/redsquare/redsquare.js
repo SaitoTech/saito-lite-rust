@@ -139,9 +139,7 @@ class RedSquare extends ModTemplate {
     // check peer for any tweets they want to send us
     //
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-console.log("LOADING: " + sql);
     this.loadTweetsFromPeer(peer, sql, () => {
-      console.log("Main - TWEETS FETCH FROM PEER: " + this.mod.tweets.length);
       this.app.connection.emit("redsquare-tweet-render-request");
     });
 
@@ -380,13 +378,8 @@ console.log("LOADING: " + sql);
 
   async fetchOpenGraphProperties(app, mod, link) {
 
-    console.log("INSIDEEE open graph*************************");
-    console.log(link);
-    console.log(app.BROWSER);
-
     if (app.BROWSER != 1) {
 
-      console.log("INSIDEEE IFFF*************************");
       // required og properties for link preview
       let og_tags = {
         'og:exists': false,
@@ -396,8 +389,6 @@ console.log("LOADING: " + sql);
         'og:image': '',
         'og:site_name': ''
       };
-
-      console.log(og_tags);
 
       // fetch source code for link inside tweet
       // (sites which uses firewall like Cloudflare shows Cloudflare loading
@@ -441,9 +432,9 @@ console.log("LOADING: " + sql);
 
 
 
-  //////////////////
-  // transactions //
-  //////////////////
+  ////////////////////////////////////////
+  // sending and receiving transactions //
+  ////////////////////////////////////////
   sendLikeTransaction(app, mod, data, tx = null) {
 
     let redsquare_self = this;
@@ -467,7 +458,6 @@ console.log("LOADING: " + sql);
     newtx.msg = obj;
     newtx = redsquare_self.app.wallet.signTransaction(newtx);
     redsquare_self.app.network.propagateTransaction(newtx);
-
     return newtx;
 
   }
@@ -507,7 +497,6 @@ console.log("LOADING: " + sql);
       //
       // add notification for unviewed
       //
-      //console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       } else {
@@ -587,7 +576,6 @@ console.log("LOADING: " + sql);
               if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
               tx.optional.num_replies++;
 
-
               this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
               tweet.renderReplies();
             }
@@ -595,7 +583,6 @@ console.log("LOADING: " + sql);
             this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_replies");
           }
         }
-
 
         //
         // if retweets
@@ -625,7 +612,6 @@ console.log("LOADING: " + sql);
       //
       // add notification for unviewed
       //
-      //console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       } else {
@@ -786,6 +772,11 @@ console.log("LOADING: " + sql);
 
   }
 
+
+
+  /////////////////////////////////////
+  // saving and loading wallet state //
+  /////////////////////////////////////
   load() {
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;
