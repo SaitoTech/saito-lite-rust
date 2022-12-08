@@ -10,15 +10,13 @@
   top: var(--saito-header-height);
   overflow-y: auto;
   overflow-x: hidden;
-
 }
-
 
 .saito-main {
   background-color: var(--saito-background-color);
   padding: 2rem 0;
   min-width: 54rem;
-  margin:0 2rem 15rem;
+  margin: 0 2rem 15rem;
 }
 
 .saito-mobile-bar {
@@ -28,7 +26,6 @@
 .saito-sidebar {
   background-color: var(--saito-background-color);
   top: calc(var(--saito-header-height) + 1rem);
-
 }
 
 .saito-sidebar > div:not(:last-child) {
@@ -40,16 +37,12 @@
   position: relative;
 }
 
-
 .saito-sidebar.left {
   padding-top: 2rem;
   position: sticky;
   height: inherit;
   width: 100%;
-  top:0;
-
-
-
+  top: 0;
 }
 
 .saito-sidebar.right {
@@ -57,7 +50,6 @@
   background-color: var(--saito-background-color);
   grid-column-start: 3;
   grid-row: 1/2;
-  background-color: var(--saito-background-color);
   position: sticky;
   top: 0;
 }
@@ -75,13 +67,11 @@
 .saito-page-header {
   z-index: 2;
   background: var(--saito-white);
-  padding-bottom: 0rem;
   width: -webkit-fill-available;
   top: 8rem;
-  padding: 1.5rem 0rem;
   position: sticky;
   top: 0rem;
-  padding-top: 2.5rem;
+  padding: 2.5rem 0 1.5rem 0;
   margin-top: -2rem;
 }
 
@@ -155,8 +145,6 @@
     font-size: 2.5rem;
   }
 }
-
-
 
 @media screen and (max-width: 768px) {
   .saito-main.appspace {

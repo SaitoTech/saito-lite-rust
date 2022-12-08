@@ -1,5 +1,5 @@
 .saito-overlay-backdrop {
-  position: fixed!important;
+  position: fixed !important;
   display: none;
   top: 0;
   left: 0;
@@ -16,15 +16,14 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
   z-index: 1000;
   min-height: 10%;
+  max-width: 90vw;
   height: min-content;
   width: min-content;
   min-width: 50rem;
-  border-radius: .5rem;
-  max-width: 90vw;
+  border-radius: 0.5rem;
   border: var(--saito-border);
 }
 
@@ -46,4 +45,3 @@
   color: var(--saito-primary);
   font-size: 31px;
 }
-

@@ -1,180 +1,179 @@
 .tweet {
-    cursor: pointer;
-    padding: 1rem  0;
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid var(--saito-tweet-border);
-    position: relative;
+  cursor: pointer;
+  padding: 1rem 0;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid var(--saito-tweet-border);
+  position: relative;
 }
 
 .tweet.has-reply {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .tweet.has-reply::after {
-    content: "";
-    position: absolute;
-    width: 2px;
-    height: 100%;
-    background-color: var(--saito-gray-mid);
-    top: 5.5rem;
-    left: 2.7rem;
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 100%;
+  background-color: var(--saito-gray-mid);
+  top: 5.5rem;
+  left: 2.7rem;
 }
 
 .tweet-body {
-    display: grid;
-    grid-template-columns: 4.5rem 1fr;
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
 }
 
 .tweet.quoted {
-    margin-top: -2rem;
+  margin-top: -2rem;
 }
 
 .tweet.quoted .tweet-contents {
-    display: grid;
-    grid-template-columns: 4.5rem 1fr;
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
 }
 
 .tweet.quoted:hover {
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid var(--saito-border-color);
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid var(--saito-border-color);
 }
 
 .tweet-notice {
-    box-sizing: border-box;
-    color: var(--saito-gray-mid);
-    font-family: var(--saito-font);
-    word-wrap: break-word;
-    padding-bottom: 1rem;
-    position: relative;
-    font-size: 1.4rem;
-    color: var(--saito-gray-mid);
+  box-sizing: border-box;
+  color: var(--saito-gray-mid);
+  font-family: var(--saito-font);
+  word-wrap: break-word;
+  padding-bottom: 1rem;
+  position: relative;
+  font-size: 1.4rem;
+  color: var(--saito-gray-mid);
 }
 
 .tweet-notice .saito-address {
-    display: inline;
-    margin-left: 0.25rem;
-    font-weight: bold;
-    font-size: 1.4rem;
-    color: var(--saito-gray-mid);
+  display: inline;
+  margin-left: 0.25rem;
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: var(--saito-gray-mid);
 }
 
 .tweet-text {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    line-height: 2.2rem;
-    overflow-wrap: anywhere;
-    max-height: 17.7rem;
-    margin-bottom: 1rem;
-    overflow: hidden;
+  padding: 0.5rem 0;
+  line-height: 2.2rem;
+  overflow-wrap: anywhere;
+  max-height: 17.7rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
 }
 
 .tweet-text.full {
-    transition: all .2s linear;
-    max-height: 50rem;
-    overflow-y: auto;
-    margin-bottom: 2rem;
+  transition: all 0.2s linear;
+  max-height: 50rem;
+  overflow-y: auto;
+  margin-bottom: 2rem;
 }
 
 .tweet-text.full::after {
-    content: "Collapse tweet";
-    position: absolute;
-    bottom: 5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--saito-primary);
-    font-size: smaller;
-    padding: 0 0.5rem;
-    transition: all .2s linear;
+  content: "Collapse tweet";
+  position: absolute;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--saito-primary);
+  font-size: smaller;
+  padding: 0 0.5rem;
+  transition: all 0.2s linear;
 }
 
 .tweet-text.preview::before {
-    content: " ";
-    position: absolute;
-    bottom: 4rem;
-    left: 0;
-    height: 11rem;
-    width: 100%;
-    background: linear-gradient(180deg, transparent, var(--saito-background-color));
-    transition: all 2s ease;
+  content: " ";
+  position: absolute;
+  bottom: 4rem;
+  left: 0;
+  height: 11rem;
+  width: 100%;
+  background: linear-gradient(180deg, transparent, var(--saito-background-color));
+  transition: all 2s ease;
 }
 
 .tweet-text.preview:hover::after {
-    content: "View full tweet";
-    position: absolute;
-    bottom: 5rem;
-    color: var(--saito-primary);
-    font-size: smaller;
-    height: 3rem;
-    z-index: 999;
-    text-align: center;
-    line-height: 2.7rem;
-    padding: 0.3rem 1rem;
-    border-radius: var(--saito-border-radius);
-    left: 50%;
-    transform: translateX(-50%);
-    transition: all 1s l;
+  content: "View full tweet";
+  position: absolute;
+  bottom: 5rem;
+  color: var(--saito-primary);
+  font-size: smaller;
+  height: 3rem;
+  z-index: 999;
+  text-align: center;
+  line-height: 2.7rem;
+  padding: 0.3rem 1rem;
+  border-radius: var(--saito-border-radius);
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 1s l;
 }
 
 .tweet:hover {
-    background-color: var(--saito-background-light);
+  background-color: var(--saito-background-light);
 }
 
 .tweet:hover .tweet-text.preview::before {
-    background: linear-gradient(180deg, transparent, var(--saito-background-light));
+  background: linear-gradient(180deg, transparent, var(--saito-background-light));
 }
 
 .tweet-controls {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.5rem;
-    width: 100%;
-    margin-top: 1rem;
-    padding-bottom: 1rem;
-    cursor: default;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  cursor: default;
 }
 
-.tweet-controls>div {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem 0;
-    cursor: pointer;
-    color: var(--tweet-controls)
+.tweet-controls > div {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  cursor: pointer;
+  color: var(--tweet-controls);
 }
 
-.tweet-controls>div:hover {
-    transform: scale(1.05);
-    color: var(--saito-primary);
+.tweet-controls > div:hover {
+  transform: scale(1.05);
+  color: var(--saito-primary);
 }
 
 .tweet-controls span {
-    display: inline-block;
-    font-weight: bold;
-    z-index: 1;
-    font-size: 1.5rem;
+  display: inline-block;
+  font-weight: bold;
+  z-index: 1;
+  font-size: 1.5rem;
 }
 
 .tweet-controls i {
-    font-size: 1.7rem;
-    margin: 0 1rem;
-    text-align: center;
+  font-size: 1.7rem;
+  margin: 0 1rem;
+  text-align: center;
 }
 
 .tweet-tool-flag i {
-    font-weight: normal;
+  font-weight: normal;
 }
 
 .tweet-picture {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
-    grid-gap: .3rem;
-    width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+  grid-gap: 0.3rem;
+  width: 100%;
 }
 
-.tweet-picture>img {
-    width: 100%;
-    height: 20rem;
-    border-radius: .5rem;
-    object-fit: cover;
+.tweet-picture > img {
+  width: 100%;
+  height: 20rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
 }
