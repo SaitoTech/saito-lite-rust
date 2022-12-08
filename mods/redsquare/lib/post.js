@@ -30,7 +30,7 @@ class Post {
     , "#redsquare-tweet-overlay");
 
     this.emoji = new SaitoEmoji(this.app, this.mod, 'post-tweet-textarea');
-    this.emoji.render(this.app, this.mod);
+    this.emoji.render();
 
     let post_self = this;
     this.app.modules.mods.forEach(mod => {
@@ -70,6 +70,13 @@ class Post {
           post_self.file_event_added = true;
         },
         false);
+    }
+
+
+    
+    if (typeof document.querySelector(".my-form") != "undefined" &&
+      document.querySelector(".my-form") != null) {
+      document.querySelector(".my-form").style.display = "none";
     }
 
     document.getElementById('post-tweet-button').addEventListener('click', function(e) {
@@ -121,30 +128,36 @@ class Post {
         post_self.overlay.hide();
       }, 1000);
     });
-
-
-    document.onclick = function (e) {
-      if (typeof (e.target.classList) != 'undefined') {
-        if (e.target.classList.contains('post-tweet-img-preview-close')) {
-          let array_position = e.target.getAttribute("data-id");
-          e.target.parentNode.remove();
-          (post_self.images).splice(array_position, 1);
-          document.querySelectorAll('.post-tweet-img-preview-close').forEach(el2 => {
-            let array_position2 = el2.getAttribute("data-id");
-            if (array_position2 > array_position) {
-              el2.setAttribute("data-id", (array_position2 - 1));
-            }
-          });
-        }
-      }
-    };
+ 
   }
 
   addImg(img) {
+    post_self = this;
     this.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${img}"
            /><i data-id="${this.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
     this.images.push(img);
+    
+    // attach img preview event
+    // event added here because img-prievew is added dynamically 
+    let sel = ".post-tweet-img-preview-close";
+    document.querySelectorAll(sel).forEach(elem => { 
+      elem.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        let array_position = e.target.getAttribute("data-id");
+        e.target.parentNode.remove();
+        (post_self.images).splice(array_position, 1);
+        document.querySelectorAll('.post-tweet-img-preview-close').forEach(el2 => {
+          let array_position2 = el2.getAttribute("data-id");
+          if (array_position2 > array_position) {
+            el2.setAttribute("data-id", (array_position2 - 1));
+          }
+        });
+      });
+    });
+
   }
 
   async resizeImg(img, dimensions, quality) {

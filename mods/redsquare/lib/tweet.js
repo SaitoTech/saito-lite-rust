@@ -42,8 +42,11 @@ class RedSquareTweet {
       this.retweet = new RedSquareTweet(this.app, this.mod, (".tweet-preview-"+this.tx.transaction.sig), newtx);
     }
 
+
+    this.text = "this is a youtube video: https://youtu.be/Yl1FNX08HFc";
     this.generateTweetProperties(app, mod, 1);
     
+
   }
 
   render() {
@@ -314,27 +317,26 @@ class RedSquareTweet {
       //
       // youtube link
       //
-      if (this.link.indexOf("youtube.com") != -1) {
+      if (this.link.indexOf("youtube.com") != -1 || this.link.indexOf("youtu.be") != -1) {
+        let videoId = "";
 
-        let urlParams = new URLSearchParams(link.search);
-        let videoId = urlParams.get('v');
+        if (this.link.indexOf("youtu.be") != -1) {
+          videoId = (this.link.split("/"));
+          videoId = videoId[videoId.length - 1];
+        } else {
+          let urlParams = new URLSearchParams(link.search);
+          videoId = urlParams.get('v');
+        }
 
         this.youtube_id = videoId;
-
         return this;
-
       }
 
       //
       // normal link
       //
       if (fetch_open_graph == 1) {
-        console.log("Fetching open graph*************************");
         let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
-        
-        
-        console.log("RESULT open graph*************************");
-        console.log(res);
         
         if (res != '') {
           this.link_properties = res;

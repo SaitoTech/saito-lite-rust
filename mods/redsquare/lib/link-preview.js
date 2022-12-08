@@ -16,8 +16,8 @@ class RedSquareLinkPreview {
     // replace element or insert into page
     //
     if (typeof this.tweet.link != "undefined") {
-      let element = "#tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .link-preview";
-      let template = RedSquareLinkPreviewTemplate(this.app, this.mod)
+      let element = "#tweett-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .link-preview";
+      let template = RedSquareLinkPreviewTemplate(this.app, this.mod, this.tweet)
 
       if (document.querySelector(element)) {
         this.app.browser.replaceElementBySelector(template, element);
