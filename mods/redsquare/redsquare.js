@@ -140,7 +140,7 @@ class RedSquare extends ModTemplate {
     //
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
     this.loadTweetsFromPeer(peer, sql, () => {
-      this.app.connection.emit("redsquare-tweet-render-request");
+      this.app.connection.emit("redsquare-home-render-request");
     });
 
     //

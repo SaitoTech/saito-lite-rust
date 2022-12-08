@@ -1,4 +1,5 @@
 const LeagueRankingsTemplate = require("./rankings.template");
+const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class LeagueRankings {
 	
@@ -6,6 +7,7 @@ class LeagueRankings {
     this.app = app;
     this.mod = mod;
     this.container = container;
+    this.overlay = new SaitoOverlay(this.app, this.mod);
 
     app.connection.on('league-rankings-render-request', () => {
       this.render();
@@ -35,7 +37,7 @@ class LeagueRankings {
       leagues.forEach(l => {
         if (l.rank > 0) {
           html += `
-	    <div id="league_${l.id}" class="saito-table-row league-leaderboard-ranking${(cnt%2 == 1)?" odd":""}">
+	    <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
               <div class="saito-table-gamename">${l.name}</div>
               <div class="saito-table-rank">${l.rank}</div>
             </div>
@@ -45,7 +47,7 @@ class LeagueRankings {
       leagues.forEach(l => {
         if (l.rank <= 0) {
           html += `
-	    <div id="league_${l.id}" class="saito-table-row league-leaderboard-ranking${(cnt%2 == 1)?" odd":""}">
+	    <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
               <div class="saito-table-gamename">${l.name}</div>
               <div class="saito-table-rank saito-deemphasize">…</div>
             </div>`;
@@ -54,12 +56,20 @@ class LeagueRankings {
     }
 
     this.app.browser.addElementToSelector(html, ".league-rankings .saito-table");
-
     this.attachEvents();
 
   }
 
   attachEvents() {
+
+    document.querySelectorAll(".league-leaderboard-ranking").forEach((el) => {
+      el.onclick = (e) => {
+	let lid = e.currentTarget.getAttribute("data-id");
+
+	this.overlay.show(`LID: ${lid}`);
+
+      }
+    });
 
   }
 
