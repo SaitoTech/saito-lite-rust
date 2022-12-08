@@ -7,7 +7,7 @@ class RedSquareImageOverlay {
   constructor(app, mod, img) {
     this.app = app;
     this.mod = mod;
-    this.saito_overlay = new SaitoOverlay(app, false, true);
+    this.overlay = new SaitoOverlay(app, mod, false, true);
     this.img = img;
     this.img_index = img.getAttribute("data-index");;
     this.selected = 1;
@@ -20,7 +20,7 @@ class RedSquareImageOverlay {
 
   render() {
     this_self = this;
-    this.saito_overlay.show(this.app, this.mod, RedSquareImageOverlayTemplate(this.app, this.mod));
+    this.overlay.show(RedSquareImageOverlayTemplate(this.app, this.mod));
 
     // if tweet has only one img, hide left right arrows
     if (this.tweetImgs.length == 1) {

@@ -9,7 +9,7 @@ class Post {
   constructor(app, mod, tweet = null) {
     this.app = app;
     this.mod = mod;
-    this.overlay = new SaitoOverlay(app, true, true);
+    this.overlay = new SaitoOverlay(this.app, this.mod, true, true);
     this.parent_id = "";
     this.thread_id = "";
     this.images = [];
@@ -24,7 +24,7 @@ class Post {
     if (document.querySelector('#redsquare-tweet-overlay') != null) {
       document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
     }
-    this.overlay.show(this.app, this.mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
+    this.overlay.show('<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
     this.app.browser.addElementToSelector(
       PostTemplate(this.app, this.mod, this)
     , "#redsquare-tweet-overlay");
@@ -102,7 +102,7 @@ class Post {
       //
       post_self.overlay.hide();
       post_self.overlay.closebox = false;
-      post_self.overlay.show(post_self.app, post_self.mod, '<div class="saito-loader"></div>');
+      post_self.overlay.show('<div class="saito-loader"></div>');
 
       //
       // tweet data

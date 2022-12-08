@@ -24,7 +24,19 @@ class AppspaceNotifications {
       }
     }
 
+console.log("NOTIFICATIONS: ");
+console.log(JSON.stringify(this.mod.notifications));
+
+    //
+    //
+    //
+    for (let i = 0; i < this.mod.notifications.length; i++) {
+      this.mod.notifications[i].container = ".redsquare-home";
+      this.mod.notifications[i].render();
+    }
+
     this.attachEvents();
+
   }  
 
   attachEvents() {
