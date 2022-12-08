@@ -150,9 +150,30 @@ Scrollbars
 
 /* utils */
 
+.left-align {
+  text-align: left;
+}
+
+.center-align {
+  text-align: center;
+}
+
+.right-align {
+  text-align: right;
+}
+
+
 .saito-deemphasize {
   opacity: 0.66;
 }
+
+.saito-address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block !important;
+  width: inherit;
+}
+
 /* ----------------------------------------------------------------
 Media Queries
 -----------------------------------------------------------------*/

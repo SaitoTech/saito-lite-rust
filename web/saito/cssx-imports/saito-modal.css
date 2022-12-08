@@ -25,7 +25,7 @@
 }
 
 .saito-modal-menu-option:hover {
-  background-color: var(--saito-grey-transparent);
+  background-color: var(--saito-gray-transparent);
   cursor: pointer;
 }
 
