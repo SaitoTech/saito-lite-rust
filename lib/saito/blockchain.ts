@@ -1109,7 +1109,7 @@ class Blockchain {
 
   async doesChainMeetGoldenTicketRequirements(
     previous_block_hash: string,
-    current_block_has_golden_ticket = false
+    mempool_has_gts = false
   ) {
     //
     // ensure adequate mining support
@@ -1154,7 +1154,7 @@ class Blockchain {
       golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR &&
       search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR
     ) {
-      if (current_block_has_golden_ticket) {
+      if (mempool_has_gts) {
         golden_tickets_found++;
       }
     }
@@ -1185,8 +1185,7 @@ class Blockchain {
 
     let does_chain_meet_golden_ticket_requirements =
       await this.doesChainMeetGoldenTicketRequirements(
-        previous_block_hash,
-        block.hasGoldenTicket()
+        previous_block_hash
       );
 
     if (!does_chain_meet_golden_ticket_requirements) {
