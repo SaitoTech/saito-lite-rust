@@ -1282,7 +1282,7 @@ class Blockchain {
       this.app.blockring.onChainReorganization(block.returnId(), block.returnHash(), true);
 
       // utxoset update
-      //block.onChainReorganization(true);
+      block.onChainReorganization(true);
       this.app.wallet.onChainReorganization(block, true);
 
       //
