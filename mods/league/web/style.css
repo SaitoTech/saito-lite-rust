@@ -1,23 +1,16 @@
 .league-rankings > h6 {
   margin-bottom: 0.5rem;
 }
-.league-rankings .saito-table .saito-table-row {
-  display: grid;
-  grid-template-columns: 1fr min-content;
-  grid-column-gap: 1rem;
-}
+
 .league-leaderboard > h6 {
   margin-bottom: 0.5rem;
 }
 .league-leaderboard .saito-table .saito-table-row {
-  display: grid;
   grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
-  grid-column-gap: 1rem;
 }
+
 .league-leaderboard .saito-table .saito-table-header {
-  display: grid;
   grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
-  grid-column-gap: 1rem;
   text-align: center;
 }
 

@@ -57,7 +57,7 @@ font imports
   --saito-main-appspace-width: 70rem;
   /* static colors for modals with fixed theme */
   --saito-white: #fff;
-  --saito-grey-transparent: #5555;
+  --saito-gray-transparent: #5555550a;
   --saito-tweet-border: #a5a5a533;
   --saito-table-hover-background: #00000045;
   --saito-gray-mid: #444;
@@ -82,6 +82,7 @@ html[data-theme='dark'] {
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #211f25;
   --saito-background-light: rgb(46, 38, 54);
+  --saito-gray-transparent: #88888818;
 }
 
 html[data-theme='arcade'] {
@@ -100,4 +101,5 @@ html[data-theme='arcade'] {
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #324;
   --saito-background-light: #426;
+  --saito-gray-transparent: #88888818;
 }

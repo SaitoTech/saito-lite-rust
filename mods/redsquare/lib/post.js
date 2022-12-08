@@ -1,6 +1,6 @@
 const PostTemplate = require("./post.template");
-const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-const SaitoEmoji = require("./../../../lib/saito/new-ui/saito-emoji/saito-emoji");
+const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoEmoji = require("./../../../lib/saito/ui/saito-emoji/saito-emoji");
 
 const JSON = require('json-bigint');
 
