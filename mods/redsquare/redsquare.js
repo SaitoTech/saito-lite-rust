@@ -24,9 +24,19 @@ class RedSquare extends ModTemplate {
 
     this.tweets = [];
     this.tweets_sigs_hmap = {};
+
+    //
+    // track which peers give me content / notifications to 
+    // simplify fetching more content
+    //
     this.results_per_page = 10;
+    this.peers_for_tweets = [];
+    this.peers_for_notifications = [];
+    this.increment_for_tweets = 1;
+    this.increment_for_notifications = 1;
     this.notifications = [];
     this.notifications_sigs_hmap = {};
+
     //
     // is this a notification?
     //
@@ -65,13 +75,207 @@ class RedSquare extends ModTemplate {
 
   }
 
+
+  //////////////////////////////
+  // initialization functions //
+  //////////////////////////////
+  //
+  // this gets the party started. note that we may not have
+  // any network connections to peers at this point. so most
+  // of the work is setting up the wallet and seeing if we 
+  // already have data there to load.
+  //
+  // we can also try to load content from any local storage
+  // so that we have something to show before the network is
+  // live.
+  //
   initialize(app) {
 
     super.initialize(app);
+
+    //
+    // fetch content from options file
+    //
     this.load();
+
+    //
+    // fetch content from local archive
+    //
+    
+    app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
+      for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
+    });
 
   }
 
+  //
+  // runs when archive peer connects
+  //
+  async onArchiveHandshakeComplete(app, peer) {
+
+    //
+    // avoid network overhead if in other apps
+    //
+    if (!this.browser_active) { return; }
+
+    //
+    // check peer for any archived tweets
+    //
+    this.loadNotificationsFromPeer(peer);
+
+  }
+
+  //
+  // runs when normal peer connects
+  //
+  async onPeerHandshakeComplete(app, peer) {
+
+    //
+    // avoid network overhead if in other apps
+    //
+    if (!this.browser_active) { return; }
+
+    //
+    // check peer for any tweets they want to send us
+    //
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+    this.loadTweetsFromPeer(peer, sql, () => {
+      this.app.connection.emit("redsquare-tweet-render-request");
+    });
+
+    //
+    // this triggers onArchiveHandshakeComplete if peer is archive etc.
+    //
+    super.onPeerHandshakeComplete(app, peer);
+
+  }
+  //
+  // this initializes the DOM but does not necessarily show the loaded content 
+  // onto the page, as we are likely being asked to render the components on 
+  // the application BEFORE we have any peers capable of feeding us content.
+  //
+  render() {
+
+    if (this.main == null) {
+      this.main = new SaitoMain(this.app, this);
+      this.header = new SaitoHeader(this.app, this);
+      this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
+      this.sidebar = new RedSquareSidebar(this.app, this, '.saito-sidebar.right');
+
+      this.addComponent(this.header);
+      this.addComponent(this.main);
+      this.addComponent(this.menu);
+      this.addComponent(this.sidebar);
+
+      //
+      // chat manager can insert itself into left-sidebar if exists
+      //
+      this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
+        let cm = mod.respondTo("chat-manager");
+        cm.container = ".saito-sidebar.left";
+	this.addComponent(cm);
+      });
+
+    }
+
+    super.render();
+
+  }
+
+
+
+  ///////////////////////
+  // network functions //
+  ///////////////////////
+  //
+  // fetch tweets / notifications middleware
+  //
+  // when we need more tweets or notifications, we can ask these functions, they 
+  // keep track of which peers have given us content in the past and simply ask 
+  // them for more data.
+  //
+  loadMoreTweets() {
+    this.increment_for_tweets++;
+    for (let i = 0; i < this.peers_for_tweets.length; i++) {
+      let peer = this.peers_for_tweets[i];
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1 }','${this.results_per_page}'`;
+      this.loadTweetsFromPeer(peer, sql, () => {
+        this.app.connection.emit("redsquare-home-render-request");
+      });
+    }
+  }
+  loadMoreNotifications() {
+    this.increment_for_notifications++;
+    for (let i = 0; i < this.peers_for_notifications.length; i++) {
+      let peer = this.peers_for_notifications[i];
+      this.loadNotificationsFromPeer(peer, this.increment_for_notifications, () => {
+        this.app.connection.emit("redsquare-notifications-render-request");
+      });
+    }
+  }
+  loadNotificationsFromPeer(peer, increment = 1, post_load_callback=null) {
+    this.app.storage.loadTransactionsFromPeer("RedSquare", (50 * increment), peer, (txs) => {
+      if (!this.peers_for_notifications.includes(peer)) {
+	this.peers_for_notifications.push(peer);
+      }
+      for (let i = 0; i < txs.length; i++) {
+        txs[i].decryptMessage(this.app);
+        this.addTweet(txs[i]);
+      }
+      if (post_load_callback != null) { post_load_callback(); }
+    });
+  }
+
+  loadTweetsFromPeer(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
+    let render_home = false;
+    if (this.tweets.length == 0) { render_home = true; }
+    this.app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
+      "RedSquare",
+      sql,
+      async (res) => {
+        if (res.rows) {
+          if (!this.peers_for_tweets.includes(peer)) {
+   	    this.peers_for_tweets.push(peer);
+          }
+          res.rows.forEach(row => {
+            let tx = new saito.default.transaction(JSON.parse(row.tx));
+            if (!tx.optional) { tx.optional = {}; }
+            tx.optional.parent_id = tx.msg.parent_id;
+            tx.optional.thread_id = tx.msg.thread_id;
+            tx.optional.num_replies = row.num_replies;
+            tx.optional.num_retweets = row.num_retweets;
+            tx.optional.num_likes = row.num_likes;
+            tx.optional.flagged = row.flagged;
+            tx.optional.link_properties = {};
+            try {
+              let x = JSON.parse(row.link_properties);
+              tx.optional.link_properties = x;
+            } catch (err) { }
+            // this will render the event
+            this.addTweet(tx);
+          });
+        }
+	if (render_home) {
+	  this.app.connection.emit("redsquare-home-render-request");
+	}
+        if (post_load_callback != null) { post_load_callback(); }
+      },
+      (p) => { if (p == peer) { return 1; } return 0; }
+    );
+  }
+  
+
+
+
+  //
+  // adding tweets and notifications
+  //
+  // all tweets and notifications are added as transactions. this function examines the
+  // tweet-tree ( this.tweets ) and inserts the transaction into the appropriate spot so 
+  // that when specific tweets are rendered their children will also display as wanted.
+  //
+  // notifications are added through this function. 
+  //
   addTweet(tx, prepend = 0) {
 
     //
@@ -168,143 +372,14 @@ class RedSquare extends ModTemplate {
 
   }
 
-  render() {
-
-    if (this.main == null) {
-      this.main = new SaitoMain(this.app, this);
-      this.header = new SaitoHeader(this.app, this);
-      this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
-      this.sidebar = new RedSquareSidebar(this.app, this, '.saito-sidebar.right');
-
-      this.addComponent(this.header);
-      this.addComponent(this.main);
-      this.addComponent(this.menu);
-      this.addComponent(this.sidebar);
-
-      //
-      // chat manager can insert itself into left-sidebar if exists
-      //
-      this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
-console.log("ADDING CHAT MANAGER");
-        let cm = mod.respondTo("chat-manager");
-        cm.container = ".saito-sidebar.left";
-	this.addComponent(cm);
-console.log("DONE CHAT MANAGER");
-      });
-
-    }
-
-    super.render();
-
-  }
 
 
-  loadNotifications(increment = 1, post_load_callback=null) {
 
-    this.app.storage.loadTransactions("RedSquare", (50 * increment), (txs) => {
-
-      //mod.ntfs_num = txs.length;
-      let first_index = (increment - 1) * 50
-      //mod.max_ntfs_num = 50 * increment;
-
-      let tx_to_add = txs.splice(first_index)
-
-      for (let i = 0; i < tx_to_add.length; i++) {
-        tx_to_add[i].decryptMessage(app);
-        let txmsg = tx_to_add[i].returnMessage();
-        mod.addTweet(tx_to_add[i]);
-      }
-    });
-
-  }
-
-
-  loadTweets(app, mod, sql, post_fetch_tweets_callback = null, to_track_tweet = false, is_server_request = false) {
-
-console.log("FETCHING TWEETS");
-    let render_home = false;
-    if (this.tweets.length == 0) { render_home = true; }
-
-    app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
-
-      "RedSquare",
-
-      sql,
-
-      async (res) => {
-console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
-        if (res.rows) {
-          res.rows.forEach(row => {
-            let tx = new saito.default.transaction(JSON.parse(row.tx));
-            if (!tx.optional) { tx.optional = {}; }
-            tx.optional.parent_id = tx.msg.parent_id;
-            tx.optional.thread_id = tx.msg.thread_id;
-            tx.optional.num_replies = row.num_replies;
-            tx.optional.num_retweets = row.num_retweets;
-            tx.optional.num_likes = row.num_likes;
-            tx.optional.flagged = row.flagged;
-            tx.optional.link_properties = {};
-            try {
-              let x = JSON.parse(row.link_properties);
-              tx.optional.link_properties = x;
-            } catch (err) { }
-            // this will render the event
-            this.addTweet(tx);
-          });
-        }
-
-	if (render_home) {
-	  app.connection.emit("redsquare-home-render-request");
-	}
-      }
-    );
-  }
-
-
-  async onConfirmation(blk, tx, conf, app) {
-  }
-
-
-  //
-  // fetch tweets from any DB on remote peer
-  //
-  async onPeerHandshakeComplete(app, peer) {
-
-    if (app.BROWSER == 1) {
-
-      if (this.tweets.length == 0) {
-	
-	let mod = this;
-        let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-        this.loadTweets(this.app, this, sql, function (app, mod) {
-          console.log("Main - TWEETS FETCH FROM PEER: " + mod.tweets.length);
-          this.app.connection.emit("redsquare-tweet-render-request");
-        });
-	this.loadNotifications();
-
-      }
-
-      //
-      // tweet thread
-      //
-      //let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND sig = '${mod.viewing}' OR parent_id = '${mod.viewing}' OR thread_id = '${mod.viewing}'`;
-
-      //
-      // user profile page
-      //
-      //let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-    }
-  }
 
   async fetchOpenGraphProperties(app, mod, link) {
 
-    console.log("INSIDEEE open graph*************************");
-    console.log(link);
-    console.log(app.BROWSER);
-
     if (app.BROWSER != 1) {
 
-      console.log("INSIDEEE IFFF*************************");
       // required og properties for link preview
       let og_tags = {
         'og:exists': false,
@@ -314,8 +389,6 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
         'og:image': '',
         'og:site_name': ''
       };
-
-      console.log(og_tags);
 
       // fetch source code for link inside tweet
       // (sites which uses firewall like Cloudflare shows Cloudflare loading
@@ -359,9 +432,9 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
 
 
 
-  //////////////////
-  // transactions //
-  //////////////////
+  ////////////////////////////////////////
+  // sending and receiving transactions //
+  ////////////////////////////////////////
   sendLikeTransaction(app, mod, data, tx = null) {
 
     let redsquare_self = this;
@@ -385,7 +458,6 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
     newtx.msg = obj;
     newtx = redsquare_self.app.wallet.signTransaction(newtx);
     redsquare_self.app.network.propagateTransaction(newtx);
-
     return newtx;
 
   }
@@ -425,7 +497,6 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
       //
       // add notification for unviewed
       //
-      //console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       } else {
@@ -505,7 +576,6 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
               if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
               tx.optional.num_replies++;
 
-
               this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
               tweet.renderReplies();
             }
@@ -513,7 +583,6 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
             this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_replies");
           }
         }
-
 
         //
         // if retweets
@@ -543,7 +612,6 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
       //
       // add notification for unviewed
       //
-      //console.log("ADD THIS: " + tx.transaction.ts + " > " + this.last_viewed_notifications_ts);
       if (tx.transaction.ts > this.last_viewed_notifications_ts) {
         this.addNotification(app, this, tx);
       } else {
@@ -704,6 +772,11 @@ console.log("RECEIVED IN RESPONSE: " + JSON.stringify(res));
 
   }
 
+
+
+  /////////////////////////////////////
+  // saving and loading wallet state //
+  /////////////////////////////////////
   load() {
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;

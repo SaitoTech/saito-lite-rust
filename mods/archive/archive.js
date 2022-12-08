@@ -28,12 +28,14 @@ class Archive extends ModTemplate {
 
   }
 
-  /*shouldAffixCallbackToModule(modname = "") {
-     if (modname == "Chat"){
-      return 1;
-     }
-    return 0;
-  }*/
+
+
+  returnServices() {
+      let services = [];
+      if (this.app.BROWSER == 0) { services.push({ service: "archive" }); }
+      return services;
+  }
+
 
   onConfirmation(blk, tx, conf, app) {
 
