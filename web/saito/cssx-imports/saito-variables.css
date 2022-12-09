@@ -53,7 +53,7 @@ font imports
   --saito-width: 1500px;
   --saito-font-color: #3d3d3d;
   --saito-font-color-heavy: #222;
-  --saito-font-color-light: #555;
+  --saito-font-color-light: #888;
   --saito-font-color-inverse: #efefef;
   --saito-box-padding: 3rem 2rem;
   --saito-profile-background: #fff;
@@ -69,12 +69,11 @@ font imports
   /* static colors for modals with fixed theme */
   --saito-white: #fff;
   --saito-gray-transparent: #5555550a;
-  --saito-tweet-border: #a5a5a533;
   --saito-table-hover-background: #00000045;
   --saito-gray-mid: #444;
-  --tweet-controls: rgba(83, 100, 113, 0.8);
   --saito-black-faded: #1c1c23b5;
   --image-box-shadow: #ccc;
+  --saito-dark-shim: #0009;
 }
 
 html[data-theme="dark"] {

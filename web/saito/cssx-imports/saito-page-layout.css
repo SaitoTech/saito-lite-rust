@@ -76,7 +76,6 @@
 }
 
 .saito-page-header-title {
-  color: var(--saito-black-faded);
   font-size: 2.5rem;
   padding-top: 0rem;
   text-transform: uppercase;
@@ -173,7 +172,7 @@
   }
 
   .saito-mobile-bar {
-    background: #0009;
+    background: var(--saito-dark-shim);
     z-index: 1;
     height: 7rem;
     content: " ";

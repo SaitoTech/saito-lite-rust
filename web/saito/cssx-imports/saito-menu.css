@@ -69,7 +69,7 @@
   }
   
   .saito-menu li:hover i::before {
-    -webkit-text-stroke: #fff 1px;
+    -webkit-text-stroke: var(--saito-background-color) 1px;
   }
   
  
