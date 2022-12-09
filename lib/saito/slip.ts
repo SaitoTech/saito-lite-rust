@@ -229,7 +229,8 @@ class Slip {
 
   validate(app: Saito): boolean {
     if (this.amt > BigInt(0)) {
-      return true;
+      return app.utxoset.validate(this.returnKey());
+      // return true;
       //return false; // TODO : isSpendable is not implemented. so returning false here for now just to catch bugs.
       // return !!app.utxoset.isSpendable(this.returnKey());
     } else {
