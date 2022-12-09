@@ -60,11 +60,13 @@ class RedSquareMenu {
     //
     this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
       document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
-console.log("clicked: " + mod.returnName());
 	document.querySelector(".saito-main").innerHTML = "";
         mod.renderInto(".saito-main");
-	mod.renderInto(".saito-sidebar.right");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
+	if (mod.canRenderInto(".saito-sidebar.right")) {
+	  document.querySelector(".saito-sidebar.right").innerHTML = "";
+	  mod.renderInto(".saito-sidebar.right");
+	}
       }
     });
 
