@@ -42,10 +42,7 @@ class RedSquareTweet {
       this.retweet = new RedSquareTweet(this.app, this.mod, (".tweet-preview-"+this.tx.transaction.sig), newtx);
     }
 
-
-    this.text = "this is a youtube video: https://youtu.be/Yl1FNX08HFc";
     this.generateTweetProperties(app, mod, 1);
-    
 
   }
 
