@@ -23,17 +23,6 @@ class LeagueRankings {
       this.app.browser.addElementToSelector(InviteTemplate(), this.container);
     }
 
-    //
-    // add content
-    //
-    let html = ``;
-    for (let i=0; i<3; i++) {
-      html += InviteTemplate(this.app, this.mod);
-      
-    }
-
-    this.app.browser.addElementToSelector(html, ".arcade-invites");
-    
 
     this.attachEvents();
 
