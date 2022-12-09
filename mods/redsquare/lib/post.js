@@ -73,6 +73,11 @@ class Post {
     }
 
 
+    document.getElementById('post-tweet-img-icon').addEventListener('click', function(e) {
+      document.querySelector("#hidden_file_element_redsquare-tweet-overlay").click();
+      return;
+    });
+
     
     if (typeof document.querySelector(".my-form") != "undefined" &&
       document.querySelector(".my-form") != null) {
