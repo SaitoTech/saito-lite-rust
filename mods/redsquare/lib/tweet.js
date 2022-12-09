@@ -13,6 +13,7 @@ class RedSquareTweet {
     this.name = "RedSquareTweet";
 
     this.tx = tx;
+    let txmsg = tx.returnMessage();
 
     this.parent_id = "";
     this.thread_id = "";
@@ -28,6 +29,9 @@ class RedSquareTweet {
     this.retweeters = [];
     this.retweet_tx = null;
     this.retweet_tx_sig = null;
+    this.links = [];
+    this.link = null;
+
     this.link_properties = null;
     this.show_controls = 1;
 
@@ -35,11 +39,40 @@ class RedSquareTweet {
     this.setKeys(tx.optional);
 
     //
+    // this.text <== set by setKeys
+    // this.images <== set by setKeys
+    //
+  
+    //
+    // do we have a link?
+    //
+    let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
+    this.link = null;
+    if (this.text) {
+      this.links = this.text.match(expression);
+    }
+    if (this.links.length > 0) { this.link = this.links[0]; }
+
+    //
     // create retweet if exists
     //
     if (this.retweet != null) {
       let newtx = new saito.default.transaction(JSON.parse(this.retweet_tx));
       this.retweet = new RedSquareTweet(this.app, this.mod, (".tweet-preview-"+this.tx.transaction.sig), newtx);
+    } else {
+      //
+      // create image preview if exists
+      //
+      if (this.images?.length > 0) {
+        this.img_preview = new ImgPreview(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
+      } else {
+        //
+        // create link preview if exists
+        //
+        if (this.link != null) {
+          this.link_preview = new LinkPreview(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
+        }
+      }
     }
 
     this.generateTweetProperties(app, mod, 1);
@@ -59,13 +92,6 @@ class RedSquareTweet {
       this.app.browser.addElementToSelector(RedSquareTweetTemplate(this.app, this.mod, this), this.container);
     }
 
-    //
-    // create possible subcomponents
-    //
-    let subcomponent_container = ( this.container != ".redsquare-home") ? this.container + ` .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview` : ".tweet-"+this.tx.transaction.sig+ " .tweet-body .tweet-main .tweet-preview";   
-    this.link_preview = new LinkPreview(this.app, this.mod, subcomponent_container, this);
-    this.img_preview = new ImgPreview(this.app, this.mod, subcomponent_container, this);
-
     if (this.retweet != null) {
       this.retweet.render();
     }
@@ -81,9 +107,10 @@ class RedSquareTweet {
   }
 
   attachEvents() {
+
     tweet_self = this;
 
-     //
+    //
     // reply
     //
     let sel = ".tweet-tool-comment";
