@@ -1,7 +1,9 @@
 const saito = require("./../../lib/saito/saito");
 const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const Invite = require("./lib/invite");
+const InviteManager = require("./lib/invite-manager");
+
+
 
 class Arcade extends ModTemplate {
 
@@ -38,13 +40,19 @@ class Arcade extends ModTemplate {
   }
 
 
+  canRenderInto(qs) {
+    if (qs === ".redsquare-sidebar") { return true; }
+    return false;
+  }
   renderInto(qs) {
     if (qs == ".redsquare-sidebar") {
-      this.invite = new Invite(this.app, this, qs);
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new InviteManager(this.app, this, qs));
+      }
       this.attachStyleSheets();
-      this.invite.render();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
-
   }
 
   initialize(app) {

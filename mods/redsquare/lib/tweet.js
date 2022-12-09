@@ -51,7 +51,7 @@ class RedSquareTweet {
 
   render() {
     
-    let myqs = `#tweett-${this.tx.transaction.sig}`;
+    let myqs = `.tweet-${this.tx.transaction.sig}`;
 
     //
     // replace or add
@@ -65,8 +65,7 @@ class RedSquareTweet {
     //
     // create possible subcomponents
     //
-    let subcomponent_container = ( this.container != ".redsquare-home") ? this.container+ " .tweet .tweet-body .tweet-preview"
-                          : "#tweet-"+this.tx.transaction.sig+ " > .tweet-body .tweet-preview";   
+    let subcomponent_container = ( this.container != ".redsquare-home") ? this.container + ` .tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview` : ".tweet-"+this.tx.transaction.sig+ " .tweet-body .tweet-main .tweet-preview";   
     this.link_preview = new LinkPreview(this.app, this.mod, subcomponent_container, this);
     this.img_preview = new ImgPreview(this.app, this.mod, subcomponent_container, this);
 
