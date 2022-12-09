@@ -1,11 +1,13 @@
+const saito = require('./../../../lib/saito/saito');
 const RedSquareTweetTemplate = require("./tweet.template");
 const LinkPreview = require("./link-preview");
 const ImgPreview = require("./img-preview");
 const PostTweet = require("./post");
+const JSON = require('json-bigint');
 
 class RedSquareTweet {
 
-  constructor(app, mod, container = "", tx) {
+  constructor(app, mod, container = "", tx=null) {
 
     this.app = app;
     this.mod = mod;
@@ -80,14 +82,14 @@ class RedSquareTweet {
   }
 
   render() {
-    
+
     let myqs = `.tweet-${this.tx.transaction.sig}`;
 
     //
     // replace or add
     //
     if (document.querySelector(myqs)) {
-       this.app.browser.replaceElementBySelector(RedSquareTweetTemplate(this.app, this.mod), myqs);
+       this.app.browser.replaceElementBySelector(RedSquareTweetTemplate(this.app, this.mod, this), myqs);
     } else {
       this.app.browser.addElementToSelector(RedSquareTweetTemplate(this.app, this.mod, this), this.container);
     }
@@ -108,6 +110,10 @@ class RedSquareTweet {
 
   attachEvents() {
 
+    if (this.show_controls == 0) { return; }
+
+    try {
+
     ///////////
     // reply //
     ///////////
@@ -125,7 +131,9 @@ class RedSquareTweet {
         post.render();
         this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".redsquare-tweet-overlay");
 
-        let new_tweet = new RedSquareTweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, this.tx);
+        let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
+	newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
+        let new_tweet = new RedSquareTweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
         new_tweet.show_controls = 0;
         new_tweet.render();
 
@@ -149,12 +157,20 @@ class RedSquareTweet {
         post.source = 'Retweet / Share';
         post.render();
         this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".redsquare-tweet-overlay");
-        let new_tweet = new RedSquareTweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, this.tx);
+
+        let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
+	newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
+        let new_tweet = new RedSquareTweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
         new_tweet.show_controls = 0;
         new_tweet.render();
 
       }
     };
+
+    } catch (err) {
+
+    }
+
   }
 
 

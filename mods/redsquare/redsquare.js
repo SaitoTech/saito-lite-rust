@@ -549,7 +549,7 @@ class RedSquare extends ModTemplate {
 
   async receiveTweetTransaction(blk, tx, conf, app) {
 
-    let tweet = new Tweet(app, this, tx);
+    let tweet = new Tweet(app, this, "", tx);
 
     //
     // browsers
