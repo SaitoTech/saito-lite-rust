@@ -1,8 +1,8 @@
 .chat-manager .saito-userline {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    width: 13rem;
-    white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 13rem;
+  white-space: nowrap;
 }
 
 .saito-notification-counter {
@@ -18,7 +18,4 @@
   color: var(--saito-white);
   background-color: var(--saito-primary);
   overflow: hidden;
-  color: var(--saito-white);
 }
-
-

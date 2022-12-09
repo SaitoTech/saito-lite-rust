@@ -2,19 +2,18 @@
 Saito Table
 -----------------------------------------------------------------*/
 .saito-table-body {
-    font-size: 1.5rem;
+  font-size: 1.5rem;
+  display: grid;
+  grid-template-columns: auto;
+  grid-gap: 0.3rem;
+  width: 100%;
+  position: relative;
+  border-radius: 0.1rem;
 
-    display: grid;
-    grid-template-columns: auto;
-    grid-gap: 0.3rem;
-    width: 100%;
-    position: relative;
-    border-radius: 0.1rem;
-
-    max-height: 100%;
-    height: auto;
-    position: relative;
-    overflow-y: auto;
+  max-height: 100%;
+  height: auto;
+  position: relative;
+  overflow-y: auto;
 }
 
 .saito-table-row {
@@ -37,8 +36,8 @@ Saito Table
 }
 
 .saito-table-rank {
-    font-family: courier, monospace;
-    font-size: 1.5rem;
+  font-family: courier, monospace;
+  font-size: 1.5rem;
 }
 
 .saito-table-header {
@@ -49,8 +48,3 @@ Saito Table
   text-align: center;
   color: var(--saito-font-color-heavy);
 }
-
-
-
-
-
