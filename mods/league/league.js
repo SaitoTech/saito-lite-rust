@@ -55,18 +55,22 @@ class League extends ModTemplate {
     });
   }
 
-  respondTo(type){
-    if (type == "rankings") {
-      super.render(); // styles and scripts
-      let r = new LeagueRankings(this.app, this);
-      return r;
+  canRenderInto(qs) {
+    if (qs == ".redsquare-sidebar") {
+      return true;
     }
-    if (type == "leaderboard") {
-      super.render(); // styles and scripts
-      let r = new LeagueLeaderboard(this.app, this);
-      return r;
+    return false;
+  }
+  renderInto(qs) {
+    if (qs == ".redsquare-sidebar") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
+        this.renderIntos[qs].push(new LeagueLeaderboard(this.app, this, qs));
+      }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
-    return super.respondTo(type);
   }
 
   //

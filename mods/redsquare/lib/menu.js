@@ -23,7 +23,7 @@ class RedSquareMenu {
     //
     // appspace modules
     //
-    this.app.modules.returnModulesRespondingTo("appspace").forEach((mod) => {
+    this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
       if (!document.querySelector(`.redsquare-menu-${mod.returnSlug()}`)) {
         this.app.browser.addElementToSelector(
           `<li class="redsquare-menu-${mod.returnSlug()}">
@@ -58,27 +58,13 @@ class RedSquareMenu {
     //
     // appspace modules
     //
-    this.app.modules.returnModulesRespondingTo("appspace").forEach((mod) => {
+    this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
       document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
-
-	//
-	// main panel
-	//
-        document.querySelector(".saito-main").innerHTML = "";
-        let y = mod.respondTo("appspace");
-        y.container = ".saito-main";
-	y.render();
+console.log("clicked: " + mod.returnName());
+	document.querySelector(".saito-main").innerHTML = "";
+        mod.renderInto(".saito-main");
+	mod.renderInto(".saito-sidebar.right");
         document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
-	
-	//
-	// sidebar
-	//
-	let z = mod.respondTo("appspace-sidebar");
-	if (z) {
-          document.querySelector(".saito-sidebar.right").innerHTML = "";
-          z.container = ".saito-sidebar.right";
-	  z.render();
-	}
       }
     });
 

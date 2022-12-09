@@ -37,16 +37,30 @@ class Settings extends ModTemplate {
   }
 
 
-  respondTo(type) {
-    if (type === 'appspace') {
-      super.render(this.app, this); // for scripts + styles
-      return new SettingsAppspace(this.app, this, ".saito-main");
+  canRenderInto(qs) {
+    if (qs === ".saito-main") { return true; }
+    if (qs === ".saito-sidebar.right") { return true; }
+    return false;
+  }
+
+  renderInto(qs) {
+console.log("RI: " + qs);
+    if (qs == ".saito-main") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new SettingsAppspace(this.app, this, qs));
+      }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
-    if (type === 'appspace-sidebar') {
-      super.render(this.app, this); // for scripts + styles
-      return new SettingsAppspaceSidebar(this.app, this);
+    if (qs == ".saito-sidebar.right") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new SettingsAppspaceSidebar(this.app, this, qs));
+      }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
-    return null;
   }
 
 }

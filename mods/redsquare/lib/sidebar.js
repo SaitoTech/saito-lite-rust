@@ -20,17 +20,7 @@ class RedSquareSidebar {
     //
     // appspace modules
     //
-    this.app.modules.returnModulesRespondingTo("rankings").forEach((mod) => {
-      let obj = mod.respondTo("rankings");
-      obj.container = ".redsquare-sidebar";
-      obj.render();
-    });
-
-    this.app.modules.returnModulesRespondingTo("leaderboard").forEach((mod) => {
-      let obj = mod.respondTo("leaderboard");
-      obj.container = ".redsquare-sidebar";
-      obj.render();
-    });
+    this.app.modules.renderInto(".redsquare-sidebar");
 
     this.attachEvents();
   }  

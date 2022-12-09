@@ -53,16 +53,22 @@ class Mixin extends ModTemplate {
   }
 
   
-  respondTo(type = "") {
-    let mixin_self = this;
-
-    if (type === 'appspace') {
-      super.render(); // for scripts + styles
-      return new MixinAppspace(this.app, this);
-    }
-
-    return null;
+  canRenderInto(qs) {
+    if (qs === ".saito-main") { return true; }
+    return false;
   }
+
+  renderInto(qs) {
+    if (qs == ".saito-main") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
+      }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+    }
+  }
+
 
 
 

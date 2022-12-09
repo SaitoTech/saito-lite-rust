@@ -233,6 +233,18 @@ class Mods {
     return null;
   }
 
+  renderInto(qs) {
+    this.mods.forEach((mod) => {
+      mod.renderInto(qs);
+    });
+  }
+
+  returnModulesRenderingInto(qs) {
+    return this.mods.filter((mod) => {
+      return mod.canRenderInto(qs) != false;
+    });
+  }
+
   returnModulesRespondingTo(request) {
     return this.mods.filter((mod) => {
       return mod.respondTo(request) != null;
