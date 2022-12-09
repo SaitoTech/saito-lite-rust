@@ -1,6 +1,7 @@
 /* ----------------------------------------------------------------
 Saito Table
 -----------------------------------------------------------------*/
+
 .saito-table-body {
   font-size: 1.5rem;
   display: grid;
@@ -9,7 +10,6 @@ Saito Table
   width: 100%;
   position: relative;
   border-radius: 0.1rem;
-
   max-height: 100%;
   height: auto;
   position: relative;
