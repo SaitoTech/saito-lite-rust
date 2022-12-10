@@ -1,4 +1,7 @@
 const AppspaceHomeTemplate = require("./home.template");
+const Post = require("./../post");
+
+
 
 class AppspaceHome {
 
@@ -29,6 +32,15 @@ class AppspaceHome {
   }  
 
   attachEvents() {
+
+    document.getElementById("redsquare-tweet").onclick = (e) => {
+      let post = new Post(this.app, this);
+      post.render();
+    }
+
+    document.getElementById("redsquare-profile").onclick = (e) => {
+      this.app.connection.emit('redquare-profile-render-request', app.wallet.returnPublicKey());
+    }
 
   }
 
