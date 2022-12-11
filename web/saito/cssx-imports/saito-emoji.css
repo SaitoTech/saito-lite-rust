@@ -1,24 +1,22 @@
-
-
 .saito-emoji-container {
-    position: relative;
-    z-index: 2000;
+  position: relative;
+  z-index: 2000;
 }
-.saito-emoji{
-    position: absolute;
-    right: 0.5rem;
-    bottom: 0.5rem;
-    font-size: 2rem;
-    color: red;
-    cursor: pointer;
+.saito-emoji {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  font-size: 2rem;
+  color: var(--saito-emoji-color);
+  cursor: pointer;
 }
 
 emoji-picker {
-    position: fixed;
-    height: 40rem;
-    bottom: 7rem;
-    width: 30rem;
-    right: 5rem;
-    --emoji-size: 2rem;
-    --emoji-padding: .5rem;
+  position: fixed;
+  height: 40rem;
+  bottom: 7rem;
+  width: 30rem;
+  right: 5rem;
+  --emoji-size: 2rem;
+  --emoji-padding: 0.5rem;
 }

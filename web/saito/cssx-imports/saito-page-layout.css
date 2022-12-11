@@ -17,6 +17,7 @@
   padding: 2rem 0;
   min-width: 54rem;
   margin: 0 2rem 15rem;
+  position: relative;
 }
 
 .saito-mobile-bar {
@@ -41,7 +42,7 @@
   padding-top: 2rem;
   position: sticky;
   height: inherit;
-  width: 100%;
+  width: 25rem;
   top: 0;
 }
 
@@ -52,6 +53,10 @@
   grid-row: 1/2;
   position: sticky;
   top: 0;
+  min-width: 26rem;
+  width: 50rem;
+  overflow-y: auto;
+  height: inherit;
 }
 
 .saito-sidebar.right.mobile {
@@ -62,27 +67,6 @@
 .saito-sidebar.left.mobile {
   visibility: visible;
   z-index: 3;
-}
-
-.saito-page-header {
-  z-index: 2;
-  background: var(--saito-white);
-  width: -webkit-fill-available;
-  top: 8rem;
-  position: sticky;
-  top: 0rem;
-  padding: 2.5rem 0 1.5rem 0;
-  margin-top: -2rem;
-}
-
-.saito-page-header-title {
-  font-size: 2.5rem;
-  padding-top: 0rem;
-  text-transform: uppercase;
-  display: inline-block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 @media screen and (max-width: 1500px) {
@@ -146,7 +130,7 @@
 }
 
 @media screen and (max-width: 768px) {
-  .saito-main.appspace {
+  .saito-main {
     min-width: 0;
     width: 100vw !important;
     margin-left: 0rem !important;

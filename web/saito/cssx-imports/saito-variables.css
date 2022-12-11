@@ -66,6 +66,7 @@ font imports
   --saito-background-light: #efefef;
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
+  --saito-emoji-color: red;
   /* static colors for modals with fixed theme */
   --saito-white: #fff;
   --saito-gray-transparent: #5555550a;
@@ -74,6 +75,12 @@ font imports
   --saito-black-faded: #1c1c23b5;
   --image-box-shadow: #ccc;
   --saito-dark-shim: #0009;
+  --redsquare-actions-background: #0009;
+  --redsquare-link-info-border: #ccc;
+  --arcade-gametile-border: #c89af6;
+  --arcade-image-border: darkorange;
+  --arcade-identicon: indigo;
+  --arcade-player-slot: #8884;
 }
 
 html[data-theme="dark"] {
