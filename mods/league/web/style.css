@@ -15,6 +15,15 @@
 }
 
 
+.league-overlay {
+    background-color: whitesmoke;
+    width: 90vw;
+    height: 90vh;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: grid;
+    grid-template-columns: 1fr max-content;
+}
 
 
 

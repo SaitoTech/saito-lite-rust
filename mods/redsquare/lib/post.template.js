@@ -26,6 +26,7 @@ module.exports = (app, mod, post) => {
       <div id="post-tweet-img-preview-container"></div>
 
       <div class="post-tweet-img-icon" id="post-tweet-img-icon"><i class="fa-solid fa-image"></i></div>
+      <div class="post-tweet-gif-icon" id="post-tweet-gif-icon"><i class="fa-solid fa-gif"></i></div>
       <div class="saito-button-primary post-tweet-button" id="post-tweet-button"> ${post.source} </div>
       <div style="clear:both"></div>
 
