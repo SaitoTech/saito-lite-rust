@@ -31,6 +31,8 @@ class RedSquare extends ModTemplate {
     // simplify fetching more content
     //
     this.results_per_page = 10;
+    this.results_loaded = false;
+
     this.peers_for_tweets = [];
     this.peers_for_notifications = [];
     this.increment_for_tweets = 1;
@@ -144,31 +146,35 @@ class RedSquare extends ModTemplate {
     //
     // render tweet thread
     //
-    let tweet_id = app.browser.returnURLParameter('tweet_id');
-    if (tweet_id != "") {
-      let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
-      this.mod.loadTweetsFromPeerAndReturn(peer, sql, function(txs) {
-        for (let z = 0; z < txs.length; z++) {
-          let tweet = new Tweet(this.app, this.mod, ".redsquare-home", txs[z]);
-          tweet.render();
-        }
-        this.attachEvents();
-      }, false, false);
-    }
+    if (results_loaded == false) {
+      let tweet_id = app.browser.returnURLParameter('tweet_id');
+      if (tweet_id != "") {
+        let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+        this.mod.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+          this.results_loaded = true;
+          for (let z = 0; z < txs.length; z++) {
+            let tweet = new Tweet(this.app, this.mod, ".redsquare-home", txs[z]);
+            tweet.render();
+          }
+          this.attachEvents();
+        }, false, false);
+      }
 
-    //
-    // render user profile
-    //
-    let user_id = app.browser.returnURLParameter('user_id');
-    if (user_id != "") {
-      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND publickey = '${publickey}';`;
-      this.mod.loadTweetsFromPeerAndReturn(peer, sql, function(txs) {
-        for (let z = 0; z < txs.length; z++) {
-          let tweet = new Tweet(this.app, this.mod, ".redsquare-profile", txs[z]);
-          tweet.render();
-        }
-        this.attachEvents();
-      }, false, false);
+      //
+      // render user profile
+      //
+      let user_id = app.browser.returnURLParameter('user_id');
+      if (user_id != "") {
+        let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND publickey = '${publickey}';`;
+        this.mod.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+          this.results_loaded = true;
+          for (let z = 0; z < txs.length; z++) {
+            let tweet = new Tweet(this.app, this.mod, ".redsquare-profile", txs[z]);
+            tweet.render();
+          }
+          this.attachEvents();
+        }, false, false);
+      }
     }
 
     //
