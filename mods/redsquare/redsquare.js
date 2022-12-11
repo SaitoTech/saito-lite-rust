@@ -142,6 +142,36 @@ class RedSquare extends ModTemplate {
     if (!this.browser_active) { return; }
 
     //
+    // render tweet thread
+    //
+    let tweet_id = app.browser.returnURLParameter('tweet_id');
+    if (tweet_id != "") {
+      let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+      this.mod.loadTweetsFromPeerAndReturn(peer, sql, function(txs) {
+        for (let z = 0; z < txs.length; z++) {
+          let tweet = new Tweet(this.app, this.mod, ".redsquare-home", txs[z]);
+          tweet.render();
+        }
+        this.attachEvents();
+      }, false, false);
+    }
+
+    //
+    // render user profile
+    //
+    let user_id = app.browser.returnURLParameter('user_id');
+    if (user_id != "") {
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND publickey = '${publickey}';`;
+      this.mod.loadTweetsFromPeerAndReturn(peer, sql, function(txs) {
+        for (let z = 0; z < txs.length; z++) {
+          let tweet = new Tweet(this.app, this.mod, ".redsquare-profile", txs[z]);
+          tweet.render();
+        }
+        this.attachEvents();
+      }, false, false);
+    }
+
+    //
     // check peer for any tweets they want to send us
     //
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
