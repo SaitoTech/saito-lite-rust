@@ -146,7 +146,7 @@ class RedSquare extends ModTemplate {
     //
     // render tweet thread
     //
-    if (results_loaded == false) {
+    if (this.results_loaded == false) {
       let tweet_id = app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
@@ -165,15 +165,8 @@ class RedSquare extends ModTemplate {
       //
       let user_id = app.browser.returnURLParameter('user_id');
       if (user_id != "") {
-        let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND publickey = '${publickey}';`;
-        this.mod.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
-          this.results_loaded = true;
-          for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(this.app, this.mod, ".redsquare-profile", txs[z]);
-            tweet.render();
-          }
-          this.attachEvents();
-        }, false, false);
+        this.app.connection.emit("redsquare-profile-render-request", (user_id));
+        this.results_loaded = true;
       }
     }
 
