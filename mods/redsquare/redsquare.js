@@ -149,15 +149,16 @@ class RedSquare extends ModTemplate {
     if (this.results_loaded == false) {
       let tweet_id = app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
-        let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
-        this.mod.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+        let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
+        this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
           this.results_loaded = true;
           for (let z = 0; z < txs.length; z++) {
             let tweet = new Tweet(this.app, this.mod, ".redsquare-home", txs[z]);
             tweet.render();
+            tweet.attachEvents();
           }
-          this.attachEvents();
         }, false, false);
+	return;
       }
 
       //
@@ -167,6 +168,13 @@ class RedSquare extends ModTemplate {
       if (user_id != "") {
         this.app.connection.emit("redsquare-profile-render-request", (user_id));
         this.results_loaded = true;
+	return;
+      }
+    } else {
+      if (this.results_loaded == true) {
+        let user_id = app.browser.returnURLParameter('user_id');
+        let tweet_id = app.browser.returnURLParameter('tweet_id');
+	if (user_id != "" || tweet_id != "") { return; }
       }
     }
 
