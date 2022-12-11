@@ -18,13 +18,13 @@
   transform: translate(-50%, -50%);
   margin: 0 auto;
   z-index: 1000;
-  min-height: 10%;
-  max-width: 90vw;
   height: min-content;
   width: min-content;
-  min-width: 50rem;
+  min-height: 10%;
+  min-height: 10%;
+  max-height: 100vh;
+  max-width: 100vw;
   border-radius: 0.5rem;
-  border: var(--saito-border);
 }
 
 .saito-overlay-closebox {

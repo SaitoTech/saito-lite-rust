@@ -81,6 +81,47 @@ class Tweet {
 
   }
 
+
+
+  renderWithChildren() {
+
+    let myqs = `.tweet-${this.tx.transaction.sig}`;
+
+    //
+    // first render the tweet
+    //
+    if (document.querySelector(myqs)) {
+       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
+    } else {
+      this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+    }
+
+
+    //
+    // then render its children
+    //
+    if (this.children.length > 0) {
+      if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
+	if (this.children[0].children.length > 0) {
+          this.children[0].renderWithChildren();
+	} else {
+          for (let i = 0; i < this.children.length; i++) {
+            this.children[i].render();
+          }
+	}
+      } else {
+        for (let i = 0; i < this.children.length; i++) {
+          this.children[i].render();
+        }
+      }
+    }
+
+    this.attachEvents();
+  }
+
+
+
+
   render() {
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
@@ -113,6 +154,15 @@ class Tweet {
     if (this.show_controls == 0) { return; }
 
     try {
+
+    /////////////////
+    // view thread //
+    /////////////////
+    document.querySelector(`.tweet-${this.tx.transaction.sig}`).onclick = (e) => {
+      this.app.connection.emit("redsquare-thread-render-request", (this));
+    }
+
+
 
     ///////////
     // reply //
@@ -295,6 +345,28 @@ class Tweet {
 
       }
     }
+  }
+
+
+  /////////////////////
+  // query children  //
+  /////////////////////
+  hasChildTweet(tweet_sig) {
+    if (this.tx.transaction.sig == tweet_sig) { return 1; }
+    for (let i = 0; i < this.children.length; i++) {
+      if (this.children[i].hasChildTweet(tweet_sig)) { return 1; }
+    }
+    return 0;
+  }
+  returnChildTweet(tweet_sig) {
+    if (this.tx.transaction.sig == tweet_sig) { return this; }
+    for (let i = 0; i < this.children.length; i++) {
+      if (this.children[i].hasChildTweet(tweet_sig)) { 
+	let x = this.returnChildTweet(tweet_sig);
+	if (!x) { return x; }
+      }
+    }
+    return null;
   }
 
 

@@ -236,7 +236,10 @@ class Browser {
         if (
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
+
           e.preventDefault();
+          e.stopImmediatePropagation();
+
           let public_key = e.target.getAttribute("data-id");
           if (!public_key || !app.crypto.isPublicKey(public_key)) {
             return;

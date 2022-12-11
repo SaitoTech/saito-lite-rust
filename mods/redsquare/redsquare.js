@@ -22,6 +22,7 @@ class RedSquare extends ModTemplate {
     this.redsquare = {}; // where settings go, saved to options file
     this.icon_fa = "fas fa-square-full";
 
+    this.profiles = {};
     this.tweets = [];
     this.tweets_sigs_hmap = {};
 
@@ -36,6 +37,11 @@ class RedSquare extends ModTemplate {
     this.increment_for_notifications = 1;
     this.notifications = [];
     this.notifications_sigs_hmap = {};
+
+    //
+    // view tweet or cache it for "load more"...
+    //
+    this.tweets_last_viewed_ts = 0;
 
     //
     // is this a notification?
@@ -194,6 +200,18 @@ class RedSquare extends ModTemplate {
   // keep track of which peers have given us content in the past and simply ask 
   // them for more data.
   //
+  loadProfile(publickey) {
+    for (let i = 0; i < this.peers_for_tweets.length; i++) {
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND publickey = '${publickey}';`;
+      let peer = this.peers_for_tweets[i];
+      this.loadTweetsFromPeerWithoutAdding(peer, sql, publickey, (txs) => {
+	if (!this.profile[publickey]) { this.profile[publickey] = []; }
+	for (let z = 0; z < txs.length; z++) { this.profile[publickey].push(txs[z]); }
+        this.app.connection.emit("redsquare-profile-render-request", (publickey));
+      });
+    }
+  }
+
   loadMoreTweets() {
     this.increment_for_tweets++;
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
@@ -226,7 +244,10 @@ class RedSquare extends ModTemplate {
     });
   }
 
-  loadTweetsFromPeer(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
+  loadTweetsFromPeerAndReturn(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
+
+    let txs = [];
+
     let render_home = false;
     if (this.tweets.length == 0) { render_home = true; }
     this.app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
@@ -252,16 +273,28 @@ class RedSquare extends ModTemplate {
               tx.optional.link_properties = x;
             } catch (err) { }
             // this will render the event
-            this.addTweet(tx);
+            txs.push(tx);
           });
         }
-	if (render_home) {
-	  this.app.connection.emit("redsquare-home-render-request");
-	}
-        if (post_load_callback != null) { post_load_callback(); }
+        if (post_load_callback != null) { post_load_callback(txs); }
       },
       (p) => { if (p == peer) { return 1; } return 0; }
     );
+  }
+  
+
+  loadTweetsFromPeer(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
+
+    let txs = [];
+
+    let render_home = false;
+    if (this.tweets.length == 0) { render_home = true; }
+
+    this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+      for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
+      if (post_load_callback != null) { post_load_callback(); }
+    }, to_track_tweet, is_server_request);
+
   }
   
 
@@ -371,6 +404,27 @@ class RedSquare extends ModTemplate {
     this.app.connection.emit("redsquare-tweet-added-request");
 
   }
+
+
+
+  returnTweet(tweet_sig=null) {
+
+    if (tweet_sig == null) { return null; }
+    if (!this.tweets_sigs_hmap[tweet_sig]) { return null; }
+
+    for (let i = 0; i < this.tweets.length; i++) {
+      if (this.tweets[i].tx.transaction.sig === tweet_sig) {
+	return this.tweets[i];
+      }
+      if (this.tweets[i].hasChildTweet(tweet_sig)) {
+	return this.tweets[i].returnChildTweet(tweet_sig);
+      }
+    }
+
+    return null;
+
+  }
+
 
 
 
