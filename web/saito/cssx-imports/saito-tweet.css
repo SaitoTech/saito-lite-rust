@@ -178,16 +178,35 @@
   object-fit: cover;
 }
 
+.tweet-overlay-img-cont img {
+  min-width: 50vw;
+  max-height: 90vh;
+  max-width: 90vw;
+}
+
+.tweet-img-icon {
+  font-size: 3rem;
+  color: var(--saito-white);
+  background: var(--saito-gray-mid);
+  padding: 1.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
 .tweet-img-arrow-box {
-  border-radius: 100%;
-  height: 4rem;
-  width: 4rem;
-  line-height: 4.5rem;
-  display: block;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: var(--saito-gray-mid);
-  color: var(--saito-background-color);
-  text-align: center;
+}
+
+.tweet-overlay-img-cont > img {
+  transition: all 0.2s ease-in-out;
+}
+
+.tweet-img-arrow-box.left {
+  left: -10rem;
+}
+
+.tweet-img-arrow-box.right {
+  right: -10rem;
 }
