@@ -27,12 +27,12 @@ class AppspaceNotifications {
 console.log("NOTIFICATIONS: ");
 console.log(JSON.stringify(this.mod.notifications));
 
-    //
-    //
-    //
     for (let i = 0; i < this.mod.notifications.length; i++) {
       this.mod.notifications[i].container = ".redsquare-home";
-      this.mod.notifications[i].render();
+      if (this.processNotification(this.mod.notifications[i])) {
+	this.mod.notifications[i].text = html;
+        this.mod.notifications[i].render();
+      }
     }
 
     this.attachEvents();
@@ -41,6 +41,57 @@ console.log(JSON.stringify(this.mod.notifications));
 
   attachEvents() {
 
+  }
+
+
+  //
+  // returns 0 (do not render) or 1 (render)
+  //
+  processNotification(tweet) {
+ 
+    let html = '';
+    let txmsg = tweet.tx.returnMessage();
+
+    if (tx.transaction.ts > mod.last_viewed_notifications_ts) {
+      mod.last_viewed_notifications_ts = tx.transaction.ts;
+      mod.saveRedSquare();
+    }
+
+    ///////////
+    // LIKED //
+    ///////////
+    if (txmsg.request == "like tweet") {
+      let qs = `.tweet-${txmsg.data.sig}`;
+      let obj = document.querySelector(qs);
+      if (obj) {
+        obj.innerHTML = obj.innerHTML.replace("liked ", "really liked ");
+        return 0;
+      } else {
+        tweet.text = "";
+	return 1;
+      }
+    }
+
+    else if (txmsg.request == "create tweet") {
+
+      if (txmsg.data.retweet_tx) {
+
+        /////////////
+        // RETWEET //
+        /////////////
+        tweet.notice = "retweeted your tweet";
+	return 1;
+
+      } else {
+
+        ///////////
+        // REPLY //
+        ///////////
+        tweet.notice = "replied to your tweet";
+	return 1;
+
+      }
+    }
   }
 
 }

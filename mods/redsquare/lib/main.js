@@ -23,7 +23,6 @@ class RedSquareMain {
 
 
 
-
     this.app.connection.on("redsquare-profile-render-request", (publickey) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'profile';

@@ -71,12 +71,12 @@ class AppspaceHome {
   attachEvents() {
 
     document.getElementById("redsquare-tweet").onclick = (e) => {
-      let post = new Post(this.app, this);
+      let post = new Post(this.app, this.mod);
       post.render();
     }
 
     document.getElementById("redsquare-profile").onclick = (e) => {
-      this.app.connection.emit('redquare-profile-render-request', this.app.wallet.returnPublicKey());
+      this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.returnPublicKey());
     }
 
   }

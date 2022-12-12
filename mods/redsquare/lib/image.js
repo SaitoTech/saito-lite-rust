@@ -1,17 +1,17 @@
 const ImageOverlay = require("./appspace/image-overlay");
-const RedSquareImgPreviewTemplate = require("./img-preview.template");
+const RedSquareImageTemplate = require("./image.template");
 
-class RedSquareImgPreview {
+class RedSquareImage {
 
   constructor(app, mod, container = "", tweet) {
     this.app = app;
     this.mod = mod;
     this.container = container;
     this.tweet = tweet;
-    this.name = "RedSquareImgPreview";
+    this.name = "RedSquareImage";
     let txmsg = tweet.tx.msg;
     this.images = txmsg.data.images || [];
-    this.img_overlay = null;
+    this.image_overlay = null;
   }
 
   render() {
@@ -20,7 +20,7 @@ class RedSquareImgPreview {
     // replace element or insert into page
     //
     let element = "#tweett-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .tweet-picture";
-    let template = RedSquareImgPreviewTemplate(this.app, this.mod, this.images);
+    let template = RedSquareImageTemplate(this.app, this.mod, this.images);
 
     if (document.querySelector(element)) {
       this.app.browser.replaceElementBySelector(template, element);
@@ -45,12 +45,12 @@ class RedSquareImgPreview {
     //
     let sel = "#tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-preview .tweet-picture > img";
     if (document.querySelectorAll(sel)) {
-      document.querySelectorAll(sel).forEach(img => {
-        img.onclick = (e) => {
-          let img = e.target;
+      document.querySelectorAll(sel).forEach(image => {
+        image.onclick = (e) => {
+          let image = e.target;
           
-          tweet_self.img_overlay = new ImageOverlay(this.app, this.mod, img);
-          tweet_self.img_overlay.render();
+          tweet_self.image_overlay = new ImageOverlay(this.app, this.mod, image);
+          tweet_self.image_overlay.render();
         }
       });
     }
@@ -58,5 +58,5 @@ class RedSquareImgPreview {
 
 }
 
-module.exports = RedSquareImgPreview;
+module.exports = RedSquareImage;
 

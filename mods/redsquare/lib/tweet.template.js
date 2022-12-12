@@ -5,6 +5,7 @@ module.exports = (app, mod, tweet) => {
   let txmsg = tweet.tx.msg;
   let optional = tweet.tx.optional;
   let notice = "";
+  if (tweet.notice != "") { notice = tweet.notice; }
   let publickey = tweet.tx.transaction.from[0].add || "";
   let text = txmsg.data.text || "";
   let flagged =  optional.flagged ||  null;
@@ -16,11 +17,7 @@ module.exports = (app, mod, tweet) => {
   let dt = app.browser.formatDate(tweet.tx.transaction.ts);
   let show_controls = tweet.show_controls;
   
-  if (text == "" && tweet.retweet_tx != "") {
-    //
-    // set tweet preview
-    //
-
+  if (text == "" && tweet.retweet_tx != "" && notice == "") {
     //
     // set notice
     // 

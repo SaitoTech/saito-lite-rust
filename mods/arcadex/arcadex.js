@@ -1,9 +1,6 @@
 const saito = require("./../../lib/saito/saito");
-const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const InviteManager = require("./lib/invite-manager");
-
-
 
 class Arcade extends ModTemplate {
 
@@ -14,29 +11,11 @@ class Arcade extends ModTemplate {
     this.categories = "Games Entertainment Utilities";
 
     this.mods = [];
-    this.affix_callbacks_to = [];
-    this.games = []; //Game Invites
-    this.old_game_removal_delay = 2000000;
-    this.services = [{ service: "arcade", domain: "saito" }];
-    this.request_no_interrupts = false; // ask other modules not to insert content
-
-    this.viewing_arcade_initialization_page = 0;
-    this.viewing_game_homepage = this.name;
-
     this.icon_fa = "fas fa-gamepad";
-
-    this.accepted = [];
-
-    this.active_tab = "arcade";
-    this.manual_ordering = false; // Toggle this to either sort games by their categories or go by the module.config order
-
     this.ui_initialized = false;
 
-    this.styles = ['/saito/saito.css', "/arcade/carousel.css", "/arcade/style.css", "/arcade/saito-arcade-invites.css"];
-
-    this.overlay = null;
+    this.styles = ['/saito/saitox.css'];
     this.debug = false;
-
   }
 
 
@@ -52,11 +31,46 @@ class Arcade extends ModTemplate {
       }
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
+
+
+
+      //
+      // TEMPORARY event for rendering hardcoded game invite
+      //
+
+      let invites = [
+        {
+          id: "abcd1234",
+          game: "twilight",
+          name: "Twilight Struggle",
+          type: "custom"
+        },
+        {
+          id: "abcd5678",
+          game: "solitrio",
+          name: "Beleaguered Solitaire",
+          type: "standard"
+        },
+        {
+          id: "abcd12346677",
+          game: "settlers",
+          name: "Settlers of Saitoa",
+          type: "standard"
+        },
+      ]
+
+
+
+      for (let i=0; i<invites.length; i++) {
+        this.app.connection.emit('invite-render-request', invites[i]);
+      }
     }
+
   }
 
   initialize(app) {
     super.initialize(app);
+
 
   }
 

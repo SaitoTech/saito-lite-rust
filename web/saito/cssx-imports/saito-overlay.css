@@ -5,8 +5,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: black;
-  opacity: 0.45;
+  background-color: var(--saito-dark-shim);
   z-index: 100;
 }
 
@@ -23,9 +22,7 @@
   min-height: 10%;
   min-height: 10%;
   max-height: 100vh;
-  max-width: 100vw;
-  border-radius: 0.5rem;
-}
+  max-width: 100vw;}
 
 .saito-overlay-closebox {
   position: absolute;

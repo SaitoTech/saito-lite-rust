@@ -83,6 +83,25 @@ class RedSquare extends ModTemplate {
 
   }
 
+  /////////////////////////////////
+  // inter-module communications //
+  /////////////////////////////////
+  respondTo(type="") {
+
+    if (type === 'user-menu') {
+      return {
+        text: "View Profile",
+        icon: "fa-regular fa-user",
+        callback: function (app, publickey) {
+          app.connection.emit('redsquare-profile-render-request', publickey);
+        }
+      }
+    }
+
+    return null;
+
+  }
+
 
   //////////////////////////////
   // initialization functions //
