@@ -71,7 +71,7 @@ class AppspaceHome {
   attachEvents() {
 
     document.getElementById("redsquare-tweet").onclick = (e) => {
-      let post = new Post(this.app, this);
+      let post = new Post(this.app, this.mod);
       post.render();
     }
 

@@ -1,8 +1,8 @@
 const saito = require('./../../../lib/saito/saito');
 const TweetTemplate = require("./tweet.template");
-const LinkPreview = require("./link-preview");
-const ImgPreview = require("./img-preview");
-const PostTweet = require("./post");
+const Link = require("./link");
+const Image = require("./image");
+const Post = require("./post");
 const JSON = require('json-bigint');
 
 class Tweet {
@@ -20,6 +20,7 @@ class Tweet {
     this.parent_id = "";
     this.thread_id = "";
     this.updated_at = 0;
+    this.notice = "";
 
     this.children = [];
     this.children_sigs_hmap = {};
