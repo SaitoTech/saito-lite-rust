@@ -129,6 +129,17 @@ class Pandemic extends GameTemplate {
   initializeHTML(app) {
 
     super.initializeHTML(app);
+
+    //Dynamically add game-css because of all the fcking name changes
+    if (!document.getElementById("game-css-link")){
+      var s = document.createElement("link");
+      s.id = "game-css-link";
+      s.rel = "stylesheet";
+      s.type = "text/css";
+      s.href = `/${this.returnSlug()}/style.css`;
+      document.querySelector('head').append(s);
+    }
+
     
     //Dynamically update index.html 
     //$('head').append(`<link rel="stylesheet" type="text/css" href="/${this.name.toLowerCase()}/style.css" />`);
@@ -2562,7 +2573,7 @@ displayDisease() {
     }
 
     html += `
-        <div class="button close_welcome_overlay" id="close_welcome_overlay">Start Playing</div>
+        <div class="saito-button-primary close_welcome_overlay" id="close_welcome_overlay">Start Playing</div>
       </div>`;
 
     return html;
