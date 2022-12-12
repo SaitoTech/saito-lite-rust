@@ -220,8 +220,74 @@ class Tweet {
       }
     };
 
-    } catch (err) {
 
+    //////////
+    // like //
+    //////////
+    document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like`).onclick = (e) => {
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+      if (tweet_sig != null) {
+
+	this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
+
+        //
+        // increase num likes
+        //
+        let obj = document.querySelector(`.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`);
+        obj.innerHTML = parseInt(obj.innerHTML) + 1;
+        if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+          obj.parentNode.classList.remove("saito-tweet-no-activity");
+          obj.parentNode.classList.add("saito-tweet-activity");
+        };
+      }
+
+    };
+
+    ///////////
+    // share //
+    ///////////
+    document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-share`).onclick = (e) => {
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+        
+      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+      if (tweet_sig != null) {
+
+        let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + tweet_sig;
+        navigator.clipboard.writeText(tweetUrl).then(() => {
+          siteMessage("Link copied to clipboard.", 2000);
+        });
+
+      }
+    };
+
+    //////////
+    // flag //
+    //////////
+    document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-flag`).onclick = (e) => {
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+        
+      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+      if (tweet_sig != null) {
+
+        this.mod.sendFlagTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
+        let obj = document.querySelector(`.tweet-flag-${tweet_sig}`);
+        obj.classList.add("saito-tweet-activity");
+        document.querySelector(`.tweet-${tweet_sig}`).style.display = 'none';
+        salert("Tweet reported to moderators successfully.");
+
+      }
+    };
+
+    } catch (err) {
+console.log("ERROR attaching events to tweet: " + err);
     }
 
   }

@@ -76,7 +76,7 @@ class AppspaceHome {
     }
 
     document.getElementById("redsquare-profile").onclick = (e) => {
-      this.app.connection.emit('redquare-profile-render-request', this.app.wallet.returnPublicKey());
+      this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.returnPublicKey());
     }
 
   }
