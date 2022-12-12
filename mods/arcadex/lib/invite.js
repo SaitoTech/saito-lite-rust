@@ -1,16 +1,11 @@
 const InviteTemplate = require("./invite.template");
 
-class LeagueRankings {
+class Invite {
 	
   constructor(app, mod, container="") {
     this.app = app;
     this.mod = mod;
     this.container = container;
-
-    app.connection.on('arcade-invites-render-request', () => {
-      this.render();
-    });
-
   }
 
   render() {
@@ -33,5 +28,5 @@ class LeagueRankings {
 
 };
 
-module.exports = LeagueRankings;
+module.exports = Invite;
 
