@@ -1,4 +1,4 @@
-const PostTemplate = require("./post.template");
+eonst PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 const SaitoEmoji = require("./../../../lib/saito/ui/saito-emoji/saito-emoji");
 
