@@ -59,7 +59,7 @@ module.exports = (app, mod, invite) => {
             border-radius: 0.5rem;
             border: none;
             overflow: hidden;
-            margin-bottom: 2rem;
+            margin-bottom: 0rem;
             width: 100%;
             padding: 0.3rem;
           }
