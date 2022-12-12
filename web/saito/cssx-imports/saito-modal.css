@@ -12,8 +12,6 @@
   grid-template-rows: min-content auto;
 }
 
-/* saito-modal-menu
-/* theming for a simple menu with font-awesome icon and text in a two col grid */
 .saito-modal-menu-option {
   font-size: 3rem;
   height: 6rem;
@@ -25,8 +23,7 @@
 }
 
 .saito-modal-menu-option:hover {
-  background-color: var(--saito-gray-transparent);
+  background-color: var(--saito-dark-transparent-highlight);
   cursor: pointer;
 }
 
-/* other modal layouts to come */
