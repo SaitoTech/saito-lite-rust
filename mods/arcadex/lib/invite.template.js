@@ -39,8 +39,8 @@ module.exports = (app, mod, invite) => {
         <style>
 
           .game-type {
-            font-size: 1.6rem;
-            font-weight: 600;
+            font-size: 1.4rem;
+            font-weight: 400;
             color: #e9e9e9;
             font-style: italic;
           }
@@ -68,7 +68,7 @@ module.exports = (app, mod, invite) => {
               color: rgb(255, 255, 255);
               background: rgba(0, 0, 0, 0.6);
               /* margin-top: 1px; */
-              font-size: 1.6em;
+              font-size: 1.4em;
               font-weight: bold;
               width: 100%;
               overflow: hidden;

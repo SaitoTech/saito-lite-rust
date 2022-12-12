@@ -42,13 +42,19 @@ class Arcade extends ModTemplate {
         {
           id: "abcd1234",
           game: "twilight",
-          name: "Twilight",
+          name: "Twilight Struggle",
           type: "custom"
         },
         {
           id: "abcd5678",
           game: "solitrio",
-          name: "Solitrio",
+          name: "Beleaguered Solitaire",
+          type: "standard"
+        },
+        {
+          id: "abcd12346677",
+          game: "settlers",
+          name: "Settlers of Saitoa",
           type: "standard"
         },
       ]
