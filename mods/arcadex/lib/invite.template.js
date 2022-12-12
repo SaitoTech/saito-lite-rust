@@ -40,7 +40,7 @@ module.exports = (app, mod, invite) => {
 
           .game-type {
             font-size: 1.6rem;
-            font-weight: 400;
+            font-weight: 600;
             color: #e9e9e9;
             font-style: italic;
           }
@@ -66,7 +66,7 @@ module.exports = (app, mod, invite) => {
 
           .saito-module-imagebox-titlebar {
               color: rgb(255, 255, 255);
-              background: rgba(0, 0, 0, 0.5);
+              background: rgba(0, 0, 0, 0.6);
               /* margin-top: 1px; */
               font-size: 1.6em;
               font-weight: bold;
