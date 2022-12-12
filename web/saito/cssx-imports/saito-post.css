@@ -1,40 +1,53 @@
+.tweet-overlay {
+  width: 50rem;
+  background-color: var(--saito-background-color);
+  padding: 2rem 2rem 0;
+  border-radius: 0.5rem;
+}
+
+.tweet-overlay-content {
+  display: grid;
+  grid-gap: 1rem;
+}
+
+.tweet-overlay-content-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 5rem;
+}
+
 .post-tweet-preview {
   margin-bottom: 1.5rem;
 }
 
 .post-tweet-img-preview {
   position: relative;
-  margin: 0 2rem 1rem 0;
+  margin: 0 2rem 0 0;
   height: auto;
   display: inline-block;
 }
 
 .post-tweet-textarea {
-  border: 1px solid var(--saito-tweet-border);
-  background-color: var(--saito-white);
+  border: 1px solid var(--saito-border-color-dark);
+  background-color: var(--saito-background-color);
   display: block;
   padding: 1rem;
   border-radius: 0.5rem;
   width: 100%;
   outline: none;
   font-size: 1.6rem;
-  margin-top: 1.5rem;
 }
 
-.redsquare-tweet-overlay .tweet {
-  padding: 0;
-}
 
 .post-tweet-img-preview img {
   top: 0px;
-  height: 4rem;
+  height: 5rem;
   width: 104%;
+  max-width: 20rem;
   margin-left: auto;
   margin-right: auto;
   width: auto;
-  margin-top: 1rem;
-  margin-right: rem;
-  box-shadow: 1px 1px 1px 2px var(--image-box-shadow);
   object-fit: contain;
 }
 
@@ -46,20 +59,15 @@
   right: 0.5rem;
   font-size: 2rem;
   cursor: pointer;
-  top: 0.5rem;
-  background: var(--saito-white);
+  top: -0.75rem;
+  background: var(--saito-background-color);
 }
 
 .post-tweet-button {
-  margin-top: 1rem;
   width: 20rem;
-  text-align: center;
-  float: right;
 }
 
 .post-tweet-img-icon {
-  margin-top: 0.5rem;
-  float: left;
   font-size: 5rem;
-  color: var(--saito-gray-mid);
+  color: var(--saito-border-color-dark);
 }

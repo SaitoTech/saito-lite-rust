@@ -13,22 +13,25 @@ module.exports = (app, mod, post) => {
 
   return `
 
-    <div class="redsquare-tweet-overlay" id="redsquare-tweet-overlay">
+    <div class="tweet-overlay" id="tweet-overlay">
+      <div class="tweet-overlay-content">
 
-      ${SaitoUserTemplate(app, post.publickey, userline)}
+        ${SaitoUserTemplate(app, post.publickey, userline)}
 
-      <textarea rows="7" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="${placeholder}" cols="60"></textarea>
+        <textarea rows="7" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="${placeholder}" cols="60"></textarea>
+
+        <div id="post-tweet-img-preview-container"></div>
+
+        <div class="tweet-overlay-content-controls">
+          <div class="post-tweet-img-icon" id="post-tweet-img-icon"><i class="fa-solid fa-image"></i></div>
+          <div class="saito-button-primary post-tweet-button" id="post-tweet-button"> ${post.source} </div>
+        </div>
+
+      </div>
 
       <input type="hidden" id="parent_id" name="parent_id" value="${post.parent_id}" />
       <input type="hidden" id="thread_id" name="thread_id" value="${post.thread_id}" />
       <input type="hidden" id="source" name="source" value="${post.source}" />
-
-      <div id="post-tweet-img-preview-container"></div>
-
-      <div class="post-tweet-img-icon" id="post-tweet-img-icon"><i class="fa-solid fa-image"></i></div>
-      <div class="post-tweet-gif-icon" id="post-tweet-gif-icon"><i class="fa-solid fa-gif"></i></div>
-      <div class="saito-button-primary post-tweet-button" id="post-tweet-button"> ${post.source} </div>
-      <div style="clear:both"></div>
 
       <section id="post-tweet-loader" class="post-tweet-loader">
         <span class="loading__anim"></span>

@@ -48,7 +48,7 @@ class Post {
     post_self.images = [];
 
     if (post_self.file_event_added == false) {
-      post_self.app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay",
+      post_self.app.browser.addDragAndDropFileUploadToElement("tweet-overlay",
         (file) => {
           if (post_self.images.length >= 4) {
             salert("Maximum 4 images allowed per tweet.");
@@ -68,7 +68,7 @@ class Post {
 
 
     document.getElementById('post-tweet-img-icon').addEventListener('click', function(e) {
-      document.querySelector("#hidden_file_element_redsquare-tweet-overlay").click();
+      document.querySelector("#hidden_file_element_tweet-overlay").click();
       return;
     });
 

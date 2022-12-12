@@ -183,7 +183,7 @@ class Tweet {
         post.parent_id = tweet_sig;
         post.source = 'Reply';
         post.render();
-        this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".redsquare-tweet-overlay");
+        this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".tweet-overlay");
 
         let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
 	newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
@@ -210,7 +210,7 @@ class Tweet {
         post.parent_id = tweet_sig;
         post.source = 'Retweet / Share';
         post.render();
-        this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".redsquare-tweet-overlay");
+        this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".tweet-overlay");
 
         let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
 	newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
