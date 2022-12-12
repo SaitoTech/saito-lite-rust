@@ -9,7 +9,7 @@
 }
 
 .post-tweet-textarea {
-  border: 1px solid var(--saito-tweet-border);
+  border: 1px solid var(--saito-border-color);
   background-color: var(--saito-white);
   display: block;
   padding: 1rem;
