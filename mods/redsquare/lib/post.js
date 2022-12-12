@@ -21,26 +21,20 @@ class Post {
   }
 
   render() {
-    if (document.querySelector('#redsquare-tweet-overlay') != null) {
-      document.querySelector('#redsquare-tweet-overlay').parentNode.remove();
-    }
-    this.overlay.show('<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
-    this.app.browser.addElementToSelector(
-      PostTemplate(this.app, this.mod, this)
-    , "#redsquare-tweet-overlay");
 
+    this.overlay.show(PostTemplate(this.app, this.mod, this));
     this.emoji = new SaitoEmoji(this.app, this.mod, 'post-tweet-textarea');
     this.emoji.render();
 
     let post_self = this;
-    this.app.modules.mods.forEach(mod => {
+    this.app.modules.mods.forEach((mod) => {
       try {
         if (mod.name == "Giphy") {
           const SaitoGif = require("./../../giphy/giphy");
           post_self.gif = new SaitoGif(post_self.app, post_self.mod, "post-tweet-textarea", function (img) { post_self.addImg(img) });
-          post_self.gif.render(app, mod);
+          post_self.gif.render(this.app, this.mod);
         }
-      } catch {
+      } catch (err) {
         console.log(err);
       }
     });

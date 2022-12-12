@@ -44,7 +44,7 @@ module.exports = (app, mod, tweet) => {
               </div>`;
 
   return `
-        <div class="tweet" id="tweet-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
+        <div class="tweet tweet-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header">
 

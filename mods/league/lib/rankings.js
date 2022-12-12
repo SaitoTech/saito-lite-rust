@@ -1,5 +1,5 @@
 const LeagueRankingsTemplate = require("./rankings.template");
-const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
+const LeagueOverlay = require("./overlays/league-overlay");
 
 class LeagueRankings {
 	
@@ -7,7 +7,7 @@ class LeagueRankings {
     this.app = app;
     this.mod = mod;
     this.container = container;
-    this.overlay = new SaitoOverlay(this.app, this.mod);
+    this.overlay = new LeagueOverlay(this.app, this.mod);
 
     app.connection.on('league-rankings-render-request', () => {
       this.render();
@@ -65,9 +65,9 @@ class LeagueRankings {
 
     document.querySelectorAll(".league-leaderboard-ranking").forEach((el) => {
       el.onclick = (e) => {
-	let lid = e.currentTarget.getAttribute("data-id");
 
-	this.overlay.show(`LID: ${lid}`);
+	let lid = e.currentTarget.getAttribute("data-id");
+	this.overlay.render();
 
       }
     });

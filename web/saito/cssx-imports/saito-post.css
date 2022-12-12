@@ -6,7 +6,6 @@
   margin: 0 2rem 1rem 0;
   height: auto;
   display: inline-block;
-  float: left;
 }
 
 .post-tweet-textarea {
@@ -19,6 +18,10 @@
   outline: none;
   font-size: 1.6rem;
   margin-top: 1.5rem;
+}
+
+.redsquare-tweet-overlay .tweet {
+  padding: 0;
 }
 
 .post-tweet-img-preview img {
@@ -43,7 +46,7 @@
   font-size: 2rem;
   cursor: pointer;
   top: 0.5rem;
-  background: #fff;
+  background: var(--saito-white);
 }
 
 .post-tweet-button {
@@ -57,23 +60,5 @@
   margin-top: 0.5rem;
   float: left;
   font-size: 5rem;
-  color: #444a;
-}
-
-@media screen and (max-width: 529px) {
-  .tweet-picture {
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  }
-  .tweet-picture > img {
-    height: 15rem;
-  }
-  .preview-img {
-    height: 15rem;
-  }
-}
-
-@media screen and (max-width: 375px) {
-  .tweet-picture {
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  }
+  color: var(--saito-gray-mid);
 }

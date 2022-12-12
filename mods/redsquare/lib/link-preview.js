@@ -16,17 +16,13 @@ class RedSquareLinkPreview {
     // replace element or insert into page
     //
     if (typeof this.tweet.link != "undefined") {
-      let element = "#tweett-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .link-preview";
-      let template = RedSquareLinkPreviewTemplate(this.app, this.mod, this.tweet)
 
-      if (document.querySelector(element)) {
-        this.app.browser.replaceElementBySelector(template, element);
+      let qs = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-main .tweet-preview";
+
+      if (document.querySelector(qs)) {
+        this.app.browser.replaceElementBySelector(RedSquareLinkPreviewTemplate(this.tweet), qs);
       } else {
-        if (this.container) {
-          this.app.browser.addElementToSelector(template, this.container);
-        } else {
-          this.app.browser.addElementToDom(template);
-        }
+        this.app.browser.addElementToSelectorOrDom(RedSquareLinkPreviewTemplate(this.tweet), this.container);
       }
 
       this.attachEvents();
@@ -36,7 +32,6 @@ class RedSquareLinkPreview {
 
 
   attachEvents() {
-
   }
 
 }
