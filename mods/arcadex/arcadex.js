@@ -14,7 +14,7 @@ class Arcade extends ModTemplate {
     this.icon_fa = "fas fa-gamepad";
     this.ui_initialized = false;
 
-    this.styles = [];
+    this.styles = ['/saito/saitox.css'];
     this.debug = false;
   }
 
@@ -38,12 +38,26 @@ class Arcade extends ModTemplate {
       // TEMPORARY event for rendering hardcoded game invite
       //
 
-      let invite = {
-        id: "abcd1234"
+      let invites = [
+        {
+          id: "abcd1234",
+          game: "twilight",
+          name: "Twilight",
+          type: "custom"
+        },
+        {
+          id: "abcd5678",
+          game: "solitrio",
+          name: "Solitrio",
+          type: "standard"
+        },
+      ]
+
+
+
+      for (let i=0; i<invites.length; i++) {
+        this.app.connection.emit('invite-render-request', invites[i]);
       }
-
-      this.app.connection.emit('invite-render-request', invite);
-
     }
 
   }
