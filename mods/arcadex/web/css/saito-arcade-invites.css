@@ -1,0 +1,41 @@
+.saito-game {
+    min-height: 370px;
+    min-width: min-content;
+    display: grid;
+    grid-template-rows: 1fr min-content;
+    position: relative;
+    border-radius: 0.5rem;
+    border: 1px solid var(--saito-border-color);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    width: calc(50% - 1rem);
+}
+
+.saito-game.minimize{
+    min-height: unset;
+}
+
+.saito-game-controls {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    padding: 1rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.saito-game-controls>div:nth-child(1) {
+    font-size: 1.1em;
+    color: #ea462f;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.saito-game-controls>div:nth-child(2) {
+    border-bottom: 1px dashed red;
+    white-space: nowrap;
+}
+
+
+.saito-box-buttons{
+    width: 100%;
+}

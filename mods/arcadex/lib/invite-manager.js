@@ -29,7 +29,7 @@ class InviteManager {
 	  app.connection.on("invite-render-request", (invite) => {
 	    
 	      if (!this.invites[invite.id]) {
-					this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager");
+					this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager", invite);
 					this.invites[invite.id].invite = invite;
 	      }
 	    
