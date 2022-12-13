@@ -37,19 +37,11 @@ class Tweet {
     this.link_properties = null;
     this.show_controls = 1;
 
-    console.log("tx.msg.data");
-    console.log(tx.msg.data); 
-  
     this.setKeys(tx.msg.data);
     this.setKeys(tx.optional);
 
     this.generateTweetProperties(app, mod, 1);
  
-
-    console.log("this.images");
-    console.log(this.images); 
- 
-
     //
     // create retweet if exists
     //
@@ -289,11 +281,8 @@ console.log("ERROR attaching events to tweet: " + err);
 
 
   setKeys(obj) {
-    console.log(obj);
 
     for (let key in obj) {
-    console.log(key);
-    console.log(this[key]); 
       if (typeof obj[key] !== 'undefined') {
         if (this[key] === 0 || this[key] === "" || this[key] === null || typeof this[key] === "undefined") {
           this[key] = obj[key];
@@ -350,6 +339,8 @@ console.log("ERROR attaching events to tweet: " + err);
     //
     if (tweet.parent_id == this.tx.transaction.sig) {
 
+console.log("this is a direct child!");
+
       //
       // already added?
       //
@@ -369,11 +360,13 @@ console.log("ERROR attaching events to tweet: " + err);
       // prioritize tweet-threads
       //
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
+console.log("unshifting...");
         this.children.unshift(tweet);
 	this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
         return 1;
       } else {
         tweet.parent_tweet = this;
+console.log("pushing...");
         this.children.push(tweet);
 	this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
         return 1;
