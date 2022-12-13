@@ -179,7 +179,7 @@ class Tweet {
       let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
       if (tweet_sig != null) {
 
-        let post = new PostTweet(this.app, this.mod, this);
+        let post = new Post(this.app, this.mod, this);
         post.parent_id = tweet_sig;
         post.source = 'Reply';
         post.render();
@@ -206,7 +206,7 @@ class Tweet {
       let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
       if (tweet_sig != null) {
 
-        let post = new PostTweet(this.app, this.mod, this);
+        let post = new Post(this.app, this.mod, this);
         post.parent_id = tweet_sig;
         post.source = 'Retweet / Share';
         post.render();
