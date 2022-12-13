@@ -57,6 +57,10 @@ class RedSquare extends ModTemplate {
 
     this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
 
+    this.postScripts = [
+      '/saito/lib/emoji-picker/emoji-picker.js'
+    ];
+
     this.styles = [
       '/saito/saitox.css',
       '/redsquare/style.css',
