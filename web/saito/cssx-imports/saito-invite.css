@@ -3,7 +3,7 @@
   grid-template-columns: 50% 50%;
 }
 
-.game-type {
+.saito-game-type {
   font-size: 1.4rem;
   font-weight: 400;
   color: var(--saito-white);
@@ -24,7 +24,7 @@
   padding: 0.3rem;
 }
 
-.saito-module-imagebox-titlebar {
+.saito-game-content {
   color: var(--saito-white);
   background: rgba(0, 0, 0, 0.6);
   font-size: 1.4em;
@@ -63,19 +63,17 @@
   width: 100%;
 }
 
-.saito-module-description-identicon-box {
+.saito-game-description {
   position: absolute;
   bottom: 1.5rem;
 }
 
-/*** SATIO Identicons ***/
-
-.saito-module-description-identicon-box {
+.saito-game-identicon-list {
   display: flex;
   flex-direction: row;
 }
 
-.saito-module-identicon-box {
+.saito-game-identicon-container {
   height: 2.5rem;
   width: 2.5rem;
   background-size: 100%;
@@ -85,18 +83,11 @@
     1px 1px 1rem 0.3px var(--saito-font-color-light) inset;
 }
 
-.saito-module-identicon-box i {
-  font-size: 2.2rem;
-  line-height: 2.5rem;
-  width: 2.5rem;
-  text-align: center;
-}
-
-.saito-module-identicon-box i:hover {
+.saito-game-identicon-container i:hover {
   transform: scale(1.1);
 }
 
-.saito-module-identicon-box img {
+.saito-game-identicon-container img {
   margin-right: 0.7rem;
   border: 0px;
   width: 2.5rem;
@@ -104,7 +95,32 @@
   height: 2.5rem;
 }
 
-.saito-module-identicon.small {
+.saito-game-identicon-container i {
+  font-size: 2.2rem;
+  line-height: 2.5rem;
+  width: 2.5rem;
+  text-align: center;
+}
+
+.saito-game-identicon-container i {
+  font-size: 2.2rem;
+  line-height: 2.5rem;
+  width: 2.5rem;
+  text-align: center;
+}
+
+.saito-game-identicon-container i:hover {
+  transform: scale(1.1);
+}
+
+/*** SATIO Identicons ***/
+
+.saito-game-identicon.small {
   width: 2.5rem;
   height: 2.5rem;
+}
+
+.saito-game-identicon-list {
+  display: flex;
+  flex-direction: row;
 }
