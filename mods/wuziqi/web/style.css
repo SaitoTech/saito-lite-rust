@@ -132,8 +132,20 @@ Board is a grid of wooden squares
   We mark the cells of the 5-in-a-row winning combination
 */
 .winner .piece{
-    border: 0.8em solid rgb(255, 166, 0) !important;
+   /*border: 0.5em solid rgb(255, 166, 0);*/
+   animation: 1s 5 alternate linear forwards winner;
 }
+
+@keyframes winner {
+  from {
+    border: 0 solid rgb(255, 166, 0);
+  }
+  to {
+    border: 1em solid rgb(255, 166, 0);
+  }
+}
+
+
 
 .opaque30 {
     opacity: 0.3;

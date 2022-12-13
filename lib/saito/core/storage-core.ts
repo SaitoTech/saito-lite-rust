@@ -141,7 +141,7 @@ class StorageCore extends Storage {
             return null;
           }
 
-          await this.app.blockchain.addBlockToBlockchain(blk, 1);
+          await this.app.blockchain.addBlockToBlockchain(blk, true);
           console.log("Loaded block " + i + " of " + files.length);
         }
       } catch (err) {
@@ -469,7 +469,7 @@ class StorageCore extends Storage {
   /**
    * TODO: uses a callback and should be moved to await / async promise
    **/
-  async returnBlockFilenameByHash(block_hash, mycallback) {
+  async returnBlockFilenameByHash(block_hash: string, mycallback) {
     const sql = "SELECT id, ts, block_id FROM blocks WHERE hash = $block_hash";
     const params = { $block_hash: block_hash };
 
@@ -487,7 +487,7 @@ class StorageCore extends Storage {
     }
   }
 
-  returnBlockFilenameByHashPromise(block_hash) {
+  returnBlockFilenameByHashPromise(block_hash: string) {
     return new Promise((resolve, reject) => {
       this.returnBlockFilenameByHash(block_hash, (filename, err) => {
         if (err) {

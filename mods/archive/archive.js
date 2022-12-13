@@ -53,7 +53,32 @@ class Archive extends ModTemplate {
     }
   }
 
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
+    try {
+
+      if (tx == null) {
+	return;
+      }
+
+      let txmsg = tx.returnMessage();
+
+      if (txmsg.request === "archive save") {
+        console.log("++++++++++++++++++++++++++++++++++++");
+        console.log("archive save as request specifically");
+        console.log("++++++++++++++++++++++++++++++++++++");
+        this.saveTransaction(tx, txmsg.type);
+	mycallback({});
+	return;
+      }
+      
+    } catch (err) {
+      console.log("Error in handlePeerTransaction in Archive module: " + err);
+    }
+
+    super.handlePeerTransaction(app, tx, peer, mycallback);
+
+  }
 
 
   async handlePeerRequest(app, req, peer, mycallback) {
@@ -63,8 +88,9 @@ class Archive extends ModTemplate {
 
     var txs;
     var response = {};
+
     //
-    // only handle archive request
+    // only handle archive request 
     //
     if (req.request === "archive") {
       if (req.data.request === "delete") {
@@ -102,6 +128,7 @@ class Archive extends ModTemplate {
         response.err = "";
         response.txs = [];
         mycallback(response);
+	return;
       }
       if (req.data.request === "load") {
         console.log("archive load");
@@ -113,6 +140,7 @@ class Archive extends ModTemplate {
         response.err = "";
         response.txs = txs;
         mycallback(response);
+	return;
       }
       if (req.data.request === "load_keys") {
         console.log("PeerRequest: load TX by Keys");
@@ -121,6 +149,7 @@ class Archive extends ModTemplate {
         response.err = "";
         response.txs = txs;
         mycallback(response);
+	return;
       }
       if (req.data.request === "load_sig") {
         console.log("PeerRequest: load TX by Sig");
@@ -131,6 +160,7 @@ class Archive extends ModTemplate {
         response.txs = txs;
 console.log("TXS is the object returned!");
         mycallback(response);
+	return;
       }
     }
 

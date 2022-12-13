@@ -7,7 +7,7 @@ class UploadRomOverlay {
   constructor(app, mod = null, selector = "") {
     this.app = app;
     this.mod = mod;
-    this.overlay = new SaitoOverlay(app);
+    this.overlay = new SaitoOverlay(app, false);
   }
 
   render(app, mod, selector = "") {
@@ -21,25 +21,38 @@ class UploadRomOverlay {
 
     try {
 
+      //
       // upload rom file 
+      //
       app.browser.addDragAndDropFileUploadToElement("nwasm-upload-overlay",
-        (file) => {
+        async (file) => {
 
-          document.querySelector('.loader').style.display = "grid";
- 
-	  mod.active_rom = file;
+	  let obj;
 
-	  let a = Buffer.from(file, 'binary').toString('base64');;
-	  let ab = mod.convertBase64ToByteArray(a);
+	  obj = document.querySelector(".nwasm-upload-overlay");
+          obj.classList.add("nwasm-upload-overlay-dark");
 
-	  //
-	  // initialize ROM gets the ROM the APP and the MOD
-	  //
-	  myApp.initializeRom(ab, app, mod);
-	  mod.startPlaying();
-	  mod.hideSplashScreen();
-	  mod.hideLibrary();
-	  uploader.overlay.hide();
+	  obj = document.querySelector(".preloader");
+	  obj.innerHTML = "initializing may take a minute...";
+          obj.classList.add("nwasm-preloader-dark");
+
+	  obj = document.querySelector(".nwasm-upload-instructions");
+          obj.innerHTML = "uploading ROM file...";
+
+	  obj = document.querySelector(".loader");
+          obj.style.display = "block";
+
+          mod.active_rom = file;
+
+          let a = Buffer.from(file, 'binary').toString('base64');;
+          let ab = mod.convertBase64ToByteArray(a);
+
+          //
+          // initialize ROM gets the ROM the APP and the MOD
+          myApp.initializeRom(ab, app, mod);
+          mod.startPlaying();
+          mod.hideSplashScreen();
+          mod.hideLibrary();
 
         },
       false, true); // true = read as array buffer
@@ -50,7 +63,6 @@ class UploadRomOverlay {
     }
 
   }
-
 }
 
 

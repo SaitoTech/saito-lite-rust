@@ -17,8 +17,8 @@ export default class Hop {
    * @param app
    */
   serialize(app: Saito): Uint8Array {
-    const from = app.binary.hexToSizedArray(this.from, 33);
-    const to = app.binary.hexToSizedArray(this.to, 33);
+    const from = app.binary.hexToSizedArray(app.crypto.fromBase58(this.from), 33);
+    const to = app.binary.hexToSizedArray(app.crypto.fromBase58(this.to), 33);
     const sig = app.binary.hexToSizedArray(this.sig, 64);
     return new Uint8Array([...from, ...to, ...sig]);
   }
@@ -34,9 +34,10 @@ export default class Hop {
    * @returns {Hop}
    */
   deserialize(app: Saito, buffer) {
-    this.from = Buffer.from(buffer.slice(0, 33)).toString("hex");
-    this.to = Buffer.from(buffer.slice(33, 66)).toString("hex");
+    this.from = app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
+    this.to = app.crypto.toBase58(Buffer.from(buffer.slice(33, 66)).toString("hex"));
     this.sig = Buffer.from(buffer.slice(66, 130)).toString("hex");
+
     return this;
   }
 

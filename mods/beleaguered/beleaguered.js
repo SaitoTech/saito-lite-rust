@@ -379,14 +379,17 @@ class Beleaguered extends GameTemplate {
 
   toggleCard(divname) {
     $(`#${divname}`).addClass("selected");
+    $(".gameboard").addClass("selected_state");
   }
 
   untoggleAll() {
     $(".slot").css("opacity", "1.0");
+    $(".selected_state").removeClass("selected_state");
   }
 
   untoggleCard(divname) {
     $(`#${divname}`).removeClass("selected");
+    $(".selected_state").removeClass("selected_state");
   }
 
   hideCard(divname) {
@@ -521,23 +524,16 @@ class Beleaguered extends GameTemplate {
     return 1;
   }
 
-  async displayBoard(timeInterval = 0) {
+  displayBoard() {
 
     if (this.browser_active == 0) { return; }
-    try {
-      //Want to add a timed delay for animated effect
-      const timeout = ms => new Promise(res => setTimeout(res, ms));
-      for (let i in this.game.board) {
-        await timeout(timeInterval);
-        let divname = '#' + i;
-        $(divname).html(this.returnCardImageHTML(this.game.board[i]));
-        this.untoggleCard(i);
-        if (this.game.board[i][0] == "E") {
-          this.makeInvisible(divname);
-        }
+    for (let i in this.game.board) {
+      let divname = '#' + i;
+      $(divname).html(this.returnCardImageHTML(this.game.board[i]));
+      this.untoggleCard(i);
+      if (this.game.board[i][0] == "E") {
+        this.makeInvisible(divname);
       }
-
-    } catch (err) {
     }
 
     this.attachEventsToBoard();

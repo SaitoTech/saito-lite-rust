@@ -249,6 +249,29 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   // network functions //
   ///////////////////////
+  async onConfirmation(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+    try {
+      if (conf == 0) {
+        if (txmsg.request === "create tweet") {
+          this.receiveTweetTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
+        }
+        if (txmsg.request === "like tweet") {
+          this.receiveLikeTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
+        }
+        if (txmsg.request === "flag tweet") {
+          this.receiveFlagTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
+        }
+      }
+    } catch (err) {
+      console.log("ERROR in " + this.name + " onConfirmation: " + err);
+    }
+  }
+
+
   //
   // fetch tweets / notifications middleware
   //
@@ -542,9 +565,7 @@ class RedSquare extends ModTemplate {
 
 
 
-  ////////////////////////////////////////
-  // sending and receiving transactions //
-  ////////////////////////////////////////
+
   sendLikeTransaction(app, mod, data, tx = null) {
 
     let redsquare_self = this;
@@ -905,6 +926,7 @@ class RedSquare extends ModTemplate {
     this.app.options.redsquare = this.redsquare;
     this.app.storage.saveOptions();
   }
+
 }
 
 module.exports = RedSquare;

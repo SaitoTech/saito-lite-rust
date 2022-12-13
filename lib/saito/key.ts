@@ -1,13 +1,14 @@
 class Key {
   public publickey: string;
   public tags: any;
-  public identifiers: any;
+  public identifiers: Array<string>;
   public watched: boolean;
   public lock_block: boolean;
   public aes_publickey: string;
   public aes_privatekey: string;
   public aes_secret: any;
   public data: any;
+  public lc: boolean;
 
   constructor() {
     this.publickey = "";
@@ -19,6 +20,7 @@ class Key {
     this.aes_privatekey = "";
     this.aes_secret = "";
     this.data = {};
+    this.lc = false;
   }
 
   addTag(tag) {
@@ -40,7 +42,7 @@ class Key {
     return false;
   }
 
-  isIdentifier(identifier) {
+  isIdentifier(identifier): boolean {
     for (let x = 0; x < this.identifiers.length; x++) {
       if (this.identifiers[x] == identifier) {
         return true;
@@ -49,11 +51,11 @@ class Key {
     return false;
   }
 
-  isPublicKey(publickey) {
-    return this.publickey == publickey;
+  isPublicKey(publickey): boolean {
+    return this.publickey === publickey;
   }
 
-  isWatched(publickey) {
+  isWatched(): boolean {
     return this.watched;
   }
 

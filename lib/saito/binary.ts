@@ -25,7 +25,7 @@ class Binary {
     if (value.toString() !== "0") {
       value_buffer = Buffer.from(value.toString(), "hex");
     } else {
-      value_buffer = Buffer.from("");
+      value_buffer = Buffer.alloc(0);
     }
     const new_buffer = Buffer.alloc(size);
     console.assert(size >= value_buffer.length, "unhandled value ranges found");

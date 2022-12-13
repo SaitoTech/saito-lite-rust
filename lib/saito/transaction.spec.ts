@@ -142,7 +142,7 @@ test("sign", async () => {
   const tx = new Transaction();
   tx.transaction.ts = 1637034582666;
   tx.transaction.type = TransactionType.ATR;
-  tx.transaction.m = Buffer.from("abc","hex");
+  tx.transaction.m = Buffer.from("abc", "hex");
 
   const input_slip = new Slip(wallet.wallet.publickey);
   //input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
@@ -167,23 +167,23 @@ test("sign", async () => {
 
   //TODO : FIX THIS
   expect(tx.transaction.sig).toEqual(
-    "fc0f76d12be1a36406e2dbfa7a4e7134ff691bc823bd59a5dcce1204982c4efc1aa42677c82c9c2f49968aee683d818ed7f34269a4dd8268d6f14dd90ef09a73"
+    "56f604952f5b325b445bd31e6fd62746532e5a568393315e661d0f944239cad845e402ffe8ff0a413d6835bae88efd7a8bb6313d72fa91c7af4cc18515578d7c"
   );
 
   expect(tx.validateSignature(mockApp)).toBeTruthy();
 
   // let buffer = Buffer.from("000000010000000100000014000000009e49d33a16f8a7a7dd9507511b3ab102ca6fa509d28ee9c10d89f13ce1233e4f7ef2681b2bab8a9a3b8eb2d7786c5c1d4373d8803132af1e3b4aa026ac312b920000017d26dd628a000000010303cb14a56ddc769932baba62c22773aaf6d26d799b548c8b8f654fb92d25ce7610dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b000000000000007b0a0003cb14a56ddc769932baba62c22773aaf6d26d799b548c8b8f654fb92d25ce7610dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b0000000000000159000065794a305a584e30496a6f696447567a64434a39","hex");
   let tx2 = new Transaction();
-  tx2.deserialize(mockApp,tx1_buffer,0);
+  tx2.deserialize(mockApp, tx1_buffer, 0);
 
   expect(tx).toEqual(tx2);
 
-  console.log("tx = ",tx);
-  console.log("slip = ",tx.transaction.from[0]);
+  console.log("tx = ", tx);
+  console.log("slip = ", tx.transaction.from[0]);
 
-  console.log("ser = "+tx.serializeForSignature(mockApp).toString("hex"));
+  console.log("ser = " + tx.serializeForSignature(mockApp).toString("hex"));
   let tx2_buffer = tx2.serialize(mockApp);
-  tx2.generateMetadata(mockApp, BigInt(1), BigInt(2));
+  tx2.generateMetadata(mockApp, BigInt(1), BigInt(2), "");
   expect(tx1_buffer).toEqual(tx2_buffer);
   expect(tx.serializeForSignature(mockApp)).toEqual(tx2.serializeForSignature(mockApp));
   expect(tx2.validateSignature(mockApp)).toBeTruthy();
