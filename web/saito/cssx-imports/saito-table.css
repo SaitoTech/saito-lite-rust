@@ -27,7 +27,7 @@ Saito Table
 }
 
 .saito-table-row:hover {
-  background: var(--saito-table-hover-background);
+  background: var(--saito-hover-background);
   color: var(--saito-white);
 }
 

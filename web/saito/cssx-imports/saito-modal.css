@@ -1,14 +1,19 @@
 /* generic modal look and feel */
+/*
+NOTE: the .saito-model class is a grid with two sectiions
+This alows for a header with a header with title to be added without extra CSS
+*/
 
 .saito-modal {
   font-size: 1.25rem;
   color: var(--saito-white);
+  background: var(--dreamscape);
   width: 70rem;
   height: min-content;
   max-width: 80vw;
   padding: 2rem;
-  background: var(--dreamscape);
   display: grid;
+  grid-gap: 1rem;
   grid-template-rows: min-content auto;
 }
 
@@ -25,7 +30,7 @@
 }
 
 .saito-modal-menu-option:hover {
-  background-color: var(--saito-dark-transparent-highlight);
+  background-color: var(--saito-hover-background);
   cursor: pointer;
 }
 
