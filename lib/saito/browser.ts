@@ -1519,10 +1519,12 @@ class Browser {
 
     if (typeof window !== "undefined") {
 
+      let browser_self = this;
+
       var mutationObserver = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
           if (mutation.addedNodes.length > 0) {
-            this.treatElements(mutation.addedNodes);
+            browser_self.treatElements(mutation.addedNodes);
           }
         });
       });
@@ -1536,7 +1538,7 @@ class Browser {
       });
 
       window.sanitize = function (msg) {
-        let result = dompurify.sanitize(msg);
+        let result = browser_self.sanitize(msg);
         return result;
       };
 
@@ -1548,10 +1550,10 @@ class Browser {
         wrapper.id = "alert-wrapper";
         var html = '<div id="alert-shim">';
         html += '<div id="alert-box">';
-        html += '<p class="alert-message">' + message + "</p>";
+        html += '<p class="alert-message">' + browser_self.sanitize(message) + "</p>";
         html += '<div id="alert-buttons"><button id="alert-ok">OK</button>';
         html += "</div></div></div>";
-        wrapper.innerHTML = sanitize(html);
+        wrapper.innerHTML = html;
         document.body.appendChild(wrapper);
         setTimeout(() => {
           document.querySelector("#alert-box").style.top = "0";
@@ -1582,11 +1584,11 @@ class Browser {
   	  wrapper.id = "alert-wrapper";
   	  var html = '<div id="alert-shim">';
   	  html += '<div id="alert-box">';
-  	  html += '<p class="alert-message">' + message + "</p>";
+  	  html += '<p class="alert-message">' + browser_self.sanitize(message) + "</p>";
   	  html +=
   	    '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
   	  html += "</div></div></div>";
-  	  wrapper.innerHTML = sanitize(html);
+  	  wrapper.innerHTML = html;
   	  document.body.appendChild(wrapper);
   	  setTimeout(() => {
   	    document.getElementById("alert-box").style.top = "0";
@@ -1621,13 +1623,13 @@ class Browser {
   	  wrapper.id = "alert-wrapper";
   	  var html = '<div id="alert-shim">';
   	  html += '<div id="alert-box">';
-  	  html += '<p class="alert-message">' + message + "</p>";
+  	  html += '<p class="alert-message">' + browser_self.sanitize(message) + "</p>";
   	  html +=
   	    '<div class="alert-prompt"><input type="text" id="promptval" class="promptval" /></div>';
   	  html +=
   	    '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
   	  html += "</div></div></div>";
-  	  wrapper.innerHTML = sanitize(html);
+  	  wrapper.innerHTML = html;
   	  document.body.appendChild(wrapper);
   	  document.querySelector("#promptval").focus();
   	  document.querySelector("#promptval").select();
@@ -1667,9 +1669,9 @@ class Browser {
   	var wrapper = document.createElement("div");
   	wrapper.id = "message-wrapper";
   	var html = '<div id="message-box">';
-  	html += '<p class="message-message">' + message + "</p>";
+  	html += '<p class="message-message">' + browser_self.sanitize(message) + "</p>";
   	html += "</div>";
-  	wrapper.innerHTML = sanitize(html);
+  	wrapper.innerHTML = html;
   	document.body.appendChild(wrapper);
   	setTimeout(() => {
   	  wrapper.remove();
@@ -1701,7 +1703,7 @@ class Browser {
         this.treatFiles(nodeList[i]);
       }
       if (nodeList[i].childNodes.length >= 1) {
-        treatElements(nodeList[i].childNodes);
+        this.treatElements(nodeList[i].childNodes);
       }
     }
   }
@@ -1719,9 +1721,9 @@ class Browser {
         }
         if (fileName) {
           filelabel.style.border = "none";
-          filelabel.innerHTML = sanitize(fileName);
+          filelabel.innerHTML = browser_self.sanitize(fileName);
         } else {
-          filelabel.innerHTML = sanitize(labelVal);
+          filelabel.innerHTML = browser_self.sanitize(labelVal);
         }
       });
       input.classList.add("treated");
