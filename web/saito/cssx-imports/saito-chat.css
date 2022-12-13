@@ -15,23 +15,15 @@
   position: fixed;
   bottom: 0px;
   right: 0px;
-
   border: 1px solid var(--saito-border-color);
   background: var(--saito-white);
   color: var(--saito-font-color);
 }
 
-.chat-container.minimize {
-  height: 4.6rem;
-}
-.chat-container.minimize .chat-body,
-.chat-container.minimize .chat-footer {
-  display: none;
-}
-
 .chat-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   border-bottom: 1px solid var(--saito-border-color);
   cursor: grab;
 }
@@ -51,42 +43,8 @@
   cursor: pointer;
 }
 
-.chat-header > i:first-child:hover {
-  cursor: row-resize;
-  transform: scaleY(0.4);
-}
-
 .chat-header > i:last-child:hover {
   transform: rotate(90deg) scale(1.1);
-}
-
-.chat-header > .chat-group-tabs {
-  margin-top: 0.2rem;
-  font-size: 2rem;
-  color: var(--saito-font-color);
-  width: 90%;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-}
-
-.chat-header > .chat-group-tabs .chat-group {
-  position: relative;
-  padding: 0.8rem 0 1rem 1rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chat-header > .chat-group-tabs.show-multi .chat-group.active-chat-tab {
-  border: 1px solid var(--saito-primary);
-  border-bottom: none;
-  border-radius: 0.5rem 0.5rem 0 0;
-}
-
-.chat-header > .chat-group-tabs.show-multi .chat-group:hover {
-  border-radius: 0.5rem 0.5rem 0 0;
-  background-color: var(--saito-primary);
-  color: var(--saito-white);
 }
 
 .chat-body {
@@ -94,7 +52,7 @@
   display: block;
   height: calc(100% - 10.4rem);
   overflow: auto;
-  margin-bottom: 5.8rem; /* Height of chat-footer*/
+  margin-bottom: 5.8rem;
 }
 
 .chat-body > .saito-user {
@@ -107,23 +65,16 @@
   font-size: 1.7rem;
 }
 
-.chat-manager .saito-userline {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  width: 13rem;
-  white-space: nowrap;
-}
-
 .chat-body .saito-userline {
   overflow-wrap: anywhere;
 }
 
 .chat-footer {
-  background-color: rgb(236, 236, 236);
+  background-color: var(--saito-background-light);
   position: absolute;
   bottom: 0;
   width: 100%;
-  padding: 1rem;
+  padding: 0.5rem;
   border-top: var(--saito-border-color);
   display: grid;
   grid-template-columns: 1fr max-content;
@@ -133,7 +84,10 @@
 }
 
 .chat-footer input {
+  height: 3rem;
+  padding-left: 1rem;
   border: none;
+  outline: none;
 }
 
 .chat-footer i {
