@@ -154,7 +154,10 @@ class Tweet {
     // view thread //
     /////////////////
     document.querySelector(`.tweet-${this.tx.transaction.sig}`).onclick = (e) => {
-      this.app.connection.emit("redsquare-thread-render-request", (this));
+
+      if (e.target.tagName != "IMG") {
+        this.app.connection.emit("redsquare-thread-render-request", (this));
+      }
     }
 
 

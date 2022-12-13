@@ -43,7 +43,11 @@ class RedSquareImage {
     ///
     // view image
     //
-    let sel = "#tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-preview .tweet-picture > img";
+    let sel = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-preview .tweet-picture > img";
+
+    console.log("tweet img id");
+    console.log(sel);
+
     if (document.querySelectorAll(sel)) {
       document.querySelectorAll(sel).forEach(image => {
         image.onclick = (e) => {
