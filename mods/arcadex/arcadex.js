@@ -70,8 +70,6 @@ class Arcade extends ModTemplate {
 
   initialize(app) {
     super.initialize(app);
-
-
   }
 
 }

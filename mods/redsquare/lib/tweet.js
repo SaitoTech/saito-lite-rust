@@ -34,28 +34,14 @@ class Tweet {
     this.retweet_tx_sig = null;
     this.links = [];
     this.link = null;
-
     this.link_properties = null;
     this.show_controls = 1;
 
     this.setKeys(tx.msg.data);
     this.setKeys(tx.optional);
 
-    //
-    // this.text <== set by setKeys
-    // this.images <== set by setKeys
-    //
-  
-    //
-    // do we have a link?
-    //
-    let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
-    this.link = null;
-    if (this.text) {
-      this.links = this.text.match(expression);
-    }
-    if (this.links.length > 0) { this.link = this.links[0]; }
-
+    this.generateTweetProperties(app, mod, 1);
+ 
     //
     // create retweet if exists
     //
@@ -67,7 +53,7 @@ class Tweet {
       // create image preview if exists
       //
       if (this.images?.length > 0) {
-        this.img_preview = new ImgPreview(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
+        this.img_preview = new Image(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
       } else {
         //
         // create link preview if exists
@@ -77,9 +63,6 @@ class Tweet {
         }
       }
     }
-
-    this.generateTweetProperties(app, mod, 1);
-
   }
 
 
@@ -163,7 +146,10 @@ class Tweet {
     // view thread //
     /////////////////
     document.querySelector(`.tweet-${this.tx.transaction.sig}`).onclick = (e) => {
-      this.app.connection.emit("redsquare-thread-render-request", (this));
+
+      if (e.target.tagName != "IMG") {
+        this.app.connection.emit("redsquare-thread-render-request", (this));
+      }
     }
 
 
@@ -179,7 +165,7 @@ class Tweet {
       let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
       if (tweet_sig != null) {
 
-        let post = new PostTweet(this.app, this.mod, this);
+        let post = new Post(this.app, this.mod, this);
         post.parent_id = tweet_sig;
         post.source = 'Reply';
         post.render();
@@ -206,7 +192,7 @@ class Tweet {
       let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
       if (tweet_sig != null) {
 
-        let post = new PostTweet(this.app, this.mod, this);
+        let post = new Post(this.app, this.mod, this);
         post.parent_id = tweet_sig;
         post.source = 'Retweet / Share';
         post.render();
@@ -295,9 +281,10 @@ console.log("ERROR attaching events to tweet: " + err);
 
 
   setKeys(obj) {
+
     for (let key in obj) {
       if (typeof obj[key] !== 'undefined') {
-        if (this[key] === 0 || this[key] === "" || this[key] === null) {
+        if (this[key] === 0 || this[key] === "" || this[key] === null || typeof this[key] === "undefined") {
           this[key] = obj[key];
         }
       }
@@ -352,6 +339,8 @@ console.log("ERROR attaching events to tweet: " + err);
     //
     if (tweet.parent_id == this.tx.transaction.sig) {
 
+console.log("this is a direct child!");
+
       //
       // already added?
       //
@@ -371,11 +360,13 @@ console.log("ERROR attaching events to tweet: " + err);
       // prioritize tweet-threads
       //
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
+console.log("unshifting...");
         this.children.unshift(tweet);
 	this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
         return 1;
       } else {
         tweet.parent_tweet = this;
+console.log("pushing...");
         this.children.push(tweet);
 	this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
         return 1;

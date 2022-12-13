@@ -51,7 +51,7 @@ class Network {
     //
     this.downloads = {};
     this.downloads_hmap = {};
-    this.downloading_active = 0;
+    this.downloading_active = false;
     this.block_sample_size = 15;
 
     //
@@ -294,7 +294,6 @@ class Network {
         : peer.peer.block_fetch_url + "/";
       url = `${base_url}${block_hash}`;
       if (this.app.SPVMODE == 1) {
-        // TODO : Tharinda to fix. need to get endpoint details in handshake for this
         url = `${peer.peer.protocol}://${peer.peer.host}:${
           peer.peer.port
         }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
@@ -309,8 +308,13 @@ class Network {
 
         const block = new Block(this.app);
         block.deserialize(buffer);
-        console.debug("block deserialized : " + block_hash);
+        // console.debug("block deserialized : " + block_hash);
+        block.generateMetadata();
         await block.generateConsensusValues();
+        console.assert(
+          block_hash === block.hash,
+          `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
+        );
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;
@@ -351,9 +355,13 @@ class Network {
         if (this.debugging) {
           console.log("connected to network", event);
         }
-        this.app.connection.emit("peer_connect", peer);
-        this.app.connection.emit("connection_up", peer);
-        this.app.network.propagateServices(peer);
+        try {
+          this.app.connection.emit("peer_connect", peer);
+          this.app.connection.emit("connection_up", peer);
+          this.app.network.propagateServices(peer);
+        } catch (error) {
+          console.error(error);
+        }
       };
       peer.socket.onclose = (event) => {
         if (this.debugging) {
@@ -372,15 +380,19 @@ class Network {
         }
       };
       peer.socket.onmessage = async (event) => {
-        const data = new Uint8Array(await event.data.arrayBuffer());
-        // console.log("data buffer 2 first: ", data[0]);
-        const api_message = this.app.networkApi.deserializeAPIMessage(data);
-        if (api_message.message_type == MessageType.Result) {
-          this.app.networkApi.receiveAPIResponse(api_message);
-        } else if (api_message.message_type == MessageType.Error) {
-          this.app.networkApi.receiveAPIError(api_message);
-        } else {
-          await this.receiveRequest(peer, api_message);
+        try {
+          const data = new Uint8Array(await event.data.arrayBuffer());
+          // console.log("data buffer 2 first: ", data[0]);
+          const api_message = this.app.networkApi.deserializeAPIMessage(data);
+          if (api_message.message_type == MessageType.Result) {
+            this.app.networkApi.receiveAPIResponse(api_message);
+          } else if (api_message.message_type == MessageType.Error) {
+            this.app.networkApi.receiveAPIError(api_message);
+          } else {
+            await this.receiveRequest(peer, api_message);
+          }
+        } catch (error) {
+          console.error(error);
         }
       };
 
@@ -404,7 +416,11 @@ class Network {
       // default ws websocket
       //
       peer.socket.on("open", async (event) => {
-        this.app.network.propagateServices(peer);
+        try {
+          this.app.network.propagateServices(peer);
+        } catch (error) {
+          console.error(error);
+        }
       });
       peer.socket.on("close", (event) => {
         if (this.debugging) {
@@ -429,14 +445,17 @@ class Network {
       //   return;
       // }
       // console.log("data buffer 1 first: ", data[0]);
-
-      const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
-      if (api_message.message_type == MessageType.Result) {
-        this.app.networkApi.receiveAPIResponse(api_message);
-      } else if (api_message.message_type == MessageType.Error) {
-        this.app.networkApi.receiveAPIError(api_message);
-      } else {
-        await this.receiveRequest(peer, api_message);
+      try {
+        const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
+        if (api_message.message_type == MessageType.Result) {
+          this.app.networkApi.receiveAPIResponse(api_message);
+        } else if (api_message.message_type == MessageType.Error) {
+          this.app.networkApi.receiveAPIError(api_message);
+        } else {
+          await this.receiveRequest(peer, api_message);
+        }
+      } catch (error) {
+        console.error(error);
       }
     });
 
@@ -752,8 +771,8 @@ class Network {
 
         for (let i = 0; i < syncobj.prehash.length; i++) {
           let buf = Buffer.concat([
-            Buffer.from(syncobj.prehash[i], "hex"),
             Buffer.from(previous_block_hash, "hex"),
+            Buffer.from(syncobj.prehash[i], "hex"),
           ]);
           let block_hash = this.app.crypto.hash(buf);
 
@@ -931,6 +950,21 @@ class Network {
       //   //await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
       //   break;
 
+      case MessageType.ApplicationTransaction: {
+        tx = new Transaction();
+        tx.deserialize(this.app, message.message_data, 0);
+
+        const mycallback = function (response_object) {
+          peer.sendResponse(
+            message.message_id,
+            Buffer.from(JSON.stringify(response_object), "utf-8")
+          );
+        };
+
+        await this.app.modules.handlePeerTransaction(tx, peer, mycallback);
+        break;
+      }
+
       case MessageType.ApplicationMessage: {
         let mdata;
         let reconstructed_obj;
@@ -1066,7 +1100,7 @@ class Network {
   //
   // propagate block
   //
-  propagateBlock(blk, peer = null) {
+  propagateBlock(blk: Block | null, peer = null) {
     if (this.app.BROWSER) {
       return;
     }
@@ -1149,6 +1183,14 @@ class Network {
     if (tx === null) {
       return;
     }
+    if (!tx.transaction) {
+      console.log("TX not found in propagate transaction");
+      return;
+    }
+    if (!tx.transaction.from) {
+      console.log("TX FROM not found in propagate transaction");
+      return;
+    }
     if (!tx.is_valid) {
       console.warn("tx is not valid. not propagating", tx);
       return;
@@ -1198,7 +1240,7 @@ class Network {
     // now send the transaction out with the appropriate routing hop
     //
     let fees = tx.returnFeesTotal();
-    for (let i = 0; i < tx.transaction.path.length; i++) {
+    for (let i = 0; i < tx.path.length; i++) {
       fees = fees / BigInt(2);
     }
     this.peers.forEach((peer) => {
@@ -1210,7 +1252,7 @@ class Network {
       if (peer.peer.receivetxs === 0) {
         return;
       }
-      if (!peer.inTransactionPath(tx) && !!peer.returnPublicKey()) {
+      if (!!tx.path && !peer.inTransactionPath(tx) && !!peer.returnPublicKey()) {
         const tmptx = peer.addPathToTransaction(tx);
         if (peer.socket && peer.socket.readyState === peer.socket.OPEN) {
           // 1 = WebSocket Open
@@ -1230,7 +1272,7 @@ class Network {
     });
   }
 
-  requestBlockchain(peer = null) {
+  requestBlockchain(peer: Peer | null = null) {
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;
@@ -1291,6 +1333,33 @@ class Network {
       for (let x = this.peers.length - 1; x >= 0; x--) {
         this.peers[x].sendRequest(message, data);
       }
+    }
+  }
+
+  sendTransaction(tx: any = "", peer: Peer = null) {
+    if (peer !== null) {
+      peer.sendTransactionWithCallback(tx);
+    } else {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        this.peers[x].sendTransactionWithCallback(tx);
+      }
+    }
+  }
+
+  //
+  // a request formatted as a transaction with request / data (tx)
+  //
+  sendTransactionWithCallback(tx: any = "", callback, peer = null) {
+    if (peer !== null) {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        if (this.peers[x] === peer) {
+          this.peers[x].sendTransactionWithCallback(tx, callback);
+        }
+      }
+      return;
+    }
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendTransactionWithCallback(tx, callback);
     }
   }
 

@@ -1,5 +1,6 @@
 /* global saito css variables
 -----------------------------------------------------------------*/
+@import url("./cssx-imports/saito-alerts.css");
 @import url("./cssx-imports/saito-base.css");
 @import url("./cssx-imports/saito-variables.css");
 @import url("./cssx-imports/saito-user.css");

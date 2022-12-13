@@ -145,7 +145,7 @@ export default class Blockring {
   }
 
   returnLongestChainBlockHashAtBlockId(block_id: bigint) {
-    const insert_pos = Number(block_id % BigInt(this.ring_buffer_length));
+    const insert_pos = Number(BigInt(block_id) % BigInt(this.ring_buffer_length));
     if (this.ring[insert_pos].lc_pos < this.ring[insert_pos].block_hashes.length) {
       return this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos];
     }

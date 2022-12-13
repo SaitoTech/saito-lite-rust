@@ -969,7 +969,7 @@ class Arcade extends ModTemplate {
     let game_status = txmsg.request; //"open" or "private"
     let player = tx.transaction.from[0].add;
     let players_array = player;
-    let start_bid = 1;
+    let start_bid = BigInt(1);
     if (blk != null) {
       start_bid = blk.block.id;
     }

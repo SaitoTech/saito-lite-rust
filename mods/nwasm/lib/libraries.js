@@ -1,6 +1,7 @@
 const saito = require('./../../../lib/saito/saito');
 const JSON = require('json-bigint');
 const NwasmLibraryTemplate = require("./libraries.template");
+const LoadRom = require("./load-rom");
 
 
 class NwasmLibrary {
@@ -8,6 +9,7 @@ class NwasmLibrary {
   constructor(app, mod = null, selector = "") {
     this.app = app;
     this.mod = mod;
+    this.loader = new LoadRom(app, mod);
   }
 
   render(app, mod, selector = "") {
@@ -15,7 +17,7 @@ class NwasmLibrary {
     //
     // main container
     //
-    app.browser.replaceElementById(NwasmLibraryTemplate(app, mod), "nwasm-libraries");
+    app.browser.replaceElementById(NwasmLibraryTemplate(this.app, this.mod), "nwasm-libraries");
 
     //
     // libraries
@@ -25,9 +27,6 @@ class NwasmLibrary {
       for (let key in mod.libraries) {
         let collection = mod.libraries[key];
         for (let i = 0; i < collection.length; i++) {
-
-console.log("COLL: ");
-console.log(JSON.stringify(collection[i]));
 
 	  let status = "available";
 	  let available = collection[i].available;
@@ -39,10 +38,10 @@ console.log(JSON.stringify(collection[i]));
 
 	  if (collection[i].title != "") {
 	    if (header_inserted == false) {
-	      app.browser.addElementToSelector(`<div id="nwasm-libraries-header" class="saito-table-row saito-table-header nwasm-libraries-header"><div class="nwasm-lib-title">title</div><div class="nwasm-lib-copies">copies</div><div class="nwasm-lib-status">status</div></div>`, ".nwasm-libraries");
+	      this.app.browser.addElementToSelector(`<div id="nwasm-libraries-header" class="saito-table-row saito-table-header nwasm-libraries-header"><div class="nwasm-lib-title">title</div><div class="nwasm-lib-copies">copies</div><div class="nwasm-lib-status">status</div></div>`, ".nwasm-libraries");
 	      header_inserted = true;
 	    }
-	    app.browser.addElementToSelector(`<div id="${collection[i].sig}" data-id="${key}" class="saito-table-row"><div class="nwasm-lib-title">${collection[i].title}</div><div class="nwasm-lib-copies">${available}</div><div class="nwasm-lib-status">${status}</div></div>`, ".nwasm-libraries");
+	    this.app.browser.addElementToSelector(`<div id="${collection[i].sig}" data-id="${key}" class="saito-table-row"><div class="nwasm-lib-title">${collection[i].title}</div><div class="nwasm-lib-copies">${available}</div><div class="nwasm-lib-status">${status}</div></div>`, ".nwasm-libraries");
 	  }
 	}
       }
@@ -54,6 +53,8 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
   }
 
   attachEvents(app, mod) {
+
+    let lib_self = this;
 
     try {
 
@@ -78,6 +79,12 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 	      }
 	    } else {
 	      obj.onclick = (e) => {
+
+		//
+		// show loader
+		//
+		this.loader.render();
+
 		if (key === this.app.wallet.returnPublicKey()) {
 
 		  let sig = obj.getAttribute("id");
@@ -85,6 +92,7 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 
 		  let library_mod = this.app.modules.returnModule("Library");
 		  library_mod.checkout("Nwasm", sig, this.app.wallet.returnPublicKey(), function(txs) {
+
 		    if (txs == null) {
 		      alert("Cannot checkout item...");
 		      return;
@@ -94,12 +102,14 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 		      try {
 		        let tx = new saito.default.transaction(txs[0].transaction);
 			mod.hideLibrary();
+			lib_self.loader.overlay.hide();
 		        mod.loadRomFile(tx);
 		      } catch (err) {
-		        console.log("ERROR LOADING GAME: " + err);
+		        console.log("Error downloading and decrypting: " + err);
 		      }
 		    } else {
-		      alert("Error Checkout: " + txs.length + " txs");
+		      console.log("ERROR TXS LIBRARY: " + JSON.stringify(txs));
+		      alert("Error - is network down?");
 		    }
 	          });
 
@@ -114,6 +124,7 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 
 		  let peer = null;
 		  for (let i = 0; i < app.network.peers.length; i++) {
+
 		    //
 		    // libraries organized by publickey
 		    //
@@ -127,8 +138,6 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 console.log("======-----======");
 console.log("======--1--======");
 console.log("======-----======");
-console.log("received callback as: " + JSON.stringify(res));
-
                   }, peer);
 	        }
 	      }
