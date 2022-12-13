@@ -1,6 +1,6 @@
 module.exports = (app, mod, invite) => {
 
-    let html = `
+  let html = `
       <div class="saito-game">
           
         <div class="saito-module-imagebox" style="background-image: url('/${invite.game}/img/arcade/arcade.jpg'); background-size: cover;">
@@ -38,78 +38,6 @@ module.exports = (app, mod, invite) => {
 
         <style>
 
-          .game-type {
-            font-size: 1.4rem;
-            font-weight: 400;
-            color: #e9e9e9;
-            font-style: italic;
-          }
-
-          .invite-manager {
-            display: grid;
-            grid-template-columns: 50% 50%;
-          }
-
-          .saito-game {
-            min-height: 13rem;
-            min-width: mn-content;
-            display: grid;
-            grid-template-rows: 1fr min-content;
-            position: relative;
-            border-radius: 0.5rem;
-            border: none;
-            overflow: hidden;
-            margin-bottom: 0rem;
-            width: 100%;
-            padding: 0.3rem;
-          }
-
-          .saito-module-imagebox-titlebar {
-              color: rgb(255, 255, 255);
-              background: rgba(0, 0, 0, 0.6);
-              /* margin-top: 1px; */
-              font-size: 1.4em;
-              font-weight: bold;
-              width: 100%;
-              overflow: hidden;
-              padding: 1rem 1.5rem;
-              height: 100%;
-          }
-
-          .saito-game.minimize{
-              min-height: unset;
-          }
-
-          .saito-game-controls {
-              display: grid;
-              grid-template-columns: 1fr min-content;
-              padding: 1rem;
-              padding-top: 1.5rem;
-              padding-bottom: 1.5rem;
-          }
-
-          .saito-game-controls>div:nth-child(1) {
-              font-size: 1.1em;
-              color: #ea462f;
-              font-weight: bold;
-              cursor: pointer;
-          }
-
-          .saito-game-controls>div:nth-child(2) {
-              border-bottom: 1px dashed red;
-              white-space: nowrap;
-          }
-
-
-          .saito-box-buttons{
-              width: 100%;
-          }
-
-
-          .saito-module-description-identicon-box {
-            position: absolute;
-            bottom: 1.5rem;
-          }
 
         </style>
   `;
