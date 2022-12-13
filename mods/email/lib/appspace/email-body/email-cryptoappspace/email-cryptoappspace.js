@@ -72,7 +72,7 @@ let EmailCryptoAppspace = {
 
     try {
       document.getElementById("private-key").onclick = function (e) {
-        document.getElementById("private-key").toggleClass("password");
+        document.getElementById("private-key").classList.toggle("password");
       }
     } catch (err) {
       console.log(err);

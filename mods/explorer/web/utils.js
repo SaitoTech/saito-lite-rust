@@ -93,9 +93,12 @@ function listTransactions(blk, hash) {
           tx_fees = inputs - outputs;
 
         //}
+        let tx_from = "fee tx";
+        if (tmptx.transaction.from.length > 0) { tx_from = tmptx.transaction.from[0].add } 
+        
 
         html += `<div><a onclick="showTransaction('tx-` + tmptx.transaction.id + `');">` + mt + `</a></div>`;
-        html += `<div><a onclick="showTransaction('tx-` + tmptx.transaction.id + `');">` + tmptx.transaction.from[0].add + `</a></div>`;
+        html += `<div><a onclick="showTransaction('tx-` + tmptx.transaction.id + `');">` + tx_from + `</a></div>`;
         html += '<div>' + tx_fees.toFixed(5) + '</div>';
         html += '<div>' + tmptx.transaction.type + '</div>';
         if (tmptx.transaction.type == 0) {

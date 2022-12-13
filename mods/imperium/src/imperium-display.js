@@ -1075,7 +1075,7 @@ returnFactionSheet2(imperium_self, player=null) {
 
   let html = `
 
-<div style="" class="faction_sheet_container p1 bc1"> 
+<div style="" class="faction_sheet_container p1 bc1">
     <div id="faction_main" class="faction_main">
       <div id="faction_sheet_empire_title" class="faction_sheet_empire_title">
 	<div class="faction_sheet_empire_title_name">${this_faction.name}</div>
@@ -1227,7 +1227,7 @@ console.log("OUR PROMISSARY NOTE: " + JSON.stringify(pm));
 
     html += `
        </div>
-         <div id="faction_flagship_container" class="faction_flagship_container">
+        <div id="faction_flagship_container" class="faction_flagship_container">
 	     <div class="faction_flagship_image"></div>
 	     <div class="faction_flagship_text_container">
 	       <div class="faction_flagship_title">${flagship_name}</div>	
@@ -1565,7 +1565,7 @@ addUIEvents() {
   $('#hexGrid').draggable();
 
   document.querySelector('.leaderboardbox').addEventListener('click', (e) => {
-    document.querySelector('.leaderboardbox').toggleClass('leaderboardbox-lock');
+    document.querySelector('.leaderboardbox').classList.toggle('leaderboardbox-lock');
   });
 
   //set player highlight color

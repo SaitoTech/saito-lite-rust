@@ -78,7 +78,7 @@ class SettingsAppspace {
       //}
 
       document.querySelector(".settings-appspace-privatekey").onclick = function (e) {
-        document.querySelector(".settings-appspace-privatekey").toggleClass("saito-password");
+        document.querySelector(".settings-appspace-privatekey").classList.toggle("saito-password");
       }
 
 

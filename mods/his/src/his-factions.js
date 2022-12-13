@@ -1,5 +1,4 @@
 
-
   returnFactionName(f) {
     if (this.factions[f]) {
       return this.factions[f].name;

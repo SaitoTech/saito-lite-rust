@@ -11,6 +11,10 @@
   opacity: 0.5;
 }
 
+.card {
+  position: relative;
+}
+
 .noncard {
   color: black;
   padding: 10px;

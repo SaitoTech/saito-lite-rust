@@ -39,6 +39,69 @@ module.exports = (app, mod, invite) => {
         <style>
 
 
+          .saito-module-description-identicon-box {
+              display: flex;
+              flex-direction: row;   
+          }
+
+          .saito-module-identicon-box {
+              height: 2.5rem;
+              width: 2.5rem;
+              background-size: 100%;
+              margin-right: 1rem;
+              overflow: hidden;
+              box-shadow: 1px 1px #ccc, 1px 1px 10px 3px #333 inset;
+          }
+
+
+          .saito-module-identicon-box i {
+              font-size: 2.2rem;
+              line-height: 2.5rem;
+              width: 2.5rem;
+              text-align: center;
+          }
+
+          .saito-module-identicon-box i:hover {
+              transform: scale(1.1);
+          }
+
+          .saito-module-identicon-box img {
+              margin-right: 0.7rem;
+              border: 0px;
+              width: 2.5rem;
+              min-width: 2.5rem;
+              height: 2.5rem;
+          }
+
+          .saito-module-identicon.small {
+              width: 2.5rem;
+              height: 2.5rem;
+          }
+
+          .player-slot-ellipsis{
+              position: relative;
+          }
+
+          .player-slot-ellipsis i{
+              position: absolute;
+              bottom: 0;
+          }
+
+          .tiptext {
+              visibility: hidden;
+              position: absolute;
+              box-sizing: content-box !important;
+              z-index: 10;
+              width: 90%;
+              min-width: 300px;
+              max-width: 750px;
+              padding: 0.25em 0.5em;
+              background-color: #fefefe;
+              border-bottom: 1px solid var(--saito-primary);
+              font-style: italic;
+          }
+          
+
         </style>
   `;
 

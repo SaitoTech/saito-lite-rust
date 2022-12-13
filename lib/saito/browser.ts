@@ -60,6 +60,9 @@ class Browser {
       // up instead and showed it to them and they understood.
       //
       try {
+
+        this.attachWindowFunctions();
+
         const channel = new BroadcastChannel("saito");
         if (!document.hidden) {
           channel.postMessage({
@@ -67,6 +70,7 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
+
 
 /******
         channel.onmessage = (e) => {
@@ -1257,12 +1261,10 @@ class Browser {
     try {
       if (text !== "") {
         text = marked.parseInline(text);
-
         //trim trailing line breaks - 
         // commenting it out because no need for this now
         // because of above marked parsing
         //text = text.replace(/[\r<br>]+$/, ""); 
-
       }
 
       text = sanitizeHtml(text, {
@@ -1510,6 +1512,228 @@ class Browser {
      tmp.innerHTML = html;
      return tmp.textContent || tmp.innerText || "";
   }
-}
 
+  attachWindowFunctions() {
+
+    if (typeof window !== "undefined") {
+
+      let browser_self = this;
+
+      var mutationObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.addedNodes.length > 0) {
+            browser_self.treatElements(mutation.addedNodes);
+          }
+        });
+      });
+
+      mutationObserver.observe(document.documentElement, {
+        attributes: true,
+        characterData: true,
+        childList: true,
+        subtree: true,
+        attributeOldValue: true,
+      });
+
+      window.sanitize = function (msg) {
+        let result = browser_self.sanitize(msg);
+        return result;
+      };
+
+      window.salert = function (message) {
+        if (document.getElementById("saito-alert")) {
+          return;
+        }
+        var wrapper = document.createElement("div");
+        wrapper.id = "saito-alert";
+        var html = '<div id="saito-alert-shim">';
+        html += '<div id="saito-alert-box">';
+        html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+        html += '<div id="saito-alert-buttons"><button id="alert-ok">OK</button>';
+        html += "</div></div></div>";
+        wrapper.innerHTML = html;
+        document.body.appendChild(wrapper);
+        setTimeout(() => {
+          document.querySelector("#alert-box").style.top = "0";
+        }, 100);
+  	document.querySelector("#alert-ok").focus();
+  	document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
+  	  if (event.keyCode === 13) {
+  	    event.preventDefault();
+  	    document.querySelector("#alert-ok").click();
+  	  }
+  	});
+  	document.querySelector("#alert-ok").addEventListener(
+  	  "click",
+  	  function () {
+  	    wrapper.remove();
+  	  },
+  	  false
+  	);
+      };
+
+      window.sconfirm = function (message) {
+  	if (document.getElementById("saito-alert")) {
+  	  return;
+  	}
+  	return new Promise((resolve, reject) => {
+  	  var wrapper = document.createElement("div");
+  	  wrapper.id = "saito-alert";
+  	  var html = '<div id="saito-alert-shim">';
+  	  html += '<div id="saito-alert-box">';
+  	  html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+  	  html +=
+  	    '<div id="saito-alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
+  	  html += "</div></div></div>";
+  	  wrapper.innerHTML = html;
+  	  document.body.appendChild(wrapper);
+  	  setTimeout(() => {
+  	    document.getElementById("saito-alert-box").style.top = "0";
+  	  }, 100);
+  	  document.getElementById("alert-ok").focus();
+  	  //document.getElementById('alert-ok').select();
+  	  document.getElementById("saito-alert-shim").onclick = (event) => {
+  	    if (event.keyCode === 13) {
+  	      event.preventDefault();
+  	      document.getElementById("alert-ok").click();
+  	    }
+  	  };
+  	  document.getElementById("alert-ok").onclick = () => {
+  	    wrapper.remove();
+  	    resolve(true);
+  	    // }, false;
+  	  };
+  	  document.getElementById("alert-cancel").onclick = () => {
+  	    wrapper.remove();
+  	    resolve(false);
+  	    // }, false);
+  	  };
+  	});
+      };
+
+      window.sprompt = function (message) {
+  	if (document.getElementById("saito-alert")) {
+  	  return;
+  	}
+  	return new Promise((resolve, reject) => {
+  	  var wrapper = document.createElement("div");
+  	  wrapper.id = "saito-alert";
+  	  var html = '<div id="saito-alert-shim">';
+  	  html += '<div id="saito-alert-box">';
+  	  html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+  	  html +=
+  	    '<div class="alert-prompt"><input type="text" id="promptval" class="promptval" /></div>';
+  	  html +=
+  	    '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
+  	  html += "</div></div></div>";
+  	  wrapper.innerHTML = html;
+  	  document.body.appendChild(wrapper);
+  	  document.querySelector("#promptval").focus();
+  	  document.querySelector("#promptval").select();
+  	  setTimeout(() => {
+  	    document.querySelector("#alert-box").style.top = "0";
+  	  }, 100);
+  	  document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
+  	    if (event.keyCode === 13) {
+  	      event.preventDefault();
+  	      document.querySelector("#alert-ok").click();
+  	    }
+  	  });
+  	  document.querySelector("#alert-ok").addEventListener(
+  	    "click",
+  	    function () {
+  	      var val = document.querySelector("#promptval").value;
+  	      wrapper.remove();
+  	      resolve(val);
+  	    },
+  	    false
+  	  );
+  	  document.querySelector("#alert-cancel").addEventListener(
+  	    "click",
+  	    function () {
+  	      wrapper.remove();
+  	      resolve(false);
+  	    },
+  	    false
+  	  );
+  	});
+      };
+
+      window.siteMessage = function (message, killtime = 9999999) {
+  	if (document.getElementById("message-wrapper")) {
+  	  document.getElementById("message-wrapper").remove();
+  	}
+  	var wrapper = document.createElement("div");
+  	wrapper.id = "message-wrapper";
+  	var html = '<div id="message-box">';
+  	html += '<p class="message-message">' + browser_self.sanitize(message) + "</p>";
+  	html += "</div>";
+  	wrapper.innerHTML = html;
+  	document.body.appendChild(wrapper);
+  	setTimeout(() => {
+  	  wrapper.remove();
+  	}, killtime);
+  	document.querySelector("#message-wrapper").addEventListener(
+  	  "click",
+  	  function () {
+  	    wrapper.remove();
+  	  },
+  	  false
+  	);
+      };
+
+      HTMLElement.prototype.destroy = function destroy() {
+        try {
+          this.parentNode.removeChild(this);
+        } catch (err) {
+          console.err(err);
+        }
+      };
+
+    }
+  }
+
+
+  treatElements(nodeList) {
+    for (var i = 0; i < nodeList.length; i++) {
+      if (nodeList[i].files) {
+        this.treatFiles(nodeList[i]);
+      }
+      if (nodeList[i].childNodes.length >= 1) {
+        this.treatElements(nodeList[i].childNodes);
+      }
+    }
+  }
+
+  treatFiles(input) {
+    if (input.classList.contains("treated")) {
+      return;
+    } else {
+      input.addEventListener("change", function (e) {
+        var fileName = "";
+        if (this.files && this.files.length > 1) {
+          fileName = this.files.length + " files selected.";
+        } else {
+          fileName = e.target.value.split("\\").pop();
+        }
+        if (fileName) {
+          filelabel.style.border = "none";
+          filelabel.innerHTML = browser_self.sanitize(fileName);
+        } else {
+          filelabel.innerHTML = browser_self.sanitize(labelVal);
+        }
+      });
+      input.classList.add("treated");
+      var filelabel = document.createElement("label");
+      filelabel.classList.add("treated");
+      filelabel.innerHTML = "Choose File";
+      filelabel.htmlFor = input.id;
+      filelabel.id = input.id + "-label";
+      var parent = input.parentNode;
+      parent.appendChild(filelabel);
+    }
+  }
+
+}
 export default Browser;
+

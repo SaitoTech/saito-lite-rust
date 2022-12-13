@@ -77,17 +77,15 @@ class Peer {
 
     // add our path
     const hop = new Hop();
-    hop.from = this.app.crypto.fromBase58(this.app.wallet.returnPublicKey());
-    hop.to = this.app.crypto.fromBase58(this.returnPublicKey());
+    hop.from = this.app.wallet.returnPublicKey();
+    hop.to = this.returnPublicKey();
     let buffer = Buffer.concat([
       Buffer.from(tx.transaction.sig, "hex"),
-      Buffer.from(hop.to, "hex"),
+      Buffer.from(this.app.crypto.fromBase58(hop.to), "hex"),
     ]);
-    //let hash = this.app.crypto.hash(buffer);
 
     hop.sig = this.app.crypto.signBuffer(buffer, this.app.wallet.returnPrivateKey());
-    //console.debug("addPathToTransaction - Tx sign : " + tx.transaction.sig + ", hop from : " + hop.from + ", hop to : " + hop.to + ", : hash :" + this.app.crypto.hash(buffer) + ", hop sign : " + hop.sig);
-    tmptx.transaction.path.push(hop);
+    tmptx.path.push(hop);
     return tmptx;
   }
 
@@ -102,8 +100,8 @@ class Peer {
       console.log("Anonymous peer publickey found, not forwarding!");
       return 1; // don't forward to anonymous peers
     }
-    for (let i = 0; i < tx.transaction.path.length; i++) {
-      if (tx.transaction.path[i].from === this.returnPublicKey()) {
+    for (let i = 0; i < tx.path.length; i++) {
+      if (tx.path[i].from === this.peer.publickey) {
         return 1;
       }
     }
@@ -111,20 +109,19 @@ class Peer {
   }
 
   isConnected() {
-    if(this.uses_stun){
-      if(this.stun.data_channel.readyState === "open"){
+    if (this.uses_stun) {
+      if (this.stun.data_channel.readyState === "open") {
         return true;
       }
       return false;
-    }else {
+    } else {
       if (this.socket) {
         if (this.socket.readyState === this.socket.OPEN) {
-           return true;
+          return true;
         }
       }
       return false;
     }
-
   }
 
   //
@@ -177,7 +174,7 @@ class Peer {
   // NETWORKING //
   ////////////////
   async sendResponse(message_id, data) {
-    let channel = this.uses_stun? this.stun.data_channel : this.socket;
+    let channel = this.uses_stun ? this.stun.data_channel : this.socket;
     await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
   }
 
@@ -241,29 +238,20 @@ class Peer {
     const data_to_send = { message: message, data: data };
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-
-    // if(channel){
-    //   this.app.networkApi.sendAPICall(channel, "SENDMESG", buffer).then(() => {
-    //   });
-    // }else {\
-    //   this.sendRequestWithCallbackAndRetry(message, data);
-    // }
-
     if (this.uses_stun && this.stun.data_channel.readyState === "open") {
-      this.app.networkApi.sendAPICall(this.stun.data_channel, MessageType.ApplicationMessage, buffer).then(() => {
-      });
+      this.app.networkApi
+        .sendAPICall(this.stun.data_channel, MessageType.ApplicationMessage, buffer)
+        .then(() => {});
     } else {
       if (this.socket && this.socket.readyState === this.socket.OPEN) {
-        this.app.networkApi.sendAPICall(this.socket, MessageType.ApplicationMessage, buffer).then(() => {
-        });
+        this.app.networkApi
+          .sendAPICall(this.socket, MessageType.ApplicationMessage, buffer)
+          .then(() => {});
       } else {
         this.sendRequestWithCallbackAndRetry(message, data);
       }
-
     }
-
   }
-
 
 
 
@@ -291,9 +279,8 @@ class Peer {
     const data_to_send = { message: message, data: data };
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-
-    if(this.uses_stun){
-      let data_channel = this.stun.data_channel
+    if (this.uses_stun) {
+      let data_channel = this.stun.data_channel;
       if (data_channel && data_channel.readyState === "open") {
         this.app.networkApi
           .sendAPICall(data_channel, MessageType.ApplicationMessage, buffer)
@@ -319,7 +306,7 @@ class Peer {
           }
         }
       }
-    }else if(this.socket){
+    } else if (this.socket) {
       if (this.socket && this.socket.readyState === this.socket.OPEN) {
         this.app.networkApi
           .sendAPICall(this.socket, MessageType.ApplicationMessage, buffer)
@@ -346,10 +333,9 @@ class Peer {
         }
       }
     }
-
-
-
   }
+
+
 
   //
   // repeats until success. this should no longer be called directly, it is called by the
@@ -385,6 +371,104 @@ class Peer {
     };
     this.sendRequestWithCallback(request, data, callbackWrapper, false);
   }
+
+
+
+  //
+  // new default implementation
+  //
+  sendTransactionWithCallback(tx: any = "", callback = null, loop = true) {
+
+    if (this.uses_stun) {
+      let data_channel = this.stun.data_channel;
+      if (data_channel && data_channel.readyState === "open") {
+        const buffer = tx.serialize(this.app);
+        this.app.networkApi
+          .sendAPICall(data_channel, MessageType.ApplicationTransaction, buffer)
+          .then((response: Buffer) => {
+            if (callback) {
+              let content = Buffer.from(response).toString("utf-8");
+              content = JSON.parse(content);
+              callback(content);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            if (callback) {
+              callback({ err: error.toString() });
+            }
+          });
+      } else {
+        if (loop) {
+          this.sendTransactionWithCallbackAndRetry(tx, callback);
+        } else {
+          if (callback) {
+            callback({ err: "Socket Not Connected" });
+          }
+        }
+      }
+    } else if (this.socket) {
+      if (this.socket && this.socket.readyState === this.socket.OPEN) {
+        const buffer = tx.serialize(this.app);
+        this.app.networkApi
+          .sendAPICall(this.socket, MessageType.ApplicationTransaction, buffer)
+          .then((response: Buffer) => {
+            if (callback) {
+              let content = Buffer.from(response).toString("utf-8");
+              content = JSON.parse(content);
+              callback(content);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            if (callback) {
+              callback({ err: error.toString() });
+            }
+          });
+      } else {
+        if (loop) {
+          this.sendTransactionWithCallbackAndRetry(tx, callback);
+        } else {
+          if (callback) {
+            callback({ err: "Socket Not Connected" });
+          }
+        }
+      }
+    }
+  }
+
+
+  //
+  // a version of sendRequestWithCallbackAndRetry that sends the TX
+  //
+  sendTransactionWithCallbackAndRetry(
+    tx,
+    callback = null,
+    initialDelay = 1000,
+    delayFalloff = 1.3
+  ) {
+    //console.debug("sendTransactionWithCallbackAndRetry");
+    const callbackWrapper = (res) => {
+      if (!res.err) {
+        if (callback != null) {
+          callback(res);
+        }
+      } else if (res.err === "Socket Not Connected") {
+        setTimeout(() => {
+          initialDelay = initialDelay * delayFalloff;
+          this.sendTransactionWithCallback(tx, callbackWrapper, false);
+        }, initialDelay);
+      } else if (res.err === "Peer not found") {
+        if (callback != null) {
+          callback(res); // Server could not find peer,
+        }
+      } else {
+        console.log("ERROR 12511: Unknown Error from socket...");
+      }
+    };
+    this.sendTransactionWithCallback(tx, callbackWrapper, false);
+  }
 }
 
 export default Peer;
+

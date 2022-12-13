@@ -25,6 +25,7 @@ class RedSquare extends ModTemplate {
     this.profiles = {};
     this.tweets = [];
     this.tweets_sigs_hmap = {};
+    this.unknown_children = [];
 
     //
     // track which peers give me content / notifications to 
@@ -249,6 +250,29 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   // network functions //
   ///////////////////////
+  async onConfirmation(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+    try {
+      if (conf == 0) {
+        if (txmsg.request === "create tweet") {
+          this.receiveTweetTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
+        }
+        if (txmsg.request === "like tweet") {
+          this.receiveLikeTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
+        }
+        if (txmsg.request === "flag tweet") {
+          this.receiveFlagTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
+        }
+      }
+    } catch (err) {
+      console.log("ERROR in " + this.name + " onConfirmation: " + err);
+    }
+  }
+
+
   //
   // fetch tweets / notifications middleware
   //
@@ -425,6 +449,16 @@ class RedSquare extends ModTemplate {
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
+	//
+	// add unknown children if possible
+	//
+	for (let i = 0; i < this.unknown_children.length; i++) {
+	  if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
+	    this.unknown_children.splice(i, 1);
+	    i--;
+	  }
+	}
+
       } else {
 
         for (let i = 0; i < this.tweets.length; i++) {
@@ -444,14 +478,23 @@ class RedSquare extends ModTemplate {
       // this is a comment
       //
     } else {
+
+      let inserted = false;
+
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
           if (this.tweets[i].addTweet(tweet) == 1) {
             this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
+	    inserted = true;
             break;
           }
         }
       }
+
+      if (inserted == false) {
+        this.unknown_children.push(tweet);
+      }
+
     }
 
     //
@@ -542,9 +585,7 @@ class RedSquare extends ModTemplate {
 
 
 
-  ////////////////////////////////////////
-  // sending and receiving transactions //
-  ////////////////////////////////////////
+
   sendLikeTransaction(app, mod, data, tx = null) {
 
     let redsquare_self = this;
@@ -905,6 +946,7 @@ class RedSquare extends ModTemplate {
     this.app.options.redsquare = this.redsquare;
     this.app.storage.saveOptions();
   }
+
 }
 
 module.exports = RedSquare;
