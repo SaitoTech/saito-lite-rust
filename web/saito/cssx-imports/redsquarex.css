@@ -1,24 +1,3 @@
-.redsquare-sidebar > div:not(:last-child) {
-  margin-bottom: 1.5rem;
-}
-#redsquare-appspace-home {
-  padding-bottom: 3rem;
-}
-
-.redsquare-actions-buttons {
-  display: flex;
-}
-
-.redsquare-page-header {
-  z-index: 2;
-  width: -webkit-fill-available;
-  padding: 1.5rem 0rem;
-  padding-top: 2.5rem;
-  position: sticky;
-  top: 0rem;
-  margin-top: -2rem;
-}
-
 .redsquare-page-header-title {
   color: var(--saito-font-color-heavy);
   font-size: 2.5rem;
@@ -47,6 +26,7 @@
   padding: 0.5rem 0.7rem 0.4rem 0.7rem;
 }
 
+<<<<<<< HEAD
 .redsquare-tweet-overlay {
   padding: 1rem;
   border-radius: 0.5rem;
@@ -58,6 +38,8 @@
   overflow-y: auto;
 }
 
+=======
+>>>>>>> ac1e777a0a56f14be30c654ef12ae83e38389fb5
 @media screen and (max-width: 768px) {
   .redsquare-page-header-title {
     font-size: 2rem;
