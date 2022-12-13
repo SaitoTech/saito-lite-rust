@@ -9,7 +9,8 @@ var marked = require("marked");
 var sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
-const UserMenu = require("./new-ui/modals/user-menu/user-menu");
+const UserMenu = require("./ui/modals/user-menu/user-menu");
+
 
 class Browser {
   public app: any;
@@ -240,12 +241,12 @@ class Browser {
           e.preventDefault();
           e.stopImmediatePropagation();
 
-          let public_key = e.target.getAttribute("data-id");
-          if (!public_key || !app.crypto.isPublicKey(public_key)) {
+          let publickey = e.target.getAttribute("data-id");
+          if (!publickey || !app.crypto.isPublicKey(publickey)) {
             return;
           }
-          if (public_key !== app.wallet.returnPublicKey()) {
-            let userMenu = new UserMenu(app, public_key);
+          if (publickey !== app.wallet.returnPublicKey()) {
+            let userMenu = new UserMenu(app, publickey);
             userMenu.render(app);
           }
         }
