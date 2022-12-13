@@ -24,11 +24,10 @@ class AppspaceNotifications {
       }
     }
 
-console.log("NOTIFICATIONS: ");
-console.log(JSON.stringify(this.mod.notifications));
+console.log("NOTIFICATIONS: " + this.mod.notifications.length);
 
     for (let i = 0; i < this.mod.notifications.length; i++) {
-      this.mod.notifications[i].container = ".redsquare-home";
+      this.mod.notifications[i].container = ".redsquare-notifications";
       if (this.processNotification(this.mod.notifications[i])) {
 	this.mod.notifications[i].text = html;
         this.mod.notifications[i].render();
@@ -52,9 +51,9 @@ console.log(JSON.stringify(this.mod.notifications));
     let html = '';
     let txmsg = tweet.tx.returnMessage();
 
-    if (tx.transaction.ts > mod.last_viewed_notifications_ts) {
-      mod.last_viewed_notifications_ts = tx.transaction.ts;
-      mod.saveRedSquare();
+    if (tweet.tx.transaction.ts > this.mod.last_viewed_notifications_ts) {
+      this.mod.last_viewed_notifications_ts = tweet.tx.transaction.ts;
+//      this.mod.saveRedSquare();
     }
 
     ///////////
