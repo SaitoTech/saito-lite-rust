@@ -221,7 +221,7 @@
 
 .link-info {
   padding: 2rem;
-  border: 1px solid var(--redsquare-link-info-border);
+  border: 1px solid var(--saito-border-color);
   border-radius: 0.5rem;
   border-top: none;
   border-top-right-radius: unset;
@@ -229,7 +229,7 @@
 }
 
 .link-title {
-  color: var(--redsquare-actions-background);
+  color: var(--saito-dark-shim);
   margin: 0.3rem 0px;
 }
 

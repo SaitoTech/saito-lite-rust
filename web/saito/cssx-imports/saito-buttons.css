@@ -2,8 +2,6 @@
 buttons
 -----------------------------------------------------------------*/
 
-@import url("./saito-colors.css");
-
 button,
 .saito-button-primary {
   background: var(--saito-primary);

@@ -34,24 +34,24 @@ class Chat extends ModTemplate {
 
         this.app.connection.on("open-chat-with", (data) => {
 
-            if (!data){
-                this.openChatBox(app.auto_open_chat_box)    
+            if (!data) {
+                this.openChatBox(app.auto_open_chat_box)
                 return;
             }
 
             let group;
 
-            if (Array.isArray(data.key)){
+            if (Array.isArray(data.key)) {
                 group = this.createChatGroup(data.key, data.name);
-            }else{
+            } else {
                 let name = data.name || app.keys.returnUsername(data.key);
                 group = this.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
             }
-            
+
             this.openChatBox(group.id);
         });
 
-        app.connection.on("open-chat-with-community", ()=>{
+        app.connection.on("open-chat-with-community", () => {
             this.openChatBox();
         });
     }
@@ -63,7 +63,7 @@ class Chat extends ModTemplate {
         let services = [];
 
         // servers with chat service run plaintext community chat groups
-        if (this.app.BROWSER == 0) { services.push({ service: "chat" , name : "Saito Community Chat" }); }
+        if (this.app.BROWSER == 0) { services.push({ service: "chat", name: "Saito Community Chat" }); }
 
         return services;
     }
@@ -72,7 +72,7 @@ class Chat extends ModTemplate {
     respondTo(type) {
         switch (type) {
             case 'chat-manager':
-        	return new ChatManager(this.app, this);
+                return new ChatManager(this.app, this);
             default:
                 return super.respondTo(type);
         }
@@ -83,10 +83,10 @@ class Chat extends ModTemplate {
     initialize(app) {
 
         super.initialize(app);
-        
-        if (!app.BROWSER){return;}
 
-console.log("INITIALIZING CHAT: ");
+        if (!app.BROWSER) { return; }
+
+        console.log("INITIALIZING CHAT: ");
 
         //
         // create chatgroups from keychain -- friends only
@@ -122,10 +122,10 @@ console.log("INITIALIZING CHAT: ");
         if (peer.isMainPeer()) {
 
 
-console.log("lllllllllllllll");
-console.log("lllllllllllllll");
-console.log("lllllllllllllll");
-console.log("lllllllllllllll");
+            console.log("lllllllllllllll");
+            console.log("lllllllllllllll");
+            console.log("lllllllllllllll");
+            console.log("lllllllllllllll");
 
             //
             // We wait until we establish a peer connection to create the community chat
@@ -134,9 +134,9 @@ console.log("lllllllllllllll");
             //
             this.createChatGroup([peer.peer.publickey], this.communityGroupName);
 
-console.log("and loading chat manager render request...");
+            console.log("and loading chat manager render request...");
 
-	    this.app.connection.emit("chat-manager-render-request");
+            this.app.connection.emit("chat-manager-render-request");
 
 
             this.loadChats();
@@ -147,7 +147,7 @@ console.log("and loading chat manager render request...");
             //this enables us to pick up anything new that we had previously not received
             //
             let sql;
-            for (let i = 0; i < this.groups.length; i++){
+            for (let i = 0; i < this.groups.length; i++) {
                 // not a publickey but group_id gets archived as if it were one
                 sql = `SELECT id, tx FROM txs WHERE publickey = "${this.groups[i].id}" ORDER BY ts DESC LIMIT 100`;
                 this.sendPeerDatabaseRequestWithFilter(
@@ -156,15 +156,15 @@ console.log("and loading chat manager render request...");
 
                     (res) => {
                         if (res?.rows) {
-                            while (res.rows.length > 0){
-                                
+                            while (res.rows.length > 0) {
+
                                 //Process the chat transaction like a new message
 
                                 let tx = new saito.default.transaction(JSON.parse(res.rows.pop().tx));
-    
+
                                 tx.decryptMessage(app);
 
-                                this.receiveChatTransaction(app, tx); 
+                                this.receiveChatTransaction(app, tx);
                             }
                         }
                     },
@@ -177,7 +177,7 @@ console.log("and loading chat manager render request...");
                 );
             }
 
-        } 
+        }
 
         //
         // See if we want to auto open a chatpopup
@@ -185,7 +185,7 @@ console.log("and loading chat manager render request...");
         //
         if (app.BROWSER) {
             if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600)) {
-                if (app.options.auto_open_chat_box !== -1){
+                if (app.options.auto_open_chat_box !== -1) {
                     let active_module = app.modules.returnActiveModule();
                     if (active_module.request_no_interrupts == true) {
                         // if the module has ASKED leave it alone
@@ -193,8 +193,8 @@ console.log("and loading chat manager render request...");
                         return;
                     }
                     this.openChatBox(app.options.auto_open_chat_box);
-                } 
-            }else{
+                }
+            } else {
                 //Under mobile use, always wait for user to open chat box
                 this.mute = true;
             }
@@ -220,11 +220,11 @@ console.log("and loading chat manager render request...");
             let txmsg = tx.returnMessage();
 
             if (txmsg.request == "chat message") {
-                
+
                 this.receiveChatTransaction(app, tx);
             }
         }
-        
+
     }
 
 
@@ -248,22 +248,22 @@ console.log("and loading chat manager render request...");
         let tx = new saito.default.transaction(message.data.tx.transaction);
 
         tx.decryptMessage(app); //In case forwarding private messages
-        
+
         let txmsg = tx.returnMessage();
 
-        if (message.request === "chat message"){
+        if (message.request === "chat message") {
 
             console.log("Receive Chat on RELAY");
             this.receiveChatTransaction(app, tx);
 
-        }else if (message.request === "chat message broadcast"){
-            
+        } else if (message.request === "chat message broadcast") {
+
             //Chat message broadcast is the Relay to the Chat-services server
             //that handles Community chat and will forward the message as a "chat message"
             //Without relay + handlePeerRequest, we do not receive community chat messages
 
             //Tell Archive to save a copy of this TX
-            app.connection.emit("archive-save-transaction", {key: message.data.group_id, type: "Chat", tx});                
+            app.connection.emit("archive-save-transaction", { key: message.data.group_id, type: "Chat", tx });
 
             //Forward to all my peers (but not me again) with new request & same data 
             app.network.peers.forEach(p => {
@@ -312,8 +312,8 @@ console.log("and loading chat manager render request...");
             tx = app.wallet.signAndEncryptTransaction(tx);
 
             app.network.propagateTransaction(tx);
-            
-            app.connection.emit("send-relay-message", {recipient, request: 'chat message broadcast', data: {tx, group_id}});
+
+            app.connection.emit("send-relay-message", { recipient, request: 'chat message broadcast', data: { tx, group_id } });
 
         } else {
             salert("Connection to chat server lost");
@@ -335,11 +335,11 @@ console.log("and loading chat manager render request...");
         }
 
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
-        
+
         if (newtx == null) {
             return;
         }
-        
+
         for (let i = 1; i < members.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(members[i]));
         }
@@ -385,21 +385,21 @@ console.log("and loading chat manager render request...");
         let group = this.returnGroup(txmsg.group_id);
 
         if (group) {
-                        
+
             //Have we already inserted this message into the chat?
             for (let z = 0; z < group.txs.length; z++) {
-                if (group.txs[z].transaction.sig === tx.transaction.sig) { 
-                    return; 
+                if (group.txs[z].transaction.sig === tx.transaction.sig) {
+                    return;
                 }
             }
 
             if (this.debug) { console.log("receiveChatTrans for defined group: " + JSON.stringify(txmsg)); }
 
             this.addTransactionToGroup(group, tx);
-            
+
             app.connection.emit('chat-popup-render-request', txmsg.group_id);
 
-        }else if (tx.isTo(app.wallet.returnPublicKey())) {
+        } else if (tx.isTo(app.wallet.returnPublicKey())) {
             //
             // no match on groups -- direct message to me
             //
@@ -412,15 +412,15 @@ console.log("and loading chat manager render request...");
             }
 
             let proper_group = this.createChatGroup(members);
-            
+
             this.addTransactionToGroup(proper_group, tx);
-            
+
             if (this.debug) { console.log("emitting render request to new group: " + proper_group.id); }
-            
+
             app.connection.emit('chat-popup-render-request', proper_group.id);
 
-        }else{
-            if (this.debug) { console.log("Chat message not for me"); }            
+        } else {
+            if (this.debug) { console.log("Chat message not for me"); }
         }
 
     }
@@ -469,10 +469,15 @@ console.log("and loading chat manager render request...");
 
         let blocks = [];
         let block = [];
-        let txs = group.txs;
+        let txs = [];
+        if (group) {
+            if (group.txs) {
+                txs = group.txs;
+            }
+        }
         let last_message_sender = "";
 
-        for (let i = 0; i < txs.length; i ++) {
+        for (let i = 0; i < txs.length; i++) {
 
             //First transaction -- start first block
             if (last_message_sender == "") {
@@ -526,7 +531,7 @@ console.log("and loading chat manager render request...");
 
         //So the David + Richard == Richard + David
         members.sort();
-        
+
         let id = this.app.crypto.hash(`${members.join('_')}`);
 
         for (let i = 0; i < this.groups.length; i++) {
@@ -544,8 +549,8 @@ console.log("and loading chat manager render request...");
             }
             if (!name) {
                 name = "me";
-            }else{
-                name = name.substring(0, name.length-2);
+            } else {
+                name = name.substring(0, name.length - 2);
             }
         }
 
@@ -558,10 +563,10 @@ console.log("and loading chat manager render request...");
         }
 
         //Prepend the community chat
-        if (name === this.communityGroupName){
+        if (name === this.communityGroupName) {
             this.groups.unshift(newGroup);
-        }else{
-            this.groups.push(newGroup);            
+        } else {
+            this.groups.push(newGroup);
         }
 
         //Tell chat manager to add this group to its list
@@ -576,7 +581,7 @@ console.log("and loading chat manager render request...");
     //
     openChatBox(group_id = null) {
 
-        if (!this.app.BROWSER) {return;}
+        if (!this.app.BROWSER) { return; }
 
         if (!group_id || group_id == -1) {
 
@@ -589,16 +594,16 @@ console.log("and loading chat manager render request...");
         }
 
         let group = this.returnGroup(group_id);
-        
-        if (!group) {return;}
+
+        if (!group) { return; }
 
         this.app.options.auto_open_chat_box = group_id;
         this.app.storage.saveOptions();
-        
+
         this.mute = false;
 
-console.log("trying to open chat box via function in mod... replacing with event.");
-	this.app.connection.emit("chat-popup-render-request", (group.id));
+        console.log("trying to open chat box via function in mod... replacing with event.");
+        this.app.connection.emit("chat-popup-render-request", (group.id));
 
     }
 
@@ -611,15 +616,15 @@ console.log("trying to open chat box via function in mod... replacing with event
             if (group.txs[i].transaction.sig === tx.transaction.sig) {
                 return;
             }
-            if (tx.transaction.ts < group.txs[i].transaction.ts){
-                let pos = Math.max(0, i-1);
+            if (tx.transaction.ts < group.txs[i].transaction.ts) {
+                let pos = Math.max(0, i - 1);
                 group.txs.splice(pos, 0, tx);
                 return;
             }
         }
 
         group.txs.push(tx);
-        
+
         //We mark "new/unread" messages as we add them to the group
         //and clear them when we render them in the popup
         group.unread++;
@@ -632,23 +637,23 @@ console.log("trying to open chat box via function in mod... replacing with event
 
     returnGroup(group_id) {
 
-console.log("requested w/ id: " + group_id);
+        console.log("requested w/ id: " + group_id);
 
         for (let i = 0; i < this.groups.length; i++) {
             if (group_id === this.groups[i].id) {
-console.log("FOUND RETURNING GROUP");
+                console.log("FOUND RETURNING GROUP");
                 return this.groups[i];
             }
         }
 
-console.log("NOT FOUND NOT RETURNING GROUP");
+        console.log("NOT FOUND NOT RETURNING GROUP");
         return null;
 
     }
 
-    returnMembers(group_id){
+    returnMembers(group_id) {
         //Make sure we have an array of unique member keys
-        
+
         for (let i = 0; i < this.groups.length; i++) {
             if (group_id === this.groups[i].id) {
                 return [...new Set(this.groups[i].members)];
@@ -657,7 +662,7 @@ console.log("NOT FOUND NOT RETURNING GROUP");
 
         return [];
     }
- 
+
 
     returnChatByName(name = "") {
         for (let i = 0; i < this.groups.length; i++) {
@@ -725,14 +730,14 @@ console.log("NOT FOUND NOT RETURNING GROUP");
     // LOCAL STORAGE //
     ///////////////////
 
-    loadChats(){
-        if (!this.app.options.chat){
+    loadChats() {
+        if (!this.app.options.chat) {
             return;
         }
 
-        for (let g of this.groups){
-            if (this.app.options.chat[g.id] && g.txs.length == 0){
-                for (let stx of this.app.options.chat[g.id]){
+        for (let g of this.groups) {
+            if (this.app.options.chat[g.id] && g.txs.length == 0) {
+                for (let stx of this.app.options.chat[g.id]) {
                     let newtx = new saito.default.transaction(stx);
                     newtx.decryptMessage(this.app);
                     g.txs.push(newtx);
@@ -745,12 +750,12 @@ console.log("NOT FOUND NOT RETURNING GROUP");
     }
 
     saveChat(group) {
-        if (!this.app.options.chat){
+        if (!this.app.options.chat) {
             this.app.options.chat = {};
         }
-        
-        this.app.options.chat[group.id] = [];       
-        for (let t of group.txs.slice(-100)){
+
+        this.app.options.chat[group.id] = [];
+        for (let t of group.txs.slice(-100)) {
             this.app.options.chat[group.id].push(t.transaction);
         }
 
@@ -768,13 +773,13 @@ console.log("NOT FOUND NOT RETURNING GROUP");
     // exercise in infinite recursion, but we do sometimes want 
     // to inspect the group for debugging purposes
     //
-    printGroup(group){
+    printGroup(group) {
         const filtered = Object.keys(group)
-                            .filter(key => key !== "popup")
-                            .reduce((obj, key) => {
-                                obj[key] = group[key];
-                                return obj;
-                            }, {});
+            .filter(key => key !== "popup")
+            .reduce((obj, key) => {
+                obj[key] = group[key];
+                return obj;
+            }, {});
         console.log(JSON.parse(JSON.stringify(filtered)));
     }
 

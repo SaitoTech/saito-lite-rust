@@ -15,9 +15,9 @@
   position: fixed;
   background: var(--saito-white);
   padding: 1rem;
-  box-shadow: 1px 1px 4px var(--saito-tooltip-boxshadow);
+  box-shadow: 1px 1px 4px var(--saito-font-color-light);
   z-index: 2;
-  color: var(--saito-tooltip-color);
+  color: var(--saito-font-color-heavy);
   font-weight: 400;
   min-width: 20rem;
 }

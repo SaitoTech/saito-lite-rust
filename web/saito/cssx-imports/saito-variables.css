@@ -42,55 +42,46 @@ font imports
 
 :root {
   --saito-font: "visuelt-light";
-  --saito-gray: #eaeaef45;
+
+  --saito-header-height: 5em;
+  --saito-width: 1500px;
+
+  --saito-left-sidebar-width: 26rem;
+  --saito-main-appspace-width: 70rem;
+
+/* static colors for all themes */
+
+--saito-gray: #eaeaef45;
+  --saito-gray-mid: #444;
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
+  --saito-tertiary: rgb(234, 234, 239);
+  --saito-white: #fff;
+
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%),
     linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000),
     linear-gradient(180deg, #e9ce93, #f71f3d);
-  --saito-tertiary: rgb(234, 234, 239);
-  --saito-header-height: 5em;
-  --saito-width: 1500px;
+
+/* variable colors overridden in themes */
+
   --saito-font-color: #3d3d3d;
   --saito-font-color-heavy: #222;
   --saito-font-color-light: #888;
   --saito-font-color-inverse: #efefef;
-  --saito-box-padding: 3rem 2rem;
   --saito-profile-background: #fff;
   --saito-border-color: #c5c5c5bb;
   --saito-border-color-dark: #a5a5a5bb;
-  --saito-border-color-highlight: #f71f3d;
   --saito-border: 1px solid #c5c5c5bb;
   --saito-border-radius: 0.5rem;
   --saito-background-color: #fff;
   --saito-background-light: #efefef;
-  --saito-left-sidebar-width: 26rem;
-  --saito-main-appspace-width: 70rem;
-  --saito-emoji-color: red;
-  --saito-tooltip-color: #111;
-  /* static colors for modals with fixed theme */
-  --saito-white: #fff;
   --saito-gray-transparent: #5555550a;
   --saito-table-hover-background: #00000045;
-  --saito-gray-mid: #444;
   --saito-black-faded: #1c1c23b5;
-  --saito-tooltip-boxshadow: #747474;
-  --image-box-shadow: #ccc;
-
   --saito-dark-shim: #0009;
-  --redsquare-actions-background: #0009;
-  --redsquare-link-info-border: #ccc;
-  --arcade-gametile-border: #c89af6;
-  --arcade-image-border: darkorange;
-  --arcade-identicon: indigo;
-  --arcade-player-slot: #8884;
 }
 
 html[data-theme="dark"] {
-  --saito-gray: #eaeaef45;
-  --saito-primary: #f71f3d;
-  --saito-secondary: #ff8235;
-  --saito-tertiary: rgb(234, 234, 239);
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
@@ -98,7 +89,6 @@ html[data-theme="dark"] {
   --saito-profile-background: #222;
   --saito-border-color: #343434;
   --saito-border-color-dark: #232323;
-  --saito-border-color-highlight: #f71f3d;
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #211f25;
   --saito-background-light: rgb(46, 38, 54);
@@ -106,18 +96,13 @@ html[data-theme="dark"] {
 }
 
 html[data-theme="arcade"] {
-  --saito-gray: #eaeaef45;
-  --saito-primary: ##639;
-  --saito-secondary: #ff8235;
-  --saito-tertiary: rgb(234, 234, 239);
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
   --saito-font-color-inverse: #010101;
   --saito-profile-background: #222;
-  --saito-border-color: #343434;
-  --saito-border-color-dark: #232323;
-  --saito-border-color-highlight: #f71f3d;
+  --saito-border-color: #c89af6;
+  --saito-border-color-dark: #4c0084;
   --saito-border: 1px solid #c5c5c5bb;
   --saito-background-color: #324;
   --saito-background-light: #426;

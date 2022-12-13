@@ -26,20 +26,6 @@
   padding: 0.5rem 0.7rem 0.4rem 0.7rem;
 }
 
-<<<<<<< HEAD
-.redsquare-tweet-overlay {
-  padding: 1rem;
-  border-radius: 0.5rem;
-  background-color: var(--saito-white);
-  position: relative;
-  width: 50rem;
-  max-width: 100vw;
-  max-height: 95vh;
-  overflow-y: auto;
-}
-
-=======
->>>>>>> ac1e777a0a56f14be30c654ef12ae83e38389fb5
 @media screen and (max-width: 768px) {
   .redsquare-page-header-title {
     font-size: 2rem;
@@ -51,7 +37,7 @@
     right: unset;
     width: 100vw;
     display: none;
-    background: var(--redsquare-actions-background);
+    background: var(--saito-dark-shim);
     grid-template-columns: 1fr;
     grid-gap: 1rem;
     padding: 1rem;

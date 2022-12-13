@@ -69,7 +69,7 @@
     right: unset;
     width: 100vw;
     display: none;
-    background: var(--redsquare-actions-background);
+    background: var(--saito-dark-shim);
     grid-template-columns: 1fr;
     grid-gap: 1rem;
     padding: 1rem;

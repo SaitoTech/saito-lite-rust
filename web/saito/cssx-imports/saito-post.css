@@ -1,7 +1,7 @@
 .tweet-overlay {
   width: 50rem;
   background-color: var(--saito-background-color);
-  padding: 2rem 2rem 0;
+  padding: 1rem;
   border-radius: 0.5rem;
 }
 
@@ -29,13 +29,8 @@
 }
 
 .post-tweet-textarea {
-<<<<<<< HEAD
   border: 1px solid var(--saito-border-color);
   background-color: var(--saito-white);
-=======
-  border: 1px solid var(--saito-border-color-dark);
-  background-color: var(--saito-background-color);
->>>>>>> ac1e777a0a56f14be30c654ef12ae83e38389fb5
   display: block;
   padding: 1rem;
   border-radius: 0.5rem;
