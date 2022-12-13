@@ -3,161 +3,88 @@ Saito Identicon
 -----------------------------------------------------------------*/
 
 .saito-identicon {
-    width: 2.5rem;
-    height: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
 }
-
 
 /* ----------------------------------------------------------------
 Saito Username
 -----------------------------------------------------------------*/
 
-.saito-address, .saito-username {
-    max-width: 90%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex;
-    align-items: center;
-    color: var(--saito-font-color-heavy);
+.saito-address,
+.saito-username {
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  color: var(--saito-font-color-heavy);
 }
 
-.saito-user>.saito-address-long:nth-child(2) {
-    grid-column-end: 4;
+.saito-user > .saito-address-long:nth-child(2) {
+  grid-column-end: 4;
 }
 
-
-
-.saito-address>*:first-child, .saito-username>*:first-child {
-    margin-right: .5rem;
+.saito-address > *:first-child,
+.saito-username > *:first-child {
+  margin-right: 0.5rem;
 }
-
 
 /* ----------------------------------------------------------------
 Saito User
 -----------------------------------------------------------------*/
 
 .saito-user {
-    display: grid;
-    cursor: pointer;
-    grid-template-columns: min-content 1fr min-content;
-    grid-template-rows: min-content 1fr;
-    justify-items: start;
-    margin-bottom: 1px;
-    width: 100%;
-    position: relative;
+  display: grid;
+  cursor: pointer;
+  grid-template-columns: min-content 1fr min-content;
+  grid-template-rows: min-content 1fr;
+  justify-items: start;
+  margin-bottom: 1px;
+  width: 100%;
+  position: relative;
 }
-
 
 /*  saito-identicon-box  */
-.saito-user> .saito-identicon-box {
-    margin-right: 1rem;
-    grid-column-start: 1;
-    grid-column-end: span 1;
-    grid-row: span 2;
+.saito-user > .saito-identicon-box {
+  margin-right: 1rem;
+  grid-column-start: 1;
+  grid-column-end: span 1;
+  grid-row: span 2;
 }
-
 
 .saito-user > .saito-address {
-    grid-column-start: 2;
-    grid-column-end: span 1;
-    grid-row-start: 1;
-    grid-row-end: span 1;
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 1;
+  grid-row-end: span 1;
 }
 
-.saito-user> .saito-user-timestamp {
-    grid-column-start: 2;
-    grid-column-end: span 1;
-    grid-row-start: 2;
-    grid-row-end: span 1;
-    font-size: 1.4rem;
-    color: var(--saito-font-color-light);
+.saito-user > .saito-user-timestamp {
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 2;
+  grid-row-end: span 1;
+  font-size: 1.4rem;
+  color: var(--saito-font-color-light);
 }
-
 
 .saito-user > .saito-userline {
-        grid-column-start: 2;
-        grid-column-end: span 1;
-        grid-row-start: 2;
-        grid-row-end: span 1;
-        font-size: 1.4rem;
-    
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 2;
+  grid-row-end: span 1;
+  font-size: 1.4rem;
 }
 
 .saito-user .saito-datetime {
-        cursor: pointer;
-        grid-column-start: 3;
-        grid-column-end: span 1;
-        grid-row: span 2;
-        font-size: 1.4rem;
-        align-items: top;
-    
+  cursor: pointer;
+  grid-column-start: 3;
+  grid-column-end: span 1;
+  grid-row: span 2;
+  font-size: 1.4rem;
+  align-items: top;
 }
-
 
 /*** SATIO Identicons ***/
-
-.saito-module-description-identicon-box {
-    display: flex;
-    flex-direction: row;   
-}
-
-.saito-module-identicon-box {
-    height: 2.5rem;
-    width: 2.5rem;
-    background-size: 100%;
-    margin-right: 1rem;
-    overflow: hidden;
-    box-shadow: 1px 1px #ccc, 1px 1px 10px 3px #333 inset;
-}
-
-
-.saito-module-identicon-box i {
-    font-size: 2.2rem;
-    line-height: 2.5rem;
-    width: 2.5rem;
-    text-align: center;
-}
-
-.saito-module-identicon-box i:hover {
-    transform: scale(1.1);
-}
-
-.saito-module-identicon-box img {
-    margin-right: 0.7rem;
-    border: 0px;
-    width: 2.5rem;
-    min-width: 2.5rem;
-    height: 2.5rem;
-}
-
-.saito-module-identicon.small {
-    width: 2.5rem;
-    height: 2.5rem;
-}
-
-.player-slot-ellipsis{
-    position: relative;
-}
-
-.player-slot-ellipsis i{
-    position: absolute;
-    bottom: 0;
-}
-
-.tiptext {
-    visibility: hidden;
-    position: absolute;
-    box-sizing: content-box !important;
-    z-index: 10;
-    width: 90%;
-    min-width: 300px;
-    max-width: 750px;
-    padding: 0.25em 0.5em;
-    background-color: #fefefe;
-    border-bottom: 1px solid var(--saito-primary);
-    font-style: italic;
-}
-
-
-

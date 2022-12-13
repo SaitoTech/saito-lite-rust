@@ -67,13 +67,16 @@ font imports
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
   --saito-emoji-color: red;
+  --saito-tooltip-color: #111;
   /* static colors for modals with fixed theme */
   --saito-white: #fff;
   --saito-gray-transparent: #5555550a;
   --saito-table-hover-background: #00000045;
   --saito-gray-mid: #444;
   --saito-black-faded: #1c1c23b5;
+  --saito-tooltip-boxshadow: #747474;
   --image-box-shadow: #ccc;
+
   --saito-dark-shim: #0009;
   --redsquare-actions-background: #0009;
   --redsquare-link-info-border: #ccc;

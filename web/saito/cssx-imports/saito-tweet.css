@@ -13,7 +13,7 @@
 .tweet.has-reply::after {
   content: "";
   position: absolute;
-  width: 2px;
+  width: 0.2rem;
   height: 100%;
   background-color: var(--saito-gray-mid);
   top: 5.5rem;
