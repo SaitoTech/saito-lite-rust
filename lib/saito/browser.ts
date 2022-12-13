@@ -1261,12 +1261,10 @@ class Browser {
     try {
       if (text !== "") {
         text = marked.parseInline(text);
-
         //trim trailing line breaks - 
         // commenting it out because no need for this now
         // because of above marked parsing
         //text = text.replace(/[\r<br>]+$/, ""); 
-
       }
 
       text = sanitizeHtml(text, {
@@ -1576,18 +1574,22 @@ class Browser {
       };
 
       window.sconfirm = function (message) {
+console.log(" ... 1");
   	if (document.getElementById("alert-wrapper")) {
   	  return;
   	}
+console.log(" ... 1");
   	return new Promise((resolve, reject) => {
   	  var wrapper = document.createElement("div");
   	  wrapper.id = "alert-wrapper";
   	  var html = '<div id="alert-shim">';
   	  html += '<div id="alert-box">';
+console.log(" ... 1");
   	  html += '<p class="alert-message">' + browser_self.sanitize(message) + "</p>";
   	  html +=
   	    '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
   	  html += "</div></div></div>";
+console.log(" ... 1");
   	  wrapper.innerHTML = html;
   	  document.body.appendChild(wrapper);
   	  setTimeout(() => {
@@ -1595,6 +1597,7 @@ class Browser {
   	  }, 100);
   	  document.getElementById("alert-ok").focus();
   	  //document.getElementById('alert-ok').select();
+console.log(" ... 1");
   	  document.getElementById("alert-shim").onclick = (event) => {
   	    if (event.keyCode === 13) {
   	      event.preventDefault();
