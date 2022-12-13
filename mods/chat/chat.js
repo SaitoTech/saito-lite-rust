@@ -72,7 +72,7 @@ class Chat extends ModTemplate {
     respondTo(type) {
         switch (type) {
             case 'chat-manager':
-                return new ChatManager(this.app, this);
+                return new ChatManager(this.app, this, ".chat-container");
             default:
                 return super.respondTo(type);
         }
