@@ -34,27 +34,21 @@ class Tweet {
     this.retweet_tx_sig = null;
     this.links = [];
     this.link = null;
-
     this.link_properties = null;
     this.show_controls = 1;
 
+    console.log("tx.msg.data");
+    console.log(tx.msg.data); 
+  
     this.setKeys(tx.msg.data);
     this.setKeys(tx.optional);
 
-    //
-    // this.text <== set by setKeys
-    // this.images <== set by setKeys
-    //
-  
-    //
-    // do we have a link?
-    //
-    let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
-    this.link = null;
-    if (this.text) {
-      this.links = this.text.match(expression);
-    }
-    if (this.links.length > 0) { this.link = this.links[0]; }
+    this.generateTweetProperties(app, mod, 1);
+ 
+
+    console.log("this.images");
+    console.log(this.images); 
+ 
 
     //
     // create retweet if exists
@@ -67,7 +61,7 @@ class Tweet {
       // create image preview if exists
       //
       if (this.images?.length > 0) {
-        this.img_preview = new ImgPreview(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
+        this.img_preview = new Image(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
       } else {
         //
         // create link preview if exists
@@ -77,9 +71,6 @@ class Tweet {
         }
       }
     }
-
-    this.generateTweetProperties(app, mod, 1);
-
   }
 
 
@@ -295,9 +286,13 @@ console.log("ERROR attaching events to tweet: " + err);
 
 
   setKeys(obj) {
+    console.log(obj);
+
     for (let key in obj) {
+    console.log(key);
+    console.log(this[key]); 
       if (typeof obj[key] !== 'undefined') {
-        if (this[key] === 0 || this[key] === "" || this[key] === null) {
+        if (this[key] === 0 || this[key] === "" || this[key] === null || typeof this[key] === "undefined") {
           this[key] = obj[key];
         }
       }
