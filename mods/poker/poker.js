@@ -94,7 +94,9 @@ class Poker extends GameTableTemplate {
  
     try{
       document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
-      document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+      if (this.game.state.button_player <= this.game.players.length && this.game.state.button_player > 0){
+        document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+      }
     }catch(err){
       console.log("Error initializing scoreboard",err);
     }
@@ -308,11 +310,11 @@ class Poker extends GameTableTemplate {
 
   startRound(){
 
+    this.updateLog("===============");
     this.updateLog("Round: " + this.game.state.round);
-    this.updateLog(`Table ${this.game.id.substring(0, 10)}, Player ${this.game.state.button_player} is the button`);
 
     for (let i = 0; i < this.game.players.length; i++) {
-      this.updateLog(`Player ${(i + 1)}: ${this.game.state.player_names[i]} (${this.game.state.player_credit[i]}${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.player_credit[i], true)}`:""})`);
+      this.updateLog(`Player ${(i + 1)}${i+1 == this.game.state.button_player ? " (dealer)":""}: ${this.game.state.player_names[i]} (${this.game.state.player_credit[i]}${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.player_credit[i], true)}`:""})`);
     }
     
     if (this.browser_active){
@@ -469,6 +471,10 @@ class Poker extends GameTableTemplate {
               //Adjust dealer for each removed player
               if (i < this.game.state.button_player){
                 this.game.state.button_player--;
+                if (this.game.state.button_player < 1) {
+                  this.game.state.button_player = this.game.players.length;
+                }
+
               }
             }
           }
@@ -1434,7 +1440,10 @@ class Poker extends GameTableTemplate {
 
 
   displayHand() {
-    if (this.game.player == 0){ return; }
+    if (this.game.player == 0){ 
+      this.playerbox.refreshInfo(`<div>You are observing the game</div>`, -1);
+      return; 
+    }
 
     if (this.game.state.passed[this.game.player-1]){
       this.cardfan.hide();
@@ -2942,8 +2951,9 @@ class Poker extends GameTableTemplate {
           this.playerbox.hideInfo();
         }
         
+        console.log("STATUS UPDATE: ", str);
         let status_obj = document.querySelector(".status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        if (status_obj) {
           status_obj.innerHTML = str;
         }
       
