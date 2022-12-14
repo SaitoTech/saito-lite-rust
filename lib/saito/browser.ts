@@ -1541,15 +1541,15 @@ class Browser {
       };
 
       window.salert = function (message) {
-        if (document.getElementById("alert-wrapper")) {
+        if (document.getElementById("saito-alert")) {
           return;
         }
         var wrapper = document.createElement("div");
-        wrapper.id = "alert-wrapper";
-        var html = '<div id="alert-shim">';
-        html += '<div id="alert-box">';
-        html += '<p class="alert-message">' + browser_self.sanitize(message) + "</p>";
-        html += '<div id="alert-buttons"><button id="alert-ok">OK</button>';
+        wrapper.id = "saito-alert";
+        var html = '<div id="saito-alert-shim">';
+        html += '<div id="saito-alert-box">';
+        html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+        html += '<div id="saito-alert-buttons"><button id="alert-ok">OK</button>';
         html += "</div></div></div>";
         wrapper.innerHTML = html;
         document.body.appendChild(wrapper);
@@ -1557,8 +1557,7 @@ class Browser {
           document.querySelector("#alert-box").style.top = "0";
         }, 100);
   	document.querySelector("#alert-ok").focus();
-  	//document.querySelector('#alert-ok').select();
-  	document.querySelector("#alert-shim").addEventListener("keyup", function (event) {
+  	document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
   	  if (event.keyCode === 13) {
   	    event.preventDefault();
   	    document.querySelector("#alert-ok").click();
@@ -1574,31 +1573,26 @@ class Browser {
       };
 
       window.sconfirm = function (message) {
-console.log(" ... 1");
-  	if (document.getElementById("alert-wrapper")) {
+  	if (document.getElementById("saito-alert")) {
   	  return;
   	}
-console.log(" ... 1");
   	return new Promise((resolve, reject) => {
   	  var wrapper = document.createElement("div");
-  	  wrapper.id = "alert-wrapper";
-  	  var html = '<div id="alert-shim">';
-  	  html += '<div id="alert-box">';
-console.log(" ... 1");
-  	  html += '<p class="alert-message">' + browser_self.sanitize(message) + "</p>";
+  	  wrapper.id = "saito-alert";
+  	  var html = '<div id="saito-alert-shim">';
+  	  html += '<div id="saito-alert-box">';
+  	  html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
   	  html +=
-  	    '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
+  	    '<div id="saito-alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
   	  html += "</div></div></div>";
-console.log(" ... 1");
   	  wrapper.innerHTML = html;
   	  document.body.appendChild(wrapper);
   	  setTimeout(() => {
-  	    document.getElementById("alert-box").style.top = "0";
+  	    document.getElementById("saito-alert-box").style.top = "0";
   	  }, 100);
   	  document.getElementById("alert-ok").focus();
   	  //document.getElementById('alert-ok').select();
-console.log(" ... 1");
-  	  document.getElementById("alert-shim").onclick = (event) => {
+  	  document.getElementById("saito-alert-shim").onclick = (event) => {
   	    if (event.keyCode === 13) {
   	      event.preventDefault();
   	      document.getElementById("alert-ok").click();
@@ -1618,15 +1612,15 @@ console.log(" ... 1");
       };
 
       window.sprompt = function (message) {
-  	if (document.getElementById("alert-wrapper")) {
+  	if (document.getElementById("saito-alert")) {
   	  return;
   	}
   	return new Promise((resolve, reject) => {
   	  var wrapper = document.createElement("div");
-  	  wrapper.id = "alert-wrapper";
-  	  var html = '<div id="alert-shim">';
-  	  html += '<div id="alert-box">';
-  	  html += '<p class="alert-message">' + browser_self.sanitize(message) + "</p>";
+  	  wrapper.id = "saito-alert";
+  	  var html = '<div id="saito-alert-shim">';
+  	  html += '<div id="saito-alert-box">';
+  	  html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
   	  html +=
   	    '<div class="alert-prompt"><input type="text" id="promptval" class="promptval" /></div>';
   	  html +=
@@ -1639,7 +1633,7 @@ console.log(" ... 1");
   	  setTimeout(() => {
   	    document.querySelector("#alert-box").style.top = "0";
   	  }, 100);
-  	  document.querySelector("#alert-shim").addEventListener("keyup", function (event) {
+  	  document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
   	    if (event.keyCode === 13) {
   	      event.preventDefault();
   	      document.querySelector("#alert-ok").click();

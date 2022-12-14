@@ -25,6 +25,7 @@ class RedSquare extends ModTemplate {
     this.profiles = {};
     this.tweets = [];
     this.tweets_sigs_hmap = {};
+    this.unknown_children = [];
 
     //
     // track which peers give me content / notifications to 
@@ -55,6 +56,10 @@ class RedSquare extends ModTemplate {
     this.load_more_notifications = 1;
 
     this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
+
+    this.postScripts = [
+      '/saito/lib/emoji-picker/emoji-picker.js'
+    ];
 
     this.styles = [
       '/saito/saitox.css',
@@ -448,6 +453,16 @@ class RedSquare extends ModTemplate {
         this.tweets.splice(insertion_index, 0, tweet);
         this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
+	//
+	// add unknown children if possible
+	//
+	for (let i = 0; i < this.unknown_children.length; i++) {
+	  if (this.tweets[insertion_index].addTweet(this.unknown_children[i]) == 1) {
+	    this.unknown_children.splice(i, 1);
+	    i--;
+	  }
+	}
+
       } else {
 
         for (let i = 0; i < this.tweets.length; i++) {
@@ -467,14 +482,23 @@ class RedSquare extends ModTemplate {
       // this is a comment
       //
     } else {
+
+      let inserted = false;
+
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
           if (this.tweets[i].addTweet(tweet) == 1) {
             this.tweets_sigs_hmap[tweet.tx.transaction.sig] = 1;
+	    inserted = true;
             break;
           }
         }
       }
+
+      if (inserted == false) {
+        this.unknown_children.push(tweet);
+      }
+
     }
 
     //

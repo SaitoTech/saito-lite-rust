@@ -7,7 +7,7 @@ const JSON = require('json-bigint');
 
 class Tweet {
 
-  constructor(app, mod, container = "", tx=null) {
+  constructor(app, mod, container = "", tx = null) {
 
     this.app = app;
     this.mod = mod;
@@ -37,18 +37,10 @@ class Tweet {
     this.link_properties = null;
     this.show_controls = 1;
 
-    console.log("tx.msg.data");
-    console.log(tx.msg.data); 
-  
     this.setKeys(tx.msg.data);
     this.setKeys(tx.optional);
 
     this.generateTweetProperties(app, mod, 1);
- 
-
-    console.log("this.images");
-    console.log(this.images); 
- 
 
     //
     // create retweet if exists
@@ -83,7 +75,7 @@ class Tweet {
     // first render the tweet
     //
     if (document.querySelector(myqs)) {
-       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
+      this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
       this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
     }
@@ -94,15 +86,15 @@ class Tweet {
     //
     if (this.children.length > 0) {
       if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
-	if (this.children[0].children.length > 0) {
+        if (this.children[0].children.length > 0) {
           this.children[0].container = this.container;
           this.children[0].renderWithChildren();
-	} else {
+        } else {
           for (let i = 0; i < this.children.length; i++) {
             this.children[i].container = this.container;
             this.children[i].render();
           }
-	}
+        }
       } else {
         for (let i = 0; i < this.children.length; i++) {
           this.children[i].container = this.container;
@@ -125,7 +117,7 @@ class Tweet {
     // replace or add
     //
     if (document.querySelector(myqs)) {
-       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
+      this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
       this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
     }
@@ -150,150 +142,171 @@ class Tweet {
 
     try {
 
-    /////////////////
-    // view thread //
-    /////////////////
-    document.querySelector(`.tweet-${this.tx.transaction.sig}`).onclick = (e) => {
+      // /////////////////
+      // // Expand and Contract long tweet //
+      // /////////////////
+      {
+        let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
+        if (el.clientHeight < el.scrollHeight) {
+          el.classList.add("preview");
+        }
 
-      if (e.target.tagName != "IMG") {
-        this.app.connection.emit("redsquare-thread-render-request", (this));
-      }
-    }
-
-
-
-    ///////////
-    // reply //
-    ///////////
-    document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment`).onclick = (e) => {
-
-      e.preventDefault();
-      e.stopImmediatePropagation();
-        
-      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-      if (tweet_sig != null) {
-
-        let post = new Post(this.app, this.mod, this);
-        post.parent_id = tweet_sig;
-        post.source = 'Reply';
-        post.render();
-        this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".tweet-overlay");
-
-        let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
-	newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
-        let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
-        new_tweet.show_controls = 0;
-        new_tweet.render();
-
-      }
-    };
-
-
-    /////////////
-    // retweet //
-    /////////////
-    document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet`).onclick = (e) => {
-
-      e.preventDefault();
-      e.stopImmediatePropagation();
-        
-      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-      if (tweet_sig != null) {
-
-        let post = new Post(this.app, this.mod, this);
-        post.parent_id = tweet_sig;
-        post.source = 'Retweet / Share';
-        post.render();
-        this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".tweet-overlay");
-
-        let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
-	newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
-        let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
-        new_tweet.show_controls = 0;
-        new_tweet.render();
-
-      }
-    };
-
-
-    //////////
-    // like //
-    //////////
-    document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like`).onclick = (e) => {
-
-      e.preventDefault();
-      e.stopImmediatePropagation();
-
-      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-      if (tweet_sig != null) {
-
-	this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
-
-        //
-        // increase num likes
-        //
-        let obj = document.querySelector(`.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`);
-        obj.innerHTML = parseInt(obj.innerHTML) + 1;
-        if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-          obj.parentNode.classList.remove("saito-tweet-no-activity");
-          obj.parentNode.classList.add("saito-tweet-activity");
-        };
-      }
-
-    };
-
-    ///////////
-    // share //
-    ///////////
-    document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-share`).onclick = (e) => {
-
-      e.preventDefault();
-      e.stopImmediatePropagation();
-        
-      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-      if (tweet_sig != null) {
-
-        let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + tweet_sig;
-        navigator.clipboard.writeText(tweetUrl).then(() => {
-          siteMessage("Link copied to clipboard.", 2000);
+        el.addEventListener("click", e => {
+          e.target.classList.toggle("preview");
+          e.target.classList.toggle("full");
         });
 
       }
-    };
 
-    //////////
-    // flag //
-    //////////
-    document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-flag`).onclick = (e) => {
+      /////////////////
+      // view thread //
+      /////////////////
+      document.querySelector(`.tweet-${this.tx.transaction.sig}`).addEventListener('click', (e) => {
 
-      e.preventDefault();
-      e.stopImmediatePropagation();
-        
-      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-      if (tweet_sig != null) {
+        // Checking if user clicked lower portion of a tweet. If so, prevent tweet from opening and allow preview and full class to be added
+        var rect = e.target.getBoundingClientRect();
+        var y = e.clientY - rect.top;
+        let clicked_lower_portion = false;
+        if (y / rect.height * 100 > 80) {
+          clicked_lower_portion = true;
+        }
 
-        this.mod.sendFlagTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
-        let obj = document.querySelector(`.tweet-flag-${tweet_sig}`);
-        obj.classList.add("saito-tweet-activity");
-        document.querySelector(`.tweet-${tweet_sig}`).style.display = 'none';
-        salert("Tweet reported to moderators successfully.");
+        if (e.target.tagName != "IMG" && !clicked_lower_portion) {
+          this.app.connection.emit("redsquare-thread-render-request", (this));
+        }
+      })
 
-      }
-    };
+
+
+      ///////////
+      // reply //
+      ///////////
+      document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment`).onclick = (e) => {
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+        if (tweet_sig != null) {
+
+          let post = new Post(this.app, this.mod, this);
+          post.parent_id = tweet_sig;
+          post.source = 'Reply';
+          post.render();
+          this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".tweet-overlay");
+
+          let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
+          newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
+          let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
+          new_tweet.show_controls = 0;
+          new_tweet.render();
+
+        }
+      };
+
+
+      /////////////
+      // retweet //
+      /////////////
+      document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet`).onclick = (e) => {
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+        if (tweet_sig != null) {
+
+          let post = new Post(this.app, this.mod, this);
+          post.parent_id = tweet_sig;
+          post.source = 'Retweet / Share';
+          post.render();
+          this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".tweet-overlay");
+
+          let newtx = new saito.default.transaction(JSON.parse(JSON.stringify(this.tx.transaction)));
+          newtx.transaction.sig = this.app.crypto.hash(newtx.transaction.sig);
+          let new_tweet = new Tweet(this.app, this.mod, `#post-tweet-preview-${tweet_sig}`, newtx);
+          new_tweet.show_controls = 0;
+          new_tweet.render();
+
+        }
+      };
+
+
+      //////////
+      // like //
+      //////////
+      document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like`).onclick = (e) => {
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+        if (tweet_sig != null) {
+
+          this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
+
+          //
+          // increase num likes
+          //
+          let obj = document.querySelector(`.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`);
+          obj.innerHTML = parseInt(obj.innerHTML) + 1;
+          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+            obj.parentNode.classList.remove("saito-tweet-no-activity");
+            obj.parentNode.classList.add("saito-tweet-activity");
+          };
+        }
+
+      };
+
+      ///////////
+      // share //
+      ///////////
+      document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-share`).onclick = (e) => {
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+        if (tweet_sig != null) {
+
+          let tweetUrl = window.location.origin + window.location.pathname + '?tweet_id=' + tweet_sig;
+          navigator.clipboard.writeText(tweetUrl).then(() => {
+            siteMessage("Link copied to clipboard.", 2000);
+          });
+
+        }
+      };
+
+      //////////
+      // flag //
+      //////////
+      document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-flag`).onclick = (e) => {
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+        if (tweet_sig != null) {
+
+          this.mod.sendFlagTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
+          let obj = document.querySelector(`.tweet-flag-${tweet_sig}`);
+          obj.classList.add("saito-tweet-activity");
+          document.querySelector(`.tweet-${tweet_sig}`).style.display = 'none';
+          salert("Tweet reported to moderators successfully.");
+
+        }
+      };
 
     } catch (err) {
-console.log("ERROR attaching events to tweet: " + err);
+      console.log("ERROR attaching events to tweet: " + err);
     }
 
   }
 
 
   setKeys(obj) {
-    console.log(obj);
 
     for (let key in obj) {
-    console.log(key);
-    console.log(this[key]); 
       if (typeof obj[key] !== 'undefined') {
         if (this[key] === 0 || this[key] === "" || this[key] === null || typeof this[key] === "undefined") {
           this[key] = obj[key];
@@ -304,7 +317,7 @@ console.log("ERROR attaching events to tweet: " + err);
 
 
 
-  addTweet(tweet, levels_deep=0) {
+  addTweet(tweet, levels_deep = 0) {
 
     //
     // still here? add in unknown children
@@ -330,16 +343,16 @@ console.log("ERROR attaching events to tweet: " + err);
         }
         this.unknown_children[i].parent_tweet = tweet;
 
-	//
-	// tweet adds its orphan
-	//
-        tweet.addTweet(this.unknown_children[i], (levels_deep+1));
+        //
+        // tweet adds its orphan
+        //
+        tweet.addTweet(this.unknown_children[i], (levels_deep + 1));
 
-	//
-	// and delete from unknown children
-	//
+        //
+        // and delete from unknown children
+        //
         if (this.unknown_children_sigs_hmap[this.unknown_children[i].tx.transaction.sig]) {
-	  delete this.unknown_children_sigs_hmap[this.unknown_children[i].tx.transaction.sig];
+          delete this.unknown_children_sigs_hmap[this.unknown_children[i].tx.transaction.sig];
         }
         this.unknown_children.splice(i, 0);
       }
@@ -349,6 +362,8 @@ console.log("ERROR attaching events to tweet: " + err);
     // tweet is direct child
     //
     if (tweet.parent_id == this.tx.transaction.sig) {
+
+      console.log("this is a direct child!");
 
       //
       // already added?
@@ -369,19 +384,21 @@ console.log("ERROR attaching events to tweet: " + err);
       // prioritize tweet-threads
       //
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
+        console.log("unshifting...");
         this.children.unshift(tweet);
-	this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
+        this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
         return 1;
       } else {
         tweet.parent_tweet = this;
+        console.log("pushing...");
         this.children.push(tweet);
-	this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
+        this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
         return 1;
       }
 
-    //
-    // tweet belongs to a child
-    //
+      //
+      // tweet belongs to a child
+      //
     } else {
 
       //
@@ -394,8 +411,8 @@ console.log("ERROR attaching events to tweet: " + err);
       if (this.children_sigs_hmap[tweet.parent_id]) {
 
         for (let i = 0; i < this.children.length; i++) {
-          if (this.children[i].addTweet(tweet, (levels_deep+1))) {
-	    this.children_sigs_hmap[tweet.tx.transaction.sig] = 1;
+          if (this.children[i].addTweet(tweet, (levels_deep + 1))) {
+            this.children_sigs_hmap[tweet.tx.transaction.sig] = 1;
             this.updated_at = tweet.updated_at;
             return 1;
           }
@@ -429,9 +446,9 @@ console.log("ERROR attaching events to tweet: " + err);
   returnChildTweet(tweet_sig) {
     if (this.tx.transaction.sig == tweet_sig) { return this; }
     for (let i = 0; i < this.children.length; i++) {
-      if (this.children[i].hasChildTweet(tweet_sig)) { 
-	let x = this.returnChildTweet(tweet_sig);
-	if (!x) { return x; }
+      if (this.children[i].hasChildTweet(tweet_sig)) {
+        let x = this.returnChildTweet(tweet_sig);
+        if (!x) { return x; }
       }
     }
     return null;
@@ -489,7 +506,7 @@ console.log("ERROR attaching events to tweet: " + err);
       //
       if (fetch_open_graph == 1) {
         let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
-        
+
         if (res != '') {
           this.link_properties = res;
         }

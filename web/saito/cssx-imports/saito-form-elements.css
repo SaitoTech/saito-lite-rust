@@ -48,3 +48,9 @@ Selects
   border-radius: 1rem;
   padding: 0 1rem;
 }
+
+textarea, input {
+  background-color: var(--saito-background-color);
+  color: var(--saito-font-color);
+  border: 1px solid var(--saito-border-color);
+}

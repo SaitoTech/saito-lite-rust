@@ -72,7 +72,7 @@ class Chat extends ModTemplate {
     respondTo(type) {
         switch (type) {
             case 'chat-manager':
-                return new ChatManager(this.app, this);
+                return new ChatManager(this.app, this, ".chat-container");
             default:
                 return super.respondTo(type);
         }
@@ -85,8 +85,6 @@ class Chat extends ModTemplate {
         super.initialize(app);
 
         if (!app.BROWSER) { return; }
-
-        console.log("INITIALIZING CHAT: ");
 
         //
         // create chatgroups from keychain -- friends only
@@ -121,20 +119,12 @@ class Chat extends ModTemplate {
         //
         if (peer.isMainPeer()) {
 
-
-            console.log("lllllllllllllll");
-            console.log("lllllllllllllll");
-            console.log("lllllllllllllll");
-            console.log("lllllllllllllll");
-
             //
             // We wait until we establish a peer connection to create the community chat
             // Now that we have all the chat groups from our wallet + peer
             // We can load the previously messages from our local storage
             //
             this.createChatGroup([peer.peer.publickey], this.communityGroupName);
-
-            console.log("and loading chat manager render request...");
 
             this.app.connection.emit("chat-manager-render-request");
 
@@ -187,13 +177,10 @@ class Chat extends ModTemplate {
             if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600)) {
                 if (app.options.auto_open_chat_box !== -1) {
                     let active_module = app.modules.returnActiveModule();
-console.log("NNO INTERUPPTS");
                     if (active_module.request_no_interrupts == true) {
                         // if the module has ASKED leave it alone
-                        console.log("ASKED NOT TO INTERRUPT!");
                         return;
                     }
-console.log("NNO INTERUPPTS 2");
                     this.openChatBox(app.options.auto_open_chat_box);
                 }
             } else {
@@ -245,8 +232,6 @@ console.log("NNO INTERUPPTS 2");
             return;
         }
 
-        console.log(message.request);
-
         let tx = new saito.default.transaction(message.data.tx.transaction);
 
         tx.decryptMessage(app); //In case forwarding private messages
@@ -255,7 +240,6 @@ console.log("NNO INTERUPPTS 2");
 
         if (message.request === "chat message") {
 
-            console.log("Receive Chat on RELAY");
             this.receiveChatTransaction(app, tx);
 
         } else if (message.request === "chat message broadcast") {
@@ -604,7 +588,6 @@ console.log("NNO INTERUPPTS 2");
 
         this.mute = false;
 
-        console.log("trying to open chat box via function in mod... replacing with event.");
         this.app.connection.emit("chat-popup-render-request", (group.id));
 
     }
@@ -639,16 +622,12 @@ console.log("NNO INTERUPPTS 2");
 
     returnGroup(group_id) {
 
-        console.log("requested w/ id: " + group_id);
-
         for (let i = 0; i < this.groups.length; i++) {
             if (group_id === this.groups[i].id) {
-                console.log("FOUND RETURNING GROUP");
                 return this.groups[i];
             }
         }
 
-        console.log("NOT FOUND NOT RETURNING GROUP");
         return null;
 
     }

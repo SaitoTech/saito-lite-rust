@@ -1,0 +1,126 @@
+.invite-manager {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.saito-game-type {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--saito-white);
+  font-style: italic;
+}
+
+.saito-game {
+  min-height: 13rem;
+  min-width: mn-content;
+  display: grid;
+  grid-template-rows: 1fr min-content;
+  position: relative;
+  border-radius: 0.5rem;
+  border: none;
+  overflow: hidden;
+  margin-bottom: 0rem;
+  width: 100%;
+  padding: 0.3rem;
+}
+
+.saito-game-content {
+  color: var(--saito-white);
+  background: rgba(0, 0, 0, 0.6);
+  font-size: 1.4em;
+  font-weight: bold;
+  width: 100%;
+  overflow: hidden;
+  padding: 1rem 1.5rem;
+  height: 100%;
+}
+
+.saito-game.minimize {
+  min-height: unset;
+}
+
+.saito-game-controls {
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  padding: 1rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.saito-game-controls > div:nth-child(1) {
+  font-size: 1.1em;
+  color: var(--saito-primary);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.saito-game-controls > div:nth-child(2) {
+  border-bottom: 1px dashed var(--saito-primary);
+  white-space: nowrap;
+}
+
+.saito-box-buttons {
+  width: 100%;
+}
+
+.saito-game-description {
+  position: absolute;
+  bottom: 1.5rem;
+}
+
+.saito-game-identicon-list {
+  display: flex;
+  flex-direction: row;
+}
+
+.saito-game-identicon-container {
+  height: 2.5rem;
+  width: 2.5rem;
+  background-size: 100%;
+  margin-right: 1rem;
+  overflow: hidden;
+  box-shadow: 1px 1px var(--saito-font-color-inverse),
+    1px 1px 1rem 0.3px var(--saito-font-color-light) inset;
+}
+
+.saito-game-identicon-container i:hover {
+  transform: scale(1.1);
+}
+
+.saito-game-identicon-container img {
+  margin-right: 0.7rem;
+  border: 0px;
+  width: 2.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+}
+
+.saito-game-identicon-container i {
+  font-size: 2.2rem;
+  line-height: 2.5rem;
+  width: 2.5rem;
+  text-align: center;
+}
+
+.saito-game-identicon-container i {
+  font-size: 2.2rem;
+  line-height: 2.5rem;
+  width: 2.5rem;
+  text-align: center;
+}
+
+.saito-game-identicon-container i:hover {
+  transform: scale(1.1);
+}
+
+/*** SATIO Identicons ***/
+
+.saito-game-identicon.small {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.saito-game-identicon-list {
+  display: flex;
+  flex-direction: row;
+}

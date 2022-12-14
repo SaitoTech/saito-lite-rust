@@ -6,7 +6,7 @@ class Arcade extends ModTemplate {
 
   constructor(app) {
     super(app);
-    this.name = "Arcade";
+    this.name = "Arcadex";
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment Utilities";
 
@@ -61,7 +61,7 @@ class Arcade extends ModTemplate {
 
 
 
-      for (let i=0; i<invites.length; i++) {
+      for (let i = 0; i < invites.length; i++) {
         this.app.connection.emit('invite-render-request', invites[i]);
       }
     }

@@ -1,14 +1,14 @@
 
 module.exports = (app, mod, group) => {
 
-    if (!group)      { return ""; }
-    if (!group.name) { group.name = ""; }
-    
-    let html = `
+  if (!group) { return ""; }
+  if (!group.name) { group.name = ""; }
+
+  let html = `
       <div class="chat-popup chat-popup-${group.id}" id="chat-popup">
 
         <div class="chat-header" id="chat-header">
-          <i id="chat-container-minimize" class="far fa-comment-dots"></i>
+          <i  class="far fa-comment-dots"></i>
           <div id="chat-group-${group.id}" class="chat-group active-chat-tab">${group.name}</div>
           <i id="chat-container-close" class="chat-container-close fas fa-times"></i>
         </div>
