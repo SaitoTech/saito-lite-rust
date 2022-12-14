@@ -130,8 +130,8 @@ class Wordblocks extends GameTemplate {
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, ".gameboard");
       } else {
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, ".gameboard");
+        this.sizer.render();
+        this.sizer.attachEvents(".gameboard");
       }
     } catch (err) {
       console.error(err);

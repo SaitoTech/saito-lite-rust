@@ -1,5 +1,4 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
-const GameHexGrid = require("../../lib/saito/ui/game-hexgrid/game-hexgrid");
 const SettlersSkin = require("./lib/settlers.skin.js");
 const SettlersGameoptionsTemplate = require("./lib/settlers-game-options.template");
 const SettlersTradeHelpOverlayTemplate = require("./lib/settlers-trade-help-overlay.template");
@@ -18,7 +17,6 @@ class Settlers extends GameTemplate {
     this.description = `Explore the island of Saitoa, collect resources, and build your way to dominance.`;
     this.categories = "Games Boardgame Strategy";
 
-    this.hexgrid = new GameHexGrid();
     this.skin = new SettlersSkin();
 
     this.cardbox.skip_card_prompt = 0;
@@ -205,8 +203,7 @@ class Settlers extends GameTemplate {
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-    this.hexgrid.render(app, this, ".gameboard");
-    this.hexgrid.attachEvents(app, this);
+    this.hexgrid.render(".gameboard");
 
     try {
       this.skin.render(this.game.options.theme);
@@ -243,8 +240,8 @@ class Settlers extends GameTemplate {
           "#game-hexgrid"
         );
       } else {
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, "#game-hexgrid");
+        this.sizer.render();
+        this.sizer.attachEvents("#game-hexgrid");
       }
 
       //

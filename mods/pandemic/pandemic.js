@@ -130,16 +130,6 @@ class Pandemic extends GameTemplate {
 
     super.initializeHTML(app);
 
-    //Dynamically add game-css because of all the fcking name changes
-    if (!document.getElementById("game-css-link")){
-      var s = document.createElement("link");
-      s.id = "game-css-link";
-      s.rel = "stylesheet";
-      s.type = "text/css";
-      s.href = `/${this.returnSlug()}/style.css`;
-      document.querySelector('head').append(s);
-    }
-
     
     //Dynamically update index.html 
     //$('head').append(`<link rel="stylesheet" type="text/css" href="/${this.name.toLowerCase()}/style.css" />`);
@@ -162,6 +152,18 @@ class Pandemic extends GameTemplate {
 
     if (!this.browser_active) { return; } 
     if (this.initialized) {return;} else { this.initialized = 1;}
+
+    //Dynamically add game-css because of all the fcking name changes
+    if (!document.getElementById("game-css-link")){
+      var s = document.createElement("link");
+      s.id = "game-css-link";
+      s.rel = "stylesheet";
+      s.type = "text/css";
+      s.href = `/${this.returnSlug()}/style.css`;
+      document.querySelector('head').append(s);
+    }
+
+
     //Since skin will resize gameboard and update boardWidth, need to recalculate so scaling works
     this.calculateBoardRatio();
 
@@ -310,8 +312,8 @@ class Pandemic extends GameTemplate {
         this.hammer.attachEvents(this.app, this, ".gameboard");
       } else {
         this.cardbox.skip_card_prompt = 1; //no Confirming
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, ".gameboard");
+        this.sizer.render();
+        this.sizer.attachEvents(".gameboard");
 
       }
     } catch (err) {

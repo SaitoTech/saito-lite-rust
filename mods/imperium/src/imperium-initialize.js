@@ -270,8 +270,8 @@
 
       } else {
 
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '#hexGrid'); // gameboard is hexgrid
+        this.sizer.render();
+        this.sizer.attachEvents('#hexGrid'); // gameboard is hexgrid
 
       }
     } catch (err) {}

@@ -945,8 +945,8 @@ class GameTestSuite extends GameTemplate {
 
   display_boardsizer_test(app){
     if (this.game_boardsizer_visible == 0){
-      this.sizer.render(this.app, this);
-      this.sizer.attachEvents(this.app, this);
+      this.sizer.render();
+      this.sizer.attachEvents();
       this.game_boardsizer_visible = 1;
     }else{
       //this.sizer.hide();

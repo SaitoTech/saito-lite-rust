@@ -255,8 +255,8 @@
         this.hammer.attachEvents(this.app, this, '.gameboard');
       } else {
 	let his_self = this;
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render();
+        this.sizer.attachEvents('.gameboard');
         $('#gameboard').draggable({
 	  stop : function(event, ui) {
 	    his_self.saveGamePreference((his_self.returnSlug()+"-board-offset"), ui.offset);

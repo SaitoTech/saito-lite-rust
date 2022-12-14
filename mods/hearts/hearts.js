@@ -159,8 +159,8 @@ class Hearts extends GameTemplate {
 
       } else {
 
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render();
+        this.sizer.attachEvents('.gameboard');
 
       }
 

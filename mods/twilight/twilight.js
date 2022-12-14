@@ -643,8 +643,8 @@ class Twilight extends GameTemplate {
 
       } else {
         this.hud.card_width = 120; // hardcode max card size
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render();
+        this.sizer.attachEvents('.gameboard');
       }
 
     } catch (err) {}
