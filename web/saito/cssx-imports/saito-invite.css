@@ -1,5 +1,5 @@
   .game-type {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 400;
     color: #e9e9e9;
     font-style: italic;
@@ -9,6 +9,10 @@
     width: 100%;
     padding: 1rem;
     padding-top: 0px;
+  }
+
+  .invite-manager h6 {
+    padding-bottom: 1rem;
   }
 
   .saito-game {
@@ -37,7 +41,7 @@
    width: 100%;
    height: 100%;
    z-index:-1;
-    filter: grayscale(70%);          
+    filter: grayscale(20%);          
   }
 
  .saito-game::after {
@@ -48,13 +52,13 @@
    width: 100%;
    height: 100%;
    z-index:1;
-background: rgba(0,0,0,0.55);
+   background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 25%, rgba(0,0,0,0.25) 100%);
 }
 
   .saito-module-imagebox-titlebar {
-      color: rgb(255, 255, 255);
-      font-size: 1.4em;
-      font-weight: bold;
+      color: rgb(207 207 207);
+    font-size: 1.4em;
+          font-weight: bold;
       overflow: hidden;
     z-index:2;
   }
