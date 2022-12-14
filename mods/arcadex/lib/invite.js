@@ -1,3 +1,4 @@
+const SaitoModuleOverlay = require("./../../../lib/saito/ui/saito-module-overlay/saito-module-overlay");
 const InviteTemplate = require("./invite.template");
 
 class Invite {
@@ -24,6 +25,21 @@ class Invite {
   }
 
   attachEvents() {
+    invite_self = this;
+
+    document.querySelectorAll(`.saito-game`).forEach(function(elem){
+      elem.onclick = (e) => {
+        e.stopImmediatePropagation();
+
+        let game_id = e.currentTarget.getAttribute("data-id");
+        let game_cmd = e.currentTarget.getAttribute("data-cmd");
+
+        let saito_mod_detials_overlay = new SaitoModuleOverlay(invite_self.app, invite_self.mod);
+        saito_mod_detials_overlay.render();
+
+      }
+    });
+
   }
 
 };

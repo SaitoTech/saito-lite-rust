@@ -1,7 +1,7 @@
 module.exports = (app, mod, invite) => {
 
     let html = `
-      <div class="saito-game">
+      <div class="saito-game" data-id="${invite.id}" data-cmd="join">
           
         <div class="saito-module-imagebox" style="background-image: url('/${invite.game}/img/arcade/arcade.jpg'); background-size: cover;">
           <div class="saito-module-imagebox-titlebar">
@@ -62,12 +62,18 @@ module.exports = (app, mod, invite) => {
             margin-bottom: 0rem;
             width: 100%;
             padding: 0.3rem;
+            cursor: pointer;
+            
+          }
+
+          .saito-game:hover .saito-module-imagebox-titlebar{
+            background: rgba(0, 0, 0, 0.7);
           }
 
           .saito-module-imagebox-titlebar {
               color: rgb(255, 255, 255);
               background: rgba(0, 0, 0, 0.6);
-              /* margin-top: 1px; */
+              transition: all 0.2s ease-in-out;
               font-size: 1.4em;
               font-weight: bold;
               width: 100%;
