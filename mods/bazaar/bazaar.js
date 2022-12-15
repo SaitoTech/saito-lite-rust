@@ -76,8 +76,7 @@ class Jaipur extends GameTemplate {
 
     this.log.render();
 
-    this.playerbox.render(app, this);
-    this.playerbox.attachEvents(app, this);
+    this.playerbox.render();
     this.playerbox.addClassAll("poker-seat-",true);
     
     this.hud.card_width = 120;

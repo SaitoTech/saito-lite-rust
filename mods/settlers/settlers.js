@@ -209,10 +209,7 @@ class Settlers extends GameTemplate {
       this.cardbox.render();
       this.cardbox.addCardType("handy-help","",this.cardbox_callback);
       
-      //Let's Try a PlayerBox instead of hud
-      this.playerbox.render(app, this);
-      this.playerbox.attachEvents(app);
-
+      this.playerbox.render();
       this.playerbox.addStatus();
       this.playerbox.addClass("me", this.game.player);
 

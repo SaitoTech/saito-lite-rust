@@ -618,12 +618,9 @@ class GameTestSuite extends GameTemplate {
   //
   add_player_boxes_test(app) {
     if (this.game_playerboxes_visible == 0) {
-      this.playerbox.render(app, this);
+      this.playerbox.render();
       this.playerbox.addClassAll("poker-seat-",true); //Have to manually add a class for positioning
-      this.playerbox.attachEvents(app, this);
-      for (let i = 0; i < this.game.players.length; i++) {
-        this.playerbox.refreshName(i+1);
-      }
+
       this.game_playerboxes_visible = 1;
     } else {
       this.game_playerboxes_visible = 0;

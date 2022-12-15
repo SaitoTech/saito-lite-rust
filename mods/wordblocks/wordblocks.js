@@ -97,9 +97,7 @@ class Wordblocks extends GameTemplate {
     this.log.render();
 
     try {
-      //Let's Try a PlayerBox instead of hud
-      this.playerbox.render(app, this);
-      this.playerbox.attachEvents(app);
+      this.playerbox.render();
 
       this.playerbox.groupOpponents(false);
       $("#opponentbox *").disableSelection();
