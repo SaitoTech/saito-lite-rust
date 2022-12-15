@@ -467,6 +467,9 @@ class Blockchain {
       already_processed_callbacks = 1;
     }
 
+    console.log("should affix callbacks? " + this.run_callbacks + " -- " + already_processed_callbacks + " -- " + this.blockchain.last_callback_block_id);
+
+
     if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
       //
       // this block is initialized with zero-confs processed

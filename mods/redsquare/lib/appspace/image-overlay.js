@@ -35,7 +35,6 @@ class RedSquareImageOverlay {
         let imgdata_uri = img.getAttribute("src");
         let img_index = img.getAttribute("data-index");
 
-
         let oImg = document.createElement("img");
         oImg.setAttribute('src', imgdata_uri);
         oImg.setAttribute('data-index', img_index);
@@ -68,10 +67,11 @@ class RedSquareImageOverlay {
     document.getElementById("tweet-img-arrow-box-left").addEventListener('click', function(e){
       this_self.hideAllImgs();
       this_self.selected = this_self.selected - 1; 
-
       let img_showing = document.querySelector("#tweet-overlay-img-"+this_self.selected);
-      img_showing.style.display = 'block';
-      this_self.checkArrows(img_showing);
+      if (img_showing) {
+        img_showing.style.display = 'block';
+        this_self.checkArrows(img_showing);
+      }
     });
 
     document.getElementById("tweet-img-arrow-box-right").addEventListener('click', function(e){
@@ -79,8 +79,10 @@ class RedSquareImageOverlay {
       this_self.selected = this_self.selected + 1; 
 
       let img_showing = document.querySelector("#tweet-overlay-img-"+this_self.selected);
-      img_showing.style.display = 'block';
-      this_self.checkArrows(img_showing);
+      if (img_showing) {
+        img_showing.style.display = 'block';
+        this_self.checkArrows(img_showing);
+      }
     });
   }
 
@@ -100,8 +102,12 @@ class RedSquareImageOverlay {
     let left_arrow_pos = img_pos.x - buffer;
     let right_arrow_pos = window.innerWidth - img_pos.x - img_pos.width - buffer;
 
-    document.querySelector('#tweet-img-arrow-box-left').style.left = '-'+ left_arrow_pos + 'px';
-    document.querySelector('#tweet-img-arrow-box-right').style.right = '-'+ right_arrow_pos + 'px';
+    if (document.querySelector('#tweet-img-arrow-box-left')) {
+      document.querySelector('#tweet-img-arrow-box-left').style.left = '-'+ left_arrow_pos + 'px';
+    } 
+    if (document.querySelector('#tweet-img-arrow-box-right')) {
+      document.querySelector('#tweet-img-arrow-box-right').style.right = '-'+ right_arrow_pos + 'px';
+    }
   }
 
   setImgCount() {
@@ -124,16 +130,24 @@ class RedSquareImageOverlay {
   }
 
   showArrows(){
-    document.querySelector('#tweet-img-arrow-box-left').style.display = 'block';
-    document.querySelector('#tweet-img-arrow-box-right').style.display = 'block';
+    if (document.querySelector('#tweet-img-arrow-box-left')) {
+      document.querySelector('#tweet-img-arrow-box-left').style.display = 'block';
+    }
+    if (document.querySelector('#tweet-img-arrow-box-right')) {
+      document.querySelector('#tweet-img-arrow-box-right').style.display = 'block';
+    }
   }
 
   hideArrowLeft(){
-    document.querySelector('#tweet-img-arrow-box-left').style.display = 'none';    
+    if (document.querySelector('#tweet-img-arrow-box-left')) {
+      document.querySelector('#tweet-img-arrow-box-left').style.display = 'none';    
+    }
   }
 
   hideArrowRight(){
-    document.querySelector('#tweet-img-arrow-box-right').style.display = 'none';    
+    if (document.querySelector('#tweet-img-arrow-box-right')) {
+      document.querySelector('#tweet-img-arrow-box-right').style.display = 'none';    
+    }
   }
 
 }

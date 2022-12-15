@@ -176,14 +176,6 @@ class Tweet {
 	//
 	// if we are asking to see a tweet, load from parent if exists
 	//
-//        if (e.target.tagName != "IMG" && !clicked_lower_portion) {
-//	  if (this.parent_id != "") {
-//	    let pt = this.mod.returnTweet(this.parent_id);
-//	    pt.critical_child = this;
-//            this.app.connection.emit("redsquare-thread-render-request", (pt));
-//	  } else {
-//            this.app.connection.emit("redsquare-thread-render-request", (this));
-//	  }
         if (e.target.tagName != "IMG") {
           this.app.connection.emit("redsquare-thread-render-request", (this));
         }
@@ -303,8 +295,9 @@ class Tweet {
 
           this.mod.sendFlagTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
           let obj = document.querySelector(`.tweet-flag-${tweet_sig}`);
-          obj.classList.add("saito-tweet-activity");
-          document.querySelector(`.tweet-${tweet_sig}`).style.display = 'none';
+          if (obj) { obj.classList.add("saito-tweet-activity"); }
+	  obj = document.querySelector(`.tweet-${tweet_sig}`);
+	  if (obj) { obj.style.display = 'none'; }
           salert("Tweet reported to moderators successfully.");
 
         }
@@ -539,8 +532,10 @@ class Tweet {
     try {
       let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`;
       let obj = document.querySelector(qs);
-      if (!this.tx?.optional?.num_likes) { return; }
-      obj.innerHTML = this.tx.optional.num_likes;
+      if (obj) {
+        if (!this.tx?.optional?.num_likes) { return; }
+        obj.innerHTML = this.tx.optional.num_likes;
+      }
     } catch (err) { }
   }
   renderRetweets() {
@@ -548,8 +543,10 @@ class Tweet {
     try {
       let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet .tweet-tool-retweet-count`;
       let obj = document.querySelector(qs);
-      if (!this.tx?.optional?.num_retweets) { return; }
-      obj.innerHTML = this.tx.optional.num_retweets;
+      if (obj) {
+        if (!this.tx?.optional?.num_retweets) { return; }
+        obj.innerHTML = this.tx.optional.num_retweets;
+      }
     } catch (err) { }
   }
   renderReplies() {
@@ -557,8 +554,10 @@ class Tweet {
     try {
       let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`;
       let obj = document.querySelector(qs);
-      if (!this.tx?.optional?.num_replies) { return; }
-      obj.innerHTML = this.tx.optional.num_replies;
+      if (obj) {
+        if (!this.tx?.optional?.num_replies) { return; }
+        obj.innerHTML = this.tx.optional.num_replies;
+      }
     } catch (err) { }
   }
 

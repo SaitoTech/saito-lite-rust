@@ -73,8 +73,7 @@ class Post {
     });
 
     
-    if (typeof document.querySelector(".my-form") != "undefined" &&
-      document.querySelector(".my-form") != null) {
+    if (typeof document.querySelector(".my-form") != "undefined" && document.querySelector(".my-form")) {
       document.querySelector(".my-form").style.display = "none";
     }
 
@@ -88,6 +87,22 @@ class Post {
       // extract keys from text AND then tweet
       //
       let keys = post_self.app.browser.extractKeys(text);
+
+      //
+      // any previous recipients get added to "to"
+      //
+      if (post_self.tweet) {
+        if (post_self.tweet.tx) {
+          if (post_self.tweet.tx.transaction) {
+            for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
+	      if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
+	        keys.push(post_self.tweet.tx.transaction.to[i].add);
+	      }
+	    }
+	  }
+        }
+      }
+
       if (this.tweet != null) {
         for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
           if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {

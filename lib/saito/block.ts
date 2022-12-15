@@ -112,10 +112,15 @@ class Block {
   }
 
   affixCallbacks() {
+
+console.log("AFFIX TXS: " + this.transactions.length);
+
     for (let z = 0; z < this.transactions.length; z++) {
+console.log("this is a tx of type: " + this.transactions[z].transaction.type);
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
+console.log("this is a normal tx: " + z);
         const txmsg = this.transactions[z].returnMessage();
-        // console.log("txmsg length: ", txmsg ? JSON.stringify(txmsg).length : txmsg);
+        console.log("txmsg length: ", txmsg ? JSON.stringify(txmsg).length : txmsg);
         this.app.modules.affixCallbacks(
           this.transactions[z],
           z,
@@ -1300,6 +1305,12 @@ console.log("running callback!");
   returnLiteBlock(keylist = []): Block {
     let pruned_transactions = [];
 
+console.log("--------------");
+console.log("--------------");
+console.log("--------------");
+console.log("ASKED FOR BLOCK WITH KEYLIST: " + JSON.stringify(keylist));
+
+
     //
     // generate lite-txs
     //
@@ -1320,7 +1331,7 @@ console.log("running callback!");
         pruned_transactions.push(this.transactions[i]);
       } else {
         let spv = new Transaction();
-        spv.transaction.type = 9;
+        spv.transaction.type = TransactionType.Vip;
         spv.transaction.r = 1;
         // the sig contains the hash of this TX
         spv.transaction.sig = this.app.crypto.hash(
@@ -1354,7 +1365,7 @@ console.log("running callback!");
     while (no_simplification_needed == 0) {
       let action_taken = 0;
       for (let i = 1; i < pruned_transactions.length; i++) {
-        if (pruned_transactions[i].transaction.type == 9 && pruned_transactions[i-1].transaction.type == 9) {
+        if (pruned_transactions[i].transaction.type == TransactionType.SPV && pruned_transactions[i-1].transaction.type == TransactionType.SPV) {
           if (pruned_transactions[i].transaction.r == pruned_transactions[i-1].transaction.r) {
             pruned_transactions[i].transaction.r *= 2;
             pruned_transactions[i].transaction.sig = this.app.crypto.hash(pruned_transactions[i-1].transaction.sig + pruned_transactions[i].transaction.sig);
