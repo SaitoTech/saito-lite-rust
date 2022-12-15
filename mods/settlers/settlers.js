@@ -1,5 +1,4 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
-const GameHexGrid = require("../../lib/saito/ui/game-hexgrid/game-hexgrid");
 const SettlersSkin = require("./lib/settlers.skin.js");
 const SettlersGameoptionsTemplate = require("./lib/settlers-game-options.template");
 const SettlersTradeHelpOverlayTemplate = require("./lib/settlers-trade-help-overlay.template");
@@ -18,7 +17,6 @@ class Settlers extends GameTemplate {
     this.description = `Explore the island of Saitoa, collect resources, and build your way to dominance.`;
     this.categories = "Games Boardgame Strategy";
 
-    this.hexgrid = new GameHexGrid();
     this.skin = new SettlersSkin();
 
     this.cardbox.skip_card_prompt = 0;
@@ -150,7 +148,7 @@ class Settlers extends GameTemplate {
     });
 
 
-    this.menu.addChatMenu(this.app, this);
+    this.menu.addChatMenu();
     
     if (this.game.player > 0){
       this.menu.addMenuOption("game-trade", "Trade");
@@ -199,26 +197,19 @@ class Settlers extends GameTemplate {
         },
       });
     }
-    this.menu.render(app, this);
+    this.menu.render();
 
-    this.restoreLog();
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
-    this.hexgrid.render(app, this, ".gameboard");
-    this.hexgrid.attachEvents(app, this);
+    this.hexgrid.render(".gameboard");
 
     try {
       this.skin.render(this.game.options.theme);
 
-      this.cardbox.render(app, this);
-      this.cardbox.attachEvents(app, this);
+      this.cardbox.render();
       this.cardbox.addCardType("handy-help","",this.cardbox_callback);
       
-      //Let's Try a PlayerBox instead of hud
-      this.playerbox.render(app, this);
-      this.playerbox.attachEvents(app);
-
+      this.playerbox.render();
       this.playerbox.addStatus();
       this.playerbox.addClass("me", this.game.player);
 
@@ -243,8 +234,8 @@ class Settlers extends GameTemplate {
           "#game-hexgrid"
         );
       } else {
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, "#game-hexgrid");
+        this.sizer.render();
+        this.sizer.attachEvents("#game-hexgrid");
       }
 
       //
@@ -2138,7 +2129,7 @@ class Settlers extends GameTemplate {
                     </div>`;
         }
       }
-      this.cardfan.render(this.app, this, cards);
+      this.cardfan.render(cards);
 
       if (usingDev){
         this.cardfan.addClass("staggered-hand");
@@ -2147,7 +2138,6 @@ class Settlers extends GameTemplate {
         this.cardfan.addClass("bighand");  
         this.cardfan.removeClass("staggered-hand");
       }
-      this.cardfan.attachEvents(this.app, this);  
     } catch (err) {
       //console.log(err);
     }

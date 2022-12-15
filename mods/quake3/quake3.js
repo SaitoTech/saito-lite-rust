@@ -434,8 +434,8 @@ console.log("THIS ONE IS ON US");
         },
     });
 
-    this.menu.addChatMenu(app, this);
-    this.menu.render(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
 
 if (app.BROWSER != 0) {
