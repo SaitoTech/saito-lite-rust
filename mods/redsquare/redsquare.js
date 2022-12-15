@@ -404,38 +404,39 @@ class RedSquare extends ModTemplate {
     //
     // maybe this needs to go into notifications too
     //
-    if (tx.isTo(this.app.wallet.returnPublicKey()) || tx.isFrom(this.app.wallet.returnPublicKey())) {
+    if (tx.isTo(this.app.wallet.returnPublicKey()) && !tx.isFrom(this.app.wallet.returnPublicKey())) {
 
-      let insertion_index = 0;
-      if (prepend == 0) {
-        for (let i = 0; i < this.notifications.length; i++) {
-          if (this.notifications[i].updated_at > tweet.updated_at) {
-            insertion_index++;
-            break;
-          } else {
-            insertion_index++;
+        let insertion_index = 0;
+        if (prepend == 0) {
+          for (let i = 0; i < this.notifications.length; i++) {
+            if (this.notifications[i].updated_at > tweet.updated_at) {
+              insertion_index++;
+              break;
+            } else {
+              insertion_index++;
+            }
           }
         }
-      }
-      this.notifications.splice(insertion_index, 0, tweet);
-      this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
-      //
-      // increment notifications in menu unless is our own
-      //
-      if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
+console.log("INSERTING NOTIFICATION");
+
+        this.notifications.splice(insertion_index, 0, tweet);
+        this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
+
+        //
+        // increment notifications in menu unless is our own
+        //
         if (tx.transaction.ts > this.notifications_last_viewed_ts) {
           this.menu.incrementNotifications("notifications");
         }
-      }
 
-      //
-      // if this is a like, we can avoid adding it to our tweet index
-      //
-      let txmsg = tx.returnMessage();
-      if (txmsg.request === "like tweet") {
-	return;
-      }
+        //
+        // if this is a like, we can avoid adding it to our tweet index
+        //
+        let txmsg = tx.returnMessage();
+        if (txmsg.request === "like tweet") {
+    	  return;
+        }
 
     }
 
