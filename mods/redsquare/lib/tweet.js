@@ -36,7 +36,7 @@ class Tweet {
     this.link = null;
     this.link_properties = null;
     this.show_controls = 1;
-
+    this.is_long_tweet = false;
     this.setKeys(tx.msg.data);
     this.setKeys(tx.optional);
 
@@ -149,12 +149,10 @@ class Tweet {
         let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
+          this.is_long_tweet = true;
         }
 
-        el.addEventListener("click", e => {
-          e.target.classList.toggle("preview");
-          e.target.classList.toggle("full");
-        });
+
 
       }
 
@@ -162,26 +160,32 @@ class Tweet {
       // view thread //
       /////////////////
       document.querySelector(`.tweet-${this.tx.transaction.sig}`).addEventListener('click', (e) => {
-
-        // Checking if user clicked lower portion of a tweet. If so, prevent tweet from opening and allow preview and full class to be added
-        var rect = e.target.getBoundingClientRect();
-        var y = e.clientY - rect.top;
-        let clicked_lower_portion = false;
-        if (y / rect.height * 100 > 80) {
-          clicked_lower_portion = true;
+        let tweet_text = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
+        if (this.is_long_tweet) {
+          if (!tweet_text.classList.contains('full')) {
+            tweet_text.classList.remove('preview');
+            tweet_text.classList.add('full');
+          } else {
+            if (e.target.tagName != "IMG") {
+              this.app.connection.emit("redsquare-thread-render-request", (this));
+            }
+          }
+          return;
         }
 
 	//
 	// if we are asking to see a tweet, load from parent if exists
 	//
-        if (e.target.tagName != "IMG" && !clicked_lower_portion) {
-	  if (this.parent_id != "") {
-	    let pt = this.mod.returnTweet(this.parent_id);
-	    pt.critical_child = this;
-            this.app.connection.emit("redsquare-thread-render-request", (pt));
-	  } else {
-            this.app.connection.emit("redsquare-thread-render-request", (this));
-	  }
+//        if (e.target.tagName != "IMG" && !clicked_lower_portion) {
+//	  if (this.parent_id != "") {
+//	    let pt = this.mod.returnTweet(this.parent_id);
+//	    pt.critical_child = this;
+//            this.app.connection.emit("redsquare-thread-render-request", (pt));
+//	  } else {
+//            this.app.connection.emit("redsquare-thread-render-request", (this));
+//	  }
+        if (e.target.tagName != "IMG") {
+          this.app.connection.emit("redsquare-thread-render-request", (this));
         }
       })
 

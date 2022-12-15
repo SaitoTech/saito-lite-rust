@@ -75,7 +75,7 @@
 }
 
 .tweet-text.full::after {
-  content: "Collapse tweet";
+  content: "";
   position: absolute;
   bottom: 5rem;
   left: 50%;
@@ -89,21 +89,22 @@
 .tweet-text.preview::before {
   content: " ";
   position: absolute;
-  bottom: 4rem;
+  bottom: 0;
   left: 0;
-  height: 11rem;
+  height: 90%;
   width: 100%;
   background: linear-gradient(180deg, transparent, var(--saito-background-color));
   transition: all 2s ease;
 }
 
 .tweet-text.preview:hover::after {
-  content: "View full tweet";
+  font-family: FontAwesome;
+  content: "\f0d7";
   position: absolute;
   bottom: 5rem;
   color: var(--saito-primary);
   font-size: smaller;
-  height: 3rem;
+  font-size: 1.5rem;
   z-index: 999;
   text-align: center;
   line-height: 2.7rem;
@@ -112,6 +113,13 @@
   left: 50%;
   transform: translateX(-50%);
   transition: all 1s l;
+}
+
+.tweet-text.preview ~ .tweet-controls {
+  display: none;
+}
+.tweet-text.full ~ .tweet-controls {
+  display: flex;
 }
 
 .tweet:hover {

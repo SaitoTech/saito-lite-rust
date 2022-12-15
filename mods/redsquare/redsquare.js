@@ -754,19 +754,22 @@ console.log("RECEIVE LIKE TX");
         // if replies
         //
         if (txmsg.data?.parent_id) {
+
+console.log("TWEET IS TO ME");
+
           if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
+console.log("TWEET IS IN HASHMAP");
             let tweet = this.returnTweet(txmsg.data.sig);
             if (tweet == null) { return; }
-            let tx = this.tweets_sigs_hmap[parent_id];
-            if (tx.isTo(app.wallet.returnPublicKey())) {
-              if (!tx.optional) { tx.optional = {}; }
-              if (!tx.optional.num_replies) { tx.optional.num_replies = 0; }
-              tx.optional.num_replies++;
-
-              this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tx.optional);
-              tweet.renderReplies();
-            }
+            if (!tweet.tx.optional) { tweet.tx.optional = {}; }
+            if (!tweet.tx.optional.num_replies) { tweet.tx.optional.num_replies = 0; }
+            tx.optional.num_replies++;
+console.log("UPDATE TX OPTIONAL");
+            this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tweet.tx.optional);
+console.log("RENDER REPLIES");
+            tweet.renderReplies();
           } else {
+console.log("NOT IN HASHMAP, SO REMOVE SAVE");
             this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_replies");
           }
         }
@@ -796,7 +799,6 @@ console.log("RECEIVE LIKE TX");
         }
       }
 
-      this.newTweets.push(tweet);
       if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
         document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
       }
