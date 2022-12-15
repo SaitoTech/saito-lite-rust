@@ -11887,7 +11887,7 @@ console.log("qe: " + qe);
         fullname.push(imperium_self.returnFaction((ii+1)));
         nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
-      this.menu.addChatMenu(app, this, nickname, fullname);
+      this.menu.addChatMenu(nickname, fullname);
     } catch (err) {
       console.log("error initing chat: " + err);
     }
@@ -11898,7 +11898,7 @@ console.log("qe: " + qe);
     if (this.browser_active == 0) { return; }
 
 
-    this.menu.render(app, this);
+    this.menu.render();
 
     this.hud.auto_sizing = 0;
     this.hud.render();

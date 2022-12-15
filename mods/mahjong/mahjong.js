@@ -281,15 +281,12 @@ class Mahjong extends GameTemplate {
       }
     });
 
-    //
-    // chat menu?
-    //
-    this.menu.addChatMenu(app, this);
+    this.menu.addChatMenu();
 
     //
     // render menu
     //
-    this.menu.render(app, this);
+    this.menu.render();
 
     //
     // display the board?

@@ -88,7 +88,7 @@ class Monarchy extends GameTemplate {
         }
       });
     }
-    this.menu.render(this.app, this);
+    this.menu.render();
 
     console.log(JSON.parse(JSON.stringify(this.game.state.decks)));
   }
@@ -113,11 +113,8 @@ class Monarchy extends GameTemplate {
       }
     });
 
-
-    this.menu.addChatMenu(app, this);
-
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
     this.log.render();
 

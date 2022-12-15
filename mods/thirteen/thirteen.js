@@ -84,9 +84,9 @@ class Thirteen extends GameTemplate {
       }
     });
 
-    this.menu.addChatMenu(app, this);
+    this.menu.addChatMenu();
 
-    this.menu.render(app, this);
+    this.menu.render();
  
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);

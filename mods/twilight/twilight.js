@@ -617,12 +617,10 @@ class Twilight extends GameTemplate {
       }
     });
 
-    this.menu.addChatMenu(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.menu.render(app, this);
-
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.cardbox.render();
 

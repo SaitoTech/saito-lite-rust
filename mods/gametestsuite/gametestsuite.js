@@ -330,10 +330,9 @@ class GameTestSuite extends GameTemplate {
     */
 
 
-    this.menu.render(app, this);
+    this.menu.render();
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.updateMenuCheck();
 

@@ -148,7 +148,7 @@ class Settlers extends GameTemplate {
     });
 
 
-    this.menu.addChatMenu(this.app, this);
+    this.menu.addChatMenu();
     
     if (this.game.player > 0){
       this.menu.addMenuOption("game-trade", "Trade");
@@ -197,7 +197,7 @@ class Settlers extends GameTemplate {
         },
       });
     }
-    this.menu.render(app, this);
+    this.menu.render();
 
     this.log.render();
 

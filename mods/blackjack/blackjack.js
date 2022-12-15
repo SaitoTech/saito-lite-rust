@@ -74,11 +74,11 @@ class Blackjack extends GameTableTemplate {
     });
 ****/
 
-    this.menu.addChatMenu(app, this);
-
-    this.menu.render(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
     this.log.render();
+
     this.playerbox.render(app, this);
     this.playerbox.attachEvents(app, this); //empty function
     this.playerbox.addClassAll("poker-seat-",true);

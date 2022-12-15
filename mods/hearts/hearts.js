@@ -116,10 +116,8 @@ class Hearts extends GameTemplate {
       }
     });
 
-    this.menu.addChatMenu(app, this);
-
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
     this.cardbox.render();
 

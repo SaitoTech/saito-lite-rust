@@ -87,9 +87,9 @@ class Wordblocks extends GameTemplate {
       },
     });
 
-    this.menu.addChatMenu(app, this);
+    this.menu.addChatMenu();
 
-    this.menu.render(app, this);
+    this.menu.render();
 
     this.hud.auto_sizing = 0; //turn off default sizing
     this.hud.render();

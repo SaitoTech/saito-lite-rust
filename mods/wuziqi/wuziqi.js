@@ -58,10 +58,10 @@ class Wuziqi extends GameTemplate {
         });
 
         // Add Chat Features to Menu
-        this.menu.addChatMenu(app, this, this.game.sides);
+        this.menu.addChatMenu(this.game.sides);
         
         // Render menu and attach events
-        this.menu.render(app, this);
+        this.menu.render();
 
         // Initialize our game
         this.game.score = [0, 0];
