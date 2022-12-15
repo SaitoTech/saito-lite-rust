@@ -50,19 +50,21 @@ class Mods {
     //
     // no callbacks on type=9 spv stubs
     //
-
-    if (tx.transaction.type == 9) {
+    if (tx.transaction.type == 5) {
+console.log("no callbacks on SPV");
       return;
     }
 
     for (let i = 0; i < this.mods.length; i++) {
       if (!!message && message.module != undefined) {
         if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
+console.log("CALLBACK AFFIXED: " + this.mods[i].returnName());
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }
       } else {
         if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
+console.log("CALLBACK AFFIXED: " + this.mods[i].returnName());
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }

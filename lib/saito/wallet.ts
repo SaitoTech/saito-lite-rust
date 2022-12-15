@@ -282,7 +282,7 @@ console.log("---------------------");
       if (force_merge > 7) { slips_to_merge = force_merge; }
       let slips_merged = 0;
       let output_amount = BigInt(0);
-      let lowest_block = this.app.blockchain.last_bid - this.app.blockchain.genesis_period + 2;
+      let lowest_block = this.app.blockchain.last_bid - this.app.blockchain.returnGenesisPeriod() + 2;
 
       //
       // check pending txs to avoid slip reuse
@@ -691,7 +691,7 @@ console.log("---------------------");
     //
     const lowest_block: bigint =
       this.app.blockchain.blockchain.last_block_id -
-      this.app.blockchain.blockchain.genesis_period +
+      this.app.blockchain.returnGenesisPeriod() +
       BigInt(2);
 
     //

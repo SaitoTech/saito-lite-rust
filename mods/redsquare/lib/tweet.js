@@ -59,7 +59,7 @@ class Tweet {
         // create link preview if exists
         //
         if (this.link != null) {
-          this.link_preview = new LinkPreview(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
+          this.link_preview = new Link(this.app, this.mod, `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-preview`, this);
         }
       }
     }
@@ -171,8 +171,17 @@ class Tweet {
           clicked_lower_portion = true;
         }
 
+	//
+	// if we are asking to see a tweet, load from parent if exists
+	//
         if (e.target.tagName != "IMG" && !clicked_lower_portion) {
-          this.app.connection.emit("redsquare-thread-render-request", (this));
+	  if (this.parent_id != "") {
+	    let pt = this.mod.returnTweet(this.parent_id);
+	    pt.critical_child = this;
+            this.app.connection.emit("redsquare-thread-render-request", (pt));
+	  } else {
+            this.app.connection.emit("redsquare-thread-render-request", (this));
+	  }
         }
       })
 
@@ -521,6 +530,33 @@ class Tweet {
   }
 
 
+  renderLikes() {
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_likes) { return; }
+      obj.innerHTML = this.tx.optional.num_likes;
+    } catch (err) { }
+  }
+  renderRetweets() {
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet .tweet-tool-retweet-count`;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_retweets) { return; }
+      obj.innerHTML = this.tx.optional.num_retweets;
+    } catch (err) { }
+  }
+  renderReplies() {
+    // some edge cases where tweet won't have rendered
+    try {
+      let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`;
+      let obj = document.querySelector(qs);
+      if (!this.tx?.optional?.num_replies) { return; }
+      obj.innerHTML = this.tx.optional.num_replies;
+    } catch (err) { }
+  }
 
 
 }

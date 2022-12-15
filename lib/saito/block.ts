@@ -396,9 +396,13 @@ class Block {
       }
     }
 
-    // console.log(`${typeof this.block.id} > ${typeof this.app.blockchain.returnGenesisPeriod()} + ${typeof this.app.blockchain.blockchain.genesis_period}`);
+    // console.log(`${typeof this.block.id} > ${typeof this.app.blockchain.returnGenesisPeriod()} + ${typeof this.app.blockchain.returnGenesisPeriod()}`);
 
     // calculate automatic transaction rebroadcasts / ATR / atr
+console.log("BLOCK ID IS " + this.block.id);
+console.log("GENESIS PERIOD IS " + this.app.blockchain.returnGenesisPeriod());
+console.log("COMPARED TO: " + (this.app.blockchain.returnGenesisPeriod() + BigInt(1)));
+console.log("AND DONE");
     if (this.block.id > this.app.blockchain.returnGenesisPeriod() + BigInt(1)) {
       const pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
       const pruned_block_hash =
@@ -506,7 +510,7 @@ class Block {
       if (previous_block.block.avg_income > cv.total_fees) {
         let adjustment =
           (previous_block.block.avg_income - cv.total_fees) /
-          this.app.blockchain.blockchain.genesis_period;
+          this.app.blockchain.returnGenesisPeriod();
         if (adjustment > 0) {
           cv.avg_income -= adjustment;
         }
@@ -514,7 +518,7 @@ class Block {
       if (previous_block.block.avg_income < cv.total_fees) {
         let adjustment =
           (cv.total_fees - previous_block.block.avg_income) /
-          this.app.blockchain.blockchain.genesis_period;
+          this.app.blockchain.returnGenesisPeriod();
         if (adjustment > 0) {
           cv.avg_income += adjustment;
         }
@@ -526,7 +530,7 @@ class Block {
       if (previous_block.block.avg_atr_income > cv.total_rebroadcast_nolan) {
         let adjustment =
           (previous_block.block.avg_atr_income - cv.total_rebroadcast_nolan) /
-          this.app.blockchain.blockchain.genesis_period;
+          this.app.blockchain.returnGenesisPeriod();
         if (adjustment > 0) {
           cv.avg_atr_income -= adjustment;
         }
@@ -534,7 +538,7 @@ class Block {
       if (previous_block.block.avg_atr_income < cv.total_rebroadcast_nolan) {
         let adjustment =
           (cv.total_rebroadcast_nolan - previous_block.block.avg_atr_income) /
-          this.app.blockchain.blockchain.genesis_period;
+          this.app.blockchain.returnGenesisPeriod();
         if (adjustment > 0) {
           cv.avg_atr_income += adjustment;
         }
@@ -1228,6 +1232,7 @@ class Block {
         for (let ii = 0; ii < this.callbacks.length; ii++) {
           try {
             if (run_callbacks === 1) {
+console.log("running callback!");
               await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
             }
           } catch (err) {

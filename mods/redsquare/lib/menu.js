@@ -72,6 +72,30 @@ class RedSquareMenu {
 
   }
 
+
+  incrementNotifications(menu_item, notifications = -1) {
+
+    let qs = `.redsquare-menu-${menu_item}`;
+
+    if (document.querySelector(qs)) {
+
+      qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
+      let obj = document.querySelector(qs);
+      if (!obj) {
+        this.app.browser.addElementToSelector(`<div class="saito-notification-dot">1</div>`, `.redsquare-menu-${menu_item}`);
+      } else {
+        let existing_notifications = parseInt(obj.innerHTML);
+        if (notifications == 0) {
+	  obj.style.display = "none";
+	} else {
+	  obj.style.display = "block";
+	  existing_notifications++;
+          obj.innerHTML = `${existing_notifications}`;
+        }
+      }
+    }
+  }
+
 }
 
 module.exports = RedSquareMenu;
