@@ -809,9 +809,9 @@ class Post extends ModTemplate {
         );
         this.receiveDeleteTransaction(new saito.default.transaction(decoded_tx));
         res.setHeader("Content-type", "text/javascript");
-        res.write("OK");
         res.charset = "UTF-8";
-        res.end();
+        res.send("OK");
+        //res.end();
       } catch (err) {
         console.log("error trying to decode moderation transaction");
         console.log(err);

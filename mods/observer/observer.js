@@ -811,11 +811,11 @@ class Observer extends ModTemplate {
 
         games = games.concat(more_games);
         if (games.length > 0) {
-          res.write(JSON.stringify(games));
+          res.send(JSON.stringify(games));
         } else {
-          res.write("{}");
+          res.send("{}");
         }
-        res.end();
+        //res.end();
         return;
     
       });
@@ -840,11 +840,11 @@ class Observer extends ModTemplate {
         res.charset = "UTF-8";
 
 	      if (games.length > 0) {
-          res.write(JSON.stringify(games));
+          res.send(JSON.stringify(games));
         } else {
-          res.write("{}");
+          res.send("{}");
         }
-        res.end();
+        //res.end();
         return;
       });
 
