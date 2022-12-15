@@ -208,8 +208,7 @@ class Settlers extends GameTemplate {
     try {
       this.skin.render(this.game.options.theme);
 
-      this.cardbox.render(app, this);
-      this.cardbox.attachEvents(app, this);
+      this.cardbox.render();
       this.cardbox.addCardType("handy-help","",this.cardbox_callback);
       
       //Let's Try a PlayerBox instead of hud
@@ -2135,7 +2134,7 @@ class Settlers extends GameTemplate {
                     </div>`;
         }
       }
-      this.cardfan.render(this.app, this, cards);
+      this.cardfan.render(cards);
 
       if (usingDev){
         this.cardfan.addClass("staggered-hand");
@@ -2144,7 +2143,6 @@ class Settlers extends GameTemplate {
         this.cardfan.addClass("bighand");  
         this.cardfan.removeClass("staggered-hand");
       }
-      this.cardfan.attachEvents(this.app, this);  
     } catch (err) {
       //console.log(err);
     }

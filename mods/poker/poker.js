@@ -1448,8 +1448,7 @@ class Poker extends GameTableTemplate {
     if (this.game.state.passed[this.game.player-1]){
       this.cardfan.hide();
     }else{
-      this.cardfan.render(this.app, this);
-      this.cardfan.attachEvents(this.app, this);  
+      this.cardfan.render();
     }
   }
 

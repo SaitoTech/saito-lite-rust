@@ -780,8 +780,7 @@ class GameTestSuite extends GameTemplate {
 
 
   display_game_clock_test(app){
-    this.clock.render(app, this);
-    this.clock.attachEvents(app, this);
+    this.clock.render();
   }
 
   deal_cards_to_player_test(app) {
@@ -956,8 +955,7 @@ class GameTestSuite extends GameTemplate {
 
   display_cardfan_test(app) {
     if (this.game_cardfan_visible == 0) {
-      this.cardfan.render(this.app, this);
-      this.cardfan.attachEvents(this.app, this);
+      this.cardfan.render();
       this.game_cardfan_visible = 1;
     } else {
       this.cardfan.hide();
@@ -999,8 +997,7 @@ class GameTestSuite extends GameTemplate {
   toggle_cardbox_test(app) {
     this.hud.render(this.app, this);
     this.hud.attachEvents(this.app, this);
-    this.cardbox.render(this.app, this);
-    this.cardbox.attachEvents(this.app,this);
+    this.cardbox.render();
 
     if (this.game_cardbox_visible == 1) {
       this.game_cardbox_visible = 0;

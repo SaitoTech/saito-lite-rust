@@ -269,8 +269,7 @@ class Pandemic extends GameTemplate {
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
     
     this.cardbox.addCardType("showcard","",null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
@@ -293,9 +292,8 @@ class Pandemic extends GameTemplate {
         if (document.getElementById("cardfan") && document.getElementById("cardfan").style.display == "block"){
           pandemic_self.cardfan.hide();
         }else{
-          pandemic_self.cardfan.render(app, pandemic_self, pandemic_self.returnPlayerCardHTML(pandemic_self.game.player));  
-          document.getElementById("cardfan").classList.add("bighand");
-          pandemic_self.cardfan.attachEvents(app, pandemic_self);
+          pandemic_self.cardfan.render(pandemic_self.returnPlayerCardHTML(pandemic_self.game.player));  
+          pandemic_self.cardfan.addClass("bighand"); 
           pandemic_self.attachCardboxEvents(pandemic_self.playFromCardFan);
         }
       }

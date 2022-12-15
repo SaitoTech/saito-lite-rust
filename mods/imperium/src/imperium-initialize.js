@@ -255,11 +255,7 @@
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
-
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.cardbox.render();
 
     try {
 

@@ -59,8 +59,7 @@ class Thirteen extends GameTemplate {
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");

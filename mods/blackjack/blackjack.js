@@ -959,8 +959,7 @@ class Blackjack extends GameTableTemplate {
         cardhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;
       }
 
-      this.cardfan.render(this.app, this, cardhtml);
-      this.cardfan.attachEvents(this.app, this);
+      this.cardfan.render(cardhtml);
 
       //Add split hands
       if (this.game.state.player[this.game.player-1].split.length>0){

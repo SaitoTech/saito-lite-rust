@@ -122,8 +122,7 @@ class Monarchy extends GameTemplate {
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
     this.cardbox.makeDraggable();
 
     this.sizer.render();
