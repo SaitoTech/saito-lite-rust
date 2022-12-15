@@ -7,7 +7,7 @@ module.exports = (app, mod, invite) => {
 
             <div class="saito-module-imagebox-titlebar">
                 <span class="saito-module-imagebox-title">${invite.name}</span>
-                <div class="game-type">${invite.type} game</div>
+                <div class="game-type">${(invite.type).toUpperCase()} GAME</div>
             </div>
             
             <div class="identicon-wrapper">
