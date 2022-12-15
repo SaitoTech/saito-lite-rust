@@ -53,6 +53,8 @@ class RedSquareMain {
       this.components[this.render_component].render();
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
+      this.mod.notifications_last_viewed_ts = new Date().getTime();
+      this.mod.save();
     });
 
     this.app.connection.on("redsquare-contacts-render-request", (tx) => {

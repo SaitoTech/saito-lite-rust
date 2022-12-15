@@ -1303,13 +1303,8 @@ console.log("running callback!");
   // returns a lite-version of the block
   //
   returnLiteBlock(keylist = []): Block {
+
     let pruned_transactions = [];
-
-console.log("--------------");
-console.log("--------------");
-console.log("--------------");
-console.log("ASKED FOR BLOCK WITH KEYLIST: " + JSON.stringify(keylist));
-
 
     //
     // generate lite-txs
