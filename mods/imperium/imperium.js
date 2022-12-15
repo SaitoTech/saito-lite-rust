@@ -78,11 +78,9 @@ class Imperium extends GameTemplate {
   //
   initializeGameObjects() {
 
-    this.hud.render(this.app, this);
-    this.hud.attachEvents(this.app, this);
+    this.hud.render();
 
-    this.log.render(this.app, this);
-    this.log.attachEvents(this.app, this);
+    this.log.render();
 
 
     this.importTech("antimass-deflectors", {
@@ -11903,8 +11901,7 @@ console.log("qe: " + qe);
     this.menu.render(app, this);
 
     this.hud.auto_sizing = 0;
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
@@ -11947,8 +11944,7 @@ console.log("qe: " + qe);
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.restoreLog();
-  
+
     //
     // specify players
     //

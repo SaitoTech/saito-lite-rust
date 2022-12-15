@@ -63,7 +63,6 @@ class HereIStand extends GameTemplate {
     // re-fill status and log
     //
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.restoreLog();
 
     //
     // initialize game objects
@@ -1769,8 +1768,7 @@ console.log("adding stuff!");
 
     this.menu.render(app, this);
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.cardbox.render();
 
@@ -1872,8 +1870,7 @@ console.log("adding stuff!");
 
     } catch (err) {}
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     this.displayBoard();
 

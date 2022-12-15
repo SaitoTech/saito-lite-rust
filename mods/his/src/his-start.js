@@ -162,8 +162,7 @@
 
     this.menu.render(app, this);
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.cardbox.render();
 
@@ -265,8 +264,7 @@
 
     } catch (err) {}
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     this.displayBoard();
 

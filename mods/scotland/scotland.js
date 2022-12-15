@@ -180,12 +180,9 @@ class Scotland extends GameTemplate {
     
     this.menu.render(app, this);
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
-
+    this.hud.render();
 
     let hh = document.querySelector(".hud-header");
     if (!hh.querySelector(".handy-help")){
@@ -251,8 +248,6 @@ class Scotland extends GameTemplate {
     }
 
     console.log(JSON.parse(JSON.stringify(this.game.state)));
-
-    this.restoreLog();
 
     if (!this.browser_active) {
       this.saveGame(this.game.id)

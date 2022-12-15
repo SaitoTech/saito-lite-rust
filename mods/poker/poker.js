@@ -83,9 +83,7 @@ class Poker extends GameTableTemplate {
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
 
-    this.restoreLog();
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.playerbox.render(app, this);
     this.playerbox.attachEvents(app, this); //empty function

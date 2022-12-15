@@ -92,9 +92,7 @@ class Thirteen extends GameTemplate {
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     this.attachCardboxEvents(function(){});
     
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
-
+    this.hud.render();
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {

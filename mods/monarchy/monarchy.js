@@ -119,8 +119,7 @@ class Monarchy extends GameTemplate {
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.cardbox.render();
     this.cardbox.makeDraggable();
@@ -148,11 +147,8 @@ class Monarchy extends GameTemplate {
     }
 
     
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
-    this.scoreboard.render(app, this);
-    this.scoreboard.attachEvents(app, this);
 }
 
 
@@ -162,7 +158,6 @@ class Monarchy extends GameTemplate {
 initializeGame(game_id) {
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
-  this.restoreLog();
 
   this.deck = this.returnCards();
 

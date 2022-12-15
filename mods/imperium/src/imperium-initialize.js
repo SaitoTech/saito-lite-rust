@@ -249,11 +249,9 @@
     this.menu.render(app, this);
 
     this.hud.auto_sizing = 0;
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.cardbox.render();
 
@@ -293,7 +291,6 @@
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.restoreLog();
   
     //
     // specify players

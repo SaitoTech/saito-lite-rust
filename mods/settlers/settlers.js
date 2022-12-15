@@ -199,9 +199,7 @@ class Settlers extends GameTemplate {
     }
     this.menu.render(app, this);
 
-    this.restoreLog();
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.hexgrid.render(".gameboard");
 

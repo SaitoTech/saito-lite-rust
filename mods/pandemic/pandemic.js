@@ -265,9 +265,7 @@ class Pandemic extends GameTemplate {
     this.menu.addChatMenu(app, this);
     this.menu.render(app, this);
 
-    this.restoreLog(); //from gameTemplate
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.cardbox.render();
     
@@ -275,8 +273,7 @@ class Pandemic extends GameTemplate {
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     this.cardbox.addCardType("handy-help", "", function(){});
     
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     if (this.game.players_info && this.game.player > 0){
       let hh = document.querySelector(".hud-header");

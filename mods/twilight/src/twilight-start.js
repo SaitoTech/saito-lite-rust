@@ -648,8 +648,7 @@ class Twilight extends GameTemplate {
 
     } catch (err) {}
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     /* Attach classes to hud to visualize player roles */
     //this.game.player == 1 --> ussr, == 2 --> usa

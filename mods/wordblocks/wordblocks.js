@@ -92,13 +92,9 @@ class Wordblocks extends GameTemplate {
     this.menu.render(app, this);
 
     this.hud.auto_sizing = 0; //turn off default sizing
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this); //Enable dragging
+    this.hud.render();
 
-    this.restoreLog();
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
-
+    this.log.render();
 
     try {
       //Let's Try a PlayerBox instead of hud

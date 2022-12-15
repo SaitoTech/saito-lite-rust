@@ -78,9 +78,7 @@ class Blackjack extends GameTableTemplate {
 
     this.menu.render(app, this);
 
-    this.restoreLog();
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
     this.playerbox.render(app, this);
     this.playerbox.attachEvents(app, this); //empty function
     this.playerbox.addClassAll("poker-seat-",true);

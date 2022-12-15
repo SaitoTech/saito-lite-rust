@@ -773,8 +773,6 @@ class GameTestSuite extends GameTemplate {
 
 
   display_scoreboard_test(app){
-    this.scoreboard.render(app, this);
-    this.scoreboard.attachEvents(app, this);
     this.scoreboard.update(`<div>Num Players: ${this.game.players.length}</div>`);
   }
 
@@ -966,8 +964,7 @@ class GameTestSuite extends GameTemplate {
   display_cardhud_test(app) {
     let game_self = this;
     if (this.game_hud_visible == 0) {
-      this.hud.render(this.app, this);
-      this.hud.attachEvents(this.app, this);
+      this.hud.render();
       if (this.game.deck[0].hand){
         this.updateStatusAndListCards('Here is my hand', this.game.deck[0].hand);
       }else{
@@ -995,8 +992,7 @@ class GameTestSuite extends GameTemplate {
   }
 
   toggle_cardbox_test(app) {
-    this.hud.render(this.app, this);
-    this.hud.attachEvents(this.app, this);
+    this.hud.render();
     this.cardbox.render();
 
     if (this.game_cardbox_visible == 1) {

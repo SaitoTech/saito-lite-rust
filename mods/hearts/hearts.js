@@ -126,8 +126,7 @@ class Hearts extends GameTemplate {
     //
     // we want hud to support cardbox, so re-render
     //
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     //
     // add card events -- for special hud treatment
