@@ -98,12 +98,13 @@
 }
 
 .tweet-text.preview:hover::after {
-  content: "View full tweet";
+  font-family: FontAwesome;
+  content: "\f0d7";
   position: absolute;
   bottom: 5rem;
   color: var(--saito-primary);
   font-size: smaller;
-  height: 3rem;
+  font-size: 1.5rem;
   z-index: 999;
   text-align: center;
   line-height: 2.7rem;

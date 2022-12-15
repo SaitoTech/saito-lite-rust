@@ -49,20 +49,19 @@ font imports
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
 
-/* static colors for all themes */
+  /* static colors for all themes */
 
---saito-gray: #eaeaef45;
+  --saito-gray: #eaeaef45;
   --saito-gray-mid: #444;
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
   --saito-tertiary: rgb(234, 234, 239);
   --saito-white: #fff;
-
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%),
     linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000),
     linear-gradient(180deg, #e9ce93, #f71f3d);
 
-/* variable colors overridden in themes */
+  /* variable colors overridden in themes */
 
   --saito-font-color: #3d3d3d;
   --saito-font-color-heavy: #222;
