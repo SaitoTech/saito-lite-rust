@@ -256,19 +256,10 @@ class RedSquare extends ModTemplate {
   ///////////////////////
   async onConfirmation(blk, tx, conf, app) {
 
-console.log("in onconf in redsquare: " + conf);
-
     let txmsg = tx.returnMessage();
     try {
       if (conf == 0) {
-
-console.log("**********************");
-console.log("**********************");
-console.log("**********************");
-console.log("on-conf 0 in redsquare");
-
         if (txmsg.request === "create tweet") {
-console.log("receive tweet tx");
           this.receiveTweetTransaction(blk, tx, conf, app);
           this.sqlcache = [];
         }
@@ -738,8 +729,6 @@ console.log("RECEIVE LIKE TX");
 
     let tweet = new Tweet(app, this, "", tx);
 
-console.log("tweet created...");
-
     //
     // browsers
     //
@@ -750,8 +739,6 @@ console.log("tweet created...");
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
 
-console.log("tx is addressed to me...");
-
         this.app.storage.saveTransaction(tx);
         let txmsg = tx.returnMessage();
 
@@ -760,22 +747,15 @@ console.log("tx is addressed to me...");
         //
         if (txmsg.data?.parent_id) {
 
-console.log("TWEET IS TO ME");
-
           if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
-console.log("TWEET IS IN HASHMAP");
-console.log("we r looking for sig: " + txmsg.data.parent_id);
             let tweet = this.returnTweet(txmsg.data.parent_id);
             if (tweet == null) { return; }
             if (!tweet.tx.optional) { tweet.tx.optional = {}; }
             if (!tweet.tx.optional.num_replies) { tweet.tx.optional.num_replies = 0; }
             tx.optional.num_replies++;
-console.log("UPDATE TX OPTIONAL");
             this.app.storage.updateTransactionOptional(txmsg.data.parent_id, app.wallet.returnPublicKey(), tweet.tx.optional);
-console.log("RENDER REPLIES");
             tweet.renderReplies();
           } else {
-console.log("NOT IN HASHMAP, SO REMOVE SAVE");
             this.app.storage.incrementTransactionOptionalValue(txmsg.data.parent_id, "num_replies");
           }
         }
