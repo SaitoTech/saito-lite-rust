@@ -33,8 +33,16 @@ class Invite {
 
         let game_id = e.currentTarget.getAttribute("data-id");
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
+        let name = e.currentTarget.getAttribute("data-name");
+        let game = e.currentTarget.getAttribute("data-game");
 
-        let saito_mod_detials_overlay = new SaitoModuleOverlay(invite_self.app, invite_self.mod);
+        let invite = {
+          name: name,
+          game: game,
+          cmd: game_cmd
+        }
+
+        let saito_mod_detials_overlay = new SaitoModuleOverlay(invite_self.app, invite_self.mod, invite);
         saito_mod_detials_overlay.render();
 
       }

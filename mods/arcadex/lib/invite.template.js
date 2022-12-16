@@ -1,7 +1,7 @@
 module.exports = (app, mod, invite) => {
 
     let html = `
-         <div class="saito-game" data-id="abcd1234" data-cmd="join">
+         <div class="saito-game" data-id="abcd1234" data-cmd="join" data-name="${invite.name}" data-game="${invite.game}">
             
             <div class="saito-game-bg" style="background-image: url('/${invite.game}/img/arcade/arcade.jpg'); background-size: cover;"></div>
 
