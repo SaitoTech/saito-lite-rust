@@ -1,5 +1,6 @@
 .tweet-overlay {
-  width: 50rem;
+  width: 75rem;
+  max-width: 90vw;
   background-color: var(--saito-background-color);
   padding: 1rem;
   border-radius: 0.5rem;
@@ -19,6 +20,11 @@
 
 .post-tweet-preview {
   margin-bottom: 1.5rem;
+}
+
+.post-tweet-preview > .tweet {
+  margin-bottom: 1.5rem;
+  padding: 0 0 2rem;
 }
 
 .post-tweet-img-preview {
@@ -66,6 +72,7 @@
 }
 
 .post-tweet-img-icon {
-  font-size: 5rem;
+  font-size: 4.6rem;
   color: var(--saito-border-color-dark);
+  margin: 0.1rem;
 }

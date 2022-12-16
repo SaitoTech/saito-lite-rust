@@ -81,6 +81,8 @@ font imports
 }
 
 html[data-theme="dark"] {
+  --saito-primary: #e05b08;
+  --saito-secondary: #060606;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
