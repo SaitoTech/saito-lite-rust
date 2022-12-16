@@ -27,29 +27,23 @@ Saito Username
   grid-column-end: 4;
 }
 
-.saito-address > *:first-child,
-.saito-username > *:first-child {
-  margin-right: 0.5rem;
-}
-
 /* ----------------------------------------------------------------
 Saito User
 -----------------------------------------------------------------*/
 
 .saito-user {
   display: grid;
+  grid-column-gap: 1rem;
   cursor: pointer;
   grid-template-columns: min-content 1fr min-content;
   grid-template-rows: min-content 1fr;
   justify-items: start;
-  margin-bottom: 1px;
   width: 100%;
   position: relative;
 }
 
 /*  saito-identicon-box  */
 .saito-user > .saito-identicon-box {
-  margin-right: 1rem;
   grid-column-start: 1;
   grid-column-end: span 1;
   grid-row: span 2;

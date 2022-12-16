@@ -1,41 +1,34 @@
-.saito-game {
-    min-height: 370px;
-    min-width: min-content;
-    display: grid;
-    grid-template-rows: 1fr min-content;
-    position: relative;
-    border-radius: 0.5rem;
-    border: 1px solid var(--saito-border-color);
-    overflow: hidden;
-    margin-bottom: 2rem;
-    width: calc(50% - 1rem);
-}
-
-.saito-game.minimize{
-    min-height: unset;
-}
-
-.saito-game-controls {
-    display: grid;
-    grid-template-columns: 1fr min-content;
-    padding: 1rem;
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-}
-
-.saito-game-controls>div:nth-child(1) {
-    font-size: 1.1em;
-    color: #ea462f;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.saito-game-controls>div:nth-child(2) {
-    border-bottom: 1px dashed red;
-    white-space: nowrap;
-}
-
-
-.saito-box-buttons{
+.invite-manager {
     width: 100%;
+    padding-top: 0px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+}
+
+.invite-manager h6 {
+    padding-bottom: 1rem;
+}
+
+.saito-game-identicons {
+    min-width: 25rem;
+}
+
+.game-type {
+    font-size: 1.4rem;
+    font-weight: 400;
+}
+
+.tiptext {
+    visibility: hidden;
+    position: absolute;
+    box-sizing: content-box !important;
+    z-index: 10;
+    width: 90%;
+    min-width: 300px;
+    max-width: 750px;
+    padding: 0.25em 0.5em;
+    background-color: #fefefe;
+    border-bottom: 1px solid var(--saito-primary);
+    font-style: italic;
 }
