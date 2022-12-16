@@ -42,7 +42,7 @@ class Arcade extends ModTemplate {
         {
           id: "abcd1234",
           game: "twilight",
-          name: "Twilight",
+          name: "Twilight Struggle",
           type: "custom",
           players: 1
         },
