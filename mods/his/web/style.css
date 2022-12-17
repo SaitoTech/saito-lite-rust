@@ -4,10 +4,40 @@ img {
 }
 
 .revolt_in_egypt {
+    background-color: transparent;
+    width: 350px;
+    height: 500px;
+    top: 2700px;
+    left: 4600px;
+    position: relative;
+    transform: rotate(15deg);
+    background-image: url(/his/img/cards/HIS-092.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 .revolt_in_ireland {
+    background-color: transparent;
+    width: 350px;
+    height: 500px;
+    top: 800px;
+    left: 900px;
+    position: relative;
+    transform: rotate(15deg);
+    background-image: url(/his/img/cards/HIS-093.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 .war_in_persia {
+    background-color: transparent;
+    width: 350px;
+    height: 500px;
+    top: 2000px;
+    left: 4650px;
+    position: relative;
+    transform: rotate(15deg);
+    background-image: url(/his/img/cards/HIS-110.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .navalspace {
