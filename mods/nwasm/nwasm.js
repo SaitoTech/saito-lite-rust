@@ -168,6 +168,7 @@ class Nwasm extends GameTemplate {
         game_mod.uploadRom(app, game_mod);
       }
     });
+/***
     this.menu.addSubMenuOption("game-game",{
       text : "Controls",
       id : "game-controls",
@@ -177,6 +178,7 @@ class Nwasm extends GameTemplate {
         game_mod.editControls(app, game_mod);
       }
     });
+***/
     this.menu.addSubMenuOption("game-game",{
       text : "Instant Save",
       id : "game-save",
@@ -196,12 +198,23 @@ class Nwasm extends GameTemplate {
       }
     });
     this.menu.addSubMenuOption("game-game",{
-      text : "Export Tx",
+      text : "Archive Save",
       id : "game-export",
       class : "game-export",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
 	game_mod.exportState();
+      }
+    });
+    this.menu.addSubMenuOption("game-game",{
+      text : "Archive Load",
+      id : "game-import",
+      class : "game-import",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	let x = new SaveGameOverlay(app, game_mod);
+	x.render(app, game_mod);
+	//game_mod.importState();
       }
     });
     this.menu.addSubMenuOption("game-game", {
@@ -225,17 +238,6 @@ class Nwasm extends GameTemplate {
             game_mod.menu.hideSubMenus();
           }
         },
-    });
-    this.menu.addSubMenuOption("game-game",{
-      text : "Import Tx",
-      id : "game-import",
-      class : "game-import",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let x = new SaveGameOverlay(app, game_mod);
-	x.render(app, game_mod);
-	//game_mod.importState();
-      }
     });
 
 
@@ -301,7 +303,6 @@ class Nwasm extends GameTemplate {
         message.data = {};
         message.data.collection = "Nwasm";
         app.network.sendRequestWithCallback(message.request, message.data, function(res) {
-console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
 	  if (res.length > 0) {
             nwasm_mod.addCollectionToLibrary(peer.peer.publickey, res);
             nwasm_mod.updateVisibleLibrary();
@@ -568,8 +569,6 @@ console.log("RECEIVED LIBRARY: " + JSON.stringify(res));
 
     let base64data = this.convertByteArrayToBase64(data);
     let screenshot = await this.app.browser.resizeImg(this.active_game_img);
-
-console.log("screenshot: " + screenshot);
 
     let newtx = this.app.wallet.createUnsignedTransaction();
 

@@ -10634,7 +10634,7 @@ playerTurnHeadlineSelected(card, player) {
             twilight_self.addMove(`vp\t${player}\t2`);
 
           } else { //India fails invasion
-            winner = (invaded == "pakistan")? "Pakistan repels Indians aggression!": "India repels Pakistani aggression!";
+            winner = (invaded == "pakistan")? "Pakistan repels India!": "India repels Pakistan!";
             if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
             } else {
@@ -12724,11 +12724,12 @@ console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " +
             });
           return 0;
         } else {
-          this.updateLog(`${this.cardToText(card)} doesn't trigger because UK not controlled by US`);
         }
 
         return 0;
-
+      
+      } else {
+        this.updateLog(`${this.cardToText(card)} doesn't trigger because UK not controlled by US`);
       }
 
       return 1;

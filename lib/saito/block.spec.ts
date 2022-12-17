@@ -123,7 +123,7 @@ describe("serializeForSignature", function () {
     const block = new Block(mockApp);
 
     const buffer = block.serializeForSignature();
-    expect(buffer).toEqual(Buffer.alloc(177));
+    expect(buffer).toEqual(Buffer.alloc(233));
   });
 
   test("block with data", async () => {

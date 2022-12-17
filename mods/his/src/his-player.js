@@ -409,7 +409,7 @@
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].units[faction]) {
 	for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-	  if (filter_func(key, i) {
+	  if (filter_func(key, i)) {
 	    units_available.push({spacekey : key, idx : i});
 	  }
 	}
@@ -1452,10 +1452,12 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  }
 
 
-	  return await selectOptionsInterface(his_self, options_selected, selectOptionsInterface);
+	  selectOptionsInterface(his_self, options_selected, selectOptionsInterface);
       });
 
-    return await selectOptionsInterface(his_self, options_selected, selectUnitsInterface);
+    }
+
+    selectOptionsInterface(his_self, options_selected, selectUnitsInterface);
 	
   }
 

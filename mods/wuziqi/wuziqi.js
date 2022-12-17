@@ -92,6 +92,7 @@ class Wuziqi extends GameTemplate {
             // Check if anyone has played yet (black goes first)
             let blackplayedyet = this.serializeBoard(this.game.board).indexOf("B");
             this.drawBoard(this.game.board);
+            this.updateScore();
 
             // If no one has played set up the board
             if (blackplayedyet < 0) {
@@ -102,7 +103,6 @@ class Wuziqi extends GameTemplate {
                 } else {
                     this.updateStatus("Waiting on <span class='playertitle'>Black</span>");
                 }
-                this.updateScore();
 
             }
 
@@ -208,6 +208,11 @@ class Wuziqi extends GameTemplate {
       console.log("ERR: " + err);
     }
 
+    animatePlay(cell){
+        //$(`div#tile_${cell.id} div`).removeClass("empty").addClass("piece").addClass(cell.owner).fadeIn();
+        $(`div#tile_${cell.id} div`).remove();
+        $(`<div class="piece ${cell.owner}"></div>`).hide().appendTo(`#tile_${cell.id}`).fadeIn(600);
+    }
 
     // Iterate through the board object to draw each cell in the DOM
     drawBoard(board) {
@@ -224,7 +229,7 @@ class Wuziqi extends GameTemplate {
         let ct = 1; 
         board.forEach(cell => {
             let tile = document.createElement('div');
-            tile.id = cell.id;
+            tile.id = "tile_"+cell.id;
             if (cell.winner) tile.classList.add("winner");
             if (ct <= this.game.size) tile.classList.add("top");
             if (ct > this.game.size*(this.game.size-1)) tile.classList.add("bottom");
@@ -248,7 +253,7 @@ class Wuziqi extends GameTemplate {
     // Add click events to the board
     addEvents(board) {
         board.forEach(cell => {
-            el = document.getElementById(cell.id);
+            el = document.getElementById("tile_"+cell.id);
             // Only add click function to blank cells,
             if (cell.owner == "none") {
                 // Add CSS indications that the cell can be clicked.
@@ -260,41 +265,28 @@ class Wuziqi extends GameTemplate {
                     cell.owner = this.game.sides[this.game.player - 1];
                     // Check for round winner.
                     let winner = this.findWinner(cell);
-                    // Redraw the board - showing winning tokens and removing events.
-                    this.drawBoard(board);
 
+                    this.drawBoard(this.game.board);
+                    
                     // Do the Saito Game Queue stuff
 
+                    // No matter what, add a 'place' message (filo - thi will be executed first) to update the board for both players.
+                    // Set the message type, the board state, cell played, player.
+                    let mv = "place\t" + this.serializeBoard(board) + "\t" + cell.id + "\t" + this.game.player;
+                    // Add this move to the stack 
+                    this.prependMove(mv);
+                    
                     // If we have a winner
                     if (winner != "no winner") {
-                        // Update my scores
-                        this.game.score[this.game.player - 1] = parseInt(this.game.score[this.game.player - 1]) + 1;
-                        this.updateScore();
-
-                        // If this round win, wins the game - let the winner know.
-                        if (this.game.score[this.game.player - 1] > this.game.options.best_of / 2) {
-                            this.game.winner = this.game.player;
-                            this.updateScore();
-                            salert("You Win!");
-
-                            // Add a game over message to the stack.
-                            this.addMove("gameover\t" + this.game.player);
-                        } else {
-                            // If not only add a 'round over' message to the stack.
-                            this.addMove("roundover\t" + this.game.player);
-                        }
+                        // If not only add a 'round over' message to the stack.
+                        this.prependMove("roundover\t" + this.game.player);
                     }
 
                     //If board full
                     if (!this.canPlayTile()){
-                        this.addMove("draw\t" + this.game.player);
+                        this.prependMove("draw\t" + this.game.player);
                     }
 
-                    // No matter what, add a 'place' message (filo - thi will be executed first) to update the board for both players.
-                    // Set the message type, the board state, cell played, player, and existing scores.
-                    let mv = "place\t" + this.serializeBoard(board) + "\t" + cell.id + "\t" + this.game.player + "\t" + this.game.score[0] + "|" + this.game.score[1];
-                    // Add this move to the stack 
-                    this.addMove(mv);
                     // And send on chain.
                     this.endTurn();
                 });
@@ -326,7 +318,8 @@ class Wuziqi extends GameTemplate {
 
         // Check we have a queue
         if (this.game.queue.length > 0) {
-            
+            this.drawBoard(this.game.board);
+
             // Save before we start executing the game queue
             // this.saveGame(this.game.id);
 
@@ -339,20 +332,23 @@ class Wuziqi extends GameTemplate {
                 // Remove this item from the queue.
                 this.game.queue = [];
 
-                //Not duplicated in board events, so both players run these
-                this.updateScore();
-                this.drawBoard(this.game.board);
-
                 //console.log(this.game.options);
                 //console.log(this.game.crypto);
 
                 this.endGame(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
                 return 0; //end queue cycling
             }
-            if (mv[0] == "draw"){
+
+            if (mv[0] === "clearboard"){
+                this.generateBoard(this.game.options.board_size);
                 this.drawBoard(this.game.board);
-                this.updateScore();
-              
+                // Remove this item from the queue.
+                this.game.queue.splice(this.game.queue.length - 1, 1);
+                return 1;
+            }
+
+            if (mv[0] == "draw"){
+
                 // Initiate next round.
                 // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
                 if (mv[1] != this.game.player) {
@@ -360,7 +356,6 @@ class Wuziqi extends GameTemplate {
                     this.addContinueButton();
                 } else {
                     this.updateStatus(`It's a draw -- no winner! <span class="playertitle">${this.game.sides[mv[1]%2]}</span> will start next round.`);
-                    this.drawBoard(this.game.board);
                 }
                 // Remove this item from the queue.
                 this.game.queue.splice(this.game.queue.length - 1, 1);
@@ -369,27 +364,38 @@ class Wuziqi extends GameTemplate {
 
             // Round over
             if (mv[0] == "roundover") {
-                this.drawBoard(this.game.board);
-                this.updateScore();
-              
-                // Initiate next round.
-                // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
-                if (mv[1] != this.game.player) {
-                    this.updateStatus(`<span class='playertitle'>${this.game.sides[mv[1] - 1]}</span> wins the round.`);
-                    this.addContinueButton();
-                } else {
-                    this.updateStatus(`You win the round! Waiting for <span class="playertitle">${this.game.sides[mv[1]%2]}</span> to start next round.`);
-                    this.drawBoard(this.game.board);
-                }
+                let winner = parseInt(mv[1]);
+
                 // Remove this item from the queue.
                 this.game.queue.splice(this.game.queue.length - 1, 1);
+
+                // Update my scores
+                this.game.score[winner - 1]++;
+                this.updateScore();
+
+                // If this round win, wins the game - let the winner know.
+                if (2 * this.game.score[winner - 1] > this.game.options.best_of) {
+                    this.game.winner = winner;
+
+                    // Add a game over message to the stack.
+                    this.game.queue.push("gameover\t" + winner);
+                }else{
+
+                    // Initiate next round.
+                    // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
+                    if (winner != this.game.player) {
+                        this.updateStatus(`<span class='playertitle'>${this.game.sides[winner - 1]}</span> wins the round.`);
+                        this.addContinueButton();
+                    } else {
+                        this.updateStatus(`You win the round! Waiting for <span class="playertitle">${this.game.sides[winner%2]}</span> to start next round.`);
+                        this.drawBoard(this.game.board);
+                    }
+                }
+
                 return 1;
             }
             if (mv[0] == "place") {
-                // Set the game scores
-                this.game.score[0] = mv[4].split("|")[0];
-                this.game.score[1] = mv[4].split("|")[1];
-                this.updateScore();
+                let player = parseInt(mv[3]);
             
                 // Regenerate the game board object from the serialized version sent by the other player.
                 // Even though the player who just placed has an accurate board, we rerun it in case of browser refresh
@@ -397,17 +403,19 @@ class Wuziqi extends GameTemplate {
                 this.boardFromString(mv[1]);
                 // Grab the played cell
                 let cell = this.returnCellById(parseInt(mv[2]));
-                // And check if it won the game
+
+                // And check if it won the game (this will just update winners in data structure)
                 let winner = this.findWinner(cell);
-                // Redraw the board (adding winning cells if any)
-                this.drawBoard(this.game.board);
+
             
-                if (this.game.player != mv[3] && this.game.player !== 0){
+                if (this.game.player !== player && this.game.player !== 0){
+                    this.animatePlay(cell);
+
                     //Let player make their move
                     this.addEvents(this.game.board);
                     this.updateStatus("Your move");
                 }else{
-                    this.updateStatus("Waiting on <span class='playertitle'>" + this.game.sides[(mv[3]) % 2] + "</span>");                        
+                    this.updateStatus("Waiting on <span class='playertitle'>" + this.game.sides[player % 2] + "</span>");                        
                 }
                 
                 // Remove this item from the queue.
@@ -426,6 +434,7 @@ class Wuziqi extends GameTemplate {
         el.classList.add("continue");
         // Reinitialise the board and add events.
         el.addEventListener("click", () => {
+            this.addMove("clearboard");
             this.generateBoard(this.game.options.board_size);
             this.drawBoard(this.game.board);
             this.addEvents(this.game.board);

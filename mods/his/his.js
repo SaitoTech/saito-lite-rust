@@ -8716,7 +8716,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 	return 1;
-      }
+      },
       onEvent : function(his_self, faction) {
 
 	his_self.game.queue.push("indulgence-vendor\t"+faction);
@@ -8785,14 +8785,13 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	  let spaces_to_select = 4;
 	  if (at_war) { spaces_to_select = 2; }
 
-	  let selected = await his_self.playerSelectOptions(res, spaces_to_select, false);
-	  alert("SELECTED SPACES FOR UNREST: " + JSON.stringify(selected));
-
-	  for (let i = 0; i < selected.length; i++) {
-	    his_self.addMove("unrest\t"+selected[i]);
-	  }
-	  his_self.endTurn();
-
+	  his_self.playerSelectOptions(res, spaces_to_select, false, (selected) => {
+	    alert("SELECTED SPACES FOR UNREST: " + JSON.stringify(selected));
+	    for (let i = 0; i < selected.length; i++) {
+	      his_self.addMove("unrest\t"+selected[i]);
+	    }
+	    his_self.endTurn();
+	  });
 	}
 
 	return 0;
@@ -8976,7 +8975,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 		    return 0;
 		  },
 		  retained
-		}
+		);
 	      }
 	    );
 	  }
@@ -9004,19 +9003,18 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	    if (his_self.isOccupied(spacekey)) { return 0; }
 	    if (!his_self.game.spaces[spacekey].language == "german") { return 1; }
 	    return 0;
-	  };
+	  });
 
 
 	  let spaces_to_select = 5;
 
-	  let selected = await his_self.playerSelectOptions(res, spaces_to_select, false);
-	  alert("SELECTED SPACES FOR UNREST: " + JSON.stringify(selected));
-
-	  for (let i = 0; i < selected.length; i++) {
-	    his_self.addMove("unrest\t"+selected[i]);
-	  }
-	  his_self.endTurn();
-
+	  his_self.playerSelectOptions(res, spaces_to_select, false, (selected) => {
+	    alert("SELECTED SPACES FOR UNREST: " + JSON.stringify(selected));
+	    for (let i = 0; i < selected.length; i++) {
+	      his_self.addMove("unrest\t"+selected[i]);
+	    }
+	    his_self.endTurn();
+	  });
 	}
 
 	return 0;
@@ -9082,14 +9080,13 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	    } 	
 	  }	
 
-	  let selected = await his_self.playerSelectOptions(res, options, false);
-
-	  if (selected.length == 0) {
-	    this.endTurn();
-	    return;
-	  }
-
-	  his_self.addMove("random\t"+selected[0]);
+	  his_self.playerSelectOptions(res, options, false, (selected) => {
+	    if (selected.length == 0) {
+	      this.endTurn();
+	      return;
+	    }
+	    his_self.addMove("random\t"+selected[0]);
+	  });
 
 	}
 
@@ -9111,7 +9108,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	  return 1;
 
-	},
+	}
 
         if (mv[0] == "ransom") {
 
@@ -9132,8 +9129,6 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	  if (ransomed_leader === null) { return; }
 
-	  thi
-	
 	  let player = his_self.returnPlayerOfFaction(ransomed_leader.owner);
 	  if (player == his_self.game.player) {
 
@@ -9199,14 +9194,13 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 	  let spaces_to_select = 3;
 
-	  let selected = await his_self.playerSelectOptions(res, spaces_to_select, false);
-	  alert("SELECTED SPACES FOR UNREST: " + JSON.stringify(selected));
-
-	  for (let i = 0; i < selected.length; i++) {
-	    his_self.addMove("unrest\t"+selected[i]);
-	  }
-	  his_self.endTurn();
-
+	  his_self.playerSelectOptions(res, spaces_to_select, false, (selected) => {
+	    alert("SELECTED SPACES FOR UNREST: " + JSON.stringify(selected));
+	    for (let i = 0; i < selected.length; i++) {
+	      his_self.addMove("unrest\t"+selected[i]);
+	    }
+	    his_self.endTurn();
+	  });
 	}
 
 	return 0;
@@ -14786,7 +14780,7 @@ this.updateLog("Catholics: " + c_rolls);
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].units[faction]) {
 	for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-	  if (filter_func(key, i) {
+	  if (filter_func(key, i)) {
 	    units_available.push({spacekey : key, idx : i});
 	  }
 	}
@@ -15829,10 +15823,12 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  }
 
 
-	  return await selectOptionsInterface(his_self, options_selected, selectOptionsInterface);
+	  selectOptionsInterface(his_self, options_selected, selectOptionsInterface);
       });
 
-    return await selectOptionsInterface(his_self, options_selected, selectUnitsInterface);
+    }
+
+    selectOptionsInterface(his_self, options_selected, selectUnitsInterface);
 	
   }
 

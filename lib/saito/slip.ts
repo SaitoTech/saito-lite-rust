@@ -22,6 +22,7 @@ class Slip {
   //public uuid: string;
   public sid: number;
   public block_id: bigint;
+  public block_hash: string;
   public tx_ordinal: bigint;
   public lc: boolean;
   public timestamp: number;
@@ -36,7 +37,8 @@ class Slip {
     slip_ordinal = 0,
     block_id = BigInt(0),
     tx_ordinal = BigInt(0),
-    lc = true
+    lc = true,
+    block_hash = ""
   ) {
     //
     // consensus variables
@@ -55,6 +57,7 @@ class Slip {
     this.timestamp = 0; // timestamp
     this.key = ""; // index in utxoset hashmap
     this.from = new Array<Slip>();
+    this.block_hash = block_hash;
   }
 
   returnAmount(): bigint {
@@ -111,7 +114,9 @@ class Slip {
       this.type,
       this.sid,
       this.block_id,
-      this.tx_ordinal
+      this.tx_ordinal,
+      this.lc,
+      this.block_hash
     );
   }
 
@@ -135,7 +140,7 @@ class Slip {
     return 1;
   }
 
-  onChainReorganization(app: Saito, lc, slip_value: number) {
+  onChainReorganization(app: Saito, lc: boolean, slip_value: number) {
     if (this.isNonZeroAmount()) {
       app.utxoset.update(this.returnKey(), slip_value);
     }
@@ -155,7 +160,7 @@ class Slip {
     //console.debug(`Generating UTXOKey for ${this.block_id}, ${this.tx_ordinal}, ${this.sid}`);
     let arr = new Uint8Array([...publickey, ...block_id, ...tx_ordinal, slip_ordinal, ...amount]);
     console.assert(arr.length == 66, "UTXO Key Length is not 66");
-    this.key = arr.toString();
+    this.key = Buffer.from(arr).toString("hex");
   }
 
   returnKey() {
@@ -224,7 +229,8 @@ class Slip {
 
   validate(app: Saito): boolean {
     if (this.amt > BigInt(0)) {
-      return true;
+      return app.utxoset.validate(this.returnKey());
+      // return true;
       //return false; // TODO : isSpendable is not implemented. so returning false here for now just to catch bugs.
       // return !!app.utxoset.isSpendable(this.returnKey());
     } else {

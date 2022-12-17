@@ -4,7 +4,11 @@ import Transaction from "./transaction";
 
 class Mempool {
   public app: Saito;
-  public mempool: any;
+  public mempool: {
+    blocks: Array<Block>;
+    transactions: Array<Transaction>;
+    golden_tickets: Array<Transaction>;
+  };
   public routing_work_needed: bigint;
   public routing_work_in_mempool: bigint;
   public transaction_size_cap: number;
@@ -19,17 +23,17 @@ class Mempool {
   public bundling_active: boolean;
   public bundling_speed: number;
   public bundling_timer: any;
-  public blocks_hmap: any;
-  public transactions_hmap: any;
-  public transactions_inputs_hmap: any;
+  public blocks_hmap: Map<string, number>;
+  public transactions_hmap: Map<string, number>;
+  public transactions_inputs_hmap: Map<string, number>;
   public downloads: any;
   public downloads_hmap: any;
-  public downloading_active: any;
+  public downloading_active: boolean;
   public transaction_size_limit: number;
   public block_size_limit: number;
-  public blocks: any;
+  public blocks: Array<Block>;
 
-  constructor(app) {
+  constructor(app: Saito) {
     this.app = app;
 
     //
@@ -78,16 +82,16 @@ class Mempool {
     //
     // hashmap
     //
-    this.blocks_hmap = []; // index is block.block.sig
-    this.transactions_hmap = []; // index is tx.transaction.sig
-    this.transactions_inputs_hmap = []; // index is slip returnKey()
+    this.blocks_hmap = new Map<string, number>(); // index is block.block.sig
+    this.transactions_hmap = new Map<string, number>(); // index is tx.transaction.sig
+    this.transactions_inputs_hmap = new Map<string, number>(); // index is slip returnKey()
 
     //
     // downloads
     //
     this.downloads = {};
     this.downloads_hmap = {};
-    this.downloading_active = 0;
+    this.downloading_active = false;
 
     //
     // size limits
@@ -98,8 +102,10 @@ class Mempool {
     this.block_size_current = 0;
   }
 
-  addBlock(block) {
-    console.log("Mempool : adding block... : " + block.returnHash());
+  addBlock(block: Block): boolean {
+    console.log(
+      "Mempool : adding block... : " + block.returnHash() + " of type : " + block.block_type
+    );
     if (!block) {
       console.warn("ERROR 529384: mempool add.block is not provided");
       return false;
@@ -138,13 +144,13 @@ class Mempool {
     //
     // sort our block queue before adding to chain
     //
-    this.mempool.blocks.sort((a, b) => a.block.id - b.block.id);
+    this.mempool.blocks.sort((a, b) => Number(a.block.id - b.block.id));
 
     try {
       this.processing_timer = setInterval(() => {
         if (this.mempool.blocks.length > 0) {
           if (this.app.blockchain.indexing_active === false) {
-            const block = this.mempool.blocks.shift();
+            const block: Block = this.mempool.blocks.shift();
             this.app.blockchain.addBlockToBlockchain(block).then((r) => {
               return;
             });
@@ -170,7 +176,7 @@ class Mempool {
       for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
         const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
         if (gt.target_hash === new_gt.target_hash) {
-          console.warn("similar golden tickets already exists");
+          console.warn("similar golden tickets already exists for target : " + gt.target_hash);
           this.app.miner.stopMining();
           return false;
         }
@@ -212,9 +218,7 @@ class Mempool {
         mempool_contains_golden_ticket
       );
 
-    //
     // stop if inadequate golden ticket support?
-    //
     if (!does_chain_meet_golden_ticket_requirements) {
       console.log(
         "ERROR 850293: we do not have enough golden ticket support, waiting before bundling..."
@@ -225,17 +229,13 @@ class Mempool {
       return;
     }
 
-    //
     // stop if already bundling?
-    //
     if (this.bundling_active === true) {
       console.log("ERROR 850293: mempool already bundling a block, not bundling another");
       return;
     }
 
-    //
     // and don't spam the public network
-    //
     if (this.mempool.transactions.length === 0) {
       if (!this.app.network.isPrivateNetwork()) {
         if (this.app.network.isProductionNetwork()) {
@@ -245,38 +245,26 @@ class Mempool {
       }
     }
 
-    //
     // start bundling
-    //
     this.bundling_active = true;
 
-    //
     // create block
-    //
     try {
-      //
       // create the block
-      //
       const block = new Block(this.app);
       const previous_block_hash = this.app.blockring.returnLatestBlockHash();
 
-      //
       // generate and sign
-      //
       console.log("blockring reports PBH: " + previous_block_hash);
-      await block.generate(previous_block_hash, this.app.mempool);
+      await block.generate(previous_block_hash);
 
-      //
       // and add to mempool
-      //
       this.addBlock(block);
     } catch (err) {
       console.error("ERROR 781029: unexpected problem bundling block in mempool: ", err);
     }
 
-    //
     // reset
-    //
     this.bundling_active = false;
   }
 
@@ -351,9 +339,7 @@ class Mempool {
       }
     }
 
-    //
     // made it this far? see if we have enough work
-    //
     const previous_block = this.app.blockchain.returnLatestBlock();
     if (previous_block != null) {
       this.routing_work_needed = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(
@@ -388,39 +374,39 @@ class Mempool {
     return false;
   }
 
-  containsBlock(block) {
-    if (block == null) {
-      return 0;
+  containsBlock(block): boolean {
+    if (!block) {
+      return false;
     }
-    if (block.block == null) {
-      return 0;
+    if (!block.block) {
+      return false;
     }
-    if (block.is_valid === 0) {
-      return 0;
+    if (!block.is_valid) {
+      return false;
     }
 
-    return this.blocks_hmap[block.block.sig] === 1;
+    return this.blocks_hmap.get(block.block.sig) === 1;
   }
 
-  containsTransaction(tx) {
-    if (tx == null) {
-      return 0;
+  containsTransaction(tx): boolean {
+    if (!tx) {
+      return false;
     }
-    if (tx.transaction == null) {
-      return 0;
+    if (!tx.transaction) {
+      return false;
     }
-    if (tx.transaction.from == null) {
-      return 0;
+    if (!tx.transaction.from) {
+      return false;
     }
 
-    if (this.transactions_hmap[tx.transaction.sig] === 1) {
+    if (this.transactions_hmap.get(tx.transaction.sig) === 1) {
       return true;
     }
 
     for (let i = 0; i < tx.transaction.from.length; i++) {
       if (tx.transaction.from[i].isNonZeroAmount()) {
-        const slip_index = tx.transaction.from[i].returnKey();
-        if (this.transactions_inputs_hmap[slip_index] === 1) {
+        const key = tx.transaction.from[i].returnKey();
+        if (this.transactions_inputs_hmap.get(key) === 1) {
           return true;
         }
       }
@@ -432,7 +418,7 @@ class Mempool {
     return this.mempool.golden_tickets.length > 0;
   }
 
-  containsValidGoldenTicket(target_hash) {
+  containsValidGoldenTicket(target_hash: string): boolean {
     if (this.mempool.golden_tickets.length > 0) {
       for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
         const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
@@ -466,21 +452,21 @@ class Mempool {
     }
   }
 
-  removeBlock(blk = null) {
+  removeBlock(blk: Block | null = null) {
     if (blk == null) {
       return;
     }
     this.clearing_active = true;
     for (let b = this.mempool.blocks.length - 1; b >= 0; b--) {
       if (this.mempool.blocks[b] && this.mempool.blocks[b].returnHash() === blk.returnHash()) {
-        this.block_size_current -= this.mempool.blocks[b].size;
+        // this.block_size_current -= this.mempool.blocks[b].size;
         this.mempool.blocks.splice(b, 1);
       }
     }
     this.clearing_active = false;
   }
 
-  removeBlockAndTransactions(blk = null) {
+  removeBlockAndTransactions(blk: Block | null = null) {
     if (blk == null) {
       return;
     }
@@ -493,14 +479,14 @@ class Mempool {
 
     // create hashmap for mempool transactions
     for (let b = 0; b < this.mempool.transactions.length; b++) {
-      mempool_transactions[this.mempool.transactions[b].transaction.sig] = b;
+      mempool_transactions.set(this.mempool.transactions[b].transaction.sig, b);
     }
 
     // set hashmap value to -1 for all txs in block
     for (let b = 0; b < blk.transactions.length; b++) {
-      const location_in_mempool = mempool_transactions[blk.transactions[b].transaction.sig];
+      const location_in_mempool = mempool_transactions.get(blk.transactions[b].transaction.sig);
       if (location_in_mempool !== undefined) {
-        mempool_transactions[blk.transactions[b].transaction.sig] = -1;
+        mempool_transactions.set(blk.transactions[b].transaction.sig, -1);
         this.transaction_size_current -= this.mempool.transactions[location_in_mempool].size;
       }
     }
@@ -510,7 +496,7 @@ class Mempool {
 
     // fill our replacement array with all non -1 values
     for (let t = 0; t < this.mempool.transactions.length; t++) {
-      if (mempool_transactions[this.mempool.transactions[t].transaction.sig] > -1) {
+      if (mempool_transactions.get(this.mempool.transactions[t].transaction.sig) > -1) {
         replacement.push(this.mempool.transactions[t]);
       }
     }
@@ -519,10 +505,10 @@ class Mempool {
 
     // and delete utxo references too
     for (let b = 0; b < blk.transactions.length; b++) {
-      delete this.transactions_hmap[blk.transactions[b].transaction.sig];
+      this.transactions_hmap.delete(blk.transactions[b].transaction.sig);
       for (let i = 0; i < blk.transactions[b].transaction.from.length; i++) {
         blk.transactions[b].transaction.from[i].generateKey(this.app);
-        delete this.transactions_inputs_hmap[blk.transactions[b].transaction.from[i].returnKey()];
+        this.transactions_inputs_hmap.delete(blk.transactions[b].transaction.from[i].returnKey());
       }
     }
 
@@ -530,7 +516,7 @@ class Mempool {
     this.clearing_active = false;
   }
 
-  returnRoutingWorkAvailable() {
+  returnRoutingWorkAvailable(): bigint {
     let v = BigInt(0);
 
     for (let i = 0; i < this.mempool.transactions.length; i++) {

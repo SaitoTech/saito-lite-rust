@@ -101,4 +101,4 @@ async function initSaito() {
   });
 }
 
-initSaito();
+initSaito().catch((e) => console.error(e));

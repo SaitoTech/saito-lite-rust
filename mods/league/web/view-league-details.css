@@ -176,6 +176,7 @@
   height: 100%;
   padding-top: 3rem; 
   margin-top: 1rem;
+  overflow: hidden;
 }
 
 #league-table-ranking-body::-webkit-scrollbar {
