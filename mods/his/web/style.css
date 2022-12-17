@@ -9,7 +9,7 @@ img {
     height: 500px;
     top: 2700px;
     left: 4600px;
-    position: relative;
+    position: absolute;
     transform: rotate(15deg);
     background-image: url(/his/img/cards/HIS-092.svg);
     background-size: contain;
@@ -21,7 +21,7 @@ img {
     height: 500px;
     top: 800px;
     left: 900px;
-    position: relative;
+    position: absolute;
     transform: rotate(15deg);
     background-image: url(/his/img/cards/HIS-093.svg);
     background-size: contain;
@@ -33,7 +33,7 @@ img {
     height: 500px;
     top: 2000px;
     left: 4650px;
-    position: relative;
+    position: absolute;
     transform: rotate(15deg);
     background-image: url(/his/img/cards/HIS-110.svg);
     background-size: contain;

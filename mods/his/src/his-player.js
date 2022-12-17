@@ -1385,14 +1385,79 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
   }
 
+  playerSelectUnitsWithFilterFromSpacesWithFilter(faction, space_filter_func, unit_filter_func, num=1, must_select_max=true, mycallback=null) {
 
-  async playerSelectOptions(options, num=1, must_select_max=true, mycallback=null) {
+    let his_self = this;
+    let selected = [];
+
+    let selectSpacesInterface = function(his_self, selected, selectSpacesInterface) {
+
+      his_self.playerSelectSpaceWithFilter(
+
+        ("Select Space of Unit" + (selected.length+1)),
+
+	space_filter_func,
+
+        function(spacekey) {
+
+	  let options = [];
+	  let space = his_self.game.spaces[spacekey];
+	  let units = space.units[faction];
+	  let num_remaining = num - selected.length;
+
+          for (let i = 0; i < units; i++) {
+	    if (unit_filter_func(units[i])) {
+	      let add_this_unit = true;
+	      for (let z = 0; z < selected.length; z++) {
+		if (z.spacekey == spacekey && i === unit_idx) { add_this_unit = false; }
+	      }
+	      if (add_this_unit == true) {
+	        options.push({ spacekey : spacekey, unit : units[i] , unit_idx : i });
+	      }
+	    }
+	  }
+
+  	  his_self.playerSelectOptions(options, num_remaining, false, function(array_of_unit_idxs) {
+
+	    //
+	    // selected options copied to selected
+	    //
+	    for (let i = 0; i < array_of_unit_idxs.length; i++) {
+	      let add_this_unit = true;
+	      for (let z = 0; z < selected.length; z++) {
+		if (selected[z].spacekey == options[array_of_unit_idxs[i]].spacekey && selected[z].unit_idx === array_of_unit_idxs[i]) { add_this_unit = false; }
+	      }
+	      if (add_this_unit == true) {
+		selected.push(options[array_of_unit_idxs[i]]);
+	      }
+	    }
+
+	    //    
+	    // still more needed?    
+	    //    
+	    let num_remaining = num - selected.length;
+	    if (num_remaining > 0) {
+	      selectSpacesInterface(his_self, selected, selectSpacesInterface);
+	    } else {
+	      mycallback(selected);
+	    }
+
+	  });
+	}
+      );
+    }
+
+    selectSpacesInterface(his_self, selected, selectSpacesInterface);
+
+  }
+
+  playerSelectOptions(options, num=1, must_select_max=true, mycallback=null) {
 
     let his_self = this;
     let options_selected = [];
     let cancel_func = null;
 
-    let selectOptionsInterface = async function(his_self, options_selected, selectOptionsInterface) {
+    let selectOptionsInterface = function(his_self, options_selected, selectOptionsInterface) {
 
       let remaining = num - options_selected.length;
 

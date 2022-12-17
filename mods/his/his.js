@@ -3381,6 +3381,12 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     state.tmp_papacy_may_specify_debater = 0;
     state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
 
+    //
+    // foreign wars
+    //
+    state.events.war_in_persia = 0;
+    state.events.revolt_in_ireland = 0;
+    state.events.revolt_in_egypt = 0;
 
 
     state.augsburg_electoral_bonus = 0;
@@ -5971,6 +5977,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 	  return 1;
 
         }
+
+	return 1;
+
       },
       canEvent : function(his_self, faction) {
 	return 1;
@@ -6110,6 +6119,8 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
           return 1;
 
         }
+
+	return 1;
       },
     }
     if (this.game.players.length == 2) {
@@ -6428,6 +6439,8 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 	  return 1;
 
         }
+
+	return 1;
       },
     }
     // 95 Theses
@@ -7268,6 +7281,8 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 	  return 0;
 
         }
+
+	return 1;
       },
     }
     deck['034'] = { 
@@ -7361,6 +7376,8 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 	  }
 	  return 0;
         }
+
+	return 1;
       },
     }
     deck['037'] = { 
@@ -7430,6 +7447,8 @@ alert("Wartburg Triggers");
 	  return 1;
 
         }
+
+	return 1;
       },
     }
     deck['038'] = { 
@@ -9163,6 +9182,68 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent(his_self, faction) {
+        return 1;
+      },
+      onEvent(his_self, faction) {
+
+        his_self.addRegular("independent", "egypt", 1);
+        his_self.addRegular("independent", "egypt", 1);
+        his_self.addRegular("independent", "egypt", 1);
+
+        his_self.game.state.events.revolt_in_egypt = 1;
+
+	his_self.game.queue.push("revolt_in_egypt");
+
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "revolt_in_egypt_placement") {
+
+	  let faction = "ottoman";
+	  let p = his_self.returnPlayerOfFaction(faction);
+	  if (his_self.game.player === p) {
+
+	    his_self.playerSelectUnitsWithFilterFromSpacesWithFilter(
+
+		faction,
+
+		(space) => {
+		  return his_self.returnFactionLandUnitsInSpace(faction, space);
+		},
+
+		(unit) => {
+		  if (unit.type == "mercentary") { return 1; };
+		  if (unit.type == "cavalry") { return 1; };
+		  if (unit.type == "regular") { return 1; };
+		  return 0;
+		},
+
+		3,
+
+		true,
+
+		(selected) => {
+		  for (let i = 0; i < selected.length; i++) {
+		    his_self.addMove(	"build" + "\t" +
+					"land" + "\t" + 
+					selected[i].type + "\t" +
+					"egypt" + "\t" );
+		    his_self.addMove(	"remove_unit" + "\t" +
+					"land" + "\t" +
+					"england" + "\t" +
+					selected[i].type + "\t" +
+					selected[i].spacekey );
+		  }
+		  his_self.endTurn();
+		}
+	    );
+	  }
+	  return 0;
+	}
+        return 1;
+      }
+
     }
     deck['093'] = { 
       img : "cards/HIS-093.svg" , 
@@ -9171,6 +9252,171 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent(his_self, faction) {
+        return 1;
+      },
+      onEvent(his_self, faction) {
+
+        his_self.addRegular("independent", "egypt", 1);
+        his_self.addRegular("independent", "egypt", 1);
+        his_self.addRegular("independent", "egypt", 1);
+
+        his_self.game.state.events.revolt_in_ireland = 1;
+
+	if (faction === "france" || faction === "hapsburg") {
+	  let p = his_self.returnPlayerOfFaction(faction);
+	  if (this.game.player == p) {
+	    his_self.addMove("revolt_in_ireland_placement");
+	    his_self.addMove("revolt_in_ireland_bonus_resistance\t"+faction);
+	    his_self.endTurn();
+	  }
+	  return 0;
+	}
+
+	return 1;
+
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "revolt_in_ireland_bonus_resistance") {
+
+	  let faction = mv[1];
+
+	  let p = his_self.returnPlayerOfFaction(faction);
+
+	  if (his_self.game.player === p) {
+
+            let msg = "Remove 1 Land Unit to Fortify Irish Resistance?";
+            let html = '<ul>';
+            html += '<li class="option" id="yes">yes</li>';
+            html += '<li class="option" id="no">no</li>';
+            html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+            $('.option').off();
+            $('.option').on('click', function () {
+
+              let action = $(this).attr("id");
+
+              if (action === "yes") {
+		
+		//
+		// pick unit on map with player land units and select one to remove
+		//
+ 	 	his_self.playerSelectSpaceWithFilter(
+
+		  "Select Space to Remove 1 Land Unit",
+
+		  (space) => { return his_self.returnFactionLandUnitsInSpace(faction, space.key); },
+
+		  (spacekey) => {
+		    
+      		    let opts = his_self.returnFactionLandUnitsInSpace(faction, spacekey);
+		    let space = his_self.game.spaces[spacekey];
+
+            	    let msg = "Remove which Land Unit?";
+            	    let html = '<ul>';
+
+		    for (let i = 0; i < space.units[faction].length; i++) {
+		      if (space.units[faction][i].type === "cavalry") {
+   	                html += '<li class="option" id="${i}">cavalry</li>';
+			break;
+		      }
+		    }
+		    for (let i = 0; i < space.units[faction].length; i++) {
+		      if (space.units[faction][i].type === "regular") {
+   	                html += '<li class="option" id="${i}">regular</li>';
+			break;
+		      }
+		    }
+		    for (let i = 0; i < space.units[faction].length; i++) {
+		      if (space.units[faction][i].type === "mercenary") {
+   	                html += '<li class="option" id="${i}">mercenary</li>';
+			break;
+		      }
+		    }
+
+            	    html += '</ul>';
+
+
+            	    his_self.updateStatusWithOptions(msg, html);
+
+	            $('.option').off();
+        	    $('.option').on('click', function () {
+
+	              let action = $(this).attr("id");
+
+		      his_self.addMove(	"remove_unit" + "\t" +
+					"land" + "\t" +
+					faction + "\t" +
+					space.units[faction][i].type + "\t" +
+					space.key );
+		      his_self.addMove("NOTIFY\t"+faction+" removes unit from " + space.key);
+		      his_self.endTurn();
+
+		    });
+		  },
+		);
+		return 0;
+	      }
+              if (action === "no") {
+		his_self.addMove("NOTIFY\t"+faction+" does not support Irish rebels");
+		his_self.endTurn();
+	      }
+	    });
+	  }
+	  return 0;
+        }
+
+
+        if (mv[0] == "revolt_in_ireland_placement") {
+
+	  let faction = "england";
+	  let p = his_self.returnPlayerOfFaction(faction);
+	  if (his_self.game.player === p) {
+
+	    his_self.playerSelectUnitsWithFilterFromSpacesWithFilter(
+
+		faction,
+
+		(space) => {
+		  return his_self.returnFactionLandUnitsInSpace(faction, space);
+		},
+
+		(unit) => {
+		  if (unit.type == "mercentary") { return 1; };
+		  if (unit.type == "cavalry") { return 1; };
+		  if (unit.type == "regular") { return 1; };
+		  return 0;
+		},
+
+		4,
+
+		true,
+
+		(selected) => {
+
+		  for (let i = 0; i < selected.length; i++) {
+		    his_self.addMove(	"build" + "\t" +
+					"land" + "\t" + 
+					selected[i].type + "\t" +
+					"ireland" + "\t" );
+		    his_self.addMove(	"remove_unit" + "\t" +
+					"land" + "\t" +
+					"england" + "\t" +
+					selected[i].type + "\t" +
+					selected[i].spacekey );
+		    his_self.addMove("remove_unit\t");
+		  }
+		  his_self.endTurn();
+		}
+	    );
+	  }
+	  return 0;
+	}
+        return 1;
+      }
     }
     deck['094'] = { 
       img : "cards/HIS-094.svg" , 
@@ -9341,6 +9587,68 @@ alert("NOT IMPLEMENTED");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent(his_self, faction) {
+        return 1;
+      },
+      onEvent(his_self, faction) {
+
+        his_self.addRegular("independent", "persia", 1);
+        his_self.addRegular("independent", "persia", 1);
+        his_self.addRegular("independent", "persia", 1);
+        his_self.addRegular("independent", "persia", 1);
+
+        his_self.game.state.events.war_in_persia = 1;
+
+	his_self.game.queue.push("war_in_persia_placement");
+
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "war_in_persia_placement") {
+
+	  let faction = "ottoman";
+	  let p = his_self.returnPlayerOfFaction(faction);
+	  if (his_self.game.player === p) {
+
+	    his_self.playerSelectUnitsWithFilterFromSpacesWithFilter(
+
+		faction,
+
+		(space) => {
+		  return his_self.returnFactionLandUnitsInSpace(faction, space);
+		},
+
+		(unit) => {
+		  if (unit.type == "mercentary") { return 1; };
+		  if (unit.type == "cavalry") { return 1; };
+		  if (unit.type == "regular") { return 1; };
+		  return 0;
+		},
+
+		5,
+
+		true,
+
+		(selected) => {
+		  for (let i = 0; i < selected.length; i++) {
+		    his_self.addMove(	"build" + "\t" +
+					"land" + "\t" + 
+					selected[i].type + "\t" +
+					"persia" + "\t" );
+		    his_self.addMove(	"remove_unit" + "\t" +
+					"land" + "\t" +
+					"england" + "\t" +
+					selected[i].type + "\t" +
+					selected[i].spacekey );
+		  }
+		  his_self.endTurn();
+		}
+	    );
+	  }
+	  return 0;
+	}
+        return 1;
+      }
     }
     deck['111'] = { 
       img : "cards/HIS-111.svg" , 
@@ -15756,14 +16064,79 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
   }
 
+  playerSelectUnitsWithFilterFromSpacesWithFilter(faction, space_filter_func, unit_filter_func, num=1, must_select_max=true, mycallback=null) {
 
-  async playerSelectOptions(options, num=1, must_select_max=true, mycallback=null) {
+    let his_self = this;
+    let selected = [];
+
+    let selectSpacesInterface = function(his_self, selected, selectSpacesInterface) {
+
+      his_self.playerSelectSpaceWithFilter(
+
+        ("Select Space of Unit" + (selected.length+1)),
+
+	space_filter_func,
+
+        function(spacekey) {
+
+	  let options = [];
+	  let space = his_self.game.spaces[spacekey];
+	  let units = space.units[faction];
+	  let num_remaining = num - selected.length;
+
+          for (let i = 0; i < units; i++) {
+	    if (unit_filter_func(units[i])) {
+	      let add_this_unit = true;
+	      for (let z = 0; z < selected.length; z++) {
+		if (z.spacekey == spacekey && i === unit_idx) { add_this_unit = false; }
+	      }
+	      if (add_this_unit == true) {
+	        options.push({ spacekey : spacekey, unit : units[i] , unit_idx : i });
+	      }
+	    }
+	  }
+
+  	  his_self.playerSelectOptions(options, num_remaining, false, function(array_of_unit_idxs) {
+
+	    //
+	    // selected options copied to selected
+	    //
+	    for (let i = 0; i < array_of_unit_idxs.length; i++) {
+	      let add_this_unit = true;
+	      for (let z = 0; z < selected.length; z++) {
+		if (selected[z].spacekey == options[array_of_unit_idxs[i]].spacekey && selected[z].unit_idx === array_of_unit_idxs[i]) { add_this_unit = false; }
+	      }
+	      if (add_this_unit == true) {
+		selected.push(options[array_of_unit_idxs[i]]);
+	      }
+	    }
+
+	    //    
+	    // still more needed?    
+	    //    
+	    let num_remaining = num - selected.length;
+	    if (num_remaining > 0) {
+	      selectSpacesInterface(his_self, selected, selectSpacesInterface);
+	    } else {
+	      mycallback(selected);
+	    }
+
+	  });
+	}
+      );
+    }
+
+    selectSpacesInterface(his_self, selected, selectSpacesInterface);
+
+  }
+
+  playerSelectOptions(options, num=1, must_select_max=true, mycallback=null) {
 
     let his_self = this;
     let options_selected = [];
     let cancel_func = null;
 
-    let selectOptionsInterface = async function(his_self, options_selected, selectOptionsInterface) {
+    let selectOptionsInterface = function(his_self, options_selected, selectOptionsInterface) {
 
       let remaining = num - options_selected.length;
 
