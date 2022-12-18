@@ -66,7 +66,7 @@ class League extends ModTemplate {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
-        this.renderIntos[qs].push(new LeagueLeaderboard(this.app, this, qs));
+        //this.renderIntos[qs].push(new LeagueLeaderboard(this.app, this, qs));
       }
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });

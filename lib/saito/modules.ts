@@ -73,7 +73,6 @@ console.log("CALLBACK AFFIXED: " + this.mods[i].returnName());
   }
 
   async handlePeerRequest(message, peer: Peer, mycallback = null) {
-
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
         this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);
