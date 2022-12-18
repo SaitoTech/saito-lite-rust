@@ -48,7 +48,7 @@
             twilight_self.addMove(`vp\t${player}\t2`);
 
           } else { //India fails invasion
-            winner = (invaded == "pakistan")? "Pakistan repels Indians aggression!": "India repels Pakistani aggression!";
+            winner = (invaded == "pakistan")? "Pakistan repels India!": "India repels Pakistan!";
             if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
             } else {

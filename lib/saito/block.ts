@@ -1132,12 +1132,12 @@ class Block {
   onChainReorganization(lc: boolean) {
     const block_id = this.returnId();
     for (let i = 0; i < this.transactions.length; i++) {
-      console.log("tx ocr " + i);
+      // console.log("tx ocr " + i);
       this.transactions[i].onChainReorganization(this.app, lc, block_id);
     }
-    console.log("done tx ocr 1");
+    // console.log("done tx ocr 1");
     this.lc = lc;
-    console.log("done tx ocr 2");
+    // console.log("done tx ocr 2");
   }
 
   asReadableString() {
