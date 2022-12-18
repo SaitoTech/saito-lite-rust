@@ -20,6 +20,9 @@
     for (let key in this.deck) {
       z.push(this.deck[key]);
     }
+    for (let key in this.diplomatic_deck) {
+      z.push(this.diplomatic_deck[key]);
+    }
 
     //
     // debaters have bonuses which modify gameplay

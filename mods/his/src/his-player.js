@@ -910,6 +910,19 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
   }
 
+  playerPlayDiplomacyCard(faction) {
+
+    let p = this.returnPlayerOfFaction(faction);
+    let his_self = this;
+
+    this.updateStatusAndListCards("Select Diplomacy Card to Play", this.game.deck[1].hand);
+    this.attachCardboxEvents(function(card) {
+      his_self.addMove("diplomacy_card_event\t"+faction+"\t"+card);
+      his_self.addMove("discard_diplomacy_card\t"+faction+"\t"+card);
+      his_self.endTurn();
+    });
+
+  }
 
   playerPlayCard(card, player, faction) {
 

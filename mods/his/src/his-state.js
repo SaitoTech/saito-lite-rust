@@ -3845,14 +3845,159 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	if (faction === "papacy") {
+
+          let f = his_self.returnAllyOfMinorPower("genoa");
+	  if (f != "papacy") {
+            his_self.deactivateMinorPower(f, "genoa");
+            his_self.activateMinorPower("papacy", "genoa");
+	  } else {
+	    his_self.game.queue.push("andrea_dorea_placement\tpapacy");
+	  }
+
+	}
+
+	if (faction === "protestant") {
+
+          let f = his_self.returnAllyOfMinorPower("genoa");
+	  if (f != "france") {
+            his_self.deactivateMinorPower(f, "genoa");
+            his_self.activateMinorPower("france", "genoa");
+	  } else {
+	    his_self.game.queue.push("andrea_dorea_placement\tprotestant");
+	  }
+
+	}
+
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "andrea_doria_placement") {
+
+	  let faction = mv[1];
+          his_self.game.queue.splice(qe, 1);
+
+          his_self.playerSelectSpaceWithFilter(
+
+            "Select Genoa Home Space for 4 Regulars",
+
+            function(space) {
+              if (space.home == "genoa") { return 1; }
+	      return 0;
+            },
+
+            function(spacekey) {
+              his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
+              his_self.endTurn();
+            }
+          );
+
+          return 0;
+        }
+	return 1;
+      }
     }
     deck['202'] = { 
       img : "cards/HIS-202.svg" , 
-      name : "Frech Constable Invades" ,
+      name : "French Constable Invades" ,
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	his_self.setEnemies("france", "papacy");
+
+	let p = his_self.returnPlayerOfFaction("protestant");
+
+	if (his_self.game.player == p) {
+
+          his_self.playerSelectSpaceWithFilter(
+
+            "Select French-Controlled Space",
+
+            function(space) {
+	      if (his_self.isSpaceControlledByFaction(space, "france")) { return 1; }
+	      return 0;
+            },
+
+            function(spacekey) {
+	      his_self.addMove("french_constable_invades\t"+spacekey);
+	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"protestant");
+              his_self.addMove(`DEAL\t1\t${p}\t1`);
+              his_self.addMove("add_army_leader\tfrance\t"+spacekey+"\tmontmorency");
+              his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+              his_self.endTurn();
+            }
+          );
+
+          return 0;
+
+	}
+
+	return 1;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "french_constable_invades") {
+
+	  let spacekey = mv[1];
+          his_self.game.queue.splice(qe, 1);
+
+ 	  let msg = "Choose Option:";
+          let html = '<ul>';
+          html += '<li class="option" id="squadron">1 squadron in French home port</li>';
+          html += '<li class="option" id="mercenaries">2 more mercenaries in '+spacekey+'</li>';
+    	  html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+	  $('.option').on('click', function () {
+
+	    let action = $(this).attr("id");
+	    if (action === "squadron") {
+
+              his_self.playerSelectSpaceWithFilter(
+
+                "Select French Home Port",
+
+                function(space) {
+                  if (space.ports.length > 0 && space.home == "french") {
+                    return 1;
+                  }
+                },
+
+                function(spacekey) {
+                  his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
+                  his_self.endTurn();
+                }
+
+              );
+	    }
+	    if (action === "mercenaries") {
+              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+              his_self.endTurn();
+	    }
+
+	  });
+
+	  return 0;
+	}
+
+        return 1;
+
+      },
     }
     deck['203'] = { 
       img : "cards/HIS-203.svg" , 
@@ -3861,6 +4006,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+alert("Corsair Raid");
+      },
     }
     deck['204'] = { 
       img : "cards/HIS-204.svg" , 
@@ -3869,6 +4017,49 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction(faction);
+        if (his_self.game.player == 0) {
+
+	  let mp = his_self.returnMinorPowers();
+	  let ca = [];
+	  let cd = [];
+
+	  for (let i = 0; i < mp.length; i++) {
+	    if (his_self.canFactionActivateMinorPower(faction, mp[i])) {
+	      if (his_self.returnAllyOfMinorPower(mp[i]) == faction) {
+	        ca.push(mp[i]);
+	      } else {
+	        cd.push(mp[i]);
+	      }
+	    }
+	  }
+	
+    	  let html = '<ul>';
+	  for (let i = 0; i < ca.length; i++) {
+            html += `<li class="option" id="${ca[i]}">activate ${ca[i]}</li>`;
+	  }
+	  for (let i = 0; i < cd.length; i++) {
+            html += `<li class="option" id="${cd[i]}">deactivate ${cd[i]}</li>`;
+	  }
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+	  $('.option').on('click', function () {
+
+	    let action = $(this).attr("id");
+	    if (ca.includes(action)) {
+	      his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+	    } else {
+	      his_self.addMove("deactivate_minor_power\t"+faction+"\t"+action);
+	    }
+	    his_self.endTurn();
+	  });
+	}
+
+	return 0;
+      },
     }
     deck['205'] = { 
       img : "cards/HIS-205.svg" , 
@@ -3877,14 +4068,109 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+alert("Diplomatic Pressure");
+      },
     }
     deck['206'] = { 
       img : "cards/HIS-206.svg" , 
-      name : "Frech Invasion" ,
+      name : "French Invasion" ,
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	his_self.setEnemies("france", "papacy");
+
+	let p = his_self.returnPlayerOfFaction("protestant");
+
+	if (his_self.game.player == p) {
+
+          his_self.playerSelectSpaceWithFilter(
+
+            "Select French-Controlled Space",
+
+            function(space) {
+	      if (his_self.isSpaceControlledByFaction(space, "france")) { return 1; }
+	      return 0;
+            },
+
+            function(spacekey) {
+	      his_self.addMove("french_invasion\t"+spacekey);
+	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"protestant");
+              his_self.addMove(`DEAL\t1\t${p}\t1`);
+	      if (his_self.game.state.leaders.francis_i) {
+                his_self.addMove("add_army_leader\tfrance\t"+spacekey+"\tfrancis-i");
+              } else {
+		his_self.addMove("add_army_leader\tfrance\t"+spacekey+"\thenry-ii");
+              }
+	      his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+              his_self.endTurn();
+            }
+          );
+
+	}
+
+        return 0;
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "french_invasion") {
+
+	  let spacekey = mv[1];
+          his_self.game.queue.splice(qe, 1);
+
+ 	  let msg = "Choose Option:";
+          let html = '<ul>';
+          html += '<li class="option" id="squadron">1 squadron in French home port</li>';
+          html += '<li class="option" id="mercenaries">2 more mercenaries in '+spacekey+'</li>';
+    	  html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+	  $('.option').on('click', function () {
+
+	    let action = $(this).attr("id");
+	    if (action === "squadron") {
+
+              his_self.playerSelectSpaceWithFilter(
+
+                "Select French Home Port",
+
+                function(space) {
+                  if (space.ports.length > 0 && space.home == "french") {
+                    return 1;
+                  }
+                },
+
+                function(spacekey) {
+                  his_self.addMove("build\tland\tfrench\t"+"squadron"+"\t"+spacekey);
+                  his_self.endTurn();
+                }
+
+              );
+	    }
+	    if (action === "mercenaries") {
+              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\tfrance\t"+"mercenary"+"\t"+spacekey);
+              his_self.endTurn();
+	    }
+
+	  });
+
+	  return 0;
+	}
+
+        return 1;
+
+      },
     }
     deck['207'] = { 
       img : "cards/HIS-207.svg" , 
@@ -3893,14 +4179,51 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+alert("Not Implemented");
+      },
     }
     deck['208'] = { 
       img : "cards/HIS-208.svg" , 
-      name : "Knights of St.John" ,
+      name : "Knights of St. John" ,
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction(faction);
+
+	his_self.game.queue.push("knights-of-saint-john\t"+faction);
+	his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+"faction");
+        his_self.game.queue.push(`DEAL\t1\t${p}\t1`);
+
+	return 1;
+
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "knights-of-saint-john") {
+
+          his_self.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let player = his_self.returnPlayerOfFaction(faction);
+
+	  if (player == his_self.game.player) {
+
+            let fhand_idx = his_self.returnFactionHandIdx(player, faction);
+	    let card = his_self.game.deck[0].cards[his_self.game.deck[0].hand[his_self.game.deck[0].hand[fhand_idx].length-1]];
+	    let ops = card.ops;
+
+	    his_self.addMove("NOTIFY\t"+faction+" pulls "+card.name+" - "+ops +" CP");
+	    his_self.addMove("build_saint_peters_with_cp\t"+ops);
+	    his_self.endTurn();
+
+	  }
+        }
+	return 0;
+      }
     }
     deck['209'] = { 
       img : "cards/HIS-209.svg" , 
@@ -3909,6 +4232,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+alert("Not Implemented");
+      },
     }
     deck['210'] = { 
       img : "cards/HIS-210.svg" , 
@@ -3917,6 +4243,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+alert("Not Implemented");
+      },
     }
     deck['211'] = { 
       img : "cards/HIS-211.svg" , 
@@ -3925,6 +4254,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+alert("Not Implemented");
+      },
     }
     deck['212'] = { 
       img : "cards/HIS-212.svg" , 
@@ -3933,6 +4265,51 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	let ally = his_self.returnAllyOfMinorPower("venice");
+
+	if (ally == "") {
+	  his_self.activateMinorPower("papacy", "venice");
+	}
+	if (ally == "hapsburg") {
+	  his_self.deactivateMinorPower("hapsburg", "venice");
+	}
+        if (ally === "papacy") {
+	  his_self.game.queue.push("venetian_alliance_placement");
+	}
+
+	return 1;
+
+      },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] == "venetian_alliance_placement") {
+
+          his_self.playerSelectSpaceWithFilter(
+
+            "Select Papal-Controlled Port not under Siege",
+
+            function(space) {
+	      if (his_self.isSpaceControlledByFaction(space, "papacy") && space.ports.length > 0 && !space.besieged) { return 1; }
+	      return 0;
+            },
+
+            function(spacekey) {
+	      his_self.addMove("build\tland\tvenice\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
+              his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
+              his_self.endTurn();
+            }
+          );
+
+          return 0;
+
+	}
+
+	return 1;
+
+      },
     }
     deck['213'] = { 
       img : "cards/HIS-213.svg" , 
@@ -3941,6 +4318,39 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction("papacy");
+
+	if (his_self.game.player == p) {
+
+          his_self.playerSelectSpaceWithFilter(
+
+            "Select Hapsburg-Controlled Space",
+
+            function(space) {
+	      if (his_self.isSpaceControlledByFaction(space, "hapsburg")) { return 1; }
+	      return 0;
+            },
+
+            function(spacekey) {
+	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"papacy");
+              his_self.addMove(`DEAL\t1\t${p}\t1`);
+              his_self.addMove("add_army_leader\tpapacy\t"+spacekey+"\tferdinand");
+	      his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+              his_self.endTurn();
+            }
+          );
+
+	}
+
+        return 0;
+      },
     }
     deck['214'] = { 
       img : "cards/HIS-214.svg" , 
@@ -3949,6 +4359,41 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction("papacy");
+
+	if (his_self.game.player == p) {
+
+          his_self.playerSelectSpaceWithFilter(
+
+            "Select Hapsburg-Controlled Space",
+
+            function(space) {
+	      if (his_self.isSpaceControlledByFaction(space, "hapsburg")) { return 1; }
+	      return 0;
+            },
+
+            function(spacekey) {
+	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"papacy");
+              his_self.addMove(`DEAL\t1\t${p}\t1`);
+              his_self.addMove("add_army_leader\tpapacy\t"+spacekey+"\tcharles-v");
+	      his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
+	      his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+              his_self.addMove("build\tland\thapsburg\t"+"mercenary"+"\t"+spacekey);
+              his_self.endTurn();
+            }
+          );
+
+	}
+
+        return 0;
+      },
     }
     deck['215'] = { 
       img : "cards/HIS-215.svg" , 
@@ -3965,6 +4410,44 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	let p = his_self.returnPlayerOfFaction("protestant");
+	his_self.setEnemies("ottoman", "papacy");
+
+	if (his_self.game.player == p) {
+
+          his_self.playerSelectSpaceWithFilter(
+
+            "Select Ottoman-Controlled Port",
+
+            function(space) {
+	      if (his_self.isSpaceControlledByFaction(space, "ottoman") && space.ports.length > 0) { return 1; }
+	      return 0;
+            },
+
+            function(spacekey) {
+	      his_self.addMove("hand_to_fhand\t1\t"+p+"\t"+"protestant");
+              his_self.addMove(`DEAL\t1\t${p}\t1`);
+              his_self.addMove("add_army_leader\tottoman\t"+spacekey+"\tsuleiman");
+	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
+	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
+	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
+	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
+              his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
+              his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
+              his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
+              his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
+              his_self.addMove("build\tland\tottoman\t"+"squadron"+"\t"+spacekey);
+              his_self.endTurn();
+            }
+          );
+
+	}
+
+        return 0;
+      },
     }
     deck['217'] = { 
       img : "cards/HIS-217.svg" , 
@@ -4083,25 +4566,25 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       faction : "hapsburg" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-        if (game_mod.isBesieged("charles-v")) { return 0; }
-        if (game_mod.isCaptured("charles-v")) { return 0; }
+        if (his_self.isBesieged("charles-v")) { return 0; }
+        if (his_self.isCaptured("charles-v")) { return 0; }
 	return 1;
       },
-      onEvent : function(game_mod, faction) {
+      onEvent : function(his_self, faction) {
 
-	let ck = game_mod.returnSpaceOfPersonage("hapsburg", "charles-v");
-	let ak = game_mod.returnSpaceOfPersonage("hapsburg", "duke-of-alva");
-	let ck_idx = game_mod.returnIndexOfPersonageInSpace("hapsburg", "charles-v", ck);
-	let ak_idx = game_mod.returnIndexOfPersonageInSpace("hapsburg", "duke-of-alva", ak);
+	let ck = his_self.returnSpaceOfPersonage("hapsburg", "charles-v");
+	let ak = his_self.returnSpaceOfPersonage("hapsburg", "duke-of-alva");
+	let ck_idx = his_self.returnIndexOfPersonageInSpace("hapsburg", "charles-v", ck);
+	let ak_idx = his_self.returnIndexOfPersonageInSpace("hapsburg", "duke-of-alva", ak);
 	
-        game_mod.playerSelectSpaceWithFilter(
+        his_self.playerSelectSpaceWithFilter(
 
 	  "Select Destination for Charles V: ",
 
 	  function(space) {
 		if (
 		  space.home === "hapsburg" &&
-		  !game_mod.isSpaceControlledByFaction(space, "hapsburg")
+		  !his_self.isSpaceControlledByFaction(space, "hapsburg")
 	        ) {
 		  return 1;
 	        }
@@ -4118,27 +4601,27 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
         	  html += '<li class="option" id="no">no</li>';
     		  html += '</ul>';
 
-    		  game_mod.updateStatusWithOptions(msg, html);
+    		  his_self.updateStatusWithOptions(msg, html);
 
 	          $('.option').off();
 	          $('.option').on('click', function () {
 	            let action = $(this).attr("id");
 		    if (action === "yes") {
-		      game_mod.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
-		      game_mod.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ak_key + "\t" + ak_idx + "\t" + "land" + spacekey);
-		      game_mod.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
-		      game_mod.endTurn();
+		      his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
+		      his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ak_key + "\t" + ak_idx + "\t" + "land" + spacekey);
+		      his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
+		      his_self.endTurn();
 		    } else {
-		      game_mod.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
-		      game_mod.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
-		      game_mod.endTurn();
+		      his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
+		      his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
+		      his_self.endTurn();
 		    }
 		  });
 
 		} else {
-		  game_mod.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
-		  game_mod.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
-		  game_mod.endTurn();
+		  his_self.addMove("ops\t"+faction+"\t"+"002"+"\t"+5);
+		  his_self.addMove("moveunit" + "\t" + faction + "\t" + "land" + "\t" + ck_key + "\t" + ck_idx + "\t" + "land" + spacekey);
+		  his_self.endTurn();
 		}
 
 	  },
@@ -4167,26 +4650,28 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       type : "normal" ,
       faction : "french" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(game_mod, faction) {
-	if (game_mod.game.state.leaders.francis_i == 1) {
-	  if (!game_mod.isCaptured("france", "francis-i")) { return 1; }
+      canEvent : function(his_self, faction) {
+	if (his_self.game.state.leaders.francis_i == 1) {
+	  if (!his_self.isCaptured("france", "francis-i")) { return 1; }
 	}
 	return 0;
       },
-      onEvent : function(game_mod, faction) {
-	game_mod.game.queue.push("patron-of-the-arts");
+      onEvent : function(his_self, faction) {
+	his_self.game.queue.push("patron-of-the-arts");
 	return 1;
       },
-      handleGameLoop : function(game_mod, qe, mv) {
+      handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] == "patron-of-the-arts") {
 
-	  let roll = game_mod.rollDice(6);
+          his_self.game.queue.splice(qe, 1);
 
-	  game_mod.updateLog("France rolls " + roll + " for Patron of the Arts");
+	  let roll = his_self.rollDice(6);
 
-	  if (game_mod.isSpaceControlledByFaction("milan", "france")) {
-	    game_mod.updateLog("French control Milan - roll adjusted to 6");
+	  his_self.updateLog("France rolls " + roll + " for Patron of the Arts");
+
+	  if (his_self.isSpaceControlledByFaction("milan", "france")) {
+	    his_self.updateLog("French control Milan - roll adjusted to 6");
 	    roll = 6;
 	  };
 
@@ -4194,10 +4679,10 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 	  // France wins 1 VP
 	  //
 	  if (roll >= 3) {
-	    if (game_mod.game.state.french_chateaux_vp < 6) {
-	      game_mod.updateLog("SUCCESS: France gains 1VP from Patron of the Arts");
-	      game_mod.game.state.french_chateaux_vp++;
-              game_mod.displayVictoryPoints();
+	    if (his_self.game.state.french_chateaux_vp < 6) {
+	      his_self.updateLog("SUCCESS: France gains 1VP from Patron of the Arts");
+	      his_self.game.state.french_chateaux_vp++;
+              his_self.displayVictoryPoints();
 	    }
 	  }
 
@@ -4237,33 +4722,33 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       type : "normal" , 
       faction : "papacy" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(game_mod, faction) {
+      canEvent : function(his_self, faction) {
 	return 1;
       },
-      onEvent : function(game_mod, faction) {
+      onEvent : function(his_self, faction) {
 
-	let p = game_mod.returnPlayerOfFaction("papacy");
+	let p = his_self.returnPlayerOfFaction("papacy");
 
-        game_mod.game.state.tmp_papacy_may_specify_debater = 1;
-        game_mod.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
+        his_self.game.state.tmp_papacy_may_specify_debater = 1;
+        his_self.game.state.tmp_papacy_may_specify_protestant_debater_unavailable = 1;
 
-	if (game_mod.game.player === p) {
+	if (his_self.game.player === p) {
 
           let msg = "Select Language Zone for Theological Debate:";
           let html = '<ul>';
 
-          if (game_mod.returnDebatersInLanguageZone("german", "protestant")) { 
+          if (his_self.returnDebatersInLanguageZone("german", "protestant")) { 
             html += '<li class="option" style="" id="german">German</li>';
           }
-          if (game_mod.returnDebatersInLanguageZone("french", "france")) { 
+          if (his_self.returnDebatersInLanguageZone("french", "france")) { 
             html += '<li class="option" style="" id="french">French</li>';
           }
-          if (game_mod.returnDebatersInLanguageZone("english", "france")) { 
+          if (his_self.returnDebatersInLanguageZone("english", "france")) { 
             html += '<li class="option" style="" id="english">English</li>';
           }
           html += '</ul>';
 
-          game_mod.updateStatusWithOptions(msg, html);
+          his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
           $('.option').on('click', function () {
@@ -4273,12 +4758,12 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
             let msg = "Leigzip Debate Format?";
             let html = '<ul>';
             html += '<li class="option" id="select">Pick My Debater</li>';
-            if (1 < game_mod.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
+            if (1 < his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
               html += '<li class="option" id="prohibit">Prohibit Protestant Debater</li>';
             }
             html += '</ul>';
 
-            game_mod.updateStatusWithOptions(msg, html);
+            his_self.updateStatusWithOptions(msg, html);
   
             $('.option').off();
             $('.option').on('click', function () {
@@ -4289,48 +4774,48 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
                 let msg = "Select Uncommitted Papal Debater:";
                 let html = '<ul>';
-		for (let i = 0; i < game_mod.game.state.debaters.length; i++) {
-		  let d = game_mod.game.state.debaters[i];
+		for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+		  let d = his_self.game.state.debaters[i];
 		  if (d.faction === "papacy") {
             	    html += `<li class="option" id="${i}">${d.name}</li>`;
 		  }
 		}
 		html += '</ul>';
-                game_mod.updateStatusWithOptions(msg, html);
+                his_self.updateStatusWithOptions(msg, html);
   
                 $('.option').off();
                 $('.option').on('click', function () {
                   let selected_papal_debater = $(this).attr("id");
-	          game_mod.addMove("theological_debate");
-        	  game_mod.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
-        	  game_mod.addMove("RESETCONFIRMSNEEDED\tall");
-	          game_mod.addMove("SETVAR\tstate\ttheological_debate\tselected_papal_debater\t"+selected_papal_debater);
-	          game_mod.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
-		  game_mod.endTurn();
+	          his_self.addMove("theological_debate");
+        	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
+        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	          his_self.addMove("SETVAR\tstate\ttheological_debate\tselected_papal_debater\t"+selected_papal_debater);
+	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
+		  his_self.endTurn();
 		});
 	
 	      } else {
 
                 let msg = "Prohibit Protestant Debater:";
                 let html = '<ul>';
-		for (let i = 0; i < game_mod.game.state.debaters.length; i++) {
-		  let d = game_mod.game.state.debaters[i];
+		for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+		  let d = his_self.game.state.debaters[i];
 		  if (d.faction !== "papacy" && d.language_zone === language_zone) {
             	    html += `<li class="option" id="${i}">${d.name}</li>`;
 		  }
 		}
 		html += '</ul>';
-                game_mod.updateStatusWithOptions(msg, html);
+                his_self.updateStatusWithOptions(msg, html);
   
                 $('.option').off();
                 $('.option').on('click', function () {
                   let prohibited_protestant_debater = $(this).attr("id");
-	          game_mod.addMove("theological_debate");
-        	  game_mod.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
-        	  game_mod.addMove("RESETCONFIRMSNEEDED\tall");
-	          game_mod.addMove("SETVAR\tstate\ttheological_debate\tprohibited_protestant_debater\t"+prohibited_protestant_debater);
-	          game_mod.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
-		  game_mod.endTurn();
+	          his_self.addMove("theological_debate");
+        	  his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate");
+        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	          his_self.addMove("SETVAR\tstate\ttheological_debate\tprohibited_protestant_debater\t"+prohibited_protestant_debater);
+	          his_self.addMove("pre_theological_debate\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted");
+		  his_self.endTurn();
 		});
 	
 	      }
@@ -4338,7 +4823,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 	  });
 
 	} else {
-	  game_mod.updateStatus("Papacy calling a Theological Debate");
+	  his_self.updateStatus("Papacy calling a Theological Debate");
 	}
 
 	return 0;
@@ -4354,25 +4839,25 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       type : "normal" ,
       faction : "protestant" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(game_mod, faction) {
-	if (game_mod.game.state.leaders.luther == 1) { return 1; }
-	if (Object.keys(game_mod.game.deck[0].discards).length > 0) { return 1; }
+      canEvent : function(his_self, faction) {
+	if (his_self.game.state.leaders.luther == 1) { return 1; }
+	if (Object.keys(his_self.game.deck[0].discards).length > 0) { return 1; }
 	return 0;
       },
-      onEvent : function(game_mod, faction) {
+      onEvent : function(his_self, faction) {
 
-	let p = game_mod.returnPlayerOfFaction(faction);
+	let p = his_self.returnPlayerOfFaction(faction);
 
-	if (game_mod.game.player === p) {
+	if (his_self.game.player === p) {
 
 	  let msg = "Retrieve Card from Discard Pile: ";
           let html = '<ul>';
-	  for (let key in game_mod.game.deck[0].discards) {
-            html += '<li class="option" id="${key}">${game_mod.game.deck[0].cards[key].name}</li>';
+	  for (let key in his_self.game.deck[0].discards) {
+            html += '<li class="option" id="${key}">${his_self.game.deck[0].cards[key].name}</li>';
 	  }
           html += '</ul>';
 
-    	  game_mod.updateStatusWithOptions(msg, html);
+    	  his_self.updateStatusWithOptions(msg, html);
 
 	  $('.option').off();
 	  $('.option').on('click', function () {
@@ -4386,7 +4871,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
             html += '<li class="option" id="hold}">hold card</li>';
             html += '</ul>';
 
-            game_mod.updateStatusWithOptions(msg, html);
+            his_self.updateStatusWithOptions(msg, html);
 
 	    $('.option').off();
 	    $('.option').on('click', function () {
@@ -4396,14 +4881,14 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
 	      if (action == "play") {
 
-		game_mod.addMove("card\tprotestant\t"+card);
-		game_mod.addMove("here_i_stand_event\t"+card);
-		game_mod.endTurn();
+		his_self.addMove("card\tprotestant\t"+card);
+		his_self.addMove("here_i_stand_event\t"+card);
+		his_self.endTurn();
 
 	      } else {
 
-		game_mod.addMove("here_i_stand_event\t"+card);
-		game_mod.endTurn();
+		his_self.addMove("here_i_stand_event\t"+card);
+		his_self.endTurn();
 
 	      }
 
@@ -4439,6 +4924,8 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] === "here_i_stand_event") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  //
 	  // first option not implemented
@@ -4536,45 +5023,45 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeck : function(his_self, player) { return 1; } ,
-      canEvent : function(game_mod, faction) {
+      canEvent : function(his_self, faction) {
 	return 1;
       },
-      onEvent : function(game_mod, faction) {
+      onEvent : function(his_self, faction) {
 
 	// set player to protestant
-	player = game_mod.returnPlayerOfFaction("protestant");
+	player = his_self.returnPlayerOfFaction("protestant");
 
 	// protestant gets 2 roll bonus at start
-	game_mod.game.state.tmp_protestant_reformation_bonus = 2;
-	game_mod.game.state.tmp_catholic_reformation_bonus = 0;
-	game_mod.game.state.tmp_reformations_this_turn = [];
+	his_self.game.state.tmp_protestant_reformation_bonus = 2;
+	his_self.game.state.tmp_catholic_reformation_bonus = 0;
+	his_self.game.state.tmp_reformations_this_turn = [];
 
-	game_mod.game.queue.push("protestant_reformation\t"+player);
-	game_mod.game.queue.push("protestant_reformation\t"+player);
-	game_mod.game.queue.push("protestant_reformation\t"+player);
-	game_mod.game.queue.push("protestant_reformation\t"+player);
-	game_mod.game.queue.push("protestant_reformation\t"+player);
-	game_mod.game.queue.push("protestant_reformation\t"+player);
-        game_mod.game.queue.push("ACKNOWLEDGE\tThe Reformation.!");
-        game_mod.convertSpace("protestant", "wittenberg");
-        game_mod.addUnit("protestant", "wittenberg", "regular");
-        game_mod.addUnit("protestant", "wittenberg", "regular");
-        game_mod.addReformer("protestant", "wittenberg", "luther-reformer");
-        game_mod.displaySpace("wittenberg");
+	his_self.game.queue.push("protestant_reformation\t"+player);
+	his_self.game.queue.push("protestant_reformation\t"+player);
+	his_self.game.queue.push("protestant_reformation\t"+player);
+	his_self.game.queue.push("protestant_reformation\t"+player);
+	his_self.game.queue.push("protestant_reformation\t"+player);
+	his_self.game.queue.push("protestant_reformation\t"+player);
+        his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation.!");
+        his_self.convertSpace("protestant", "wittenberg");
+        his_self.addUnit("protestant", "wittenberg", "regular");
+        his_self.addUnit("protestant", "wittenberg", "regular");
+        his_self.addReformer("protestant", "wittenberg", "luther-reformer");
+        his_self.displaySpace("wittenberg");
 
 	return 1;
       },
-      handleGameLoop : function(game_mod, qe, mv) {
+      handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] == "catholic_counter_reformation") {
 
           let player = parseInt(mv[1]);
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
-          game_mod.game.queue.splice(qe, 1);
+          his_self.game.queue.splice(qe, 1);
 
-	  if (game_mod.game.player == player) {
-            game_mod.playerSelectSpaceWithFilter(
+	  if (his_self.game.player == player) {
+            his_self.playerSelectSpaceWithFilter(
 
 	      "Select Counter-Reformation Attempt",
 
@@ -4585,8 +5072,8 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 		if (
 		  space.religion === "protestant" &&
 		  (space.language === language_zone || language_zone == "all") &&
-		  !game_mod.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
-		  game_mod.isSpaceAdjacentToReligion(space, "catholic")
+		  !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
+		  his_self.isSpaceAdjacentToReligion(space, "catholic")
 	        ) {
 		  return 1;
 	        }
@@ -4597,9 +5084,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 	      // launch counter_reformation
 	      //
 	      function(spacekey) {
-	  	game_mod.updateStatus("Counter-Reformation attempt in "+spacekey);
-		game_mod.addMove("counter_reformation\t"+spacekey);
-		game_mod.endTurn();
+	  	his_self.updateStatus("Counter-Reformation attempt in "+spacekey);
+		his_self.addMove("counter_reformation\t"+spacekey);
+		his_self.endTurn();
 	      },
 
 	      null
@@ -4616,10 +5103,10 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
           let player = parseInt(mv[1]);
           let language_zone = "german";
 	  if (mv[2]) { language_zone = mv[2]; }
-          game_mod.game.queue.splice(qe, 1);
+          his_self.game.queue.splice(qe, 1);
 
-	  if (game_mod.game.player == player) {
-            game_mod.playerSelectSpaceWithFilter(
+	  if (his_self.game.player == player) {
+            his_self.playerSelectSpaceWithFilter(
 
 	      "Select Reformation Attempt",
 
@@ -4629,9 +5116,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 	      function(space) {
 		if (
 		  space.religion === "catholic" &&
-		  !game_mod.game.state.tmp_reformations_this_turn.includes(space.key) &&
+		  !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
 		  (space.language === language_zone || language_zone == "all") &&
-		  game_mod.isSpaceAdjacentToReligion(space, "protestant")
+		  his_self.isSpaceAdjacentToReligion(space, "protestant")
 	        ) {
 		  return 1;
 	        }
@@ -4642,9 +5129,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 	      // launch reformation
 	      //
 	      function(spacekey) {
-	  	game_mod.updateStatus("Reformation attempt in "+spacekey);
-		game_mod.addMove("reformation\t"+spacekey);
-		game_mod.endTurn();
+	  	his_self.updateStatus("Reformation attempt in "+spacekey);
+		his_self.addMove("reformation\t"+spacekey);
+		his_self.endTurn();
 	      },
 
 	      null
@@ -4666,17 +5153,17 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
-      canEvent : function(game_mod, faction) { return 1; },
-      onEvent : function(game_mod, faction) {
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
 
 	// algiers space is now in play
-	game_mod.game.spaces['algiers'].home = "ottoman";
-	game_mod.game.spaces['algiers'].political = "ottoman";
-	game_mod.addRegular("ottoman", "algiers", 2);
-	game_mod.addCorsair("ottoman", "algiers", 2);
-	game_mod.game.state.events.barbary_pirates = 1;
-	game_mod.game.state.events.ottoman_piracy_enabled = 1;
-	game_mod.game.state.events.ottoman_corsairs_enabled = 1;
+	his_self.game.spaces['algiers'].home = "ottoman";
+	his_self.game.spaces['algiers'].political = "ottoman";
+	his_self.addRegular("ottoman", "algiers", 2);
+	his_self.addCorsair("ottoman", "algiers", 2);
+	his_self.game.state.events.barbary_pirates = 1;
+	his_self.game.state.events.ottoman_piracy_enabled = 1;
+	his_self.game.state.events.ottoman_corsairs_enabled = 1;
 
 	return 1;
       },
@@ -4689,10 +5176,10 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(game_mod, faction) { return 1; },
-      onEvent : function(game_mod, faction) {
-	game_mod.game.state.leaders.leo_x = 0;
-	game_mod.game.state.leaders.clement_vii = 1;
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
+	his_self.game.state.leaders.leo_x = 0;
+	his_self.game.state.leaders.clement_vii = 1;
 	return 1;
       },
 
@@ -4704,21 +5191,21 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
-      canEvent : function(game_mod, faction) { return 1; },
-      onEvent : function(game_mod, faction) {
+      canEvent : function(his_self, faction) { return 1; },
+      onEvent : function(his_self, faction) {
 
-	let papacy = game_mod.returnPlayerOfFaction("papacy");
+	let papacy = his_self.returnPlayerOfFaction("papacy");
 
 	// deal extra card if player is england
-	if (player === game_mod.returnPlayerOfFaction("england")) {
-	  let faction_hand_idx = game_mod.returnFactionHandIdx(player, "england");   
- 	  game_mod.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.players_info[player-1].factions[faction_hand_idx]);
-	  game_mod.game.queue.push(`DEAL\t1\t${player}\t1`);
+	if (player === his_self.returnPlayerOfFaction("england")) {
+	  let faction_hand_idx = his_self.returnFactionHandIdx(player, "england");   
+ 	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.players_info[player-1].factions[faction_hand_idx]);
+	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
         }
 	// three counter-reformation attempts
-	game_mod.game.queue.push(`counter_reformation_attempt\t${papacy}`);
-	game_mod.game.queue.push(`counter_reformation_attempt\t${papacy}`);
-	game_mod.game.queue.push(`counter_reformation_attempt\t${papacy}`);
+	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
+	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
+	his_self.game.queue.push(`counter_reformation_attempt\t${papacy}`);
 
 	return 1;
       },
@@ -4730,27 +5217,27 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
+      onEvent : function(his_self, faction) {
 
 	let f = {};
-	if (!f[game_mod.game.spaces['genoa'].political]) { f[game_mod.game.spaces['genoa'].political] = 1; }
-	else { f[game_mod.game.spaces['genoa'].political]++ }
+	if (!f[his_self.game.spaces['genoa'].political]) { f[his_self.game.spaces['genoa'].political] = 1; }
+	else { f[his_self.game.spaces['genoa'].political]++ }
 
 	for (let key in f) {
 	  if (f[key] >= 4) {
-	    game_mod.gainVictoryPoints(faction, 3);
+	    his_self.gainVictoryPoints(faction, 3);
 	  }
 	  if (f[key] == 3) {
-	    game_mod.gainVictoryPoints(faction, 2);
+	    his_self.gainVictoryPoints(faction, 2);
 	  }
 	  if (f[key] == 2) {
-	    let faction_hand_idx = game_mod.returnFactionHandIdx(player, key);
- 	    game_mod.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.players_info[player-1].factions[faction_hand_idx]);
-	    game_mod.game.queue.push(`DEAL\t1\t${player}\t1`);
+	    let faction_hand_idx = his_self.returnFactionHandIdx(player, key);
+ 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.players_info[player-1].factions[faction_hand_idx]);
+	    his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
 	  }
 	}
 
-	game_mod.displayVictoryTrack();
+	his_self.displayVictoryTrack();
 
       }
     }
@@ -4762,9 +5249,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
         turn : 1 ,
         type : "mandatory" ,
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-        onEvent : function(game_mod, faction) {
+        onEvent : function(his_self, faction) {
           state.events.schmalkaldic_league = 1;
-          game_mod.game.state.activated_powers["papacy"].push("hapsburg");
+          his_self.game.state.activated_powers["papacy"].push("hapsburg");
         }
       }
     } else {
@@ -4775,7 +5262,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
         turn : 1 ,
         type : "mandatory" ,
         removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-        onEvent : function(game_mod, faction) {
+        onEvent : function(his_self, faction) {
           state.events.schmalkaldic_league = 1;
         }
       }
@@ -4787,11 +5274,11 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 3 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
-	game_mod.game.state.leaders.leo_x = 0;
-	game_mod.game.state.leaders.clement_vii = 0;
-	game_mod.removeCardFromGame('010'); // remove clement vii
-	game_mod.game.state.leaders.paul_iii = 1;
+      onEvent : function(his_self, faction) {
+	his_self.game.state.leaders.leo_x = 0;
+	his_self.game.state.leaders.clement_vii = 0;
+	his_self.removeCardFromGame('010'); // remove clement vii
+	his_self.game.state.leaders.paul_iii = 1;
 	return 1;
       },
 
@@ -4803,12 +5290,12 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 5 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
-      onEvent : function(game_mod, faction) {
+      onEvent : function(his_self, faction) {
 
-	let papacy = game_mod.returnPlayerOfFaction("papacy");
-	if (game_mod.game.player === papacy) {
+	let papacy = his_self.returnPlayerOfFaction("papacy");
+	if (his_self.game.player === papacy) {
 
-	  game_mod.game.state.events.papacy_may_found_jesuit_universities = 1;
+	  his_self.game.state.events.papacy_may_found_jesuit_universities = 1;
 
 	  return 0;
 	}
@@ -4823,25 +5310,25 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
+      onEvent : function(his_self, faction) {
 
-	game_mod.game.state.leaders['luther'] = 0;
-	game_mod.game.state.leaders['calvin'] = 1;
+	his_self.game.state.leaders['luther'] = 0;
+	his_self.game.state.leaders['calvin'] = 1;
 
-	let x = game_mod.returnSpaceOfPersonage("luther-reformer");
-	let y = game_mod.returnIndexOfPersonageInSpace("luther-reformer");
+	let x = his_self.returnSpaceOfPersonage("luther-reformer");
+	let y = his_self.returnIndexOfPersonageInSpace("luther-reformer");
 
 	if (y > -1) {
-	  game_mod.game.spaces[x].units["protestant"].splice(y, 1);
+	  his_self.game.spaces[x].units["protestant"].splice(y, 1);
 	}
 
-	for (let i = 0; i < game_mod.game.state.debaters.length; i++) {
-	  if (game_mod.game.state.debaters[i].type === "luther-debater") {
-	    game_mod.game.state.debaters.splice(i, 1);
+	for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+	  if (his_self.game.state.debaters[i].type === "luther-debater") {
+	    his_self.game.state.debaters.splice(i, 1);
 	  }
 	}
 
-	game_mod.updateLog("Luther dies and is replaced by Calvin");
+	his_self.updateLog("Luther dies and is replaced by Calvin");
 
 	return 0;
       }
@@ -4869,8 +5356,8 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
-	game_mod.game.state.leaders.edward_vi = 1;
+      onEvent : function(his_self, faction) {
+	his_self.game.state.leaders.edward_vi = 1;
 	return 1;
       },
     }
@@ -4881,9 +5368,9 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
-	game_mod.game.state.leaders.francis_i = 0;
-	game_mod.game.state.leaders.henry_ii = 1;
+      onEvent : function(his_self, faction) {
+	his_self.game.state.leaders.francis_i = 0;
+	his_self.game.state.leaders.henry_ii = 1;
 	return 1;
       },
     }
@@ -4894,11 +5381,11 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
-	game_mod.game.state.leaders.henry_viii = 0;
-	game_mod.game.state.leaders.edward_vi = 0;
-	game_mod.game.state.leaders.mary_i = 1;
-	game_mod.removeCardFromGame('021');
+      onEvent : function(his_self, faction) {
+	his_self.game.state.leaders.henry_viii = 0;
+	his_self.game.state.leaders.edward_vi = 0;
+	his_self.game.state.leaders.mary_i = 1;
+	his_self.removeCardFromGame('021');
 	return 1;
       },
     }
@@ -4909,13 +5396,13 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 7 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
-	game_mod.game.state.leaders.leo_x = 0;
-	game_mod.game.state.leaders.clement_vii = 0;
-	game_mod.game.state.leaders.paul_iii = 0;
-	game_mod.game.state.leaders.julius_iii = 1;
-	game_mod.removeCardFromGame('010');
-	game_mod.removeCardFromGame('014');
+      onEvent : function(his_self, faction) {
+	his_self.game.state.leaders.leo_x = 0;
+	his_self.game.state.leaders.clement_vii = 0;
+	his_self.game.state.leaders.paul_iii = 0;
+	his_self.game.state.leaders.julius_iii = 1;
+	his_self.removeCardFromGame('010');
+	his_self.removeCardFromGame('014');
 	return 1;
       },
     }
@@ -4926,13 +5413,13 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       turn : 0 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
-	game_mod.game.state.leaders.henry_viii = 0;
-	game_mod.game.state.leaders.edward_vi = 0;
-	game_mod.game.state.leaders.mary_i = 0;
-	game_mod.game.state.leaders.elizabeth_i = 1;
-	game_mod.removeCardFromGame('019');
-	game_mod.removeCardFromGame('021');
+      onEvent : function(his_self, faction) {
+	his_self.game.state.leaders.henry_viii = 0;
+	his_self.game.state.leaders.edward_vi = 0;
+	his_self.game.state.leaders.mary_i = 0;
+	his_self.game.state.leaders.elizabeth_i = 1;
+	his_self.removeCardFromGame('019');
+	his_self.removeCardFromGame('021');
 	return 1;
       },
     }
@@ -4969,7 +5456,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "field_battle") {
-          player = game_mod.returnPlayerOfFaction(faction);
+          player = his_self.returnPlayerOfFaction(faction);
 	  player.tmp_roll_bonus = 2;
         }
         return 1;
@@ -5007,7 +5494,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "field_battle") {
-          player = game_mod.returnPlayerOfFaction(faction);
+          player = his_self.returnPlayerOfFaction(faction);
 	  player.tmp_roll_bonus = 2;
 	  if (faction === "france" || faction === "ottoman") {
 	    player.tmp_roll_bonus = 3;
@@ -5050,7 +5537,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
         if (menu == "field_battle") {
 	  alet("Mercenaries Bribed...");
 
-          //player = game_mod.returnPlayerOfFaction(faction);
+          //player = his_self.returnPlayerOfFaction(faction);
 	  //if (faction === "france" || faction === "ottoman") {
 	  //  player.tmp_roll_bonus = 3;
 	  //}
@@ -5092,7 +5579,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
         if (menu == "assault") {
 	  alet("Mercenaries Grow Restless...");
 
-          //player = game_mod.returnPlayerOfFaction(faction);
+          //player = his_self.returnPlayerOfFaction(faction);
 	  //if (faction === "france" || faction === "ottoman") {
 	  //  player.tmp_roll_bonus = 3;
 	  //}
@@ -5132,7 +5619,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "assault") {
-          player = game_mod.returnPlayerOfFaction(faction);
+          player = his_self.returnPlayerOfFaction(faction);
 	  if (his_self.game.state.active_player === player) {
 	    player.tmp_roll_bonus = 3;
 	  }
@@ -5172,7 +5659,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "assault") {
-          player = game_mod.returnPlayerOfFaction(faction);
+          player = his_self.returnPlayerOfFaction(faction);
 	  if (his_self.game.state.active_player === player) {
 	    player.tmp_roll_first = 1;
 	  }
@@ -5559,11 +6046,11 @@ alert("Wartburg Triggers");
       turn : 3 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
+      onEvent : function(his_self, faction) {
 
-	if (player == game_mod.game.player) {
+	if (player == his_self.game.player) {
 
-	  let powers = game_mod.returnImpulseOrder();
+	  let powers = his_self.returnImpulseOrder();
 	  let msg = "Declare War on which Power?";
 
           let html = '<ul>';
@@ -5572,7 +6059,7 @@ alert("Wartburg Triggers");
 	  }
           html += '</ul>';
 
-    	  game_mod.updateStatusWithOptions(msg, html);
+    	  his_self.updateStatusWithOptions(msg, html);
 
 	  $('.option').off();
 	  $('.option').on('click', function () {
@@ -5580,9 +6067,9 @@ alert("Wartburg Triggers");
 	    $('.option').off();
 	    let action = $(this).attr("id");
 
-            game_mod.addMove("ops\t"+faction+"\t"+"004"+"\t"+2);
-            game_mod.addMove("declare_war\t"+faction+"\t"+action);
-	    game_mod.endTurn();
+            his_self.addMove("ops\t"+faction+"\t"+"004"+"\t"+2);
+            his_self.addMove("declare_war\t"+faction+"\t"+action);
+	    his_self.endTurn();
 
 	  });
 
@@ -5700,7 +6187,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
                 html += '<li class="option" id="discard">protestants discard</li>';
     		html += '</ul>';
 
-    	    game_mod.updateStatusWithOptions(msg, html);
+    	    his_self.updateStatusWithOptions(msg, html);
 
 	    $('.option').off();
 	    $('.option').on('click', function () {
@@ -5764,11 +6251,11 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       turn : 4 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      onEvent : function(game_mod, faction) {
+      onEvent : function(his_self, faction) {
 
-	game_mod.updateLog(faction + " gets 1 VP from Michael Servetus");
-	game_mod.game.state.events.michael_servetus = faction;
-	game_mod.game.queue.push("discard_random\tprotestant\t1");
+	his_self.updateLog(faction + " gets 1 VP from Michael Servetus");
+	his_self.game.state.events.michael_servetus = faction;
+	his_self.game.queue.push("discard_random\tprotestant\t1");
 
       }
     }
@@ -5889,7 +6376,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       },
       onEvent : function(his_self, faction) {
 
-	player = game_mod.returnPlayerOfFaction("protestant");
+	player = his_self.returnPlayerOfFaction("protestant");
 
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
@@ -6352,8 +6839,8 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 	if (his_self.isSpaceControlledByFaction("calais", "england") && his_self.isSpaceControlledByFaction("antwerp", "hapsburg")) {
 
-          let p1 = game_mod.returnPlayerOfFaction("england");
-          let p2 = game_mod.returnPlayerOfFaction("hapsburg");
+          let p1 = his_self.returnPlayerOfFaction("england");
+          let p2 = his_self.returnPlayerOfFaction("hapsburg");
 
           his_self.game.queue.push("cloth-prices-fluctuate-option1\t"+faction);
 
@@ -6372,6 +6859,8 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] == "cloth-prices-fluctuate-option1") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 	  let p = his_self.returnPlayerOfFaction(faction);
@@ -6420,6 +6909,8 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 
         if (mv[0] == "cloth-prices-fluctuate-option2") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 	  let f = his_self.returnFactionControllingSpace("antwerp");
@@ -6506,7 +6997,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	  for (let i = 0; i < cd.length; i++) {
             html += `<li class="option" id="${cd[i]}">deactivate ${cd[i]}</li>`;
 	  }
-          game_mod.updateStatusWithOptions(msg, html);
+          his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
 	  $('.option').on('click', function () {
@@ -6553,6 +7044,8 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] == "diplomatic-overturn") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 	  let p = his_self.returnPlayerOfFaction(faction);
@@ -6773,7 +7266,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	    function(space) {
 	      if (
 		space.home === "france" &&
-		!game_mod.isOccupied(space)
+		!his_self.isOccupied(space)
 	      ) {
 		return 1;
 	      }
@@ -6789,7 +7282,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	          if (
 	  	    space.home === "france" &&
 	  	    space.key != space1 &&
-		    !game_mod.isOccupied(space)
+		    !his_self.isOccupied(space)
 	          ) {
 		    return 1;
 	          }
@@ -6988,7 +7481,7 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
     }
     deck['086'] = { 
       img : "cards/HIS-086.svg" , 
-      name : "Knights of St.John" ,
+      name : "Knights of St. John" ,
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
@@ -7285,6 +7778,8 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
         if (mv[0] == "revolt_in_egypt_placement") {
 
+          his_self.game.queue.splice(qe, 1);
+
 	  let faction = "ottoman";
 	  let p = his_self.returnPlayerOfFaction(faction);
 	  if (his_self.game.player === p) {
@@ -7364,6 +7859,8 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
       handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] == "revolt_in_ireland_bonus_resistance") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
 
@@ -7456,6 +7953,8 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 
 
         if (mv[0] == "revolt_in_ireland_placement") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  let faction = "england";
 	  let p = his_self.returnPlayerOfFaction(faction);
@@ -7690,6 +8189,8 @@ alert("NOT IMPLEMENTED");
       handleGameLoop : function(his_self, qe, mv) {
 
         if (mv[0] == "war_in_persia_placement") {
+
+          his_self.game.queue.splice(qe, 1);
 
 	  let faction = "ottoman";
 	  let p = his_self.returnPlayerOfFaction(faction);

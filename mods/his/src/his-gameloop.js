@@ -27,7 +27,6 @@ console.log("MOVE: " + mv[0]);
 	//
         if (mv[0] == "init") {
           this.game.queue.splice(qe, 1);
-
 	  return 1;
         }
 
@@ -40,7 +39,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("diplomacy_phase");
+	  this.game.queue.push("diplomacy_phase");
 
 this.game.queue.push("is_testing");
 
@@ -364,15 +363,27 @@ alert("removing unit not implement for sea");
 	  return 1;
 	}
 
-        if (mv[0] === "event") {
+        if (mv[0] === "diplomacy_card_event") {
 
-	  let player = parseInt(mv[1]);
+	  let faction = mv[1];
 	  let card = mv[2];
-	  let faction = mv[3];
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (!this.deck[card].onEvent(this, player)) { return 0; }
+	  if (!this.diplomatic_deck[card].onEvent(this, faction)) { return 0; }
+
+	  return 1;
+	}
+
+
+        if (mv[0] === "event") {
+
+	  let faction = mv[1];
+	  let card = mv[2];
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (!this.deck[card].onEvent(this, faction)) { return 0; }
 
 	  return 1;
 	}
@@ -3684,6 +3695,19 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	}
 
 
+	if (mv[0] === "build_saint_peters_with_cp") {
+
+	  let ops = parseInt(mv[1]);
+
+	  this.game.queue.splice(qe, 1);
+
+          for (let i = 0; i < ops; i++) {
+            his_self.game.queue.push("build_saint_peters");
+          }
+
+	  return 1;
+
+	}
 
         if (mv[0] === "build_saint_peters") {
 
@@ -3829,10 +3853,13 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
 	  //
-	  if (this.game.state.round > 1) {
+//
+// HACK should only happen after 2nd round
+//
+//	  if (this.game.state.round > 1) {
     	    this.game.queue.push("play_diplomacy_card\tpapacy");
     	    this.game.queue.push("play_diplomacy_card\tprotestant");
-	  }
+//	  }
 
 	  //
 	  // 2-player game? Diplomacy Deck
@@ -4134,6 +4161,33 @@ console.log("----------------------------");
 	  this.game.queue.splice(qe, 1);
 
 	  return 0;
+	}
+
+	if (mv[0] === "discard_diplomacy_card") {
+
+	  let faction = mv[1];
+	  let card = mv[2];
+	  let player_of_faction = this.returnPlayerOfFaction(faction);
+
+	  //
+	  // move into discards
+	  //
+	  this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+
+	  //
+	  // and remove from hand
+	  //
+	  if (this.game.player === player_of_faction) {
+	    for (let i = 0; i < this.game.deck[1].hand.length; i++) {
+	      if (this.game.deck[1].hand[i] === card) {
+		this.game.deck[1].hand.splice(i, 1);
+	      }
+	    }
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
 	}
 
 	// moves into discard pile
