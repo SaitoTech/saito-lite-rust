@@ -14,7 +14,7 @@ class Arcade extends ModTemplate {
     this.icon_fa = "fas fa-gamepad";
     this.ui_initialized = false;
 
-    this.styles = ['/saito/saitox.css'];
+    this.styles = ['/arcadex/style.css'];
     this.debug = false;
   }
 
@@ -25,6 +25,7 @@ class Arcade extends ModTemplate {
   }
   renderInto(qs) {
     if (qs == ".redsquare-sidebar") {
+      this.styles = ['/arcadex/css/arcade-join-game-overlay.css'];
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new InviteManager(this.app, this, ".arcade-invites-box"));

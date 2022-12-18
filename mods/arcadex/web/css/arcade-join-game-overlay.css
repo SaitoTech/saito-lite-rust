@@ -1,0 +1,40 @@
+
+.arcade-game-overlay {
+    background-color: whitesmoke;
+    width: 60vw;
+    height: max-content;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: grid;
+    grid-template-rows: 8rem max-content;
+}
+
+.arcade-game-overlay-header-image {
+    background-image: url(/twilight/img/arcade/arcade.jpg);
+    background-size: cover;
+    width: 11rem;
+    height: 7rem;
+    float: left;
+    margin-right: 1rem;
+}
+
+.arcade-game-overlay-header-title-box-title {
+    font-size: 4rem;
+}
+
+.arcade-game-overlay-header-title-box-desc {
+    2rem;
+}
+
+.arcade-game-overlay-create-game-button {
+    float: right;
+    margin-right: 0;
+    min-width: 20rem;
+}
+
+.arcade-game-overlay-body {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+}
+
+
