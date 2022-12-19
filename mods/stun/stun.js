@@ -3,11 +3,11 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
 const StunAppspace = require('./lib/appspace/main');
 
-//const ChatManagerLarge = require('./lib/components/chat-manager-large');
-//const ChatManagerSmall = require("./lib/components/chat-manager-small");
-//const InviteOverlay = require("./lib/components/invite-overlay");
-//const StunxGameMenu = require("./lib/game-menu/main");
-//const StunxInvite = require("./lib/invite/main");
+const ChatManagerLarge = require('./lib/components/chat-manager-large');
+const ChatManagerSmall = require("./lib/components/chat-manager-small");
+const InviteOverlay = require("./lib/components/invite-overlay");
+// const StunxGameMenu = require("./lib/game-menu/main");
+// const StunxInvite = require("./lib/invite/main");
 
 
 
@@ -27,9 +27,9 @@ class Stunx extends ModTemplate {
         this.remoteStreamPosition = 0;
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
-        //this.ChatManagerLarge = new ChatManagerLarge(app, this);
-        //this.ChatManagerSmall = new ChatManagerSmall(app, this);
-        //this.InviteOverlay = new InviteOverlay(app, this);
+        this.ChatManagerLarge = new ChatManagerLarge(app, this);
+        this.ChatManagerSmall = new ChatManagerSmall(app, this);
+        this.InviteOverlay = new InviteOverlay(app, this);
         this.icon = "fas fa-video"
         //this.stunxGameMenu = new StunxGameMenu(app, this);
         this.localStream = null;
@@ -78,7 +78,7 @@ class Stunx extends ModTemplate {
                 this.renderIntos[qs] = [];
                 this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
             }
-            this.styles = [`/${this.returnSlug()}/css/style.css`,];
+            this.styles = [`/${this.returnSlug()}/style.css`];
             this.attachStyleSheets();
             this.renderIntos[qs].forEach((comp) => { comp.render(); });
         }
@@ -185,24 +185,24 @@ class Stunx extends ModTemplate {
                     app.connection.emit('game-start-audio-call', public_key);
                 }
             },
-                // {
-                //     text: "Stun connect",
-                //     icon: "",
-                //     callback: function (app, public_key) {
-                //         // app.connection.emit('game-start-audio-call', public_key);
-                //         let stunx = app.modules.returnModule("Stunx");
-                //         stunx.createStunConnectionWithPeers([public_key]);
-                //     }
-                // },
-                // {
-                //     text: "Send Message to peer",
-                //     icon: "",
-                //     callback: function (app, public_key) {
-                //         // app.connection.emit('game-start-audio-call', public_key);
-                //         let stunx = app.modules.returnModule("Stunx");
-                //         stunx.sendRequest(public_key);
-                //     }
-                // }
+            {
+                text: "Stun connect",
+                icon: "",
+                callback: function (app, public_key) {
+                    // app.connection.emit('game-start-audio-call', public_key);
+                    let stunx = app.modules.returnModule("Stunx");
+                    stunx.createStunConnectionWithPeers([public_key]);
+                }
+            },
+            {
+                text: "Send Message to peer",
+                icon: "",
+                callback: function (app, public_key) {
+                    // app.connection.emit('game-start-audio-call', public_key);
+                    let stunx = app.modules.returnModule("Stunx");
+                    stunx.sendRequest(public_key);
+                }
+            }
             ]
         }
         return null;
