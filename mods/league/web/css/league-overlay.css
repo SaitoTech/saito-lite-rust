@@ -5,8 +5,9 @@
     height: 90vh;
     padding: 1rem;
     border-radius: 0.5rem;
-    display: grid;
-    grid-template-rows: 7rem max-content;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
 }
 
 .league-overlay-header-image {
@@ -14,27 +15,40 @@
     background-size: cover;
     width: 11rem;
     height: 7rem;
-    float: left;
-    margin-right: 1rem;
 }
 
 .league-overlay-header-title-box-title {
     font-size: 4rem;
 }
 
-.league-overlay-header-title-box-desc {
-    2rem;
-}
-
 .league-overlay-create-game-button {
-    float: right;
-    margin-right: 0;
     min-width: 20rem;
+    max-width: 25rem;
 }
 
 .league-overlay-body {
     display: grid;
     grid-template-columns: 1fr max-content;
+    grid-gap: 2rem;
 }
 
 
+.league-overlay-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.league-over-header-controls {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+}
+
+.league-overlay-league-body-games {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+}
