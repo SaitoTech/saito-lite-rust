@@ -81,14 +81,12 @@ class Midnight extends GameTemplate {
       });
 
       // Add Chat Features to Menu
-      this.menu.addChatMenu(app, this, this.game.sides);
-
+      this.menu.addChatMenu();
 
      // Render menu and attach events
-      this.menu.render(app, this);
+      this.menu.render();
 
-      this.playerbox.render(app, this);
-      this.playerbox.attachEvents(app, this);
+      this.playerbox.render();
 
   }
 

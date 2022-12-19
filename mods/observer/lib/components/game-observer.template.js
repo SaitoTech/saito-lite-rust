@@ -11,7 +11,7 @@ module.exports = GameObserverTemplate = (step) => {
         <div id="game-observer-play-btn" class="game-observer-btn play-state"><i class="fas fa-play" title="Play moves continually"></i><i class="fas fa-pause" title="Stop execution and queue all incoming game moves"></i></div>
         <div id="game-observer-next-btn" class="game-observer-btn play-state"><i class="fas fa-forward" title="Fast forward"></i><i class="fas fa-step-forward" title="Move forward one game step"></i></div>
       </div>
-      <div id="obstatus" class="status"></div>
+      <div id="obstatus"></div>
       
     </div>
   `;

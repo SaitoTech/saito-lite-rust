@@ -78,9 +78,7 @@ class Imperium extends GameTemplate {
   //
   initializeGameObjects() {
 
-    this.hud.render(this.app, this);
-    this.hud.attachEvents(this.app, this);
+    this.hud.render();
 
-    this.log.render(this.app, this);
-    this.log.attachEvents(this.app, this);
+    this.log.render();
 

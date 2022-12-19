@@ -131,6 +131,19 @@ body {
 }
 
 
+.game_status_indicator {
+  position: absolute;
+  font-size: 20px;
+}
+  
+ .game_status_indicator.game_live {
+  color: crimson;
+}
+  
+ .game_status_indicator.game_over {
+  color: darkgrey;
+}
+
 
 
 /* game-create-menu */ 

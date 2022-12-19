@@ -440,7 +440,8 @@ img {
 }
 
 .gameboard {
-  position: relative;
+  position: relative; /* sizer turns this to absolute */
+  margin: 50px 5px;
 }
 
 .city {

@@ -199,7 +199,7 @@ class Server {
 
         console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
         res.status(400);
-        res.send({
+        res.end({
           error: {
             message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
           },
@@ -232,8 +232,8 @@ class Server {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
         });
-        res.write(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
-        res.end();
+        res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
+        //res.end();
       } catch (err) {
         //
         // file does not exist on disk, check in memory
@@ -242,7 +242,7 @@ class Server {
 
         console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
         res.status(400);
-        res.send({
+        res.end({
           error: {
             message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
           },
@@ -308,9 +308,9 @@ class Server {
           const liteblock = block.returnLiteBlock(keylist);
           const buffer = Buffer.from(liteblock.serialize()); //.toString("base64");
 
-          //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
-          res.write(buffer, "utf8");
-          res.end();
+          //res.send(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
+          res.end(buffer, "utf8");
+          //res.end();
           return;
         }
 
@@ -327,7 +327,7 @@ class Server {
           //   "Content-Transfer-Encoding": "utf8",
           // });
           // res.send("{}");
-          // res.end();
+          // //res.end();
           res.sendStatus(404);
           return;
         } else {
@@ -337,12 +337,11 @@ class Server {
             "Content-Type": "text/plain",
             "Content-Transfer-Encoding": "utf8",
           });
-
           const liteblock = block.returnLiteBlock(keylist);
           const buffer = Buffer.from(liteblock.serialize()); //, "binary").toString("base64");
-          res.write(buffer);
-          //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
-          res.end();
+          res.end(buffer);
+          //res.send(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
+          //res.end();
           return;
         }
 
@@ -447,8 +446,8 @@ class Server {
         "Content-Type": "text/json",
         "Content-Transfer-Encoding": "utf8",
       });
-      res.write(Buffer.from(JSON.stringify(this.app.options.runtime)), "utf8");
-      res.end();
+      res.end(Buffer.from(JSON.stringify(this.app.options.runtime)), "utf8");
+      //res.end();
     });
 
     app.get("/r", (req, res) => {
