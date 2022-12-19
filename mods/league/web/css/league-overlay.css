@@ -1,6 +1,6 @@
 
 .league-overlay {
-    background-color: whitesmoke;
+    background-color: var(--saito-background-color);
     width: 90vw;
     height: 90vh;
     padding: 1rem;
