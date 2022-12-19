@@ -691,7 +691,7 @@ console.log("---------------------");
     //
     const lowest_block: bigint =
       this.app.blockchain.blockchain.last_block_id -
-      this.app.blockchain.blockchain.genesis_period +
+      this.app.blockchain.genesis_period +
       BigInt(2);
 
     //

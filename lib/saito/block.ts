@@ -396,7 +396,7 @@ class Block {
       }
     }
 
-    // console.log(`${typeof this.block.id} > ${typeof this.app.blockchain.returnGenesisPeriod()} + ${typeof this.app.blockchain.blockchain.genesis_period}`);
+    // console.log(`${typeof this.block.id} > ${typeof this.app.blockchain.returnGenesisPeriod()} + ${typeof this.app.blockchain.genesis_period}`);
 
     // calculate automatic transaction rebroadcasts / ATR / atr
     if (this.block.id > this.app.blockchain.returnGenesisPeriod() + BigInt(1)) {
@@ -506,7 +506,7 @@ class Block {
       if (previous_block.block.avg_income > cv.total_fees) {
         let adjustment =
           (previous_block.block.avg_income - cv.total_fees) /
-          this.app.blockchain.blockchain.genesis_period;
+          this.app.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_income -= adjustment;
         }
@@ -514,7 +514,7 @@ class Block {
       if (previous_block.block.avg_income < cv.total_fees) {
         let adjustment =
           (cv.total_fees - previous_block.block.avg_income) /
-          this.app.blockchain.blockchain.genesis_period;
+          this.app.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_income += adjustment;
         }
@@ -526,7 +526,7 @@ class Block {
       if (previous_block.block.avg_atr_income > cv.total_rebroadcast_nolan) {
         let adjustment =
           (previous_block.block.avg_atr_income - cv.total_rebroadcast_nolan) /
-          this.app.blockchain.blockchain.genesis_period;
+          this.app.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_atr_income -= adjustment;
         }
@@ -534,7 +534,7 @@ class Block {
       if (previous_block.block.avg_atr_income < cv.total_rebroadcast_nolan) {
         let adjustment =
           (cv.total_rebroadcast_nolan - previous_block.block.avg_atr_income) /
-          this.app.blockchain.blockchain.genesis_period;
+          this.app.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_atr_income += adjustment;
         }
