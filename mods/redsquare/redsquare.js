@@ -1593,8 +1593,8 @@ console.log("4444");
 
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.write(redsquareHome(app, redsquare_self));
-      res.end();
+      res.send(redsquareHome(app, redsquare_self));
+      //res.end();
       return;
 
     });
