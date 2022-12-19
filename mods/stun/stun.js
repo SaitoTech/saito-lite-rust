@@ -68,19 +68,20 @@ class Stunx extends ModTemplate {
 
 
     canRenderInto(qs) {
-      if (qs === ".saito-main") { return true; }
-      return false;
+        if (qs === ".saito-main") { return true; }
+        return false;
     }
 
     renderInto(qs) {
-      if (qs == ".saito-main") {
-        if (!this.renderIntos[qs]) {
-          this.renderIntos[qs] = [];
-          this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+        if (qs == ".saito-main") {
+            if (!this.renderIntos[qs]) {
+                this.renderIntos[qs] = [];
+                this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+            }
+            this.styles = [`/${this.returnSlug()}/css/style.css`,];
+            this.attachStyleSheets();
+            this.renderIntos[qs].forEach((comp) => { comp.render(); });
         }
-        this.attachStyleSheets();
-        this.renderIntos[qs].forEach((comp) => { comp.render(); });
-      }
     }
 
 
@@ -99,7 +100,7 @@ class Stunx extends ModTemplate {
 
         if (type == "game-menu") {
 
-            return {    
+            return {
                 id: "game-chat",
                 text: "Chat",
                 submenus: [
@@ -109,13 +110,13 @@ class Stunx extends ModTemplate {
                         class: "game-video-chat",
                         callback: function (app, game_mod) {
                             console.log('all players ', game_mod.game.players);
-                            if (game_mod.game.player.length > 1){
-                                app.connection.emit('game-start-video-call', [...game_mod.game.players]);    
-                            }else{
+                            if (game_mod.game.player.length > 1) {
+                                app.connection.emit('game-start-video-call', [...game_mod.game.players]);
+                            } else {
                                 //Open a modal to invite someone to a video chat
-                                
+
                             }
-                            
+
                         },
                     }
                 ],
@@ -184,25 +185,25 @@ class Stunx extends ModTemplate {
                     app.connection.emit('game-start-audio-call', public_key);
                 }
             },
-            // {
-            //     text: "Stun connect",
-            //     icon: "",
-            //     callback: function (app, public_key) {
-            //         // app.connection.emit('game-start-audio-call', public_key);
-            //         let stunx = app.modules.returnModule("Stunx");
-            //         stunx.createStunConnectionWithPeers([public_key]);
-            //     }
-            // },
-            // {
-            //     text: "Send Message to peer",
-            //     icon: "",
-            //     callback: function (app, public_key) {
-            //         // app.connection.emit('game-start-audio-call', public_key);
-            //         let stunx = app.modules.returnModule("Stunx");
-            //         stunx.sendRequest(public_key);
-            //     }
-            // }
-        ]
+                // {
+                //     text: "Stun connect",
+                //     icon: "",
+                //     callback: function (app, public_key) {
+                //         // app.connection.emit('game-start-audio-call', public_key);
+                //         let stunx = app.modules.returnModule("Stunx");
+                //         stunx.createStunConnectionWithPeers([public_key]);
+                //     }
+                // },
+                // {
+                //     text: "Send Message to peer",
+                //     icon: "",
+                //     callback: function (app, public_key) {
+                //         // app.connection.emit('game-start-audio-call', public_key);
+                //         let stunx = app.modules.returnModule("Stunx");
+                //         stunx.sendRequest(public_key);
+                //     }
+                // }
+            ]
         }
         return null;
     }
@@ -257,7 +258,7 @@ class Stunx extends ModTemplate {
             }
 
         }
-        if(message.request === "testing stunx"){
+        if (message.request === "testing stunx") {
             console.log('message received ', message, message.data, message.data.tx);
         }
 
@@ -454,7 +455,7 @@ class Stunx extends ModTemplate {
         return createPeerConnection;
 
     }
-    createStunConnectionOffer(publickey,app) {
+    createStunConnectionOffer(publickey, app) {
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async (app) => {
@@ -486,13 +487,13 @@ class Stunx extends ModTemplate {
                         }
                     }
 
- 
+
                     const data_channel = pc.createDataChannel('channel');
                     // pc.dc = data_channel;
                     // let stunx_mod = this.app.modules.returnModule("Stunx");
                     // pc.dc.onmessage = (e) => {
-                        // console.log('new message from client : ', e.data);
-                    app.network.addStunPeer({publickey, peer_connection: pc, data_channel });
+                    // console.log('new message from client : ', e.data);
+                    app.network.addStunPeer({ publickey, peer_connection: pc, data_channel });
                     // };
                     // pc.dc.onopen = (e) =>  { 
                     //     pc.dc.send("new message");
@@ -500,8 +501,8 @@ class Stunx extends ModTemplate {
                     // };
 
                     pc.createOffer().then(offer => {
-                    pc.setLocalDescription(offer)
-                   })
+                        pc.setLocalDescription(offer)
+                    })
                     // pc.setLocalDescription(offer);
                 } catch (error) {
                     console.log(error);
@@ -510,7 +511,7 @@ class Stunx extends ModTemplate {
             }
 
             execute(app)
-        
+
 
         })
 
@@ -519,14 +520,14 @@ class Stunx extends ModTemplate {
     }
 
 
-    
-    
 
-    
+
+
+
 
 
     acceptMediaConnectionOffer(app, offer_creator, offer) {
-        this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, offer.ui_type, offer.call_type );
+        this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, offer.ui_type, offer.call_type);
         const createPeerConnection = async () => {
             let reply = {
                 answer: "",
@@ -658,10 +659,10 @@ class Stunx extends ModTemplate {
                     }
                 }
 
-                pc.ondatachannel = (e)=> {
+                pc.ondatachannel = (e) => {
                     console.log('new data channel', e.channel);
                     let data_channel = e.channel;
-                    app.network.addStunPeer({publickey:offer_creator, peer_connection: pc, data_channel });
+                    app.network.addStunPeer({ publickey: offer_creator, peer_connection: pc, data_channel });
                 }
 
                 await pc.setRemoteDescription(offer.offer_sdp);
@@ -711,8 +712,8 @@ class Stunx extends ModTemplate {
                         ice_candidates: offer.ice_candidates,
                         offer_sdp: offer.offer_sdp,
                         recipient: offer.recipient,
-                        ui_type : offer.ui_type,
-                        call_type:offer.call_type
+                        ui_type: offer.ui_type,
+                        call_type: offer.call_type
                     })
                 })
                 // const offers = peerConnectionOffers.map(item => item.offer_sdp);
@@ -791,7 +792,7 @@ class Stunx extends ModTemplate {
         for (let i = 0; i < offers.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
         }
-        
+
         newtx.msg.module = "Stunx";
         newtx.msg.request = "stun offer"
         newtx.msg.offers = {
@@ -812,16 +813,16 @@ class Stunx extends ModTemplate {
         console.log('from:', offer_creator, offer);
 
 
-        if(offer.ui_type == "small"){
-                this.app.connection.emit('game-receive-video-call', app, offer_creator, offer);
-                return;
+        if (offer.ui_type == "small") {
+            this.app.connection.emit('game-receive-video-call', app, offer_creator, offer);
+            return;
         }
 
-       if(offer.ui_type== "large"){
-        this.acceptMediaConnectionOffer(app, offer_creator, offer);
-       }
+        if (offer.ui_type == "large") {
+            this.acceptMediaConnectionOffer(app, offer_creator, offer);
+        }
 
-      
+
 
 
 
@@ -924,7 +925,7 @@ class Stunx extends ModTemplate {
             }
         }
     }
-    
+
     receiveStunAnswerTransaction(blk, tx, conf, app) {
         let stunx_self = app.modules.returnModule("Stunx");
         let my_pubkey = app.wallet.returnPublicKey();
