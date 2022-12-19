@@ -1,0 +1,40 @@
+
+.league-overlay {
+    background-color: whitesmoke;
+    width: 90vw;
+    height: 90vh;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: grid;
+    grid-template-rows: 7rem max-content;
+}
+
+.league-overlay-header-image {
+    background-image: url(/twilight/img/arcade/arcade.jpg);
+    background-size: cover;
+    width: 11rem;
+    height: 7rem;
+    float: left;
+    margin-right: 1rem;
+}
+
+.league-overlay-header-title-box-title {
+    font-size: 4rem;
+}
+
+.league-overlay-header-title-box-desc {
+    2rem;
+}
+
+.league-overlay-create-game-button {
+    float: right;
+    margin-right: 0;
+    min-width: 20rem;
+}
+
+.league-overlay-body {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+}
+
+

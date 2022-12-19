@@ -1,5 +1,5 @@
 const LeagueRankingsTemplate = require("./rankings.template");
-const LeagueOverlay = require("./overlays/league-overlay");
+const LeagueOverlay = require("./overlays/league");
 
 class LeagueRankings {
 	
@@ -65,10 +65,8 @@ class LeagueRankings {
 
     document.querySelectorAll(".league-leaderboard-ranking").forEach((el) => {
       el.onclick = (e) => {
-
 	let lid = e.currentTarget.getAttribute("data-id");
 	this.overlay.render();
-
       }
     });
 

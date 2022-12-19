@@ -19,7 +19,6 @@ class Leaderboard {
 
   render(league=null) {
 
-
     if (document.querySelector(".leaderboard")) {
       this.app.browser.replaceElementBySelector(LeaderboardTemplate(this.app, this.mod), ".leaderboard");
     } else {

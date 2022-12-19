@@ -25,6 +25,7 @@ class Arcade extends ModTemplate {
   }
   renderInto(qs) {
     if (qs == ".redsquare-sidebar") {
+      this.styles = ['/arcadex/css/arcade-join-game-overlay.css'];
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new InviteManager(this.app, this, ".arcade-invites-box"));
@@ -42,7 +43,7 @@ class Arcade extends ModTemplate {
         {
           id: "abcd1234",
           game: "twilight",
-          name: "Twilight",
+          name: "Twilight Struggle",
           type: "custom",
           players: 1
         },
