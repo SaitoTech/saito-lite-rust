@@ -78,6 +78,7 @@ font imports
   --saito-hover-background: #00000045;
   --saito-black-faded: #1c1c23b5;
   --saito-dark-shim: #0009;
+  --saito-light-shim: #0001
 }
 
 html[data-theme="dark"] {

@@ -25,10 +25,10 @@ class Arcade extends ModTemplate {
   }
   renderInto(qs) {
     if (qs == ".redsquare-sidebar") {
-      this.styles = ['/arcadex/css/arcade-join-game-overlay.css'];
+      this.styles = ['/arcadex/css/arcade-join-game-overlay.css','/arcadex/css/saito-arcade-invites.css'];
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new InviteManager(this.app, this, ".arcade-invites-box"));
+        this.renderIntos[qs].push(new InviteManager(this.app, this, ".saito-sidebar.right"));
       }
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });

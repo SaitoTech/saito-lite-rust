@@ -29,6 +29,10 @@
     opacity: 0.80;
 }
 
+.saito-module-titlebar-title {
+    color: var(--saito-font-color-heavy);
+}
+
 .saito-module-details {
     display: flex;
     flex-direction: row;

@@ -6,12 +6,14 @@
     row-gap: 1rem;
 }
 
-.invite-manager h6 {
-    padding-bottom: 1rem;
-}
-
 .saito-game-identicons {
     min-width: 25rem;
+    backdrop-filter: blur(1px);
+    padding: 1rem;
+}
+
+.saito-game-identicons div {
+    height: 3.5rem;
 }
 
 .game-type {
@@ -19,16 +21,11 @@
     font-weight: 400;
 }
 
-.tiptext {
-    visibility: hidden;
-    position: absolute;
-    box-sizing: content-box !important;
-    z-index: 10;
-    width: 90%;
-    min-width: 300px;
-    max-width: 750px;
-    padding: 0.25em 0.5em;
-    background-color: #fefefe;
-    border-bottom: 1px solid var(--saito-primary);
-    font-style: italic;
+.identicon-needed {
+    height: 3.5rem;
+    width: 3.5rem;
+    border: 1px solid var(--saito-border-color);
+    box-shadow: -1px -1px #000;
+    background-color: var(--saito-light-shim);
 }
+

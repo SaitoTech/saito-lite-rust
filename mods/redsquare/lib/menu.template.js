@@ -12,7 +12,7 @@ module.exports = () => {
             <span>Notifications</span>
           </li>
           <li class="redsquare-menu-contacts">
-            <i class="far fa-id-card"></i>
+            <i class="fas fa-user"></i>
             <span>Contacts</span>
           </li>
         </ul>
