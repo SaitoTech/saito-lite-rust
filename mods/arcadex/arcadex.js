@@ -1,6 +1,7 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const InviteManager = require("./lib/invite-manager");
+const GameWizard = require("./lib/overlays/game-wizard");
 
 class Arcade extends ModTemplate {
 
@@ -25,7 +26,7 @@ class Arcade extends ModTemplate {
   }
   renderInto(qs) {
     if (qs == ".redsquare-sidebar") {
-      this.styles = ['/arcadex/css/arcade-join-game-overlay.css','/arcadex/css/arcade-invites.css'];
+      this.styles = ['/arcadex/css/arcade-join-game-overlay.css','/arcadex/css/arcade-invites.css', '/arcadex/css/arcade-wizard.css'];
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new InviteManager(this.app, this, ".saito-sidebar.right"));
@@ -73,8 +74,25 @@ class Arcade extends ModTemplate {
   }
 
   initialize(app) {
+    arcade_self = this;
     super.initialize(app);
+
+    app.connection.on("launch-game-wizard", (obj)=>{
+      if (obj.game){
+        
+        arcade_self.styles = [];
+
+        let game_mod = app.modules.returnModule(obj.game);
+        if (game_mod) {
+          let x = new GameWizard(app, arcade_self, game_mod, obj);
+          x.render(app, arcade_self);
+        }
+
+      }
+    });
   }
+
+
 
 }
 

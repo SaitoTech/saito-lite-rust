@@ -10,7 +10,7 @@ module.exports = LeagueOverlayTemplate = () => {
             <div class="league-overlay-header-title-box-desc">Public League</div>
         </div>
         <div class="league-over-header-controls">
-            <div class="league-overlay-create-game-button saito-button-secondary">create game</div>
+            <div data-id="Twilight" class="league-overlay-create-game-button saito-button-secondary">create game</div>
         </div>
     </div>
     <div class="league-overlay-body">
