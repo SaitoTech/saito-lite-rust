@@ -1309,8 +1309,10 @@ class Network {
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
         if (this.app.SPVMODE == 1) {
+          console.log("requesting ghost chain from peer : " + peer.id);
           this.sendRequest("REQGSTCN", buffer_to_send, peer);
         } else {
+          console.log("requesting full chain from peer : " + peer.id);
           this.sendRequest("REQCHAIN", buffer_to_send, peer);
         }
         return;
@@ -1319,8 +1321,10 @@ class Network {
 
     if (this.peers.length > 0) {
       if (this.app.SPVMODE == 1) {
+        console.log("requesting ghost chain from first peer");
         this.sendRequest("REQGSTCN", buffer_to_send, this.peers[0]);
       } else {
+        console.log("requesting full chain from first peer");
         this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);
       }
     }
