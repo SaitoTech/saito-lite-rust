@@ -20,10 +20,10 @@ class ExplorerCore extends ModTemplate {
     // web resources //
     ///////////////////
     expressapp.get("/explorer/", function (req, res) {
-      res.setHeader("Content-type", "text/html");
+      res.set("Content-type", "text/html");
       res.charset = "UTF-8";
       res.write(explorer_self.returnIndexHTML(app));
-      res.end();
+      //res.end();
       return;
     });
 
@@ -48,16 +48,16 @@ class ExplorerCore extends ModTemplate {
 
         res.setHeader("Content-type", "text/html");
         res.charset = "UTF-8";
-        res.write("Please provide a block hash.");
-        res.end();
+        res.send("Please provide a block hash.");
+        ////res.end();
         return;
 
       } else {
 
         res.setHeader("Content-type", "text/html");
         res.charset = "UTF-8";
-        res.write(explorer_self.returnBlockHTML(app, hash));
-        res.end();
+        res.send(explorer_self.returnBlockHTML(app, hash));
+        ////res.end();
         return;
 
       }
@@ -67,8 +67,8 @@ class ExplorerCore extends ModTemplate {
 
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.write(explorer_self.returnMempoolHTML());
-      res.end();
+      res.send(explorer_self.returnMempoolHTML());
+      ////res.end();
       return;
 
     });
@@ -80,8 +80,8 @@ class ExplorerCore extends ModTemplate {
       if (hash == null) {
         res.setHeader("Content-type", "text/html");
         res.charset = "UTF-8";
-        res.write("NO BLOCK FOUND 1: ");
-        res.end();
+        res.send("NO BLOCK FOUND 1: ");
+        ////res.end();
         return;
 
       } else {
@@ -92,8 +92,8 @@ class ExplorerCore extends ModTemplate {
 
           res.setHeader("Content-type", "text/html");
           res.charset = "UTF-8";
-          res.write(explorer_self.returnBlockSourceHTML(app, hash));
-          res.end();
+          res.send(explorer_self.returnBlockSourceHTML(app, hash));
+          ////res.end();
           return;
         }
       }
