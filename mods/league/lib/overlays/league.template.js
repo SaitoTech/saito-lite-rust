@@ -17,7 +17,7 @@ module.exports = LeagueOverlayTemplate = () => {
         <div class="league-overlay-league-body-games">
             <div class="league-overlay-description">Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War. One player plays the United States (US), and the other plays the Soviet Union (USSR). </div>    
             <div class="league-overlay-league-body-games-list">
-                <h6>Upcoming Games</h6>
+                <h5>Upcoming Games</h5>
                 <div class="saito-table">
                     <div class="saito-table-body">
                         <div class="saito-table-row">
@@ -30,7 +30,7 @@ module.exports = LeagueOverlayTemplate = () => {
                 </div>
             </div>
             <div class="league-overlay-league-body-games-list">
-                <h6>My Recent Games</h6>
+                <h5>My Recent Games</h5>
                 <div class="saito-table">
                     <div class="saito-table-body">
                         <div class="saito-table-row">
@@ -43,7 +43,7 @@ module.exports = LeagueOverlayTemplate = () => {
                 </div>
             </div>
             <div class="league-overlay-league-body-games-list">
-                <h6>Recent League Matches</h6>
+                <h5>Recent League Matches</h5>
                 <div class="saito-table">
                     <div class="saito-table-body">
                         <div class="saito-table-row">
