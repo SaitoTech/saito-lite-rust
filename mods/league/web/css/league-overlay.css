@@ -3,10 +3,10 @@
     background-color: var(--saito-background-color);
     width: 90vw;
     height: 90vh;
-    padding: 1rem;
+    padding: 1rem 2rem;
     border-radius: 0.5rem;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 7rem calc(90vh - 10rem);
     row-gap: 1rem;
 }
 
@@ -22,12 +22,8 @@
     font-size: 4rem;
 }
 .league-overlay-description {
-    font-size: 2rem;
-    line-height: 2.5rem;
-}
-.league-overlay-league-body-games-list {
-    margin-left: 5rem;
-    margin-right: 5rem;
+    font-size: 1.4rem;
+    line-height: 2rem;
 }
 
 .league-overlay-create-game-button {
@@ -37,10 +33,13 @@
 
 .league-overlay-body {
     display: grid;
-    grid-template-columns: 1fr max-content;
+    grid-template-columns: 1fr 1fr;
     grid-gap: 2rem;
 }
 
+.league-overlay-body>div {
+    overflow-y: auto;
+}
 
 .league-overlay-header {
     display: flex;
@@ -60,4 +59,5 @@
     display: flex;
     flex-direction: column;
     row-gap: 1rem;
+    
 }
