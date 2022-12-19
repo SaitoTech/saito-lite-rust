@@ -15,10 +15,19 @@
     background-size: cover;
     width: 11rem;
     height: 7rem;
+    margin-right: 1rem;
 }
 
 .league-overlay-header-title-box-title {
     font-size: 4rem;
+}
+.league-overlay-description {
+    font-size: 2rem;
+    line-height: 2.5rem;
+}
+.league-overlay-league-body-games-list {
+    margin-left: 5rem;
+    margin-right: 5rem;
 }
 
 .league-overlay-create-game-button {
