@@ -1,9 +1,3 @@
-body {
-  font-family: arial, helvetica, sans-serif;
-  font-size: 13px;
-  padding: 0px;
-  margin: 0px;
-}
 
 
 /*** increase cardbox default size ***/
@@ -18,6 +12,18 @@ body {
   width: calc(72vh * 0.730);
 }
 
+
+.hud-header.soviet {
+  background: linear-gradient(to right, rgba(255, 0, 0, 0.6), rgba(255, 255, 0, 0.4), rgba(255, 0, 0, 0.6));
+}
+
+.hud-header.american {
+  background: linear-gradient(to right, rgba(0, 0, 255, 0.6), rgba(255, 255, 255, 0.4), rgba(0, 0, 255, 0.6));
+}
+
+.hud{
+  background: #FFFA;
+}
 
 
 
@@ -134,14 +140,6 @@ li.card {
   width: 50px;
 }
 
-.main {
-  display: grid;
-  width: 100vw;
-  height: 100vh;
-  overflow: auto;
-
-  margin-top: unset;
-}
 
 
 /** Modal **/
