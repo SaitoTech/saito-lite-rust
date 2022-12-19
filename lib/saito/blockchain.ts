@@ -1185,7 +1185,9 @@ class Blockchain {
 
     let does_chain_meet_golden_ticket_requirements =
       await this.doesChainMeetGoldenTicketRequirements(
-        previous_block_hash
+        previous_block_hash,
+        // todo : remove after testing
+        block.hasGoldenTicket()
       );
 
     if (!does_chain_meet_golden_ticket_requirements) {
