@@ -1,4 +1,3 @@
-
 module.exports = ArcadeMenuTemplate = (app, mod, gamelist) => {
 
   return `

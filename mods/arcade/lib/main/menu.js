@@ -2,22 +2,24 @@ const ArcadeMenuTemplate = require('./menu.template');
 
 class ArcadeMenu {
 
-  constructor(app){
+  constructor(app, mod, container="") {
     this.app = app;
+    this.mod = mod;
+    this.container = container;
   }
 
-  render(app, mod, container = "") {
+  render() {
 
+    //
+    // create HTML of games list
+    //
     let gamelist = [];
-
-    //Query all games in Saito build
-    app.modules.respondTo("arcade-games").forEach(game_mod => {
+    let html = "";
+    for (let i = 0; i < this.mod.games.length; i++) {
+      let game_mod = this.mod.games[i];
       let title = (game_mod.gamename)? game_mod.gamename: game_mod.name;
-        gamelist.push([game_mod.categories, 
-          `<li class="arcade-menu-item${(game_mod.name == mod.viewing_game_homepage)? " selected":""}" id="${game_mod.name}">${title}</li>`]);
-    });
-
-    //Sort the games according to their categories...
+      gamelist.push([game_mod.categories, `<li class="arcade-menu-item${(game_mod.name == mod.viewing_game_homepage)? " selected":""}" id="${game_mod.name}">${title}</li>`]);
+    };
     if (!mod.manual_ordering){
       gamelist.sort(function (a,b){
         if (a[0]>b[0]){ return 1;}
@@ -25,24 +27,25 @@ class ArcadeMenu {
         return 0;
       });
     }
-
-    let gamelisthtml = "";
     for (let g of gamelist){
-      gamelisthtml += g[1];
+      html += g[1];
     }
 
-    if (!document.querySelector(".arcade-menu")) {
-      app.browser.addElementToSelector(ArcadeMenuTemplate(app, mod, gamelisthtml), container);
+
+    if (document.querySelector(".saito-container")) {
+      this.app.browser.replaceElementBySelector(ArcadeMenuTemplate(html), ".saito-container");
     } else {
-      app.browser.replaceElementBySelector(ArcadeMenuTemplate(app, mod, gamelisthtml), container);
+      this.app.browser.addElementToSelectorOrDom(ArcadeMenuTemplate(html), this.container);
     }
 
-    this.attachEvents(app, mod);
+    this.attachEvents();
+
   }
 
   
   attachEvents(app, mod) {
-            
+
+/*****  
     Array.from(document.getElementsByClassName('arcade-menu-item')).forEach(game => {
       game.addEventListener('click', (e) => {
         let gameName = e.currentTarget.id;
@@ -62,7 +65,7 @@ class ArcadeMenu {
 
       });
     });
-
+*****/
 
   }
 
