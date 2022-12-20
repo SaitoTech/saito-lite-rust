@@ -1,4 +1,4 @@
-
+/* 
 
 /* Overlay -- in case we still have a link to game rules from game creation wizard*/
 
@@ -96,34 +96,6 @@
   width: 100%;
   font-size: 1.2em;
   padding: 0 1em;
-}
-
-
-/* Custom Select */
-.saito-select {
-  position: relative;
-  display: flex;
-  height: 3em;
-  line-height: 3;
-  background: #55555555;
-  overflow: hidden;
-  border-bottom: 1px solid var(--saito-red);
-  width: 100%;
-}
-
-/* Arrow */
-.saito-select::after {
-  content: "\25BC";
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0 1em;
-  background: #55555533;
-  cursor: pointer;
-  pointer-events: none;
-  -webkit-transition: 0.25s all ease;
-  -o-transition: 0.25s all ease;
-  transition: 0.25s all ease;
 }
 
 
@@ -335,7 +307,7 @@
   margin: 0.1rem;
   background: var(--saito-primary);
   border: 1px solid var(--saito-primary);
-  color: #fff;
+  color: var(--saito-white)
 }
 
 
@@ -522,4 +494,4 @@
   font-size: 1.5rem;
   line-height: 1.9rem;
   overflow: auto;
-}
+} */

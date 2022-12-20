@@ -11,6 +11,7 @@
   left: 0;
   z-index: 10;
   height: var(--saito-header-height);
+  border-bottom: 1px solid var(--saito-border-color);
 }
 
 #saito-header nav {
@@ -71,7 +72,7 @@
 .saito-header-hamburger-contents {
   display: block;
   pointer-events: none;
-  background-color: var(--saito-white);
+  background-color: var(--saito-background-color);
   position: absolute;
   right: 0;
   top: var(--saito-header-height);

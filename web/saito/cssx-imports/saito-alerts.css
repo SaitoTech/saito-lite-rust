@@ -1,10 +1,9 @@
-
 #saito-alert {
 }
 
 #saito-alert-shim {
   z-index: 2000;
-  background-color: #0008;
+  background-color: var(--saito-dark-shim);
   position: absolute;
   width: 100%;
   height: 100%;
@@ -13,13 +12,13 @@
 
 #saito-alert-box {
   width: 75vw;
-  max-width: 700px;
+  max-width: 70rem;
   transition: all 333ms ease-in-out;
-  background: rgb(234, 234, 239);
+  background: var(--saito-background-color);
   margin: auto;
   position: relative;
-  top: -500px;
-  border: 1px solid var(--saito-red);
+  top: -50rem;
+  border: 1px solid var(--saito-border-color);
   border-radius: 0 0 5px 5px;
   padding: 1em 1em 3.5em 1em;
 }
@@ -43,4 +42,3 @@
   margin: 1em 0;
   overflow-wrap: break-word;
 }
-

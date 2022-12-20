@@ -79,7 +79,7 @@ font imports
   --saito-black-faded: #1c1c23b5;
   --saito-dark-shim: #0009;
   --saito-light-shim: #0001;
-  --saito-dark-transparent: rgba(0,0,0,0.5);
+  --saito-dark-transparent: rgba(0, 0, 0, 0.5);
   --saito-dark-btn: #639;
   --saito-dark-btn-deep: #47226c;
 }
@@ -100,17 +100,44 @@ html[data-theme="dark"] {
   --saito-gray-transparent: #88888818;
 }
 
-html[data-theme="arcade"] {
+html[data-theme="arcade-light"] {
+  --saito-primary: #c89af6;
+  --saito-font-color: #3d3d3d;
+  --saito-font-color-heavy: #222;
+  --saito-font-color-light: #888;
+  --saito-font-color-inverse: #efefef;
+  --saito-profile-background: #fff;
+  --saito-border-color: #c5c5c5bb;
+  --saito-border-color-dark: #a5a5a5bb;
+  --saito-border: 1px solid #c5c5c5bb;
+  --saito-border-radius: 0.5rem;
+  --saito-background-color: #fff;
+  --saito-background-light: #efefef;
+  --saito-gray-transparent: #5555550a;
+  --saito-hover-background: #00000045;
+  --saito-black-faded: #1c1c23b5;
+  --saito-dark-shim: #0009;
+  --saito-light-shim: #0001;
+  --saito-dark-transparent: rgba(0, 0, 0, 0.5);
+  --saito-dark-btn: #639;
+  --saito-dark-btn-deep: #47226c;
+  --dreamscape: rgb(121, 57, 185);
+}
+html[data-theme="arcade-dark"] {
+  --saito-primary: rgb(199 156 242);
+  --saito-secondary: #060606;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
   --saito-font-color-inverse: #010101;
-  --saito-profile-background: #222;
-  --saito-border-color: #c89af6;
-  --saito-border-color-dark: #4c0084;
+  --saito-profile-background: #22222269;
   --saito-border: 1px solid #c5c5c5bb;
-  --saito-background-color: #324;
-  --saito-background-light: #426;
+  --saito-border-color: #624a7a;
+  --saito-background-color: rgb(59, 27, 91);
+  --saito-background-light: rgb(46, 38, 54);
   --saito-gray-transparent: #88888818;
-  --saito-dark-transparent-highlight: #0005;
+  --saito-background-shim: #0008;
+  --saito-dark-shim: #0009;
+  --saito-light-shim: #0001;
+  --dreamscape: rgb(59, 27, 91);
 }

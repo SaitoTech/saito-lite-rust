@@ -5,7 +5,6 @@ select {
 /* ----------------------------------------------------------------
 Selects
 -----------------------------------------------------------------*/
-
 .saito-select {
   position: relative;
   display: flex;
@@ -15,6 +14,9 @@ Selects
   background-color: transparent;
   overflow: hidden;
   width: 100%;
+  border-radius: 0 1rem 1rem 0;
+  outline: none;
+  background-color: none;
 }
 
 .saito-select::after {
@@ -49,7 +51,8 @@ Selects
   padding: 0 1rem;
 }
 
-textarea, input {
+textarea,
+input {
   background-color: var(--saito-background-color);
   color: var(--saito-font-color);
   border: 1px solid var(--saito-border-color);
