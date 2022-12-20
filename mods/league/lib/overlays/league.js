@@ -3,7 +3,7 @@ const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-ove
 const Leaderboard = require("./../leaderboard");
 
 class LeagueOverlay {
-	
+
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
@@ -22,8 +22,9 @@ class LeagueOverlay {
 
     Array.from(document.querySelectorAll('.league-overlay-create-game-button')).forEach(game => {
       game.onclick = (e) => {
+        console.log('league_self', league_self)
         let modname = e.currentTarget.getAttribute("data-id");
-        league_self.app.connection.emit("launch-game-wizard", {game: modname});
+        league_self.app.connection.emit("launch-game-wizard", { game: modname });
       };
     });
   }
