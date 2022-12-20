@@ -12,8 +12,7 @@ Saito Identicon
 Saito Username
 -----------------------------------------------------------------*/
 
-.saito-address,
-.saito-username {
+.saito-address, .saito-username {
   max-width: 90%;
   white-space: nowrap;
   overflow: hidden;
@@ -23,7 +22,7 @@ Saito Username
   color: var(--saito-font-color-heavy);
 }
 
-.saito-user > .saito-address-long:nth-child(2) {
+.saito-user>.saito-address-long:nth-child(2) {
   grid-column-end: 4;
 }
 
@@ -43,20 +42,21 @@ Saito User
 }
 
 /*  saito-identicon-box  */
-.saito-user > .saito-identicon-box {
+
+.saito-user>.saito-identicon-box {
   grid-column-start: 1;
   grid-column-end: span 1;
   grid-row: span 2;
 }
 
-.saito-user > .saito-address {
+.saito-user>.saito-address {
   grid-column-start: 2;
   grid-column-end: span 1;
   grid-row-start: 1;
   grid-row-end: span 1;
 }
 
-.saito-user > .saito-user-timestamp {
+.saito-user>.saito-user-timestamp {
   grid-column-start: 2;
   grid-column-end: span 1;
   grid-row-start: 2;
@@ -65,7 +65,7 @@ Saito User
   color: var(--saito-font-color-light);
 }
 
-.saito-user > .saito-userline {
+.saito-user>.saito-userline {
   grid-column-start: 2;
   grid-column-end: span 1;
   grid-row-start: 2;

@@ -1,12 +1,12 @@
-
 .arcade-game-overlay {
-    background-color: whitesmoke;
+    background-color: var(--saito-background-color);
     width: 60vw;
     height: max-content;
     padding: 1rem;
     border-radius: 0.5rem;
     display: grid;
     grid-template-rows: 8rem max-content;
+    grid-gap: 1rem;
 }
 
 .arcade-game-overlay-header-image {
@@ -22,15 +22,16 @@
     font-size: 4rem;
 }
 
-.arcade-game-overlay-create-game-button {
-    float: right;
-    margin-right: 0;
-    min-width: 20rem;
-}
-
 .arcade-game-overlay-body {
-    display: grid;
-    grid-template-columns: 1fr max-content;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
 }
 
+.arcade-game-overlay .saito-table-row {
+    grid-template-columns: 5rem 1fr;
+}
 
+.arcade-game-controls button {
+    margin: 0;
+}
