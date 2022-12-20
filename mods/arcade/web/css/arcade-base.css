@@ -207,11 +207,11 @@ body {
 
 
 
-.saito-sidebar-left{
+.saito-sidebar.left{
   width: var(--sidebar-width);
 }
 
-.saito-sidebar-right{
+.saito-sidebar.right{
   width: var(--sidebar-width);
   grid-column-start: 3;
 
@@ -263,7 +263,7 @@ body {
 }
 
 @media screen and (max-width: 1200px) {
-  .saito-sidebar-right{
+  .saito-sidebar.right{
     visibility: hidden;
     position: fixed;
     right: 0;
@@ -280,7 +280,7 @@ body {
 }
 
 @media screen and (max-width: 650px){
-  .saito-sidebar-left{
+  .saito-sidebar.left{
     position: fixed;
     visibility: hidden;
     background: var(--saito-nightscape);
@@ -303,11 +303,11 @@ body {
 
 }
 
-.saito-sidebar-left.mobile{
+.saito-sidebar.left.mobile{
   visibility: visible;
   z-index: 2;
 }
-.saito-sidebar-right.mobile{
+.saito-sidebar.right.mobile{
   visibility: visible;
   z-index: 2;
 }

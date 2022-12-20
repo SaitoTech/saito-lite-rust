@@ -16,26 +16,28 @@ class ArcadeMenu {
     let gamelist = [];
     let html = "";
     for (let i = 0; i < this.mod.games.length; i++) {
+console.log("GAME: " + (i+1));
       let game_mod = this.mod.games[i];
-      let title = (game_mod.gamename)? game_mod.gamename: game_mod.name;
-      gamelist.push([game_mod.categories, `<li class="arcade-menu-item${(game_mod.name == mod.viewing_game_homepage)? " selected":""}" id="${game_mod.name}">${title}</li>`]);
+      gamelist.push([game_mod.categories, `<li class="arcade-menu-item${(game_mod.name == this.mod.viewing_game_homepage)? " selected":""}" id="${game_mod.name}">${game_mod.returnName()}</li>`]);
     };
-    if (!mod.manual_ordering){
+    if (!this.mod.manual_ordering){
       gamelist.sort(function (a,b){
         if (a[0]>b[0]){ return 1;}
         if (a[0]<b[0]){ return -1;}
         return 0;
       });
     }
+console.log(JSON.stringify(gamelist));
     for (let g of gamelist){
       html += g[1];
     }
 
+console.log("HTML: " + html);
 
-    if (document.querySelector(".saito-container")) {
-      this.app.browser.replaceElementBySelector(ArcadeMenuTemplate(html), ".saito-container");
+    if (document.querySelector(".arcade-menu")) {
+      this.app.browser.replaceElementBySelector(ArcadeMenuTemplate(html), ".arcade-menu");
     } else {
-      this.app.browser.addElementToSelectorOrDom(ArcadeMenuTemplate(html), this.container);
+      this.app.browser.addElementToSelector(ArcadeMenuTemplate(html), this.container);
     }
 
     this.attachEvents();
@@ -43,7 +45,7 @@ class ArcadeMenu {
   }
 
   
-  attachEvents(app, mod) {
+  attachEvents() {
 
 /*****  
     Array.from(document.getElementsByClassName('arcade-menu-item')).forEach(game => {

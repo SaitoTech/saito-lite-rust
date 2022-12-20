@@ -21,18 +21,17 @@ class ArcadeMain {
     //
     // left sidebar
     //
-    this.sidebar = new SaitoSidebar(this.app, this.mod, ".saito-sidebar-left");
+    this.sidebar = new SaitoSidebar(this.app, this.mod, ".saito-container");
     this.sidebar.align = "nope";
-
-    //Add Menu to Sidebar
-    this.menu = new ArcadeMenu(this.app, this.mod);
+    this.menu = new ArcadeMenu(this.app, this.mod, ".saito-sidebar.left");
     this.sidebar.addComponent(this.menu);
-    
+
+/***
     //Add Chat Manager as Service to Sidebar
     this.app.modules.respondTo("chat-manager").forEach(m => {
       this.sidebar.addComponent(m.respondTo("chat-manager"));
     });
-
+***/
 //    this.banner = new ArcadeBanner(this.app, this.mod);
     this.leaderboard = null;
     this.userLeagues = null;
@@ -41,17 +40,23 @@ class ArcadeMain {
 
   render() {
 
-    // avoid rendering over inits
-    if (this.mod.viewing_arcade_initialization_page == 1 || !this.mod.browser_active || !this.app.BROWSER) {
-      return;
-    }
-
-
+console.log("X1");
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(ArcadeMainTemplate(), ".saito-container");
     } else {
       this.app.browser.addElementToSelectorOrDom(ArcadeMainTemplate(), this.container);
     }
+
+console.log("X2");
+    this.sidebar.render();
+console.log("X3");
+
+
+    //
+    // appspace modules
+    //
+    this.app.modules.renderInto(".arcade-leagues");
+
 
 
 /*****
@@ -94,7 +99,7 @@ class ArcadeMain {
 
 
 
-  attachEvents(app, mod) {
+  attachEvents() {
 /****    
     //
     // game invitation actions

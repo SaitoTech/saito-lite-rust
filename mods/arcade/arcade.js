@@ -110,6 +110,7 @@ class Arcade extends ModTemplate {
     // list of arcade games
     //
     app.modules.respondTo("arcade-games").forEach(game_mod => {
+console.log("ADDING: " + game_mod.returnName());
       arcade_self.games.push(game_mod);
     });
 
