@@ -127,8 +127,8 @@ class Beleaguered extends GameTemplate {
       }
     });
 
-    this.menu.addChatMenu(app, this);
-    this.menu.render(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
   }
 
 

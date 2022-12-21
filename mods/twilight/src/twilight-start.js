@@ -617,15 +617,12 @@ class Twilight extends GameTemplate {
       }
     });
 
-    this.menu.addChatMenu(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.menu.render(app, this);
+    this.log.render();
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
-
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
 
     //
     // add card events -- text shown and callback run if there
@@ -643,14 +640,13 @@ class Twilight extends GameTemplate {
 
       } else {
         this.hud.card_width = 120; // hardcode max card size
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render();
+        this.sizer.attachEvents('.gameboard');
       }
 
     } catch (err) {}
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     /* Attach classes to hud to visualize player roles */
     //this.game.player == 1 --> ussr, == 2 --> usa

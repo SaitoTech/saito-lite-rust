@@ -955,7 +955,7 @@ try {
 
         res.setHeader('Content-type', 'text/javascript');
         res.charset = 'UTF-8';
-        res.write(`
+        res.end(`
 
 	  let x = confirm("Server reports it does not contain your Saito javascript bundle. This can happen across server upgrades with remotely-hosted application bundles. Do you wish to reset to use the server default and update your default AppStore to this server?");
 	  if (x) { 
@@ -982,7 +982,7 @@ try {
 
 	`);
 
-        res.end();
+        //res.end();
       });
     }
   }

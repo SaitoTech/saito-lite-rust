@@ -361,7 +361,10 @@ i.menu_icon_icon{
   z-index: 2;
   justify-self: center;
 }
-
+/* This probably shouldn't be here */ 
+.card {
+  position: relative;
+}
 
 
 

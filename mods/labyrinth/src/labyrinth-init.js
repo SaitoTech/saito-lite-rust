@@ -63,7 +63,6 @@ class Labyrinth extends GameTemplate {
     // re-fill status and log
     //
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.restoreLog();
 
 
     

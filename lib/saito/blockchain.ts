@@ -13,7 +13,6 @@ class Blockchain {
     last_burnfee: BigInt(0),
 
     // earliest in epoch
-    genesis_period: BigInt(100000),
     genesis_block_id: BigInt(0),
     genesis_timestamp: 0,
     genesis_block_hash: "",
@@ -27,6 +26,7 @@ class Blockchain {
     last_callback_block_id: BigInt(0),
   };
   // public blockring: Blockring;
+  public genesis_period: bigint;
   public blocks: Map<string, Block>;
   // public utxoset: any;
   public prune_after_blocks: number;
@@ -60,6 +60,8 @@ class Blockchain {
     //
     this.parent_blocks_fetched = 0;
     this.parent_blocks_fetched_limit = 10;
+
+    this.genesis_period = BigInt(100000);
 
     //
     // set to true when adding blocks to disk (must be done one at a time!)
@@ -472,8 +474,6 @@ class Blockchain {
       //
       block.affixCallbacks();
 
-      console.log("done affixing callbacks!");
-
       //
       // don't run callbacks if reloading (force!)
       //
@@ -858,9 +858,16 @@ class Blockchain {
     // load blockchain from options if exists
     //
     if (this.app?.options?.blockchain) {
-      this.blockchain = this.app.options.blockchain;
+      let obj = this.app.options.blockchain;
+      for (let key in obj) {
+        if (typeof obj[key] !== 'undefined') {
+          this[key] = obj[key];
+        }
+      }
       this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
     }
+
+console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
 
     //
     // prevent mempool from producing blocks while we load
@@ -1028,7 +1035,7 @@ class Blockchain {
   }
 
   returnGenesisPeriod(): bigint {
-    return BigInt(this.blockchain.genesis_period || 0);
+    return this.genesis_period;
   }
 
   //  TODO fix

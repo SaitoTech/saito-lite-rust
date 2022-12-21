@@ -1,13 +1,16 @@
 body{
-   font-family: arial, helvetica, sans-serif;
-   font-size: 1.1em;
-   padding:0px;
-   margin:0px;
+  font-family: arial, helvetica, sans-serif;
+  padding:0px;
+  margin:0px;
 
   background: -webkit-linear-gradient(top, #0a2942, #010204);
   background: -moz-linear-gradient(top, #0a2942, #010204);
   background: linear-gradient(to top, #0a2942, #010204);
   background-attachment: fixed;
+}
+
+img {
+  width: unset;
 }
 
 .status-message {
@@ -437,7 +440,8 @@ body{
 }
 
 .gameboard {
-  position: relative;
+  position: relative; /* sizer turns this to absolute */
+  margin: 50px 5px;
 }
 
 .city {
@@ -494,7 +498,8 @@ body{
   text-align: center;
 }
 .close_welcome_overlay{
-  margin: 40px;
+  margin: 40px auto;
+  max-width: 300px;
 }
 
 
@@ -553,6 +558,7 @@ body{
  max-width: 150%;
  white-space: nowrap;
  overflow-x: visible;
+ font-size: 2rem;
 }
 
 .status ul li.card{

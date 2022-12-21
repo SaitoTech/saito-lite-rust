@@ -1,8 +1,8 @@
 
 #game_board_sizer{
   position: absolute;
-  top: 0px;
-  right: 40px;
+  top: 5px;
+  right: 10px;
   z-index: 45;
   display: flex;
   flex-direction: row;
@@ -22,13 +22,11 @@
   width: 100%;
   border: 1px solid var(--saito-primary);
   border-radius: 0.5rem;
-  margin: 1.25rem;
   z-index: 99999;
   padding: 1rem;
-  margin-left: 1rem;
+  margin: 0px 10px;
   padding-left: 1px;
   padding-right: 1px;
-  margin-right: 1rem;
 }
 
 

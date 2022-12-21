@@ -199,7 +199,7 @@ class Server {
 
         console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
         res.status(400);
-        res.send({
+        res.end({
           error: {
             message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
           },
@@ -232,8 +232,8 @@ class Server {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
         });
-        res.write(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
-        res.end();
+        res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
+        //res.end();
       } catch (err) {
         //
         // file does not exist on disk, check in memory
@@ -242,7 +242,7 @@ class Server {
 
         console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
         res.status(400);
-        res.send({
+        res.end({
           error: {
             message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
           },
@@ -312,10 +312,9 @@ class Server {
         const liteblock = block.returnLiteBlock(keylist);
         const buffer = Buffer.from(liteblock.serialize());
 
-        res.write(buffer, "utf8");
-        res.end();
-        return;
-      }
+          res.end(buffer, "utf8");
+          return;
+        }
 
       //
       // TODO - load from disk to ensure we have txs -- slow.
@@ -324,29 +323,33 @@ class Server {
       // @ts-ignore
       const blk = await this.app.storage.loadBlockByHash(bsh);
 
-      if (blk == null) {
-        // res.writeHead(200, {
-        //   "Content-Type": "text/plain",
-        //   "Content-Transfer-Encoding": "utf8",
-        // });
-        // res.send("{}");
-        // res.end();
-        res.sendStatus(404);
-        return;
-      } else {
-        const newblk = blk.returnLiteBlock(keylist);
+        if (blk == null) {
+          // res.writeHead(200, {
+          //   "Content-Type": "text/plain",
+          //   "Content-Transfer-Encoding": "utf8",
+          // });
+          // res.send("{}");
+          // //res.end();
+          res.sendStatus(404);
+          return;
+        } else {
+          const newblk = blk.returnLiteBlock(keylist);
 
-        res.writeHead(200, {
-          "Content-Type": "text/plain",
-          "Content-Transfer-Encoding": "utf8",
-        });
+          res.writeHead(200, {
+            "Content-Type": "text/plain",
+            "Content-Transfer-Encoding": "utf8",
+          });
+          const liteblock = block.returnLiteBlock(keylist);
+          const buffer = Buffer.from(liteblock.serialize()); //, "binary").toString("base64");
+          res.end(buffer);
+          //res.send(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
+          //res.end();
+          return;
+        }
 
-        const liteblock = block.returnLiteBlock(keylist);
-        const buffer = Buffer.from(liteblock.serialize());
-        res.write(buffer);
-        res.end();
+        console.log("hit end...");
         return;
-      }
+
     });
 
     app.get("/block/:hash", async (req, res) => {
@@ -442,8 +445,8 @@ class Server {
         "Content-Type": "text/json",
         "Content-Transfer-Encoding": "utf8",
       });
-      res.write(Buffer.from(JSON.stringify(this.app.options.runtime)), "utf8");
-      res.end();
+      res.end(Buffer.from(JSON.stringify(this.app.options.runtime)), "utf8");
+      //res.end();
     });
 
     app.get("/r", (req, res) => {
