@@ -58,7 +58,7 @@ console.log("X3");
     this.app.modules.renderInto(".arcade-leagues");
 
     
-    this.app.modules.renderInto(".arcade-invites");
+    this.app.modules.renderInto(".arcade-invites-box");
 
 
 /*****

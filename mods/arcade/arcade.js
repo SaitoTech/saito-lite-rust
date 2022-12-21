@@ -43,10 +43,10 @@ class Arcade extends ModTemplate {
       }
     }
 
-    if (qs == ".arcade-invites") {
+    if (qs == ".arcade-invites-box") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        let obj = new InviteManager(this.app, this, ".arcade-invites");
+        let obj = new InviteManager(this.app, this, ".arcade-invites-box");
         obj.type = "long";
         this.renderIntos[qs].push(obj);
       }
@@ -56,13 +56,13 @@ class Arcade extends ModTemplate {
     if (this.renderIntos[qs] != null && this.renderIntos[qs].length > 0) {
        console.log(this.renderIntos);   
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
-    
-      // temporary invite render
-      if (qs == ".redsquare-sidebar" || qs == ".arcade-invites") {
-        this.temporaryInviteRender();
-      }
     }
 
+
+    // temporary invite render
+    if (qs == ".redsquare-sidebar" || qs == ".arcade-invites-box") {
+      this.temporaryInviteRender();
+    }
   }
 
 
@@ -96,11 +96,10 @@ class Arcade extends ModTemplate {
     ]
 
 
-    // for (let i = 0; i < invites.length; i++) {
-    //   this.app.connection.emit('invite-render-request', invites[i]);
-    // }
+    for (let i = 0; i < invites.length; i++) {
+      this.app.connection.emit('invite-render-request', invites[i]);
+    }
 
-    this.app.connection.emit('invite-render-request', invites[2]);
   }
 
 

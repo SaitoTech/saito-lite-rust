@@ -37,10 +37,7 @@ class InviteManager {
 			} else {
 				this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager", invite);
 			}
-
-			console.log('typeeeeeeeeeeeeeeeeeeeeee');
-			console.log(manager_self.type);
-
+			
 			this.invites[invite.id].invite = invite;
 	      }
 	    
