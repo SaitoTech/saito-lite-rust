@@ -35,6 +35,8 @@ class LeagueRankings {
     if (leagues.length > 0){
       let cnt = 0;
       leagues.forEach(l => {
+
+        console.log(l);
         if (l.rank > 0) {
           html += `
 	    <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
@@ -45,6 +47,7 @@ class LeagueRankings {
         }
       });
       leagues.forEach(l => {
+        console.log(l);
         if (l.rank <= 0) {
           html += `
 	    <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">

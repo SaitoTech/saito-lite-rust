@@ -46,28 +46,16 @@ console.log("HTML: " + html);
 
   
   attachEvents() {
+    menu_self = this;
 
-/*****  
     Array.from(document.getElementsByClassName('arcade-menu-item')).forEach(game => {
       game.addEventListener('click', (e) => {
         let gameName = e.currentTarget.id;
 
-        //mod.viewing_game_homepage = "Arcade"; //gameName;
-        //mod.viewing_arcade_initialization_page = false;
-        //mod.render(app);
-
-        if (gameName !== mod.name){
-          mod.createGameWizard(gameName); 
-        }else{
-          mod.createGameSelector();
-          //mod.viewing_game_homepage = "Arcade";
-          //window.location.hash = "";
-          //mod.render(app);          
-        }
-
+        menu_self.app.connection.emit("arcade-launch-game-wizard", { game: gameName });
+      
       });
     });
-*****/
 
   }
 
