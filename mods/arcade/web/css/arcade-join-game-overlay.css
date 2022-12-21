@@ -1,37 +1,51 @@
 .arcade-game-overlay {
-    background-color: var(--saito-background-color);
-    width: 60vw;
-    height: max-content;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    display: grid;
-    grid-template-rows: 8rem max-content;
-    grid-gap: 1rem;
+  background-color: var(--saito-background-color);
+  width: 60vw;
+  height: max-content;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  display: grid;
+  grid-template-rows: 8rem max-content;
+  grid-gap: 1rem;
 }
 
 .arcade-game-overlay-header-image {
-    background-image: url(/twilight/img/arcade/arcade.jpg);
-    background-size: cover;
-    width: 11rem;
-    height: 7rem;
-    float: left;
-    margin-right: 1rem;
+  background-image: url(/twilight/img/arcade/arcade.jpg);
+  background-size: cover;
+  width: 11rem;
+  height: 7rem;
+  float: left;
+  margin-right: 1rem;
 }
 
 .arcade-game-overlay-header-title-box-title {
-    font-size: 4rem;
+  font-size: 4rem;
 }
 
 .arcade-game-overlay-body {
-    display: flex;
-    flex-direction: column;
-    row-gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
 }
 
 .arcade-game-overlay .saito-table-row {
-    grid-template-columns: 5rem 1fr;
+  grid-template-columns: 5rem 1fr;
+}
+
+.arcade-game-players {
+  overflow-y: auto;
+  box-shadow: -1px 1px 0.5rem 1px var(--saito-border-color);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.arcade-game-options {
+  overflow-y: auto;
+  box-shadow: -1px 1px 0.5rem 1px var(--saito-border-color);
+  padding: 1rem;
+  margin-top: 1rem;
 }
 
 .arcade-game-controls button {
-    margin: 0;
+  margin: 0;
 }

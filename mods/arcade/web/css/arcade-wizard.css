@@ -101,7 +101,7 @@
 
 
 .game-wizard-options > .saito-select::after {
-  background: var(--saito-primary);
+  background: var(--saito-dark-btn);
 }
 
 .game-wizard-options .saito-select::after {
@@ -143,7 +143,7 @@
 }
 
 .game-create-new-overlay.dark .saito-overlay input::after {
-  background: var(--saito-primary);
+  background: var(--saito-dark-btn);
 }
 
 .game-create-new-overlay.dark .saito-overlay .saito-select {
@@ -160,11 +160,11 @@
 }
 
 .game-create-new-overlay.dark .saito-overlay .game-wizard-advanced-return-btn {
-  background: var(--saito-primary);
+  background: var(--saito-dark-btn);
 }
 
 .game-create-new-overlay.dark .saito-overlay .game-wizard-advanced-return-btn:hover {
-  color: #fff;
+  color: var(--saito-white);
   border: none;
 }
 
@@ -212,8 +212,8 @@
   position: relative;
   display: flex;
   line-height: 3;
-  background: #fff;
-  color: var(--saito-primary);
+  background: var(--saito-white);
+  color: var(--saito-dark-btn);
 }
 
 .saito-multi-select_btn_options {
@@ -243,7 +243,7 @@
 
 
 .saito-multi-select_btn_options.dark button{
-  background: var(--saito-primary);
+  background: var(--saito-dark-btn);
   margin: 0rem;
   padding: 0rem;
   width: 101%;
@@ -257,7 +257,7 @@
   top: 0;
   right: 0;
   padding: 0 1em;
-  background: var(--saito-primary);
+  background: var(--saito-dark-btn);
   cursor: pointer;
   pointer-events: none;
   -webkit-transition: 0.25s all ease;
@@ -269,9 +269,9 @@
 
 .game-wizard-invite .saito-multi-select_btn.saito-select::after {
   box-sizing: border-box;
-  border: 1px solid var(--saito-primary);
+  border: 1px solid var(--saito-dark-btn);
   background-color: var(--saito-white);
-  color: var(--saito-primary);
+  color: var(--saito-dark-btn);
   border-radius: 0 0.5rem 0.5rem 0;
   height: 4.8rem;
   line-height: 4.8rem;
@@ -281,14 +281,14 @@
 
 
 .game-wizard-invite .saito-multi-select_btn.saito-select.dark::after {
-  background: var(--saito-primary);
+  background: var(--saito-dark-btn);
   color: var(--saito-white);
 }
 
 
 /* Transition */
 .saito-select:hover::after {
-  color: var(--saito-primary);
+  color: var(--saito-dark-btn);
 }
 .dark option {
   background: var(--saito-black-faded);
@@ -300,8 +300,8 @@
   min-height: 4.8rem;
   font-weight: bold;
   margin: 0.1rem;
-  background: var(--saito-primary);
-  border: 1px solid var(--saito-primary);
+  background: var(--saito-dark-btn);
+  border: 1px solid var(--saito-dark-btn);
   color: var(--saito-white)
 }
 

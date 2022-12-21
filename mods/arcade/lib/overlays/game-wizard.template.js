@@ -28,13 +28,13 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
       </div>
       <!- ***Game desc & title end*** -->
   `;
-        
+
   html += `
         <input type="hidden" name="game" value="${game_mod.name}" />
   `;
   if (invite) {
     html += `
-      ${(invite.msg.league)? `<input type="hidden" name="league" value="${invite.msg.league}" />` : ""}
+      ${(invite.msg.league) ? `<input type="hidden" name="league" value="${invite.msg.league}" />` : ""}
     `;
   }
   html += `
@@ -43,6 +43,7 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
     <div class="game-wizard-controls">
   
       <div class="rs-create-game-players dark">
+        
         ${game_mod.returnPlayerSelectHTML()}
         <div id="arcade-advance-opt" class="info-item-wrapper">advanced options...</div>
       </div>
@@ -50,28 +51,28 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
       <div class="game-wizard-invite">
   `;
 
-    if (game_mod.maxPlayers == 1){
-      html += `<button type="button" id="game-invite-btn" class="game-invite-btn" data-type="single">Play</button>`;
-    }else{
-      html += `
+  if (game_mod.maxPlayers == 1) {
+    html += `<button type="button" id="game-invite-btn" class="game-invite-btn" data-type="single">Play</button>`;
+  } else {
+    html += `
           <div class="saito-multi-select_btn saito-select dark">
            <div class="saito-multi-select_btn_options dark saito-slct">
       `;
-      if (publickey) {
-        html += `
+    if (publickey) {
+      html += `
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="direct">Next Step...</button>
        `;
-      } else {
-        html += `
+    } else {
+      html += `
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="open">Create Open Game</button>
               <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private Game</button>
        `;
-     }
-	html += `
+    }
+    html += `
            </div>
           </div>
 	`;
-    }
+  }
 
 
   html += `
@@ -81,7 +82,7 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
     <div id="advanced-options-overlay-container"></div>
   </form>
   `;
-  
+
   // message for licensed games
   if (game_mod.publisher_message) {
     html += `<div id="arcade-game-publisher-message" class="arcade-game-publisher-message">

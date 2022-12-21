@@ -1,63 +1,64 @@
-
 .league-overlay {
-    background-color: var(--saito-background-color);
-    width: 90vw;
-    height: 90vh;
-    padding: 1rem 2rem;
-    border-radius: 0.5rem;
-    display: grid;
-    grid-template-rows: 7rem calc(90vh - 10rem);
-    row-gap: 1rem;
+  background-color: var(--saito-background-color);
+  width: 90vw;
+  height: 90vh;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  display: grid;
+  grid-template-rows: 7rem calc(90vh - 10rem);
+  row-gap: 1rem;
 }
 
 .league-overlay-header-image {
-    background-image: url(/twilight/img/arcade/arcade.jpg);
-    background-size: cover;
-    width: 11rem;
-    height: 7rem;
-    margin-right: 1rem;
+  background-image: url(/twilight/img/arcade/arcade.jpg);
+  background-size: cover;
+  width: 11rem;
+  height: 7rem;
+  margin-right: 1rem;
 }
 
 .league-overlay-header-title-box-title {
-    font-size: 4rem;
+  font-size: 4rem;
 }
 .league-overlay-description {
-    font-size: 1.4rem;
-    line-height: 2rem;
+  font-size: 1.4rem;
+  line-height: 2rem;
 }
 
 .league-overlay-create-game-button {
-    min-width: 20rem;
-    max-width: 25rem;
+  min-width: 20rem;
+  max-width: 25rem;
 }
 
 .league-overlay-body {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2rem;
 }
 
-.league-overlay-body>div {
-    overflow-y: auto;
+.league-overlay-body > div {
+  overflow-y: auto;
+  box-shadow: -1px 1px 0.5rem 1px var(--saito-border-color);
+  padding: 2rem;
+  margin-top: 1rem;
 }
 
 .league-overlay-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 
 .league-over-header-controls {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: flex-start;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-start;
 }
 
 .league-overlay-league-body-games {
-    display: flex;
-    flex-direction: column;
-    row-gap: 1rem;
-    
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
 }
