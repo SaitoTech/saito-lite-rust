@@ -33,7 +33,7 @@ class Blockchain {
   public parent_blocks_fetched: number;
   public parent_blocks_fetched_limit: number;
   public indexing_active: boolean;
-  public run_callbacks: any;
+  public run_callbacks: boolean;
   public callback_limit: number;
   public res_spend: any;
   public res_unspend: any;
@@ -76,7 +76,7 @@ class Blockchain {
     //
     // set to zero to disable module execution
     //
-    this.run_callbacks = 1;
+    this.run_callbacks = true;
     this.callback_limit = 2; // 2 blocks
 
     this.debugging = true;
@@ -134,6 +134,7 @@ class Blockchain {
   }
 
   async addBlockToBlockchain(block: Block, force = false) {
+    console.log("adding block : " + block.hash + " to blockchain");
     //
     //
     //
@@ -462,12 +463,12 @@ class Blockchain {
     //
     // run callbacks if desired
     //
-    let already_processed_callbacks = 0;
+    let already_processed_callbacks = false;
     if (block_id <= this.blockchain.last_callback_block_id) {
-      already_processed_callbacks = 1;
+      already_processed_callbacks = true;
     }
 
-    if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
+    if (this.run_callbacks && !already_processed_callbacks) {
       //
       // this block is initialized with zero-confs processed
       //
@@ -477,43 +478,58 @@ class Blockchain {
       // don't run callbacks if reloading (force!)
       //
       if (block.lc && !block.force) {
-        let block_id_from_which_to_run_callbacks =
-          block.returnId() - BigInt(this.callback_limit + 1);
+        let block_id_to_run_callbacks_from = block.returnId() - BigInt(this.callback_limit + 1);
         let block_id_in_which_to_delete_callbacks =
           block.returnId() - BigInt(this.prune_after_blocks);
-        if (block_id_from_which_to_run_callbacks <= 0) {
-          block_id_from_which_to_run_callbacks = BigInt(1);
+        if (block_id_to_run_callbacks_from <= BigInt(0)) {
+          block_id_to_run_callbacks_from = BigInt(1);
         }
-        if (block_id_from_which_to_run_callbacks <= block_id_in_which_to_delete_callbacks) {
-          block_id_from_which_to_run_callbacks = block_id_from_which_to_run_callbacks + BigInt(1);
+        if (block_id_to_run_callbacks_from <= block_id_in_which_to_delete_callbacks) {
+          block_id_to_run_callbacks_from = block_id_to_run_callbacks_from + BigInt(1);
         }
 
-        if (block_id_from_which_to_run_callbacks > 0) {
-          for (let i = block_id_from_which_to_run_callbacks; i <= block.returnId(); i++) {
-            let blocks_back = block.returnId() - BigInt(i);
-            let this_confirmation = blocks_back + BigInt(1);
-            let run_callbacks = 1;
+        // console.log("block_id_to_run_callbacks_from = " + block_id_to_run_callbacks_from);
+        // console.log(
+        //   "block_id_in_which_to_delete_callbacks = " + block_id_in_which_to_delete_callbacks
+        // );
 
-            //
+        if (block_id_to_run_callbacks_from > BigInt(0)) {
+          for (let i = block_id_to_run_callbacks_from; i <= block.returnId(); i++) {
+            let confirmation_count = block.returnId() - BigInt(i) + BigInt(1);
+            let run_callbacks = true;
+
+
             // if bid is less than our last-bid but it is still
             // the biggest BID we have, then we should avoid
             // running callbacks as we will have already run
             // them. We check TS as sanity check as well.
-            //
             if (block.returnId() < this.blockchain.last_block_id) {
               if (block.returnTimestamp() < this.blockchain.last_timestamp) {
                 if (block.lc) {
-                  run_callbacks = 0;
+                  console.log(
+                    "not running callbacks. blockId = " +
+                      block.returnId() +
+                      " lastId = " +
+                      this.blockchain.last_block_id
+                  );
+                  run_callbacks = false;
                 }
               }
             }
 
-            if (run_callbacks === 1) {
+            if (run_callbacks) {
               let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
               if (callback_block_hash !== "") {
                 let callback_block = this.blocks.get(callback_block_hash);
                 if (callback_block) {
-                  await callback_block.runCallbacks(this_confirmation);
+                  // console.log(
+                  //   "running callback : hash = " +
+                  //     callback_block_hash +
+                  //     " confirmations = " +
+                  //     confirmation_count
+                  // );
+                  // this.blockchain.last_callback_block_id = i;
+                  await callback_block.runCallbacks(confirmation_count);
                 }
               }
             }
@@ -529,18 +545,30 @@ class Blockchain {
           );
           let callback_block = this.blocks.get(callback_block_hash);
           if (callback_block) {
+            // console.log("deleting callbacks : " + callback_block_hash);
             callback_block.callbacks = [];
             callback_block.callbackTxs = [];
           }
         }
       }
 
-      console.log("moving into onNewBlock");
+      console.log("moving into onNewBlock : " + block.hash + " -- id : " + block.returnId());
 
       //
       // callback
       //
-      this.app.modules.onNewBlock(block, true /*i_am_the_longest_chain*/); // TODO : undefined i_am_the_longest_chain ???
+      this.app.modules.onNewBlock(block, block.lc /*i_am_the_longest_chain*/); // TODO : undefined i_am_the_longest_chain ???
+    } else {
+      // console.log(
+      //   "not calling callbacks : run_callbacks = " +
+      //     this.run_callbacks +
+      //     "  -- already_processed_callbacks = " +
+      //     already_processed_callbacks +
+      //     " -- last_callback_block_id = " +
+      //     this.blockchain.last_callback_block_id +
+      //     " -- block_id = " +
+      //     block_id
+      // );
     }
 
     // console.log("done add block success... : " + block.returnHash());
