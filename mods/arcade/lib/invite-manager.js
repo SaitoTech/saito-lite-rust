@@ -10,11 +10,13 @@ class InviteManager {
 	  this.mod = mod;
 	  this.container = container;
 	  this.name = "InviteManager";
+	  this.type = "short";
 
 	  //
 	  // track invites
 	  //
 	  this.invites = {};
+	  manager_self = this;
 
 	  //
 	  // handle requests to re-render invite manager
@@ -29,14 +31,20 @@ class InviteManager {
 	  app.connection.on("invite-render-request", (invite) => {
 	    
 	      if (!this.invites[invite.id]) {
-					this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager", invite);
-					this.invites[invite.id].invite = invite;
+			// rendering different types of invite templates based on invite manager type (inside RS or arcade)		
+			if (manager_self.type == "short") {
+				this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager", invite);
+			} else {
+				this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager", invite);
+			}
+
+			console.log('typeeeeeeeeeeeeeeeeeeeeee');
+			console.log(manager_self.type);
+
+			this.invites[invite.id].invite = invite;
 	      }
 	    
 	      this.invites[invite.id].render();
-
-	      console.log("INVITES");
-	      console.log(this.invites);
 	    
     });
 

@@ -37,14 +37,18 @@ class Arcade extends ModTemplate {
    
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new InviteManager(this.app, this, ".saito-sidebar.right"));
+        let obj = new InviteManager(this.app, this, ".saito-sidebar.right");
+        obj.type = "short";
+        this.renderIntos[qs].push(obj);
       }
     }
 
     if (qs == ".arcade-invites") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new InviteManager(this.app, this, ".arcade-invites"));
+        let obj = new InviteManager(this.app, this, ".arcade-invites");
+        obj.type = "long";
+        this.renderIntos[qs].push(obj);
       }
  
     }
