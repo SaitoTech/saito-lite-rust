@@ -57,6 +57,8 @@ console.log("X3");
     //
     this.app.modules.renderInto(".arcade-leagues");
 
+    
+    this.app.modules.renderInto(".arcade-invites");
 
 
 /*****
@@ -100,6 +102,8 @@ console.log("X3");
 
 
   attachEvents() {
+
+
 /****    
     //
     // game invitation actions

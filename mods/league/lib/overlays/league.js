@@ -22,7 +22,6 @@ class LeagueOverlay {
 
     Array.from(document.querySelectorAll('.league-overlay-create-game-button')).forEach(game => {
       game.onclick = (e) => {
-        console.log('league_self', league_self)
         let modname = e.currentTarget.getAttribute("data-id");
         league_self.app.connection.emit("arcade-launch-game-wizard", { game: modname });
       };
