@@ -2,7 +2,8 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const LeagueRankings = require("./lib/rankings");
 const LeagueLeaderboard = require("./lib/leaderboard");
-
+const LeagueMain = require('./lib/main');
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 
 class League extends ModTemplate {
 
@@ -15,7 +16,7 @@ class League extends ModTemplate {
     this.categories = "Arcade Competition";
     this.overlay = null;
 
-    this.styles = ['/league/style.css'];
+    this.styles = ['/saito/saitox.css','/league/style.css'];
 
     //
     // i like simpler names, but /lib contains this.leagues[] as well
@@ -40,7 +41,6 @@ class League extends ModTemplate {
 
 
   initialize(app) {
-
     super.initialize(app);
 
     //
@@ -48,11 +48,21 @@ class League extends ModTemplate {
     //
     this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
       this.addLeague(
-	app.crypto.hash(mod.returnName()) ,	// id
-	mod.returnName() , 			// name
-	0 					// rank
+      	app.crypto.hash(mod.returnName()) ,	// id
+      	mod.returnName() , 			// name
+      	0 					// rank
       );
     });
+  }
+
+  render(app, mod) {
+
+    this.main = new LeagueMain(app, this)
+    this.header = new SaitoHeader(app, this);
+    this.addComponent(this.main);
+    this.addComponent(this.header);
+
+    super.render(app, this);
   }
 
   canRenderInto(qs) {
@@ -64,6 +74,7 @@ class League extends ModTemplate {
     }
     return false;
   }
+  
   renderInto(qs) {
     if (qs == ".redsquare-sidebar") {
       if (!this.renderIntos[qs]) {
@@ -98,17 +109,17 @@ class League extends ModTemplate {
     let league_idx = -1;
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) {
-	league_idx = i;
-	break;
+      	league_idx = i;
+      	break;
       }
     }
     if (league_idx == -1) {
       this.leagues.push({
-	id	:	league_id ,
-	name	:	name ,
-	rank	:	rank ,
-	players :	[] ,
-	games	:	[] ,
+      	id	:	league_id ,
+      	name	:	name ,
+      	rank	:	rank ,
+      	players :	[] ,
+      	games	:	[] ,
       });
     } else {
       this.app.connection.emit("league-add-league", (this.leagues[league_idx]));
@@ -117,43 +128,46 @@ class League extends ModTemplate {
 
 
   async onPeerHandshakeComplete(app, peer) {
-
     //    
     // fetch any leagues    
     //    
     this.sendPeerDatabaseRequestWithFilter(
-	
-	"League" , 
-
-	`SELECT * FROM leagues` ,
-
-	(res) => {
-console.log("RECEIVED LEAGUES: ");
-console.log(JSON.stringify(res));	  
-	}
-
+    	"League" , 
+    	`SELECT * FROM leagues` ,
+    	(res) => {
+        console.log("RECEIVED LEAGUES: ");
+        console.log(JSON.stringify(res));	  
+    	}
     );
-
   }
 
+  filterLeagues(app, include_default = true){
+    let leagues_to_display = [];
+    //filter leagues to display
+    for (let le of this.leagues){
+      if (!include_default && le.admin === "saito"){
+        continue;
+      }
+      if (le.admin == app.wallet.returnPublicKey() || le.myRank > 0){
+        leagues_to_display.push(le);
+      }else if (le.type == "public"){
+        //Only show public leagues if there are available slots or I am a member
+        if (le.max_players == 0 || le?.playerCnt < le.max_players){
+          leagues_to_display.push(le);
+        }
+      }
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //sort leagues
+    leagues_to_display.sort((a, b) =>{
+      if (a.id === "SAITOLICIOUS") { return -1};
+      if (b.id === "SAITOLICIOUS") { return 1};
+      if (a.myRank < 0) {return 1;}
+      if (b.myRank < 0) {return -1;}
+      return a.myRank - b.myRank
+    });
+    return leagues_to_display;
+  }
 
 }
 
