@@ -4,45 +4,83 @@ const ChatPopupTemplate = require("./popup.template");
 class ChatPopup {
 
   constructor(app, mod, container = "") {
+
     this.app = app;
     this.mod = mod;
+
     this.container = container;
     this.emoji = new SaitoEmoji(app, mod, `chat-input`);
     this.minimized = false;
     this.group = null;
+
+    this.x_pos = 0;
+    this.y_pos = 0;
+
   }
 
   render() {
 
-    console.log("RENDER POPUP");
-    if (!document.querySelector(`.chat-container`)) {
-      this.app.browser.addElementToDom(`<div class="chat-container"> </div>`)
-    }
     //
-    // if group is unset, we do not know which chat group to render
+    // exit if group unset
     //
-
-    if (this.group == null) {
-      console.log("Chat Popup: requested rendering of unspecified group");
-      return;
-    }
-
-    console.log("RENDER POPUP 2");
+    if (this.group == null) { return; }
 
     //
-    // replace element or insert into page
+    // calculate some values to determine position on screen...
+    //
+    let x_offset = 1000000;
+    let x_range = 440;
+    let popups_on_page = 0;
+    document.querySelectorAll(".chat-popup").forEach((el) => {
+        popups_on_page++;
+	var rect = el.getBoundingClientRect();
+        x_range = rect.right - rect.left;
+        if (rect.left < x_offset) {
+	  x_offset = rect.left;
+	}
+    });    
+
+
+    //
+    // insert or replace popup on page
     //
     let popup_qs = ".chat-popup-" + this.group.id;
     if (document.querySelector(popup_qs)) {
       this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group), popup_qs);
+      popups_on_page--; // because one of them was me
     } else {
-      this.app.browser.addElementToSelectorOrDom(ChatPopupTemplate(this.app, this.mod, this.group), '.chat-container');
+      this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
     }
 
+
     //
-    // make it draggable
+    // now set left-position of popup
     //
-    this.app.browser.makeDraggable(`chat-popup`, `chat-header`, true);
+    if (popups_on_page >= 1) {
+      this.x_pos = x_offset - x_range - 30;
+      if (this.x_pos < 0) { this.x_pos = 0; }
+      let obj = document.querySelector(popup_qs);
+      obj.style.left = this.x_pos + "px";
+    }
+
+
+    //
+    // make draggable
+    //
+    this.app.browser.makeDraggable(`chat-popup`, `chat-header`, true, () => {
+
+	//
+	//
+	//
+	let obj = document.querySelector(popup_qs);
+
+	var rect = obj.getBoundingClientRect();
+	console.log(rect.top, rect.right, rect.bottom, rect.left);
+
+	this.x_pos = rect.left;
+	this.y_pos = rect.top;
+
+    });
 
     //
     // emojis

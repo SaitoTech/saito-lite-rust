@@ -28,6 +28,8 @@ class Chat extends ModTemplate {
 
         this.mute = false;
 
+        this.chat_manager = null;
+
         this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
             this.createChatGroup(data?.members);
         });
@@ -70,9 +72,11 @@ class Chat extends ModTemplate {
 
 
     respondTo(type) {
+ 
         switch (type) {
             case 'chat-manager':
-                return new ChatManager(this.app, this, ".chat-container");
+		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
+                return this.chat_manager;
             default:
                 return super.respondTo(type);
         }
