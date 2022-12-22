@@ -148,6 +148,7 @@ class Crypto {
    * @returns {string} converted string
    */
   fromBase58(t: string): string {
+console.log("FB58: " + t);
     return Buffer.from(Base58.decode(t)).toString("hex");
   }
 
@@ -158,6 +159,7 @@ class Crypto {
    * @returns {string} converted string
    */
   toBase58(t: string): string {
+console.log("TB58: " + t);
     return Base58.encode(Buffer.from(t, "hex"));
   }
 
@@ -289,11 +291,19 @@ class Crypto {
   isPublicKey(publickey: string) {
     if (publickey.length == 44 || publickey.length == 45) {
       if (publickey.indexOf("@") <= 0) {
-        return 1;
+	if (this.isBase58(publickey)) {
+          return 1;
+	}
       }
     }
     return 0;
   }
+
+  isBase58(t: string) { 
+    return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);
+  }
+
+ 
 
   //////////////////
   // MERKLE TREES //

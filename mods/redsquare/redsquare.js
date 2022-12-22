@@ -418,8 +418,6 @@ class RedSquare extends ModTemplate {
           }
         }
 
-console.log("INSERTING NOTIFICATION");
-
         this.notifications.splice(insertion_index, 0, tweet);
         this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
@@ -649,8 +647,6 @@ console.log("INSERTING NOTIFICATION");
     //
     if (app.BROWSER == 1) {
 
-console.log("RECEIVE LIKE TX");
-
       //
       // save my likes
       //
@@ -721,7 +717,6 @@ console.log("RECEIVE LIKE TX");
     }
     newtx = redsquare_self.app.wallet.signTransaction(newtx);
     redsquare_self.app.network.propagateTransaction(newtx);
-
     return newtx;
 
   }

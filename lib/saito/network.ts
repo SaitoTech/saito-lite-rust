@@ -1199,6 +1199,8 @@ class Network {
     for (let i = 0; i < tx.transaction.from.length; ++i) {
       tx.transaction.from[i].generateKey(this.app);
     }
+
+console.log("TESTING TESTING 1: " + JSON.stringify(tx));
     //
     // if this is our (normal) transaction, add to pending
     //
@@ -1206,6 +1208,8 @@ class Network {
       this.app.wallet.addTransactionToPending(tx);
       this.app.connection.emit("update_balance", this.app.wallet);
     }
+
+console.log("TESTING TESTING 2");
 
     if (this.app.BROWSER === 0 && this.app.SPVMODE === 0) {
       //
@@ -1253,9 +1257,13 @@ class Network {
         return;
       }
       if (!!tx.path && !peer.inTransactionPath(tx) && !!peer.returnPublicKey()) {
+console.log("TESTING TESTING 4");
+console.log(JSON.stringify(tx.transaction));
         const tmptx = peer.addPathToTransaction(tx);
+console.log(JSON.stringify(tmptx.transaction));
         if (peer.socket && peer.socket.readyState === peer.socket.OPEN) {
           // 1 = WebSocket Open
+console.log("TESTING TESTING 5");
           this.sendRequest("SNDTRANS", tmptx.serialize(this.app), peer);
         } else {
           if (!peer.socket) {
