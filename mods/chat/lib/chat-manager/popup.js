@@ -75,8 +75,6 @@ class ChatPopup {
 	let obj = document.querySelector(popup_qs);
 
 	var rect = obj.getBoundingClientRect();
-	console.log(rect.top, rect.right, rect.bottom, rect.left);
-
 	this.x_pos = rect.left;
 	this.y_pos = rect.top;
 
@@ -113,6 +111,7 @@ class ChatPopup {
 
     let app = this.app;
     let mod = this.mod;
+    let group_id = this.group.id;
 
     try {
 
@@ -150,7 +149,6 @@ class ChatPopup {
       // submit
       //
       let msg_input = document.getElementById("chat-input");
-
       msg_input.onkeydown = (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();

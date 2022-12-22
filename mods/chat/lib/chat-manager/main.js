@@ -37,9 +37,6 @@ class ChatManager {
 	  // handle requests to re-render chat popups
 	  //
 	  app.connection.on("chat-popup-render-request", (group) => {
-
-console.log("popup render request: " + group.id);
-
 	    if (this.render_popups_to_screen) {
 	      if (!this.popups[group.id]) {
 		this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
@@ -48,16 +45,10 @@ console.log("popup render request: " + group.id);
 	      this.popups[group.id].render();
 	    }
           });
-
 	}
 
 
 	render() {
-
-console.log("-----");
-console.log("-----");
-console.log("-----");
-console.log("request to render chat manager!");
 
 	  //
 	  // some applications do not want chat-manager appearing (games!)
@@ -84,6 +75,7 @@ console.log("request to render chat manager!");
 	  // render chat groups
 	  //
 	  for (let group of this.mod.groups) {
+
 	    if (!group.unread) { group.unread = 0; }
 
             // {
@@ -120,7 +112,6 @@ console.log("request to render chat manager!");
 	  }
 
 	  this.rendered = 1;
-console.log("request to attach events to chat manager!");
 	  this.attachEvents();
 
 	}
@@ -128,12 +119,10 @@ console.log("request to attach events to chat manager!");
 
 	attachEvents() {
 
-console.log("attaching events in chat manager");
 	  let cm = this;
 
 	  document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 	    item.onclick = (e) => {
-console.log("we have clicked on list saito user");
 	      let gid = e.currentTarget.getAttribute("data-id");
 	      cm.app.connection.emit("chat-popup-render-request", cm.mod.returnGroup(gid));  
 	    }

@@ -213,9 +213,9 @@ class Chat extends ModTemplate {
             let txmsg = tx.returnMessage();
 
             if (txmsg.request == "chat message") {
-
                 this.receiveChatTransaction(app, tx);
             }
+
         }
 
     }
@@ -263,10 +263,10 @@ class Chat extends ModTemplate {
             });
         }
 
-        //Legacy code??? 
-        if (mycallback) {
-            mycallback({ "payload": "success", "error": {} });
-        }
+	//
+	// notify sender if requested
+	//
+        if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
 
     }
 
@@ -298,9 +298,7 @@ class Chat extends ModTemplate {
 
             //We want to send this info unencrypted, so save a copy first
             let group_id = tx.msg.group_id;
-
             tx = app.wallet.signAndEncryptTransaction(tx);
-
             app.network.propagateTransaction(tx);
 
             app.connection.emit("send-relay-message", { recipient, request: 'chat message broadcast', data: { tx, group_id } });
@@ -382,12 +380,9 @@ class Chat extends ModTemplate {
                     return;
                 }
             }
-
-            if (this.debug) { console.log("receiveChatTrans for defined group: " + JSON.stringify(txmsg)); }
-
             this.addTransactionToGroup(group, tx);
 
-            app.connection.emit('chat-popup-render-request', txmsg.group_id);
+            app.connection.emit('chat-popup-render-request', group);
 
         } else if (tx.isTo(app.wallet.returnPublicKey())) {
             //
@@ -407,7 +402,7 @@ class Chat extends ModTemplate {
 
             if (this.debug) { console.log("emitting render request to new group: " + proper_group.id); }
 
-            app.connection.emit('chat-popup-render-request', proper_group.id);
+            app.connection.emit('chat-popup-render-request', proper_group);
 
         } else {
             if (this.debug) { console.log("Chat message not for me"); }
@@ -446,6 +441,7 @@ class Chat extends ModTemplate {
             }
         }
 
+	if (!group.unread) { group.unread = 0; }
         group.unread = 0;
 
         //Save to Wallet Here
@@ -601,6 +597,7 @@ class Chat extends ModTemplate {
     // Since we were always testing the timestamp its a good thing we don't manipulate it
     //
     addTransactionToGroup(group, tx) {
+
         for (let i = 0; i < group.txs.length; i++) {
             if (group.txs[i].transaction.sig === tx.transaction.sig) {
                 return;
@@ -613,9 +610,9 @@ class Chat extends ModTemplate {
         }
 
         group.txs.push(tx);
-
         //We mark "new/unread" messages as we add them to the group
         //and clear them when we render them in the popup
+        if (!group.unread) { group.unread = 0; }
         group.unread++;
     }
 
