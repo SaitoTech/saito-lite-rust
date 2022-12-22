@@ -10,7 +10,7 @@ class ChatPopup {
 
     this.container = container;
     this.emoji = new SaitoEmoji(app, mod, `chat-input`);
-    this.minimized = false;
+    this.manually_closed = false;
     this.group = null;
 
     this.x_pos = 0;
@@ -24,6 +24,16 @@ class ChatPopup {
     // exit if group unset
     //
     if (this.group == null) { return; }
+
+    //
+    // exit if manually minimized
+    //
+    if (this.manually_closed) { return; }
+
+    //
+    // our query selector
+    //
+    let popup_qs = ".chat-popup-" + this.group.id;
 
     //
     // calculate some values to determine position on screen...
@@ -44,7 +54,6 @@ class ChatPopup {
     //
     // insert or replace popup on page
     //
-    let popup_qs = ".chat-popup-" + this.group.id;
     if (document.querySelector(popup_qs)) {
       this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group), popup_qs);
       popups_on_page--; // because one of them was me
@@ -88,7 +97,7 @@ class ChatPopup {
     //
     // scroll to bottom
     //
-    //document.querySelector(".chat-body").scroll(0, 1000000000);
+    document.querySelector(".chat-body").scroll(0, 1000000000);
 
     //
     // attach events
@@ -113,25 +122,28 @@ class ChatPopup {
     let mod = this.mod;
     let group_id = this.group.id;
 
-    try {
+    //
+    // our query selector
+    //
+    let popup_qs = ".chat-popup-" + this.group.id;
 
+
+    try {
 
       //
       // close
       //
-      document.querySelector(`#chat-container-close`).onclick = (e) => {
-        this.minimized = false;
+      document.querySelector(`${popup_qs} .chat-header .chat-container-close`).onclick = (e) => {
+        this.manually_closed = true;
         mod.mute = true;
-        document.getElementById(`chat-container`).remove();
-
-        app.options.auto_open_chat_box = -1;
+        document.querySelector(`${popup_qs}`).remove();
         app.storage.saveOptions();
       }
 
       //
       // minimize
       //
-      let chat_bubble = document.getElementById(`chat-container-minimize`);
+      let chat_bubble = document.getElementById(`${popup_qs} .chat-header .fa-comment-dots`);
       if (chat_bubble) {
         chat_bubble.onclick = (e) => {
           this.toggleDisplay();
@@ -148,7 +160,7 @@ class ChatPopup {
       //
       // submit
       //
-      let msg_input = document.getElementById("chat-input");
+      let msg_input = document.querySelector(`${popup_qs} .chat-footer .chat-input`);
       msg_input.onkeydown = (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();
@@ -163,7 +175,7 @@ class ChatPopup {
       //
       // submit (button)
       //
-      document.getElementById("chat-input-submit").onclick = (e) => {
+      document.getElementById(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
         e.preventDefault();
         if (msg_input.value == "") { return; }
         let newtx = mod.createChatTransaction(group_id, msg_input.value);
@@ -175,22 +187,22 @@ class ChatPopup {
       //
       // View Other tab
       //
-      Array.from(document.getElementsByClassName("chat-group")).forEach((tab) => {
-        if (!tab.classList.contains("active-chat-tab")) {
-          tab.onclick = (e) => {
-            let id = e.currentTarget.getAttribute("id");
-            id = id.replace("chat-group-", "");
-
-            this.app.options.auto_open_chat_box = id;
-            this.app.storage.saveOptions();
-
-            this.render(this.app, this.mod, id);
-          };
-        }
-      });
+      //Array.from(document.getElementsByClassName("chat-group")).forEach((tab) => {
+      //  if (!tab.classList.contains("active-chat-tab")) {
+      //    tab.onclick = (e) => {
+      //      let id = e.currentTarget.getAttribute("id");
+      //      id = id.replace("chat-group-", "");
+      //
+      //      this.app.options.auto_open_chat_box = id;
+      //      this.app.storage.saveOptions();
+      //
+      //      this.render(this.app, this.mod, id);
+      //    };
+      //  }
+      //});
 
     } catch (err) {
-      console.log("ERROR IN CHAT POPUP -- we can fix later");
+      console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
     }
 
   }

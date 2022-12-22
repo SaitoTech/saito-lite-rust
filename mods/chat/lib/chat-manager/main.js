@@ -103,7 +103,7 @@ class ChatManager {
 
             let obj = document.getElementById(divid);
             if (obj) {
-//              this.app.browser.replaceElementById(html, divid);
+              this.app.browser.replaceElementById(html, divid);
             } else {
               if (document.querySelector(".chat-manager-list")){
                 this.app.browser.addElementToSelector(html, ".chat-manager-list");
@@ -124,7 +124,10 @@ class ChatManager {
 	  document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 	    item.onclick = (e) => {
 	      let gid = e.currentTarget.getAttribute("data-id");
-	      cm.app.connection.emit("chat-popup-render-request", cm.mod.returnGroup(gid));  
+	      let group = cm.mod.returnGroup(gid);
+	      // unset manually closed to permit re-opening
+	      if (this.popups[gid]) { this.popups[gid].manually_closed = false; }
+	      cm.app.connection.emit("chat-popup-render-request", group);  
 	    }
 	  });
 	}
