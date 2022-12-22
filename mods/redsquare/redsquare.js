@@ -277,19 +277,6 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  //
-  // return og information etc.
-  //
-  async handlePeerRequest(app, message, peer, mycallback = null) {
-
-console.log("HPR in RedSquare with " + JSON.stringify(message));
-    super.handlePeerRequest(app, message, peer, mycallback);
-
-  } 
-
-
-
-
 
   //
   // fetch tweets / notifications middleware
