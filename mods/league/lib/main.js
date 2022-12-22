@@ -87,15 +87,24 @@ class LeagueMain {
           html += `<li data-id="${game_mod.name}">${game_mod.gamename || game_mod.name}</li>`;
         });
 
-        let selector = new ListSelectionModal(main_self.app, (gamename) =>{
+        console.log("RESPONDTO");
+        console.log(main_self.app.modules.respondTo("arcade-games"));
+
+        console.log("HTML");
+        console.log(html);        
+
+        let selector = new ListSelectionModal(main_self.app, main_self.mod, (gamename) =>{
           console.log(gamename);
           let gameMod = main_self.app.modules.returnModule(gamename);
           if (!gameMod){ console.log("No game module"); return;}
-          let wizard = new LeagueWizard(main_self.app, mod, gameMod);
-          wizard.render(main_self.app, mod);
+          let wizard = new LeagueWizard(main_self.app, main_self.mod, gameMod);
+          wizard.render(main_self.app, main_self.mod);
         });
 
-        selector.render(main_self.app, "Games", "Select a game for your league", html);
+        selector.title = "Games";
+        selector.prompt = "Select a game for your league";
+        selector.list = html;
+        selector.render();
       }
     }
   }
