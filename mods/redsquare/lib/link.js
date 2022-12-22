@@ -8,6 +8,23 @@ class RedSquareLink {
     this.container = container;
     this.tweet = tweet;
     this.name = "RedSquareLink";
+
+    this.src = "/saito/img/dreamscape.png";
+    this.url = "";
+    this.title = "";
+    this.description = "";
+
+    if (this.tweet.link_properties) {
+      if (this.tweet.link_properties['og:image']) { this.src = this.tweet.link_properties['og:image']; }
+      if (this.tweet.link_properties['og:url']) { this.url = this.tweet.link_properties['og:url']; }
+      if (this.tweet.link_properties['og:title']) { this.title = this.tweet.link_properties['og:title']; }
+      if (this.tweet.link_properties['og:description']) { this.description = this.tweet.link_properties['og:description']; }
+    }
+
+    if (this.url == "") {
+      this.url = tweet.link;
+    }
+
   }
 
   render() {
@@ -20,9 +37,9 @@ class RedSquareLink {
       let qs = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-main .tweet-preview";
 
       if (document.querySelector(qs)) {
-        this.app.browser.replaceElementBySelector(RedSquareLinkTemplate(this.tweet), qs);
+        this.app.browser.replaceElementBySelector(RedSquareLinkTemplate(this), qs);
       } else {
-        this.app.browser.addElementToSelectorOrDom(RedSquareLinkTemplate(this.tweet), this.container);
+        this.app.browser.addElementToSelectorOrDom(RedSquareLinkTemplate(this), this.container);
       }
 
       this.attachEvents();

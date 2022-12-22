@@ -148,7 +148,6 @@ class Crypto {
    * @returns {string} converted string
    */
   fromBase58(t: string): string {
-console.log("FB58: " + t);
     return Buffer.from(Base58.decode(t)).toString("hex");
   }
 
@@ -159,7 +158,6 @@ console.log("FB58: " + t);
    * @returns {string} converted string
    */
   toBase58(t: string): string {
-console.log("TB58: " + t);
     return Base58.encode(Buffer.from(t, "hex"));
   }
 

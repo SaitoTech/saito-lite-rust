@@ -277,6 +277,19 @@ class RedSquare extends ModTemplate {
     }
   }
 
+  //
+  // return og information etc.
+  //
+  async handlePeerRequest(app, message, peer, mycallback = null) {
+
+console.log("HPR in RedSquare with " + JSON.stringify(message));
+    super.handlePeerRequest(app, message, peer, mycallback);
+
+  } 
+
+
+
+
 
   //
   // fetch tweets / notifications middleware
@@ -792,7 +805,9 @@ class RedSquare extends ModTemplate {
     //
     // fetch supporting link properties
     //
+console.log("SERVER: GENERATE TWEET PROPERTIES 1");
     tweet = await tweet.generateTweetProperties(app, this, 1);
+console.log("SERVER: GENERATE TWEET PROPERTIES 2");
 
     let created_at = tx.transaction.ts;
     let updated_at = tx.transaction.ts;
@@ -851,6 +866,8 @@ class RedSquare extends ModTemplate {
       $tx_size: tx_size
     };
 
+console.log("SERVER: GENERATE TWEET PROPERTIES 3");
+
     app.storage.executeDatabase(sql, params, "redsquare");
 
     let ts = new Date().getTime();
@@ -861,6 +878,7 @@ class RedSquare extends ModTemplate {
     }
     app.storage.executeDatabase(sql2, params2, "redsquare");
 
+console.log("SERVER: GENERATE TWEET PROPERTIES 4");
 
     if (tweet.retweet_tx != null) {
       let ts = new Date().getTime();
