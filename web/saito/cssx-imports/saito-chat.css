@@ -25,6 +25,7 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--saito-border-color);
+  background: var(--saito-gray-transparent);
   cursor: grab;
 }
 
