@@ -9,6 +9,8 @@ module.exports = (app, mod) => {
     <p>The round ends after each player has played 4 STRATEGY cards. The remaining STRATEGY card is saved for the AFTERMATH. Players with the most influence in any world opinion battleground may utilize the special abilities (e.g. being able to escalate/de-escalate on DEFCON track, receiving the PERSONAL LETTER, or peeking at the top STRATEGY card and either discarding it or adding it to the AFTERMATH). The secret AGENDAs are then revealed to see how players change their PRESTIGE. A player may only lead by 5 PRESTIGE, but this does not trigger an automatic win.</p>
     <p>At the end of the round, if you have any markers in the DEFCON 1 zone or more than one in the DEFCON 2 zone, you trigger a thermonuclear war and lose the game. DEFCON is advanced by one for all markers at the beginning of every round.</p>
     <p>After three rounds, the AFTERMATH cards are revealed and the player with the most INFLUENCE cubes associated with the cards receives an additional +2 PRESTIGE. The player with the most PRESTIGE wins the game.</p>
+    <h2>TL;DR</h2>
+    <p>The game is about bluffing and brinksmanship. You know which AGENDA card you selected and your opponent knows the three from which you chose. So, you don't want to give away exactly which AGENDA you are aiming for. Meanwhile, you have a 1 in 3 chance of guessing what your opponent's AGENDA selection is. You can win points from either AGENDA. Most of the AGENDAs award points based on the difference in INFLUENCE in a battleground or difference on the DEFCON track. So, you want to maximize those without tipping over into thermonuclear war. However, you only have four moves in which to accomplish all this before the round ends.</p>
     </div>`;
 
     return html;

@@ -250,29 +250,14 @@ class Thirteen extends GameTemplate {
     // adjust screen ratio
     //
     try {
-      $('.country').css('width', this.scale(260)+"px");
-      $('.us').css('width', this.scale(130)+"px");
-      $('.ussr').css('width', this.scale(130)+"px");
-      $('.us').css('height', this.scale(100)+"px");
-      $('.ussr').css('height', this.scale(100)+"px");
-
-
     //
     // arenas
     //
       for (var i in this.game.arenas) {
-
-        let divname      = '#'+i;
-        let divname_us   = divname + " > .us > img";
-        let divname_ussr = divname + " > .ussr > img";
-
-        let us_i   = 0;
-        let ussr_i = 0;
+        let divname = '#'+i;
 
         $(divname).css('top', this.scale(this.game.arenas[i].top)+"px");
         $(divname).css('left', this.scale(this.game.arenas[i].left)+"px");
-        $(divname_us).css('height', this.scale(100)+"px");
-        $(divname_ussr).css('height', this.scale(100)+"px");
 
         if (this.game.arenas[i].us > 0) { this.showInfluence(i); }
         if (this.game.arenas[i].ussr > 0) { this.showInfluence(i); }
@@ -282,16 +267,11 @@ class Thirteen extends GameTemplate {
     // prestige track
     //
       for (var i in this.game.prestige) {
-
-        let divname      = '.'+i;
+        let divname  = '.'+i;
 
         $(divname).css('top', this.scale(this.game.prestige[i].top)+"px");
         $(divname).css('left', this.scale(this.game.prestige[i].left)+"px");
-
       }
-      $(".prestige_slot").css('height', this.scale(50)+"px");
-      $(".prestige_slot").css('width', this.scale(50)+"px");
-
 
     //
     // flags
@@ -301,11 +281,7 @@ class Thirteen extends GameTemplate {
         let divname      = '#'+i;
         $(divname).css('top', this.scale(this.game.flags[i].top)+"px");
         $(divname).css('left', this.scale(this.game.flags[i].left)+"px");
-
       }
-      $(".flag").css('height', this.scale(60)+"px");
-      $(".flag").css('width', this.scale(60)+"px");
-
 
     //
     // defcon track
@@ -318,39 +294,17 @@ class Thirteen extends GameTemplate {
 
       }
 
-      $(".round_slot").css('height', this.scale(60)+"px");
-      $(".round_slot").css('width', this.scale(60)+"px");
-
-    //
-    // agenda deck
-    //
     //
     // round track
     //
       for (var i in this.game.rounds) {
-
-        let divname      = '.'+i;
+        let divname      = '#'+i;
 
         $(divname).css('top', this.scale(this.game.rounds[i].top)+"px");
         $(divname).css('left', this.scale(this.game.rounds[i].left)+"px");
-
       }
-      $(".round_slot").css('height', this.scale(50)+"px");
-      $(".round_slot").css('width', this.scale(50)+"px");
 
-    //
-    // agenda deck
-    //
-      $(".agenda_deck").css('top', this.scale(830)+"px");
-      $(".agenda_deck").css('left', this.scale(2068)+"px");
-      $(".agenda_deck").css('height', this.scale(362)+"px");
-      $(".agenda_deck").css('width', this.scale(264)+"px");
-
-      $(".strategy_deck").css('top', this.scale(1360)+"px");
-      $(".strategy_deck").css('left', this.scale(465)+"px");
-      $(".strategy_deck").css('height', this.scale(362)+"px");
-      $(".strategy_deck").css('width', this.scale(264)+"px");
-
+  
     } catch (err) {}
 
     //
@@ -377,16 +331,6 @@ class Thirteen extends GameTemplate {
     //
     if (this.game.player == 0) { player = "observer"; }
 
-    if (this.game.over == 1) {
-      let winner = "ussr";
-      if (this.game.winner == 2) { winner = "us"; }
-      let gid = $('#sage_game_id').attr("class");
-      if (gid === this.game.id) {
-        this.updateStatus("<div class='status-message' id='status-message'><span>game over:</span> "+winner.touppercase() + "</span> <span>wins</span></div>");
-      }
-      return 0;
-    }
-
     ///////////
     // queue //
     ///////////
@@ -402,40 +346,37 @@ class Thirteen extends GameTemplate {
       let thirteen_self = this;
 
       if (mv[0] === "init") {
+        this.game.queue.splice(qe, 1);
 
-        let tmpar = this.game.players[0];
-        if (this.game.options.player1 != undefined) {
+        // observer skips
+        if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+          return 1;
+        } 
 
-          //
-          // random pick
-          //
-          if (this.game.options.player1 == "random") {
-            let roll = this.rollDice(6);
-            if (roll <= 3) {
-              this.game.options.player1 = "us";
-            } else {
-              this.game.options.player1 = "ussr";
-            }
+        //Game engine automatically randomizes player order, so we are good to go
+        if (!this.game.options.player1 || this.game.options.player1 == "random"){
+          return 1;
+        }
+          
+        if (this.game.options.player1 === "ussr"){
+          if (this.game.players[0] !== this.game.originator){
+            let p = this.game.players.shift();
+            this.game.players.push(p);
           }
-
-          if (this.game.players[0] === this.app.wallet.returnPublicKey()) {
-            if (this.game.options.player1 == "us") {
-              this.game.player = 2;
-            } else {
-              this.game.player = 1;
-            }
-          } else {
-            if (this.game.options.player1 == "us") {
-              this.game.player = 1;
-            } else {
-              this.game.player = 2;
-            }
+        } else {
+          if (this.game.players[1] !== this.game.originator){
+            let p = this.game.players.shift();
+            this.game.players.push(p);
+          }
+        }
+        //Fix game.player so that it corresponds to the indices of game.players[]
+        for (let i = 0; i < this.game.players.length; i++){
+          if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+            this.game.player = i+1;
           }
         }
 
-        this.game.queue.splice(qe, 1);
         return 1;
-
       }
 
       if (mv[0] === "reshuffle_discarded_agenda_cards") {
@@ -644,7 +585,7 @@ class Thirteen extends GameTemplate {
       if (this.game.state.defcon1_ussr > 3 && this.game.state.defcon2_ussr > 3 && this.game.state.defcon3_ussr > 3) { ussr_loses = 1; }
 
       if (us_loses == 1 && ussr_loses == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US and USSR both lose from DEFCON</div>");
+        this.endGame({}, "US and USSR both lose");
         return 0;
       }
       if (us_loses == 1) {
@@ -652,7 +593,7 @@ class Thirteen extends GameTemplate {
         return 0;
       }
       if (ussr_loses == 1) {
-        this.endGame(this.game.players[1], "US DEFCON too high");
+        this.endGame(this.game.players[1], "USSR DEFCON too high");
         return 0;
       }
 
@@ -754,9 +695,7 @@ class Thirteen extends GameTemplate {
 
         if (this.game.player == television_bonus) {
           this.updateStatus(`<div class='status-message' id='status-message'>You receive Television Battleground bonus: adjust one DEFCON track one level.</div>`);
-          this.eventShiftDefcon(this.game.player, this.game.player, [1,2,3], 1, 1, function() {
-            thirteen_self.endTurn();
-          });
+          this.eventShiftDefcon(this.game.player, this.game.player, [1,2,3], 1);
         } else {
           this.updateStatus("<div class='status-message' id='status-message'>Opponent is taking Television Battleground bonus</div>");
           return 0;
@@ -1076,22 +1015,6 @@ if (mv[0] == "decrease_defcon") {
 
 }
 
-if (mv[0] == "place_command_tokens") {
-
-	let player = parseInt(mv[1]);
-	let card = mv[2];
-
-  console.log("SHOULD PLACE: " + player);
-
-  if (this.game.player == player) {
-   this.playerPlaceCommandTokens(player, card);
- }
-
- this.game.queue.splice(qe, 1);
- return 0;
-
-}
-
 if (mv[0] == "trigger_opponent_event") {
 
 	let player = parseInt(mv[1]);
@@ -1123,17 +1046,21 @@ if (mv[0] == "trigger_opponent_event") {
 
 }
 
-if (mv[0] == "event_command_influence") {
+if (mv[0] == "command_influence") {
 
 	let player = parseInt(mv[1]);
-	let card = mv[2];
-	let number = parseInt(mv[3]);
+	let number = parseInt(mv[2]);
 
-	if (this.game.player == player) {
-    this.playerPlaceCommandTokens(player, card, number);
-  }
+  console.log(`${this.roles[player]} SHOULD COMMAND: ${number} influence`);
 
   this.game.queue.splice(qe, 1);
+
+	if (this.game.player == player) {
+    this.playerPlaceCommandTokens(player, number);
+  }else{
+    this.updateStatusAndListCards(`Opponent commanding ${number} influence`);
+  }
+
   return 0;
 
 }
@@ -1149,9 +1076,7 @@ if (mv[0] == "event_add_influence") {
 	let defcon_trigger = parseInt(mv[6]);
 
 	if (this.game.player == player) {
-    this.eventAddInfluence(player, player_to_add, options, number, max_per_arena, defcon_trigger, function() {
-     thirteen_self.endTurn();
-   });
+    this.eventAddInfluence(player, player_to_add, options, number, max_per_arena, defcon_trigger);
   }
 
   this.game.queue.splice(qe, 1);
@@ -1159,46 +1084,24 @@ if (mv[0] == "event_add_influence") {
 
 }
 
-if (mv[0] == "add_influence") {
+  if (mv[0] == "add_influence") {
 
-	let player = parseInt(mv[1]);
-	let arena_id = mv[2];
-	let num = parseInt(mv[3]);
-	let already_updated = mv[4];
+  	let player = parseInt(mv[1]);
+  	let arena_id = mv[2];
+  	let num = parseInt(mv[3]);
+  	let already_updated = parseInt(mv[4]);
 
-	if (already_updated != this.game.player) {
+    this.game.queue.splice(qe, 1);
 
-   if (player == 1) {
-     if (already_updated != this.game.player) {
-
-      if (this.game.state.influence_on_board_ussr+num > 17) { 
-        num = 17-this.game.state.influence_on_board_ussr;
-        this.updateLog("USSR can only have 17 influence on the board at any time. Reducing placement");
-      }
-      this.game.arenas[arena_id].ussr += num;
-      if (this.game.arenas[arena_id].ussr > 5) { this.game.arenas[arena_id].ussr = 5; }
-    }
-  } else {
-   if (already_updated != this.game.player) {
-
-    if (this.game.state.influence_on_board_us+num > 17) { 
-      num = 17-this.game.state.influence_on_board_us;
-      this.updateLog("USSR can only have 17 influence on the board at any time. Reducing placement");
+  	if (already_updated != this.game.player) {
+      this.addInfluence(player, arena_id, num);
     }
 
-    this.game.arenas[arena_id].us += num;
-    if (this.game.arenas[arena_id].us > 5) { this.game.arenas[arena_id].us = 5; }
+    this.showBoard();
+
+    return 1;
+
   }
-}
-
-}
-
-this.showBoard();
-
-this.game.queue.splice(qe, 1);
-return 1;
-
-}
 
 if (mv[0] == "event_remove_influence") {
 
@@ -1210,15 +1113,11 @@ if (mv[0] == "event_remove_influence") {
 	let defcon_trigger = parseInt(mv[6]);
 	
 	if (this.game.player == player) {
-    this.eventRemoveInfluence(player, player_to_remove, options, number, max_per_arena, defcon_trigger, function() {
-     thirteen_self.endTurn();
-   });
+    this.eventRemoveInfluence(player, player_to_remove, options, number, max_per_arena, defcon_trigger);
   }
 
-  this.showBoard();
-
   this.game.queue.splice(qe, 1);
-  return 1;
+  return 0;
 
 }
 
@@ -1227,73 +1126,19 @@ if (mv[0] == "remove_influence") {
 	let player = parseInt(mv[1]);
 	let arena_id = mv[2];
 	let num = parseInt(mv[3]);
-	let already_updated = mv[4];
-
-
-	if (already_updated != this.game.player) {
-
-   if (player == 1) {
-     if (player != this.game.player) {
-       this.game.arenas[arena_id].ussr -= num;
-       if (this.game.arenas[arena_id].ussr < 0) { this.game.arenas[arena_id].ussr = 0; }
-     }
-   } else {
-     if (player != this.game.player) {
-       this.game.arenas[arena_id].us -= num;
-       if (this.game.arenas[arena_id].us < 0) { this.game.arenas[arena_id].us = 0; }
-     }
-   }
- }
+	let already_updated = parseInt(mv[4]);
 
  this.game.queue.splice(qe, 1);
+
+	if (already_updated != this.game.player) {
+    this.removeInfluence(player, arena_id, num);   
+  }
 
  this.showBoard();
  return 1;
 
 }
 
-if (mv[0] == "event_increase_defcon") {
-
-	let player = parseInt(mv[1]);
-	let player_to_increase = parseInt(mv[2]);
-	let options = JSON.parse(this.app.crypto.base64ToString(mv[3]));
-	let number = parseInt(mv[4]);
-	let max_per_arena = parseInt(mv[5]);
-
-	if (this.game.player != player) {
-    this.eventShiftDefcon(player, player_to_increase, options, number, max_per_arena, function() {
-     thirteen_self.endTurn();
-   }, "increase");
-  }else{
-    this.updateStatusAndListCards("Opponent choosing a defcon track to increase");
-  }
-
-  this.game.queue.splice(qe, 1);
-  return 0;
-
-}
-
-
-if (mv[0] == "event_decrease_defcon") {
-
-	let player = parseInt(mv[1]);
-	let player_to_increase = parseInt(mv[2]);
-	let options = JSON.parse(this.app.crypto.base64ToString(mv[3]));
-	let number = parseInt(mv[4]);
-	let max_per_arena = parseInt(mv[5]);
-
-	if (this.game.player != player) {
-    this.eventShiftDefcon(player, player_to_increase, options, number, max_per_arena, function() {
-     thirteen_self.endTurn();
-   }, "decrease");
-  }else{
-    this.updateStatusAndListCards("Opponent choosing a defcon track to decrease");
-  }
-
-  this.game.queue.splice(qe, 1);
-  return 0;
-
-}
 
 if (mv[0] == "event_shift_defcon") {
 
@@ -1301,12 +1146,9 @@ if (mv[0] == "event_shift_defcon") {
 	let player_getting_moved = parseInt(mv[2]);
 	let options = JSON.parse(this.app.crypto.base64ToString(mv[3]));
 	let number = parseInt(mv[4]);
-	let max_per_arena = parseInt(mv[5]);	
 
 	if (this.game.player == player) {
-    this.eventShiftDefcon(player, player_getting_moved, options, number, max_per_arena, function() {
-     thirteen_self.endTurn();
-   });
+    this.eventShiftDefcon(player, player_getting_moved, options, number);
   }else{
     this.updateStatusAndListCards(`Opponent shifting ${(player == player_getting_moved)? "their" : "your"} defcon levels`);
   }
@@ -1324,7 +1166,7 @@ if (mv[0] == "prestige") {
     this.game.state.prestige_track += num;
     this.updateLog("USSR gains " + num + " prestige");
   } else {
-    this.game.state.prestige_track += num;
+    this.game.state.prestige_track -= num;
     this.updateLog("US gains " + num + " prestige");
   }
 
@@ -1344,29 +1186,26 @@ if (mv[0] == "bayofpigs") {
 	//
   if (this.game.player == 2) {
 
-    let html = "<div class='status-message' id='status-message'>you must either remove two influence from alliance battleground or choose not to use events to lower defcon for this round: <p></p><ul>";
-    html += '<li class="textcard" id="remove">remove influence</li>';
-    html += '<li class="textcard" id="restrict">defcon restriction</li>';
-    html += '</ul></div>';
-    thirteen_self.updateStatus(html);
+    let html = "<ul>";
+    html += '<li class="card nocard" id="remove">remove influence</li>';
+    html += '<li class="card nocard" id="restrict">defcon restriction</li>';
+    html += '</ul>';
+    thirteen_self.updateStatusWithOptions(`${this.cardToText('s34b')}: Either remove two influence from alliance battleground or choose not to use events to lower defcon for this round:`, html);
 
-    $('.textcard').off();
-    $('.textcard').on('click', function() {
-
-     let action = $(this).attr("id");
-
-     if (action == "remove") {
-       thirteen_self.eventRemoveInfluence(2, 2, ['un', 'alliances','television'], 2, 2, 0, function(args) {
-         thirteen_self.endTurn();
-       }); 
-     }
-     if (action == "restrict") {
-       thirteen_self.addMove("setvar\tcannot_deflate_defcon_from_events\t2"); 
-       thirteen_self.endTurn();
-     }
+    thirteen_self.attachCardboxEvents(function(action) {
+      
+      if (action == "remove") {
+        thirteen_self.eventRemoveInfluence(2, 2, ['un', 'alliances','television'], 2, 2, 0); 
+      }
+      if (action == "restrict") {
+        thirteen_self.addMove("setvar\tcannot_deflate_defcon_from_events\t2"); 
+        thirteen_self.endTurn();
+      }
 
    });
 
+  }else{
+    this.updateStatusAndListCards(`US dealing with ${this.cardToText('s34b')}`);
   } 
 
   return 0;
@@ -1410,67 +1249,67 @@ return 1;
   }
 
 
-playerTurn(selected_card=null) {
+  playerTurn(selected_card=null) {
 
-  let thirteen_self = this;
+    let thirteen_self = this;
 
-  this.game.state.personal_letter_bonus = 0;
+    this.game.state.personal_letter_bonus = 0;
 
-  this.removeEventsFromBoard();
+    this.removeEventsFromBoard();
 
-  if (this.game.state.turn != this.game.player) {
+    if (this.game.state.turn != this.game.player) {
 
-    this.cardbox.hide(1);
-    this.updateStatusAndListCards(`waiting for ${(this.game.player ==1)?"US":"USSR"} to move...`, this.game.deck[1].hand);
-    this.attachCardboxEvents(); //Allow mouseover zoom
-  
-  } else {
-    let html = "";
-    if (this.game.player == 1) { html = "USSR pick a card to play: "; }
-    if (this.game.player == 2) { html = "US pick a card to play: "; }
+      this.cardbox.hide(1);
+      this.updateStatusAndListCards(`waiting for ${(this.game.player ==1)?"US":"USSR"} to move...`, this.game.deck[1].hand);
+      this.attachCardboxEvents(); //Allow mouseover zoom
+    
+    } else {
+      let html = "";
+      if (this.game.player == 1) { html = "USSR pick a card to play: "; }
+      if (this.game.player == 2) { html = "US pick a card to play: "; }
 
-    let cards = [];
-    for (let i = 0; i < this.game.deck[1].hand.length; i++) {
-    	cards.push(this.game.deck[1].hand[i]);
-    }
-    if (this.game.player == this.game.state.personal_letter) {
-      cards.push("personal_letter");
-    }
+      let cards = [];
+      for (let i = 0; i < this.game.deck[1].hand.length; i++) {
+      	cards.push(this.game.deck[1].hand[i]);
+      }
+      if (this.game.player == this.game.state.personal_letter) {
+        cards.push("personal_letter");
+      }
 
-    //console.log("CARDS: "+JSON.stringify(cards));
+      //console.log("CARDS: "+JSON.stringify(cards));
 
-    this.updateStatusAndListCards(html, cards);
-    this.attachCardboxEvents(function (card) {
+      this.updateStatusAndListCards(html, cards);
+      this.attachCardboxEvents(function (card) {
 
-      if (card == "personal_letter") {
-        thirteen_self.game.state.personal_letter_bonus = 1;
-        let cards2 = [];
-        for (let z = 0; z < cards.length; z++) {
-          if (cards[z] != "personal_letter") {
-            cards2.push(cards[z]);
+        if (card == "personal_letter") {
+          thirteen_self.game.state.personal_letter_bonus = 1;
+          let cards2 = [];
+          for (let z = 0; z < cards.length; z++) {
+            if (cards[z] != "personal_letter") {
+              cards2.push(cards[z]);
+            }
           }
-        }
-        if (thirteen_self.game.player == 1) {
-          html = "USSR pick a card to play (+1 bonus): ";
-        }
-        if (thirteen_self.game.player == 2) {
-          html = "US pick a card to play (+1 bonus): ";
-        }
-        thirteen_self.addMove("setvar\tpersonal_letter\t" + thirteen_self.game.player);
+          if (thirteen_self.game.player == 1) {
+            html = "USSR pick a card to play (+1 bonus): ";
+          }
+          if (thirteen_self.game.player == 2) {
+            html = "US pick a card to play (+1 bonus): ";
+          }
+          thirteen_self.addMove("setvar\tpersonal_letter\t" + thirteen_self.game.player);
 
-        thirteen_self.updateStatusAndListCards(html, cards2);
-        thirteen_self.attachCardboxEvents(function (card) {
+          thirteen_self.updateStatusAndListCards(html, cards2);
+          thirteen_self.attachCardboxEvents(function (card) {
+            thirteen_self.addMove(`discard\t${thirteen_self.game.player}\t2\t${card}`);
+            thirteen_self.playerPlayStrategyCard(card);
+          });
+        } else {
           thirteen_self.addMove(`discard\t${thirteen_self.game.player}\t2\t${card}`);
           thirteen_self.playerPlayStrategyCard(card);
-        });
-      } else {
-        thirteen_self.addMove(`discard\t${thirteen_self.game.player}\t2\t${card}`);
-        thirteen_self.playerPlayStrategyCard(card);
-      }
-    });
-  }
+        }
+      });
+    }
 
-}
+  }
 
   cardToText(card){
     return `<span class='showcard' id='${card}'>${this.strategies[card].name}</span>`;
@@ -1498,16 +1337,13 @@ playerTurn(selected_card=null) {
       }
       if (action == "playcommand") {
 
-        let myside = "us";
-        let opponent = 1;
-
-        if (thirteen_self.game.player == 1) { myside = "ussr"; opponent = 2; }
+        let number = thirteen_self.strategies[card].tokens; 
 
         if (this_card.side == "neutral" || this_card.side == me) {
-            thirteen_self.playerPlaceCommandTokens(thirteen_self.game.player, card);
+            thirteen_self.playerPlaceCommandTokens(thirteen_self.game.player, number);
         } else {
             thirteen_self.updateStatus(thirteen_self.formatStatusHeader(`wait for opponent to play ${thirteen_self.cardToText(card)} event`));
-            thirteen_self.addMove("place_command_tokens\t" + thirteen_self.game.player + "\t"+card);
+            thirteen_self.addMove("command_influence\t" + thirteen_self.game.player + "\t"+number);
             thirteen_self.addMove(`trigger_opponent_event\t${3-thirteen_self.game.player}\t${card}`);
             thirteen_self.addMove(`notify\t${me} plays ${thirteen_self.cardToText(card)} for command`);
             thirteen_self.endTurn();
@@ -1521,25 +1357,43 @@ playerTurn(selected_card=null) {
   addInfluence(player, arena_id, num) {
 
     if (player == 1) {
+      if (this.game.state.influence_on_board_ussr >= 17 || this.game.arenas[arena_id].ussr > 5){
+        this.displayModal("USSR influence maxed out, placement failed");
+        return false;
+      }
+
       if (this.game.state.influence_on_board_ussr+num > 17) { 
        num = 17-this.game.state.influence_on_board_ussr;
        this.updateLog("USSR can only have 17 influence on the board at any time. Reducing placement");
       }
+      if (this.game.arenas[arena_id].ussr + num > 5){
+        num = 5 - this.game.arenas[arena_id].ussr;
+        this.updateLog("USSR can only have 5 influence on any battleground. Reducing placement"); 
+      }
+
+      this.game.arenas[arena_id].ussr += num;
+      this.updateLog("USSR gains "+num+" influence in "+this.game.arenas[arena_id].name);
+
     }
+
     if (player == 2) {
+      if (this.game.state.influence_on_board_us >= 17 || this.game.arenas[arena_id].us > 5){
+        this.displayModal("US influence maxed out, placement failed");
+        return false;
+      }
+
       if (this.game.state.influence_on_board_us+num > 17) { 
         num = 17-this.game.state.influence_on_board_us; 
         this.updateLog("US can only have 17 influence on the board at any time. Reducing placement");
       }
-    }
 
-    if (player == 1) {
-      this.game.arenas[arena_id].ussr += num;
-      if (this.game.arenas[arena_id].ussr > 5) { this.game.arenas[arena_id].ussr = 5; return true; }
-      this.updateLog("USSR gains "+num+" influence in "+this.game.arenas[arena_id].name);
-    } else {
+      if (this.game.arenas[arena_id].us + num > 5){
+        num = 5 - this.game.arenas[arena_id].us;
+        this.updateLog("US can only have 5 influence on any battleground. Reducing placement"); 
+      }
+
       this.game.arenas[arena_id].us += num;
-      if (this.game.arenas[arena_id].us > 5) { this.game.arenas[arena_id].us = 5; return true; }
+
       this.updateLog("US gains "+num+" influence in "+this.game.arenas[arena_id].name);
     }
 
@@ -1550,12 +1404,13 @@ playerTurn(selected_card=null) {
   removeInfluence(player, arena_id, num) {
 
     if (player == 1) {
+      num = Math.min(num, this.game.arenas[arena_id].ussr);
       this.game.arenas[arena_id].ussr -= num;
-      if (this.game.arenas[arena_id].ussr < 0) { this.game.arenas[arena_id].ussr = 0; return true; }
       this.updateLog("USSR removes "+num+" influence in "+this.game.arenas[arena_id].name);
+
     } else {
+      num = Math.min(num, this.game.arenas[arena_id].us);
       this.game.arenas[arena_id].us -= num;
-      if (this.game.arenas[arena_id].us < 0) { this.game.arenas[arena_id].us = 0; return true; }
       this.updateLog("US removes "+num+" influence in "+this.game.arenas[arena_id].name);
     }
 
@@ -1564,61 +1419,53 @@ playerTurn(selected_card=null) {
   }
 
 
-  eventIncreaseDefcon(player, player_getting_moved, options, number, max_per_arena, mycallback=null) {
-    this.eventShiftDefcon(player, player_getting_moved, options, number, max_per_arena, mycallback, "increase");
-  }
-
-  eventDecreaseDefcon(player, player_getting_moved,  options, number, max_per_arena, mycallback=null) {
-    this.eventShiftDefcon(player, player_getting_moved, options, number, max_per_arena, mycallback, "decrease");
-  }
-
-  //
-  // if number == 100, then only 1 defcon track can be manipulated up to max_per_arena
-  //
-  eventShiftDefcon(player, player_getting_moved, options, number, max_per_arena, mycallback=null, directions="both") {
+  eventShiftDefcon(player, player_getting_moved, options, number, directions="both", mycallback=null) {
 
     if (directions == "decrease") {
       if (player == 1) {
         if (this.game.state.ussr_cannot_deflate_defcon_from_events == 1) {
           this.updateLog("USSR cannot deflate defcon from events this turn");
-          mycallback();
+          runCallback(0);
           return 0;
         }
       }
       if (player == 2) {
         if (this.game.state.us_cannot_deflate_defcon_from_events == 1) {
           this.updateLog("US cannot deflate defcon from events this turn");
-          mycallback();
+          runCallback(0);
           return 0;
         }
       } 
     }
 
     let thirteen_self = this;
-    let total_shifted = 0;
-
     let defcon_tracks = ["military", "political", "world opinion"];
-    let only_one_defcon_track = 0;
-    let selected_defcon_track = 0;
 
-    if (number == 100) { 
-      if (options.length > 1) {
-        selected_defcon_track  = -1;
+    this.removeEventsFromBoard();
+ 
+    //All players to reset in the branching menu tree
+    this.menu_backup_callback = () =>{
+      thirteen_self.eventShiftDefcon(player, player_getting_moved, options, number, directions, mycallback);
+    }
+
+    const runCallback = function(total_shifted){
+      if (mycallback){
+        mycallback(total_shifted);
+      }else{
+        thirteen_self.endTurn();
       }
-      only_one_defcon_track = 1;
-      number = max_per_arena; 
     }
 
     const choosetrack = function() {
-      thirteen_self.removeEventsFromBoard();
+ 
+      //Shortcut if no choice
+      if (options.length == 1) {
+        choosedirection(options[0]);
+      } 
 
       let html2 = '<ul>';
-      if (only_one_defcon_track == 1 && selected_defcon_track > 0) {
-        html2 += `<li class="card nocard" id="${selected_defcon_track}">${defcon_tracks[selected_defcon_track-1]}</li>`;
-      } else {
-        for (let op of options){
-          html2 += `<li class="card nocard" id="${op}">${defcon_tracks[parseInt(op)-1]}</li>`;
-        }
+      for (let op of options){
+        html2 += `<li class="card nocard" id="${op}">${defcon_tracks[parseInt(op)-1]}</li>`;
       }
       
       html2 += '<li class="textcard" id="done">finish move</li>';
@@ -1627,85 +1474,88 @@ playerTurn(selected_card=null) {
       thirteen_self.updateStatusWithOptions(`Adjust which DEFCON track for ${player == player_getting_moved ? "you" : "your opponent"}:`, html2);
       thirteen_self.attachCardboxEvents(function(action) {
         if (action == "done") {
-          mycallback(total_shifted);
+          runCallback(0);
           return;
+        }else{
+          choosedirection(action);
         }
-        selected_defcon_track = action;
-        choosedirection(selected_defcon_track);
       });
     };
 
     const choosedirection = function(track) {
 
-      thirteen_self.removeEventsFromBoard();
+      let choices = 0;
+      let nochoice = "";
 
       let html = "<ul>";
       if (directions != "decrease") {
-        html += `<li class="card nocard" id="increase">escalate!</li>`;
+        if (thirteen_self.getDefcon(player_getting_moved, track) < 8){
+          choices++;
+          nochoice = "increase";
+          html += `<li class="card nocard" id="increase">escalate!</li>`;          
+        }
       }
       if (directions != "increase") {
-        html += `<li class="card nocard" id="decrease">de-escalate</li>`;
+        if (thirteen_self.getDefcon(player_getting_moved, track) > 1){
+          choices++;
+          nochoice = "decrease";
+          html += `<li class="card nocard" id="decrease">de-escalate</li>`;
+        }
       }
-      html += '<li class="card nocard" id="done">go back</li>';
+      html += '<li class="textcard" id="done">finish move</li>';
       html += '</ul>';
+
+      if (choices === 1){
+        chooseamount(track, nochoice);
+        return;
+      }
       
-      thirteen_self.updateStatusWithOptions(`escalate or de-escalate ${defcon_tracks[track-1]} defcon track for ${player == player_getting_moved ? "you" : "your opponent"}?`,html);
+      thirteen_self.updateStatusWithOptions(`escalate or de-escalate ${defcon_tracks[track-1]} defcon track for ${player == player_getting_moved ? "you" : "your opponent"}?`,html, true);
 
       thirteen_self.attachCardboxEvents(function(direction) {
-
-
-        if (number !== 1){
-
-          let html3 = "<ul>";
-          for (let i = 1; i <= number; i++){
-            html3 += `<li class="card nocard" id="${i}">${i}</li>`
-          }
-          html3 += `<li class="card nocard" id="done">go back</li></ul>`;
-
-          thirteen_self.updateStatusWithOptions(`${direction} ${defcon_tracks[track-1]} by how much?`, html3);
-          thirteen_self.attachCardboxEvents(function(number){
-            number = parseInt(number);
-            total_shifted += number;
-            thirteen_self.addMove(`${direction}_defcon\t${player_getting_moved}\t${selected_defcon_track}\t${number}\t${thirteen_self.game.player}`);
-            if (direction == "decrease"){
-              number = -number;
-            }
-            thirteen_self.updateDefcon(player_getting_moved, selected_defcon_track, number);  
-
-            if ((number == 100 && total_shifted >= max_per_arena) || (total_shifted >= number)) {
-              if (mycallback != null) {
-                mycallback(total_shifted);
-              }
-              return;
-            }
-            choosetrack();
-          });
-          return;
+        if (direction == "done"){
+          runCallback(0);
         }
 
-        if (direction == "increase") {
-          total_shifted++;
-          thirteen_self.updateDefcon(player_getting_moved, selected_defcon_track, 1);
-          thirteen_self.addMove("increase_defcon\t"+player_getting_moved+"\t"+selected_defcon_track+"\t"+"1"+"\t"+thirteen_self.game.player);
-        }
-
-        if (direction == "decrease") {
-          total_shifted++;
-          thirteen_self.updateDefcon(player_getting_moved, selected_defcon_track, -1);
-          thirteen_self.addMove("decrease_defcon\t"+player_getting_moved+"\t"+selected_defcon_track+"\t"+"1"+"\t"+thirteen_self.game.player);
-        }
-
-        if ((number == 100 && total_shifted >= max_per_arena) || (total_shifted >= number)) {
-          if (mycallback != null) {
-            mycallback(total_shifted);
-          }
-          return;
-        }
-        choosetrack();
-      });
+        chooseamount(track, direction);
+      });        
     };
 
-  choosetrack();
+    const chooseamount = function(track, direction){
+
+      let multiplier = (direction == "decrease") ? -1 : 1;
+
+      if (number != 1){
+        let html3 = "<ul>";
+        for (let i = 1; i <= number; i++){
+          html3 += `<li class="card nocard" id="${i}">${i}</li>`
+        }
+        html3 += `<li class="textcard" id="done">finish move</li></ul>`;
+
+        thirteen_self.updateStatusWithOptions(`${direction} ${defcon_tracks[track-1]} by how much?`, html3, true);
+        thirteen_self.attachCardboxEvents(function(num){
+          if (num === "done"){
+            runCallback(0);
+            return;
+          }
+
+          num = parseInt(num);
+
+          thirteen_self.addMove(`${direction}_defcon\t${player_getting_moved}\t${track}\t${num}\t${thirteen_self.game.player}`);
+          thirteen_self.updateDefcon(player_getting_moved, track, multiplier * num);  
+          runCallback(num);
+        });
+      }else{
+        thirteen_self.addMove(`${direction}_defcon\t${player_getting_moved}\t${track}\t1\t${thirteen_self.game.player}`);
+        thirteen_self.updateDefcon(player_getting_moved, track, multiplier);  
+        runCallback(1);
+      }
+    }
+
+
+
+
+    choosetrack();
 
   }
 
@@ -1721,7 +1571,11 @@ playerTurn(selected_card=null) {
 
     this.attachCardboxEvents(function(action) {
       if (action == "done"){
-        if (mycallback != null) { mycallback(); }    
+        if (mycallback) { 
+          mycallback(); 
+        }else{
+          thirteen_self.endTurn();
+        }    
       }
     }); 
 
@@ -1767,20 +1621,20 @@ playerTurn(selected_card=null) {
         thirteen_self.showBoard();
 
         //Short cut so we know we are done in that special case?
-        if (total_placed >= max_per_arena && number == 100) {
+        if (number == 100 && total_placed >= max_per_arena) {
           number = max_per_arena;
         }
 
 	      //
 	      // have we hit our influence limit?
-    	  //
-        let hit_influence_limit = (player == 1 && thirteen_self.game.state.influence_on_board_ussr == 17) || (player == 2 && thirteen_self.game.state.influence_on_board_us == 17);
+        let hit_influence_limit = (player_added == 1 && thirteen_self.game.state.influence_on_board_ussr == 17) || (player_added == 2 && thirteen_self.game.state.influence_on_board_us == 17);
 
-        if (total_placed >= number || hit_influence_limit == 1) {
+        if (hit_influence_limit == 1) {
+          salert("You have hit your limit of 17 influence cubes on the board. Ending placement");
+        }
 
-          if (hit_influence_limit == 1) {
-            salert("You have hit your limit of 17 influence cubes on the board. Ending placement");
-          }
+        if (total_placed >= number || hit_influence_limit) {
+          $(".active_battleground").off();
 
 	        //
 	        // manipulate defcon
@@ -1798,7 +1652,11 @@ playerTurn(selected_card=null) {
             }
           }
 
-          if (mycallback != null) { mycallback(); }
+          if (mycallback) { 
+            mycallback(); 
+          }else{
+            thirteen_self.endTurn();
+          }
    
         }
       } else {
@@ -1808,7 +1666,7 @@ playerTurn(selected_card=null) {
   }
 
   //
-  // number has special codes 100 == as many as you want, in which case max_per_arena is how many battlegrounds
+  // number has special codes 100 == as many as you want (from 1 arena), in which case max_per_arena isn't used
   // 			      101 == half, rounded up, in which case max_per_area is how many battlegrounds
   //
   eventRemoveInfluence(player, player_removed, options, number, max_per_arena, defcon_trigger=0, mycallback=null) {
@@ -1822,7 +1680,11 @@ playerTurn(selected_card=null) {
     this.removeEventsFromBoard();
     this.attachCardboxEvents(function(action) {
       if (action == "done"){
-        if (mycallback != null) { mycallback(); }    
+        if (mycallback) { 
+          mycallback(total_placed); 
+        }else{
+          thirteen_self.endTurn();
+        }    
       }
     }); 
 
@@ -1845,7 +1707,7 @@ playerTurn(selected_card=null) {
         if (thirteen_self.removeInfluence(player_removed, arena_id, total_to_remove)) {
           thirteen_self.addMove("remove_influence\t"+player+"\t"+arena_id+"\t"+total_to_remove + "\t" + thirteen_self.game.player);
           thirteen_self.showBoard();
-          mycallback();
+          mycallback(total_placed);
           return;
         }
       }
@@ -1859,6 +1721,7 @@ playerTurn(selected_card=null) {
           if (player_removed == 2) {
             max_to_remove = thirteen_self.game.arenas[arena_id].us;
           }
+          max_per_arena = max_to_remove;
         }else{
           if (arena_id != battleground_selected) {
             salert("you can only remove from one battleground. click done when done.");
@@ -1871,17 +1734,19 @@ playerTurn(selected_card=null) {
       } else {
 
         if (thirteen_self.removeInfluence(player_removed, arena_id, 1)) {
+          
           total_placed++;
           placed[arena_id]++;
 
           thirteen_self.addMove("remove_influence\t"+player_removed+"\t"+arena_id+"\t"+"1" + "\t" + thirteen_self.game.player);
           thirteen_self.showBoard();
 
-          if (total_placed >= max_per_arena && number == 100) {
-            number = max_per_arena;
+          if (number == 100 && total_placed >= max_to_remove) {
+            number = total_placed;
           }
 
           if (total_placed >= number) {
+            $(".active_battleground").off();
 	      
             if (defcon_trigger == 1) {
 
@@ -1898,12 +1763,10 @@ playerTurn(selected_card=null) {
               }
             }
             
-            if (mycallback != null) { mycallback(); }
-          }
-
-          if (max_to_remove > -1) {
-            if (total_placed >= max_to_remove) {
-              if (mycallback != null) { mycallback(); }
+            if (mycallback) { 
+              mycallback(total_placed);
+            }else{
+              thirteen_self.endTurn();
             }
           }
 
@@ -1915,13 +1778,9 @@ playerTurn(selected_card=null) {
   }
 
 
-  playerPlaceCommandTokens(player, card, tokens=-1) {
+  playerPlaceCommandTokens(player, tokens) {
 
     let thirteen_self = this;
-
-    if (tokens == -1) { 
-      tokens = this.strategies[card].tokens; 
-    }
     
     //
     // personal letter bonus if played
@@ -1932,11 +1791,9 @@ playerTurn(selected_card=null) {
     if (player == 1) { tokens += this.game.state.ussr_command_token_bonus; }
     if (player == 2) { tokens += this.game.state.us_command_token_bonus; }
     
-    if (tokens < 1) { 
-      tokens = 1; 
-    }
+    tokens = Math.max(tokens, 1);
 
-    this.updateStatusWithOptions(this.formatStatusHeader(`Pick a battleground to add/remove up to ${tokens} cubes:`), `<ul><li class="card nocard" id="done">finish</li></ul>`);
+    this.updateStatusWithOptions(`Pick a battleground to add/remove up to ${tokens} cubes:`, `<ul><li class="card nocard" id="done">finish</li></ul>`);
     this.attachCardboxEvents(function(card){
       if (card === "done"){
         thirteen_self.endTurn();
@@ -2057,11 +1914,38 @@ playerTurn(selected_card=null) {
     return -1;
   }
 
+  getDefcon(player, track){
+    if (player == 1) {
+      if (track == 1) {
+        return this.game.state.defcon1_ussr;
+      }
+      if (track == 2) {
+        return this.game.state.defcon2_ussr;
+      }
+      if (track == 3) {
+        return this.game.state.defcon3_ussr;
+      }
+    }
+
+    if (player == 2) {
+      if (track == 1) {
+        return this.game.state.defcon1_us;
+      }
+      if (track == 2) {
+        return this.game.state.defcon2_us;
+      }
+      if (track == 3) {
+        return this.game.state.defcon3_us;
+      }
+    }
+    return -1;
+  }
+
   updateDefcon(player, track, num){
 
     if (player == 1) {
       if (track == 1) {
-        this.game.state.defcon1_ussr += num;;
+        this.game.state.defcon1_ussr += num;
         if (this.game.state.defcon1_ussr > 8) { this.game.state.defcon1_ussr = 8; }
         if (this.game.state.defcon1_ussr < 1) { this.game.state.defcon1_ussr = 1; }
       }
@@ -2079,7 +1963,7 @@ playerTurn(selected_card=null) {
 
     if (player == 2) {
       if (track == 1) {
-        this.game.state.defcon1_us += num;;
+        this.game.state.defcon1_us += num;
         if (this.game.state.defcon1_us > 8) { this.game.state.defcon1_us = 8; }
         if (this.game.state.defcon1_us < 1) { this.game.state.defcon1_us = 1; }
       }
@@ -2157,132 +2041,88 @@ playerTurn(selected_card=null) {
     }
   }
 
-showBoard() {
+  showBoard() {
 
-  if (this.browser_active == 0) { return; }
+    if (this.browser_active == 0) { return; }
 
-  this.showArenas();
-  this.showFlags();
-  this.showRoundTrack();
-  this.showPrestigeTrack();
-  this.showDefconTracks();
+    this.showArenas();
+    this.showFlags();
+    this.showRoundTrack();
+    this.showPrestigeTrack();
+    this.showDefconTracks();
 
-  $(this.returnCardImage(this.game.state.ussr_agenda_selected)).appendTo("#ussr_agenda");
-  $(this.returnCardImage(this.game.state.us_agenda_selected)).appendTo("#us_agenda");
+    $(this.returnCardImage(this.game.state.ussr_agenda_selected)).appendTo("#ussr_agenda");
+    $(this.returnCardImage(this.game.state.us_agenda_selected)).appendTo("#us_agenda");
 
-  $("#agenda_discard").html("");
-  for (let card of this.used_agendas){
-    $(this.returnCardImage(card)).appendTo("#agenda_discard");
+    $("#agenda_discard").html("");
+    for (let card of this.used_agendas){
+      $(this.returnCardImage(card)).appendTo("#agenda_discard");
+    }
   }
-}
 
 
-showInfluence(arena_id) {
+  showInfluence(arena_id) {
 
-  let divname = "#"+arena_id;
-  let divname_us = "#"+arena_id + " > .us";
-  let divname_ussr = "#"+arena_id + " > .ussr"
-  let width = 100;
-  let ushtml = '';
-  let ussrhtml = '';
-  let cubes = 0;
+    let width = 100;
+    let cubes = 0;
 
-    //
-    // us cubes
-    //
-  cubes = this.game.arenas[arena_id].us;
-  this.game.state.influence_on_board_us += cubes;
-  if (cubes > 0) {
+    let y = [-10, 0, -34, -25, -135];
+    let x = [15, 14, 12, 10, 44];
 
-    let starting_point = width / 2;
-    let cube_gap = 50;
-    if (cubes > 1) {
-      starting_point = 0;
-      cube_gap = (width / cubes) - 10;
+      //
+      // us cubes
+      //
+    cubes = this.game.arenas[arena_id].us;
+    
+    this.game.state.influence_on_board_us += cubes;
+    let html = "";
+    
+    if (cubes > 0) {
+
+      let starting_point = width / 2;
+      let cube_gap = 50;
+      if (cubes > 1) {
+        starting_point = 0;
+        cube_gap = (width / cubes) - 10;
+      }
+
+
+      for (let z = 0; z < cubes; z++) {
+        html += `<img class="cube" src="/thirteen/img/Blue%20Cube.png" style="top:${this.scale(y[z])}px;left:${this.scale(x[z])}px;" />`;
+        starting_point += cube_gap;
+      }
     }
 
-    for (let z = 0; z < cubes; z++) {
-
-     let y = 0;
-     let x = 0;
-
-     if (z == 0) {
-       y = -10;
-       x = 15;
-     }
-     if (z == 1) {
-       y = 0;
-       x = 14;
-     }
-     if (z == 2) {
-       y = -34;
-       x = 12;
-     }
-     if (z == 3) {
-       y = -25;
-       x = 10;
-     }
-     if (z == 4) {
-       y = -135;
-       x = 44;
-     }
-     ushtml += '<img class="cube" src="/thirteen/img/Blue%20Cube.png" style="position:relative;top:'+this.scale(y)+'px;left:'+this.scale(x)+'px;" />';
-     starting_point += cube_gap;
-   }
-
- }
- 
+    $(`#${arena_id} > .us`).html(html);
+   
     //
     // ussr cubes
     //
- cubes = this.game.arenas[arena_id].ussr;
- this.game.state.influence_on_board_ussr += cubes;
- if (cubes > 0) {
+    
+    cubes = this.game.arenas[arena_id].ussr;
+    this.game.state.influence_on_board_ussr += cubes;
+    html = "";
 
-  let starting_point = width / 2;
-  let cube_gap = 50;
-  if (cubes > 1) {
-    starting_point = 0;
-    cube_gap = (width / cubes) - 10;
+    if (cubes > 0) {
+
+      let starting_point = width / 2;
+      let cube_gap = 50;
+      if (cubes > 1) {
+        starting_point = 0;
+        cube_gap = (width / cubes) - 10;
+      }
+
+    
+      for (let z = 0; z < cubes; z++) {
+        html += `<img class="cube" src="/thirteen/img/Red%20Cube.png" style="-webkit-transform:scaleX(-1);transform: scaleX(-1);top:${this.scale(y[z])}px;left:${this.scale(x[z])}px;" />`;
+        starting_point += cube_gap;
+      }
+
+    }
+
+    $(`#${arena_id} > .ussr`).html(html);
+
   }
-
-  let x = 0;
-  let y = 0;
-
-  for (let z = 0; z < cubes; z++) {
-
-   if (z == 0) {
-     y = -10;
-     x = 15;
-   }
-   if (z == 1) {
-     y = 0;
-     x = 14;
-   }
-   if (z == 2) {
-     y = -34;
-     x = 12;
-   }
-   if (z == 3) {
-     y = -25;
-     x = 10;
-   }
-   if (z == 4) {
-     y = -135;
-     x = 44;
-   }
-
-   ussrhtml += '<img class="cube" src="/thirteen/img/Red%20Cube.png" style="-webkit-transform:scaleX(-1);transform: scaleX(-1);position:relative;top:'+this.scale(y)+'px;left:'+this.scale(x)+'px;" />';
-   starting_point += cube_gap;
- }
-
-}
-
-
-$(divname_us).html(ushtml);
-$(divname_ussr).html(ussrhtml);
-
-}
 
 
 
@@ -3186,7 +3026,7 @@ returnStrategyCards() {
     defcon : 0 ,
     event : function(player) {
       thirteen_self.updateStatusWithOptions(`${thirteen_self.cardToText("s0lb")}: Place up to three influence cubes in total on one or more world opinion battlegrounds (max 2 per battleground)`, `<ul><li class="card nocard" id="done">finish</li></ul>`);
-      thirteen_self.eventAddInfluence(player, player, ['un','television','alliances'], 3, 2, 0, (args) => { thirteen_self.endTurn(); }); 
+      thirteen_self.eventAddInfluence(player, player, ['un','television','alliances'], 3, 2, 0); 
     },
  }
  deck['s02b']            = { 
@@ -3199,9 +3039,9 @@ returnStrategyCards() {
    event : function(player) {
 
 	  // escalate / de-escalate DEFCON tracks by up to 2 steps
-     thirteen_self.eventShiftDefcon(player, player, [1, 2, 3], 100, 2, function(args) {
-       thirteen_self.updateStatusWithOptions("Place up to one influence one or more battlegrounds:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-       thirteen_self.playerPlaceCommandTokens(player, 's02b', 1);
+     thirteen_self.eventShiftDefcon(player, player, [1, 2, 3], 2, function(args) {
+       thirteen_self.updateStatusWithOptions("Command 1 Influence cube:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+       thirteen_self.playerPlaceCommandTokens(player, 1);
      });
 
    },
@@ -3227,9 +3067,9 @@ returnStrategyCards() {
         let options = thirteen_self.app.crypto.stringToBase64(JSON.stringify([1,2,3]));
 
 	      // escalate / de-escalate up to 2 DEFCON tracks by up to 1 steps
-        thirteen_self.addMove("event_shift_defcon\t"+who_goes+"\t"+who_goes+"\t" + options + "\t1\t1");
-        thirteen_self.addMove("event_shift_defcon\t"+who_goes+"\t"+who_goes+"\t" + options + "\t1\t1");
-        thirteen_self.addMove("notify\tplayer dominant in Television may escalate or de-escalate up to 2 DEFCON tracks by up to 1 step each");
+        thirteen_self.addMove("event_shift_defcon\t"+who_goes+"\t"+who_goes+"\t" + options + "\t1");
+        thirteen_self.addMove("event_shift_defcon\t"+who_goes+"\t"+who_goes+"\t" + options + "\t1");
+        thirteen_self.addMove(`notify\t${who_goes} may escalate or de-escalate 2 DEFCON tracks by 1 step each because dominant in Television`);
         thirteen_self.endTurn();
      }
    },
@@ -3262,9 +3102,7 @@ returnStrategyCards() {
 
 	  // place up to 2 influence cubes in total on one or more political battlegrounds
      thirteen_self.updateStatusWithOptions("Place up to two influence cubes in total on one or more political battlegrounds:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-     thirteen_self.eventAddInfluence(player, player, ['cuba_pol','italy','turkey'], 2, 2, 0, function(args) {
-       thirteen_self.endTurn();
-     }); 
+     thirteen_self.eventAddInfluence(player, player, ['cuba_pol','italy','turkey'], 2, 2, 0); 
 
    },
  }
@@ -3284,7 +3122,6 @@ returnStrategyCards() {
 
    },
  }
- //TBD
  deck['s07b']            = { 
    img : "Strategy Card 07b.png" , 
    name : "Summit Meeting",
@@ -3294,57 +3131,33 @@ returnStrategyCards() {
    defcon : 0 ,
    event : function(player) {
 
-     let cards_discarded = 0;
-     let html = "<ul>";
-     for (let i = 0; i < thirteen_self.game.deck[1].hand.length; i++) {
-      html += '<li class="card '+thirteen_self.game.deck[1].hand[i]+'" id="'+thirteen_self.game.deck[1].hand[i]+'">'+thirteen_self.game.deck[1].cards[thirteen_self.game.deck[1].hand[i]].name+'</li>';
-    }
-    html += '<li class="card dashed" id="finished">Done Discarding</li></ul>';
-    thirteen_self.updateStatusWithOptions(`Select cards to discard:`,html);
-    thirteen_self.attachCardboxEvents(function(card) {
+        let cards_discarded = 0;
+        let html = "<ul>";
+        for (let i = 0; i < thirteen_self.game.deck[1].hand.length; i++) {
+          html += `<li class="card nocard" id="${thirteen_self.game.deck[1].hand[i]}">${thirteen_self.cardToText(thirteen_self.game.deck[1].hand[i])}</li>`;
+        }
+        html += '<li class="card nocard dashed" id="finished">Done Discarding</li></ul>';
+        
+        thirteen_self.updateStatusWithOptions(`Select cards to discard:`,html);
+        thirteen_self.attachCardboxEvents(function(card) {
 
-      if (card == "finished") {
-        thirteen_self.addMove("DEAL\t2\t"+thirteen_self.game.player+"\t"+cards_discarded);
+        if (card == "finished") {
+          thirteen_self.addMove("SAFEDEAL\t2\t"+thirteen_self.game.player+"\t"+cards_discarded);
+          thirteen_self.endTurn();
 
-              //
-              // are there enough cards available, if not, reshuffle
-              //
-        if (cards_discarded > thirteen_self.game.deck[1].crypt.length) {
+        } else {
 
-          let discarded_cards = thirteen_self.returnDiscardedCards(1);
-          if (Object.keys(discarded_cards).length > 0) {
+          cards_discarded++;
+          let divname = `#${card}.card.nocard`;
+          $(divname).remove();
+          thirteen_self.addMove(`discard\t${thirteen_self.game.player}\t2\t${card}`);
 
-                  //
-                  // SHUFFLE in discarded cards
-                  //
-            thirteen_self.addMove("SHUFFLE\t2");
-            thirteen_self.addMove("DECKRESTORE\t2");
-            thirteen_self.addMove("DECKENCRYPT\t2\t2");
-            thirteen_self.addMove("DECKENCRYPT\t2\t1");
-            thirteen_self.addMove("DECKXOR\t2\t2");
-            thirteen_self.addMove("DECKXOR\t2\t1");
-                  thirteen_self.addMove("flush\tdiscards\t2"); // opponent should know to flush discards as we have
-                  thirteen_self.addMove("DECK\t2\t"+JSON.stringify(discarded_cards));
-                  thirteen_self.addMove("DECKBACKUP\t2");
-
-                  thirteen_self.updateLog("cards remaining: " + thirteen_self.game.deck[1].crypt.length);
-                  thirteen_self.updateLog("Shuffling discarded cards back into the deck...");
-                }
-              }
-
-              thirteen_self.endTurn();
-
-            } else {
-
-              cards_discarded++;
-              let divname = "."+card;
-              $(divname).remove();
-
-              thirteen_self.removeCardFromHand(card);
-              thirteen_self.addMove(`discard\t${thirteen_self.game.player}\t2\t${card}`);
-
-            }
-          });
+          if (cards_discarded === thirteen_self.game.deck[1].hand.length){
+            thirteen_self.addMove("SAFEDEAL\t2\t"+thirteen_self.game.player+"\t"+cards_discarded);
+            thirteen_self.endTurn();            
+          }
+        }
+      });
   },
 }
 deck['s08b']            = { 
@@ -3374,9 +3187,7 @@ deck['s09b']            = {
 
 	    // place up to 2 influence cubes in total on one or more military battlegrounds
     thirteen_self.updateStatusWithOptions("Place up to two influence cubes in total on one or more military battlegrounds:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-    thirteen_self.eventAddInfluence(player, player, ['cuba_mil','atlantic','berlin'], 2, 2, 0, function(args) {
-      thirteen_self.endTurn();
-    }); 
+    thirteen_self.eventAddInfluence(player, player, ['cuba_mil','atlantic','berlin'], 2, 2, 0); 
  },
 }
 deck['s10b']            = { 
@@ -3425,9 +3236,9 @@ deck['s12b']            = {
    let opponent = 3 - thirteen_self.game.player;
 
 	  // command three influence, then opponent may command 1 influence
-   thirteen_self.addMove("event_command_influence" + "\t" + opponent + "\t" + "s12b" + "\t" + "1");
+   thirteen_self.addMove(`command_influence\t${opponent}\t1`);
    thirteen_self.updateStatusWithOptions("Command 3 Influence cubes", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-   thirteen_self.playerPlaceCommandTokens(thirteen_self.game.player, 's12b', 3);
+   thirteen_self.playerPlaceCommandTokens(thirteen_self.game.player, 3);
  }
 }
 deck['s13b']            = { 
@@ -3439,9 +3250,7 @@ deck['s13b']            = {
 	defcon : 0 ,
 	event : function(player) {
    thirteen_self.updateStatusWithOptions("Place up to three influence cubes on up to three battlegrounds (1 each):", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-   thirteen_self.eventAddInfluence(player, player, thirteen_self.all_battlegrounds, 3, 1, 0, function(args) {
-     thirteen_self.endTurn();
-   }); 
+   thirteen_self.eventAddInfluence(player, player, thirteen_self.all_battlegrounds, 3, 1, 0); 
 
  },
 }
@@ -3453,13 +3262,10 @@ deck['s14b']            = {
 	tokens : 3 ,
 	defcon : 1 ,
 	event : function(player) {
-
-   thirteen_self.eventShiftDefcon(player, player, [2], 2, 2, function(args) {
-     thirteen_self.updateStatusWithOptions("Place one influence cube on one battleground:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-     thirteen_self.eventAddInfluence(player, player, ['cuba_pol', 'cuba_mil', 'atlantic', 'turkey', 'berlin', 'italy', 'un','television','alliances'], 1, 1, 1, function(args) {
-       thirteen_self.endTurn();
-     });
-   }); 
+    thirteen_self.eventShiftDefcon(player, player, [2], 2, function(args) {
+      thirteen_self.updateStatusWithOptions("Command 1 influence cube:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+      thirteen_self.playerPlaceCommandTokens(player, 1); 
+    });
  },
 }
 
@@ -3479,9 +3285,7 @@ deck['s15b']            = {
      }
    }
    thirteen_self.updateStatusWithOptions("Place up to 4 Influence in battlegrounds where the US currently has no influence. Max 2 per battleround:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-   thirteen_self.eventAddInfluence(player, player, options, 4, 2, 1, function(args) {
-     thirteen_self.endTurn();
-   }); 
+   thirteen_self.eventAddInfluence(player, player, options, 4, 2, 1); 
 
  },
 }
@@ -3508,9 +3312,7 @@ deck['s16b']            = {
    }
 
    thirteen_self.updateStatusWithOptions("Select a battleground from which to remove US influence:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-   thirteen_self.eventRemoveInfluence(thirteen_self.game.player, 2, options, 5, 5, 0, function() {
-     thirteen_self.endTurn();
-   });	
+   thirteen_self.eventRemoveInfluence(thirteen_self.game.player, 2, options, 100, 1, 0);	
 
  },
 }
@@ -3518,12 +3320,13 @@ deck['s16b']            = {
 deck['s17b']            = { 
 	img : "Strategy Card 17b.png" , 
 	name : "Lessons of Munich",
-	text : "Place up to 4 Influence ubes in total on Berlin, Italy, and Turkey Battlegrounds. Max 2 per battleground",
+	text : "Place up to 4 Influence cubes in total on Berlin, Italy, and Turkey Battlegrounds. Max 2 per battleground",
 	side : "us",
 	tokens : 3 ,
 	defcon : 0 ,
 	event : function(player) {
-   thirteen_self.eventAddInfluence(player, player, ['berlin','italy','turkey'], 4, 2, 0, function(args) {
+    thirteen_self.updateStatusWithOptions("Place up to 4 Influence in total on Berlin, Italy, and Turkey Battlegrounds. Max 2 per battleground", `<ul><li class="card nocard" id="done">finish</li></ul>`)
+    thirteen_self.eventAddInfluence(player, player, ['berlin','italy','turkey'], 4, 2, 0, function(args) {
      thirteen_self.endTurn();
    }); 
 
@@ -3541,13 +3344,11 @@ deck['s18b']            = {
    let options = thirteen_self.app.crypto.stringToBase64(JSON.stringify([1,2,3]));
 
    thirteen_self.updateLog("US gains 1 prestige, USSR may shift 1 US DEFCON track");
-   thirteen_self.addMove("event_shift_defcon\t1\t2\t" + options + "\t1\t1");
+   thirteen_self.addMove("event_shift_defcon\t1\t2\t" + options + "\t1");
    thirteen_self.addMove("prestige\t2\t1");
    thirteen_self.endTurn();
  },
 }
-
-
 deck['s19b']            = { 
 	img : "Strategy Card 19b.png" , 
 	name : "Air Strike",
@@ -3566,15 +3367,11 @@ deck['s19b']            = {
     thirteen_self.attachCardboxEvents(function(action) {
      if (action == "remove_from_cuba") {
        thirteen_self.updateStatusWithOptions("Select a Cuban battleground to remove half of the USSR influence:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-       thirteen_self.eventRemoveInfluence(2, 1, ['cuba_pol', 'cuba_mil'], 101, 1, 0, function() {
-         thirteen_self.endTurn();
-       });
+       thirteen_self.eventRemoveInfluence(2, 1, ['cuba_pol', 'cuba_mil'], 101, 1, 0);
      }
      if (action == "add_alliances") {
        thirteen_self.updateStatusWithOptions("Add up to two influence to the Alliances battleground:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-       thirteen_self.eventAddInfluence(2, 2, ['alliances'], 2, 2, 0, function() {
-         thirteen_self.endTurn();
-       }); 
+       thirteen_self.eventAddInfluence(2, 2, ['alliances'], 2, 2, 0); 
      }
    });
   }
@@ -3589,9 +3386,7 @@ deck['s20b']            = {
 	event : function(player) {
 
     thirteen_self.eventRemoveInfluence(player, 1, ['turkey'], 2, 2, 0, function(args) {
-      thirteen_self.eventShiftDefcon(player, player, [2], 2, 2, function(args) {
-        thirteen_self.endTurn();
-      });
+      thirteen_self.eventShiftDefcon(player, player, [2], 2);
     }); 
 
  },
@@ -3606,11 +3401,9 @@ deck['s21b']            = {
 	event : function(player) {
 
    if (thirteen_self.game.state.defcon2_us < 4) {
-     thirteen_self.updateStatusWithOptions("Place up to 3 Influence in Cuba (pol), Italy and Turkey:", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-     thirteen_self.eventAddInfluence(2, 2, ['cuba_pol','italy','turkey'], 3, 1, 0, function() {
-       thirteen_self.addMove("notify\tUS installs offensive missiles in political chokepoints");
-       thirteen_self.endTurn();
-     });
+     thirteen_self.updateStatusWithOptions("Place up to 3 Influence in Cuba (pol), Italy and Turkey (max 1 per battleground):", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+     thirteen_self.addMove("notify\tUS installs offensive missiles in political chokepoints");
+     thirteen_self.eventAddInfluence(2, 2, ['cuba_pol','italy','turkey'], 3, 1, 0);
    } else {
      thirteen_self.addMove("notify\tUS political defcon track is lower than 3, skipping Offensive Missiles");
      thirteen_self.displayModal("Offensive Missiles doesn't go into effect because US political defcon track is lower than 3");
@@ -3630,11 +3423,9 @@ deck['s22b']            = {
 	event : function(player) {
 
     //player, player_getting_moved, options, number, max_per_arena, mycallback=null, directions="both"
-    thirteen_self.eventIncreaseDefcon(player, 2, [1], 2, 2, 
+    thirteen_self.eventShiftDefcon(player, 2, [1], 2, "increase",  
       function(arg){
-        thirteen_self.eventDecreaseDefcon(player, 2, [2, 3], 100, arg, function(arg2){
-          thirteen_self.endTurn();
-        });
+        thirteen_self.eventShiftDefcon(player, 2, [2, 3], arg, "decrease");
       });
 
  },
@@ -3647,10 +3438,8 @@ deck['s23b']            = {
 	tokens : 1 ,
 	defcon : 0 ,
 	event : function(player) {
-   thirteen_self.updateStatus("<div class='status-message' id='status-message'>Place up to 2 Influence on the Atlantic battleground: <p></p><ul><li class='card' id='done'>click here when done</li></ul></div>");
-   thirteen_self.eventAddInfluence(player, player, ['atlantic'], 2, 2, 0, function(args) {
-     thirteen_self.endTurn();
-   }); 
+   thirteen_self.updateStatusWithOptions("Place up to 2 Influence on the Atlantic battleground:",`<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventAddInfluence(player, player, ['atlantic'], 2, 2, 0); 
 
  },
 }
@@ -3662,9 +3451,8 @@ deck['s24b']            = {
 	tokens : 1 ,
 	defcon : 1 ,
 	event : function(player) {
-   thirteen_self.eventAddInfluence(player, player, ['cuba_mil','berlin','atlantic'], 3, 3, 1, function(args) {
-     thirteen_self.endTurn();
-   }); 
+    //FIX THIS <<<<<<
+   thirteen_self.eventAddInfluence(player, player, ['cuba_mil','berlin','atlantic'], 3, 3, 1); 
 
  },
 }
@@ -3677,11 +3465,10 @@ deck['s25b']            = {
 	defcon : 0 ,
 	event : function(player) {
 
-   let options2 = thirteen_self.app.crypto.stringToBase64(JSON.stringify(thirteen_self.all_battlegrounds));
-   thirteen_self.addMove("event_add_influence\t2\t2\t"+options2+"\t2\t2\t0");
-   thirteen_self.updateStatus("<div class='status-message' id='status-message'>"+'Remove up to 2 US influence cubes in total from one or more battlegrounds. Place them on other battlegrounds: <p></p><li class="card" id="done">click here when done</li></ul></div>');
-   thirteen_self.eventRemoveInfluence(player, player, thirteen_self.all_battlegrounds, 2, 2, 0, function() {
-     thirteen_self.endTurn();
+   thirteen_self.updateStatusWithOptions('Remove up to 2 US influence cubes in total from one or more battlegrounds. Place them on other battlegrounds:', `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventRemoveInfluence(player, player, thirteen_self.all_battlegrounds, 2, 2, 0, function(arg) {
+      thirteen_self.updateStatusWithOptions(`Now place the ${arg} influence on other battlegrounds:`, `<ul><li class="card nocard" id="done">finish</li></ul>`);
+     thirteen_self.eventAddInfluence(player, player, thirteen_self.all_battlegrounds, arg, arg, 0);
    });
  },
 }
@@ -3713,25 +3500,22 @@ deck['s27b']            = {
 	defcon : 1 ,
 	event : function(player) {
 
-   thirteen_self.eventShiftDefcon(1, 1, [1], 100, 2, function(args) {
-     let options = thirteen_self.app.crypto.stringToBase64(JSON.stringify(thirteen_self.all_battlegrounds));
-     thirteen_self.addMove("event_add_influence\t1\t1\t"+options+"\t1\t1\t1");
-     thirteen_self.endTurn();
-   });
-
+    thirteen_self.eventShiftDefcon(1, 1, [1], 2, function(args) {
+      thirteen_self.playerPlaceCommandTokens(1, 1);
+    });
  },
 }
 deck['s28b']            = { 
 
 	img : "Strategy Card 28b.png" , 
-	name : "Moscow is the Brain",
+	name : "Moscow is our Brain",
 	text : "Place up to 4 Influence dubes in total on battlegrounds where the USSR player currently has Influence cubes. Max 2 per battleground",
 	side : "ussr",
 	tokens : 3 ,
 	defcon : 1 ,
 	event : function(player) {
 
-   thirteen_self.updateStatus("<div class='status-message' id='status-message'>"+'Place up to 4 Influence cubes in total on battlegrounds where the USSR player currently has Influence cubes. Max 2 per battleground: <p></p><ul><li class="card" id="done">done</li></ul></div>');
+   thirteen_self.updateStatusWithOptions("Place up to 4 Influence cubes in total on battlegrounds where the USSR player currently has Influence cubes. Max 2 per battleground: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
    let options = [];
 
    for (var i in thirteen_self.game.arenas) {
@@ -3739,10 +3523,7 @@ deck['s28b']            = {
        options.push(i);
      }
    }
-   thirteen_self.eventAddInfluence(1, 1, options, 4, 2, 1, function(args) {
-     thirteen_self.endTurn();
-   });
-
+   thirteen_self.eventAddInfluence(1, 1, options, 4, 2, 1);
  },
 }
 deck['s29b']            = { 
@@ -3753,10 +3534,8 @@ deck['s29b']            = {
 	tokens : 3 ,
 	defcon : 1 ,
 	event : function(player) {
-   thirteen_self.updateStatus("<div class='status-message' id='status-message'>"+'Remove up to 3 USSR Influence cubes in total from one or more battlegrounds: <p></p><ul><li class="card" id="done">done</li></ul></div>');
-   thirteen_self.eventRemoveInfluence(1, 1, thirteen_self.all_battlegrounds, 3, 3, 1, function(args) {
-     thirteen_self.endTurn();
-   });
+   thirteen_self.updateStatusWithOptions("Remove up to 3 USSR Influence cubes in total from one or more battlegrounds: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventRemoveInfluence(player, 1, thirteen_self.all_battlegrounds, 3, 3, 1);
  },
 }
 deck['s30b']            = { 
@@ -3767,9 +3546,8 @@ deck['s30b']            = {
 	tokens : 3 ,
 	defcon : 0 ,
 	event : function(player) {
-   thirteen_self.eventAddInfluence(player, player, ['cuba_mil','cuba_pol'], 3, 3, 0, function(args) {
-     thirteen_self.endTurn();
-   }); 
+   thirteen_self.updateStatusWithOptions("Place up to 3 USSR Influence cubes in total on one or both Cuba battlegrounds: ", `<ul><li class="card nocard" id="done">finish</li></ul>`); 
+   thirteen_self.eventAddInfluence(player, player, ['cuba_mil','cuba_pol'], 3, 3, 0); 
  },
 }
 deck['s31b']            = { 
@@ -3782,8 +3560,8 @@ deck['s31b']            = {
 	event : function(player) {
 
    let options = thirteen_self.app.crypto.stringToBase64(JSON.stringify([1,2,3]));
-   thirteen_self.addMove("event_shift_defcon\t2\t1\t" + options + "\t2\t2");
-   thirteen_self.addMove("prestige\t2\t1");
+   thirteen_self.addMove("event_shift_defcon\t2\t1\t" + options + "\t2");
+   thirteen_self.addMove("prestige\t1\t2");
    thirteen_self.addMove("notify\tUSSR gains 2 prestige");
    thirteen_self.endTurn();
 
@@ -3798,21 +3576,19 @@ deck['s32b']            = {
 	defcon : 0 ,
 	event : function(player) {
 
-   thirteen_self.updateLog("USSR plays Suez-Hungary");
-   let us = thirteen_self.game.arenas['italy'].us;
-   let ussr = thirteen_self.game.arenas['italy'].ussr;
+   let total_needed = Math.min(thirteen_self.game.arenas['italy'].us + 1, 5);
 
-   let total_needed = us+1;
-   if (total_needed > 5) { total_needed = 5; }
-
-   let total_to_add = total_needed-ussr;
+   let total_to_add = total_needed - thirteen_self.game.arenas['italy'].ussr;
+   if (thirteen_self.game.state.influence_on_board_ussr + total_to_add > 17){
+      total_to_add = 17 - thirteen_self.game.state.influence_on_board_ussr; 
+   }
 
    if (total_to_add > 0) {
      thirteen_self.addMove("add_influence\t1\titaly\t"+total_to_add + "\t" + "-1");
      thirteen_self.addMove("notify\tUSSR adds "+total_to_add+" in Italy");
    }
-   thirteen_self.endTurn();
 
+   thirteen_self.endTurn();
  },
 }
 deck['s33b']            = { 
@@ -3843,8 +3619,8 @@ deck['s34b']            = {
 	tokens : 2 ,
 	defcon : 0 ,
 	event : function(player) {
-   thirteen_self.addMove("bayofpigs");
-   thirteen_self.endTurn();
+    thirteen_self.addMove("bayofpigs\t"+player);
+    thirteen_self.endTurn();
  },
 }
 deck['s35b']            = { 
@@ -3866,9 +3642,7 @@ deck['s35b']            = {
    if (thirteen_self.game.state.defcon2_ussr >= max_defcon) { options.push(2); }
    if (thirteen_self.game.state.defcon3_ussr >= max_defcon) { options.push(3); }
 
-   thirteen_self.eventDecreaseDefcon(player, player, options, 2, 2, function(args) {
-     thirteen_self.endTurn();
-   }); 
+   thirteen_self.eventShiftDefcon(player, player, options, 2, "decrease"); 
  },
 }
 deck['s36b']            = { 
@@ -3879,10 +3653,8 @@ deck['s36b']            = {
 	tokens : 1 ,
 	defcon : 1 ,
 	event : function(player) {
-   thirteen_self.updateStatus("<div class='status-message' id='status-message'>Place up to 3 Influence on the Atlantic battleground: <p></p><ul><li class='card' id='done'>click here when done</li></ul></div>");
-   thirteen_self.eventAddInfluence(player, player, ['atlantic'], 3, 3, 1, function(args) {
-     thirteen_self.endTurn();
-   }); 
+   thirteen_self.updateStatusWithOptions("Place up to 3 Influence on the Atlantic battleground: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventAddInfluence(player, player, ['atlantic'], 3, 3, 1); 
 
  },
 }
@@ -3894,10 +3666,8 @@ deck['s37b']            = {
 	tokens : 1 ,
 	defcon : 1 ,
 	event : function(player) {
-   thirteen_self.updateStatus("<div class='status-message' id='status-message'>Command 3 Influence cubes on to one political battleground: <p></p><ul><li class='card' id='done'>click here when done</li></ul></div>");
-   thirteen_self.eventAddInfluence(player, player, ['cuba_pol','italy','turkey'], 3, 3, 1, function(args) {
-     thirteen_self.endTurn();
-   }); 
+   thirteen_self.updateStatusWithOptions("Command 3 Influence cubes on to one political battleground: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventAddInfluence(player, player, ['cuba_pol','italy','turkey'], 3, 3, 1); 
  },
 }
 deck['s38b']            = { 
@@ -3908,12 +3678,10 @@ deck['s38b']            = {
 	tokens : 2 ,
 	defcon : 0 ,
 	event : function(player) {
-   thirteen_self.updateStatus("<div class='status-message' id='status-message'>Add up to 2 influence cubes in Turkey: <p></p><ul><li class='card' id='done'>click here when done</li></ul></div>");
+   thirteen_self.updateStatusWithOptions("Add up to 2 influence cubes in Turkey: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
    thirteen_self.eventAddInfluence(player, player, ['turkey'], 2, 2, 0, function(args) {
-     thirteen_self.updateStatus("<div class='status-message' id='status-message'>Remove half of US influence from one Cuban battleground: <p></p><ul><li class='card' id='done'>click here when done</li></ul></div>");
-     thirteen_self.eventRemoveInfluence(player, 2, ['cuba_pol', 'cuba_mil'], 101, 2, 0, function(args) {
-       thirteen_self.endTurn();
-     }); 
+     thirteen_self.updateStatusWithOptions("Now, click remove half of US influence from one Cuban battleground: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+     thirteen_self.eventRemoveInfluence(player, 2, ['cuba_pol', 'cuba_mil'], 101, 2, 0); 
    }); 
  },
 }
@@ -3925,10 +3693,8 @@ deck['s39b']            = {
 	tokens : 1 ,
 	defcon : 1 ,
 	event : function(player) {
-   thirteen_self.eventAddInfluence(player, player, ['un','television'], 2, 2, 1, function(args) {
-     thirteen_self.endTurn();
-   }); 
-
+   thirteen_self.updateStatusWithOptions("Place up to 2 Influence cubes in total on the Television and United Nations battlegrounds: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
+   thirteen_self.eventAddInfluence(player, player, ['un','television'], 2, 2, 1); 
  },
 }
 
@@ -3939,45 +3705,6 @@ return deck;
 
 
 
-
-
-
-  /////////////////
-  // Play Events //
-  /////////////////
-  //
-  // the point of this function is either to execute events directly
-  // or permit the relevant player to translate them into actions
-  // that can be directly executed by other plays on receipt of the
-  // necessary instructions.
-  //
-  // this function returns 1 if we can continue, or 0 if we cannot
-  // in the handleGame loop managing the events / turns that are
-  // queued up to go.
-  //
-playEvent(player, card) {
-
-  let thirteen_self = this;
-
-    ///////////
-    // CARDS //
-    ///////////
-
-    //
-    // Cultural Diplomacy
-    //
-  if (card == "culturaldiplomacy") {
-
-    this.updateLog("Do something here");
-    return 1;
-
-  }
-
-    //
-    // return 0 so other cards do not trigger infinite loop
-    //
-  return 0;
-}
 
 
 returnGameRulesHTML(){

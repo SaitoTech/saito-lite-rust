@@ -30,6 +30,7 @@ img{
 }
 
 img.cube{
+  position: relative;
   width: 60px;
 }
 
@@ -112,10 +113,14 @@ li.card {
 
 .prestige_slot {
   position: absolute;
+  width: 50px;
+  height: 50px;
 }
 
 .round_slot {
   position: absolute;
+  width: 50px;
+  height: 50px;
 }
 
 .agenda_deck {
@@ -123,6 +128,8 @@ li.card {
   background-image: url("/thirteen/img/Agenda Card-Backb.png");
   top: 830px;
   left: 2068px;
+  width: 264px;
+  height: 362px;
 }
 
 .strategy_deck {
@@ -130,12 +137,18 @@ li.card {
   background-image: url("/thirteen/img/Strategy Card-Backb.png");
   top: 1360px;
   left: 465px;
+  width: 264px;
+  height: 362px;
+
 }
 
 #agenda_discard{
   position: absolute;
   top: 1360px;
   left: 865px;
+  width: 264px;
+  height: 362px;
+
 }
 
 .agenda_card {
@@ -145,7 +158,14 @@ li.card {
 
 
 .country {
-  width: 100px;
+  width: 260px;
+  height: 100px;
+ /* display: flex;
+  flex-direction: row;*/
+}
+
+.country div{
+  width: 130px;
   height: 100px;
 }
 
