@@ -14,6 +14,8 @@
   background-image: url("/scotland/img/gameboard-large.jpg");
   width: 5135px;
   height: 3829px;
+  margin-top: 50px;
+  margin-bottom: 300px;
 }
 
 .gameboard canvas{
@@ -24,12 +26,31 @@
   height: 3829px;
 }
 
+.hidden{
+  display: none;
+}
+
 .hud-header{
   margin: 0;
+  height: 25px;
 }
+
+.hud-header i{
+  cursor: pointer;
+  text-shadow: 1px 1px 2px #010101;
+}
+
 
 .hud {
   background-color: #444A;
+}
+
+.menu_icon_icon{
+  width: unset;
+}
+
+.fa-border.fa-mask{
+  padding: 0.2em 0.05em 0.15em;
 }
 
 .status{
@@ -137,6 +158,39 @@
   border-radius: 100%;
   overflow: hidden;
   /*transform: translate(-125px,-125px);*/
+}
+
+.clues-overlay{
+  min-width: min(650px, 80vw);
+  min-height: 180px;
+  background-color: blanchedalmond;
+  color: black;
+  font-size: 16px;
+  line-height: 24px;
+  padding: 20px;
+  font-family: garamond, serif;
+}
+
+.overlay_header{
+  font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.my_pawns{
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-around;
+  width: 250px;
+  height: 150px;
+  float: right;
+  margin-left: 20px;
+}
+
+.my_pawns img{
+  width: 80px;
+  top: unset;
+  transform: unset;
 }
 
 .status-icon-menu{
