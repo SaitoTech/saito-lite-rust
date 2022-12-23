@@ -16,7 +16,7 @@ class League extends ModTemplate {
     this.categories = "Arcade Competition";
     this.overlay = null;
 
-    this.styles = ['/saito/saitox.css','/league/style.css'];
+    this.styles = ['/league/style.css'];
 
     //
     // i like simpler names, but /lib contains this.leagues[] as well
@@ -81,6 +81,7 @@ class League extends ModTemplate {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
       }
+      this.styles = ['/league/css/league-overlay.css'];
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
@@ -89,6 +90,7 @@ class League extends ModTemplate {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
       }
+      this.styles = ['/league/css/league-overlay.css'];
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
