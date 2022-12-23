@@ -9,7 +9,8 @@ module.exports = (app, mod, invite) => {
                 <div class="saito-module-titlebar-details game-type">${(invite.type).toUpperCase()} GAME</div>
             </div>
             
-            <div class="saito-module-details saito-game-identicons">
+            <div class="saito-module-holder">
+                <div class="saito-module-details saito-game-identicons">
                 
     `;
 
@@ -36,8 +37,9 @@ module.exports = (app, mod, invite) => {
     }
 
     html += `
-              <div class="saito-module-identicon identicon-needed tip">
-                <div class="tiptext">You need this player to start the game</div>
+                <div class="saito-module-identicon identicon-needed tip">
+                  <div class="tiptext">You need this player to start the game</div>
+                </div>
               </div>
             </div>
           </div>

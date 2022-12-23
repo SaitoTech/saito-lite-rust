@@ -6,9 +6,12 @@
     row-gap: 1rem;
 }
 
+.arcade-players-needed {
+    margin-bottom: -1rem;
+}
 
 .saito-game-identicons {
-    min-width: 25rem;
+    min-width: min-content;
     backdrop-filter: blur(1px);
     padding: 1rem;
 }

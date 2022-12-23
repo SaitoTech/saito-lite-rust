@@ -2,7 +2,7 @@ module.exports = InviteManagerTemplate = (app, mod) => {
 
   return `
   <div class="invite-manager">
-    <h6>Open invites:</h6>
+    <h6 class="arcade-players-needed">Players Needed:</h6>
   </div>`;
 
 }
