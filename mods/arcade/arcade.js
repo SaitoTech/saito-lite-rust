@@ -13,7 +13,7 @@ class Arcade extends ModTemplate {
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment Utilities";
 
-    this.mods = [];
+    this.game_mods = [];
     this.games = [];
 
     this.icon_fa = "fas fa-gamepad";
@@ -141,8 +141,7 @@ class Arcade extends ModTemplate {
     // list of arcade games
     //
     app.modules.respondTo("arcade-games").forEach(game_mod => {
-console.log("ADDING: " + game_mod.returnName());
-      arcade_self.games.push(game_mod);
+      arcade_self.game_mods.push(game_mod);
     });
 
     //

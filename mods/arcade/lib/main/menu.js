@@ -15,9 +15,9 @@ class ArcadeMenu {
     //
     let gamelist = [];
     let html = "";
-    for (let i = 0; i < this.mod.games.length; i++) {
+    for (let i = 0; i < this.mod.game_mods.length; i++) {
 console.log("GAME: " + (i+1));
-      let game_mod = this.mod.games[i];
+      let game_mod = this.mod.game_mods[i];
       gamelist.push([game_mod.categories, `<li class="arcade-menu-item${(game_mod.name == this.mod.viewing_game_homepage)? " selected":""}" id="${game_mod.name}">${game_mod.returnName()}</li>`]);
     };
     if (!this.mod.manual_ordering){

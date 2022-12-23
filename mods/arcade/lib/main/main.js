@@ -1,15 +1,9 @@
 const JSON = require("json-bigint");
 const ArcadeMainTemplate = require("./main.template");
 const ArcadeMenu = require("./menu");
-const SaitoSidebar = require('./../../../../lib/saito/ui/saito-sidebar/saito-sidebar');
+const ArcadeBanner = require("./banner");
 
-/****
-const SaitoCarousel = require("./../../../../lib/saito/ui/saito-carousel/saito-carousel");
-const ArcadeInviteTemplate = require("./arcade-invite.template");
-const ArcadeBanner = require("./arcade-banner");
-const ArcadeLeaderboard = require("./meta-leaderboard"); //require("./arcade-leaderboard");
-const ArcadeLeague = require("./arcade-league");
-****/
+const SaitoSidebar = require('./../../../../lib/saito/ui/saito-sidebar/saito-sidebar');
 
 class ArcadeMain {
 
@@ -25,40 +19,31 @@ class ArcadeMain {
     this.sidebar.align = "nope";
     this.menu = new ArcadeMenu(this.app, this.mod, ".saito-sidebar.left");
     this.sidebar.addComponent(this.menu);
-
-/***
-    //Add Chat Manager as Service to Sidebar
-    this.app.modules.respondTo("chat-manager").forEach(m => {
-      this.sidebar.addComponent(m.respondTo("chat-manager"));
-    });
-***/
-//    this.banner = new ArcadeBanner(this.app, this.mod);
-    this.leaderboard = null;
-    this.userLeagues = null;
+    this.banner = new ArcadeBanner(this.app, this.mod, ".arcade-central-panel");
 
   }
 
   render() {
 
-console.log("X1");
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(ArcadeMainTemplate(), ".saito-container");
     } else {
       this.app.browser.addElementToSelectorOrDom(ArcadeMainTemplate(), this.container);
     }
 
-console.log("X2");
     this.sidebar.render();
-console.log("X3");
+
+    if (Math.random() < 0.5) {
+      this.banner.render();
+    } else {
+      this.app.modules.renderInto(".arcade-invites-box");
+    }
 
 
     //
     // appspace modules
     //
     this.app.modules.renderInto(".arcade-leagues");
-
-    
-    this.app.modules.renderInto(".arcade-invites-box");
 
 
 /*****
@@ -73,7 +58,9 @@ console.log("X3");
 
 
     this.sidebar.render(app, mod);
+
     this.banner.render(app, mod);
+
     if (app.modules.returnModule("League")){
       if (!this.leaderboard){
         this.leaderboard = new ArcadeLeaderboard(app, mod);
