@@ -21,7 +21,61 @@ class ArcadeMain {
     this.sidebar.addComponent(this.menu);
     this.banner = new ArcadeBanner(this.app, this.mod, ".arcade-central-panel");
 
+
+    //
+    // load init page
+    //
+    app.connection.on("arcade-launch-game-init", (game_id) => {
+
+      this.mod.is_game_initializing = true;
+
+      this.mod.initialization_timer = setInterval(() => {
+
+        let game_idx = -1;
+        if (this.app.options.games != undefined) {
+          for (let i = 0; i < this.app.options.games.length; i++) {
+            if (this.app.options.games[i].id == game_id) {
+              game_idx = i;
+            }
+          }
+        } 
+        
+        if (game_idx == -1) { return; }
+          
+        if (this.app.options.games[game_idx].initializing == 0) {
+    
+          //
+          // check we don't have a pending TX for this game...
+          //
+          let ready_to_go = 1;
+      
+          if (this.app.wallet.wallet.pending.length > 0) {
+            for (let i = 0; i < arcade_self.app.wallet.wallet.pending.length; i++) {
+              let thistx = new saito.transaction(JSON.parse(arcade_self.app.wallet.wallet.pending[i]));
+              let thistxmsg = thistx.returnMessage();
+              if (thistxmsg.module == arcade_self.app.options.games[game_idx].module) {
+                if (thistxmsg.game_id == arcade_self.app.options.games[game_idx].id) {
+                  ready_to_go = 0;
+                }
+              }
+            }  
+          }
+
+          if (ready_to_go == 0) {
+            console.log("transaction for this game still in pending...");
+            return;
+          }
+
+          clearInterval(arcade_self.initialization_timer);
+
+        }
+      }, 1000);
+
+    });
+
   }
+
+  
 
   render() {
 
