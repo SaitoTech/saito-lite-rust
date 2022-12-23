@@ -46,13 +46,13 @@ class League extends ModTemplate {
     //
     // create initial leagues
     //
-    this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
-      this.addLeague(
-      	app.crypto.hash(mod.returnName()) ,	// id
-      	mod.returnName() , 			// name
-      	0 					// rank
-      );
-    });
+    // this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
+    //   this.addLeague(
+    //   	app.crypto.hash(mod.returnName()) ,	// id
+    //   	mod.returnName() , 			// name
+    //   	0 					// rank
+    //   );
+    // });
   }
 
   render(app, mod) {
@@ -96,6 +96,21 @@ class League extends ModTemplate {
     }
   }
 
+  renderLeagues(app, mod){
+    if (this.app.BROWSER == 0){return;}
+
+    if (this.browser_active){
+      this.main.render(app, this);
+    } else {
+      app.connection.emit("league-update", {});
+    }
+  }
+
+  resetLeagues(){
+    this.leagues = [];
+    this.leagueCount = 0;
+  }
+
   //
   // the league is an array of objects with the following structure
   //
@@ -107,25 +122,42 @@ class League extends ModTemplate {
   //   games 	: [games_array] ,
   // }
   //
-  addLeague(league_id, name, rank) {
-    let league_idx = -1;
-    for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) {
-      	league_idx = i;
-      	break;
+  addLeague(tx) {
+    // let league_idx = -1;
+    // for (let i = 0; i < this.leagues.length; i++) {
+    //   if (this.leagues[i].id === league_id) {
+    //   	league_idx = i;
+    //   	break;
+    //   }
+    // }
+    // if (league_idx == -1) {
+    //   this.leagues.push({
+    //   	id	:	league_id ,
+    //   	name	:	name ,
+    //   	rank	:	rank ,
+    //   	players :	[] ,
+    //   	games	:	[] ,
+    //   });
+    // } else {
+    //   this.app.connection.emit("league-add-league", (this.leagues[league_idx]));
+    // }
+
+    let txmsg = tx.returnMessage();
+    let lobj = txmsg.league;
+    lobj.id = tx.transaction.sig;
+
+    this.updateLeague(lobj);
+    let newLeague = true;
+
+    for (let i = 0; i < this.leagues.length; i++){
+      if (lobj.id == this.leagues[i].id){
+        newLeague = false;
       }
     }
-    if (league_idx == -1) {
-      this.leagues.push({
-      	id	:	league_id ,
-      	name	:	name ,
-      	rank	:	rank ,
-      	players :	[] ,
-      	games	:	[] ,
-      });
-    } else {
-      this.app.connection.emit("league-add-league", (this.leagues[league_idx]));
+     if (newLeague){
+      this.leagues.push(lobj);
     }
+
   }
 
 
@@ -972,7 +1004,7 @@ class League extends ModTemplate {
 
     //Check League Membership
     if (!this.isLeagueMember(league.id)){
-      salert("You need to be a member of the League to create a League-only game invite");
+      alert("You need to be a member of the League to create a League-only game invite");
       return;
     }
 
@@ -1010,7 +1042,7 @@ class League extends ModTemplate {
     if (!arcade_mod) { return; }
     //Check League Membership
     if (!this.isLeagueMember(league.id)){
-      salert("You need to be a member of the League to create a League-only game invite");
+      alert("You need to be a member of the League to create a League-only game invite");
       return;
     }
     let options = (league.options) ? JSON.parse(league.options) : null;
@@ -1021,7 +1053,7 @@ class League extends ModTemplate {
     }
     console.log(JSON.parse(JSON.stringify(options)));
     if (options["game-wizard-players-select"] != 2){
-      salert("You can only challenge head-to-head");
+      alert("You can only challenge head-to-head");
       return;
     }
     //Check options
@@ -1041,7 +1073,7 @@ class League extends ModTemplate {
     });
     challenge_overlay.show(this.app, this, ChallengeIssuedTemplate());
     timeout = setTimeout(async ()=>{
-      salert("It seems your opponent isn't available.");
+      alert("It seems your opponent isn't available.");
       challenge_overlay.remove();
     }, 30000);
     this.app.connection.on("arcade-reject-challenge", (game_id)=>{
