@@ -36,7 +36,10 @@ class GameWizard {
     });
   }
 
-  render(app, mod) {
+  render() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     //Create the game wizard overlay
     this.overlay.show(app, mod, GameWizardTemplate(app, mod, this.game_mod, this.obj));
@@ -70,13 +73,17 @@ class GameWizard {
 
     }
 
-    this.attachEvents(app, mod);
+    this.attachEvents();
+
   }
 
   //
   // Note: mod = Arcade
   //
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     if (document.querySelector(".saito-multi-select_btn")){
       document.querySelector(".saito-multi-select_btn").addEventListener("click", (e) => {
@@ -129,7 +136,7 @@ class GameWizard {
         try {
           let options = this.getOptions();
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
-  
+
           let c = await mod.verifyOptions(isPrivateGame, options);
           if (!c){
             this.overlay.remove();
@@ -146,8 +153,10 @@ class GameWizard {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
+console.log("CAN WE MAKE GAME INVITE 1");
           mod.makeGameInvite(options, isPrivateGame);
- 
+console.log("CAN WE MAKE GAME INVITE 2"); 
+
         } catch (err) {
           console.warn(err);
         }

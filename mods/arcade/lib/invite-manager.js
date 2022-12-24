@@ -11,40 +11,18 @@ class InviteManager {
 	  this.container = container;
 	  this.name = "InviteManager";
 	  this.type = "short";
+	  //this.list = "open";
+	  this.list = "mine";
 
-	  //
-	  // track invites
-	  //
 	  this.invites = {};
-	  manager_self = this;
 
 	  //
 	  // handle requests to re-render invite manager
 	  //
-	  app.connection.on("invite-manager-render-request", () => {
+	  app.connection.on("arcade-invite-manager-render-request", () => {
+console.log("arcade -- invite manager render");
 	    this.render();
 	  });
-
-	  //
-	  // handle requests to re-render invites
-	  //
-	  app.connection.on("arcade-invite-render-request", (invite) => {
-
-	    //
-	    // don't re-render if we are initializing
-	    //
-            if (this.mod.is_game_initializing == true) { return; }
-
-	    if (!this.invites[invite.id]) {
-	      if (manager_self.type == "short") {
-	 	this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager", invite);
-	      } else {
-		this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager", invite);
-	      }
-	      this.invites[invite.id].invite = invite;
-	    }
-	    this.invites[invite.id].render();
-          });
 
 	}
 
@@ -59,6 +37,28 @@ class InviteManager {
 	  } else {
  	    this.app.browser.addElementToSelectorOrDom(InviteManagerTemplate(this.app, this.mod), this.container);
  	  }
+
+          if (!this.mod.games[this.list]) { this.mod.games[this.list] = {}; }
+          if (!this.invites[this.list]) {
+	    this.invites[this.list] = [];
+	  } else {
+	    for (let i = 0; i < this.invites[this.list].length; i++) {
+	      delete this.invites[this.list][i];
+	    }
+	    this.invites[this.list] = [];
+	  }
+
+console.log("About to render invites...");
+
+	  for (let i = 0; i < this.mod.games[this.list].length; i++) {
+console.log("pushing number: " + (i+1));
+	    this.invites[this.list].push(new Invite(this.app, this.mod, ".invite-manager", this.mod.games[this.list][i]));
+	  }
+
+	  for (let i = 0; i < this.invites[this.list].length; i++) {
+console.log("render invite number: " + (i+1));
+	    this.invites[this.list][i].render();
+	  }
 
 	  this.attachEvents();
 

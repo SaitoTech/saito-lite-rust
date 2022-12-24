@@ -2,7 +2,6 @@ const JSON = require("json-bigint");
 const ArcadeMainTemplate = require("./main.template");
 const ArcadeMenu = require("./menu");
 const ArcadeBanner = require("./banner");
-
 const SaitoSidebar = require('./../../../../lib/saito/ui/saito-sidebar/saito-sidebar');
 
 class ArcadeMain {
@@ -20,6 +19,7 @@ class ArcadeMain {
     this.menu = new ArcadeMenu(this.app, this.mod, ".saito-sidebar.left");
     this.sidebar.addComponent(this.menu);
     this.banner = new ArcadeBanner(this.app, this.mod, ".arcade-central-panel");
+
 
 
     //
