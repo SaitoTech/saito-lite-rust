@@ -318,7 +318,7 @@ class Network {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;
-        this.app.mempool.addBlock(block);
+        await this.app.mempool.addBlock(block);
       } else {
         // if (this.debugging) {
         console.error(
@@ -765,27 +765,35 @@ class Network {
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
-        //if (this.debugging) { console.log("RECEIVED GSTCHAIN 1: " + JSON.stringify(syncobj)); }
+        if (this.debugging) {
+          console.log("RECEIVED GSTCHAIN 1: ", syncobj);
+        }
 
         let previous_block_hash = syncobj.start;
 
         for (let i = 0; i < syncobj.prehash.length; i++) {
           let buf = Buffer.concat([
-            Buffer.from(previous_block_hash, "hex"),
-            Buffer.from(syncobj.prehash[i], "hex"),
+            this.app.binary.hexToSizedArray(previous_block_hash, 32),
+            this.app.binary.hexToSizedArray(syncobj.prehash[i], 32),
           ]);
           let block_hash = this.app.crypto.hash(buf);
 
-          //if (this.debugging) { console.log("block hash as: " + block_hash); }
+          if (this.debugging) {
+            console.log("block hash as: " + block_hash);
+          }
 
           if (parseInt(syncobj.txs[i]) > 0) {
-            //if (this.debugging) { console.log("fetching blcok! " + block_hash); }
+            if (this.debugging) {
+              console.log("fetching block! " + block_hash);
+            }
             await this.fetchBlock(block_hash);
-            //if (this.debugging) { console.log("done fetch block!"); }
+            if (this.debugging) {
+              console.log("done fetch block!");
+            }
           } else {
             // ghost block
             if (this.debugging) {
-              //              console.log("adding ghostchain blcok! " + block_hash);
+              console.log("adding ghostchain block! " + block_hash);
             }
             this.app.blockchain.addGhostToBlockchain(
               BigInt(syncobj.block_ids[i]),
@@ -874,12 +882,12 @@ class Network {
 
         let syncobj = {
           start: "",
-          prehash: [],
-          previous_block_hash: [],
+          prehash: new Array<string>(),
+          previous_block_hash: new Array<string>(),
           block_ids: new Array<bigint>(),
-          block_ts: [],
-          txs: [],
-          gts: [],
+          block_ts: new Array<number>(),
+          txs: new Array<number>(),
+          gts: new Array<boolean>(),
         };
         syncobj.start =
           this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
@@ -906,6 +914,8 @@ class Network {
             }
           }
         }
+
+        console.log("sync obj for gst chain : ", syncobj);
 
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
@@ -1310,8 +1320,10 @@ class Network {
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
         if (this.app.SPVMODE == 1) {
+          console.log("requesting ghost chain from peer : " + peer.id);
           this.sendRequest("REQGSTCN", buffer_to_send, peer);
         } else {
+          console.log("requesting full chain from peer : " + peer.id);
           this.sendRequest("REQCHAIN", buffer_to_send, peer);
         }
         return;
@@ -1320,8 +1332,10 @@ class Network {
 
     if (this.peers.length > 0) {
       if (this.app.SPVMODE == 1) {
+        console.log("requesting ghost chain from first peer");
         this.sendRequest("REQGSTCN", buffer_to_send, this.peers[0]);
       } else {
+        console.log("requesting full chain from first peer");
         this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);
       }
     }

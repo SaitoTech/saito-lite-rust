@@ -58,10 +58,10 @@ class Wuziqi extends GameTemplate {
         });
 
         // Add Chat Features to Menu
-        this.menu.addChatMenu(app, this, this.game.sides);
+        this.menu.addChatMenu(this.game.sides);
         
         // Render menu and attach events
-        this.menu.render(app, this);
+        this.menu.render();
 
         // Initialize our game
         this.game.score = [0, 0];
@@ -76,7 +76,7 @@ class Wuziqi extends GameTemplate {
 
 
         //Player Boxes
-        this.playerbox.render(this.app,this);
+        this.playerbox.render();
         if (this.game.player == 0){
             this.playerbox.addClass("me",1);
             this.playerbox.addClass("notme",2);
@@ -84,7 +84,6 @@ class Wuziqi extends GameTemplate {
             this.playerbox.addClass("me",this.game.player);
             this.playerbox.addClass("notme",3-this.game.player);
         }
-        this.playerbox.attachEvents(this.app);
         this.playerbox.makeDraggable(); //I think we still want to be able to move them
 
         // Render board and set up values.

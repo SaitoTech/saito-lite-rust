@@ -107,13 +107,10 @@ class Chessgame extends GameTemplate {
       },
     });
 
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.menu.addChatMenu(app, this);
-    this.menu.render(app, this);
-
-    this.restoreLog();
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     if (!this.confirm_moves){
       let confirm_btn = document.getElementById("buttons");

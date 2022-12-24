@@ -60,8 +60,8 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   grid-gap: min(5px,0.4vw);
-  min-width: 185px;
-  min-height: 185px;
+  min-width: 225px;
+  min-height: 225px;
   padding: min(10px,1vw);
   background-color: #652A0E99;
   border-radius: 10px; 
@@ -280,6 +280,17 @@ body {
   height: 177px;
 }
 
+.rules-overlay{
+  line-height: 21px;
+}
+
+.rules-overlay ol{
+  color: black;
+  font-size: 15px;
+  margin: 18px;
+
+}
+
 
 
 /*********** WORDBLOCKS STYLE HUD *********/
@@ -307,6 +318,7 @@ body {
   color: rgb(250,244,239);
   padding: 0;
   font-size: 1.6em;
+  font-family: cursive;
 }
 
 .hud-body {
@@ -373,6 +385,7 @@ body {
 }
 
 #rules{
+  display: none;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -391,8 +404,27 @@ body {
   margin-bottom: 3px;
 }
 
-@media screen and (max-width: 1200px){
+@media screen and (max-width: 1260px){
   .invisible_item{
     width: 0;
+  }
+}
+
+@media screen and (max-width:1120px){
+  .jaipur_board{
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width:1100px){
+  .bonus_tokens{
+    padding: max(2px, 0.6vw);
+    grid-gap: max(1px, 0.3vw);
+    min-width: 155px;
+    min-height: 155px;
+  }
+  .token{
+    width: max(50px, 6.3vw);
+    height: max(50px, 6.3vw);
   }
 }

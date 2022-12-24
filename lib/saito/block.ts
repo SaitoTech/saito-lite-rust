@@ -401,8 +401,6 @@ console.log("this is a normal tx: " + z);
       }
     }
 
-    // console.log(`${typeof this.block.id} > ${typeof this.app.blockchain.returnGenesisPeriod()} + ${typeof this.app.blockchain.returnGenesisPeriod()}`);
-
     // calculate automatic transaction rebroadcasts / ATR / atr
 console.log("BLOCK ID IS " + this.block.id);
 console.log("GENESIS PERIOD IS " + this.app.blockchain.returnGenesisPeriod());
