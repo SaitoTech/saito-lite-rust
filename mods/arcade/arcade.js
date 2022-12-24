@@ -58,8 +58,6 @@ class Arcade extends ModTemplate {
       this.game_mods.push(game_mod);
     });
 
-console.log("BEFORE WIZARD 0");
-
     //
     // game wizard
     //
@@ -68,10 +66,8 @@ console.log("BEFORE WIZARD 0");
     //
     // my games
     //
-console.log("BEFORE WIZARD 1");
     for (let game of this.app.options.games) {
       if (game.over == 0 && (game.players_set != 1 || game.players.includes(this.app.wallet.returnPublicKey()) || game.accepted.includes(this.app.wallet.returnPublicKey()))) {
-console.log("BEFORE WIZARD 1 - 2");
 
         let game_tx = new saito.default.transaction();
         if (game.over) { if (game.last_block > 0) { return; } }
@@ -100,11 +96,9 @@ console.log("BEFORE WIZARD 1 - 2");
 	//
 	// and add to list of my games
 	//
-console.log("BEFORE WIZARD 2");
         this.addGame(game_tx, "mine");
       }
     }
-console.log("BEFORE WIZARD 3");
   }
 
   //
@@ -238,7 +232,6 @@ console.log("BEFORE WIZARD 3");
     }
 
     if (this.renderIntos[qs] != null && this.renderIntos[qs].length > 0) {
-       console.log(this.renderIntos);   
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
 
@@ -340,12 +333,10 @@ console.log("BEFORE WIZARD 3");
 
 
 
-console.log("HERE WE ARE!");
         //
         // public invites
         //
         if (txmsg.module === "Arcade" && txmsg.request == "open") {
-console.log("RECEIVE OPEN TRANSACTION!");
           arcade_self.receiveOpenTransaction(tx, blk);
         }
 
@@ -600,12 +591,14 @@ console.log("RECEIVE OPEN TRANSACTION!");
   }
   async receiveOpenTransaction(tx, blk=null) {
 
-console.log("receive open transaction...");
-
     //
     // add to games list
     //
-    this.addGame(tx, "open");
+    if (this.isMyGame(tx)) {
+      this.addGame(tx, "mine");
+    } else {
+      this.addGame(tx, "open");
+    }
     this.app.connection.emit("arcade-invite-manager-render-request");
 
     //
@@ -1042,8 +1035,6 @@ alert("GAME SHOULD START, BUT WE HAVEN'T CODED THAT YET");
   //
   async launchGame(game_id) {
 
-    if (this.debug) { console.log("ALREADY SHOWING LOADER? " + this.viewing_arcade_initialization_page); }
-
     if (!game_id && !this.viewing_arcade_initialization_page){
       if (this.browser_active){
         let gameLoader = new GameLoader(this.app, this);
@@ -1249,9 +1240,17 @@ alert("GAME SHOULD START, BUT WE HAVEN'T CODED THAT YET");
   //
   addGame(tx, list="open") {
     let valid_game = this.validateGame(tx);
+    let game_exists = false;
     if (valid_game) {
       if (!this.games[list]) { this.games[list] = []; }
-      this.games[list].push(tx);
+      for (let i = 0; i < this.games[list].length; i++) {
+        if (this.games[list][i].transaction.sig === tx.transaction.sig) {
+	  game_exists = true;
+	}
+      }
+      if (game_exists == false) {
+        this.games[list].push(tx);
+      }
     }
   }
   addGames(txs, list="open") {

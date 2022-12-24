@@ -87,11 +87,11 @@ class ArcadeMain {
 
     this.sidebar.render();
 
-    if (Math.random() < 0.5) {
-      this.banner.render();
-    } else {
+//    if (Math.random() < 0.5) {
+//      this.banner.render();
+//    } else {
       this.app.modules.renderInto(".arcade-invites-box");
-    }
+//    }
 
 
     //
