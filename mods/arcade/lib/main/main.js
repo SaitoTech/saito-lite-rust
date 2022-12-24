@@ -50,11 +50,11 @@ class ArcadeMain {
           let ready_to_go = 1;
       
           if (this.app.wallet.wallet.pending.length > 0) {
-            for (let i = 0; i < arcade_self.app.wallet.wallet.pending.length; i++) {
-              let thistx = new saito.transaction(JSON.parse(arcade_self.app.wallet.wallet.pending[i]));
+            for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
+              let thistx = new saito.transaction(JSON.parse(this.app.wallet.wallet.pending[i]));
               let thistxmsg = thistx.returnMessage();
-              if (thistxmsg.module == arcade_self.app.options.games[game_idx].module) {
-                if (thistxmsg.game_id == arcade_self.app.options.games[game_idx].id) {
+              if (thistxmsg.module == this.app.options.games[game_idx].module) {
+                if (thistxmsg.game_id == this.app.options.games[game_idx].id) {
                   ready_to_go = 0;
                 }
               }
@@ -66,7 +66,7 @@ class ArcadeMain {
             return;
           }
 
-          clearInterval(arcade_self.initialization_timer);
+          clearInterval(this.mod.initialization_timer);
 
         }
       }, 1000);
@@ -99,51 +99,11 @@ class ArcadeMain {
     //
     this.app.modules.renderInto(".arcade-leagues");
 
-
-/*****
-    //Check hash for game page
-    var hash = window.location.hash;
-    if (hash){
-      hash = hash.substring(1).toLowerCase();
-      mod.viewing_game_homepage = hash[0].toUpperCase() + hash.substring(1);
-    }else{
-      mod.viewing_game_homepage = "Arcade";
-    }
-
-
-    this.sidebar.render(app, mod);
-
-    this.banner.render(app, mod);
-
-    if (app.modules.returnModule("League")){
-      if (!this.leaderboard){
-        this.leaderboard = new ArcadeLeaderboard(app, mod);
-      }
-      this.leaderboard.render(app, mod);
-
-      if (!this.userLeagues){
-        this.userLeagues = new ArcadeLeague(app, mod);
-      }
-      this.userLeagues.render(app, mod);
-    }
-
-    //
-    // add games
-    //
-    this.renderArcadeTab(app, mod);
-
-    let game_filter = (mod.viewing_game_homepage == mod.name) ? "" : mod.viewing_game_homepage;
-    app.connection.emit("observer-render-arcade-tabs", {selector: "observer-live-hero", game_filter, live_games: true});
-    app.connection.emit("observer-render-arcade-tabs", {selector: "observer-review-hero", game_filter, live_games: false});
-
-*****/
-
   }
 
 
 
   attachEvents() {
-
 
 /****    
     //

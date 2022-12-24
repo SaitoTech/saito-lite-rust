@@ -8,12 +8,12 @@ const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito
 class GameWizard {
 
   constructor(app, mod, game_mod = null, invite_obj = {}) {
+
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app);
     this.obj = invite_obj;
-    gamewizard_self = this;
 
     app.connection.on("arcade-launch-game-wizard", (invite_obj)=>{
 
@@ -21,14 +21,13 @@ class GameWizard {
       
       if (invite_obj.game){
 
-        let game_mod = gamewizard_self.app.modules.returnModule(invite_obj.game);
+        let game_mod = this.app.modules.returnModule(invite_obj.game);
         
         if (game_mod) {
           
-          gamewizard_self.game_mod = game_mod;
-          gamewizard_self.obj = invite_obj;
-
-          gamewizard_self.render(app, arcade_self);
+          this.game_mod = game_mod;
+          this.obj = invite_obj;
+          this.render(this.app, this.mod);
         } else {
           salert("Module not found: " + game_mod);
         }
