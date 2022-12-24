@@ -35,7 +35,7 @@ class LeagueMain {
 
     if (filter1.length > 0){
       filter1.forEach((game) => {
-        LeagueComponentExistingLeague.render(this.app, mod, game, "leagues-for-admin");
+        LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-admin");
       });
     }else{
       if (document.getElementById("leagues-for-admin") != null)
@@ -44,7 +44,7 @@ class LeagueMain {
 
     if (filter2.length > 0){
       filter2.forEach((game) => {
-        LeagueComponentExistingLeague.render(this.app, mod, game, "leagues-for-play");
+        LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-play");
       });
     }else{
       if (document.getElementById("leagues-for-play") != null)
@@ -53,7 +53,7 @@ class LeagueMain {
 
     if (filter3.length > 0){
       filter3.forEach((game) => {
-        LeagueComponentExistingLeague.render(this.app, mod, game, "leagues-for-join");
+        LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-join");
       });
     }else{
       if (document.getElementById("leagues-for-join") != null)
