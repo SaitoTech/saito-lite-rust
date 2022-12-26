@@ -3836,6 +3836,10 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
   returnDiplomaticDeck() {
 
+console.log("RDD: ");
+console.log("RDD: ");
+console.log("RDD: ");
+
     let deck = {};
 
     deck['201'] = { 
@@ -4008,6 +4012,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
 alert("Corsair Raid");
+        return 1;
       },
     }
     deck['204'] = { 
@@ -4475,6 +4480,9 @@ alert("Not Implemented");
     }
 
     for (let key in deck) {
+console.log(".......");
+console.log("....... " + key);
+console.log(".......");
       deck[key] = this.addEvents(deck[key]);
     }
 

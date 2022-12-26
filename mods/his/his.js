@@ -5785,6 +5785,10 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
   returnDiplomaticDeck() {
 
+console.log("RDD: ");
+console.log("RDD: ");
+console.log("RDD: ");
+
     let deck = {};
 
     deck['201'] = { 
@@ -5957,6 +5961,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(his_self, faction) {
 alert("Corsair Raid");
+        return 1;
       },
     }
     deck['204'] = { 
@@ -6424,6 +6429,9 @@ alert("Not Implemented");
     }
 
     for (let key in deck) {
+console.log(".......");
+console.log("....... " + key);
+console.log(".......");
       deck[key] = this.addEvents(deck[key]);
     }
 
@@ -10536,13 +10544,13 @@ alert("NOT IMPLEMENTED");
     // 1 = fall through, 0 = halt game
     //
     if (obj.onEvent == null) {
-      obj.onEvent = function(his_self, player) { return 1; }
+      obj.onEvent = function(his_self, player) { return 1; } // 1 means fall-through / no-stop
     }
     if (obj.canEvent == null) {
       obj.canEvent = function(his_self, faction) { return 0; } // 0 means cannot event
     }
     if (obj.handleGameLoop == null) {
-      obj.handleGameLoop = function(his_self, qe, mv) { return 1; }
+      obj.handleGameLoop = function(his_self, qe, mv) { return 1; } // 1 means fall-through / no-stop
     }
 
 
@@ -10610,7 +10618,6 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("diplomacy_phase");
 
-this.game.queue.push("is_testing");
 
 	  //
 	  // start the game with the Protestant Reformation
@@ -14422,13 +14429,10 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
 	  //
-//
-// HACK should only happen after 2nd round
-//
-//	  if (this.game.state.round > 1) {
+	  if (this.game.state.round > 1) {
     	    this.game.queue.push("play_diplomacy_card\tpapacy");
     	    this.game.queue.push("play_diplomacy_card\tprotestant");
-//	  }
+	  }
 
 	  //
 	  // 2-player game? Diplomacy Deck
@@ -18663,6 +18667,9 @@ return;
 
 
 
+
+
+
   displayDebaters() {
 
     let html = `<div class="personage_overlay" id="personage_overlay">`;
@@ -19726,7 +19733,6 @@ return;
     // add tiles
     //
     for (let key in this.game.navalspaces) {
-console.log("nk: " + key);
       if (this.game.navalspaces[key]) {
 	this.displayNavalSpace(key);
         document.getElementById(key).onclick = (e) => {
@@ -19756,22 +19762,13 @@ console.log("nk: " + key);
 
   displayVictoryTrack() {
 
-console.log("!!!!!!!!!!!!!!!!!!!!");
-console.log("!!!!! VP TRACK !!!!!");
-console.log("!!!!!!!!!!!!!!!!!!!!");
-
     let factions_and_scores = this.calculateVictoryPoints();
-
-console.log(JSON.stringify(factions_and_scores));
 
     let x = this.returnVictoryPointTrack();
 
     for (f in factions_and_scores) {
       let total_vp = factions_and_scores[f].vp;
-console.log("total VP: " + total_vp);
-
       let ftile = f + "_vp_tile";
-console.log("for ftile: " + ftile);
       obj = document.getElementById(ftile);
       obj.style.left = x[total_vp.toString()].left + "px";
       obj.style.top = x[total_vp.toString()].top + "px";
@@ -19779,6 +19776,52 @@ console.log("for ftile: " + ftile);
     }
 
   }
+
+
+
+  returnCardImage(cardname) {
+
+    let cardclass = "cardimg";
+    let deckidx = -1;
+    let card;
+
+    for (let i = 0; i < this.game.deck.length; i++) {
+      var c = this.game.deck[i].cards[cardname];
+      if (c == undefined) { c = this.game.deck[i].discards[cardname]; }
+      if (c == undefined) { c = this.game.deck[i].removed[cardname]; }
+      if (c !== undefined) { 
+	deckidx = i;
+        card = c;
+      }
+    }
+
+    if (deckidx === -1) {
+      //
+      // this is not a card, it is something like "skip turn" or cancel
+      //
+      return `<div class="noncard" id="${cardname.replaceAll(" ","")}">${cardname}</div>`;
+    }
+
+    var html = `<img class="${cardclass}" src="/his/img/${card.img}" />`;
+
+    //
+    // add cancel button to uneventable cards
+    //
+    if (deckidx == 0) { 
+      if (!this.deck[cardname].canEvent(this, "")) {
+        html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+      }
+    }
+    if (deckidx == 1) { 
+      if (!this.diplomatic_deck[cardname].canEvent(this, "")) {
+        html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+      }
+    }
+
+    return html
+
+  }
+
 
 
 

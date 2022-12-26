@@ -41,7 +41,6 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("diplomacy_phase");
 
-this.game.queue.push("is_testing");
 
 	  //
 	  // start the game with the Protestant Reformation
@@ -3853,13 +3852,10 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  // 2-player game? both players play a diplomacy card
 	  // AFTER they have been dealt on every turn after T1
 	  //
-//
-// HACK should only happen after 2nd round
-//
-//	  if (this.game.state.round > 1) {
+	  if (this.game.state.round > 1) {
     	    this.game.queue.push("play_diplomacy_card\tpapacy");
     	    this.game.queue.push("play_diplomacy_card\tprotestant");
-//	  }
+	  }
 
 	  //
 	  // 2-player game? Diplomacy Deck

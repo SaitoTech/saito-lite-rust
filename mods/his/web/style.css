@@ -3,6 +3,18 @@ img {
   width: unset;
 }
 
+
+.cancel_x {
+  opacity: 0.3;
+}
+.cardimg {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  top: 0px;
+  left: 0px;
+}
+
 .revolt_in_egypt {
     background-color: transparent;
     width: 350px;
