@@ -24,7 +24,7 @@ class Observer extends ModTemplate {
     this.step_speed = 2000;
     this.is_paused = true;
 
-    this.debug = false;
+    this.debug = true;
     this.controls = null;
   }
 
@@ -200,9 +200,6 @@ class Observer extends ModTemplate {
   onPeerHandshakeComplete(app, peer) {
     if (!app.BROWSER) { return; }
     
-    // fetch any usernames needed
-    // app.browser.addIdentifiersToDom();
-
     // load observer games (active)
     this.sendPeerDatabaseRequestWithFilter(
       "Observer", 
@@ -350,7 +347,7 @@ class Observer extends ModTemplate {
   
     msg.latest_move = msg.ts;
     this.games.push(msg);
-    
+    console.log(JSON.stringify(this.games));
     this.app.connection.emit("observer-add-game-render-request",this.games);
     
   }
@@ -811,11 +808,11 @@ class Observer extends ModTemplate {
 
         games = games.concat(more_games);
         if (games.length > 0) {
-          res.write(JSON.stringify(games));
+          res.send(JSON.stringify(games));
         } else {
-          res.write("{}");
+          res.send("{}");
         }
-        res.end();
+        //res.end();
         return;
     
       });
@@ -840,11 +837,11 @@ class Observer extends ModTemplate {
         res.charset = "UTF-8";
 
 	      if (games.length > 0) {
-          res.write(JSON.stringify(games));
+          res.send(JSON.stringify(games));
         } else {
-          res.write("{}");
+          res.send("{}");
         }
-        res.end();
+        //res.end();
         return;
       });
 

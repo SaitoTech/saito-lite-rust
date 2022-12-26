@@ -88,7 +88,7 @@ class Monarchy extends GameTemplate {
         }
       });
     }
-    this.menu.render(this.app, this);
+    this.menu.render();
 
     console.log(JSON.parse(JSON.stringify(this.game.state.decks)));
   }
@@ -113,21 +113,16 @@ class Monarchy extends GameTemplate {
       }
     });
 
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.menu.addChatMenu(app, this);
+    this.log.render();
 
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
-
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
-
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
     this.cardbox.makeDraggable();
 
-    this.sizer.render(this.app, this);
-    this.sizer.attachEvents(this.app, this, ".cardstacks");
+    this.sizer.render();
+    this.sizer.attachEvents(".cardstacks");
 
     //
     // add card events -- text shown and callback run if there
@@ -149,11 +144,8 @@ class Monarchy extends GameTemplate {
     }
 
     
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
-    this.scoreboard.render(app, this);
-    this.scoreboard.attachEvents(app, this);
 }
 
 
@@ -163,7 +155,6 @@ class Monarchy extends GameTemplate {
 initializeGame(game_id) {
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
-  this.restoreLog();
 
   this.deck = this.returnCards();
 

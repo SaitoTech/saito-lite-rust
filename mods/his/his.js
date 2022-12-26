@@ -63,7 +63,6 @@ class HereIStand extends GameTemplate {
     // re-fill status and log
     //
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.restoreLog();
 
     //
     // initialize game objects
@@ -1804,16 +1803,12 @@ console.log("adding stuff!");
       }
     });
 
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.menu.addChatMenu(app, this);
+    this.log.render();
 
-    this.menu.render(app, this);
-
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
-
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
 
     //
     // add card events -- text shown and callback run if there
@@ -1902,8 +1897,8 @@ console.log("adding stuff!");
         this.hammer.attachEvents(this.app, this, '.gameboard');
       } else {
 	let his_self = this;
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render();
+        this.sizer.attachEvents('.gameboard');
         $('#gameboard').draggable({
 	  stop : function(event, ui) {
 	    his_self.saveGamePreference((his_self.returnSlug()+"-board-offset"), ui.offset);
@@ -1913,8 +1908,7 @@ console.log("adding stuff!");
 
     } catch (err) {}
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     this.displayBoard();
 

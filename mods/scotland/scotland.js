@@ -176,16 +176,12 @@ class Scotland extends GameTemplate {
       }
     });
 
-    this.menu.addChatMenu(app, this);
-    
-    this.menu.render(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
-
+    this.hud.render();
 
     let hh = document.querySelector(".hud-header");
     if (!hh.querySelector(".handy-help")){
@@ -210,8 +206,8 @@ class Scotland extends GameTemplate {
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, ".gameboard");
       } else {
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, ".gameboard");
+        this.sizer.render();
+        this.sizer.attachEvents(".gameboard");
       }
     } catch (err) {}
   }
@@ -251,8 +247,6 @@ class Scotland extends GameTemplate {
     }
 
     console.log(JSON.parse(JSON.stringify(this.game.state)));
-
-    this.restoreLog();
 
     if (!this.browser_active) {
       this.saveGame(this.game.id)

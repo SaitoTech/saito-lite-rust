@@ -71,23 +71,16 @@ class Jaipur extends GameTemplate {
       }
     });
 
+    this.menu.addChatMenu();
+    this.menu.render();
 
+    this.log.render();
 
-    this.menu.addChatMenu(app, this);
-
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
-
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
-
-    this.playerbox.render(app, this);
-    this.playerbox.attachEvents(app, this);
+    this.playerbox.render();
     this.playerbox.addClassAll("poker-seat-",true);
     
     this.hud.card_width = 120;
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this); //Enable dragging
+    this.hud.render();
 
 }
 
@@ -98,7 +91,6 @@ class Jaipur extends GameTemplate {
 initializeGame(game_id) {
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
-  this.restoreLog();
 
   //
   // initialize

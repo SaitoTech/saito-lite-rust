@@ -109,7 +109,7 @@ game-overlay-cardlist-button {
   background: #222b;
   color: #fff;
   padding: min(5vh,5vw);
-  min-width: min(400px,85vw);
+  min-width: min(500px,85vw);
   max-width: 95vw;
   overflow-y: auto;
 }

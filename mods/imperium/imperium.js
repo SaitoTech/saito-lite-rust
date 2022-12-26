@@ -78,11 +78,9 @@ class Imperium extends GameTemplate {
   //
   initializeGameObjects() {
 
-    this.hud.render(this.app, this);
-    this.hud.attachEvents(this.app, this);
+    this.hud.render();
 
-    this.log.render(this.app, this);
-    this.log.attachEvents(this.app, this);
+    this.log.render();
 
 
     this.importTech("antimass-deflectors", {
@@ -11889,7 +11887,7 @@ console.log("qe: " + qe);
         fullname.push(imperium_self.returnFaction((ii+1)));
         nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
-      this.menu.addChatMenu(app, this, nickname, fullname);
+      this.menu.addChatMenu(nickname, fullname);
     } catch (err) {
       console.log("error initing chat: " + err);
     }
@@ -11900,20 +11898,15 @@ console.log("qe: " + qe);
     if (this.browser_active == 0) { return; }
 
 
-    this.menu.render(app, this);
+    this.menu.render();
 
     this.hud.auto_sizing = 0;
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
-
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.cardbox.render();
 
     try {
 
@@ -11924,8 +11917,8 @@ console.log("qe: " + qe);
 
       } else {
 
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '#hexGrid'); // gameboard is hexgrid
+        this.sizer.render();
+        this.sizer.attachEvents('#hexGrid'); // gameboard is hexgrid
 
       }
     } catch (err) {}
@@ -11951,8 +11944,7 @@ console.log("qe: " + qe);
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.restoreLog();
-  
+
     //
     // specify players
     //

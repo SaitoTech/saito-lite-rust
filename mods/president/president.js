@@ -65,7 +65,7 @@ class President extends GameTemplate {
     //
     // add card events -- text shown and callback run if there
     //
-    this.hud.render(app, this);
+    this.hud.render();
 
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);

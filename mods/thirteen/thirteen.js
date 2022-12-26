@@ -59,8 +59,7 @@ class Thirteen extends GameTemplate {
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
@@ -85,17 +84,15 @@ class Thirteen extends GameTemplate {
       }
     });
 
-    this.menu.addChatMenu(app, this);
+    this.menu.addChatMenu();
 
-    this.menu.render(app, this);
+    this.menu.render();
  
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     this.attachCardboxEvents(function(){});
     
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
-
+    this.hud.render();
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -103,8 +100,8 @@ class Thirteen extends GameTemplate {
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, '.gameboard');
       } else {
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render();
+        this.sizer.attachEvents('.gameboard');
       }
     } catch (err) {}
 
