@@ -6429,9 +6429,6 @@ alert("Not Implemented");
     }
 
     for (let key in deck) {
-console.log(".......");
-console.log("....... " + key);
-console.log(".......");
       deck[key] = this.addEvents(deck[key]);
     }
 
@@ -14532,13 +14529,14 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
 
-
 	  //
 	  // new cards this turn
 	  //
 	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
 
-console.log("CARDS IN DECK: ");
+console.log("==============");
+console.log("CARDS IN DECK:");
+console.log("==============");
 for (let key in new_cards) {
   console.log(key);
 }
@@ -14565,7 +14563,10 @@ console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
 
 
-	  let deck_to_deal = this.returnDeck()
+//
+//
+//
+	  let deck_to_deal = new_cards;
 	  delete deck_to_deal['001'];
 	  delete deck_to_deal['002'];
 	  delete deck_to_deal['003'];
@@ -15494,6 +15495,7 @@ this.updateLog("Catholics: " + c_rolls);
   //
   playerAssignHits(faction, spacekey, hits_to_assign, naval_hits_acceptable=0) {
 
+    let his_self = this;
     let space = spacekey;
     try { if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; } } catch (err) {}
 
@@ -15557,6 +15559,7 @@ this.updateLog("Catholics: " + c_rolls);
   //
   playerAssignNavalHits(faction, hits_to_assign, spacekey) {
 
+    let his_self = this;
     let space;
 
     if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
@@ -15760,9 +15763,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 	  }
 	  his_self.endTurn();
 	  return;
-
 	}
-
       });
     }
 
@@ -15952,6 +15953,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
   playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
 
+    let his_self = this;
     let factions = this.returnImpulseOrder();
     let f = [];
 
@@ -16101,7 +16103,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
     this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
-    this.attachCardboxEvents(function(card) {
+    this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
 
@@ -16205,7 +16207,6 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     // mandatory event cards effect first, then 2 OPS
     //
     if (this.deck[card].type === "mandatory") {
-      // event before ops
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
@@ -16213,7 +16214,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
       let html = `<ul>`;
       html    += `<li class="card" id="ops">play for ops</li>`;
-      if (this.deck[card].canEvent(his_self, faction)) {
+      if (this.deck[card].canEvent(this, faction)) {
         html    += `<li class="card" id="event">play for event</li>`;
       }
       html    += `</ul>`;
@@ -16222,7 +16223,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       this.bindBackButtonFunction(() => {
         this.playerTurn(faction);
       });
-      this.attachCardboxEvents(function(user_choice) {
+      this.attachCardboxEvents((user_choice) => {
         if (user_choice === "ops") {
           let ops = this.game.deck[0].cards[card].ops;
           this.playerPlayOps(card, faction, ops);
@@ -16238,6 +16239,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
   }
 
   async playerPlayOps(card, faction, ops=null) {
+
+alert("ppo");
 
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);

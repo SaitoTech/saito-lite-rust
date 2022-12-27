@@ -3955,13 +3955,14 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
 
-
 	  //
 	  // new cards this turn
 	  //
 	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
 
-console.log("CARDS IN DECK: ");
+console.log("==============");
+console.log("CARDS IN DECK:");
+console.log("==============");
 for (let key in new_cards) {
   console.log(key);
 }
@@ -3988,7 +3989,10 @@ console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
 
 
-	  let deck_to_deal = this.returnDeck()
+//
+//
+//
+	  let deck_to_deal = new_cards;
 	  delete deck_to_deal['001'];
 	  delete deck_to_deal['002'];
 	  delete deck_to_deal['003'];

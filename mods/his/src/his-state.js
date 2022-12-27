@@ -4480,9 +4480,6 @@ alert("Not Implemented");
     }
 
     for (let key in deck) {
-console.log(".......");
-console.log("....... " + key);
-console.log(".......");
       deck[key] = this.addEvents(deck[key]);
     }
 
