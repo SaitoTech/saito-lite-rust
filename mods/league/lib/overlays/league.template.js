@@ -10,7 +10,7 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
     return `
     <div class="league-overlay">
     <div class="league-overlay-header">
-        <div class="league-overlay-header-image">
+        <div class="league-overlay-header-image" style="background-image: url('/${game_mod.returnSlug()}/img/arcade/arcade.jpg')">
         </div>
         <div class="league-overlay-header-title-box">
             <div class="league-overlay-header-title-box-title">${league_name}</div>
