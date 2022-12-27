@@ -6,7 +6,8 @@ module.exports = (app, mod, tx=null) => {
     if (!txmsg.type) { txmsg.type = "standard"; }
     if (!txmsg.name) { 
       let game_mod = app.modules.returnModule(txmsg.game);
-      txmsg.name = game_mod.returnName();
+console.log("GAME MOD: " + txmsg.game);
+      if (game_mod) { txmsg.name = game_mod.returnName(); }
     }
 
     let html = `

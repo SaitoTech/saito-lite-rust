@@ -27,10 +27,7 @@ class Arcade extends ModTemplate {
     this.icon_fa = "fas fa-gamepad";
     this.ui_initialized = false;
 
-    this.styles = [	'/arcade/style.css', 
-			'/arcade/css/arcade-join-game-overlay.css',
-			'/arcade/css/arcade-invites.css',
-			'/arcade/css/arcade-wizard.css'];
+    this.styles = ['/arcade/style.css'];
 
     this.affix_callbacks_to = [];
     this.old_game_removal_delay = 2000000;
@@ -215,19 +212,23 @@ class Arcade extends ModTemplate {
 
     if (qs == ".redsquare-sidebar") {
       if (!this.renderIntos[qs]) {
+        this.styles = ['/arcade/css/arcade-overlays.css','/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
         let obj = new InviteManager(this.app, this, ".saito-sidebar.right");
         obj.type = "short";
         this.renderIntos[qs].push(obj);
+	this.attachStyleSheets();
       }
     }
 
     if (qs == ".arcade-invites-box") {
       if (!this.renderIntos[qs]) {
+        this.styles = ['/arcade/css/arcade-overlays.css','/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
         let obj = new InviteManager(this.app, this, ".arcade-invites-box");
         obj.type = "long";
         this.renderIntos[qs].push(obj);
+	this.attachStyleSheets();
       }
     }
 

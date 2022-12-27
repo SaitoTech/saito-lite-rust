@@ -22,10 +22,23 @@
   font-size: 4rem;
 }
 
+.arcade-game-overlay-header-title-box-desc {
+  font-size: 2rem;
+}
+
+.arcade-game-desc {
+    margin-top: -1rem;
+    font-size: 2rem;
+    font-style: italic;
+    color: var(--saito-font-color);
+    grid-column: 1 / 2 span;
+}
+
 .arcade-game-overlay-body {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  column-gap: 1rem;
   row-gap: 1rem;
+  grid-template-columns: 2fr minmax(min-content, 1fr);
 }
 
 .arcade-game-overlay .saito-table-row {

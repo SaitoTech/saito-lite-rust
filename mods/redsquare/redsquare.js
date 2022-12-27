@@ -1,4 +1,5 @@
 const saito = require("./../../lib/saito/saito");
+const RedSquareIndex = require("./lib/index");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoMain = require("./lib/main");
@@ -966,12 +967,11 @@ console.log("SERVER: GENERATE TWEET PROPERTIES 4");
 
 
 
-
+/*****
   webServer(app, expressapp, express) {
-    //super.webServer(app, expressapp, express);
+
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
     let fs = app?.storage?.returnFileSystem();
-
     let redsquare_self = this;
 
     expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
@@ -1083,7 +1083,7 @@ console.log("SERVER: GENERATE TWEET PROPERTIES 4");
 
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(redsquareHome(app, redsquare_self));
+      res.send(RedSquareIndex(app, redsquare_self));
       //res.end();
       return;
 
@@ -1091,6 +1091,7 @@ console.log("SERVER: GENERATE TWEET PROPERTIES 4");
 
     expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
   }
+****/
 
 }
 

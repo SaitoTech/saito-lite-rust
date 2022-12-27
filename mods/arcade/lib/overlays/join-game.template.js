@@ -11,6 +11,9 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  </div>
   </div>
   <div class="arcade-game-overlay-body">
+	  <div class="arcade-game-desc">
+Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War. One player plays the United States (US), and the other plays the Soviet Union (USSR).
+	  </div>
 	  <div class="arcade-game-players">
 		  <h5>Player</h5>
 		  <div class="saito-table">
