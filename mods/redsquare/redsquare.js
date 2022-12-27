@@ -8,6 +8,7 @@ const Tweet = require("./lib/tweet");
 const fetch = require('node-fetch');
 const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
+const redsquareHome = require("./index");
 
 class RedSquare extends ModTemplate {
 
