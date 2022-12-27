@@ -46,13 +46,14 @@ class League extends ModTemplate {
     //
     // create initial leagues
     //
-    // this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
-    //   this.addLeague(
-    //   	app.crypto.hash(mod.returnName()) ,	// id
-    //   	mod.returnName() , 			// name
-    //   	0 					// rank
-    //   );
-    // });
+    this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
+console.log("ADD LEAGUE: " + mod.returnName()); 
+       this.addLeague({
+        	id   : app.crypto.hash(mod.returnName()) ,	// id
+    	   	name : mod.returnName() , 			// name
+    	 	rank : 0 					// rank
+       });
+    });
     league_self = this;
     app.connection.on("league-update", ()=>{
       if (this.browser_active){
@@ -162,40 +163,29 @@ class League extends ModTemplate {
   //   games 	: [games_array] ,
   // }
   //
-  addLeague(tx) {
-    // let league_idx = -1;
-    // for (let i = 0; i < this.leagues.length; i++) {
-    //   if (this.leagues[i].id === league_id) {
-    //   	league_idx = i;
-    //   	break;
-    //   }
-    // }
-    // if (league_idx == -1) {
-    //   this.leagues.push({
-    //   	id	:	league_id ,
-    //   	name	:	name ,
-    //   	rank	:	rank ,
-    //   	players :	[] ,
-    //   	games	:	[] ,
-    //   });
-    // } else {
-    //   this.app.connection.emit("league-add-league", (this.leagues[league_idx]));
-    // }
+  addLeague(obj) {
 
-    let txmsg = tx.returnMessage();
-    let lobj = txmsg.league;
-    lobj.id = tx.transaction.sig;
+    //
+    // default values
+    //
+    if (!obj) { return; }
+    if (!obj.name) { obj.name = "Unknown"; }
+    if (!obj.rank) { obj.rank = 0; }
+    if (!obj.players) { obj.players = []; }
+    if (!obj.games) { obj.games = []; }
 
-    this.updateLeague(lobj);
-    let newLeague = true;
-
-    for (let i = 0; i < this.leagues.length; i++){
-      if (lobj.id == this.leagues[i].id){
-        newLeague = false;
+    let league_idx = -1;
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].id === obj.id) {
+       	league_idx = i;
+       	break;
       }
     }
-     if (newLeague){
-      this.leagues.push(lobj);
+
+    if (league_idx == -1) {
+      this.leagues.push(obj);
+      league_idx = this.leagues.length-1;
+      this.app.connection.emit("league-add-league", (this.leagues[league_idx]));
     }
 
   }
@@ -255,13 +245,7 @@ class League extends ModTemplate {
       //}
 
         if (txmsg.request === "create league") {
-          //Perform db ops
           this.receiveCreateLeagueTransaction(blk, tx, conf, app);
-          //Update saito-lite, refresh UI
-          if (app.BROWSER){
-            console.log("Receive League Create Request");
-            this.addLeague(tx);
-          }
         }
 
         if (txmsg.request === "join league") {
@@ -343,27 +327,32 @@ class League extends ModTemplate {
 
     this.app.network.propagateTransaction(newtx);
 
-    //Short circuit transaction to immediately process
-    this.addLeague(newtx);
+    //
+    // and immediately process !
+    //
+    this.addLeague(tx.msg);
   }
 
 
   async receiveCreateLeagueTransaction(blk, tx, conf, app) {
-    if (this.app.BROWSER) { return; }
 
+    //
+    // extract league from tx
+    //
     let league = Object.assign({id: tx.transaction.sig}, tx.returnMessage().league);
-    let params = {};
-    for (let i in league){
-      params[`$${i}`] = league[i];
-    }
-    //console.log(league);
-    //console.log(params);
+
+    //
+    // add league
+    //
+    this.addLeague(league);
 
     let sql = `INSERT INTO leagues (id, game, type, admin, name, description, ranking, starting_score, max_players, options, startdate, enddate, allowlate)
                         VALUES ($id, $game, $type, $admin, $name, $description, $ranking, $starting_score, $max_players, $options, $startdate, $enddate, $allowlate)`;
-
+    let params = {};
+    for (let i in league){ params[`$${i}`] = league[i]; }
     await app.storage.executeDatabase(sql, params, "league");
     return;
+
   }
 
 
