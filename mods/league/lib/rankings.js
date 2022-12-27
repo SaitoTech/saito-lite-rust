@@ -36,7 +36,6 @@ class LeagueRankings {
       let cnt = 0;
       leagues.forEach(l => {
 
-        console.log(l);
         if (l.rank > 0) {
           html += `
 	    <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
@@ -47,7 +46,6 @@ class LeagueRankings {
         }
       });
       leagues.forEach(l => {
-        console.log(l);
         if (l.rank <= 0) {
           html += `
 	    <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
@@ -69,6 +67,12 @@ class LeagueRankings {
     document.querySelectorAll(".league-leaderboard-ranking").forEach((el) => {
       el.onclick = (e) => {
 	let lid = e.currentTarget.getAttribute("data-id");
+	for (let i = 0; i < this.mod.leagues.length; i++) {
+	  if (this.mod.leagues[i].id === lid) {
+	    this.mod.league_idx = i;
+alert("SETTING LEAGUE IDX TO: " + this.mod.league_idx);
+	  }
+        }
 	this.overlay.render();
       }
     });

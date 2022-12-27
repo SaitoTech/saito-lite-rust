@@ -371,6 +371,16 @@ class Mods {
     return null;
   }
 
+  // checks against full name (with spaces too)
+  returnModuleByName(modname) {
+    for (let i = 0; i < this.mods.length; i++) {
+      if (modname === this.mods[i] || modname === this.mods[i].returnName()) {
+        return this.mods[i];
+      }
+    }
+    return null;
+  }
+
   returnModule(modname) {
     for (let i = 0; i < this.mods.length; i++) {
       if (modname === this.mods[i].name) {

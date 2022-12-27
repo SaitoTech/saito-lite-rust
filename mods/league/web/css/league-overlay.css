@@ -28,6 +28,11 @@
 .league-overlay-create-game-button {
   min-width: 20rem;
   max-width: 25rem;
+  height: 7rem;
+  padding-top: 2.2rem;
+  font-size: 2.1rem;
+  padding-left: 4rem;
+  padding-right: 4rem;
 }
 
 .league-overlay-body {

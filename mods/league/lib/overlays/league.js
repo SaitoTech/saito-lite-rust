@@ -12,7 +12,13 @@ class LeagueOverlay {
   }
 
   render() {
-    this.overlay.show(LeagueOverlayTemplate())
+
+    let league = this.mod.leagues[this.mod.league_idx];
+    let game_mod = this.app.modules.returnModuleByName(league.name);
+
+    this.overlay.show(LeagueOverlayTemplate(this.app, this.mod));
+    alert(`TEST: /${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
+    this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
     this.leaderboard.render();
     this.attachEvents();
   }

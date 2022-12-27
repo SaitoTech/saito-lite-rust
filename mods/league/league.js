@@ -22,6 +22,7 @@ class League extends ModTemplate {
     // i like simpler names, but /lib contains this.leagues[] as well
     //
     this.leagues = [];
+    this.league_idx = -1; // if a league is active, this will be idx
     this.leagueCount = 0;
 
     //
@@ -47,7 +48,6 @@ class League extends ModTemplate {
     // create initial leagues
     //
     this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
-console.log("ADD LEAGUE: " + mod.returnName()); 
        this.addLeague({
         	id   : app.crypto.hash(mod.returnName()) ,	// id
     	   	name : mod.returnName() , 			// name
@@ -173,6 +173,9 @@ console.log("ADD LEAGUE: " + mod.returnName());
     if (!obj.rank) { obj.rank = 0; }
     if (!obj.players) { obj.players = []; }
     if (!obj.games) { obj.games = []; }
+
+    if (!obj.mod) { obj.mod = this.app.modules.returnModuleByName(obj.name); }
+
 
     let league_idx = -1;
     for (let i = 0; i < this.leagues.length; i++) {
