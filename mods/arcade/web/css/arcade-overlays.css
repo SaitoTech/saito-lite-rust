@@ -59,6 +59,18 @@
   margin-top: 1rem;
 }
 
-.arcade-game-controls button {
-  margin: 0;
+.arcade-game-controls {
+    grid-column: 1 / 2 span;
 }
+
+.arcade-game-controls .saito-button {
+    margin: 0;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    width: max-content;
+    float: right;
+    height: 7rem;
+    font-size: 2rem;
+    padding-top: 2.1rem;
+}
+

@@ -6,6 +6,9 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  <div class="arcade-game-overlay-header-image">
 	  </div>
 	  <div class="arcade-game-overlay-header-title-box">
+	  	  <div class="arcade-game-controls">
+		  	<div class="saito-button saito-button-primary">join game</div>
+	  	  </div>
 		  <div class="arcade-game-overlay-header-title-box-title">Twilight Struggle</div>
 		  <div class="arcade-game-overlay-header-title-box-desc">open game invitation</div>
 	  </div>
@@ -53,9 +56,6 @@ Twilight Struggle is a card-driven strategy game for two players, with its theme
 				  </div>
 			  </div>
 		  </div>
-	  </div>
-	  <div class="arcade-game-controls">
-		  <div class="saito-button saito-button-primary">join game</div>
 	  </div>
   </div>
 </div>
