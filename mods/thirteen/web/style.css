@@ -340,8 +340,17 @@ li.card {
   cursor: pointer;
 }
 
+.us_tokens{
+  color: blue;
+  font-size: 18px;
+  margin: 1px 5px;
+}
 
-
+.ussr_tokens{
+  color: darkred;
+  font-size: 18px;
+  margin: 1px 5px;
+}
 
 
 /*** makes cards smaller in hud ***/
