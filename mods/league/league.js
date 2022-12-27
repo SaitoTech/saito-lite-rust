@@ -53,6 +53,14 @@ class League extends ModTemplate {
     //   	0 					// rank
     //   );
     // });
+    league_self = this;
+    app.connection.on("league-update", ()=>{
+      if (this.browser_active){
+        
+        league_self.renderArcadeTab(app, league_self);
+        
+      }
+    });
   }
 
   render(app, mod) {
@@ -93,6 +101,38 @@ class League extends ModTemplate {
       this.styles = ['/league/css/league-overlay.css'];
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
+    }
+  }
+
+
+   /**
+    Create the html for an arcade-style list of my leagues and open leagues,
+    inserted into elem
+  */
+  renderArcadeTab(app, mod){
+    if (!app.BROWSER) { return; }
+
+    let tab = document.getElementById("league-hero");
+
+    if (tab){
+      tab.innerHTML = "";
+
+      let leagues_to_display = this.filterLeagues(app);
+      for (let le of leagues_to_display){
+        if (le.admin === "saito"){
+          let altElm = document.getElementById(`forum-topic-${le.id.toLowerCase()}`);
+          let al = new ForumLeague(app, this, le);
+          al.render(app, this, altElm);
+        }
+
+        if (le.myRank > 0 || le.admin !== "saito"){
+          let al = new ArcadeLeague(app, this, le);
+          al.render(app, this, tab);
+        }
+      }
+    }else{
+      //Probably on initialization screen
+      //console.error("League cannot render in Arcade");
     }
   }
 

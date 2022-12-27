@@ -38,8 +38,8 @@ class LeagueMain {
         LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-admin");
       });
     }else{
-      if (document.getElementById("leagues-for-admin") != null)
-        document.getElementById("leagues-for-admin").style.display = "none";
+      // if (document.getElementById("leagues-for-admin") != null)
+      //   document.getElementById("leagues-for-admin").style.display = "none";
     }  
 
     if (filter2.length > 0){
@@ -47,8 +47,8 @@ class LeagueMain {
         LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-play");
       });
     }else{
-      if (document.getElementById("leagues-for-play") != null)
-        document.getElementById("leagues-for-play").style.display = "none";
+      //if (document.getElementById("leagues-for-play") != null)
+        //document.getElementById("leagues-for-play").style.display = "none";
     }  
 
     if (filter3.length > 0){
@@ -56,8 +56,8 @@ class LeagueMain {
         LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-join");
       });
     }else{
-      if (document.getElementById("leagues-for-join") != null)
-        document.getElementById("leagues-for-join").style.display = "none";
+      //if (document.getElementById("leagues-for-join") != null)
+        //document.getElementById("leagues-for-join").style.display = "none";
     }  
 
 

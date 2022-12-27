@@ -287,18 +287,18 @@ class LeagueWizard {
     let title = document.getElementById("league-name");
     
     if (!title || !title.innerHTML || title.innerHTML == title.getAttribute("data-placeholder")){
-      salert("Your league must have a name");
+      alert("Your league must have a name");
       return false;
     }
 
     if (title.innerHTML == this.game_mod.name || title.innerHTML == this.game_mod.gamename){
-      salert("You can't just name your league after the game");
+      alert("You can't just name your league after the game");
       return false;
     }
 
     let desc = document.getElementById("league-desc");
     if (!desc || !desc.innerHTML || desc.innerHTML == desc.getAttribute("data-placeholder")){
-      salert("Your league must have a description");
+      alert("Your league must have a description");
       return false;
     }
 
@@ -312,14 +312,14 @@ class LeagueWizard {
       let startTime = Date.parse(start);
 
       if (startTime < today){
-        salert("Invalid Start Date! Must be after today, otherwise leave blank for League to take immediate effect.");
+        alert("Invalid Start Date! Must be after today, otherwise leave blank for League to take immediate effect.");
         return false;
       }
 
       if (end){
         let endTime = Date.parse(end);
         if (endTime < startTime){
-          salert("Invalid Date Range!");
+          alert("Invalid Date Range!");
           return false;
         }
       }
@@ -329,7 +329,7 @@ class LeagueWizard {
     if (end){
       let endTime = Date.parse(end);
       if (endTime < today){
-        salert("Invalid End Date!");
+        alert("Invalid End Date!");
         return false;
       }
     }
