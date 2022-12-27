@@ -70,7 +70,6 @@ class LeagueRankings {
 	for (let i = 0; i < this.mod.leagues.length; i++) {
 	  if (this.mod.leagues[i].id === lid) {
 	    this.mod.league_idx = i;
-alert("SETTING LEAGUE IDX TO: " + this.mod.league_idx);
 	  }
         }
 	this.overlay.render();

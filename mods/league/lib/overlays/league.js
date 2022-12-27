@@ -20,6 +20,9 @@ class LeagueOverlay {
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
     this.leaderboard.render();
     this.attachEvents();
+console.log("ATTACH STYLESHEETS");
+    this.mod.attachStyleSheets();
+
   }
 
   attachEvents() {
