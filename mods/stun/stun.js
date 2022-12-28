@@ -11,14 +11,14 @@ const InviteOverlay = require("./lib/components/invite-overlay");
 
 
 
-class Stunx extends ModTemplate {
+class Stun extends ModTemplate {
 
     constructor(app, mod) {
 
         super(app);
 
         this.appname = "Video Call";
-        this.name = "Stunx";
+        this.name = "Stun";
         this.slug = this.returnSlug();
         this.description = "Dedicated Video Chat Module";
         this.categories = "Video Call"
@@ -144,7 +144,7 @@ class Stunx extends ModTemplate {
                                 id: "game-video-chat-" + (i + 1),
                                 class: "game-video-chat-" + (i + 1),
                                 callback: function (app, game_mod) {
-                                    const stunx = app.modules.returnModule('Stunx');
+                                    const stunx = app.modules.returnModule('Stun');
                                     console.log('player ', game_mod.game.players[i]);
                                     app.connection.emit('game-start-video-call', [game_mod.game.players[i]]);
                                 },
@@ -156,7 +156,7 @@ class Stunx extends ModTemplate {
                         id: "game-video-chat",
                         class: "game-video-chat",
                         callback: function (app, game_mod) {
-                            const stunx = app.modules.returnModule('Stunx');
+                            const stunx = app.modules.returnModule('Stun');
                             console.log('all players ', game_mod.game.players);
                             app.connection.emit('game-start-video-call', [...game_mod.game.players]);
                         },
@@ -190,7 +190,7 @@ class Stunx extends ModTemplate {
                 icon: "",
                 callback: function (app, public_key) {
                     // app.connection.emit('game-start-audio-call', public_key);
-                    let stunx = app.modules.returnModule("Stunx");
+                    let stunx = app.modules.returnModule("Stun");
                     stunx.createStunConnectionWithPeers([public_key]);
                 }
             },
@@ -199,7 +199,7 @@ class Stunx extends ModTemplate {
                 icon: "",
                 callback: function (app, public_key) {
                     // app.connection.emit('game-start-audio-call', public_key);
-                    let stunx = app.modules.returnModule("Stunx");
+                    let stunx = app.modules.returnModule("Stun");
                     stunx.sendRequest(public_key);
                 }
             }
@@ -218,7 +218,7 @@ class Stunx extends ModTemplate {
     onConfirmation(blk, tx, conf, app) {
         let txmsg = tx.returnMessage();
         if (conf === 0) {
-            if (txmsg.module === 'Stunx') {
+            if (txmsg.module === 'Stun') {
                 if (tx.msg.request === "media answer") {
                     this.receiveMediaAnswerTransaction(blk, tx, conf, app)
                 }
@@ -276,7 +276,7 @@ class Stunx extends ModTemplate {
         let server_pub_key = this.app.network.peers[0].peer.publicKey;
         let server = this.app.network.peers[0];
         newtx.transaction.to.push(new saito.default.slip(server_pub_key));
-        newtx.msg.module = "Stunx";
+        newtx.msg.module = "Stun";
         newtx.msg.request = "create room"
         newtx.msg.room = {
             room
@@ -300,7 +300,7 @@ class Stunx extends ModTemplate {
         let server_pub_key = this.app.network.peers[0].peer.publicKey;
         let server = this.app.network.peers[0];
         newtx.transaction.to.push(new saito.default.slip(server_pub_key));
-        newtx.msg.module = "Stunx";
+        newtx.msg.module = "Stun";
         newtx.msg.request = "update room"
         newtx.msg.data = {
             room_code,
@@ -412,7 +412,7 @@ class Stunx extends ModTemplate {
                         }
                     }
 
-                    const stunx_self = this.app.modules.returnModule('Stunx');
+                    const stunx_self = this.app.modules.returnModule('Stun');
                     let localStream = stunx_self.localStream;
                     if (!localStream) return console.log('there is no localstream');
                     stunx_self.localStream.getTracks().forEach(track => {
@@ -485,12 +485,13 @@ class Stunx extends ModTemplate {
                                 ""
                                 break;
                         }
+
                     }
 
 
                     const data_channel = pc.createDataChannel('channel');
                     // pc.dc = data_channel;
-                    // let stunx_mod = this.app.modules.returnModule("Stunx");
+                    // let stunx_mod = this.app.modules.returnModule("Stun");
                     // pc.dc.onmessage = (e) => {
                     // console.log('new message from client : ', e.data);
                     app.network.addStunPeer({ publickey, peer_connection: pc, data_channel });
@@ -540,7 +541,7 @@ class Stunx extends ModTemplate {
                 pc.onicecandidate = (ice) => {
                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
                         console.log('ice candidate check closed');
-                        let stunx_mod = app.modules.returnModule("Stunx");
+                        let stunx_mod = app.modules.returnModule("Stun");
                         stunx_mod.peer_connections[offer_creator] = pc;
                         stunx_mod.sendMediaAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
                         return;
@@ -630,7 +631,7 @@ class Stunx extends ModTemplate {
                 pc.onicecandidate = (ice) => {
                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
                         console.log('ice candidate check closed');
-                        let stunx_mod = app.modules.returnModule("Stunx");
+                        let stunx_mod = app.modules.returnModule("Stun");
                         stunx_mod.peer_connections[offer_creator] = pc;
                         // stunx_mod.initializeStun(stunx_mod.peer_connections[offer_creator]);
                         stunx_mod.sendStunAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
@@ -775,7 +776,7 @@ class Stunx extends ModTemplate {
         for (let i = 0; i < offers.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
         }
-        newtx.msg.module = "Stunx";
+        newtx.msg.module = "Stun";
         newtx.msg.request = "media offer"
         newtx.msg.offers = {
             offer_creator,
@@ -793,7 +794,7 @@ class Stunx extends ModTemplate {
             newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
         }
 
-        newtx.msg.module = "Stunx";
+        newtx.msg.module = "Stun";
         newtx.msg.request = "stun offer"
         newtx.msg.offers = {
             offer_creator,
@@ -808,11 +809,8 @@ class Stunx extends ModTemplate {
 
 
     acceptMediaOfferAndBroadcastAnswer(app, offer_creator, offer) {
-
         console.log('accepting offer');
         console.log('from:', offer_creator, offer);
-
-
         if (offer.ui_type == "small") {
             this.app.connection.emit('game-receive-video-call', app, offer_creator, offer);
             return;
@@ -841,7 +839,7 @@ class Stunx extends ModTemplate {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting answer to ', offer_creator);
         newtx.transaction.to.push(new saito.default.slip(offer_creator));
-        newtx.msg.module = "Stunx";
+        newtx.msg.module = "Stun";
         newtx.msg.request = "media answer"
         newtx.msg.answer = {
             answer_creator,
@@ -857,7 +855,7 @@ class Stunx extends ModTemplate {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting answer to ', offer_creator);
         newtx.transaction.to.push(new saito.default.slip(offer_creator));
-        newtx.msg.module = "Stunx";
+        newtx.msg.module = "Stun";
         newtx.msg.request = "stun answer"
         newtx.msg.answer = {
             answer_creator,
@@ -871,7 +869,7 @@ class Stunx extends ModTemplate {
 
     receiveMediaOfferTransaction(blk, tx, conf, app) {
         if (app.BROWSER !== 1) return;
-        let stunx_self = app.modules.returnModule("Stunx");
+        let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         const offer_creator = tx.msg.offers.offer_creator;
 
@@ -887,7 +885,7 @@ class Stunx extends ModTemplate {
 
     receiveStunOfferTransaction(blk, tx, conf, app) {
         if (app.BROWSER !== 1) return;
-        let stunx_self = app.modules.returnModule("Stunx");
+        let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         const offer_creator = tx.msg.offers.offer_creator;
 
@@ -902,7 +900,7 @@ class Stunx extends ModTemplate {
     }
 
     receiveMediaAnswerTransaction(blk, tx, conf, app) {
-        let stunx_self = app.modules.returnModule("Stunx");
+        let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         if (my_pubkey === tx.msg.answer.offer_creator) {
             if (app.BROWSER !== 1) return;
@@ -927,7 +925,7 @@ class Stunx extends ModTemplate {
     }
 
     receiveStunAnswerTransaction(blk, tx, conf, app) {
-        let stunx_self = app.modules.returnModule("Stunx");
+        let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         if (my_pubkey === tx.msg.answer.offer_creator) {
             if (app.BROWSER !== 1) return;
@@ -957,7 +955,7 @@ class Stunx extends ModTemplate {
     sendOpenMediaChatTransaction(peer, ui_type, call_type) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         newtx.transaction.to.push(new saito.default.slip(peer));
-        newtx.msg.module = "Stunx";
+        newtx.msg.module = "Stun";
         newtx.msg.request = "open media chat"
         newtx.msg.data = {
             ui_type,
@@ -970,7 +968,7 @@ class Stunx extends ModTemplate {
     }
 
     receiveOpenMediaChatTransaction(blk, tx, conf, app) {
-        let stunx_self = app.modules.returnModule("Stunx");
+        let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         if (my_pubkey === tx.msg.data.peer) {
             // open media chat
@@ -978,6 +976,17 @@ class Stunx extends ModTemplate {
         }
     }
 
+
+    closeMediaConnections() {
+        for (let i in this.peer_connections) {
+            if (this.peer_connections[i]) {
+                this.peer_connections[i].close();
+                delete this.peer_connections[i];
+                console.log('closing peer connection');
+            }
+        }
+        // update database and delete public key from room
+    }
     // sendRequest( publickey){
     //   let newtx = this.app.wallet.createUnsignedTransaction();
     //   // get recipient -- server in this case
@@ -987,7 +996,7 @@ class Stunx extends ModTemplate {
     //   let peer = this.app.network.peers.find(peer => peer.peer.publickey == publickey)
 
     //   newtx.transaction.to.push(new saito.default.slip(publickey));
-    //   newtx.msg.module = "Stunx";
+    //   newtx.msg.module = "Stun";
     //   newtx.msg.request = "testing stunx"
     //   newtx.msg.data = {
     //     name: 'test'
@@ -1007,5 +1016,5 @@ class Stunx extends ModTemplate {
 
 }
 
-module.exports = Stunx;
+module.exports = Stun;
 

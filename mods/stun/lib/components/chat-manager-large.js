@@ -5,7 +5,8 @@ class VideoChatManager {
 
     // peers = {};
     localStream;
-    my_pc = [];
+    roomCode;
+    // my_pc = [];
     video_boxes = {}
     videoEnabled = true;
     audioEnabled = true;
@@ -14,11 +15,12 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        
 
-        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type) => {
+
+        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type, room_code) => {
             if (ui_type !== "large") return
             this.call_type = call_type
+            this.room_code = room_code
             this.ui_type = ui_type;
             this.show(app, mod);
         })
@@ -77,14 +79,30 @@ class VideoChatManager {
     }
 
     disconnect() {
-        let stunx_mod = this.app.modules.returnModule("Stunx");
-        console.log("peer connections ", stunx_mod.peer_connections);
-        for (let i in stunx_mod.peer_connections) {
-            if (stunx_mod.peer_connections[i]) {
-                stunx_mod.peer_connections[i].close();
-                console.log('closing peer connection');
+        let stun_mod = this.app.modules.returnModule("Stun");
+        console.log("peer connections ", stun_mod.peer_connections);
+        stun_mod.closeMediaConnections();
+
+        // remove pair from room
+        let sql = `SELECT * FROM rooms WHERE room_code = "${this.room_code}"`;
+        let requestCallback = async (res) => {
+            let room = res.rows[0];
+            console.log(res, 'res')
+            let peers_in_room = JSON.parse(room.peers);
+            let my_public_key = this.app.wallet.returnPublicKey()
+            peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key)
+
+            const data = {
+                peers_in_room: JSON.stringify(peers_in_room),
+                peer_count: peers_in_room.length,
+                is_max_capacity: false
             }
+            stun_mod.sendUpdateRoomTransaction(this.room_code, data);
         }
+
+        stun_mod.sendPeerDatabaseRequestWithFilter('Stun', sql, requestCallback)
+
+
         this.localStream.getTracks().forEach(track => {
             track.stop();
             console.log(track);
@@ -128,7 +146,7 @@ class VideoChatManager {
 
         switch (state) {
             case "disconnected":
-                this.disconnect();     
+                this.disconnect();
                 console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
@@ -183,53 +201,53 @@ class VideoChatManager {
     }
 
 
-    startTimer(){
-        if(this.timer_interval) {
+    startTimer() {
+        if (this.timer_interval) {
             return;
         }
-        let  timerElement = document.querySelector(".stunx-chatbox .counter");
+        let timerElement = document.querySelector(".stunx-chatbox .counter");
         let seconds = 0;
-  
+
         const timer = () => {
             seconds++;
-          
+
             // Get hours
             let hours = Math.floor(seconds / 3600);
             // Get minutes
             let minutes = Math.floor((seconds - hours * 3600) / 60);
             // Get seconds
             let secs = Math.floor(seconds % 60);
-          
+
             if (hours < 10) {
-              hours = `0${hours}`;
+                hours = `0${hours}`;
             }
             if (minutes < 10) {
-              minutes = `0${minutes}`;
+                minutes = `0${minutes}`;
             }
             if (secs < 10) {
-              secs = `0${secs}`;
+                secs = `0${secs}`;
             }
-          
+
             timerElement.innerHTML = `<sapn style="color:orangered; font-size: 3rem;" >${hours}:${minutes}:${secs} </sapn>`;
-          
-          };
+
+        };
 
         this.timer_interval = setInterval(timer, 1000);
     }
 
 
-    addImages(){
+    addImages() {
         let images = ``;
         let count = 0
         console.log('video boxes ', this.video_boxes)
-        for(let i in this.video_boxes){
-            if(i === "local"){
-                let publickey =this.app.wallet.returnPublicKey()
+        for (let i in this.video_boxes) {
+            if (i === "local") {
+                let publickey = this.app.wallet.returnPublicKey()
                 let imgsrc = this.app.keys.returnIdenticon(publickey);
-                images+= `<img data-id="${publickey}" src="${imgsrc}"/>`         
-            }else {
+                images += `<img data-id="${publickey}" src="${imgsrc}"/>`
+            } else {
                 let imgsrc = this.app.keys.returnIdenticon(i);
-                images+= `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`    
+                images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`
             }
             count++;
 

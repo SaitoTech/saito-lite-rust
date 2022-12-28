@@ -15,7 +15,6 @@ class ChatManagerSmall {
 
 
     constructor(app, mod) {
-    
         this.app = app;
         this.mod = mod;
         this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type) => {
@@ -53,7 +52,7 @@ class ChatManagerSmall {
         } else {
             this.app.browser.addElementToSelector(ChatManagerSmallTemplateGeneric(this.call_type), "");
             // this.p
-         
+
         }
 
     }
@@ -97,27 +96,21 @@ class ChatManagerSmall {
     }
 
     disconnect() {
-        let stunx_mod = this.app.modules.returnModule("Stunx");
-        console.log("peer connections ", stunx_mod.peer_connections);
-        for (let i in stunx_mod.peer_connections) {
-            if (stunx_mod.peer_connections[i]) {
-                stunx_mod.peer_connections[i].close();
-                console.log('closing peer connection');
-            }
-        }
-        
+        let stun_mod = this.app.modules.returnModule("Stun");
+        console.log("peer connections ", stun_mod.peer_connections);
+        stun_mod.closeMediaConnections()
         this.localStream.getTracks().forEach(track => {
             track.stop();
             console.log(track);
             console.log('stopping track');
         })
 
-        if(this.timer_interval){
+        if (this.timer_interval) {
             clearInterval(this.timer_interval)
         }
 
         this.video_boxes = {};
-       
+
         this.hide();
     }
 
@@ -140,8 +133,8 @@ class ChatManagerSmall {
     renderRemoteStreamPlaceholder(peer, ui_type, call_type) {
 
         // if (!this.video_boxes[peer]) {
-            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
-            this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
+        const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
+        this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         // }
         this.video_boxes[peer].video_box.render(null, peer, null);
     }
@@ -157,7 +150,7 @@ class ChatManagerSmall {
 
             switch (state) {
                 case "disconnected":
-                    this.disconnect();     
+                    this.disconnect();
                     console.log("video boxes: after ", this.video_boxes);
                     break;
                 case "connected":
@@ -201,74 +194,74 @@ class ChatManagerSmall {
 
     toggleVideo() {
         console.log('toggling video');
-        if(this.call_type=== "video"){
+        if (this.call_type === "video") {
             if (this.videoEnabled === true) {
                 this.localStream.getVideoTracks()[0].enabled = false;
                 this.videoEnabled = false
                 document.querySelector('.video_control').classList.remove('fa-video')
                 document.querySelector('.video_control').classList.add('fa-video-slash')
             } else {
-    
+
                 this.localStream.getVideoTracks()[0].enabled = true;
                 // this.localStream.getVideoTracks()[0].start();
-    
+
                 this.videoEnabled = true;
                 document.querySelector('.video_control').classList.remove('fa-video-slash')
                 document.querySelector('.video_control').classList.add('fa-video')
             }
         }
-      
+
 
     }
 
 
-    startTimer(){
-        if(this.timer_interval) {
+    startTimer() {
+        if (this.timer_interval) {
             return;
         }
-        let  timerElement = document.querySelector(".small-video-chatbox .counter");
+        let timerElement = document.querySelector(".small-video-chatbox .counter");
         let seconds = 0;
-  
+
         const timer = () => {
             seconds++;
-          
+
             // Get hours
             let hours = Math.floor(seconds / 3600);
             // Get minutes
             let minutes = Math.floor((seconds - hours * 3600) / 60);
             // Get seconds
             let secs = Math.floor(seconds % 60);
-          
+
             if (hours < 10) {
-              hours = `0${hours}`;
+                hours = `0${hours}`;
             }
             if (minutes < 10) {
-              minutes = `0${minutes}`;
+                minutes = `0${minutes}`;
             }
             if (secs < 10) {
-              secs = `0${secs}`;
+                secs = `0${secs}`;
             }
-          
+
             timerElement.innerHTML = `<sapn style="color:orangered; font-size: 3rem;" >${hours}:${minutes}:${secs} </sapn>`;
-          
-          };
+
+        };
 
         this.timer_interval = setInterval(timer, 1000);
     }
 
 
-    addImages(){
+    addImages() {
         let images = ``;
         let count = 0
         console.log('video boxe3s ', this.video_boxes)
-        for(let i in this.video_boxes){
-            if(i === "local"){
-                let publickey =this.app.wallet.returnPublicKey()
+        for (let i in this.video_boxes) {
+            if (i === "local") {
+                let publickey = this.app.wallet.returnPublicKey()
                 let imgsrc = this.app.keys.returnIdenticon(publickey);
-                images+= `<img data-id="${publickey}" src="${imgsrc}"/>`         
-            }else {
+                images += `<img data-id="${publickey}" src="${imgsrc}"/>`
+            } else {
                 let imgsrc = this.app.keys.returnIdenticon(i);
-                images+= `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`    
+                images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`
             }
             count++;
 
