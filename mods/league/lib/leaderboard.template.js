@@ -3,9 +3,7 @@ module.exports = LeaderboardTemplate = () => {
 
   return `
       <div class="league-leaderboard">
-        <h6>Leaderboard:</h6>
         <div class="saito-table">
-
           <div class="saito-table-header">
             <div class="right-align">Rank</div>
             <div >Player</div>

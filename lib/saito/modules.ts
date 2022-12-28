@@ -51,20 +51,17 @@ class Mods {
     // no callbacks on type=9 spv stubs
     //
     if (tx.transaction.type == 5) {
-console.log("no callbacks on SPV");
       return;
     }
 
     for (let i = 0; i < this.mods.length; i++) {
       if (!!message && message.module != undefined) {
         if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
-console.log("CALLBACK AFFIXED: " + this.mods[i].returnName());
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }
       } else {
         if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
-console.log("CALLBACK AFFIXED: " + this.mods[i].returnName());
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }
@@ -368,6 +365,16 @@ console.log("CALLBACK AFFIXED: " + this.mods[i].returnName());
   returnModuleBySlug(modslug) {
     for (let i = 0; i < this.mods.length; i++) {
       if (modslug === this.mods[i].returnSlug()) {
+        return this.mods[i];
+      }
+    }
+    return null;
+  }
+
+  // checks against full name (with spaces too)
+  returnModuleByName(modname) {
+    for (let i = 0; i < this.mods.length; i++) {
+      if (modname === this.mods[i] || modname === this.mods[i].returnName()) {
         return this.mods[i];
       }
     }

@@ -130,16 +130,6 @@ class Pandemic extends GameTemplate {
 
     super.initializeHTML(app);
 
-    //Dynamically add game-css because of all the fcking name changes
-    if (!document.getElementById("game-css-link")){
-      var s = document.createElement("link");
-      s.id = "game-css-link";
-      s.rel = "stylesheet";
-      s.type = "text/css";
-      s.href = `/${this.returnSlug()}/style.css`;
-      document.querySelector('head').append(s);
-    }
-
     
     //Dynamically update index.html 
     //$('head').append(`<link rel="stylesheet" type="text/css" href="/${this.name.toLowerCase()}/style.css" />`);
@@ -162,6 +152,18 @@ class Pandemic extends GameTemplate {
 
     if (!this.browser_active) { return; } 
     if (this.initialized) {return;} else { this.initialized = 1;}
+
+    //Dynamically add game-css because of all the fcking name changes
+    if (!document.getElementById("game-css-link")){
+      var s = document.createElement("link");
+      s.id = "game-css-link";
+      s.rel = "stylesheet";
+      s.type = "text/css";
+      s.href = `/${this.returnSlug()}/style.css`;
+      document.querySelector('head').append(s);
+    }
+
+
     //Since skin will resize gameboard and update boardWidth, need to recalculate so scaling works
     this.calculateBoardRatio();
 
@@ -260,22 +262,18 @@ class Pandemic extends GameTemplate {
       });
     }
 
-    this.menu.addChatMenu(app, this);
-    this.menu.render(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.restoreLog(); //from gameTemplate
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
     
     this.cardbox.addCardType("showcard","",null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     this.cardbox.addCardType("handy-help", "", function(){});
     
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     if (this.game.players_info && this.game.player > 0){
       let hh = document.querySelector(".hud-header");
@@ -291,9 +289,8 @@ class Pandemic extends GameTemplate {
         if (document.getElementById("cardfan") && document.getElementById("cardfan").style.display == "block"){
           pandemic_self.cardfan.hide();
         }else{
-          pandemic_self.cardfan.render(app, pandemic_self, pandemic_self.returnPlayerCardHTML(pandemic_self.game.player));  
-          document.getElementById("cardfan").classList.add("bighand");
-          pandemic_self.cardfan.attachEvents(app, pandemic_self);
+          pandemic_self.cardfan.render(pandemic_self.returnPlayerCardHTML(pandemic_self.game.player));  
+          pandemic_self.cardfan.addClass("bighand"); 
           pandemic_self.attachCardboxEvents(pandemic_self.playFromCardFan);
         }
       }
@@ -310,8 +307,8 @@ class Pandemic extends GameTemplate {
         this.hammer.attachEvents(this.app, this, ".gameboard");
       } else {
         this.cardbox.skip_card_prompt = 1; //no Confirming
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, ".gameboard");
+        this.sizer.render();
+        this.sizer.attachEvents(".gameboard");
 
       }
     } catch (err) {

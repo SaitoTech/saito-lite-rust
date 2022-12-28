@@ -116,19 +116,15 @@ class Hearts extends GameTemplate {
       }
     });
 
-    this.menu.addChatMenu(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
-
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
 
     //
     // we want hud to support cardbox, so re-render
     //
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     //
     // add card events -- for special hud treatment
@@ -159,8 +155,8 @@ class Hearts extends GameTemplate {
 
       } else {
 
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render();
+        this.sizer.attachEvents('.gameboard');
 
       }
 

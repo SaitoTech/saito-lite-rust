@@ -24,6 +24,7 @@ class RedSquareMenu {
     // appspace modules
     //
     this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
+console.log("rendering one: " + mod.name);
       if (!document.querySelector(`.redsquare-menu-${mod.returnSlug()}`)) {
         this.app.browser.addElementToSelector(
           `<li class="redsquare-menu-${mod.returnSlug()}">

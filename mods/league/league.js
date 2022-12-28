@@ -16,12 +16,13 @@ class League extends ModTemplate {
     this.categories = "Arcade Competition";
     this.overlay = null;
 
-    this.styles = ['/saito/saitox.css','/league/style.css'];
+    this.styles = ['/league/style.css'];
 
     //
     // i like simpler names, but /lib contains this.leagues[] as well
     //
     this.leagues = [];
+    this.league_idx = -1; // if a league is active, this will be idx
     this.leagueCount = 0;
 
     //
@@ -47,11 +48,19 @@ class League extends ModTemplate {
     // create initial leagues
     //
     this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
-      this.addLeague(
-      	app.crypto.hash(mod.returnName()) ,	// id
-      	mod.returnName() , 			// name
-      	0 					// rank
-      );
+       this.addLeague({
+        	id   : app.crypto.hash(mod.returnName()) ,	// id
+    	   	name : mod.returnName() , 			// name
+    	 	rank : 0 					// rank
+       });
+    });
+    league_self = this;
+    app.connection.on("league-update", ()=>{
+      if (this.browser_active){
+        
+        league_self.renderArcadeTab(app, league_self);
+        
+      }
     });
   }
 
@@ -81,6 +90,7 @@ class League extends ModTemplate {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
       }
+      this.styles = ['/league/css/league-base.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
@@ -89,9 +99,57 @@ class League extends ModTemplate {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
       }
+      this.styles = ['/league/css/league-base.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
+  }
+
+
+   /**
+    Create the html for an arcade-style list of my leagues and open leagues,
+    inserted into elem
+  */
+  renderArcadeTab(app, mod){
+    if (!app.BROWSER) { return; }
+
+    let tab = document.getElementById("league-hero");
+
+    if (tab){
+      tab.innerHTML = "";
+
+      let leagues_to_display = this.filterLeagues(app);
+      for (let le of leagues_to_display){
+        if (le.admin === "saito"){
+          let altElm = document.getElementById(`forum-topic-${le.id.toLowerCase()}`);
+          let al = new ForumLeague(app, this, le);
+          al.render(app, this, altElm);
+        }
+
+        if (le.myRank > 0 || le.admin !== "saito"){
+          let al = new ArcadeLeague(app, this, le);
+          al.render(app, this, tab);
+        }
+      }
+    }else{
+      //Probably on initialization screen
+      //console.error("League cannot render in Arcade");
+    }
+  }
+
+  renderLeagues(app, mod){
+    if (this.app.BROWSER == 0){return;}
+
+    if (this.browser_active){
+      this.main.render(app, this);
+    } else {
+      app.connection.emit("league-update", {});
+    }
+  }
+
+  resetLeagues(){
+    this.leagues = [];
+    this.leagueCount = 0;
   }
 
   //
@@ -105,25 +163,34 @@ class League extends ModTemplate {
   //   games 	: [games_array] ,
   // }
   //
-  addLeague(league_id, name, rank) {
+  addLeague(obj) {
+
+    //
+    // default values
+    //
+    if (!obj) { return; }
+    if (!obj.name) { obj.name = "Unknown"; }
+    if (!obj.rank) { obj.rank = 0; }
+    if (!obj.players) { obj.players = []; }
+    if (!obj.games) { obj.games = []; }
+
+    if (!obj.mod) { obj.mod = this.app.modules.returnModuleByName(obj.name); }
+
+
     let league_idx = -1;
     for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) {
-      	league_idx = i;
-      	break;
+      if (this.leagues[i].id === obj.id) {
+       	league_idx = i;
+       	break;
       }
     }
+
     if (league_idx == -1) {
-      this.leagues.push({
-      	id	:	league_id ,
-      	name	:	name ,
-      	rank	:	rank ,
-      	players :	[] ,
-      	games	:	[] ,
-      });
-    } else {
+      this.leagues.push(obj);
+      league_idx = this.leagues.length-1;
       this.app.connection.emit("league-add-league", (this.leagues[league_idx]));
     }
+
   }
 
 
@@ -181,13 +248,7 @@ class League extends ModTemplate {
       //}
 
         if (txmsg.request === "create league") {
-          //Perform db ops
           this.receiveCreateLeagueTransaction(blk, tx, conf, app);
-          //Update saito-lite, refresh UI
-          if (app.BROWSER){
-            console.log("Receive League Create Request");
-            this.addLeague(tx);
-          }
         }
 
         if (txmsg.request === "join league") {
@@ -269,27 +330,32 @@ class League extends ModTemplate {
 
     this.app.network.propagateTransaction(newtx);
 
-    //Short circuit transaction to immediately process
-    this.addLeague(newtx);
+    //
+    // and immediately process !
+    //
+    this.addLeague(tx.msg);
   }
 
 
   async receiveCreateLeagueTransaction(blk, tx, conf, app) {
-    if (this.app.BROWSER) { return; }
 
+    //
+    // extract league from tx
+    //
     let league = Object.assign({id: tx.transaction.sig}, tx.returnMessage().league);
-    let params = {};
-    for (let i in league){
-      params[`$${i}`] = league[i];
-    }
-    //console.log(league);
-    //console.log(params);
+
+    //
+    // add league
+    //
+    this.addLeague(league);
 
     let sql = `INSERT INTO leagues (id, game, type, admin, name, description, ranking, starting_score, max_players, options, startdate, enddate, allowlate)
                         VALUES ($id, $game, $type, $admin, $name, $description, $ranking, $starting_score, $max_players, $options, $startdate, $enddate, $allowlate)`;
-
+    let params = {};
+    for (let i in league){ params[`$${i}`] = league[i]; }
     await app.storage.executeDatabase(sql, params, "league");
     return;
+
   }
 
 
@@ -970,7 +1036,7 @@ class League extends ModTemplate {
 
     //Check League Membership
     if (!this.isLeagueMember(league.id)){
-      salert("You need to be a member of the League to create a League-only game invite");
+      alert("You need to be a member of the League to create a League-only game invite");
       return;
     }
 
@@ -1008,7 +1074,7 @@ class League extends ModTemplate {
     if (!arcade_mod) { return; }
     //Check League Membership
     if (!this.isLeagueMember(league.id)){
-      salert("You need to be a member of the League to create a League-only game invite");
+      alert("You need to be a member of the League to create a League-only game invite");
       return;
     }
     let options = (league.options) ? JSON.parse(league.options) : null;
@@ -1019,7 +1085,7 @@ class League extends ModTemplate {
     }
     console.log(JSON.parse(JSON.stringify(options)));
     if (options["game-wizard-players-select"] != 2){
-      salert("You can only challenge head-to-head");
+      alert("You can only challenge head-to-head");
       return;
     }
     //Check options
@@ -1039,7 +1105,7 @@ class League extends ModTemplate {
     });
     challenge_overlay.show(this.app, this, ChallengeIssuedTemplate());
     timeout = setTimeout(async ()=>{
-      salert("It seems your opponent isn't available.");
+      alert("It seems your opponent isn't available.");
       challenge_overlay.remove();
     }, 30000);
     this.app.connection.on("arcade-reject-challenge", (game_id)=>{

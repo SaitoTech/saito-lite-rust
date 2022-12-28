@@ -8,12 +8,12 @@ const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito
 class GameWizard {
 
   constructor(app, mod, game_mod = null, invite_obj = {}) {
+
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app);
     this.obj = invite_obj;
-    gamewizard_self = this;
 
     app.connection.on("arcade-launch-game-wizard", (invite_obj)=>{
 
@@ -21,14 +21,13 @@ class GameWizard {
       
       if (invite_obj.game){
 
-        let game_mod = gamewizard_self.app.modules.returnModule(invite_obj.game);
+        let game_mod = this.app.modules.returnModule(invite_obj.game);
         
         if (game_mod) {
           
-          gamewizard_self.game_mod = game_mod;
-          gamewizard_self.obj = invite_obj;
-
-          gamewizard_self.render(app, arcade_self);
+          this.game_mod = game_mod;
+          this.obj = invite_obj;
+          this.render(this.app, this.mod);
         } else {
           salert("Module not found: " + game_mod);
         }
@@ -37,7 +36,10 @@ class GameWizard {
     });
   }
 
-  render(app, mod) {
+  render() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     //Create the game wizard overlay
     this.overlay.show(app, mod, GameWizardTemplate(app, mod, this.game_mod, this.obj));
@@ -71,13 +73,17 @@ class GameWizard {
 
     }
 
-    this.attachEvents(app, mod);
+    this.attachEvents();
+
   }
 
   //
   // Note: mod = Arcade
   //
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     if (document.querySelector(".saito-multi-select_btn")){
       document.querySelector(".saito-multi-select_btn").addEventListener("click", (e) => {
@@ -130,7 +136,7 @@ class GameWizard {
         try {
           let options = this.getOptions();
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
-  
+
           let c = await mod.verifyOptions(isPrivateGame, options);
           if (!c){
             this.overlay.remove();
@@ -147,8 +153,10 @@ class GameWizard {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
+console.log("CAN WE MAKE GAME INVITE 1");
           mod.makeGameInvite(options, isPrivateGame);
- 
+console.log("CAN WE MAKE GAME INVITE 2"); 
+
         } catch (err) {
           console.warn(err);
         }

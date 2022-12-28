@@ -10,7 +10,7 @@
 }
 
 .league-overlay-header-image {
-  background-image: url(/twilight/img/arcade/arcade.jpg);
+  background-image: url(/saito/img/dreamscape.png);
   background-size: cover;
   width: 11rem;
   height: 7rem;
@@ -21,13 +21,19 @@
   font-size: 4rem;
 }
 .league-overlay-description {
-  font-size: 1.4rem;
-  line-height: 2rem;
+  font-size: 1.7rem;
+  line-height: 2.3rem;
 }
 
 .league-overlay-create-game-button {
   min-width: 20rem;
   max-width: 25rem;
+  height: 7rem;
+  padding-top: 2.2rem;
+  font-size: 2.1rem;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  margin: 0;
 }
 
 .league-overlay-body {

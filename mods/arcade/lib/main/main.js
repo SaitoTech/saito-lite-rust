@@ -1,15 +1,8 @@
 const JSON = require("json-bigint");
 const ArcadeMainTemplate = require("./main.template");
 const ArcadeMenu = require("./menu");
+const ArcadeBanner = require("./banner");
 const SaitoSidebar = require('./../../../../lib/saito/ui/saito-sidebar/saito-sidebar');
-
-/****
-const SaitoCarousel = require("./../../../../lib/saito/ui/saito-carousel/saito-carousel");
-const ArcadeInviteTemplate = require("./arcade-invite.template");
-const ArcadeBanner = require("./arcade-banner");
-const ArcadeLeaderboard = require("./meta-leaderboard"); //require("./arcade-leaderboard");
-const ArcadeLeague = require("./arcade-league");
-****/
 
 class ArcadeMain {
 
@@ -25,31 +18,80 @@ class ArcadeMain {
     this.sidebar.align = "nope";
     this.menu = new ArcadeMenu(this.app, this.mod, ".saito-sidebar.left");
     this.sidebar.addComponent(this.menu);
+    this.banner = new ArcadeBanner(this.app, this.mod, ".arcade-central-panel");
 
-/***
-    //Add Chat Manager as Service to Sidebar
-    this.app.modules.respondTo("chat-manager").forEach(m => {
-      this.sidebar.addComponent(m.respondTo("chat-manager"));
+
+
+    //
+    // load init page
+    //
+    app.connection.on("arcade-launch-game-init", (game_id) => {
+
+      this.mod.is_game_initializing = true;
+
+      this.mod.initialization_timer = setInterval(() => {
+
+        let game_idx = -1;
+        if (this.app.options.games != undefined) {
+          for (let i = 0; i < this.app.options.games.length; i++) {
+            if (this.app.options.games[i].id == game_id) {
+              game_idx = i;
+            }
+          }
+        } 
+        
+        if (game_idx == -1) { return; }
+          
+        if (this.app.options.games[game_idx].initializing == 0) {
+    
+          //
+          // check we don't have a pending TX for this game...
+          //
+          let ready_to_go = 1;
+      
+          if (this.app.wallet.wallet.pending.length > 0) {
+            for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
+              let thistx = new saito.transaction(JSON.parse(this.app.wallet.wallet.pending[i]));
+              let thistxmsg = thistx.returnMessage();
+              if (thistxmsg.module == this.app.options.games[game_idx].module) {
+                if (thistxmsg.game_id == this.app.options.games[game_idx].id) {
+                  ready_to_go = 0;
+                }
+              }
+            }  
+          }
+
+          if (ready_to_go == 0) {
+            console.log("transaction for this game still in pending...");
+            return;
+          }
+
+          clearInterval(this.mod.initialization_timer);
+
+        }
+      }, 1000);
+
     });
-***/
-//    this.banner = new ArcadeBanner(this.app, this.mod);
-    this.leaderboard = null;
-    this.userLeagues = null;
 
   }
 
+  
+
   render() {
 
-console.log("X1");
     if (document.querySelector(".saito-container")) {
       this.app.browser.replaceElementBySelector(ArcadeMainTemplate(), ".saito-container");
     } else {
       this.app.browser.addElementToSelectorOrDom(ArcadeMainTemplate(), this.container);
     }
 
-console.log("X2");
     this.sidebar.render();
-console.log("X3");
+
+//    if (Math.random() < 0.5) {
+//      this.banner.render();
+//    } else {
+      this.app.modules.renderInto(".arcade-invites-box");
+//    }
 
 
     //
@@ -57,52 +99,11 @@ console.log("X3");
     //
     this.app.modules.renderInto(".arcade-leagues");
 
-    
-    this.app.modules.renderInto(".arcade-invites-box");
-
-
-/*****
-    //Check hash for game page
-    var hash = window.location.hash;
-    if (hash){
-      hash = hash.substring(1).toLowerCase();
-      mod.viewing_game_homepage = hash[0].toUpperCase() + hash.substring(1);
-    }else{
-      mod.viewing_game_homepage = "Arcade";
-    }
-
-
-    this.sidebar.render(app, mod);
-    this.banner.render(app, mod);
-    if (app.modules.returnModule("League")){
-      if (!this.leaderboard){
-        this.leaderboard = new ArcadeLeaderboard(app, mod);
-      }
-      this.leaderboard.render(app, mod);
-
-      if (!this.userLeagues){
-        this.userLeagues = new ArcadeLeague(app, mod);
-      }
-      this.userLeagues.render(app, mod);
-    }
-
-    //
-    // add games
-    //
-    this.renderArcadeTab(app, mod);
-
-    let game_filter = (mod.viewing_game_homepage == mod.name) ? "" : mod.viewing_game_homepage;
-    app.connection.emit("observer-render-arcade-tabs", {selector: "observer-live-hero", game_filter, live_games: true});
-    app.connection.emit("observer-render-arcade-tabs", {selector: "observer-review-hero", game_filter, live_games: false});
-
-*****/
-
   }
 
 
 
   attachEvents() {
-
 
 /****    
     //

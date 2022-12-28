@@ -3,9 +3,15 @@ const LeagueComponentExistingLeagueTemplate = require("./existing-league.templat
 module.exports = ExistingLeague = {
 
   render(app, mod, league, id) {
+
+    console.log("inside existing-league js");
+    console.log(league, id);
+
     if (!document.getElementById(league.id)) {
+      console.log("inside if");
       app.browser.addElementToId(LeagueComponentExistingLeagueTemplate(app, mod, league), id);
     } else {
+      console.log("inside else");
       app.browser.replaceElementById(LeagueComponentExistingLeagueTemplate(app, mod, league), league.id);
     }
   },
@@ -19,7 +25,7 @@ module.exports = ExistingLeague = {
         let cmd = btn.getAttribute('data-cmd');
         if (cmd == "join") {
           mod.sendJoinLeagueTransaction(league_id);
-          salert('Joining League... it may take a moment to update info');
+          alert('Joining League... it may take a moment to update info');
         }
         if (cmd == "view") {
           app.connection.emit("view-league-details", league_id);
@@ -31,7 +37,7 @@ module.exports = ExistingLeague = {
           let confirm = await sconfirm("Are you sure you want to delete this league?");
           if (confirm) {
             mod.sendDisbandLeagueTransaction(league_id);
-            salert("League Deleted");
+            alert("League Deleted");
           }
         }
       }

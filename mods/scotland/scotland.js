@@ -1,4 +1,3 @@
-const GameHud = require("../../lib/saito/ui/game-hud/game-hud");
 const GameTemplate = require("../../lib/templates/gametemplate");
 const ScotlandGameRulesTemplate = require("./lib/scotland-game-rules.template");
 
@@ -82,10 +81,30 @@ class Scotland extends GameTemplate {
     return ScotlandGameRulesTemplate(this.app, this);
   }
 
+//>>>>>>>>>>
   handleCluesMenuItem() {
-    let html = `<div id="game-clues" class="rules-overlay">`;
-    for (let i = 0; i < this.game.state.clues.length; i++) {
-      html += '<div class="game-clues-row">' + this.game.state.clues[i] + "</div>";
+    let html = `<div id="game-clues" class="clues-overlay">`;
+    if (this.game.state.clues.length > 0){
+      for (let i = 0; i < this.game.state.clues.length; i++) {
+        html += '<div class="game-clues-row">' + this.game.state.clues[i] + "</div>";
+      }
+    }else{
+      if (this.game.player == this.game.state.x){
+        html +=   `<div class="my_pawns">${this.returnPawn(this.game.state.numDetectives)}</div>`;
+        html +=  `<div class="overlay_header">You are Mr X</div>`;
+        html += `<div>The detectives don't know where you are, but you will be visible after your third move. Try to distance yourself from them and have a ready escape available.</div>`;
+      }else{
+        html += `<div class="my_pawns">`;
+        for (let j = 0; j< this.game.state.numDetectives; j++){
+          if (this.game.state.detectives[j] == this.game.player){
+            html += this.returnPawn(j);
+          }
+        }
+        html += "</div>";
+        html +=  `<div class="overlay_header">You are a Detective</div>`; 
+        html += `<div>Mister X starts the game at one of the highlighted spaces and will be briefly visible after his third move. Start laying a trap now</div>`;
+      }
+      html += `<div>Click a ticket type to see where you can move, then click on the board to move there.</div>`;
     }
     html += `</div>`;
     this.overlay.show(this.app, this, html);
@@ -176,24 +195,20 @@ class Scotland extends GameTemplate {
       }
     });
 
-    this.menu.addChatMenu(app, this);
-    
-    this.menu.render(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
-
+    this.hud.render();
 
     let hh = document.querySelector(".hud-header");
     if (!hh.querySelector(".handy-help")){
-      this.app.browser.addElementToElement(`<i id="hud_zoom" class="handy-help hud-controls fas fa-search" aria-hidden="true""></i>`, hh);
-      this.app.browser.addElementToElement(`<i id="hud_clues" class="handy-help hud-controls fas fa-shoe-prints" aria-hidden="true"></i>`, hh);  
-      this.app.browser.addElementToElement(`<i id="hud_bus" class="handy-help hud-controls fas fa-bus" aria-hidden="true""></i>`, hh);
-      this.app.browser.addElementToElement(`<i id="hud_underground" class="handy-help hud-controls fas fa-subway" aria-hidden="true"></i>`, hh);  
-      this.app.browser.addElementToElement(`<i id="hud_clear" class="handy-help hud-controls far fa-map" aria-hidden="true"></i>`, hh);  
+      this.app.browser.addElementToElement(`<i id="hud_zoom" class="handy-help hud-controls fas fa-search" aria-hidden="true"" title="Turn mouse into a magnifying glass"></i>`, hh);
+      this.app.browser.addElementToElement(`<i id="hud_clues" class="handy-help hud-controls fas fa-shoe-prints" aria-hidden="true" title="Check logbook of clues"></i>`, hh);  
+      this.app.browser.addElementToElement(`<i id="hud_bus" class="handy-help hud-controls fas fa-bus" aria-hidden="true"" title="Display bus routes"></i>`, hh);
+      this.app.browser.addElementToElement(`<i id="hud_underground" class="handy-help hud-controls fas fa-subway" aria-hidden="true" title="Display Underground routes"></i>`, hh);  
+      this.app.browser.addElementToElement(`<i id="hud_clear" class="handy-help hud-controls far fa-map" aria-hidden="true" title="Clear map"></i>`, hh);  
     }
     try{
       document.getElementById("hud_zoom").onclick = this.magnifyingGlass.bind(this);
@@ -210,10 +225,12 @@ class Scotland extends GameTemplate {
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, ".gameboard");
       } else {
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, ".gameboard");
+        this.sizer.render();
+        this.sizer.attachEvents(".gameboard");
       }
     } catch (err) {}
+
+    this.handleCluesMenuItem();
   }
 
   ////////////////
@@ -251,8 +268,6 @@ class Scotland extends GameTemplate {
     }
 
     console.log(JSON.parse(JSON.stringify(this.game.state)));
-
-    this.restoreLog();
 
     if (!this.browser_active) {
       this.saveGame(this.game.id)
@@ -365,6 +380,7 @@ class Scotland extends GameTemplate {
         this.game.state.tickets[this.game.state.numDetectives]["double"]--;
         this.game.queue.push("play\t" + this.game.state.x + "\t" + this.game.state.numDetectives);
         this.game.queue.push("play\t" + this.game.state.x + "\t" + this.game.state.numDetectives);
+        this.updateLog(`Mister X uses one of his double tickets, he has ${this.game.state.tickets[this.game.state.numDetectives]["double"]} remaining.`);
         this.game.state.double_in_action = 1;
         this.game.queue.splice(qe, 1);
         return 1;
@@ -399,7 +415,7 @@ class Scotland extends GameTemplate {
       */
       if (mv[0] === "move") {
         let player = parseInt(mv[1]);
-        let pawn = mv[2];
+        let pawn = parseInt(mv[2]);
         let target_id = mv[3];
         let ticket = mv[4];
         
@@ -414,7 +430,7 @@ class Scotland extends GameTemplate {
             case "taxi": hint = "Mr. X was spotted in a taxi..."; break;
             case "bus": hint = "Mr. X was spotted in a bus..."; break;
             case "underground": hint = "Mr. X was spotted on the underground..."; break;
-            default: hint = "Mr. X evaded detection this turn...";
+            default: hint = `Mr. X evaded detection this turn by playing a mystery ticket, he has ${scotland_self.game.state.tickets[pawn]["x"]} remaining.`;
           }
           
           if (this.game.state.xmoves == 3 || this.game.state.xmoves == 8 || this.game.state.xmoves == 13 || this.game.state.xmoves == 18 || this.game.state.xmoves == 24 ) {
@@ -589,8 +605,8 @@ class Scotland extends GameTemplate {
       html += `<div class="menu_icon ${(this.game.state.tickets[pawn]["x"] == 0)? "unavailable":""}" id="mystery">
                 <i class="menu_icon_icon fas fa-mask fa-border"></i>
                 <div class="menu-text">X: ${this.game.state.tickets[pawn]["x"]}</div>
-              </div>
-              <div class="menu_icon ${(this.game.state.tickets[pawn]["double"] == 0)? "unavailable":""}" id="double">
+              </div> 
+              <div class="menu_icon ${(this.game.state.tickets[pawn]["double"] == 0 || this.game.state.double_in_action )? "unavailable":""}" id="double">
                 <i class="menu_icon_icon fas fa-angle-double-right fa-border" style="background-color: #062E03;"></i>
                 <div class="menu-text">Double: ${this.game.state.tickets[pawn]["double"]}</div>
               </div>`;      
@@ -646,7 +662,7 @@ class Scotland extends GameTemplate {
       scotland_self.disableBoardClicks();
       
       let action = $(this).attr("id");
-      if (action == "double"){
+      if (action == "double" && scotland_self.game.state.double_in_action === 0){
         scotland_self.addMove("double");
         scotland_self.endTurn();
         return;
@@ -694,7 +710,6 @@ class Scotland extends GameTemplate {
         }
       }
       if (action == "mystery"){
-        $(".highlight-available-move").css("border-color", "black");
         useMysteryTicket = true;
         if (scotland_self.game.state.tickets[pawn]["x"] > 0) {
         let mot = ["bus", "taxi", "underground", "ferry"];
@@ -1007,6 +1022,9 @@ class Scotland extends GameTemplate {
 
     let ctx = c.getContext("2d");
     ctx.clearRect(0, 0, 5135, 3829);
+
+    $(".highlight-available-move").css("border-color", "transparent");
+    $(".highlight-available-move").removeClass("highlight-available-move");
   }
 
   returnLocations() {

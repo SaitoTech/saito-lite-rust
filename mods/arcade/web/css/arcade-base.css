@@ -12,3 +12,10 @@ body {
 .saito-header-hamburger-contents {
   background: var(--saito-background-color);
 }
+
+.arcade-main {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 1rem;
+}
+

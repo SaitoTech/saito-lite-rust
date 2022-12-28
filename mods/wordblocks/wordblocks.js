@@ -87,23 +87,17 @@ class Wordblocks extends GameTemplate {
       },
     });
 
-    this.menu.addChatMenu(app, this);
+    this.menu.addChatMenu();
 
-    this.menu.render(app, this);
+    this.menu.render();
 
     this.hud.auto_sizing = 0; //turn off default sizing
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this); //Enable dragging
+    this.hud.render();
 
-    this.restoreLog();
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
-
+    this.log.render();
 
     try {
-      //Let's Try a PlayerBox instead of hud
-      this.playerbox.render(app, this);
-      this.playerbox.attachEvents(app);
+      this.playerbox.render();
 
       this.playerbox.groupOpponents(false);
       $("#opponentbox *").disableSelection();
@@ -130,8 +124,8 @@ class Wordblocks extends GameTemplate {
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, ".gameboard");
       } else {
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, ".gameboard");
+        this.sizer.render();
+        this.sizer.attachEvents(".gameboard");
       }
     } catch (err) {
       console.error(err);

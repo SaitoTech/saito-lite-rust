@@ -11,53 +11,63 @@ class InviteManager {
 	  this.container = container;
 	  this.name = "InviteManager";
 	  this.type = "short";
+	  this.list = "all";
 
-	  //
-	  // track invites
-	  //
+	  this.lists = ["mine","open"];
+
 	  this.invites = {};
-	  manager_self = this;
 
 	  //
 	  // handle requests to re-render invite manager
 	  //
-	  app.connection.on("invite-manager-render-request", () => {
+	  app.connection.on("arcade-invite-manager-render-request", () => {
 	    this.render();
 	  });
-
-	  //
-	  // handle requests to re-render invites
-	  //
-	  app.connection.on("invite-render-request", (invite) => {
-	    
-	      if (!this.invites[invite.id]) {
-			// rendering different types of invite templates based on invite manager type (inside RS or arcade)		
-			if (manager_self.type == "short") {
-				this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager", invite);
-			} else {
-				this.invites[invite.id] = new Invite(this.app, this.mod, ".invite-manager", invite);
-			}
-			
-			this.invites[invite.id].invite = invite;
-	      }
-	    
-	      this.invites[invite.id].render();
-	    
-    });
 
 	}
 
 
 	render() {
 
-    //
-    // replace element or insert into page
+          //
+          // replace element or insert into page
  	  //
 	  if (document.querySelector(".invite-manager")) {
 	    this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), ".invite-manager");
 	  } else {
  	    this.app.browser.addElementToSelectorOrDom(InviteManagerTemplate(this.app, this.mod), this.container);
  	  }
+
+	  for (let z = 0; z < this.lists.length; z++) {
+	    if (this.list === "all" || this.list === this.lists[z]) {
+
+	      let list = this.lists[z];
+
+              if (!this.mod.games[list]) { this.mod.games[list] = {}; }
+              if (!this.invites[list]) {
+	        this.invites[list] = [];
+	      } else {
+	        for (let i = 0; i < this.invites[list].length; i++) {
+	          delete this.invites[list][i];
+	        }
+	        this.invites[list] = [];
+	      }
+
+	      for (let i = 0; i < this.mod.games[list].length; i++) {
+	        this.invites[list].push(new Invite(this.app, this.mod, ".invite-manager", this.mod.games[list][i]));
+	      }
+
+	      if (this.invites[list].length > 0) {
+    	        if (list === "mine") { this.app.browser.addElementToSelector(`<h6 class="arcade-players-needed">My Games:</h6>`, ".invite-manager"); }
+    	        if (list === "open") { this.app.browser.addElementToSelector(`<h6 class="arcade-players-needed">Open Invites:</h6>`, ".invite-manager"); }
+	      }
+
+	      for (let i = 0; i < this.invites[list].length; i++) {
+	        this.invites[list][i].render();
+	      }
+	    }
+	  }
+
 
 	  this.attachEvents();
 

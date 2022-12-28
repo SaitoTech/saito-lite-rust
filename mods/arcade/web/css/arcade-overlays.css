@@ -2,11 +2,17 @@
   background-color: var(--saito-background-color);
   width: 60vw;
   height: max-content;
+  max-height: 90vh;
   padding: 1rem;
   border-radius: 0.5rem;
   display: grid;
-  grid-template-rows: 8rem max-content;
+  grid-template-rows: 7rem max-content 7rem;
   grid-gap: 1rem;
+}
+
+.arcade-game-overlay .saito-table-row.arcade-game-player-row {
+    display: grid;
+    grid-template-columns: min-content 1fr min-content 1fr;
 }
 
 .arcade-game-overlay-header-image {
@@ -22,10 +28,14 @@
   font-size: 4rem;
 }
 
+.arcade-game-overlay-header-title-box-desc {
+  font-size: 2rem;
+}
+
 .arcade-game-overlay-body {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   row-gap: 1rem;
+  grid-template-columns: 1fr;
 }
 
 .arcade-game-overlay .saito-table-row {
@@ -42,10 +52,20 @@
 .arcade-game-options {
   overflow-y: auto;
   box-shadow: -1px 1px 0.5rem 1px var(--saito-border-color);
-  padding: 1rem;
-  margin-top: 1rem;
+  padding: 2rem;
 }
 
-.arcade-game-controls button {
-  margin: 0;
+.arcade-game-controls {
 }
+
+.arcade-game-controls .saito-button {
+    margin: 0;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    width: max-content;
+    float: right;
+    height: 7rem;
+    font-size: 2rem;
+    padding-top: 2.1rem;
+}
+
