@@ -430,14 +430,6 @@ class Server {
       return;
     });
 
-    app.get("/runtime", (req, res) => {
-      res.writeHead(200, {
-        "Content-Type": "text/json",
-        "Content-Transfer-Encoding": "utf8",
-      });
-      res.end(JSON.stringify(this.app.options.runtime), "utf8");
-    });
-
     app.get("/r", (req, res) => {
       res.sendFile(this.web_dir + "refer.html");
       return;
