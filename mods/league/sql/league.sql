@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS leagues (
+CREATE TABLE IF NOT EXISTS league (
   id TEXT PRIMARY KEY,
   game TEXT,
   type TEXT,
