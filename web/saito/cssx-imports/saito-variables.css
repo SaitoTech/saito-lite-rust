@@ -82,6 +82,7 @@ font imports
   --saito-dark-transparent: rgba(0, 0, 0, 0.5);
   --saito-dark-btn: #639;
   --saito-dark-btn-deep: #47226c;
+  --saito-box-shadow: -1px 1px 0.5rem 1px var(--saito-border-color);
 }
 
 html[data-theme="dark"] {
@@ -132,7 +133,7 @@ html[data-theme="arcade-dark"] {
   --saito-font-color-inverse: #010101;
   --saito-profile-background: #22222269;
   --saito-border: 1px solid #c5c5c5bb;
-  --saito-border-color: #624a7a;
+  --saito-border-color: #5b4a7a75;
   --saito-background-color: rgb(59, 27, 91);
   --saito-background-light: rgb(46, 38, 54);
   --saito-gray-transparent: #88888818;
