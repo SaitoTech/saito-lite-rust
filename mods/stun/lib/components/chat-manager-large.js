@@ -49,7 +49,7 @@ class VideoChatManager {
     }
 
     attachEvents(app, mod) {
-        app.browser.makeDraggable("stunx-chatbox", null, true);
+        // app.browser.makeDraggable("stunx-chatbox", null, true);
 
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
 
@@ -62,6 +62,21 @@ class VideoChatManager {
         })
         document.querySelector('.video_control').addEventListener('click', (e) => {
             this.toggleVideo();
+        })
+
+        document.querySelector('.stunx-chatbox .minimizer').addEventListener('click', (e) => {
+            let chat_box = document.querySelector(".stunx-chatbox")
+            chat_box.classList.add('minimize');
+        })
+
+        document.querySelector('.large-wrapper').addEventListener('click', (e) => {
+            let chat_box = document.querySelector('.stunx-chatbox')
+            console.log('clicking stunx', e.target.classList, e.target)
+            if (chat_box.classList.contains('minimize')) {
+                chat_box.classList.remove('minimize')
+            }
+
+
         })
     }
 

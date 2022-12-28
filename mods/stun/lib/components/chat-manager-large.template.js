@@ -21,8 +21,8 @@ const ChatManagerLargeTemplate = (call_type) => {
            <span>
             <i class=" audio_control fa fa-microphone" > </i>
             </span>
-            <span  style=" background-color: ${call_type === "audio" ?  "grey" : "white"}">
-            <i  style=" cursor :${call_type === "audio" ? "none" : "pointer" }; color:${call_type === "audio" ? "black" : "green" }  " class=" video_control  fas fa-video"> </i>
+            <span  style=" background-color: ${call_type === "audio" ? "grey" : "white"}">
+            <i  style=" cursor :${call_type === "audio" ? "none" : "pointer"}; color:${call_type === "audio" ? "black" : "green"}  " class=" video_control  fas fa-video"> </i>
             </span>
             <span>
             <i class="disconnect_btn  fas fa-phone"> </i>
@@ -32,7 +32,9 @@ const ChatManagerLargeTemplate = (call_type) => {
         </section>
       </main>
 
-
+    <div class="minimizer">
+    <i class="far regular fa-window-minimize"></i>
+    </div>
     </div>`
 }
 

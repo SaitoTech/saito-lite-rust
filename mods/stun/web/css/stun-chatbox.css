@@ -1,11 +1,47 @@
 .stunx-chatbox {
-  max-width: 60vw;
   top: 0 !important;
   left: 0 !important;
-  width: 100vh;
+  width: 100vw;
   background-color: var(--saito-white) fff;
   position: fixed;
   z-index: 100000;
+  transition: all 0.2s;
+}
+
+.stunx-chatbox.minimize:hover {
+  cursor: pointer;
+}
+
+.stunx-chatbox .minimizer {
+  position: absolute;
+  right: 3rem;
+  top: 0rem;
+}
+
+.stunx-chatbox .minimizer i {
+  font-size: 4rem;
+  color: var(--saito-white);
+  transition: all 0.2s;
+}
+
+@keyframes minimize {
+  100% {
+    position: absolute;
+    opacity: 0.8;
+    transform: translate(-40%, 90%) translate(0, -50%) scale(0.2);
+  }
+}
+
+.minimize {
+  animation-name: minimize;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+.stunx-chatbox .minimizer i:hover {
+  color: var(--saito-primary);
+  transform: scale(1.1);
+  cursor: pointer;
 }
 
 .stunx-chatbox main {
