@@ -1,8 +1,16 @@
+.chat-manager {
+  margin: 0 0 0 1.5rem;
+}
+
 .chat-manager .saito-userline {
   text-overflow: ellipsis;
   overflow: hidden;
   width: 13rem;
   white-space: nowrap;
+}
+
+.chat-manager .saito-user {
+  column-gap: 2rem;
 }
 
 /*  chat / Popup  */

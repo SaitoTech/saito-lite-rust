@@ -1,13 +1,13 @@
 .arcade-game-overlay {
-  background-color: var(--saito-background-color);
+  background: var(--saito-arcade-background);
   width: 60vw;
   height: max-content;
   max-height: 90vh;
-  padding: 1rem;
+  padding: 2rem;
   border-radius: 0.5rem;
   display: grid;
   grid-template-rows: 7rem max-content 7rem;
-  grid-gap: 1rem;
+  grid-gap: 2rem;
 }
 
 .arcade-game-overlay .saito-table-row.arcade-game-player-row {
@@ -44,15 +44,16 @@
 
 .arcade-game-players {
   overflow-y: auto;
-  box-shadow: -1px 1px 0.5rem 1px var(--saito-border-color);
+  box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 1rem;
   margin-top: 1rem;
 }
 
 .arcade-game-options {
   overflow-y: auto;
-  box-shadow: -1px 1px 0.5rem 1px var(--saito-border-color);
+  box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 2rem;
+  border-radius: 0.5rem;
 }
 
 .arcade-game-controls {

@@ -1,7 +1,12 @@
 body {
   height: 100vh;
-  background: var(--saito-background-color);
+  background: var(--saito-arcade-background);
   justify-content: center;
+}
+
+#saito-header {
+  background: var(--saito-arcade-header-background);
+  border-bottom: none;
 }
 
 .arcade-tab-container {
@@ -19,3 +24,10 @@ body {
   grid-gap: 1rem;
 }
 
+button, .saito-button-primary, .saito-button-secondary:hover {
+  background: linear-gradient(45deg, #540e81, #b539e8) !important;
+}
+
+.saito-button-secondary {
+  color: var(--saito-font-color);
+}

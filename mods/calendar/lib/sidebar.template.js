@@ -1,22 +1,18 @@
+module.exports = CalendarAppspaceTemplate = () => {
 
-module.exports = CalendarSidebarTemplate = (app) => {
+  return `
+    
+    <link href='/saito/lib/fullcalendar/packages/core/main.css' rel='stylesheet' />
+    <link href='/saito/lib/fullcalendar/packages/daygrid/main.css' rel='stylesheet' />
+    <link href='/saito/lib/fullcalendar/packages/list/main.css' rel='stylesheet' />
+    <script src='/saito/lib/fullcalendar/packages/core/main.js'></script>
+    <script src='/saito/lib/fullcalendar/packages/daygrid/main.js'></script>
+    <script src='/saito/lib/fullcalendar/packages/list/main.js'></script>
 
-  let mods = app.modules.respondTo("calendar-event");
-  if (mods.length == 0) { return ''; }
+    <div id="calendar-sidebar" class="calendar-sidebar">
+      <div id="tiny-calendar-box" class="calendar-box tiny-calendar-box"></div>
+    </div>
 
-  html = `
-       <select name="calendar-sidebar" id="calendar-sidebar-select" class="calendar-sidebar-select">
-           <option value="all">select event type</option>
   `;
-  for (let i = 0; i < mods.length; i++) {
-    let modobj = mods[i].respondTo("calendar-event");
-    html += `<option value="${modobj.type}">${modobj.name}</option>`;
-  }
-  html += `
-       </select>
-       <div id="calendar-sidebar-add-appointment" class="calendar-sidebar-add-appointment">
-       </div>
-  `;
-  return html;
+
 }
-

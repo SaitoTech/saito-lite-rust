@@ -106,7 +106,7 @@ class League extends ModTemplate {
   }
 
 
-   /**
+  /**
     Create the html for an arcade-style list of my leagues and open leagues,
     inserted into elem
   */
@@ -168,13 +168,13 @@ class League extends ModTemplate {
     //
     // default values
     //
-    if (!obj) { return; }
     if (!obj.name) { obj.name = "Unknown"; }
+    if (!obj) { return; }
     if (!obj.rank) { obj.rank = 0; }
     if (!obj.players) { obj.players = []; }
     if (!obj.games) { obj.games = []; }
-
     if (!obj.mod) { obj.mod = this.app.modules.returnModuleByName(obj.name); }
+    if (!obj.module && obj.mod) { obj.module = obj.mod.name; }
 
 
     let league_idx = -1;
@@ -195,17 +195,35 @@ class League extends ModTemplate {
 
 
   async onPeerHandshakeComplete(app, peer) {
+    league_self = this;
     //    
     // fetch any leagues    
     //    
     this.sendPeerDatabaseRequestWithFilter(
     	"League" , 
-    	`SELECT * FROM leagues` ,
+    	`SELECT * FROM league` ,
     	(res) => {
         console.log("RECEIVED LEAGUES: ");
-        console.log(JSON.stringify(res));	  
+        console.log(JSON.stringify(res));	
+
+        console.log('LEAGUE ROWS');
+        console.log(res.rows);  
+        let rows = res.rows || [];
+
+        console.log(rows);
+        console.log(rows.length);
+
+        if (rows.length > 0) {
+          rows.forEach(function(league, key) {
+            console.log(league);
+            league_self.addLeague(league);
+          }); 
+        }
     	}
     );
+
+    console.log("onPeerHandshakeComplete end");
+    console.log(league_self.leagues);
   }
 
   filterLeagues(app, include_default = true){
@@ -347,9 +365,9 @@ class League extends ModTemplate {
     //
     // add league
     //
-    this.addLeague(league);
+    //this.addLeague(league);
 
-    let sql = `INSERT INTO leagues (id, game, type, admin, name, description, ranking, starting_score, max_players, options, startdate, enddate, allowlate)
+    let sql = `INSERT INTO league (id, game, type, admin, name, description, ranking, starting_score, max_players, options, startdate, enddate, allowlate)
                         VALUES ($id, $game, $type, $admin, $name, $description, $ranking, $starting_score, $max_players, $options, $startdate, $enddate, $allowlate)`;
     let params = {};
     for (let i in league){ params[`$${i}`] = league[i]; }
@@ -527,7 +545,7 @@ class League extends ModTemplate {
 
     let txmsg = tx.returnMessage();
 
-    let sql1 = `DELETE FROM leagues WHERE id='${txmsg.league}'`;
+    let sql1 = `DELETE FROM league WHERE id='${txmsg.league}'`;
     await this.app.storage.executeDatabase(sql1, {}, "league");
     console.log(sql1);
     let sql2 = `DELETE FROM players WHERE league_id='${txmsg.league}'`;
@@ -543,7 +561,7 @@ class League extends ModTemplate {
     let game = txmsg.module;
 
     //Which leagues may this gameover affect?
-    let sql = `SELECT * FROM leagues WHERE game = ? OR id='SAITOLICIOUS'`;
+    let sql = `SELECT * FROM league WHERE game = ? OR id='SAITOLICIOUS'`;
     const relevantLeagues = await this.app.storage.queryDatabase(sql, [game], "league");
 
     //Who are all the players in the game?
@@ -674,7 +692,7 @@ class League extends ModTemplate {
     let game = txmsg.module;
 
     //Which leagues may this gameover affect?
-    let sql = `SELECT * FROM leagues WHERE game = ?${(gameover)? ` OR id='SAITOLICIOUS'`:''}`;
+    let sql = `SELECT * FROM league WHERE game = ?${(gameover)? ` OR id='SAITOLICIOUS'`:''}`;
     const relevantLeagues = await app.storage.queryDatabase(sql, [game], "league");
 
     //Who are all the players in the game?
@@ -827,7 +845,7 @@ class League extends ModTemplate {
       }
     }else{
 
-      let row = await this.app.storage.queryDatabase(`SELECT * FROM leagues WHERE id = ?`, [league_id], "league");
+      let row = await this.app.storage.queryDatabase(`SELECT * FROM league WHERE id = ?`, [league_id], "league");
 
       if (row?.length > 0){
         return row[0][data_field];
@@ -852,7 +870,7 @@ class League extends ModTemplate {
       }
     }else{
 
-      let row = await this.app.storage.queryDatabase(`SELECT * FROM leagues WHERE id = ?`, [league_id], "league");
+      let row = await this.app.storage.queryDatabase(`SELECT * FROM league WHERE id = ?`, [league_id], "league");
       if (row?.length > 0){
         return row[0];
       }
@@ -1128,8 +1146,8 @@ class League extends ModTemplate {
     if (modname == "League") { return 1; }
     if (modname == "Arcade") { return 1; }
 
-    for (let i = 0; i < this.games.length; i++) {
-      if (this.games[i].modname == modname) {
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].module == modname) {
         return 1;
       }
     }
