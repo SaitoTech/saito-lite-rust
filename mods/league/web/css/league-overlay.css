@@ -1,11 +1,11 @@
 .league-overlay {
-  background-color: var(--saito-background-color);
+  background: var(--saito-arcade-background);
   width: 90vw;
   height: 90vh;
-  padding: 1rem 2rem;
+  padding: 2rem 3rem;
   border-radius: 0.5rem;
   display: grid;
-  grid-template-rows: 7rem calc(90vh - 10rem);
+  grid-template-rows: 7rem calc(90vh - 12rem);
   row-gap: 1rem;
 }
 
@@ -44,9 +44,10 @@
 
 .league-overlay-body > div {
   overflow-y: auto;
-  box-shadow: -1px 1px 0.5rem 1px var(--saito-border-color);
+  box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 2rem;
   margin-top: 1rem;
+  border-radius: 0.5rem;
 }
 
 .league-overlay-header {

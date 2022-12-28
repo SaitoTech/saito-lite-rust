@@ -13,7 +13,6 @@
 }
 
 .saito-main {
-  background-color: var(--saito-background-color);
   padding: 2rem 0;
   min-width: 54rem;
   margin: 0 2rem 15rem;
@@ -25,7 +24,6 @@
 }
 
 .saito-sidebar {
-  background-color: var(--saito-background-color);
   top: calc(var(--saito-header-height) + 1rem);
 }
 
@@ -80,7 +78,6 @@
     visibility: hidden;
     width: 35rem;
     height: 100vh;
-    background-color: var(--saito-background-color);
     left: 0;
     border-right: 1px solid var(--saito-primary);
   }
@@ -150,7 +147,6 @@
     top: 0;
     visibility: hidden;
     margin-top: var(--saito-header-height);
-    background-color: var(--saito-background-color);
     height: 100vh;
     z-index: 12;
   }
