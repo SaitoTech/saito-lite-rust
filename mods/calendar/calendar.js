@@ -2,7 +2,7 @@ const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoOverlay = require('../../lib/saito/new-ui/saito-overlay/saito-overlay');
 //const CalendarAppspace = require('./lib/email-appspace/calendar-appspace');
-const CalendarAppspace = require('./lib/email-appspace/calendar-appspace');
+const CalendarSidebar = require('./lib/sidebar');
 
 
 class Calendar extends ModTemplate {
@@ -41,16 +41,28 @@ class Calendar extends ModTemplate {
   renderInto(qs) {
     if (qs == ".redsquare-sidebar") {
       if (!this.renderIntos[qs]) {
-        let m = new CalendarAppspace(this.app, this, qs);
+        let m = new CalendarSidebar(this.app, this, qs);
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(m);
       }
+
+      this.styles = ['/saito/lib/fullcalendar/packages/core/main.css',
+                     '/saito/lib/fullcalendar/packages/daygrid/main.css',
+                     '/saito/lib/fullcalendar/packages/list/main.css'];
+
+
+      this.scripts = ['/saito/lib/fullcalendar/packages/core/main.js',
+		      '/saito/lib/fullcalendar/packages/daygrid/main.js', 
+		      '/saito/lib/fullcalendar/packages/list/main.js'];
       this.attachStyleSheets();
+      this.attachScripts();
+
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
   } 
     
   respondTo(type) {
+/*****
     //
     // standalone large in DEV
     //
@@ -85,30 +97,9 @@ class Calendar extends ModTemplate {
 	  `;
       return obj;
     }
+****/
     return null;
   }
-
-  renderLargeCalendar(app, mod) {
-     mod = app.modules.returnModule("Calendar");;
-     CalendarAppspace.render(app, mod);
-  }
-  attachEventsLargeCalendar(app, mod) {
-     mod = app.modules.returnModule("Calendar");;
-     CalendarAppspace.attachEvents(app, mod);
-  }
-  renderTinyCalendar(app, mod) {
-     mod = app.modules.returnModule("Calendar");;
-     mod.tiny_calendar_active = 1;
-     CalendarAppspace.render(app, mod);
-  }
-  attachEventsTinyCalendar(app, mod) {
-     mod = app.modules.returnModule("Calendar");;
-     mod.tiny_calendar_active = 1;
-     CalendarAppspace.attachEvents(app, mod);
-  }
-
-
-
 
 
   onConfirmation(blk, tx, conf, app) {
