@@ -52,7 +52,7 @@
 .arcade-game-options {
   overflow-y: auto;
   box-shadow: -1px 1px 0.5rem 1px var(--saito-border-color);
-  padding: 1rem;
+  padding: 2rem;
 }
 
 .arcade-game-controls {
