@@ -195,6 +195,7 @@ class League extends ModTemplate {
 
 
   async onPeerHandshakeComplete(app, peer) {
+    league_self = this;
     //    
     // fetch any leagues    
     //    
@@ -203,9 +204,26 @@ class League extends ModTemplate {
     	`SELECT * FROM league` ,
     	(res) => {
         console.log("RECEIVED LEAGUES: ");
-        console.log(JSON.stringify(res));	  
+        console.log(JSON.stringify(res));	
+
+        console.log('LEAGUE ROWS');
+        console.log(res.rows);  
+        let rows = res.rows || [];
+
+        console.log(rows);
+        console.log(rows.length);
+
+        if (rows.length > 0) {
+          rows.forEach(function(league, key) {
+            console.log(league);
+            league_self.addLeague(league);
+          }); 
+        }
     	}
     );
+
+    console.log("onPeerHandshakeComplete end");
+    console.log(league_self.leagues);
   }
 
   filterLeagues(app, include_default = true){

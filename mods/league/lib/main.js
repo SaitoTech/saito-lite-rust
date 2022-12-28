@@ -22,7 +22,14 @@ class LeagueMain {
     //
     // Wipe the main container and create a fresh build render main template
     //
-    this.app.browser.replaceElementById(LeagueMainTemplate(), null);
+
+    if (document.getElementById('league-main-container') != null) {
+      this.app.browser.replaceElementBySelector(LeagueMainTemplate(), "#league-main-container");
+    } else {
+      this.app.browser.addElementToDom(LeagueMainTemplate());
+    }
+
+    
 
     let leagues = this.mod.filterLeagues(this.app, false);
 
