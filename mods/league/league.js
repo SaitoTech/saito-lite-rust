@@ -106,7 +106,7 @@ class League extends ModTemplate {
   }
 
 
-   /**
+  /**
     Create the html for an arcade-style list of my leagues and open leagues,
     inserted into elem
   */
@@ -168,13 +168,13 @@ class League extends ModTemplate {
     //
     // default values
     //
-    if (!obj) { return; }
     if (!obj.name) { obj.name = "Unknown"; }
+    if (!obj) { return; }
     if (!obj.rank) { obj.rank = 0; }
     if (!obj.players) { obj.players = []; }
     if (!obj.games) { obj.games = []; }
-
     if (!obj.mod) { obj.mod = this.app.modules.returnModuleByName(obj.name); }
+    if (!obj.module && obj.mod) { obj.module = obj.mod.name; }
 
 
     let league_idx = -1;
@@ -1146,8 +1146,8 @@ class League extends ModTemplate {
     if (modname == "League") { return 1; }
     if (modname == "Arcade") { return 1; }
 
-    for (let i = 0; i < this.games.length; i++) {
-      if (this.games[i].modname == modname) {
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].module == modname) {
         return 1;
       }
     }
