@@ -393,15 +393,14 @@ i.link_icon.private {
   overflow-y: scroll;
   font-size: 2rem;
   min-width: 400px;
-
+  padding: 1.5rem;
 }
 
 .selection-list li {
   cursor: pointer;
   border-bottom: 1px solid transparent;
-  padding: 5px 0 2px 10px;
-  padding: 10px 0px 10px 20px;
   list-style: none;
+  padding: 0.5rem 0.5rem;
 }
 
 .selection-list li:hover {
@@ -442,9 +441,9 @@ i.link_icon.private {
 
 
 .info-item-wrapper {
-  border-bottom: 2px dotted #b5b5b5;
   display: inline-block;
   cursor: pointer;
+  transform: translateY(56%);
 }
 
 
@@ -502,6 +501,15 @@ i.link_icon.private {
   text-transform: lowercase;
 }
 
+.text-prompt {
+  margin-bottom: 2rem;
+}
+
+.game-selection-list-overlay .overlay-title {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  color: var(--saito-primary);
+}
 
 .saito-labeled-input{
   width: 100%;
@@ -531,6 +539,11 @@ i.link_icon.private {
   text-transform: uppercase;
 }
 
+
+.game-wizard-options form{
+  display: flex;
+  justify-content: space-between;
+}
 
 .saito-select {
   position: relative;

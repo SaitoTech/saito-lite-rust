@@ -11,6 +11,10 @@ class LeagueMain {
     this.app = app;
     this.mod = mod;
 
+    app.connection.on("league-add-league", (league) => {
+      this.render();
+    });
+
   }
 
   render() {
@@ -18,9 +22,20 @@ class LeagueMain {
     //
     // Wipe the main container and create a fresh build render main template
     //
-    this.app.browser.replaceElementById(LeagueMainTemplate(), null);
+
+    if (document.getElementById('league-main-container') != null) {
+      this.app.browser.replaceElementBySelector(LeagueMainTemplate(), "#league-main-container");
+    } else {
+      this.app.browser.addElementToDom(LeagueMainTemplate());
+    }
+
+    
 
     let leagues = this.mod.filterLeagues(this.app, false);
+
+    console.log("LEAGUES");
+    console.log(leagues);
+
     let filter1 = leagues.filter( l => l.admin == this.app.wallet.returnPublicKey() );
     let filter2 = leagues.filter( l => l.myRank > 0 && l.admin != this.app.wallet.returnPublicKey());
     let filter3 = leagues.filter( l => l.myRank <= 0 && l.admin != this.app.wallet.returnPublicKey());
