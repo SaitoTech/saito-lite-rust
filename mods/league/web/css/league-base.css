@@ -5,7 +5,7 @@
 .league-leaderboard > h6 {
   margin-bottom: 0.5rem;
 }
-.league-leaderboard .saito-table .saito-table-row {
+.league-leaderboard .saito-table .saito-table-body .saito-table-row {
   grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
 }
 
