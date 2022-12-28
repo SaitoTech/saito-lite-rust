@@ -1,4 +1,5 @@
 const RedSquareSidebarTemplate = require("./sidebar.template");
+const SaitoCalendar = require("./../../../lib/saito/ui/saito-calendar/saito-calendar");
 
 class RedSquareSidebar {
 
@@ -7,6 +8,8 @@ class RedSquareSidebar {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareSidebar";
+    this.calendar = new SaitoCalendar(app, mod, ".redsquare-sidebar-calendar");
+
   }
 
   render() {
@@ -16,6 +19,11 @@ class RedSquareSidebar {
     } else {
       this.app.browser.addElementToSelectorOrDom(RedSquareSidebarTemplate(), this.container);
     }
+
+    //
+    // render calendar
+    //
+    this.calendar.render();
 
     //
     // appspace modules
