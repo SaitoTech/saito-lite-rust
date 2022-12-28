@@ -1,6 +1,7 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoOverlay = require('../../lib/saito/new-ui/saito-overlay/saito-overlay');
+//const CalendarAppspace = require('./lib/email-appspace/calendar-appspace');
 const CalendarAppspace = require('./lib/email-appspace/calendar-appspace');
 
 
@@ -30,7 +31,25 @@ class Calendar extends ModTemplate {
     this.overlay = new SaitoOverlay(app);
   }
 
+  canRenderInto(qs) {
+    if (qs == ".redsquare-sidebar") {
+      return true;
+    }
+    return false;
+  } 
 
+  renderInto(qs) {
+    if (qs == ".redsquare-sidebar") {
+      if (!this.renderIntos[qs]) {
+        let m = new CalendarAppspace(this.app, this, qs);
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(m);
+      }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+    }
+  } 
+    
   respondTo(type) {
     //
     // standalone large in DEV

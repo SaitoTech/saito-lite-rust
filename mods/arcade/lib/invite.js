@@ -1,5 +1,6 @@
 const JoinGameOverlay = require("./overlays/join-game");
 const InviteTemplate = require("./invite.template");
+const JSON = require('json-bigint');
 
 class Invite {
 	
@@ -8,9 +9,8 @@ class Invite {
     this.app = app;
     this.mod = mod;
     this.container = container;
-    this.join = new JoinGameOverlay(app, mod);
+    this.join = new JoinGameOverlay(app, mod, tx);
     this.tx = tx;
-
 
 
     //
