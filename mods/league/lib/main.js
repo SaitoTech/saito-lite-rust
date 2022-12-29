@@ -1,6 +1,5 @@
 const LeagueMainTemplate    = require("./main.template");
-const LeagueWizard = require("./components/league-wizard");
-const LeagueListModal = require('./components/league-list-modal');
+const LeagueListModal = require('./overlays/league-list-modal');
 const LeagueComponentExistingLeague = require("./components/existing-league");
 //const LeagueJoinOverlay = require("./../overlays/join-league-overlay");
 
@@ -108,13 +107,7 @@ class LeagueMain {
         console.log("HTML");
         console.log(html);        
 
-        let selector = new LeagueListModal(main_self.app, main_self.mod, (gamename) =>{
-          console.log(gamename);
-          let gameMod = main_self.app.modules.returnModule(gamename);
-          if (!gameMod){ console.log("No game module"); return;}
-          let wizard = new LeagueWizard(main_self.app, main_self.mod, gameMod);
-          wizard.render(main_self.app, main_self.mod);
-        });
+        let selector = new LeagueListModal(main_self.app, main_self.mod);
 
         selector.title = "Games";
         selector.prompt = "Select a game for your league";
