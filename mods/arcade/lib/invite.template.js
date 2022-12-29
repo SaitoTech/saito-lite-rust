@@ -21,8 +21,7 @@ console.log("GAME MOD: " + txmsg.game);
                 <div class="saito-module-details saito-game-identicons">
     `;
 
-    for (let i=0; i < txmsg.players; i++) {
-      if (i%2 == 0) {
+    for (let i=0; i < txmsg.players.length; i++) {
         html += `
               <div class="tip">
                 <img class="saito-module-identicon saito-identicon" id-${txmsg.players[i]}" src="${app.keys.returnIdenticon(txmsg.players[i])}">
@@ -30,16 +29,6 @@ console.log("GAME MOD: " + txmsg.game);
                   <div class="saito-address saito-address-${txmsg.players[i]}" data-id="${txmsg.players[i]}">${txmsg.players[i]}</div>
                 </div>
               </div>`;
-      } else {
-        html += `
-              <div class="tip">
-                <img class="saito-module-identicon saito-identicon" src="${app.keys.returnIdenticon(txmsg.players[i])}">
-                <div class="tiptext">
-                  <div class="saito-address saito-address-${txmsg.players[i]}" data-id="${txmsg.players[i]}">${txmsg.players[i]}</div>
-                </div>
-              </div>`;
-
-      }
     }
 
     html += `
