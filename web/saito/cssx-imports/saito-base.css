@@ -200,6 +200,23 @@ Scrollbars
   font-style: italic;
 }
 
+#message-wrapper {
+  border: 2px solid var(--saito-primary);
+  min-width: 500px;
+  padding: 3rem;
+  font-size: 2rem;
+  background: var(--saito-primary);
+  position: fixed;
+  bottom: 5rem;
+  left: 5rem;
+  color: var(--saito-background-color);
+  z-index: 200;
+}
+
+.message-message {
+  font-size: 2rem;
+}
+
 
 /* ----------------------------------------------------------------
 Media Queries
