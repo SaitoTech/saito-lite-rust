@@ -4,6 +4,7 @@ const LeagueRankings = require("./lib/rankings");
 const LeagueLeaderboard = require("./lib/leaderboard");
 const LeagueMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const InvitationLink = require("./../../lib/saito/ui/modals/invitation-link/invitation-link");
 
 class League extends ModTemplate {
 
@@ -395,9 +396,9 @@ class League extends ModTemplate {
         this.updateLeague(league);
       }
     }
-   // setTimeout(()=>{
-   //   this.renderLeagues(this.app, this);
-   // },1000);
+   setTimeout(()=>{
+     this.renderLeagues(this.app, this);
+   },1000);
   }
 
   removePlayer(tx){

@@ -21,6 +21,7 @@
   border: 1px solid var(--saito-border-color);
   border-radius: 0 0 5px 5px;
   padding: 1em 1em 3.5em 1em;
+  color: var(--saito-font-color);
 }
 
 #saito-alert-buttons {

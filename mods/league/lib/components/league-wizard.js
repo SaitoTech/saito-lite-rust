@@ -123,6 +123,10 @@ class LeagueWizard {
         //Destroy both overlays
         this.overlay.remove();
         this.super_overlay.remove();
+
+        setTimeout(function(){
+          location.reload();
+        }, 1000);
         return false;
       });
     });
