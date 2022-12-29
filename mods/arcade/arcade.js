@@ -4,7 +4,6 @@ const ArcadeMain = require("./lib/main/main");
 const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 const InviteManager = require("./lib/invite-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
-const { threadId } = require("worker_threads");
 
 class Arcade extends ModTemplate {
 
@@ -55,6 +54,10 @@ class Arcade extends ModTemplate {
     if (app.modules.respondTo("arcade-games")) {
       app.modules.respondTo("arcade-games").forEach(game_mod => {
         this.game_mods.push(game_mod);
+	//
+	// and listen to their transactions
+	//
+        this.affix_callbacks_to.push(game_mod.name);
       });
     }
 
