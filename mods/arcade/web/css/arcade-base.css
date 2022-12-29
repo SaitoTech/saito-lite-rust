@@ -15,7 +15,7 @@ body {
 }
 
 .saito-header-hamburger-contents {
-  background: var(--saito-background-color);
+  background: var(--saito-arcade-background);
 }
 
 .arcade-main {
@@ -25,7 +25,7 @@ body {
 }
 
 button, .saito-button-primary, .saito-button-secondary:hover {
-  background: linear-gradient(45deg, #540e81, #b539e8) !important;
+  background: var(--saito-button-background);
 }
 
 .saito-button-secondary {

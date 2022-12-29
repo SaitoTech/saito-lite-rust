@@ -4,7 +4,6 @@ const ArcadeMain = require("./lib/main/main");
 const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 const InviteManager = require("./lib/invite-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
-const { threadId } = require("worker_threads");
 
 class Arcade extends ModTemplate {
 

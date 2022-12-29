@@ -104,6 +104,7 @@ html[data-theme="dark"] {
   --saito-gray-transparent: #88888818;
   --saito-box-shadow: 0 0 0 1px;
   --saito-arcade-header-background: transparent;
+  --saito-button-background: var(--saito-primary);
 }
 
 html[data-theme="arcade-light"] {
@@ -132,7 +133,7 @@ html[data-theme="arcade-light"] {
 
 html[data-theme="arcade-dark"] {
   --saito-arcade-background: linear-gradient(-45deg, #324 50%, #1e1e1f 100%);
-  --saito-primary: #639;
+  --saito-primary: #93B;
   --saito-secondary: #060606;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
