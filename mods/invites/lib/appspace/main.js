@@ -4,12 +4,11 @@ const SaitoScheduler = require('./../../../../lib/saito/new-ui/saito-scheduler/s
 
 class InvitesAppspace {
 
-  constructor(app, mod) {
-  }
+  constructor(app, mod, container = "") {
 
-  render(app, mod, container = "") {
-
-console.log("MOD IS: " + mod.name);
+    this.app = app;
+    this.mod = mod;
+    this.container = container;
 
     app.connection.on("event-render-request", (invite_obj) => {
       if (!document.querySelector(".invite-email-appspace")) {
@@ -21,9 +20,20 @@ console.log("MOD IS: " + mod.name);
 
 
 
-    if (!document.querySelector(".invite-email-appspace")) {
-      app.browser.addElementToSelector(InvitesAppspaceTemplate(app, mod), ".appspace");
+  }
+
+
+  render() {
+
+    let app = this.app;
+    let mod = this.mod;
+
+    if (document.querySelector(".invites-appspace")) {
+      this.app.browser.replaceElementBySelector(InvitesAppspaceTemplate(this.app, this.mod), ".invites-appspace");
+    } else {
+      this.app.browser.addElementToSelectorOrDom(InvitesAppspaceTemplate(this.app, this.mod), this.container);
     }
+
 
     if (mod.invites.length > 0) {
       for (let i = 0; i < mod.invites.length; i++) {
@@ -58,12 +68,16 @@ console.log("MOD IS: " + mod.name);
       }
     }
 
-    this.attachEvents(app, mod);
+    this.attachEvents();
+
   }
 
 
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     document.getElementById("invites-new-invite").onclick = (e) => {
       let sc = new SaitoScheduler(app, mod);

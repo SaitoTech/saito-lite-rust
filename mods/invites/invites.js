@@ -27,13 +27,23 @@ class Invites extends InviteTemplate {
     this.loadInvites();
   }
 
-  respondTo(type) {
-    if (type == 'appspace') {
-      super.render(this.app, this); // for scripts + styles
-      return new InvitesAppspace(this.app, this);
-    }
-    return null;
+
+  canRenderInto(qs) {
+    if (qs === ".saito-main") { return true; }
+    return false;
   }
+
+  renderInto(qs) {
+    if (qs == ".saito-main") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new InvitesAppspace(this.app, this, qs));
+      }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+    }
+  }
+
 
   async onConfirmation(blk, tx, conf, app) {
     super.onConfirmation(blk, tx, conf, app);
