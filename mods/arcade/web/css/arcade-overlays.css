@@ -13,6 +13,7 @@
 .arcade-game-overlay .saito-table-row.arcade-game-player-row {
     display: grid;
     grid-template-columns: min-content 1fr min-content 1fr;
+    grid-gap: 1rem;
 }
 
 .arcade-game-overlay-header-image {
@@ -70,3 +71,15 @@
     padding-top: 2.1rem;
 }
 
+
+.saito-identicon-box.empty_slot {
+  width: 3.5rem;
+  border: 1px solid var(--saito-border-color);
+  box-shadow: -1px -1px #000;
+  background-color: var(--saito-light-shim);
+  height: 3.5rem;
+}
+
+.saito-identicon-box .saito-username {
+  line-height: 3.5rem;
+}

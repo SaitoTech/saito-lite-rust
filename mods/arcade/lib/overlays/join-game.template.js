@@ -39,6 +39,11 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
 		}
 
 	html += `  
+
+						<div class="saito-identicon-box empty_slot">
+					  </div>
+					  <div class="saito-username">Open to join</div>
+
 					</div>
 
 				  <div class="saito-table-row">
