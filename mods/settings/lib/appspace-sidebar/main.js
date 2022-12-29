@@ -10,10 +10,10 @@ class SettingsAppspaceSidebar {
 
   render(app, mod) {
 
-    if (document.querySelector(".settings-appspace-sodebar")) {
-      this.app.browser.replaceElementBySelector(SettingsAppspaceTemplate(this.app, this.mod), ".settings-appspace-sidebar");
+    if (document.querySelector(".settings-appspace-sidebar")) {
+      this.app.browser.replaceElementBySelector(SettingsAppspaceSidebarTemplate(this.app, this.mod), ".settings-appspace-sidebar");
     } else {
-      this.app.browser.addElementToSelectorOrDom(SettingsAppspaceTemplate(this.app, this.mod), this.container);
+      this.app.browser.addElementToSelectorOrDom(SettingsAppspaceSidebarTemplate(this.app, this.mod), this.container);
     }
 
   }
