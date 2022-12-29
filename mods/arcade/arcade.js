@@ -49,15 +49,17 @@ class Arcade extends ModTemplate {
 
     super.initialize(app);
 
+    //
+    // compile list of arcade games
+    //
+    if (app.modules.respondTo("arcade-games")) {
+      app.modules.respondTo("arcade-games").forEach(game_mod => {
+        this.game_mods.push(game_mod);
+      });
+    }
+
+
     if (this.app.BROWSER == 1) {
-      //
-      // compile list of arcade games
-      //
-      if (app.modules.respondTo("arcade-games")) {
-        app.modules.respondTo("arcade-games").forEach(game_mod => {
-          this.game_mods.push(game_mod);
-        });
-      }
 
       //
       // game wizard
