@@ -4,6 +4,8 @@ const ArcadeMain = require("./lib/main/main");
 const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 const InviteManager = require("./lib/invite-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
+const GameSelector = require("./lib/overlays/game-selector");
+
 
 class Arcade extends ModTemplate {
 
@@ -21,6 +23,7 @@ class Arcade extends ModTemplate {
     this.games['mine'] = [];
 
     this.wizard = null;
+    this.game_selector = null;
 
     this.is_game_initializing = false;
 
@@ -70,9 +73,13 @@ class Arcade extends ModTemplate {
       this.wizard = new GameWizard(app, this, null, {});
 
       //
+      // game wizard
+      //
+      this.game_selector = new GameSelector(app, this, {});
+
+      //
       // my games
       //
-
       if (this.app.options.games) {
         for (let game of this.app.options.games) {
           if (game.over == 0 && (game.players_set != 1 || game.players.includes(this.app.wallet.returnPublicKey()) || game.accepted.includes(this.app.wallet.returnPublicKey()))) {
@@ -305,6 +312,18 @@ class Arcade extends ModTemplate {
         slug: this.returnSlug()
       };
     }
+    if (type === 'user-menu') {
+      return {
+        text: "Challenge to Arcade Game",
+        icon: "fas fa-gamepad",
+        callback: function (app, publickey) {
+          let obj = { publickey : publickey };
+alert("emit arcade-launch-game-selector");
+	  app.connection.emit("arcade-launch-game-selector", (obj));
+        }
+      }
+    }
+
     return null;
   }
 
