@@ -5,6 +5,7 @@ const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 const InviteManager = require("./lib/invite-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
+const GameScheduler = require("./lib/overlays/game-scheduler");
 
 
 class Arcade extends ModTemplate {
@@ -24,6 +25,7 @@ class Arcade extends ModTemplate {
 
     this.wizard = null;
     this.game_selector = null;
+    this.game_scheduler = null;
 
     this.is_game_initializing = false;
 
@@ -73,9 +75,14 @@ class Arcade extends ModTemplate {
       this.wizard = new GameWizard(app, this, null, {});
 
       //
-      // game wizard
+      // game selector
       //
       this.game_selector = new GameSelector(app, this, {});
+
+      //
+      // game scheduler
+      //
+      this.game_scheduler = new GameScheduler(app, this, {});
 
       //
       // my games
@@ -1663,8 +1670,7 @@ class Arcade extends ModTemplate {
 
       if (gameType == "direct") {
         let newtx = this.createOpenTransaction(gamedata, options.publickey);
-        let w = new ScheduleInvite(this.app, this, newtx);
-        w.render(this.app, this);
+	this.app.connection.emit("arcade-launch-game-scheduler", (newtx));
         return;
       }
 
