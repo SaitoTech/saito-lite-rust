@@ -318,7 +318,6 @@ class Arcade extends ModTemplate {
         icon: "fas fa-gamepad",
         callback: function (app, publickey) {
           let obj = { publickey : publickey };
-alert("emit arcade-launch-game-selector");
 	  app.connection.emit("arcade-launch-game-selector", (obj));
         }
       }
