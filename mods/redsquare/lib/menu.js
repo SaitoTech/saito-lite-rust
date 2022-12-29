@@ -15,9 +15,9 @@ class RedSquareMenu {
     // replace element or insert into page
     //
     if (document.querySelector(".redsquare-menu")) {
-      this.app.browser.replaceElementBySelector( RedSquareMenuTemplate(this.app, this.mod), ".redsquare-menu");
+      this.app.browser.replaceElementBySelector(RedSquareMenuTemplate(this.app, this.mod), ".redsquare-menu");
     } else {
-      this.app.browser.addElementToSelectorOrDom( RedSquareMenuTemplate(this.app, this.mod), this.container);
+      this.app.browser.addElementToSelectorOrDom(RedSquareMenuTemplate(this.app, this.mod), this.container);
     }
 
     //
@@ -31,13 +31,13 @@ console.log("rendering one: " + mod.name);
             <i class="${mod.icon}"></i>
             <span>${mod.returnName()}</span>
           </li>`,
-	  ".saito-menu-list"
-	);
+          ".saito-menu-list"
+        );
       }
     });
 
     this.attachEvents();
-  }  
+  }
 
 
 
@@ -61,13 +61,13 @@ console.log("rendering one: " + mod.name);
     //
     this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
       document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
-	document.querySelector(".saito-main").innerHTML = "";
+        document.querySelector(".saito-main").innerHTML = "";
         mod.renderInto(".saito-main");
-        document.querySelector('.saito-container').scroll({top:0, left:0, behavior: 'smooth'});
-	if (mod.canRenderInto(".saito-sidebar.right")) {
-	  document.querySelector(".saito-sidebar.right").innerHTML = "";
-	  mod.renderInto(".saito-sidebar.right");
-	}
+        document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
+        if (mod.canRenderInto(".saito-sidebar.right")) {
+          document.querySelector(".saito-sidebar.right").innerHTML = "";
+          mod.renderInto(".saito-sidebar.right");
+        }
       }
     });
 
@@ -83,18 +83,18 @@ console.log("rendering one: " + mod.name);
       qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
       let obj = document.querySelector(qs);
       if (!obj) {
-console.log("UPDATING AS 1");
+        console.log("UPDATING AS 1");
         this.app.browser.addElementToSelector(`<div class="saito-notification-dot">1</div>`, `.redsquare-menu-${menu_item}`);
       } else {
-console.log("UPDATING AS 1");
+        console.log("UPDATING AS 1");
         let existing_notifications = parseInt(obj.innerHTML);
-console.log("existing_notifications: " + existing_notifications);
+        console.log("existing_notifications: " + existing_notifications);
         if (notifications == 0) {
-	  obj.style.display = "none";
-	} else {
-	  obj.style.display = "block";
-	  existing_notifications++;
-console.log("updating to " + existing_notifications);
+          obj.style.display = "none";
+        } else {
+          obj.style.display = "block";
+          existing_notifications++;
+          console.log("updating to " + existing_notifications);
           obj.innerHTML = existing_notifications;
         }
       }
