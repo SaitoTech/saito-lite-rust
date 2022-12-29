@@ -82,9 +82,6 @@
   opacity: 0;
   z-index: 10;
   padding: 2rem;
-  box-shadow: 1px 3px 3px var(--saito-border-color), 1px 3px 3px var(--saito-border-color),
-    1px 3px 3px var(--saito-border-color), 1px 1rem 1rem var(--saito-border-color),
-    1px 1rem 1rem var(--saito-border-color);
   width: 20rem;
   height: 100vh;
   overflow: auto;
@@ -108,6 +105,10 @@
   grid-row-end: 2;
 }
 
+.saito-header-profile-balance .saito-select-crypto {
+  font-size: 2rem;
+}
+
 .saito-header-profile-balance > .saito-select-wrapper > div {
   width: 28rem;
 }
@@ -126,7 +127,6 @@
 }
 
 .saito-header-profile-address p {
-  width: 70%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

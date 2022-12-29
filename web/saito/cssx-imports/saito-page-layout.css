@@ -53,7 +53,6 @@
   top: 0;
   min-width: 26rem;
   width: 50rem;
-  overflow-y: auto;
   height: inherit;
 }
 
