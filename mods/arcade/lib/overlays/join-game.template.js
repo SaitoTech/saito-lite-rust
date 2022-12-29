@@ -3,6 +3,9 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
   let txmsg = invite_tx.returnMessage();
   let game_mod = app.modules.returnModuleByName(txmsg.name);
 
+  console.log("TXN MSGGGGGGGG");
+  console.log(txmsg);
+
   let html = `
   <div class="arcade-game-overlay">
   <div class="arcade-game-overlay-header">
@@ -17,30 +20,27 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
 	  <div class="arcade-game-options">
 		  <div class="saito-table">
 			  <div class="saito-table-body">
-				  <div class="saito-table-row arcade-game-player-row">
+	
+			  <div class="saito-table-row arcade-game-player-row">
+	`;
+
+		for (let i=0; i < txmsg.players.length; i++) {
+  		html += `
+
+				  
 					  <div class="saito-identicon-box">
 						  <img class="saito-identicon"
-							  src="${app.keys.returnIdenticon('fkBBy46Rjw3gAtzSa8o1kHKn9HeCzAibiFvnMqyS5A2b')}">
+							  src="${app.keys.returnIdenticon(txmsg.players[i])}">
 					  </div>
-					  <div class="saito-username">fkBBy46Rjw3gAtzSa8o1kHKn9HeCzAibiFvnMqyS5A2b</div>
-					  <div class="saito-identicon-box">
-						  <img class="saito-identicon"
-							  src="${app.keys.returnIdenticon('fkBBy46Rjw3gAtzSa8o1kHKn9HeCzAibiFvnMqyS5A2b')}">
-					  </div>
-					  <div class="saito-username">fkBBy46Rjw3gAtzSa8o1kHKn9HeCzAibiFvnMqyS5A2b</div>
-				  </div>
-				  <div class="saito-table-row arcade-game-player-row" style="margin-bottom: 2rem">
-					  <div class="saito-identicon-box">
-						  <img class="saito-identicon"
-							  src="${app.keys.returnIdenticon('fkBBy46Rjw3gAtzSa8o1kHKn9HeCzAibiFvnMqyS5A2b')}">
-					  </div>
-					  <div class="saito-username">fkBBy46Rjw3gAtzSa8o1kHKn9HeCzAibiFvnMqyS5A2b</div>
-					  <div class="saito-identicon-box">
-						  <img class="saito-identicon"
-							  src="${app.keys.returnIdenticon('fkBBy46Rjw3gAtzSa8o1kHKn9HeCzAibiFvnMqyS5A2b')}">
-					  </div>
-					  <div class="saito-username">fkBBy46Rjw3gAtzSa8o1kHKn9HeCzAibiFvnMqyS5A2b</div>
-				  </div>
+					  <div class="saito-username">${txmsg.players[i]}</div>
+					  	  
+			`;
+
+		}
+
+	html += `  
+					</div>
+
 				  <div class="saito-table-row">
 					  <div class="arcade-game-options-key">deck</div>
 					  <div class="arcade-game-options-value">optional</div>
