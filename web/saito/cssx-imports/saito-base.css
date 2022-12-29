@@ -142,16 +142,18 @@ Scrollbars
 
 ::-webkit-scrollbar-track {
   background: transparent;
+  /*
   background: linear-gradient(
     90deg,
     transparent 0 45%,
     var(--saito-border-color) 45% 55%,
     transparent 55% 100%
   );
+  */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--saito-thumbBG);
+  background-color: var(--saito-primary);
   border-radius: 1rem;
 }
 

@@ -49,11 +49,11 @@
   background-color: var(--saito-background-color);
   grid-column-start: 3;
   grid-row: 1/2;
-  position: sticky;
+  position: relative;
   top: 0;
   min-width: 26rem;
   width: 50rem;
-  height: inherit;
+  height: max-content;
 }
 
 .saito-sidebar.right.mobile {

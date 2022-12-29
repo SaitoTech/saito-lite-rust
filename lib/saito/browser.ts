@@ -72,29 +72,29 @@ class Browser {
         }
 
 
-/******
-        channel.onmessage = (e) => {
-          console.log("document onmessage change");
-          if (!document.hidden) {
-            channel.postMessage({
-              active: 1,
-              publickey: this.app.wallet.returnPublicKey(),
-            });
-            this.setActiveTab(1);
-          } else {
-            //
-            // only disable if someone else active w/ same key
-            //
-            if (e.data) {
-              if (e.data.active == 1) {
-                if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
-                  this.setActiveTab(0);
-                }
-              }
-            }
-          }
-        };
-*****/
+        /******
+                channel.onmessage = (e) => {
+                  console.log("document onmessage change");
+                  if (!document.hidden) {
+                    channel.postMessage({
+                      active: 1,
+                      publickey: this.app.wallet.returnPublicKey(),
+                    });
+                    this.setActiveTab(1);
+                  } else {
+                    //
+                    // only disable if someone else active w/ same key
+                    //
+                    if (e.data) {
+                      if (e.data.active == 1) {
+                        if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
+                          this.setActiveTab(0);
+                        }
+                      }
+                    }
+                  }
+                };
+        *****/
 
         document.addEventListener(
           "visibilitychange",
@@ -665,7 +665,7 @@ class Browser {
     wrapper.append(tip);
   }
 
-  formatTime(milliseconds=0) {
+  formatTime(milliseconds = 0) {
 
     let hours = parseInt(milliseconds / 3600000);
     milliseconds = milliseconds % 3600000;
@@ -675,7 +675,7 @@ class Browser {
 
     let seconds = parseInt(milliseconds / 1000);
 
-    return { hours : hours, minutes : minutes, seconds : seconds };
+    return { hours: hours, minutes: minutes, seconds: seconds };
 
   }
 
@@ -742,11 +742,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-	    if (read_as_array_buffer) {
+            if (read_as_array_buffer) {
               reader.readAsArrayBuffer(file);
-	    } else {
+            } else {
               reader.readAsDataURL(file);
-	    }
+            }
           });
         },
         false
@@ -760,11 +760,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-	    if (read_as_array_buffer) {
+            if (read_as_array_buffer) {
               reader.readAsArrayBuffer(file);
-	    } else {
+            } else {
               reader.readAsDataURL(file);
-	    }
+            }
           });
         },
         false
@@ -787,11 +787,11 @@ class Browser {
               reader.addEventListener("load", (event) => {
                 handleFileDrop(event.target.result);
               });
-	      if (read_as_array_buffer) {
+              if (read_as_array_buffer) {
                 reader.readAsArrayBuffer(file);
-	      } else {
+              } else {
                 reader.readAsDataURL(file);
-	      }
+              }
             });
           }
         },
@@ -837,7 +837,7 @@ class Browser {
       let element_start_top = 0;
 
       element_to_drag.onmousedown = function (e) {
-        if (timeout){
+        if (timeout) {
           clearTimeout(timeout);
         }
         let resizeable = ["both", "vertical", "horizontal"];
@@ -897,8 +897,8 @@ class Browser {
               element_to_move.style.top =
                 window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
             }
-          
-            timeout = setTimeout(()=>{
+
+            timeout = setTimeout(() => {
               element_to_move.classList.remove("dockedBottom");
               element_to_move.classList.remove("dockedTop");
               element_to_move.classList.remove("dockedRight");
@@ -948,8 +948,8 @@ class Browser {
 
             if (
               Math.abs(element_to_move.getBoundingClientRect().x +
-              element_to_move.getBoundingClientRect().width -
-              window.innerWidth) < threshold
+                element_to_move.getBoundingClientRect().width -
+                window.innerWidth) < threshold
             ) {
               element_to_move.classList.add("dockedRight");
             } else {
@@ -958,8 +958,8 @@ class Browser {
 
             if (
               Math.abs(element_to_move.getBoundingClientRect().y +
-              element_to_move.getBoundingClientRect().height -
-              window.innerHeight) < threshold
+                element_to_move.getBoundingClientRect().height -
+                window.innerHeight) < threshold
             ) {
               element_to_move.classList.add("dockedBottom");
             } else {
@@ -967,7 +967,7 @@ class Browser {
             }
 
             // set the element's new position:
-            
+
             if (Math.abs(newPosX) < threshold) {
               newPosX = 0;
             }
@@ -981,7 +981,7 @@ class Browser {
             if (Math.abs(newPosY + element_to_move.getBoundingClientRect().height - window.innerHeight) < threshold) {
               newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
             }
-            
+
           }
 
           element_to_move.style.left = newPosX + "px";
@@ -1337,7 +1337,7 @@ class Browser {
   }
 
   async linkifyKeys(app, mod, element) {
-    if (typeof element == "undefined") { return ;}
+    if (typeof element == "undefined") { return; }
     //console.log("linkifyin' " + element.id)
     if (element.id == "") { return; }
     let elements = element.childNodes;
@@ -1361,7 +1361,7 @@ class Browser {
         if (identifiers.length + keys.length > 0) {
           //deduplicate identifier list
           identifiers = [...new Set(identifiers)];
-          
+
           try {
 
             identifiers.forEach(async (identifier) => {
@@ -1377,7 +1377,7 @@ class Browser {
             keys = [...new Set(keys)];
 
             const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
-            mappedKeyIdentifiers = Object.assign({},mappedKeyIdentifiers, answer);
+            mappedKeyIdentifiers = Object.assign({}, mappedKeyIdentifiers, answer);
 
             keys.forEach(k => {
               let matched = false;
@@ -1510,10 +1510,10 @@ class Browser {
     });
   }
 
-  stripHtml(html){
-     let tmp = document.createElement("DIV");
-     tmp.innerHTML = html;
-     return tmp.textContent || tmp.innerText || "";
+  stripHtml(html) {
+    let tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
   }
 
   attachWindowFunctions() {
@@ -1559,130 +1559,130 @@ class Browser {
         setTimeout(() => {
           document.querySelector("#alert-box").style.top = "0";
         }, 100);
-  	document.querySelector("#alert-ok").focus();
-  	document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
-  	  if (event.keyCode === 13) {
-  	    event.preventDefault();
-  	    document.querySelector("#alert-ok").click();
-  	  }
-  	});
-  	document.querySelector("#alert-ok").addEventListener(
-  	  "click",
-  	  function () {
-  	    wrapper.remove();
-  	  },
-  	  false
-  	);
+        document.querySelector("#alert-ok").focus();
+        document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
+          if (event.keyCode === 13) {
+            event.preventDefault();
+            document.querySelector("#alert-ok").click();
+          }
+        });
+        document.querySelector("#alert-ok").addEventListener(
+          "click",
+          function () {
+            wrapper.remove();
+          },
+          false
+        );
       };
 
       window.sconfirm = function (message) {
-  	if (document.getElementById("saito-alert")) {
-  	  return;
-  	}
-  	return new Promise((resolve, reject) => {
-  	  var wrapper = document.createElement("div");
-  	  wrapper.id = "saito-alert";
-  	  var html = '<div id="saito-alert-shim">';
-  	  html += '<div id="saito-alert-box">';
-  	  html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
-  	  html +=
-  	    '<div id="saito-alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
-  	  html += "</div></div></div>";
-  	  wrapper.innerHTML = html;
-  	  document.body.appendChild(wrapper);
-  	  setTimeout(() => {
-  	    document.getElementById("saito-alert-box").style.top = "0";
-  	  }, 100);
-  	  document.getElementById("alert-ok").focus();
-  	  //document.getElementById('alert-ok').select();
-  	  document.getElementById("saito-alert-shim").onclick = (event) => {
-  	    if (event.keyCode === 13) {
-  	      event.preventDefault();
-  	      document.getElementById("alert-ok").click();
-  	    }
-  	  };
-  	  document.getElementById("alert-ok").onclick = () => {
-  	    wrapper.remove();
-  	    resolve(true);
-  	    // }, false;
-  	  };
-  	  document.getElementById("alert-cancel").onclick = () => {
-  	    wrapper.remove();
-  	    resolve(false);
-  	    // }, false);
-  	  };
-  	});
+        if (document.getElementById("saito-alert")) {
+          return;
+        }
+        return new Promise((resolve, reject) => {
+          var wrapper = document.createElement("div");
+          wrapper.id = "saito-alert";
+          var html = '<div id="saito-alert-shim">';
+          html += '<div id="saito-alert-box">';
+          html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+          html +=
+            '<div id="saito-alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
+          html += "</div></div></div>";
+          wrapper.innerHTML = html;
+          document.body.appendChild(wrapper);
+          setTimeout(() => {
+            document.getElementById("saito-alert-box").style.top = "0";
+          }, 100);
+          document.getElementById("alert-ok").focus();
+          //document.getElementById('alert-ok').select();
+          document.getElementById("saito-alert-shim").onclick = (event) => {
+            if (event.keyCode === 13) {
+              event.preventDefault();
+              document.getElementById("alert-ok").click();
+            }
+          };
+          document.getElementById("alert-ok").onclick = () => {
+            wrapper.remove();
+            resolve(true);
+            // }, false;
+          };
+          document.getElementById("alert-cancel").onclick = () => {
+            wrapper.remove();
+            resolve(false);
+            // }, false);
+          };
+        });
       };
 
       window.sprompt = function (message) {
-  	if (document.getElementById("saito-alert")) {
-  	  return;
-  	}
-  	return new Promise((resolve, reject) => {
-  	  var wrapper = document.createElement("div");
-  	  wrapper.id = "saito-alert";
-  	  var html = '<div id="saito-alert-shim">';
-  	  html += '<div id="saito-alert-box">';
-  	  html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
-  	  html +=
-  	    '<div class="alert-prompt"><input type="text" id="promptval" class="promptval" /></div>';
-  	  html +=
-  	    '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
-  	  html += "</div></div></div>";
-  	  wrapper.innerHTML = html;
-  	  document.body.appendChild(wrapper);
-  	  document.querySelector("#promptval").focus();
-  	  document.querySelector("#promptval").select();
-  	  setTimeout(() => {
-  	    document.querySelector("#alert-box").style.top = "0";
-  	  }, 100);
-  	  document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
-  	    if (event.keyCode === 13) {
-  	      event.preventDefault();
-  	      document.querySelector("#alert-ok").click();
-  	    }
-  	  });
-  	  document.querySelector("#alert-ok").addEventListener(
-  	    "click",
-  	    function () {
-  	      var val = document.querySelector("#promptval").value;
-  	      wrapper.remove();
-  	      resolve(val);
-  	    },
-  	    false
-  	  );
-  	  document.querySelector("#alert-cancel").addEventListener(
-  	    "click",
-  	    function () {
-  	      wrapper.remove();
-  	      resolve(false);
-  	    },
-  	    false
-  	  );
-  	});
+        if (document.getElementById("saito-alert")) {
+          return;
+        }
+        return new Promise((resolve, reject) => {
+          var wrapper = document.createElement("div");
+          wrapper.id = "saito-alert";
+          var html = '<div id="saito-alert-shim">';
+          html += '<div id="saito-alert-box">';
+          html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+          html +=
+            '<div class="alert-prompt"><input type="text" id="promptval" class="promptval" /></div>';
+          html +=
+            '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
+          html += "</div></div></div>";
+          wrapper.innerHTML = html;
+          document.body.appendChild(wrapper);
+          document.querySelector("#promptval").focus();
+          document.querySelector("#promptval").select();
+          setTimeout(() => {
+            document.querySelector("#alert-box").style.top = "0";
+          }, 100);
+          document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
+            if (event.keyCode === 13) {
+              event.preventDefault();
+              document.querySelector("#alert-ok").click();
+            }
+          });
+          document.querySelector("#alert-ok").addEventListener(
+            "click",
+            function () {
+              var val = document.querySelector("#promptval").value;
+              wrapper.remove();
+              resolve(val);
+            },
+            false
+          );
+          document.querySelector("#alert-cancel").addEventListener(
+            "click",
+            function () {
+              wrapper.remove();
+              resolve(false);
+            },
+            false
+          );
+        });
       };
 
       window.siteMessage = function (message, killtime = 9999999) {
-  	if (document.getElementById("message-wrapper")) {
-  	  document.getElementById("message-wrapper").remove();
-  	}
-  	var wrapper = document.createElement("div");
-  	wrapper.id = "message-wrapper";
-  	var html = '<div id="message-box">';
-  	html += '<p class="message-message">' + browser_self.sanitize(message) + "</p>";
-  	html += "</div>";
-  	wrapper.innerHTML = html;
-  	document.body.appendChild(wrapper);
-  	setTimeout(() => {
-  	  wrapper.remove();
-  	}, killtime);
-  	document.querySelector("#message-wrapper").addEventListener(
-  	  "click",
-  	  function () {
-  	    wrapper.remove();
-  	  },
-  	  false
-  	);
+        if (document.getElementById("message-wrapper")) {
+          document.getElementById("message-wrapper").remove();
+        }
+        var wrapper = document.createElement("div");
+        wrapper.id = "message-wrapper";
+        var html = '<div id="message-box">';
+        html += '<p class="message-message">' + browser_self.sanitize(message) + "</p>";
+        html += "</div>";
+        wrapper.innerHTML = html;
+        document.body.appendChild(wrapper);
+        setTimeout(() => {
+          wrapper.remove();
+        }, killtime);
+        document.querySelector("#message-wrapper").addEventListener(
+          "click",
+          function () {
+            wrapper.remove();
+          },
+          false
+        );
       };
 
       HTMLElement.prototype.destroy = function destroy() {
@@ -1694,6 +1694,8 @@ class Browser {
       };
 
     }
+
+  
   }
 
 
@@ -1736,6 +1738,9 @@ class Browser {
       parent.appendChild(filelabel);
     }
   }
+
+
+
 
 }
 export default Browser;
