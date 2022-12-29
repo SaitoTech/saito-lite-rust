@@ -1,7 +1,7 @@
-const ListSelectionModalTemplate= require('./list-selection-modal.template');
-const SaitoOverlay = require('./../../saito-overlay/saito-overlay');
+const LeagueListModalTemplate= require('./league-list-modal.template');
+const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
-class ListSelectionModal {
+ class LeagueListModal {
 
   constructor(app, mod, callback = () => { }) {
     this.app = app;
@@ -15,7 +15,7 @@ class ListSelectionModal {
 
   render() {
     modal_self = this;
-    this.overlay.show(ListSelectionModalTemplate(this.app, this.mod, this));
+    this.overlay.show(LeagueListModalTemplate(this.app, this.mod, this));
 
     Array.from(document.querySelectorAll('#selection-list li')).forEach(game => {
       game.addEventListener('click', (e) => {
@@ -32,5 +32,5 @@ class ListSelectionModal {
 }
 
 
-module.exports = ListSelectionModal;
+module.exports = LeagueListModal;
 

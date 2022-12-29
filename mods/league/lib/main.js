@@ -1,6 +1,6 @@
 const LeagueMainTemplate    = require("./main.template");
 const LeagueWizard = require("./components/league-wizard");
-const ListSelectionModal = require('./../../../lib/saito/ui/modals/list-selection-modal/list-selection-modal');
+const LeagueListModal = require('./components/league-list-modal');
 const LeagueComponentExistingLeague = require("./components/existing-league");
 //const LeagueJoinOverlay = require("./../overlays/join-league-overlay");
 
@@ -108,7 +108,7 @@ class LeagueMain {
         console.log("HTML");
         console.log(html);        
 
-        let selector = new ListSelectionModal(main_self.app, main_self.mod, (gamename) =>{
+        let selector = new LeagueListModal(main_self.app, main_self.mod, (gamename) =>{
           console.log(gamename);
           let gameMod = main_self.app.modules.returnModule(gamename);
           if (!gameMod){ console.log("No game module"); return;}
