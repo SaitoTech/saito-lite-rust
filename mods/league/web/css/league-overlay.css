@@ -1,6 +1,7 @@
 .league-overlay {
   background: var(--saito-arcade-background);
   width: 90vw;
+  max-width: 150rem;
   height: 90vh;
   padding: 2rem 3rem;
   border-radius: 0.5rem;

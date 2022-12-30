@@ -321,7 +321,7 @@ class Arcade extends ModTemplate {
     }
     if (type === 'user-menu') {
       return {
-        text: "Challenge to Arcade Game",
+        text: "Challenge to Game",
         icon: "fas fa-gamepad",
         callback: function (app, publickey) {
           let obj = { publickey : publickey };
