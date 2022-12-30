@@ -15,17 +15,14 @@ class GameWizard {
     this.overlay = new SaitoOverlay(app);
     this.obj = invite_obj;
 
-    app.connection.on("arcade-launch-game-wizard", (invite_obj)=>{
+    app.connection.on("arcade-launch-game-wizard", (invite_obj) => {
 
-      console.log('inside game wizard');
-      console.log(JSON.stringify(invite_obj));
-
-      if (invite_obj.game){
+      if (invite_obj.game) {
 
         let game_mod = this.app.modules.returnModule(invite_obj.game);
-        
+
         if (game_mod) {
-          
+
           this.game_mod = game_mod;
           this.obj = invite_obj;
           this.render(this.app, this.mod);
@@ -50,15 +47,15 @@ class GameWizard {
     //Test if we should include Advanced Options
     let advancedOptions = this.game_mod.returnGameOptionsHTML();
     if (!advancedOptions) {
-      if (document.getElementById("arcade-advance-opt")){
-        document.getElementById("arcade-advance-opt").style.display = "none";  
+      if (document.getElementById("arcade-advance-opt")) {
+        document.getElementById("arcade-advance-opt").style.display = "none";
       }
     } else {
 
       //Create (hidden) the advanced options window
       this.meta_overlay = new SaitoOverlay(app, false, false);
       this.meta_overlay.show(app, mod, advancedOptions);
-      this.meta_overlay.hide();      
+      this.meta_overlay.hide();
 
       //
       // move advanced options into game details form for easy selection of game options
@@ -86,24 +83,24 @@ class GameWizard {
     let app = this.app;
     let mod = this.mod;
 
-    if (document.querySelector(".saito-multi-select_btn")){
+    if (document.querySelector(".saito-multi-select_btn")) {
       document.querySelector(".saito-multi-select_btn").addEventListener("click", (e) => {
-      e.currentTarget.classList.toggle("showAll");
-      });  
+        e.currentTarget.classList.toggle("showAll");
+      });
     }
 
-    
+
     //
     // Display Advanced Options Overlay
     //
     const advancedOptionsToggle = document.getElementById("arcade-advance-opt");
-    if (advancedOptionsToggle){
+    if (advancedOptionsToggle) {
       advancedOptionsToggle.onclick = (e) => {
 
         //Requery advancedOptions on the click so it can dynamically update based on # of players
         let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small">Accept</div>`;
         let advancedOptionsHTML = this.game_mod.returnGameOptionsHTML();
-        if (!advancedOptionsHTML.includes(accept_button)){
+        if (!advancedOptionsHTML.includes(accept_button)) {
           advancedOptionsHTML += accept_button;
         }
         this.meta_overlay.show(app, this.game_mod, advancedOptionsHTML);
@@ -117,12 +114,12 @@ class GameWizard {
         }
       }
     }
-      
+
     //
     // Display Rules Overlay
     //
-    if (document.getElementById('game-rules-btn')){
-      document.getElementById('game-rules-btn').onclick = function(){
+    if (document.getElementById('game-rules-btn')) {
+      document.getElementById('game-rules-btn').onclick = function () {
         let rules_overlay = new SaitoOverlay(app);
         rules_overlay.show(app, mod, this.game_mod.returnGameRulesHTML());
       }
@@ -139,7 +136,7 @@ class GameWizard {
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
 
           let c = await mod.verifyOptions(isPrivateGame, options);
-          if (!c){
+          if (!c) {
             this.overlay.remove();
             return;
           }
@@ -154,9 +151,9 @@ class GameWizard {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
-console.log("CAN WE MAKE GAME INVITE 1");
+          console.log("CAN WE MAKE GAME INVITE 1");
           mod.makeGameInvite(options, isPrivateGame);
-console.log("CAN WE MAKE GAME INVITE 2"); 
+          console.log("CAN WE MAKE GAME INVITE 2");
 
         } catch (err) {
           console.warn(err);
@@ -168,7 +165,7 @@ console.log("CAN WE MAKE GAME INVITE 2");
         return false;
       });
     });
-  
+
   }
 
 
