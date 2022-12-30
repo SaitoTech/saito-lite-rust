@@ -24,7 +24,18 @@ class ThemeSwitcherOverlay {
 
   attachEvents() {
     this_self = this;
+    document.querySelectorAll('.saito-modal-menu-option').forEach(function(elem){
+      elem.addEventListener('click', function(e) {
+      
+        let theme = e.target.getAttribute('data-theme');
+        
+        if (theme != null) {
+          console.log(theme);
+          this_self.app.browser.switchTheme(theme);
+        }
+      });
 
+    });
   }
 
 }

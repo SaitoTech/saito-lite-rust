@@ -1739,8 +1739,10 @@ class Browser {
     }
   }
 
-
-
+  switchTheme(theme) {
+    console.log('switch theme');
+    document.documentElement.setAttribute('data-theme', theme);
+  }
 
 }
 export default Browser;
