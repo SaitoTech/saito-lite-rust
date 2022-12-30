@@ -6,7 +6,6 @@
     flex-direction: row;
     justify-content: space-between;
     position: relative;
-    overflow: hidden;
     width: 100%;
     cursor: pointer;
     padding: 1rem;

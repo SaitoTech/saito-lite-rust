@@ -1,4 +1,4 @@
-module.exports = ListSelectionModalTemplate = (app, mod, modal) => {
+module.exports = LeagueListModalTemplate = (app, mod, modal) => {
   return `
     <div class="game-selection-list-overlay">
       <div class="overlay-title">${modal.title}</div>

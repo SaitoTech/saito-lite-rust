@@ -276,7 +276,7 @@ class Arcade extends ModTemplate {
         game: "twilight",
         name: "Twilight Struggle",
         type: "custom",
-        players: 1
+        players: ['c53MKaXsjr6McTndPAC7q6x4t7xUz3QJ6sVwkgNSwR8H']
       };
       game_tx = this.app.wallet.signTransaction(game_tx);
       this.games["open"].push(game_tx);
@@ -287,7 +287,7 @@ class Arcade extends ModTemplate {
         game: "solitrio",
         name: "Beleaguered Solitaire",
         type: "standard",
-        players: 3
+        players: ['c53MKaXsjr6McTndPAC7q6x4t7xUz3QJ6sVwkgNSwR8H', 'nReBEFShjCJCynR4THTciLGbTrLrscTr32mR5wi8RXyt', '24KsrYBodT4p1JBjESmxgqoWMCfR8aUF28z4GEEdPFYti']
       };
       game_tx = this.app.wallet.signTransaction(game_tx);
       this.games["open"].push(game_tx);
@@ -298,7 +298,7 @@ class Arcade extends ModTemplate {
         game: "settlers",
         name: "Settlers of Saitoa",
         type: "standard",
-        players: 5
+        players: ['c53MKaXsjr6McTndPAC7q6x4t7xUz3QJ6sVwkgNSwR8H', 'wjToCM1iwcr47V2R4LcFiFNckASNsD9kbb9jEAchWkEh', '29dcJnLEaFtkejszLDd35gxRXE3XpXdywD2G71d2AnbUe', 'nReBEFShjCJCynR4THTciLGbTrLrscTr32mR5wi8RXyt', '24KsrYBodT4p1JBjESmxgqoWMCfR8aUF28z4GEEdPFYti']
       };
       game_tx = this.app.wallet.signTransaction(game_tx);
       this.games["open"].push(game_tx);

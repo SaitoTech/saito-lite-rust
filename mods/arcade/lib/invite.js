@@ -56,8 +56,8 @@ class Invite {
           cmd: game_cmd
         }
 
-	invite_self.join.invite = invite;
-	invite_self.join.render();
+      	invite_self.join.invite = invite;
+      	invite_self.join.render();
 
       }
     });

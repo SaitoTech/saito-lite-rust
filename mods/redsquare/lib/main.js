@@ -70,9 +70,9 @@ class RedSquareMain {
     //
     this.app.connection.on("redsquare-tweet-added", (tweet) => {
       if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
-	if (this.render_component === "home") {
-	  tweet.render();
-	}
+        if (this.render_component === "home") {
+          tweet.render();
+        }
       }
     });
 
@@ -111,9 +111,33 @@ class RedSquareMain {
     //
     this.attachEvents();
 
-  }  
+  }
 
   attachEvents() {
+    var scrollableElement = document.querySelector(".saito-container");
+    var sidebar = document.querySelector(".saito-sidebar.right");
+    var scrollTop = 0;
+    var stop = 0;
+
+    scrollableElement.addEventListener("scroll", (e) => {
+      if (window.innerHeight - 100 < sidebar.clientHeight) {
+        if (scrollTop < scrollableElement.scrollTop) {
+          stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
+          if (scrollableElement.scrollTop + window.innerHeight > sidebar.clientHeight) {
+            sidebar.style.top = stop + "px";
+          }
+        } else {
+          if (stop > scrollableElement.scrollTop) {
+            stop = scrollableElement.scrollTop;
+            sidebar.style.top = stop + "px";
+          }
+        }
+      } else {
+        stop = scrollableElement.scrollTop;
+        sidebar.style.top = stop + "px";
+      }
+      scrollTop = scrollableElement.scrollTop;
+    });
   }
 
 }

@@ -142,16 +142,18 @@ Scrollbars
 
 ::-webkit-scrollbar-track {
   background: transparent;
+  /*
   background: linear-gradient(
     90deg,
     transparent 0 45%,
     var(--saito-border-color) 45% 55%,
     transparent 55% 100%
   );
+  */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--saito-thumbBG);
+  background-color: var(--saito-primary);
   border-radius: 1rem;
 }
 
@@ -196,6 +198,23 @@ Scrollbars
   background-color: #fefefe;
   border-bottom: 1px solid var(--saito-primary);
   font-style: italic;
+}
+
+#message-wrapper {
+  border: 2px solid var(--saito-primary);
+  min-width: 500px;
+  padding: 3rem;
+  font-size: 2rem;
+  background: var(--saito-primary);
+  position: fixed;
+  bottom: 5rem;
+  left: 5rem;
+  color: var(--saito-background-color);
+  z-index: 200;
+}
+
+.message-message {
+  font-size: 2rem;
 }
 
 
