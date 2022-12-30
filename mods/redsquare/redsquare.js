@@ -86,6 +86,8 @@ class RedSquare extends ModTemplate {
       og_image_secure_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"
     }
 
+    this.themes_avl = ['lite', 'dark'];
+
     return this;
 
   }
