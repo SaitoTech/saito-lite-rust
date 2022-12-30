@@ -576,6 +576,8 @@ class Network {
   }
 
   initialize() {
+    console.debug("[DEBUG] initialize network");
+
     if (this.app.options) {
       if (this.app.options.server) {
         if (
@@ -618,9 +620,12 @@ class Network {
     }
 
     if (this.app.options.peers != null) {
+      console.debug("[DEBUG] peers length " + this.app.options.peers.length);
       for (let i = 0; i < this.app.options.peers.length; i++) {
         this.addPeer(JSON.stringify(this.app.options.peers[i]));
       }
+    } else {
+      console.debug("[DEBUG] no peers defined");
     }
 
     this.app.connection.on("peer_disconnect", (peer) => {
