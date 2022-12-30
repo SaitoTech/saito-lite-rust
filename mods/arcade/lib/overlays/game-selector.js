@@ -13,7 +13,7 @@ class GameSelector {
     this.overlay = new SaitoOverlay(app);
     this.obj = obj;
 
-    this.app.connection.on("arcade-launch-game-selector", (obj={}) => {
+    this.app.connection.on("arcade-launch-game-selector", (obj = {}) => {
       this.obj = obj;
       this.render();
     });
@@ -27,12 +27,12 @@ class GameSelector {
 
   attachEvents() {
 
-    Array.from(document.querySelectorAll('.redsquare-game-container')).forEach(game => {
+    Array.from(document.querySelectorAll('.arcade-game-container')).forEach(game => {
       game.onclick = (e) => {
         let modname = e.currentTarget.getAttribute("data-id");
-	this.obj.game = modname;
+        this.obj.game = modname;
         this.overlay.remove();
-	this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
+        this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
       };
     });
   }

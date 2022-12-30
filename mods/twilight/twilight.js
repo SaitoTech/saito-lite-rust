@@ -8497,12 +8497,12 @@ playerTurnHeadlineSelected(card, player) {
               <option value="enable" >enable</option>
               <option value="disable" selected>disable</option>
             </select>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+            <button id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 	</div>
 
             <div id="game-wizard-advanced-box" class="game-wizard-advanced-box" style="display:block;padding-left:20px;">
 
-	      <style type="text/css">li { list-style: none; } .saito-select { margin-bottom: 10px; margin-top:5px; } label { text-transform: uppercase; } .removecards { grid-gap: 0.1em; } .list-header { font-weight: bold; font-size:1.5em; margin-top:0px; margin-bottom:10px; margin-left: 15px; text-transform: uppercase; } </style>
+	      <style type="text/css">li { list-style: none; } label { text-transform: uppercase; } .removecards { grid-gap: 0.1em; } .list-header { font-weight: bold; font-size:1.5em; margin-top:0px; margin-bottom:10px; margin-left: 15px; text-transform: uppercase; } </style>
               <div class="list-header">remove cards:</div>
               <ul id="removecards" class="removecards">
               <li><input class="remove_card" type="checkbox" name="asia" /> Asia Scoring</li>
