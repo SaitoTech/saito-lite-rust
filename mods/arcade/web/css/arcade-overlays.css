@@ -11,8 +11,8 @@
 }
 
 .arcade-game-overlay .saito-table-row.arcade-game-player-row {
-    display: grid;
-    grid-template-columns: min-content 1fr min-content 1fr;
+  display: grid;
+  grid-template-columns: min-content 1fr min-content 1fr;
 }
 
 .arcade-game-overlay-header-image {
@@ -60,13 +60,12 @@
 }
 
 .arcade-game-controls .saito-button {
-    margin: 0;
-    padding-left: 5rem;
-    padding-right: 5rem;
-    width: max-content;
-    float: right;
-    height: 7rem;
-    font-size: 2rem;
-    padding-top: 2.1rem;
+  margin: 0;
+  padding-left: 5rem;
+  padding-right: 5rem;
+  width: max-content;
+  float: right;
+  height: 7rem;
+  font-size: 2rem;
+  padding-top: 2.1rem;
 }
-
