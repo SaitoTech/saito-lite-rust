@@ -98,7 +98,9 @@
 
 
       players[i] = {};
-      players[i].debaters_committed_this_turn = []; // bonuses
+      players[i].tmp_debaters_committed_reformation = 0;
+      players[i].tmp_debaters_committed_translation = 0;
+      players[i].tmp_debaters_committed_counter_reformation = 0;
       players[i].tmp_roll_bonus = 0;
       players[i].tmp_roll_first = 0;
       players[i].tmp_roll_modifiers = [];
@@ -189,7 +191,9 @@
     }
 
     let p = this.game.state.players_info[(player_num-1)];
-    p.debaters_committed_this_turn = [];
+    p.tmp_debaters_committed_reformation = 0;
+    p.tmp_debaters_committed_translation = 0;
+    p.tmp_debaters_committed_counter_reformation = 0;
     p.tmp_roll_bonus = 0;
     p.tmp_roll_first = 0;
     p.tmp_roll_modifiers = [];
@@ -2520,12 +2524,19 @@ return;
     $('.option').on('click', function () {
       let id = $(this).attr("id");
 
-      if (id === 1) { his_self.addMove("translation\tnew_testament\tgerman"); }
-      if (id === 2) { his_self.addMove("translation\tnew_testament\tfrench"); }
-      if (id === 3) { his_self.addMove("translation\tnew_testament\tenglish"); }
-      if (id === 4) { his_self.addMove("translation\tfull_bible\tgerman"); }
-      if (id === 5) { his_self.addMove("translation\tfull_bible\tfrench"); }
-      if (id === 6) { his_self.addMove("translation\tfull_bible\tenglish"); }
+      if (id === 1 || id === 4) {
+	his_self.addMove("translation\tgerman"); 
+	his_self.addMove("counter_or_acknowledge\tProtestants Translation German Scripture\ttranslation_german_language_zone\tgerman"); 
+      }
+      if (id === 2 || id === 5) { his_self.addMove("translation\tfrench"); 
+	his_self.addMove("translation\tfrench"); 
+	his_self.addMove("counter_or_acknowledge\tProtestants Translation German Scripture\ttranslation_french_language_zone\tfrench"); 
+      }
+      if (id === 3 || id === 6) { his_self.addMove("translation\tenglish");
+	his_self.addMove("translation\tenglish"); 
+	his_self.addMove("counter_or_acknowledge\tProtestants Translation German Scripture\ttranslation_english_language_zone\tenglish"); 
+      }
+
       his_self.endTurn();
 
     });

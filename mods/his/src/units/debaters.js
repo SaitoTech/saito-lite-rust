@@ -11,7 +11,32 @@
       power		:	4,
       ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
-    });
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "translation_german_language_zone") {
+          return { faction : extra , event : 'Martin Luther', html : `<li class="option" id="martin_luther">Martin Luther +1 Bonus CP</li>` };
+        } 
+        return {};
+      },  
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "translation_german_language_zone") {
+          if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 && 
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
+                return 1;
+          }
+        }
+        return 0;
+      },  
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "martin_luther") {
+          his_self.addMove("translation\tgerman");
+          his_self.addMove("commit\tprotestant\tluther-debater");
+          his_self.endTurn();
+          his_self.updateStatus("acknowledge");
+        } 
+        return 0; 
+      },
+   });
 
     this.importDebater('zwingli-debater', {
       type		:	"zwingli-debater" ,
@@ -94,6 +119,31 @@
       power		:	3 ,
       ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
+      menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "translation_german_language_zone") {
+          return { faction : extra , event : 'Melanchthon', html : `<li class="option" id="melanchthon">Melanchthon +1 Bonus CP</li>` };
+        } 
+        return {};
+      },  
+      menuOptionTriggers:  function(his_self, menu, player, faction) {
+        if (menu == "translation_german_language_zone") {
+          if (his_self.game.state.players_info[player-1].tmp_debaters_committed_reformation == 0 &&
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_translation == 0 && 
+              his_self.game.state.players_info[player-1].tmp_debaters_committed_counter_reformation == 0) {
+                return 1;
+          }
+        }
+        return 0;
+      },  
+      menuOptionActivated:  function(his_self, menu, player, faction) {
+        if (menu == "melanchthon") {
+          his_self.addMove("translation\tgerman");
+          his_self.addMove("commit\tprotestant\tmelanchthon-debater");
+          his_self.endTurn();
+          his_self.updateStatus("acknowledge");
+        } 
+        return 0; 
+      },
     });
 
     this.importDebater('oekolampadius-debater', {

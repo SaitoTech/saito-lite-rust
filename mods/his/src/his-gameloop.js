@@ -1423,7 +1423,6 @@ console.log("update status and list cards...");
 
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
-console.log(i + " --- " + z[i].name);
             if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
               let x = z[i].menuOption(this, stage, this.game.player, extra);
               html += x.html;
@@ -3584,9 +3583,7 @@ console.log("space: " + spacekey);
 	    }
 	  }
 
-console.log("TOTAL AVAILABLE: " + dd);
 	  x = this.rollDice(dd) - 1;
-console.log("INDEX SELECTED: " + x);
 	  dd = 0;
 	  for (let i = 0; i < this.game.state.debaters.length; i++) {
 	    if (this.game.state.theological_debate.committed == "committed") {
@@ -3608,6 +3605,19 @@ console.log("INDEX SELECTED: " + x);
 	  return 1;
 
 	}
+
+
+        if (mv[0] === "commit") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let debater = mv[2];
+	  this.commitDebater(faction, debater);
+
+	  return 1;
+
+        }
 
 
         if (mv[0] === "theological_debate") {
@@ -3702,6 +3712,39 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	}
 
 
+
+        if (mv[0] === "translation") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let zone = mv[1];
+
+	  if (zone === "german") {
+	    if (this.game.state.translations['new']['german'] >= 6) {
+	      this.game.state.translations['full']['german']++;
+	    } else {
+	      this.game.state.translations['new']['german']++;
+	    }
+	  }
+	  if (zone === "french") {
+	    if (this.game.state.translations['new']['french'] >= 6) {
+	      this.game.state.translations['full']['french']++;
+	    } else {
+	      this.game.state.translations['new']['french']++;
+	    }
+	  }
+	  if (zone === "english") {
+	    if (this.game.state.translations['new']['english'] >= 6) {
+	      this.game.state.translations['full']['english']++;
+	    } else {
+	      this.game.state.translations['new']['english']++;
+	    }
+	  }
+
+	  return 1;
+        }
+
+
 	if (mv[0] === "build_saint_peters_with_cp") {
 
 	  let ops = parseInt(mv[1]);
@@ -3715,27 +3758,6 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	  return 1;
 
 	}
-
-        if (mv[0] === "translation") {
-
-	  this.game.queue.splice(qe, 1);
-
-	  let type = mv[1];
-	  let zone = mv[2];
-
-	  if (type === "new_testament") {
-	    if (zone === "german")  { this.game.state.translations['new']['german']++; }
-	    if (zone === "french")  { this.game.state.translations['new']['french']++; }
-	    if (zone === "english") { this.game.state.translations['new']['english']++; }
-	  } else {
-	    if (zone === "german")  { this.game.state.translations['full']['german']++; }
-	    if (zone === "french")  { this.game.state.translations['full']['french']++; }
-	    if (zone === "english") { this.game.state.translations['full']['english']++; }
-          }
-
-	  return 1;
-        }
-
 
         if (mv[0] === "build_saint_peters") {
 
