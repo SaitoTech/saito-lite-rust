@@ -249,8 +249,7 @@
 
 
   addReformer(faction, space, reformer) {
-
-    if (!this.reformer[reformer]) {
+    if (!this.reformers[reformer]) {
       console.log("REFORMER: " + reformer + " not found");
       return;
     }

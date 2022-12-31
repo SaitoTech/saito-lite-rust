@@ -964,16 +964,12 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
   async playerPlayOps(card, faction, ops=null) {
 
-alert("ppo");
-
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
-    if (ops == 0) {
-console.log("OPS ARE ZERO!");
-    }
+    if (ops == 0) { console.log("OPS ARE ZERO!"); }
 
     if (this.game.state.activated_powers[faction].length > 0) {
 
@@ -1876,7 +1872,7 @@ console.log("units length: " + space.units[defender].length);
     if (spaces_with_infantry.length == 0) { return 0; }
 
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-      let dest = this.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops);
+      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops);
       if (dest.length > 0) { return 1; }
     }
 
@@ -2247,6 +2243,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Regular",
 
       function(space) {
+        if (faction == "protestant" && space.religion == "protestant") { return 1; }
         if (space.owner === faction) { return 1; }
         if (space.home === faction) { return 1; }
 	return 0;

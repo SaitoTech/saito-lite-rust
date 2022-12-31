@@ -2809,6 +2809,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
   }
 
 
+
   //
   // returns adjacent naval and port spaces
   //
@@ -5785,10 +5786,6 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
   returnDiplomaticDeck() {
 
-console.log("RDD: ");
-console.log("RDD: ");
-console.log("RDD: ");
-
     let deck = {};
 
     deck['201'] = { 
@@ -8380,13 +8377,13 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	}
 	for (let i = 0; i < neighbours.length; i++) {
 	  let s = his_self.game.spaces[neighbours[i]];
-	  for (let ii = 0; ii < neighbours.length; ii++) {
-	    if (his_self.isSpaceControlledByFaction(neighbours[ii], "ottoman")) {
+	  for (let ii = 0; ii < s.neighbours.length; ii++) {
+	    if (his_self.isSpaceControlledByFaction(s.neighbours[ii], "ottoman")) {
 	      if (!neighbours.includes(s.neighbours[ii])) { neighbours.push(s.neighbours[ii]); }
 	    }
 	  }
 	}
-	
+
 	//
 	// enemy control any of these neighbours?
 	//
@@ -10621,13 +10618,13 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
-//  	    this.game.queue.push("diet_of_worms");
+  	    this.game.queue.push("diet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
-//	    this.updateLog("Luther's 95 Theses!");
-//	    this.game.queue.push("event\t1\t008");
+	    this.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -11860,6 +11857,9 @@ console.log(JSON.stringify(mv));
           game_self.game.queue.push("resolve_diet_of_worms");
 
           this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
+
+console.log("update status and list cards...");
+
           this.attachCardboxEvents(function(card) {
 
             game_self.updateStatus("You picked: " + game_self.deck[card].name); 
@@ -16240,16 +16240,12 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
   async playerPlayOps(card, faction, ops=null) {
 
-alert("ppo");
-
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
-    if (ops == 0) {
-console.log("OPS ARE ZERO!");
-    }
+    if (ops == 0) { console.log("OPS ARE ZERO!"); }
 
     if (this.game.state.activated_powers[faction].length > 0) {
 
@@ -17152,7 +17148,7 @@ console.log("units length: " + space.units[defender].length);
     if (spaces_with_infantry.length == 0) { return 0; }
 
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-      let dest = this.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops);
+      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops);
       if (dest.length > 0) { return 1; }
     }
 
@@ -17523,6 +17519,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Regular",
 
       function(space) {
+        if (faction == "protestant" && space.religion == "protestant") { return 1; }
         if (space.owner === faction) { return 1; }
         if (space.home === faction) { return 1; }
 	return 0;
@@ -18568,8 +18565,7 @@ return;
 
 
   addReformer(faction, space, reformer) {
-
-    if (!this.reformer[reformer]) {
+    if (!this.reformers[reformer]) {
       console.log("REFORMER: " + reformer + " not found");
       return;
     }
@@ -19811,6 +19807,7 @@ return;
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
+console.log("card: " + cardname);
       if (!this.deck[cardname].canEvent(this, "")) {
         html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
       }

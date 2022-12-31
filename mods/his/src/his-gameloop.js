@@ -47,13 +47,13 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
 
-//  	    this.game.queue.push("diet_of_worms");
+  	    this.game.queue.push("diet_of_worms");
 	    //
 	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
-//	    this.updateLog("Luther's 95 Theses!");
-//	    this.game.queue.push("event\t1\t008");
+	    this.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
 
 	  } else {
 	    this.game.queue.push("card_draw_phase");
@@ -1286,6 +1286,9 @@ console.log(JSON.stringify(mv));
           game_self.game.queue.push("resolve_diet_of_worms");
 
           this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
+
+console.log("update status and list cards...");
+
           this.attachCardboxEvents(function(card) {
 
             game_self.updateStatus("You picked: " + game_self.deck[card].name); 

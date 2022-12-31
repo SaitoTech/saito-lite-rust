@@ -860,6 +860,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
   }
 
 
+
   //
   // returns adjacent naval and port spaces
   //
@@ -3836,10 +3837,6 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
   returnDiplomaticDeck() {
 
-console.log("RDD: ");
-console.log("RDD: ");
-console.log("RDD: ");
-
     let deck = {};
 
     deck['201'] = { 
@@ -6431,13 +6428,13 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	}
 	for (let i = 0; i < neighbours.length; i++) {
 	  let s = his_self.game.spaces[neighbours[i]];
-	  for (let ii = 0; ii < neighbours.length; ii++) {
-	    if (his_self.isSpaceControlledByFaction(neighbours[ii], "ottoman")) {
+	  for (let ii = 0; ii < s.neighbours.length; ii++) {
+	    if (his_self.isSpaceControlledByFaction(s.neighbours[ii], "ottoman")) {
 	      if (!neighbours.includes(s.neighbours[ii])) { neighbours.push(s.neighbours[ii]); }
 	    }
 	  }
 	}
-	
+
 	//
 	// enemy control any of these neighbours?
 	//

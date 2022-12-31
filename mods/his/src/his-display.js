@@ -1140,6 +1140,7 @@
     // add cancel button to uneventable cards
     //
     if (deckidx == 0) { 
+console.log("card: " + cardname);
       if (!this.deck[cardname].canEvent(this, "")) {
         html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
       }
