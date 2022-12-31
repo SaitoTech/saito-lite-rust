@@ -501,7 +501,7 @@ setPlayerInactive(player) {
   $(divclass).css('background-color', 'red');
 }
 setPlayerActiveOnly(player) {
-  for (let i = 1; i <= this.game.players_info.length; i++) {
+  for (let i = 1; i <= this.game.state.players_info.length; i++) {
     if (player == i) { this.setPlayerActive(i); } else { this.setPlayerInactive(i); }  
   }
 }
@@ -554,7 +554,7 @@ returnPlanetInformationHTML(planet) {
 returnFactionDashboard(agenda_phase=0) {
 
   let html = '';
-  for (let i = 0; i < this.game.players_info.length; i++) {
+  for (let i = 0; i < this.game.state.players_info.length; i++) {
 
     html += `
 
@@ -586,7 +586,7 @@ returnFactionDashboard(agenda_phase=0) {
         <div data-id="${(i+1)}" class="dash-item tooltip dash-item-trade trade">
           <i data-id="${(i+1)}" class="fas fa-database pc white-stroke"></i>
           <div data-id="${(i+1)}" id="dash-item-goods" class="dash-item-goods">
-            ${this.game.players_info[i].goods}
+            ${this.game.state.players_info[i].goods}
           </div>
         </div>
       </div>
@@ -595,7 +595,7 @@ returnFactionDashboard(agenda_phase=0) {
     html += `
       <div data-id="${(i+1)}" class="dash-faction-base">
 	<div data-id="${(i+1)}" class="dash-faction-status-${(i+1)} dash-faction-status"></div>
-	commodities : <span data-id="${(i+1)}" class="dash-item-commodities">${this.game.players_info[i].commodities}</span> / <span data-id="${(i+1)}" class="dash-item-commodity-limit">${this.game.players_info[i].commodity_limit}</span>
+	commodities : <span data-id="${(i+1)}" class="dash-item-commodities">${this.game.state.players_info[i].commodities}</span> / <span data-id="${(i+1)}" class="dash-item-commodity-limit">${this.game.state.players_info[i].commodity_limit}</span>
       </div>
 
       <div data-id="${(i+1)}" class="dash-faction-speaker`;
@@ -695,7 +695,7 @@ returnUnitsOverlay() {
     if (fleet.spacedocks > 0) 	{ }
 
   } else {
-    let player = this.game.players_info[this.game.player-1];
+    let player = this.game.state.players_info[this.game.player-1];
 
     html += `
       <div style="width:100%;text-align:center"><div class="units-overlay-title">Your Units</div></div>
@@ -905,7 +905,7 @@ returnObjectivesOverlay() {
   // SECRET OBJECTIVES
   //
   for (let i = 0; i < imperium_self.game.deck[5].hand.length; i++) {
-    if (!imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
+    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
       let obj = imperium_self.secret_objectives[imperium_self.game.deck[5].hand[i]];
       html += `<div class="objectives_overlay_objectives_card" style="background-image: url(${obj.img})">
                  <div class="objectives_card_name">${obj.name}</div>
@@ -927,9 +927,9 @@ returnObjectivesOverlay() {
                <div class="objectives_card_content">${obj.text}</div>
                <div class="objectives_scorings">
     `;
-    for (let p = 0; p < this.game.players_info.length; p++) {
-      for (let z = 0; z < this.game.players_info[p].objectives_scored.length; z++) {
-        if (this.game.state.stage_i_objectives[i] === this.game.players_info[p].objectives_scored[z]) {
+    for (let p = 0; p < this.game.state.players_info.length; p++) {
+      for (let z = 0; z < this.game.state.players_info[p].objectives_scored.length; z++) {
+        if (this.game.state.stage_i_objectives[i] === this.game.state.players_info[p].objectives_scored[z]) {
           html += `<div class="objectives_players_scored players_scored_${(p+1)} p${(p+1)}"><div class="bk" style="width:100%;height:100%"></div></div>`;
         }
       }
@@ -950,9 +950,9 @@ returnObjectivesOverlay() {
                <div class="objectives_card_content">${obj.text}</div>
                <div class="objectives_scorings">
     `;
-    for (let p = 0; p < this.game.players_info.length; p++) {
-      for (let z = 0; z < this.game.players_info[p].objectives_scored.length; z++) {
-        if (this.game.state.stage_ii_objectives[i] === this.game.players_info[p].objectives_scored[z]) {
+    for (let p = 0; p < this.game.state.players_info.length; p++) {
+      for (let z = 0; z < this.game.state.players_info[p].objectives_scored.length; z++) {
+        if (this.game.state.stage_ii_objectives[i] === this.game.state.players_info[p].objectives_scored[z]) {
           html += `<div class="objectives_players_scored players_scored_${(p+1)} p${(p+1)}"><div class="bk" style="width:100%;height:100%"></div></div>`;
         }
       }
@@ -966,7 +966,7 @@ returnObjectivesOverlay() {
   //
   // SECRET OBJECTIVES
   //
-  for (let i = 0; i < this.game.players_info.length; i++) {
+  for (let i = 0; i < this.game.state.players_info.length; i++) {
     if (i > 0) { html += '<p></p>'; }
     let objc = imperium_self.returnPlayerObjectivesScored((i+1), ["secret_objectives"]);
     for (let o in objc) {
@@ -997,15 +997,15 @@ displayFactionDashboard(agenda_phase=0) {
 
     let pl = "";
     let fo = "";
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
 
       pl = "p" + (i+1);
       fo = ".dash-faction."+pl;
 
-      let total_resources = this.returnTotalResources((i+1)) - this.game.players_info[i].goods;
-      let available_resources = this.returnAvailableResources((i+1)) - this.game.players_info[i].goods;
-      let total_influence = this.returnTotalInfluence((i+1)) - this.game.players_info[i].goods;
-      let available_influence = this.returnAvailableInfluence((i+1)) - this.game.players_info[i].goods;
+      let total_resources = this.returnTotalResources((i+1)) - this.game.state.players_info[i].goods;
+      let available_resources = this.returnAvailableResources((i+1)) - this.game.state.players_info[i].goods;
+      let total_influence = this.returnTotalInfluence((i+1)) - this.game.state.players_info[i].goods;
+      let available_influence = this.returnAvailableInfluence((i+1)) - this.game.state.players_info[i].goods;
 
       document.querySelector(`.${pl} .dash-faction-name`).innerHTML = this.returnFaction(i+1);
       try {
@@ -1014,9 +1014,9 @@ displayFactionDashboard(agenda_phase=0) {
       document.querySelector(`.${pl} .influence .total`).innerHTML = total_influence;
       document.querySelector(`.${pl} .resources .avail`).innerHTML = available_resources;
       document.querySelector(`.${pl} .resources .total`).innerHTML = total_resources;
-      document.querySelector(`.${pl} .dash-item-goods`).innerHTML = this.game.players_info[i].goods;
-      document.querySelector(`.${pl} .dash-item-commodities`).innerHTML = this.game.players_info[i].commodities;
-      document.querySelector(`.${pl} .dash-item-commodity-limit`).innerHTML = this.game.players_info[i].commodity_limit;
+      document.querySelector(`.${pl} .dash-item-goods`).innerHTML = this.game.state.players_info[i].goods;
+      document.querySelector(`.${pl} .dash-item-commodities`).innerHTML = this.game.state.players_info[i].commodities;
+      document.querySelector(`.${pl} .dash-item-commodity-limit`).innerHTML = this.game.state.players_info[i].commodity_limit;
       } catch (err) {}
 
       document.querySelector(fo).onclick = (e) => {
@@ -1066,7 +1066,7 @@ returnFactionSheet2(imperium_self, player=null) {
   let player_class = "";
   let border_color = "";
   let factions = imperium_self.returnFactions();
-  let this_faction = factions[imperium_self.game.players_info[player-1].faction];
+  let this_faction = factions[imperium_self.game.state.players_info[player-1].faction];
 
   let flagship_name = "Flagship";
   let flagship_text = "This flagship has no special abilities.";
@@ -1088,7 +1088,7 @@ returnFactionSheet2(imperium_self, player=null) {
             <span class="fa-stack fa-3x">
             <span class="fa fa-stack-1x">
             <span class="token_count commend_token_count">
-            ${imperium_self.game.players_info[player - 1].command_tokens}
+            ${imperium_self.game.state.players_info[player - 1].command_tokens}
             </span>
             </span>
             </span>
@@ -1097,7 +1097,7 @@ returnFactionSheet2(imperium_self, player=null) {
             <span class="fa-stack fa-3x">
             <span class="fa fa-stack-1x">
             <span class="token_count strategy_token_count">
-            ${this.game.players_info[player - 1].strategy_tokens}
+            ${this.game.state.players_info[player - 1].strategy_tokens}
             </span>
             </span>
             </span>
@@ -1106,7 +1106,7 @@ returnFactionSheet2(imperium_self, player=null) {
             <span class="fa-stack fa-3x">
             <span class="fa fa-stack-1x">
             <span class="token_count fleet_supply_count">
-            ${this.game.players_info[player - 1].fleet_supply}
+            ${this.game.state.players_info[player - 1].fleet_supply}
             </span>
             </span>
             </span>
@@ -1138,7 +1138,7 @@ returnFactionSheet2(imperium_self, player=null) {
 
       } else {
 
-        let acih = imperium_self.game.players_info[player-1].action_cards_in_hand;
+        let acih = imperium_self.game.state.players_info[player-1].action_cards_in_hand;
         for (let i = 0; i < acih; i++) {
           html += `
             <div class="faction_sheet_action_card faction_sheet_action_card_back bc">
@@ -1158,8 +1158,8 @@ returnFactionSheet2(imperium_self, player=null) {
     //
     // tech we have
     //
-    for (let i = 0; i < imperium_self.game.players_info[player-1].tech.length; i++) {
-      let techname = imperium_self.game.players_info[player-1].tech[i];
+    for (let i = 0; i < imperium_self.game.state.players_info[player-1].tech.length; i++) {
+      let techname = imperium_self.game.state.players_info[player-1].tech[i];
       let tech = imperium_self.tech[techname];
       if (tech.type != "ability") {
         html += tech.returnCardImage();
@@ -1191,8 +1191,8 @@ returnFactionSheet2(imperium_self, player=null) {
       <div id="faction_abilities_container" class="faction_abilities_container">	
 `;
 
-    for (let i = 0; i < imperium_self.game.players_info[player-1].tech.length; i++) {
-      let tech = imperium_self.tech[imperium_self.game.players_info[player-1].tech[i]];
+    for (let i = 0; i < imperium_self.game.state.players_info[player-1].tech.length; i++) {
+      let tech = imperium_self.tech[imperium_self.game.state.players_info[player-1].tech[i]];
       if (tech.type == "ability") {
 console.log("HERE: " + tech.key);
         if (tech.key.indexOf("flagship") == -1) {
@@ -1245,8 +1245,8 @@ console.log("OUR PROMISSARY NOTE: " + JSON.stringify(pm));
     for (i in imperium_self.tech) {
       let tech = imperium_self.tech[i];
       if (tech.type == "special") {
-        if (!imperium_self.game.players_info[player-1].tech.includes(i)) {
-          if (imperium_self.game.players_info[player-1].faction == tech.faction) {
+        if (!imperium_self.game.state.players_info[player-1].tech.includes(i)) {
+          if (imperium_self.game.state.players_info[player-1].faction == tech.faction) {
             let unmodded = tech.returnCardImage();
             html += unmodded.replace(/card_nonopaque/g, 'card_opaque');
           }
@@ -1407,7 +1407,7 @@ returnFactionSheet(imperium_self, player=null) {
   if (player != null) { player_class = "p"+player; border_color = "bc"+player;  }
 
   let html = `
-      <div class="faction_sheet_container ${player_class} ${border_color}" style="overflow-y:scroll;padding:15px;;width:90vw;height:90vh;background-image:url('/imperium/img/factions/${imperium_self.game.players_info[player-1].faction}.jpg');background-size:cover;">
+      <div class="faction_sheet_container ${player_class} ${border_color}" style="overflow-y:scroll;padding:15px;;width:90vw;height:90vh;background-image:url('/imperium/img/factions/${imperium_self.game.state.players_info[player-1].faction}.jpg');background-size:cover;">
         <div class="faction_sheet_token_box" id="faction_sheet_token_box">
           <div class="faction_sheet_token_box_title">Command</div>
           <div class="faction_sheet_token_box_title">Strategy</div>
@@ -1417,7 +1417,7 @@ returnFactionSheet(imperium_self, player=null) {
             <i class="fas fa-dice-d20 fa-stack-2x pc white-stroke"></i>
             <span class="fa fa-stack-1x">
             <span class="token_count commend_token_count">
-            ${imperium_self.game.players_info[player - 1].command_tokens}
+            ${imperium_self.game.state.players_info[player - 1].command_tokens}
             </span>
             </span>
             </span>
@@ -1427,7 +1427,7 @@ returnFactionSheet(imperium_self, player=null) {
             <i class="far fa-futbol fa-stack-2x pc white-stroke"></i>
             <span class="fa fa-stack-1x">
             <span class="token_count strategy_token_count">
-            ${this.game.players_info[player - 1].strategy_tokens}
+            ${this.game.state.players_info[player - 1].strategy_tokens}
             </span>
             </span>
             </span>
@@ -1437,7 +1437,7 @@ returnFactionSheet(imperium_self, player=null) {
             <i class="fas fa-space-shuttle fa-stack-2x pc white-stroke"></i>
             <span class="fa fa-stack-1x">
             <span class="token_count fleet_supply_count">
-            ${this.game.players_info[player - 1].fleet_supply}
+            ${this.game.state.players_info[player - 1].fleet_supply}
             </span>
             </span>
             </span>
@@ -1454,8 +1454,8 @@ returnFactionSheet(imperium_self, player=null) {
     html += `
       <div class="faction_sheet_tech_box" id="faction_sheet_abilities_box">
     `;
-    for (let i = 0; i < imperium_self.game.players_info[player-1].tech.length; i++) {
-      let tech = imperium_self.tech[imperium_self.game.players_info[player-1].tech[i]];
+    for (let i = 0; i < imperium_self.game.state.players_info[player-1].tech.length; i++) {
+      let tech = imperium_self.tech[imperium_self.game.state.players_info[player-1].tech[i]];
       if (tech.type == "ability") {
 	let unmodded = tech.returnCardImage();
 	html += unmodded.replace(/card_nonopaque/g, 'bc');
@@ -1473,8 +1473,8 @@ returnFactionSheet(imperium_self, player=null) {
     //
     // tech we have
     //
-    for (let i = 0; i < imperium_self.game.players_info[player-1].tech.length; i++) {
-      let techname = imperium_self.game.players_info[player-1].tech[i];
+    for (let i = 0; i < imperium_self.game.state.players_info[player-1].tech.length; i++) {
+      let techname = imperium_self.game.state.players_info[player-1].tech[i];
       let tech = imperium_self.tech[techname];
       if (tech.type != "ability") {
 	html += tech.returnCardImage();
@@ -1486,8 +1486,8 @@ returnFactionSheet(imperium_self, player=null) {
     for (i in imperium_self.tech) {
       let tech = imperium_self.tech[i];
       if (tech.type == "special") {
-	if (!imperium_self.game.players_info[player-1].tech.includes(i)) {
- 	  if (imperium_self.game.players_info[player-1].faction == tech.faction) {
+	if (!imperium_self.game.state.players_info[player-1].tech.includes(i)) {
+ 	  if (imperium_self.game.state.players_info[player-1].faction == tech.faction) {
 	    let unmodded = tech.returnCardImage();
 	    html += unmodded.replace(/card_nonopaque/g, 'card_opaque');
 	  }
@@ -1521,7 +1521,7 @@ returnFactionSheet(imperium_self, player=null) {
 
       } else {
 
-	let acih = imperium_self.game.players_info[player-1].action_cards_in_hand;
+	let acih = imperium_self.game.state.players_info[player-1].action_cards_in_hand;
 	for (let i = 0; i < acih; i++) {
           html += `
             <div class="faction_sheet_action_card faction_sheet_action_card_back bc">
@@ -1590,7 +1590,7 @@ returnTokenDisplay(player=null) {
         <i class="fas fa-dice-d20 fa-stack-2x pc white-stroke"></i>
         <span class="fa fa-stack-1x">
         <div id="token_display_command_token_count" class="token_count command_token_count">
-        ${this.game.players_info[player-1].command_tokens}
+        ${this.game.state.players_info[player-1].command_tokens}
         </div>
         </span>
         </span>
@@ -1600,7 +1600,7 @@ returnTokenDisplay(player=null) {
         <i class="far fa-futbol fa-stack-2x pc white-stroke"></i>
         <span class="fa fa-stack-1x">
         <div id="token_display_strategy_token_count" class="token_count strategy_token_count">
-        ${this.game.players_info[player-1].strategy_tokens}
+        ${this.game.state.players_info[player-1].strategy_tokens}
         </div>
         </span>
         </span>
@@ -1610,7 +1610,7 @@ returnTokenDisplay(player=null) {
         <i class="fas fa-space-shuttle fa-stack-2x pc white-stroke"></i>
         <span class="fa fa-stack-1x">
         <div id="token_display_fleet_supply_count" class="token_count fleet_supply_count">
-        ${this.game.players_info[player-1].fleet_supply}
+        ${this.game.state.players_info[player-1].fleet_supply}
         </div>
         </span>
         </span>
@@ -1654,9 +1654,9 @@ updateTokenDisplay() {
   let imperium_self = this;
 
   try {
-    $('#token_display_command_token_count').html(imperium_self.game.players_info[imperium_self.game.player-1].command_tokens);
-    $('#token_display_strategy_token_count').html(imperium_self.game.players_info[imperium_self.game.player-1].strategy_tokens);
-    $('#token_display_fleet_supply_count').html(imperium_self.game.players_info[imperium_self.game.player-1].fleet_supply_tokens);
+    $('#token_display_command_token_count').html(imperium_self.game.state.players_info[imperium_self.game.player-1].command_tokens);
+    $('#token_display_strategy_token_count').html(imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_tokens);
+    $('#token_display_fleet_supply_count').html(imperium_self.game.state.players_info[imperium_self.game.player-1].fleet_supply_tokens);
   } catch (err) {
   }
 
@@ -1697,9 +1697,9 @@ updateLeaderboard() {
       html += '<div class="vp ' + j + '-points"><div class="player-vp-background">' + j + '</div>';
       html += '<div class="vp-players">'
 
-      for (let i = 0; i < this.game.players_info.length; i++) {
-        if (this.game.players_info[i].vp == j) {
-          html += `  <div class="player-vp" style="background-color:var(--p${i + 1});"><div class="vp-faction-name">${factions[this.game.players_info[i].faction].name}</div></div>`;
+      for (let i = 0; i < this.game.state.players_info.length; i++) {
+        if (this.game.state.players_info[i].vp == j) {
+          html += `  <div class="player-vp" style="background-color:var(--p${i + 1});"><div class="vp-faction-name">${factions[this.game.state.players_info[i].faction].name}</div></div>`;
         }
       }
 
@@ -1728,7 +1728,7 @@ updateSectorGraphics(sector) {
 
   if (sector.indexOf("_") == -1) { sector = sys.s.tile; }
 
-  for (let i = 0; i < this.game.players_info.length; i++) {
+  for (let i = 0; i < this.game.state.players_info.length; i++) {
     if (this.game.queue.length > 0) {
       let lmv = this.game.queue[this.game.queue.length-1].split("\t");
       //

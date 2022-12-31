@@ -303,7 +303,7 @@ playerTurn(stage = "main") {
       auto_end_turn = 0;
     }
 
-    if (this.game.players_info[this.game.player - 1].command_tokens > 0) {
+    if (this.game.state.players_info[this.game.player - 1].command_tokens > 0) {
       if (this.game.state.active_player_moved == 0) {
         html += '<li class="option" id="activate">activate sector</li>';
 	auto_end_turn = 0;
@@ -388,7 +388,7 @@ playerTurn(stage = "main") {
         imperium_self.playerScoreActionStageVictoryPoints(imperium_self, function (imperium_self, vp, objective) {
           //imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
           if (vp > 0) { imperium_self.addMove("score\t" + imperium_self.game.player + "\t" + vp + "\t" + objective); }
-          imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored_this_round.push(objective);
+          imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored_this_round.push(objective);
           imperium_self.endTurn();
           return;
         });
@@ -469,12 +469,12 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
   for (let i = 0; i < this.game.deck[1].hand.length; i++) {
     if (this.game.deck[1].hand[i].indexOf("sabotage") > -1) {
       if (card.indexOf("sabotage") == -1) {
-        this.game.players_info[this.game.player - 1].can_intervene_in_action_card = 1;
+        this.game.state.players_info[this.game.player - 1].can_intervene_in_action_card = 1;
       }
     }
   }
 
-  if (this.game.players_info[this.game.player - 1].can_intervene_in_action_card) {
+  if (this.game.state.players_info[this.game.player - 1].can_intervene_in_action_card) {
 
     let html = '<div class="action_card_instructions_hud">' + this.returnFaction(action_card_player) + ' has played an action card:</div>';
     html += '<div class="action_card_name_hud">' + imperium_self.action_cards[card].name + '</div>';
@@ -541,7 +541,7 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
 
       if (action2 == "action") {
         imperium_self.playerSelectActionCard(function (card2) {
-          imperium_self.game.players_info[imperium_self.game.player - 1].action_cards_played.push(card2);
+          imperium_self.game.state.players_info[imperium_self.game.player - 1].action_cards_played.push(card2);
           imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card2);
           imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card2);
           imperium_self.addMove("lose\t" + imperium_self.game.player + "\taction_cards\t1");
@@ -708,7 +708,7 @@ playerPlayBombardment(attacker, sector, planet_idx) {
 
     if (action2 == "action") {
       imperium_self.playerSelectActionCard(function (card) {
-        imperium_self.game.players_info[this.game.player - 1].action_cards_played.push(card);
+        imperium_self.game.state.players_info[this.game.player - 1].action_cards_played.push(card);
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("lose\t" + imperium_self.game.player + "\taction_cards\t1");
@@ -946,7 +946,7 @@ playerAcknowledgeNotice(msg, mycallback) {
     if (tech_attach_menu_events == 1) {
       for (let i = 0; i < tech_attach_menu_triggers.length; i++) {
         if (action2 == tech_attach_menu_triggers[i]) {
-          let mytech = this.tech[imperium_self.game.players_info[imperium_self.game.player - 1].tech[tech_attach_menu_index]];
+          let mytech = this.tech[imperium_self.game.state.players_info[imperium_self.game.player - 1].tech[tech_attach_menu_index]];
           z[tech_attach_menu_index[i]].menuOptionActivated(imperium_self, menu_type, imperium_self.game.player);
         }
       }
@@ -984,7 +984,7 @@ playerAcknowledgeNotice(msg, mycallback) {
       html += '<ul>';
 
       let total_targetted_units = 0;
-      let targetted_units = imperium_self.game.players_info[imperium_self.game.player - 1].target_units;
+      let targetted_units = imperium_self.game.state.players_info[imperium_self.game.player - 1].target_units;
       if (type == "anti_fighter_barrage") {
 	//
 	// overwrite
@@ -1128,7 +1128,7 @@ playerDestroyUnits(player, total, sector, capital = 0) {
   html = '<div class="sf-readable">You must destroy ' + total + ' units in sector: ' + imperium_self.game.sectors[sector].name + ':</div><ul>';
 
   let total_targetted_units = 0;
-  let targetted_units = imperium_self.game.players_info[imperium_self.game.player - 1].target_units;
+  let targetted_units = imperium_self.game.state.players_info[imperium_self.game.player - 1].target_units;
 
   if (capital == 1) {
     targetted_units = [];
@@ -1239,7 +1239,7 @@ playerDestroyShips(player, total, sector, capital = 0) {
   html = '<div class="sf-readable">You must destroy ' + total + ' ships in your fleet:</div><ul>';
 
   let total_targetted_units = 0;
-  let targetted_units = imperium_self.game.players_info[imperium_self.game.player - 1].target_units;
+  let targetted_units = imperium_self.game.state.players_info[imperium_self.game.player - 1].target_units;
 
   if (capital == 1) {
     targetted_units = [];
@@ -1338,7 +1338,7 @@ playerDestroyOpponentShips(player, total, sector, capital = 0) {
   html = '<div class="sf-readable">You may destroy ' + total + ' ships in opponent fleet:</div><ul>';
 
   let total_targetted_units = 0;
-  let targetted_units = imperium_self.game.players_info[imperium_self.game.player - 1].target_units;
+  let targetted_units = imperium_self.game.state.players_info[imperium_self.game.player - 1].target_units;
 
   if (capital == 1) {
     targetted_units = [];
@@ -1900,7 +1900,7 @@ playerPlayPDSAttack(player, attacker, sector) {
   // skip if attacker is immune
   //
   if (defender != -1) {
-    if (imperium_self.game.players_info[defender - 1].temporary_immune_to_pds_fire) {
+    if (imperium_self.game.state.players_info[defender - 1].temporary_immune_to_pds_fire) {
       html = '<div class="sf-readable">' + imperium_self.returnFaction(defender) + ' cannot be targeted by PDS fire during this invasion:</div><ul>';
       can_target_with_pds_fire = 0;
     }
@@ -1997,7 +1997,7 @@ playerPlayPDSDefense(player, attacker, sector) {
   //
   // skip if attacker is immune
   //
-  if (imperium_self.game.players_info[attacker - 1].temporary_immune_to_pds_fire) {
+  if (imperium_self.game.state.players_info[attacker - 1].temporary_immune_to_pds_fire) {
     html = '<div class="sf-readable">Your attacker cannot be targeted by PDS fire during this invasion:</div><ul>';
     can_target_with_pds_fire = 0;
   }
@@ -2302,7 +2302,7 @@ playerContinueTurn(player, sector) {
 
   if (this.canPlayerInvadePlanet(player, sector) && this.game.tracker.invasion == 0) {
     if (sector == "new-byzantium" || sector == "4_4") {
-      if ((imperium_self.game.planets['new-byzantium'].owner != -1) || (imperium_self.returnAvailableInfluence(imperium_self.game.player) + imperium_self.game.players_info[imperium_self.game.player - 1].goods) >= 6) {
+      if ((imperium_self.game.planets['new-byzantium'].owner != -1) || (imperium_self.returnAvailableInfluence(imperium_self.game.player) + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods) >= 6) {
         html += '<li class="option" id="invade">invade planet</li>';
         options_available++;
       }
@@ -2456,7 +2456,7 @@ playerContinueTurn(player, sector) {
       imperium_self.playerScoreActionStageVictoryPoints(imperium_self, function (imperium_self, vp, objective) {
         imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
         if (vp > 0) { imperium_self.addMove("score\t" + imperium_self.game.player + "\t" + vp + "\t" + objective); }
-        imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored_this_round.push(objective);
+        imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored_this_round.push(objective);
         imperium_self.endTurn();
         return;
       });
@@ -2603,7 +2603,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
   if (stage == 2) {
     html = '<div class="sf-readable">Politics has been played: do you wish to spend 1 strategy token to purchase 2 action cards?</div><ul>';
     if (imperium_self.game.state.round == 1) {
-      html = `${imperium_self.returnFaction(imperium_self.game.player)} has played the Politics strategy card. This lets you to spend 1 strategy token to purchase 2 action cards, which provide special one-time abilities. You have ${imperium_self.game.players_info[imperium_self.game.player-1].strategy_tokens} strategy tokens. Purchase action cards: </p><ul>`;
+      html = `${imperium_self.returnFaction(imperium_self.game.player)} has played the Politics strategy card. This lets you to spend 1 strategy token to purchase 2 action cards, which provide special one-time abilities. You have ${imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_tokens} strategy tokens. Purchase action cards: </p><ul>`;
     }
   }
   html += '<li class="buildchoice textchoice" id="yes">Purchase Action Cards</li>';
@@ -2661,7 +2661,7 @@ playerBuyTokens(stage = 0, resolve = 1) {
   if (stage == 2) {
     html = '<div class="sf-readable">The Imperial Strategy card has been played: do you wish to spend 1 strategy token to purchase a Secret Objective?</div><ul>';
     if (imperium_self.game.state.round == 1) {
-      html = `${imperium_self.returnFaction(imperium_self.game.player)} has played the Imperial strategy card. This lets you to spend 1 strategy token to purchase an additional secret bjective. You have ${imperium_self.game.players_info[imperium_self.game.player-1].strategy_tokens} strategy tokens. Purchase secret objective: </p><ul>`;
+      html = `${imperium_self.returnFaction(imperium_self.game.player)} has played the Imperial strategy card. This lets you to spend 1 strategy token to purchase an additional secret bjective. You have ${imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_tokens} strategy tokens. Purchase secret objective: </p><ul>`;
     }
   }
   html += '<li class="buildchoice textchoice" id="yes">Purchase Secret Objective</li>';
@@ -2764,7 +2764,7 @@ canPlayerScoreActionStageVictoryPoints(player) {
   // Secret Objectives - Action Phase
   //
   for (let i = 0; i < imperium_self.game.deck[5].hand.length; i++) {
-    if (!imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
+    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
       if (imperium_self.canPlayerScoreVictoryPoints(imperium_self.game.player, imperium_self.game.deck[5].hand[i], 3)) {
         if (imperium_self.secret_objectives[imperium_self.game.deck[5].hand[i]].phase === "action") {
           html += '<li class="option secret3" id="' + imperium_self.game.deck[5].hand[i] + '">' + imperium_self.secret_objectives[imperium_self.game.deck[5].hand[i]].name + '</li>';
@@ -2876,9 +2876,9 @@ playerScoreSecretObjective(imperium_self, mycallback, stage = 0) {
 
   // Secret Objectives
   for (let i = 0; i < imperium_self.game.deck[5].hand.length; i++) {
-    if (!imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
+    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.deck[5].hand[i])) {
       if (imperium_self.canPlayerScoreVictoryPoints(imperium_self.game.player, imperium_self.game.deck[5].hand[i], 3)) {
-        if (!imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored_this_round.includes(imperium_self.game.deck[5].hand[i])) {
+        if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored_this_round.includes(imperium_self.game.deck[5].hand[i])) {
           can_score = 1;
           html += '1 VP Secret Objective: <li class="option secret3" id="' + imperium_self.game.deck[5].hand[i] + '">' + imperium_self.game.deck[5].cards[imperium_self.game.deck[5].hand[i]].name + '</li>';
         }
@@ -2952,9 +2952,9 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   // Stage I Public Objectives
   for (let i = 0; i < imperium_self.game.state.stage_i_objectives.length; i++) {
 
-    if (!imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.state.stage_i_objectives[i])) {
+    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.state.stage_i_objectives[i])) {
       if (imperium_self.canPlayerScoreVictoryPoints(imperium_self.game.player, imperium_self.game.state.stage_i_objectives[i], 1)) {
-        if (!imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored_this_round.includes(imperium_self.game.state.stage_i_objectives[i])) {
+        if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored_this_round.includes(imperium_self.game.state.stage_i_objectives[i])) {
           html += '1 VP Public Objective: <li class="option stage1" id="' + imperium_self.game.state.stage_i_objectives[i] + '">' + imperium_self.game.deck[3].cards[imperium_self.game.state.stage_i_objectives[i]].name + '</li>';
         }
       }
@@ -2963,9 +2963,9 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
 
   // Stage II Public Objectives
   for (let i = 0; i < imperium_self.game.state.stage_ii_objectives.length; i++) {
-    if (!imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.state.stage_ii_objectives[i])) {
+    if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored.includes(imperium_self.game.state.stage_ii_objectives[i])) {
       if (imperium_self.canPlayerScoreVictoryPoints(imperium_self.game.player, imperium_self.game.state.stage_ii_objectives[i], 2)) {
-        if (!imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored_this_round.includes(imperium_self.game.state.stage_ii_objectives[i])) {
+        if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].objectives_scored_this_round.includes(imperium_self.game.state.stage_ii_objectives[i])) {
           html += '2 VP Public Objective: <li class="option stage2" id="' + imperium_self.game.state.stage_ii_objectives[i] + '">' + imperium_self.game.deck[4].cards[imperium_self.game.state.stage_ii_objectives[i]].name + '</li>';
         }
       }
@@ -3116,7 +3116,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   //
   let sys = this.returnSectorAndPlanets(sector);
   let available_resources = imperium_self.returnAvailableResources(imperium_self.game.player);
-  available_resources += imperium_self.game.players_info[imperium_self.game.player - 1].production_bonus;
+  available_resources += imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
 
 
   let calculated_production_limit = 0;
@@ -3132,9 +3132,9 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     }
   }
 
-  if (this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock == 1) {
-    if (production_limit == 0 && this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit >= 0) { production_limit = this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit; }
-    if (cost_limit == 0 && this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit >= 0) { cost_limit = this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit; }
+  if (this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock == 1) {
+    if (production_limit == 0 && this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit >= 0) { production_limit = this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit; }
+    if (cost_limit == 0 && this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit >= 0) { cost_limit = this.game.state.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit; }
   };
 
   if (calculated_production_limit > production_limit) { production_limit = calculated_production_limit; }
@@ -3165,7 +3165,7 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   if (available_resources >= 8 && this.canPlayerProduceFlagship(imperium_self.game.player)) {
     html += '<li class="buildchoice" id="flagship">Flagship - <span class="flagship_total">0</span></li>';
   }
-  if (imperium_self.game.players_info[imperium_self.game.player - 1].may_produce_warsuns == 1) {
+  if (imperium_self.game.state.players_info[imperium_self.game.player - 1].may_produce_warsuns == 1) {
     if (available_resources >= 12) {
       html += '<li class="buildchoice" id="warsun">War Sun - <span class="warsun_total">0</span></li>';
     }
@@ -3205,8 +3205,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
         total_cost += imperium_self.returnUnitCost(stuff_to_build[i], imperium_self.game.player);
       }
 
-      if (imperium_self.game.players_info[imperium_self.game.player - 1].production_bonus > 0) {
-        total_cost -= imperium_self.game.players_info[imperium_self.game.player - 1].production_bonus;
+      if (imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus > 0) {
+        total_cost -= imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
         if (total_cost < 0) { total_cost = 0; }
       }
 
@@ -3259,8 +3259,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     //
     // reduce production costs if needed
     //
-    if (imperium_self.game.players_info[imperium_self.game.player - 1].production_bonus > 0) {
-      calculated_total_cost -= imperium_self.game.players_info[imperium_self.game.player - 1].production_bonus;
+    if (imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus > 0) {
+      calculated_total_cost -= imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
     }
 
 
@@ -3270,36 +3270,36 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     // respect production / cost limits
     //
     let return_to_zero = 0;
-    if (id == "fighter" && (player_build.fighters + player_fleet.fighters) > imperium_self.game.players_info[imperium_self.game.player - 1].fighter_limit) {
-      salert("You can only have " + imperium_self.game.players_info[imperium_self.game.player - 1].fighter_limit + " fighters on the board");
+    if (id == "fighter" && (player_build.fighters + player_fleet.fighters) > imperium_self.game.state.players_info[imperium_self.game.player - 1].fighter_limit) {
+      salert("You can only have " + imperium_self.game.state.players_info[imperium_self.game.player - 1].fighter_limit + " fighters on the board");
       return_to_zero = 1;
     }
-    if (id == "infantry" && (player_build.infantry + player_fleet.infantry) > imperium_self.game.players_info[imperium_self.game.player - 1].infantry_limit) {
-      salert("You can only have " + imperium_self.game.players_info[imperium_self.game.player - 1].infantry_limit + " infantry on the board");
+    if (id == "infantry" && (player_build.infantry + player_fleet.infantry) > imperium_self.game.state.players_info[imperium_self.game.player - 1].infantry_limit) {
+      salert("You can only have " + imperium_self.game.state.players_info[imperium_self.game.player - 1].infantry_limit + " infantry on the board");
       return_to_zero = 1;
     }
-    if (id == "destroyer" && (player_build.destroyers + player_fleet.destroyers) > imperium_self.game.players_info[imperium_self.game.player - 1].destroyer_limit) {
-      salert("You can only have " + imperium_self.game.players_info[imperium_self.game.player - 1].destroyer_limit + " destroyers on the board");
+    if (id == "destroyer" && (player_build.destroyers + player_fleet.destroyers) > imperium_self.game.state.players_info[imperium_self.game.player - 1].destroyer_limit) {
+      salert("You can only have " + imperium_self.game.state.players_info[imperium_self.game.player - 1].destroyer_limit + " destroyers on the board");
       return_to_zero = 1;
     }
-    if (id == "carrier" && (player_build.carriers + player_fleet.carriers) > imperium_self.game.players_info[imperium_self.game.player - 1].carrier_limit) {
-      salert("You can only have " + imperium_self.game.players_info[imperium_self.game.player - 1].carrier_limit + " carriers on the board");
+    if (id == "carrier" && (player_build.carriers + player_fleet.carriers) > imperium_self.game.state.players_info[imperium_self.game.player - 1].carrier_limit) {
+      salert("You can only have " + imperium_self.game.state.players_info[imperium_self.game.player - 1].carrier_limit + " carriers on the board");
       return_to_zero = 1;
     }
-    if (id == "cruiser" && (player_build.cruisers + player_fleet.cruisers) > imperium_self.game.players_info[imperium_self.game.player - 1].cruiser_limit) {
-      salert("You can only have " + imperium_self.game.players_info[imperium_self.game.player - 1].cruiser_limit + " cruisers on the board");
+    if (id == "cruiser" && (player_build.cruisers + player_fleet.cruisers) > imperium_self.game.state.players_info[imperium_self.game.player - 1].cruiser_limit) {
+      salert("You can only have " + imperium_self.game.state.players_info[imperium_self.game.player - 1].cruiser_limit + " cruisers on the board");
       return_to_zero = 1;
     }
-    if (id == "dreadnaught" && (player_build.dreadnaughts + player_fleet.dreadnaughts) > imperium_self.game.players_info[imperium_self.game.player - 1].dreadnaught_limit) {
-      salert("You can only have " + imperium_self.game.players_info[imperium_self.game.player - 1].dreadnaught_limit + " dreadnaughts on the board");
+    if (id == "dreadnaught" && (player_build.dreadnaughts + player_fleet.dreadnaughts) > imperium_self.game.state.players_info[imperium_self.game.player - 1].dreadnaught_limit) {
+      salert("You can only have " + imperium_self.game.state.players_info[imperium_self.game.player - 1].dreadnaught_limit + " dreadnaughts on the board");
       return_to_zero = 1;
     }
-    if (id == "flagship" && (player_build.flagships + player_fleet.flagships) > imperium_self.game.players_info[imperium_self.game.player - 1].flagships_limit) {
-      salert("You can only have " + imperium_self.game.players_info[imperium_self.game.player - 1].flagship_limit + " flagships on the board");
+    if (id == "flagship" && (player_build.flagships + player_fleet.flagships) > imperium_self.game.state.players_info[imperium_self.game.player - 1].flagships_limit) {
+      salert("You can only have " + imperium_self.game.state.players_info[imperium_self.game.player - 1].flagship_limit + " flagships on the board");
       return_to_zero = 1;
     }
-    if (id == "warsun" && (player_build.warsuns + player_fleet.warsuns) > imperium_self.game.players_info[imperium_self.game.player - 1].warsun_limit) {
-      salert("You can only have " + imperium_self.game.players_info[imperium_self.game.player - 1].warsun_limit + " warsuns on the board");
+    if (id == "warsun" && (player_build.warsuns + player_fleet.warsuns) > imperium_self.game.state.players_info[imperium_self.game.player - 1].warsun_limit) {
+      salert("You can only have " + imperium_self.game.state.players_info[imperium_self.game.player - 1].warsun_limit + " warsuns on the board");
       return_to_zero = 1;
     }
     if (calculated_total_cost > imperium_self.returnAvailableResources(imperium_self.game.player)) {
@@ -3358,8 +3358,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     //
     // reduce production costs if needed
     //
-    if (imperium_self.game.players_info[imperium_self.game.player - 1].production_bonus > 0) {
-      total_cost -= imperium_self.game.players_info[imperium_self.game.player - 1].production_bonus;
+    if (imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus > 0) {
+      total_cost -= imperium_self.game.state.players_info[imperium_self.game.player - 1].production_bonus;
       imperium_self.updateLog("Production Costs reduced by 1");
     }
 
@@ -3491,7 +3491,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
       let receive_action_cards_text = 'no action cards';
       let offer_action_cards_text = 'no action cards';
-      if (imperium_self.game.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.players_info[player-1].may_trade_action_cards == 1) {
+      if (imperium_self.game.state.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.state.players_info[player-1].may_trade_action_cards == 1) {
         for (let i = 0; i < receive_action_cards.length; i++) {
           if (i == 0) { receive_action_cards_text = ''; }
           let pm = receive_action_cards[i];
@@ -3540,7 +3540,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       let html = "<div class='sf-readable'>Make an Offer: </div><ul>";
       html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
       html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
-      if (imperium_self.game.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.players_info[player-1].may_trade_action_cards == 1) {
+      if (imperium_self.game.state.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.state.players_info[player-1].may_trade_action_cards == 1) {
         html += '<li id="action_cards_offer" class="option">you give <span class="give_action_cards">'+offer_action_cards_text+'</span></li>';
         //html += '<li id="action_cards_receive" class="option">you receive <span class="receive_action_cards">'+receive_action_cards_text+'</span></li>';
       }
@@ -3616,9 +3616,9 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       if (mode == 1) {
 
         let html = '<div class="sf-readable">Add Promissary to YOUR Offer: </div><ul>';
-        for (let i = 0; i < imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes.length; i++) {
+        for (let i = 0; i < imperium_self.game.state.players_info[imperium_self.game.player-1].promissary_notes.length; i++) {
 
-	  let pm = imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes[i];
+	  let pm = imperium_self.game.state.players_info[imperium_self.game.player-1].promissary_notes[i];
 	  tmpar = pm.split("-");
 	  let tmpname = tmpar[1];
           for (let i = 2; i < tmpar.length; i++) {
@@ -3649,7 +3649,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
             return 0;
           }
 	  
-	  let promobj = { player : imperium_self.game.player , promissary : imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes[prom] }
+	  let promobj = { player : imperium_self.game.player , promissary : imperium_self.game.state.players_info[imperium_self.game.player-1].promissary_notes[prom] }
 	  offer_promissaries.push(promobj);
           goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
@@ -3662,8 +3662,8 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       if (mode == 2) {
 
         let html = '<div class="sf-readable">Request Promissary FROM them: </div><ul>';
-        for (let i = 0; i < imperium_self.game.players_info[player-1].promissary_notes.length; i++) {
-	  let pm = imperium_self.game.players_info[player-1].promissary_notes[i];
+        for (let i = 0; i < imperium_self.game.state.players_info[player-1].promissary_notes.length; i++) {
+	  let pm = imperium_self.game.state.players_info[player-1].promissary_notes[i];
 	  let tmpar = pm.split("-");
 	  let tmpname = tmpar[1];
             for (let i = 2; i < tmpar.length; i++) {
@@ -3694,7 +3694,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
             return 0;
           }
 	  
-	  let promobj = { player : player , promissary : imperium_self.game.players_info[player-1].promissary_notes[prom] }
+	  let promobj = { player : player , promissary : imperium_self.game.state.players_info[player-1].promissary_notes[prom] }
 	  receive_promissaries.push(promobj);
           goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
@@ -3767,13 +3767,13 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
     let mainTradeInterface = function (imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
 
       let html = '<div class="sf-readable">Make Trade Offer to Faction: </div><ul>';
-      for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-        if (imperium_self.game.players_info[i].traded_this_turn == 0 && (i + 1) != imperium_self.game.player) {
+      for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+        if (imperium_self.game.state.players_info[i].traded_this_turn == 0 && (i + 1) != imperium_self.game.player) {
           if (imperium_self.arePlayersAdjacent(imperium_self.game.player, (i + 1)) ||
-	      imperium_self.game.players_info[imperium_self.game.player-1].may_trade_with_non_neighbours == 1 ||
-	      imperium_self.game.players_info[i].may_trade_with_non_neighbours == 1
+	      imperium_self.game.state.players_info[imperium_self.game.player-1].may_trade_with_non_neighbours == 1 ||
+	      imperium_self.game.state.players_info[i].may_trade_with_non_neighbours == 1
 	  ) {
-            html += `  <li class="option" id="${i}">${factions[imperium_self.game.players_info[i].faction].name}</li>`;
+            html += `  <li class="option" id="${i}">${factions[imperium_self.game.state.players_info[i].faction].name}</li>`;
           }
         }
       }
@@ -3792,8 +3792,8 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
           return 0;
         }
 
-        max_offer = imperium_self.game.players_info[imperium_self.game.player - 1].commodities + imperium_self.game.players_info[imperium_self.game.player - 1].goods;
-        max_receipt = imperium_self.game.players_info[parseInt(faction)].commodities + imperium_self.game.players_info[parseInt(faction)].goods;
+        max_offer = imperium_self.game.state.players_info[imperium_self.game.player - 1].commodities + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods;
+        max_receipt = imperium_self.game.state.players_info[parseInt(faction)].commodities + imperium_self.game.state.players_info[parseInt(faction)].goods;
 
 	goodsTradeInterface(imperium_self, (parseInt(faction)+1), mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 
@@ -3909,17 +3909,17 @@ playerSelectInfluence(cost, mycallback) {
   let array_of_cards = this.returnPlayerUnexhaustedPlanetCards(this.game.player); // unexhausted
   let array_of_cards_to_exhaust = [];
   let selected_cost = 0;
-  let total_trade_goods = imperium_self.game.players_info[imperium_self.game.player - 1].goods;
+  let total_trade_goods = imperium_self.game.state.players_info[imperium_self.game.player - 1].goods;
 
 
   let html = "<div class='sf-readable'>Select " + cost + " in influence: </div><ul>";
   for (let z = 0; z < array_of_cards.length; z++) {
     html += '<li class="cardchoice cardchoice-card" id="cardchoice_' + array_of_cards[z] + '">' + this.returnPlanetCard(array_of_cards[z]) + '</li>';
   }
-  if (1 == imperium_self.game.players_info[imperium_self.game.player - 1].goods) {
-    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.players_info[imperium_self.game.player - 1].goods + ' trade good</li>';
+  if (1 == imperium_self.game.state.players_info[imperium_self.game.player - 1].goods) {
+    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods + ' trade good</li>';
   } else {
-    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.players_info[imperium_self.game.player - 1].goods + ' trade goods</li>';
+    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods + ' trade goods</li>';
   }
   html += '</ul>';
 
@@ -3994,8 +3994,8 @@ playerSelectStrategyAndCommandTokens(cost, mycallback) {
   let selected_cost = 0;
 
   let html = "<div class='sf-readable'>Select " + cost + " in Strategy and Command Tokens: </div><ul>";
-  html += '<li class="textchoice" id="command">command tokens - <span class="available_command_tokens">'+imperium_self.game.players_info[imperium_self.game.player-1].command_tokens+'</span></li>';
-  html += '<li class="textchoice" id="strategy">strategy tokens - <span class="available_strategy_tokens">'+imperium_self.game.players_info[imperium_self.game.player-1].strategy_tokens+'</span></li>';
+  html += '<li class="textchoice" id="command">command tokens - <span class="available_command_tokens">'+imperium_self.game.state.players_info[imperium_self.game.player-1].command_tokens+'</span></li>';
+  html += '<li class="textchoice" id="strategy">strategy tokens - <span class="available_strategy_tokens">'+imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_tokens+'</span></li>';
   html += '</ul>';
 
   this.updateStatus(html);
@@ -4047,16 +4047,16 @@ playerSelectResources(cost, mycallback) {
   let array_of_cards = this.returnPlayerUnexhaustedPlanetCards(this.game.player); // unexhausted
   let array_of_cards_to_exhaust = [];
   let selected_cost = 0;
-  let total_trade_goods = imperium_self.game.players_info[imperium_self.game.player - 1].goods;
+  let total_trade_goods = imperium_self.game.state.players_info[imperium_self.game.player - 1].goods;
 
   let html = "<div class='sf-readable'>Select " + cost + " in resources: </div><ul>";
   for (let z = 0; z < array_of_cards.length; z++) {
     html += '<li class="cardchoice cardchoice-card" id="cardchoice_' + array_of_cards[z] + '">' + this.returnPlanetCard(array_of_cards[z]) + '</li>';
   }
-  if (1 == imperium_self.game.players_info[imperium_self.game.player - 1].goods) {
-    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.players_info[imperium_self.game.player - 1].goods + ' trade good</li>';
+  if (1 == imperium_self.game.state.players_info[imperium_self.game.player - 1].goods) {
+    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods + ' trade good</li>';
   } else {
-    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.players_info[imperium_self.game.player - 1].goods + ' trade goods</li>';
+    html += '<li class="textchoice" id="trade_goods" style="clear:both">' + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods + ' trade goods</li>';
   }
   html += '</ul>';
 
@@ -4142,7 +4142,7 @@ playerSelectActionCard(mycallback, cancel_callback, types = []) {
 
   html += "<div class='sf-readable'>Select an action card: </div><ul>";
   for (let z = 0; z < array_of_cards.length; z++) {
-    if (!this.game.players_info[this.game.player - 1].action_cards_played.includes(array_of_cards[z])) {
+    if (!this.game.state.players_info[this.game.player - 1].action_cards_played.includes(array_of_cards[z])) {
       let thiscard = imperium_self.action_cards[array_of_cards[z]];
       html += '<li class="textchoice pointer" id="' + array_of_cards[z] + '">' + thiscard.name + '</li>';
     }
@@ -4164,7 +4164,7 @@ playerSelectActionCard(mycallback, cancel_callback, types = []) {
     if (imperium_self.game.tracker) { imperium_self.game.tracker.action_card = 1; }
     if (imperium_self.action_cards[action2].type == "action") { imperium_self.game.state.active_player_moved = 1; }
 
-    imperium_self.game.players_info[imperium_self.game.player - 1].action_cards_played.push(action2);
+    imperium_self.game.state.players_info[imperium_self.game.player - 1].action_cards_played.push(action2);
 
     mycallback(action2);
 
@@ -4189,7 +4189,7 @@ playerSelectActionCardFromList(mycallback, cancel_callback, array_of_cards = [])
 
   html += "<div class='sf-readable'>Select an action card: </div><ul>";
   for (let z = 0; z < array_of_cards.length; z++) {
-    if (!this.game.players_info[this.game.player - 1].action_cards_played.includes(array_of_cards[z])) {
+    if (!this.game.state.players_info[this.game.player - 1].action_cards_played.includes(array_of_cards[z])) {
       let thiscard = imperium_self.action_cards[array_of_cards[z]];
       html += '<li class="textchoice pointer" id="' + array_of_cards[z] + '">' + thiscard.name + '</li>';
     }
@@ -4222,7 +4222,7 @@ playerSelectActionCardFromList(mycallback, cancel_callback, array_of_cards = [])
 //
 playerSelectStrategyCard(mycallback, mode = 0) {
 
-  let array_of_cards = this.game.players_info[this.game.player - 1].strategy;
+  let array_of_cards = this.game.state.players_info[this.game.player - 1].strategy;
   let strategy_cards = this.returnStrategyCards();
   let imperium_self = this;
 
@@ -4230,7 +4230,7 @@ playerSelectStrategyCard(mycallback, mode = 0) {
 
   html += "<div class='sf-readable'>Select a strategy card: </div><ul>";
   for (let z in array_of_cards) {
-    if (!this.game.players_info[this.game.player - 1].strategy_cards_played.includes(array_of_cards[z])) {
+    if (!this.game.state.players_info[this.game.player - 1].strategy_cards_played.includes(array_of_cards[z])) {
       html += '<li class="textchoice" id="' + array_of_cards[z] + '">' + strategy_cards[array_of_cards[z]].name + '</li>';
     }
   }
@@ -4520,8 +4520,8 @@ playerSelectUnitsToMove(destination) {
 
   let obj = {};
   obj.max_hops = 2;
-  obj.ship_move_bonus = this.game.players_info[this.game.player - 1].ship_move_bonus + this.game.players_info[this.game.player - 1].temporary_ship_move_bonus;
-  obj.fleet_move_bonus = this.game.players_info[this.game.player - 1].fleet_move_bonus + this.game.players_info[this.game.player - 1].temporary_fleet_move_bonus;
+  obj.ship_move_bonus = this.game.state.players_info[this.game.player - 1].ship_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_ship_move_bonus;
+  obj.fleet_move_bonus = this.game.state.players_info[this.game.player - 1].fleet_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_fleet_move_bonus;
   obj.ships_and_sectors = [];
   obj.stuff_to_move = [];
   obj.stuff_to_load = [];
@@ -5577,7 +5577,7 @@ playerPostActivateSystem(sector) {
 
   if (this.canPlayerInvadePlanet(player, sector) && this.game.tracker.invasion == 0) {
     if (sector == "new-byzantium" || sector == "4_4") {
-      if ((imperium_self.game.planets['new-byzantium'].owner != -1) || (imperium_self.returnAvailableInfluence(imperium_self.game.player) + imperium_self.game.players_info[imperium_self.game.player - 1].goods) >= 6) {
+      if ((imperium_self.game.planets['new-byzantium'].owner != -1) || (imperium_self.returnAvailableInfluence(imperium_self.game.player) + imperium_self.game.state.players_info[imperium_self.game.player - 1].goods) >= 6) {
         html += '<li class="option" id="invade">invade planet</li>';
       }
     } else {
@@ -5609,7 +5609,7 @@ playerPostActivateSystem(sector) {
     if (action2 == "action") {
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("activate_system_post\t" + imperium_self.game.player + "\t" + sector);
-        imperium_self.game.players_info[imperium_self.game.player - 1].action_cards_played.push(card);
+        imperium_self.game.state.players_info[imperium_self.game.player - 1].action_cards_played.push(card);
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("lose\t" + imperium_self.game.player + "\taction_cards\t1");
@@ -5692,9 +5692,9 @@ playerAllocateNewTokens(player, tokens, resolve_needed = 1, stage = 0, leadershi
   if (this.game.player == player) {
 
     let obj = {};
-    obj.current_command = this.game.players_info[player - 1].command_tokens;
-    obj.current_strategy = this.game.players_info[player - 1].strategy_tokens;
-    obj.current_fleet = this.game.players_info[player - 1].fleet_supply;
+    obj.current_command = this.game.state.players_info[player - 1].command_tokens;
+    obj.current_strategy = this.game.state.players_info[player - 1].strategy_tokens;
+    obj.current_fleet = this.game.state.players_info[player - 1].fleet_supply;
     obj.new_command = 0;
     obj.new_strategy = 0;
     obj.new_fleet = 0;
@@ -5782,8 +5782,8 @@ playerSelectPlayerWithFilter(msg, filter_func, mycallback = null, cancel_func = 
   let html = '<div class="sf-readable">' + msg + '</div>';
   html += '<ul>';
 
-  for (let i = 0; i < this.game.players_info.length; i++) {
-    if (filter_func(this.game.players_info[i]) == 1) {
+  for (let i = 0; i < this.game.state.players_info.length; i++) {
+    if (filter_func(this.game.state.players_info[i]) == 1) {
       html += '<li class="textchoice" id="' + (i + 1) + '">' + this.returnFaction((i + 1)) + '</li>';
     }
   }
@@ -6283,7 +6283,7 @@ playerSelectUnitInSectorFilter(msg, sector, filter_func, mycallback = null, canc
   let html = '<div class="sf-readable">' + msg + '</div>';
   html += '<ul>';
 
-  for (let i = 0; i < this.game.players_info.length; i++) {
+  for (let i = 0; i < this.game.state.players_info.length; i++) {
     for (let ii = 0; ii < sys.s.units[i].length; ii++) {
       if (filter_func(sys.s.units[i][ii]) == 1) {
         html += '<li class="textchoice" id="' + sector + '_' + i + '_' + i + '">' + this.returnFaction((i + 1)) + " - " + sys.s.units[i][ii].name + '</li>';
@@ -6350,7 +6350,7 @@ playerDiscardActionCards(num, mycallback=null) {
     $(this).remove();
 
     imperium_self.hideActionCard(action2);
-    imperium_self.game.players_info[imperium_self.game.player - 1].action_cards_played.push(ac_in_hand[action2]);
+    imperium_self.game.state.players_info[imperium_self.game.player - 1].action_cards_played.push(ac_in_hand[action2]);
     imperium_self.addMove("lose\t" + imperium_self.game.player + "\taction_cards\t1");
 
     if (num == 0) {

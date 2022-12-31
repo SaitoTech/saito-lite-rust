@@ -7,7 +7,7 @@
       // we use 
       //
       activateSystemTriggers	:	function(imperium_self, attacker, player, sector) {
-	let promissary_name = imperium_self.game.players_info[attacker-1].faction + "-" + "ceasefire";
+	let promissary_name = imperium_self.game.state.players_info[attacker-1].faction + "-" + "ceasefire";
 	if (imperium_self.doesPlayerHavePromissary(player, promissary_name)) { 
 	  if (attacker != player) {
 	    if (imperium_self.doesPlayerHaveUnitsInSector(player, sector)) {
@@ -87,12 +87,12 @@
       faction	  :	  -1,
       text	  :	  "When the owner replenishes commodities, this promissary triggers and you gain their commodities as trade goods" ,
       gainCommodities	:	function(imperium_self, player, amount) {
-	let promissary_name = imperium_self.game.players_info[player-1].faction + "-" + "trade";
+	let promissary_name = imperium_self.game.state.players_info[player-1].faction + "-" + "trade";
 	let pprom = imperium_self.returnPromissaryPlayer(promissary_name);
-	for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	  if ((i+1) != player) {
 	    if (imperium_self.doesPlayerHavePromissary((i+1), promissary_name)) {
-	      imperium_self.game.players_info[i].goods += amount;
+	      imperium_self.game.state.players_info[i].goods += amount;
 	      imperium_self.givePromissary(player, (i+1), promissary_name);
 	      imperium_self.updateLog(imperium_self.returnFaction((i+1)) + " redeems their Trade Promissary from " + imperium_self.returnFaction(pprom));
 	      return 0;
@@ -121,7 +121,7 @@
 	if (menu != "pre_agenda") { return 0; }
         let playable_promissaries = imperium_self.returnPlayablePromissaryArray(player, "political");
         for (let i = 0; i < playable_promissaries.length; i++) {
-	  if (imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes.includes(playable_promissaries[i])) { return 1; }
+	  if (imperium_self.game.state.players_info[imperium_self.game.player-1].promissary_notes.includes(playable_promissaries[i])) { return 1; }
 	}
         return 0;
       },
@@ -168,8 +168,8 @@
 	if (promissary.indexOf("throne") > -1) {
 	  let pprom = imperium_self.returnPromissaryPlayer(promissary);
 	  if (pprom != gainer) {
-	    imperium_self.game.players_info[gainer-1][promissary] = 1;
-	    imperium_self.game.players_info[gainer-1].vp++;
+	    imperium_self.game.state.players_info[gainer-1][promissary] = 1;
+	    imperium_self.game.state.players_info[gainer-1].vp++;
 	    imperium_self.updateLog(imperium_self.returnFaction(gainer) + " gains 1 VP from Support for the Throne");
 	    imperium_self.updateLeaderboard();
 	  }
@@ -179,8 +179,8 @@
 	if (promissary.indexOf("throne") > -1) {
 	  let pprom = imperium_self.returnPromissaryPlayer(promissary);
 	  if (pprom != loser) {
-	    imperium_self.game.players_info[loser-1][promissary] = 1;
-	    imperium_self.game.players_info[loser-1].vp--;
+	    imperium_self.game.state.players_info[loser-1][promissary] = 1;
+	    imperium_self.game.state.players_info[loser-1].vp--;
 	    imperium_self.updateLog(imperium_self.returnFaction(loser) + " loses 1 VP from Support for the Throne");
 	    imperium_self.updateLeaderboard();
 	  }
@@ -189,14 +189,14 @@
       // run code on trigger, no need for event separately since asynchronous
       activateSystemTriggers : function(imperium_self, activating_player, player, sector) {
 	let sys = imperium_self.returnSectorAndPlanets(sector);
-	for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	  if ((i+1) != activating_player) {
 	    if (imperium_self.doesPlayerHaveUnitsInSector((i+1), sector)) {
-	      let faction_promissary = imperium_self.game.players_info[player-1].id + "-" + "throne";
+	      let faction_promissary = imperium_self.game.state.players_info[player-1].id + "-" + "throne";
 	      if (imperium_self.doesPlayerHavePromissary(activating_player, faction_promissary)) {
-	        imperium_self.game.players_info[activating_player-1][faction_promissary] = 0;
+	        imperium_self.game.state.players_info[activating_player-1][faction_promissary] = 0;
 	        imperium_self.updateLog(imperium_self.returnFaction(activating_player) + " loses 1 VP from Support for the Throne");
-	        imperium_self.game.players_info[activating_player-1].vp--;
+	        imperium_self.game.state.players_info[activating_player-1].vp--;
 	     	imperium_self.givePromissary(activating_player, (i+1), details);
 	      }
 	    }

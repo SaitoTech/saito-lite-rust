@@ -337,7 +337,8 @@
       //
       // players first
       //
-      this.game.players_info = this.returnPlayers(this.totalPlayers); // factions and player info
+      this.game.state   = this.returnState();
+      this.game.state.players_info = this.returnPlayers(this.totalPlayers); // factions and player info
 
 
       //
@@ -347,7 +348,6 @@
       // this.game.planets
       // this.game.sectors
       //
-      this.game.state   = this.returnState();
       this.game.sectors = this.returnSectors();
       this.game.planets = this.returnPlanets();
 
@@ -487,9 +487,9 @@
       //
       // set homeworlds
       //
-      for (let i = 0; i < this.game.players_info.length; i++) {
-        this.game.players_info[i].homeworld = hwsectors[i];
-        this.game.board[hwsectors[i]].tile = this.factions[this.game.players_info[i].faction].homeworld;
+      for (let i = 0; i < this.game.state.players_info.length; i++) {
+        this.game.state.players_info[i].homeworld = hwsectors[i];
+        this.game.board[hwsectors[i]].tile = this.factions[this.game.state.players_info[i].faction].homeworld;
       }
   
 
@@ -515,11 +515,11 @@
 	//
 	// assign starting units
 	//
-	for (let k = 0; k < this.factions[this.game.players_info[i].faction].space_units.length; k++) {
-          this.addSpaceUnit(i + 1, hwsectors[i], this.factions[this.game.players_info[i].faction].space_units[k]);
+	for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].space_units.length; k++) {
+          this.addSpaceUnit(i + 1, hwsectors[i], this.factions[this.game.state.players_info[i].faction].space_units[k]);
 	}
-	for (let k = 0; k < this.factions[this.game.players_info[i].faction].ground_units.length; k++) {
-          this.loadUnitOntoPlanet(i + 1, hwsectors[i], strongest_planet, this.factions[this.game.players_info[i].faction].ground_units[k]);
+	for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].ground_units.length; k++) {
+          this.loadUnitOntoPlanet(i + 1, hwsectors[i], strongest_planet, this.factions[this.game.state.players_info[i].faction].ground_units[k]);
 	}
 
 	let technologies = this.returnTechnology();
@@ -527,18 +527,18 @@
 	//
 	// assign starting technology
 	//
-	for (let k = 0; k < this.factions[this.game.players_info[i].faction].tech.length; k++) {
-	  let free_tech = this.factions[this.game.players_info[i].faction].tech[k];
+	for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].tech.length; k++) {
+	  let free_tech = this.factions[this.game.state.players_info[i].faction].tech[k];
 	  let player = i+1;
-          this.game.players_info[i].tech.push(free_tech);
+          this.game.state.players_info[i].tech.push(free_tech);
         }
 	//
 	// assign starting promissary notes
 	//
-	for (let k = 0; k < this.factions[this.game.players_info[i].faction].promissary_notes.length; k++) {
-	  let promissary = this.factions[this.game.players_info[i].faction].id + "-" + this.factions[this.game.players_info[i].faction].promissary_notes[k];
+	for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].promissary_notes.length; k++) {
+	  let promissary = this.factions[this.game.state.players_info[i].faction].id + "-" + this.factions[this.game.state.players_info[i].faction].promissary_notes[k];
 	  let player = i+1;
-          this.game.players_info[i].promissary_notes.push(promissary);
+          this.game.state.players_info[i].promissary_notes.push(promissary);
         }
 
 
@@ -578,7 +578,7 @@
         //
         // add cards to deck and shuffle as needed
         //
-        for (let i = 0; i < this.game.players_info.length; i++) {
+        for (let i = 0; i < this.game.state.players_info.length; i++) {
 	  // everyone gets 1 secret objective to start
           this.game.queue.push("gain\t"+(i+1)+"\tsecret_objectives\t1");
           this.game.queue.push("DEAL\t6\t"+(i+1)+"\t1");
@@ -609,7 +609,7 @@
     //
     let z = this.returnEventObjects();
     for (let i = 0; i < z.length; i++) {
-      for (let k = 0; k < this.game.players_info.length; k++) {
+      for (let k = 0; k < this.game.state.players_info.length; k++) {
         z[i].initialize(this, (k+1));
       }
     }
@@ -619,12 +619,12 @@
     // if this is a new game, gainTechnology that we start with
     //
     if (is_this_a_new_game == 1) {
-      for (let k = 0; k < this.game.players_info.length; k++) {
-        for (let kk = 0; kk < this.game.players_info[k].tech.length; kk++) {
-          this.tech[this.game.players_info[k].tech[kk]].gainTechnology(this, (k+1), this.game.players_info[k].tech[kk]);
+      for (let k = 0; k < this.game.state.players_info.length; k++) {
+        for (let kk = 0; kk < this.game.state.players_info[k].tech.length; kk++) {
+          this.tech[this.game.state.players_info[k].tech[kk]].gainTechnology(this, (k+1), this.game.state.players_info[k].tech[kk]);
         }
       }
-      for (let k = 0; k < this.game.players_info.length; k++) {
+      for (let k = 0; k < this.game.state.players_info.length; k++) {
         this.upgradePlayerUnitsOnBoard((k+1));
       }
     }

@@ -19,8 +19,8 @@
 	  return 0;
 	},
 	playActionCardEvent : function(imperium_self, player, action_card_player, card) {
-          imperium_self.game.players_info[action_card_player-1].strategy_tokens += 2;
-          imperium_self.game.players_info[action_card_player-1].command_tokens += 1;
+          imperium_self.game.state.players_info[action_card_player-1].strategy_tokens += 2;
+          imperium_self.game.state.players_info[action_card_player-1].command_tokens += 1;
 	  imperium_self.updateLog(imperium_self.returnFaction(action_card_player) + " gains 2 strategy tokens and 1 command token");
 	  return 1;
 	}
@@ -67,7 +67,7 @@
                 }
               },
               function(sector) {
-                for (let b = 0; b < imperium_self.game.players_info.length; b++) {
+                for (let b = 0; b < imperium_self.game.state.players_info.length; b++) {
                   imperium_self.addMove("activate\t"+(b+1)+"\t"+sector);
                 }
                 imperium_self.addMove("NOTIFY\t" + imperium_self.returnFactionNickname(action_card_player) + " uses Diplomacy Rider to protect " + sector);
@@ -114,8 +114,8 @@
 
 	    // and change speaker
 	    let html = 'Make which player the speaker? <ul>';
-            for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-              html += '<li class="textchoice" id="'+i+'">' + factions[imperium_self.game.players_info[i].faction].name + '</li>';
+            for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+              html += '<li class="textchoice" id="'+i+'">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
             }
             html += '</ul>';
             imperium_self.updateStatus(html);
@@ -315,8 +315,8 @@
 
 	},
 	playActionCardEvent : function(imperium_self, player, action_card_player, card) {
-          imperium_self.game.players_info[action_card_player-1].vp += 1;
-          imperium_self.game.players_info[action_card_player-1].objectives_scored.push("imperial-rider");
+          imperium_self.game.state.players_info[action_card_player-1].vp += 1;
+          imperium_self.game.state.players_info[action_card_player-1].objectives_scored.push("imperial-rider");
 	  return 1;
 	}
     });

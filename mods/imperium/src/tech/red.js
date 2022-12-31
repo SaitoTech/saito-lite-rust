@@ -5,14 +5,14 @@
       prereqs             :       [],
       text		:	"All PDS and bombardment fire gets +1 bonus shot" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].plasma_scoring == undefined) {
-          imperium_self.game.players_info[player-1].plasma_scoring = 0;
+        if (imperium_self.game.state.players_info[player-1].plasma_scoring == undefined) {
+          imperium_self.game.state.players_info[player-1].plasma_scoring = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "plasma-scoring") {
-          imperium_self.game.players_info[gainer-1].plasma_scoring = 1;
-	  imperium_self.game.players_info[gainer-1].pds_combat_roll_bonus_shots++;
+          imperium_self.game.state.players_info[gainer-1].plasma_scoring = 1;
+	  imperium_self.game.state.players_info[gainer-1].pds_combat_roll_bonus_shots++;
         }
       },
       pdsSpaceAttackTriggers : function(imperium_self, attacker, player, sector) {
@@ -49,13 +49,13 @@
       prereqs             :       ["red"],
 
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].magen_defense_grid == undefined) {
-          imperium_self.game.players_info[player-1].magen_defense_grid = 0;
+        if (imperium_self.game.state.players_info[player-1].magen_defense_grid == undefined) {
+          imperium_self.game.state.players_info[player-1].magen_defense_grid = 0;
         }
       },
       onNewRound : function(imperium_self, player) {
         if (player == imperium_self.game.player) {
-          imperium_self.game.players_info[player-1].magen_defense_grid = 1;
+          imperium_self.game.state.players_info[player-1].magen_defense_grid = 1;
         }
         return 1;
       },
@@ -115,15 +115,15 @@
       prereqs     	:       ['red','red'],
       text		:	"Each round, you may repair any ship which has not taken damage this round" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].duranium_armor == undefined) {
-          imperium_self.game.players_info[player-1].duranium_armor = 0;
-          imperium_self.game.players_info[player-1].duranium_armor = 0;
+        if (imperium_self.game.state.players_info[player-1].duranium_armor == undefined) {
+          imperium_self.game.state.players_info[player-1].duranium_armor = 0;
+          imperium_self.game.state.players_info[player-1].duranium_armor = 0;
         }
       },
       onNewRound : function(imperium_self, player, mycallback) {
         if (player == imperium_self.game.player) {
-          imperium_self.game.players_info[player-1].duranium_armor = 1;
-          imperium_self.game.players_info[player-1].may_repair_damaged_ships_after_space_combat = 1;
+          imperium_self.game.state.players_info[player-1].duranium_armor = 1;
+          imperium_self.game.state.players_info[player-1].may_repair_damaged_ships_after_space_combat = 1;
         }
         return 1;
       },
@@ -163,14 +163,14 @@
       prereqs     	:       ['red','red','red'],
       text		:	"If you have three or more capital ships in a sector, destroy one opponent capital ship" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].assault_cannont == undefined) {
-          imperium_self.game.players_info[player-1].assault_cannont = 0;
+        if (imperium_self.game.state.players_info[player-1].assault_cannont == undefined) {
+          imperium_self.game.state.players_info[player-1].assault_cannont = 0;
         }
       },
       onNewRound : function(imperium_self, player, mycallback) {
         if (player == imperium_self.game.player) {
-          imperium_self.game.players_info[player-1].assault_cannont = 1;
-          imperium_self.game.players_info[player-1].may_assign_first_round_combat_shot = 1;
+          imperium_self.game.state.players_info[player-1].assault_cannont = 1;
+          imperium_self.game.state.players_info[player-1].may_assign_first_round_combat_shot = 1;
         }
         return 1;
       },
@@ -209,7 +209,7 @@
         return 0;
       },
       spaceCombatEvent : function(imperium_self, player, sector) {
-	imperium_self.game.players_info[player-1].target_units = ['carrier','destroyer','cruiser','dreadnaught','flagship','warsun'];
+	imperium_self.game.state.players_info[player-1].target_units = ['carrier','destroyer','cruiser','dreadnaught','flagship','warsun'];
 	imperium_self.game.queue.push("destroy_ships\t"+player+"\t"+"1"+"\t"+imperium_self.game.state.activated_sector);
 	imperium_self.game.queue.push("ACKNOWLEDGE\t"+imperium_self.returnFaction(player)+" must destroy 1 ship from Assault Cannon");
 	return 1;

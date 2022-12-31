@@ -79,11 +79,11 @@ handleStrategyMenuItem() {
     }
 
     let thiscard = this.strategy_cards[s];
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].strategy.includes(s)) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.game.state.players_info[i].strategy.includes(s)) {
         strategy_card_state = "unplayed";
         strategy_card_player = (i+1);
-        if (this.game.players_info[i].strategy_cards_played.includes(s)) {
+        if (this.game.state.players_info[i].strategy_cards_played.includes(s)) {
           strategy_card_state = "played";
         };
       };
@@ -130,9 +130,9 @@ handleSystemsMenuItem() {
 
   this.activated_systems_player++;
 
-  if (this.activated_systems_player > this.game.players_info.length) { this.activated_systems_player = 1; }
+  if (this.activated_systems_player > this.game.state.players_info.length) { this.activated_systems_player = 1; }
 
-  salert(`Showing Systems Activated by ${factions[this.game.players_info[this.activated_systems_player - 1].faction].name}`);
+  salert(`Showing Systems Activated by ${factions[this.game.state.players_info[this.activated_systems_player - 1].faction].name}`);
 
   $('.hex_activated').css('background-color', 'transparent');
   $('.hex_activated').css('opacity', '0.3');
