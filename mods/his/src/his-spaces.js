@@ -1,10 +1,14 @@
 
   isSpaceFriendly(space, faction) {
-
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
     return this.areAllies(cf, faction);
+  }
 
+  isSpaceHostile(space, faction) {
+    let cf = this.returnFactionControllingSpace(space);
+    if (cf === faction) { return false; }
+    return this.areEnemies(cf, faction);
   }
 
   isSpaceControlled(space, faction) {

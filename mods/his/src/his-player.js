@@ -2491,8 +2491,45 @@ return;
     return 0;
   }
   async playerTranslateScripture(his_self, player, faction) {
-console.log("16");
-return;
+
+    let msg = "Work on Translation?";
+    let html = '<ul>';
+
+    if (his_self.game.state.translations['new']['german'] < 6) {
+      html += '<li class="option" style="" id="1">German (new testament)</li>';
+    }
+    if (his_self.game.state.translations['new']['french'] < 6) {
+      html += '<li class="option" style="" id="2">French (new testament)</li>';
+    }
+    if (his_self.game.state.translations['new']['english'] < 6) {
+      html += '<li class="option" style="" id="3">English (new testament)</li>';
+    }
+    if (his_self.game.state.translations['full']['german'] < 10) {
+      html += '<li class="option" style="" id="4">German (full bible)</li>';
+    }
+    if (his_self.game.state.translations['full']['french'] < 10) {
+      html += '<li class="option" style="" id="5">French (full bible)</li>';
+    }
+    if (his_self.game.state.translations['full']['english'] < 10) {
+      html += '<li class="option" style="" id="6">English (full bible)</li>';
+    }
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+      let id = $(this).attr("id");
+
+      if (id === 1) { his_self.addMove("translation\tnew_testament\tgerman"); }
+      if (id === 2) { his_self.addMove("translation\tnew_testament\tfrench"); }
+      if (id === 3) { his_self.addMove("translation\tnew_testament\tenglish"); }
+      if (id === 4) { his_self.addMove("translation\tfull_bible\tgerman"); }
+      if (id === 5) { his_self.addMove("translation\tfull_bible\tfrench"); }
+      if (id === 6) { his_self.addMove("translation\tfull_bible\tenglish"); }
+      his_self.endTurn();
+
+    });
+
   }
   canPlayerPublishTreatise(his_self, player, faction) {
     if (faction === "protestant") { return 1; }

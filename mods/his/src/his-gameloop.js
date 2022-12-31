@@ -3716,6 +3716,27 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 
 	}
 
+        if (mv[0] === "translation") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let type = mv[1];
+	  let zone = mv[2];
+
+	  if (type === "new_testament") {
+	    if (zone === "german")  { this.game.state.translations['new']['german']++; }
+	    if (zone === "french")  { this.game.state.translations['new']['french']++; }
+	    if (zone === "english") { this.game.state.translations['new']['english']++; }
+	  } else {
+	    if (zone === "german")  { this.game.state.translations['full']['german']++; }
+	    if (zone === "french")  { this.game.state.translations['full']['french']++; }
+	    if (zone === "english") { this.game.state.translations['full']['english']++; }
+          }
+
+	  return 1;
+        }
+
+
         if (mv[0] === "build_saint_peters") {
 
 	  this.game.queue.splice(qe, 1);

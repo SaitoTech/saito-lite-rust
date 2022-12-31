@@ -861,9 +861,6 @@ Habsburg conquistadores:
       power		:	4,
       ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
-      onCommit		:	function(his_self, faction) {
-	return 1;
-      }
     });
 
     this.importDebater('zwingli-debater', {
@@ -6443,11 +6440,15 @@ alert("NOT IMPLEMENTED");
 
 
   isSpaceFriendly(space, faction) {
-
     let cf = this.returnFactionControllingSpace(space);
     if (cf === faction) { return true; }
     return this.areAllies(cf, faction);
+  }
 
+  isSpaceHostile(space, faction) {
+    let cf = this.returnFactionControllingSpace(space);
+    if (cf === faction) { return false; }
+    return this.areEnemies(cf, faction);
   }
 
   isSpaceControlled(space, faction) {
@@ -15553,6 +15554,7 @@ this.updateLog("Catholics: " + c_rolls);
 
 
       players[i] = {};
+      players[i].debaters_committed_this_turn = []; // bonuses
       players[i].tmp_roll_bonus = 0;
       players[i].tmp_roll_first = 0;
       players[i].tmp_roll_modifiers = [];
@@ -15642,15 +15644,14 @@ this.updateLog("Catholics: " + c_rolls);
       }
     }
 
-    for (let i = 0; i < this.game.state.players_info.length; i++) {
-      let p = this.game.state.players_info[i];
-      p.tmp_roll_bonus = 0;
-      p.tmp_roll_first = 0;
-      p.tmp_roll_modifiers = [];
-      p.has_colonized = 0;
-      p.has_explored = 0;
-      p.has_conquered = 0;
-    }
+    let p = this.game.state.players_info[(player_num-1)];
+    p.debaters_committed_this_turn = [];
+    p.tmp_roll_bonus = 0;
+    p.tmp_roll_first = 0;
+    p.tmp_roll_modifiers = [];
+    p.has_colonized = 0;
+    p.has_explored = 0;
+    p.has_conquered = 0;
 
     this.game.state.field_battle = {};
 
