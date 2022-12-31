@@ -811,7 +811,6 @@ class Post extends ModTemplate {
         res.setHeader("Content-type", "text/javascript");
         res.charset = "UTF-8";
         res.send("OK");
-        //res.end();
       } catch (err) {
         console.log("error trying to decode moderation transaction");
         console.log(err);

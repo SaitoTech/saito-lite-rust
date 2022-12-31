@@ -113,11 +113,10 @@ initializeGame(game_id) {
   }
 
   if (this.browser_active){
-     $(".Jaipur_board").attr("style","");
+     $(".jaipur_board").attr("style","");
      this.updateTokens();
      this.updateMarket();
      this.displayPlayers();
-
   }
  
 }
@@ -184,8 +183,12 @@ initializeQueue(first_player = 1){
           }
         }
 
+        //Redraw everything for new round
         if (this.browser_active){
-          this.updateMarket();
+           $(".jaipur_board").attr("style","");
+           this.updateTokens();
+           this.updateMarket();
+           this.displayPlayers();
         }
       }
 
@@ -532,7 +535,7 @@ initializeQueue(first_player = 1){
 
   playerTurn(){
     
-    let html = `Select a card to buy or sell it, or <span id="trade" class="link">click here to trade</span>`;
+    let html = `Select a card in the market to buy, in your hand to sell, or <span id="trade" class="link">click here to trade</span>`;
     
     this.updateStatusWithCards(html);
     this.attachGameEvents();
@@ -640,11 +643,15 @@ initializeQueue(first_player = 1){
       html += `</div></div> <div class="hand_overlay">
                         <div class="h2">Cards in Hand:</div>
                         <div class="card_group">`;
+      let handCount = game_self.game.state.hand.length + to_take.length - to_give.filter(c=>{ return c !== "camel"}).length
+      console.log(JSON.parse(JSON.stringify(game_self.game.state.hand)), game_self.game.state.hand.length);
+      console.log(JSON.parse(JSON.stringify(to_take)), to_take.length);
+      console.log(JSON.parse(JSON.stringify(to_give)), to_give.filter(c=>{ return c !== "camel"}).length);
       for (let r in hand){
-        if (!to_take.includes(r) && (r != "camel" || (game_self.game.state.hand.length + to_take.length - to_give.filter(c=>{ return c !== "camel"}).length) < 7)){
-          html += game_self.cardWithCountToHTML(r, hand[r]);
-        }else{
+        if (to_take.includes(r) || (r == "camel" && handCount >= 7 && to_give.length >= to_take.length)) {
           html += game_self.cardWithCountToHTML(r, -hand[r]);
+        }else{
+          html += game_self.cardWithCountToHTML(r, hand[r]);
         }
       }
       html += `</div></div> <div class="give_overlay">                            

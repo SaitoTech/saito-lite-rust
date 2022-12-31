@@ -233,7 +233,6 @@ class Server {
           "Content-Transfer-Encoding": "utf8",
         });
         res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
-        //res.end();
       } catch (err) {
         //
         // file does not exist on disk, check in memory
@@ -297,37 +296,32 @@ class Server {
       // @ts-ignore
       const block = this.app.blockchain.blocks.get(bsh);
 
-      if (block) {
-        if (!block.hasKeylistTransactions(keylist)) {
-          res.writeHead(200, {
-            "Content-Type": "text/plain",
-            "Content-Transfer-Encoding": "utf8",
-          });
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize()); //.toString("base64");
-
-          //res.send(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
+      if (!block) {
+        console.log(`block : ${bsh} doesn't exist...`);
+        res.sendStatus(404);
+        return;
+      }
+      if (!block.hasKeylistTransactions(keylist)) {
+        res.writeHead(200, {
+          "Content-Type": "text/plain",
+          "Content-Transfer-Encoding": "utf8",
+        });
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const liteblock = block.returnLiteBlock(keylist);
+        const buffer = Buffer.from(liteblock.serialize());
           res.end(buffer, "utf8");
-          //res.end();
           return;
         }
 
-        //
-        // TODO - load from disk to ensure we have txs -- slow.
-        //
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const blk = await this.app.storage.loadBlockByHash(bsh);
+      //
+      // TODO - load from disk to ensure we have txs -- slow.
+      //
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const blk = await this.app.storage.loadBlockByHash(bsh);
 
         if (blk == null) {
-          // res.writeHead(200, {
-          //   "Content-Type": "text/plain",
-          //   "Content-Transfer-Encoding": "utf8",
-          // });
-          // res.send("{}");
-          // //res.end();
           res.sendStatus(404);
           return;
         } else {
@@ -340,17 +334,12 @@ class Server {
           const liteblock = block.returnLiteBlock(keylist);
           const buffer = Buffer.from(liteblock.serialize()); //, "binary").toString("base64");
           res.end(buffer);
-          //res.send(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
-          //res.end();
           return;
         }
 
         console.log("hit end...");
         return;
-      }
 
-      console.log("block doesn't exist...");
-      return;
     });
 
     app.get("/block/:hash", async (req, res) => {
@@ -439,15 +428,6 @@ class Server {
       res.sendFile(client_options_file);
       //res.send(this.app.storage.returnClientOptions());
       return;
-    });
-
-    app.get("/runtime", (req, res) => {
-      res.writeHead(200, {
-        "Content-Type": "text/json",
-        "Content-Transfer-Encoding": "utf8",
-      });
-      res.end(Buffer.from(JSON.stringify(this.app.options.runtime)), "utf8");
-      //res.end();
     });
 
     app.get("/r", (req, res) => {

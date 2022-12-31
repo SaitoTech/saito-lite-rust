@@ -812,7 +812,6 @@ class Observer extends ModTemplate {
         } else {
           res.send("{}");
         }
-        //res.end();
         return;
     
       });
@@ -841,7 +840,6 @@ class Observer extends ModTemplate {
         } else {
           res.send("{}");
         }
-        //res.end();
         return;
       });
 
