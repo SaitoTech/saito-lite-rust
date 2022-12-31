@@ -30,7 +30,7 @@
 
   isCaptured(faction, unittype) {
     for (let i = 0; i < this.game.players.length; i++) {
-      let p = this.game.players_info[i];
+      let p = this.game.state.players_info[i];
       if (p.captured.includes(unittype)) { return 1; }
     }
     return 0;
@@ -144,10 +144,10 @@
 
     let factions = {};
 
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-        factions[this.game.players_info[i].factions[ii]] = {
-	  faction : this.game.players_info[i].factions[ii] ,
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
+        factions[this.game.state.players_info[i].factions[ii]] = {
+	  faction : this.game.state.players_info[i].factions[ii] ,
 	  vp_base : 0 ,
 	  vp_bonus : 0 ,
 	  vp_special : 0 ,
@@ -380,6 +380,11 @@
     state.tmp_catholic_counter_reformation_bonus = 0;
     state.tmp_papacy_may_specify_debater = 0;
     state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
+    state.tmp_bonus_protestant_translation_german_zone = 0;
+    state.tmp_bonus_protestant_translation_french_zone = 0;
+    state.tmp_bonus_protestant_translation_english_zone = 0;
+    state.tmp_bonus_papacy_burn_books = 0;
 
     //
     // foreign wars

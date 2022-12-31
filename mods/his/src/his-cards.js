@@ -703,7 +703,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -1395,7 +1395,7 @@ alert("Not Implemented");
 	// deal extra card if player is england
 	if (player === his_self.returnPlayerOfFaction("england")) {
 	  let faction_hand_idx = his_self.returnFactionHandIdx(player, "england");   
- 	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.players_info[player-1].factions[faction_hand_idx]);
+ 	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.state.players_info[player-1].factions[faction_hand_idx]);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
         }
 	// three counter-reformation attempts
@@ -1428,7 +1428,7 @@ alert("Not Implemented");
 	  }
 	  if (f[key] == 2) {
 	    let faction_hand_idx = his_self.returnFactionHandIdx(player, key);
- 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.players_info[player-1].factions[faction_hand_idx]);
+ 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.state.players_info[player-1].factions[faction_hand_idx]);
 	    his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
 	  }
 	}
@@ -1631,7 +1631,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('024')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -1670,7 +1670,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('025')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -1711,7 +1711,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('026')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -1753,7 +1753,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('027')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -1795,7 +1795,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -1835,7 +1835,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -1875,7 +1875,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('030')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -1921,7 +1921,7 @@ alert("Not Implemented");
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
-	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
+	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -1961,7 +1961,7 @@ alert("Not Implemented");
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('033')) {
-	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
+	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -2082,7 +2082,7 @@ alert("Not Implemented");
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('036')) {
-	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
+	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -3434,7 +3434,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
         his_self.game.queue.push("DEAL\t1\t"+p+"\t"+1);
         his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+faction);
         his_self.game.queue.push("DEAL\t1\t"+p+"\t"+1);
-	his_self.game.state.event.fuggers = faction;
+	his_self.game.state.events.fuggers = faction;
 
 	return 1;
       },
@@ -3866,10 +3866,10 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	  let captured_leaders = [];
 	  let options = [];
 
-	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    for (let ii = 0; ii < this.game.players_info[i].captured.length; ii++) {
-	      captured_leaders.push({ leader : this.game.players_info[i].captured[ii].type , player : i , idx : ii });
-	      options.push(this.game.players_info[i].captured[ii].type);
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+	    for (let ii = 0; ii < this.game.state.players_info[i].captured.length; ii++) {
+	      captured_leaders.push({ leader : this.game.state.players_info[i].captured[ii].type , player : i , idx : ii });
+	      options.push(this.game.state.players_info[i].captured[ii].type);
 	    } 	
 	  }	
 
@@ -3911,11 +3911,11 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	  let ransomed_leader_type = mv[1];
 	  let ransomed_leader = null;
 
-	  for (let i = 0; i < his_self.game.players_info.length; i++) {
-	    for (let ii = 0; ii < his_self.game.players_info[i].captured.length; ii++) {
-	      if (his_self.game.players_info[i].captured[ii].type == ransomed_leader_type) {
-	        randomed_leader = his_self.game.players_info[i].captured[ii];
-		his_self.game.players_info[i].captured.splice(ii, 1);
+	  for (let i = 0; i < his_self.game.state.players_info.length; i++) {
+	    for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
+	      if (his_self.game.state.players_info[i].captured[ii].type == ransomed_leader_type) {
+	        randomed_leader = his_self.game.state.players_info[i].captured[ii];
+		his_self.game.state.players_info[i].captured.splice(ii, 1);
 	      }
 	    } 	
 	  }	

@@ -1,4 +1,13 @@
 
+  //
+  // Allies
+  //
+  // are by definition major powers as opposed minor / activated powers, although 
+  // if you ask areAllies() or areEnemies() on combinations of faction names that 
+  // include minor-activated powers like scotland or genoa these functions will 
+  // politely let you know if those minor-powers are activated to an ally or enemy
+  //
+
   returnAllies(faction) { 
     let f = [];
     let io = this.returnImpulseOrder();

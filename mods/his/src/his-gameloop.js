@@ -34,6 +34,11 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+	    this.resetPlayerRound((i+1));
+          }
+
+
 	  this.game.queue.push("victory_determination_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
@@ -1552,8 +1557,8 @@ console.log(i + " --- " + z[i].name);
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker)-1];
-	      let ap = his_self.game.players_info[attacker_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -1563,8 +1568,8 @@ console.log(i + " --- " + z[i].name);
 	      } 
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
-	      let dp = his_self.game.players_info[defender_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -1770,8 +1775,8 @@ console.log(i + " --- " + z[i].name);
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker)-1];
-	      let ap = his_self.game.players_info[attacker_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -1781,8 +1786,8 @@ console.log(i + " --- " + z[i].name);
 	      } 
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
-	      let dp = his_self.game.players_info[defender_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -2097,8 +2102,8 @@ console.log(i + " --- " + z[i].name);
 	  let faction_map = his_self.game.state.field_battle.faction_map;
 	  let attacker_faction = his_self.game.state.field_battle.attacker_faction;
 	  let defender_faction = his_self.game.state.field_battle.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	  let attacker_results = his_self.game.state.field_battle.attacker_results;
 	  let defender_results = his_self.game.state.field_battle.defender_results;
 	  let attacker_rolls   = his_self.game.state.field_battle.attacker_rolls;
@@ -2564,8 +2569,8 @@ console.log("d");
 	  let faction_map      = his_self.game.state.naval_battle.faction_map;
 	  let attacker_faction = his_self.game.state.naval_battle.attacker_faction;
 	  let defender_faction = his_self.game.state.naval_battle.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	  let attacker_results = his_self.game.state.naval_battle.attacker_results;
 	  let defender_results = his_self.game.state.naval_battle.defender_results;
 	  let attacker_rolls   = his_self.game.state.naval_battle.attacker_rolls;
@@ -2767,8 +2772,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker)-1];
-	      let ap = his_self.game.players_info[attacker_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -2778,8 +2783,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      } 
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
-	      let dp = his_self.game.players_info[defender_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -3077,8 +3082,8 @@ console.log("removing secondarily!");
 	  let faction_map      = his_self.game.state.assault.faction_map;
 	  let attacker_faction = his_self.game.state.assault.attacker_faction;
 	  let defender_faction = his_self.game.state.assault.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	  let attacker_results = his_self.game.state.assault.attacker_results;
 	  let defender_results = his_self.game.state.assault.defender_results;
 	  let attacker_rolls   = his_self.game.state.assault.attacker_rolls;
@@ -3360,8 +3365,8 @@ console.log("space: " + spacekey);
           let faction_map = his_self.game.state.naval_battle.faction_map;
           let attacker_faction = his_self.game.state.naval_battle.attacker_faction;
           let defender_faction = his_self.game.state.naval_battle.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 
           if (this.game.player == this.returnPlayerOfFaction(loser)) {
             this.playerEvaluateNavalRetreatOpportunity(loser, spacekey);
@@ -3388,8 +3393,8 @@ console.log("space: " + spacekey);
           let faction_map = his_self.game.state.field_battle.faction_map;
           let attacker_faction = his_self.game.state.field_battle.attacker_faction;
           let defender_faction = his_self.game.state.field_battle.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
           let attacker_results = his_self.game.state.field_battle.attacker_results;
           let defender_results = his_self.game.state.field_battle.defender_results;
           let attacker_rolls   = his_self.game.state.field_battle.attacker_rolls;
@@ -3734,7 +3739,7 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	  let f = this.calculateVictoryPoints();
 
 /****
-//          faction : this.game.players_info[i].factions[ii] ,
+//          faction : this.game.state.players_info[i].factions[ii] ,
 //          vp : 0 ,
 //          keys : 0 ,
 //          religious : 0 ,
@@ -3864,17 +3869,17 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  // 2-player game? Diplomacy Deck
 	  //
 	  if (this.game.players.length == 2) {
-	    for (let i = this.game.players_info.length-1; i >= 0; i--) {
-	      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	    for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
+	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
     	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t1");
 	      }
 	    }
             this.game.queue.push("SHUFFLE\t2");
             this.game.queue.push("DECKRESTORE\t2");
-	    for (let i = this.game.players_info.length; i > 0; i--) {
+	    for (let i = this.game.state.players_info.length; i > 0; i--) {
     	      this.game.queue.push("DECKENCRYPT\t2\t"+(i));
 	    }
-	    for (let i = this.game.players_info.length; i > 0; i--) {
+	    for (let i = this.game.state.players_info.length; i > 0; i--) {
     	      this.game.queue.push("DECKXOR\t2\t"+(i));
 	    }
 	    let new_cards = this.returnNewDiplomacyCardsForThisTurn(this.game.state.round);
@@ -3926,20 +3931,20 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  //
 	  // deal cards and add home card
 	  //
-	  for (let i = this.game.players_info.length-1; i >= 0; i--) {
-	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-              let cardnum = this.factions[this.game.players_info[i].factions[z]].returnCardsDealt(this);
+	  for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
+	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+              let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
 
 	      //
 	      // fuggers card -1
 	      //
-              if (this.game.state.events.fuggers === this.game.players_info[i].factions[z]) {
+              if (this.game.state.events.fuggers === this.game.state.players_info[i].factions[z]) {
 		cardnum--;
 		this.game.state.events.fuggers = "";
 	      }
 
-    	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
-    	      this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
+    	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	      this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 	    }
 	  }
@@ -3951,10 +3956,10 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
           this.game.queue.push("DECKRESTORE\t1");
 
 
-	  for (let i = this.game.players_info.length; i > 0; i--) {
+	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
 	  }
-	  for (let i = this.game.players_info.length; i > 0; i--) {
+	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
 
@@ -4304,8 +4309,8 @@ console.log("----------------------------");
 
 	  let player_turn = -1;
 
-	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    if (this.game.players_info[i].factions.includes(faction)) {
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+	    if (this.game.state.players_info[i].factions.includes(faction)) {
 	      player_turn = i+1;
 	    }
 	  }

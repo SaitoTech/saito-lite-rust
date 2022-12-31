@@ -7,9 +7,9 @@
     //
     // factions in-play
     //
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.factions[this.game.players_info[i].faction] != undefined) {
-        z.push(this.factions[this.game.players_info[i].faction]);
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.factions[this.game.state.players_info[i].faction] != undefined) {
+        z.push(this.factions[this.game.state.players_info[i].faction]);
       }
     }
 
@@ -51,6 +51,9 @@
     // 
     // 1 = fall through, 0 = halt game
     //
+    if (obj.onCommit == null) {
+      obj.onCommit = function(his_self, faction) { return 1; } // 1 means fall through
+    }
     if (obj.onEvent == null) {
       obj.onEvent = function(his_self, player) { return 1; } // 1 means fall-through / no-stop
     }
@@ -60,6 +63,9 @@
     if (obj.handleGameLoop == null) {
       obj.handleGameLoop = function(his_self, qe, mv) { return 1; } // 1 means fall-through / no-stop
     }
+
+
+
 
 
     //

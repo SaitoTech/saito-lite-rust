@@ -2,7 +2,6 @@
     ////////////////
     // PROTESTANT //
     ////////////////
-
     this.importDebater('luther-debater', {
       type		:	"luther-debater" ,
       name		: 	"Martin Luther",
@@ -10,8 +9,11 @@
       language_zone	:	"german" ,
       faction		:	"protestant" ,
       power		:	4,
-      ability		:	"Bonus CP for transaction in German zone" ,
+      ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
+      onCommit		:	function(his_self, faction) {
+	return 1;
+      }
     });
 
     this.importDebater('zwingli-debater', {

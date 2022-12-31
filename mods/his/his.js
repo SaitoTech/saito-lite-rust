@@ -852,7 +852,6 @@ Habsburg conquistadores:
     ////////////////
     // PROTESTANT //
     ////////////////
-
     this.importDebater('luther-debater', {
       type		:	"luther-debater" ,
       name		: 	"Martin Luther",
@@ -860,8 +859,11 @@ Habsburg conquistadores:
       language_zone	:	"german" ,
       faction		:	"protestant" ,
       power		:	4,
-      ability		:	"Bonus CP for transaction in German zone" ,
+      ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
+      onCommit		:	function(his_self, faction) {
+	return 1;
+      }
     });
 
     this.importDebater('zwingli-debater', {
@@ -1473,11 +1475,11 @@ Habsburg conquistadores:
 
       first_time_running = 1;
       this.game.state = this.returnState();
+      this.game.state.players_info = this.returnPlayers(this.game.players.length);
       this.game.spaces = this.returnSpaces();
       this.game.navalspaces = this.returnNavalSpaces();
-      this.game.players_info = this.returnPlayers(this.game.players.length);
 
-console.log("PLAYERS INFO: " + JSON.stringify(this.game.players_info));
+console.log("PLAYERS INFO: " + JSON.stringify(this.game.state.players_info));
 
 
 console.log("\n\n\n\n");
@@ -2652,7 +2654,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3344,7 +3346,7 @@ alert("Not Implemented");
 	// deal extra card if player is england
 	if (player === his_self.returnPlayerOfFaction("england")) {
 	  let faction_hand_idx = his_self.returnFactionHandIdx(player, "england");   
- 	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.players_info[player-1].factions[faction_hand_idx]);
+ 	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.state.players_info[player-1].factions[faction_hand_idx]);
 	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
         }
 	// three counter-reformation attempts
@@ -3377,7 +3379,7 @@ alert("Not Implemented");
 	  }
 	  if (f[key] == 2) {
 	    let faction_hand_idx = his_self.returnFactionHandIdx(player, key);
- 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.players_info[player-1].factions[faction_hand_idx]);
+ 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+this.game.state.players_info[player-1].factions[faction_hand_idx]);
 	    his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
 	  }
 	}
@@ -3580,7 +3582,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('024')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3619,7 +3621,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('025')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3660,7 +3662,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('026')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3702,7 +3704,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('027')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3744,7 +3746,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('028')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3784,7 +3786,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('029')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3824,7 +3826,7 @@ alert("Not Implemented");
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('030')) {
-              f = his_self.game.players_info[his_self.game.player-1].factions[i];
+              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
@@ -3870,7 +3872,7 @@ alert("Not Implemented");
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
-	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
+	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -3910,7 +3912,7 @@ alert("Not Implemented");
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('033')) {
-	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
+	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -4031,7 +4033,7 @@ alert("Not Implemented");
 
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('036')) {
-	      f = his_self.game.players_info[his_self.game.player-1].factions[i];
+	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
@@ -5383,7 +5385,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
         his_self.game.queue.push("DEAL\t1\t"+p+"\t"+1);
         his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+faction);
         his_self.game.queue.push("DEAL\t1\t"+p+"\t"+1);
-	his_self.game.state.event.fuggers = faction;
+	his_self.game.state.events.fuggers = faction;
 
 	return 1;
       },
@@ -5815,10 +5817,10 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	  let captured_leaders = [];
 	  let options = [];
 
-	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    for (let ii = 0; ii < this.game.players_info[i].captured.length; ii++) {
-	      captured_leaders.push({ leader : this.game.players_info[i].captured[ii].type , player : i , idx : ii });
-	      options.push(this.game.players_info[i].captured[ii].type);
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+	    for (let ii = 0; ii < this.game.state.players_info[i].captured.length; ii++) {
+	      captured_leaders.push({ leader : this.game.state.players_info[i].captured[ii].type , player : i , idx : ii });
+	      options.push(this.game.state.players_info[i].captured[ii].type);
 	    } 	
 	  }	
 
@@ -5860,11 +5862,11 @@ alert("NOT IMPLEMENTED: need to connect this with actual piracy for hits-scoring
 	  let ransomed_leader_type = mv[1];
 	  let ransomed_leader = null;
 
-	  for (let i = 0; i < his_self.game.players_info.length; i++) {
-	    for (let ii = 0; ii < his_self.game.players_info[i].captured.length; ii++) {
-	      if (his_self.game.players_info[i].captured[ii].type == ransomed_leader_type) {
-	        randomed_leader = his_self.game.players_info[i].captured[ii];
-		his_self.game.players_info[i].captured.splice(ii, 1);
+	  for (let i = 0; i < his_self.game.state.players_info.length; i++) {
+	    for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
+	      if (his_self.game.state.players_info[i].captured[ii].type == ransomed_leader_type) {
+	        randomed_leader = his_self.game.state.players_info[i].captured[ii];
+		his_self.game.state.players_info[i].captured.splice(ii, 1);
 	      }
 	    } 	
 	  }	
@@ -6440,12 +6442,6 @@ alert("NOT IMPLEMENTED");
 
 
 
-  isSpaceFortified(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.type === "key" || space.type === "fortress") { return false; }
-    return false;
-  }
-
   isSpaceFriendly(space, faction) {
 
     let cf = this.returnFactionControllingSpace(space);
@@ -6472,17 +6468,73 @@ alert("NOT IMPLEMENTED");
     return false;
   }
 
-  returnFactionControllingSpace(space) {
+  isSpaceFortified(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    let factions = this.returnImpulseOrder(); 
-    for (let i = 0; i < factions.length; i++) {
-      if (this.isSpaceControlled(space, factions[i])) { return factions[i]; }
-    }
-    if (space.political) { return space.political; }
-    return space.home;
+    if (space.type === "key" || space.type === "fortress") { return false; }
+    return false;
   }
 
+  //
+  // similar to above, except it can cross a sea-zone
+  //
+  isSpaceConnectedToCapitalSpringDeployment(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
+    let his_self = this;
+    let capitals = this.returnCapitals(faction);
+    let already_routed_through = {};
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // capitals are good destinations
+      function(spacekey) {
+        if (capitals.includes(spacekey)) { return 1; }
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      },
+
+      // transit passes? 0
+      0,
+
+      // transit seas? 1
+      1,
+     
+      // faction? optional
+      faction,
+
+      // already crossed sea zone optional
+      0 
+    );
+
+    return 1;
+  }
+
+  isSpaceAdjacentToReligion(space, religion) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.neighbours.length; i++) {
+      if (this.game.spaces[space.neighbours[i]].religion === religion) {
+	return true;
+      }
+    }
+    return false;
+  }
+
+  returnSpacesWithFilter(filter_func) {
+    let spaces = [];
+    for (let spacekey in this.game.spaces) {
+      if (filter_func(spacekey) == 1) { spaces.push(spacekey); }
+    }
+    return spaces;
+  }
 
   isSpaceFactionCapital(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -6499,17 +6551,11 @@ alert("NOT IMPLEMENTED");
     return false;
   }
 
-  isSpaceBesieged(space) {
-    return this.isSpaceUnderSiege(space);
-  }
-
   isSpaceUnderSiege(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.besieged > 0) { return true; }
     return false;
   }
-
-
 
   isSpaceConnectedToCapital(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -6548,6 +6594,16 @@ alert("NOT IMPLEMENTED");
 
 
 
+
+  returnFactionControllingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let factions = this.returnImpulseOrder(); 
+    for (let i = 0; i < factions.length; i++) {
+      if (this.isSpaceControlled(space, factions[i])) { return factions[i]; }
+    }
+    if (space.political) { return space.political; }
+    return space.home;
+  }
 
 
 
@@ -7277,81 +7333,6 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
   }
 
-  isFriendlyHomeSpace(space, faction) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (faction == "protestant") {
-      if (space.religion == faction && space.language == "german" && this.isSpaceFriendly(space, faction)) { return 1; }
-    } else {
-      if (space.home == faction && this.isSpaceFriendly(space, faction)) { return 1; }
-    }
-    return 0;
-  }
-
-
-
-  //
-  // similar to above, except it can cross a sea-zone
-  //
-  isSpaceConnectedToCapitalSpringDeployment(space, faction) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-
-    let his_self = this;
-    let capitals = this.returnCapitals(faction);
-    let already_routed_through = {};
-
-    let res = this.returnNearestSpaceWithFilter(
-
-      space.key,
-
-      // capitals are good destinations
-      function(spacekey) {
-        if (capitals.includes(spacekey)) { return 1; }
-        return 0;
-      },
-
-      // route through this?
-      function(spacekey) {
-	if (already_routed_through[spacekey] == 1) { return 0; }
-        already_routed_through[spacekey] = 1;
-	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
-	return 0;
-      },
-
-      // transit passes? 0
-      0,
-
-      // transit seas? 1
-      1,
-     
-      // faction? optional
-      faction,
-
-      // already crossed sea zone optional
-      0 
-    );
-
-    return 1;
-  }
-
-  isSpaceAdjacentToReligion(space, religion) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.neighbours.length; i++) {
-      if (this.game.spaces[space.neighbours[i]].religion === religion) {
-	return true;
-      }
-    }
-    return false;
-  }
-
-  returnSpacesWithFilter(filter_func) {
-    let spaces = [];
-    for (let spacekey in this.game.spaces) {
-      if (filter_func(spacekey) == 1) { spaces.push(spacekey); }
-    }
-    return spaces;
-  }
-
-
 HACK
   returnNumberOfElectoratesControlledByCatholics() {
     let controlled_keys = 0;
@@ -7385,7 +7366,7 @@ HACK
     return controlled_keys;
   }
   returnNumberOfKeysControlledByPlayer(player_num) {
-    let faction = this.game.players_info[player_num-1].faction;
+    let faction = this.game.state.players_info[player_num-1].faction;
     let controlled_keys = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].type === "key") {
@@ -9143,6 +9124,90 @@ HACK
   }
 
 
+  //
+  // Allies
+  //
+  // are by definition major powers as opposed minor / activated powers, although 
+  // if you ask areAllies() or areEnemies() on combinations of faction names that 
+  // include minor-activated powers like scotland or genoa these functions will 
+  // politely let you know if those minor-powers are activated to an ally or enemy
+  //
+
+  returnAllies(faction) { 
+    let f = [];
+    let io = this.returnImpulseOrder();
+    for (let i = 0; i < io.length; i++) {
+      if (io[i] !== faction) {
+        if (this.areAllies(faction, io[i])) { f.push(io[i]); }
+      }
+    }
+    return f;
+  }
+
+  returnEnemies(faction) { 
+    let f = [];
+    let io = this.returnImpulseOrder();
+    for (let i = 0; i < io.length; i++) {
+      if (io[i] !== faction) {
+        if (this.areEnemies(faction, io[i])) { f.push(io[i]); }
+      }
+    }
+    return f;
+  }
+
+  areAllies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
+    if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
+      let f1cp = this.returnControllingPower(faction1);
+      let f2cp = this.returnControllingPower(faction2);
+      try { if (this.game.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
+      try { if (this.game.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
+    }
+    return 0;
+  }
+
+  areEnemies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
+    if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
+      let f1cp = this.returnControllingPower(faction1);
+      let f2cp = this.returnControllingPower(faction2);
+      try { if (this.game.diplomacy[f1cp][f2cp].enemies == 1) { return 1; } } catch (err) {}
+      try { if (this.game.diplomacy[f2cp][f1cp].enemies == 1) { return 1; } } catch (err) {}
+    }
+    return 0;
+  }
+
+  setAllies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+  }
+
+  unsetAllies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+  }
+
+  setEnemies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+  }
+
+  unsetEnemies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+  }
+
+
   isMajorPower(power) {
     if (power === "france" || power === "hapsburg" || power === "england" || power === "protestant" || power === "ottoman" || power === "papacy") { return true; }
     return false;
@@ -9273,7 +9338,7 @@ HACK
 
   isCaptured(faction, unittype) {
     for (let i = 0; i < this.game.players.length; i++) {
-      let p = this.game.players_info[i];
+      let p = this.game.state.players_info[i];
       if (p.captured.includes(unittype)) { return 1; }
     }
     return 0;
@@ -9321,80 +9386,6 @@ HACK
       }
     }
     return null;
-  }
-
-  returnAllies(faction) { 
-    let f = [];
-    let io = this.returnImpulseOrder();
-    for (let i = 0; i < io.length; i++) {
-      if (io[i] !== faction) {
-        if (this.areAllies(faction, io[i])) { f.push(io[i]); }
-      }
-    }
-    return f;
-  }
-
-  returnEnemies(faction) { 
-    let f = [];
-    let io = this.returnImpulseOrder();
-    for (let i = 0; i < io.length; i++) {
-      if (io[i] !== faction) {
-        if (this.areEnemies(faction, io[i])) { f.push(io[i]); }
-      }
-    }
-    return f;
-  }
-
-  areAllies(faction1, faction2) {
-    try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
-    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
-    if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
-      let f1cp = this.returnControllingPower(faction1);
-      let f2cp = this.returnControllingPower(faction2);
-      try { if (this.game.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
-      try { if (this.game.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
-    }
-    return 0;
-  }
-
-  areEnemies(faction1, faction2) {
-    try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
-    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
-    if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
-      let f1cp = this.returnControllingPower(faction1);
-      let f2cp = this.returnControllingPower(faction2);
-      try { if (this.game.diplomacy[f1cp][f2cp].enemies == 1) { return 1; } } catch (err) {}
-      try { if (this.game.diplomacy[f2cp][f1cp].enemies == 1) { return 1; } } catch (err) {}
-    }
-    return 0;
-  }
-
-  setAllies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
-  }
-
-  unsetAllies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
-  }
-
-  setEnemies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
-  }
-
-  unsetEnemies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
   }
 
   addUnit(faction, space, type) {
@@ -9461,10 +9452,10 @@ HACK
 
     let factions = {};
 
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-        factions[this.game.players_info[i].factions[ii]] = {
-	  faction : this.game.players_info[i].factions[ii] ,
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
+        factions[this.game.state.players_info[i].factions[ii]] = {
+	  faction : this.game.state.players_info[i].factions[ii] ,
 	  vp_base : 0 ,
 	  vp_bonus : 0 ,
 	  vp_special : 0 ,
@@ -9697,6 +9688,11 @@ HACK
     state.tmp_catholic_counter_reformation_bonus = 0;
     state.tmp_papacy_may_specify_debater = 0;
     state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
+    state.tmp_bonus_protestant_translation_german_zone = 0;
+    state.tmp_bonus_protestant_translation_french_zone = 0;
+    state.tmp_bonus_protestant_translation_english_zone = 0;
+    state.tmp_bonus_papacy_burn_books = 0;
 
     //
     // foreign wars
@@ -10549,9 +10545,9 @@ HACK
     //
     // factions in-play
     //
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.factions[this.game.players_info[i].faction] != undefined) {
-        z.push(this.factions[this.game.players_info[i].faction]);
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.factions[this.game.state.players_info[i].faction] != undefined) {
+        z.push(this.factions[this.game.state.players_info[i].faction]);
       }
     }
 
@@ -10593,6 +10589,9 @@ HACK
     // 
     // 1 = fall through, 0 = halt game
     //
+    if (obj.onCommit == null) {
+      obj.onCommit = function(his_self, faction) { return 1; } // 1 means fall through
+    }
     if (obj.onEvent == null) {
       obj.onEvent = function(his_self, player) { return 1; } // 1 means fall-through / no-stop
     }
@@ -10602,6 +10601,9 @@ HACK
     if (obj.handleGameLoop == null) {
       obj.handleGameLoop = function(his_self, qe, mv) { return 1; } // 1 means fall-through / no-stop
     }
+
+
+
 
 
     //
@@ -10660,6 +10662,11 @@ console.log("MOVE: " + mv[0]);
         if (mv[0] === "round") {
 
 	  this.game.state.round++;
+
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+	    this.resetPlayerRound((i+1));
+          }
+
 
 	  this.game.queue.push("victory_determination_phase");
 	  this.game.queue.push("new_world_phase");
@@ -12179,8 +12186,8 @@ console.log(i + " --- " + z[i].name);
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker)-1];
-	      let ap = his_self.game.players_info[attacker_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -12190,8 +12197,8 @@ console.log(i + " --- " + z[i].name);
 	      } 
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
-	      let dp = his_self.game.players_info[defender_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -12397,8 +12404,8 @@ console.log(i + " --- " + z[i].name);
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker)-1];
-	      let ap = his_self.game.players_info[attacker_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -12408,8 +12415,8 @@ console.log(i + " --- " + z[i].name);
 	      } 
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
-	      let dp = his_self.game.players_info[defender_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -12724,8 +12731,8 @@ console.log(i + " --- " + z[i].name);
 	  let faction_map = his_self.game.state.field_battle.faction_map;
 	  let attacker_faction = his_self.game.state.field_battle.attacker_faction;
 	  let defender_faction = his_self.game.state.field_battle.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	  let attacker_results = his_self.game.state.field_battle.attacker_results;
 	  let defender_results = his_self.game.state.field_battle.defender_results;
 	  let attacker_rolls   = his_self.game.state.field_battle.attacker_rolls;
@@ -13191,8 +13198,8 @@ console.log("d");
 	  let faction_map      = his_self.game.state.naval_battle.faction_map;
 	  let attacker_faction = his_self.game.state.naval_battle.attacker_faction;
 	  let defender_faction = his_self.game.state.naval_battle.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	  let attacker_results = his_self.game.state.naval_battle.attacker_results;
 	  let defender_results = his_self.game.state.naval_battle.defender_results;
 	  let attacker_rolls   = his_self.game.state.naval_battle.attacker_rolls;
@@ -13394,8 +13401,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	  //
           for (let f in space.units) {
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker)-1];
-	      let ap = his_self.game.players_info[attacker_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
+	      let ap = his_self.game.state.players_info[attacker_player-1];
 	      if (p.tmp_roll_first == 1) { ap.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { ap.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -13405,8 +13412,8 @@ console.log(winner + " --- " + attacker_faction + " --- " + defender_faction);
 	      } 
 	    }
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
-	      let p = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
-	      let dp = his_self.game.players_info[defender_player-1];
+	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	      let dp = his_self.game.state.players_info[defender_player-1];
 	      if (p.tmp_roll_first == 1) { dp.tmp_roll_first = 1; }
 	      if (p.tmp_roll_bonus != 0) { dp.tmp_roll_bonus += p.tmp_roll_bonus; }
 	      if (p.tmp_roll_modifiers.length > 0) { 
@@ -13704,8 +13711,8 @@ console.log("removing secondarily!");
 	  let faction_map      = his_self.game.state.assault.faction_map;
 	  let attacker_faction = his_self.game.state.assault.attacker_faction;
 	  let defender_faction = his_self.game.state.assault.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 	  let attacker_results = his_self.game.state.assault.attacker_results;
 	  let defender_results = his_self.game.state.assault.defender_results;
 	  let attacker_rolls   = his_self.game.state.assault.attacker_rolls;
@@ -13987,8 +13994,8 @@ console.log("space: " + spacekey);
           let faction_map = his_self.game.state.naval_battle.faction_map;
           let attacker_faction = his_self.game.state.naval_battle.attacker_faction;
           let defender_faction = his_self.game.state.naval_battle.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
 
           if (this.game.player == this.returnPlayerOfFaction(loser)) {
             this.playerEvaluateNavalRetreatOpportunity(loser, spacekey);
@@ -14015,8 +14022,8 @@ console.log("space: " + spacekey);
           let faction_map = his_self.game.state.field_battle.faction_map;
           let attacker_faction = his_self.game.state.field_battle.attacker_faction;
           let defender_faction = his_self.game.state.field_battle.defender_faction;
-          let attacker_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
           let attacker_results = his_self.game.state.field_battle.attacker_results;
           let defender_results = his_self.game.state.field_battle.defender_results;
           let attacker_rolls   = his_self.game.state.field_battle.attacker_rolls;
@@ -14361,7 +14368,7 @@ console.log("DEFENDER IS: "  + this.game.state.theological_debate.defender_debat
 	  let f = this.calculateVictoryPoints();
 
 /****
-//          faction : this.game.players_info[i].factions[ii] ,
+//          faction : this.game.state.players_info[i].factions[ii] ,
 //          vp : 0 ,
 //          keys : 0 ,
 //          religious : 0 ,
@@ -14491,17 +14498,17 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  // 2-player game? Diplomacy Deck
 	  //
 	  if (this.game.players.length == 2) {
-	    for (let i = this.game.players_info.length-1; i >= 0; i--) {
-	      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	    for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
+	      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
     	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t1");
 	      }
 	    }
             this.game.queue.push("SHUFFLE\t2");
             this.game.queue.push("DECKRESTORE\t2");
-	    for (let i = this.game.players_info.length; i > 0; i--) {
+	    for (let i = this.game.state.players_info.length; i > 0; i--) {
     	      this.game.queue.push("DECKENCRYPT\t2\t"+(i));
 	    }
-	    for (let i = this.game.players_info.length; i > 0; i--) {
+	    for (let i = this.game.state.players_info.length; i > 0; i--) {
     	      this.game.queue.push("DECKXOR\t2\t"+(i));
 	    }
 	    let new_cards = this.returnNewDiplomacyCardsForThisTurn(this.game.state.round);
@@ -14553,20 +14560,20 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
 	  //
 	  // deal cards and add home card
 	  //
-	  for (let i = this.game.players_info.length-1; i >= 0; i--) {
-	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-              let cardnum = this.factions[this.game.players_info[i].factions[z]].returnCardsDealt(this);
+	  for (let i = this.game.state.players_info.length-1; i >= 0; i--) {
+	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+              let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
 
 	      //
 	      // fuggers card -1
 	      //
-              if (this.game.state.events.fuggers === this.game.players_info[i].factions[z]) {
+              if (this.game.state.events.fuggers === this.game.state.players_info[i].factions[z]) {
 		cardnum--;
 		this.game.state.events.fuggers = "";
 	      }
 
-    	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
-    	      this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
+    	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	      this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 	    }
 	  }
@@ -14578,10 +14585,10 @@ console.log("NUMBER OF PLAYERS: " + this.game.players);
           this.game.queue.push("DECKRESTORE\t1");
 
 
-	  for (let i = this.game.players_info.length; i > 0; i--) {
+	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
 	  }
-	  for (let i = this.game.players_info.length; i > 0; i--) {
+	  for (let i = this.game.state.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
 
@@ -14931,8 +14938,8 @@ console.log("----------------------------");
 
 	  let player_turn = -1;
 
-	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    if (this.game.players_info[i].factions.includes(faction)) {
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+	    if (this.game.state.players_info[i].factions.includes(faction)) {
 	      player_turn = i+1;
 	    }
 	  }
@@ -15602,6 +15609,21 @@ this.updateLog("Catholics: " + c_rolls);
 
   }
 
+  //
+  // runs each new round
+  //
+  resetPlayerRound(player_num) {
+
+    this.game.state.tmp_bonus_protestant_translation_german_zone = 0;
+    this.game.state.tmp_bonus_protestant_translation_french_zone = 0;
+    this.game.state.tmp_bonus_protestant_translation_english_zone = 0;
+    this.game.state.tmp_bonus_papacy_burn_books = 0;
+
+  }
+
+  //
+  // runs each new turn
+  //
   resetPlayerTurn(player_num) {
 
     this.game.state.tmp_reformations_this_turn = [];
@@ -15620,8 +15642,8 @@ this.updateLog("Catholics: " + c_rolls);
       }
     }
 
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      let p = this.game.players_info[i];
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      let p = this.game.state.players_info[i];
       p.tmp_roll_bonus = 0;
       p.tmp_roll_first = 0;
       p.tmp_roll_modifiers = [];
@@ -15638,20 +15660,20 @@ this.updateLog("Catholics: " + c_rolls);
 
   isFactionInPlay(faction) {
     for (let i = 0; i < this.game.players.length; i++) {
-      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-	if (this.game.players_info[i].factions[z] === faction) { return 1; }
+      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	if (this.game.state.players_info[i].factions[z] === faction) { return 1; }
       }
     }
     return 0;
   }
 
   returnPlayerOfFaction(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].factions.includes(faction)) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.game.state.players_info[i].factions.includes(faction)) {
 	return i+1;
       }
-      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-	let f = this.game.players_info[i].factions[z];
+      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	let f = this.game.state.players_info[i].factions[z];
         if (this.game.state.activated_powers[f].includes(faction)) {
           console.log("this is an activated_power!: " + faction + " -- " + f);
 	  return (i+1);
@@ -15949,7 +15971,7 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
 
   returnPlayerFactions(player) {
-    return this.game.players_info[player-1].factions;
+    return this.game.state.players_info[player-1].factions;
   }
 
   returnActionMenuOptions(player=null, faction=null) {
@@ -17680,7 +17702,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Mercenary",
 
       function(space) {
-        if (his_self.isFriendlyHomeSpace(space, faction)) { return 1; }
+        if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
 	return 0;
       },
 
@@ -17702,7 +17724,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Regular",
 
       function(space) {
-        if (his_self.isFriendlyHomeSpace(space, faction)) { return 1; }
+        if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
 	return 0;
       },
 
@@ -17840,29 +17862,29 @@ console.log("CS: " + JSON.stringify(conquerable_spaces));
     return 0;
   }
   canPlayerExplore(his_self, player, faction) {
-    if (this.game.players_info[player-1].has_explored == 0) { return 1; }
+    if (this.game.state.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
   async playerExplore(his_self, player, faction) {
-    this.game.players_info[player-1].has_explored = 1;
+    this.game.state.players_info[player-1].has_explored = 1;
 console.log("10");
 return;
   }
   canPlayerColonize(his_self, player, faction) {
-    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
+    if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerColonize(his_self, player, faction) {
-    this.game.players_info[player-1].has_colonized = 1;
+    this.game.state.players_info[player-1].has_colonized = 1;
 console.log("11");
 return;
   }
   canPlayerConquer(his_self, player, faction) {
-    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
+    if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerConquer(his_self, player, faction) {
-    this.game.players_info[player-1].has_conquered = 1;
+    this.game.state.players_info[player-1].has_conquered = 1;
 console.log("12");
 return;
   }
@@ -18457,20 +18479,20 @@ return;
   }
 
   gainVictoryPoints(faction, points, type="special") {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii]) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
+	if (faction === this.game.state.players_info[i].factions[ii]) {
 	  if (type == "base") {
-            this.game.players_info[i].factions[ii].vp += points;
-            this.game.players_info[i].factions[ii].vp_base += points;
+            this.game.state.players_info[i].factions[ii].vp += points;
+            this.game.state.players_info[i].factions[ii].vp_base += points;
 	  }
 	  if (type == "special") {
-            this.game.players_info[i].factions[ii].vp += points;
-            this.game.players_info[i].factions[ii].vp_special += points;
+            this.game.state.players_info[i].factions[ii].vp += points;
+            this.game.state.players_info[i].factions[ii].vp_special += points;
 	  }
 	  if (type == "bonus") {
-            this.game.players_info[i].factions[ii].vp += points;
-            this.game.players_info[i].factions[ii].vp_bonus += points;
+            this.game.state.players_info[i].factions[ii].vp += points;
+            this.game.state.players_info[i].factions[ii].vp_bonus += points;
 	  }
 	  break;
         }
@@ -18480,10 +18502,10 @@ return;
   }
 
   returnCapitals(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii]) {
-          return this.factions[this.game.players_info[i].factions[ii]].capitals;
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
+	if (faction === this.game.state.players_info[i].factions[ii]) {
+          return this.factions[this.game.state.players_info[i].factions[ii]].capitals;
         }
       }
     }
@@ -18491,8 +18513,8 @@ return;
   }
 
   returnFactionHandIdx(player, faction) {
-    for (let i = 0; i < this.game.players_info[player-1].factions.length; i++) {
-      if (this.game.players_info[player-1].factions[i] === faction) {
+    for (let i = 0; i < this.game.state.players_info[player-1].factions.length; i++) {
+      if (this.game.state.players_info[player-1].factions[i] === faction) {
 	return i;
       }
     }
@@ -20020,8 +20042,8 @@ console.log("card: " + cardname);
 console.log("PLAYER OF FACTION: " + faction);
 console.log(p);
  
-      for (let z = 0; z < this.game.players_info[p-1].factions.length; z++) {
-	if (this.game.players_info[p-1].factions[z] == faction) {
+      for (let z = 0; z < this.game.state.players_info[p-1].factions.length; z++) {
+	if (this.game.state.players_info[p-1].factions[z] == faction) {
 console.log("FACTION IS FHAND: " + z);
 	  if (this.game.player == p) {
 console.log("DECK FHAND IS: " + JSON.stringify(this.game.deck[0].fhand));

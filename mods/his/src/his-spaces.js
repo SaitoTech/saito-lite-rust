@@ -1,10 +1,4 @@
 
-  isSpaceFortified(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.type === "key" || space.type === "fortress") { return false; }
-    return false;
-  }
-
   isSpaceFriendly(space, faction) {
 
     let cf = this.returnFactionControllingSpace(space);
@@ -31,17 +25,73 @@
     return false;
   }
 
-  returnFactionControllingSpace(space) {
+  isSpaceFortified(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    let factions = this.returnImpulseOrder(); 
-    for (let i = 0; i < factions.length; i++) {
-      if (this.isSpaceControlled(space, factions[i])) { return factions[i]; }
-    }
-    if (space.political) { return space.political; }
-    return space.home;
+    if (space.type === "key" || space.type === "fortress") { return false; }
+    return false;
   }
 
+  //
+  // similar to above, except it can cross a sea-zone
+  //
+  isSpaceConnectedToCapitalSpringDeployment(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
+    let his_self = this;
+    let capitals = this.returnCapitals(faction);
+    let already_routed_through = {};
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // capitals are good destinations
+      function(spacekey) {
+        if (capitals.includes(spacekey)) { return 1; }
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      },
+
+      // transit passes? 0
+      0,
+
+      // transit seas? 1
+      1,
+     
+      // faction? optional
+      faction,
+
+      // already crossed sea zone optional
+      0 
+    );
+
+    return 1;
+  }
+
+  isSpaceAdjacentToReligion(space, religion) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.neighbours.length; i++) {
+      if (this.game.spaces[space.neighbours[i]].religion === religion) {
+	return true;
+      }
+    }
+    return false;
+  }
+
+  returnSpacesWithFilter(filter_func) {
+    let spaces = [];
+    for (let spacekey in this.game.spaces) {
+      if (filter_func(spacekey) == 1) { spaces.push(spacekey); }
+    }
+    return spaces;
+  }
 
   isSpaceFactionCapital(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -58,17 +108,11 @@
     return false;
   }
 
-  isSpaceBesieged(space) {
-    return this.isSpaceUnderSiege(space);
-  }
-
   isSpaceUnderSiege(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.besieged > 0) { return true; }
     return false;
   }
-
-
 
   isSpaceConnectedToCapital(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -107,6 +151,16 @@
 
 
 
+
+  returnFactionControllingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let factions = this.returnImpulseOrder(); 
+    for (let i = 0; i < factions.length; i++) {
+      if (this.isSpaceControlled(space, factions[i])) { return factions[i]; }
+    }
+    if (space.political) { return space.political; }
+    return space.home;
+  }
 
 
 
@@ -836,81 +890,6 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
 
   }
 
-  isFriendlyHomeSpace(space, faction) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (faction == "protestant") {
-      if (space.religion == faction && space.language == "german" && this.isSpaceFriendly(space, faction)) { return 1; }
-    } else {
-      if (space.home == faction && this.isSpaceFriendly(space, faction)) { return 1; }
-    }
-    return 0;
-  }
-
-
-
-  //
-  // similar to above, except it can cross a sea-zone
-  //
-  isSpaceConnectedToCapitalSpringDeployment(space, faction) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-
-    let his_self = this;
-    let capitals = this.returnCapitals(faction);
-    let already_routed_through = {};
-
-    let res = this.returnNearestSpaceWithFilter(
-
-      space.key,
-
-      // capitals are good destinations
-      function(spacekey) {
-        if (capitals.includes(spacekey)) { return 1; }
-        return 0;
-      },
-
-      // route through this?
-      function(spacekey) {
-	if (already_routed_through[spacekey] == 1) { return 0; }
-        already_routed_through[spacekey] = 1;
-	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
-	return 0;
-      },
-
-      // transit passes? 0
-      0,
-
-      // transit seas? 1
-      1,
-     
-      // faction? optional
-      faction,
-
-      // already crossed sea zone optional
-      0 
-    );
-
-    return 1;
-  }
-
-  isSpaceAdjacentToReligion(space, religion) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.neighbours.length; i++) {
-      if (this.game.spaces[space.neighbours[i]].religion === religion) {
-	return true;
-      }
-    }
-    return false;
-  }
-
-  returnSpacesWithFilter(filter_func) {
-    let spaces = [];
-    for (let spacekey in this.game.spaces) {
-      if (filter_func(spacekey) == 1) { spaces.push(spacekey); }
-    }
-    return spaces;
-  }
-
-
 HACK
   returnNumberOfElectoratesControlledByCatholics() {
     let controlled_keys = 0;
@@ -944,7 +923,7 @@ HACK
     return controlled_keys;
   }
   returnNumberOfKeysControlledByPlayer(player_num) {
-    let faction = this.game.players_info[player_num-1].faction;
+    let faction = this.game.state.players_info[player_num-1].faction;
     let controlled_keys = 0;
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].type === "key") {
