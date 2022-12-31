@@ -17,7 +17,7 @@ class RedSquare extends ModTemplate {
 
     super(app);
     this.appname = "Red Square";
-    this.name = "RedSquare";
+    this.name = "Redsquare";
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
@@ -86,7 +86,10 @@ class RedSquare extends ModTemplate {
       og_image_secure_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"
     }
 
-    this.themes_avl = ['lite', 'dark'];
+    this.theme_options = {
+      'lite': 'fa-solid fa-sun', 
+      'dark': 'fa-solid fa-moon'
+    };
 
     return this;
 
@@ -244,7 +247,7 @@ class RedSquare extends ModTemplate {
       this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
         let cm = mod.respondTo("chat-manager");
         cm.container = ".saito-sidebar.left";
-	this.addComponent(cm);
+	      this.addComponent(cm);
       });
 
     }

@@ -6,7 +6,7 @@ class Themes extends ModTemplate {
         super(app);
         this.app = app;
         this.name = "Themes";
-
+        this.slug = "themes";
         this.styles = ['/themes/style.css'];
 
         this.initialize(app);
@@ -40,6 +40,16 @@ class Themes extends ModTemplate {
             this.renderIntos[qs].forEach((comp) => { comp.render(); });
         }
     }
+
+    getCurrentModName(){
+        if (this.app.BROWSER == 1) {
+            let slug =  ((window.location.pathname).split('/'))[1];
+            return slug.charAt(0).toUpperCase() + slug.slice(1);
+        }
+
+        return null;
+    }
+
 }
 
 module.exports = Themes;
