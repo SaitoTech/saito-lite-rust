@@ -98,6 +98,7 @@
 
 
       players[i] = {};
+      players[i].debaters_committed_this_turn = []; // bonuses
       players[i].tmp_roll_bonus = 0;
       players[i].tmp_roll_first = 0;
       players[i].tmp_roll_modifiers = [];
@@ -187,15 +188,14 @@
       }
     }
 
-    for (let i = 0; i < this.game.state.players_info.length; i++) {
-      let p = this.game.state.players_info[i];
-      p.tmp_roll_bonus = 0;
-      p.tmp_roll_first = 0;
-      p.tmp_roll_modifiers = [];
-      p.has_colonized = 0;
-      p.has_explored = 0;
-      p.has_conquered = 0;
-    }
+    let p = this.game.state.players_info[(player_num-1)];
+    p.debaters_committed_this_turn = [];
+    p.tmp_roll_bonus = 0;
+    p.tmp_roll_first = 0;
+    p.tmp_roll_modifiers = [];
+    p.has_colonized = 0;
+    p.has_explored = 0;
+    p.has_conquered = 0;
 
     this.game.state.field_battle = {};
 

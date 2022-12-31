@@ -11,9 +11,6 @@
       power		:	4,
       ability		:	"Bonus CP for translation in German zone" ,
       committed		: 	0,
-      onCommit		:	function(his_self, faction) {
-	return 1;
-      }
     });
 
     this.importDebater('zwingli-debater', {
