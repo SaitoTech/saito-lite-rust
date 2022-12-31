@@ -643,7 +643,7 @@ alert("removing unit not implement for sea");
 	  //
 	  for (f in this.factions) {
 
-	    if (f !== attacker && this.isSpaceControlledByFaction(spacekey, f)) {
+	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
@@ -4673,6 +4673,122 @@ this.updateLog("Catholics: " + c_rolls);
 	    this.game.queue.push("convert\t"+space+"\tprotestant");
 	  } else {
 	    this.updateLog("Catholics win!");
+	  }
+
+	  return 1;
+
+	}
+
+
+	if (mv[0] === "counter_reformation") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+	  this.game.state.tmp_counter_reformations_this_turn.push(space);
+
+	  let p_rolls = 0;
+	  let c_rolls = 0;
+
+	  let p_neighbours = 0;
+	  let c_neighbours = 0;
+
+	  let p_bonus = 0;
+	  let c_bonus = 0;
+
+	  let p_high = 0;
+	  let c_high = 0;
+
+	  let catholics_win = 0;
+
+	  let ties_resolve = "protestant";
+
+	  //
+	  // catholics win ties if Paul III or Julius III are Pope
+	  //
+	  if (this.game.state.leaders.paul_iii == 1 || this.game.state.leaders.julius_iii == 1) {
+	    ties_resolve = "catholic";
+	  }
+
+	  //
+	  // neighbours
+	  //
+	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+	      c_neighbours++;
+	    }
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+	      p_neighbours++;
+	    }  
+	  }
+
+	  //
+	  // language zone
+	  //
+console.log("FIX: unknown how to handle target language zone");
+	  //if (this.game.spaces[space].language !== "german") {
+	  //  ties_resolve = "catholic";
+ 	  //}
+
+
+	  // jesuit universities
+console.log("FIX: not yet handling jesuit university counter-reformation bonus");
+	  // stack of land units
+console.log("FIX: not yet handling catholic land units");
+
+
+	  //
+	  // temporary bonuses
+	  //
+	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
+	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
+
+	  //
+	  // calculate total rolls
+	  //
+	  p_rolls += p_neighbours;
+	  p_rolls += p_bonus;
+	  c_rolls += c_neighbours;
+	  c_rolls += c_bonus;
+
+	  //
+	  // everyone rolls at least 1 dice
+	  //
+	  if (c_rolls == 0) { c_rolls = 1; }
+	  if (p_rolls == 0) { p_rolls = 1; }
+
+this.updateLog("Total Rolls: ");
+this.updateLog("Protestants: " + p_rolls);
+
+	  for (let i = 0; i < p_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Protestants roll: " + x, 1);
+	    if (x > p_high) { p_high = x; }
+	  }
+
+this.updateLog("Catholics: " + c_rolls);
+
+	  for (let i = 0; i < c_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Catholics roll: " + x, 1);
+	    if (x > c_high) { c_high = x; }
+	  }
+
+	  //
+	  // do protestants win?
+	  //
+	  if (p_high < c_high) { catholics_win = 1; }
+	  if (p_high == c_high && ties_resolve === "catholics") { catholics_win = 1; }
+
+
+	  //
+	  // handle victory
+	  //
+	  if (catholics_win == 1) {
+	    this.updateLog("Catholics win!");
+	    this.game.queue.push("convert\t"+space+"\tcatholic");
+	  } else {
+	    this.updateLog("Protestants win!");
 	  }
 
 	  return 1;

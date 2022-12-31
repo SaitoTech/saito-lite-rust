@@ -1948,3811 +1948,6 @@ console.log("adding stuff!");
 
 
 
-  returnSpaceOfPersonage(faction, personage) {
-    for (let key in this.game.spaces) {
-      for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-	if (this.game.spaces[key].units[faction][i].type === personage) {
-	  return key;
-        }
-      }
-    }
-    return "";
-  }
-
-  returnIndexOfPersonageInSpace(faction, personage, spacekey) {
-    if (spacekey === "") { return -1; }
-    for (let i = 0; i < this.game.spaces[spacekey].units[faction].length; i++) {
-      if (this.game.spaces[spacekey].units[faction][i].type === personage) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  returnNavalTransportDestinations(faction, space, ops) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-
-    let viable_destinations = [];
-    let viable_navalspaces = [];
-    let options = [];
-    let ops_remaining = ops-1;    
-
-    for (let i = 0; i < space.ports.length; i++) {
-      if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
-	viable_navalspaces.push({key : space.ports[i] , ops_remaining : ops_remaining});
-      }
-    }
-
-    //
-    // TODO check for blocking fleet
-    //
-    while (ops_remaining > 1) {
-      ops_remaining--;
-      for (let i = 0; i < viable_navalspaces.length; i++) {
-	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i]].neighbours.length; z++) {
-          if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
-	    let ns = this.game.navalspaces[viable_navalspaces[i].key].neighbours[z];
-	    let already_included = 0;
-	    for (let z = 0; z < viable_navalspaces.length; z++) {
-	      if (viable_navalspaces[z].key == ns) { already_included = 1; }
-	    }
-	    if (aready_included == 0) {
-	      viable_navalspaces.push({ key : ns , ops_remaining : ops_remaining });
-	    }
-	  }
-	}
-      }
-    }
-
-    //
-    //
-    //
-    for (let i = 0; i < viable_navalspaces.length; i++) {
-      let key = viable_navalspaces[i].key;
-      for (let z = 0; z < this.game.navalspaces[key].ports.length; z++) {      
-	let port = this.game.navalspaces[key].ports[z];
-	if (port != space.key) {
-	  viable_destinations.push({ key : port , cost : (ops - ops_remaining)});
-	}
-      }
-    }
-
-    return viable_destinations;
-
-  }
-
-
-  returnFactionNavalUnitsToMove(faction) {
-
-    let units = [];
-
-    //
-    // include minor-activated factions
-    //
-    let fip = [];
-        fip.push(faction);
-    if (this.game.state.activated_powers[faction]) {
-      for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
-        fip.push(this.game.state.activated_powers[faction][i]);
-      }
-    }
-
-    //
-    // find units
-    //
-    for (let i = 0; i < fip.length; i++) {
-      for (let key in this.game.spaces) {
-
-	//
-	// we only care about units in ports
-	//
-	if (this.game.spaces[key].ports) {
-	if (this.game.spaces[key].ports.length > 0) {
-	  let ships = [];
-	  let leaders = [];
-	  for (let z = 0; z < this.game.spaces[key].units[fip[i]].length; z++) {
-
-	    //
-	    // only add leaders if there is a ship in port
-	    //
-	    let u = this.game.spaces[key].units[fip[i]][z];
-	    u.idx = z;
-	    if (u.land_or_sea === "sea") {
-	      if (u.navy_leader == true) {
-		leaders.push(u);
-	      } else {
-		ships.push(u);
-	      }
-	    }
-	  }
-
-	  //
-	  // add and include location
-	  //
-	  if (ships.length > 0) {
-	    for (let y = 0; y < ships.length; y++) {
-	      ships[y].spacekey = key;
-	      units.push(ships[y]);
-	    }
-	    for (let y = 0; y < leaders.length; y++) {
-	      leaders[y].spacekey = key;
-	      units.push(leaders[y]);
-	    }
-	  }
-	}
-        }
-      }
-    }
-
-    //
-    // add ships and leaders out-of-port
-    //
-    for (let i = 0; i < fip.length; i++) {
-      for (let key in this.game.navalspaces) {
-	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
-	  this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
-	  units.push(this.game.navalspaces[key].units[fip[i]][z]);
-	}
-      }
-    }
-
-    return units;
-  }
-
-
-
-  returnLoanedUnits() {
-    for (let i in this.game.spaces) {
-      space = this.game.spaces[i];
-      for (let f in space.units) {
-        for (let z = space.units[f].length-1;  z >= 0; z--) {
-	  let unit = space.units[f][z];
-	  if (unit.loaned != false) {
-	    let lender = unit.loaned;
-	    space.units[f].splice(z, 1);
-	    space.units[lender].push(unit);
-	  }
-        }
-      }
-    }
-    for (let i in this.game.navalspaces) {
-      space = this.game.navalspaces[i];
-      for (let f in space.units) {
-        for (let z = space.units[f].length-1;  z >= 0; z--) {
-	  let unit = space.units[f][z];
-	  if (unit.loaned != false) {
-	    let lender = unit.loaned;
-	    space.units[f].splice(z, 1);
-	    space.units[lender].push(unit);
-	  }
-        }
-      }
-    }
-  }
-
-
-  isSpaceFortified(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.type === "key" || space.type === "fortress") { return 1; }
-    return 0;
-  }
-
-
-  returnNearestFriendlyFortifiedSpaces(faction, space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-
-    let his_self = this;
-    let already_routed_through = {};
-
-    let res = this.returnNearestSpaceWithFilter(
-
-      space.key,
-
-      // fortified spaces
-      function(spacekey) {
-        if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
-	  if (his_self.isSpaceControlledByFaction(space, faction)) {
-	    return 1;
-	  }
-	  if (his_self.isSpaceFriendly(space, faction)) {
-	    return 1;
-	  }
-	}
-        return 0;
-      },
-
-      // route through this?
-      function(spacekey) {
-	if (already_routed_through[spacekey] == 1) { return 0; }
-        already_routed_through[spacekey] = 1;
-	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
-	return 0;
-      }
-    );
-
-    return res;
-
-  }
-
-
-  returnNearestFactionControlledPorts(faction, space) {
-    try { if (this.game.navelspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-
-    let his_self = this;
-    let already_routed_through = {};
-
-    let res = this.returnNearestNavalSpaceOrPortWithFilter(
-
-      space.key,
-
-      // ports
-      function(spacekey) {
-        if (his_self.game.spaces[spacekey]) {
-	  if (his_self.isSpaceControlledByFaction(space, faction)) {
-	    return 1;
-	  }
-	}
-        return 0;
-      },
-
-      // route through this
-      function(spacekey) {	
-        if (his_self.game.spaces[spacekey]) { return 0; }
-	if (already_routed_through[spacekey] == 1) { return 0; }
-        already_routed_through[spacekey] = 1;
-	return 1;
-      }
-    );
-
-    return res;
-
-  }
-
-
-  isCaptured(faction, unittype) {
-    for (let i = 0; i < this.game.players.length; i++) {
-      let p = this.game.players_info[i];
-      if (p.captured.includes(unittype)) { return 1; }
-    }
-    return 0;
-  }
-  isBesieged(faction, unittype) {
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].besieged) {
-	for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-	  if (this.game.spaces[key].units[faction][i].type == unittype) {
-	    if (this.game.spaces[key].units[faction][i].besieged == true) {
-	      return 1;
-	    }
-	  }
-	}
-      }
-    }
-    return 0;
-  }
-
-
-
-  captureLeader(winning_faction, losing_faction, space, unit) {
-    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    let p = this.returnPlayerOfFaction(winning_faction);
-    let unitjson = JSON.stringify(unit);
-    for (let z = 0; z < p.captured.length; z++) {
-      if (JSON.stringify(p.captured[z]) === unitjson) { return; }
-    }
-    p.captured.push(unit);
-  }
-
-  captureNavalLeader(winning_faction, losing_faction, space, unit) {
-    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
-    this.game.state.naval_leaders_lost_at_sea.push(unit);
-  }
-
-  isPersonageOnMap(faction, personage) {
-    for (let s in this.game.spaces) {
-      if (this.game.spaces[s].units[faction].length > 0) {
-	for (let i = 0; i < this.game.spaces[s].units[faction].length; i++) {
-	  let unit = this.game.spaces[s].units[faction][i];
-	  if (unit.key === personage) { return unit; }
-	}
-      }
-    }
-    return null;
-  }
-
-  returnAllies(faction) { 
-    let f = [];
-    let io = this.returnImpulseOrder();
-    for (let i = 0; i < io.length; i++) {
-      if (io[i] !== faction) {
-        if (this.areAllies(faction, io[i])) { f.push(io[i]); }
-      }
-    }
-    return f;
-  }
-
-  returnEnemies(faction) { 
-    let f = [];
-    let io = this.returnImpulseOrder();
-    for (let i = 0; i < io.length; i++) {
-      if (io[i] !== faction) {
-        if (this.areEnemies(faction, io[i])) { f.push(io[i]); }
-      }
-    }
-    return f;
-  }
-
-  areAllies(faction1, faction2) {
-    try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
-    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
-    return 0;
-  }
-
-  areEnemies(faction1, faction2) {
-    try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
-    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
-    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
-    return 0;
-  }
-
-  setAllies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
-  }
-
-  unsetAllies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
-  }
-
-  setEnemies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
-  }
-
-  unsetEnemies(faction1, faction2) {
-    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
-    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
-  }
-
-  addUnit(faction, space, type) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.units[faction].push(this.newUnit(faction, type));
-  }
-
-  removeUnit(faction, space, type) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = space.units[faction].length - 1; i >= 0; i--) {
-      if (space.units[faction].type === type) {
-	space.units[faction].splice(i, 1);
-	return;
-      }
-    }
-  }
-
-  isLandUnit(unit) {
-    if (unit.type === "regular") { return 1; }
-    if (unit.type === "mercenary") { return 1; }
-    if (unit.type === "cavalry") { return 1; }
-    return 0;
-  }
-
-  addRegular(faction, space, num=1) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < num; i++) {
-      space.units[faction].push(this.newUnit(faction, "regular"));
-    }
-  }
-
-  addMercenary(faction, space, num=1) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < num; i++) {
-      space.units[faction].push(this.newUnit(faction, "mercenary"));
-    }
-  }
-
-  addCavalry(faction, space, num=1) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < num; i++) {
-      space.units[faction].push(this.newUnit(faction, "cavalry"));
-    }
-  }
-
-  addNavalSquadron(faction, space, num=1) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < num; i++) {
-      space.units[faction].push(this.newUnit(faction, "squadron"));
-    }
-  }
-
-  addCorsair(faction, space, num=1) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < num; i++) {
-      space.units[faction].push(this.newUnit(faction, "corsair"));
-    }
-  }
-
-  //
-  // figure out how many base points people have
-  //
-  calculateVictoryPoints() {
-
-    let factions = {};
-
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-        factions[this.game.players_info[i].factions[ii]] = {
-	  faction : this.game.players_info[i].factions[ii] ,
-	  vp_base : 0 ,
-	  vp_bonus : 0 ,
-	  vp_special : 0 ,
-	  vp : 0 ,
-	  keys : 0 ,
-	  religious : 0 ,
-	  victory : 0,	  
-	  details : "",
-	};
-      }
-    }
-    //
-    // let factions calculate their VP
-    //
-    for (let f in factions) {
-      factions[f].vp_base = this.factions[f].calculateBaseVictoryPoints(this);
-      factions[f].vp_bonus = this.factions[f].calculateBonusVictoryPoints(this);
-      factions[f].vp_special = this.factions[f].calculateSpecialVictoryPoints(this);
-      factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
-    }
-
-
-    //
-    // calculate keys controlled
-    //
-    for (let f in factions) {
-      factions[f].keys = this.returnNumberOfKeysControlledByFaction(f);
-      if (f === "protestant") {
-	factions[f].religious = this.returnNumberOfSpacesControlledByProtestants();
-      }
-    }
-
-    //
-    // military victory
-    //
-    if (factions['hapsburg']) {
-      if (factions['hapsburg'].keys >= this.game.state.autowin_hapsburg_keys_controlled) {
-        factions['hapsburg'].victory = 1;
-        factions['hapsburg'].details = "military victory";
-      }
-    }
-    if (factions['ottoman']) {
-      if (factions['ottoman'].keys >= this.game.state.autowin_ottoman_keys_controlled) {
-        factions['ottoman'].victory = 1;
-        factions['ottoman'].details = "military victory";
-      }
-    }
-    if (factions['france']) {
-      if (factions['france'].keys >= this.game.state.autowin_france_keys_controlled) {
-        factions['france'].victory = 1;
-        factions['france'].details = "military victory";
-      }
-    }
-    if (factions['england']) {
-      if (factions['england'].keys >= this.game.state.autowin_england_keys_controlled) {
-        factions['england'].victory = 1;
-        factions['england'].details = "military victory";
-      }
-    }
-    if (factions['papacy']) {
-      if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
-        factions['papacy'].victory = 1;
-        factions['papacy'].details = "military victory";
-      }
-    }
-
-    //
-    // religious victory
-    //
-    if (factions['protestant']) {
-      if (factions['protestant'].religious >= 50) {
-        factions['papacy'].victory = 1;
-        factions['papacy'].details = "religious victory";
-      }
-    }
-
-    //
-    // PROCESS BONUS VP
-    //
-    //• Copernicus (2 VP) or Michael Servetus (1 VP) event
-    if (this.game.state.events.michael_servetus) {
-      factions[this.game.state.events.michael_servetus].vp_special++;
-      factions[this.game.state.events.michael_servetus].vp++;
-    }
-    if (this.game.state.events.copernicus) {
-      factions[this.game.state.events.copernicus].vp_special += this.game.state.events.copernicus_vp;
-      factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
-    }
-
-
-    // base
-
-    // protestant spaces
-
-    // bonus vp
-    //• Bible translation completed (1 VP for each language)    ***
-    //• Protestant debater burned (1 per debate rating)         ***
-    //• Papal debater disgraced (1 per debate rating)           ***
-    //• Successful voyage of exploration
-    //• Successful voyage of conquest
-    //• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
-    //• War Winner marker received during Peace Segment
-    //• Master of Italy VP marker received during Action Phase
-
-    return factions;
-
-  }
-
-
-  canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[invalid_space]; } } catch (err) {}
-    if (space === attacker_comes_from_this_space) { return 0; }
-    if (this.isSpaceInUnrest(space) == 1) { return 0; }
-    if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
-    return 0;
-  }
-
-  canFactionRetreatToNavalSpace(faction, space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports AND open sea");
-    return 1;
-  }
-
-  convertSpace(religion, space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.religion = religion;
-    this.displayBoard();
-  }
-
-  controlSpace(faction, space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.political = faction;
-    space.occupier = faction;
-  }
-
-
-  returnDefenderFaction(attacker_faction, space) {
-    // called in combat, this finds whichever faction is there but isn't allied to the attacker
-    // or -- failing that -- whichever faction is recorded as occupying the space.
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let f in space.units) {
-      let luis = this.returnFactionLandUnitsInSpace(f, space);
-      if (luis > 0) {
-        if (!this.areAllies(attacker_faction, f)) {
-	  return f;
-	}
-      }
-    }
-    return this.returnFactionOccupyingSpace(space);
-  }
-
-  returnFactionOccupyingSpace(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.occupier != "" && space.occupier != undefined && space.occupier != "undefined" && space.occupier != 'undefined') { 
-      // whoever had units here first
-      console.log("occupier: " + space.occupier);
-      if (space.units[space.occupier]) {
-        if (space.units[space.occupier].length > 0) {
-          return space.occupier; 
-        }
-      }
-    }
-    // or whoever has political control
-    if (space.political != "") { return space.political; }
-    // or whoever has home control
-    if (space.owner != -1) { return space.owner; }
-    return space.home;
-  }
-
-  returnFriendlyLandUnitsInSpace(faction, space) {
-    let luis = 0;
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction][i].type === "regular") { luis++; }
-      if (space.units[faction][i].type === "mercenary") { luis++; }
-      if (space.units[faction][i].type === "cavalry") { luis++; }
-    }
-    return luis;
-  }
-
-  returnFactionLandUnitsInSpace(faction, space) {
-    let luis = 0;
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction][i].type === "regular") { luis++; }
-      if (space.units[faction][i].type === "mercenary") { luis++; }
-      if (space.units[faction][i].type === "cavalry") { luis++; }
-    }
-    return luis;
-  }
-
-  returnFactionSeaUnitsInSpace(faction, space) {
-    let luis = 0;
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction][i].type === "squadron") { luis++; }
-      if (space.units[faction][i].type === "corsair") { luis++; }
-    }
-    return luis;
-  }
-
-
-  //
-  // faction is papacy or (anything), since debaters aren't really owned by factions outside
-  // papcy and protestants, even if they are tagged as would be historically appropriate
-  //
-  returnDebatersInLanguageZone(language_zone="german", faction="papacy", committed=-1) {
-    let num = 0;
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      if (this.game.state.debaters[i].language_zone === language_zone || this.game.state.debaters[i].langauge_zone === "any") {
-        if (this.game.state.debaters[i].faction === faction || (faction != "papacy" && this.game.state.debaters[i].faction != "papacy")) {
-          if (this.game.state.debaters[i].committed === committed || committed == -1) {
-	    num++;
-          }
-        }
-      }
-    }
-    return num;
-  }
-
-  doesOtherFactionHaveNavalUnitsInSpace(exclude_faction, key) {
-    if (this.game.spaces[key]) {
-      for (let f in this.game.spaces[key].units) {
-	if (f != exclude_faction) {
-          if (this.game.spaces[key].units[faction]) {
-            for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-              if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
-  	        return 1;
-              }
-            }
-	  }
-	}
-      }
-    }
-    if (this.game.navalspaces[key]) {
-      for (let f in this.game.navalspaces[key].units) {
-	if (f != exclude_faction) {
-          if (this.game.navalspaces[key].units[faction]) {
-            for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
-              if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
-  	        return 1;
-              }
-            }
-	  }
-	}
-      }
-    }
-    return 0;
-  }
-
-  doesFactionHaveNavalUnitsInSpace(faction, key) {
-    if (this.game.spaces[key]) {
-      if (this.game.spaces[key].units[faction]) {
-        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-          if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
-  	    return 1;
-          }
-        }
-      }
-    }
-    if (this.game.navalspaces[key]) {
-      if (this.game.navalspaces[key].units[faction]) {
-        for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
-          if (this.game.navalspaces[key].units[faction][i].type === "squadron" || this.game.navalspaces[key].units[faction][i].type === "corsair") {
-  	    return 1;
-          }
-        }
-      }
-    }
-    return 0;
-  }
-
-  doesFactionHaveNavalUnitsOnBoard(faction) {
-    for (let key in this.game.navalspaces) {
-      if (this.game.navalspaces[key].units[faction]) {
-        for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
-	  return 1;
-	}
-      }
-    }
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].units[faction]) {
-        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-	  if (this.game.spaces[key].units[faction][i].land_or_sea === "sea") {
-	    return 1;
-	  }
-	}
-      }
-    }
-    return 0;
-  }
-
-  returnFactionMap(space, faction1, faction2) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-    let faction_map = {};
-    for (let f in space.units) {
-      if (this.returnFactionLandUnitsInSpace(f, space)) {
-        if (f == faction1) {
-          faction_map[f] = faction1;
-        } else {
-          if (f == faction2) {
-            faction_map[f] = faction2;
-          } else {
-            if (this.areAllies(f, faction1)) {
-              faction_map[f] = faction1;
-            }
-            if (this.areAllies(f, faction2)) {
-              faction_map[f] = faction2;
-            }
-          }
-        }
-      }
-    }
-    return faction_map;
-  }
-
-  returnImpulseOrder() {
-    return ["ottoman","hapsburg","england","france","papacy","protestant"];
-  }
-
-  returnHomeSpaces(faction) {
-
-    let spaces = [];
-
-    for (let i in this.game.spaces) {
-      if (this.game.spaces[i].home === faction) { spaces.push(i); }
-    }
-
-    return spaces;
-
-  }
-
-  //
-  // transit seas calculates neighbours across a sea zone
-  //
-  // if transit_seas and faction is specified, we can only cross if
-  // there are no ports in a zone with non-faction ships.
-  //
-  returnNeighbours(space, transit_passes=1, transit_seas=0, faction="") {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (transit_seas == 0) {
-      if (transit_passes == 1) {
-        return space.neighbours;
-      }
-      let neighbours = [];
-      for (let i = 0; i < space.neighbours.length; i++) {
-        let x = space.neighbours[i];      
-        if (!space.pass.includes[x]) {
-  	  neighbours.push(x);
-        }
-      }
-      return neighbours;
-    } else {
-
-      let neighbours = [];
-
-      if (transit_passes == 1) {
-        neighbours = JSON.parse(JSON.stringify(space.neighbours));
-      } else {
-        for (let i = 0; i < space.neighbours.length; i++) {
-          let x = space.neighbours[i];  
-          if (!space.pass.includes[x]) {
-            neighbours.push(x);
-          }
-        }
-      }
-
-      //
-      // any ports ?
-      //
-      if (space.ports) {
-        if (space.ports.length > 0) {
-	  for (let i = 0; i < space.ports.length; i++) {
-	    let navalspace = this.game.navalspaces[space.ports[i]];
-	    let any_unfriendly_ships = false;
-	    if (navalspace.ports) {
-	      if (faction != "") {
-	        for (let z = 0; z < navalspace.ports.length; z++) {
-	          if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z])) { any_unfriendly_ships = true; }
-	        }
-	      }
-              for (let z = 0; z < navalspace.ports.length; z++) {
-	        if (!neighbours.includes(navalspace.ports[z])) {
-	          neighbours.push(navalspace.ports[z]);
-	        };
-	      }
-	    }
- 	  }
-        }
-      }
-      return neighbours;
-    }
-  }
-
-
-  //
-  // only calculates moves from naval spaces, not outbound from ports
-  //
-  returnNavalNeighbours(space, transit_passes=1) {
-    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-    let neighbours = [];
-    for (let i = 0; i < space.ports.length; i++) {
-      let x = space.ports[i];
-      neighbours.push(x);
-    }
-    for (let i = 0; i < space.neighbours.length; i++) {
-      let x = space.neighbours[i];
-      neighbours.push(x);
-    }
-
-    return neighbours;
-  }
-
-
-
-  //
-  // returns adjacent naval and port spaces
-  //
-  returnNavalAndPortNeighbours(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-
-    let key = space.key;
-    let neighbours = [];
-
-    //
-    // ports add only naval spaces
-    //
-    if (this.game.spaces[key]) {
-      for (let i = 0; i < space.ports.length; i++) {
-        let x = space.ports[i];
-        neighbours.push(x);
-      }
-    }
-
-    //
-    // naval spaces add ports
-    //
-    if (this.game.navalspaces[key]) {
-      for (let i = 0; i < space.ports.length; i++) {
-        let x = space.ports[i];
-        neighbours.push(x);
-      }
-      for (let i = 0; i < space.neighbours.length; i++) {
-        let x = space.neighbours[i];
-        neighbours.push(x);
-      }
-    }
-
-    return neighbours;
-  }
-
-
-
-  //
-  // returns both naval and port movement options
-  //
-  returnNavalMoveOptions(spacekey) {
-
-    let neighbours = [];
-
-    if (this.game.navalspaces[spacekey]) {
-      for (let i = 0; i < this.game.navalspaces[spacekey].neighbours.length; i++) {
-	neighbours.push(this.game.navalspaces[spacekey].neighbours[i]);
-      }
-      for (let i = 0; i < this.game.navalspaces[spacekey].ports.length; i++) {
-	neighbours.push(this.game.navalspaces[spacekey].ports[i]);
-      }
-    } else {
-      if (this.game.spaces[spacekey]) {
-        for (let i = 0; i < this.game.spaces[spacekey].ports.length; i++) {
-	  neighbours.push(this.game.spaces[spacekey].ports[i]);
-        }
-      }
-    }
-
-    return neighbours;
-  }
-
-
-  //
-  // find the nearest destination.
-  //
-  returnNearestNavalSpaceOrPortWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1) {
-
-    //
-    // return array with results + hops distance
-    //
-    let results = [];
-    let searched_spaces = {};
-    let pending_spaces = {};
-
-    //
-    // if the source matches our destination, return it
-    //
-    if (include_source == 1) {
-      if (destination_filter(sourcekey)) {
-        results.push({ space : sourcekey , hops : 0 });
-        return results;
-      }
-    }
-
-    //
-    // put the neighbours into pending
-    //
-    let n = this.returnNavalNeighbours(sourcekey);
-
-    for (let i = 0; i < n.length; i++) {
-      pending_spaces[n[i]] = { hops : 0 , key : n[i] };
-    }
-
-    //
-    // otherwise propagate outwards searching pending
-    //
-    let continue_searching = 1;
-    while (continue_searching) {
-
-      let count = 0;
-      for (let key in pending_spaces) {
-
-	count++;
-	let hops = pending_spaces[key].hops;
-
-	if (destination_filter(key)) {
-	  // found results? this is last pass
-	  results.push({ hops : (hops+1) , key : key });	
-	  continue_searching = 0;
-	} else {
-	  if (propagation_filter(key)) {
-    	    for (let i = 0; i < this.game.navalspaces[key].neighbours.length; i++) {
-	      if (!searched_spaces.hasOwnProperty[this.game.navalspaces[key].neighbours[i]]) {
-		// don't add to pending as we've transversed before
-	      } else {
-      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
-	      }
-    	    }
-	  }
-	  searched_spaces[key] = { hops : (hops+1) , key : key };
-	}
-	delete pending_spaces[key];
-
-      }
-      if (count == 0) { continue_searching = 0; }
-    }
-
-    //
-    // at this point we have results or not 
-    //
-    return results;
-
-  }
-
-  //
-  // find the nearest destination.
-  //
-  // transit_eas = filters on spring deploment criteria of two friendly ports on either side of the zone + no uncontrolled ships in zone
-  //
-  returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1, transit_passes=0, transit_seas=0, faction="", already_crossed_sea_zone=0) {
-
-    //
-    // return array with results + hops distance
-    //
-    let results = [];
-    let searched_spaces = {};
-    let pending_spaces = {};
-
-    //
-    // if the source matches our destination, return it
-    //
-    if (include_source == 1) {
-      if (destination_filter(sourcekey)) {
-        results.push({ space : sourcekey , hops : 0 });
-        return results;
-      }
-    }
-
-    //
-    // put the neighbours into pending
-    //
-    let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction);
-
-    for (let i = 0; i < n.length; i++) {
-      pending_spaces[n[i]] = { hops : 0 , key : n[i] };
-    }
-
-    //
-    // otherwise propagate outwards searching pending
-    //
-    let continue_searching = 1;
-    while (continue_searching) {
-
-      let count = 0;
-      for (let key in pending_spaces) {
-
-	count++;
-	let hops = pending_spaces[key].hops;
-
-	if (destination_filter(key)) {
-	  // found results? this is last pass
-	  results.push({ hops : (hops+1) , key : key });	
-	  continue_searching = 0;
-	} else {
-	  if (propagation_filter(key)) {
-    	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
-	      if (!searched_spaces.hasOwnProperty[this.game.spaces[key].neighbours[i]]) {
-		// don't add to pending as we've transversed before
-	      } else {
-      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
-	      }
-    	    }
-	  }
-	  searched_spaces[key] = { hops : (hops+1) , key : key };
-	}
-	delete pending_spaces[key];
-
-      }
-      if (count == 0) { continue_searching = 0; }
-    }
-
-    //
-    // at this point we have results or not 
-    //
-    return results;
-
-  }
-
-  isMinorPower(power) {
-    if (power === "genoa" || power === "hungary" || power === "scotland" || power === "venice") { return 1; }
-    return 0;
-  }
-
-  returnMinorPowers() {
-    return ["genoa", "hungary", "scotland", "venice"];
-  }
-
-  returnAllyOfMinorPower(power) {
-    if (!this.game.state.minor_activated_powers.includes(power)) { return ""; }
-    for (let key in this.game.state.activated_powers) {
-      if (this.game.state.activated_powers[key].includes(power)) {
-	return key;
-      }
-    }
-    return power;
-  }
-
-  activateMinorPower(faction, power) {
-    this.setAllies(faction, power);
-    this.game.state.activated_powers[faction].push(power);
-    this.game.state.minor_activated_powers.push(power);
-  }
-
-  deactivateMinorPower(faction, power) {
-    this.unsetAllies(faction, power);
-    for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
-      if (this.game.state.activated_powers[faction][i] === power) {
-	this.game.state.activated_powers[faction].splice(i, 1);
-      }
-    }
-    for (let i = 0; i < this.game.state.minor_activated_powers.length; i++) {
-      if (this.game.state.minor_activated_powers[i] === power) {
-	this.game.state.minor_activated_powers.splice(i, 1);
-      }
-    }
-  }
-
-  canFactionDeactivateMinorPower(faction, power) {
-    if (power == "genoa") { return 1; }
-    if (power == "scotland") { return 1; }
-    if (power == "venice") { return 1; }
-    return 0;
-  }
-
-  canFactionActivateMinorPower(faction, power) {
-    if (power == "genoa") {
-      if (faction == "france") { return 1; }
-      if (faction == "hapsburg") { return 1; }
-      if (faction == "papacy") { return 1; }
-    }
-    if (power == "hungary") {
-      if (faction == "hapsburg") { return 1; }
-    }
-    if (power == "scotland") {
-      if (faction == "france") { return 1; }
-      if (faction == "england") { return 1; }
-    }
-    if (power == "venice") {
-      if (faction == "france") { return 1; }
-      if (faction == "hapsburg") { return 1; }
-      if (faction == "papacy") { return 1; }
-    }
-    return 0;
-  }
-
-  isMinorActivatedPower(power) {
-    for (let i = 0; i < this.game.state.minor_activated_powers.length; i++) {
-      if (power === this.game.state.minor_activated_powers[i]) {
-	return 1;
-      }
-    }
-    return 0;
-  }
-
-  isMinorUnactivatedPower(power) {
-    if (power === "genoa" && this.isMinorActivatedPower(power) != 1) { return 1; }
-    if (power === "scotland" && this.isMinorActivatedPower(power) != 1) { return 1; }
-    if (power === "hungary" && this.isMinorActivatedPower(power) != 1) { return 1; }
-    if (power === "venice" && this.isMinorActivatedPower(power) != 1) { return 1; }
-    return 0;
-  }
-
-  returnFactionControllingSpace(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    let factions = this.returnImpulseOrder(); 
-    for (let i = 0; i < factions.length; i++) {
-      if (this.isSpaceControlledByFaction(space, factions[i])) { return factions[i]; }
-    }
-    return space.political;  
-  }
-  isSpaceControlledByFaction(space, faction) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.home === faction) { return true; }
-    if (space.political === faction) { return true; }
-    return false;
-  }
-
-  isSpaceFactionCapital(space, faction) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    let capitals = this.returnCapitals(faction);
-    for (let i = 0; i < capitals.length; i++) {
-      if (capitals[i] === space.key) { return true; }
-    }
-    return false;
-  }
-
-  isSpaceInUnrest(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.unrest == 1) { return true; }
-    return false;
-  }
-
-  isSpaceUnderSiege(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.besieged > 0) { return true; }
-    return false;
-  }
-
-  isSpaceFriendly(space, faction) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    // friendly if i control it
-    if (space.owner === faction) { return 1; }
-    if (space.political === faction) { return 1; }
-    if (space.political === "" && space.home === faction) { return 1; }
-    // friendly if ally controls it
-    if (space.political === "") {
-      if (this.areAllies(faction, space.home)) { return 1; }
-    } else {
-      if (this.areAllies(faction, space.political)) { return 1; }
-    }
-    // friendly if we are minor power and controller controls us
-    if (this.game.state.activated_powers[space.owner]) {
-      if (this.game.state.activated_powers[space.owner].includes(faction)) { return 1; }
-    }
-    if (this.game.state.activated_powers[space.political]) {
-      if (this.game.state.activated_powers[space.political].includes(faction)) { return 1; }
-    }
-    if (this.game.state.activated_powers[space.home]) {
-      if (this.game.state.activated_powers[space.home].includes(faction)) { return 1; }
-    }
-    return 0;
-  }
-
-  isSpaceConnectedToCapital(space, faction) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-
-    let his_self = this;
-    let capitals = this.returnCapitals(faction);
-    let already_routed_through = {};
-
-    let res = this.returnNearestSpaceWithFilter(
-
-      space.key,
-
-      // capitals are good destinations
-      function(spacekey) {
-        if (capitals.includes(spacekey)) { return 1; }
-        return 0;
-      },
-
-      // route through this?
-      function(spacekey) {
-	if (already_routed_through[spacekey] == 1) { return 0; }
-        already_routed_through[spacekey] = 1;
-	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
-	return 0;
-      }
-    );
-
-    return 1;
-  }
-
-
-  //
-  // similar to above, except it can cross a sea-zone
-  //
-  isSpaceConnectedToCapitalSpringDeployment(space, faction) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-
-    let his_self = this;
-    let capitals = this.returnCapitals(faction);
-    let already_routed_through = {};
-
-    let res = this.returnNearestSpaceWithFilter(
-
-      space.key,
-
-      // capitals are good destinations
-      function(spacekey) {
-        if (capitals.includes(spacekey)) { return 1; }
-        return 0;
-      },
-
-      // route through this?
-      function(spacekey) {
-	if (already_routed_through[spacekey] == 1) { return 0; }
-        already_routed_through[spacekey] = 1;
-	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
-	return 0;
-      },
-
-      // transit passes? 0
-      0,
-
-      // transit seas? 1
-      1,
-     
-      // faction? optional
-      faction,
-
-      // already crossed sea zone optional
-      0 
-    );
-
-    return 1;
-  }
-
-  isSpaceAdjacentToReligion(space, religion) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.neighbours.length; i++) {
-      if (this.game.spaces[space.neighbours[i]].religion === religion) {
-	return true;
-      }
-    }
-    return false;
-  }
-
-  returnSpacesWithFilter(filter_func) {
-    let spaces = [];
-    for (let spacekey in this.game.spaces) {
-      if (filter_func(spacekey) == 1) { spaces.push(spacekey); }
-    }
-    return spaces;
-  }
-
-
-  returnNumberOfUncommittedDebaters(faction) {
-    let num = 0;
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 0) {
-	num++;
-      }
-    }
-    return num;
-  }
-
-  returnNumberOfCommittedDebaters(faction) {
-    let num = 0;
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 1) {
-	num++;
-      }
-    }
-    return num;
-  }
-
-  returnNumberOfUncommittedExplorers(faction) {
-    let num = 0;
-    for (let i = 0; i < this.game.state.explorers.length; i++) {
-      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 0) {
-	num++;
-      }
-    }
-    return num;
-  }
-
-  returnNumberOfCommittedExplorers(faction) {
-    let num = 0;
-    for (let i = 0; i < this.game.state.explorers.length; i++) {
-      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 1) {
-	num++;
-      }
-    }
-    return num;
-  }
-
-  returnNumberOfElectoratesControlledByCatholics() {
-    let controlled_keys = 0;
-    if (this.game.spaces['augsburg'].religion === "catholic") { controlled_keys++; }
-    if (this.game.spaces['mainz'].religion === "catholic") { controlled_keys++; }
-    if (this.game.spaces['trier'].religion === "catholic") { controlled_keys++; }
-    if (this.game.spaces['cologne'].religion === "catholic") { controlled_keys++; }
-    if (this.game.spaces['wittenberg'].religion === "catholic") { controlled_keys++; }
-    if (this.game.spaces['brandenburg'].religion === "catholic") { controlled_keys++; }
-    return controlled_keys;
-  }
-  returnNumberOfElectoratesControlledByProtestants() {
-    let controlled_keys = 0;
-    if (this.game.spaces['augsburg'].religion === "protestant") { controlled_keys++; }
-    if (this.game.spaces['mainz'].religion === "protestant") { controlled_keys++; }
-    if (this.game.spaces['trier'].religion === "protestant") { controlled_keys++; }
-    if (this.game.spaces['cologne'].religion === "protestant") { controlled_keys++; }
-    if (this.game.spaces['wittenberg'].religion === "protestant") { controlled_keys++; }
-    if (this.game.spaces['brandenburg'].religion === "protestant") { controlled_keys++; }
-    return controlled_keys;
-  }
-  returnNumberOfKeysControlledByFaction(faction) {
-    let controlled_keys = 0;
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].type === "key") {
-        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
-          controlled_keys++;
-        }
-      }
-    }
-    return controlled_keys;
-  }
-  returnNumberOfKeysControlledByPlayer(player_num) {
-    let faction = this.game.players_info[player_num-1].faction;
-    let controlled_keys = 0;
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].type === "key") {
-        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
-          controlled_keys++;
-        }
-      }
-    }
-    return controlled_keys;
-  }
-
-  returnNumberOfSpacesControlledByProtestants() {
-    let controlled_spaces = 0;
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].religion === "protestant") {
-	controlled_spaces++;
-      }
-    }
-    return controlled_spaces;
-  }
-
-
-
-  /////////////////////
-  // Core Game State //
-  /////////////////////
-  returnState() {
-
-    let state = {};
-
-    state.scenario = "1517";
-    if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
-    state.round = 0;
-    state.players = [];
-    state.events = {};
-
-    // whose turn is it? (attacker)
-    state.active_player = -1;
-
-    // which ones are activated
-    state.minor_activated_powers = [];
-
-    state.naval_leaders_lost_at_sea = [];
-
-    state.activated_powers = {};
-    state.activated_powers['ottoman'] = [];
-    state.activated_powers['hapsburg'] = [];
-    state.activated_powers['france'] = [];
-    state.activated_powers['england'] = [];
-    state.activated_powers['papacy'] = [];
-    state.activated_powers['protestant'] = [];
-
-    state.translations = {};
-    state.translations['new'] = {};
-    state.translations['new']['german'] = 0;
-    state.translations['new']['french'] = 0;
-    state.translations['new']['english'] = 0;
-    state.translations['full'] = {};
-    state.translations['full']['german'] = 0;
-    state.translations['full']['french'] = 0;
-    state.translations['full']['english'] = 0;
-
-    state.saint_peters_cathedral = {};
-    state.saint_peters_cathedral['state'] = 0;
-    state.saint_peters_cathedral['vp'] = 0;    
-
-    state.papal_debaters_disgraced_vp = 0;
-    state.protestant_debaters_burned_vp = 0;
-
-    state.events.michael_servetus = "";  // faction that gets VP
-    state.events.copernicus = "";        // faction that gets VP
-    state.events.copernicus_vp = 0;     // 1 or 2 VP
-
-    state.french_chateaux_vp = 0;
-
-    state.tmp_reformations_this_turn = [];
-    state.tmp_counter_reformations_this_turn = [];
-    state.tmp_protestant_reformation_bonus = 0;
-    state.tmp_catholic_reformation_bonus = 0;
-    state.tmp_protestant_counter_reformation_bonus = 0;
-    state.tmp_catholic_counter_reformation_bonus = 0;
-    state.tmp_papacy_may_specify_debater = 0;
-    state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
-
-    //
-    // foreign wars
-    //
-    state.events.war_in_persia = 0;
-    state.events.revolt_in_ireland = 0;
-    state.events.revolt_in_egypt = 0;
-
-
-    state.augsburg_electoral_bonus = 0;
-    state.mainz_electoral_bonus = 0;
-    state.trier_electoral_bonus = 0;
-    state.cologne_electoral_bonus = 0;
-    state.wittenberg_electoral_bonus = 0;
-    state.brandenburg_electoral_bonus = 0;
-
-    state.autowin_hapsburg_keys_controlled = 14;
-    state.autowin_ottoman_keys_controlled = 11;
-    state.autowin_papacy_keys_controlled = 7;
-    state.autowin_france_keys_controlled = 11;
-    state.autowin_england_keys_controlled = 9;
-
-
-
-    state.debaters = [];
-    state.explorers = [];
-    state.conquistadors = [];
-
-
-    state.leaders = {};
-    state.leaders.francis_i = 1;
-    state.leaders.henry_viii = 1;
-    state.leaders.charles_v = 1;
-    state.leaders.suleiman = 1;
-    state.leaders.leo_x = 1;
-    state.leaders.luther = 1
-    state.leaders.clement_vii = 0;
-    state.leaders.paul_iii = 0;
-    state.leaders.edward_vi = 0;
-    state.leaders.henry_ii = 0;
-    state.leaders.mary_i = 0;
-    state.leaders.julius_iii = 0;
-    state.leaders.elizabeth_i = 0;
-    state.leaders.calvin = 0;
-
-    state.events.ottoman_piracy_enabled = 0;
-    state.events.ottoman_corsairs_enabled = 0;
-    state.events.papacy_may_found_jesuit_universities = 0;
-    state.events.schmalkaldic_league = 0;
-    state.events.edward_vi_born = 0;
-    state.events.wartburg = 0;
-
-    return state;
-
-  }
-
-
-  returnReligiousConflictChart() {
-
-    let chart = {};
-
-    chart['s0'] = {
-      top: "475px",
-      left: "64px",
-    }
-    chart['s1'] = {
-      top: "475px",
-      left: "140px",
-    }
-    chart['s2'] = {
-      top: "475px",
-      left: "216px",
-    }
-    chart['s3'] = {
-      top: "475px",
-      left: "292px",
-    }
-    chart['s4'] = {
-      top: "475px",
-      left: "368px",
-    }
-    chart['s5'] = {
-      top: "475px",
-      left: "444px",
-    }
-    chart['s6'] = {
-      top: "475px",
-      left: "520px",
-    }
-    chart['s7'] = {
-      top: "475px",
-      left: "596px",
-    }
-    chart['s8'] = {
-      top: "475px",
-      left: "672px",
-    }
-    chart['s9'] = {
-      top: "475px",
-      left: "748px",
-    }
-    chart['s10'] = {
-      top: "475px",
-      left: "824px",
-    }
-    chart['s11'] = {
-      top: "475px",
-      left: "900px",
-    }
-    chart['s12'] = {
-      top: "475px",
-      left: "976px",
-    }
-    chart['s13'] = {
-      top: "558px",
-      left: "64px",
-    }
-    chart['s14'] = {
-      top: "558px",
-      left: "140px",
-    }
-    chart['s15'] = {
-      top: "558px",
-      left: "216px",
-    }
-    chart['s16'] = {
-      top: "558px",
-      left: "292px",
-    }
-    chart['s17'] = {
-      top: "558px",
-      left: "368px",
-    }
-    chart['s18'] = {
-      top: "558px",
-      left: "444px",
-    }
-    chart['s19'] = {
-      top: "558px",
-      left: "520px",
-    }
-    chart['s20'] = {
-      top: "558px",
-      left: "596px",
-    }
-    chart['s21'] = {
-      top: "558px",
-      left: "672px",
-    }
-    chart['s22'] = {
-      top: "558px",
-      left: "748px",
-    }
-    chart['s23'] = {
-      top: "558px",
-      left: "824px",
-    }
-    chart['s24'] = {
-      top: "558px",
-      left: "900px",
-    }
-    chart['s25'] = {
-      top: "558px",
-      left: "976px",
-    }
-    chart['s26'] = {
-      top: "643px",
-      left: "64px",
-    }
-    chart['s27'] = {
-      top: "643px",
-      left: "140px",
-    }
-    chart['s28'] = {
-      top: "643px",
-      left: "216px",
-    }
-    chart['s29'] = {
-      top: "643px",
-      left: "292px",
-    }
-    chart['s30'] = {
-      top: "643px",
-      left: "368px",
-    }
-    chart['s31'] = {
-      top: "643px",
-      left: "444px",
-    }
-    chart['s32'] = {
-      top: "643px",
-      left: "520px",
-    }
-    chart['s33'] = {
-      top: "643px",
-      left: "596px",
-    }
-    chart['s34'] = {
-      top: "643px",
-      left: "672px",
-    }
-    chart['s35'] = {
-      top: "643px",
-      left: "748px",
-    }
-    chart['s36'] = {
-      top: "643px",
-      left: "824px",
-    }
-    chart['s37'] = {
-      top: "643px",
-      left: "900px",
-    }
-    chart['s38'] = {
-      top: "643px",
-      left: "976px",
-    }
-    chart['s39'] = {
-      top: "475px",
-      left: "64px",
-    }
-    chart['s40'] = {
-      top: "726px",
-      left: "140px",
-    }
-    chart['s41'] = {
-      top: "726px",
-      left: "216px",
-    }
-    chart['s42'] = {
-      top: "726px",
-      left: "292px",
-    }
-    chart['s43'] = {
-      top: "726px",
-      left: "368px",
-    }
-    chart['s44'] = {
-      top: "726px",
-      left: "444px",
-    }
-    chart['s45'] = {
-      top: "726px",
-      left: "520px",
-    }
-    chart['s46'] = {
-      top: "726px",
-      left: "596px",
-    }
-    chart['s47'] = {
-      top: "726px",
-      left: "672px",
-    }
-    chart['s48'] = {
-      top: "726px",
-      left: "672px",
-    }
-    chart['s49'] = {
-      top: "726px",
-      left: "748px",
-    }
-    chart['s50'] = {
-      top: "726px",
-      left: "824px",
-    }
-
-    return chart;
-
-  }
-
-
-
-  returnPregnancyChart() {
-
-    let chart = {};
-
-    chart['1'] = {
-      top : 1307,
-      left : 4075,
-    }
-
-    chart['2'] = {
-      top : 1220,
-      left : 4075,
-    }
-
-    chart['3'] = {
-      top : 1135,
-      left : 4075,
-    }
-
-    chart['4'] = {
-      top : 1051,
-      left : 4075,
-    }
-
-    chart['5'] = {
-      top : 963,
-      left : 4075,
-    }
-
-    chart['1'] = {
-      top : 850,
-      left : 4075,
-    }
-
-    return chart;
-
-  }
-
-  returnColonies() {
-
-    let colonies = {};
-
-    colonies['1'] = {
-      top : 1007,
-      left : 55
-    }
-    colonies['2'] = {
-      top : 1120,
-      left : 55
-    }
-    colonies['3'] = {
-      top : 1232,
-      left : 55
-    }
-    colonies['4'] = {
-      top : 1344,
-      left : 55
-    }
-    colonies['5'] = {
-      top : 1456,
-      left : 55
-    }
-    colonies['6'] = {
-      top : 1568,
-      left : 55
-    }
-    colonies['7'] = {
-      top : 1680,
-      left : 55
-    }
-
-    return colonies;
-
-  }
-
-
-  returnNewWorld() {
-
-    let nw = {};
-
-    nw['greatlakes'] = {
-      top : 1906 ,
-      left : 280,
-      vp : 1
-    }
-    nw['stlawrence'] = {
-      top : 1886 ,
-      left : 515,
-      vp : 1
-    }
-    nw['mississippi'] = {
-      top : 2075 ,
-      left : 280 ,
-      vp : 1
-    }
-    nw['aztec'] = {
-      top : 2258 ,
-      left : 168 ,
-      vp : 2
-    }
-    nw['maya'] = {
-      top : 2300 ,
-      left : 302 ,
-      vp : 2
-    }
-    nw['amazon'] = {
-      top : 2536 ,
-      left : 668 ,
-      vp : 2
-    }
-    nw['inca'] = {
-      top : 2660 ,
-      left : 225,
-      vp : 2
-    }
-    nw['circumnavigation'] = {
-      top : 2698,
-      left : 128,
-      vp : 3
-    }
-    nw['pacificstrait'] = {
-      top : 2996 ,
-      left : 486 ,
-      vp : 1
-    }
-
-
-    return nw;
-
-  }
-
-
-  returnConquest() {
-
-    let conquest = {};
-
-    conquest['1'] = {
-      top : 1007,
-      left : 178
-    }
-    conquest['2'] = {
-      top : 1120,
-      left : 178
-    }
-    conquest['3'] = {
-      top : 1232,
-      left : 178
-    }
-    conquest['4'] = {
-      top : 1344,
-      left : 178
-    }
-    conquest['5'] = {
-      top : 1456,
-      left : 178
-    }
-    conquest['6'] = {
-      top : 1568,
-      left : 178
-    }
-    conquest['7'] = {
-      top : 1680,
-      left : 178
-    }
-
-    return conquest;
-
-  }
-
-  returnVictoryPointTrack() {
-
-    let track = {};
-
-    track['0'] = {
-      top : 2912,
-      left : 2025
-    }
-    track['1'] = {
-      top : 2912,
-      left : 2138
-    }
-    track['2'] = {
-      top : 2912,
-      left : 2252
-    }
-    track['3'] = {
-      top : 2912,
-      left : 2366
-    }
-    track['4'] = {
-      top : 2912,
-      left : 2480
-    }
-    track['5'] = {
-      top : 2912,
-      left : 2594
-    }
-    track['6'] = {
-      top : 2912,
-      left : 2708
-    }
-    track['7'] = {
-      top : 2912,
-      left : 2822
-    }
-    track['8'] = {
-      top : 2912,
-      left : 2936
-    }
-    track['9'] = {
-      top : 2912,
-      left : 3050
-    }
-    track['10'] = {
-      top : 3026,
-      left : 884
-    }
-    track['11'] = {
-      top : 3026,
-      left : 998
-    }
-    track['12'] = {
-      top : 3026,
-      left : 1112
-    }
-    track['13'] = {
-      top : 1226,
-      left : 1
-    }
-    track['14'] = {
-      top : 3026,
-      left : 1340
-    }
-    track['15'] = {
-      top : 3026,
-      left : 1454
-    }
-    track['16'] = {
-      top : 3026,
-      left : 1568
-    }
-    track['17'] = {
-      top : 3026,
-      left : 1682
-    }
-    track['18'] = {
-      top : 3026,
-      left : 1796
-    }
-    track['19'] = {
-      top : 3026,
-      left : 1910
-    }
-    track['20'] = {
-      top : 3026,
-      left : 2024
-    }
-    track['21'] = {
-      top : 3026,
-      left : 2138
-    }
-    track['22'] = {
-      top : 3026,
-      left : 2252
-    }
-    track['23'] = {
-      top : 3026,
-      left : 2366
-    }
-    track['24'] = {
-      top : 3026,
-      left : 2480
-    }
-    track['25'] = {
-      top : 3026,
-      left : 2594
-    }
-    track['26'] = {
-      top : 3026,
-      left : 2708
-    }
-    track['27'] = {
-      top : 3026,
-      left : 2822
-    }
-    track['28'] = {
-      top : 3026,
-      left : 2936
-    }
-    track['29'] = {
-      top : 3026,
-      left : 3050
-    }
-
-    return track;
-  }
-
-
-  returnNavalSpaces() {
-
-    let seas = {};
-
-    seas['irish'] = {
-      top : 875 ,
-      left : 900 ,
-      name : "Irish Sea" ,
-      ports : ["glasgow"] ,
-      neighbours : ["biscay","north","channel"] ,
-    }
-    seas['biscay'] = {
-      top : 1500 ,
-      left : 1400 ,
-      name : "Bay of Biscay" ,
-      ports : ["brest", "nantes", "bordeaux", "corunna" ] ,
-      neighbours : ["irish","channel","atlantic"] ,
-    }
-    seas['atlantic'] = {
-      top : 2700 ,
-      left : 850 ,
-      name : "Atlantic Ocean" ,
-      ports : ["gibraltar" , "seville" , "corunna"] ,
-      neighbours : ["biscay"] ,
-    }
-    seas['channel'] = {
-      top : 1020 ,
-      left : 1450 ,
-      name : "English Channel" ,
-      ports : ["brest", "plymouth", "portsmouth", "rouen", "bolougne", "calais" ] ,
-      neighbours : ["irish","biscay","north"] ,
-    }
-    seas['north'] = {
-      top : 200 ,
-      left : 2350 ,
-      name : "North Sea" ,
-      ports : ["london", "norwich", "berwick", "edinburgh", "calais", "antwerp", "amsterdam", "bremen", "hamburg" ] ,
-      neighbours : ["irish","channel","baltic"] ,
-    }
-    seas['baltic'] = {
-      top : 50 ,
-      left : 3150 ,
-      name : "Baltic Sea" ,
-      ports : ["lubeck", "stettin" ] ,
-      neighbours : ["north"] ,
-    }
-    seas['gulflyon'] = {
-      top : 1930 ,
-      left : 2430 ,
-      name : "Gulf of Lyon" ,
-      ports : ["cartagena", "valencia", "palma", "barcelona" , "marseille", "nice" , "genoa", "bastia" ] ,
-      neighbours : ["barbary","tyrrhenian"] ,
-    }
-    seas['barbary'] = {
-      top : 2330 ,
-      left : 2430 ,
-      name : "Barbary Coast" ,
-      ports : ["gibraltar", "oran", "cartagena", "algiers" , "tunis", "cagliari" , "palma" ] ,
-      neighbours : ["gulflyon","tyrrhenian","ionian","africa"] ,
-    }
-    seas['tyrrhenian'] = {
-      top : 2260 ,
-      left : 3300 ,
-      name : "Tyrrhenian Sea" ,
-      ports : ["genoa" , "bastia" , "rome" , "naples" , "palermo" , "caliari" , "messina" ] ,
-      neighbours : ["barbary","gulflyon"] ,
-    }
-    seas['africa'] = {
-      top : 2770 ,
-      left : 4200 ,
-      name : "North African Coast" ,
-      ports : ["tunis" , "tripoli" , "malta" , "candia" , "rhodes" ] ,
-      neighbours : ["ionian","barbary","aegean"] ,
-    }
-    seas['aegean'] = {
-      top : 2470 ,
-      left : 4450 ,
-      name : "Aegean Sea" ,
-      ports : ["rhodes" , "candia" , "coron" , "athens" , "salonika" , "istanbul" ] ,
-      neighbours : ["black","africa","ionian"] ,
-    }
-    seas['ionian'] = {
-      top : 2390 ,
-      left : 3750 ,
-      name : "Ionian Sea" ,
-      ports : ["malta" , "messina" , "coron", "lepanto" , "corfu" , "taranto" ] ,
-      neighbours : ["black","aegean","adriatic"] ,
-    }
-    seas['adriatic'] = {
-      top : 1790 ,
-      left : 3400 ,
-      name : "Adriatic Sea" ,
-      ports : ["corfu" , "durazzo" , "scutari" , "ragusa" , "trieste" , "venice" , "ravenna" , "ancona" ] ,
-      neighbours : ["ionian"] ,
-    }
-    seas['black'] = {
-      top : 1450 ,
-      left : 4750 ,
-      name : "Black Sea" ,
-      ports : ["istanbul" , "varna" ] ,
-      neighbours : ["aegean"] ,
-    }
-
-    for (let key in seas) {
-      seas[key].units = {};
-      seas[key].units['england'] = [];
-      seas[key].units['france'] = [];
-      seas[key].units['hapsburg'] = [];
-      seas[key].units['ottoman'] = [];
-      seas[key].units['papacy'] = [];
-      seas[key].units['protestant'] = [];
-      seas[key].units['venice'] = [];
-      seas[key].units['genoa'] = [];
-      seas[key].units['hungary'] = [];
-      seas[key].units['scotland'] = [];
-      seas[key].units['independent'] = [];
-    }
-
-    return seas;
-  }
-
-  returnSpaceName(key) {
-    if (this.game.spaces[key]) { return this.game.spaces[key].name; }
-    if (this.game.navalspaces[key]) { return this.game.navalspaces[key].name; }
-    return "Unknown";
-  }
-
-
-  returnSpacesInUnrest() {
-    let spaces_in_unrest = [];
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].unrest == 1) { spaces_in_unrest.push(key); }
-    }
-    return spaces_in_unrest;
-  }
-
-  returnSpacesWithFactionInfantry(faction) {
-    let spaces_with_infantry = [];
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].units[faction].length > 0) {
-        spaces_with_infantry.push(key);
-      }
-    }
-    return spaces_with_infantry;
-  }
-
-  returnSpaces() {
-
-    let spaces = {};
-
-    spaces['stirling'] = {
-      top: 70,
-      left: 1265,
-      home: "scotland",
-      political: "scotland",
-      religion: "catholic",
-      ports: ["irish"],
-      neighbours: ["glasgow","edinburgh"],
-      language: "english",
-      type: "fortress"
-    }
-    spaces['glasgow'] = {
-      top: 225,
-      left: 1285,
-      home: "scotland",
-      political: "scotland",
-      religion: "catholic",
-      ports: ["irish"],
-      neighbours: ["stirling","edinburgh","carlisle"],
-      language: "english",
-      type: "town"
-    }
-    spaces['edinburgh'] = {
-      top: 125,
-      left: 1420,
-      home: "scotland",
-      political: "scotland",
-      religion: "catholic",
-      ports: ["north"],
-      neighbours: ["stirling","carlisle","berwick"],
-      language: "english",
-      type: "key"
-    }
-    spaces['berwick'] = {
-      top: 183,
-      left: 1572,
-      home: "england",
-      political: "england",
-      ports: ["north"],
-      neighbours: ["edinburgh","carlisle","york"],
-      language: "english",
-      religion: "catholic",
-      type: "town"
-    }
-    spaces['carlisle'] = {
-      top: 276,
-      left: 1447,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      neighbours: ["glasgow","berwick","york","shrewsbury"],
-      language: "english",
-      type: "town"
-    }
-    spaces['york'] = {
-      top: 375,
-      left: 1595,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      neighbours: ["berwick","carlisle","shrewsbury","lincoln"],
-      language: "english",
-      type: "key"
-    }
-    spaces['wales'] = {
-      top: 633,
-      left: 1398,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      neighbours: ["shrewsbury","bristol"],
-      language: "english",
-      type: "key"
-
-    }
-    spaces['shrewsbury'] = {
-      top: 521,
-      left: 1535,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      neighbours: ["wales","carlisle","york","london","bristol"],
-      language: "english",
-      type: "town"
-    }
-    spaces['lincoln'] = {
-      top: 531,
-      left: 1706,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      neighbours: ["london","york"],
-      language: "english",
-      type: "town"
-    }
-    spaces['norwich'] = {
-      top: 538,
-      left: 1896,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      ports: ["north"],
-      neighbours:["london"],
-      language: "english",
-      type: "town"
-    }
-    spaces['bristol'] = {
-      top: 688,
-      left: 1554,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      language: "english",
-      ports: ["irish"],
-      neighbours: ["shrewsbury","wales","plymouth","portsmouth","london"],
-      type: "key"
-    }
-    spaces['london'] = {
-      top: 706,
-      left: 1785,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      ports: ["north"],
-      neighbours: ["norwich","lincoln","bristol","portsmouth","shrewsbury"],
-      language: "english",
-      type: "key"
-    }
-    spaces['plymouth'] = {
-      top: 898,
-      left: 1398,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      ports: ["irish"],
-      neighbours: ["bristol","portsmouth"],
-      language: "english",
-      type: "town"
-    }
-    spaces['portsmouth'] = {
-      top: 821,
-      left: 1661,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      ports: ["channel"],
-      neighbours: ["plymouth","bristol","london"],
-      language: "english",
-      type: "town"
-    }
-    spaces['calais'] = {
-      top: 745,
-      left: 2022,
-      home: "england",
-      political: "england",
-      religion: "catholic",
-      ports:["north"], 
-      neighbours: ["boulogne","brussels","antwerp"],
-      language: "french",
-      type: "key"
-    }
-
-    spaces['boulogne'] = {
-      top: 880,
-      left: 1955,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      ports: ["channel"],
-      neighbours: ["calais","rouen","paris","stquentin"],
-      language: "french",
-      type: "town"
-    }
-    spaces['stquentin'] = {
-      name: "St. Quentin",
-      top: 933,
-      left: 2093,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["brussels","stdizier","paris","boulogne"],
-      type: "town"
-    }
-    spaces['stdizier'] = {
-      name: "St. Dizier",
-      top: 1043,
-      left: 2205,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["brussels","stquentin","paris","dijon","metz"],
-      language: "french",
-      type: "town"
-    }
-    spaces['paris'] = {
-      top: 1063,
-      left: 2009,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["rouen","boulogne","stquentin","stdizier","dijon","orleans"],
-      language: "french",
-      type: "key"
-    }
-    spaces['rouen'] = {
-      top: 1000,
-      left: 1805,
-      home: "france",
-      political: "france",
-      ports: ["channel"],
-      religion: "channelc",
-      neighbours: ["boulogne","paris","tours","nantes"],
-      language: "french",
-      type: "key"
-    }
-    spaces['orleans'] = {
-      top: 1217,
-      left: 2018,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["paris","tours","dijon","lyon"],
-      language: "french",
-      type: "town"
-    }
-    spaces['dijon'] = {
-      top: 1205,
-      left: 2204,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["stdizier","paris","orleans","lyon","besancon"],
-      type: "town"
-    }
-    spaces['limoges'] = {
-      top: 1398,
-      left: 1975,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["tours","bordeaux","lyon"],
-      language: "french",
-      type: "town"
-    }
-    spaces['tours'] = {
-      top: 1277,
-      left: 1849,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["rouen","nantes","bordeaux","limoges","orleans"],
-      language: "french",
-      type: "town"
-    }
-    spaces['nantes'] = {
-      top: 1310,
-      left: 1650,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      ports: ["biscay"],
-      neighbours: ["brest","rouen","tours","bordeaux"],
-      language: "french",
-      type: "town"
-    }
-    spaces['brest'] = {
-      top: 1173,
-      left: 1409,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      ports: ["channnel","biscay"],
-      neighbours: ["nantes"],
-      language: "french",
-      type: "town"
-    }
-    spaces['bordeaux'] = {
-      top: 1568,
-      left: 1780,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      ports: ["biscay"],
-      neighbours: ["navarre", "nantes","tours","limoges"],
-      pass: ["navarre"],
-      language: "french",
-      type: "key"
-    }
-    spaces['lyon'] = {
-      top: 1445,
-      left: 2312,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["avignon","limoges","orleans","dijon","geneva","grenoble"],
-      language: "french",
-      type: "key"
-    }
-    spaces['grenoble'] = {
-      top: 1590,
-      left: 2437,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["turin","lyon","geneva"],
-      pass: ["turin"],
-      language: "french",
-      type: "town"
-    }
-    spaces['avignon'] = {
-      top: 1645,
-      left: 2292,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["barcelona","toulouse","lyon","marseille"],
-      pass: ["barcelona"],
-      language: "french",
-      type: "town"
-    }
-    spaces['marseille'] = {
-      top: 1781,
-      left: 2390,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      ports: ["lyon"],
-      neighbours: ["avignon","nice"],
-      language: "french",
-      type: "key"
-    }
-    spaces['toulouse'] = {
-      top: 1740,
-      left: 1990,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["barcelona","bordeaux","avignon"],
-      pass: ["barcelona"],
-      language: "french",
-      type: "town"
-    }
-    spaces['bordeaux'] = {
-      top: 1568,
-      left: 1780,
-      home: "france",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["nantes","tours","limoges","toulouse"],
-      language: "french",
-      type: "key"
-    }
-
-    spaces['munster'] = {
-      top: 537,
-      left: 2500,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["bremen","kassel","cologne","amsterdam"],
-      language: "german",
-      type: "town"
-    }
-    spaces['bremen'] = {
-      top: 422,
-      left: 2595,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      ports: ["north"],
-      neighbours:["munster","brunswick","hamburg"],
-      language: "german",
-      type: "town"
-    }
-    spaces['hamburg'] = {
-      top: 345,
-      left: 2758,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      ports: ["north"],
-      neighbours: ["bremen","brunswick","lubeck"],
-      language: "german",
-      type: "town"
-    }
-    spaces['lubeck'] = {
-      top: 258,
-      left: 2985,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      ports: ["baltic"],
-      neighbours: ["hamburg","magdeburg","brandenburg","stettin"],
-      language: "german",
-      type: "town"
-    }
-    spaces['stettin'] = {
-      top: 310,
-      left: 3214,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      ports: ["baltic"],
-      neighbours: ["lubeck","brandenburg"],
-      language: "german",
-      type: "town"
-    }
-    spaces['brandenburg'] = {
-      top: 460,
-      left: 3077,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["stettin","lubeck","magdeburg","wittenberg","breslau"],
-      language: "german",
-      type: "electorate"
-    }
-    spaces['wittenberg'] = {
-      top: 600,
-      left: 3130,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["brandenburg","magdeburg","leipzig","prague","breslau"],
-      language: "german",
-      type: "electorate"
-    }
-    spaces['magdeburg'] = {
-      top: 534,
-      left: 2932,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["lubeck","brandenburg","wittenberg","erfurt","brunswick"],
-      language: "german",
-      type: "town"
-    }
-    spaces['brunswick'] = {
-      top: 568,
-      left: 2722,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["bremen","hamburg","magdeburg","kassel"],
-      language: "german",
-      type: "town"
-    }
-    spaces['cologne'] = {
-      top: 716,
-      left: 2500,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["munster","mainz","liege"],
-      language: "german",
-      type: "electorate"
-    }
-    spaces['kassel'] = {
-      top: 714,
-      left: 2665,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["munster","brunswick","erfurt","nuremberg","mainz"],
-      language: "german",
-      type: "town"
-    }
-    spaces['erfurt'] = {
-      top: 750,
-      left: 2824,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["magdeburg","kassel","leipzig"],
-      language: "german",
-      type: "town"
-    }
-    spaces['leipzig'] = {
-      top: 690,
-      left: 2983,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["wittenberg","prague","nuremberg","erfurt"],
-      language: "german",
-      type: "town"
-    }
-    spaces['regensburg'] = {
-      top: 956,
-      left: 3033,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["nuremberg","augsburg","salzburg","linz"],
-      language: "german",
-      type: "town"
-    }
-    spaces['salzburg'] = {
-      top: 1108,
-      left: 3147,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["graz","linz","regensburg","augsburg","innsbruck"],
-      pass: ["graz"],
-      language: "german",
-      type: "town"
-    }
-    spaces['augsburg'] = {
-      top: 1080,
-      left: 2860,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["innsbruck","worms","nuremberg","regensburg","salzburg"],
-      pass: ["innsbruck"],
-      language: "german",
-      type: "electorate"
-    }
-    spaces['nuremberg'] = {
-      top: 925,
-      left: 2834,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["augsburg","worms","mainz","kassel","leipzig","regensburg"],
-      language: "german",
-      type: "town"
-    }
-    spaces['mainz'] = {
-      top: 868,
-      left: 2666,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["trier","cologne","kassel","nuremberg","worms"],
-      language: "german",
-      type: "electorate"
-    }
-    spaces['trier'] = {
-      top: 894,
-      left: 2516,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["liege","metz","mainz"],
-      language: "german",
-      type: "town"
-    }
-    spaces['strasburg'] = {
-      top: 1070,
-      left: 2578,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["metz","besancon","basel","worms"],
-      language: "german",
-      type: "town"
-    }
-    spaces['worms'] = {
-      top: 1009,
-      left: 2704,
-      home: "",
-      political: "hapsburg",
-      religion: "catholic",
-      neighbours: ["strasburg","mainz","nuremberg","augsburg"],
-      language: "german",
-      type: "town"
-    }
-    spaces['navarre'] = {
-      top: 1814,
-      left: 1702,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["zaragoza","bilbao"],
-      language: "spanish",
-      type: "key"
-    }
-    spaces['bilbao'] = {
-      top: 1825,
-      left: 1533,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["corunna","valladolid","zaragoza","navarre"],
-      language: "spanish",
-      type: "town"
-    }
-    spaces['corunna'] = {
-      top: 1870,
-      left: 1015,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["biscay","atlantic"],
-      neighbours: ["bilbao","valladolid"],
-      language: "spanish",
-      type: "town"
-    }
-    spaces['valladolid'] = {
-      top: 2058,
-      left: 1394,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["corunna","bilbao","madrid"],
-      language: "spanish",
-      type: "key"
-    }
-    spaces['zaragoza'] = {
-      top: 2025,
-      left: 1777,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["navarre","bilbao","madrid","barcelona"],
-      language: "spanish",
-      type: "town"
-    }
-    spaces['barcelona'] = {
-      top: 2062,
-      left: 2106,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["gulflyon"],
-      neighbours: ["toulouse","avignon","zaragoza","valencia"],
-      pass: ["toulouse","avignon"],
-      language: "spanish",
-      type: "key"
-    }
-    spaces['palma'] = {
-      top: 2266,
-      left: 2211,
-      home: "hapsburg",
-      political: "",
-      ports: ["gulflyon","barbary"],
-      neighbours: ["cartagena","cagliari"],
-      language: "other",
-      religion: "catholic",
-      type: "town"
-    }
-    spaces['madrid'] = {
-      top: 2236,
-      left: 1550,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["cordoba","valladolid","zaragoza","valencia"],
-      language: "spanish",
-      type: "town"
-    }
-    spaces['valencia'] = {
-      top: 2333,
-      left: 1871,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["gulflyon"],
-      neighbours: ["cartagena","madrid","barcelona"],
-      language: "spanish",
-      type: "town"
-    }
-    spaces['cartagena'] = {
-      top: 2593,
-      left: 1830,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["gulflyon","barbary"],
-      neighbours: ["granada","valencia"],
-      language: "spanish",
-      type: "town"
-    }
-    spaces['granada'] = {
-      top: 2657,
-      left: 1558,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["cordoba","gibraltar","cartagena"],
-      language: "spanish",
-      type: "town"
-    }
-    spaces['seville'] = {
-      top: 2642,
-      left: 1319,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["atlantic"],
-      neighbours: ["cordoba","gibraltar"],
-      language: "spanish",
-      type: "key"
-    }
-    spaces['cordoba'] = {
-      top: 2530,
-      left: 1446,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["madrid","seville","granada"],
-      language: "spanish",
-      type: "town"
-    }
-    spaces['gibraltar'] = {
-      top: 2814,
-      left: 1374,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["atlantic","barbary"],
-      neighbours: ["seville","granada"],
-      language: "spanish",
-      type: "fortress"
-    }
-    spaces['oran'] = {
-      top: 2822,
-      left: 1902,
-      home: "hapsburg ottoman",
-      political: "",
-      religion: "catholic",
-      ports: ["barbary"],
-      neighbours: [],
-      language: "other",
-      type: "town"
-    }
-    spaces['algiers'] = {
-      top: 2656,
-      left: 2275,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      ports: ["barbary"],
-      neighbours: [],
-      language: "other",
-      type: "key"
-    }
-    spaces['tunis'] = {
-      top: 2599,
-      left: 2945,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      ports: ["barbary","africa"],
-      neighbours: [],
-      language: "other",
-      type: "key"
-    }
-    spaces['cagliari'] = {
-      top: 2320,
-      left: 2828,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports:["tyrrhenian","barbary"],
-      neighbours: [],
-      language: "other",
-      type: "town"
-    }
-    spaces['palermo'] = {
-      top: 2421,
-      left: 3260,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["tyrrhenian"],
-      neighbours: ["messina"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['messina'] = {
-      top: 2429,
-      left: 3475,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["tyrrhenian","ionian"],
-      neighbours: ["palermo","naples","taranto"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['cerignola'] = {
-      top: 1915,
-      left: 3426,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["taranto","ancona","rome"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['taranto'] = {
-      top: 2080,
-      left: 3597,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["ionian"],
-      neighbours: ["cerignola","naples","messina"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['naples'] = {
-      top: 2087,
-      left: 3358,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["tyrrhenian"],
-      neighbours: ["rome","taranto","messina"],
-      language: "italian",
-      type: "key"
-    }
-    spaces['malta'] = {
-      top: 2715,
-      left: 3380,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["ionian","africa"],
-      neighbours: [],
-      language: "other",
-      type: "fortress"
-    }
-    spaces['vienna'] = {
-      top: 1020,
-      left: 3474,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["brunn","linz","graz","pressburg"],
-      language: "german",
-      type: "key"
-    }
-    spaces['linz'] = {
-      top: 1045,
-      left: 3288,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["prague","regensburg","salzburg","vienna"],
-      language: "german",
-      type: "town"
-    }
-    spaces['graz'] = {
-      top: 2715,
-      left: 3380,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["salzburg","vienna","mohacs","agram","trieste"],
-      pass: ["salzburg"],
-      language: "german",
-      type: "town"
-    }
-    spaces['trieste'] = {
-      top: 1392,
-      left: 3257,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["adriatic"],
-      neighbours: ["graz","agram","zara","venice"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['innsbruck'] = {
-      top: 1170,
-      left: 3016,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["augsburg","trent","zurich","salzburg"],
-      pass: ["augsburg","trent"],
-      language: "german",
-      type: "town"
-    }
-    spaces['tripoli'] = {
-      top: 3030,
-      left: 3316,
-      home: "hapsburg ottoman",
-      political: "",
-      religion: "catholic",
-      ports: ["north"],
-      neighbours: [],
-      language: "other",
-      type: "town"
-    }
-    spaces['candia'] = {
-      top: 2670,
-      left: 4484,
-      home: "venice",
-      political: "",
-      religion: "catholic",
-      ports: ["aegean","africa"],
-      neighbours: [],
-      language: "other",
-      type: "fortress"
-    }
-    spaces['rhodes'] = {
-      top: 2524,
-      left: 4730,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      ports: ["aegean","africa"],
-      neighbours: [],
-      language: "other",
-      type: "town"
-    }
-    spaces['corfu'] = {
-      top: 2210,
-      left: 3868,
-      home: "venice",
-      political: "",
-      religion: "catholic",
-      ports: ["adriatic"],
-      neighbours: [],
-      language: "other",
-      type: "fortress"
-    }
-    spaces['coron'] = {
-      top: 2510,
-      left: 4146,
-      home: "",
-      political: "",
-      religion: "other",
-      ports:["ionian","aegean"],
-      neighbours: ["athens"],
-      language: "other",
-      type: "town"
-    }
-    spaces['athens'] = {
-      top: 2346,
-      left: 4286,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      ports: ["aegean"],
-      neighbours: ["larissa","lepanto","coron"],
-      language: "other",
-      type: "key"
-    }
-    spaces['lepanto'] = {
-      top: 2320,
-      left: 4057,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      ports: ["ionian"],
-      neighbours: ["larissa","athens"],
-      language: "other",
-      type: "town"
-    }
-    spaces['larissa'] = {
-      top: 2184,
-      left: 4130,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      neighbours: ["durazzo","lepanto","athens","salonika"],
-      pass: ["durazzo"],
-      language: "other",
-      type: "town"
-    }
-    spaces['salonika'] = {
-      top: 2010,
-      left: 4164,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      neighbours: ["larissa","edirne"],
-      language: "other",
-      type: "key"
-    }
-    spaces['durazzo'] = {
-      top: 2040,
-      left: 3844,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      ports: ["adriatic"],
-      neighbours: ["larissa","scutari"],
-      pass: ["larissa"],
-      language: "other",
-      type: "town"
-    }
-    spaces['scutari'] = {
-      top: 1860,
-      left: 3819,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      ports: ["adriatic"],
-      neighbours: ["nezh","ragusa","durazzo"],
-      pass: ["nezh"],
-      language: "other",
-      type: "fortress"
-    }
-    spaces['edirne'] = {
-      top: 1840,
-      left: 4532,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      neighbours: ["varna","istanbul","salonika","sofia",],
-      language: "other",
-      type: "key"
-    }
-    spaces['istanbul'] = {
-      top: 1890,
-      left: 4775,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      ports: ["black","aegean"],
-      neighbours: ["edirne","varna"],
-      language: "other",
-      type: "key"
-    }
-    spaces['varna'] = {
-      top: 1620,
-      left: 4653,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      ports: ["black"],
-      neighbours: ["bucharest","edirne","istanbul"],
-      language: "other",
-      type: "town"
-    }
-    spaces['bucharest'] = {
-      top: 1430,
-      left: 4459,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      neighbours: ["nicopolis","varna"],
-      language: "other",
-      type: "town"
-    }
-    spaces['nicopolis'] = {
-      top: 1570,
-      left: 4336,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      neighbours: ["szegedin","sofia","bucharest","belgrade"],
-      pass: ["szegedin","sofia"],
-      language: "other",
-      type: "town"
-    }
-    spaces['sofia'] = {
-      top: 1765,
-      left: 4275,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      neighbours: ["nicopolis","nezh","edirne"],
-      pass: ["nicopolis"],
-      language: "other",
-      type: "town"
-    }
-    spaces['nezh'] = {
-      top: 1652,
-      left: 4070,
-      home: "ottoman",
-      political: "",
-      religion: "other",
-      neighbours: ["scutari","belgrade","sofia"],
-      pass: ["scutari"],
-      language: "other",
-      type: "town"
-    }
-
-
-    spaces['belgrade'] = {
-      top: 1450,
-      left: 3894,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["ragusa","szegedin","mohacs","agram","nezh","nicopolis"],
-      pass: ["ragusa"],
-      language: "other",
-      type: "key"
-    }
-    spaces['szegedin'] = {
-      top: 1268,
-      left: 3846,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["nicopolis","buda","belgrade"],
-      pass: ["nicopolis"],
-      language: "other",
-      type: "town"
-    }
-    spaces['mohacs'] = {
-      top: 1353,
-      left: 3710,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["buda","graz","agram","belgrade"],
-      language: "other",
-      type: "town"
-    }
-    spaces['graz'] = {
-      top: 1208,
-      left: 3374,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["vienna","mohacs","agram","trieste"],
-      language: "german",
-      type: "town"
-    }
-    spaces['agram'] = {
-      top: 1373,
-      left: 3460,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["zara","graz","trieste","belgrade","mohacs"],
-      pass: ["zara"],
-      language: "other",
-      type: "town"
-    }
-    spaces['buda'] = {
-      top: 1104,
-      left: 3746,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["pressburg","mohacs","szegedin"],
-      language: "other",
-      type: "key"
-    }
-    spaces['pressburg'] = {
-      top: 1080,
-      left: 3613,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["vienna","buda"],
-      language: "other",
-      type: "town"
-    }
-    spaces['brunn'] = {
-      top: 840,
-      left: 3526,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["breslau","prague","vienna"],
-      language: "other",
-      type: "town"
-    }
-    spaces['breslau'] = {
-      top: 640,
-      left: 3466,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["brandenburg","wittenberg","brunn"],
-      language: "other",
-      type: "town"
-    }
-    spaces['prague'] = {
-      top: 785,
-      left: 3230,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["wittenberg","leipzig","linz"],
-      language: "other",
-      type: "key"
-    }
-    spaces['amsterdam'] = {
-      top: 546,
-      left: 2244,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["north"],
-      neighbours: ["antwerp","munster"],
-      language: "other",
-      type: "town"
-    }
-    spaces['antwerp'] = {
-      top: 669,
-      left: 2168,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      ports: ["north"],
-      neighbours: ["antwerp","liege","brussels","calais"],
-      language: "other",
-      type: "key"
-    }
-    spaces['brussels'] = {
-      top: 823,
-      left: 2201,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["antwerp","calais","stquentin","stdizier","liege"],
-      language: "french",
-      type: "fortress"
-    }
-    spaces['liege'] = {
-      top: 783,
-      left: 2351,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["cologne","trier","metz","brussels","antwerp"],
-      language: "french",
-      type: "town"
-    }
-    spaces['metz'] = {
-      top: 995,
-      left: 2384,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["liege","trier","strasburg","besancon","stdizier"],
-      language: "french",
-      type: "key"
-    }
-    spaces['besancon'] = {
-      top: 1169,
-      left: 2390,
-      home: "hapsburg",
-      political: "",
-      religion: "catholic",
-      neighbours: ["metz","dijon","geneva","basel","strasburg"],
-      language: "french",
-      type: "fortress"
-    }
-    spaces['basel'] = {
-      top: 1211,
-      left: 2558,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["strasburg","besancon","geneva","zurich"],
-      language: "german",
-      type: "town"
-    }
-    spaces['zurich'] = {
-      top: 1216,
-      left: 2712,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["basel","innsbruck"],
-      language: "german",
-      type: "town"
-    }
-    spaces['geneva'] = {
-      top: 1367,
-      left: 2474,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["basel","besancon","lyon","turin","grenoble"],
-      pass: ["turin"],
-      language: "french",
-      type: "town"
-    }
-    spaces['milan'] = {
-      top: 1373,
-      left: 2746,
-      home: "independent",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["trent","modena","pavia","turin"],
-      language: "italian",
-      type: "key"
-    }
-    spaces['trent'] = {
-      top: 1310,
-      left: 2933,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["innsbruck","milan","modena","venice"],
-      pass: ["innsbruck"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['modena'] = {
-      top: 1486,
-      left: 2951,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["trent","milan","pavia","florence","ravenna","venice"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['pavia'] = {
-      top: 1505,
-      left: 2800,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["milan","turin","genoa","modena"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['turin'] = {
-      top: 1530,
-      left: 2585,
-      home: "independent",
-      political: "france",
-      religion: "catholic",
-      neighbours: ["milan","pavia","geneva","grenoble","genoa"],
-      pass: ["grenoble","geneva"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['nice'] = {
-      top: 1733,
-      left: 2580,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      ports: ["gulflyon"],
-      neighbours: ["genoa","marseille"],
-      pass: ["genoa"],
-      language: "french",
-      type: "town"
-    }
-    spaces['florence'] = {
-      top: 1642,
-      left: 2976,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["modena","genoa","siena"],
-       language: "italian",
-      type: "key"
-    }
-    spaces['siena'] = {
-      top: 1805,
-      left: 2988,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      neighbours: ["genoa","florence","rome"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['bastia'] = {
-      top: 1829,
-      left: 2784,
-      home: "genoa",
-      political: "",
-      religion: "catholic",
-      ports: ["gulflyon","tyrrhenian"],
-      neighbours: [],
-      language: "other",
-      type: "town"
-    }
-    spaces['genoa'] = {
-      top: 1626,
-      left: 2726,
-      home: "genoa",
-      political: "",
-      religion: "catholic",
-      ports: ["gulflyon","tyrrhenian"],
-      neighbours: ["nice","pavia","turin","modena","siena"],
-      pass: ["nice"],
-      language: "italian",
-      type: "key"
-    }
-    spaces['rome'] = {
-      top: 1924,
-      left: 3125,
-      home: "papacy",
-      political: "",
-      religion: "catholic",
-      ports: ["tyrrhenian"],
-      neighbours: ["siena","ancona","cerignola","naples"],
-      language: "italian",
-      type: "key"
-    }
-    spaces['ancona'] = {
-      top: 1754,
-      left: 3238,
-      home: "papacy",
-      political: "",
-      religion: "catholic",
-      ports: ["adriatic"],
-      neighbours: ["ravenna","rome","cerignola"],
-      language: "italian",
-      type: "town"
-    }
-    spaces['ravenna'] = {
-      top: 1596,
-      left: 3130,
-      home: "papacy",
-      political: "",
-      religion: "catholic",
-      ports: ["adriatic"],
-      neighbours: ["venice","modena","ancona"],
-      language: "italian",
-      type: "key"
-    }
-    spaces['venice'] = {
-      top: 1399,
-      left: 3086,
-      home: "venice",
-      political: "",
-      religion: "catholic",
-      ports:["adriatic"],
-      neighbours: ["trent","modena","ravenna","trieste"],
-      language: "italian",
-      type: "key"
-    }
-    spaces['zara'] = {
-      top: 1571,
-      left: 3374,
-      home: "venice",
-      political: "",
-      religion: "catholic",
-      neighbours: ["agram","ragusa","trieste"],
-      pass: ["agram"],
-      language: "other",
-      type: "town"
-    }
-    spaces['ragusa'] = {
-      top: 1750,
-      left: 3660,
-      home: "independent",
-      political: "",
-      religion: "catholic",
-      ports: ["adriatic"],
-      neighbours: ["belgrade","zara","scutari"],
-      pass: ["belgrade"],
-      language: "italian",
-      type: "town"
-    }
-
-    //
-    // foreign war cards are spaces
-    //
-    spaces['egypt'] = {
-      top: 0,
-      left: 0,
-      home: "independent",
-      political: "",
-      religion: "",
-      ports: [],
-      neighbours: [],
-      pass: [],
-      language: "",
-      type: "war"
-    }
-    spaces['ireland'] = {
-      top: 0,
-      left: 0,
-      home: "independent",
-      political: "",
-      religion: "",
-      ports: [],
-      neighbours: [],
-      pass: [],
-      language: "",
-      type: "war"
-    }
-    spaces['persia'] = {
-      top: 0,
-      left: 0,
-      home: "independent",
-      political: "",
-      religion: "",
-      ports: [],
-      neighbours: [],
-      pass: [],
-      language: "",
-      type: "war"
-    }
-
-    for (let key in spaces) {
-      spaces[key].units = {};
-      spaces[key].units['england'] = [];
-      spaces[key].units['france'] = [];
-      spaces[key].units['hapsburg'] = [];
-      spaces[key].units['ottoman'] = [];
-      spaces[key].units['papacy'] = [];
-      spaces[key].units['protestant'] = [];
-      spaces[key].units['venice'] = [];
-      spaces[key].units['genoa'] = [];
-      spaces[key].units['hungary'] = [];
-      spaces[key].units['scotland'] = [];
-      spaces[key].units['independent'] = [];
-      spaces[key].university = 0;
-      spaces[key].unrest = 0;
-      if (!spaces[key].pass) { spaces[key].pass = []; }
-      if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
-      if (!spaces[key].besieged) { spaces[key].besieged = 0; }
-      if (!spaces[key].besieged_factions) { spaces[key].besieged_factions = []; }
-    }
-
-    return spaces;
-
-  }
-
-
-  isOccupied(space) {
-
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-
-    for (let key in this.game.spaces[space].units) {
-      if (this.game.spaces[space].units[key].length > 0) { return 1; }
-    }
-
-    return 0;
-  }
-
-  isElectorate(spacekey) {
-
-    try { if (spacekey.key) { spacekey = spacekey.key; } } catch (err) {}
-
-    if (spacekey === "augsburg") { return 1; }
-    if (spacekey === "trier") { return 1; }
-    if (spacekey === "cologne") { return 1; }
-    if (spacekey === "wittenberg") { return 1; }
-    if (spacekey === "mainz") { return 1; }
-    if (spacekey === "brandenburg") { return 1; }
-    return 0;
-  }
-
-  returnElectorateDisplay() {
-
-    let electorates = {};
-
-    electorates['augsburg'] = {
-      top: 190,
-      left: 3380,
-    }
-    electorates['trier'] = {
-      top: 190,
-      left: 3510,
-    }
-    electorates['cologne'] = {
-      top: 190,
-      left: 3642,
-    }
-    electorates['wittenberg'] = {
-      top: 376,
-      left: 3380,
-    }
-    electorates['mainz'] = {
-      top: 376,
-      left: 3510,
-    }
-    electorates['brandenburg'] = {
-      top: 376,
-      left: 3642,
-    }
-
-    return electorates;
-
-  }
-
-  //
-  // import space attaches events / functions to spaces if they do not exist
-  //
-  importSpace(obj, key) {
-
-    let his_self = this;
-
-    obj.key = key;
-
-    if (obj.name == null)               { obj.name = "Unknown"; }
-    if (obj.owner == null)              { obj.owner = -1; }          
-    if (obj.type == null)               { obj.type = "town"; }     
-    if (obj.debaters == null)           { obj.debaters = []; }     
-    if (obj.returnView == null)		{ 
-
-      obj.returnView = function () {
-
-	let html = '<div class="space_view" id="">';
-
-        for (let f in this.units) {
-	  if (this.units[f].length > 0) {
-
-	    html += `<div class="space_faction">${his_self.returnFactionName(f)}</div>`;
-            for (let i = 0; i < this.units[f].length; i++) {
-
-	      let b = "";
-	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
-
-	      html += `<div class="space_unit">1 - ${this.units[f][i].type} ${b}</div>`;
-	    }
-	  }
-	}
-
-	html += `</div>`;
-
-	return html;
-
-      };
-
-    }
-
-    return obj;
-
-  }
-
-
   returnNewCardsForThisTurn(turn = 1) {
 
     let deck = this.returnDeck();
@@ -5782,7 +1977,6 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
     return new_deck;
 
   }
-
 
   returnDiplomaticDeck() {
 
@@ -5873,7 +2067,7 @@ console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports 
             "Select French-Controlled Space",
 
             function(space) {
-	      if (his_self.isSpaceControlledByFaction(space, "france")) { return 1; }
+	      if (his_self.isSpaceControlled(space, "france")) { return 1; }
 	      return 0;
             },
 
@@ -6043,7 +2237,7 @@ alert("Diplomatic Pressure");
             "Select French-Controlled Space",
 
             function(space) {
-	      if (his_self.isSpaceControlledByFaction(space, "france")) { return 1; }
+	      if (his_self.isSpaceControlled(space, "france")) { return 1; }
 	      return 0;
             },
 
@@ -6242,7 +2436,7 @@ alert("Not Implemented");
             "Select Papal-Controlled Port not under Siege",
 
             function(space) {
-	      if (his_self.isSpaceControlledByFaction(space, "papacy") && space.ports.length > 0 && !space.besieged) { return 1; }
+	      if (his_self.isSpaceControlled(space, "papacy") && space.ports.length > 0 && !space.besieged) { return 1; }
 	      return 0;
             },
 
@@ -6280,7 +2474,7 @@ alert("Not Implemented");
             "Select Hapsburg-Controlled Space",
 
             function(space) {
-	      if (his_self.isSpaceControlledByFaction(space, "hapsburg")) { return 1; }
+	      if (his_self.isSpaceControlled(space, "hapsburg")) { return 1; }
 	      return 0;
             },
 
@@ -6321,7 +2515,7 @@ alert("Not Implemented");
             "Select Hapsburg-Controlled Space",
 
             function(space) {
-	      if (his_self.isSpaceControlledByFaction(space, "hapsburg")) { return 1; }
+	      if (his_self.isSpaceControlled(space, "hapsburg")) { return 1; }
 	      return 0;
             },
 
@@ -6373,7 +2567,7 @@ alert("Not Implemented");
             "Select Ottoman-Controlled Port",
 
             function(space) {
-	      if (his_self.isSpaceControlledByFaction(space, "ottoman") && space.ports.length > 0) { return 1; }
+	      if (his_self.isSpaceControlled(space, "ottoman") && space.ports.length > 0) { return 1; }
 	      return 0;
             },
 
@@ -6535,7 +2729,7 @@ alert("Not Implemented");
 	  function(space) {
 		if (
 		  space.home === "hapsburg" &&
-		  !his_self.isSpaceControlledByFaction(space, "hapsburg")
+		  !his_self.isSpaceControlled(space, "hapsburg")
 	        ) {
 		  return 1;
 	        }
@@ -6621,7 +2815,7 @@ alert("Not Implemented");
 
 	  his_self.updateLog("France rolls " + roll + " for Patron of the Arts");
 
-	  if (his_self.isSpaceControlledByFaction("milan", "france")) {
+	  if (his_self.isSpaceControlled("milan", "france")) {
 	    his_self.updateLog("French control Milan - roll adjusted to 6");
 	    roll = 6;
 	  };
@@ -8357,7 +4551,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	    if (his_self.game.spaces[spacekey].units["ottoman"].length > 0) {
 	      for (let z = 0; z < his_self.game.spaces[spacekey].units["ottoman"].length; z++) {
 	        if (his_self.game.spaces[spacekey].units["ottoman"][z].type === "cavalry") {
-	          if (his_self.isSpaceControlledByFaction(spacekey, "ottoman")) {
+	          if (his_self.isSpaceControlled(spacekey, "ottoman")) {
 		    return 1;
 		  }
 	        }
@@ -8378,7 +4572,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	for (let i = 0; i < neighbours.length; i++) {
 	  let s = his_self.game.spaces[neighbours[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
-	    if (his_self.isSpaceControlledByFaction(s.neighbours[ii], "ottoman")) {
+	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
 	      if (!neighbours.includes(s.neighbours[ii])) { neighbours.push(s.neighbours[ii]); }
 	    }
 	  }
@@ -8389,7 +4583,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	//
 	for (let i = 0; i < neighbours.length; i++) {
 	  for (let ii = 0; ii < enemies.length; ii++) {
-	    if (his_self.isSpaceControlledByFaction(neighbours[i], enemies[ii])) {
+	    if (his_self.isSpaceControlled(neighbours[i], enemies[ii])) {
 	      return 1;
 	    }
 	  }
@@ -8410,7 +4604,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	    if (his_self.game.spaces[spacekey].units["ottoman"].length > 0) {
 	      for (let z = 0; z < his_self.game.spaces[spacekey].units["ottoman"].length; z++) {
 	        if (his_self.game.spaces[spacekey].units["ottoman"][z].type === "cavalry") {
-	          if (his_self.isSpaceControlledByFaction(spacekey, "ottoman")) {
+	          if (his_self.isSpaceControlled(spacekey, "ottoman")) {
 	  	    return 1;
 		  }
 	        }     
@@ -8430,7 +4624,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	  for (let i = 0; i < neighbours.length; i++) {
 	    let s = his_self.game.spaces[neighbours[i]];
 	    for (let ii = 0; ii < neighbours.length; ii++) {
-	      if (his_self.isSpaceControlledByFaction(neighbours[ii], "ottoman")) {
+	      if (his_self.isSpaceControlled(neighbours[ii], "ottoman")) {
 	        if (!neighbours.includes(s.neighbours[ii])) { neighbours.push(s.neighbours[ii]); }
 	      }
 	    }
@@ -8441,7 +4635,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	  //
 	  for (let i = 0; i < neighbours.length; i++) {
 	    for (let ii = 0; ii < enemies.length; ii++) {
-	      if (his_self.isSpaceControlledByFaction(neighbours[i], enemies[ii])) {
+	      if (his_self.isSpaceControlled(neighbours[i], enemies[ii])) {
 	        if (!target_which_faction.includes(enemies[ii])) { target_which_faction.push(enemies[ii]); }
 	      }
 	    }
@@ -8589,7 +4783,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 		  function(space) {
 		    if (space.home == "scotland") {
-		      if (his_self.isSpaceControlledByFaction(space, "france")) {
+		      if (his_self.isSpaceControlled(space, "france")) {
 		        if (!space.besieged) {
 		          return 1;
 		        }
@@ -8640,7 +4834,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 
 	    function(space) {
 	      if (space.beseiged) { return 0; }
-	      if (his_self.isSpaceControlledByFaction(space, faction)) { return 1; }
+	      if (his_self.isSpaceControlled(space, faction)) { return 1; }
 	      return 0;
 	    },
 
@@ -8693,7 +4887,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	      // electorate under hapsburg control
 	      if (his_self.game.state.events.schmalkaldic_league == 1) {
 		if (his_self.isElectorate(space.key)) {
-		  if (his_self.isSpaceControlledByFaction(space.key, "hapsburg")) { return 1; }
+		  if (his_self.isSpaceControlled(space.key, "hapsburg")) { return 1; }
 		}
 	      }
 
@@ -8788,7 +4982,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       },
       onEvent : function(his_self, faction) {
 
-	if (his_self.isSpaceControlledByFaction("calais", "england") && his_self.isSpaceControlledByFaction("antwerp", "hapsburg")) {
+	if (his_self.isSpaceControlled("calais", "england") && his_self.isSpaceControlled("antwerp", "hapsburg")) {
 
           let p1 = his_self.returnPlayerOfFaction("england");
           let p2 = his_self.returnPlayerOfFaction("hapsburg");
@@ -8825,7 +5019,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	      "Select Home Space not under Seige",
 	      function(space) {
 	        if (space.beseiged) { return 0; }
-	        if (his_self.isSpaceControlledByFaction(space, faction)) { return 1; }
+	        if (his_self.isSpaceControlled(space, faction)) { return 1; }
 	        return 0;
 	      },
 	      function(spacekey) {
@@ -8845,7 +5039,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
 	      "Select Home Space not under Seige",
 	      function(space) {
 	        if (space.beseiged) { return 0; }
-	        if (his_self.isSpaceControlledByFaction(space, faction)) { return 1; }
+	        if (his_self.isSpaceControlled(space, faction)) { return 1; }
 	        return 0;
 	      },
 	      function(spacekey) {
@@ -10245,6 +6439,3868 @@ alert("NOT IMPLEMENTED");
   }
 
 
+
+  isSpaceFortified(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.type === "key" || space.type === "fortress") { return false; }
+    return false;
+  }
+
+  isSpaceFriendly(space, faction) {
+
+    let cf = this.returnFactionControllingSpace(space);
+    if (cf === faction) { return true; }
+    return this.areAllies(cf, faction);
+
+  }
+
+  isSpaceControlled(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    // home spaces that have not fallen to another power.
+    if (space.home === faction && space.political == faction) { return true; }
+
+    // independent (gray) spaces seized by the power.
+    if (space.home === "independent" && space.political === faction) { return true; }
+
+    // home spaces of other powers seized by the power.
+    if (space.home !== faction && space.political === faction) { return true; }
+
+    // home spaces of allied minor powers. 
+    if (space.home !== faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
+
+    return false;
+  }
+
+  returnFactionControllingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let factions = this.returnImpulseOrder(); 
+    for (let i = 0; i < factions.length; i++) {
+      if (this.isSpaceControlled(space, factions[i])) { return factions[i]; }
+    }
+    if (space.political) { return space.political; }
+    return space.home;
+  }
+
+
+
+  isSpaceFactionCapital(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let capitals = this.returnCapitals(faction);
+    for (let i = 0; i < capitals.length; i++) {
+      if (capitals[i] === space.key) { return true; }
+    }
+    return false;
+  }
+
+  isSpaceInUnrest(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.unrest == 1) { return true; }
+    return false;
+  }
+
+  isSpaceBesieged(space) {
+    return this.isSpaceUnderSiege(space);
+  }
+
+  isSpaceUnderSiege(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.besieged > 0) { return true; }
+    return false;
+  }
+
+
+
+  isSpaceConnectedToCapital(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let capitals = this.returnCapitals(faction);
+    let already_routed_through = {};
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // capitals are good destinations
+      function(spacekey) {
+        if (capitals.includes(spacekey)) { return 1; }
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      }
+    );
+
+    return 1;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  returnSpaceOfPersonage(faction, personage) {
+    for (let key in this.game.spaces) {
+      for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	if (this.game.spaces[key].units[faction][i].type === personage) {
+	  return key;
+        }
+      }
+    }
+    return "";
+  }
+
+  returnIndexOfPersonageInSpace(faction, personage, spacekey) {
+    if (spacekey === "") { return -1; }
+    for (let i = 0; i < this.game.spaces[spacekey].units[faction].length; i++) {
+      if (this.game.spaces[spacekey].units[faction][i].type === personage) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  returnNavalTransportDestinations(faction, space, ops) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let viable_destinations = [];
+    let viable_navalspaces = [];
+    let options = [];
+    let ops_remaining = ops-1;    
+
+    for (let i = 0; i < space.ports.length; i++) {
+      if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
+	viable_navalspaces.push({key : space.ports[i] , ops_remaining : ops_remaining});
+      }
+    }
+
+    //
+    // TODO check for blocking fleet
+    //
+    while (ops_remaining > 1) {
+      ops_remaining--;
+      for (let i = 0; i < viable_navalspaces.length; i++) {
+	for (let z = 0; z < this.game.navalspaces[viable_navalspaces[i]].neighbours.length; z++) {
+          if (this.doesFactionHaveNavalUnitsInSpace(faction, space.ports[i])) {
+	    let ns = this.game.navalspaces[viable_navalspaces[i].key].neighbours[z];
+	    let already_included = 0;
+	    for (let z = 0; z < viable_navalspaces.length; z++) {
+	      if (viable_navalspaces[z].key == ns) { already_included = 1; }
+	    }
+	    if (aready_included == 0) {
+	      viable_navalspaces.push({ key : ns , ops_remaining : ops_remaining });
+	    }
+	  }
+	}
+      }
+    }
+
+    //
+    //
+    //
+    for (let i = 0; i < viable_navalspaces.length; i++) {
+      let key = viable_navalspaces[i].key;
+      for (let z = 0; z < this.game.navalspaces[key].ports.length; z++) {      
+	let port = this.game.navalspaces[key].ports[z];
+	if (port != space.key) {
+	  viable_destinations.push({ key : port , cost : (ops - ops_remaining)});
+	}
+      }
+    }
+
+    return viable_destinations;
+
+  }
+
+
+  returnFactionNavalUnitsToMove(faction) {
+
+    let units = [];
+
+    //
+    // include minor-activated factions
+    //
+    let fip = [];
+        fip.push(faction);
+    if (this.game.state.activated_powers[faction]) {
+      for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
+        fip.push(this.game.state.activated_powers[faction][i]);
+      }
+    }
+
+    //
+    // find units
+    //
+    for (let i = 0; i < fip.length; i++) {
+      for (let key in this.game.spaces) {
+
+	//
+	// we only care about units in ports
+	//
+	if (this.game.spaces[key].ports) {
+	if (this.game.spaces[key].ports.length > 0) {
+	  let ships = [];
+	  let leaders = [];
+	  for (let z = 0; z < this.game.spaces[key].units[fip[i]].length; z++) {
+
+	    //
+	    // only add leaders if there is a ship in port
+	    //
+	    let u = this.game.spaces[key].units[fip[i]][z];
+	    u.idx = z;
+	    if (u.land_or_sea === "sea") {
+	      if (u.navy_leader == true) {
+		leaders.push(u);
+	      } else {
+		ships.push(u);
+	      }
+	    }
+	  }
+
+	  //
+	  // add and include location
+	  //
+	  if (ships.length > 0) {
+	    for (let y = 0; y < ships.length; y++) {
+	      ships[y].spacekey = key;
+	      units.push(ships[y]);
+	    }
+	    for (let y = 0; y < leaders.length; y++) {
+	      leaders[y].spacekey = key;
+	      units.push(leaders[y]);
+	    }
+	  }
+	}
+        }
+      }
+    }
+
+    //
+    // add ships and leaders out-of-port
+    //
+    for (let i = 0; i < fip.length; i++) {
+      for (let key in this.game.navalspaces) {
+	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
+	  this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
+	  units.push(this.game.navalspaces[key].units[fip[i]][z]);
+	}
+      }
+    }
+
+    return units;
+  }
+
+
+
+
+
+
+
+
+  returnNearestFriendlyFortifiedSpaces(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let already_routed_through = {};
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // fortified spaces
+      function(spacekey) {
+        if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
+	  if (his_self.isSpaceControlled(space, faction)) {
+	    return 1;
+	  }
+	  if (his_self.isSpaceFriendly(space, faction)) {
+	    return 1;
+	  }
+	}
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      }
+    );
+
+    return res;
+
+  }
+
+
+  returnNearestFactionControlledPorts(faction, space) {
+    try { if (this.game.navelspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let already_routed_through = {};
+
+    let res = this.returnNearestNavalSpaceOrPortWithFilter(
+
+      space.key,
+
+      // ports
+      function(spacekey) {
+        if (his_self.game.spaces[spacekey]) {
+	  if (his_self.isSpaceControlled(space, faction)) {
+	    return 1;
+	  }
+	}
+        return 0;
+      },
+
+      // route through this
+      function(spacekey) {	
+        if (his_self.game.spaces[spacekey]) { return 0; }
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	return 1;
+      }
+    );
+
+    return res;
+
+  }
+
+
+  canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[invalid_space]; } } catch (err) {}
+    if (space === attacker_comes_from_this_space) { return 0; }
+    if (this.isSpaceInUnrest(space) == 1) { return 0; }
+    if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
+    return 0;
+  }
+
+  canFactionRetreatToNavalSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+console.log("canFactionRetreatToNavalSpace INCOMPLETE -- needs to support ports AND open sea");
+    return 1;
+  }
+
+  convertSpace(religion, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.religion = religion;
+    this.displayBoard();
+  }
+
+  controlSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.political = faction;
+    space.occupier = faction;
+  }
+
+
+  returnDefenderFaction(attacker_faction, space) {
+    // called in combat, this finds whichever faction is there but isn't allied to the attacker
+    // or -- failing that -- whichever faction is recorded as occupying the space.
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      let luis = this.returnFactionLandUnitsInSpace(f, space);
+      if (luis > 0) {
+        if (!this.areAllies(attacker_faction, f)) {
+	  return f;
+	}
+      }
+    }
+    return this.returnFactionOccupyingSpace(space);
+  }
+
+  returnFactionOccupyingSpace(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.occupier != "" && space.occupier != undefined && space.occupier != "undefined" && space.occupier != 'undefined') { 
+      // whoever had units here first
+      console.log("occupier: " + space.occupier);
+      if (space.units[space.occupier]) {
+        if (space.units[space.occupier].length > 0) {
+          return space.occupier; 
+        }
+      }
+    }
+    // or whoever has political control
+    if (space.political != "") { return space.political; }
+    // or whoever has home control
+    if (space.owner != -1) { return space.owner; }
+    return space.home;
+  }
+
+  returnFriendlyLandUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === "regular") { luis++; }
+      if (space.units[faction][i].type === "mercenary") { luis++; }
+      if (space.units[faction][i].type === "cavalry") { luis++; }
+    }
+    return luis;
+  }
+
+  returnFactionLandUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === "regular") { luis++; }
+      if (space.units[faction][i].type === "mercenary") { luis++; }
+      if (space.units[faction][i].type === "cavalry") { luis++; }
+    }
+    return luis;
+  }
+
+  returnFactionSeaUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction][i].type === "squadron") { luis++; }
+      if (space.units[faction][i].type === "corsair") { luis++; }
+    }
+    return luis;
+  }
+
+  doesOtherFactionHaveNavalUnitsInSpace(exclude_faction, key) {
+    if (this.game.spaces[key]) {
+      for (let f in this.game.spaces[key].units) {
+	if (f != exclude_faction) {
+          if (this.game.spaces[key].units[faction]) {
+            for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+              if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
+  	        return 1;
+              }
+            }
+	  }
+	}
+      }
+    }
+    if (this.game.navalspaces[key]) {
+      for (let f in this.game.navalspaces[key].units) {
+	if (f != exclude_faction) {
+          if (this.game.navalspaces[key].units[faction]) {
+            for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+              if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
+  	        return 1;
+              }
+            }
+	  }
+	}
+      }
+    }
+    return 0;
+  }
+
+  doesFactionHaveNavalUnitsInSpace(faction, key) {
+    if (this.game.spaces[key]) {
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+          if (this.game.spaces[key].units[faction][i].type === "squadron" || this.game.spaces[key].units[faction][i].type === "corsair") {
+  	    return 1;
+          }
+        }
+      }
+    }
+    if (this.game.navalspaces[key]) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+          if (this.game.navalspaces[key].units[faction][i].type === "squadron" || this.game.navalspaces[key].units[faction][i].type === "corsair") {
+  	    return 1;
+          }
+        }
+      }
+    }
+    return 0;
+  }
+
+  doesFactionHaveNavalUnitsOnBoard(faction) {
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+	  return 1;
+	}
+      }
+    }
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (this.game.spaces[key].units[faction][i].land_or_sea === "sea") {
+	    return 1;
+	  }
+	}
+      }
+    }
+    return 0;
+  }
+
+  returnFactionMap(space, faction1, faction2) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    let faction_map = {};
+    for (let f in space.units) {
+      if (this.returnFactionLandUnitsInSpace(f, space)) {
+        if (f == faction1) {
+          faction_map[f] = faction1;
+        } else {
+          if (f == faction2) {
+            faction_map[f] = faction2;
+          } else {
+            if (this.areAllies(f, faction1)) {
+              faction_map[f] = faction1;
+            }
+            if (this.areAllies(f, faction2)) {
+              faction_map[f] = faction2;
+            }
+          }
+        }
+      }
+    }
+    return faction_map;
+  }
+
+  returnHomeSpaces(faction) {
+
+    let spaces = [];
+
+    for (let i in this.game.spaces) {
+      if (this.game.spaces[i].home === faction) { spaces.push(i); }
+    }
+
+    return spaces;
+
+  }
+
+  //
+  // transit seas calculates neighbours across a sea zone
+  //
+  // if transit_seas and faction is specified, we can only cross if
+  // there are no ports in a zone with non-faction ships.
+  //
+  returnNeighbours(space, transit_passes=1, transit_seas=0, faction="") {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (transit_seas == 0) {
+      if (transit_passes == 1) {
+        return space.neighbours;
+      }
+      let neighbours = [];
+      for (let i = 0; i < space.neighbours.length; i++) {
+        let x = space.neighbours[i];      
+        if (!space.pass.includes[x]) {
+  	  neighbours.push(x);
+        }
+      }
+      return neighbours;
+    } else {
+
+      let neighbours = [];
+
+      if (transit_passes == 1) {
+        neighbours = JSON.parse(JSON.stringify(space.neighbours));
+      } else {
+        for (let i = 0; i < space.neighbours.length; i++) {
+          let x = space.neighbours[i];  
+          if (!space.pass.includes[x]) {
+            neighbours.push(x);
+          }
+        }
+      }
+
+      //
+      // any ports ?
+      //
+      if (space.ports) {
+        if (space.ports.length > 0) {
+	  for (let i = 0; i < space.ports.length; i++) {
+	    let navalspace = this.game.navalspaces[space.ports[i]];
+	    let any_unfriendly_ships = false;
+	    if (navalspace.ports) {
+	      if (faction != "") {
+	        for (let z = 0; z < navalspace.ports.length; z++) {
+	          if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z])) { any_unfriendly_ships = true; }
+	        }
+	      }
+              for (let z = 0; z < navalspace.ports.length; z++) {
+	        if (!neighbours.includes(navalspace.ports[z])) {
+	          neighbours.push(navalspace.ports[z]);
+	        };
+	      }
+	    }
+ 	  }
+        }
+      }
+      return neighbours;
+    }
+  }
+
+
+  //
+  // only calculates moves from naval spaces, not outbound from ports
+  //
+  returnNavalNeighbours(space, transit_passes=1) {
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    let neighbours = [];
+    for (let i = 0; i < space.ports.length; i++) {
+      let x = space.ports[i];
+      neighbours.push(x);
+    }
+    for (let i = 0; i < space.neighbours.length; i++) {
+      let x = space.neighbours[i];
+      neighbours.push(x);
+    }
+
+    return neighbours;
+  }
+
+
+
+  //
+  // returns adjacent naval and port spaces
+  //
+  returnNavalAndPortNeighbours(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+
+    let key = space.key;
+    let neighbours = [];
+
+    //
+    // ports add only naval spaces
+    //
+    if (this.game.spaces[key]) {
+      for (let i = 0; i < space.ports.length; i++) {
+        let x = space.ports[i];
+        neighbours.push(x);
+      }
+    }
+
+    //
+    // naval spaces add ports
+    //
+    if (this.game.navalspaces[key]) {
+      for (let i = 0; i < space.ports.length; i++) {
+        let x = space.ports[i];
+        neighbours.push(x);
+      }
+      for (let i = 0; i < space.neighbours.length; i++) {
+        let x = space.neighbours[i];
+        neighbours.push(x);
+      }
+    }
+
+    return neighbours;
+  }
+
+
+  //
+  // returns both naval and port movement options
+  //
+  returnNavalMoveOptions(spacekey) {
+
+    let neighbours = [];
+
+    if (this.game.navalspaces[spacekey]) {
+      for (let i = 0; i < this.game.navalspaces[spacekey].neighbours.length; i++) {
+	neighbours.push(this.game.navalspaces[spacekey].neighbours[i]);
+      }
+      for (let i = 0; i < this.game.navalspaces[spacekey].ports.length; i++) {
+	neighbours.push(this.game.navalspaces[spacekey].ports[i]);
+      }
+    } else {
+      if (this.game.spaces[spacekey]) {
+        for (let i = 0; i < this.game.spaces[spacekey].ports.length; i++) {
+	  neighbours.push(this.game.spaces[spacekey].ports[i]);
+        }
+      }
+    }
+
+    return neighbours;
+  }
+
+
+  //
+  // find the nearest destination.
+  //
+  returnNearestNavalSpaceOrPortWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1) {
+
+    //
+    // return array with results + hops distance
+    //
+    let results = [];
+    let searched_spaces = {};
+    let pending_spaces = {};
+
+    //
+    // if the source matches our destination, return it
+    //
+    if (include_source == 1) {
+      if (destination_filter(sourcekey)) {
+        results.push({ space : sourcekey , hops : 0 });
+        return results;
+      }
+    }
+
+    //
+    // put the neighbours into pending
+    //
+    let n = this.returnNavalNeighbours(sourcekey);
+
+    for (let i = 0; i < n.length; i++) {
+      pending_spaces[n[i]] = { hops : 0 , key : n[i] };
+    }
+
+    //
+    // otherwise propagate outwards searching pending
+    //
+    let continue_searching = 1;
+    while (continue_searching) {
+
+      let count = 0;
+      for (let key in pending_spaces) {
+
+	count++;
+	let hops = pending_spaces[key].hops;
+
+	if (destination_filter(key)) {
+	  // found results? this is last pass
+	  results.push({ hops : (hops+1) , key : key });	
+	  continue_searching = 0;
+	} else {
+	  if (propagation_filter(key)) {
+    	    for (let i = 0; i < this.game.navalspaces[key].neighbours.length; i++) {
+	      if (!searched_spaces.hasOwnProperty[this.game.navalspaces[key].neighbours[i]]) {
+		// don't add to pending as we've transversed before
+	      } else {
+      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+	      }
+    	    }
+	  }
+	  searched_spaces[key] = { hops : (hops+1) , key : key };
+	}
+	delete pending_spaces[key];
+
+      }
+      if (count == 0) { continue_searching = 0; }
+    }
+
+    //
+    // at this point we have results or not 
+    //
+    return results;
+
+  }
+
+  //
+  // find the nearest destination.
+  //
+  // transit_eas = filters on spring deploment criteria of two friendly ports on either side of the zone + no uncontrolled ships in zone
+  //
+  returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1, transit_passes=0, transit_seas=0, faction="", already_crossed_sea_zone=0) {
+
+    //
+    // return array with results + hops distance
+    //
+    let results = [];
+    let searched_spaces = {};
+    let pending_spaces = {};
+
+    //
+    // if the source matches our destination, return it
+    //
+    if (include_source == 1) {
+      if (destination_filter(sourcekey)) {
+        results.push({ space : sourcekey , hops : 0 });
+        return results;
+      }
+    }
+
+    //
+    // put the neighbours into pending
+    //
+    let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction);
+
+    for (let i = 0; i < n.length; i++) {
+      pending_spaces[n[i]] = { hops : 0 , key : n[i] };
+    }
+
+    //
+    // otherwise propagate outwards searching pending
+    //
+    let continue_searching = 1;
+    while (continue_searching) {
+
+      let count = 0;
+      for (let key in pending_spaces) {
+
+	count++;
+	let hops = pending_spaces[key].hops;
+
+	if (destination_filter(key)) {
+	  // found results? this is last pass
+	  results.push({ hops : (hops+1) , key : key });	
+	  continue_searching = 0;
+	} else {
+	  if (propagation_filter(key)) {
+    	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
+	      if (!searched_spaces.hasOwnProperty[this.game.spaces[key].neighbours[i]]) {
+		// don't add to pending as we've transversed before
+	      } else {
+      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
+	      }
+    	    }
+	  }
+	  searched_spaces[key] = { hops : (hops+1) , key : key };
+	}
+	delete pending_spaces[key];
+
+      }
+      if (count == 0) { continue_searching = 0; }
+    }
+
+    //
+    // at this point we have results or not 
+    //
+    return results;
+
+  }
+
+  isFriendlyHomeSpace(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (faction == "protestant") {
+      if (space.religion == faction && space.language == "german" && this.isSpaceFriendly(space, faction)) { return 1; }
+    } else {
+      if (space.home == faction && this.isSpaceFriendly(space, faction)) { return 1; }
+    }
+    return 0;
+  }
+
+
+
+  //
+  // similar to above, except it can cross a sea-zone
+  //
+  isSpaceConnectedToCapitalSpringDeployment(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let capitals = this.returnCapitals(faction);
+    let already_routed_through = {};
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // capitals are good destinations
+      function(spacekey) {
+        if (capitals.includes(spacekey)) { return 1; }
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      },
+
+      // transit passes? 0
+      0,
+
+      // transit seas? 1
+      1,
+     
+      // faction? optional
+      faction,
+
+      // already crossed sea zone optional
+      0 
+    );
+
+    return 1;
+  }
+
+  isSpaceAdjacentToReligion(space, religion) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.neighbours.length; i++) {
+      if (this.game.spaces[space.neighbours[i]].religion === religion) {
+	return true;
+      }
+    }
+    return false;
+  }
+
+  returnSpacesWithFilter(filter_func) {
+    let spaces = [];
+    for (let spacekey in this.game.spaces) {
+      if (filter_func(spacekey) == 1) { spaces.push(spacekey); }
+    }
+    return spaces;
+  }
+
+
+HACK
+  returnNumberOfElectoratesControlledByCatholics() {
+    let controlled_keys = 0;
+    if (this.game.spaces['augsburg'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['mainz'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['trier'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['cologne'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['wittenberg'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['brandenburg'].religion === "catholic") { controlled_keys++; }
+    return controlled_keys;
+  }
+  returnNumberOfElectoratesControlledByProtestants() {
+    let controlled_keys = 0;
+    if (this.game.spaces['augsburg'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['mainz'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['trier'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['cologne'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['wittenberg'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['brandenburg'].religion === "protestant") { controlled_keys++; }
+    return controlled_keys;
+  }
+  returnNumberOfKeysControlledByFaction(faction) {
+    let controlled_keys = 0;
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
+          controlled_keys++;
+        }
+      }
+    }
+    return controlled_keys;
+  }
+  returnNumberOfKeysControlledByPlayer(player_num) {
+    let faction = this.game.players_info[player_num-1].faction;
+    let controlled_keys = 0;
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
+          controlled_keys++;
+        }
+      }
+    }
+    return controlled_keys;
+  }
+
+  returnNumberOfSpacesControlledByProtestants() {
+    let controlled_spaces = 0;
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion === "protestant") {
+	controlled_spaces++;
+      }
+    }
+    return controlled_spaces;
+  }
+
+
+  returnNavalSpaces() {
+
+    let seas = {};
+
+    seas['irish'] = {
+      top : 875 ,
+      left : 900 ,
+      name : "Irish Sea" ,
+      ports : ["glasgow"] ,
+      neighbours : ["biscay","north","channel"] ,
+    }
+    seas['biscay'] = {
+      top : 1500 ,
+      left : 1400 ,
+      name : "Bay of Biscay" ,
+      ports : ["brest", "nantes", "bordeaux", "corunna" ] ,
+      neighbours : ["irish","channel","atlantic"] ,
+    }
+    seas['atlantic'] = {
+      top : 2700 ,
+      left : 850 ,
+      name : "Atlantic Ocean" ,
+      ports : ["gibraltar" , "seville" , "corunna"] ,
+      neighbours : ["biscay"] ,
+    }
+    seas['channel'] = {
+      top : 1020 ,
+      left : 1450 ,
+      name : "English Channel" ,
+      ports : ["brest", "plymouth", "portsmouth", "rouen", "bolougne", "calais" ] ,
+      neighbours : ["irish","biscay","north"] ,
+    }
+    seas['north'] = {
+      top : 200 ,
+      left : 2350 ,
+      name : "North Sea" ,
+      ports : ["london", "norwich", "berwick", "edinburgh", "calais", "antwerp", "amsterdam", "bremen", "hamburg" ] ,
+      neighbours : ["irish","channel","baltic"] ,
+    }
+    seas['baltic'] = {
+      top : 50 ,
+      left : 3150 ,
+      name : "Baltic Sea" ,
+      ports : ["lubeck", "stettin" ] ,
+      neighbours : ["north"] ,
+    }
+    seas['gulflyon'] = {
+      top : 1930 ,
+      left : 2430 ,
+      name : "Gulf of Lyon" ,
+      ports : ["cartagena", "valencia", "palma", "barcelona" , "marseille", "nice" , "genoa", "bastia" ] ,
+      neighbours : ["barbary","tyrrhenian"] ,
+    }
+    seas['barbary'] = {
+      top : 2330 ,
+      left : 2430 ,
+      name : "Barbary Coast" ,
+      ports : ["gibraltar", "oran", "cartagena", "algiers" , "tunis", "cagliari" , "palma" ] ,
+      neighbours : ["gulflyon","tyrrhenian","ionian","africa"] ,
+    }
+    seas['tyrrhenian'] = {
+      top : 2260 ,
+      left : 3300 ,
+      name : "Tyrrhenian Sea" ,
+      ports : ["genoa" , "bastia" , "rome" , "naples" , "palermo" , "caliari" , "messina" ] ,
+      neighbours : ["barbary","gulflyon"] ,
+    }
+    seas['africa'] = {
+      top : 2770 ,
+      left : 4200 ,
+      name : "North African Coast" ,
+      ports : ["tunis" , "tripoli" , "malta" , "candia" , "rhodes" ] ,
+      neighbours : ["ionian","barbary","aegean"] ,
+    }
+    seas['aegean'] = {
+      top : 2470 ,
+      left : 4450 ,
+      name : "Aegean Sea" ,
+      ports : ["rhodes" , "candia" , "coron" , "athens" , "salonika" , "istanbul" ] ,
+      neighbours : ["black","africa","ionian"] ,
+    }
+    seas['ionian'] = {
+      top : 2390 ,
+      left : 3750 ,
+      name : "Ionian Sea" ,
+      ports : ["malta" , "messina" , "coron", "lepanto" , "corfu" , "taranto" ] ,
+      neighbours : ["black","aegean","adriatic"] ,
+    }
+    seas['adriatic'] = {
+      top : 1790 ,
+      left : 3400 ,
+      name : "Adriatic Sea" ,
+      ports : ["corfu" , "durazzo" , "scutari" , "ragusa" , "trieste" , "venice" , "ravenna" , "ancona" ] ,
+      neighbours : ["ionian"] ,
+    }
+    seas['black'] = {
+      top : 1450 ,
+      left : 4750 ,
+      name : "Black Sea" ,
+      ports : ["istanbul" , "varna" ] ,
+      neighbours : ["aegean"] ,
+    }
+
+    for (let key in seas) {
+      seas[key].units = {};
+      seas[key].units['england'] = [];
+      seas[key].units['france'] = [];
+      seas[key].units['hapsburg'] = [];
+      seas[key].units['ottoman'] = [];
+      seas[key].units['papacy'] = [];
+      seas[key].units['protestant'] = [];
+      seas[key].units['venice'] = [];
+      seas[key].units['genoa'] = [];
+      seas[key].units['hungary'] = [];
+      seas[key].units['scotland'] = [];
+      seas[key].units['independent'] = [];
+    }
+
+    return seas;
+  }
+
+  returnSpaceName(key) {
+    if (this.game.spaces[key]) { return this.game.spaces[key].name; }
+    if (this.game.navalspaces[key]) { return this.game.navalspaces[key].name; }
+    return "Unknown";
+  }
+
+
+  returnSpacesInUnrest() {
+    let spaces_in_unrest = [];
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].unrest == 1) { spaces_in_unrest.push(key); }
+    }
+    return spaces_in_unrest;
+  }
+
+  returnSpacesWithFactionInfantry(faction) {
+    let spaces_with_infantry = [];
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units[faction].length > 0) {
+        spaces_with_infantry.push(key);
+      }
+    }
+    return spaces_with_infantry;
+  }
+
+  returnSpaces() {
+
+    let spaces = {};
+
+    spaces['stirling'] = {
+      top: 70,
+      left: 1265,
+      home: "scotland",
+      political: "scotland",
+      religion: "catholic",
+      ports: ["irish"],
+      neighbours: ["glasgow","edinburgh"],
+      language: "english",
+      type: "fortress"
+    }
+    spaces['glasgow'] = {
+      top: 225,
+      left: 1285,
+      home: "scotland",
+      political: "scotland",
+      religion: "catholic",
+      ports: ["irish"],
+      neighbours: ["stirling","edinburgh","carlisle"],
+      language: "english",
+      type: "town"
+    }
+    spaces['edinburgh'] = {
+      top: 125,
+      left: 1420,
+      home: "scotland",
+      political: "scotland",
+      religion: "catholic",
+      ports: ["north"],
+      neighbours: ["stirling","carlisle","berwick"],
+      language: "english",
+      type: "key"
+    }
+    spaces['berwick'] = {
+      top: 183,
+      left: 1572,
+      home: "england",
+      political: "england",
+      ports: ["north"],
+      neighbours: ["edinburgh","carlisle","york"],
+      language: "english",
+      religion: "catholic",
+      type: "town"
+    }
+    spaces['carlisle'] = {
+      top: 276,
+      left: 1447,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      neighbours: ["glasgow","berwick","york","shrewsbury"],
+      language: "english",
+      type: "town"
+    }
+    spaces['york'] = {
+      top: 375,
+      left: 1595,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      neighbours: ["berwick","carlisle","shrewsbury","lincoln"],
+      language: "english",
+      type: "key"
+    }
+    spaces['wales'] = {
+      top: 633,
+      left: 1398,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      neighbours: ["shrewsbury","bristol"],
+      language: "english",
+      type: "key"
+
+    }
+    spaces['shrewsbury'] = {
+      top: 521,
+      left: 1535,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      neighbours: ["wales","carlisle","york","london","bristol"],
+      language: "english",
+      type: "town"
+    }
+    spaces['lincoln'] = {
+      top: 531,
+      left: 1706,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      neighbours: ["london","york"],
+      language: "english",
+      type: "town"
+    }
+    spaces['norwich'] = {
+      top: 538,
+      left: 1896,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      ports: ["north"],
+      neighbours:["london"],
+      language: "english",
+      type: "town"
+    }
+    spaces['bristol'] = {
+      top: 688,
+      left: 1554,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      language: "english",
+      ports: ["irish"],
+      neighbours: ["shrewsbury","wales","plymouth","portsmouth","london"],
+      type: "key"
+    }
+    spaces['london'] = {
+      top: 706,
+      left: 1785,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      ports: ["north"],
+      neighbours: ["norwich","lincoln","bristol","portsmouth","shrewsbury"],
+      language: "english",
+      type: "key"
+    }
+    spaces['plymouth'] = {
+      top: 898,
+      left: 1398,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      ports: ["irish"],
+      neighbours: ["bristol","portsmouth"],
+      language: "english",
+      type: "town"
+    }
+    spaces['portsmouth'] = {
+      top: 821,
+      left: 1661,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      ports: ["channel"],
+      neighbours: ["plymouth","bristol","london"],
+      language: "english",
+      type: "town"
+    }
+    spaces['calais'] = {
+      top: 745,
+      left: 2022,
+      home: "england",
+      political: "england",
+      religion: "catholic",
+      ports:["north"], 
+      neighbours: ["boulogne","brussels","antwerp"],
+      language: "french",
+      type: "key"
+    }
+
+    spaces['boulogne'] = {
+      top: 880,
+      left: 1955,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      ports: ["channel"],
+      neighbours: ["calais","rouen","paris","stquentin"],
+      language: "french",
+      type: "town"
+    }
+    spaces['stquentin'] = {
+      name: "St. Quentin",
+      top: 933,
+      left: 2093,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["brussels","stdizier","paris","boulogne"],
+      type: "town"
+    }
+    spaces['stdizier'] = {
+      name: "St. Dizier",
+      top: 1043,
+      left: 2205,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["brussels","stquentin","paris","dijon","metz"],
+      language: "french",
+      type: "town"
+    }
+    spaces['paris'] = {
+      top: 1063,
+      left: 2009,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["rouen","boulogne","stquentin","stdizier","dijon","orleans"],
+      language: "french",
+      type: "key"
+    }
+    spaces['rouen'] = {
+      top: 1000,
+      left: 1805,
+      home: "france",
+      political: "france",
+      ports: ["channel"],
+      religion: "channelc",
+      neighbours: ["boulogne","paris","tours","nantes"],
+      language: "french",
+      type: "key"
+    }
+    spaces['orleans'] = {
+      top: 1217,
+      left: 2018,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["paris","tours","dijon","lyon"],
+      language: "french",
+      type: "town"
+    }
+    spaces['dijon'] = {
+      top: 1205,
+      left: 2204,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["stdizier","paris","orleans","lyon","besancon"],
+      type: "town"
+    }
+    spaces['limoges'] = {
+      top: 1398,
+      left: 1975,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["tours","bordeaux","lyon"],
+      language: "french",
+      type: "town"
+    }
+    spaces['tours'] = {
+      top: 1277,
+      left: 1849,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["rouen","nantes","bordeaux","limoges","orleans"],
+      language: "french",
+      type: "town"
+    }
+    spaces['nantes'] = {
+      top: 1310,
+      left: 1650,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      ports: ["biscay"],
+      neighbours: ["brest","rouen","tours","bordeaux"],
+      language: "french",
+      type: "town"
+    }
+    spaces['brest'] = {
+      top: 1173,
+      left: 1409,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      ports: ["channnel","biscay"],
+      neighbours: ["nantes"],
+      language: "french",
+      type: "town"
+    }
+    spaces['bordeaux'] = {
+      top: 1568,
+      left: 1780,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      ports: ["biscay"],
+      neighbours: ["navarre", "nantes","tours","limoges"],
+      pass: ["navarre"],
+      language: "french",
+      type: "key"
+    }
+    spaces['lyon'] = {
+      top: 1445,
+      left: 2312,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["avignon","limoges","orleans","dijon","geneva","grenoble"],
+      language: "french",
+      type: "key"
+    }
+    spaces['grenoble'] = {
+      top: 1590,
+      left: 2437,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["turin","lyon","geneva"],
+      pass: ["turin"],
+      language: "french",
+      type: "town"
+    }
+    spaces['avignon'] = {
+      top: 1645,
+      left: 2292,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["barcelona","toulouse","lyon","marseille"],
+      pass: ["barcelona"],
+      language: "french",
+      type: "town"
+    }
+    spaces['marseille'] = {
+      top: 1781,
+      left: 2390,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      ports: ["lyon"],
+      neighbours: ["avignon","nice"],
+      language: "french",
+      type: "key"
+    }
+    spaces['toulouse'] = {
+      top: 1740,
+      left: 1990,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["barcelona","bordeaux","avignon"],
+      pass: ["barcelona"],
+      language: "french",
+      type: "town"
+    }
+    spaces['bordeaux'] = {
+      top: 1568,
+      left: 1780,
+      home: "france",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["nantes","tours","limoges","toulouse"],
+      language: "french",
+      type: "key"
+    }
+
+    spaces['munster'] = {
+      top: 537,
+      left: 2500,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["bremen","kassel","cologne","amsterdam"],
+      language: "german",
+      type: "town"
+    }
+    spaces['bremen'] = {
+      top: 422,
+      left: 2595,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      ports: ["north"],
+      neighbours:["munster","brunswick","hamburg"],
+      language: "german",
+      type: "town"
+    }
+    spaces['hamburg'] = {
+      top: 345,
+      left: 2758,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      ports: ["north"],
+      neighbours: ["bremen","brunswick","lubeck"],
+      language: "german",
+      type: "town"
+    }
+    spaces['lubeck'] = {
+      top: 258,
+      left: 2985,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      ports: ["baltic"],
+      neighbours: ["hamburg","magdeburg","brandenburg","stettin"],
+      language: "german",
+      type: "town"
+    }
+    spaces['stettin'] = {
+      top: 310,
+      left: 3214,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      ports: ["baltic"],
+      neighbours: ["lubeck","brandenburg"],
+      language: "german",
+      type: "town"
+    }
+    spaces['brandenburg'] = {
+      top: 460,
+      left: 3077,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["stettin","lubeck","magdeburg","wittenberg","breslau"],
+      language: "german",
+      type: "electorate"
+    }
+    spaces['wittenberg'] = {
+      top: 600,
+      left: 3130,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["brandenburg","magdeburg","leipzig","prague","breslau"],
+      language: "german",
+      type: "electorate"
+    }
+    spaces['magdeburg'] = {
+      top: 534,
+      left: 2932,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["lubeck","brandenburg","wittenberg","erfurt","brunswick"],
+      language: "german",
+      type: "town"
+    }
+    spaces['brunswick'] = {
+      top: 568,
+      left: 2722,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["bremen","hamburg","magdeburg","kassel"],
+      language: "german",
+      type: "town"
+    }
+    spaces['cologne'] = {
+      top: 716,
+      left: 2500,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["munster","mainz","liege"],
+      language: "german",
+      type: "electorate"
+    }
+    spaces['kassel'] = {
+      top: 714,
+      left: 2665,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["munster","brunswick","erfurt","nuremberg","mainz"],
+      language: "german",
+      type: "town"
+    }
+    spaces['erfurt'] = {
+      top: 750,
+      left: 2824,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["magdeburg","kassel","leipzig"],
+      language: "german",
+      type: "town"
+    }
+    spaces['leipzig'] = {
+      top: 690,
+      left: 2983,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["wittenberg","prague","nuremberg","erfurt"],
+      language: "german",
+      type: "town"
+    }
+    spaces['regensburg'] = {
+      top: 956,
+      left: 3033,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["nuremberg","augsburg","salzburg","linz"],
+      language: "german",
+      type: "town"
+    }
+    spaces['salzburg'] = {
+      top: 1108,
+      left: 3147,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["graz","linz","regensburg","augsburg","innsbruck"],
+      pass: ["graz"],
+      language: "german",
+      type: "town"
+    }
+    spaces['augsburg'] = {
+      top: 1080,
+      left: 2860,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["innsbruck","worms","nuremberg","regensburg","salzburg"],
+      pass: ["innsbruck"],
+      language: "german",
+      type: "electorate"
+    }
+    spaces['nuremberg'] = {
+      top: 925,
+      left: 2834,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["augsburg","worms","mainz","kassel","leipzig","regensburg"],
+      language: "german",
+      type: "town"
+    }
+    spaces['mainz'] = {
+      top: 868,
+      left: 2666,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["trier","cologne","kassel","nuremberg","worms"],
+      language: "german",
+      type: "electorate"
+    }
+    spaces['trier'] = {
+      top: 894,
+      left: 2516,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["liege","metz","mainz"],
+      language: "german",
+      type: "town"
+    }
+    spaces['strasburg'] = {
+      top: 1070,
+      left: 2578,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["metz","besancon","basel","worms"],
+      language: "german",
+      type: "town"
+    }
+    spaces['worms'] = {
+      top: 1009,
+      left: 2704,
+      home: "",
+      political: "hapsburg",
+      religion: "catholic",
+      neighbours: ["strasburg","mainz","nuremberg","augsburg"],
+      language: "german",
+      type: "town"
+    }
+    spaces['navarre'] = {
+      top: 1814,
+      left: 1702,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["zaragoza","bilbao"],
+      language: "spanish",
+      type: "key"
+    }
+    spaces['bilbao'] = {
+      top: 1825,
+      left: 1533,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["corunna","valladolid","zaragoza","navarre"],
+      language: "spanish",
+      type: "town"
+    }
+    spaces['corunna'] = {
+      top: 1870,
+      left: 1015,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["biscay","atlantic"],
+      neighbours: ["bilbao","valladolid"],
+      language: "spanish",
+      type: "town"
+    }
+    spaces['valladolid'] = {
+      top: 2058,
+      left: 1394,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["corunna","bilbao","madrid"],
+      language: "spanish",
+      type: "key"
+    }
+    spaces['zaragoza'] = {
+      top: 2025,
+      left: 1777,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["navarre","bilbao","madrid","barcelona"],
+      language: "spanish",
+      type: "town"
+    }
+    spaces['barcelona'] = {
+      top: 2062,
+      left: 2106,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["gulflyon"],
+      neighbours: ["toulouse","avignon","zaragoza","valencia"],
+      pass: ["toulouse","avignon"],
+      language: "spanish",
+      type: "key"
+    }
+    spaces['palma'] = {
+      top: 2266,
+      left: 2211,
+      home: "hapsburg",
+      political: "",
+      ports: ["gulflyon","barbary"],
+      neighbours: ["cartagena","cagliari"],
+      language: "other",
+      religion: "catholic",
+      type: "town"
+    }
+    spaces['madrid'] = {
+      top: 2236,
+      left: 1550,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["cordoba","valladolid","zaragoza","valencia"],
+      language: "spanish",
+      type: "town"
+    }
+    spaces['valencia'] = {
+      top: 2333,
+      left: 1871,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["gulflyon"],
+      neighbours: ["cartagena","madrid","barcelona"],
+      language: "spanish",
+      type: "town"
+    }
+    spaces['cartagena'] = {
+      top: 2593,
+      left: 1830,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["gulflyon","barbary"],
+      neighbours: ["granada","valencia"],
+      language: "spanish",
+      type: "town"
+    }
+    spaces['granada'] = {
+      top: 2657,
+      left: 1558,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["cordoba","gibraltar","cartagena"],
+      language: "spanish",
+      type: "town"
+    }
+    spaces['seville'] = {
+      top: 2642,
+      left: 1319,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["atlantic"],
+      neighbours: ["cordoba","gibraltar"],
+      language: "spanish",
+      type: "key"
+    }
+    spaces['cordoba'] = {
+      top: 2530,
+      left: 1446,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["madrid","seville","granada"],
+      language: "spanish",
+      type: "town"
+    }
+    spaces['gibraltar'] = {
+      top: 2814,
+      left: 1374,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["atlantic","barbary"],
+      neighbours: ["seville","granada"],
+      language: "spanish",
+      type: "fortress"
+    }
+    spaces['oran'] = {
+      top: 2822,
+      left: 1902,
+      home: "hapsburg ottoman",
+      political: "",
+      religion: "catholic",
+      ports: ["barbary"],
+      neighbours: [],
+      language: "other",
+      type: "town"
+    }
+    spaces['algiers'] = {
+      top: 2656,
+      left: 2275,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      ports: ["barbary"],
+      neighbours: [],
+      language: "other",
+      type: "key"
+    }
+    spaces['tunis'] = {
+      top: 2599,
+      left: 2945,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      ports: ["barbary","africa"],
+      neighbours: [],
+      language: "other",
+      type: "key"
+    }
+    spaces['cagliari'] = {
+      top: 2320,
+      left: 2828,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports:["tyrrhenian","barbary"],
+      neighbours: [],
+      language: "other",
+      type: "town"
+    }
+    spaces['palermo'] = {
+      top: 2421,
+      left: 3260,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["tyrrhenian"],
+      neighbours: ["messina"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['messina'] = {
+      top: 2429,
+      left: 3475,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["tyrrhenian","ionian"],
+      neighbours: ["palermo","naples","taranto"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['cerignola'] = {
+      top: 1915,
+      left: 3426,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["taranto","ancona","rome"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['taranto'] = {
+      top: 2080,
+      left: 3597,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["ionian"],
+      neighbours: ["cerignola","naples","messina"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['naples'] = {
+      top: 2087,
+      left: 3358,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["tyrrhenian"],
+      neighbours: ["rome","taranto","messina"],
+      language: "italian",
+      type: "key"
+    }
+    spaces['malta'] = {
+      top: 2715,
+      left: 3380,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["ionian","africa"],
+      neighbours: [],
+      language: "other",
+      type: "fortress"
+    }
+    spaces['vienna'] = {
+      top: 1020,
+      left: 3474,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["brunn","linz","graz","pressburg"],
+      language: "german",
+      type: "key"
+    }
+    spaces['linz'] = {
+      top: 1045,
+      left: 3288,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["prague","regensburg","salzburg","vienna"],
+      language: "german",
+      type: "town"
+    }
+    spaces['graz'] = {
+      top: 2715,
+      left: 3380,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["salzburg","vienna","mohacs","agram","trieste"],
+      pass: ["salzburg"],
+      language: "german",
+      type: "town"
+    }
+    spaces['trieste'] = {
+      top: 1392,
+      left: 3257,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["adriatic"],
+      neighbours: ["graz","agram","zara","venice"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['innsbruck'] = {
+      top: 1170,
+      left: 3016,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["augsburg","trent","zurich","salzburg"],
+      pass: ["augsburg","trent"],
+      language: "german",
+      type: "town"
+    }
+    spaces['tripoli'] = {
+      top: 3030,
+      left: 3316,
+      home: "hapsburg ottoman",
+      political: "",
+      religion: "catholic",
+      ports: ["north"],
+      neighbours: [],
+      language: "other",
+      type: "town"
+    }
+    spaces['candia'] = {
+      top: 2670,
+      left: 4484,
+      home: "venice",
+      political: "",
+      religion: "catholic",
+      ports: ["aegean","africa"],
+      neighbours: [],
+      language: "other",
+      type: "fortress"
+    }
+    spaces['rhodes'] = {
+      top: 2524,
+      left: 4730,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      ports: ["aegean","africa"],
+      neighbours: [],
+      language: "other",
+      type: "town"
+    }
+    spaces['corfu'] = {
+      top: 2210,
+      left: 3868,
+      home: "venice",
+      political: "",
+      religion: "catholic",
+      ports: ["adriatic"],
+      neighbours: [],
+      language: "other",
+      type: "fortress"
+    }
+    spaces['coron'] = {
+      top: 2510,
+      left: 4146,
+      home: "",
+      political: "",
+      religion: "other",
+      ports:["ionian","aegean"],
+      neighbours: ["athens"],
+      language: "other",
+      type: "town"
+    }
+    spaces['athens'] = {
+      top: 2346,
+      left: 4286,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      ports: ["aegean"],
+      neighbours: ["larissa","lepanto","coron"],
+      language: "other",
+      type: "key"
+    }
+    spaces['lepanto'] = {
+      top: 2320,
+      left: 4057,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      ports: ["ionian"],
+      neighbours: ["larissa","athens"],
+      language: "other",
+      type: "town"
+    }
+    spaces['larissa'] = {
+      top: 2184,
+      left: 4130,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      neighbours: ["durazzo","lepanto","athens","salonika"],
+      pass: ["durazzo"],
+      language: "other",
+      type: "town"
+    }
+    spaces['salonika'] = {
+      top: 2010,
+      left: 4164,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      neighbours: ["larissa","edirne"],
+      language: "other",
+      type: "key"
+    }
+    spaces['durazzo'] = {
+      top: 2040,
+      left: 3844,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      ports: ["adriatic"],
+      neighbours: ["larissa","scutari"],
+      pass: ["larissa"],
+      language: "other",
+      type: "town"
+    }
+    spaces['scutari'] = {
+      top: 1860,
+      left: 3819,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      ports: ["adriatic"],
+      neighbours: ["nezh","ragusa","durazzo"],
+      pass: ["nezh"],
+      language: "other",
+      type: "fortress"
+    }
+    spaces['edirne'] = {
+      top: 1840,
+      left: 4532,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      neighbours: ["varna","istanbul","salonika","sofia",],
+      language: "other",
+      type: "key"
+    }
+    spaces['istanbul'] = {
+      top: 1890,
+      left: 4775,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      ports: ["black","aegean"],
+      neighbours: ["edirne","varna"],
+      language: "other",
+      type: "key"
+    }
+    spaces['varna'] = {
+      top: 1620,
+      left: 4653,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      ports: ["black"],
+      neighbours: ["bucharest","edirne","istanbul"],
+      language: "other",
+      type: "town"
+    }
+    spaces['bucharest'] = {
+      top: 1430,
+      left: 4459,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      neighbours: ["nicopolis","varna"],
+      language: "other",
+      type: "town"
+    }
+    spaces['nicopolis'] = {
+      top: 1570,
+      left: 4336,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      neighbours: ["szegedin","sofia","bucharest","belgrade"],
+      pass: ["szegedin","sofia"],
+      language: "other",
+      type: "town"
+    }
+    spaces['sofia'] = {
+      top: 1765,
+      left: 4275,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      neighbours: ["nicopolis","nezh","edirne"],
+      pass: ["nicopolis"],
+      language: "other",
+      type: "town"
+    }
+    spaces['nezh'] = {
+      top: 1652,
+      left: 4070,
+      home: "ottoman",
+      political: "",
+      religion: "other",
+      neighbours: ["scutari","belgrade","sofia"],
+      pass: ["scutari"],
+      language: "other",
+      type: "town"
+    }
+
+
+    spaces['belgrade'] = {
+      top: 1450,
+      left: 3894,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["ragusa","szegedin","mohacs","agram","nezh","nicopolis"],
+      pass: ["ragusa"],
+      language: "other",
+      type: "key"
+    }
+    spaces['szegedin'] = {
+      top: 1268,
+      left: 3846,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["nicopolis","buda","belgrade"],
+      pass: ["nicopolis"],
+      language: "other",
+      type: "town"
+    }
+    spaces['mohacs'] = {
+      top: 1353,
+      left: 3710,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["buda","graz","agram","belgrade"],
+      language: "other",
+      type: "town"
+    }
+    spaces['graz'] = {
+      top: 1208,
+      left: 3374,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["vienna","mohacs","agram","trieste"],
+      language: "german",
+      type: "town"
+    }
+    spaces['agram'] = {
+      top: 1373,
+      left: 3460,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["zara","graz","trieste","belgrade","mohacs"],
+      pass: ["zara"],
+      language: "other",
+      type: "town"
+    }
+    spaces['buda'] = {
+      top: 1104,
+      left: 3746,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["pressburg","mohacs","szegedin"],
+      language: "other",
+      type: "key"
+    }
+    spaces['pressburg'] = {
+      top: 1080,
+      left: 3613,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["vienna","buda"],
+      language: "other",
+      type: "town"
+    }
+    spaces['brunn'] = {
+      top: 840,
+      left: 3526,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["breslau","prague","vienna"],
+      language: "other",
+      type: "town"
+    }
+    spaces['breslau'] = {
+      top: 640,
+      left: 3466,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["brandenburg","wittenberg","brunn"],
+      language: "other",
+      type: "town"
+    }
+    spaces['prague'] = {
+      top: 785,
+      left: 3230,
+      home: "hungary",
+      political: "",
+      religion: "catholic",
+      neighbours: ["wittenberg","leipzig","linz"],
+      language: "other",
+      type: "key"
+    }
+    spaces['amsterdam'] = {
+      top: 546,
+      left: 2244,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["north"],
+      neighbours: ["antwerp","munster"],
+      language: "other",
+      type: "town"
+    }
+    spaces['antwerp'] = {
+      top: 669,
+      left: 2168,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      ports: ["north"],
+      neighbours: ["antwerp","liege","brussels","calais"],
+      language: "other",
+      type: "key"
+    }
+    spaces['brussels'] = {
+      top: 823,
+      left: 2201,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["antwerp","calais","stquentin","stdizier","liege"],
+      language: "french",
+      type: "fortress"
+    }
+    spaces['liege'] = {
+      top: 783,
+      left: 2351,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["cologne","trier","metz","brussels","antwerp"],
+      language: "french",
+      type: "town"
+    }
+    spaces['metz'] = {
+      top: 995,
+      left: 2384,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["liege","trier","strasburg","besancon","stdizier"],
+      language: "french",
+      type: "key"
+    }
+    spaces['besancon'] = {
+      top: 1169,
+      left: 2390,
+      home: "hapsburg",
+      political: "",
+      religion: "catholic",
+      neighbours: ["metz","dijon","geneva","basel","strasburg"],
+      language: "french",
+      type: "fortress"
+    }
+    spaces['basel'] = {
+      top: 1211,
+      left: 2558,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["strasburg","besancon","geneva","zurich"],
+      language: "german",
+      type: "town"
+    }
+    spaces['zurich'] = {
+      top: 1216,
+      left: 2712,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["basel","innsbruck"],
+      language: "german",
+      type: "town"
+    }
+    spaces['geneva'] = {
+      top: 1367,
+      left: 2474,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["basel","besancon","lyon","turin","grenoble"],
+      pass: ["turin"],
+      language: "french",
+      type: "town"
+    }
+    spaces['milan'] = {
+      top: 1373,
+      left: 2746,
+      home: "independent",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["trent","modena","pavia","turin"],
+      language: "italian",
+      type: "key"
+    }
+    spaces['trent'] = {
+      top: 1310,
+      left: 2933,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["innsbruck","milan","modena","venice"],
+      pass: ["innsbruck"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['modena'] = {
+      top: 1486,
+      left: 2951,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["trent","milan","pavia","florence","ravenna","venice"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['pavia'] = {
+      top: 1505,
+      left: 2800,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["milan","turin","genoa","modena"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['turin'] = {
+      top: 1530,
+      left: 2585,
+      home: "independent",
+      political: "france",
+      religion: "catholic",
+      neighbours: ["milan","pavia","geneva","grenoble","genoa"],
+      pass: ["grenoble","geneva"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['nice'] = {
+      top: 1733,
+      left: 2580,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      ports: ["gulflyon"],
+      neighbours: ["genoa","marseille"],
+      pass: ["genoa"],
+      language: "french",
+      type: "town"
+    }
+    spaces['florence'] = {
+      top: 1642,
+      left: 2976,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["modena","genoa","siena"],
+       language: "italian",
+      type: "key"
+    }
+    spaces['siena'] = {
+      top: 1805,
+      left: 2988,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      neighbours: ["genoa","florence","rome"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['bastia'] = {
+      top: 1829,
+      left: 2784,
+      home: "genoa",
+      political: "",
+      religion: "catholic",
+      ports: ["gulflyon","tyrrhenian"],
+      neighbours: [],
+      language: "other",
+      type: "town"
+    }
+    spaces['genoa'] = {
+      top: 1626,
+      left: 2726,
+      home: "genoa",
+      political: "",
+      religion: "catholic",
+      ports: ["gulflyon","tyrrhenian"],
+      neighbours: ["nice","pavia","turin","modena","siena"],
+      pass: ["nice"],
+      language: "italian",
+      type: "key"
+    }
+    spaces['rome'] = {
+      top: 1924,
+      left: 3125,
+      home: "papacy",
+      political: "",
+      religion: "catholic",
+      ports: ["tyrrhenian"],
+      neighbours: ["siena","ancona","cerignola","naples"],
+      language: "italian",
+      type: "key"
+    }
+    spaces['ancona'] = {
+      top: 1754,
+      left: 3238,
+      home: "papacy",
+      political: "",
+      religion: "catholic",
+      ports: ["adriatic"],
+      neighbours: ["ravenna","rome","cerignola"],
+      language: "italian",
+      type: "town"
+    }
+    spaces['ravenna'] = {
+      top: 1596,
+      left: 3130,
+      home: "papacy",
+      political: "",
+      religion: "catholic",
+      ports: ["adriatic"],
+      neighbours: ["venice","modena","ancona"],
+      language: "italian",
+      type: "key"
+    }
+    spaces['venice'] = {
+      top: 1399,
+      left: 3086,
+      home: "venice",
+      political: "",
+      religion: "catholic",
+      ports:["adriatic"],
+      neighbours: ["trent","modena","ravenna","trieste"],
+      language: "italian",
+      type: "key"
+    }
+    spaces['zara'] = {
+      top: 1571,
+      left: 3374,
+      home: "venice",
+      political: "",
+      religion: "catholic",
+      neighbours: ["agram","ragusa","trieste"],
+      pass: ["agram"],
+      language: "other",
+      type: "town"
+    }
+    spaces['ragusa'] = {
+      top: 1750,
+      left: 3660,
+      home: "independent",
+      political: "",
+      religion: "catholic",
+      ports: ["adriatic"],
+      neighbours: ["belgrade","zara","scutari"],
+      pass: ["belgrade"],
+      language: "italian",
+      type: "town"
+    }
+
+    //
+    // foreign war cards are spaces
+    //
+    spaces['egypt'] = {
+      top: 0,
+      left: 0,
+      home: "independent",
+      political: "",
+      religion: "",
+      ports: [],
+      neighbours: [],
+      pass: [],
+      language: "",
+      type: "war"
+    }
+    spaces['ireland'] = {
+      top: 0,
+      left: 0,
+      home: "independent",
+      political: "",
+      religion: "",
+      ports: [],
+      neighbours: [],
+      pass: [],
+      language: "",
+      type: "war"
+    }
+    spaces['persia'] = {
+      top: 0,
+      left: 0,
+      home: "independent",
+      political: "",
+      religion: "",
+      ports: [],
+      neighbours: [],
+      pass: [],
+      language: "",
+      type: "war"
+    }
+
+    for (let key in spaces) {
+      spaces[key].units = {};
+      spaces[key].units['england'] = [];
+      spaces[key].units['france'] = [];
+      spaces[key].units['hapsburg'] = [];
+      spaces[key].units['ottoman'] = [];
+      spaces[key].units['papacy'] = [];
+      spaces[key].units['protestant'] = [];
+      spaces[key].units['venice'] = [];
+      spaces[key].units['genoa'] = [];
+      spaces[key].units['hungary'] = [];
+      spaces[key].units['scotland'] = [];
+      spaces[key].units['independent'] = [];
+      spaces[key].university = 0;
+      spaces[key].unrest = 0;
+      if (!spaces[key].pass) { spaces[key].pass = []; }
+      if (!spaces[key].name) { spaces[key].name = key.charAt(0).toUpperCase() + key.slice(1); }
+      if (!spaces[key].besieged) { spaces[key].besieged = 0; }
+      if (!spaces[key].besieged_factions) { spaces[key].besieged_factions = []; }
+    }
+
+    return spaces;
+
+  }
+
+
+  isOccupied(space) {
+
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    for (let key in this.game.spaces[space].units) {
+      if (this.game.spaces[space].units[key].length > 0) { return 1; }
+    }
+
+    return 0;
+  }
+
+  isElectorate(spacekey) {
+
+    try { if (spacekey.key) { spacekey = spacekey.key; } } catch (err) {}
+
+    if (spacekey === "augsburg") { return 1; }
+    if (spacekey === "trier") { return 1; }
+    if (spacekey === "cologne") { return 1; }
+    if (spacekey === "wittenberg") { return 1; }
+    if (spacekey === "mainz") { return 1; }
+    if (spacekey === "brandenburg") { return 1; }
+    return 0;
+  }
+
+  //
+  // import space attaches events / functions to spaces if they do not exist
+  //
+  importSpace(obj, key) {
+
+    let his_self = this;
+
+    obj.key = key;
+
+    if (obj.name == null)               { obj.name = "Unknown"; }
+    if (obj.owner == null)              { obj.owner = -1; }          
+    if (obj.type == null)               { obj.type = "town"; }     
+    if (obj.debaters == null)           { obj.debaters = []; }     
+    if (obj.returnView == null)		{ 
+
+      obj.returnView = function () {
+
+	let html = '<div class="space_view" id="">';
+
+        for (let f in this.units) {
+	  if (this.units[f].length > 0) {
+
+	    html += `<div class="space_faction">${his_self.returnFactionName(f)}</div>`;
+            for (let i = 0; i < this.units[f].length; i++) {
+
+	      let b = "";
+	      if (this.units[f][i].besieged) { b = ' (besieged)'; }
+
+	      html += `<div class="space_unit">1 - ${this.units[f][i].type} ${b}</div>`;
+	    }
+	  }
+	}
+
+	html += `</div>`;
+
+	return html;
+
+      };
+
+    }
+
+    return obj;
+
+  }
+
+
+  isMajorPower(power) {
+    if (power === "france" || power === "hapsburg" || power === "england" || power === "protestant" || power === "ottoman" || power === "papacy") { return true; }
+    return false;
+  }
+
+  isMinorPower(power) {
+    if (power === "genoa" || power === "hungary" || power === "scotland" || power === "venice") { return 1; }
+    return 0;
+  }
+
+  isAlliedMinorPower(mp, faction) {
+    if (faction === this.returnAllyOfMinorPower(mp)) { return true; }
+    return false;
+  }
+
+  returnMinorPowers() {
+    return ["genoa", "hungary", "scotland", "venice"];
+  }
+
+  returnControllingPower(power) {
+    this.returnAllyOfMinorPower(power);
+  }
+
+  returnAllyOfMinorPower(power) {
+    if (!this.game.state.minor_activated_powers.includes(power)) { return ""; }
+    for (let key in this.game.state.activated_powers) {
+      if (this.game.state.activated_powers[key].includes(power)) {
+	return key;
+      }
+    }
+    return power;
+  }
+
+  activateMinorPower(faction, power) {
+    this.setAllies(faction, power);
+    this.game.state.activated_powers[faction].push(power);
+    this.game.state.minor_activated_powers.push(power);
+  }
+
+  deactivateMinorPower(faction, power) {
+    this.unsetAllies(faction, power);
+    for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
+      if (this.game.state.activated_powers[faction][i] === power) {
+	this.game.state.activated_powers[faction].splice(i, 1);
+      }
+    }
+    for (let i = 0; i < this.game.state.minor_activated_powers.length; i++) {
+      if (this.game.state.minor_activated_powers[i] === power) {
+	this.game.state.minor_activated_powers.splice(i, 1);
+      }
+    }
+  }
+
+  canFactionDeactivateMinorPower(faction, power) {
+    if (power == "genoa") { return 1; }
+    if (power == "scotland") { return 1; }
+    if (power == "venice") { return 1; }
+    return 0;
+  }
+
+  canFactionActivateMinorPower(faction, power) {
+    if (power == "genoa") {
+      if (faction == "france") { return 1; }
+      if (faction == "hapsburg") { return 1; }
+      if (faction == "papacy") { return 1; }
+    }
+    if (power == "hungary") {
+      if (faction == "hapsburg") { return 1; }
+    }
+    if (power == "scotland") {
+      if (faction == "france") { return 1; }
+      if (faction == "england") { return 1; }
+    }
+    if (power == "venice") {
+      if (faction == "france") { return 1; }
+      if (faction == "hapsburg") { return 1; }
+      if (faction == "papacy") { return 1; }
+    }
+    return 0;
+  }
+
+  isMinorActivatedPower(power) {
+    for (let i = 0; i < this.game.state.minor_activated_powers.length; i++) {
+      if (power === this.game.state.minor_activated_powers[i]) {
+	return 1;
+      }
+    }
+    return 0;
+  }
+
+  isMinorUnactivatedPower(power) {
+    if (power === "genoa" && this.isMinorActivatedPower(power) != 1) { return 1; }
+    if (power === "scotland" && this.isMinorActivatedPower(power) != 1) { return 1; }
+    if (power === "hungary" && this.isMinorActivatedPower(power) != 1) { return 1; }
+    if (power === "venice" && this.isMinorActivatedPower(power) != 1) { return 1; }
+    return 0;
+  }
+
+
+  returnLoanedUnits() {
+    for (let i in this.game.spaces) {
+      space = this.game.spaces[i];
+      for (let f in space.units) {
+        for (let z = space.units[f].length-1;  z >= 0; z--) {
+	  let unit = space.units[f][z];
+	  if (unit.loaned != false) {
+	    let lender = unit.loaned;
+	    space.units[f].splice(z, 1);
+	    space.units[lender].push(unit);
+	  }
+        }
+      }
+    }
+    for (let i in this.game.navalspaces) {
+      space = this.game.navalspaces[i];
+      for (let f in space.units) {
+        for (let z = space.units[f].length-1;  z >= 0; z--) {
+	  let unit = space.units[f][z];
+	  if (unit.loaned != false) {
+	    let lender = unit.loaned;
+	    space.units[f].splice(z, 1);
+	    space.units[lender].push(unit);
+	  }
+        }
+      }
+    }
+  }
+
+  isCaptured(faction, unittype) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      let p = this.game.players_info[i];
+      if (p.captured.includes(unittype)) { return 1; }
+    }
+    return 0;
+  }
+  isBesieged(faction, unittype) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].besieged) {
+	for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (this.game.spaces[key].units[faction][i].type == unittype) {
+	    if (this.game.spaces[key].units[faction][i].besieged == true) {
+	      return 1;
+	    }
+	  }
+	}
+      }
+    }
+    return 0;
+  }
+
+
+
+  captureLeader(winning_faction, losing_faction, space, unit) {
+    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let p = this.returnPlayerOfFaction(winning_faction);
+    let unitjson = JSON.stringify(unit);
+    for (let z = 0; z < p.captured.length; z++) {
+      if (JSON.stringify(p.captured[z]) === unitjson) { return; }
+    }
+    p.captured.push(unit);
+  }
+
+  captureNavalLeader(winning_faction, losing_faction, space, unit) {
+    if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
+    this.game.state.naval_leaders_lost_at_sea.push(unit);
+  }
+
+  isPersonageOnMap(faction, personage) {
+    for (let s in this.game.spaces) {
+      if (this.game.spaces[s].units[faction].length > 0) {
+	for (let i = 0; i < this.game.spaces[s].units[faction].length; i++) {
+	  let unit = this.game.spaces[s].units[faction][i];
+	  if (unit.key === personage) { return unit; }
+	}
+      }
+    }
+    return null;
+  }
+
+  returnAllies(faction) { 
+    let f = [];
+    let io = this.returnImpulseOrder();
+    for (let i = 0; i < io.length; i++) {
+      if (io[i] !== faction) {
+        if (this.areAllies(faction, io[i])) { f.push(io[i]); }
+      }
+    }
+    return f;
+  }
+
+  returnEnemies(faction) { 
+    let f = [];
+    let io = this.returnImpulseOrder();
+    for (let i = 0; i < io.length; i++) {
+      if (io[i] !== faction) {
+        if (this.areEnemies(faction, io[i])) { f.push(io[i]); }
+      }
+    }
+    return f;
+  }
+
+  areAllies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 1; } } catch (err) {}
+    if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
+      let f1cp = this.returnControllingPower(faction1);
+      let f2cp = this.returnControllingPower(faction2);
+      try { if (this.game.diplomacy[f1cp][f2cp].allies == 1) { return 1; } } catch (err) {}
+      try { if (this.game.diplomacy[f2cp][f1cp].allies == 1) { return 1; } } catch (err) {}
+    }
+    return 0;
+  }
+
+  areEnemies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
+    try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
+    if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
+      let f1cp = this.returnControllingPower(faction1);
+      let f2cp = this.returnControllingPower(faction2);
+      try { if (this.game.diplomacy[f1cp][f2cp].enemies == 1) { return 1; } } catch (err) {}
+      try { if (this.game.diplomacy[f2cp][f1cp].enemies == 1) { return 1; } } catch (err) {}
+    }
+    return 0;
+  }
+
+  setAllies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+  }
+
+  unsetAllies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+  }
+
+  setEnemies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+  }
+
+  unsetEnemies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+  }
+
+  addUnit(faction, space, type) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.units[faction].push(this.newUnit(faction, type));
+  }
+
+  removeUnit(faction, space, type) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = space.units[faction].length - 1; i >= 0; i--) {
+      if (space.units[faction].type === type) {
+	space.units[faction].splice(i, 1);
+	return;
+      }
+    }
+  }
+
+  isLandUnit(unit) {
+    if (unit.type === "regular") { return 1; }
+    if (unit.type === "mercenary") { return 1; }
+    if (unit.type === "cavalry") { return 1; }
+    return 0;
+  }
+
+  addRegular(faction, space, num=1) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "regular"));
+    }
+  }
+
+  addMercenary(faction, space, num=1) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "mercenary"));
+    }
+  }
+
+  addCavalry(faction, space, num=1) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "cavalry"));
+    }
+  }
+
+  addNavalSquadron(faction, space, num=1) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "squadron"));
+    }
+  }
+
+  addCorsair(faction, space, num=1) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "corsair"));
+    }
+  }
+
+  //
+  // figure out how many base points people have
+  //
+  calculateVictoryPoints() {
+
+    let factions = {};
+
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
+        factions[this.game.players_info[i].factions[ii]] = {
+	  faction : this.game.players_info[i].factions[ii] ,
+	  vp_base : 0 ,
+	  vp_bonus : 0 ,
+	  vp_special : 0 ,
+	  vp : 0 ,
+	  keys : 0 ,
+	  religious : 0 ,
+	  victory : 0,	  
+	  details : "",
+	};
+      }
+    }
+    //
+    // let factions calculate their VP
+    //
+    for (let f in factions) {
+      factions[f].vp_base = this.factions[f].calculateBaseVictoryPoints(this);
+      factions[f].vp_bonus = this.factions[f].calculateBonusVictoryPoints(this);
+      factions[f].vp_special = this.factions[f].calculateSpecialVictoryPoints(this);
+      factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
+    }
+
+
+    //
+    // calculate keys controlled
+    //
+    for (let f in factions) {
+      factions[f].keys = this.returnNumberOfKeysControlledByFaction(f);
+      if (f === "protestant") {
+	factions[f].religious = this.returnNumberOfSpacesControlledByProtestants();
+      }
+    }
+
+    //
+    // military victory
+    //
+    if (factions['hapsburg']) {
+      if (factions['hapsburg'].keys >= this.game.state.autowin_hapsburg_keys_controlled) {
+        factions['hapsburg'].victory = 1;
+        factions['hapsburg'].details = "military victory";
+      }
+    }
+    if (factions['ottoman']) {
+      if (factions['ottoman'].keys >= this.game.state.autowin_ottoman_keys_controlled) {
+        factions['ottoman'].victory = 1;
+        factions['ottoman'].details = "military victory";
+      }
+    }
+    if (factions['france']) {
+      if (factions['france'].keys >= this.game.state.autowin_france_keys_controlled) {
+        factions['france'].victory = 1;
+        factions['france'].details = "military victory";
+      }
+    }
+    if (factions['england']) {
+      if (factions['england'].keys >= this.game.state.autowin_england_keys_controlled) {
+        factions['england'].victory = 1;
+        factions['england'].details = "military victory";
+      }
+    }
+    if (factions['papacy']) {
+      if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
+        factions['papacy'].victory = 1;
+        factions['papacy'].details = "military victory";
+      }
+    }
+
+    //
+    // religious victory
+    //
+    if (factions['protestant']) {
+      if (factions['protestant'].religious >= 50) {
+        factions['papacy'].victory = 1;
+        factions['papacy'].details = "religious victory";
+      }
+    }
+
+    //
+    // PROCESS BONUS VP
+    //
+    //• Copernicus (2 VP) or Michael Servetus (1 VP) event
+    if (this.game.state.events.michael_servetus) {
+      factions[this.game.state.events.michael_servetus].vp_special++;
+      factions[this.game.state.events.michael_servetus].vp++;
+    }
+    if (this.game.state.events.copernicus) {
+      factions[this.game.state.events.copernicus].vp_special += this.game.state.events.copernicus_vp;
+      factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
+    }
+
+
+    // base
+
+    // protestant spaces
+
+    // bonus vp
+    //• Bible translation completed (1 VP for each language)    ***
+    //• Protestant debater burned (1 per debate rating)         ***
+    //• Papal debater disgraced (1 per debate rating)           ***
+    //• Successful voyage of exploration
+    //• Successful voyage of conquest
+    //• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
+    //• War Winner marker received during Peace Segment
+    //• Master of Italy VP marker received during Action Phase
+
+    return factions;
+
+  }
+
+
+  //
+  // faction is papacy or (anything), since debaters aren't really owned by factions outside
+  // papcy and protestants, even if they are tagged as would be historically appropriate
+  //
+  returnDebatersInLanguageZone(language_zone="german", faction="papacy", committed=-1) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].language_zone === language_zone || this.game.state.debaters[i].langauge_zone === "any") {
+        if (this.game.state.debaters[i].faction === faction || (faction != "papacy" && this.game.state.debaters[i].faction != "papacy")) {
+          if (this.game.state.debaters[i].committed === committed || committed == -1) {
+	    num++;
+          }
+        }
+      }
+    }
+    return num;
+  }
+
+
+  returnImpulseOrder() {
+    return ["ottoman","hapsburg","england","france","papacy","protestant"];
+  }
+
+  returnNumberOfUncommittedDebaters(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 0) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfCommittedDebaters(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].owner === faction && this.game.state.debaters[i].committed == 1) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfUncommittedExplorers(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 0) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  returnNumberOfCommittedExplorers(faction) {
+    let num = 0;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      if (this.game.state.explorers[i].owner === faction && this.game.state.explorers[i].committed == 1) {
+	num++;
+      }
+    }
+    return num;
+  }
+
+  /////////////////////
+  // Core Game State //
+  /////////////////////
+  returnState() {
+
+    let state = {};
+
+    state.scenario = "1517";
+    if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
+    state.round = 0;
+    state.players = [];
+    state.events = {};
+
+    // whose turn is it? (attacker)
+    state.active_player = -1;
+
+    // which ones are activated
+    state.minor_activated_powers = [];
+
+    state.naval_leaders_lost_at_sea = [];
+
+    state.activated_powers = {};
+    state.activated_powers['ottoman'] = [];
+    state.activated_powers['hapsburg'] = [];
+    state.activated_powers['france'] = [];
+    state.activated_powers['england'] = [];
+    state.activated_powers['papacy'] = [];
+    state.activated_powers['protestant'] = [];
+
+    state.translations = {};
+    state.translations['new'] = {};
+    state.translations['new']['german'] = 0;
+    state.translations['new']['french'] = 0;
+    state.translations['new']['english'] = 0;
+    state.translations['full'] = {};
+    state.translations['full']['german'] = 0;
+    state.translations['full']['french'] = 0;
+    state.translations['full']['english'] = 0;
+
+    state.saint_peters_cathedral = {};
+    state.saint_peters_cathedral['state'] = 0;
+    state.saint_peters_cathedral['vp'] = 0;    
+
+    state.papal_debaters_disgraced_vp = 0;
+    state.protestant_debaters_burned_vp = 0;
+
+    state.events.michael_servetus = "";  // faction that gets VP
+    state.events.copernicus = "";        // faction that gets VP
+    state.events.copernicus_vp = 0;     // 1 or 2 VP
+
+    state.french_chateaux_vp = 0;
+
+    state.tmp_reformations_this_turn = [];
+    state.tmp_counter_reformations_this_turn = [];
+    state.tmp_protestant_reformation_bonus = 0;
+    state.tmp_catholic_reformation_bonus = 0;
+    state.tmp_protestant_counter_reformation_bonus = 0;
+    state.tmp_catholic_counter_reformation_bonus = 0;
+    state.tmp_papacy_may_specify_debater = 0;
+    state.tmp_papacy_may_specify_protestant_debater_unavailable = 0;
+
+    //
+    // foreign wars
+    //
+    state.events.war_in_persia = 0;
+    state.events.revolt_in_ireland = 0;
+    state.events.revolt_in_egypt = 0;
+
+
+    state.augsburg_electoral_bonus = 0;
+    state.mainz_electoral_bonus = 0;
+    state.trier_electoral_bonus = 0;
+    state.cologne_electoral_bonus = 0;
+    state.wittenberg_electoral_bonus = 0;
+    state.brandenburg_electoral_bonus = 0;
+
+    state.autowin_hapsburg_keys_controlled = 14;
+    state.autowin_ottoman_keys_controlled = 11;
+    state.autowin_papacy_keys_controlled = 7;
+    state.autowin_france_keys_controlled = 11;
+    state.autowin_england_keys_controlled = 9;
+
+
+
+    state.debaters = [];
+    state.explorers = [];
+    state.conquistadors = [];
+
+
+    state.leaders = {};
+    state.leaders.francis_i = 1;
+    state.leaders.henry_viii = 1;
+    state.leaders.charles_v = 1;
+    state.leaders.suleiman = 1;
+    state.leaders.leo_x = 1;
+    state.leaders.luther = 1
+    state.leaders.clement_vii = 0;
+    state.leaders.paul_iii = 0;
+    state.leaders.edward_vi = 0;
+    state.leaders.henry_ii = 0;
+    state.leaders.mary_i = 0;
+    state.leaders.julius_iii = 0;
+    state.leaders.elizabeth_i = 0;
+    state.leaders.calvin = 0;
+
+    state.events.ottoman_piracy_enabled = 0;
+    state.events.ottoman_corsairs_enabled = 0;
+    state.events.papacy_may_found_jesuit_universities = 0;
+    state.events.schmalkaldic_league = 0;
+    state.events.edward_vi_born = 0;
+    state.events.wartburg = 0;
+
+    return state;
+
+  }
+
+
+  returnReligiousConflictChart() {
+
+    let chart = {};
+
+    chart['s0'] = {
+      top: "475px",
+      left: "64px",
+    }
+    chart['s1'] = {
+      top: "475px",
+      left: "140px",
+    }
+    chart['s2'] = {
+      top: "475px",
+      left: "216px",
+    }
+    chart['s3'] = {
+      top: "475px",
+      left: "292px",
+    }
+    chart['s4'] = {
+      top: "475px",
+      left: "368px",
+    }
+    chart['s5'] = {
+      top: "475px",
+      left: "444px",
+    }
+    chart['s6'] = {
+      top: "475px",
+      left: "520px",
+    }
+    chart['s7'] = {
+      top: "475px",
+      left: "596px",
+    }
+    chart['s8'] = {
+      top: "475px",
+      left: "672px",
+    }
+    chart['s9'] = {
+      top: "475px",
+      left: "748px",
+    }
+    chart['s10'] = {
+      top: "475px",
+      left: "824px",
+    }
+    chart['s11'] = {
+      top: "475px",
+      left: "900px",
+    }
+    chart['s12'] = {
+      top: "475px",
+      left: "976px",
+    }
+    chart['s13'] = {
+      top: "558px",
+      left: "64px",
+    }
+    chart['s14'] = {
+      top: "558px",
+      left: "140px",
+    }
+    chart['s15'] = {
+      top: "558px",
+      left: "216px",
+    }
+    chart['s16'] = {
+      top: "558px",
+      left: "292px",
+    }
+    chart['s17'] = {
+      top: "558px",
+      left: "368px",
+    }
+    chart['s18'] = {
+      top: "558px",
+      left: "444px",
+    }
+    chart['s19'] = {
+      top: "558px",
+      left: "520px",
+    }
+    chart['s20'] = {
+      top: "558px",
+      left: "596px",
+    }
+    chart['s21'] = {
+      top: "558px",
+      left: "672px",
+    }
+    chart['s22'] = {
+      top: "558px",
+      left: "748px",
+    }
+    chart['s23'] = {
+      top: "558px",
+      left: "824px",
+    }
+    chart['s24'] = {
+      top: "558px",
+      left: "900px",
+    }
+    chart['s25'] = {
+      top: "558px",
+      left: "976px",
+    }
+    chart['s26'] = {
+      top: "643px",
+      left: "64px",
+    }
+    chart['s27'] = {
+      top: "643px",
+      left: "140px",
+    }
+    chart['s28'] = {
+      top: "643px",
+      left: "216px",
+    }
+    chart['s29'] = {
+      top: "643px",
+      left: "292px",
+    }
+    chart['s30'] = {
+      top: "643px",
+      left: "368px",
+    }
+    chart['s31'] = {
+      top: "643px",
+      left: "444px",
+    }
+    chart['s32'] = {
+      top: "643px",
+      left: "520px",
+    }
+    chart['s33'] = {
+      top: "643px",
+      left: "596px",
+    }
+    chart['s34'] = {
+      top: "643px",
+      left: "672px",
+    }
+    chart['s35'] = {
+      top: "643px",
+      left: "748px",
+    }
+    chart['s36'] = {
+      top: "643px",
+      left: "824px",
+    }
+    chart['s37'] = {
+      top: "643px",
+      left: "900px",
+    }
+    chart['s38'] = {
+      top: "643px",
+      left: "976px",
+    }
+    chart['s39'] = {
+      top: "475px",
+      left: "64px",
+    }
+    chart['s40'] = {
+      top: "726px",
+      left: "140px",
+    }
+    chart['s41'] = {
+      top: "726px",
+      left: "216px",
+    }
+    chart['s42'] = {
+      top: "726px",
+      left: "292px",
+    }
+    chart['s43'] = {
+      top: "726px",
+      left: "368px",
+    }
+    chart['s44'] = {
+      top: "726px",
+      left: "444px",
+    }
+    chart['s45'] = {
+      top: "726px",
+      left: "520px",
+    }
+    chart['s46'] = {
+      top: "726px",
+      left: "596px",
+    }
+    chart['s47'] = {
+      top: "726px",
+      left: "672px",
+    }
+    chart['s48'] = {
+      top: "726px",
+      left: "672px",
+    }
+    chart['s49'] = {
+      top: "726px",
+      left: "748px",
+    }
+    chart['s50'] = {
+      top: "726px",
+      left: "824px",
+    }
+
+    return chart;
+
+  }
+
+
+
+  returnPregnancyChart() {
+
+    let chart = {};
+
+    chart['1'] = {
+      top : 1307,
+      left : 4075,
+    }
+
+    chart['2'] = {
+      top : 1220,
+      left : 4075,
+    }
+
+    chart['3'] = {
+      top : 1135,
+      left : 4075,
+    }
+
+    chart['4'] = {
+      top : 1051,
+      left : 4075,
+    }
+
+    chart['5'] = {
+      top : 963,
+      left : 4075,
+    }
+
+    chart['1'] = {
+      top : 850,
+      left : 4075,
+    }
+
+    return chart;
+
+  }
+
+  returnColonies() {
+
+    let colonies = {};
+
+    colonies['1'] = {
+      top : 1007,
+      left : 55
+    }
+    colonies['2'] = {
+      top : 1120,
+      left : 55
+    }
+    colonies['3'] = {
+      top : 1232,
+      left : 55
+    }
+    colonies['4'] = {
+      top : 1344,
+      left : 55
+    }
+    colonies['5'] = {
+      top : 1456,
+      left : 55
+    }
+    colonies['6'] = {
+      top : 1568,
+      left : 55
+    }
+    colonies['7'] = {
+      top : 1680,
+      left : 55
+    }
+
+    return colonies;
+
+  }
+
+
+  returnNewWorld() {
+
+    let nw = {};
+
+    nw['greatlakes'] = {
+      top : 1906 ,
+      left : 280,
+      vp : 1
+    }
+    nw['stlawrence'] = {
+      top : 1886 ,
+      left : 515,
+      vp : 1
+    }
+    nw['mississippi'] = {
+      top : 2075 ,
+      left : 280 ,
+      vp : 1
+    }
+    nw['aztec'] = {
+      top : 2258 ,
+      left : 168 ,
+      vp : 2
+    }
+    nw['maya'] = {
+      top : 2300 ,
+      left : 302 ,
+      vp : 2
+    }
+    nw['amazon'] = {
+      top : 2536 ,
+      left : 668 ,
+      vp : 2
+    }
+    nw['inca'] = {
+      top : 2660 ,
+      left : 225,
+      vp : 2
+    }
+    nw['circumnavigation'] = {
+      top : 2698,
+      left : 128,
+      vp : 3
+    }
+    nw['pacificstrait'] = {
+      top : 2996 ,
+      left : 486 ,
+      vp : 1
+    }
+
+
+    return nw;
+
+  }
+
+
+  returnConquest() {
+
+    let conquest = {};
+
+    conquest['1'] = {
+      top : 1007,
+      left : 178
+    }
+    conquest['2'] = {
+      top : 1120,
+      left : 178
+    }
+    conquest['3'] = {
+      top : 1232,
+      left : 178
+    }
+    conquest['4'] = {
+      top : 1344,
+      left : 178
+    }
+    conquest['5'] = {
+      top : 1456,
+      left : 178
+    }
+    conquest['6'] = {
+      top : 1568,
+      left : 178
+    }
+    conquest['7'] = {
+      top : 1680,
+      left : 178
+    }
+
+    return conquest;
+
+  }
+
+  returnVictoryPointTrack() {
+
+    let track = {};
+
+    track['0'] = {
+      top : 2912,
+      left : 2025
+    }
+    track['1'] = {
+      top : 2912,
+      left : 2138
+    }
+    track['2'] = {
+      top : 2912,
+      left : 2252
+    }
+    track['3'] = {
+      top : 2912,
+      left : 2366
+    }
+    track['4'] = {
+      top : 2912,
+      left : 2480
+    }
+    track['5'] = {
+      top : 2912,
+      left : 2594
+    }
+    track['6'] = {
+      top : 2912,
+      left : 2708
+    }
+    track['7'] = {
+      top : 2912,
+      left : 2822
+    }
+    track['8'] = {
+      top : 2912,
+      left : 2936
+    }
+    track['9'] = {
+      top : 2912,
+      left : 3050
+    }
+    track['10'] = {
+      top : 3026,
+      left : 884
+    }
+    track['11'] = {
+      top : 3026,
+      left : 998
+    }
+    track['12'] = {
+      top : 3026,
+      left : 1112
+    }
+    track['13'] = {
+      top : 1226,
+      left : 1
+    }
+    track['14'] = {
+      top : 3026,
+      left : 1340
+    }
+    track['15'] = {
+      top : 3026,
+      left : 1454
+    }
+    track['16'] = {
+      top : 3026,
+      left : 1568
+    }
+    track['17'] = {
+      top : 3026,
+      left : 1682
+    }
+    track['18'] = {
+      top : 3026,
+      left : 1796
+    }
+    track['19'] = {
+      top : 3026,
+      left : 1910
+    }
+    track['20'] = {
+      top : 3026,
+      left : 2024
+    }
+    track['21'] = {
+      top : 3026,
+      left : 2138
+    }
+    track['22'] = {
+      top : 3026,
+      left : 2252
+    }
+    track['23'] = {
+      top : 3026,
+      left : 2366
+    }
+    track['24'] = {
+      top : 3026,
+      left : 2480
+    }
+    track['25'] = {
+      top : 3026,
+      left : 2594
+    }
+    track['26'] = {
+      top : 3026,
+      left : 2708
+    }
+    track['27'] = {
+      top : 3026,
+      left : 2822
+    }
+    track['28'] = {
+      top : 3026,
+      left : 2936
+    }
+    track['29'] = {
+      top : 3026,
+      left : 3050
+    }
+
+    return track;
+  }
+
+
+  returnElectorateDisplay() {
+
+    let electorates = {};
+
+    electorates['augsburg'] = {
+      top: 190,
+      left: 3380,
+    }
+    electorates['trier'] = {
+      top: 190,
+      left: 3510,
+    }
+    electorates['cologne'] = {
+      top: 190,
+      left: 3642,
+    }
+    electorates['wittenberg'] = {
+      top: 376,
+      left: 3380,
+    }
+    electorates['mainz'] = {
+      top: 376,
+      left: 3510,
+    }
+    electorates['brandenburg'] = {
+      top: 376,
+      left: 3642,
+    }
+
+    return electorates;
+
+  }
+
+
   returnDiplomacyTable() {
 
     let diplomacy 		= {};
@@ -11214,7 +11270,7 @@ alert("removing unit not implement for sea");
 	  //
 	  for (f in this.factions) {
 
-	    if (f !== attacker && this.isSpaceControlledByFaction(spacekey, f)) {
+	    if (f !== attacker && this.isSpaceControlled(spacekey, f)) {
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
@@ -15251,6 +15307,122 @@ this.updateLog("Catholics: " + c_rolls);
 	}
 
 
+	if (mv[0] === "counter_reformation") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+	  this.game.state.tmp_counter_reformations_this_turn.push(space);
+
+	  let p_rolls = 0;
+	  let c_rolls = 0;
+
+	  let p_neighbours = 0;
+	  let c_neighbours = 0;
+
+	  let p_bonus = 0;
+	  let c_bonus = 0;
+
+	  let p_high = 0;
+	  let c_high = 0;
+
+	  let catholics_win = 0;
+
+	  let ties_resolve = "protestant";
+
+	  //
+	  // catholics win ties if Paul III or Julius III are Pope
+	  //
+	  if (this.game.state.leaders.paul_iii == 1 || this.game.state.leaders.julius_iii == 1) {
+	    ties_resolve = "catholic";
+	  }
+
+	  //
+	  // neighbours
+	  //
+	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+	      c_neighbours++;
+	    }
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+	      p_neighbours++;
+	    }  
+	  }
+
+	  //
+	  // language zone
+	  //
+console.log("FIX: unknown how to handle target language zone");
+	  //if (this.game.spaces[space].language !== "german") {
+	  //  ties_resolve = "catholic";
+ 	  //}
+
+
+	  // jesuit universities
+console.log("FIX: not yet handling jesuit university counter-reformation bonus");
+	  // stack of land units
+console.log("FIX: not yet handling catholic land units");
+
+
+	  //
+	  // temporary bonuses
+	  //
+	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
+	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
+
+	  //
+	  // calculate total rolls
+	  //
+	  p_rolls += p_neighbours;
+	  p_rolls += p_bonus;
+	  c_rolls += c_neighbours;
+	  c_rolls += c_bonus;
+
+	  //
+	  // everyone rolls at least 1 dice
+	  //
+	  if (c_rolls == 0) { c_rolls = 1; }
+	  if (p_rolls == 0) { p_rolls = 1; }
+
+this.updateLog("Total Rolls: ");
+this.updateLog("Protestants: " + p_rolls);
+
+	  for (let i = 0; i < p_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Protestants roll: " + x, 1);
+	    if (x > p_high) { p_high = x; }
+	  }
+
+this.updateLog("Catholics: " + c_rolls);
+
+	  for (let i = 0; i < c_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Catholics roll: " + x, 1);
+	    if (x > c_high) { c_high = x; }
+	  }
+
+	  //
+	  // do protestants win?
+	  //
+	  if (p_high < c_high) { catholics_win = 1; }
+	  if (p_high == c_high && ties_resolve === "catholics") { catholics_win = 1; }
+
+
+	  //
+	  // handle victory
+	  //
+	  if (catholics_win == 1) {
+	    this.updateLog("Catholics win!");
+	    this.game.queue.push("convert\t"+space+"\tcatholic");
+	  } else {
+	    this.updateLog("Protestants win!");
+	  }
+
+	  return 1;
+
+	}
+
+
 	//
 	// objects and cards can add commands
 	//
@@ -16240,6 +16412,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
   async playerPlayOps(card, faction, ops=null) {
 
+console.log("in PPO");
+
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);
     let pfactions = this.returnPlayerFactions(this.game.player);
@@ -16247,7 +16421,10 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     if (ops == null) { ops = 2; }
     if (ops == 0) { console.log("OPS ARE ZERO!"); }
 
+
     if (this.game.state.activated_powers[faction].length > 0) {
+
+console.log("AAA AP");
 
       let html = `<ul>`;
       html    += `<li class="card" id="${faction}">${faction}</li>`;
@@ -16308,12 +16485,19 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       });
     } else {
 
+console.log("AAA AP");
+
       //
       // duplicates code above
       //
       let html = `<ul>`;
       for (let i = 0; i < menu.length; i++) {
+
+console.log("menu: " + menu[i].name);
+console.log("faction is: " + faction);
+
         if (menu[i].check(this, this.game.player, faction)) {
+console.log("returned 1 for " + menu[i].name);
           for (let z = 0; z < menu[i].factions.length; z++) {
             if (menu[i].factions[z] === faction) {
   	      if (menu[i].cost[z] <= ops) {
@@ -17496,8 +17680,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Mercenary",
 
       function(space) {
-        if (space.owner === faction) { return 1; }
-        if (space.home === faction) { return 1; }
+        if (his_self.isFriendlyHomeSpace(space, faction)) { return 1; }
 	return 0;
       },
 
@@ -17519,9 +17702,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Regular",
 
       function(space) {
-        if (faction == "protestant" && space.religion == "protestant") { return 1; }
-        if (space.owner === faction) { return 1; }
-        if (space.home === faction) { return 1; }
+        if (his_self.isFriendlyHomeSpace(space, faction)) { return 1; }
 	return 0;
       },
 
@@ -17559,7 +17740,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   canPlayerAssault(his_self, player, faction) {
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) {
+      if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
         if (his_self.game.spaces[conquerable_spaces[i]].besieged > 0) {
 	  return 1;
 	}
@@ -17574,7 +17755,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Space for Siege/Assault: ",
 
       function(space) {
-        if (!his_self.isSpaceControlledByFaction(space, faction)) {
+        if (!his_self.isSpaceControlled(space, faction)) {
           if (his_self.game.spaces[space.key].type === "fortress") {
   	    return 1;
 	  }
@@ -17590,10 +17771,11 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     );
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
+console.log("CPCUS: " + faction);
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+      if (!his_self.isSpaceControlled(spaces_in_unrest[i]), faction) { 
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
@@ -17608,18 +17790,20 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { 
+console.log("checking: " + conquerable_spaces[i]);
+      if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) { 
 	console.log("SPACE IS: " + conquerable_spaces[i]);
 	return 1;
       } 
-   }
+    }
+console.log("return ZERO");
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let pacifiable_spaces_in_unrest = [];
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+      if (!his_self.isSpaceControlled(spaces_in_unrest[i], faction)) { 
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
@@ -17629,11 +17813,13 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (his_self.isSpaceControlledByFaction(conquerable_spaces[i], faction)) {
+      if (his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
 	conquerable_spaces.splice(i, 1);
 	i--;
       }
     }
+
+console.log("CS: " + JSON.stringify(conquerable_spaces));
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -17641,7 +17827,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
       function(space) {
         if (pacifiable_spaces_in_unrest.includes(space.key)) { return 1; }
-        if (conquerable_spaces.includes(space.key) && !his_self.isSpaceControlledByFaction(space.key, faction) && !his_self.isSpaceFriendly(space.key, faction)) { return 1; }
+        if (conquerable_spaces.includes(space.key) && !his_self.isSpaceControlled(space.key, faction) && !his_self.isSpaceFriendly(space.key, faction)) { return 1; }
 	return 0;
       },
 

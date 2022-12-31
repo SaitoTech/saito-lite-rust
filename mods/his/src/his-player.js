@@ -964,6 +964,8 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
 
   async playerPlayOps(card, faction, ops=null) {
 
+console.log("in PPO");
+
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);
     let pfactions = this.returnPlayerFactions(this.game.player);
@@ -971,7 +973,10 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
     if (ops == null) { ops = 2; }
     if (ops == 0) { console.log("OPS ARE ZERO!"); }
 
+
     if (this.game.state.activated_powers[faction].length > 0) {
+
+console.log("AAA AP");
 
       let html = `<ul>`;
       html    += `<li class="card" id="${faction}">${faction}</li>`;
@@ -1032,12 +1037,19 @@ console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
       });
     } else {
 
+console.log("AAA AP");
+
       //
       // duplicates code above
       //
       let html = `<ul>`;
       for (let i = 0; i < menu.length; i++) {
+
+console.log("menu: " + menu[i].name);
+console.log("faction is: " + faction);
+
         if (menu[i].check(this, this.game.player, faction)) {
+console.log("returned 1 for " + menu[i].name);
           for (let z = 0; z < menu[i].factions.length; z++) {
             if (menu[i].factions[z] === faction) {
   	      if (menu[i].cost[z] <= ops) {
@@ -2220,8 +2232,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Mercenary",
 
       function(space) {
-        if (space.owner === faction) { return 1; }
-        if (space.home === faction) { return 1; }
+        if (his_self.isFriendlyHomeSpace(space, faction)) { return 1; }
 	return 0;
       },
 
@@ -2243,9 +2254,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Regular",
 
       function(space) {
-        if (faction == "protestant" && space.religion == "protestant") { return 1; }
-        if (space.owner === faction) { return 1; }
-        if (space.home === faction) { return 1; }
+        if (his_self.isFriendlyHomeSpace(space, faction)) { return 1; }
 	return 0;
       },
 
@@ -2283,7 +2292,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   canPlayerAssault(his_self, player, faction) {
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) {
+      if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
         if (his_self.game.spaces[conquerable_spaces[i]].besieged > 0) {
 	  return 1;
 	}
@@ -2298,7 +2307,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Space for Siege/Assault: ",
 
       function(space) {
-        if (!his_self.isSpaceControlledByFaction(space, faction)) {
+        if (!his_self.isSpaceControlled(space, faction)) {
           if (his_self.game.spaces[space.key].type === "fortress") {
   	    return 1;
 	  }
@@ -2314,10 +2323,11 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     );
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
+console.log("CPCUS: " + faction);
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+      if (!his_self.isSpaceControlled(spaces_in_unrest[i]), faction) { 
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
@@ -2332,18 +2342,20 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { 
+console.log("checking: " + conquerable_spaces[i]);
+      if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) { 
 	console.log("SPACE IS: " + conquerable_spaces[i]);
 	return 1;
       } 
-   }
+    }
+console.log("return ZERO");
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let pacifiable_spaces_in_unrest = [];
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+      if (!his_self.isSpaceControlled(spaces_in_unrest[i], faction)) { 
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
@@ -2353,11 +2365,13 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (his_self.isSpaceControlledByFaction(conquerable_spaces[i], faction)) {
+      if (his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
 	conquerable_spaces.splice(i, 1);
 	i--;
       }
     }
+
+console.log("CS: " + JSON.stringify(conquerable_spaces));
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -2365,7 +2379,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
       function(space) {
         if (pacifiable_spaces_in_unrest.includes(space.key)) { return 1; }
-        if (conquerable_spaces.includes(space.key) && !his_self.isSpaceControlledByFaction(space.key, faction) && !his_self.isSpaceFriendly(space.key, faction)) { return 1; }
+        if (conquerable_spaces.includes(space.key) && !his_self.isSpaceControlled(space.key, faction) && !his_self.isSpaceFriendly(space.key, faction)) { return 1; }
 	return 0;
       },
 
