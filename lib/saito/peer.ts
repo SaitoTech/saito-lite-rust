@@ -5,6 +5,17 @@ import Hop from "./hop";
 import Transaction from "./transaction";
 import { MessageType } from "./networkapi";
 
+//request messages
+const SNDBLOCK = "SNDBLOCK";
+const SNDBLKHH = "SNDBLKHH";
+const SNDTRANS = "SNDTRANS";
+const REQGSTCN = "REQGSTCN";
+const REQCHAIN = "REQCHAIN";
+const SPVCHAIN = "SPVCHAIN";
+const GSTCHAIN = "GSTCHAIN";
+const SERVICES = "SERVICES";
+const PINGPING = "PINGPING";
+
 class Peer {
   public keep_alive_timer: any;
   public app: Saito;
@@ -189,43 +200,43 @@ class Peer {
     // console.debug("peer.sendRequest : " + message);
     // block as Block.serialize(BlockType.Header)
 
-    if (message === "SNDBLOCK") {
+    if (message === SNDBLOCK) {
       this.app.networkApi.send(socket, MessageType.Block, data);
       return;
     }
     // block as block_hash
-    if (message === "SNDBLKHH") {
+    if (message === SNDBLKHH) {
       this.app.networkApi.send(socket, MessageType.BlockHeaderHash, data);
       return;
     }
     // transaction as Transaction.serialize()
-    if (message === "SNDTRANS") {
+    if (message === SNDTRANS) {
       this.app.networkApi.send(socket, MessageType.Transaction, data);
       return;
     }
     // transaction as Transaction.serialize()
-    if (message === "REQGSTCN") {
+    if (message === REQGSTCN) {
       this.app.networkApi.send(socket, MessageType.GhostChainRequest, data);
       return;
     }
-    if (message === "REQCHAIN") {
+    if (message === REQCHAIN) {
       this.app.networkApi.send(socket, MessageType.BlockchainRequest, data);
       return;
     }
-    if (message === "SPVCHAIN") {
+    if (message === SPVCHAIN) {
       this.app.networkApi.send(socket, MessageType.SPVChain, data);
       return;
     }
-    if (message === "GSTCHAIN") {
+    if (message === GSTCHAIN) {
       this.app.networkApi.send(socket, MessageType.GhostChain, data);
       return;
     }
     // json list of services running on server
-    if (message === "SERVICES") {
+    if (message === SERVICES) {
       this.app.networkApi.send(socket, MessageType.Services, data);
       return;
     }
-    if (message === "PINGPING") {
+    if (message === PINGPING) {
       this.app.networkApi.send(socket, MessageType.Ping, data);
       return;
     }
