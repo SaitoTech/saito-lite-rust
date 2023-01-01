@@ -7,6 +7,16 @@ import Transaction from "./transaction";
 import Block from "./block";
 import { MessageType } from "./networkapi";
 
+const pino = require('pino')
+
+const logger = pino({
+  transport: {
+    target: 'pino-pretty'
+  },
+})
+
+//pino.level = 'debug'
+
 class Network {
   public app: Saito;
   public peers: Peer[];
@@ -445,6 +455,7 @@ class Network {
       //   return;
       // }
       // console.log("data buffer 1 first: ", data[0]);
+      logger.info("message " + data);
       try {
         const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
         if (api_message.message_type == MessageType.Result) {
