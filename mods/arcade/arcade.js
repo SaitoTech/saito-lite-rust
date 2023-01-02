@@ -213,6 +213,15 @@ class Arcade extends ModTemplate {
   //
   render() {
 
+    if (this.app.BROWSER == 1) {
+      if (this.app.options.theme) {
+        let theme = this.app.options.theme[this.slug];
+        if (theme != null) {
+          this.app.browser.switchTheme(theme);
+        }
+      }
+    }
+
     if (this.main == null) {
       this.main = new ArcadeMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
