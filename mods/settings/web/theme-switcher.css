@@ -1,6 +1,0 @@
-.theme-container {
-	position: absolute;
-	z-index: 999;
-	top: 50%;
-	transform: translateY(-50%);
-}

@@ -69,7 +69,6 @@ class RedSquareMain {
     // this fires when a tweet is added to our tree
     //
     this.app.connection.on("redsquare-tweet-added", (tweet) => {
-console.log("tweet: " + tweet.updated_at + " -- " + this.mod.tweets_last_viewed_ts);
       if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
         if (this.render_component === "home") {
           tweet.render();

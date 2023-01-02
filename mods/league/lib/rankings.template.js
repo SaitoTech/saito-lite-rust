@@ -4,7 +4,7 @@ module.exports = LeagueRankingsTemplate = () => {
 
  	      <div class="league-rankings">
 
-	        <h5>Rankings:</h5>
+	        <h6>Rankings:</h6>
 
 	        <div class="saito-table">
 			  <div class="saito-table-body"></div>

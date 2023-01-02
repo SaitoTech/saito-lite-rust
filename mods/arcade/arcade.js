@@ -13,7 +13,6 @@ class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
     this.name = "Arcade";
-    this.slug = 'arcade';
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment Utilities";
 
@@ -39,11 +38,6 @@ class Arcade extends ModTemplate {
     this.old_game_removal_delay = 2000000;
     this.services = [{ service: "arcade", domain: "saito" }];
 
-    this.theme_options = {
-      'lite': 'fa-solid fa-sun', 
-      'dark': 'fa-solid fa-moon',
-      'arcade': 'fa-solid fa-moon'
-    };
   }
 
 
@@ -213,15 +207,6 @@ class Arcade extends ModTemplate {
   //
   render() {
 
-    if (this.app.BROWSER == 1) {
-      if (this.app.options.theme) {
-        let theme = this.app.options.theme[this.slug];
-        if (theme != null) {
-          this.app.browser.switchTheme(theme);
-        }
-      }
-    }
-
     if (this.main == null) {
       this.main = new ArcadeMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -256,7 +241,7 @@ class Arcade extends ModTemplate {
       if (!this.renderIntos[qs]) {
         this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-game-selector-overlay.css', '/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
-        let obj = new InviteManager(this.app, this, ".redsquare-sidebar");
+        let obj = new InviteManager(this.app, this, ".saito-sidebar.right");
         obj.type = "short";
         this.renderIntos[qs].push(obj);
         this.attachStyleSheets();
@@ -278,9 +263,49 @@ class Arcade extends ModTemplate {
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
 
+    //
+    // temporary invite render
+    //
+    if (qs == ".redsquare-sidebar" || qs == ".arcade-invites-box") {
+
+      let game_tx;
+
+      game_tx = new saito.default.transaction();
+      game_tx.msg = {
+        id: "abcd1234",
+        game: "twilight",
+        name: "Twilight Struggle",
+        type: "custom",
+        players: ['c53MKaXsjr6McTndPAC7q6x4t7xUz3QJ6sVwkgNSwR8H']
+      };
+      game_tx = this.app.wallet.signTransaction(game_tx);
+      this.games["open"].push(game_tx);
+
+      game_tx = new saito.default.transaction();
+      game_tx.msg = {
+        id: "abcd5678",
+        game: "solitrio",
+        name: "Beleaguered Solitaire",
+        type: "standard",
+        players: ['c53MKaXsjr6McTndPAC7q6x4t7xUz3QJ6sVwkgNSwR8H', 'nReBEFShjCJCynR4THTciLGbTrLrscTr32mR5wi8RXyt', '24KsrYBodT4p1JBjESmxgqoWMCfR8aUF28z4GEEdPFYti']
+      };
+      game_tx = this.app.wallet.signTransaction(game_tx);
+      this.games["open"].push(game_tx);
+
+      game_tx = new saito.default.transaction();
+      game_tx.msg = {
+        id: "abcd12346677",
+        game: "settlers",
+        name: "Settlers of Saitoa",
+        type: "standard",
+        players: ['c53MKaXsjr6McTndPAC7q6x4t7xUz3QJ6sVwkgNSwR8H', 'wjToCM1iwcr47V2R4LcFiFNckASNsD9kbb9jEAchWkEh', '29dcJnLEaFtkejszLDd35gxRXE3XpXdywD2G71d2AnbUe', 'nReBEFShjCJCynR4THTciLGbTrLrscTr32mR5wi8RXyt', '24KsrYBodT4p1JBjESmxgqoWMCfR8aUF28z4GEEdPFYti']
+      };
+      game_tx = this.app.wallet.signTransaction(game_tx);
+      this.games["open"].push(game_tx);
+
+      this.app.connection.emit('arcade-invite-manager-render-request');
+    }
   }
-
-
 
   //
   // flexible inter-module-communications
@@ -296,7 +321,7 @@ class Arcade extends ModTemplate {
     }
     if (type === 'user-menu') {
       return {
-        text: "Challenge to Game",
+        text: "Challenge to Arcade Game",
         icon: "fas fa-gamepad",
         callback: function (app, publickey) {
           let obj = { publickey : publickey };
@@ -307,9 +332,6 @@ class Arcade extends ModTemplate {
 
     return null;
   }
-
-
-
 
 
   ////////////////////////////////////////////////////
@@ -347,6 +369,8 @@ class Arcade extends ModTemplate {
           arcade_self.doesGameExistLocally(tx.transaction.sig)) {
           arcade_self.notifyPeers(tx);
         }
+
+
 
         //
         // public invites

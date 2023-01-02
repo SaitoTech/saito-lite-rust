@@ -26,12 +26,6 @@
   padding: 0.5rem 0.7rem 0.4rem 0.7rem;
 }
 
-.redsquare-sidebar {
-  display: flex;
-  flex-direction: column;
-  row-gap: 2rem;
-}
-
 @media screen and (max-width: 768px) {
   .redsquare-page-header-title {
     font-size: 2rem;

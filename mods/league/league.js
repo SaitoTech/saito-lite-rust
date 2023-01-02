@@ -91,7 +91,7 @@ class League extends ModTemplate {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
       }
-      this.styles = ['/league/css/league-leaderboard.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
+      this.styles = ['/league/css/league-base.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
@@ -100,7 +100,7 @@ class League extends ModTemplate {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
       }
-      this.styles = ['/league/css/league-leaderboard.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
+      this.styles = ['/league/css/league-base.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
       this.attachStyleSheets();
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }

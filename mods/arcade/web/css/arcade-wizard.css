@@ -27,7 +27,6 @@
 } */
 
 /* Game Advanced Options Styling*/
-
 .game-wizard-advanced-options-overlay .overlay-title {
   text-align: center;
 }
@@ -51,7 +50,6 @@
   display: block;
   text-align: left;
 }
-
 .game-wizard-advanced-box .list-header:nth-of-type(n + 2) {
   margin-top: 1.2rem;
 }
@@ -59,7 +57,6 @@
 #advanced-options-overlay-container label {
   margin-top: 0.5rem;
 }
-
 #advanced-options-overlay-container select {
   margin-bottom: 1rem;
   height: 3rem;
@@ -68,10 +65,6 @@
 .game-wizard-advanced-return-btn {
   font-size: 1.5rem;
   padding: 1rem 1.5rem;
-<<<<<<< HEAD
-=======
-  ;
->>>>>>> e9cbdf2e89f0553a26c5c556801c8ca0126e3d30
   text-align: center;
   text-transform: uppercase;
   background-color: var(--saito-dark-btn);
@@ -83,19 +76,16 @@
 .game-wizard-options-toggle {
   padding-top: 1rem;
 }
-
 .game-wizard-options-toggle-text {
   border-bottom: 1px dashed;
   cursor: pointer;
 }
-
 .game-wizard-invite {
   width: 100%;
   min-height: 7rem;
   display: block !important;
   padding: 0rem !important;
 }
-
 .game-wizard-other-btns {
   display: none;
   /* display: flex; */
@@ -111,6 +101,7 @@
   overflow-y: visible;
   grid-template-rows: min-content auto;
   background: var(--saito-arcade-overlay-background);
+  color: var(--saito-font-color-inverse);
   padding: 2rem;
   border-radius: 0.5rem;
 }
@@ -156,28 +147,14 @@
   margin-top: 2rem;
 }
 
-.arcade-wizard-overlay select {
-  background: var(--saito-button-background);
-  color: var(--saito-white);
-  font-size: 2rem;
-  appearance: none;
-  padding: 0 1rem;
-  border: none;
-}
-
-.arcade-wizard-overlay select:focus {
-  outline: none;
-}
-
-.arcade-wizard-overlay option {
-  background-color: var(--saito-primary);
+..arcade-game-wizard-controls .settings select {
 }
 
 .saito-select::after {
-  background-color: transparent;
+  background-color: var(--saito-dark-btn);
 }
 
-.arcade-game-wizard-controls .settings>div:first-of-type {
+.arcade-game-wizard-controls .settings > div:first-of-type {
   position: relative;
   display: flex;
   width: 20em;
@@ -190,15 +167,14 @@
   outline: none;
   background-color: none;
 }
-
-.arcade-game-wizard-controls .settings>div:first-of-type::after {
+.arcade-game-wizard-controls .settings > div:first-of-type::after {
   content: "\25BC";
   position: absolute;
   top: 0;
   right: 0;
   padding: 0 1em;
   color: var(--saito-white);
-  background-color: var(--saito-button-background);
+  background-color: var(--saito-dark-btn);
   cursor: pointer;
   pointer-events: none;
   -webkit-transition: 0.25s all ease;
@@ -225,7 +201,6 @@
   font-size: 1.6rem;
   margin: 0.4rem;
 }
-
 .arcade-game-details .detail_row {
   margin: 0.4rem 0;
 }
@@ -241,7 +216,6 @@
   position: relative;
   display: flex;
   line-height: 3;
-  background: var(--saito-button-background);
 }
 
 .saito-multi-select_btn_options {
@@ -270,7 +244,7 @@
 }
 
 .saito-multi-select_btn_options button {
-  background: transparent;
+  background: var(--saito-dark-btn);
   margin: 0rem;
   padding: 0rem;
   width: 101%;
@@ -283,6 +257,8 @@
   min-height: 4.8rem;
   font-weight: bold;
   margin: 0.1rem;
+  background: var(--saito-dark-btn);
+  border: 1px solid var(--saito-dark-btn);
   color: var(--saito-white);
 }
 
@@ -327,8 +303,4 @@
 .game-wizard-players-select option {
   background: var(--saito-black-faded);
   color: var(--saito-white);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> e9cbdf2e89f0553a26c5c556801c8ca0126e3d30

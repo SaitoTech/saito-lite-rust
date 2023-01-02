@@ -8,17 +8,12 @@ Saito Identicon
   border: 1px solid var(--saito-background-color);
 }
 
-.saito-identicon-box {
-  width: 3.5rem;
-  height: 3.5rem;
-}
-
 /* ----------------------------------------------------------------
 Saito Username
 -----------------------------------------------------------------*/
 
 .saito-address, .saito-username {
-  max-width: 99%;
+  max-width: 90%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

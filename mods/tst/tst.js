@@ -73,7 +73,7 @@ console.log("not received payment...");
 
 
 
-  renderModalSelectCrypto(app, mod, cryptomod) {
+  renderModalSelectCrypto(app, cryptomod) {
     return `
       <div id="dot-warning" class="dot-warning">
         <div id="dot-warning-header" class="dot-warning-header">Welcome to Kusama!</div>
@@ -120,7 +120,7 @@ This shows how to make the Select Crypto module show up.
       </style>
     `;
   }
-  attachEventsModalSelectCrypto(app, mod, cryptomod) {
+  attachEventsModalSelectCrypto(app, cryptomod) {
     try {
       let dotgo = document.getElementById("dot-warning-confirm");
       if (dotgo) {
