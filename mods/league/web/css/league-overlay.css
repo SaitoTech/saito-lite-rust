@@ -52,6 +52,7 @@
   box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 2rem;
   border-radius: 0.5rem;
+  max-height: calc(90vh -30rem);
 }
 
 .league-overlay-header-image {

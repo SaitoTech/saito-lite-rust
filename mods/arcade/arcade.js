@@ -256,7 +256,7 @@ class Arcade extends ModTemplate {
       if (!this.renderIntos[qs]) {
         this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-game-selector-overlay.css', '/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
-        let obj = new InviteManager(this.app, this, ".saito-sidebar.right");
+        let obj = new InviteManager(this.app, this, ".redsquare-sidebar");
         obj.type = "short";
         this.renderIntos[qs].push(obj);
         this.attachStyleSheets();
