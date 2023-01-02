@@ -36,7 +36,7 @@ class Monarchy extends GameTemplate {
     this.animation_queue = [];
     
     this.turn_count = 1;
-    this.card_img_dir = `/${this.name.toLowerCase()}/img/cards`;
+    this.card_img_dir = `/${this.name.toLowerCase()}/altimg/cards`;
     this.card_back = "blank.jpg";
     this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
@@ -68,7 +68,7 @@ class Monarchy extends GameTemplate {
 
   returnWelcomeOverlay(){
    let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
-           <img src="/${this.name.toLowerCase()}/img/welcome_splash.jpg"/>
+           <img src="/${this.name.toLowerCase()}/altimg/welcome_splash.jpg"/>
                </div>`;
     return html;
   }
@@ -1278,7 +1278,7 @@ initializeGame(game_id) {
 
     //Show temporary discard
     let shift = Object.keys(this.game.deck[this.game.player-1].discards) + 1;
-    $(`<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`).hide().appendTo(".discardpile").slideDown();
+    $(`<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`).hide().appendTo(".discardpile").slideDown();
 
   }
 
@@ -1294,13 +1294,12 @@ initializeGame(game_id) {
         if (count > 0){
           for (let i = 0; i < count - 1; i++){
             let shift = (count > 12) ? i : i*2;
-            html += `<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;  
+            html += `<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;  
           }
             let shift = (count > 12) ? count : count*2;
-          html += `<img class="passivecard" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
+          html += `<img class="passivecard" id="${c}" src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
           html += `<div class="tiptext">Remaining Supply: ${this.game.state.supply[c]}</div>`;
         }else{
-          //html += `<img class="passivecard" src="/${this.name.toLowerCase()}/img/cards/blank.jpg">`;
           html += `<div class="tiptext">No more ${this.cardToText(c,true)}</div>`;
         }
         html += "</div>";  
@@ -1343,7 +1342,7 @@ initializeGame(game_id) {
       let html = `<div class="player_decks tip">`;
       html += `<div class="drawpile cardpile">`;
       for (let i = 0; i < this.game.deck[this.game.player-1].crypt.length; i++){
-        html += `<img src="/${this.name.toLowerCase()}/img/cards/blank.jpg" style="bottom:${i}px;right:${i}px;">`;
+        html += `<img src="${this.card_img_dir}/blank.jpg" style="bottom:${i}px;right:${i}px;">`;
       }
       html += `</div>
               <div class="discardpile cardpile">
@@ -1351,7 +1350,7 @@ initializeGame(game_id) {
       let shift = 0;
       for (let card in this.game.deck[this.game.player-1].discards){
         let c = this.game.deck[this.game.player-1].discards[card];
-        html += `<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
+        html += `<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
         shift++;
       }
       html += `</div>
@@ -1916,7 +1915,7 @@ initializeGame(game_id) {
 
   returnCardImage(cardname){
     if (this.deck[cardname]?.img){
-      return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/cards/${this.deck[cardname].img}" />`;
+      return `<img class="cardimg" src="${this.card_img_dir}/${this.deck[cardname].img}" />`;
     }else{
       return ""
     }
