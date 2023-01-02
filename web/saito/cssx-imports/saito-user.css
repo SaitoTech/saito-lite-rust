@@ -13,7 +13,7 @@ Saito Username
 -----------------------------------------------------------------*/
 
 .saito-address, .saito-username {
-  max-width: 90%;
+  max-width: 99%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
