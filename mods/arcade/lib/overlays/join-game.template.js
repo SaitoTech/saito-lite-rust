@@ -18,34 +18,30 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
   </div>
   <div class="arcade-game-overlay-body">
 	  <div class="arcade-game-options">
-		  <div class="saito-table">
-			  <div class="saito-table-body">
-	
-			  <div class="saito-table-row arcade-game-player-row">
+	    <div class="arcade-game-players">
 	`;
 
 		for (let i=0; i < txmsg.players.length; i++) {
-  		html += `
-
-				  
-					  <div class="saito-identicon-box">
-						  <img class="saito-identicon"
-							  src="${app.keys.returnIdenticon(txmsg.players[i])}">
-					  </div>
-					  <div class="saito-username">${txmsg.players[i]}</div>
-					  	  
+  		  html += `
+		  <div class="arcade-game-playerbox saito-table-row">
+		    <div class="saito-identicon-box">
+		      <img class="saito-identicon" src="${app.keys.returnIdenticon(txmsg.players[i])}">
+		    </div>
+		    <div class="saito-username">${txmsg.players[i]}</div>
+		  </div>					  	  
 			`;
-
 		}
 
+
 	html += `  
+		  <div class="arcade-game-playerbox saito-table-row">
+		    <div class="saito-identicon-box empty-slot"></div>
+		    <div class="saito-username">open player slot</div>
+                  </div>
+	      </div>
+	    <div class="saito-table">
 
-						<div class="saito-identicon-box empty_slot">
-					  </div>
-					  <div class="saito-username">Open to join</div>
-
-					</div>
-
+			  <div class="saito-table-body">
 				  <div class="saito-table-row">
 					  <div class="arcade-game-options-key">deck</div>
 					  <div class="arcade-game-options-value">optional</div>
@@ -60,8 +56,9 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
 				  </div>
 			  </div>
 		  </div>
+	    </div>
+
 	  </div>
-  </div>
 	  <div class="arcade-game-controls">
 	    <div class="saito-button saito-button-primary">join game</div>
 	  </div>

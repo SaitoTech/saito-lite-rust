@@ -16,9 +16,6 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
             <div class="league-overlay-header-title-box-title">${league_name}</div>
             <div class="league-overlay-header-title-box-desc">${league_type}</div>
         </div>
-        <div class="league-over-header-controls">
-            <div data-id="${game_mod.name}" class="league-overlay-create-game-button saito-button-secondary">create game</div>
-        </div>
     </div>
     <div class="league-overlay-body">
         <div class="league-overlay-league-body-games">
@@ -73,6 +70,9 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
             <div class="league-overlay-leaderboard"></div>
         </div>
     </div>
+    <div class="league-overlay-controls">
+      <button class="league-overlay-create-game-button saito-button saito-button-primary">create game</button>
+  </div>
 </div>
  
     `;

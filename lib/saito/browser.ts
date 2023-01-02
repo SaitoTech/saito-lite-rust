@@ -1739,8 +1739,23 @@ class Browser {
     }
   }
 
+  switchTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
 
+    if (this.app.BROWSER == 1) {
+      let mod_name = ((window.location.pathname).split('/'))[1];
 
+      if (!this.app.options.theme) {
+        this.app.options.theme = {};
+      }
+
+      if (mod_name != null) {
+          this.app.options.theme[mod_name] = theme;
+          this.app.storage.saveOptions();
+      }
+      console.log(this.app.options);
+    }
+  }
 
 }
 export default Browser;
