@@ -13,6 +13,7 @@ class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
     this.name = "Arcade";
+    this.slug = 'arcade';
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment Utilities";
 
@@ -38,6 +39,11 @@ class Arcade extends ModTemplate {
     this.old_game_removal_delay = 2000000;
     this.services = [{ service: "arcade", domain: "saito" }];
 
+    this.theme_options = {
+      'lite': 'fa-solid fa-sun', 
+      'dark': 'fa-solid fa-moon',
+      'arcade-dark': 'fa-solid fa-moon'
+    };
   }
 
 

@@ -1,6 +1,6 @@
 const InvitesAppspaceTemplate = require('./main.template.js');
 const InviteTemplate = require('./invite.template.js');
-const SaitoScheduler = require('./../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler');
+const SaitoScheduler = require('./../../../../lib/saito/ui/saito-scheduler/saito-scheduler');
 
 class InvitesAppspace {
 
@@ -81,7 +81,7 @@ class InvitesAppspace {
 
     document.getElementById("invites-new-invite").onclick = (e) => {
       let sc = new SaitoScheduler(app, mod);
-      sc.render(app, mod, function(data) {
+      sc.render(function(data) {
         //Need some callback???
       });
     }

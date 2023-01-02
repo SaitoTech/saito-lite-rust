@@ -17,8 +17,6 @@ class GameWizard {
 
     app.connection.on("arcade-launch-game-wizard", (invite_obj) => {
 
-      console.log('inside event');
-
       if (invite_obj.game) {
 
         let game_mod = this.app.modules.returnModule(invite_obj.game);
