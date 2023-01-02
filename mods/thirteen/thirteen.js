@@ -381,34 +381,6 @@ class Thirteen extends GameTemplate {
         return 1;
       }
 
-      /*if (mv[0] === "reshuffle_discarded_agenda_cards") {
-
-        let discarded_cards = this.returnDiscardedCards(1);
-
-        if (Object.keys(discarded_cards).length > 0) {
-
-          //
-          // SHUFFLE in discarded cards
-          //
-          thirteen_self.game.queue.push("SHUFFLE\t1");
-          thirteen_self.game.queue.push("DECKRESTORE\t1");
-          thirteen_self.game.queue.push("DECKENCRYPT\t1\t2");
-          thirteen_self.game.queue.push("DECKENCRYPT\t1\t1");
-          thirteen_self.game.queue.push("DECKXOR\t1\t2");
-          thirteen_self.game.queue.push("DECKXOR\t1\t1");
-          thirteen_self.game.queue.push("flush\tdiscards\t1"); // opponent should know to flush discards as we have
-          thirteen_self.game.queue.push("DECK\t1\t"+JSON.stringify(discarded_cards));
-          thirteen_self.game.queue.push("DECKBACKUP\t1");
-          thirteen_self.updateLog("cards remaining: " + thirteen_self.game.deck[0].crypt.length);
-          thirteen_self.updateLog("shuffling discarded agenda cards back into the deck...");
-
-        }
-
-        this.game.queue.splice(qe, 1);
-        return 1;
-
-      }*/
-
       if (mv[0] === "pick_agenda_card") {
 
        if (this.browser_active == 0) { return 0; }
@@ -417,11 +389,11 @@ class Thirteen extends GameTemplate {
 
        if (this.game.player == player)  {
 
-         let html = (this.game.player == 1) ? 'USSR pick your Agenda Card: ' : 'US pick your Agenda Card: '; 
+         let html = `${this.roles[player]} pick your Agenda Card: `; 
 
          let hand = this.game.deck[0].hand;
 
-         this.updateStatus("Pick you agenda card");
+         this.updateStatus("Pick your agenda card");
          this.overlay.showCardSelectionOverlay(
           this.app,
           this,
@@ -447,9 +419,6 @@ class Thirteen extends GameTemplate {
 
               for (let i = hand.length - 1; i >= 0; i--) {
                 thirteen_self.addMove(`flag\t${player}\t${thirteen_self.agendas[hand[i]].flag}`);
-                if (hand[i] !== card){
-                  thirteen_self.removeCardFromHand(hand[i], true);
-                }
               }
               thirteen_self.endTurn();
             },
@@ -462,31 +431,41 @@ class Thirteen extends GameTemplate {
         return 0;
       }
 
+      if (mv[0] === "discard_agenda"){
+        let player = parseInt(mv[1]);
+        let card = mv[2];
+        let used = parseInt(mv[3]);
+
+        //Leave on Board (Trash pile)
+        if (used){
+          this.used_agendas.push(card);
+          $(this.returnCardImage(card)).appendTo("#agenda_discard");
+        }else{
+        //Or add to discards to be reshuffled
+          this.game.deck[0].discards[card] = this.game.deck[0].cards[card];
+        }
+
+        if (this.game.player == player){
+          this.removeCardFromHand(card); 
+        }
+
+        this.game.queue.splice(qe, 1);
+        return 1;
+
+      }
+
       if (mv[0] === "discard") {
 
         let player = parseInt(mv[1]);
         let deckidx = parseInt(mv[2])-1;
         let cardname = mv[3];
 
-        let player_country = (player == 2) ? "us" : "ussr";
+        this.updateLog(`<span>${this.roles[player]} discards</span> <span class="showcard" id="${cardname}">${this.game.deck[deckidx].cards[cardname].name}</span>`);
 
-        if (mv[4]){
-          this.used_agendas.push(cardname);
-          $(this.returnCardImage(cardname)).appendTo("#agenda_discard");
-
-        }else{
-          this.updateLog("<span>" + player_country + ` discards</span> <span class="showcard" id="${cardname}">${this.game.deck[deckidx].cards[cardname].name}</span>`);
-        }
-
-        this.game.deck[deckidx].discards[cardname] = this.game.deck[deckidx].hand[cardname];
+        this.game.deck[deckidx].discards[cardname] = this.game.deck[deckidx].cards[cardname];
 
         if (this.game.player == player){
-          for (let i = 0; i < this.game.deck[deckidx].hand.length; i++) {
-            if (cardname == this.game.deck[deckidx].hand[i]) {
-              this.removeCardFromHand(cardname);
-              break;
-            }
-          }  
+          this.removeCardFromHand(cardname);
         }
 
         this.game.queue.splice(qe, 1);
@@ -568,10 +547,10 @@ class Thirteen extends GameTemplate {
       let us_loses = 0;
       let ussr_loses = 0;
       
-      if (this.game.state.defcon1_us > 6 || this.game.state.defcon2_us > 6 && this.game.state.defcon3_us > 6) { us_loses = 1; }
+      if (this.game.state.defcon1_us > 6 || this.game.state.defcon2_us > 6 || this.game.state.defcon3_us > 6) { us_loses = 1; }
       if (this.game.state.defcon1_us > 3 && this.game.state.defcon2_us > 3 && this.game.state.defcon3_us > 3) { us_loses = 1; }
 
-      if (this.game.state.defcon1_ussr > 6 || this.game.state.defcon2_ussr > 6 && this.game.state.defcon3_ussr > 6) { ussr_loses = 1; }
+      if (this.game.state.defcon1_ussr > 6 || this.game.state.defcon2_ussr > 6 || this.game.state.defcon3_ussr > 6) { ussr_loses = 1; }
       if (this.game.state.defcon1_ussr > 3 && this.game.state.defcon2_ussr > 3 && this.game.state.defcon3_ussr > 3) { ussr_loses = 1; }
 
       if (us_loses == 1 && ussr_loses == 1) {
@@ -623,8 +602,9 @@ class Thirteen extends GameTemplate {
         this.updateLog("USSR gains " + this.total_scoring_this_round + " Prestige");
       }  
       if (this.total_scoring_this_round == 0) { 
-        this.updateLog("US and USSR tie for Prestige...");
+        this.updateLog("US and USSR tie for Prestige this round...");
       }
+
       this.game.state.prestige_track += this.total_scoring_this_round;
       if (this.game.state.prestige_track > 12) { this.game.state.prestige_track = 12; }
       if (this.game.state.prestige_track < 2) { this.game.state.prestige_track = 2; }
@@ -638,21 +618,25 @@ class Thirteen extends GameTemplate {
   if (mv[0] == "scoring_phase") {
 
 	  let scorer = parseInt(mv[1]);
-	
-	  if (this.game.player == scorer) {
-      if (scorer == 1) {
-        this.addMove("scoring_result\t1\t" + this.agendas[this.game.state.ussr_agenda_selected].score());
-        this.addMove("notify\tUSSR choses to score "+this.agendas[this.game.state.ussr_agenda_selected].name);
-        this.addMove(`discard\t${this.game.player}\t1\t${this.game.state.ussr_agenda_selected}\t1`); 
-      }else{
-        this.addMove("scoring_result\t2\t" + this.agendas[this.game.state.us_agenda_selected].score());
-        this.addMove("notify\tUS choses to score "+this.agendas[this.game.state.us_agenda_selected].name);
-        this.addMove(`discard\t${this.game.player}\t1\t${this.game.state.us_agenda_selected}\t1`); 
+	  let agenda_card = (scorer === 1) ? this.game.state.ussr_agenda_selected : this.game.state.us_agenda_selected;
+    
+    this.game.queue.splice(qe, 1);
+	  
+    if (this.game.player == scorer) {
+      this.addMove(`scoring_result\t${scorer}\t${this.agendas[agenda_card].score()}`);
+      this.addMove(`notify\t${this.roles[scorer]} choses to score ${this.agendas[agenda_card].name}`);
+
+      for (let a of this.game.deck[0].hand){
+        if (a === agenda_card){
+          this.addMove(`discard_agenda\t${this.game.player}\t${a}\t1`);
+        }else{
+          this.addMove(`discard_agenda\t${this.game.player}\t${a}\t0`);
+        }
       }
+
       this.endTurn();
     }
 
-    this.game.queue.splice(qe, 1);
     return 0;
   }
 
@@ -894,7 +878,7 @@ class Thirteen extends GameTemplate {
       this.game.queue.push("world_opinion_phase\ttelevision");
 
       let first_player = (this.returnInitiative() === "ussr") ? 1 : 2;
-      for (let i = 0; i < 4; i++){
+      for (let i = 0; i < 4; i++){   
         this.game.queue.push(`play\t${3-first_player}`);
         this.game.queue.push(`play\t${first_player}`);
       }
@@ -937,36 +921,17 @@ class Thirteen extends GameTemplate {
 
 if (mv[0] == "increase_defcon") {
 
-  let player = parseInt(mv[1]);
-  let defcon_track = parseInt(mv[2]);
-  let num = parseInt(mv[3]);
-
   this.game.queue.splice(qe, 1);
-
-  //We can specify if the player who was already updated their stats and skip the rest  
-  let do_not_adjust_for_player = (mv[4]) ? parseInt(mv[4]) : -1;
-
-  if (this.game.player !== do_not_adjust_for_player) {
-    this.updateDefcon(player, defcon_track, num);
-  }
+  this.updateDefcon(parseInt(mv[1]), parseInt(mv[2]), parseInt(mv[3]));
+  
   return 1;
-
 }
 
 if (mv[0] == "decrease_defcon") {
 
-  let player = parseInt(mv[1]);
-  let defcon_track = parseInt(mv[2]);
-  let num = parseInt(mv[3]);
-
   this.game.queue.splice(qe, 1);
+  this.updateDefcon(parseInt(mv[1]), parseInt(mv[2]), -1 * parseInt(mv[3]));
 
-  //We can specify if the player who was already updated their stats and skip the rest  
-  let do_not_adjust_for_player = (mv[4]) ? parseInt(mv[4]) : -1;
-
-  if (this.game.player !== do_not_adjust_for_player) {
-    this.updateDefcon(player, defcon_track, -num);
-  }
   return 1;
 
 }
@@ -1006,6 +971,7 @@ if (mv[0] == "command_influence") {
 
 	let player = parseInt(mv[1]);
 	let number = parseInt(mv[2]);
+  let letter = (mv[3]) ? parseInt(mv[3]) : 0;
 
   console.log(`${this.roles[player]} SHOULD COMMAND: ${number} influence`);
 
@@ -1014,7 +980,7 @@ if (mv[0] == "command_influence") {
 	if (this.game.player == player) {
     this.playerPlaceCommandTokens(player, number);
   }else{
-    this.updateStatusAndListCards(`Opponent commanding ${number} influence`, this.returnHand());
+    this.updateStatusAndListCards(`Opponent commanding ${this.adjustInfluence(player, number) + letter} influence`, this.returnHand());
   }
 
   return 0;
@@ -1143,15 +1109,19 @@ if (mv[0] == "bayofpigs") {
   if (this.game.player == 2) {
 
     let html = "<ul>";
-    html += '<li class="card nocard" id="remove">remove influence</li>';
+
+    if (this.game.arenas["alliances"].us >= 2){
+      html += '<li class="card nocard" id="remove">remove influence</li>';  
+    }
     html += '<li class="card nocard" id="restrict">defcon restriction</li>';
     html += '</ul>';
+  
     thirteen_self.updateStatusWithOptions(`${this.cardToText('s34b')}: Either remove two influence from alliance battleground or choose not to use events to lower defcon for this round:`, html);
 
     thirteen_self.attachCardboxEvents(function(action) {
-      
       if (action == "remove") {
-        thirteen_self.eventRemoveInfluence(2, 2, ['un', 'alliances','television'], 2, 2, 0); 
+        thirteen_self.addMove("remove_influence\t2\talliances\t2");
+        thirteen_self.endTurn();
       }
       if (action == "restrict") {
         thirteen_self.addMove("setvar\tcannot_deflate_defcon_from_events\t2"); 
@@ -1270,7 +1240,7 @@ return 1;
           thirteen_self.playerPlaceCommandTokens(thirteen_self.game.player, number);
       } else {
           thirteen_self.updateStatus(thirteen_self.formatStatusHeader(`wait for opponent to play ${thirteen_self.cardToText(card)} event`));
-          thirteen_self.addMove("command_influence\t" + thirteen_self.game.player + "\t"+number);
+          thirteen_self.addMove(`command_influence\t${thirteen_self.game.player}\t${number}\t${thirteen_self.game.state.personal_letter_bonus}`);
           thirteen_self.addMove(`trigger_opponent_event\t${3-thirteen_self.game.player}\t${card}`);
           thirteen_self.addMove(`notify\t${me} plays ${thirteen_self.cardToText(card)} for command`);
           thirteen_self.endTurn();
@@ -1348,7 +1318,7 @@ return 1;
       this.updateLog("US gains "+num+" influence in "+this.game.arenas[arena_id].name);
     }
 
-    return true;
+    return num;
 
   }
 
@@ -1357,15 +1327,16 @@ return 1;
     if (player == 1) {
       num = Math.min(num, this.game.arenas[arena_id].ussr);
       this.game.arenas[arena_id].ussr -= num;
-      this.updateLog("USSR removes "+num+" influence in "+this.game.arenas[arena_id].name);
-
     } else {
       num = Math.min(num, this.game.arenas[arena_id].us);
       this.game.arenas[arena_id].us -= num;
-      this.updateLog("US removes "+num+" influence in "+this.game.arenas[arena_id].name);
     }
 
-    return true;
+    if (num > 0){
+     this.updateLog(`${this.roles[player]} removes ${num} influence in ${this.game.arenas[arena_id].name}`); 
+    }
+
+    return num;
 
   }
 
@@ -1477,10 +1448,15 @@ return 1;
     const chooseamount = function(track, direction){
 
       let multiplier = (direction == "decrease") ? -1 : 1;
+      let current = thirteen_self.getDefcon(player_getting_moved, track);
 
       if (number != 1){
         let html3 = "<ul>";
         for (let i = 1; i <= number; i++){
+          let value = multiplier * i + current;
+          if (value <= 1 || value >= 8){
+            break;
+          }
           html3 += `<li class="card nocard" id="${i}">${i}</li>`
         }
         html3 += `<li class="card nocard" id="done">finish move</li></ul>`;
@@ -1494,13 +1470,11 @@ return 1;
 
           num = parseInt(num);
 
-          thirteen_self.addMove(`${direction}_defcon\t${player_getting_moved}\t${track}\t${num}\t${thirteen_self.game.player}`);
-          thirteen_self.updateDefcon(player_getting_moved, track, multiplier * num);  
+          thirteen_self.addMove(`${direction}_defcon\t${player_getting_moved}\t${track}\t${num}`);
           runCallback(num);
         });
       }else{
-        thirteen_self.addMove(`${direction}_defcon\t${player_getting_moved}\t${track}\t1\t${thirteen_self.game.player}`);
-        thirteen_self.updateDefcon(player_getting_moved, track, multiplier);  
+        thirteen_self.addMove(`${direction}_defcon\t${player_getting_moved}\t${track}\t1`);
         runCallback(1);
       }
     }
@@ -1581,10 +1555,6 @@ return 1;
 	      //
 	      // have we hit our influence limit?
         let hit_influence_limit = (player_added == 1 && thirteen_self.game.state.influence_on_board_ussr == 17) || (player_added == 2 && thirteen_self.game.state.influence_on_board_us == 17);
-
-        if (hit_influence_limit == 1) {
-          salert("You have hit your limit of 17 influence cubes on the board. Ending placement");
-        }
 
         if (total_placed >= number || hit_influence_limit) {
           $(".active_battleground").off();
@@ -1732,20 +1702,25 @@ return 1;
     });
   }
 
-  playerPlaceCommandTokens(player, tokens) {
+ adjustInfluence(player, tokens){
+    //Includes possible penalties (as -1)
+    if (player == 1) { tokens += this.game.state.ussr_command_token_bonus; }
+    if (player == 2) { tokens += this.game.state.us_command_token_bonus; }
+    tokens = Math.max(tokens, 1);
 
-    let thirteen_self = this;
-    
     //
     // personal letter bonus if played
     //
     tokens += this.game.state.personal_letter_bonus;
 
-    //Includes possible penalties (as -1)
-    if (player == 1) { tokens += this.game.state.ussr_command_token_bonus; }
-    if (player == 2) { tokens += this.game.state.us_command_token_bonus; }
+    return tokens;
+ }
+
+  playerPlaceCommandTokens(player, tokens) {
+
+    let thirteen_self = this;
     
-    tokens = Math.max(tokens, 1);
+    tokens = this.adjustInfluence(player, tokens);
 
     this.updateStatusWithOptions(`Pick a battleground to add/remove up to ${tokens} cubes:`, `<ul><li class="card nocard" id="done">finish</li></ul>`);
     this.attachCardboxEvents(function(card){
@@ -1803,11 +1778,16 @@ return 1;
         for (let i = currentTokens, j = 1; i < 5 && j <= tokens; i++, j++){
           html += `<li class="card nocard" id="${j}">${j}</li>`;
         }
+        html += `<li class="card nocard" id="done">end turn</li>`;
         html += '</ul>';
 
         thirteen_self.updateStatusWithOptions(`how many command tokens do you wish to add?`,html);
         thirteen_self.attachCardboxEvents(function(number){
 
+          if (number == "done"){
+            thirteen_self.endTurn();
+            return;
+          }
           let defcon_increase = parseInt(number)-1;
           let defcon_track = thirteen_self.returnDefconFromBattleground(arena);
 
@@ -2033,8 +2013,10 @@ return 1;
     $(this.returnCardImage(this.game.state.us_agenda_selected)).appendTo("#us_agenda");
 
     $("#agenda_discard").html("");
+    let offset = 0;
     for (let card of this.used_agendas){
-      $(this.returnCardImage(card)).appendTo("#agenda_discard");
+      $(this.returnCardImage(card)).appendTo("#agenda_discard").css({"left": `${offset}px`, "top": `${offset}px`});
+      offset+=2;
     }
 
 
@@ -3113,13 +3095,18 @@ returnStrategyCards() {
    event : function(player) {
 
         let cards_discarded = 0;
+        let max_cards = 0;
         let html = "<ul>";
         for (let i = 0; i < thirteen_self.game.deck[1].hand.length; i++) {
-          html += `<li class="card nocard" id="${thirteen_self.game.deck[1].hand[i]}">${thirteen_self.cardToText(thirteen_self.game.deck[1].hand[i])}</li>`;
+          if (thirteen_self.game.deck[1].hand[i] !== 's07b'){
+            max_cards++;
+            html += `<li class="card nocard" id="${thirteen_self.game.deck[1].hand[i]}">${thirteen_self.cardToText(thirteen_self.game.deck[1].hand[i])}</li>`;            
+          }
         }
         html += '<li class="card nocard dashed" id="finished">Done Discarding</li></ul>';
         
         thirteen_self.updateStatusWithOptions(`Select cards to discard:`,html);
+
         thirteen_self.attachCardboxEvents(function(card) {
 
           if (card == "finished") {
@@ -3128,14 +3115,19 @@ returnStrategyCards() {
 
           } else {
 
-            cards_discarded++;
-            let divname = `#${card}.card.nocard`;
-            $(divname).remove();
-            thirteen_self.addMove(`discard\t${thirteen_self.game.player}\t2\t${card}`);
+            let li = document.querySelector(`.status ul #${card}.card.nocard`);
+            if (li){
+              cards_discarded++;
+              li.remove();
+              thirteen_self.addMove(`discard\t${thirteen_self.game.player}\t2\t${card}`);
 
-            if (cards_discarded === thirteen_self.game.deck[1].hand.length){
-              thirteen_self.addMove("SAFEDEAL\t2\t"+thirteen_self.game.player+"\t"+cards_discarded);
-              thirteen_self.endTurn();            
+              if (cards_discarded === max_cards){
+                thirteen_self.addMove("SAFEDEAL\t2\t"+thirteen_self.game.player+"\t"+cards_discarded);
+                thirteen_self.endTurn();            
+              }
+                
+            }else{
+              console.warn(`TROUBLE UPDATING UI: `, card);
             }
           }
       });
@@ -3365,6 +3357,7 @@ deck['s20b']            = {
 	defcon : 0 ,
 	event : function(player) {
 
+    thirteen_self.updateStatusWithOptions("Remove up to 2 USSR Influence cubes from the Turkey battleground.", `<ul><li class="card nocard" id="done">finish</li></ul>`)
     thirteen_self.eventRemoveInfluence(player, 1, ['turkey'], 2, 2, 0, function(args) {
       thirteen_self.eventShiftDefcon(player, player, [2], 2);
     }); 
@@ -3432,7 +3425,7 @@ deck['s24b']            = {
 	defcon : 1 ,
 	event : function(player) {
     //FIX THIS <<<<<<
-   thirteen_self.eventAddInfluence(player, player, ['cuba_mil','berlin','atlantic'], 3, 3, 1); 
+   thirteen_self.eventAddInfluence(player, player, ['cuba_mil','berlin','atlantic'], 100, 3, 1); 
 
  },
 }
@@ -3647,7 +3640,7 @@ deck['s37b']            = {
 	defcon : 1 ,
 	event : function(player) {
    thirteen_self.updateStatusWithOptions("Command 3 Influence cubes on to one political battleground: ", `<ul><li class="card nocard" id="done">finish</li></ul>`);
-   thirteen_self.eventAddInfluence(player, player, ['cuba_pol','italy','turkey'], 3, 3, 1); 
+   thirteen_self.eventAddInfluence(player, player, ['cuba_pol','italy','turkey'], 100, 3, 1); 
  },
 }
 deck['s38b']            = { 
