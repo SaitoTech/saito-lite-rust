@@ -28,6 +28,13 @@ class Network {
   public peer_monitor_connection_timeout = 2000;
   public peer_monitor_timer: any;
   public debugging: boolean;
+  public blocks_to_fetch: Array<{ id: bigint; hash: string; peer: Peer }> = new Array<{
+    id: bigint;
+    hash: string;
+    peer: Peer;
+  }>();
+
+  public block_fetch_running = false;
 
   constructor(app: Saito) {
     this.app = app;
@@ -108,8 +115,8 @@ class Network {
         if (this.debugging) {
           console.log(
             "ERROR 185203: not adding " +
-              this.app.options.server.host +
-              " as peer since it is our server."
+            this.app.options.server.host +
+            " as peer since it is our server."
           );
         }
         return;
@@ -122,8 +129,8 @@ class Network {
           if (this.debugging) {
             console.log(
               "ERROR 185204: not adding " +
-                this.app.options.server.host +
-                " as peer since it is our server."
+              this.app.options.server.host +
+              " as peer since it is our server."
             );
           }
           return;
@@ -947,10 +954,12 @@ class Network {
       //
       case MessageType.BlockHeaderHash:
         block_hash = Buffer.from(message.message_data.slice(0, 32), "hex").toString("hex");
+        block_id = this.app.binary.u64FromBytes(message.message_data.slice(32, 40));
         console.log("BlockHeaderHash received : " + block_hash);
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
-          await this.fetchBlock(block_hash, peer);
+          this.blocks_to_fetch.push({ id: block_id, hash: block_hash, peer: peer });
+          await this.fetchBlocks();
         }
         break;
 
@@ -969,7 +978,7 @@ class Network {
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
-        const mycallback = function (response_object) {
+        const mycallback = function(response_object) {
           peer.sendResponse(
             message.message_id,
             Buffer.from(JSON.stringify(response_object), "utf-8")
@@ -1009,7 +1018,7 @@ class Network {
         if (reconstructed_data) {
           msg.data = reconstructed_data;
         }
-        const mycallback = function (response_object) {
+        const mycallback = function(response_object) {
           peer.sendResponse(
             message.message_id,
             Buffer.from(JSON.stringify(response_object), "utf-8")
@@ -1401,10 +1410,30 @@ class Network {
   // this function requires switching to the new network API
   //
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  updatePeersWithWatchedPublicKeys() {}
+  updatePeersWithWatchedPublicKeys() {
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  close() {}
+  close() {
+  }
+
+  async fetchBlocks() {
+    if (this.block_fetch_running) {
+      return;
+    }
+    this.block_fetch_running = true;
+    do {
+      let promises = [];
+      // for (let i = 0; i < 10 && this.blocks_to_fetch.length > 0; ++i) {
+      let entry = this.blocks_to_fetch.pop();
+      // promises.push(this.fetchBlock(entry.hash, entry.peer));
+      await this.fetchBlock(entry.hash, entry.peer);
+
+      // }
+      // await Promise.all(promises);
+    } while (this.blocks_to_fetch.length > 0);
+    this.block_fetch_running = false;
+  }
 }
 
 export default Network;
