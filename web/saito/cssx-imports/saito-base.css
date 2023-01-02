@@ -56,7 +56,6 @@ h3,
 h4,
 h5,
 h6 {
-  color: var(--saito-primary);
   font-weight: normal;
 }
 
@@ -216,7 +215,6 @@ Scrollbars
 .message-message {
   font-size: 2rem;
 }
-
 
 /* ----------------------------------------------------------------
 Media Queries

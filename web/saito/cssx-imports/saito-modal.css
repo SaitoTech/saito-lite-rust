@@ -7,8 +7,8 @@ This alows for a header with a header with title to be added without extra CSS
 .saito-modal {
   font-size: 1.25rem;
   color: var(--saito-white);
-  background: var(--dreamscape);
-  width: 70rem;
+  background: var(--saito-modal-background);
+  min-width: 70rem;
   height: min-content;
   max-width: 80vw;
   padding: 2rem;
@@ -33,4 +33,3 @@ This alows for a header with a header with title to be added without extra CSS
   background-color: var(--saito-hover-background);
   cursor: pointer;
 }
-

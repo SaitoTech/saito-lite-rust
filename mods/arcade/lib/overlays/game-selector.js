@@ -27,7 +27,7 @@ class GameSelector {
 
   attachEvents() {
 
-    Array.from(document.querySelectorAll('.arcade-game-container')).forEach(game => {
+    Array.from(document.querySelectorAll('.game-selector-container')).forEach(game => {
       game.onclick = (e) => {
         let modname = e.currentTarget.getAttribute("data-id");
         this.obj.game = modname;

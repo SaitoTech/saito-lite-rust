@@ -55,7 +55,7 @@
 }
 
 #advanced-options-overlay-container label {
-  margin-top: .5rem
+  margin-top: 0.5rem;
 }
 #advanced-options-overlay-container select {
   margin-bottom: 1rem;
@@ -64,18 +64,14 @@
 
 .game-wizard-advanced-return-btn {
   font-size: 1.5rem;
-  padding:1rem 1.5rem;;
+  padding: 1rem 1.5rem;
   text-align: center;
   text-transform: uppercase;
   background-color: var(--saito-dark-btn);
-  width: 100%
+  width: 100%;
 }
 
 /* Game Advanced Options Styling*/
-
-
-
-
 
 .game-wizard-options-toggle {
   padding-top: 1rem;
@@ -96,8 +92,6 @@
   flex-direction: row;
   justify-content: space-between;
 }
-
-
 
 .arcade-wizard-overlay {
   display: grid;
@@ -146,7 +140,6 @@
   font-size: 1.5rem;
 }
 
-
 .arcade-game-wizard-controls {
   display: grid;
   grid-template-columns: 3fr 7fr;
@@ -189,8 +182,6 @@
   transition: 0.25s all ease;
   border-radius: 0 1rem 1rem 0;
 }
-
-
 
 .saito-module-intro-title {
   font-size: 2.5rem;
@@ -283,7 +274,7 @@
 } */
 
 #arcade-advance-opt {
-  margin: 1rem 0; 
+  margin: 1rem 0;
   text-transform: lowercase;
 }
 
@@ -304,7 +295,6 @@
   color: var(--saito-white);
 } */
 
-
 .game-wizard-players-select {
   color: var(--saito-white);
   border-color: var(--saito-border-color);
@@ -314,4 +304,3 @@
   background: var(--saito-black-faded);
   color: var(--saito-white);
 }
-
