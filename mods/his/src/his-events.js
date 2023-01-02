@@ -27,7 +27,9 @@
     //
     // debaters have bonuses which modify gameplay
     //
-    for (let key in this.debaters) {
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      let d = this.game.state.debaters[i];
+      let key = this.game.state.debaters[i].key;
       z.push(this.debaters[key]);
     }
 

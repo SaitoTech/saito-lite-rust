@@ -1508,8 +1508,8 @@ HACK
       type: "town"
     }
     spaces['brandenburg'] = {
-      top: 460,
-      left: 3077,
+      top: 467,
+      left: 3080,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -1518,8 +1518,8 @@ HACK
       type: "electorate"
     }
     spaces['wittenberg'] = {
-      top: 600,
-      left: 3130,
+      top: 610,
+      left: 3133,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -1528,8 +1528,8 @@ HACK
       type: "electorate"
     }
     spaces['magdeburg'] = {
-      top: 534,
-      left: 2932,
+      top: 536,
+      left: 2935,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -1548,7 +1548,7 @@ HACK
       type: "town"
     }
     spaces['cologne'] = {
-      top: 716,
+      top: 726,
       left: 2500,
       home: "",
       political: "hapsburg",
@@ -1609,8 +1609,8 @@ HACK
       type: "town"
     }
     spaces['augsburg'] = {
-      top: 1080,
-      left: 2860,
+      top: 1084,
+      left: 2864,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -1620,8 +1620,8 @@ HACK
       type: "electorate"
     }
     spaces['nuremberg'] = {
-      top: 925,
-      left: 2834,
+      top: 930,
+      left: 2837,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -1630,8 +1630,8 @@ HACK
       type: "town"
     }
     spaces['mainz'] = {
-      top: 868,
-      left: 2666,
+      top: 872,
+      left: 2668,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -1640,8 +1640,8 @@ HACK
       type: "electorate"
     }
     spaces['trier'] = {
-      top: 894,
-      left: 2516,
+      top: 897,
+      left: 2521,
       home: "",
       political: "hapsburg",
       religion: "catholic",

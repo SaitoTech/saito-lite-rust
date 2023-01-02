@@ -1291,9 +1291,6 @@ console.log(JSON.stringify(mv));
           game_self.game.queue.push("resolve_diet_of_worms");
 
           this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
-
-console.log("update status and list cards...");
-
           this.attachCardboxEvents(function(card) {
 
             game_self.updateStatus("You picked: " + game_self.deck[card].name); 
@@ -1328,13 +1325,33 @@ console.log("update status and list cards...");
 	  let protestant_card = this.game.deck[0].cards[this.game.state.sp[protestant-1]];
 	  let papacy_card = this.game.deck[0].cards[this.game.state.sp[papacy-1]];
 
-/*
-3. roll protestant dice: The Protestant player adds 4 to the CP value of his card. This total represents the number of dice he now rolls. Each roll of a “5” or a “6” is considered to be a hit.
-4. roll papal and Hapsburg dice: The Papal player rolls a num- ber of dice equal to the CP value of his card. The Hapsburg player does the same. Each roll of a “5” or a “6” is considered to be a hit. These two powers combine their hits into a Catholic total.
-5. protestant Victory: If the number of Protestant hits exceeds the number of Catholic hits, the Protestant power flips a number of spaces equal to the number of extra hits he rolled to Protestant influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Protestant space; spaces that were just flipped in this step can be used as the required adjacent Protestant space.
-6. Catholic Victory: If the number of Catholic hits exceeds the number of Protestant hits, the Papacy flips a number of spaces equal to the number of extra hits he rolled to Catholic influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Catholic space; spaces that were just flipped in this step can be used as the required adjacent Catholic space.
-*/
+	  //
+	  // discard the selected cards
+	  //
+	  this.game.queue.push("discard\tprotestant\t"+this.game.state.sp[protestant-1]);
+	  this.game.queue.push("discard\tpapacy\t"+this.game.state.sp[papacy-1]);
 
+	  //
+	  // 3. roll protestant dice: The Protestant player adds 4 to the CP value of his card. 
+	  // This total represents the number of dice he now rolls. Each roll of a “5” or a “6” 
+	  // is considered to be a hit.
+	  //
+	  // 4. roll papal and Hapsburg dice: The Papal player rolls a num- ber of dice equal to 
+	  // the CP value of his card. The Hapsburg player does the same. Each roll of a “5” or a
+	  // “6” is considered to be a hit. These two powers combine their hits into a Catholic total.
+	  // 
+	  // 5. protestant victory: If the number of Protestant hits exceeds the number of Catholic 
+	  // hits, the Protestant power flips a number of spaces equal to the number of extra hits he 
+	  // rolled to Protestant influence. All spaces flipped must be in the German language zone. 
+	  // Spaces flipped must be adjacent to another Protestant space; spaces that were just 
+	  // flipped in this step can be used as the required adjacent Protestant space.
+	  //
+	  // 6. Catholic Victory: If the number of Catholic hits exceeds the number of Protestant hits,
+	  // the Papacy flips a number of spaces equal to the number of extra hits he rolled to Catholic 
+	  // influence. All spaces flipped must be in the German language zone. Spaces flipped must be 
+	  // adjacent to another Catholic space; spaces that were just flipped in this step can be used 
+	  // as the required adjacent Catholic space.
+	  //
 
 	  let protestant_rolls = protestant_card.ops + 4;
 	  let protestant_hits = 0;
@@ -1344,7 +1361,6 @@ console.log("update status and list cards...");
 	    this.updateLog("Protestants roll: " + x);
 	    if (x >= 5) { protestant_hits++; }
 	  }
-
 
 	  let papacy_rolls = papacy_card.ops;
 	  let papacy_hits = 0;
@@ -1391,6 +1407,12 @@ console.log("update status and list cards...");
 	// for however many people need to have the opportunity to counter or acknowledge.
 	//
 	if (mv[0] === "counter_or_acknowledge") {
+
+//	  if (this.game.state.skip_counter_or_acknowledge == 1) {
+//            this.addMove("RESOLVE\t"+this.app.wallet.returnPublicKey());
+//	    this.endTurn();
+//	    return;
+// 	  }
 
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
 	    this.updateStatus("acknowledged");
@@ -4127,7 +4149,7 @@ console.log("----------------------------");
 
 	  this.game.queue.splice(qe, 1);
 
-	  this.game.updateLog("removing " + this.game.deck[0].cards[card].name + " from deck");
+	  this.updateLog("removing " + this.game.deck[0].cards[card].name + " from deck");
 	  this.removeCardFromGame(card);
 
 	  return 1;
@@ -4847,7 +4869,6 @@ this.updateLog("Catholics: " + c_rolls);
 	//
 	// objects and cards can add commands
 	//
-        // we half if we receive a 0/false from one
         for (let i in z) {
           if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }

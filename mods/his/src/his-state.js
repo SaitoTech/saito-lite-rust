@@ -327,6 +327,8 @@
 
     let state = {};
 
+    state.skip_counter_or_acknowledge = 0; // don't skip
+
     state.scenario = "1517";
     if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
     state.round = 0;

@@ -1232,12 +1232,14 @@ alert("Not Implemented");
 	his_self.game.state.tmp_catholic_reformation_bonus = 0;
 	his_self.game.state.tmp_reformations_this_turn = [];
 
+	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
 	his_self.game.queue.push("protestant_reformation\t"+player);
+	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation.!");
         his_self.convertSpace("protestant", "wittenberg");
         his_self.addUnit("protestant", "wittenberg", "regular");
@@ -1282,6 +1284,8 @@ alert("Not Implemented");
 	      function(spacekey) {
 	  	his_self.updateStatus("Counter-Reformation attempt in "+spacekey);
 		his_self.addMove("counter_reformation\t"+spacekey);
+		his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation Attempt in "+spacekey+"\tcatholic_counter_reformation\t"+spacekey);
+        	his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },
 
@@ -1327,6 +1331,8 @@ alert("Not Implemented");
 	      function(spacekey) {
 	  	his_self.updateStatus("Reformation attempt in "+spacekey);
 		his_self.addMove("reformation\t"+spacekey);
+		his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+spacekey+"\tprotestant_reformation\t"+spacekey);
+        	his_self.addMove("RESETCONFIRMSNEEDED\tall");
 		his_self.endTurn();
 	      },
 
@@ -2567,7 +2573,7 @@ console.log(faction + " has " + total + " home spaces, protestant count is " + c
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-	if (his_self.isDebaterComitted("luther-debater")) { return 0; }
+	if (his_self.isDebaterCommitted("luther-debater")) { return 0; }
 	return 1;
       },
       onEvent : function(his_self, faction) {

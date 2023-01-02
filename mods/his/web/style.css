@@ -215,7 +215,7 @@ img {
   background-image: url('/his/img/factions/NewTestament_German.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 0rem; 
 }
@@ -223,7 +223,7 @@ img {
   background-image: url('/his/img/factions/NewTestament_French.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 1rem; 
 }
@@ -231,7 +231,7 @@ img {
   background-image: url('/his/img/factions/NewTestament_English.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 2rem; 
 }
@@ -240,7 +240,7 @@ img {
   background-image: url('/his/img/factions/BibleGerman.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 0rem; 
 }
@@ -248,7 +248,7 @@ img {
   background-image: url('/his/img/factions/BibleFrench.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 1rem; 
 }
@@ -256,7 +256,7 @@ img {
   background-image: url('/his/img/factions/BibleEnglish.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 2rem; 
 }
@@ -363,7 +363,6 @@ img {
   position: absolute;
   height: 100px;
   width: 100px;
-  background-color: green;
 }
 .faction_sheet_england_keytile1 {
   top: 568px;

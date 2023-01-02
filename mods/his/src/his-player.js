@@ -177,7 +177,6 @@
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
     this.game.state.tmp_protestant_reformation_bonus = 0;
-    this.game.state.tmp_protestant_reformation_bonus = 0;
     this.game.state.tmp_catholic_reformation_bonus = 0;
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
@@ -224,7 +223,6 @@
       for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
 	let f = this.game.state.players_info[i].factions[z];
         if (this.game.state.activated_powers[f].includes(faction)) {
-          console.log("this is an activated_power!: " + faction + " -- " + f);
 	  return (i+1);
         }
       }
@@ -2517,26 +2515,28 @@ return;
     if (his_self.game.state.translations['full']['english'] < 10) {
       html += '<li class="option" style="" id="6">English (full bible)</li>';
     }
+    html += '</ul>';
 
     his_self.updateStatusWithOptions(msg, html);
 
     $('.option').off();
     $('.option').on('click', function () {
-      let id = $(this).attr("id");
 
-      if (id === 1 || id === 4) {
+      let id = parseInt($(this).attr("id"));
+
+      if (id == 1 || id == 4) {
 	his_self.addMove("translation\tgerman"); 
-	his_self.addMove("counter_or_acknowledge\tProtestants Translation German Scripture\ttranslation_german_language_zone\tgerman"); 
+	his_self.addMove("counter_or_acknowledge\tProtestants Translate in Germany Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
       }
-      if (id === 2 || id === 5) { his_self.addMove("translation\tfrench"); 
+      if (id == 2 || id == 5) { 
 	his_self.addMove("translation\tfrench"); 
-	his_self.addMove("counter_or_acknowledge\tProtestants Translation German Scripture\ttranslation_french_language_zone\tfrench"); 
+	his_self.addMove("counter_or_acknowledge\tProtestants Translate in French Language Zone\ttranslation_french_language_zone\tfrench\t"+faction);
       }
-      if (id === 3 || id === 6) { his_self.addMove("translation\tenglish");
+      if (id == 3 || id == 6) { 
 	his_self.addMove("translation\tenglish"); 
-	his_self.addMove("counter_or_acknowledge\tProtestants Translation German Scripture\ttranslation_english_language_zone\tenglish"); 
+	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
       }
-
+      his_self.addMove("RESETCONFIRMSNEEDED\tall");
       his_self.endTurn();
 
     });
@@ -2569,6 +2569,34 @@ return;
       $('.option').off();
       $('.option').on('click', function () {
         let id = $(this).attr("id");
+
+	if (id === "german" && his_self.isDebaterAvailable("carlstadt-debater")) {
+
+          let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
+          let html = '<ul>';
+            html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="no">No</li>';
+          html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let id = $(this).attr("id");
+
+	    if (id === "yes") {
+	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    }
+	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    his_self.endTurn();
+
+	    return 0;
+	  });
+
+	  return 0;
+        }
+
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.endTurn();
