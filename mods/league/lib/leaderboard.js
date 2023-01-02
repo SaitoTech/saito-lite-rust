@@ -35,8 +35,6 @@ class Leaderboard {
           <div class="center-align">3</div>
           <div class="saito-address saito-address-urgg5fVRPXYM4agBxec3zF3ieHJNTCQ6h5KYphntuSkN" data-id="urgg5fVRPXYM4agBxec3zF3ieHJNTCQ6h5KYphntuSkN">urgg5fVRPXYM4agBxec3zF3ieHJNTCQ6h5KYphntuSkN</div>
           <div class="right-align">1672</div>
-          <div class="right-align">16</div>
-          <div class="right-align">3</div>
         </div>    
       `;
 

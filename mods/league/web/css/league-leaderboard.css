@@ -6,11 +6,11 @@
   margin-bottom: 0.5rem;
 }
 .league-leaderboard .saito-table .saito-table-body .saito-table-row {
-  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
+  grid-template-columns: 4rem auto 5rem;
 }
 
 .league-leaderboard .saito-table .saito-table-header {
-  grid-template-columns: 4rem auto 5rem 4.5rem 4.5rem;
+  grid-template-columns: 4rem auto 5rem;
   text-align: center;
 }
 
