@@ -278,49 +278,9 @@ class Arcade extends ModTemplate {
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
 
-    //
-    // temporary invite render
-    //
-    if (qs == ".redsquare-sidebar" || qs == ".arcade-invites-box") {
-
-      let game_tx;
-
-      game_tx = new saito.default.transaction();
-      game_tx.msg = {
-        id: "abcd1234",
-        game: "twilight",
-        name: "Twilight Struggle",
-        type: "custom",
-        players: ['c53MKaXsjr6McTndPAC7q6x4t7xUz3QJ6sVwkgNSwR8H']
-      };
-      game_tx = this.app.wallet.signTransaction(game_tx);
-      this.games["open"].push(game_tx);
-
-      game_tx = new saito.default.transaction();
-      game_tx.msg = {
-        id: "abcd5678",
-        game: "solitrio",
-        name: "Beleaguered Solitaire",
-        type: "standard",
-        players: ['c53MKaXsjr6McTndPAC7q6x4t7xUz3QJ6sVwkgNSwR8H', 'nReBEFShjCJCynR4THTciLGbTrLrscTr32mR5wi8RXyt', '24KsrYBodT4p1JBjESmxgqoWMCfR8aUF28z4GEEdPFYti']
-      };
-      game_tx = this.app.wallet.signTransaction(game_tx);
-      this.games["open"].push(game_tx);
-
-      game_tx = new saito.default.transaction();
-      game_tx.msg = {
-        id: "abcd12346677",
-        game: "settlers",
-        name: "Settlers of Saitoa",
-        type: "standard",
-        players: ['c53MKaXsjr6McTndPAC7q6x4t7xUz3QJ6sVwkgNSwR8H', 'wjToCM1iwcr47V2R4LcFiFNckASNsD9kbb9jEAchWkEh', '29dcJnLEaFtkejszLDd35gxRXE3XpXdywD2G71d2AnbUe', 'nReBEFShjCJCynR4THTciLGbTrLrscTr32mR5wi8RXyt', '24KsrYBodT4p1JBjESmxgqoWMCfR8aUF28z4GEEdPFYti']
-      };
-      game_tx = this.app.wallet.signTransaction(game_tx);
-      this.games["open"].push(game_tx);
-
-      this.app.connection.emit('arcade-invite-manager-render-request');
-    }
   }
+
+
 
   //
   // flexible inter-module-communications
@@ -347,6 +307,9 @@ class Arcade extends ModTemplate {
 
     return null;
   }
+
+
+
 
 
   ////////////////////////////////////////////////////
@@ -384,8 +347,6 @@ class Arcade extends ModTemplate {
           arcade_self.doesGameExistLocally(tx.transaction.sig)) {
           arcade_self.notifyPeers(tx);
         }
-
-
 
         //
         // public invites

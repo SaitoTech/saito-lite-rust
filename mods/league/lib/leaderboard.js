@@ -13,7 +13,6 @@ class Leaderboard {
       this.render(league);
     });
 
-
   }
 
 
