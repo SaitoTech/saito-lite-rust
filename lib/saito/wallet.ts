@@ -8,7 +8,7 @@ import Transaction, { TransactionType } from "./transaction";
 import Block from "./block";
 
 const CryptoModule = require("../templates/cryptomodule");
-const ModalSelectCrypto = require("./new-ui/modals/modal-select-crypto/modal-select-crypto");
+const ModalSelectCrypto = require("./ui/modals/select-crypto/select-crypto");
 
 /**
  * A Saito-lite wallet.
@@ -995,9 +995,9 @@ console.log("---------------------");
 
     if (cryptomod != null && show_overlay == 1) {
       if (cryptomod.renderModalSelectCrypto() != null) {
-        const modal_select_crypto = new ModalSelectCrypto(this.app, cryptomod);
-        modal_select_crypto.render(this.app, cryptomod);
-        modal_select_crypto.attachEvents(this.app, cryptomod);
+        const modal_select_crypto = new ModalSelectCrypto(this.app, null, cryptomod);
+        modal_select_crypto.render(this.app, null, cryptomod);
+        modal_select_crypto.attachEvents(this.app, null, cryptomod);
       }
     }
 
