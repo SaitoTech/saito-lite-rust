@@ -1594,7 +1594,6 @@ console.log("4444");
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
       res.send(redsquareHome(app, redsquare_self));
-      //res.end();
       return;
 
     });

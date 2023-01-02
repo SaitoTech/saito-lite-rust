@@ -15,8 +15,8 @@
   <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/fontawesome.min.css" type="text/css" media="screen" />
   <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/all.css" type="text/css" media="screen" />
 
-  <link rel="stylesheet" type="text/css" href="/saito/style.css" />
-  <link rel="stylesheet" type="text/css" href="/saito/lib/templates/game.css" />
+  <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
+  <link rel="stylesheet" type="text/css" href="/saito/game.css" />
   <link rel="stylesheet" type="text/css" href="/thirteen/style.css" />
 
   <link rel="stylesheet" type="text/css" href="/saito/lib/templates/email-chat.css">
@@ -27,43 +27,41 @@
 </head>
 <body>
 
-  <div id="main" class="main" style="display:all">
 
-    <div class="connection_monitor" id="connection_monitor">CONNECTION UNSTABLE (refresh your browser) ...</div>
     <div class="gameboard" id="gameboard">
 
       <div class="agenda_deck" id="agenda_deck"></div>
       <div class="strategy_deck" id="strategy_deck"></div>
       <div class="personal_letter" id="personal_letter"></div>
-      <div class="discard" id="discard"></div>
+      <div class="discard" id="agenda_discard"></div>
 
       <div class="defcon_track" id="defcon_track">
-	<div class="defcon_track_slot defcon_track_1_1"></div>
-	<div class="defcon_track_slot defcon_track_1_2"></div>
-	<div class="defcon_track_slot defcon_track_1_3"></div>
-	<div class="defcon_track_slot defcon_track_1_4"></div>
-	<div class="defcon_track_slot defcon_track_1_5"></div>
-	<div class="defcon_track_slot defcon_track_1_6"></div>
-	<div class="defcon_track_slot defcon_track_1_7"></div>
-	<div class="defcon_track_slot defcon_track_1_8"></div>
+      	<div class="defcon_track_slot" id="defcon_track_1_1"></div>
+      	<div class="defcon_track_slot" id="defcon_track_1_2"></div>
+      	<div class="defcon_track_slot" id="defcon_track_1_3"></div>
+      	<div class="defcon_track_slot" id="defcon_track_1_4"></div>
+      	<div class="defcon_track_slot" id="defcon_track_1_5"></div>
+      	<div class="defcon_track_slot" id="defcon_track_1_6"></div>
+      	<div class="defcon_track_slot" id="defcon_track_1_7"></div>
+      	<div class="defcon_track_slot" id="defcon_track_1_8"></div>
 
-	<div class="defcon_track_slot defcon_track_2_1"></div>
-	<div class="defcon_track_slot defcon_track_2_2"></div>
-	<div class="defcon_track_slot defcon_track_2_3"></div>
-	<div class="defcon_track_slot defcon_track_2_4"></div>
-	<div class="defcon_track_slot defcon_track_2_5"></div>
-	<div class="defcon_track_slot defcon_track_2_6"></div>
-	<div class="defcon_track_slot defcon_track_2_7"></div>
-	<div class="defcon_track_slot defcon_track_2_8"></div>
+      	<div class="defcon_track_slot" id="defcon_track_2_1"></div>
+      	<div class="defcon_track_slot" id="defcon_track_2_2"></div>
+      	<div class="defcon_track_slot" id="defcon_track_2_3"></div>
+      	<div class="defcon_track_slot" id="defcon_track_2_4"></div>
+      	<div class="defcon_track_slot" id="defcon_track_2_5"></div>
+      	<div class="defcon_track_slot" id="defcon_track_2_6"></div>
+      	<div class="defcon_track_slot" id="defcon_track_2_7"></div>
+      	<div class="defcon_track_slot" id="defcon_track_2_8"></div>
 
-	<div class="defcon_track_slot defcon_track_3_1"></div>
-	<div class="defcon_track_slot defcon_track_3_2"></div>
-	<div class="defcon_track_slot defcon_track_3_3"></div>
-	<div class="defcon_track_slot defcon_track_3_4"></div>
-	<div class="defcon_track_slot defcon_track_3_5"></div>
-	<div class="defcon_track_slot defcon_track_3_6"></div>
-	<div class="defcon_track_slot defcon_track_3_7"></div>
-	<div class="defcon_track_slot defcon_track_3_8"></div>
+      	<div class="defcon_track_slot" id="defcon_track_3_1"></div>
+      	<div class="defcon_track_slot" id="defcon_track_3_2"></div>
+      	<div class="defcon_track_slot" id="defcon_track_3_3"></div>
+      	<div class="defcon_track_slot" id="defcon_track_3_4"></div>
+      	<div class="defcon_track_slot" id="defcon_track_3_5"></div>
+      	<div class="defcon_track_slot" id="defcon_track_3_6"></div>
+      	<div class="defcon_track_slot" id="defcon_track_3_7"></div>
+      	<div class="defcon_track_slot" id="defcon_track_3_8"></div>
       </div>
 
       <div class="prestige_track" id="prestige_track">
@@ -83,10 +81,10 @@
       </div>
 
       <div class="round_track" id="round_track">
-        <div class="round_slot round_1"></div>
-        <div class="round_slot round_2"></div>
-        <div class="round_slot round_3"></div>
-        <div class="round_slot round_4"></div>
+        <div class="round_slot" id="round_1"></div>
+        <div class="round_slot" id="round_2"></div>
+        <div class="round_slot" id="round_3"></div>
+        <div class="round_slot" id="round_4"></div>
       </div>
 
       <div class="country" id="cuba_mil"><div class="us"></div><div class="ussr"></div></div>
@@ -115,9 +113,11 @@
         <div class="flag" id="personal_letter_flag"></div>
       </div>
 
-    </div>
-  </div>
+      <div id="us_agenda" class="agenda"></div>
+      <div id="ussr_agenda" class="agenda"></div>
 
+    </div>
+]
   <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 
 </body>
