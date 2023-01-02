@@ -145,17 +145,22 @@ li.card {
 #agenda_discard{
   position: absolute;
   top: 1360px;
-  left: 865px;
+  left: 790px;
   width: 264px;
   height: 362px;
 
 }
+
 
 .agenda_card {
   width: 20vw;
   height: 28vw;
 }
 
+#agenda_discard .agenda_card{
+  width: 100%;
+  height: auto;
+}
 
 .country {
   width: 260px;
@@ -340,8 +345,17 @@ li.card {
   cursor: pointer;
 }
 
+.us_tokens{
+  color: blue;
+  font-size: 18px;
+  margin: 1px 5px;
+}
 
-
+.ussr_tokens{
+  color: darkred;
+  font-size: 18px;
+  margin: 1px 5px;
+}
 
 
 /*** makes cards smaller in hud ***/
