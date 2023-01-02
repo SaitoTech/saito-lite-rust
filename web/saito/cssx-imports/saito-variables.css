@@ -105,32 +105,9 @@ html[data-theme="dark"] {
   --saito-button-background: var(--saito-primary);
 }
 
-html[data-theme="arcade-light"] {
-  --saito-primary: #c89af6;
-  --saito-font-color: #f7f7f7;
-  --saito-font-color-heavy: #222;
-  --saito-font-color-light: #888;
-  --saito-font-color-inverse: #efefef;
-  --saito-profile-background: #fff;
-  --saito-border-color: #c5c5c5bb;
-  --saito-border-color-dark: #a5a5a5bb;
-  --saito-border: 1px solid #c5c5c5bb;
-  --saito-border-radius: 0.5rem;
-  --saito-background-color: #fff;
-  --saito-background-light: #efefef;
-  --saito-gray-transparent: #5555550a;
-  --saito-hover-background: #00000045;
-  --saito-black-faded: #1c1c23b5;
-  --saito-dark-shim: #0009;
-  --saito-light-shim: #0001;
-  --saito-arcade-overlay-background: #11101ed1;
-  --saito-dark-btn: #639;
-  --saito-box-shadow: 0 0 0 1px;
-}
-
-html[data-theme="arcade-dark"] {
-  --saito-arcade-background: linear-gradient(-45deg, #324 50%, #1e1e1f 100%);
-  --saito-primary: #93b;
+html[data-theme="arcade"] {
+  --saito-arcade-background: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
+  --saito-primary: #84a;
   --saito-secondary: #060606;
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
