@@ -70,11 +70,10 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
             <div class="league-overlay-leaderboard"></div>
         </div>
     </div>
-    <div class="league-ghost-controls"></div>
+    <div class="league-overlay-controls">
+      <button class="league-overlay-create-game-button saito-button saito-button-primary">create game</button>
+  </div>
 </div>
-    <div class="league-controls">
-      <div class="league-overlay-create-game-button saito-button saito-button-primary">create game</div>
-    </div>
  
     `;
 

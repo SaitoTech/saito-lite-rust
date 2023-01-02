@@ -1,37 +1,31 @@
 .league-overlay {
-    background: var(--saito-arcade-background);
-    width: 90vw;
-    height: max-content;
-    max-height: 90vh;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    display: grid;
-    grid-template-rows: 7rem max-content 7rem;
-    grid-gap: 2rem;
-    overflow-y: scroll;
+  background: var(--saito-arcade-background);
+  width: 90vw;
+  height: max-content;
+  max-height: 90vh;
+  max-width: 140rem;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  display: grid;
+  grid-template-rows: 7rem max-content 7rem;
+  grid-gap: 2rem;
+  overflow-y: scroll;
 }
 
-.league-controls {
-    position: fixed;
-    bottom: 0px;
-    right: 0px;
-    margin-bottom: 2rem;
-    margin-right: 2rem;
-    margin-top: 2rem;
-    background-color: #FFF9;
+.league-overlay-controls {
+  height: 7rem;
+  display: flex;
+  flex-flow: row;
+  justify-self: flex-end;
+  column-gap: 2rem;
 }
 
-.league-controls > .saito-button {
-    margin: 0;
-    padding-left: 5rem;
-    padding-right: 5rem;
-    width: max-content;
-    float: right;
-    height: 7rem;
-    font-size: 2rem;
-    padding-top: 2.1rem;
+.league-overlay-controls button {
+  line-height: 4.5rem;
+  width: 20rem;
+  font-size: 2.2rem;
+  margin: 0;
 }
-
 
 .league-overlay-header {
   display: flex;
@@ -53,26 +47,12 @@
   grid-gap: 2rem;
 }
 
-.league-overlay-body > div {
+.league-overlay-body>div {
   overflow-y: auto;
   box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 2rem;
   border-radius: 0.5rem;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .league-overlay-header-image {
   background-image: url(/saito/img/dreamscape.png);
@@ -85,26 +65,6 @@
 .league-overlay-description {
   font-size: 1.7rem;
   line-height: 2.3rem;
-}
-
-.league-overlay-create-game-button {
-  min-width: 20rem;
-  max-width: 25rem;
-  height: 7rem;
-  padding-top: 2.2rem;
-  font-size: 2.1rem;
-  padding-left: 4rem;
-  padding-right: 4rem;
-  margin: 0;
-}
-
-
-.league-over-header-controls {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: flex-start;
 }
 
 .league-overlay-league-body-games {
