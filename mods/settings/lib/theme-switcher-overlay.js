@@ -11,18 +11,25 @@ class ThemeSwitcherOverlay {
 
   render() {
     let mod_name = this.mod.getCurrentModName();    
-    let active_mod = this.app.modules.returnModule(mod_name);
+    let mod_obj = this.app.modules.returnModule(mod_name);
     let selected_theme = "";
     if (this.app.options.theme) {
-      this.app.options.theme[active_mod.returnSlug()];
+      selected_theme = this.app.options.theme[mod_obj.returnSlug()];
     }
 
+    console.log('mod_name');
     console.log(mod_name);
-    console.log(active_mod);
-    console.log(active_mod.theme_options);
+    console.log('mod_obj')
+    console.log(mod_obj);
+    console.log('mod_obj.theme_options')
+    console.log(mod_obj.theme_options);
+    console.log("selected theme");
     console.log(selected_theme);
 
-    this.overlay.show(ThemeSwitcherOverlayTemplate(this.app, this.mod, active_mod.theme_options, selected_theme));
+    console.log("options");
+    console.log(this.app.options.theme);
+
+    this.overlay.show(ThemeSwitcherOverlayTemplate(this.app, this.mod, mod_obj.theme_options, selected_theme));
     this.attachEvents();
   }
 
@@ -31,8 +38,8 @@ class ThemeSwitcherOverlay {
     this_self = this;
     document.querySelectorAll('.saito-modal-menu-option').forEach(function(elem){
       elem.addEventListener('click', function(e) {
-      
-        let theme = e.target.getAttribute('data-theme');
+    
+        let theme = e.currentTarget.getAttribute('data-theme');
 
         if (theme != null) {
           this_self.app.browser.switchTheme(theme);

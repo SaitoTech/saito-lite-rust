@@ -13,7 +13,6 @@ This alows for a header with a header with title to be added without extra CSS
   max-width: 80vw;
   padding: 2rem;
   display: grid;
-  grid-gap: 1rem;
   grid-template-rows: min-content auto;
 }
 
