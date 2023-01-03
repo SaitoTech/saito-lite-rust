@@ -46,6 +46,8 @@ class Arcade extends ModTemplate {
     };
   }
 
+  //remove this comment - placeholder to check versioning
+
 
   /////////////////////////////
   // INITIALIZATION FUNTIONS //
