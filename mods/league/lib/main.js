@@ -107,12 +107,18 @@ class LeagueMain {
         console.log("HTML");
         console.log(html);        
 
-        let selector = new LeagueListModal(main_self.app, main_self.mod);
+        // this.mod.styles = ['/league/style.css', '/arcade/css/arcade-game-selector-overlay.css',
+        // '/arcade/css/arcade-overlays.css'];
+        // this.mod.attachStyleSheets();
 
-        selector.title = "Games";
-        selector.prompt = "Select a game for your league";
-        selector.list = html;
-        selector.render();
+        console.log(this.mod);
+        this.app.connection.emit("arcade-launch-game-selector");
+
+        // let selector = new LeagueListModal(main_self.app, main_self.mod);
+        // selector.title = "Games";
+        // selector.prompt = "Select a game for your league";
+        // selector.list = html;
+        // selector.render();
       }
     }
   }
