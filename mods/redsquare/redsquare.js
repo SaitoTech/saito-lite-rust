@@ -17,7 +17,7 @@ class RedSquare extends ModTemplate {
 
     super(app);
     this.appname = "Red Square";
-    this.name = "RedSquare";
+    this.name = "Redsquare";
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
@@ -86,6 +86,11 @@ class RedSquare extends ModTemplate {
       og_image_secure_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png"
     }
 
+    this.theme_options = {
+      'lite': 'fa-solid fa-sun', 
+      'dark': 'fa-solid fa-moon'
+    };
+
     return this;
 
   }
@@ -135,7 +140,8 @@ class RedSquare extends ModTemplate {
     //
     // fetch content from local archive
     //
-    
+    this.tweets_last_viewed_ts = new Date().getTime();
+console.log("TWEETS LAST VIEWED TS: " + this.tweets_last_viewed_ts);
     app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
       for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
     });
@@ -225,6 +231,15 @@ class RedSquare extends ModTemplate {
   //
   render() {
 
+    if (this.app.BROWSER == 1) {
+      if (this.app.options.theme) {
+        let theme = this.app.options.theme[this.slug];
+        if (theme != null) {
+          this.app.browser.switchTheme(theme);
+        }
+      }
+    }
+
     if (this.main == null) {
       this.main = new SaitoMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -242,7 +257,7 @@ class RedSquare extends ModTemplate {
       this.app.modules.returnModulesRespondingTo("chat-manager").forEach((mod) => {
         let cm = mod.respondTo("chat-manager");
         cm.container = ".saito-sidebar.left";
-	this.addComponent(cm);
+	      this.addComponent(cm);
       });
 
     }
@@ -262,6 +277,7 @@ class RedSquare extends ModTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
+console.log("RECEIVE TWEET TRANSACTION IN REDSQUARE.JS");
           this.receiveTweetTransaction(blk, tx, conf, app);
           this.sqlcache = [];
         }
@@ -337,10 +353,13 @@ class RedSquare extends ModTemplate {
 
     let render_home = false;
     if (this.tweets.length == 0) { render_home = true; }
-    this.app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
+console.log("STARTING HERE!");
+
+    this.sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
       async (res) => {
+console.log("RESULTS");
         if (res.rows) {
           if (!this.peers_for_tweets.includes(peer)) {
    	    this.peers_for_tweets.push(peer);
@@ -367,6 +386,7 @@ class RedSquare extends ModTemplate {
       },
       (p) => { if (p == peer) { return 1; } return 0; }
     );
+console.log("DONE");
   }
   
 
@@ -397,6 +417,8 @@ class RedSquare extends ModTemplate {
   // notifications are added through this function. 
   //
   addTweet(tx, prepend = 0) {
+
+console.log("ADDING TWEET");
 
     //
     // create the tweet
@@ -435,6 +457,7 @@ class RedSquare extends ModTemplate {
         //
         let txmsg = tx.returnMessage();
         if (txmsg.request === "like tweet") {
+console.log("LIKED A TWEET -- nope out");
     	  return;
         }
 
@@ -525,6 +548,7 @@ class RedSquare extends ModTemplate {
     //
     // 
     //
+console.log("EMIT: RTAR");
     this.app.connection.emit("redsquare-tweet-added-request");
 
   }
@@ -745,6 +769,8 @@ class RedSquare extends ModTemplate {
         //
         if (txmsg.data?.parent_id) {
 
+console.log("IS REPLY");
+
           if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
             let tweet = this.returnTweet(txmsg.data.parent_id);
             if (tweet == null) { return; }
@@ -786,6 +812,11 @@ class RedSquare extends ModTemplate {
       if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
         document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
       }
+
+console.log("NOPING OUT OF BROWSER...");
+
+      this.addTweet(tx);
+
       return;
     }
 
