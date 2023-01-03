@@ -317,7 +317,7 @@ class Network {
         block.deserialize(buffer);
         // console.debug("block deserialized : " + block_hash);
         block.generateMetadata();
-        await block.generateConsensusValues();
+        // await block.generateConsensusValues();
         console.assert(
           block_hash === block.hash,
           `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
