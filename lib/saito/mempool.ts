@@ -141,21 +141,22 @@ class Mempool {
     }
     this.processing_active = true;
 
-    //
-    // sort our block queue before adding to chain
-    //
-    this.mempool.blocks.sort((a, b) => Number(a.block.id - b.block.id));
-
     try {
       this.processing_timer = setInterval(() => {
         if (this.mempool.blocks.length > 0) {
           if (this.app.blockchain.indexing_active === false) {
+            // sort our block queue before adding to chain
+            console.debug("sorting mempool blocks");
+            this.mempool.blocks.sort((a, b) => Number(a.block.id - b.block.id));
             const block: Block = this.mempool.blocks.shift();
             this.app.blockchain.addBlockToBlockchain(block).then((r) => {
               return;
             });
+          } else {
+            console.log("blockchain indexing active. returning...");
           }
         } else {
+          console.debug("clearing processing timer");
           this.processing_active = false;
           clearInterval(this.processing_timer);
         }
