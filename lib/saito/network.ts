@@ -1416,7 +1416,7 @@ class Network {
     this.block_fetch_running = true;
     do {
       let promises = [];
-      for (let i = 0; i < 100 && this.blocks_to_fetch.length > 0; ++i) {
+      for (let i = 0; i < 1 && this.blocks_to_fetch.length > 0; ++i) {
         let entry = this.blocks_to_fetch.pop();
         promises.push(this.fetchBlock(entry.hash, entry.peer));
         // await this.fetchBlock(entry.hash, entry.peer);
