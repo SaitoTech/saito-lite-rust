@@ -120,7 +120,6 @@
   appearance: none;
   background-color: var(--saito-arcade-background);
   border: none;
-  border-radius: 1rem;
 }
 
 .saito-header-profile-balance .saito-select-crypto:focus {

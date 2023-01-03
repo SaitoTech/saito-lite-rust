@@ -113,6 +113,7 @@
   background: var(--saito-arcade-overlay-background);
   padding: 2rem;
   border-radius: 0.5rem;
+  color: var(--saito-white);
 }
 
 .info-item-wrapper {
@@ -157,12 +158,12 @@
 }
 
 .arcade-wizard-overlay select {
-  background: var(--saito-button-background);
+  background: transparent;
+  border: 1px solid var(--saito-primary);
   color: var(--saito-white);
   font-size: 2rem;
   appearance: none;
   padding: 0 1rem;
-  border: none;
 }
 
 .arcade-wizard-overlay select:focus {
@@ -174,8 +175,8 @@
 }
 
 .saito-select::after {
-  background-color: transparent;
-  border-left: 1px solid var(--saito-border-color);
+  background: var(--saito-button-background);
+  border-left: 1px solid var(--saito-primary);
 }
 
 .arcade-game-wizard-controls .settings>div:first-of-type {
@@ -205,14 +206,14 @@
   right: 0;
   padding: 0 1em;
   color: var(--saito-white);
-  background-color: var(--saito-button-background);
+  background: var(--saito-button-background);
   cursor: pointer;
   pointer-events: none;
   -webkit-transition: 0.25s all ease;
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
   border-radius: 0 1rem 1rem 0;
-  border-left: 1px solid var(--saito-border-color);
+  border-left: 1px solid var(--saito-primary);
 }
 
 .saito-module-intro-title {
@@ -249,22 +250,20 @@
   position: relative;
   display: flex;
   line-height: 3;
-  background: var(--saito-button-background);
 }
 
 .saito-multi-select_btn_options {
-  width: calc(100% - 6rem);
+  width: calc(100% - 5rem - 4px);
   padding: 0;
   border: none;
 }
 
 .saito-multi-select_btn_options {
   background: none;
-  margin-left: 0.5rem;
 }
 
 .saito-multi-select_btn_options button {
-  border-radius: 0.5rem 0px 0px 0.5rem;
+  border-radius: 0;
   min-height: 4.8rem;
   margin-bottom: 0.2rem;
 }
@@ -284,6 +283,7 @@
   width: 101%;
   display: block;
   margin-bottom: 0.2rem;
+  border: 1px solid var(--saito-primary)
 }
 
 .saito-multi-btn {
@@ -292,6 +292,10 @@
   font-weight: bold;
   margin: 0.1rem;
   color: var(--saito-white);
+}
+
+.saito-multi-btn:hover {
+  background: var(--saito-button-background)
 }
 
 .game-wizard-form {
@@ -335,8 +339,4 @@
 .game-wizard-players-select option {
   background: var(--saito-black-faded);
   color: var(--saito-white);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> e9cbdf2e89f0553a26c5c556801c8ca0126e3d30
