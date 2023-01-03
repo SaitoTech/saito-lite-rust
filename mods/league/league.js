@@ -5,6 +5,7 @@ const LeagueLeaderboard = require("./lib/leaderboard");
 const LeagueMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const InvitationLink = require("./../../lib/saito/ui/modals/invitation-link/invitation-link");
+const LeagueWizard = require('./lib/components/league-wizard');
 
 class League extends ModTemplate {
 
@@ -63,6 +64,8 @@ class League extends ModTemplate {
         
       }
     });
+
+    this.league_wizard = new LeagueWizard(this.app, this, null);
   }
 
   render(app, mod) {

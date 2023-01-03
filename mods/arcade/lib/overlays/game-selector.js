@@ -9,11 +9,19 @@ class GameSelector {
 
   constructor(app, mod, obj = {}) {
     this.app = app;
+    this.mod = mod;
     this.name = "GameSelector";
     this.overlay = new SaitoOverlay(app);
     this.obj = obj;
+    this_self = this;
 
     this.app.connection.on("arcade-launch-game-selector", (obj = {}) => {
+
+
+      this_self.mod.styles = ['/arcade/css/arcade-game-selector-overlay.css',
+        '/arcade/css/arcade-overlays.css'];
+      this_self.mod.attachStyleSheets();
+
       this.obj = obj;
       this.render();
     });
@@ -32,7 +40,12 @@ class GameSelector {
         let modname = e.currentTarget.getAttribute("data-id");
         this.obj.game = modname;
         this.overlay.remove();
-        this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
+
+
+        let game_mod = this.app.modules.returnModule(modname);
+        this.app.connection.emit("league-launch-wizard", (game_mod));
+
+        //this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
       };
     });
   }

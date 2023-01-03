@@ -4,7 +4,6 @@ module.exports = () => {
   return `
     <div class="league-main-container" id="league-main-container">
     <div class="saito-module">
-      <div></div>
       <div class="saito-module-details-box">
         <div class="saito-module-title">Community Leagues</div>
         <div class="saito-module-description">Create and join leagues to compete against other players in specific games, chat, and make friends</div>
