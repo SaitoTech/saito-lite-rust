@@ -192,6 +192,7 @@ class Blockchain {
           this.parent_blocks_fetched++;
         } else {
           console.log("OFF CHAIN -- not looping back endlessly.");
+          this.indexing_active = false;
           return;
         }
       }
@@ -420,6 +421,7 @@ class Blockchain {
       this.indexing_active = false;
       return 1;
     }
+    this.indexing_active = false;
   }
 
   async addBlockSuccess(block: Block) {
@@ -508,9 +510,9 @@ class Blockchain {
                 if (block.lc) {
                   console.log(
                     "not running callbacks. blockId = " +
-                    block.returnId() +
-                    " lastId = " +
-                    this.blockchain.last_block_id
+                      block.returnId() +
+                      " lastId = " +
+                      this.blockchain.last_block_id
                   );
                   run_callbacks = false;
                 }
