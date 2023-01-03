@@ -546,10 +546,9 @@ console.log("LIKED A TWEET -- nope out");
     }
 
     //
-    // 
-    //
 console.log("EMIT: RTAR");
-    this.app.connection.emit("redsquare-tweet-added-request");
+    //
+    this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
 
   }
 
