@@ -175,6 +175,7 @@
 
 .saito-select::after {
   background-color: transparent;
+  border-left: 1px solid var(--saito-border-color);
 }
 
 .arcade-game-wizard-controls .settings>div:first-of-type {
@@ -191,6 +192,12 @@
   background-color: none;
 }
 
+.arcade-game-wizard-controls .settings {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
 .arcade-game-wizard-controls .settings>div:first-of-type::after {
   content: "\25BC";
   position: absolute;
@@ -205,6 +212,7 @@
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
   border-radius: 0 1rem 1rem 0;
+  border-left: 1px solid var(--saito-border-color);
 }
 
 .saito-module-intro-title {

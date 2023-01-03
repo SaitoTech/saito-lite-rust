@@ -88,25 +88,43 @@
 }
 
 .saito-header-profile {
-  background-color: var(--saito-profile-background);
   padding: 1.4rem 0.5rem;
-  border-radius: 8px;
-  display: grid;
-  column-gap: 1rem;
-  grid-template-rows: min-content min-content;
-  grid-template-columns: min-content 1fr;
+  display: flex;
+  row-gap: 1rem;
   border-bottom: 1px solid var(--saito-border-color);
+  flex-direction: column;
 }
 
-.saito-header-profile-balance {
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 1;
-  grid-row-end: 2;
+.saito-header-profile-details {
+  display: grid;
+    grid-template-columns: 5rem auto;
+    border: 1px solid var(--saito-primary);
+    border-radius: 0 1.2rem 1.2rem 0;
 }
+
+.saito-header-profile-details .saito-identicon {
+  margin: auto;
+  border: none;
+ }
+
+ .saito-header-profile-balance.saito-select::after {
+  background-color: var(--saito-primary);
+  border: none;
+ }
 
 .saito-header-profile-balance .saito-select-crypto {
   font-size: 2rem;
+  color: var(--saito-font-color);
+  padding: 0 0 0 1rem;
+  font-size: 2rem;
+  appearance: none;
+  background-color: var(--saito-arcade-background);
+  border: none;
+  border-radius: 1rem;
+}
+
+.saito-header-profile-balance .saito-select-crypto:focus {
+  outline: none;
 }
 
 .saito-header-profile-balance > .saito-select-wrapper > div {
@@ -119,7 +137,7 @@
   grid-row-start: 2;
   grid-row-end: 3;
   display: flex;
-  width: 90%;
+  width: 99%;
   justify-content: center;
   justify-self: center;
   padding-top: 1rem;
