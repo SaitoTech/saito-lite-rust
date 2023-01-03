@@ -16,14 +16,13 @@ class GameSelector {
     this_self = this;
 
     this.app.connection.on("arcade-launch-game-selector", (obj = {}) => {
-
-
       this_self.mod.styles = ['/arcade/css/arcade-game-selector-overlay.css',
         '/arcade/css/arcade-overlays.css'];
       this_self.mod.attachStyleSheets();
 
       this.obj = obj;
       this.render();
+      this.attachEvents();
     });
 
   }
@@ -41,11 +40,16 @@ class GameSelector {
         this.obj.game = modname;
         this.overlay.remove();
 
+        console.log(this.obj);
+        console.log(typeof(this.obj.league) != 'undefined' && this.obj.league == true);
+        if (typeof(this.obj.league) != 'undefined' && this.obj.league == true) {
+          console.log('inside');
+          let game_mod = this.app.modules.returnModule(modname);
+          this.app.connection.emit("league-launch-wizard", (game_mod));
+          return;
+        }
 
-        let game_mod = this.app.modules.returnModule(modname);
-        this.app.connection.emit("league-launch-wizard", (game_mod));
-
-        //this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
+        this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
       };
     });
   }
