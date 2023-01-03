@@ -1,12 +1,11 @@
 const GameWizardTemplate = require('./game-wizard.template.js');
-const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
+const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 
 /*
   Red Square re-do of "arcade-game-details", an interface to select game options and create a game invite
 */
 
 class GameWizard {
-
   constructor(app, mod, game_mod = null, invite_obj = {}) {
 
     this.app = app;
@@ -40,8 +39,8 @@ class GameWizard {
     let mod = this.mod;
 
     //Create the game wizard overlay
-    this.overlay.show(app, mod, GameWizardTemplate(app, mod, this.game_mod, this.obj));
-    let backdrop_image = this.game_mod.respondTo("arcade-games")?.img || `/${slug}/img/arcade/arcade.jpg`;
+    this.overlay.show(GameWizardTemplate(app, mod, this.game_mod, this.obj));
+    let backdrop_image = this.game_mod.respondTo("arcade-games")?.img || `/${this.slug}/img/arcade/arcade.jpg`;
     this.overlay.setBackground(backdrop_image);
 
     //Test if we should include Advanced Options
@@ -53,8 +52,8 @@ class GameWizard {
     } else {
 
       //Create (hidden) the advanced options window
-      this.meta_overlay = new SaitoOverlay(app, false, false);
-      this.meta_overlay.show(app, mod, advancedOptions);
+      this.meta_overlay = new SaitoOverlay(app, mod, false, false);
+      this.meta_overlay.show(advancedOptions);
       this.meta_overlay.hide();
 
       //
@@ -103,7 +102,7 @@ class GameWizard {
         if (!advancedOptionsHTML.includes(accept_button)) {
           advancedOptionsHTML += accept_button;
         }
-        this.meta_overlay.show(app, this.game_mod, advancedOptionsHTML);
+        this.meta_overlay.show(advancedOptionsHTML);
         this.game_mod.attachAdvancedOptionsEventListeners();
         this.meta_overlay.blockClose();
 
@@ -121,7 +120,7 @@ class GameWizard {
     if (document.getElementById('game-rules-btn')) {
       document.getElementById('game-rules-btn').onclick = function () {
         let rules_overlay = new SaitoOverlay(app);
-        rules_overlay.show(app, mod, this.game_mod.returnGameRulesHTML());
+        rules_overlay.show(this.game_mod.returnGameRulesHTML());
       }
     }
 
