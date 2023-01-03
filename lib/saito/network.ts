@@ -955,7 +955,7 @@ class Network {
       case MessageType.BlockHeaderHash:
         block_hash = Buffer.from(message.message_data.slice(0, 32), "hex").toString("hex");
         block_id = this.app.binary.u64FromBytes(message.message_data.slice(32, 40));
-        console.log("BlockHeaderHash received : " + block_hash);
+        console.log("BlockHeaderHash received : " + block_hash + " - " + block_id);
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
           this.blocks_to_fetch.push({ id: block_id, hash: block_hash, peer: peer });
@@ -1422,8 +1422,10 @@ class Network {
     this.block_fetch_running = true;
     do {
       let promises = [];
+      this.blocks_to_fetch.sort((a, b) => Number(b.id - a.id));
       for (let i = 0; i < 1 && this.blocks_to_fetch.length > 0; ++i) {
         let entry = this.blocks_to_fetch.pop();
+        console.debug("fetching : " + entry.hash + " - " + entry.id);
         promises.push(this.fetchBlock(entry.hash, entry.peer));
         // await this.fetchBlock(entry.hash, entry.peer);
       }
