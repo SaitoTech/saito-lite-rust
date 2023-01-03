@@ -13,7 +13,7 @@ Selects
   line-height: 3;
   background-color: transparent;
   overflow: hidden;
-  width: 100%;
+  width: 100.01%;
   border-radius: 0 1rem 1rem 0;
   outline: none;
   background-color: none;
@@ -44,8 +44,7 @@ Selects
 }
 
 .saito-slct {
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none;
   background-color: var(--saito-white);
   border-radius: 1rem;
   padding: 0 1rem;
