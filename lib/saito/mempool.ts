@@ -104,10 +104,7 @@ class Mempool {
 
   async addBlock(block: Block): Promise<boolean> {
     console.log(
-      "Mempool : adding block... : " +
-        block.returnHash() +
-        " of type : " +
-        block.block_type
+      "Mempool : adding block... : " + block.returnHash() + " of type : " + block.block_type
     );
     if (!block) {
       console.warn("ERROR 529384: mempool add.block is not provided");
@@ -138,11 +135,11 @@ class Mempool {
     }
 
     // process queue
-      if (this.processing_active) {
-        console.debug("processing active. returning");
-        return false;
-      }
-      this.processing_active = true;
+    if (this.processing_active) {
+      console.debug("processing active. returning");
+      return false;
+    }
+    this.processing_active = true;
 
     //
     // sort our block queue before adding to chain
@@ -150,20 +147,19 @@ class Mempool {
     this.mempool.blocks.sort((a, b) => Number(a.block.id - b.block.id));
 
     try {
-
-        this.processing_timer = setInterval(() => {
-          if (this.mempool.blocks.length > 0) {
-            if (this.app.blockchain.indexing_active === false) {
-              const block: Block = this.mempool.blocks.shift();
-              this.app.blockchain.addBlockToBlockchain(block).then((r) => {
-                return;
-              });
-            }
-          } else {
-            this.processing_active = false;
-            clearInterval(this.processing_timer);
+      this.processing_timer = setInterval(() => {
+        if (this.mempool.blocks.length > 0) {
+          if (this.app.blockchain.indexing_active === false) {
+            const block: Block = this.mempool.blocks.shift();
+            this.app.blockchain.addBlockToBlockchain(block).then((r) => {
+              return;
+            });
           }
-        }, this.processing_speed);
+        } else {
+          this.processing_active = false;
+          clearInterval(this.processing_timer);
+        }
+      }, this.processing_speed);
     } catch (err) {
       console.error(err);
     }

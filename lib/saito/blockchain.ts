@@ -145,6 +145,7 @@ class Blockchain {
     // first things first, ensure hashes OK
     //
     block.generateHashes();
+    await block.generateConsensusValues();
 
     if (this.debugging) {
       //console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
@@ -498,7 +499,6 @@ class Blockchain {
             let confirmation_count = block.returnId() - BigInt(i) + BigInt(1);
             let run_callbacks = true;
 
-
             // if bid is less than our last-bid but it is still
             // the biggest BID we have, then we should avoid
             // running callbacks as we will have already run
@@ -508,9 +508,9 @@ class Blockchain {
                 if (block.lc) {
                   console.log(
                     "not running callbacks. blockId = " +
-                      block.returnId() +
-                      " lastId = " +
-                      this.blockchain.last_block_id
+                    block.returnId() +
+                    " lastId = " +
+                    this.blockchain.last_block_id
                   );
                   run_callbacks = false;
                 }
@@ -860,14 +860,14 @@ class Blockchain {
     if (this.app?.options?.blockchain) {
       let obj = this.app.options.blockchain;
       for (let key in obj) {
-        if (typeof obj[key] !== 'undefined') {
+        if (typeof obj[key] !== "undefined") {
           this[key] = obj[key];
         }
       }
       this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
     }
 
-console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
+    console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
 
     //
     // prevent mempool from producing blocks while we load
