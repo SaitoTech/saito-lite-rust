@@ -40,7 +40,7 @@ class Arcade extends ModTemplate {
     this.services = [{ service: "arcade", domain: "saito" }];
 
     this.theme_options = {
-      'lite': 'fa-solid fa-sun', 
+      'lite': 'fa-solid fa-sun',
       'dark': 'fa-solid fa-moon',
       'arcade': 'fa-solid fa-moon'
     };
@@ -65,9 +65,9 @@ class Arcade extends ModTemplate {
     if (app.modules.respondTo("arcade-games")) {
       app.modules.respondTo("arcade-games").forEach(game_mod => {
         this.game_mods.push(game_mod);
-	//
-	// and listen to their transactions
-	//
+        //
+        // and listen to their transactions
+        //
         this.affix_callbacks_to.push(game_mod.name);
       });
     }
@@ -96,7 +96,7 @@ class Arcade extends ModTemplate {
       if (this.app.options.games) {
         for (let game of this.app.options.games) {
           if (game.over == 0 && (game.players_set != 1 || game.players.includes(this.app.wallet.returnPublicKey()) || game.accepted.includes(this.app.wallet.returnPublicKey()))) {
-  
+
             let game_tx = new saito.default.transaction();
             if (game.over) { if (game.last_block > 0) { return; } }
             if (game.players) {
@@ -106,7 +106,7 @@ class Arcade extends ModTemplate {
               game_tx.transaction.from.push(new saito.default.slip(this.app.wallet.returnPublicKey()));
               game_tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey()));
             }
-  
+
             let msg = {
               request: "loaded",
               game: game.module,
@@ -117,10 +117,10 @@ class Arcade extends ModTemplate {
               over: game.over,
               last_block: game.last_block,
             }
-  
+
             game_tx.transaction.sig = game.id;
             game_tx.msg = msg;
-  
+
             //
             // and add to list of my games
             //
@@ -215,7 +215,7 @@ class Arcade extends ModTemplate {
 
     if (this.app.BROWSER == 1) {
       if (this.app.options.theme) {
-        let theme = this.app.options.theme[this.slug];
+        let theme = this.app.options.theme[this.returnSlug];
         if (theme != null) {
           this.app.browser.switchTheme(theme);
         }
@@ -304,8 +304,8 @@ console.log("<===>");
         text: "Challenge to Game",
         icon: "fas fa-gamepad",
         callback: function (app, publickey) {
-          let obj = { publickey : publickey };
-	  app.connection.emit("arcade-launch-game-selector", (obj));
+          let obj = { publickey: publickey };
+          app.connection.emit("arcade-launch-game-selector", (obj));
         }
       }
     }
@@ -1663,7 +1663,7 @@ console.log("X: 4");
 
       if (gameType == "direct") {
         let newtx = this.createOpenTransaction(gamedata, options.publickey);
-	this.app.connection.emit("arcade-launch-game-scheduler", (newtx));
+        this.app.connection.emit("arcade-launch-game-scheduler", (newtx));
         return;
       }
 

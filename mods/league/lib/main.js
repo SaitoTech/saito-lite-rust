@@ -1,5 +1,5 @@
-const LeagueMainTemplate    = require("./main.template");
-//const LeagueListModal = require('./overlays/league-list-modal');
+const LeagueMainTemplate = require("./main.template");
+// const LeagueListModal = require('./overlays/league-list-modal');
 const LeagueComponentExistingLeague = require("./components/existing-league");
 //const LeagueJoinOverlay = require("./../overlays/join-league-overlay");
 
@@ -28,16 +28,16 @@ class LeagueMain {
       this.app.browser.addElementToDom(LeagueMainTemplate());
     }
 
-    
+
 
     let leagues = this.mod.filterLeagues(this.app, false);
 
     console.log("LEAGUES");
     console.log(leagues);
 
-    let filter1 = leagues.filter( l => l.admin == this.app.wallet.returnPublicKey() );
-    let filter2 = leagues.filter( l => l.myRank > 0 && l.admin != this.app.wallet.returnPublicKey());
-    let filter3 = leagues.filter( l => l.myRank <= 0 && l.admin != this.app.wallet.returnPublicKey());
+    let filter1 = leagues.filter(l => l.admin == this.app.wallet.returnPublicKey());
+    let filter2 = leagues.filter(l => l.myRank > 0 && l.admin != this.app.wallet.returnPublicKey());
+    let filter3 = leagues.filter(l => l.myRank <= 0 && l.admin != this.app.wallet.returnPublicKey());
 
     console.log("FILTERSSS");
     console.log("filter1");
@@ -47,32 +47,32 @@ class LeagueMain {
     console.log("filter3");
     console.log(filter3);
 
-    if (filter1.length > 0){
+    if (filter1.length > 0) {
       filter1.forEach((game) => {
         LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-admin");
       });
-    }else{
+    } else {
       // if (document.getElementById("leagues-for-admin") != null)
       //   document.getElementById("leagues-for-admin").style.display = "none";
-    }  
+    }
 
-    if (filter2.length > 0){
+    if (filter2.length > 0) {
       filter2.forEach((game) => {
         LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-play");
       });
-    }else{
+    } else {
       //if (document.getElementById("leagues-for-play") != null)
-        //document.getElementById("leagues-for-play").style.display = "none";
-    }  
+      //document.getElementById("leagues-for-play").style.display = "none";
+    }
 
-    if (filter3.length > 0){
+    if (filter3.length > 0) {
       filter3.forEach((game) => {
         LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-join");
       });
-    }else{
+    } else {
       //if (document.getElementById("leagues-for-join") != null)
-        //document.getElementById("leagues-for-join").style.display = "none";
-    }  
+      //document.getElementById("leagues-for-join").style.display = "none";
+    }
 
 
     // let url = new URL(window.location.href);
@@ -90,11 +90,11 @@ class LeagueMain {
   }
 
 
-  attachEvents(){
+  attachEvents() {
     main_self = this;
 
-    if (document.getElementById('create-new-league')){
-      document.getElementById('create-new-league').onclick = () =>{
+    if (document.getElementById('create-new-league')) {
+      document.getElementById('create-new-league').onclick = () => {
 
         let html = "";
         main_self.app.modules.respondTo("arcade-games").forEach(game_mod => {
@@ -105,7 +105,7 @@ class LeagueMain {
         console.log(main_self.app.modules.respondTo("arcade-games"));
 
         console.log("HTML");
-        console.log(html);        
+        console.log(html);
 
         // this.mod.styles = ['/league/style.css', '/arcade/css/arcade-game-selector-overlay.css',
         // '/arcade/css/arcade-overlays.css'];

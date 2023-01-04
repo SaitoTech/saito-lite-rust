@@ -28,19 +28,37 @@
 
 /* Game Advanced Options Styling*/
 
-.game-wizard-advanced-options-overlay .overlay-title {
+#advanced-options-overlay-container {
+  color: var(--saito-font-color-dark-modal);
+  background: #181818;
+  border-radius: 0.5rem;
+  min-width: 40rem;
+  min-height: 15rem;
+  display: flex;
+  padding: 1.5rem;
+  flex-direction:column;
+
+
+}
+#advanced-options-overlay-container .overlay-title {
   text-align: center;
+  color: var(--saito-white);
 }
 
-.game-wizard-advanced-options-overlay .overlay-input {
+#advanced-options-overlay-container .overlay-input {
   margin-bottom: 1rem;
 }
 
-.game-wizard-advanced-options-overlay select {
+#advanced-options-overlay-container select {
   text-transform: capitalize;
+  background: transparent;
+  border: 1px solid var(--saito-primary);
+  color: var(--saito-white);
+  font-size: 2rem;
+  padding: 0 1rem;
 }
 
-.game-wizard-advanced-options-overlay .options_notice {
+#advanced-options-overlay-container .options_notice {
   margin-bottom: 1.2rem;
   color: var(--saito-background-color);
   font-style: italic;
@@ -52,6 +70,9 @@
   text-align: left;
 }
 
+.game-wizard-advanced-box .list-header {
+  color: var(--saito-primary);
+}
 .game-wizard-advanced-box .list-header:nth-of-type(n + 2) {
   margin-top: 1.2rem;
 }
@@ -68,14 +89,10 @@
 .game-wizard-advanced-return-btn {
   font-size: 1.5rem;
   padding: 1rem 1.5rem;
-<<<<<<< HEAD
-=======
-  ;
->>>>>>> e9cbdf2e89f0553a26c5c556801c8ca0126e3d30
   text-align: center;
   text-transform: uppercase;
-  background-color: var(--saito-dark-btn);
   width: 100%;
+  margin-top: auto;p
 }
 
 /* Game Advanced Options Styling*/
@@ -150,7 +167,7 @@
   font-size: 1.5rem;
 }
 
-.arcade-game-wizard-controls {
+.arcade-wizard-game-controls {
   display: grid;
   grid-template-columns: 3fr 7fr;
   grid-gap: 1rem;
@@ -179,7 +196,12 @@
   border-left: 1px solid var(--saito-primary);
 }
 
-.arcade-game-wizard-controls .settings>div:first-of-type {
+
+.arcade-wizard-game-controls  {
+
+  align-items: center;
+}
+.arcade-wizard-game-controls .settings > div:first-of-type {
   position: relative;
   display: flex;
   width: 20em;
@@ -191,15 +213,17 @@
   border-radius: 0 1rem 1rem 0;
   outline: none;
   background-color: none;
+
 }
 
-.arcade-game-wizard-controls .settings {
+.arcade-wizard-game-controls .settings {
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
+
 }
 
-.arcade-game-wizard-controls .settings>div:first-of-type::after {
+.arcade-wizard-game-controls .settings > div:first-of-type::after {
   content: "\25BC";
   position: absolute;
   top: 0;
@@ -283,7 +307,7 @@
   width: 101%;
   display: block;
   margin-bottom: 0.2rem;
-  border: 1px solid var(--saito-primary)
+  border: 1px solid var(--saito-primary);
 }
 
 .saito-multi-btn {
@@ -295,7 +319,7 @@
 }
 
 .saito-multi-btn:hover {
-  background: var(--saito-button-background)
+  background: var(--saito-button-background);
 }
 
 .game-wizard-form {

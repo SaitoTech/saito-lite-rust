@@ -40,14 +40,14 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
   html += `
     </div>
 
-    <div class="arcade-game-wizard-controls">
+    <div class="arcade-wizard-game-controls">
   
       <div class="settings">
         ${game_mod.returnPlayerSelectHTML()}
         <div id="arcade-advance-opt" class="info-item-wrapper">advanced options...</div>
       </div>
 
-      <div class="arcade-game-wizard-invite">
+      <div class="arcade-wizard-game-invite">
   `;
 
   if (game_mod.maxPlayers == 1) {
@@ -78,7 +78,6 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
       </div>
 
     </div>
-    <div id="advanced-options-overlay-container"></div>
   </form>
   `;
 
