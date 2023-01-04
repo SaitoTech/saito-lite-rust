@@ -92,7 +92,7 @@
   text-align: center;
   text-transform: uppercase;
   width: 100%;
-  margin-top: auto;p
+  margin-top: auto;
 }
 
 /* Game Advanced Options Styling*/
@@ -196,11 +196,6 @@
   border-left: 1px solid var(--saito-primary);
 }
 
-
-.arcade-wizard-game-controls  {
-
-  align-items: center;
-}
 .arcade-wizard-game-controls .settings > div:first-of-type {
   position: relative;
   display: flex;

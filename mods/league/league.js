@@ -489,6 +489,8 @@ class League extends ModTemplate {
     };
 
     await app.storage.executeDatabase(sql, params, "league");
+    
+    this.app.connection.emit("league-rankings-render-request");
     return;
   }
 
@@ -524,6 +526,7 @@ class League extends ModTemplate {
 
     let sql = `DELETE FROM players WHERE league_id=$league AND pkey=$player`;
     await this.app.storage.executeDatabase(sql, params, "league");
+    this.app.connection.emit("league-rankings-render-request");
   }
 
   sendDisbandLeagueTransaction(league_id){
@@ -946,9 +949,11 @@ class League extends ModTemplate {
         if (league_self.leagueCount >= league_self.leagues.length){
           league_self.renderLeagues(league_self.app, league_self);
         }
-      }
 
-    );
+
+        this.app.connection.emit("league-rankings-render-request");
+
+      });
 
   }
 
@@ -988,6 +993,7 @@ class League extends ModTemplate {
     }
     console.log(params);
     await this.app.storage.executeDatabase(sql, params, "league");
+    this.app.connection.emit("league-rankings-render-request");
     return 1;
   }
 
@@ -1007,6 +1013,7 @@ class League extends ModTemplate {
     }
     console.log(params);
     await this.app.storage.executeDatabase(sql, params, "league");
+    this.app.connection.emit("league-rankings-render-request");
     return 1;
   }
 

@@ -1,5 +1,9 @@
+<<<<<<< HEAD
+const LeagueMainTemplate    = require("./main.template");
+=======
 const LeagueMainTemplate = require("./main.template");
 // const LeagueListModal = require('./overlays/league-list-modal');
+>>>>>>> 01f7352a1b6901f809bee4f730fc075072beb3e7
 const LeagueComponentExistingLeague = require("./components/existing-league");
 //const LeagueJoinOverlay = require("./../overlays/join-league-overlay");
 
@@ -112,7 +116,7 @@ class LeagueMain {
         // this.mod.attachStyleSheets();
 
         console.log(this.mod);
-        this.app.connection.emit("arcade-launch-game-selector");
+        this.app.connection.emit("arcade-launch-game-selector", {league: true});
 
         // let selector = new LeagueListModal(main_self.app, main_self.mod);
         // selector.title = "Games";
