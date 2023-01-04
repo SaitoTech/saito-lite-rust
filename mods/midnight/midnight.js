@@ -76,7 +76,7 @@ class Midnight extends GameTemplate {
           class: "game-intro",
           callback: function (app, game_mod) {
               game_mod.menu.hideSubMenus();
-              game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML());
+              game_mod.overlay.show(game_mod.returnGameRulesHTML());
           }
       });
 

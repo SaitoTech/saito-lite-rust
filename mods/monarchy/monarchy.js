@@ -1,7 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const MonarchyGameRulesTemplate = require("./lib/monarchy-game-rules.template");
 const MonarchyGameOptionsTemplate = require("./lib/monarchy-game-options.template");
-const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -29,7 +29,7 @@ class Monarchy extends GameTemplate {
     //this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
     this.hud.respectDocking = true;
-    this.attackOverlay = new SaitoOverlay(app, true, false);
+    this.attackOverlay = new SaitoOverlay(app, this, true, false);
     
     this.cards_in_play = [];
     this.is_testing = false;

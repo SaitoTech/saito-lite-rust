@@ -1,4 +1,4 @@
-const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const InviteOverlayTemplate = require("./invite-overlay.template");
 
 

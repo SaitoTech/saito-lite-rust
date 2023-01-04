@@ -21,6 +21,59 @@ class JoinGameOverlay {
   }
   
   attachEvents() {
+
+    document.querySelector(".arcade-game-controls-join-game").onclick = (e) => {
+
+      //
+      // join or accept?
+      //
+      let newtx;
+      let txmsg = this.invite_tx.returnMessage();
+      let players_needed = parseInt(txmsg.players_needed);
+      let players_current = parseInt(txmsg.players_sigs.length);
+
+      if (players_needed == (players_current-1)) {
+        newtx = this.mod.createJoinTransaction(this.invite_tx);
+      } else {
+        newtx = this.mod.createAcceptTransaction(this.invite_tx);
+        this.app.connection.emit("arcade-game-initialize-render-request", (newtx.transaction.sig));
+      }
+
+      //
+      // send on-chain
+      //
+      this.app.network.propagateTransaction(newtx);
+
+      //
+      // refresh with latest data, including me !
+      //
+      let newtxmsg = newtx.returnMessage();
+      let players = newtxmsg.players;
+
+      //
+      // send off-chain
+      //
+      let relay_mod = this.app.modules.returnModule("Relay");
+      if (relay_mod != null) {
+        relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
+      }
+
+      //
+      // hello world!
+      //
+      salert("Joining game! Please wait a moment");
+
+      //
+      // hide overlay
+      //
+      this.overlay.hide();
+ 
+      //
+      // let main panel take action
+      //
+      this.app.connection.emit("arcade-invite-manager-render-request");        
+
+    }
   }
 
 }

@@ -12,11 +12,13 @@
   min-height: 12rem;
   max-height: 12rem;
   padding: 0.5rem;
+  border: 1px solid var(--saito-border-color);
   transition: all 0.2s;
 }
 
 .game-selector-container:hover {
   cursor: pointer;
+  border: none;
   outline: 1px solid var(--saito-border-color);
   transform: scale(1.05);
 }
@@ -32,6 +34,8 @@
 
 .game-selector-game-title {
   font-size: 2rem;
+  text-transform: uppercase;
+  margin-top: auto;
 }
 
 .game-selctor-game-image {

@@ -107,9 +107,7 @@ class Tweet {
   }
 
 
-
-
-  render() {
+  render(prepend=false) {
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
 
@@ -119,7 +117,11 @@ class Tweet {
     if (document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
-      this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+      if (prepend == true) {
+        this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+      } else {
+        this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+      }
     }
 
     if (this.retweet != null) {

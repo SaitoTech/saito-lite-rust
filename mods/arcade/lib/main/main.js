@@ -2,6 +2,7 @@ const JSON = require("json-bigint");
 const ArcadeMainTemplate = require("./main.template");
 const ArcadeMenu = require("./menu");
 const ArcadeBanner = require("./banner");
+const ArcadeInitializer = require("./initializer");
 const SaitoSidebar = require('./../../../../lib/saito/ui/saito-sidebar/saito-sidebar');
 
 class ArcadeMain {
@@ -19,58 +20,15 @@ class ArcadeMain {
     this.menu = new ArcadeMenu(this.app, this.mod, ".saito-sidebar.left");
     this.sidebar.addComponent(this.menu);
     this.banner = new ArcadeBanner(this.app, this.mod, ".arcade-central-panel");
-
-
+    this.initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
 
     //
     // load init page
     //
-    app.connection.on("arcade-launch-game-init", (game_id) => {
-
+    app.connection.on("arcade-game-initialize-render-request", (game_id) => {
+      document.querySelector(".arcade-central-panel").innerHTML = "";
       this.mod.is_game_initializing = true;
-
-      this.mod.initialization_timer = setInterval(() => {
-
-        let game_idx = -1;
-        if (this.app.options.games != undefined) {
-          for (let i = 0; i < this.app.options.games.length; i++) {
-            if (this.app.options.games[i].id == game_id) {
-              game_idx = i;
-            }
-          }
-        } 
-        
-        if (game_idx == -1) { return; }
-          
-        if (this.app.options.games[game_idx].initializing == 0) {
-    
-          //
-          // check we don't have a pending TX for this game...
-          //
-          let ready_to_go = 1;
-      
-          if (this.app.wallet.wallet.pending.length > 0) {
-            for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
-              let thistx = new saito.transaction(JSON.parse(this.app.wallet.wallet.pending[i]));
-              let thistxmsg = thistx.returnMessage();
-              if (thistxmsg.module == this.app.options.games[game_idx].module) {
-                if (thistxmsg.game_id == this.app.options.games[game_idx].id) {
-                  ready_to_go = 0;
-                }
-              }
-            }  
-          }
-
-          if (ready_to_go == 0) {
-            console.log("transaction for this game still in pending...");
-            return;
-          }
-
-          clearInterval(this.mod.initialization_timer);
-
-        }
-      }, 1000);
-
+      this.initializer.render(game_id);
     });
 
   }
@@ -87,17 +45,21 @@ class ArcadeMain {
 
     this.sidebar.render();
 
-//    if (Math.random() < 0.5) {
-//      this.banner.render();
-//    } else {
-      this.app.modules.renderInto(".arcade-invites-box");
-//    }
-
-
     //
     // appspace modules
     //
     this.app.modules.renderInto(".arcade-leagues");
+
+    //
+    // invite manager
+    //
+    this.app.modules.renderInto(".arcade-invites-box");
+
+
+    //
+    //
+    //
+    this.attachEvents();
 
   }
 

@@ -124,7 +124,7 @@ class Settlers extends GameTemplate {
       class: "game-help",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
     });
     this.menu.addSubMenuOption("game-info", {
@@ -133,7 +133,7 @@ class Settlers extends GameTemplate {
       class: "game-stats",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnStatsOverlay());
+        game_mod.overlay.show(game_mod.returnStatsOverlay());
       },
     });
     
@@ -193,7 +193,7 @@ class Settlers extends GameTemplate {
         class: "game-trade-help",
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
-          game_mod.overlay.show(app, game_mod, game_mod.returnTradeHelpOverlay());
+          game_mod.overlay.show(game_mod.returnTradeHelpOverlay());
         },
       });
     }

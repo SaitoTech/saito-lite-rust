@@ -40,7 +40,7 @@ class Arcade extends ModTemplate {
     this.services = [{ service: "arcade", domain: "saito" }];
 
     this.theme_options = {
-      'lite': 'fa-solid fa-sun', 
+      'lite': 'fa-solid fa-sun',
       'dark': 'fa-solid fa-moon',
       'arcade': 'fa-solid fa-moon'
     };
@@ -65,9 +65,9 @@ class Arcade extends ModTemplate {
     if (app.modules.respondTo("arcade-games")) {
       app.modules.respondTo("arcade-games").forEach(game_mod => {
         this.game_mods.push(game_mod);
-	//
-	// and listen to their transactions
-	//
+        //
+        // and listen to their transactions
+        //
         this.affix_callbacks_to.push(game_mod.name);
       });
     }
@@ -96,7 +96,7 @@ class Arcade extends ModTemplate {
       if (this.app.options.games) {
         for (let game of this.app.options.games) {
           if (game.over == 0 && (game.players_set != 1 || game.players.includes(this.app.wallet.returnPublicKey()) || game.accepted.includes(this.app.wallet.returnPublicKey()))) {
-  
+
             let game_tx = new saito.default.transaction();
             if (game.over) { if (game.last_block > 0) { return; } }
             if (game.players) {
@@ -106,7 +106,7 @@ class Arcade extends ModTemplate {
               game_tx.transaction.from.push(new saito.default.slip(this.app.wallet.returnPublicKey()));
               game_tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey()));
             }
-  
+
             let msg = {
               request: "loaded",
               game: game.module,
@@ -117,10 +117,10 @@ class Arcade extends ModTemplate {
               over: game.over,
               last_block: game.last_block,
             }
-  
+
             game_tx.transaction.sig = game.id;
             game_tx.msg = msg;
-  
+
             //
             // and add to list of my games
             //
@@ -215,7 +215,7 @@ class Arcade extends ModTemplate {
 
     if (this.app.BROWSER == 1) {
       if (this.app.options.theme) {
-        let theme = this.app.options.theme[this.slug];
+        let theme = this.app.options.theme[this.returnSlug];
         if (theme != null) {
           this.app.browser.switchTheme(theme);
         }
@@ -264,6 +264,11 @@ class Arcade extends ModTemplate {
     }
 
     if (qs == ".arcade-invites-box") {
+
+console.log("<===>");
+console.log("<--->");
+console.log("<===>");
+
       if (!this.renderIntos[qs]) {
         this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
@@ -299,8 +304,8 @@ class Arcade extends ModTemplate {
         text: "Challenge to Game",
         icon: "fas fa-gamepad",
         callback: function (app, publickey) {
-          let obj = { publickey : publickey };
-	  app.connection.emit("arcade-launch-game-selector", (obj));
+          let obj = { publickey: publickey };
+          app.connection.emit("arcade-launch-game-selector", (obj));
         }
       }
     }
@@ -693,7 +698,7 @@ class Arcade extends ModTemplate {
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.slip(gametx.transaction.from[0].add, 0.0));
-    tx.transaction.to.push(new saito.slip(app.wallet.returnPublicKey(), 0.0));
+    tx.transaction.to.push(new saito.slip(this.app.wallet.returnPublicKey(), 0.0));
     tx.msg.ts = "";
     tx.msg.module = txmsg.game;
     tx.msg.request = "invite";
@@ -853,7 +858,7 @@ class Arcade extends ModTemplate {
       //
       // only process transactions for us
       //
-      if (!tx.isTo(app.wallet.returnPublicKey())) { return; }
+      if (!tx.isTo(this.app.wallet.returnPublicKey())) { return; }
 
       //
       // do not re-accept old games
@@ -892,16 +897,18 @@ class Arcade extends ModTemplate {
     //
     // kick-off game
     //
-    if (txmsg.players.includes(app.wallet.returnPublicKey())) {
-      alert("GAME SHOULD START, BUT WE HAVEN'T CODED THAT YET");
-      this.app.connection.emit("arcade-game-accept", (txmsg.game_id));
+    if (txmsg.players.includes(this.app.wallet.returnPublicKey())) {
+      this.app.connection.emit("arcade-game-initialize-render-request", (txmsg.game_id));
       siteMessage(txmsg.module + ' invite accepted.', 20000);
+
       let game_id = await gamemod.processAcceptRequest(tx, this.app);
+
+console.log("returned: " + game_id);
 
       if (!game_id) {
         console.log("Game template returned a null game_id");
-        await sconfirm("Something went wrong with the game initialization, reload?");
-        window.location.reload();
+        await sconfirm("Something went wrong with the game initialization, reload: " + game_id);
+        //window.location.reload();
       }
     }
 
@@ -1349,7 +1356,7 @@ class Arcade extends ModTemplate {
   }
   returnGame(game_id) {
     for (let key in this.games) {
-      let game = this.games.find((g) => g.transaction.sig == game_id);
+      let game = this.games[key].find((g) => g.transaction.sig == game_id);
       if (game) { return game; }
     }
     return null;
@@ -1578,9 +1585,13 @@ class Arcade extends ModTemplate {
 
   showShareLink(game_sig) {
     let data = {};
+    let accepted_game = null;
 
     //Add more information about the game
-    let accepted_game = this.games.find((g) => g.transaction.sig === game_sig);
+    for (let key in this.games) {
+      let x = this.games[key].find((g) => g.transaction.sig === game_sig);
+      if (x) { accepted_game = x; }
+    }
 
     if (accepted_game) {
       data.game = accepted_game.msg.game;
@@ -1615,6 +1626,8 @@ class Arcade extends ModTemplate {
     let game_mod = this.app.modules.returnModule(game);
     let players_needed = options["game-wizard-players-select"];
 
+console.log("X: 1");
+
     if (!players_needed) {
       console.error("Create Game Error");
       console.log(options);
@@ -1627,6 +1640,8 @@ class Arcade extends ModTemplate {
       players_needed = options["game-wizard-players-select"];
     }
 
+console.log("X: 2");
+
     let gamedata = {
       ts: new Date().getTime(),
       name: game,
@@ -1637,8 +1652,10 @@ class Arcade extends ModTemplate {
     };
 
     if (players_needed == 1) {
+console.log("X: 3");
       this.launchSinglePlayerGame(this.app, gamedata); //Game options don't get saved....
     } else {
+console.log("X: 4");
 
       if (gameType == "private" || gameType == "direct") {
         gamedata.invitation_type = "private";
@@ -1646,7 +1663,7 @@ class Arcade extends ModTemplate {
 
       if (gameType == "direct") {
         let newtx = this.createOpenTransaction(gamedata, options.publickey);
-	this.app.connection.emit("arcade-launch-game-scheduler", (newtx));
+        this.app.connection.emit("arcade-launch-game-scheduler", (newtx));
         return;
       }
 
@@ -1661,14 +1678,26 @@ class Arcade extends ModTemplate {
         peers.push(this.app.network.peers[i].returnPublicKey());
       }
 
-      this.app.connection.emit("send-relay-message", { recipient: peers, request: "arcade spv update", data: newtx });
-
       this.addGame(newtx, "mine");
 
+console.log("X: 5");
+
       this.app.connection.emit("arcade-invite-manager-render-request");
+console.log("X: 5 2");
+//
+      this.app.connection.emit("send-relay-message", { recipient: peers, request: "arcade spv update", data: newtx });
+console.log("X: 5 3");
+
+console.log("***");
+console.log("***");
+console.log("***");
+
+console.log("X: 6");
 
       if (gameType == "private") {
+console.log("X: 7");
         this.showShareLink(newtx.transaction.sig);
+console.log("X: 8");
       }
     }
   }
@@ -1732,14 +1761,9 @@ class Arcade extends ModTemplate {
 
   }
 
-
-
-
-
-
-
-
-
 }
 
 module.exports = Arcade;
+
+
+
