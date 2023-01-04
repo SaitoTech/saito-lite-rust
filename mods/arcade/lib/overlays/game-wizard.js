@@ -66,8 +66,10 @@ class GameWizard {
       overlaybox.appendChild(overlay1);
       overlaybox.appendChild(overlay_backdrop_el);
 
-      overlay_backdrop_el.style.opacity = 0.95;
-      overlay_backdrop_el.style.backgroundColor = "#111";
+      if (overlay_backdrop_el) {
+        overlay_backdrop_el.style.opacity = 0.95;
+        overlay_backdrop_el.style.backgroundColor = "#111";
+      }
 
     }
 

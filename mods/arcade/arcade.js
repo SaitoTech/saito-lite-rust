@@ -264,6 +264,11 @@ class Arcade extends ModTemplate {
     }
 
     if (qs == ".arcade-invites-box") {
+
+console.log("<===>");
+console.log("<--->");
+console.log("<===>");
+
       if (!this.renderIntos[qs]) {
         this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
@@ -693,7 +698,7 @@ class Arcade extends ModTemplate {
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.slip(gametx.transaction.from[0].add, 0.0));
-    tx.transaction.to.push(new saito.slip(app.wallet.returnPublicKey(), 0.0));
+    tx.transaction.to.push(new saito.slip(this.app.wallet.returnPublicKey(), 0.0));
     tx.msg.ts = "";
     tx.msg.module = txmsg.game;
     tx.msg.request = "invite";
@@ -853,7 +858,7 @@ class Arcade extends ModTemplate {
       //
       // only process transactions for us
       //
-      if (!tx.isTo(app.wallet.returnPublicKey())) { return; }
+      if (!tx.isTo(this.app.wallet.returnPublicKey())) { return; }
 
       //
       // do not re-accept old games
@@ -892,16 +897,18 @@ class Arcade extends ModTemplate {
     //
     // kick-off game
     //
-    if (txmsg.players.includes(app.wallet.returnPublicKey())) {
-      alert("GAME SHOULD START, BUT WE HAVEN'T CODED THAT YET");
-      this.app.connection.emit("arcade-game-accept", (txmsg.game_id));
+    if (txmsg.players.includes(this.app.wallet.returnPublicKey())) {
+      this.app.connection.emit("arcade-game-initialize-render-request", (txmsg.game_id));
       siteMessage(txmsg.module + ' invite accepted.', 20000);
+
       let game_id = await gamemod.processAcceptRequest(tx, this.app);
+
+console.log("returned: " + game_id);
 
       if (!game_id) {
         console.log("Game template returned a null game_id");
-        await sconfirm("Something went wrong with the game initialization, reload?");
-        window.location.reload();
+        await sconfirm("Something went wrong with the game initialization, reload: " + game_id);
+        //window.location.reload();
       }
     }
 
@@ -1349,7 +1356,7 @@ class Arcade extends ModTemplate {
   }
   returnGame(game_id) {
     for (let key in this.games) {
-      let game = this.games.find((g) => g.transaction.sig == game_id);
+      let game = this.games[key].find((g) => g.transaction.sig == game_id);
       if (game) { return game; }
     }
     return null;
@@ -1578,9 +1585,13 @@ class Arcade extends ModTemplate {
 
   showShareLink(game_sig) {
     let data = {};
+    let accepted_game = null;
 
     //Add more information about the game
-    let accepted_game = this.games.find((g) => g.transaction.sig === game_sig);
+    for (let key in this.games) {
+      let x = this.games[key].find((g) => g.transaction.sig === game_sig);
+      if (x) { accepted_game = x; }
+    }
 
     if (accepted_game) {
       data.game = accepted_game.msg.game;
@@ -1615,6 +1626,8 @@ class Arcade extends ModTemplate {
     let game_mod = this.app.modules.returnModule(game);
     let players_needed = options["game-wizard-players-select"];
 
+console.log("X: 1");
+
     if (!players_needed) {
       console.error("Create Game Error");
       console.log(options);
@@ -1627,6 +1640,8 @@ class Arcade extends ModTemplate {
       players_needed = options["game-wizard-players-select"];
     }
 
+console.log("X: 2");
+
     let gamedata = {
       ts: new Date().getTime(),
       name: game,
@@ -1637,8 +1652,10 @@ class Arcade extends ModTemplate {
     };
 
     if (players_needed == 1) {
+console.log("X: 3");
       this.launchSinglePlayerGame(this.app, gamedata); //Game options don't get saved....
     } else {
+console.log("X: 4");
 
       if (gameType == "private" || gameType == "direct") {
         gamedata.invitation_type = "private";
@@ -1661,14 +1678,26 @@ class Arcade extends ModTemplate {
         peers.push(this.app.network.peers[i].returnPublicKey());
       }
 
-      this.app.connection.emit("send-relay-message", { recipient: peers, request: "arcade spv update", data: newtx });
-
       this.addGame(newtx, "mine");
 
+console.log("X: 5");
+
       this.app.connection.emit("arcade-invite-manager-render-request");
+console.log("X: 5 2");
+//
+      this.app.connection.emit("send-relay-message", { recipient: peers, request: "arcade spv update", data: newtx });
+console.log("X: 5 3");
+
+console.log("***");
+console.log("***");
+console.log("***");
+
+console.log("X: 6");
 
       if (gameType == "private") {
+console.log("X: 7");
         this.showShareLink(newtx.transaction.sig);
+console.log("X: 8");
       }
     }
   }
@@ -1732,14 +1761,9 @@ class Arcade extends ModTemplate {
 
   }
 
-
-
-
-
-
-
-
-
 }
 
 module.exports = Arcade;
+
+
+
