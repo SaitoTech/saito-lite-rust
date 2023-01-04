@@ -373,7 +373,7 @@
   displaySpaceDetailedView(name) {
     // function is attached to this.spaces not this.game.spaces
     let html = this.spaces[name].returnView();    
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
   displayElectorateDisplay() {

@@ -488,29 +488,6 @@ class Twilight extends GameTemplate {
       }
     });
 
-/****
-    this.menu.addSubMenuOption("game-game", {
-      text: "Invite Observer",
-      id: "game-observer",
-      class: "game-observer",
-      callback: function(app, game_mod){
-        game_mod.game.saveGameState = 1;
-        let msgobj = {
-          game_id : game_mod.game.id ,
-          player : app.wallet.returnPublicKey() ,
-          module : game_mod.game.module
-        };
-        let msg = app.crypto.stringToBase64(JSON.stringify(msgobj));
-        let observe_link = window.location.href;
-        let tmpar = observe_link.split("/");
-        let oblink = tmpar[0] + "//" + tmpar[2];
-        let html  = `<div class="status-message" id="status-message">Observer Mode will be enabled on your next move (reload to cancel). Make your move and then share this link:
-        <div style="padding:15px;font-size:0.9em;overflow-wrap:anywhere">${oblink}/arcade/?i=watch&msg=${msg}</div></div>`;
-        game_mod.overlay.show(app, game_mod, html);
-      }
-    });
-****/
-
     this.menu.addSubMenuOption("game-info", {
       text: "Cards",
       id: "game-cards",
@@ -8497,12 +8474,12 @@ playerTurnHeadlineSelected(card, player) {
               <option value="enable" >enable</option>
               <option value="disable" selected>disable</option>
             </select>
-            <button id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 	</div>
 
             <div id="game-wizard-advanced-box" class="game-wizard-advanced-box" style="display:block;padding-left:20px;">
 
-	      <style type="text/css">li { list-style: none; } label { text-transform: uppercase; } .removecards { grid-gap: 0.1em; } .list-header { font-weight: bold; font-size:1.5em; margin-top:0px; margin-bottom:10px; margin-left: 15px; text-transform: uppercase; } </style>
+	      <style type="text/css">li { list-style: none; } .saito-select { margin-bottom: 10px; margin-top:5px; } label { text-transform: uppercase; } .removecards { grid-gap: 0.1em; } .list-header { font-weight: bold; font-size:1.5em; margin-top:0px; margin-bottom:10px; margin-left: 15px; text-transform: uppercase; } </style>
               <div class="list-header">remove cards:</div>
               <ul id="removecards" class="removecards">
               <li><input class="remove_card" type="checkbox" name="asia" /> Asia Scoring</li>

@@ -1,21 +1,25 @@
 const UploadRomOverlayTemplate = require("./upload-rom.template");
-const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 
 class UploadRomOverlay {
 
-  constructor(app, mod = null, selector = "") {
+  constructor(app, mod = null, container = "") {
     this.app = app;
     this.mod = mod;
-    this.overlay = new SaitoOverlay(app, false);
+    this.container = container;
+    this.overlay = new SaitoOverlay(app, mod, false);
   }
 
-  render(app, mod, selector = "") {
-    this.overlay.show(app, mod, UploadRomOverlayTemplate(app, mod));
-    this.attachEvents(app, mod);
+  render() {
+    this.overlay.show(UploadRomOverlayTemplate(this.app, this.mod));
+    this.attachEvents();
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     let uploader = this;    
 

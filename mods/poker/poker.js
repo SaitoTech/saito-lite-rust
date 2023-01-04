@@ -56,7 +56,7 @@ class Poker extends GameTableTemplate {
       class: "game-rules",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
     });
     this.menu.addSubMenuOption("game-info", {
@@ -859,7 +859,7 @@ class Poker extends GameTableTemplate {
 
         if (this.browser_active){
           this.overlay.closebox = true;
-          this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`, ()=>{
+          this.overlay.show(`<div class="shim-notice">${winner_html}${updateHTML}</div>`, ()=>{
             this.overlay.closebox = false;
             this.clearTable();
             this.restartQueue();
@@ -2997,7 +2997,7 @@ class Poker extends GameTableTemplate {
 
     html+=`</div>`;
 
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
 
