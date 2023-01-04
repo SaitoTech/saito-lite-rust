@@ -525,6 +525,18 @@ class Browser {
     }
   }
 
+  addElementAfterId(html, id = null) {
+    if (id == null) {
+      console.warn(`no id provided to add to, so adding to DOM`);
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementAfterId(id);
+      if (obj) {
+        this.app.browser.addElementToDom(html, obj);
+      }
+    }
+  }
+
   prependElementToId(html, id = null) {
     if (id == null) {
       console.warn(`no id provided to prepend to, so adding to DOM`);
@@ -576,6 +588,18 @@ class Browser {
       let container = document.querySelector(selector);
       if (container) {
         this.app.browser.addElementToElement(html, container);
+      }
+    }
+  }
+
+  addElementAfterSelector(html, selector = "") {
+    if (selector === "") {
+      console.warn("no selector provided to add to, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.addElementAfterElement(html, container);
       }
     }
   }
@@ -641,6 +665,22 @@ class Browser {
       console.log(html);
     }
   }
+
+  addElementAfterElement(html, elem = document.body) {
+    try {
+      const el = document.createElement("div");
+      if (elem.nextSibling) {
+        siblingBefore.parentNode.insertBefore(el, siblingBefore.nextSibling);
+      } else {
+        siblingBefore.parentNode.appendChild(el);
+      }
+      el.outerHTML = html;
+    } catch (err) {
+      console.log("ERROR 582343: error in addElementToElement. Does " + elem + " exist?");
+      console.log(html);
+    }
+  }
+
 
   makeElement(elemType, elemId, elemClass) {
     const headerDiv = document.createElement(elemType);

@@ -546,7 +546,11 @@ class RedSquare extends ModTemplate {
     }
 
     //
-    console.log("EMIT: RTAR");
+    console.log("ALL TWEETS: ");
+for (let i = 0; i < this.tweets.length; i++) {
+    console.log(this.tweets[i].text + " ---- " + this.tweets[i].children.length);
+}
+
     //
     this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
 

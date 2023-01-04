@@ -44,7 +44,7 @@ class AppspaceHome {
 	this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
       }
       this.mod.tweets[i].container = ".redsquare-appspace-body";
-      this.mod.tweets[i].render();
+      this.mod.tweets[i].renderWithCriticalChild();
     }
 
     this.attachEvents();

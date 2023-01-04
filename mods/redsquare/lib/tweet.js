@@ -27,6 +27,7 @@ class Tweet {
     this.unknown_children = [];
     this.unknown_children_sigs_hmap = {};
     this.critical_child = null;
+    this.render_after_selector = "";
 
     this.retweet = null;
     this.retweeters = [];
@@ -66,6 +67,26 @@ class Tweet {
   }
 
 
+  renderWithCriticalChild(prepend=false) {
+
+    this.render();
+    this.attachEvents();
+
+    if (this.critical_child) {
+
+      this.critical_child.render_after_selector = ".tweet-" + this.critical_child.tx.transaction.sig;
+      this.critical_child.render();
+
+      let myqs = `.tweet-${this.tx.transaction.sig}`;
+      let obj = document.querySelector(myqs);
+      if (obj) {
+	obj.classList.add("has-reply");
+      }
+
+    }
+
+  }
+
 
   renderWithChildren() {
 
@@ -79,7 +100,6 @@ class Tweet {
     } else {
       this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
     }
-
 
     //
     // then render its children
@@ -107,9 +127,13 @@ class Tweet {
   }
 
 
+
+
+
   render(prepend=false) {
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
+
 
     //
     // replace or add
@@ -120,7 +144,11 @@ class Tweet {
       if (prepend == true) {
         this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
-        this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+        if (this.render_after_selector) {
+          this.app.browser.addElementAfterSelector(TweetTemplate(this.app, this.mod, this), this.render_after_selector);
+        } else {
+          this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+	}
       }
     }
 
@@ -153,9 +181,6 @@ class Tweet {
           el.classList.add("preview");
           this.is_long_tweet = true;
         }
-
-
-
       }
 
       /////////////////
