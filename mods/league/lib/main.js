@@ -1,5 +1,5 @@
 const LeagueMainTemplate    = require("./main.template");
-const LeagueListModal = require('./overlays/league-list-modal');
+//const LeagueListModal = require('./overlays/league-list-modal');
 const LeagueComponentExistingLeague = require("./components/existing-league");
 //const LeagueJoinOverlay = require("./../overlays/join-league-overlay");
 
