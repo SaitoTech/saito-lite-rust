@@ -17,7 +17,7 @@ class RedSquare extends ModTemplate {
 
     super(app);
     this.appname = "Red Square";
-    this.name = "Redsquare";
+    this.name = "RedSquare";
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";

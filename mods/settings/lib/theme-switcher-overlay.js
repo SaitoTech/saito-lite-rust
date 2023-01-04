@@ -10,15 +10,13 @@ class ThemeSwitcherOverlay {
   }
 
   render() {
-    let mod_name = this.mod.getCurrentModName();    
-    let mod_obj = this.app.modules.returnModule(mod_name);
+    let mod_obj = this.app.modules.returnActiveModule();
     let selected_theme = "";
     if (this.app.options.theme) {
       selected_theme = this.app.options.theme[mod_obj.returnSlug()];
     }
 
-    console.log('mod_name');
-    console.log(mod_name);
+    /*
     console.log('mod_obj')
     console.log(mod_obj);
     console.log('mod_obj.theme_options')
@@ -28,6 +26,7 @@ class ThemeSwitcherOverlay {
 
     console.log("options");
     console.log(this.app.options.theme);
+    */
 
     this.overlay.show(ThemeSwitcherOverlayTemplate(this.app, this.mod, mod_obj.theme_options, selected_theme));
     this.attachEvents();
