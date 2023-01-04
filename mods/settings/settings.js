@@ -75,7 +75,8 @@ class Settings extends ModTemplate {
         }
       }
   }
-
+  
+  /*
   getCurrentModName(){
     if (this.app.BROWSER == 1) {
         let slug =  ((window.location.pathname).split('/'))[1];
@@ -84,6 +85,7 @@ class Settings extends ModTemplate {
 
     return null;
   }
+  */
 
 }
 

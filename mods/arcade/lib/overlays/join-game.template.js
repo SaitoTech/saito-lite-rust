@@ -60,7 +60,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
 
 	  </div>
 	  <div class="arcade-game-controls">
-	    <div class="saito-button saito-button-primary">join game</div>
+	    <div class="arcade-game-controls-join-game saito-button saito-button-primary">join game</div>
 	  </div>
 </div>
   `;

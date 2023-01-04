@@ -1557,7 +1557,7 @@ class Browser {
         wrapper.innerHTML = html;
         document.body.appendChild(wrapper);
         setTimeout(() => {
-          document.querySelector("#alert-box").style.top = "0";
+          document.querySelector("#saito-alert-box").style.top = "0";
         }, 100);
         document.querySelector("#alert-ok").focus();
         document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
