@@ -1422,8 +1422,8 @@ class Network {
     this.block_fetch_running = true;
     do {
       let promises = [];
-      this.blocks_to_fetch.sort((a, b) => Number(b.id - a.id));
-      for (let i = 0; i < 1 && this.blocks_to_fetch.length > 0; ++i) {
+      this.blocks_to_fetch.sort((a, b) => Number(a.id - b.id));
+      for (let i = 0; i < 10 && this.blocks_to_fetch.length > 0; ++i) {
         let entry = this.blocks_to_fetch.pop();
         console.debug("fetching : " + entry.hash + " - " + entry.id);
         promises.push(this.fetchBlock(entry.hash, entry.peer));
