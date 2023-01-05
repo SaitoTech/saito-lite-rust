@@ -24,7 +24,6 @@ class RedSquareMenu {
     // appspace modules
     //
     this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
-console.log("rendering one: " + mod.name);
       if (!document.querySelector(`.redsquare-menu-${mod.returnSlug()}`)) {
         this.app.browser.addElementToSelector(
           `<li class="redsquare-menu-${mod.returnSlug()}">
@@ -55,7 +54,6 @@ console.log("rendering one: " + mod.name);
       this.app.connection.emit("redsquare-contacts-render-request");
     }
 
-
     //
     // appspace modules
     //
@@ -83,18 +81,14 @@ console.log("rendering one: " + mod.name);
       qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
       let obj = document.querySelector(qs);
       if (!obj) {
-        console.log("UPDATING AS 1");
         this.app.browser.addElementToSelector(`<div class="saito-notification-dot">1</div>`, `.redsquare-menu-${menu_item}`);
       } else {
-        console.log("UPDATING AS 1");
         let existing_notifications = parseInt(obj.innerHTML);
-        console.log("existing_notifications: " + existing_notifications);
         if (notifications == 0) {
           obj.style.display = "none";
         } else {
           obj.style.display = "block";
           existing_notifications++;
-          console.log("updating to " + existing_notifications);
           obj.innerHTML = existing_notifications;
         }
       }

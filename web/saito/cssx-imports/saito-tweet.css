@@ -30,7 +30,7 @@
     border: 0.25rem solid var(--saito-font-color-inverse);
     z-index: 50;
 }
-.saito-identicon {
+.tweet-header .saito-user .saito-identicon-box .saito-identicon {
     z-index: 51;
     position: absolute;
 }

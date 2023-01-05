@@ -25,6 +25,8 @@ class AppspaceNotifications {
     }
 
 console.log("NOTIFICATIONS: " + this.mod.notifications.length);
+    this.mod.menu.incrementNotifications("notifications", 0);
+
 
     for (let i = 0; i < this.mod.notifications.length; i++) {
       this.mod.notifications[i].container = ".redsquare-notifications";

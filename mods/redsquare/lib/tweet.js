@@ -74,6 +74,8 @@ class Tweet {
     //
     // replace or add
     //
+console.log("RENDER: " + this.text);
+
     if (document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
@@ -159,6 +161,8 @@ class Tweet {
       } else {
         for (let i = 0; i < this.children.length; i++) {
           this.children[i].container = this.container;
+console.log("render children: " + this.children[i].text);
+          this.children[i].render_after_selector = `.tweet-${this.tx.transaction.sig}`;
           this.children[i].render();
         }
       }
