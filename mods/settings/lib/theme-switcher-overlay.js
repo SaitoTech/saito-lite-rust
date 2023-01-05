@@ -16,6 +16,10 @@ class ThemeSwitcherOverlay {
       selected_theme = this.app.options.theme[mod_obj.returnSlug()];
     }
 
+
+    console.log('mod_obj')
+    console.log(mod_obj);
+
     /*
     console.log('mod_obj')
     console.log(mod_obj);

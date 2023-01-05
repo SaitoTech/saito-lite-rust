@@ -1783,14 +1783,14 @@ class Browser {
     document.documentElement.setAttribute('data-theme', theme);
 
     if (this.app.BROWSER == 1) {
-      let mod_name = ((window.location.pathname).split('/'))[1];
+      let mod_obj = this.app.modules.returnActiveModule();
 
       if (!this.app.options.theme) {
         this.app.options.theme = {};
       }
 
-      if (mod_name != null) {
-          this.app.options.theme[mod_name] = theme;
+      if (mod_obj.slug != null) {
+          this.app.options.theme[mod_obj.slug] = theme;
           this.app.storage.saveOptions();
       }
       console.log(this.app.options);
