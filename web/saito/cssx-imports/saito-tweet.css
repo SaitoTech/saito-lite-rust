@@ -17,7 +17,7 @@
     height: 100%;
     top: 5.5rem;
     left: 3.5rem;
-    border: 0.25rem solid var(--saito-gray-transparent);
+    border: 0.25rem solid var(--saito-font-color-inverse);
     z-index: 50;
 }
 .tweet.has-reply-disconnected::after {
@@ -27,11 +27,12 @@
     height: 100%;
     top: 5.5rem;
     left: 3.5rem;
-    border: 0.25rem dashed var(--saito-gray-transparent);
+    border: 0.25rem solid var(--saito-font-color-inverse);
     z-index: 50;
 }
 .saito-identicon {
     z-index: 51;
+    position: absolute;
 }
 
 .tweet-body {
