@@ -67,73 +67,9 @@ class Tweet {
   }
 
 
-  renderWithCriticalChild(prepend=false) {
-
-    this.render();
-    this.attachEvents();
-
-    if (this.critical_child) {
-
-      this.critical_child.render_after_selector = ".tweet-" + this.critical_child.tx.transaction.sig;
-      this.critical_child.render();
-
-      let myqs = `.tweet-${this.tx.transaction.sig}`;
-      let obj = document.querySelector(myqs);
-      if (obj) {
-	obj.classList.add("has-reply");
-      }
-
-    }
-
-  }
-
-
-  renderWithChildren() {
-
-    let myqs = `.tweet-${this.tx.transaction.sig}`;
-
-    //
-    // first render the tweet
-    //
-    if (document.querySelector(myqs)) {
-      this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
-    } else {
-      this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
-    }
-
-    //
-    // then render its children
-    //
-    if (this.children.length > 0) {
-      if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
-        if (this.children[0].children.length > 0) {
-          this.children[0].container = this.container;
-          this.children[0].renderWithChildren();
-        } else {
-          for (let i = 0; i < this.children.length; i++) {
-            this.children[i].container = this.container;
-            this.children[i].render();
-          }
-        }
-      } else {
-        for (let i = 0; i < this.children.length; i++) {
-          this.children[i].container = this.container;
-          this.children[i].render();
-        }
-      }
-    }
-
-    this.attachEvents();
-  }
-
-
-
-
-
   render(prepend=false) {
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
-
 
     //
     // replace or add
@@ -165,6 +101,66 @@ class Tweet {
     this.attachEvents();
 
   }
+
+  renderWithCriticalChild(prepend=false) {
+
+    this.render();
+    this.attachEvents();
+
+
+    if (this.critical_child) {
+
+      this.critical_child.render_after_selector = ".tweet-" + this.tx.transaction.sig;
+      this.critical_child.render();
+
+      let myqs = `.tweet-${this.tx.transaction.sig}`;
+      let obj = document.querySelector(myqs);
+      if (obj) { obj.classList.add("has-reply"); }
+
+    }
+
+  }
+
+
+  renderWithChildren() {
+
+    let myqs = `.tweet-${this.tx.transaction.sig}`;
+
+    //
+    // first render the tweet
+    //
+    if (document.querySelector(myqs)) {
+      this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
+    } else {
+      this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+    }
+
+    //
+    // then render its children
+    //
+    if (this.children.length > 0) {
+      if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
+        if (this.children[0].children.length > 0) {
+          this.children[0].container = this.container;
+          this.children[0].renderWithChildren();
+        } else {
+          for (let i = 0; i < this.children.length; i++) {
+            this.children[i].container = this.container;
+            this.children[i].render_after_selector = `.tweet-${this.tx.transaction.sig}`;
+            this.children[i].render();
+          }
+        }
+      } else {
+        for (let i = 0; i < this.children.length; i++) {
+          this.children[i].container = this.container;
+          this.children[i].render();
+        }
+      }
+    }
+
+    this.attachEvents();
+  }
+
 
   attachEvents() {
 
@@ -369,7 +365,6 @@ class Tweet {
     //
     for (let i = 0; i < this.unknown_children.length; i++) {
       if (this.unknown_children[i].parent_id === tweet.tx.transaction.sig) {
-
         if (this.isCriticalChild(this.unknown_children[i])) {
           this.critical_child = this.unknown_children[i];
           this.updated_at = this.critical_child.updated_at;
@@ -396,8 +391,6 @@ class Tweet {
     //
     if (tweet.parent_id == this.tx.transaction.sig) {
 
-      console.log("this is a direct child!");
-
       //
       // already added?
       //
@@ -417,13 +410,11 @@ class Tweet {
       // prioritize tweet-threads
       //
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
-        console.log("unshifting...");
         this.children.unshift(tweet);
         this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
         return 1;
       } else {
         tweet.parent_tweet = this;
-        console.log("pushing...");
         this.children.push(tweet);
         this.children_sigs_hmap[tweet.tx.transaction.sig] == 1;
         return 1;
@@ -489,6 +480,7 @@ class Tweet {
 
 
   isCriticalChild(tweet) {
+    if (tweet.thread_id === this.thread_id) { return false; }
     for (let i = 0; i < tweet.tx.transaction.to.length; i++) {
       if (tweet.tx.transaction.to[i].add === this.app.wallet.returnPublicKey()) {
         if (this.critical_child == null) { return true; }

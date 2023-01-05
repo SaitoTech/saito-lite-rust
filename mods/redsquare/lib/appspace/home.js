@@ -43,8 +43,10 @@ class AppspaceHome {
       if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
 	this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
       }
+console.log("in main thread with tweet " + this.mod.tweets[i].text);
       this.mod.tweets[i].container = ".redsquare-appspace-body";
       this.mod.tweets[i].renderWithCriticalChild();
+
     }
 
     this.attachEvents();

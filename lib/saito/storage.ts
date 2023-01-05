@@ -326,16 +326,12 @@ class Storage {
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
   saveTransaction(tx: Transaction) {
-    console.log("savig tx 1");
-
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = {
       request: "archive save",
       data: tx.serialize(this.app),
     };
-    console.log("signing tx...");
     newtx = this.app.wallet.signTransaction(newtx);
-    console.log("signed tx...");
     this.app.network.sendTransactionWithCallback(newtx, function (res) {});
 
     //    const txmsg = tx.returnMessage();
@@ -349,7 +345,6 @@ class Storage {
     console.log("=============");
     //    this.app.network.sendRequestWithCallback(message, data, function (res) {});
     this.app.connection.emit("save-transaction", tx);
-    console.log("save-transaction'd the tx");
   }
   saveTransactionByKey(key, tx) {
     const txmsg = tx.returnMessage();

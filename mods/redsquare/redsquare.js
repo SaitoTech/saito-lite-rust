@@ -418,12 +418,15 @@ class RedSquare extends ModTemplate {
   //
   addTweet(tx, prepend = 0) {
 
-    console.log("ADDING TWEET");
-
     //
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, "", tx);
+
+console.log('LOAD TWEET: ' + tweet.text);
+console.log('id:  ' + tx.transaction.sig);
+console.log('parent_id:  ' + tweet.parent_id);
+console.log('thread_id:  ' + tweet.thread_id);
 
     //
     // maybe this needs to go into notifications too
@@ -545,13 +548,11 @@ class RedSquare extends ModTemplate {
 
     }
 
-    //
-    console.log("ALL TWEETS: ");
+console.log("ADDED TWEET AND ALL ARE: ");
 for (let i = 0; i < this.tweets.length; i++) {
     console.log(this.tweets[i].text + " ---- " + this.tweets[i].children.length);
 }
 
-    //
     this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
 
   }
@@ -772,8 +773,6 @@ for (let i = 0; i < this.tweets.length; i++) {
         //
         if (txmsg.data?.parent_id) {
 
-          console.log("IS REPLY");
-
           if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
             let tweet = this.returnTweet(txmsg.data.parent_id);
             if (tweet == null) { return; }
@@ -816,8 +815,6 @@ for (let i = 0; i < this.tweets.length; i++) {
         document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
       }
 
-      console.log("NOPING OUT OF BROWSER...");
-
       this.addTweet(tx);
 
       return;
@@ -828,9 +825,7 @@ for (let i = 0; i < this.tweets.length; i++) {
     //
     // fetch supporting link properties
     //
-    console.log("SERVER: GENERATE TWEET PROPERTIES 1");
     tweet = await tweet.generateTweetProperties(app, this, 1);
-    console.log("SERVER: GENERATE TWEET PROPERTIES 2");
 
     let created_at = tx.transaction.ts;
     let updated_at = tx.transaction.ts;
@@ -889,8 +884,6 @@ for (let i = 0; i < this.tweets.length; i++) {
       $tx_size: tx_size
     };
 
-    console.log("SERVER: GENERATE TWEET PROPERTIES 3");
-
     app.storage.executeDatabase(sql, params, "redsquare");
 
     let ts = new Date().getTime();
@@ -900,8 +893,6 @@ for (let i = 0; i < this.tweets.length; i++) {
       $sig: tweet.thread_id,
     }
     app.storage.executeDatabase(sql2, params2, "redsquare");
-
-    console.log("SERVER: GENERATE TWEET PROPERTIES 4");
 
     if (tweet.retweet_tx != null) {
       let ts = new Date().getTime();
@@ -1053,10 +1044,6 @@ for (let i = 0; i < this.tweets.length; i++) {
               }
             } // if query param has tweet id
   
-  
-            console.log('query params');
-            console.log(query_params);
-  
             if (typeof query_params.og_img_sig != "undefined") {
   
   
@@ -1088,16 +1075,6 @@ for (let i = 0; i < this.tweets.length; i++) {
                   let img = Buffer.from(base64Data, 'base64');
                   let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
                 }
-  
-  
-                // console.log('base64 data');
-                // console.log(base64Data);
-  
-                // console.log('img');
-                // console.log(img);
-  
-                // console.log('img format');
-                // console.log(img_type);
   
                 if (img_type == 'image/svg+xml') {
                   img_type = 'image/svg';

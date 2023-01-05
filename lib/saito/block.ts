@@ -112,13 +112,8 @@ class Block {
   }
 
   affixCallbacks() {
-
-console.log("AFFIX TXS: " + this.transactions.length);
-
     for (let z = 0; z < this.transactions.length; z++) {
-console.log("this is a tx of type: " + this.transactions[z].transaction.type);
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
-console.log("this is a normal tx: " + z);
         const txmsg = this.transactions[z].returnMessage();
         console.log("txmsg length: ", txmsg ? JSON.stringify(txmsg).length : txmsg);
         this.app.modules.affixCallbacks(

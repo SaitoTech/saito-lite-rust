@@ -497,7 +497,7 @@ class Browser {
       elemWhere.insertAdjacentElement("afterbegin", elem);
       elem.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582343: error in prependElementToDom");
+      console.log("ERROR 582341: error in prependElementToDom");
     }
   }
 
@@ -661,7 +661,7 @@ class Browser {
       elem.appendChild(el);
       el.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582343: error in addElementToElement. Does " + elem + " exist?");
+      console.log("ERROR 582342: error in addElementToElement. Does " + elem + " exist?");
       console.log(html);
     }
   }
@@ -670,13 +670,13 @@ class Browser {
     try {
       const el = document.createElement("div");
       if (elem.nextSibling) {
-        siblingBefore.parentNode.insertBefore(el, siblingBefore.nextSibling);
+        elem.parentNode.insertBefore(el, elem.nextSibling);
       } else {
-        siblingBefore.parentNode.appendChild(el);
+        elem.parentNode.appendChild(el);
       }
       el.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582343: error in addElementToElement. Does " + elem + " exist?");
+      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : "  + err);
       console.log(html);
     }
   }
