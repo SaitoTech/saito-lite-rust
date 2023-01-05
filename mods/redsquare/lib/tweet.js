@@ -115,7 +115,13 @@ class Tweet {
 
       let myqs = `.tweet-${this.tx.transaction.sig}`;
       let obj = document.querySelector(myqs);
-      if (obj) { obj.classList.add("has-reply"); }
+      if (obj) {
+	if (this.critical_child.parent_id == this.tx.transaction.sig) {
+	  obj.classList.add("has-reply");
+	} else {
+	  obj.classList.add("has-reply-disconnected");
+	}
+      }
 
     }
 

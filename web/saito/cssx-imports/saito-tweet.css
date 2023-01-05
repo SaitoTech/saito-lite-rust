@@ -11,13 +11,27 @@
 }
 
 .tweet.has-reply::after {
-  content: "";
-  position: absolute;
-  width: 0.2rem;
-  height: 100%;
-  background-color: var(--saito-gray-mid);
-  top: 5.5rem;
-  left: 2.7rem;
+    content: "";
+    position: absolute;
+    width: 0rem;
+    height: 100%;
+    top: 5.5rem;
+    left: 3.5rem;
+    border: 0.25rem solid var(--saito-gray-transparent);
+    z-index: 50;
+}
+.tweet.has-reply-disconnected::after {
+    content: "";
+    position: absolute;
+    width: 0rem;
+    height: 100%;
+    top: 5.5rem;
+    left: 3.5rem;
+    border: 0.25rem dashed var(--saito-gray-transparent);
+    z-index: 50;
+}
+.saito-identicon {
+    z-index: 51;
 }
 
 .tweet-body {
