@@ -120,11 +120,11 @@ class StorageCore extends Storage {
     }
 
     files.sort(function (a, b) {
-      const compres = fs.statSync(dir + a).mtime.getTime() - fs.statSync(dir + b).mtime.getTime();
-      if (compres == 0) {
-        return parseInt(a) - parseInt(b);
-      }
-      return compres;
+      // const compres = fs.statSync(dir + a).mtime.getTime() - fs.statSync(dir + b).mtime.getTime();
+      // if (compres == 0) {
+      return parseInt(a.split("-")[0]) - parseInt(b.split("-")[0]);
+      // }
+      // return compres;
     });
 
     for (let i = 0; i < files.length; i++) {
