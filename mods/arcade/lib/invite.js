@@ -1,4 +1,5 @@
 const JoinGameOverlay = require("./overlays/join-game");
+const MyGameOverlay = require("./overlays/my-game");
 const InviteTemplate = require("./invite.template");
 const JSON = require('json-bigint');
 
@@ -10,6 +11,7 @@ class Invite {
     this.mod = mod;
     this.container = container;
     this.join = new JoinGameOverlay(app, mod, tx);
+    this.my_game = new MyGameOverlay(app, mod, tx);
     this.tx = tx;
 
 
@@ -54,6 +56,14 @@ class Invite {
           name: name,
           game: game,
           cmd: game_cmd
+        }
+
+        console.log(invite);
+
+        if (game_cmd == 'continue' || game_cmd == 'cancel') {
+          invite_self.my_game.invite = invite;
+          invite_self.my_game.render();
+          return;
         }
 
       	invite_self.join.invite = invite;

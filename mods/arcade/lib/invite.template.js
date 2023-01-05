@@ -3,15 +3,41 @@ module.exports = (app, mod, tx=null) => {
     if (tx === null) { return ""; }
 
     let txmsg = tx.returnMessage();
+    console.log("invite msg");
+    console.log(txmsg);
+
     if (!txmsg.type) { txmsg.type = "standard"; }
     if (!txmsg.name) { 
       let game_mod = app.modules.returnModule(txmsg.game);
-console.log("GAME MOD: " + txmsg.game);
+      console.log("GAME MOD: " + txmsg.game);
       if (game_mod) { txmsg.name = game_mod.returnName(); }
     }
 
+    let originator = txmsg.originator || null;
+    let pubkey = app.wallet.returnPublicKey();
+    let cmd = 'join';
+    let game_id = txmsg.game_id || null;
+
+    // check if game invite is joined or not
+    if (originator != null) {
+      cmd = (pubkey == originator) ? 'continue' : 'join'
+    } else if (game_id != null) {
+    
+      let mine_games = mod.games.mine;
+
+      if (mine_games.length > 0) {
+        mine_games.forEach(function(game,key) {
+          if (game.msg.game_id == game_id) {
+            cmd = 'continue';
+            return;
+          }
+        });
+      }
+    }
+
+
     let html = `
-          <div class="saito-module saito-game" data-id="abcd1234" data-cmd="join" data-name="${txmsg.name}" data-game="${txmsg.game}" style="background-image: url('/${txmsg.game}/img/arcade/arcade.jpg');">
+          <div class="saito-module saito-game" data-id="${game_id}" data-cmd="${cmd}" data-name="${txmsg.name}" data-game="${txmsg.game}" style="background-image: url('/${txmsg.game}/img/arcade/arcade.jpg');">
             <div class="saito-module-titlebar">
                 <span class="saito-module-titlebar-title">${txmsg.name}</span>
                 <div class="saito-module-titlebar-details game-type">${(txmsg.type).toUpperCase()} GAME</div>
@@ -31,11 +57,21 @@ console.log("GAME MOD: " + txmsg.game);
               </div>`;
     }
 
-    html += `
-                <div class="saito-module-identicon identicon-needed tip">
-                  <div class="tiptext">You need this player to start the game</div>
-                </div>
+    if (txmsg.players_needed > txmsg.players.length) {
+      let missing_slots = txmsg.players_needed - txmsg.players.length;
+
+      for (let i=0; i<missing_slots; i++) {
+        html += `
+              <div class="saito-module-identicon identicon-needed tip">
+                <div class="tiptext">You need this player to start the game</div>
               </div>
+        `;
+      }
+    }
+
+    html += `
+
+             </div>
             </div>
           </div>
   `;

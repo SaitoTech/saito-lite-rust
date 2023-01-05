@@ -1,4 +1,4 @@
-module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
+module.exports = MyGameOverlayTemplate = (app, mod, invite_tx) => {
 
   let txmsg = invite_tx.returnMessage();
   let game_mod = app.modules.returnModuleByName(txmsg.name);
@@ -13,7 +13,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
 	  </div>
 	  <div class="arcade-game-overlay-header-title-box">
 		  <div class="arcade-game-overlay-header-title-box-title">${game_mod.returnName()}</div>
-		  <div class="arcade-game-overlay-header-title-box-desc">open game invitation</div>
+		  <div class="arcade-game-overlay-header-title-box-desc">joined game invite</div>
 	  </div>
   </div>
   <div class="arcade-game-overlay-body">
@@ -71,7 +71,8 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
 
 	  </div>
 	  <div class="arcade-game-controls">
-	    <div class="arcade-game-controls-join-game saito-button saito-button-primary">join game</div>
+	    <div class="arcade-game-controls-join-game saito-button saito-button-primary" data-cmd="continue">continue game</div>
+	    <div class="arcade-game-controls-join-game saito-button saito-button-primary" data-cmd="cancel">cancel game</div>
 	  </div>
 </div>
   `;
