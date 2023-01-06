@@ -3,6 +3,7 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
     let league = mod.leagues[mod.league_idx];
     let game_mod = app.modules.returnModuleByName(league.name);
 
+    let league_mod = game_mod.name;
     let league_name = game_mod.returnName();
     let league_type = "public league"
     let league_desc = game_mod.description;
@@ -71,7 +72,7 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
         </div>
     </div>
     <div class="league-overlay-controls">
-      <button class="league-overlay-create-game-button saito-button saito-button-primary">create game</button>
+      <button data-id="${league_mod}" class="league-overlay-create-game-button saito-button saito-button-primary">create game</button>
   </div>
 </div>
  

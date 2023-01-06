@@ -20,9 +20,6 @@ class League extends ModTemplate {
 
     this.styles = ['/league/style.css'];
 
-    //
-    // i like simpler names, but /lib contains this.leagues[] as well
-    //
     this.leagues = [];
     this.league_idx = -1; // if a league is active, this will be idx
     this.leagueCount = 0;
@@ -172,12 +169,12 @@ class League extends ModTemplate {
     //
     // default values
     //
-    if (!obj.name) { obj.name = "Unknown"; }
-    if (!obj) { return; }
-    if (!obj.rank) { obj.rank = 0; }
-    if (!obj.players) { obj.players = []; }
-    if (!obj.games) { obj.games = []; }
-    if (!obj.mod) { obj.mod = this.app.modules.returnModuleByName(obj.name); }
+    if (!obj)                   { return; }
+    if (!obj.name)              { obj.name = "Unknown"; }
+    if (!obj.rank)              { obj.rank = 0; }
+    if (!obj.players)           { obj.players = []; }
+    if (!obj.games)             { obj.games = []; }
+    if (!obj.mod)               { obj.mod = this.app.modules.returnModuleByName(obj.name); }
     if (!obj.module && obj.mod) { obj.module = obj.mod.name; }
 
 

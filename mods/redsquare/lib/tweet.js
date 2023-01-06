@@ -74,8 +74,6 @@ class Tweet {
     //
     // replace or add
     //
-console.log("RENDER: " + this.text);
-
     if (document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
@@ -130,18 +128,13 @@ console.log("RENDER: " + this.text);
   }
 
 
-  renderWithChildren() {
 
-    let myqs = `.tweet-${this.tx.transaction.sig}`;
+  renderWithChildren() {
 
     //
     // first render the tweet
     //
-    if (document.querySelector(myqs)) {
-      this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
-    } else {
-      this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
-    }
+    this.render();
 
     //
     // then render its children
@@ -161,7 +154,50 @@ console.log("RENDER: " + this.text);
       } else {
         for (let i = 0; i < this.children.length; i++) {
           this.children[i].container = this.container;
-console.log("render children: " + this.children[i].text);
+          this.children[i].render_after_selector = `.tweet-${this.tx.transaction.sig}`;
+          this.children[i].render();
+        }
+      }
+    }
+
+    this.attachEvents();
+  }
+
+
+  renderWithParentAndChildren() {
+
+    //
+    // first render parent if it exists
+    //
+    let parent = this.mod.returnTweet(this.parent_id);
+    if (parent) {
+      parent.critical_child = this;
+      parent.render();
+      this.render_after_selector = `.tweet-${this.parent_id}`;
+      this.render();
+    } else {
+      this.render();
+    }
+
+    //
+    // then render its children
+    //
+    if (this.children.length > 0) {
+      if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
+        if (this.children[0].children.length > 0) {
+          this.children[0].container = this.container;
+          this.children[0].render_after_selector = `.tweet-${this.tx.transaction.sig}`;
+          this.children[0].renderWithChildren();
+        } else {
+          for (let i = 0; i < this.children.length; i++) {
+            this.children[i].container = this.container;
+            this.children[i].render_after_selector = `.tweet-${this.tx.transaction.sig}`;
+            this.children[i].render();
+          }
+        }
+      } else {
+        for (let i = 0; i < this.children.length; i++) {
+          this.children[i].container = this.container;
           this.children[i].render_after_selector = `.tweet-${this.tx.transaction.sig}`;
           this.children[i].render();
         }

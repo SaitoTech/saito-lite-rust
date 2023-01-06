@@ -6,24 +6,30 @@ const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-ove
 */
 
 class GameWizard {
-  constructor(app, mod, game_mod = null, invite_obj = {}) {
+  constructor(app, mod, game_mod = null, obj = {}) {
 
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
     this.overlay = new SaitoOverlay(app);
-    this.obj = invite_obj;
+    this.obj = obj;
 
-    app.connection.on("arcade-launch-game-wizard", (invite_obj) => {
+    app.connection.on("arcade-launch-game-wizard", (obj) => {
 
-      if (invite_obj.game) {
+      if (obj.game) {
 
-        let game_mod = this.app.modules.returnModule(invite_obj.game);
+	//
+	// {
+	//    game   : module_name
+	//    league : league_obj { id , name , mod }
+ 	// }
+	//
+
+        let game_mod = this.app.modules.returnModule(obj.game);
 
         if (game_mod) {
-
           this.game_mod = game_mod;
-          this.obj = invite_obj;
+          this.obj = obj;
           this.render(this.app, this.mod);
         } else {
           salert("Module not found: " + game_mod);
@@ -174,9 +180,7 @@ class GameWizard {
         return false;
       });
     });
-
   }
-
 
   getOptions() {
     let options = {};

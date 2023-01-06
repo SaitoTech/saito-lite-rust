@@ -25,13 +25,15 @@ class LeagueOverlay {
   }
 
   attachEvents() {
+
     league_self = this;
 
     Array.from(document.querySelectorAll('.league-overlay-create-game-button')).forEach(game => {
       game.onclick = (e) => {
         let modname = e.currentTarget.getAttribute("data-id");
+        let league = this.mod.leagues[this.mod.league_idx];
 	this.overlay.remove();
-        league_self.app.connection.emit("arcade-launch-game-wizard", { game: modname });
+        league_self.app.connection.emit("arcade-launch-game-wizard", ({ game: modname , league : league }));
       };
     });
   }
