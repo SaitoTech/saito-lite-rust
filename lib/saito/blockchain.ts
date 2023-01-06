@@ -461,7 +461,7 @@ class Blockchain {
     //
     // propagate block to network
     //
-    this.app.network.propagateBlock(block);
+    this.app.network.propagateBlock(block.hash, block.returnId());
 
     //
     // run callbacks if desired

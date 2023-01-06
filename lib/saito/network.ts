@@ -841,19 +841,32 @@ class Network {
         if (this.debugging) {
           console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
+        let obj: any = {
+          last_id: last_shared_ancestor,
+        };
+        obj.timer = setInterval(() => {
+          let count = 100;
+          // notify peer of longest-chain after this amount
+          for (let i = obj.last_id; i <= this.app.blockring.returnLatestBlockId(); i++) {
+            --count;
+            block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+            if (block_hash !== "") {
+              // block = await this.app.blockchain.loadBlockAsync(block_hash);
+              // if (block) {
+              this.propagateBlock(block_hash, i, peer);
+              obj.last_id = i;
+              // }
+            }
 
-        //
-        // notify peer of longest-chain after this amount
-        //
-        for (let i = last_shared_ancestor; i <= this.app.blockring.returnLatestBlockId(); i++) {
-          block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-          if (block_hash !== "") {
-            block = await this.app.blockchain.loadBlockAsync(block_hash);
-            if (block) {
-              this.propagateBlock(block, peer);
+            if (count === 0) {
+              break;
             }
           }
-        }
+
+          if (obj.last_id === this.app.blockring.returnLatestBlockId()) {
+            clearInterval(obj.timer);
+          }
+        }, 1000);
 
         break;
       }
@@ -1119,25 +1132,21 @@ class Network {
   //
   // propagate block
   //
-  propagateBlock(blk: Block | null, peer = null) {
+  propagateBlock(hash: string, id: bigint, peer = null) {
     if (this.app.BROWSER) {
       return;
     }
     //console.debug("network.propagateBlock", blk.returnHash());
-    if (!blk) {
+    if (!hash) {
       return;
     }
-    if (!blk.is_valid) {
+    if (!id) {
       return;
     }
 
-    const data = { bhash: blk.returnHash(), bid: blk.block.id };
     for (let i = 0; i < this.peers.length; i++) {
       if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
-        let blockheader = Buffer.concat([
-          Buffer.from(blk.returnHash(), "hex"),
-          this.app.binary.u64AsBytes(blk.returnId()),
-        ]);
+        let blockheader = Buffer.concat([Buffer.from(hash, "hex"), this.app.binary.u64AsBytes(id)]);
         this.sendRequest("SNDBLKHH", blockheader, this.peers[i]);
       }
     }
