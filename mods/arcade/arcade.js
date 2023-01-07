@@ -6,6 +6,7 @@ const InviteManager = require("./lib/invite-manager");
 const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
+const GameInvitationLink = require("./lib/overlays/game-invitation-link");
 
 
 class Arcade extends ModTemplate {
@@ -89,6 +90,11 @@ class Arcade extends ModTemplate {
       // game scheduler
       //
       this.game_scheduler = new GameScheduler(app, this, {});
+
+      //
+      // game invitation link
+      //
+      this.game_invitation_link = new GameInvitationLink(app, this, {});
 
       //
       // my games
@@ -1615,13 +1621,10 @@ console.log("returned: " + game_id);
 
     data.invite_link = inviteLink;
 
+    console.log("pre invitation link render");
     console.log(JSON.stringify(data));
 
-//
-// HACK FIX INVITATION LINK
-//
-    let invitationModal = new InvitationLink(this.app, this);
-    invitationModal.render(this.app, this, data);
+    this.game_invitation_link.render(data);
 
   }
 
