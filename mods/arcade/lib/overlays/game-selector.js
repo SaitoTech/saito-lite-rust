@@ -11,7 +11,7 @@ class GameSelector {
     this.app = app;
     this.mod = mod;
     this.name = "GameSelector";
-    this.overlay = new SaitoOverlay(app);
+    this.overlay = new SaitoOverlay(app, mod, false, true);
     this.obj = obj;
     this_self = this;
 
@@ -28,27 +28,18 @@ class GameSelector {
   }
 
   render() {
-    this.overlay.show(GameSelectorTemplate(this.app, this.mod, "Select Game to Play"));
+    this.overlay.show(GameSelectorTemplate(this.app, this.mod));
     this.attachEvents();
   }
 
   attachEvents() {
 
-    Array.from(document.querySelectorAll('.game-selector-container')).forEach(game => {
+    Array.from(document.querySelectorAll('.arcade-game-selector-game')).forEach(game => {
       game.onclick = (e) => {
+
         let modname = e.currentTarget.getAttribute("data-id");
         this.obj.game = modname;
         this.overlay.remove();
-
-        console.log(this.obj);
-        console.log(typeof(this.obj.league) != 'undefined' && this.obj.league == true);
-        if (typeof(this.obj.league) != 'undefined' && this.obj.league == true) {
-          console.log('inside');
-          let game_mod = this.app.modules.returnModule(modname);
-          this.app.connection.emit("league-launch-wizard", (game_mod));
-          return;
-        }
-
         this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
       };
     });

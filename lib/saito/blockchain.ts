@@ -1144,7 +1144,7 @@ console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
 
   async doesChainMeetGoldenTicketRequirements(
     previous_block_hash: string,
-    mempool_has_gts = false
+    current_block_has_golden_ticket = false
   ) {
     //
     // ensure adequate mining support
@@ -1189,7 +1189,7 @@ console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
       golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR &&
       search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR
     ) {
-      if (mempool_has_gts) {
+      if (current_block_has_golden_ticket) {
         golden_tickets_found++;
       }
     }

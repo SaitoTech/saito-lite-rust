@@ -198,6 +198,12 @@ class Settlers extends GameTemplate {
       });
     }
     this.menu.render();
+    
+    try{
+      document.getElementById("game-post").remove();
+    }catch(err){
+      console.error(err);
+    }
 
     this.log.render();
 

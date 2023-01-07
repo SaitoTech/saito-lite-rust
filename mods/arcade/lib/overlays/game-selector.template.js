@@ -9,20 +9,17 @@ module.exports = GameSelectorTemplate = (app, mod, element_title = "") => {
     let slug = (module.returnSlug()) ? module.slug : module.name.toLowerCase();
     let description = module.description;
     games_menu += `
-       <div id="${modname}" class="game-selector-container" data-id="${modname}">
- 	 <div class="game-selctor-game-image"><img src="/${slug}/img/arcade/arcade.jpg" /></div>
-    <div class="game-selector-game-description"></div>
-	 <div class="game-selector-game-title">${title}</div>
+       <div id="${modname}" class="arcade-game-selector-game" data-id="${modname}">
+ 	 <div class="arcade-game-selector-game-image"><img src="/${slug}/img/arcade/arcade.jpg" /></div>
+	 <div class="arcade-game-selector-game-title">${title}</div>
        </div>
      `;
   });
 
+
   return `
-  <div class="saito-modal">
-  <h6>${element_title}</h6>
-  <div class="saito-modal-content">
-  <div class="game-selector-game-list">${games_menu}</div>
-  </div>
+  <div class="arcade-game-selector">
+    ${games_menu}
   </div>
   `;
 

@@ -993,117 +993,107 @@ for (let i = 0; i < this.tweets.length; i++) {
 
 
 
-  /*****
-    webServer(app, expressapp, express) {
+/****
+  webServer(app, expressapp, express) {
   
-      let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
-      let fs = app?.storage?.returnFileSystem();
-      let redsquare_self = this;
+    let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+    let fs = app?.storage?.returnFileSystem();
+    let redsquare_self = this;
   
-      expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
-        let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
+    expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
+      let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
   
-        try {
+      try {
   
-          if (Object.keys(req.query).length > 0) {
-            let query_params = req.query;
+        if (Object.keys(req.query).length > 0) {
+          let query_params = req.query;
   
-            if (typeof query_params.tweet_id != "undefined" || typeof query_params.thread_id != "undefined") {
-              let sig = query_params.tweet_id || query_params.thread_id;
-              let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
+          if (typeof query_params.tweet_id != "undefined" || typeof query_params.thread_id != "undefined") {
+            let sig = query_params.tweet_id || query_params.thread_id;
+            let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
+            let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
   
-              let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
+            for (let i = 0; i < rows.length; i++) {
+              let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+              let txmsg = tx.returnMessage();
+              let text = tx.msg.data.text;
+              let publickey = tx.transaction.from[0].add;
+              let user = app.keys.returnIdentifierByPublicKey(publickey, true);
   
-              for (let i = 0; i < rows.length; i++) {
-                let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
-                let txmsg = tx.returnMessage();
-                let text = tx.msg.data.text;
-                let publickey = tx.transaction.from[0].add;
-                let user = app.keys.returnIdentifierByPublicKey(publickey, true);
-                //let user = await app.keys.fetchIdentifierPromise(publickey);
+              redsquare_self.social.twitter_description = text;
+              redsquare_self.social.og_description = text;
+              redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
   
-                redsquare_self.social.twitter_description = text;
-                redsquare_self.social.og_description = text;
-                redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
+              // if (typeof tx.msg.data.images != "undefined") {
+              //   let image = tx.msg.data?.images[0];
+              // } else {
+              //   let publickey = tx.transaction.from[0].add;
+              //   let image = app.keys.returnIdenticon(publickey);
+              // }
   
-                // if (typeof tx.msg.data.images != "undefined") {
-                //   let image = tx.msg.data?.images[0];
-                // } else {
-                //   let publickey = tx.transaction.from[0].add;
-                //   let image = app.keys.returnIdenticon(publickey);
-                // }
+              let image = redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug()) + '?og_img_sig=' + sig;
+              redsquare_self.social.og_title = user + " posted on Saito 🟥";
+              redsquare_self.social.twitter_title = user + " posted on Saito 🟥"
+              redsquare_self.social.og_image = image;
+              redsquare_self.social.og_image_url = image;
+              redsquare_self.social.og_image_secure_url = image;
+              redsquare_self.social.twitter_image = image;
   
-                let image = redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug()) + '?og_img_sig=' + sig;
-                redsquare_self.social.og_title = user + " posted on Saito 🟥";
-                redsquare_self.social.twitter_title = user + " posted on Saito 🟥"
-                redsquare_self.social.og_image = image;
-                redsquare_self.social.og_image_url = image;
-                redsquare_self.social.og_image_secure_url = image;
-                redsquare_self.social.twitter_image = image;
-  
-              }
-            } // if query param has tweet id
-  
-            if (typeof query_params.og_img_sig != "undefined") {
-  
-  
-              let sig = query_params.og_img_sig;
-              let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
-  
-              let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
-  
-              for (let i = 0; i < rows.length; i++) {
-                let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
-                let txmsg = tx.returnMessage();
-  
-                if (typeof tx.msg.data.images != "undefined") {
-                  let img_uri = tx.msg.data?.images[0];
-  
-  
-  
-                  let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
-  
-                  let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
-                  let img = Buffer.from(base64Data, 'base64');
-  
-  
-                } else {
-  
-                  let publickey = tx.transaction.from[0].add;
-                  let img_uri = app.keys.returnIdenticonasPNG(publickey);
-                  let base64Data = img_uri.replace(/^data:image\/png;base64,/, '');
-                  let img = Buffer.from(base64Data, 'base64');
-                  let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
-                }
-  
-                if (img_type == 'image/svg+xml') {
-                  img_type = 'image/svg';
-                }
-  
-                res.writeHead(200, {
-                  'Content-Type': img_type,
-                  'Content-Length': img.length
-                });
-                res.end(img);
-                return;
-              }
             }
           }
-        } catch (err) {
-          console.log("Loading OG data failed with error: " + err);
+  
+          if (typeof query_params.og_img_sig != "undefined") {
+  
+            let sig = query_params.og_img_sig;
+            let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
+  
+            let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
+  
+            for (let i = 0; i < rows.length; i++) {
+              let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+              let txmsg = tx.returnMessage();
+  
+              if (typeof tx.msg.data.images != "undefined") {
+                let img_uri = tx.msg.data?.images[0];   
+                let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
+                let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+                let img = Buffer.from(base64Data, 'base64');
+ 
+              } else {
+                let publickey = tx.transaction.from[0].add;
+                let img_uri = app.keys.returnIdenticonasPNG(publickey);
+                let base64Data = img_uri.replace(/^data:image\/png;base64,/, '');
+                let img = Buffer.from(base64Data, 'base64');
+                let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
+              }
+  
+              if (img_type == 'image/svg+xml') {
+                img_type = 'image/svg';
+              }
+  
+              res.writeHead(200, {
+                'Content-Type': img_type,
+                'Content-Length': img.length
+              });
+              res.end(img);
+              return;
+            }
+          }
         }
+      } catch (err) {
+        console.log("Loading OG data failed with error: " + err);
+      }
   
-        res.setHeader("Content-type", "text/html");
-        res.charset = "UTF-8";
-        res.send(RedSquareIndex(app, redsquare_self));
-        //res.end();
-        return;
-  
-      });
-  
-      expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
-    }
-  ****/
+      res.setHeader("Content-type", "text/html");
+      res.charset = "UTF-8";
+      res.send(redsquareHome(app, redsquare_self));
+      return;
+
+    });
+
+    expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
+  }
+****/
 
 }
 

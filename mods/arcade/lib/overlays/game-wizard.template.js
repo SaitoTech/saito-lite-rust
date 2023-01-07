@@ -22,7 +22,7 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
       <!- ***Game desc & title start*** -->
       <div class="arcade-wizard-game-details  rs-create-game-desc-wrapper">
         <div class="arcade-wizard-game-name">
-          <span><b>${game_mod.name}</b></span>
+          <span><b>${game_mod.returnName()}</b></span>
         </div>
         <div class="arcade-wizard-game-description">${game_mod.description}</div>
       </div>
@@ -44,7 +44,7 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
   
       <div class="settings">
         ${game_mod.returnPlayerSelectHTML()}
-        <div id="arcade-advance-opt" class="info-item-wrapper">advanced options...</div>
+        <div id="arcade-advance-opt"><span class="arcade-advance-opt-text">advanced options...</span></div>
       </div>
 
       <div class="arcade-wizard-game-invite">

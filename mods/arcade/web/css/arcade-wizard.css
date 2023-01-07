@@ -54,7 +54,7 @@
   background: transparent;
   border: 1px solid var(--saito-primary);
   color: var(--saito-white);
-  font-size: 2rem;
+  font-size: 2.5rem;
   padding: 0 1rem;
 }
 
@@ -133,17 +133,11 @@
   color: var(--saito-white);
 }
 
-.info-item-wrapper {
-  border-bottom: 2px dotted var(--saito-border-color);
-  display: inline-block;
-  cursor: pointer;
-}
-
 .arcade-wizard-overlay .arcade-wizard-game-container {
   min-height: 17rem;
   display: grid;
   grid-template-columns: 3fr 7fr;
-  grid-gap: 1rem;
+  grid-gap: 1.5rem;
 }
 
 .arcade-wizard-overlay .arcade-wizard-game-image {
@@ -159,12 +153,13 @@
 }
 
 .arcade-wizard-game-name {
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   margin-bottom: 1rem;
 }
 
 .arcade-wizard-game-description {
-  font-size: 1.5rem;
+  font-size: 2.0rem;
+  line-height: 3.0rem;
 }
 
 .arcade-wizard-game-controls {
@@ -178,7 +173,7 @@
   background: transparent;
   border: 1px solid var(--saito-primary);
   color: var(--saito-white);
-  font-size: 2rem;
+  font-size: 2.5rem;
   appearance: none;
   padding: 0 1rem;
 }
@@ -269,6 +264,7 @@
   position: relative;
   display: flex;
   line-height: 3;
+  margin-top: 0px;
 }
 
 .saito-multi-select_btn_options {
@@ -285,6 +281,7 @@
   border-radius: 0;
   min-height: 4.8rem;
   margin-bottom: 0.2rem;
+  font-size: 2.5rem;
 }
 
 .saito-multi-select_btn.showAll {
@@ -323,32 +320,20 @@
   grid-template-columns: 1fr;
 }
 
-/* .arcade-game-publisher-message {
+.arcade-game-publisher-message {
   margin-top: 1rem;
-  font-size: 1em;
-} */
+  font-size: 1.7rem;
+  line-height: 2.2rem;
+}
 
 #arcade-advance-opt {
   margin: 1rem 0;
   text-transform: lowercase;
 }
-
-/* .saito-labeled-input {
-  width: 100%;
-  padding: 0 1rem;
-  margin: 1rem 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
-} */
-
-/* .game-help-link {
-  position: absolute;
-  right: 2rem;
-  font-size: 2rem;
-  color: var(--saito-white);
-} */
+.arcade-advance-opt-text {
+  cursor: pointer;
+  border-bottom: 2px dotted var(--saito-border-color);
+}
 
 .game-wizard-players-select {
   color: var(--saito-white);

@@ -9,6 +9,7 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
     let league_desc = game_mod.description;
 
     return `
+    <div class="league-overlay-container">
     <div class="league-overlay">
     <div class="league-overlay-header">
         <div class="league-overlay-header-image" style="background-image: url('/${game_mod.returnSlug()}/img/arcade/arcade.jpg')">
@@ -71,6 +72,8 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
             <div class="league-overlay-leaderboard"></div>
         </div>
     </div>
+    <div class="league-overlay-controls-ghost"></div>
+</div>
     <div class="league-overlay-controls">
       <button data-id="${league_mod}" class="league-overlay-create-game-button saito-button saito-button-primary">create game</button>
   </div>
