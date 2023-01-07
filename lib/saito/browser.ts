@@ -242,14 +242,15 @@ class Browser {
           e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
         ) {
 
-          e.preventDefault();
-          e.stopImmediatePropagation();
-
           let publickey = e.target.getAttribute("data-id");
           if (!publickey || !app.crypto.isPublicKey(publickey)) {
             return;
           }
           if (publickey !== app.wallet.returnPublicKey()) {
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
             let userMenu = new UserMenu(app, publickey);
             userMenu.render(app);
           }

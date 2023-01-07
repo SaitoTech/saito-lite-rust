@@ -121,15 +121,33 @@ class ChatManager {
 
 	  let cm = this;
 
+	  //
+	  // clicks on the element itself (background)
+	  //
 	  document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
 	    item.onclick = (e) => {
 	      let gid = e.currentTarget.getAttribute("data-id");
 	      let group = cm.mod.returnGroup(gid);
 	      // unset manually closed to permit re-opening
 	      if (this.popups[gid]) { this.popups[gid].manually_closed = false; }
-	      cm.app.connection.emit("chat-popup-render-request", group);  
+	      cm.app.connection.emit("chat-popup-render-request", group);
 	    }
 	  });
+
+	  //
+	  // clicks on elements inside the element
+	  //
+	  document.querySelectorAll('.chat-manager-list .saito-user div').forEach(item => {
+	    item.onclick = (e) => {
+	      let gid = e.currentTarget.parentNode.getAttribute("data-id");
+	      let group = cm.mod.returnGroup(gid);
+	      // unset manually closed to permit re-opening
+	      if (this.popups[gid]) { this.popups[gid].manually_closed = false; }
+	      cm.app.connection.emit("chat-popup-render-request", group);
+	    }
+	  });
+
+
 	}
 
 }

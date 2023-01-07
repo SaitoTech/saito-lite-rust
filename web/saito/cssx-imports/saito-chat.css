@@ -11,6 +11,7 @@
 
 .chat-manager .saito-user {
   column-gap: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 /*  chat / Popup  */
