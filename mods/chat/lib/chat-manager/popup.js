@@ -41,6 +41,8 @@ class ChatPopup {
     let x_offset = 1000000;
     let x_range = 440;
     let popups_on_page = 0;
+    let am_i_on_page = 0;
+
     document.querySelectorAll(".chat-popup").forEach((el) => {
         popups_on_page++;
 	var rect = el.getBoundingClientRect();
@@ -50,17 +52,19 @@ class ChatPopup {
 	}
     });    
 
+    if (document.querySelector(popup_qs)) {
+      am_i_on_page = 1;
+    }
+
 
     //
     // insert or replace popup on page
     //
-    if (document.querySelector(popup_qs)) {
+    if (am_i_on_page == 1) {
       this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group), popup_qs);
-      popups_on_page--; // because one of them was me
     } else {
       this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
     }
-
 
     //
     // now set left-position of popup
@@ -72,21 +76,14 @@ class ChatPopup {
       obj.style.left = this.x_pos + "px";
     }
 
-
     //
     // make draggable
     //
     this.app.browser.makeDraggable(`chat-popup`, `chat-header`, true, () => {
-
-	//
-	//
-	//
-	let obj = document.querySelector(popup_qs);
-
-	var rect = obj.getBoundingClientRect();
-	this.x_pos = rect.left;
-	this.y_pos = rect.top;
-
+      let obj = document.querySelector(popup_qs);
+      var rect = obj.getBoundingClientRect();
+      this.x_pos = rect.left;
+      this.y_pos = rect.top;
     });
 
     //

@@ -36,6 +36,8 @@
   border-bottom: 1px solid var(--saito-border-color);
   background: var(--saito-gray-transparent);
   cursor: grab;
+  height: 4.5rem;
+  font-size: 2rem;
 }
 
 .chat-header > i {
@@ -55,6 +57,11 @@
 
 .chat-header > i:last-child:hover {
   transform: rotate(90deg) scale(1.1);
+}
+
+.chat-header .chat-group {
+  max-width: 99%;
+  overflow: hidden;
 }
 
 .chat-body {
@@ -80,6 +87,8 @@
 }
 
 .chat-footer {
+  height: 4.5rem;
+  font-size: 2rem;
   background-color: var(--saito-background-light);
   position: absolute;
   bottom: 0;

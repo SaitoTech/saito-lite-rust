@@ -67,11 +67,6 @@ class ChatManager {
    	  }
 
 	  //
-	  // render community chat
-	  //
-
-
-	  //
 	  // render chat groups
 	  //
 	  for (let group of this.mod.groups) {
@@ -137,8 +132,14 @@ class ChatManager {
 	  //
 	  // clicks on elements inside the element
 	  //
+/***
 	  document.querySelectorAll('.chat-manager-list .saito-user div').forEach(item => {
 	    item.onclick = (e) => {
+
+	      //
+              e.preventDefault();
+              e.stopImmediatePropagation();
+  
 	      let gid = e.currentTarget.parentNode.getAttribute("data-id");
 	      let group = cm.mod.returnGroup(gid);
 	      // unset manually closed to permit re-opening
@@ -146,7 +147,7 @@ class ChatManager {
 	      cm.app.connection.emit("chat-popup-render-request", group);
 	    }
 	  });
-
+***/
 
 	}
 
