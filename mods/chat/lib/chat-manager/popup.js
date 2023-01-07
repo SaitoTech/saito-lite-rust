@@ -69,7 +69,7 @@ class ChatPopup {
     //
     // now set left-position of popup
     //
-    if (popups_on_page >= 1) {
+    if (popups_on_page >= 1 && am_i_on_page == 0) {
       this.x_pos = x_offset - x_range - 30;
       if (this.x_pos < 0) { this.x_pos = 0; }
       let obj = document.querySelector(popup_qs);

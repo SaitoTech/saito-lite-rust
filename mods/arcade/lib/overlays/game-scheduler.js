@@ -7,6 +7,7 @@ class GameScheduler {
 
     constructor(app, mod, invite_tx = null) {
       this.app = app;
+      this.mod = mod;
       this.invite_tx = invite_tx;
       this.overlay = new SaitoOverlay(app);
 
@@ -49,12 +50,12 @@ class GameScheduler {
           relay_mod.sendRelayMessage(peers, "arcade spv update", scheduler_self.invite_tx);
         }
 
-        mod.addGameToOpenList(scheduler_self.invite_tx);
+        mod.addGame(scheduler_self.invite_tx, "open");
 
         // 
         // create invite link from the game_sig
         // 
-        mod.showShareLink(newtx.transaction.sig);
+        mod.showShareLink(scheduler_self.invite_tx.transaction.sig);
       }
 
       //

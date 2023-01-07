@@ -1617,18 +1617,27 @@ console.log("returned: " + game_id);
 
     console.log(JSON.stringify(data));
 
+//
+// HACK FIX INVITATION LINK
+//
     let invitationModal = new InvitationLink(this.app, this);
     invitationModal.render(this.app, this, data);
+
   }
 
 
-  makeGameInvite(options, gameType = "public") {
+  makeGameInvite(options, gameType = "public", invite_obj={}) {
+
+    // options = game options
+    // invite_obj = publickey of desired opponent + league info
+console.log("OPTIONS ARE: " + JSON.stringify(options));
+console.log("INVITE OBJ: " + invite_obj.publickey);
 
     let game = options.game;
     let game_mod = this.app.modules.returnModule(game);
     let players_needed = options["game-wizard-players-select"];
-
-console.log("X: 1");
+    let desired_opponent_publickey = "";
+    if (invite_obj.publickey) { desired_opponent_publickey = invite_obj.publickey; }
 
     if (!players_needed) {
       console.error("Create Game Error");
@@ -1642,8 +1651,6 @@ console.log("X: 1");
       players_needed = options["game-wizard-players-select"];
     }
 
-console.log("X: 2");
-
     let gamedata = {
       ts: new Date().getTime(),
       name: game,
@@ -1654,22 +1661,22 @@ console.log("X: 2");
     };
 
     if (players_needed == 1) {
-console.log("X: 3");
       this.launchSinglePlayerGame(this.app, gamedata); //Game options don't get saved....
     } else {
-console.log("X: 4");
 
       if (gameType == "private" || gameType == "direct") {
         gamedata.invitation_type = "private";
       }
 
       if (gameType == "direct") {
-        let newtx = this.createOpenTransaction(gamedata, options.publickey);
+        let newtx = this.createOpenTransaction(gamedata, desired_opponent_publickey);
+alert("arcade-launch-game-scheduler!");
         this.app.connection.emit("arcade-launch-game-scheduler", (newtx));
         return;
       }
 
-      let newtx = this.createOpenTransaction(gamedata);
+alert("or create open transaction!");
+      let newtx = this.createOpenTransaction(gamedata, desired_opponent_publickey);
       this.app.network.propagateTransaction(newtx);
 
       //
@@ -1682,24 +1689,12 @@ console.log("X: 4");
 
       this.addGame(newtx, "mine");
 
-console.log("X: 5");
-
       this.app.connection.emit("arcade-invite-manager-render-request");
-console.log("X: 5 2");
-//
       this.app.connection.emit("send-relay-message", { recipient: peers, request: "arcade spv update", data: newtx });
-console.log("X: 5 3");
-
-console.log("***");
-console.log("***");
-console.log("***");
-
-console.log("X: 6");
 
       if (gameType == "private") {
-console.log("X: 7");
+alert("SHOW SHARE LINK");
         this.showShareLink(newtx.transaction.sig);
-console.log("X: 8");
       }
     }
   }

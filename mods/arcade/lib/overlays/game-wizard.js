@@ -166,9 +166,11 @@ class GameWizard {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
-          console.log("CAN WE MAKE GAME INVITE 1");
-          mod.makeGameInvite(options, isPrivateGame);
-          console.log("CAN WE MAKE GAME INVITE 2");
+
+alert("make game invite in game wizard!");
+
+          mod.makeGameInvite(options, isPrivateGame, this.obj);
+
 
         } catch (err) {
           console.warn(err);
