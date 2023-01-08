@@ -444,10 +444,10 @@ console.log("<===>");
         }
 
         //
-        // open msgs -- private invitations
+        // open msgs -- but private invitations
         //
         if (txmsg.module === "ArcadeInvite" && txmsg.request == "open" && tx.isTo(app.wallet.returnPublicKey())) {
-          arcade_self.addGame(tx, "open");
+          arcade_self.addGame(tx, "mine");
         }
 
         //
@@ -1330,19 +1330,31 @@ console.log("returned: " + game_id);
   // functions to manipulate the local games list
   //
   addGame(tx, list = "open") {
-    let valid_game = this.validateGame(tx);
-    let game_exists = false;
-    if (valid_game) {
-      if (!this.games[list]) { this.games[list] = []; }
-      for (let i = 0; i < this.games[list].length; i++) {
-        if (this.games[list][i].transaction.sig === tx.transaction.sig) {
-          game_exists = true;
-        }
+
+    let already_exists = 0;
+
+    for (let key in this.games) {
+      for (let z = 0; z < this.games[key].length; z++) {
+        if (tx.transaction.sig === this.games[key][z].transaction.sig) {
+	  already_exists = 1;
+	}
       }
-      if (game_exists == false) {
+    }
+
+    if (already_exists == 0) {
+      console.log("^^^^^^^^^^^^");
+      console.log("^^^^^^^^^^^^");
+      console.log(JSON.stringify(tx.transaction));
+      console.log("^^^^^^^^^^^^");
+      console.log("^^^^^^^^^^^^");
+      let valid_game = this.validateGame(tx);
+      let game_exists = false;
+      if (valid_game) {
+        if (!this.games[list]) { this.games[list] = []; }
         this.games[list].push(tx);
       }
     }
+
   }
   addGames(txs, list = "open") {
     if (!this.games[list]) { this.games[list] = []; }
@@ -1353,10 +1365,26 @@ console.log("returned: " + game_id);
       if (valid_game) {
         if (list == "mine") {
           if (this.isMyGame(tx)) {
-            this.games["mine"].unshift(tx);
+	    let already_exists = 0;
+	    for (let i = 0; i < this.games[mine].length; i++) {
+	      if (tx.transaction.sig === this.games[mine][i].transaction.sig) {
+		already_exists = 1;
+	      }
+	    }
+	    if (already_exists == 0) {
+              this.games["mine"].unshift(tx);
+            }
           }
         } else {
-          this.games[list].unshift(tx);
+	  let already_exists = 0;
+	  for (let i = 0; i < this.games[mine].length; i++) {
+	    if (tx.transaction.sig === this.games[mine][i].transaction.sig) {
+	      already_exists = 1;
+	    }
+	  }
+	  if (already_exists == 0) {
+            this.games[list].unshift(tx);
+          }
         }
       }
     });

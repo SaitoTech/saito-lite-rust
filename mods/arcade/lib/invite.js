@@ -14,11 +14,53 @@ class Invite {
     this.my_game = new MyGameOverlay(app, mod, tx);
     this.tx = tx;
 
+    //
+    // information may be stored in different places, so we 
+    // save these variables in our invite, and use the invite
+    // version to display our overlay templates.
+    //
+    this.game_id = "";
+    this.game_type = "standard game";
+    this.game_name = "";
+    this.game_slug = "";
+    this.game_mod = null;
+    this.originator = null;
+    if (this.tx) {
+      let txmsg = this.tx.returnMessage();
+      if (this.tx.transaction.sig) { this.game_id = this.tx.transaction.sig; }
+      if (txmsg.game_id) { this.game_id = txmsg.game_id; }
+      if (txmsg.name) { this.game_name = txmsg.name; }
+      if (this.game_name) { this.game_slug = this.game_name.toLowerCase(); }
+      if (!txmsg.name) { this.game_name = txmsg.game; }
+      this.game_mod = app.modules.returnModule(txmsg.game);
+      this.originator = txmsg.originator || null;
+    }
+    if (this.game_mod) {
+      this.game_name = this.game_mod.returnName();
+      this.game_slug = this.game_mod.returnSlug();
+    }
 
+    //
+    // private invites
+    //
+    if (mod.isMyGame(this.tx)) {
+      if (!mod.isJoined(tx, app.wallet.returnPublicKey())) {
+        this.game_type = "private invite";
+      }
+      if (this.tx.transaction.to.length > 1) {
+        this.game_type = "private invite";
+      }
+    }
+
+
+
+
+    //
     //
     // handle requests to re-render invites -- move to INVITE FILE
     //
     this.app.connection.on("arcade-invite-render-request", (game_id) => {
+      this.game_id = game_id;
       if (this.tx == null) { return; }
       if (this.mod.is_game_initializing == true) { return; }
       if (game_id === this.tx.transaction.sig) {
@@ -30,9 +72,9 @@ class Invite {
 
   render() {
     if (document.querySelector(".arcade-invites")) {
-      this.app.browser.replaceElementBySelector(InviteTemplate(this.app, this.mod, this.tx), ".arcade-invites");
+      this.app.browser.replaceElementBySelector(InviteTemplate(this.app, this.mod, this), ".arcade-invites");
     } else {
-      this.app.browser.addElementToSelector(InviteTemplate(this.app, this.mod, this.tx), this.container);
+      this.app.browser.addElementToSelector(InviteTemplate(this.app, this.mod, this), this.container);
     }
     this.attachEvents();
   }
@@ -40,45 +82,29 @@ class Invite {
 
   attachEvents() {
 
-    invite_self = this;
+    let qs = `.saito-game-${this.game_id}`;
 
-    document.querySelectorAll(`.saito-game`).forEach( (elem) => {
-      elem.onclick = (e) => {
+    document.querySelector(qs).onclick = (e) => {
 
         e.stopImmediatePropagation();
 
-        let game_id = e.currentTarget.getAttribute("data-id");
-        let game_cmd = e.currentTarget.getAttribute("data-cmd");
-        let name = e.currentTarget.getAttribute("data-name");
-        let game = e.currentTarget.getAttribute("data-game");
-        let game_overlay = e.currentTarget.getAttribute("data-overlay");
-
-        let invite = {
-          name: name,
-          game: game,
-          cmd: game_cmd,
-          game_overlay: game_overlay
-        }
-
-        console.log(invite);
-
-	if (game_overlay == "join") {
-      	  invite_self.join.invite = invite;
-      	  invite_self.join.render();
+	if (this.mod.isMyGame(this.tx)) {
+	  if (this.mod.isAccepted(this.tx, this.app.wallet.returnPublicKey())) {
+            this.my_game.invite = this;
+            this.my_game.render();
+	    return;
+	  } else {
+      	    this.join.invite = this;
+      	    this.join.render();
+	    return;
+	  }
+	} else {
+      	  this.join.invite = this;
+      	  this.join.render();
 	  return;
 	}
 
-        if (game_overlay == "continue" || game_cmd == 'continue' || game_cmd == 'cancel') {
-          invite_self.my_game.invite = invite;
-          invite_self.my_game.render();
-          return;
-        }
-
-      	invite_self.join.invite = invite;
-      	invite_self.join.render();
-
-      }
-    });
+    };
 
   }
 
