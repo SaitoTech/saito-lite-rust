@@ -3,13 +3,10 @@ module.exports = (app, mod, tx=null) => {
     if (tx === null) { return ""; }
 
     let txmsg = tx.returnMessage();
-    console.log("invite msg");
-    console.log(txmsg);
 
     if (!txmsg.type) { txmsg.type = "standard"; }
     if (!txmsg.name) { 
       let game_mod = app.modules.returnModule(txmsg.game);
-      console.log("GAME MOD: " + txmsg.game);
       if (game_mod) { txmsg.name = game_mod.returnName(); }
     }
 
@@ -17,14 +14,26 @@ module.exports = (app, mod, tx=null) => {
     let pubkey = app.wallet.returnPublicKey();
     let cmd = 'join';
     let game_id = txmsg.game_id || null;
+    let game_type = `${txmsg.type} game`;
+    let game_overlay = "join";
+
+    //
+    // change game_type 
+    //
+    if (mod.isMyGame(tx)) {
+      game_overlay = "continue";
+      if (!mod.isJoined(tx, app.wallet.returnPublicKey())) { 
+	game_type = "private invite";
+	game_overlay = "open";
+      }
+    }
+
 
     // check if game invite is joined or not
     if (originator != null) {
       cmd = (pubkey == originator) ? 'continue' : 'join'
     } else if (game_id != null) {
-    
       let mine_games = mod.games.mine;
-
       if (mine_games.length > 0) {
         mine_games.forEach(function(game,key) {
           if (game.msg.game_id == game_id) {
@@ -37,7 +46,7 @@ module.exports = (app, mod, tx=null) => {
 
 
     let html = `
-          <div class="saito-module saito-game" data-id="${game_id}" data-cmd="${cmd}" data-name="${txmsg.name}" data-game="${txmsg.game}" style="background-image: url('/${txmsg.game}/img/arcade/arcade.jpg');">
+          <div class="saito-module saito-game" data-id="${game_id}" data-overlay="${game_overlay}" data-cmd="${cmd}" data-name="${txmsg.name}" data-game="${txmsg.game}" style="background-image: url('/${txmsg.game}/img/arcade/arcade.jpg');">
             <div class="saito-module-titlebar">
                 <span class="saito-module-titlebar-title">${txmsg.name}</span>
                 <div class="saito-module-titlebar-details game-type">${(txmsg.type).toUpperCase()} GAME</div>
@@ -62,8 +71,7 @@ module.exports = (app, mod, tx=null) => {
 
       for (let i=0; i<missing_slots; i++) {
         html += `
-              <div class="saito-module-identicon identicon-needed tip">
-                <div class="tiptext">You need this player to start the game</div>
+              <div class="saito-module-identicon identicon-needed">
               </div>
         `;
       }

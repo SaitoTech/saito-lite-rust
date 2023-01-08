@@ -7,7 +7,8 @@ const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
 const GameInvitationLink = require("./lib/overlays/game-invitation-link");
-
+const JoinGameOverlay = require("./lib/overlays/join-game");
+const MyGameOverlay = require("./lib/overlays/my-game");
 
 class Arcade extends ModTemplate {
 
@@ -97,6 +98,16 @@ class Arcade extends ModTemplate {
       this.game_invitation_link = new GameInvitationLink(app, this, {});
 
       //
+      // join game overlay
+      //
+      this.join_game_overlay = new JoinGameOverlay(app, this, {});
+
+      //
+      // my game overlay
+      //
+      this.my_game_overlay = new MyGameOverlay(app, this, {});
+
+      //
       // my games
       //
       if (this.app.options.games) {
@@ -144,39 +155,80 @@ class Arcade extends ModTemplate {
 
     if (!app.BROWSER) { return; }
     let arcade_self = this;
+    //
+    // TODO for game invites do we really want this cut-off ? 
+    //
     let cutoff = new Date().getTime() - this.old_game_removal_delay;
 
-    /*********
-        if (this.browser_active && this.app.browser.returnURLParameter("jid")) {
+    //
+    //
+    //
+    if (this.app.browser.returnURLParameter("arcade_game_id")) {
     
-          let gameId = this.app.browser.returnURLParameter("jid");
-    
-          let sql = `SELECT * FROM games WHERE game_id = "${gameId}" AND created_at > ${cutoff}`;
-          this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
-            if (res.rows) {
-              arcade_self.addGames(
-                res.rows.map((row) => {
-                  if (arcade_self.debug) { console.log(JSON.parse(JSON.stringify(row))); };
-                  if (row.status == "open" || row.status == "private") {
-                    let newtx = new saito.default.transaction(JSON.parse(row.tx));
-                    let player_info = row.players_array.split("_");
-                    for (let pi of player_info){
-                      let pair = pi.split("/");
-                      let pkey = pair[0];
-                      let sig = pair[1];
-                      if (!newtx.msg.players.includes(pkey)){
-                        newtx.msg.players.push(pkey);
-                        newtx.msg.players_sigs.push(sig);
-                      }
+      let game_id = this.app.browser.returnURLParameter("arcade_game_id");    
+      let invite_tx = null;
+      let sql = `SELECT * FROM games WHERE game_id = "${game_id}" AND created_at > ${cutoff}`;
+console.log(">>>>>");
+console.log(">>>>>");
+console.log(">>>>>");
+console.log(sql);
+
+      let game = this.returnGame(game_id);
+      if (game != null) {
+
+alert("Asking for a game that exists!");
+
+      } else {
+
+        this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
+          if (res.rows) {
+            arcade_self.addGames(
+              res.rows.map((row) => {
+                if (row.status == "open" || row.status == "private") {
+                  let newtx = new saito.default.transaction(JSON.parse(row.tx));
+                  let player_info = row.players_array.split("_");
+                  for (let pi of player_info){
+                    let pair = pi.split("/");
+                    let pkey = pair[0];
+                    let sig = pair[1];
+                    if (!newtx.msg.players.includes(pkey)){
+                      newtx.msg.players.push(pkey);
+                      newtx.msg.players_sigs.push(sig);
                     }
-                    return newtx;
-                  } else { return null; }
-                });
-              );
-            }
-          });
-        }
-    *******/
+                  }
+		  invite_tx = newtx;
+                  return newtx;
+                } else { return null; }
+              })
+            );
+
+console.log("OVERLAY IS COMPLETE");
+
+	    if (invite_tx != null) {
+
+	      //
+	      // which overlay we show depends on HACK 
+	      //
+	      if (this.isMyGame(invite_tx)) {
+console.log("is my game");
+	        if (this.isAccepted(invite_tx, this.app.wallet.returnPublicKey())) {
+console.log("is accepted");
+	          this.join_game_overlay.invite_tx = invite_tx;
+	          this.join_game_overlay.render();
+	        } else {
+console.log("is my game");
+	          this.my_game_overlay.invite_tx = invite_tx;
+	          this.my_game_overlay.render();
+	        }
+	      }
+	    } else {
+alert("Observer Overlay for URL Games not yet implemented");
+	    }
+console.log("INVITE TX: " + JSON.stringify(invite_tx));
+	  }
+        });
+      }
+    }
 
     //
     // load open games from server
@@ -206,6 +258,8 @@ class Arcade extends ModTemplate {
       }
     );
   }
+
+
 
 
 
@@ -372,6 +426,13 @@ console.log("<===>");
         // private invites
         //
         if (txmsg.module === "Arcade" && txmsg.request == "private") {
+          arcade_self.receiveOpenTransaction(tx, blk);
+        }
+
+	//
+	// private invites
+	//
+        if (txmsg.module === "ArcadeInvite" && txmsg.request == "private") {
           arcade_self.receiveOpenTransaction(tx, blk);
         }
 
@@ -1309,7 +1370,40 @@ console.log("returned: " + game_id);
       }
     }
   }
+  isInvited(tx, publickey) {
+    for (let i = 0; i < tx.transaction.to.length; i++) {
+      if (tx.transaction.to[i].add == publickey) {
+	return true;
+      }
+    }
+    return false;
+  }
+  isJoined(tx, publickey) {
+    for (let i = 0; i < tx.msg.players.length; i++) {
+      if (tx.msg.players[i] == publickey) {
+        if (tx.msg.players_sigs[i] != "") {
+	  return true;
+	}
+      }
+    }
+    return false;
+  }
+  isAccepted(tx, publickey) {
+    if (tx.msg.players < tx.msg.players_needed) { return false; }
+    if (tx.msg.players.length > tx.msg.players_sigs.length) { return false; }
+    for (let i = 0; i < tx.msg.players.length; i++) {
+      if (tx.msg.players[i] == publickey) {
+        if (tx.msg.players_sigs[i] != "") {
+	  return true;
+	}
+      }
+    }
+    return false;
+  }
   isMyGame(tx) {
+    for (let i = 0; i < tx.transaction.to.length; i++) {
+      if (tx.transaction.to[i].add == this.app.wallet.returnPublicKey()) { return true; }
+    }
     for (let i = 0; i < tx.msg.players.length; i++) {
       if (tx.msg.players[i] == this.app.wallet.returnPublicKey()) { return true; }
     }
@@ -1614,13 +1708,16 @@ console.log("returned: " + game_id);
       inviteLink += "#";
     }
     if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&jid=" + game_sig);
+      inviteLink = inviteLink.replace("#", "&arcade_game_id=" + game_sig);
     } else {
-      inviteLink = inviteLink.replace("#", "?jid=" + game_sig);
+      inviteLink = inviteLink.replace("#", "?arcade_game_id=" + game_sig);
     }
 
     data.invite_link = inviteLink;
 
+    console.log("<<<<>>>>");
+    console.log("<<<<  >>>>");
+    console.log("<<<<    >>>>");
     console.log("pre invitation link render");
     console.log(JSON.stringify(data));
 
@@ -1673,12 +1770,10 @@ console.log("INVITE OBJ: " + invite_obj.publickey);
 
       if (gameType == "direct") {
         let newtx = this.createOpenTransaction(gamedata, desired_opponent_publickey);
-alert("arcade-launch-game-scheduler!");
         this.app.connection.emit("arcade-launch-game-scheduler", (newtx));
         return;
       }
 
-alert("or create open transaction!");
       let newtx = this.createOpenTransaction(gamedata, desired_opponent_publickey);
       this.app.network.propagateTransaction(newtx);
 
@@ -1696,7 +1791,6 @@ alert("or create open transaction!");
       this.app.connection.emit("send-relay-message", { recipient: peers, request: "arcade spv update", data: newtx });
 
       if (gameType == "private") {
-alert("SHOW SHARE LINK");
         this.showShareLink(newtx.transaction.sig);
       }
     }

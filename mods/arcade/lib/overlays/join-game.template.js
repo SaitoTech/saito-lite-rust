@@ -1,10 +1,11 @@
 module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
 
   let txmsg = invite_tx.returnMessage();
-  let game_mod = app.modules.returnModuleByName(txmsg.name);
+  let modname = txmsg.name;
+  if (!modname) { modname = txmsg.game; }
+  if (!modname) { modname = txmsg.module; }
 
-  console.log("TXN MSGGGGGGGG");
-  console.log(txmsg);
+  let game_mod = app.modules.returnModuleByName(modname);
 
   let html = `
   <div class="arcade-game-overlay">

@@ -1,7 +1,10 @@
 module.exports = MyGameOverlayTemplate = (app, mod, invite_tx) => {
 
   let txmsg = invite_tx.returnMessage();
-  let game_mod = app.modules.returnModuleByName(txmsg.name);
+  let modname = txmsg.name;
+  if (!modname) { modname = txmsg.game; }
+  if (!modname) { modname = txmsg.module; }
+  let game_mod = app.modules.returnModuleByName(modname);
   let desc = "open invitation";
 
   let html = `

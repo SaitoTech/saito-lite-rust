@@ -13,7 +13,12 @@ class JoinGameOverlay {
   render() {
     
     let txmsg = this.invite_tx.returnMessage();
-    let game_mod = this.app.modules.returnModuleByName(txmsg.name);
+    let modname = txmsg.name;
+    if (!modname) { modname = txmsg.game; }
+    if (!modname) { modname = txmsg.module; }
+console.log("TXMSG: " + JSON.stringify(txmsg));
+
+    let game_mod = this.app.modules.returnModuleByName(modname);
 
     this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite_tx));
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);

@@ -51,16 +51,24 @@ class Invite {
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
         let name = e.currentTarget.getAttribute("data-name");
         let game = e.currentTarget.getAttribute("data-game");
+        let game_overlay = e.currentTarget.getAttribute("data-overlay");
 
         let invite = {
           name: name,
           game: game,
-          cmd: game_cmd
+          cmd: game_cmd,
+          game_overlay: game_overlay
         }
 
         console.log(invite);
 
-        if (game_cmd == 'continue' || game_cmd == 'cancel') {
+	if (game_overlay == "join") {
+      	  invite_self.join.invite = invite;
+      	  invite_self.join.render();
+	  return;
+	}
+
+        if (game_overlay == "continue" || game_cmd == 'continue' || game_cmd == 'cancel') {
           invite_self.my_game.invite = invite;
           invite_self.my_game.render();
           return;

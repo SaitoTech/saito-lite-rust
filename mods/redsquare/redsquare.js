@@ -141,7 +141,6 @@ class RedSquare extends ModTemplate {
     // fetch content from local archive
     //
     this.tweets_last_viewed_ts = new Date().getTime();
-    console.log("TWEETS LAST VIEWED TS: " + this.tweets_last_viewed_ts);
     app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
       for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
     });
@@ -277,7 +276,6 @@ class RedSquare extends ModTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          console.log("RECEIVE TWEET TRANSACTION IN REDSQUARE.JS");
           this.receiveTweetTransaction(blk, tx, conf, app);
           this.sqlcache = [];
         }
@@ -353,13 +351,11 @@ class RedSquare extends ModTemplate {
 
     let render_home = false;
     if (this.tweets.length == 0) { render_home = true; }
-    console.log("STARTING HERE!");
 
     this.sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       sql,
       async (res) => {
-        console.log("RESULTS");
         if (res.rows) {
           if (!this.peers_for_tweets.includes(peer)) {
             this.peers_for_tweets.push(peer);
@@ -386,7 +382,6 @@ class RedSquare extends ModTemplate {
       },
       (p) => { if (p == peer) { return 1; } return 0; }
     );
-    console.log("DONE");
   }
 
 
@@ -423,11 +418,6 @@ class RedSquare extends ModTemplate {
     //
     let tweet = new Tweet(this.app, this, "", tx);
 
-console.log('LOAD TWEET: ' + tweet.text);
-console.log('id:  ' + tx.transaction.sig);
-console.log('parent_id:  ' + tweet.parent_id);
-console.log('thread_id:  ' + tweet.thread_id);
-
     //
     // maybe this needs to go into notifications too
     //
@@ -460,7 +450,6 @@ console.log('thread_id:  ' + tweet.thread_id);
       //
       let txmsg = tx.returnMessage();
       if (txmsg.request === "like tweet") {
-        console.log("LIKED A TWEET -- nope out");
         return;
       }
 
@@ -547,11 +536,6 @@ console.log('thread_id:  ' + tweet.thread_id);
       }
 
     }
-
-console.log("ADDED TWEET AND ALL ARE: ");
-for (let i = 0; i < this.tweets.length; i++) {
-    console.log(this.tweets[i].text + " ---- " + this.tweets[i].children.length);
-}
 
     this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
 

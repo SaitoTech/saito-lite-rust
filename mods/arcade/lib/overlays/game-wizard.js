@@ -1,10 +1,6 @@
 const GameWizardTemplate = require('./game-wizard.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 
-/*
-  Red Square re-do of "arcade-game-details", an interface to select game options and create a game invite
-*/
-
 class GameWizard {
   constructor(app, mod, game_mod = null, obj = {}) {
 
@@ -166,11 +162,7 @@ class GameWizard {
             app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
-
-alert("make game invite in game wizard!");
-
           mod.makeGameInvite(options, isPrivateGame, this.obj);
-
 
         } catch (err) {
           console.warn(err);

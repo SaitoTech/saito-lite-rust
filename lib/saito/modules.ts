@@ -373,8 +373,10 @@ class Mods {
 
   // checks against full name (with spaces too)
   returnModuleByName(modname) {
+
     for (let i = 0; i < this.mods.length; i++) {
-      if (modname === this.mods[i] || modname === this.mods[i].returnName()) {
+console.log("checking: " + modname + " against " + this.mods[i].name);
+      if (modname === this.mods[i].name || modname === this.mods[i].returnName()) {
         return this.mods[i];
       }
     }
