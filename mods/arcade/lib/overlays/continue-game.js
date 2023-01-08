@@ -1,7 +1,7 @@
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
-const MyGameOverlayTemplate = require('./my-game.template');
+const ContinueGameOverlayTemplate = require('./continue-game.template');
 
-class MyGameOverlay {
+class ContinueGameOverlay {
 
   constructor(app, mod, tx=null) {
     this.app = app;
@@ -19,7 +19,7 @@ class MyGameOverlay {
 
     let game_mod = this.app.modules.returnModuleByName(modname);
 
-    this.overlay.show(MyGameOverlayTemplate(this.app, this.mod, this.invite_tx));
+    this.overlay.show(ContinueGameOverlayTemplate(this.app, this.mod, this.invite_tx));
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
     this.attachEvents();
   }
@@ -33,5 +33,5 @@ class MyGameOverlay {
 }
 
 
-module.exports = MyGameOverlay;
+module.exports = ContinueGameOverlay;
 

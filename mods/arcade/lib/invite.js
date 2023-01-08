@@ -1,5 +1,6 @@
 const JoinGameOverlay = require("./overlays/join-game");
-const MyGameOverlay = require("./overlays/my-game");
+const ContinueGameOverlay = require("./overlays/continue-game");
+const WaitingGameOverlay = require("./overlays/waiting-game");
 const InviteTemplate = require("./invite.template");
 const JSON = require('json-bigint');
 
@@ -11,7 +12,8 @@ class Invite {
     this.mod = mod;
     this.container = container;
     this.join = new JoinGameOverlay(app, mod, tx);
-    this.my_game = new MyGameOverlay(app, mod, tx);
+    this.continue_game = new ContinueGameOverlay(app, mod, tx);
+    this.waiting_game = new WaitingGameOverlay(app, mod, tx);
     this.tx = tx;
 
     //
@@ -24,9 +26,11 @@ class Invite {
     this.game_name = "";
     this.game_slug = "";
     this.game_mod = null;
+    this.game_status = "";
     this.originator = null;
     if (this.tx) {
       let txmsg = this.tx.returnMessage();
+      if (txmsg.status) { this.game_status = txmsg.status; }
       if (this.tx.transaction.sig) { this.game_id = this.tx.transaction.sig; }
       if (txmsg.game_id) { this.game_id = txmsg.game_id; }
       if (txmsg.name) { this.game_name = txmsg.name; }
@@ -90,9 +94,15 @@ class Invite {
 
 	if (this.mod.isMyGame(this.tx)) {
 	  if (this.mod.isAccepted(this.tx, this.app.wallet.returnPublicKey())) {
-            this.my_game.invite = this;
-            this.my_game.render();
-	    return;
+	    if (this.game_status === "open") {
+              this.waiting_game.invite = this;
+              this.waiting_game.render();
+  	      return;
+	    } else {
+              this.continue_game.invite = this;
+              this.continue_game.render();
+  	      return;
+	    }
 	  } else {
       	    this.join.invite = this;
       	    this.join.render();

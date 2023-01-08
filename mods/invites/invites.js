@@ -6,6 +6,7 @@ const InvitesAppspace = require('./lib/appspace/main');
 class Invites extends InviteTemplate {
 
   constructor(app) {
+
     super(app);
 
     this.app = app;
@@ -21,10 +22,6 @@ class Invites extends InviteTemplate {
 
     return this;
 
-  }
-
-  initialize(app) {
-    this.loadInvites();
   }
 
 

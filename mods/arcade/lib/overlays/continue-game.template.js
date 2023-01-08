@@ -1,4 +1,4 @@
-module.exports = MyGameOverlayTemplate = (app, mod, invite_tx) => {
+module.exports = ContinueGameOverlayTemplate = (app, mod, invite_tx) => {
 
   let txmsg = invite_tx.returnMessage();
   let modname = txmsg.name;

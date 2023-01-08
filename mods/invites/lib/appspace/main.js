@@ -13,7 +13,7 @@ class InvitesAppspace {
     app.connection.on("event-render-request", (invite_obj) => {
       if (!document.querySelector(".invite-email-appspace")) {
         app.browser.replaceElementBySelector(InvitesAppspaceTemplate(app, mod), ".appspace");
-        this.attachEvents(app, mod);
+	this.render();
 	return;
       }
     });

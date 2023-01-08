@@ -8,7 +8,8 @@ const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
 const GameInvitationLink = require("./lib/overlays/game-invitation-link");
 const JoinGameOverlay = require("./lib/overlays/join-game");
-const MyGameOverlay = require("./lib/overlays/my-game");
+const ContinueGameOverlay = require("./lib/overlays/continue-game");
+const WaitingGameOverlay = require("./lib/overlays/waiting-game");
 
 class Arcade extends ModTemplate {
 
@@ -103,9 +104,14 @@ class Arcade extends ModTemplate {
       this.join_game_overlay = new JoinGameOverlay(app, this, {});
 
       //
-      // my game overlay
+      // continue game overlay
       //
-      this.my_game_overlay = new MyGameOverlay(app, this, {});
+      this.continue_game_overlay = new ContinueGameOverlay(app, this, {});
+
+      //
+      // continue game overlay
+      //
+      this.waiting_game_overlay = new WaitingGameOverlay(app, this, {});
 
       //
       // my games
@@ -167,19 +173,31 @@ class Arcade extends ModTemplate {
     
       let game_id = this.app.browser.returnURLParameter("arcade_game_id");    
       let invite_tx = null;
-      let sql = `SELECT * FROM games WHERE game_id = "${game_id}" AND created_at > ${cutoff}`;
-console.log(">>>>>");
-console.log(">>>>>");
-console.log(">>>>>");
-console.log(sql);
-
       let game = this.returnGame(game_id);
       if (game != null) {
 
-alert("Asking for a game that exists!");
+	//
+	// game exists locally
+	//
+        if (this.isMyGame(game)) {
+          if (this.isAccepted(game, this.app.wallet.returnPublicKey())) {
+  	    let txmsg = game.returnMessage();
+	    if (txmsg.players_needed > txmsg.players) {
+	      this.waiting_game_overlay.invite_tx = game;
+	      this.waiting_game_overlay.render();
+	    } else {
+	      this.continue_game_overlay.invite_tx = game;
+	      this.continue_game_overlay.render();
+	    }
+	  } else {
+	    this.continue_game_overlay.invite_tx = game;
+	    this.continue_game_overlay.render();
+	  }
+	}
 
       } else {
 
+        let sql = `SELECT * FROM games WHERE game_id = "${game_id}" AND created_at > ${cutoff}`;
         this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
           if (res.rows) {
             arcade_self.addGames(
@@ -202,29 +220,25 @@ alert("Asking for a game that exists!");
               })
             );
 
-console.log("OVERLAY IS COMPLETE");
-
 	    if (invite_tx != null) {
-
-	      //
-	      // which overlay we show depends on HACK 
-	      //
 	      if (this.isMyGame(invite_tx)) {
-console.log("is my game");
 	        if (this.isAccepted(invite_tx, this.app.wallet.returnPublicKey())) {
-console.log("is accepted");
-	          this.join_game_overlay.invite_tx = invite_tx;
-	          this.join_game_overlay.render();
+		  let txmsg = invite_tx.returnMessage();
+		  if (txmsg.players_needed > txmsg.players) {
+	            this.waiting_game_overlay.invite_tx = invite_tx;
+	            this.waiting_game_overlay.render();
+		  } else {
+	            this.continue_game_overlay.invite_tx = invite_tx;
+	            this.continue_game_overlay.render();
+		  }
 	        } else {
-console.log("is my game");
-	          this.my_game_overlay.invite_tx = invite_tx;
-	          this.my_game_overlay.render();
+	          this.continue_game_overlay.invite_tx = invite_tx;
+	          this.continue_game_overlay.render();
 	        }
 	      }
 	    } else {
 alert("Observer Overlay for URL Games not yet implemented");
 	    }
-console.log("INVITE TX: " + JSON.stringify(invite_tx));
 	  }
         });
       }
