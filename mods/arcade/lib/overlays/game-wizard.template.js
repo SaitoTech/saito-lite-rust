@@ -60,7 +60,7 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
     if (invite_obj.league) {
       if (publickey) {
         html += `
-              <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">create league game</button>
+              <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">next...</button>
          `;
       } else {
         html += `
@@ -70,7 +70,7 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
     } else {
       if (publickey) {
         html += `
-              <button type="button" class="saito-multi-btn game-invite-btn" data-type="direct">send invite...</button>
+              <button type="button" class="saito-multi-btn game-invite-btn" data-type="direct">next...</button>
        `;
       } else {
         html += `
