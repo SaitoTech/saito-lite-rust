@@ -40,7 +40,13 @@ class GameSelector {
         let modname = e.currentTarget.getAttribute("data-id");
         this.obj.game = modname;
         this.overlay.remove();
-        this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
+
+	if (this.obj.callback != null) {
+	  this.obj.callback(this.obj);
+	} else {
+          this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
+	}
+
       };
     });
   }

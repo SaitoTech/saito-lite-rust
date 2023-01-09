@@ -1,6 +1,6 @@
+const LeagueWizard = require("./components/league-wizard");
 const LeagueMainTemplate    = require("./main.template");
 const LeagueComponentExistingLeague = require("./components/existing-league");
-//const LeagueJoinOverlay = require("./../overlays/join-league-overlay");
 
 class LeagueMain {
 
@@ -8,6 +8,7 @@ class LeagueMain {
 
     this.app = app;
     this.mod = mod;
+    this.wizard = null;
 
     app.connection.on("league-add-league", (league) => {
       this.render();
@@ -90,37 +91,25 @@ class LeagueMain {
 
 
   attachEvents() {
-    main_self = this;
 
     if (document.getElementById('create-new-league')) {
       document.getElementById('create-new-league').onclick = () => {
 
-        let html = "";
-        main_self.app.modules.respondTo("arcade-games").forEach(game_mod => {
-          html += `<li data-id="${game_mod.name}">${game_mod.gamename || game_mod.name}</li>`;
-        });
+        this.app.connection.emit("arcade-launch-game-selector", { 
+	  callback : (obj) => {
+    	    if (this.wizard != null) { delete this.wizard; }
+	    let game_mod = this.app.modules.returnModuleByName(obj.game);
+	    this.wizard = new LeagueWizard(this.app, this.mod, game_mod);
+            this.wizard.render();
+	  }
+	});
 
-        console.log("RESPONDTO");
-        console.log(main_self.app.modules.respondTo("arcade-games"));
-
-        console.log("HTML");
-        console.log(html);
-
-        // this.mod.styles = ['/league/style.css', '/arcade/css/arcade-game-selector-overlay.css',
-        // '/arcade/css/arcade-overlays.css'];
-        // this.mod.attachStyleSheets();
-
-        console.log(this.mod);
-        this.app.connection.emit("arcade-launch-game-selector", {league: true});
-
-        // let selector = new LeagueListModal(main_self.app, main_self.mod);
-        // selector.title = "Games";
-        // selector.prompt = "Select a game for your league";
-        // selector.list = html;
-        // selector.render();
       }
     }
   }
+
+
+
 }
 
 module.exports = LeagueMain;

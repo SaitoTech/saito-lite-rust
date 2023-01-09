@@ -1770,8 +1770,6 @@ console.log("returned: " + game_id);
 
   makeGameInvite(options, gameType = "public", invite_obj={}) {
 
-    // options = game options
-    // invite_obj = publickey of desired opponent + league info
 console.log("OPTIONS ARE: " + JSON.stringify(options));
 console.log("INVITE OBJ: " + invite_obj.publickey);
 
@@ -1780,6 +1778,13 @@ console.log("INVITE OBJ: " + invite_obj.publickey);
     let players_needed = options["game-wizard-players-select"];
     let desired_opponent_publickey = "";
     if (invite_obj.publickey) { desired_opponent_publickey = invite_obj.publickey; }
+
+    //
+    // add league_id to options if this is a league game
+    // 
+    if (invite_obj.league) {
+      options.league_id = invite_obj.league.id;
+    }
 
     if (!players_needed) {
       console.error("Create Game Error");
