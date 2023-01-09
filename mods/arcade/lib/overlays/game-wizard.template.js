@@ -57,15 +57,27 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
           <div class="saito-multi-select_btn saito-select">
            <div class="saito-multi-select_btn_options saito-slct">
       `;
-    if (publickey) {
-      html += `
-              <button type="button" class="saito-multi-btn game-invite-btn" data-type="direct">Next Step...</button>
-       `;
+    if (invite_obj.league) {
+      if (publickey) {
+        html += `
+              <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">create league game</button>
+         `;
+      } else {
+        html += `
+              <button type="button" class="saito-multi-btn  game-invite-btn" data-type="private">create private invite</button>
+         `;
+      }
     } else {
-      html += `
-              <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">Create Open Game</button>
-              <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private Game</button>
+      if (publickey) {
+        html += `
+              <button type="button" class="saito-multi-btn game-invite-btn" data-type="direct">send invite...</button>
        `;
+      } else {
+        html += `
+              <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">create public invite</button>
+              <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">create private invite</button>
+         `;
+      }
     }
     html += `
            </div>
@@ -81,7 +93,7 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
   </form>
   `;
 
-  // message for licensed games
+  // support game publishers
   if (game_mod.publisher_message) {
     html += `<div id="arcade-game-publisher-message" class="arcade-game-publisher-message">
       <span>NOTE: </span>${game_mod.publisher_message}</div>`;

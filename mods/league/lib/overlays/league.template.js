@@ -1,10 +1,10 @@
 module.exports = LeagueOverlayTemplate = (app, mod) => {
 
     let league = mod.leagues[mod.league_idx];
-    let game_mod = app.modules.returnModuleByName(league.name);
+    let game_mod = app.modules.returnModuleByName(league.game);
 
     let league_mod = game_mod.name;
-    let league_name = game_mod.returnName();
+    let league_name = league.name;
     let league_type = "public league"
     let league_desc = game_mod.description;
 

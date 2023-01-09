@@ -53,27 +53,10 @@ class GameWizard {
       }
     } else {
 
-      //Create (hidden) the advanced options window
-      advancedOptions = `
-        <div id="advanced-options-overlay-container"> 
-          ${advancedOptions}
-        </div>
-      `
+      advancedOptions = `<div id="advanced-options-overlay-container">${advancedOptions}</div>`;
       this.meta_overlay = new SaitoOverlay(app, mod, false, false);
       this.meta_overlay.show(advancedOptions);
       this.meta_overlay.hide();
-
-      //
-      // move advanced options into game details form for easy selection of game options
-      //
-      // let overlay1 = document.querySelector(`#saito-overlay${this.meta_overlay.ordinal}`);
-      // let overlay_backdrop_el = document.querySelector(`#saito-overlay-backdrop${this.meta_overlay.ordinal}`);
-      // let overlaybox = document.querySelector("#advanced-options-overlay-container");
-      // overlaybox.appendChild(overlay1);
-      // overlaybox.appendChild(overlay_backdrop_el);
-
-      // overlay_backdrop_el.style.opacity = 0.95;
-      // overlay_backdrop_el.style.backgroundColor = "#111";
 
     }
 

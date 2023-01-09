@@ -1770,9 +1770,6 @@ console.log("returned: " + game_id);
 
   makeGameInvite(options, gameType = "public", invite_obj={}) {
 
-console.log("OPTIONS ARE: " + JSON.stringify(options));
-console.log("INVITE OBJ: " + invite_obj.publickey);
-
     let game = options.game;
     let game_mod = this.app.modules.returnModule(game);
     let players_needed = options["game-wizard-players-select"];

@@ -48,9 +48,11 @@ class League extends ModTemplate {
     //
     this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
        this.addLeague({
-        	id   : app.crypto.hash(mod.returnName()) ,	// id
-    	   	name : mod.returnName() , 			// name
-    	 	rank : 0 					// rank
+        	id     : app.crypto.hash(mod.returnName()) ,	// id
+		default: 1,					// default league
+    	   	name   : mod.returnName() , 			// name - name of league
+    	   	game   : mod.returnName() , 			// game - name of game mod
+    	 	rank   : 0 					// rank
        });
     });
     league_self = this;
@@ -158,6 +160,7 @@ class League extends ModTemplate {
   //
   // {
   //   id   	: $LEAGUE_ID ,
+  //   default  : 0 , 
   //   name 	: $LEAGUE_NAME ,
   //   rank 	: $MY_RANK_IN_LEAGUE ,
   //   players 	: [player_array] ,
@@ -175,6 +178,7 @@ class League extends ModTemplate {
     if (!obj.players)           { obj.players = []; }
     if (!obj.games)             { obj.games = []; }
     if (!obj.mod)               { obj.mod = this.app.modules.returnModuleByName(obj.name); }
+    if (!obj.default)		{ obj.default = 0; }
     if (!obj.module && obj.mod) { obj.module = obj.mod.name; }
 
 

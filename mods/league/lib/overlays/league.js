@@ -14,7 +14,7 @@ class LeagueOverlay {
   render() {
 
     let league = this.mod.leagues[this.mod.league_idx];
-    let game_mod = this.app.modules.returnModuleByName(league.name);
+    let game_mod = this.app.modules.returnModuleByName(league.game);
 
     this.overlay.show(LeagueOverlayTemplate(this.app, this.mod));
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
@@ -26,14 +26,18 @@ class LeagueOverlay {
 
   attachEvents() {
 
-    league_self = this;
-
     Array.from(document.querySelectorAll('.league-overlay-create-game-button')).forEach(game => {
       game.onclick = (e) => {
         let modname = e.currentTarget.getAttribute("data-id");
         let league = this.mod.leagues[this.mod.league_idx];
 	this.overlay.remove();
-        league_self.app.connection.emit("arcade-launch-game-wizard", ({ game: modname , league : league }));
+	if (league.default == 0) {
+	  // private leagues get league provided
+          this.app.connection.emit("arcade-launch-game-wizard", ({ game: modname , league : league }));
+	} else {
+	  // default games skip as invites are open
+          this.app.connection.emit("arcade-launch-game-wizard", ({ game: modname }));
+	}
       };
     });
   }
