@@ -28,6 +28,13 @@ class Network {
   public peer_monitor_connection_timeout = 2000;
   public peer_monitor_timer: any;
   public debugging: boolean;
+  public blocks_to_fetch: Array<{ id: bigint; hash: string; peer: Peer }> = new Array<{
+    id: bigint;
+    hash: string;
+    peer: Peer;
+  }>();
+
+  public block_fetch_running = false;
 
   constructor(app: Saito) {
     this.app = app;
@@ -310,7 +317,7 @@ class Network {
         block.deserialize(buffer);
         // console.debug("block deserialized : " + block_hash);
         block.generateMetadata();
-        await block.generateConsensusValues();
+        // await block.generateConsensusValues();
         console.assert(
           block_hash === block.hash,
           `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
@@ -834,19 +841,32 @@ class Network {
         if (this.debugging) {
           console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
+        let obj: any = {
+          last_id: last_shared_ancestor,
+        };
+        obj.timer = setInterval(() => {
+          let count = 100;
+          // notify peer of longest-chain after this amount
+          for (let i = obj.last_id; i <= this.app.blockring.returnLatestBlockId(); i++) {
+            --count;
+            block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+            if (block_hash !== "") {
+              // block = await this.app.blockchain.loadBlockAsync(block_hash);
+              // if (block) {
+              this.propagateBlock(block_hash, i, peer);
+              obj.last_id = i;
+              // }
+            }
 
-        //
-        // notify peer of longest-chain after this amount
-        //
-        for (let i = last_shared_ancestor; i <= this.app.blockring.returnLatestBlockId(); i++) {
-          block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-          if (block_hash !== "") {
-            block = await this.app.blockchain.loadBlockAsync(block_hash);
-            if (block) {
-              this.propagateBlock(block, peer);
+            if (count === 0) {
+              break;
             }
           }
-        }
+
+          if (obj.last_id === this.app.blockring.returnLatestBlockId()) {
+            clearInterval(obj.timer);
+          }
+        }, 1000);
 
         break;
       }
@@ -942,10 +962,12 @@ class Network {
       //
       case MessageType.BlockHeaderHash:
         block_hash = Buffer.from(message.message_data.slice(0, 32), "hex").toString("hex");
-        console.log("BlockHeaderHash received : " + block_hash);
+        block_id = this.app.binary.u64FromBytes(message.message_data.slice(32, 40));
+        console.log("BlockHeaderHash received : " + block_hash + " - " + block_id);
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
-          await this.fetchBlock(block_hash, peer);
+          this.blocks_to_fetch.push({ id: block_id, hash: block_hash, peer: peer });
+          await this.fetchBlocks();
         }
         break;
 
@@ -1110,25 +1132,21 @@ class Network {
   //
   // propagate block
   //
-  propagateBlock(blk: Block | null, peer = null) {
+  propagateBlock(hash: string, id: bigint, peer = null) {
     if (this.app.BROWSER) {
       return;
     }
     //console.debug("network.propagateBlock", blk.returnHash());
-    if (!blk) {
+    if (!hash) {
       return;
     }
-    if (!blk.is_valid) {
+    if (!id) {
       return;
     }
 
-    const data = { bhash: blk.returnHash(), bid: blk.block.id };
     for (let i = 0; i < this.peers.length; i++) {
       if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
-        let blockheader = Buffer.concat([
-          Buffer.from(blk.returnHash(), "hex"),
-          this.app.binary.u64AsBytes(blk.returnId()),
-        ]);
+        let blockheader = Buffer.concat([Buffer.from(hash, "hex"), this.app.binary.u64AsBytes(id)]);
         this.sendRequest("SNDBLKHH", blockheader, this.peers[i]);
       }
     }
@@ -1399,6 +1417,25 @@ class Network {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   close() {}
+
+  async fetchBlocks() {
+    if (this.block_fetch_running) {
+      return;
+    }
+    this.block_fetch_running = true;
+    do {
+      let promises = [];
+      this.blocks_to_fetch.sort((a, b) => Number(b.id - a.id));
+      for (let i = 0; i < 1 && this.blocks_to_fetch.length > 0; ++i) {
+        let entry = this.blocks_to_fetch.pop();
+        console.debug("fetching : " + entry.hash + " - " + entry.id);
+        promises.push(this.fetchBlock(entry.hash, entry.peer));
+        // await this.fetchBlock(entry.hash, entry.peer);
+      }
+      await Promise.all(promises);
+    } while (this.blocks_to_fetch.length > 0);
+    this.block_fetch_running = false;
+  }
 }
 
 export default Network;
