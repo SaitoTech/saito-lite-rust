@@ -92,10 +92,7 @@ class GameWizard {
         if (!advancedOptionsHTML.includes(accept_button)) {
           advancedOptionsHTML += accept_button;
         }
-        advancedOptionsHTML = ` <div id="advanced-options-overlay-container"> 
-        ${advancedOptionsHTML}
-      </div>`
-
+        advancedOptionsHTML = ` <div id="advanced-options-overlay-container">${advancedOptionsHTML}</div>`;
 
         this.meta_overlay.show(advancedOptionsHTML);
         this.game_mod.attachAdvancedOptionsEventListeners();
@@ -151,10 +148,9 @@ class GameWizard {
           console.warn(err);
         }
 
-        //Destroy both overlays
         this.overlay.remove();
-
         return false;
+
       });
     });
   }
