@@ -28,7 +28,7 @@ class GameSelector {
   }
 
   render() {
-    this.overlay.show(GameSelectorTemplate(this.app, this.mod));
+    this.overlay.show(GameSelectorTemplate(this.app, this.mod, this));
     this.attachEvents();
   }
 
@@ -41,11 +41,11 @@ class GameSelector {
         this.obj.game = modname;
         this.overlay.remove();
 
-	if (this.obj.callback != null) {
-	  this.obj.callback(this.obj);
-	} else {
+      	if (this.obj.callback != null) {
+      	  this.obj.callback(this.obj);
+      	} else {
           this.app.connection.emit("arcade-launch-game-wizard", (this.obj));
-	}
+      	}
 
       };
     });

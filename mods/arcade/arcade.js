@@ -662,7 +662,7 @@ console.log("<===>");
       moduletype = "ArcadeInvite";
     }
 
-    let { ts, name, options, players_needed, invitation_type } = gamedata;
+    let { ts, name, options, players_needed, invitation_type, desired_opponent_publickey } = gamedata;
 
     let requestMsg = invitation_type == "private" ? "private" : "open";
 
@@ -684,6 +684,7 @@ console.log("<===>");
       players: [this.app.wallet.returnPublicKey()],
       players_sigs: [accept_sig],
       originator: this.app.wallet.returnPublicKey(),
+      desired_opponent_publickey: desired_opponent_publickey
     };
     tx = this.app.wallet.signTransaction(tx);
 
@@ -1436,8 +1437,8 @@ console.log("returned: " + game_id);
     for (let i = 0; i < tx.msg.players.length; i++) {
       if (tx.msg.players[i] == publickey) {
         if (tx.msg.players_sigs[i] != "") {
-	  return true;
-	}
+          return true;
+        }
       }
     }
     return false;
@@ -1770,6 +1771,9 @@ console.log("returned: " + game_id);
 
   makeGameInvite(options, gameType = "public", invite_obj={}) {
 
+    console.log("invite obj inside makeGameInvite");
+    console.log(invite_obj);
+
     let game = options.game;
     let game_mod = this.app.modules.returnModule(game);
     let players_needed = options["game-wizard-players-select"];
@@ -1802,6 +1806,7 @@ console.log("returned: " + game_id);
       options: options,
       players_needed: players_needed,
       invitation_type: gameType,
+      desired_opponent_publickey: null
     };
 
     if (players_needed == 1) {
@@ -1813,7 +1818,11 @@ console.log("returned: " + game_id);
       }
 
       if (gameType == "direct") {
+        gamedata.desired_opponent_publickey = desired_opponent_publickey;
         let newtx = this.createOpenTransaction(gamedata, desired_opponent_publickey);
+
+        console.log("direct tx");
+        console.log(newtx);
         this.app.connection.emit("arcade-launch-game-scheduler", (newtx));
         return;
       }
