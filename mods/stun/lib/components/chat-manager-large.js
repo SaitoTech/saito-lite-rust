@@ -46,7 +46,7 @@ class VideoChatManager {
 
 
     render() {
-        this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type), document.getElementById('content__'));
+        this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type, this.room_code), document.getElementById('content__'));
     }
 
     attachEvents(app, mod) {
@@ -59,10 +59,13 @@ class VideoChatManager {
             siteMessage("You have been disconnected", 5000);
         })
 
-        document.querySelector('.add_users').addEventListener('click', (e) => {
-            // this.toggleAudio();
-            this.addUsersManager.render(this.room_code);
-        })
+        let add_users = document.querySelector('.add_users')
+        if (add_users) {
+            add_users.addEventListener('click', (e) => {
+                // this.toggleAudio();
+                this.addUsersManager.render(this.room_code);
+            })
+        }
         document.querySelector('.audio_control').addEventListener('click', (e) => {
             this.toggleAudio();
         })

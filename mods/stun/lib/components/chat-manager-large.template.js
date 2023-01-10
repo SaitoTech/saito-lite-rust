@@ -1,4 +1,7 @@
-const ChatManagerLargeTemplate = (call_type) => {
+const ChatManagerLargeTemplate = (call_type, code) => {
+  let add_user = code ? `<span>
+  <i class=" add_users fa fa-users" > </i>
+</span>`: ""
   return `
     <div class="stunx-chatbox" id="stunx-chatbox">
       <main>
@@ -10,6 +13,7 @@ const ChatManagerLargeTemplate = (call_type) => {
         <div class="control-panel">
         <div class="timer">
             <p class="counter"> 00.00 </p>
+
             <div class="users-on-call">
                 <div class="image-list">
                     
@@ -18,9 +22,8 @@ const ChatManagerLargeTemplate = (call_type) => {
             </div>
         </div>  
         <div class="control-list">
-        <span>
-        <i class=" add_users fa fa-users" > </i>
-        </span>
+      ${add_user}
+       
 
            <span>
             <i class=" audio_control fa fa-microphone" > </i>
