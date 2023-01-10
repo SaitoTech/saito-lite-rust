@@ -20,6 +20,11 @@
     height: 3.5rem;
 }
 
+.saito-game-identicons .requested_player {
+    opacity: 0.6;
+    filter: grayscale(0.7);
+}
+
 .game-type {
     font-size: 1.4rem;
     font-weight: 400;

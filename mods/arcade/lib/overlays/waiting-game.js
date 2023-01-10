@@ -27,7 +27,7 @@ class WaitingGameOverlay {
   attachEvents() {
 
     document.querySelector(".arcade-game-controls-cancel-invite").onclick = (e) => {
-	alert("CANCEL INVITE");
+      alert("CANCEL INVITE");
     }
   }
 

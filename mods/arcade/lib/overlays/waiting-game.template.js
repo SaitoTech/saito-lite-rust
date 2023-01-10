@@ -7,6 +7,9 @@ module.exports = WaitingGameOverlayTemplate = (app, mod, invite_tx) => {
   let game_mod = app.modules.returnModuleByName(modname);
   let desc = "waiting for players";
 
+  console.log("Waiting for players tx");
+  console.log(txmsg);
+
   let html = `
     <div class="arcade-game-overlay">
 

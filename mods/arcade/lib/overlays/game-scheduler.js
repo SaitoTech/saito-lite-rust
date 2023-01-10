@@ -38,7 +38,7 @@ class GameScheduler {
       document.getElementById("create-invite-now").onclick = (e) => {
 
         this.overlay.hide();
-	app.network.propagateTransaction(scheduler_self.invite_tx);
+	      app.network.propagateTransaction(scheduler_self.invite_tx);
 
         //
         // and relay open if exists
@@ -51,6 +51,9 @@ class GameScheduler {
         if (relay_mod != null) {
           relay_mod.sendRelayMessage(peers, "arcade spv update", scheduler_self.invite_tx);
         }
+
+        console.log('add game invite_tx');
+        console.log(scheduler_self.invite_tx);
 
         mod.addGame(scheduler_self.invite_tx, "open");
 

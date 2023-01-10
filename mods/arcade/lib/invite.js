@@ -28,17 +28,27 @@ class Invite {
     this.game_mod = null;
     this.game_status = "";
     this.originator = null;
+    this.desired_opponent_publickeys = [];
+
     if (this.tx) {
       let txmsg = this.tx.returnMessage();
+
+      console.log(txmsg);
+
       if (txmsg.status) { this.game_status = txmsg.status; }
       if (this.tx.transaction.sig) { this.game_id = this.tx.transaction.sig; }
       if (txmsg.game_id) { this.game_id = txmsg.game_id; }
       if (txmsg.name) { this.game_name = txmsg.name; }
       if (this.game_name) { this.game_slug = this.game_name.toLowerCase(); }
       if (!txmsg.name) { this.game_name = txmsg.game; }
+      if (txmsg.players) { this.players = txmsg.players; }
+      if (txmsg.players_needed) { this.players_needed = txmsg.players_needed; }
+      if (txmsg.desired_opponent_publickey) { this.desired_opponent_publickeys.push(txmsg.desired_opponent_publickey); }
+     
       this.game_mod = app.modules.returnModule(txmsg.game);
       this.originator = txmsg.originator || null;
     }
+
     if (this.game_mod) {
       this.game_name = this.game_mod.returnName();
       this.game_slug = this.game_mod.returnSlug();
@@ -56,8 +66,23 @@ class Invite {
       }
     }
 
+    // calculate empty slots 
+    if (this.players.length < this.players_needed) {
+      this.empty_slots = this.players_needed - this.players.length;
+    }
 
+    console.log('invite data');
+    console.log(this);
 
+    // remove empty slots if any players are requested
+    if (this.game_type == 'private invite') {
+      if (this.desired_opponent_publickeys.length != 0) {
+        this.empty_slots = this.empty_slots - this.desired_opponent_publickeys.length;
+      }
+    }
+
+    console.log('invite data');
+    console.log(this);
 
     //
     //
@@ -89,31 +114,28 @@ class Invite {
     let qs = `.saito-game-${this.game_id}`;
 
     document.querySelector(qs).onclick = (e) => {
+      e.stopImmediatePropagation();
 
-        e.stopImmediatePropagation();
+    	if (this.mod.isMyGame(this.tx)) {
+    	  if (this.mod.isAccepted(this.tx, this.app.wallet.returnPublicKey())) {
 
-	if (this.mod.isMyGame(this.tx)) {
-	  if (this.mod.isAccepted(this.tx, this.app.wallet.returnPublicKey())) {
-	    if (this.game_status === "open") {
-              this.waiting_game.invite = this;
-              this.waiting_game.render();
-  	      return;
-	    } else {
-              this.continue_game.invite = this;
-              this.continue_game.render();
-  	      return;
-	    }
-	  } else {
-      	    this.join.invite = this;
-      	    this.join.render();
-	    return;
-	  }
-	} else {
-      	  this.join.invite = this;
-      	  this.join.render();
-	  return;
-	}
+          console.log("game status");
+          console.log(this.game_status);
+    	    if (this.game_status === "open") {
+            this.waiting_game.invite = this;
+            this.waiting_game.render();
+    	      return;
+    	    } else {
+            this.continue_game.invite = this;
+            this.continue_game.render();
+    	      return;
+    	    }
+    	  }
+    	}
 
+  	  this.join.invite = this;
+  	  this.join.render();
+  	  return;
     };
 
   }
