@@ -119,8 +119,6 @@ class Invite {
     	if (this.mod.isMyGame(this.tx)) {
     	  if (this.mod.isAccepted(this.tx, this.app.wallet.returnPublicKey())) {
 
-          console.log("game status");
-          console.log(this.game_status);
     	    if (this.game_status === "open") {
             this.waiting_game.invite = this;
             this.waiting_game.render();

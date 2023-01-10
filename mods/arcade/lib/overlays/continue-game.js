@@ -7,10 +7,13 @@ class ContinueGameOverlay {
     this.app = app;
     this.mod = mod;
     this.invite_tx = tx;
+    this.invite = null;
     this.overlay = new SaitoOverlay(app, mod, false, true);
   }
 
   render() {
+
+    console.log('inside continue-game overlay');
     
     let txmsg = this.invite_tx.returnMessage();
     let modname = txmsg.name;
@@ -19,7 +22,7 @@ class ContinueGameOverlay {
 
     let game_mod = this.app.modules.returnModuleByName(modname);
 
-    this.overlay.show(ContinueGameOverlayTemplate(this.app, this.mod, this.invite_tx));
+    this.overlay.show(ContinueGameOverlayTemplate(this.app, this.mod, this));
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
     this.attachEvents();
   }
