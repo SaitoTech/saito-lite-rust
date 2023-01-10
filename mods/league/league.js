@@ -4,8 +4,10 @@ const LeagueRankings = require("./lib/rankings");
 const LeagueLeaderboard = require("./lib/leaderboard");
 const LeagueMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
-const InvitationLink = require("./../../lib/saito/ui/modals/invitation-link/invitation-link");
+const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
+const InvitationLink = require("./lib/overlays/league-invitation-link");
 const LeagueWizard = require('./lib/components/league-wizard');
+const JoinLeagueOverlay = require('./lib/overlays/join-league');
 
 class League extends ModTemplate {
 
@@ -67,12 +69,34 @@ class League extends ModTemplate {
     this.league_wizard = new LeagueWizard(this.app, this, null);
   }
 
+  returnLeague(league_id) {
+    for (let i = 0; i < this.leagues.length; i++) {
+console.log("comparing: " + this.leagues[i].id + " - " + league_id);
+      if (this.leagues[i].id === league_id) { return this.leagues[i]; }
+    }
+    return null;
+  }
+
   render(app, mod) {
 
     this.main = new LeagueMain(app, this)
     this.header = new SaitoHeader(app, this);
     this.addComponent(this.main);
     this.addComponent(this.header);
+
+
+    //
+    // league join league
+    //
+    if (this.app.browser.returnURLParameter("league_join_league")) {
+      let so = new SaitoOverlay(app, this);
+      let backdrop_image = `/saito/img/dreamscape.png`;
+      let game = this.app.browser.returnURLParameter("game");
+      let game_mod = this.app.modules.returnModuleByName(game);
+      if (game_mod != null) { backdrop_image = `/${game_mod.returnSlug()}/img/arcade/arcade.jpg`; }
+      so.setBackground(backdrop_image);
+      so.render(' ');
+    }
 
     super.render(app, this);
   }
@@ -200,35 +224,34 @@ class League extends ModTemplate {
 
 
   async onPeerHandshakeComplete(app, peer) {
-    league_self = this;
+
+    let league_self = this;
+
     //    
     // fetch any leagues    
     //    
     this.sendPeerDatabaseRequestWithFilter(
-    	"League" , 
-    	`SELECT * FROM league` ,
-    	(res) => {
-        console.log("RECEIVED LEAGUES: ");
-        console.log(JSON.stringify(res));	
-
-        console.log('LEAGUE ROWS');
-        console.log(res.rows);  
+      "League" , 
+      `SELECT * FROM league` ,
+      (res) => {
         let rows = res.rows || [];
-
-        console.log(rows);
-        console.log(rows.length);
-
         if (rows.length > 0) {
           rows.forEach(function(league, key) {
-            console.log(league);
             league_self.addLeague(league);
           }); 
+
+	  //
+	  // league join league
+	  //
+          if (this.app.browser.returnURLParameter("league_join_league")) {
+            let league_id = this.app.browser.returnURLParameter("league_join_league");
+            let jlo = new JoinLeagueOverlay(app, this, league_id);
+            jlo.render();
+          }
         }
-    	}
+      }
     );
 
-    console.log("onPeerHandshakeComplete end");
-    console.log(league_self.leagues);
   }
 
   filterLeagues(app, include_default = true){
@@ -466,6 +489,7 @@ class League extends ModTemplate {
 
     let txmsg = tx.returnMessage();
     let league_id  = txmsg.league_id;
+    let email = txmsg.email;
     let publickey  = tx.transaction.from[0].add;
 
     let base_score = await this.getLeagueData(league_id, "starting_score");
@@ -474,11 +498,13 @@ class League extends ModTemplate {
                 league_id,
                 pkey,
                 score,
+		email,
                 ts
               ) VALUES (
                 $league_id,
                 $publickey,
                 $score,
+                $email,
                 $timestamp
               )`;
 
@@ -486,6 +512,7 @@ class League extends ModTemplate {
       $league_id: league_id,
       $publickey: publickey,
       $score: base_score,
+      $email: email,
       $timestamp: parseInt(txmsg.timestamp)
     };
 
@@ -868,7 +895,7 @@ class League extends ModTemplate {
   */
   async getAllLeagueData(league_id){
 
-    if (!league_id){return null;}
+    if (!league_id){ return null;}
 
     if (this.app.BROWSER == 1){
       for (let l of this.leagues){
@@ -876,7 +903,7 @@ class League extends ModTemplate {
           return l;
         }
       }
-    }else{
+    } else{
 
       let row = await this.app.storage.queryDatabase(`SELECT * FROM league WHERE id = ?`, [league_id], "league");
       if (row?.length > 0){
@@ -1020,6 +1047,7 @@ class League extends ModTemplate {
 
 
   showShareLink(league_id){
+
     let data = {};
 
     //Add more information about the game
@@ -1041,16 +1069,16 @@ class League extends ModTemplate {
       inviteLink += "#";
     }
     if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&jid=" + league_id);
+      inviteLink = inviteLink.replace("#", "&league_join_league=" + league_id);
     } else {
-      inviteLink = inviteLink.replace("#", "?jid=" + league_id);
+      inviteLink = inviteLink.replace("#", "?league_join_league=" + league_id);
     }
-    data.invite_link = inviteLink;
 
-    console.log(JSON.stringify(data));
+    inviteLink += "&game=";
+    inviteLink += league.game;
 
-    let linkModal = new InvitationLink(this.app, this);
-    linkModal.render(this.app, this, data);
+    let linkModal = new InvitationLink(this.app, this, inviteLink);
+    linkModal.render();
   }
 
 

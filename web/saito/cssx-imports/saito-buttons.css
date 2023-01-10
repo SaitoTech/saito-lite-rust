@@ -50,3 +50,10 @@ button.small,
   font-size: 1.4rem;
   min-width: 4rem;
 }
+button.fat, saito-button-primary.fat, .saito-button-seconary.fat, saito-button-gradient.fat {
+  height: 7rem;
+  font-size: 2rem;
+  padding: 2rem !important;
+  width: 30rem;
+}
+

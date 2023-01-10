@@ -1,18 +1,17 @@
-const InvitationLinkTemplate = require('./game-invitation-link.template');
+const InvitationLinkTemplate = require('./league-invitation-link.template');
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class InvitationLink {
 
-    constructor(app, mod, data={}){
+    constructor(app, mod, link="") {
         this.app = app;
         this.mod = mod;
-        this.data = data;
+        this.link = link;
         this.overlay = new SaitoOverlay(app, mod);
     }
     
-    render(data = null) {
-        if (data != null) { this.data = data; }
-        this.overlay.show(InvitationLinkTemplate(this.app, this.mod, this.data));
+    render() {
+        this.overlay.show(InvitationLinkTemplate(this.app, this.mod, this.link));
         this.attachEvents();
     }
 
@@ -22,7 +21,7 @@ class InvitationLink {
                 navigator.clipboard.writeText(e.currentTarget.dataset.link);
                 this.overlay.remove();
             });
-        }catch(err){
+        } catch(err){
             console.error(err);
         }
     }

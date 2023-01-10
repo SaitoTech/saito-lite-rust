@@ -10,6 +10,7 @@ class GameScheduler {
       this.mod = mod;
       this.invite_tx = invite_tx;
       this.overlay = new SaitoOverlay(app);
+      this.mycallback = null;
 
       this.app.connection.on("arcade-launch-game-scheduler", (invite_tx={}) => {
         this.invite_tx = invite_tx;
@@ -18,13 +19,14 @@ class GameScheduler {
 
     }
 
-    render() {
+    render(mycallback = null) {
+      if (mycallback != null) { this.mycallback = mycallback; }
       this.overlay.show(ScheduleInviteTemplate(this.app, this.mod));
-      this.attachEvents();
+      this.attachEvents(mycallback);
     }
 
 
-    attachEvents() {
+    attachEvents(mycallback = null) {
 
       let scheduler_self = this;
       let app = this.app;
@@ -56,18 +58,35 @@ class GameScheduler {
         // create invite link from the game_sig
         // 
         mod.showShareLink(scheduler_self.invite_tx.transaction.sig);
+
+
       }
+
 
       //
       // create future invite
       //
       document.getElementById("create-specific-date").onclick = (e) => {
+
 	let txmsg = scheduler_self.invite_tx.returnMessage();
-	let title = "Game Invite: " + txmsg.options.game;
+
+console.log("INVITE TX SENDING TO SCHEDULER IS: ");
+console.log(JSON.stringify(scheduler_self.invite_tx));
+
+	let title = "Game: " + txmsg.options.game;
         this.overlay.hide();
-	let scheduler = new SaitoScheduler(app, mod, { date : new Date() , tx : scheduler_self.invite_tx , title : title });
-	scheduler.render(app, mod, function() {
+        let adds = [];
+        for (let i = 0; i < scheduler_self.invite_tx.transaction.to.length; i++) {
+	  if (!adds.includes(scheduler_self.invite_tx.transaction.to[i].add)) {
+	    adds.push(scheduler_self.invite_tx.transaction.to[i].add);
+	  }
+        }
+	let scheduler = new SaitoScheduler(app, mod, { date : new Date() , tx : scheduler_self.invite_tx , title : title , adds : adds});
+	scheduler.render(() => {
+
+	  if (mycallback != null) { mycallback(); }
 	  alert("CALLBACK WHEN DATE SELECTED");
+
 	});
       }
 
