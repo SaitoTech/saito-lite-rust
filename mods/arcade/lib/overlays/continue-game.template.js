@@ -8,7 +8,7 @@ module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
   let game_mod = app.modules.returnModuleByName(modname);
   let options = txmsg.options;
 
-  let desc = "";
+  let desc = "open invitation";
   (invite.desired_opponent_publickeys != null && invite.desired_opponent_publickeys.length > 0) ? 
   desc = 'private invitation' : 'open invitation';
 
