@@ -1,6 +1,6 @@
 module.exports = StunAppspaceTemplate = () => {
 
-    return `
+  return `
       <div class="stun-appspace"> 
 
         <card class="appear stunx-appspace-card">
@@ -11,11 +11,11 @@ module.exports = StunAppspaceTemplate = () => {
 
           <div class="stunx-appspace-actions">
             <div class="stunx-appspace-create">
-              <div class="saito-button-secondary" id="createInvite"> Create Invite</div>
+              <div class="saito-button-primary" id="createInvite"> Start Call</div>
             </div>
             <div class="stunx-appspace-join">
+             <input type="text" placeholder="Enter Code" id="inviteCode" />
               <div class="saito-button-secondary" id="joinInvite">Join</div>
-              <input type="text" placeholder="Insert Room Code" id="inviteCode" />
             </div>
           </div>
 

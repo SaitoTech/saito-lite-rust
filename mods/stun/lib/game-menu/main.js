@@ -22,17 +22,17 @@ class StunxGameMenu {
         if (peers.constructor !== Array) {
             peers = [peers]
         }
-        const stunx_mod = this.app.modules.returnModule('Stunx');
+        const stunx_mod = this.app.modules.returnModule('Stun');
         const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         stunx_mod.setLocalStream(localStream);
         // stunx_mod.setChatType("game");
         peers.forEach(peer => {
-            this.app.connection.emit('show-video-chat-request', this.app, this, "small", "video");
-            this.app.connection.emit('render-local-stream-request', localStream, "small", "video");
-            this.app.connection.emit('render-remote-stream-placeholder-request', peer, "small", "video");
+            this.app.connection.emit('show-video-chat-request', this.app, this, "large", "video");
+            this.app.connection.emit('render-local-stream-request', localStream, "large", "video");
+            this.app.connection.emit('render-remote-stream-placeholder-request', peer, "large", "video");
         })
 
-        stunx_mod.createMediaConnectionWithPeers(peers, 'small', 'video');
+        stunx_mod.createMediaConnectionWithPeers(peers, 'large', 'video');
 
     }
 
@@ -41,35 +41,35 @@ class StunxGameMenu {
         if (peers.constructor !== Array) {
             peers = [peers]
         }
-        const stunx_mod = this.app.modules.returnModule('Stunx');
+        const stunx_mod = this.app.modules.returnModule('Stun');
         const localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
         stunx_mod.setLocalStream(localStream);
         // stunx_mod.setChatType("game");
         peers.forEach(peer => {
-            this.app.connection.emit('show-video-chat-request', this.app, this, "small", "audio");
-            this.app.connection.emit('render-local-stream-request', localStream, "small", "audio");
-            this.app.connection.emit('render-remote-stream-placeholder-request', peer, "small", "audio");
+            this.app.connection.emit('show-video-chat-request', this.app, this, "large", "audio");
+            this.app.connection.emit('render-local-stream-request', localStream, "large", "audio");
+            this.app.connection.emit('render-remote-stream-placeholder-request', peer, "large", "audio");
         })
 
-        stunx_mod.createMediaConnectionWithPeers(peers, 'small', 'audio');
+        stunx_mod.createMediaConnectionWithPeers(peers, 'large', 'audio');
 
     }
 
-// offer: {
-//     ice_candidates
-//     offer_sdp
-//     recipient
-//     ui_type
-//     call_type
-// }
-  
+    // offer: {
+    //     ice_candidates
+    //     offer_sdp
+    //     recipient
+    //     ui_type
+    //     call_type
+    // }
+
     async receiveVideoCall(app, offer_creator, offer) {
         console.log('receiving media call : type ', offer.call_type);
         const show_video = offer.call_type === "video" ? true : false
         const promise = sconfirm(`Accept Incoming ${offer.call_type} call`);
         promise.then(async () => {
             const localStream = await navigator.mediaDevices.getUserMedia({ video: show_video, audio: true });
-            const stunx_mod = this.app.modules.returnModule('Stunx');
+            const stunx_mod = this.app.modules.returnModule('Stun');
             stunx_mod.setLocalStream(localStream);
             // stunx_mod.setChatType("game");
             this.app.connection.emit('show-video-chat-request', this.app, this, offer.ui_type, offer.call_type);

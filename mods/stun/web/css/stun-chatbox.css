@@ -4,7 +4,7 @@
   width: 100vw;
   background-color: var(--saito-white) fff;
   position: fixed;
-  z-index: 100000;
+  z-index: 20;
   transition: all 0.2s;
 }
 
@@ -357,6 +357,36 @@
   animation: lds-dual-ring 1.2s linear infinite;
 }
 
+/*  Add users */
+.add-users-container {
+  min-width: 0;
+  width: 50rem;
+}
+
+.add-users-header {
+  font-size: 1.7rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.add-users-code-container {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--saito-white);
+  color: var(--saito-font-color);
+  font-size: 1.6rem;
+  display: flex;
+  width: 25%;
+  justify-content: space-between;
+}
+
+.add-users-code-container i {
+  cursor: pointer;
+}
+.add-users-footer-text {
+  margin-top: 1rem;
+  font-size: 1.4rem;
+}
 @keyframes lds-dual-ring {
   0% {
     transform: rotate(0deg);
@@ -454,4 +484,8 @@
 .control-list .disconnect_btn {
   background-color: var(--saito-white);
   color: var(--saito-primary);
+}
+
+.control-list .add_users {
+  color: var(--saito-skyline-grey);
 }

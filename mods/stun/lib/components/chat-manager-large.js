@@ -1,11 +1,12 @@
 
 const VideoBox = require('./video-box');
 const ChatManagerLargeTemplate = require('./chat-manager-large.template');
+const AddUsers = require('./add-users');
 class VideoChatManager {
 
     // peers = {};
     localStream;
-    roomCode;
+    room_code;
     // my_pc = [];
     video_boxes = {}
     videoEnabled = true;
@@ -15,7 +16,7 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-
+        this.addUsersManager = new AddUsers(app, mod)
 
         this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type, room_code) => {
             if (ui_type !== "large") return
@@ -56,6 +57,11 @@ class VideoChatManager {
             this.disconnect()
 
             siteMessage("You have been disconnected", 5000);
+        })
+
+        document.querySelector('.add_users').addEventListener('click', (e) => {
+            // this.toggleAudio();
+            this.addUsersManager.render(this.room_code);
         })
         document.querySelector('.audio_control').addEventListener('click', (e) => {
             this.toggleAudio();

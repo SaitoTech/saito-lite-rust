@@ -2,10 +2,10 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
 const StunAppspace = require('./lib/appspace/main');
-
 const ChatManagerLarge = require('./lib/components/chat-manager-large');
 const ChatManagerSmall = require("./lib/components/chat-manager-small");
 const InviteOverlay = require("./lib/components/invite-overlay");
+const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxInvite = require("./lib/invite/main");
 
@@ -36,6 +36,7 @@ class Stun extends ModTemplate {
         this.hasRendered = true
         this.chatType = null;
         this.peer_connections = {}
+        this.stunGameMenu = new StunxGameMenu(app, mod);
         this.servers = [
             {
                 urls: "stun:stun-sf.saito.io:3478"
@@ -88,7 +89,7 @@ class Stun extends ModTemplate {
 
     respondTo(type) {
         if (type === 'invite') {
-            this.styles = [`/${this.returnSlug()}/css/style.css`,];
+            this.styles = [`/stun/style.css`,];
             super.render(this.app, this);
             return new StunxInvite(this.app, this);
         }
@@ -99,7 +100,8 @@ class Stun extends ModTemplate {
         }
 
         if (type == "game-menu") {
-
+            this.styles = [`/${this.returnSlug()}/css/style.css`,];
+            super.render(this.app, this);
             return {
                 id: "game-chat",
                 text: "Chat",
@@ -171,38 +173,41 @@ class Stun extends ModTemplate {
         }
 
         if (type === 'user-menu') {
+            this.styles = [`/${this.returnSlug()}/style.css`,];
+            this.attachStyleSheets();
+            super.render(this.app, this);
             return [{
-                text: "Video Call",
+                text: "Video/Audio Call",
                 icon: "fas fa-video",
                 callback: function (app, public_key) {
                     app.connection.emit('game-start-video-call', public_key);
                 }
             },
-            {
-                text: "Audio Call",
-                icon: "fas fa-microphone",
-                callback: function (app, public_key) {
-                    app.connection.emit('game-start-audio-call', public_key);
-                }
-            },
-            {
-                text: "Stun connect",
-                icon: "",
-                callback: function (app, public_key) {
-                    // app.connection.emit('game-start-audio-call', public_key);
-                    let stunx = app.modules.returnModule("Stun");
-                    stunx.createStunConnectionWithPeers([public_key]);
-                }
-            },
-            {
-                text: "Send Message to peer",
-                icon: "",
-                callback: function (app, public_key) {
-                    // app.connection.emit('game-start-audio-call', public_key);
-                    let stunx = app.modules.returnModule("Stun");
-                    stunx.sendRequest(public_key);
-                }
-            }
+                // {
+                //     text: "Audio Call",
+                //     icon: "fas fa-microphone",
+                //     callback: function (app, public_key) {
+                //         app.connection.emit('game-start-audio-call', public_key);
+                //     }
+                // },
+                // {
+                //     text: "Stun connect",
+                //     icon: "",
+                //     callback: function (app, public_key) {
+                //         // app.connection.emit('game-start-audio-call', public_key);
+                //         let stunx = app.modules.returnModule("Stun");
+                //         stunx.createStunConnectionWithPeers([public_key]);
+                //     }
+                // },
+                // {
+                //     text: "Send Message to peer",
+                //     icon: "",
+                //     callback: function (app, public_key) {
+                //         // app.connection.emit('game-start-audio-call', public_key);
+                //         let stunx = app.modules.returnModule("Stun");
+                //         stunx.sendRequest(public_key);
+                //     }
+                // }
             ]
         }
         return null;
@@ -289,8 +294,9 @@ class Stun extends ModTemplate {
         message.data.tx = newtx;
         server.sendRequest(message.request, message.data);
 
-        this.app.connection.emit('show-invite-overlay-request', roomCode);
-        siteMessage("Room created successfully", 5000);
+        this.app.connection.emit('join-room-with-code', roomCode);
+        // this.app.connection.emit('show-invite-overlay-request', roomCode);
+        siteMessage("Call created", 5000);
     }
 
     async sendUpdateRoomTransaction(room_code, data) {

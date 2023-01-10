@@ -1,18 +1,34 @@
 /* Appspace css */
 
-.stunx-appspace-card h2 {
+.stun-appspace {
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+  padding: 2rem;
+  top: 0;
+  display: flex;
+  z-index: 12;
+  /* justify-content: center; */
+  align-items: center;
+  background-color: var(--saito-white);
+  background-color: black;
+  color: white;
+  padding: 3rem;
+}
+
+.stunx-appspace-card {
+  width: 50%;
+  margin-left: 7rem;
+}
+
+.saito-page-header-title {
   margin-bottom: 1rem;
+  font-size: 5rem;
 }
 
 .stunx-appspace-card > p {
   margin-bottom: 1rem;
-}
-
-.stunx-appspace-actions {
-  margin-bottom: 1rem;
-  border-top: 1px solid #ddd;
-  padding: 1rem;
-  border-bottom: 1px solid #ddd;
+  font-size: 2rem;
 }
 
 .stunx-appspace-card .saito-badge {
@@ -28,54 +44,67 @@
 }
 
 .stunx-appspace-card .saito-info-text {
-  color: #666;
+  color: rgb(195, 195, 195);
   line-height: 1.2rem;
 }
 
-.stunx-appspace-actions .saito-button-secondary {
-  width: 18rem;
-}
-
-.stunx-appspace-join {
+.stunx-appspace-actions {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
   display: flex;
-}
-
-.stunx-appspace-join input {
-  margin-right: 1rem;
-  padding-left: 1rem;
-  height: 2rem;
-  width: 18rem;
-}
-
-.stunx-appspace-join p {
-  font-weight: bold;
+  margin-top: 3.5rem;
 }
 
 .stunx-appspace-create {
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 }
 
 .stunx-appspace-create p {
   font-weight: bold;
 }
 
-.stunx-appspace-actions > div {
-  display: grid;
-  grid-gap: 1rem;
-  grid-template-columns: 20rem 1fr;
-}
-
 .stunx-appspace-join {
+  display: flex;
+  margin-left: 1.5rem;
+  position: relative;
 }
 
 .stunx-appspace-join input {
   margin-right: 1rem;
   padding-left: 1rem;
-  height: 50.798px;
+  height: 75%;
+  border-radius: 0.5rem;
+}
+
+.stunx-appspace-join p {
+  font-weight: bold;
+}
+
+.stunx-appspace-join {
+  display: flex;
+  align-items: center;
+}
+
+.stunx-appspace-join input {
+  margin-right: 1rem;
+  padding-left: 1rem;
+  /* height: 50.798px; */
 }
 
 .stunx-appspace-join input:focus {
   outline: none;
+}
+
+.stunx-appspace-join .saito-button-secondary {
+  position: absolute;
+  height: 50%;
+  display: flex;
+  right: 0.5rem;
+  display: none;
+  align-items: center;
+  background: var(--saito-white);
+  color: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
 }
 
 /*  responsive */

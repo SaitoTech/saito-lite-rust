@@ -18,6 +18,10 @@ const ChatManagerLargeTemplate = (call_type) => {
             </div>
         </div>  
         <div class="control-list">
+        <span>
+        <i class=" add_users fa fa-users" > </i>
+        </span>
+
            <span>
             <i class=" audio_control fa fa-microphone" > </i>
             </span>

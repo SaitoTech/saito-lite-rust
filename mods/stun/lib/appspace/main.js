@@ -1,3 +1,4 @@
+const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 const StunAppspaceTemplate = require('./main.template.js');
 
 class StunAppspace {
@@ -6,14 +7,18 @@ class StunAppspace {
     this.app = app;
     this.mod = mod;
     this.container = container;
+    this.overlay = new SaitoOverlay(app, mod);
+
+    app.connection.on('join-room-with-code', (code) => {
+      this.joinVideoInvite(app, mod, code)
+
+    })
   }
 
   render() {
-    if (document.querySelector(".stun-appspace")) {
-      this.app.browser.replaceElementBySelector(StunAppspaceTemplate(this.app, this.mod), ".stun-appspace");
-    } else {
-      this.app.browser.addElementToSelectorOrDom(StunAppspaceTemplate(this.app, this.mod), this.container);
-    }
+    // this.app.browser.addElementToDom(StunAppspaceTemplate(this.app, this.mod));
+
+    this.overlay.show(StunAppspaceTemplate(this.app, this.mod))
     this.attachEvents(this.app, this.mod);
 
   }
@@ -36,10 +41,20 @@ class StunAppspace {
           this.joinVideoInvite(app, mod, inviteCode.trim());
       }
     })
+
+    document.querySelector('#inviteCode').addEventListener('keyup', (e) => {
+      console.log('focusing')
+      let button = document.querySelector('.stunx-appspace-join .saito-button-secondary');
+      button.style.display = "flex"
+      setTimeout(() => {
+        button.style.display = "none"
+      }, 10000)
+    })
   }
 
 
   joinVideoInvite(app, mod, room_code) {
+    this.overlay.remove();
     console.log(room_code)
     if (!room_code) return siteMessage("Please insert a room code", 5000);
     let sql = `SELECT * FROM rooms WHERE room_code = "${room_code}"`;
@@ -104,7 +119,7 @@ class StunAppspace {
 
         // filter my public key
         peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
-        mod.createMediaConnectionWithPeers(peers_in_room, 'large');
+        mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video");
         this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
         this.app.connection.emit('render-local-stream-request', localStream, 'large');
         peers_in_room.forEach(peer => {

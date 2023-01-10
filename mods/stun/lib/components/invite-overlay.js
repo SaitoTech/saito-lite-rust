@@ -16,7 +16,7 @@ class InviteOverlay {
     constructor(app, mod) {
         this.app = app
         this.mod = mod
-        this.overlay = new SaitoOverlay(app, true);
+        this.overlay = new SaitoOverlay(app, mod);
 
 
         this.app.connection.on('show-invite-overlay-request', (roomCode) => {
@@ -30,12 +30,12 @@ class InviteOverlay {
 
     render(app, mod) {
         console.log(InviteOverlayTemplate(this.roomCode));
-        this.overlay.show(this.app, this.mod, InviteOverlayTemplate(this.roomCode), null);
+        this.overlay.show(InviteOverlayTemplate(this.roomCode));
         this.attachEvents();
     }
 
     attachEvents() {
-        document.querySelector('#stunx-copy-vide-invite-code').addEventListener('click', (e) => {
+        document.querySelector('#stunx-copy-video-invite-code').addEventListener('click', (e) => {
             navigator.clipboard.writeText(`${this.roomCode}`);
             salert("Copied code to clipboard");
         });
