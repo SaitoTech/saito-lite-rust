@@ -28,6 +28,8 @@ class InvitesAppspace {
     let app = this.app;
     let mod = this.mod;
 
+console.log("pre render");
+
     if (document.querySelector(".invites-appspace")) {
       this.app.browser.replaceElementBySelector(InvitesAppspaceTemplate(this.app, this.mod), ".invites-appspace");
     } else {
@@ -37,11 +39,12 @@ class InvitesAppspace {
 
     if (mod.invites.length > 0) {
       for (let i = 0; i < mod.invites.length; i++) {
+console.log("invite is: " + JSON.stringify(mod.invites[i]));
         app.browser.addElementToSelector(InviteTemplate(app, mod, mod.invites[i]), ".invites-list");
       }
       for (let i = 0; i < mod.invites.length; i++) {
 
-
+	let invite = mod.invites[i].msg.invite;
 console.log("-------");
 console.log("-------");
 console.log(JSON.stringify(mod.invites[i]));
@@ -51,27 +54,27 @@ console.log(JSON.stringify(mod.invites[i]));
 	  //
 	  // buttons may not exist
 	  //
-          let qs = `#invites-invitation-join-${mod.invites[i].invite_id}`;
+          let qs = `#invites-invitation-join-${invite.invite_id}`;
           document.querySelector(qs).style.display = "none";
 console.log("-------");
 
 	  // hide accept
-          qs = `#invites-invitation-accept-${mod.invites[i].invite_id}`;
+          qs = `#invites-invitation-accept-${invite.invite_id}`;
           document.querySelector(qs).style.display = "none";
 console.log("-------");
 
-	  for (let z = 0; z < mod.invites[i].adds.length; z++) {
-	    if (mod.invites[i].adds[z] === app.wallet.returnPublicKey()) {
+	  for (let z = 0; z < invite.adds.length; z++) {
+	    if (invite.adds[z] === app.wallet.returnPublicKey()) {
 	      have_i_accepted = 0;
 	      try {
-	        if (mod.invites[i].sigs.length >= (z+1)) {
-	          if (mod.invites[i].sigs[z] != "") {
+	        if (invite.sigs.length >= (z+1)) {
+	          if (invite.sigs[z] != "") {
 	      	    have_i_accepted = 1;
 	          }
 	        }
 	      } catch (err) { }
               if (have_i_accepted == 0) {
-                qs = `#invites-invitation-accept-${mod.invites[i].invite_id}`;
+                qs = `#invites-invitation-accept-${invite.invite_id}`;
                 document.querySelector(qs).style.display = "block";
               }
 	    }
@@ -103,10 +106,10 @@ console.log("-------");
          let sig = e.currentTarget.getAttribute("data-id");
          let idx = -1;
 	 for (let i = 0; i < mod.invites.length; i++) {
-	   if (mod.invites[i].invite_id === sig) { idx = i; }
+	   if (mod.invites[i].msg.invite.invite_id === sig) { idx = i; }
 	 }
 	 if (idx == -1) { alert("ERROR: cannot find invite!"); }
-	 let invite_obj = mod.invites[idx];
+	 let invite_obj = mod.invites[idx].msg.invite;
 console.log("INVITE OBJ is: " + JSON.stringify(invite_obj));
 	 mod.createAcceptTransaction(invite_obj);
          alert("sent accept!");
