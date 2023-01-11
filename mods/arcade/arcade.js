@@ -47,6 +47,8 @@ class Arcade extends ModTemplate {
       'dark': 'fa-solid fa-moon',
       'arcade': 'fa-solid fa-moon'
     };
+
+    this.ommit_options = ['game', 'game-wizard-players-select'];
   }
 
 
