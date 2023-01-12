@@ -108,7 +108,7 @@ body {
 }
 
 .league_options_overlay .overlay-title{
-  font-size: 3rem;
+  font-size: 4rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
@@ -316,7 +316,7 @@ i.link_icon.private {
   color: #fff;
   margin-left: 0rem;
   width: 100%;
-  margin-bottom: 0rem;
+  margin-bottom: 1.5rem;
   margin-top: 0rem;
   display: inline-block;
   width: 20rem;
@@ -346,7 +346,8 @@ i.link_icon.private {
 
 
 .league-join-overlay-box img {
-  width: 50rem;
+  min-width: 50rem;
+  width: 60rem;
   margin-bottom: 1rem;
 }
 
@@ -366,9 +367,10 @@ i.link_icon.private {
 }
 
 .league-join-email-note {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-style: italic;
   color: #444;
+  margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
@@ -377,11 +379,12 @@ i.link_icon.private {
 }
 
 .league-join-controls input {
-  text-align: center;
-  width: 80%;
-  margin-bottom: 1.5rem;
-  height: 4.5rem;
-  font-size: 1.8rem;
+    text-align: center;
+    width: 90%;
+    margin-top: 0.5rem;
+    margin-bottom: 2.5rem;
+    height: 5.5rem;
+    font-size: 2.6rem;
 }
 
 

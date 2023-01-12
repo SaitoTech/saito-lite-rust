@@ -1,8 +1,31 @@
 const SaitoUser = require('./../../../../lib/saito/ui/templates/saito-user.template');
 
-module.exports = (app, mod, invite) => {
+module.exports = (app, mod, tx) => {
 
-    console.log("WHAT IS OUR INVITE? " + JSON.stringify(invite));
+console.log("A");
+console.log(JSON.stringify(tx));
+    let txmsg = {};
+    try {
+      txmsg = tx.returnMessage();
+    } catch (err) {
+      txmsg = tx.msg;
+    }
+console.log("B");
+    let invite = txmsg.invite;
+
+    //
+    // is invite accepted
+    //
+    let is_invite_accepted = true;
+    if (invite.adds.length > invite.sigs.length) {
+      is_invite_accepted = false;
+    }
+    for (let i = 0; i < invite.adds.length; i++) {
+      if (invite.sigs[i] == "") {
+	is_invite_accepted = false;
+      }
+    }
+
 
     //
     // text
@@ -11,12 +34,16 @@ module.exports = (app, mod, invite) => {
     if (invite.description) { 
       tweet_text += '<p></p>';
       tweet_text += invite.description; 
+      tweet_text += '<p></p>';
     }
 
     //
     // userline
     //
-    let userline = "has created an invitation";
+    let d = new Date(invite.datetime);
+    let sd = app.browser.formatDate(d.getTime());
+
+    let userline = `has created an invitation for <span style="color:darkred;font-weight:bold;font-size:1.75rem;">${sd.month} ${sd.day} ${sd.year} ${sd.hours}:${sd.minutes}</span>`;
 
 
     //
@@ -25,13 +52,9 @@ module.exports = (app, mod, invite) => {
     let participants = "";
     let added = 0;
     for (let i = 0; i < invite.adds.length; i++) {
-console.log("invite adds: " + i);
       let status = '<span class="saito-primary-color saito-primary">yet to accept</span>';
-console.log("terms: " + invite.terms[i] + " -- " + invite.sigs.length + " vs " + (i+1));
       if (invite.terms[i] === "on accept" && invite.sigs.length >= (i+1)) {
-console.log("terms met: " + invite.sigs.length);
 	if (invite.sigs[i] !== "") {
-console.log("and sigs not null");
           status = '<span class="saito-primary-color saito-primary">accepted</span>';
         }
       }
@@ -55,34 +78,65 @@ console.log("and sigs not null");
     `;
 
 
-    let html = `
+    let html;
 
-      <div class="tweet invite-${invite.invite_id}" data-id="${invite.invite_id}">
 
-        <div class="tweet-notice"></div>
+    if (is_invite_accepted) {
 
-        <div class="tweet-header">
-	  ${SaitoUser(app, invite.adds[0], userline)}
-    	</div>
-  
-        <div class="tweet-body">
-          <div class="tweet-sidebar"></div>
-          <div class="tweet-main">
-            <div class="tweet-text">
-              ${tweet_text} 
-	      ${participants}
-	    </div>
-            <div class="tweet-controls">
-	      ${controls}
+      html = `
+        <div class="tweet invite-${invite.invite_id}" data-id="${invite.invite_id}">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+  	    ${SaitoUser(app, invite.adds[0], userline)}
+    	  </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar"></div>
+            <div class="tweet-main">
+              <div class="tweet-text">
+	        <div style="margin-top:1.5rem;margin-bottom:1.5rem;font-size:2rem;font-weight:bold;">
+                  ACCEPTED - ${tweet_text} 
+	        </div>
+	        <div style="">
+	        </div>
+	        <div style="">
+	          ${participants}
+	        </div>
+	      </div>
             </div>
           </div>
         </div>
+      `;
 
-      </div>
+    } else {
 
+      html = `
+        <div class="tweet invite-${invite.invite_id}" data-id="${invite.invite_id}">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+  	    ${SaitoUser(app, invite.adds[0], userline)}
+    	  </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar"></div>
+            <div class="tweet-main">
+              <div class="tweet-text">
+	        <div style="margin-top:1.5rem;margin-bottom:1.5rem;font-size:2rem;font-weight:bold;">
+                  ${tweet_text} 
+	        </div>
+	        <div style="">
+	          ${participants}
+	        </div>
+	      </div>
+              <div class="tweet-controls">
+	        ${controls}
+              </div>
+            </div>
+          </div>
+        </div>
     `;
 
-    return html;
+    }
+
+  return html;
 
 }
 

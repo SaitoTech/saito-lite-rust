@@ -92,10 +92,7 @@ class GameWizard {
         if (!advancedOptionsHTML.includes(accept_button)) {
           advancedOptionsHTML += accept_button;
         }
-        advancedOptionsHTML = ` <div id="advanced-options-overlay-container"> 
-        ${advancedOptionsHTML}
-      </div>`
-
+        advancedOptionsHTML = ` <div id="advanced-options-overlay-container">${advancedOptionsHTML}</div>`;
 
         this.meta_overlay.show(advancedOptionsHTML);
         this.game_mod.attachAdvancedOptionsEventListeners();
@@ -151,17 +148,16 @@ class GameWizard {
           console.warn(err);
         }
 
-        //Destroy both overlays
         this.overlay.remove();
-
         return false;
+
       });
     });
   }
 
   getOptions() {
     let options = {};
-    document.querySelectorAll("form input, form select").forEach((element) => {
+    document.querySelectorAll("#advanced-options-overlay-container input, #advanced-options-overlay-container select, .arcade-wizard-overlay input, .arcade-wizard-overlay select").forEach((element) => {
       if (element.type == "checkbox") {
         if (element.checked) {
           options[element.name] = 1;
@@ -174,6 +170,8 @@ class GameWizard {
         options[element.name] = element.value;
       }
     });
+
+console.log("SELECT TESTING: " + JSON.stringify(options));
 
     return options;
   }

@@ -41,6 +41,16 @@ class Invites extends InviteTemplate {
     }
   }
 
+  onPeerHandshakeComplete(app, peer) {
+
+    //
+    // emit any invite events for rendering
+    //
+    super.onPeerHandshakeComplete(app, peer);
+
+  }
+
+
 
   async onConfirmation(blk, tx, conf, app) {
     super.onConfirmation(blk, tx, conf, app);

@@ -7,6 +7,7 @@ class WaitingGameOverlay {
     this.app = app;
     this.mod = mod;
     this.invite_tx = tx;
+    this.invite = null;
     this.overlay = new SaitoOverlay(app, mod, false, true);
   }
 
@@ -27,7 +28,7 @@ class WaitingGameOverlay {
   attachEvents() {
 
     document.querySelector(".arcade-game-controls-cancel-invite").onclick = (e) => {
-	alert("CANCEL INVITE");
+      alert("CANCEL INVITE");
     }
   }
 

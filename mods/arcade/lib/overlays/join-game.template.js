@@ -6,6 +6,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
   if (!modname) { modname = txmsg.module; }
 
   let game_mod = app.modules.returnModuleByName(modname);
+  let options = txmsg.options;
 
   let html = `
   <div class="arcade-game-overlay">
@@ -54,18 +55,19 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
 	    <div class="saito-table">
 
 			  <div class="saito-table-body">
-				  <div class="saito-table-row">
-					  <div class="arcade-game-options-key">deck</div>
-					  <div class="arcade-game-options-value">optional</div>
-				  </div>
-				  <div class="saito-table-row">
-					  <div class="arcade-game-options-key">time</div>
-					  <div class="arcade-game-options-value">60 mins</div>
-				  </div>
-				  <div class="saito-table-row">
-					  <div class="arcade-game-options-key">sides</div>
-					  <div class="arcade-game-options-value">random</div>
-				  </div>
+	`;			
+
+ 	for (const key in options) {
+ 		if (!mod.ommit_options.includes(key)) {
+    	html += `
+	      <div class="saito-table-row">
+	        <div class="arcade-game-options-key">${key}</div>
+	        <div class="arcade-game-options-value">${options[key]}</div>
+	      </div>`;
+	  }
+	 };
+			
+	html += `
 			  </div>
 		  </div>
 	    </div>

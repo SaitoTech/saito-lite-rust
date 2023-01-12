@@ -24,7 +24,6 @@ class AppspaceNotifications {
       }
     }
 
-console.log("NOTIFICATIONS: " + this.mod.notifications.length);
     this.mod.menu.incrementNotifications("notifications", 0);
 
 

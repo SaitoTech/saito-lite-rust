@@ -28,6 +28,11 @@
     background-color: var(--saito-gray-transparent);
 }
 
+.arcade-game-playerbox.requested_player {
+  opacity: 0.6;
+  filter: grayscale(0.7);
+}
+
 .arcade-game-overlay .saito-table-row.arcade-game-player-row {
   display: grid;
   grid-template-columns: min-content 1fr min-content 1fr;
@@ -60,6 +65,8 @@
 .arcade-game-overlay .saito-table-row {
   grid-template-columns: 5rem 1fr;
 }
+
+
 
 .arcade-game-options {
   overflow-y: auto;

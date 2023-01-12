@@ -59,6 +59,10 @@
 
 .saito-calendar-events-details {
   clear: both;
+  font-size: 2rem;
+  color: var(--saito-font-color);
+  font-weight: bold;
+  padding-left: 2rem;
 }
 
 .saito-calendar-month {

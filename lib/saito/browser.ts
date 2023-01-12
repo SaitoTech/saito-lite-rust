@@ -1157,8 +1157,6 @@ class Browser {
   returnAddressHTML(key) {
     const identifier = this.app.keys.returnIdentifierByPublicKey(key);
     const id = !identifier ? key : identifier;
-    // obsolete
-    //return `<span data-id="${key}" id="saito-address-${key}" class="saito-address saito-address-${key}">${id}</span>`;
     return `<div class="saito-address saito-address-${key}" data-id="${key}">${id}</div>`;
   }
 

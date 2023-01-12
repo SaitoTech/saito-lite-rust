@@ -422,6 +422,8 @@ class Chat extends ModTemplate {
 
         let html = '';
         let group = this.returnGroup(group_id);
+	if (!group) { return ""; }
+
         let message_blocks = this.createMessageBlocks(group);
 
         for (let block of message_blocks) {
