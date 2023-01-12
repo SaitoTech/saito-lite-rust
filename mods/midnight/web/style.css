@@ -5,6 +5,10 @@ body {
   margin: 0px;
 }
 
+.bold{
+  font-weight: bold;
+}
+
 .gameboard {
   position: absolute;
   background-image: url("img/arcade/arcade-banner-background.png"); 
@@ -21,6 +25,8 @@ body {
   background-color: whitesmoke;
   position: relative;
   width: min(640px,90vw);
+  max-height: 90vh;
+  overflow-y: auto;
   /*height: 600px;*/
   margin-left: auto;
   margin-right: auto;
@@ -34,12 +40,45 @@ body {
   border-radius: 5px;
 }
 
+.combat .status{
+  background-color: darkred;
+  color: ghostwhite;
+}
+
+
+.page_number{ 
+  position: absolute;
+  right: 3px;
+  top: -3px;
+}
+
+
 .story{
   
 }
+
+.textoption{
+  border: 1px solid #fff;
+  width: fit-content;
+  padding: 2px 8px;
+}
+.food, .potion{
+  cursor: pointer;
+}
+
+.food:hover, .potion:hover{
+  font-weight: bold;
+}
+
 .status ul li.textchoice{
   border-top: unset;
   border-bottom: 1px solid saddlebrown;
+}
+
+.status ul li.nonchoice{
+  border-top: unset;
+  border-bottom: 1px solid saddlebrown;
+  color: lightgrey;
 }
 
 .status .choicelist{
@@ -47,3 +86,51 @@ body {
   border-top: 1px solid saddlebrown;
 }
 
+.player-box{
+  bottom: 0;
+}
+
+.player_stats{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.player_skills{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+/* Selection Interface for Special Skills */
+.special_skills{
+  display: flex;
+  flex-wrap: wrap;
+  padding: 3rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.special_skills div{
+  margin: 1rem;
+  padding: 2rem;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.special_skills div:hover{
+  background-color: lightgrey;
+}
+
+.special_skills div.selected{
+  color: ghostwhite;
+  background-color: saddlebrown;
+}
+
+.result{
+  border-top: 1px dashed saddlebrown;
+  margin-top: 5px;
+  padding-top: 5px;
+  font-style: italic;
+}
