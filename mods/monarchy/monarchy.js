@@ -13,9 +13,9 @@ class Monarchy extends GameTemplate {
 
     this.app             = app;
 
-    this.name  		       = "Dominion";
+    this.name  		       = "Shogun";
 
-    this.description     = `Strategy deck-building game: acquire money and land to assert dominion over the realm.`;
+    this.description     = `Strategy deck-building game: acquire money and land to assert <em>dominion</em> over the realm.`;
     this.status          = "Alpha";
     this.card_height_ratio = 1.6; // height is 1.6x width
 
@@ -36,7 +36,7 @@ class Monarchy extends GameTemplate {
     this.animation_queue = [];
     
     this.turn_count = 1;
-    this.card_img_dir = `/${this.name.toLowerCase()}/altimg/cards`;
+    this.card_img_dir = `/${this.name.toLowerCase()}/img/cards`;
     this.card_back = "blank.jpg";
     this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
@@ -68,7 +68,7 @@ class Monarchy extends GameTemplate {
 
   returnWelcomeOverlay(){
    let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
-           <img src="/${this.name.toLowerCase()}/altimg/welcome_splash.jpg"/>
+           <img src="/${this.name.toLowerCase()}/img/welcome_splash.jpg"/>
                </div>`;
     return html;
   }
@@ -168,7 +168,7 @@ initializeGame(game_id) {
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("------ INITIALIZE GAME ----");
-    console.log("----------Dominion---------");
+    console.log(`----------${this.name}---------`);
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("\n\n\n\n");
