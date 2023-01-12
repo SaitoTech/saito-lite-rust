@@ -53,13 +53,13 @@ module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
 
 
   // render empty slots; empty slots =  players needed - (players joined + players requested)
-  for (let i = 0; i < invite.empty_slots; i++) {
-    html += `
-          <div class="arcade-game-playerbox saito-table-row">  
-	      		<div class="saito-identicon-box empty-slot"></div>
-      			<div class="saito-username">open player slot</div>
-    			</div>
-    `;
+  for (let i = 0; i < invite.empty_slots; i++) {    
+	    html += `
+        <div class="arcade-game-playerbox saito-table-row">  
+      		<div class="saito-identicon-box empty-slot"></div>
+    			<div class="saito-username">open player slot</div>	
+  			</div>
+	    `;
   }
 
 
@@ -68,16 +68,19 @@ module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
 	  </div>
 
 	  <div class="saito-table">
-  	    <div class="saito-table-body">
+  	    <div class="saito-table-body arcade-overlay-game-options">
  	`;
 
  	for (const key in options) {
  		if (!mod.ommit_options.includes(key)) {
-    	html += `
-	      <div class="saito-table-row">
-	        <div class="arcade-game-options-key">${key}</div>
-	        <div class="arcade-game-options-value">${options[key]}</div>
-	      </div>`;
+    	
+    		html += `
+        	<div class="saito-table-row">
+	    
+	        	<div class="arcade-game-options-key">${key}</div>
+	        	<div class="arcade-game-options-value">${options[key]}</div>
+				
+	      	</div>`;
 	  }
 	 };
 

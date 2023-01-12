@@ -66,6 +66,13 @@
   grid-template-columns: 5rem 1fr;
 }
 
+.arcade-overlay-game-options .saito-table-row {
+  grid-template-columns: 1fr 1fr; 
+}
+
+.arcade-game-options-key {
+  font-weight: bold;
+}
 
 
 .arcade-game-options {
