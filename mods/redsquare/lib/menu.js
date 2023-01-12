@@ -50,9 +50,9 @@ class RedSquareMenu {
       this.app.connection.emit("redsquare-notifications-render-request");
     }
 
-    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
-      this.app.connection.emit("redsquare-contacts-render-request");
-    }
+//    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
+//      this.app.connection.emit("redsquare-contacts-render-request");
+//    }
 
     //
     // appspace modules

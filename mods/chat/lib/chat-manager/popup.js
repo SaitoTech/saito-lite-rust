@@ -20,6 +20,9 @@ class ChatPopup {
 
   render() {
 
+
+console.log("re-rendering chat popup!");
+
     //
     // exit if group unset
     //
@@ -172,7 +175,7 @@ class ChatPopup {
       //
       // submit (button)
       //
-      document.getElementById(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
+      document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
         e.preventDefault();
         if (msg_input.value == "") { return; }
         let newtx = mod.createChatTransaction(group_id, msg_input.value);
@@ -180,23 +183,6 @@ class ChatPopup {
         mod.receiveChatTransaction(app, newtx);
         msg_input.value = "";
       }
-
-      //
-      // View Other tab
-      //
-      //Array.from(document.getElementsByClassName("chat-group")).forEach((tab) => {
-      //  if (!tab.classList.contains("active-chat-tab")) {
-      //    tab.onclick = (e) => {
-      //      let id = e.currentTarget.getAttribute("id");
-      //      id = id.replace("chat-group-", "");
-      //
-      //      this.app.options.auto_open_chat_box = id;
-      //      this.app.storage.saveOptions();
-      //
-      //      this.render(this.app, this.mod, id);
-      //    };
-      //  }
-      //});
 
     } catch (err) {
       console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);

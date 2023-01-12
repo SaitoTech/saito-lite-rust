@@ -67,6 +67,16 @@ class Stun extends ModTemplate {
 
 
 
+    initialize(app) {
+      super.initialize(app);
+      this.app.connection.on("stun-create-peer-connection", (array_of_publickeys) => {
+	this.createStunConnectionWithPeers(array_of_publickeys);
+      });
+    }
+
+
+
+
 
     canRenderInto(qs) {
         if (qs === ".saito-main") { return true; }
@@ -215,7 +225,7 @@ class Stun extends ModTemplate {
 
 
 
-
+    // callback(this.app, this.mod, roomCode)
 
 
 
@@ -239,9 +249,13 @@ class Stun extends ModTemplate {
                 if (tx.msg.request === "open media chat") {
                     this.receiveOpenMediaChatTransaction(blk, tx, conf, app)
                 }
+                if (tx.msg.request === "receive room code") {
+                    this.receiveRoomCodeTransaction(blk, tx, conf, app)
+                }
             }
         }
     }
+
 
 
 
@@ -272,7 +286,7 @@ class Stun extends ModTemplate {
 
 
 
-    async sendCreateRoomTransaction() {
+    async sendCreateRoomTransaction(callback = null) {
         let roomCode = this.app.crypto.generateRandomNumber().substring(0, 6);
         let room = { code: roomCode, peers: "[]", peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
         let newtx = this.app.wallet.createUnsignedTransaction();
@@ -293,10 +307,14 @@ class Stun extends ModTemplate {
         message.request = "stunx offchain update";
         message.data.tx = newtx;
         server.sendRequest(message.request, message.data);
+        // siteMessage("Call created", 5000);
+        if (callback) {
+            callback(this.app, this.mod, roomCode)
+        }
 
-        this.app.connection.emit('join-room-with-code', roomCode);
-        // this.app.connection.emit('show-invite-overlay-request', roomCode);
-        siteMessage("Call created", 5000);
+
+
+
     }
 
     async sendUpdateRoomTransaction(room_code, data) {
@@ -980,6 +998,29 @@ class Stun extends ModTemplate {
             // open media chat
             this.app.connection.emit('show-video-chat-request', this.app, this, tx.msg.data.ui_type);
         }
+    }
+
+    receiveRoomCodeTransaction(blk, tx, conf, app) {
+        if (app.BROWSER !== 1) return;
+        console.log(tx.msg.data)
+        if (tx.msg.data.creator === app.wallet.returnPublicKey()) {
+            return;
+        }
+
+        sconfirm("Accept video call from " + tx.msg.data.creator).then((e) => {
+            console.log(e, 'result')
+            if (e === false) {
+                salert("Video call rejected")
+                return;
+            }
+            this.styles = [`/${this.returnSlug()}/style.css`];
+            this.attachStyleSheets();
+            setTimeout(() => {
+                this.app.connection.emit('join-direct-room-with-code', tx.msg.data.roomCode);
+            }, 3000)
+        })
+
+
     }
 
 

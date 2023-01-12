@@ -30,8 +30,14 @@ class Chat extends ModTemplate {
 
         this.chat_manager = null;
 
+
         this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
+console.log("=========");
+console.log("========= create chat group");
+console.log("=========");
+
             this.createChatGroup(data?.members);
+            this.app.connection.emit("chat-manager-render-request");
         });
 
         this.app.connection.on("open-chat-with", (data) => {
@@ -420,11 +426,18 @@ class Chat extends ModTemplate {
     //
     returnChatBody(group_id) {
 
+console.log("group ID: " + group_id);
+
         let html = '';
         let group = this.returnGroup(group_id);
+	if (!group) { return ""; }
+
         let message_blocks = this.createMessageBlocks(group);
 
         for (let block of message_blocks) {
+
+console.log("block: " + JSON.stringify(block));
+
             let ts = 0;
             if (block.length > 0) {
                 let sender = "";
@@ -436,7 +449,9 @@ class Chat extends ModTemplate {
                     msg += txmsg.message;
                     ts = txmsg.timestamp;
                 }
+console.log("pre-sanitize: " + msg);
                 msg = this.app.browser.sanitize(msg);
+console.log("post-sanitize: " + msg);
                 html += `${SaitoUserWithTimeTemplate(this.app, sender, msg, ts)}`;
             }
         }
@@ -447,6 +462,7 @@ class Chat extends ModTemplate {
         //Save to Wallet Here
         this.saveChat(group);
 
+console.log("return html: " + html);
         return html;
 
     }
@@ -555,8 +571,7 @@ class Chat extends ModTemplate {
             this.groups.push(newGroup);
         }
 
-        //Tell chat manager to add this group to its list
-        this.app.connection.emit("refresh-chat-groups", newGroup.id);
+        this.app.connection.emit("chat-manager-render-request");
 
         return newGroup;
 
@@ -728,7 +743,7 @@ class Chat extends ModTemplate {
             }
         }
 
-        this.app.connection.emit("refresh-chat-groups");
+        this.app.connection.emit("chat-manager-render-request");
     }
 
     saveChat(group) {

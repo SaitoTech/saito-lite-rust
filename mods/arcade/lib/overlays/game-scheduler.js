@@ -73,23 +73,18 @@ class GameScheduler {
 
 	let txmsg = scheduler_self.invite_tx.returnMessage();
 
-console.log("INVITE TX SENDING TO SCHEDULER IS: ");
-console.log(JSON.stringify(scheduler_self.invite_tx));
-
 	let title = "Game: " + txmsg.options.game;
         this.overlay.hide();
         let adds = [];
         for (let i = 0; i < scheduler_self.invite_tx.transaction.to.length; i++) {
-	  if (!adds.includes(scheduler_self.invite_tx.transaction.to[i].add)) {
-	    adds.push(scheduler_self.invite_tx.transaction.to[i].add);
+	  let inv = scheduler_self.invite_tx.transaction.to[i];
+	  if (!adds.includes(inv.add)) {
+	    adds.push(inv.add);
 	  }
         }
 	let scheduler = new SaitoScheduler(app, mod, { date : new Date() , tx : scheduler_self.invite_tx , title : title , adds : adds});
 	scheduler.render(() => {
-
 	  if (mycallback != null) { mycallback(); }
-	  alert("CALLBACK WHEN DATE SELECTED");
-
 	});
       }
 

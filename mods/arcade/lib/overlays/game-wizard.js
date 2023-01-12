@@ -157,7 +157,7 @@ class GameWizard {
 
   getOptions() {
     let options = {};
-    document.querySelectorAll("form input, form select").forEach((element) => {
+    document.querySelectorAll("#advanced-options-overlay-container input, #advanced-options-overlay-container select, .arcade-wizard-overlay input, .arcade-wizard-overlay select").forEach((element) => {
       if (element.type == "checkbox") {
         if (element.checked) {
           options[element.name] = 1;
@@ -170,6 +170,8 @@ class GameWizard {
         options[element.name] = element.value;
       }
     });
+
+console.log("SELECT TESTING: " + JSON.stringify(options));
 
     return options;
   }

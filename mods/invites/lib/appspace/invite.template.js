@@ -2,13 +2,24 @@ const SaitoUser = require('./../../../../lib/saito/ui/templates/saito-user.templ
 
 module.exports = (app, mod, tx) => {
 
-    let txmsg = tx.returnMessage();
+console.log("A");
+console.log(JSON.stringify(tx));
+    let txmsg = {};
+    try {
+      txmsg = tx.returnMessage();
+    } catch (err) {
+      txmsg = tx.msg;
+    }
+console.log("B");
     let invite = txmsg.invite;
 
     //
     // is invite accepted
     //
     let is_invite_accepted = true;
+    if (invite.adds.length > invite.sigs.length) {
+      is_invite_accepted = false;
+    }
     for (let i = 0; i < invite.adds.length; i++) {
       if (invite.sigs[i] == "") {
 	is_invite_accepted = false;

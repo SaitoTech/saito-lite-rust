@@ -673,7 +673,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    // console.log("network.receiveRequest : ", message);
+    console.log("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
