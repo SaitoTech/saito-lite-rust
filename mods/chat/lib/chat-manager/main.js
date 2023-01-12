@@ -45,6 +45,8 @@ class ChatManager {
 	      this.popups[group.id].render();
 	    }
           });
+
+
 	}
 
 

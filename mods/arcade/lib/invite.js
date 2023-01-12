@@ -31,6 +31,7 @@ class Invite {
     this.desired_opponent_publickeys = [];
 
     if (this.tx) {
+
       let txmsg = this.tx.returnMessage();
 
       console.log(txmsg);
@@ -39,6 +40,11 @@ class Invite {
       if (this.tx.transaction.sig) { this.game_id = this.tx.transaction.sig; }
       if (txmsg.game_id) { this.game_id = txmsg.game_id; }
       if (txmsg.name) { this.game_name = txmsg.name; }
+      if (txmsg.options) {
+        if (txmsg.options.crypto) {
+	  this.game_type = `${txmsg.options.crypto} game`;
+	}
+      }
       if (this.game_name) { this.game_slug = this.game_name.toLowerCase(); }
       if (!txmsg.name) { this.game_name = txmsg.game; }
       if (txmsg.players) { this.players = txmsg.players; }

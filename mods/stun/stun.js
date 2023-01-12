@@ -67,6 +67,16 @@ class Stun extends ModTemplate {
 
 
 
+    initialize(app) {
+      super.initialize(app);
+      this.app.connection.on("stun-create-peer-connection", (array_of_publickeys) => {
+	this.createStunConnectionWithPeers(array_of_publickeys);
+      });
+    }
+
+
+
+
 
     canRenderInto(qs) {
         if (qs === ".saito-main") { return true; }
