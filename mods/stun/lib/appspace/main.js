@@ -11,7 +11,6 @@ class StunAppspace {
 
     app.connection.on('join-room-with-code', (code) => {
       this.joinVideoInvite(app, mod, code)
-
     })
   }
 
@@ -33,7 +32,10 @@ class StunAppspace {
       }
       if (e.target.id === "createInvite") {
         let stun_mod = app.modules.returnModule("Stun");
-        stun_mod.sendCreateRoomTransaction();
+        let callback = (app, mod, roomCode) => {
+          app.connection.emit('join-room-with-code', roomCode);
+        }
+        stun_mod.sendCreateRoomTransaction(callback);
       }
       if (e.target.id === "joinInvite") {
         const inviteCode = document.querySelector("#inviteCode").value;
@@ -97,7 +99,7 @@ class StunAppspace {
         mod.sendUpdateRoomTransaction(room_code, data);
         this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
         this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
-        siteMessage("You are the only participant in this room");
+        siteMessage("You are the only participant in this room", 3000);
         return;
 
       } else {
