@@ -46,6 +46,7 @@ class Invites extends InviteTemplate {
     //
     // emit any invite events for rendering
     //
+    super.onPeerHandshakeComplete(app, peer);
 
   }
 

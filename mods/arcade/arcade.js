@@ -342,11 +342,6 @@ alert("Observer Overlay for URL Games not yet implemented");
     }
 
     if (qs == ".arcade-invites-box") {
-
-console.log("<===>");
-console.log("<--->");
-console.log("<===>");
-
       if (!this.renderIntos[qs]) {
         this.styles = ['/arcade/css/arcade-overlays.css', '/arcade/css/arcade-invites.css'];
         this.renderIntos[qs] = [];
@@ -953,7 +948,7 @@ console.log("<===>");
         if (this.app.options.games[i].id == txmsg.game_id) {
           let currentTime = new Date().getTime();
           if (currentTime - this.app.options.games[i].ts > 5000) {
-            console.log("nope out of old game");
+            console.log("ERROR 4132: nope out of old game");
             return;
           }
         }
@@ -989,12 +984,8 @@ console.log("<===>");
 
       let game_id = await gamemod.processAcceptRequest(tx, this.app);
 
-console.log("returned: " + game_id);
-
       if (!game_id) {
-        console.log("Game template returned a null game_id");
         await sconfirm("Something went wrong with the game initialization, reload: " + game_id);
-        //window.location.reload();
       }
     }
 
@@ -1149,29 +1140,24 @@ console.log("returned: " + game_id);
         gameLoader.render(this.app, this, "#arcade-main");
       }
       this.viewing_arcade_initialization_page = 1;
-      console.log("Set up spinner and stop");
       return;
     }
 
     if (this.app.options?.games) {
       for (let i = 0; i < this.app.options.games.length; i++) {
         if (this.app.options.games[i].id == game_id) {
-          console.log("Game exists, and " + this.app.options.games[i].initializing)
           if (this.app.options.games[i].initializing == 0) {
 
             let ready_to_go = 1;
 
             if (this.app.wallet.wallet.pending.length > 0) {
-              console.log("Pending Messages!?!");
               for (let j = 0; j < this.app.wallet.wallet.pending.length; j++) {
                 let thistx = new saito.default.transaction(JSON.parse(this.app.wallet.wallet.pending[j]));
                 let thistxmsg = thistx.returnMessage();
 
                 if (thistxmsg.module == this.app.options.games[i].module && thistxmsg.game_id == game_id && thistxmsg?.step?.game) {
-                  console.log("message is: " + JSON.stringify(thistxmsg));
                   ready_to_go = 0;
                   if (thistxmsg?.step?.game <= this.app.options.games[i].step.game) {
-                    console.log("never mind, old move");
                     ready_to_go = 1;
                   }
                 }
@@ -1228,7 +1214,6 @@ console.log("returned: " + game_id);
       if (app.options.games) {
         for (let i = 0; i < app.options.games.length; i++) {
           if (app.options.games[i].module == gameobj.name) {
-            console.log("We already have an open copy of this single player game");
             this.launchGame(app.options.games[i].id);
             return;
           }
@@ -1348,6 +1333,10 @@ console.log("returned: " + game_id);
   //
   addGame(tx, list = "open") {
 
+    if (!this.games[list])   { this.games[list] = []; }
+    if (!this.games["open"]) { this.games["open"] = []; }
+    if (!this.games["mine"]) { this.games["mine"] = []; }
+
     let already_exists = 0;
 
     for (let key in this.games) {
@@ -1359,11 +1348,6 @@ console.log("returned: " + game_id);
     }
 
     if (already_exists == 0) {
-      console.log("^^^^^^^^^^^^");
-      console.log("^^^^^^^^^^^^");
-      console.log(JSON.stringify(tx.transaction));
-      console.log("^^^^^^^^^^^^");
-      console.log("^^^^^^^^^^^^");
       let valid_game = this.validateGame(tx);
       let game_exists = false;
       if (valid_game) {
@@ -1375,7 +1359,8 @@ console.log("returned: " + game_id);
   }
   addGames(txs, list = "open") {
     if (!this.games[list]) { this.games[list] = []; }
-    if (!this.games["mine"]) { this.games[mine] = []; }
+    if (!this.games["open"]) { this.games["open"] = []; }
+    if (!this.games["mine"]) { this.games["mine"] = []; }
     txs.forEach((tx, i) => {
       let for_us = false;
       let valid_game = this.validateGame(tx);
@@ -1541,8 +1526,7 @@ console.log("returned: " + game_id);
     try {
       if (txmsg.game_state) { game_state = txmsg.game_state; }
     } catch (err) {
-      console.log("error saving game state, so quitting...");
-      console.log("is this: " + JSON.stringify(txmsg));
+      console.log("ERROR 4131232: error saving game state");
       return;
     }
 
@@ -1743,7 +1727,6 @@ console.log("returned: " + game_id);
     if (accepted_game) {
       data.game = accepted_game.msg.game;
     } else {
-      console.log("Game invitation not found");
       return;
     }
 
@@ -1759,22 +1742,12 @@ console.log("returned: " + game_id);
     }
 
     data.invite_link = inviteLink;
-
-    console.log("<<<<>>>>");
-    console.log("<<<<  >>>>");
-    console.log("<<<<    >>>>");
-    console.log("pre invitation link render");
-    console.log(JSON.stringify(data));
-
     this.game_invitation_link.render(data);
 
   }
 
 
   makeGameInvite(options, gameType = "public", invite_obj={}) {
-
-    console.log("invite obj inside makeGameInvite");
-    console.log(invite_obj);
 
     let game = options.game;
     let game_mod = this.app.modules.returnModule(game);
@@ -1790,8 +1763,7 @@ console.log("returned: " + game_id);
     }
 
     if (!players_needed) {
-      console.error("Create Game Error");
-      console.log(options);
+      console.error("ERROR 582342: Create Game Error");
       return;
     }
 
@@ -1823,8 +1795,6 @@ console.log("returned: " + game_id);
         gamedata.desired_opponent_publickey = desired_opponent_publickey;
         let newtx = this.createOpenTransaction(gamedata, desired_opponent_publickey);
 
-        console.log("direct tx");
-        console.log(newtx);
         this.app.connection.emit("arcade-launch-game-scheduler", (newtx));
         return;
       }
