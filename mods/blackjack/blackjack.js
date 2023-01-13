@@ -1239,13 +1239,13 @@ class Blackjack extends GameTableTemplate {
     }
 
     if (this.settlement.length > 0){
-      this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, ()=>{
+      this.overlay.show(`<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, ()=>{
         this.restartQueue();
       });
       this.game.halted = 1;  
       return 0;
     }else{
-      this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`);
+      this.overlay.show(`<div class="shim-notice">${dealerHTML}${playerHTML}</div>`);
     } 
     return 1;
   }

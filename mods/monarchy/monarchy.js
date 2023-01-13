@@ -337,7 +337,7 @@ initializeGame(game_id) {
         //For the beginning of the game only...
         if (this.game.state.welcome == 0) {
           try {
-            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            this.overlay.show(this.returnWelcomeOverlay());
             document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
           } catch (err) {}
           this.game.state.welcome = 1;
@@ -1259,7 +1259,7 @@ initializeGame(game_id) {
       html += `<div class="aoc">${this.returnCardImage(cards[i])}</div>`;
     }
     rCol.innerHTML = html;
-    this.attackOverlay.show(this.app, this);
+    this.attackOverlay.show();
   }
 
   displayCardInZone(card){
@@ -1575,7 +1575,7 @@ initializeGame(game_id) {
 
     //Attacks
     if (this.deck[card_to_play].type.includes("attack")){
-      this.attackOverlay.show(this.app, this, this.returnAttackOverlay(card_to_play));
+      this.attackOverlay.show(this.returnAttackOverlay(card_to_play));
       for (let i = 1; i <= this.game.players.length; i++){
         this.game.queue.push(`attack\t${player}\t${i}\t${card_to_play}`);
       }

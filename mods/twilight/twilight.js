@@ -84,7 +84,7 @@ class Twilight extends GameTemplate {
                 </div>`;
       }
       html += "</div></div>";
-      this.overlay.show(this.app, this, html);
+      this.overlay.show(html);
   }
 
 
@@ -107,7 +107,7 @@ class Twilight extends GameTemplate {
     }  
     html += `</div></div>`;
 
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
 
@@ -153,7 +153,7 @@ class Twilight extends GameTemplate {
     html += `</div>`;
 
     html += `</div>`;
-    this.overlay.show(this.app, this, html); 
+    this.overlay.show(html); 
   }
 
   handleExportMenu() {
@@ -8401,11 +8401,9 @@ playerTurnHeadlineSelected(card, player) {
 
     return `
 
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
+      <div style="padding:40px;width:100vw;height:90vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
 
 	<div style="top:0;left:0;">
-
-            
 
             <label for="deck">Deck:</label>
             <select name="deck" id="deckselect" onchange='

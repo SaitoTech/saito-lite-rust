@@ -84,7 +84,7 @@ class Twilight extends GameTemplate {
                 </div>`;
       }
       html += "</div></div>";
-      this.overlay.show(this.app, this, html);
+      this.overlay.show(html);
   }
 
 
@@ -107,7 +107,7 @@ class Twilight extends GameTemplate {
     }  
     html += `</div></div>`;
 
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
 
@@ -153,7 +153,7 @@ class Twilight extends GameTemplate {
     html += `</div>`;
 
     html += `</div>`;
-    this.overlay.show(this.app, this, html); 
+    this.overlay.show(html); 
   }
 
   handleExportMenu() {
