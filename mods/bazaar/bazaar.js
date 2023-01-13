@@ -67,7 +67,7 @@ class Jaipur extends GameTemplate {
       class : "game-rules",
       callback : function(app, game_mod) {
          game_mod.menu.hideSubMenus();
-         game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML()); 
+         game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
 
@@ -319,7 +319,7 @@ initializeQueue(first_player = 1){
         //For the beginning of the game only...
         if (this.game.state.welcome == 0) {
           try {
-            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            this.overlay.show(this.returnWelcomeOverlay());
             document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
           } catch (err) {}
           this.game.state.welcome = 1;
@@ -669,7 +669,7 @@ initializeQueue(first_player = 1){
         </div>
       `;
     
-      game_self.overlay.show(game_self.app, game_self, html);
+      game_self.overlay.show(html);
       game_self.overlay.blockClose();
 
       $(".market_overlay .card_count").on("click", (e)=>{
