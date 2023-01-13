@@ -1,0 +1,58 @@
+.saito-loader {
+    /* border struggles with overlay 8?
+/*  border: 1px solid aqua; */
+    position: relative;
+    width: 100%;
+}
+
+.saito-loader::after {
+    background-color: transparent;
+    background-image: url(../img/saito-loader.svg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    animation-duration: 2s;
+    animation-name: pulse;
+    animation-iteration-count: infinite;
+    position: relative;
+    width: 70px;
+    height: 70px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    content: "";
+    display: block;
+    transform-origin: 50%, 50%;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        border-radius: 50%;
+        background-size: 0px;
+    }
+
+    30% {
+        transform: translate(-50%, -50%) scale(1);
+        border-radius: 0;
+        background-color: red;
+        background-size: 0px;
+    }
+
+    50% {
+        background-size: 50px;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    70% {
+        transform: translate(-50%, -50%) scale(1);
+        border-radius: 0;
+        background-color: red;
+        background-size: 50px;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(0.5);
+        border-radius: 50%;
+        background-size: 0px;
+    }
+}
