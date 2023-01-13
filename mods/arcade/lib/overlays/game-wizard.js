@@ -56,6 +56,7 @@ class GameWizard {
       advancedOptions = `<div id="advanced-options-overlay-container">${advancedOptions}</div>`;
       this.meta_overlay = new SaitoOverlay(app, mod, false, false);
       this.meta_overlay.show(advancedOptions);
+      this.meta_overlay.setBackgroundColor("#000");
       this.meta_overlay.hide();
 
     }

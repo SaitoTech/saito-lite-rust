@@ -10,6 +10,8 @@ const GameInvitationLink = require("./lib/overlays/game-invitation-link");
 const JoinGameOverlay = require("./lib/overlays/join-game");
 const ContinueGameOverlay = require("./lib/overlays/continue-game");
 const WaitingGameOverlay = require("./lib/overlays/waiting-game");
+const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
+
 
 class Arcade extends ModTemplate {
 
@@ -89,6 +91,11 @@ class Arcade extends ModTemplate {
       // game selector
       //
       this.game_selector = new GameSelector(app, this, {});
+
+      //
+      // game crypto transfer manager
+      //
+      this.game_crypto_transfer_manager = new GameCryptoTransferManager(app, this);
 
       //
       // game scheduler
@@ -981,9 +988,7 @@ alert("Observer Overlay for URL Games not yet implemented");
     if (txmsg.players.includes(this.app.wallet.returnPublicKey())) {
       this.app.connection.emit("arcade-game-initialize-render-request", (txmsg.game_id));
       siteMessage(txmsg.module + ' invite accepted.', 20000);
-
       let game_id = await gamemod.processAcceptRequest(tx, this.app);
-
       if (!game_id) {
         await sconfirm("Something went wrong with the game initialization, reload: " + game_id);
       }
@@ -1368,8 +1373,8 @@ alert("Observer Overlay for URL Games not yet implemented");
         if (list == "mine") {
           if (this.isMyGame(tx)) {
 	    let already_exists = 0;
-	    for (let i = 0; i < this.games[mine].length; i++) {
-	      if (tx.transaction.sig === this.games[mine][i].transaction.sig) {
+	    for (let i = 0; i < this.games["mine"].length; i++) {
+	      if (tx.transaction.sig === this.games["mine"][i].transaction.sig) {
 		already_exists = 1;
 	      }
 	    }
@@ -1379,8 +1384,8 @@ alert("Observer Overlay for URL Games not yet implemented");
           }
         } else {
 	  let already_exists = 0;
-	  for (let i = 0; i < this.games[mine].length; i++) {
-	    if (tx.transaction.sig === this.games[mine][i].transaction.sig) {
+	  for (let i = 0; i < this.games["mine"].length; i++) {
+	    if (tx.transaction.sig === this.games["mine"][i].transaction.sig) {
 	      already_exists = 1;
 	    }
 	  }
@@ -1410,7 +1415,10 @@ alert("Observer Overlay for URL Games not yet implemented");
   }
   isJoined(tx, publickey) {
     for (let i = 0; i < tx.msg.players.length; i++) {
+console.log(i);
+console.log(JSON.stringify(tx.msg));
       if (tx.msg.players[i] == publickey) {
+	if (!tx.msg.players_sigs) { return false; } 
         if (tx.msg.players_sigs[i] != "") {
 	  return true;
 	}
@@ -1700,8 +1708,7 @@ alert("Observer Overlay for URL Games not yet implemented");
     //
     try {
       if (options.crypto && parseFloat(options.stake) > 0) {
-        let crypto_transfer_manager = new GameCryptoTransferManager(this.app);
-        let success = await crypto_transfer_manager.confirmBalance(this.app, this, options.crypto, options.stake);
+        let success = await this.game_crypto_transfer_manager.confirmBalance(this.app, this, options.crypto, options.stake);
         if (!success) {
           return false;
         }

@@ -15,11 +15,8 @@ class StunAppspace {
   }
 
   render() {
-    // this.app.browser.addElementToDom(StunAppspaceTemplate(this.app, this.mod));
-
     this.overlay.show(StunAppspaceTemplate(this.app, this.mod))
     this.attachEvents(this.app, this.mod);
-
   }
 
   attachEvents(app, mod) {
@@ -43,6 +40,12 @@ class StunAppspace {
           this.joinVideoInvite(app, mod, inviteCode.trim());
       }
     })
+
+    document.querySelector(".stun-host-your-own").onclick = (e) => {
+      this.mod.sendCreateRoomTransaction((app, mod, roomCode) => {
+        this.app.connection.emit('join-room-with-code', roomCode);
+      });
+    }
 
     document.querySelector('#inviteCode').addEventListener('keyup', (e) => {
       console.log('focusing')

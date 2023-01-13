@@ -21,6 +21,10 @@
   margin-left: 7rem;
 }
 
+.my-stun-container-info {
+  font-size: 2rem;
+}
+
 .saito-page-header-title {
   margin-bottom: 1rem;
   font-size: 5rem;
@@ -28,7 +32,8 @@
 
 .stunx-appspace-card > p {
   margin-bottom: 1rem;
-  font-size: 2rem;
+  font-size: 2.2rem;
+  line-height: 3rem;
 }
 
 .stunx-appspace-card .saito-badge {
@@ -48,11 +53,17 @@
   line-height: 1.2rem;
 }
 
+.stun-host-your-own {
+  display: inline;
+  border-bottom: 2px dashed var(--saito-white);
+  padding-bottom: 1px;
+  cursor: pointer;
+}
+
 .stunx-appspace-actions {
-  margin-top: 2rem;
   margin-bottom: 2rem;
   display: flex;
-  margin-top: 3.5rem;
+  margin-top: 2rem;
 }
 
 .stunx-appspace-create {
@@ -70,10 +81,13 @@
 }
 
 .stunx-appspace-join input {
-  margin-right: 1rem;
-  padding-left: 1rem;
-  height: 75%;
-  border-radius: 0.5rem;
+    margin-right: 1rem;
+    padding-left: 1rem;
+    font-size: 3rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    height: 4.5rem;
+    max-width: 20rem;
 }
 
 .stunx-appspace-join p {
