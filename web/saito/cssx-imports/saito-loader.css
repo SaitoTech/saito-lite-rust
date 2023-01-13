@@ -56,3 +56,49 @@
         background-size: 0px;
     }
 }
+
+.saito-loader-container.blocker {
+  height: 100vh; 
+  width: 100vw; 
+  position: fixed;  
+  z-index: 20;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+}
+
+.saito-loader-container.non-blocker {
+    z-index: 20;
+    margin-top: 7rem;
+}
+
+.game-loader-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.game-loader-spinner {
+  margin: auto;
+  border: 16px solid var(--saito-skyline-grey);
+  border-top: 16px solid var(--saito-red);
+  border: 16px solid var(--saito-primary);
+  border-top: 16px solid var(--saito-tertiary);
+
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  width: 5em;
+  height: 5em;
+  margin-top: 3rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(720deg);
+  }
+}

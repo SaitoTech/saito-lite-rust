@@ -31,3 +31,13 @@ button, .saito-button-primary, .saito-button-secondary:hover {
 .saito-button-secondary {
   color: var(--saito-font-color);
 }
+
+.arcade-game-initializer-success-title {
+  text-align: center;
+}
+
+.arcade-game-initializer-success-button {
+  margin-left: 50%;
+  transform: translateX(-50%);
+  margin-top: 3rem;
+}
