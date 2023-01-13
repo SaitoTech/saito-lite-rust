@@ -20264,7 +20264,7 @@ playerTurn(stage = "main") {
       if (action2 == "tutorial_move_ships") {
         imperium_self.tutorial_move_clicked = 1;
         imperium_self.game.state.use_tutorials = 1;
-        imperium_self.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/movement.png" style="width:100%; height:auto;" /></div>');
+        imperium_self.overlay.show('<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/movement.png" style="width:100%; height:auto;" /></div>');
         imperium_self.playerAcknowledgeNotice("REMEMBER: to move ships select \"activate sector\" and pick the sector you are moving into. Most ships can only move 1-hex and you cannot move ships from sectors that are already activated. You will be able to choose the ships to move, and load infantry and fighters into units that can carry them.", function () {
           imperium_self.playerTurn();
         });
@@ -20273,7 +20273,7 @@ playerTurn(stage = "main") {
       if (action2 == "tutorial_produce_units") {
         imperium_self.tutorial_produce_clicked = 1;
         imperium_self.game.state.use_tutorials = 1;
-        imperium_self.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/production.png" style="width:100%; height:auto;" /></div>');
+        imperium_self.overlay.show('<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/production.png" style="width:100%; height:auto;" /></div>');
         imperium_self.playerAcknowledgeNotice("REMEMBER: to produce units, select \"activate sector\" and activate a sector with a space dock (like your home system). You are limited to producing +2 more units than the resources of the planet on which the Space Dock sits. And you can only have as many non-fighter ships in any sector as your fleet supply, so move your ships out before producing more!", function () {
           imperium_self.playerTurn();
         });
@@ -25343,10 +25343,10 @@ playerActivateSystem() {
       if (imperium_self.game.state.round == 1) {
         if (!imperium_self.canPlayerMoveShipsIntoSector(imperium_self.game.player, pid)) {
 	  if (imperium_self.hasPlayerActivatedSector(imperium_self.game.player) && !imperium_self.canPlayerProduceInSector(imperium_self.game.player, pid)) {
-            imperium_self.overlay.show(imperium_self.app, imperium_self, imperium_self.returnActivatedSectorsOverlay());
+            imperium_self.overlay.show(imperium_self.returnActivatedSectorsOverlay());
 	  } else {
             if (!imperium_self.canPlayerProduceInSector(imperium_self.game.player, pid)) {
-              imperium_self.overlay.show(imperium_self.app, imperium_self, imperium_self.returnFirstTurnOverlay());
+              imperium_self.overlay.show(imperium_self.returnFirstTurnOverlay());
 	      return;
             }
           }
@@ -30675,7 +30675,7 @@ try {
     if (Math.abs(xpos-e.clientX) > 4) { return; }
     if (Math.abs(ypos-e.clientY) > 4) { return; }
     pid = $(this).attr("id");
-    imperium_self.overlay.show(imperium_self.app, imperium_self, imperium_self.returnSectorInformationHTML(pid));
+    imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
   });
 } catch (err) {}
 }
@@ -31686,7 +31686,7 @@ displayFactionSheet(player) {
 
   let imperium_self = this;
   let html = imperium_self.returnFactionSheet2(imperium_self, player);
-  imperium_self.overlay.show(imperium_self.app, imperium_self, html);
+  imperium_self.overlay.show(html);
 
 
 }

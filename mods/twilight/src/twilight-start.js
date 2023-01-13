@@ -169,7 +169,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
 
     $('.menu-item').on('click', function() {
 
@@ -182,7 +182,7 @@ class Twilight extends GameTemplate {
           break;
       }
 
-      twilight_self.overlay.show(twilight_self.app, twilight_self, "All players are backing up their game...");
+      twilight_self.overlay.show("All players are backing up their game...");
     });
 
   }
@@ -338,7 +338,7 @@ class Twilight extends GameTemplate {
           </div>
         `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
   }
 
 
@@ -357,7 +357,7 @@ class Twilight extends GameTemplate {
     //<li class="menu-item" id="text">Text Cards</li>
     //<li class="menu-item" id="graphics">Graphical Cards</li>
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, user_message);
+    twilight_self.overlay.show(user_message);
 
     $('.menu-item').on('click', function() {
       let action2 = $(this).attr("id");

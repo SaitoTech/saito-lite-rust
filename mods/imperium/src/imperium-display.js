@@ -44,7 +44,7 @@ try {
     if (Math.abs(xpos-e.clientX) > 4) { return; }
     if (Math.abs(ypos-e.clientY) > 4) { return; }
     pid = $(this).attr("id");
-    imperium_self.overlay.show(imperium_self.app, imperium_self, imperium_self.returnSectorInformationHTML(pid));
+    imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
   });
 } catch (err) {}
 }
@@ -1055,7 +1055,7 @@ displayFactionSheet(player) {
 
   let imperium_self = this;
   let html = imperium_self.returnFactionSheet2(imperium_self, player);
-  imperium_self.overlay.show(imperium_self.app, imperium_self, html);
+  imperium_self.overlay.show(html);
 
 
 }
