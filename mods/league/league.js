@@ -1161,18 +1161,18 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
       players: players,
       options: options
     });
-    challenge_overlay.show(this.app, this, ChallengeIssuedTemplate());
+    challenge_overlay.show(ChallengeIssuedTemplate());
     timeout = setTimeout(async ()=>{
       alert("It seems your opponent isn't available.");
       challenge_overlay.remove();
     }, 30000);
     this.app.connection.on("arcade-reject-challenge", (game_id)=>{
       clearTimeout(timeout);
-      challenge_overlay.show(this.app, this, ChallengeRejectedTemplate());
+      challenge_overlay.show(ChallengeRejectedTemplate());
     });
     this.app.connection.on("arcade-game-loading" , () =>{
       clearTimeout(timeout);
-      challenge_overlay.show(this.app, this, ChallengeAcceptedTemplate());
+      challenge_overlay.show(ChallengeAcceptedTemplate());
     });
   */
   }

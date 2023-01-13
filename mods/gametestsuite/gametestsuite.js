@@ -388,7 +388,7 @@ class GameTestSuite extends GameTemplate {
       }
       if (mv[0] === "welcome"){
         if (this.browser_active){
-          this.overlay.show(this.app, this, this.returnWelcomeMessage());
+          this.overlay.show(this.returnWelcomeMessage());
           this.game.queue.splice(qe, 1);
         }
         return 0; //Stops the game engine from cycling through the game loop
@@ -742,7 +742,7 @@ class GameTestSuite extends GameTemplate {
       </div>
     `;
 
-    this.overlay.show(this.app, this, overlay_html, function() {
+    this.overlay.show(overlay_html, function() {
       alert("Callback Optional on Close!");
     });
 
@@ -761,7 +761,7 @@ class GameTestSuite extends GameTemplate {
       </div>
     `;
 
-    this.overlay.show(this.app, this, overlay_html);
+    this.overlay.show(overlay_html);
     this.overlay.blockClose();
     document.getElementById("close_overlay_button").onclick = (e) => { game_self.overlay.hide(); }
 

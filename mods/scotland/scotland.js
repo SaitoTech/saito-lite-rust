@@ -107,7 +107,7 @@ class Scotland extends GameTemplate {
       html += `<div>Click a ticket type to see where you can move, then click on the board to move there.</div>`;
     }
     html += `</div>`;
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
   // Opt out of letting League create a default

@@ -140,7 +140,7 @@ class Thirteen extends GameTemplate {
     </div>
     `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
 
     $('.menu-item').on('click', function() {
 
@@ -178,7 +178,7 @@ class Thirteen extends GameTemplate {
         `;
       }
 
-      twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+      twilight_self.overlay.show(html);
     });
 
   }

@@ -8,6 +8,7 @@ const InviteOverlay = require("./lib/components/invite-overlay");
 const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxInvite = require("./lib/invite/main");
+const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 
 
 
@@ -63,6 +64,21 @@ class Stun extends ModTemplate {
                 credential: "somepassword",
             }
         ];
+    }
+
+
+    onPeerHandshakeComplete(app, peer) {
+
+      if (!this.video_chat_loaded) {
+
+        if (app.browser.returnURLParameter("stun_video_chat")) {
+          let obj = JSON.parse(app.crypto.convertBase64ToString(app.browser.returnURLParameter("stun_video_chat")));
+	  // JOIN THE ROOM
+        }
+
+	this.video_chat_loaded = 1;
+      }
+
     }
 
 
@@ -1048,6 +1064,28 @@ class Stun extends ModTemplate {
     // }
 
 
+
+
+
+
+  showShareLink(room_obj={}) {
+
+    let base64string = this.app.crypto.convertStringToBase64(JSON.stringify(room_obj));
+
+    let inviteLink = window.location.href;
+    if (!inviteLink.includes("#")) { inviteLink += "#"; }
+
+    if (inviteLink.includes("?")) {
+      inviteLink = inviteLink.replace("#", "&stun_video_chat=" + base64string);
+    } else {
+      inviteLink = inviteLink.replace("#", "?stun_video_chat=" + base64string);
+    }
+
+    let linkModal = new ChatInvitationLink(this.app, this, inviteLink);
+    linkModal.render();
+
+  } 
+    
 
 
 }

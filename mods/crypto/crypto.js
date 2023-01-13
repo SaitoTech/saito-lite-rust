@@ -1,22 +1,29 @@
 const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const CryptoOverlay = require('./lib/overlay/main');
+const CryptoSelectAmount = require('./lib/overlays/select-amount');
+
 
 class Crypto extends ModTemplate {
 
-  constructor(app) {
+  constructor(app, mod) {
 
     super(app);
+
+    this.app = app;
+    this.mod = mod;
+    this.ticker = "";
 
     this.appname = "Crypto";
     this.name = "Crypto";
     this.description = "Modifies the Game-Menu to add an option for managing in-game crypto";
     this.categories = "Utility Entertainment";
-
-    this.overlay = new CryptoOverlay(app, this);
+    this.overlay = new CryptoSelectAmount(app, this);
 
   }
   
+
+  
+
   respondTo(type = "") {
     if (type == "game-menu") {
 
@@ -39,9 +46,15 @@ class Crypto extends ModTemplate {
           text : ac[i].ticker,
           id : "game-crypto-"+ac[i].ticker,
           class : "game-crypto-ticker",
-          callback : async function(app, game_mod) {
-            game_mod.menu.hideSubMenus();
-      	    cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker);
+          callback : async (app, game_mod) => {
+
+	    this.ticker = ac[i].ticker;
+alert("ticker is: " + this.ticker);
+	    this.overlay.render((amount) => {
+alert("and done render!");
+              game_mod.menu.hideSubMenus();
+      	      cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
+	    });
           }
         });
       }
@@ -52,7 +65,7 @@ class Crypto extends ModTemplate {
   }
 
 
-  enableCrypto(game_mod, game_id, ticker) {
+  enableCrypto(game_mod, game_id, ticker, amount) {
 
     if (game_mod.game.crypto != "") {
       alert("Exiting: crypto already enabled for this game!");
@@ -69,7 +82,7 @@ class Crypto extends ModTemplate {
     game_mod.game = game_mod.game_state_pre_move;
     game_mod.game.turn = [];
     game_mod.moves = [];
-    game_mod.proposeGameStake(ticker, "100");
+    game_mod.proposeGameStake(ticker, amount);
 
   }
 

@@ -15,11 +15,6 @@
   overflow-y: scroll;
 }
 
-.league-overlay-controls-ghost {
-  background-color: white;
-  height: 7rem;
-}
-
 .league-overlay-controls button {
     line-height: 4.5rem;
     width: 20rem;

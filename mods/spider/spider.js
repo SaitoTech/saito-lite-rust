@@ -801,7 +801,7 @@ class Spider extends GameTemplate {
         this.game.state.wins++;
         this.animateFinalVictory();
         this.endGame(this.app.wallet.returnPublicKey());
-        this.overlay.show(this.app, this, this.returnStatsHTML("Winner!"), ()=>{
+        this.overlay.show(this.returnStatsHTML("Winner!"), ()=>{
           this.newRound();
           $(".completed_card").remove();
           this.restartQueue();

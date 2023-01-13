@@ -84,7 +84,7 @@ class Twilight extends GameTemplate {
                 </div>`;
       }
       html += "</div></div>";
-      this.overlay.show(this.app, this, html);
+      this.overlay.show(html);
   }
 
 
@@ -107,7 +107,7 @@ class Twilight extends GameTemplate {
     }  
     html += `</div></div>`;
 
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
 
@@ -153,7 +153,7 @@ class Twilight extends GameTemplate {
     html += `</div>`;
 
     html += `</div>`;
-    this.overlay.show(this.app, this, html); 
+    this.overlay.show(html); 
   }
 
   handleExportMenu() {
@@ -169,7 +169,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
 
     $('.menu-item').on('click', function() {
 
@@ -182,7 +182,7 @@ class Twilight extends GameTemplate {
           break;
       }
 
-      twilight_self.overlay.show(twilight_self.app, twilight_self, "All players are backing up their game...");
+      twilight_self.overlay.show("All players are backing up their game...");
     });
 
   }
@@ -338,7 +338,7 @@ class Twilight extends GameTemplate {
           </div>
         `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
   }
 
 
@@ -357,7 +357,7 @@ class Twilight extends GameTemplate {
     //<li class="menu-item" id="text">Text Cards</li>
     //<li class="menu-item" id="graphics">Graphical Cards</li>
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, user_message);
+    twilight_self.overlay.show(user_message);
 
     $('.menu-item').on('click', function() {
       let action2 = $(this).attr("id");
@@ -474,7 +474,7 @@ class Twilight extends GameTemplate {
       class : "game-rules",
       callback : function(app, game_mod) {
          game_mod.menu.hideSubMenus();
-         game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML()); 
+         game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
 
@@ -8401,11 +8401,9 @@ playerTurnHeadlineSelected(card, player) {
 
     return `
 
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
+      <div style="padding:40px;width:100vw;height:90vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
 
 	<div style="top:0;left:0;">
-
-            
 
             <label for="deck">Deck:</label>
             <select name="deck" id="deckselect" onchange='
