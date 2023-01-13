@@ -8,7 +8,7 @@ const InviteOverlay = require("./lib/components/invite-overlay");
 const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxInvite = require("./lib/invite/main");
-const ChatInvitationLink = require("./lib/overlays/invitation-link");
+const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 
 
 
