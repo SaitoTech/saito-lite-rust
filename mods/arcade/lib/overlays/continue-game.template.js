@@ -72,7 +72,7 @@ module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
  	`;
 
  	for (const key in options) {
- 		if (!mod.ommit_options.includes(key)) {
+ 		if (!mod.ommit_options.includes(key) && (options[key] != "" && options[key] != 0)) {
     	
     		html += `
         	<div class="saito-table-row">
