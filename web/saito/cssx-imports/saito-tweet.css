@@ -76,10 +76,11 @@
 .tweet-text {
   padding: 0.5rem 0;
   line-height: 2.2rem;
-  overflow-wrap: anywhere;
   max-height: 17.7rem;
   margin-bottom: 1rem;
   overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .tweet-text.full {

@@ -20,7 +20,12 @@ class Initializer {
 
     let html = `
       <div class="arcade-initializer">
-      INITIALIZING
+        <div id="game-loader-container" class="game-loader-container"> 
+          <div id="game-loader-title" class="game-loader-title">
+            Your Game is Initializing
+          </div>
+          <div class="game-loader-spinner" id="game-loader-spinner"></div>
+        </div>
       </div>
     `; 
 
