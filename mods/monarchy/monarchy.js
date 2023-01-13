@@ -84,7 +84,7 @@ class Monarchy extends GameTemplate {
         class : "decks-cards",
         callback : function(app, game_mod) {
            game_mod.menu.hideSubMenus();
-           game_mod.overlay.show(game_mod.app, game_mod, game_mod.formatDeck(game_mod.game.state.decks[i], title)); 
+           game_mod.overlay.show(game_mod.formatDeck(game_mod.game.state.decks[i], title)); 
         }
       });
     }
@@ -109,7 +109,7 @@ class Monarchy extends GameTemplate {
       class : "game-rules",
       callback : function(app, game_mod) {
          game_mod.menu.hideSubMenus();
-         game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML()); 
+         game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
 

@@ -11718,7 +11718,7 @@ console.log("qe: " + qe);
           </div>
         `;
 
-        game_mod.overlay.show(game_mod.app, game_mod, html);
+        game_mod.overlay.show(html);
 
         $('.menu-item').on('click', function() {
 
@@ -11729,10 +11729,10 @@ console.log("qe: " + qe);
 	      game_mod.handleHowToPlayMenuItem();
               break;
             case "movement":
-              game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
+              game_mod.overlay.show(game_mod.returnUnitsOverlay());
               break;
             case "production":
-	      game_mod.overlay.show(game_mod.app, game_mod, '<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
+	      game_mod.overlay.show('<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
               break;
             case "combat":
 	      game_mod.handleCombatMenuItem();
@@ -11803,7 +11803,7 @@ console.log("qe: " + qe);
 	  salert("There are currently no Active Laws");
 	  return;
 	}
-        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnLawsOverlay());
+        game_mod.overlay.show(game_mod.returnLawsOverlay());
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -11852,7 +11852,7 @@ console.log("qe: " + qe);
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
+        game_mod.overlay.show(game_mod.returnUnitsOverlay());
       }
     });
     this.menu.addSubMenuOption("game-reference", {
