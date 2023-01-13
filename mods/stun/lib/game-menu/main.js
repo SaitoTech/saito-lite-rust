@@ -10,6 +10,7 @@ class StunxGameMenu {
             // this.receiveVideoCall(app, offer_creator, offer);
         })
         this.app.connection.on('game-start-video-call', (peers) => {
+console.log("START VIDEO CALL: " + peers.length);
             this.startVideoCall(peers);
         })
 

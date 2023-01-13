@@ -40,7 +40,7 @@ const ChatManagerLargeTemplate = (call_type, code) => {
       </main>
 
     <div class="minimizer">
-    <i class="far regular fa-window-minimize"></i>
+    <i class="fas fas fa-caret-down"></i>
     </div>
     </div>`
 }

@@ -34,17 +34,10 @@ class Invite {
 
       let txmsg = this.tx.returnMessage();
 
-      console.log(txmsg);
-
       if (txmsg.status) { this.game_status = txmsg.status; }
       if (this.tx.transaction.sig) { this.game_id = this.tx.transaction.sig; }
       if (txmsg.game_id) { this.game_id = txmsg.game_id; }
       if (txmsg.name) { this.game_name = txmsg.name; }
-      if (txmsg.options) {
-        if (txmsg.options.crypto) {
-	  this.game_type = `${txmsg.options.crypto} game`;
-	}
-      }
       if (this.game_name) { this.game_slug = this.game_name.toLowerCase(); }
       if (!txmsg.name) { this.game_name = txmsg.game; }
       if (txmsg.players) { this.players = txmsg.players; }
@@ -53,12 +46,26 @@ class Invite {
      
       this.game_mod = app.modules.returnModule(txmsg.game);
       this.originator = txmsg.originator || null;
+
+      //
+      // crypto invites and games
+      //
+      if (txmsg.options) {
+        if (txmsg.options.crypto) {
+          this.game_type = `${txmsg.options.crypto} invite`;
+          if (this.players_needed <= this.players.length) {
+             this.game_type = `${txmsg.options.crypto} game`;
+          }
+        }
+      }
+
     }
 
     if (this.game_mod) {
       this.game_name = this.game_mod.returnName();
       this.game_slug = this.game_mod.returnSlug();
     }
+
 
     //
     // private invites
@@ -69,6 +76,9 @@ class Invite {
       }
       if (this.tx.transaction.to.length > 1) {
         this.game_type = "private invite";
+      }
+      if (this.players_needed <= this.players.length) {
+        this.game_type = "private game";
       }
     }
 
