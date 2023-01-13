@@ -27,5 +27,5 @@ class ChatInvitationLink {
     }
 }
 
+module.exports = ChatInvitationLink;
 
-module.exports = InvitationLink;

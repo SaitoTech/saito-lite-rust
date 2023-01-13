@@ -18,6 +18,13 @@ class CryptoSelectAmount {
 
   attachEvents(callback=null) {
 
+    document.querySelector(".amount_to_stake").onclick = (e) => {
+      let amt = document.querySelector(".amount_to_stake").value;
+      if (amt === "0.0" || amt === "0") { 
+        document.querySelector(".amount_to_stake").select();
+      }
+    }
+
     document.querySelector(".crypto_amount_btn").onclick = (e) => {
       let amount = document.getElementById("amount_to_stake_input").value;
       if (callback != null) {
@@ -29,6 +36,6 @@ class CryptoSelectAmount {
 
 }
 
-module.exports = CryptoOverlay;
+module.exports = CryptoSelectAmount;
 
 
