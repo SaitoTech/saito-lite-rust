@@ -18,7 +18,8 @@ class Settings extends ModTemplate {
     this.icon = "fas fa-cog";
     this.description = "User settings module.";
     this.categories = "Admin Users";
-    this.styles = ['/settings/style.css','/saito/lib/jsonTree/jsonTree.css'];
+    this.styles = ['/settings/style.css','/saito/lib/jsonTree/jsonTree.css','/settings/theme-switcher.css'];
+
     return this;
   }
 
@@ -69,23 +70,12 @@ class Settings extends ModTemplate {
 
           let obj = new ThemeBtn(this.app, this, ".saito-header-themes");
           this.renderIntos[qs].push(obj);
-          this.styles = ['/settings/theme-switcher.css'];
           this.attachStyleSheets();
           this.renderIntos[qs].forEach((comp) => { comp.render(); });
         }
       }
   }
-  
-  /*
-  getCurrentModName(){
-    if (this.app.BROWSER == 1) {
-        let slug =  ((window.location.pathname).split('/'))[1];
-        return slug.charAt(0).toUpperCase() + slug.slice(1);
-    }
 
-    return null;
-  }
-  */
 
 }
 

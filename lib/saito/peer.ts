@@ -17,6 +17,7 @@ class Peer {
     data_channel: null,
     peer_connection: null,
   };
+  public initial_sync_done = false;
 
   public peer = {
     host: "localhost",
@@ -253,8 +254,6 @@ class Peer {
     }
   }
 
-
-
   //
   // new default implementation
   //
@@ -335,8 +334,6 @@ class Peer {
     }
   }
 
-
-
   //
   // repeats until success. this should no longer be called directly, it is called by the
   // above functions in the event that socket transmission is unsuccessful. this is part of
@@ -372,13 +369,10 @@ class Peer {
     this.sendRequestWithCallback(request, data, callbackWrapper, false);
   }
 
-
-
   //
   // new default implementation
   //
   sendTransactionWithCallback(tx: any = "", callback = null, loop = true) {
-
     if (this.uses_stun) {
       let data_channel = this.stun.data_channel;
       if (data_channel && data_channel.readyState === "open") {
@@ -436,7 +430,6 @@ class Peer {
       }
     }
   }
-
 
   //
   // a version of sendRequestWithCallbackAndRetry that sends the TX

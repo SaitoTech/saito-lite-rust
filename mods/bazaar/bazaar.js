@@ -37,9 +37,9 @@ class Jaipur extends GameTemplate {
 
   returnWelcomeOverlay(){
    let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
-           <img src="/${this.name.toLowerCase()}/img/welcome_splash.jpg"/>
+           <img src="/${this.name.toLowerCase()}/img/splash_welcome.jpg"/>
                </div>`;
-    return "";//html;
+    return html;
   }
 
 
@@ -948,7 +948,8 @@ initializeQueue(first_player = 1){
     state.goodtokens = [[], []];
     state.mybonustokens = [];
     state.enemytokens = [];
-
+    state.welcome = 0;
+    
     state.tokens = {cloth: [1, 1, 2, 2, 3, 3, 5],
                     leather:[1, 1, 1, 1, 1, 1, 2, 3, 4],
                     spice:[1, 1, 2, 2, 3, 3, 5],
