@@ -13,9 +13,9 @@ class Monarchy extends GameTemplate {
 
     this.app             = app;
 
-    this.name  		       = "Dominion";
+    this.name  		       = "Shogun";
 
-    this.description     = `Strategy deck-building game: acquire money and land to assert dominion over the realm.`;
+    this.description     = `Strategy deck-building game: acquire money and land to assert <em>dominion</em> over the realm.`;
     this.status          = "Alpha";
     this.card_height_ratio = 1.6; // height is 1.6x width
 
@@ -168,7 +168,7 @@ initializeGame(game_id) {
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("------ INITIALIZE GAME ----");
-    console.log("----------Dominion---------");
+    console.log(`----------${this.name}---------`);
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("\n\n\n\n");
@@ -1278,7 +1278,7 @@ initializeGame(game_id) {
 
     //Show temporary discard
     let shift = Object.keys(this.game.deck[this.game.player-1].discards) + 1;
-    $(`<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`).hide().appendTo(".discardpile").slideDown();
+    $(`<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`).hide().appendTo(".discardpile").slideDown();
 
   }
 
@@ -1294,13 +1294,12 @@ initializeGame(game_id) {
         if (count > 0){
           for (let i = 0; i < count - 1; i++){
             let shift = (count > 12) ? i : i*2;
-            html += `<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;  
+            html += `<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;  
           }
             let shift = (count > 12) ? count : count*2;
-          html += `<img class="passivecard" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
+          html += `<img class="passivecard" id="${c}" src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
           html += `<div class="tiptext">Remaining Supply: ${this.game.state.supply[c]}</div>`;
         }else{
-          //html += `<img class="passivecard" src="/${this.name.toLowerCase()}/img/cards/blank.jpg">`;
           html += `<div class="tiptext">No more ${this.cardToText(c,true)}</div>`;
         }
         html += "</div>";  
@@ -1343,7 +1342,7 @@ initializeGame(game_id) {
       let html = `<div class="player_decks tip">`;
       html += `<div class="drawpile cardpile">`;
       for (let i = 0; i < this.game.deck[this.game.player-1].crypt.length; i++){
-        html += `<img src="/${this.name.toLowerCase()}/img/cards/blank.jpg" style="bottom:${i}px;right:${i}px;">`;
+        html += `<img src="${this.card_img_dir}/blank.jpg" style="bottom:${i}px;right:${i}px;">`;
       }
       html += `</div>
               <div class="discardpile cardpile">
@@ -1351,7 +1350,7 @@ initializeGame(game_id) {
       let shift = 0;
       for (let card in this.game.deck[this.game.player-1].discards){
         let c = this.game.deck[this.game.player-1].discards[card];
-        html += `<img src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
+        html += `<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
         shift++;
       }
       html += `</div>
@@ -1916,7 +1915,7 @@ initializeGame(game_id) {
 
   returnCardImage(cardname){
     if (this.deck[cardname]?.img){
-      return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/cards/${this.deck[cardname].img}" />`;
+      return `<img class="cardimg" src="${this.card_img_dir}/${this.deck[cardname].img}" />`;
     }else{
       return ""
     }
