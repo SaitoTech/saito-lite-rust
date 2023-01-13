@@ -72,7 +72,6 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
             <div class="league-overlay-leaderboard"></div>
         </div>
     </div>
-    <div class="league-overlay-controls-ghost"></div>
 </div>
     <div class="league-overlay-controls">
       <button data-id="${league_mod}" class="league-overlay-create-game-button saito-button saito-button-primary">create game</button>
