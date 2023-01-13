@@ -28,6 +28,7 @@ class CryptoSelectAmount {
     document.querySelector(".crypto_amount_btn").onclick = (e) => {
       let amount = document.getElementById("amount_to_stake_input").value;
       if (callback != null) {
+	this.overlay.hide();
         callback(amount);
       }
     };

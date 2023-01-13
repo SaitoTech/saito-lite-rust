@@ -1078,6 +1078,8 @@ try {
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
+console.log("LATEST MOVE: " + mv);
+
       //
       // cambridge region
       // chernobyl region

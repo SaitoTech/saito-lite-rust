@@ -34,6 +34,8 @@ button, .saito-button-primary, .saito-button-secondary:hover {
 
 .arcade-game-initializer-success-title {
   text-align: center;
+  font-size: 3rem;
+  margin-top: 10rem;
 }
 
 .arcade-game-initializer-success-button {
