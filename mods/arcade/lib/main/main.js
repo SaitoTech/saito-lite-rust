@@ -45,6 +45,8 @@ class ArcadeMain {
 
     this.sidebar.render();
 
+    this.banner.render();
+
     //
     // appspace modules
     //
