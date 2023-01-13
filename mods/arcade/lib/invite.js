@@ -134,8 +134,7 @@ class Invite {
 
     	if (this.mod.isMyGame(this.tx)) {
     	  if (this.mod.isAccepted(this.tx, this.app.wallet.returnPublicKey())) {
-
-    	    if (this.game_status === "open") {
+    	    if (this.players.length < this.players_needed) {
             this.waiting_game.invite = this;
             this.waiting_game.render();
     	      return;

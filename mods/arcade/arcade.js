@@ -1427,17 +1427,13 @@ alert("Observer Overlay for URL Games not yet implemented");
     return false;
   }
   isAccepted(tx, publickey) {
-    if (tx.msg.players < tx.msg.players_needed) { return false; }
     if (tx.msg.players_sigs) {
       if (tx.msg.players.length > tx.msg.players_sigs.length) { return false; }
     }
+
     for (let i = 0; i < tx.msg.players.length; i++) {
       if (tx.msg.players[i] == publickey) {
-        if (tx.msg.players_sigs) {
-          if (tx.msg.players_sigs[i] != "") {
             return true;
-          }
-        }
       }
     }
     return false;
