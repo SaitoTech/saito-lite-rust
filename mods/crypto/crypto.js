@@ -13,6 +13,8 @@ class Crypto extends ModTemplate {
     this.mod = mod;
     this.ticker = "";
 
+    this.styles = ['/crypto/css/crypto-base.css'];
+
     this.appname = "Crypto";
     this.name = "Crypto";
     this.description = "Modifies the Game-Menu to add an option for managing in-game crypto";
@@ -47,11 +49,9 @@ class Crypto extends ModTemplate {
           id : "game-crypto-"+ac[i].ticker,
           class : "game-crypto-ticker",
           callback : async (app, game_mod) => {
-
+	    this.attachStyleSheets();
 	    this.ticker = ac[i].ticker;
-alert("ticker is: " + this.ticker);
 	    this.overlay.render((amount) => {
-alert("and done render!");
               game_mod.menu.hideSubMenus();
       	      cm.enableCrypto(game_mod, game_mod.game.id, ac[i].ticker, amount);
 	    });

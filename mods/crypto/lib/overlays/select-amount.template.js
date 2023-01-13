@@ -10,7 +10,7 @@ module.exports = (app, mod) => {
       <p></p>
       <div class="button saito-button-primary crypto_amount_btn" id="enable_staking_no">confirm</div>
       <p></p>
-      <div class="commentary">all gaming is peer-to-peer - by using you confirm usage is legal in your jurisdiction</div>
+      <div class="commentary">i confirm peer-to-peer gaming is legal in my jurisdiction</div>
 
     </div>
  
