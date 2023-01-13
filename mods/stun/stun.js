@@ -72,7 +72,7 @@ class Stun extends ModTemplate {
       if (!this.video_chat_loaded) {
 
         if (app.browser.returnURLParameter("stun_video_chat")) {
-          let obj = JSON.parse(app.crypto.convertBase64ToString(app.browser.returnURLParameter("stun_video_chat"));
+          let obj = JSON.parse(app.crypto.convertBase64ToString(app.browser.returnURLParameter("stun_video_chat")));
 	  // JOIN THE ROOM
         }
 
