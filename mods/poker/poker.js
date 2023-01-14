@@ -98,10 +98,12 @@ class Poker extends GameTableTemplate {
       console.log("Error initializing scoreboard",err);
     }
 
+/*
     this.rawCrypto = this.loadGamePreference("raw_crypto_display");
     if (!this.rawCrypto){
       this.rawCrypto = false;
     }
+*/
 
     if (this.game?.options?.crypto){
 
@@ -514,7 +516,7 @@ class Poker extends GameTableTemplate {
           let winnings = this.game.state.pot - this.game.state.player_pot[player_left_idx];
           let logMsg = `${this.game.state.player_names[player_left_idx]} wins ${this.game.state.pot} chips (${winnings} net)`;
           if (this.game.crypto){
-            logMsg += ` ~ ${this.formatWager(this.game.state.pot, true)} ( ${this.formatWager(winnings)} net)`;
+            logMsg += ` ~ ${this.formatWager(this.game.state.pot, false)} ( ${this.formatWager(winning, trues)} net)`;
           }
           this.updateLog(logMsg);
           console.log(`${this.game.state.player_credit[player_left_idx]} + ${this.game.state.pot} = `);
@@ -794,7 +796,7 @@ class Poker extends GameTableTemplate {
 
         if (winners.length > 1) {
 
-          this.updateLog(`${winnerStr} split the pot for ${pot_size} chips ${(this.game.crypto)?`(${this.formatWager(pot_size, true)}) `:""}each`);
+          this.updateLog(`${winnerStr} split the pot for ${pot_size} chips ${(this.game.crypto)?`(${this.formatWager(pot_size, false)}) `:""}each`);
 
           //
           // send wagers to winner
@@ -831,7 +833,7 @@ class Poker extends GameTableTemplate {
         } else {// single winner gets everything
           let logMsg = `${winnerStr} wins ${this.game.state.pot} (${this.game.state.pot-this.game.state.player_pot[winners[0]]} net) chips`;
           if (this.game.crypto){
-            logMsg += ` ~ ${this.formatWager(this.game.state.pot, true)} (${this.formatWager(this.game.state.pot-this.game.state.player_pot[winners[0]], true)} net)`;
+            logMsg += ` ~ ${this.formatWager(this.game.state.pot, false)} (${this.formatWager(this.game.state.pot-this.game.state.player_pot[winners[0]], false)} net)`;
           }
           this.updateLog(logMsg);
 
@@ -894,7 +896,7 @@ class Poker extends GameTableTemplate {
           this.game.state.player_credit[bbpi] = 0;
           this.game.state.passed[bbpi] = 1;
         } else {
-          this.updateLog(`${this.game.state.player_names[bbpi]} posts big blind: ${this.game.state.big_blind} chips${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.big_blind, true)}`:""}`);
+          this.updateLog(`${this.game.state.player_names[bbpi]} posts big blind: ${this.game.state.big_blind} chips${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.big_blind, false)}`:""}`);
           this.game.state.player_pot[bbpi] += this.game.state.big_blind;
           this.game.state.pot += this.game.state.big_blind;
           this.game.state.player_credit[bbpi] -= this.game.state.big_blind;
@@ -913,7 +915,7 @@ class Poker extends GameTableTemplate {
           this.game.state.player_credit[sbpi] = 0;
           this.game.state.passed[sbpi] = 1;
         } else {
-          this.updateLog(`${this.game.state.player_names[sbpi]} posts small blind: ${this.game.state.small_blind}${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.big_blind, true)}`:""}`);
+          this.updateLog(`${this.game.state.player_names[sbpi]} posts small blind: ${this.game.state.small_blind}${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.big_blind, false)}`:""}`);
           this.game.state.player_pot[sbpi] += this.game.state.small_blind;
           this.game.state.pot += this.game.state.small_blind;
           this.game.state.player_credit[sbpi] -= this.game.state.small_blind;
@@ -1078,12 +1080,10 @@ class Poker extends GameTableTemplate {
     console.log(JSON.parse(JSON.stringify(this.game.state)));
   }
 
-  formatWager(numChips, forceConvert = false){
-    
-    if ( (!this.rawCrypto || !this.game.crypto) && !forceConvert){
-      return numChips;
-    }
-    return `${this.sizeNumber(numChips * this.game.chipValue)} ${this.game.crypto}`;
+  formatWager(numChips, includeTicker=true) {
+    let chips = "CHIPS";
+    if (this.game.crypto) { chips = this.game.crypto; }
+    return `${this.app.crypto.convertStringToDecimalPrecision(this.sizeNumber(numChips * this.game.chipValue))} ${chips}`;
   }
 
   playerTurn() {
@@ -1449,21 +1449,24 @@ class Poker extends GameTableTemplate {
     }
   }
 
-  updatePot(){
+  updatePot() {
+
       let poker_self = this;
 
-      let html = `<div class="pot-counter">${this.game.state.pot}</div>`;
+      let html = `<div class="pot-counter">${this.app.crypto.convertStringToDecimalPrecision(this.game.state.pot)}</div>`;
       if (this.game.crypto){
-        let display1, display2;
-        if (this.rawCrypto){
-          display1 = `${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
-          display2 = `${this.game.state.pot} ${this.game.state.chips}`;
-        }else{
+        let display1 = "";
+	let display2 = "";
+        if (this.rawCrypto) {
+          display1 = `${this.app.crypto.convertStringToDecimalPrecision(this.sizeNumber(this.game.state.pot * this.game.chipValue))} ${this.game.crypto}`;
+          display2 = `${this.app.crypto.convertStringToDecimalPrecision(this.game.state.pot)} ${this.game.state.chips}`;
+        } else {
           display2 = `${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
           display1 = `${this.game.state.pot} ${this.game.state.chips}`;
         }
-        html = `<div class="pot-counter crypto_tip">${display1}<div class="tiptext">${display2}</div></div>`;
+        html = `<div class="pot-counter crypto_tip">${this.app.crypto.convertStringToDecimalPrecision(display1)}<div class="tiptext">${display2}</div></div>`;
       }
+
 
       if (this.useGraphics){
         for (let i = 0; i < this.game.state.player_pot.length; i++){
