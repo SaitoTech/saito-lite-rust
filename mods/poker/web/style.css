@@ -116,11 +116,11 @@ body {
   right: 100px;
 }
 
-.flip-card{
+.flip-card , .card {
   width: 11vw;
 }
 
-.flip-card .card{
+.flip-card .card {
   position: absolute;
 }
 
@@ -143,10 +143,6 @@ body {
   transform: rotateY(-180deg);
 }
 
-
-.deal .card {
-  width: inherit;
-}
 
 .deal {
   margin: 0 auto;
@@ -258,7 +254,7 @@ body {
 
 @media screen and (max-width: 1200px) {
 
-  .flip-card {
+  .flip-card , .card {
     width: 14vw;
   }
 
@@ -266,7 +262,7 @@ body {
 
 @media screen and (max-width: 800px) {
 
-  .flip-card {
+  .flip-card , .card {
     width: 16vw;
   }
 
@@ -274,7 +270,7 @@ body {
 
 @media screen and (max-width: 600px) {
 
-  .flip-card {
+  .flip-card , .card {
     width: 17vw;
   }
 
@@ -282,7 +278,7 @@ body {
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
 
-  .deal .card {
+  .flip-card , .card {
     width: 20%;
   }
 
