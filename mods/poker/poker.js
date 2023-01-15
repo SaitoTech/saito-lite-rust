@@ -20,6 +20,7 @@ class Poker extends GameTableTemplate {
 
     this.minPlayers = 2;
     this.maxPlayers = 6;
+    this.crypto_msg = "settles round-by-round";
     this.decimal_precision = 8; /*Default, bitcoin-level of 8 decimals */
     this.settlement = [];
     this.updateHTML = "";
@@ -156,26 +157,14 @@ class Poker extends GameTableTemplate {
     let num_chips = 100;
     if (this.game.options.num_chips > 0) { num_chips = this.game.options_num_chips; }
 
-console.log("NUM CHIPS: " + num_chips);
-
     this.game.crypto = this.game.options.crypto = crypto;
     this.game.stake =  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 100;
-
-console.log("STAKE: " + this.game.stake);
 
     this.game.chipValue = 1;
     this.game.chipStart = parseInt(num_chips);
     this.game.tournamentBlinds = (this.game.options.blind_mode === "increase");
     this.game.state.round = 1;
     // default to 100 chips
-
-console.log("^^^^^^^^^^^^^");
-console.log("^^^^^^_^^^^^^");
-console.log("^^^^^___^^^^^");
-console.log("^^^^_____^^^^");
-console.log("^^^_______^^^");
-console.log("^^^^^^^^^^^^^");
-console.log("GAME STAKE IS: " + this.game.stake);
 
     this.game.state.big_blind = this.game.stake/50;
     this.game.state.small_blind = this.game.stake/100;
@@ -189,8 +178,6 @@ console.log("GAME STAKE IS: " + this.game.stake);
       this.game.state.debt[i] = 0;
       this.game.state.player_credit[i] = this.game.stake;
     }
-
-console.log("STATE IS: " + JSON.stringify(this.game.state));
 
     this.game.queue = ["newround"];
 
@@ -220,9 +207,6 @@ console.log("STATE IS: " + JSON.stringify(this.game.state));
     this.settleNow = (this.game.options.settle_by_round == 1);
     let chipValueStr = this.game.chipValue.toString();
     this.decimal_precision = 8;
-    console.log("INITIALIZE GAME WITH CRYPTO: " + this.game.crypto);
-    console.log(chipValueStr, this.decimal_precision);
-    console.log("dec precision: " + this.decimal_precision);
 
 
     // initialize game state
@@ -235,12 +219,6 @@ console.log("STATE IS: " + JSON.stringify(this.game.state));
     if (this.browser_active) {
       this.displayBoard();
     }
-
-console.log("-----");
-console.log("-----");
-console.log("-----");
-console.log("-----");
-console.log(JSON.stringify(this.game));
 
     //If reloading, make sure we can refresh the queue operations
     this.game.halted = 0;
@@ -314,8 +292,6 @@ console.log(JSON.stringify(this.game));
     if (this.game.crypto && this.settleNow) {
       msg += " and settling bets...";
 
-      console.log("PROCESSING THE SETTLEMENT NOW!");
-      console.log(JSON.stringify(this.settlement));
       for (let i = 0; i < this.settlement.length; i++) {
         this.game.queue.push(this.settlement[i]);
       }
@@ -324,8 +300,6 @@ console.log(JSON.stringify(this.game));
     }else{
       msg += "...";
     }
-
-    console.log("new queue: " + JSON.stringify(this.game.queue));    
 
     this.cardfan.hide();
 
@@ -396,7 +370,6 @@ console.log(JSON.stringify(this.game));
       }
 
       if (mv[0] === "newround"){
-        console.log("--------- SNR ---------");
 
         this.game.state.round++;
 
@@ -485,8 +458,6 @@ console.log(JSON.stringify(this.game));
         let removal = false;
 
         if (alive_players < this.game.state.player_credit.length) {
-          console.log("Need to remove a player");
-          console.log(JSON.parse(JSON.stringify(this.game.players)));
           for (let i = this.game.state.player_credit.length-1; i >= 0 ; i--) {
             if (this.game.state.player_credit[i] <= 0) {
               this.updateLog(`Player ${i+1} (${this.game.state.player_names[i]}) has been eliminated from the game.`);
@@ -548,10 +519,8 @@ console.log(JSON.stringify(this.game));
             logMsg += ` ~ ${this.formatWager(this.game.state.pot, false)} ( ${this.formatWager(winnings)} net)`;
           }
           this.updateLog(logMsg);
-          console.log(`${this.game.state.player_credit[player_left_idx]} + ${this.game.state.pot} = `);
-          this.game.state.player_credit[player_left_idx] += this.game.state.pot;
+          this.game.state.player_credit[player_left_idx] = parseFloat(this.game.state.player_credit[player_left_idx]) + parseFloat(this.game.state.pot);
           this.game.state.player_credit[player_left_idx] = this.game.state.player_credit[player_left_idx].toFixed(8);
-          console.log(this.game.state.player_credit[player_left_idx]);
           this.game.stats[this.game.players[player_left_idx]].handsWon++;
           //
           // everyone settles with winner if needed
@@ -803,7 +772,7 @@ console.log(JSON.stringify(this.game));
           this.game.stats[this.game.players[winners[i]]].handsWon++;
           winnerStr += this.game.state.player_names[winners[i]] + ", ";
           //Award in game winnings
-          this.game.state.player_credit[winners[i]] += pot_size;
+          this.game.state.player_credit[winners[i]] = parseFloat(this.game.state.player_credit[winners[i]]) + parseFloat(pot_size);
           this.game.state.player_credit[winners[i]] = this.game.state.player_credit[winners[i]].toFixed(8);
         }
         winnerStr = this.prettifyList(winnerStr); //works with one player
@@ -829,22 +798,15 @@ console.log(JSON.stringify(this.game));
 
           this.updateLog(`${winnerStr} split the pot for ${this.formatWager(pot_size)}`);
 
-          //
-          // send wagers to winner
-          //let chips_to_send = this.game.state.player_pot[this.game.player - 1] / winners.length;
-          //if (chips_to_send !== Math.round(chips_to_send)){
-          //  salert("Uneven pot split. House keeps difference");
-          //  chips_to_send = Math.floor(chips_to_send);
-          //}
-
           for (let i = 0; i < winners.length; i++) {
             //
             // non-winners send wagers to winner
+            //
             if (this.game.crypto) {
               for (let ii = 0; ii < this.game.players.length; ii++) {
                 if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-                  let amount_to_send = this.game.chipValue * this.game.state.player_pot[ii] / winners.length ;
-                  amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+                  let amount_to_send = parseFloat(this.game.chipValue) * parseFloat(this.game.state.player_pot[ii]) / winners.length;
+                  amount_to_send = amount_to_send.toFixed(8);
 
                   if (this.settleNow){
                     // do not reformat -- adding whitespace screws with API
@@ -853,9 +815,11 @@ console.log(JSON.stringify(this.game));
                     let uh = this.game.dice;
                     this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
                     this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
-                  }else{
-                    this.game.state.debt[ii] += this.game.state.player_pot[ii] / winners.length;
-                    this.game.state.debt[winners[i]] -= this.game.state.player_pot[ii] / winners.length;
+                  } else {
+                    this.game.state.debt[ii] = parseFloat(this.game.state.debt[ii]) + (parseFloat(this.game.state.player_pot[ii]) / winners.length);
+                    this.game.state.debt[ii] = this.game.state.debt[ii].toFixed(8);
+                    this.game.state.debt[winners[i]] = this.game.state.debt[winners[i]] - (parseFloat(this.game.state.player_pot[ii]) / winners.length);
+                    this.game.state.debt[winners[i]] = this.game.state.debt[winners[i]].toFixed(8);
                   }
                 }
               }
@@ -871,8 +835,8 @@ console.log(JSON.stringify(this.game));
           if (this.game.crypto) {
             for (let ii = 0; ii < this.game.players.length; ii++) {
               if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-                let amount_to_send = this.game.state.player_pot[ii] * this.game.chipValue;
-                amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+                let amount_to_send = parseFloat(this.game.state.player_pot[ii]) * this.game.chipValue;
+                amount_to_send = amount_to_send.toFixed(8);
 
                 if (this.settleNow){
                   let ts = new Date().getTime();
@@ -882,8 +846,10 @@ console.log(JSON.stringify(this.game));
                   this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
                   this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
                 }else{
-                  this.game.state.debt[ii] += this.game.state.player_pot[ii];
-                  this.game.state.debt[winners[0]] -= this.game.state.player_pot[ii];
+                  this.game.state.debt[ii] = parseFloat(this.game.state.debt[ii]) + parseFloat(this.game.state.player_pot[ii]);
+                  this.game.state.debt[ii] = this.game.state.debt[ii].toFixed(8);
+                  this.game.state.debt[winners[0]] = parseFloat(this.game.state.debt[winners[0]]) - parseFloat(this.game.state.player_pot[ii]);
+                  this.game.state.debt[winners[0]] = this.game.state.debt[winners[0]].toFixed(8);
                 }
               }
             }
@@ -922,17 +888,19 @@ console.log(JSON.stringify(this.game));
         if (this.game.state.player_credit[bbpi] <= this.game.state.big_blind) {
           this.updateLog(this.game.state.player_names[bbpi] + ` posts remaining ${this.game.state.player_credit[bbpi]} chips for big blind and is removed from game`);
           //Put all the player tokens in the pot and have them pass / remove
-          this.game.state.player_pot[bbpi] += this.game.state.player_credit[bbpi];
+          this.game.state.player_pot[bbpi] = parseFloat(this.game.state.player_pot[bbpo]) + parseFloat(this.game.state.player_credit[bbpi]);
           this.game.state.player_pot[bbpi] = this.game.state.player_pot[bbpi].toFixed(8);
-          this.game.state.pot += this.game.state.player_credit[bbpi];
+          this.game.state.pot = parseFloat(this.game.state.pot) + parseFloat(this.game.state.player_credit[bbpi]);
           this.game.state.pot = this.game.state.pot.toFixed(8);
           this.game.state.player_credit[bbpi] = 0;
           this.game.state.passed[bbpi] = 1;
         } else {
           this.updateLog(`${this.game.state.player_names[bbpi]} posts big blind: ${this.game.state.big_blind} chips${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.big_blind, false)}`:""}`);
-          this.game.state.player_pot[bbpi] += this.game.state.big_blind;
-          this.game.state.pot += this.game.state.big_blind;
-          this.game.state.player_credit[bbpi] -= this.game.state.big_blind;
+          this.game.state.player_pot[bbpi] = parseFloat(this.game.state.player_pot[bbpi]) + parseFloat(this.game.state.big_blind);
+          this.game.state.player_pot[bbpi] = this.game.state.player_pot[bbpi].toFixed(8);
+          this.game.state.pot = parseFloat(this.game.state.pot) + parseFloat(this.game.state.big_blind);
+	  this.game.state.pot = this.game.state.pot.toFixed(8);
+          this.game.state.player_credit[bbpi] = parseFloat(this.game.state.player_credit[bbpi]) - parseFloat(this.game.state.big_blind);
           this.game.state.player_credit[bbpi] = this.game.state.player_credit[bbpi].toFixed(8);
         }
 
@@ -944,16 +912,22 @@ console.log(JSON.stringify(this.game));
         if (this.game.state.player_credit[sbpi] <= this.game.state.small_blind) {
           this.updateLog(this.game.state.player_names[sbpi] + 
               ` posts remaining ${this.game.state.player_credit[sbpi]} chips as small blind and is removed from the game`);
-          this.game.state.player_pot[sbpi] += this.game.state.player_credit[sbpi];
-          this.game.state.pot += this.game.state.player_credit[sbpi];
+          this.game.state.player_pot[sbpi] = parseFloat(this.game.state.player_pot[sbpi]) + parseFloat(this.game.state.player_credit[sbpi]);
+          this.game.state.player_pot[sbpi] = this.game.state.player_pot[sbpi].toFixed(8);
+          this.game.state.pot = parseFloat(this.game.state.pot) + parseFloat(this.game.state.player_credit[sbpi]);
+          this.game.state.pot = this.game.state.pot.toFixed(8);
           this.game.state.player_credit[sbpi] = 0;
           this.game.state.passed[sbpi] = 1;
         } else {
           this.updateLog(`${this.game.state.player_names[sbpi]} posts small blind: ${this.game.state.small_blind}${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.big_blind, false)}`:""}`);
-          this.game.state.player_pot[sbpi] += this.game.state.small_blind;
-          this.game.state.pot += this.game.state.small_blind;
-          this.game.state.player_credit[sbpi] -= this.game.state.small_blind;
+          this.game.state.player_pot[sbpi] = parseFloat(this.game.state.player_pot[sbpi]) + parseFloat(this.game.state.small_blind);
+	  this.game.state.player_pot[sbpi] = this.game.state.player_pot[sbpi].toFixed(8);
+          this.game.state.pot = parseFloat(this.game.state.pot) + parseFloat(this.game.state.small_blind);
+          this.game.state.pot = this.game.state.pot.toFixed(8);
+          this.game.state.player_credit[sbpi] = parseFloat(this.game.state.player_credit[sbpi]) - parseFloat(this.game.state.small_blind);
+          this.game.state.player_credit[sbpi] = this.game.state.player_credit[sbpi].toFixed(8);
         }
+
 
         this.outputState();
 
@@ -986,9 +960,10 @@ console.log(JSON.stringify(this.game));
 
       /* WE programmatically determine here how much the call is*/
       if (mv[0] === "call") {
+
         let player = parseInt(mv[1]);
 
-        let amount_to_call = this.game.state.required_pot - this.game.state.player_pot[player - 1];
+        let amount_to_call = parseFloat(this.game.state.required_pot) - parseFloat(this.game.state.player_pot[player - 1]);
 
         if (amount_to_call <= 0) {
           console.error("Zero/Negative Call");
@@ -996,12 +971,27 @@ console.log(JSON.stringify(this.game));
           this.outputState();
         }
 
+console.log("amount to call: " + amount_to_call);
+console.log("player_credit: " + this.game.state.player_credit[player-1]);
+console.log("player pot: " + this.game.state.player_pot[player-1]);
+console.log("pot: " + this.game.state.pot);
+
         //
         // reset plays since last raise
         //
-        this.game.state.player_credit[player - 1] -= amount_to_call;
-        this.game.state.player_pot[player - 1] += amount_to_call;
-        this.game.state.pot += amount_to_call;
+        this.game.state.player_credit[player-1] = parseFloat(this.game.state.player_credit[player - 1]) - parseFloat(amount_to_call);
+        this.game.state.player_pot[player-1] = parseFloat(this.game.state.player_pot[player - 1]) + parseFloat(amount_to_call);
+        this.game.state.pot = parseFloat(this.game.state.pot) + parseFloat(amount_to_call);
+console.log("player_credit: " + this.game.state.player_credit[player-1]);
+console.log("player pot: " + this.game.state.player_pot[player-1]);
+console.log("pot: " + this.game.state.pot);
+
+        this.game.state.player_credit[player-1] = this.game.state.player_credit[player-1].toFixed(8);
+console.log("new: " + this.game.state.player_credit[player-1]);
+        this.game.state.player_pot[player-1] = this.game.state.player_pot[player-1].toFixed(8);
+console.log("new: " + this.game.state.player_pot[player-1]);
+        this.game.state.pot = this.game.state.pot.toFixed(8);
+console.log("new: " + this.game.state.pot);
 
         this.game.queue.splice(qe, 1);
 
