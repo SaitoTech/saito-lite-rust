@@ -415,11 +415,7 @@ class Crypto {
 
   convertStringToDecimalPrecision(stringx, p=8) {
     stringx = parseFloat(stringx);
-console.log("_______________");
-console.log("_______________");
-console.log("IN: " + stringx);
-console.log("TO FIXED: " + stringx.toFixed(p));
-    return stringx.toFixed(p).replace(/0+$/,'').replace(/\.$/,'\.0');
+    return stringx.toFixed(p).replace(/0+$/,'').replace(/\.$/,'\.0').replace(/\.0$/, '');
   }
 
 }
