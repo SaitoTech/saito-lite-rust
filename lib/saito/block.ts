@@ -397,16 +397,10 @@ class Block {
     }
 
     // calculate automatic transaction rebroadcasts / ATR / atr
-console.log("BLOCK ID IS " + this.block.id);
-console.log("GENESIS PERIOD IS " + this.app.blockchain.returnGenesisPeriod());
-console.log("COMPARED TO: " + (this.app.blockchain.returnGenesisPeriod() + BigInt(1)));
-console.log("AND DONE");
     if (this.block.id > this.app.blockchain.returnGenesisPeriod() + BigInt(1)) {
       const pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
       const pruned_block_hash =
         this.app.blockring.returnLongestChainBlockHashByBlockId(pruned_block_id);
-      console.log("pruned block id: " + pruned_block_id);
-      console.log("pruned block hash: " + pruned_block_hash);
       const pruned_block = await this.app.blockchain.loadBlockAsync(pruned_block_hash);
 
       //

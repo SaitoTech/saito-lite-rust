@@ -412,6 +412,12 @@ class Crypto {
   fastSerialize(jsobj) {
     return stringify(jsobj);
   }
+
+  convertStringToDecimalPrecision(stringx, p=8) {
+    stringx = parseFloat(stringx);
+    return stringx.toFixed(p).replace(/0+$/,'').replace(/\.$/,'\.0').replace(/\.0$/, '');
+  }
+
 }
 
 export default Crypto;
