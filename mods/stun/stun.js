@@ -427,6 +427,7 @@ class Stun extends ModTemplate {
                     };
                     pc.onconnectionstatechange = e => {
                         console.log("connection state ", pc.connectionState);
+
                         switch (pc.connectionState) {
                             case "connecting":
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type);
@@ -724,7 +725,6 @@ class Stun extends ModTemplate {
 
 
     async createMediaConnectionWithPeers(public_keys, ui_type, call_type) {
-
         let peerConnectionOffers = [];
         if (public_keys.length > 0) {
             // send connection to other peers if they exit
@@ -740,7 +740,7 @@ class Stun extends ModTemplate {
             if (peerConnectionOffers.length > 0) {
                 const offers = [];
                 peerConnectionOffers.forEach((offer) => {
-                    // map key to pc
+
                     console.log('offer :', offer)
                     this.peer_connections[offer.recipient] = offer.pc
                     offers.push({
@@ -751,8 +751,20 @@ class Stun extends ModTemplate {
                         call_type: offer.call_type
                     })
                 })
-                // const offers = peerConnectionOffers.map(item => item.offer_sdp);
-                this.sendMediaOfferTransaction(this.app.wallet.returnPublicKey(), offers);
+
+                let index = 0;
+                let interval = setInterval(() => {
+                    let offer = []
+                    offer.push(offers[index])
+                    this.sendMediaOfferTransaction(this.app.wallet.returnPublicKey(), offer)
+                    console.log('sending offer', index)
+                    if (offers.length - 1 === index) {
+                        clearInterval(interval)
+                    }
+                    index++;
+                }, 3000);
+
+
             }
 
         } catch (error) {
@@ -806,7 +818,7 @@ class Stun extends ModTemplate {
 
     sendMediaOfferTransaction(offer_creator, offers) {
         let newtx = this.app.wallet.createUnsignedTransaction();
-        console.log('broadcasting offers');
+        console.log('broadcasting offers', offers);
         for (let i = 0; i < offers.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
         }

@@ -18,7 +18,7 @@ class VideoChatManager {
         this.mod = mod;
         this.addUsersManager = new AddUsers(app, mod)
 
-        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type, room_code) => {
+        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code) => {
             if (ui_type !== "large") return
             this.call_type = call_type
             this.room_code = room_code

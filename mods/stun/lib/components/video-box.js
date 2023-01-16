@@ -24,17 +24,17 @@ class VideoBox {
 
 
 
-        // if (this.stream === null) {
-        //     this.renderPlaceholder();
-        // }
+        if (this.stream === null) {
+            this.renderPlaceholder();
+        }
 
         if (this.stream_id === 'local' && stream !== null) {
             this.renderStream({ muted: true });
-        }else {
-            this.renderStream({muted: false})
+        } else {
+            this.renderStream({ muted: false })
         }
 
-        
+
 
 
 
@@ -48,9 +48,9 @@ class VideoBox {
     }
 
     renderStream({ muted }) {
-        if(!this.stream){
+        if (!this.stream) {
             this.renderPlaceholder();
-        }else {
+        } else {
             if (!document.querySelector(`#stream${this.stream_id}`)) {
                 if (this.containerClass) {
                     this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted, this.ui_type), this.containerClass);
@@ -59,18 +59,18 @@ class VideoBox {
                     this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
                 }
             }
-    
+
             const videoBox = document.querySelector(`#stream${this.stream_id}`);
             console.log('call type', this.call_type)
-            if(this.call_type === "audio"){
+            if (this.call_type === "audio") {
                 videoBox.insertAdjacentHTML('beforeend', `<div class="audio-stream"> <i class="fas fa-microphone"></i></div> `);
-            }else if(this.call_type === "video") {
+            } else if (this.call_type === "video") {
                 videoBox.firstElementChild.srcObject = this.stream;
             }
         }
-      
-      
-       
+
+
+
 
     }
 
@@ -110,7 +110,7 @@ class VideoBox {
             //     document.querySelector(`#stream${this.stream_id}`).parentElement.remove(document.querySelector(`#stream${this.stream_id}`));
             //     break;
             case "failed":
-                document.querySelector('#connection-message').textContent = "<p>Failed to connect </p>"
+                document.querySelector('#connection-message').textContent = `Failed to connect`
                 break;
 
             default:
