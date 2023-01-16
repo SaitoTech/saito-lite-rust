@@ -1,6 +1,6 @@
 const ChatManagerLargeTemplate = (call_type, code) => {
   let add_user = code ? `<span>
-  <i class=" add_users fa fa-users" > </i>
+  <i class=" add_users fa fa-plus" > </i>
 </span>`: ""
   return `
     <div class="stunx-chatbox" id="stunx-chatbox">

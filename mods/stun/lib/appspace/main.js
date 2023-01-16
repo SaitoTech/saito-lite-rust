@@ -27,13 +27,6 @@ class StunAppspace {
         let stun_mod = app.modules.returnModule("Stun");
         stun_mod.addListeners(listeners);
       }
-      if (e.target.id === "createInvite") {
-        let stun_mod = app.modules.returnModule("Stun");
-        let callback = (app, mod, roomCode) => {
-          app.connection.emit('join-room-with-code', roomCode);
-        }
-        stun_mod.sendCreateRoomTransaction(callback);
-      }
       if (e.target.id === "joinInvite") {
         const inviteCode = document.querySelector("#inviteCode").value;
         console.log(inviteCode, 'invite code'),

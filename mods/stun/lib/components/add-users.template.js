@@ -1,11 +1,11 @@
 const AddUsersTemplate = (app, mod, code) => {
-    return `
+  return `
     <div class="add-users-container saito-modal saito-modal-add-contact">
-    <div class="saito-modal-title">Your call is ready</div>
+    <div class="saito-modal-title">Copy Video Chat Invitation Link</div>
     <div class="saito-modal-content">
      <div class="add-users-container">
-      <h4 class="add-users-header"> Share this call code with others you want in the call </h4>
-      <div class="add-users-code-container"> <span> ${code} </span> <i class="fas fa-copy"> </i> </div>
+      <h4 class="add-users-header"> Share this call link with others you want in the call </h4>
+      <div class="add-users-code-container"> <span> ${code.slice(0, 30)}... </span> <i class="fas fa-copy"> </i> </div>
       <p class="add-users-footer-text"> Joined as ${app.wallet.returnPublicKey()} </p>
       </div>
     </div>
