@@ -109,6 +109,10 @@ class VideoChatManager {
         const current_url = window.location.toString();
         const myurl = new URL(current_url);
         this.room_link = `${myurl}?stun_video_chat=${base64obj}`;
+        this.addUsersManager.code = this.room_link;
+        if (document.querySelector('.add-users-code-container span')) {
+            document.querySelector('.add-users-code-container span').textContent = this.room_link.slice(0, 30);
+        }
     }
 
     show(app, mod) {
