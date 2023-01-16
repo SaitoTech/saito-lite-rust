@@ -18,7 +18,7 @@ class AddUsers {
     attachEvents() {
         document.querySelector('.add-users-code-container .fa-copy').onclick = async (e) => {
             navigator.clipboard.writeText(this.code)
-            salert("Code copied to clipboard")
+            salert("Link copied to clipboard")
         }
     }
 

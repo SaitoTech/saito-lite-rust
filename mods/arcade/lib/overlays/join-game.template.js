@@ -54,7 +54,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite_tx) => {
 	      </div>
 	    <div class="saito-table">
 
-			  <div class="saito-table-body">
+			  <div class="saito-table-body arcade-overlay-game-options">
 	`;			
 
  	for (const key in options) {

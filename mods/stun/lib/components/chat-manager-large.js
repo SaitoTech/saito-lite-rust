@@ -28,19 +28,23 @@ class VideoChatManager {
         this.app.connection.on('render-local-stream-request', (localStream, ui_type) => {
             if (ui_type !== "large") return
             this.renderLocalStream(localStream)
+            this.updateRoomLink()
         })
         this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
             if (ui_type !== "large") return
             this.addRemoteStream(peer, remoteStream, pc)
+            this.updateRoomLink()
         });
         this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
             if (ui_type !== "large") return
             this.renderRemoteStreamPlaceholder(peer);
+            this.updateRoomLink()
         });
 
         this.app.connection.on('change-connection-state-request', (peer, state, ui_type) => {
             if (ui_type !== "large") return
             this.updateConnectionState(peer, state)
+            this.updateRoomLink()
         })
     }
 
@@ -62,8 +66,7 @@ class VideoChatManager {
         let add_users = document.querySelector('.add_users')
         if (add_users) {
             add_users.addEventListener('click', (e) => {
-                // this.toggleAudio();
-                this.addUsersManager.render(this.room_code);
+                this.addUsersManager.render(this.room_link);
             })
         }
         document.querySelector('.audio_control').addEventListener('click', (e) => {
@@ -87,6 +90,29 @@ class VideoChatManager {
 
 
         })
+    }
+
+    updateRoomLink() {
+        let public_keys = []
+        for (let i in this.video_boxes) {
+            if (i === "local") {
+                public_keys.push(this.app.wallet.returnPublicKey())
+            } else {
+                public_keys.push(i);
+            }
+        }
+        let obj = {
+            room_id: this.room_code,
+            public_keys,
+        }
+        let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+        const current_url = window.location.toString();
+        const myurl = new URL(current_url);
+        this.room_link = `${myurl}?stun_video_chat=${base64obj}`;
+        this.addUsersManager.code = this.room_link;
+        if (document.querySelector('.add-users-code-container span')) {
+            document.querySelector('.add-users-code-container span').textContent = this.room_link.slice(0, 30);
+        }
     }
 
     show(app, mod) {

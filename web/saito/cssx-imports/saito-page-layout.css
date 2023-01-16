@@ -125,6 +125,15 @@
   }
 }
 
+.saito-redsquare-actions-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.saito-redsquare-actions-buttons .saito-button-secondary {
+  display: block;
+}
+
 @media screen and (max-width: 768px) {
   .saito-main {
     min-width: 0;

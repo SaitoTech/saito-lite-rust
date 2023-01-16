@@ -3,10 +3,11 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   let email_registered = app.keys.returnEmail(app.wallet.returnPublicKey());
   let identifier_registered = app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
   if (email_registered == "") { email_registered = `<span id="register-email-btn" style="cursor:pointer" class="register-email-btn settings-appspace-link">Register an email address</span>`; }
-  if (identifier_registered == "") { 
+  if (identifier_registered == "") {
     identifier_registered = `
     <span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>
-    `; }
+    `;
+  }
 
   let modules_html = "Wallet Outdated - module selection not supported";
   let modules_html_active = "Wallet Outdated - module selection not supported";
@@ -64,10 +65,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   <div class="settings-appspace">
     <div class="setting-appspace-header">
       <div class="saito-redsquare-actions-buttons">
-        <div class="saito-redsquare-actions-buttons-icon">
-          <i id="action-icon" class="fas fa-plus"></i>
-        </div>
-        <div class="saito-page-header-title">SETTINGS</div>
+        <div class="redsquare-page-header-title">SETTINGS</div>
         <div class="redsquare-actions-container">
           <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
           <div class="saito-button-secondary small"id="restore-account-btn">Restore Wallet</div>

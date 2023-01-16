@@ -69,24 +69,29 @@ class Stun extends ModTemplate {
 
     onPeerHandshakeComplete(app, peer) {
 
-      if (!this.video_chat_loaded) {
+        if (!this.video_chat_loaded) {
 
-        if (app.browser.returnURLParameter("stun_video_chat")) {
-          let obj = JSON.parse(app.crypto.convertBase64ToString(app.browser.returnURLParameter("stun_video_chat")));
-	  // JOIN THE ROOM
+            if (app.browser.returnURLParameter("stun_video_chat")) {
+                let room_obj = JSON.parse(app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat")));
+                console.log(room_obj, 'stun video chat')
+                // JOIN THE ROOM
+                this.styles = [`/${this.returnSlug()}/style.css`,];
+                this.attachStyleSheets();
+                super.render(this.app, this);
+                app.connection.emit('join-direct-room-with-link', room_obj);
+            }
+
+            this.video_chat_loaded = 1;
         }
-
-	this.video_chat_loaded = 1;
-      }
 
     }
 
 
     initialize(app) {
-      super.initialize(app);
-      this.app.connection.on("stun-create-peer-connection", (array_of_publickeys) => {
-	this.createStunConnectionWithPeers(array_of_publickeys);
-      });
+        super.initialize(app);
+        this.app.connection.on("stun-create-peer-connection", (array_of_publickeys) => {
+            this.createStunConnectionWithPeers(array_of_publickeys);
+        });
     }
 
     canRenderInto(qs) {
@@ -1068,24 +1073,26 @@ class Stun extends ModTemplate {
 
 
 
-  showShareLink(room_obj={}) {
+    showShareLink(room_obj = {}) {
 
-    let base64string = this.app.crypto.convertStringToBase64(JSON.stringify(room_obj));
 
-    let inviteLink = window.location.href;
-    if (!inviteLink.includes("#")) { inviteLink += "#"; }
+        let base64string = this.app.crypto.toBase58(JSON.stringify(room_obj));
 
-    if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&stun_video_chat=" + base64string);
-    } else {
-      inviteLink = inviteLink.replace("#", "?stun_video_chat=" + base64string);
+        let inviteLink = window.location.href;
+        if (!inviteLink.includes("#")) { inviteLink += "#"; }
+
+        if (inviteLink.includes("?")) {
+            inviteLink = inviteLink.replace("#", "&stun_video_chat=" + base64string);
+        } else {
+            inviteLink = inviteLink.replace("#", "?stun_video_chat=" + base64string);
+        }
+
+
+        let linkModal = new ChatInvitationLink(this.app, this, inviteLink);
+        linkModal.render();
+
     }
 
-    let linkModal = new ChatInvitationLink(this.app, this, inviteLink);
-    linkModal.render();
-
-  } 
-    
 
 
 }

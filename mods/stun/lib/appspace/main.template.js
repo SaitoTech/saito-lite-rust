@@ -14,7 +14,7 @@ module.exports = StunAppspaceTemplate = () => {
              <input type="text" placeholder="enter code" id="inviteCode" />
             </div>
             <div class="stunx-appspace-create">
-              <div class="saito-button-primary" id="createInvite">Start</div>
+              <div class="saito-button-primary" id="joinInvite">Join</div>
             </div>
           </div>
 

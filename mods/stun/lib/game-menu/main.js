@@ -10,13 +10,18 @@ class StunxGameMenu {
             // this.receiveVideoCall(app, offer_creator, offer);
         })
         this.app.connection.on('game-start-video-call', (peers) => {
-console.log("START VIDEO CALL: " + peers.length);
+            console.log("START VIDEO CALL: " + peers.length);
             this.startVideoCall(peers);
         })
 
         app.connection.on('join-direct-room-with-code', (code) => {
             console.log('app', this.app, 'mod', this.mod)
             this.joinVideoInvite(this.app, code)
+        })
+
+        app.connection.on('join-direct-room-with-link', (room_obj) => {
+            console.log('app', this.app, 'mod', this.mod)
+            this.joinInviteWithLink(this.app, room_obj)
         })
     }
 
@@ -49,6 +54,40 @@ console.log("START VIDEO CALL: " + peers.length);
     }
 
 
+
+    async joinInviteWithLink(app, room_obj) {
+        const mod = app.modules.returnModule('Stun');
+
+        let room_code = room_obj.room_id;
+        let peers_in_room = room_obj.public_keys
+
+        const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        mod.setLocalStream(localStream);
+        let my_public_key = this.app.wallet.returnPublicKey();
+        // add to the room list and save
+        peers_in_room.push(my_public_key);
+        let peer_count = peers_in_room.length;
+
+        let is_max_capacity = false;
+        if (peer_count === 4) {
+            is_max_capacity = true;
+        }
+
+        const data = {
+            peers_in_room: JSON.stringify(peers_in_room),
+            peer_count,
+            is_max_capacity
+        }
+        mod.sendUpdateRoomTransaction(room_code, data);
+        // filter my public key
+        peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
+        mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video");
+        this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
+        this.app.connection.emit('render-local-stream-request', localStream, 'large');
+        peers_in_room.forEach(peer => {
+            this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
+        });
+    }
 
     joinVideoInvite(app, room_code) {
         console.log(room_code)

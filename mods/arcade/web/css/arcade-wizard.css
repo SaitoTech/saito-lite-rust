@@ -305,6 +305,11 @@
   border: 1px solid var(--saito-primary);
 }
 
+.saito-multi-select_btn.showAll > .saito-multi-select_btn_options button { 
+  background-color: var(--saito-primary);
+  color: #fff; 
+}
+
 .saito-multi-btn {
   width: 100%;
   min-height: 4.8rem;

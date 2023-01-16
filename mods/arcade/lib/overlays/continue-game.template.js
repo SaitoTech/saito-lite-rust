@@ -11,6 +11,9 @@ module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
   let desc = "open invitation";
   (invite.desired_opponent_publickeys != null && invite.desired_opponent_publickeys.length > 0) ? 
   desc = 'private invitation' : 'open invitation';
+  (invite.players.length  == invite.players_needed) ? 
+  desc = 'closed invitation' : 'open invitation';
+
 
   let html = `
     <div class="arcade-game-overlay">
