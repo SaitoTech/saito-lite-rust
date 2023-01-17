@@ -22,8 +22,6 @@ class VideoBox {
         this.stream = stream
         console.log(this);
 
-
-
         if (this.stream === null) {
             this.renderPlaceholder();
         }

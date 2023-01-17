@@ -465,6 +465,8 @@ class Stun extends ModTemplate {
 
                         console.log('ui_type ', ui_type, 'public key ', publicKey, "call type", call_type);
 
+                        console.log(remoteStream, pc, publicKey, "This is for the offer creator")
+
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, ui_type, call_type);
 
                     });
@@ -563,7 +565,8 @@ class Stun extends ModTemplate {
 
 
     acceptMediaConnectionOffer(app, offer_creator, offer) {
-        this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, offer.ui_type, offer.call_type);
+        console.log('rendering remote stream place holder');
+        this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, offer.ui_type);
         const createPeerConnection = async () => {
             let reply = {
                 answer: "",
@@ -855,12 +858,13 @@ class Stun extends ModTemplate {
 
 
     acceptMediaOfferAndBroadcastAnswer(app, offer_creator, offer) {
+
         console.log('accepting offer');
         console.log('from:', offer_creator, offer);
-        if (offer.ui_type == "small") {
-            this.app.connection.emit('game-receive-video-call', app, offer_creator, offer);
-            return;
-        }
+        // if (offer.ui_type == "small") {
+        //     this.app.connection.emit('game-receive-video-call', app, offer_creator, offer);
+        //     return;
+        // }
 
         if (offer.ui_type == "large") {
             this.acceptMediaConnectionOffer(app, offer_creator, offer);
@@ -872,6 +876,8 @@ class Stun extends ModTemplate {
 
 
     }
+
+
 
     acceptStunOfferAndBroadcastAnswer(app, offer_creator, offer) {
         console.log('accepting offer');

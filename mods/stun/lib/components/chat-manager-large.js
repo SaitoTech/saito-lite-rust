@@ -20,9 +20,9 @@ class VideoChatManager {
 
         this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code) => {
             if (ui_type !== "large") return
-            this.call_type = call_type
+            this.call_type = "Video"
             this.room_code = room_code
-            this.ui_type = ui_type;
+            this.ui_type = "large";
             this.show(app, mod);
         })
         this.app.connection.on('render-local-stream-request', (localStream, ui_type) => {
@@ -33,18 +33,18 @@ class VideoChatManager {
         this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
             if (ui_type !== "large") return
             this.addRemoteStream(peer, remoteStream, pc)
-            this.updateRoomLink()
+            // this.updateRoomLink()
         });
         this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
             if (ui_type !== "large") return
             this.renderRemoteStreamPlaceholder(peer);
-            this.updateRoomLink()
+            // this.updateRoomLink()
         });
 
         this.app.connection.on('change-connection-state-request', (peer, state, ui_type) => {
             if (ui_type !== "large") return
             this.updateConnectionState(peer, state)
-            this.updateRoomLink()
+            // this.updateRoomLink()
         })
     }
 
