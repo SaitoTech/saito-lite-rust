@@ -17,7 +17,7 @@
     height: 100%;
     top: 5.5rem;
     left: 3.5rem;
-    border: 0.25rem solid var(--saito-font-color-inverse);
+    border-left: 5px dotted var(--saito-border-color);
     z-index: 50;
 }
 .tweet.has-reply-disconnected::after {
