@@ -20,12 +20,12 @@
   height: 66rem;
   width: 44rem;
   border-radius: 0.5rem;
-  z-index: 1000;
+  z-index: 9;
   position: fixed;
   bottom: 0px;
   right: 0px;
   border: 1px solid var(--saito-border-color);
-  background: var(--saito-white);
+  background: var(--saito-background-color);
   color: var(--saito-font-color);
 }
 
@@ -34,7 +34,7 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--saito-border-color);
-  background: var(--saito-gray-transparent);
+  background: var(--saito-background-light);
   cursor: grab;
   height: 4.5rem;
   font-size: 2rem;
