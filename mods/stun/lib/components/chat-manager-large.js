@@ -20,7 +20,7 @@ class VideoChatManager {
 
         this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code) => {
             if (ui_type !== "large") return
-            this.call_type = "Video"
+            this.call_type = "video"
             this.room_code = room_code
             this.ui_type = "large";
             this.show(app, mod);

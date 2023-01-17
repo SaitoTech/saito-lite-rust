@@ -34,19 +34,19 @@ class StunxGameMenu {
 
         let callback = async function (app, mod, roomCode) {
             app.connection.emit('join-direct-room-with-code', roomCode);
-            let newtx = app.wallet.createUnsignedTransaction();
-            peers.forEach(peer => {
-                newtx.transaction.to.push(new saito.default.slip(peer))
-            })
+            // let newtx = app.wallet.createUnsignedTransaction();
+            // peers.forEach(peer => {
+            //     newtx.transaction.to.push(new saito.default.slip(peer))
+            // })
 
-            newtx.msg.module = "Stun";
-            newtx.msg.request = "receive room code"
-            newtx.msg.data = {
-                roomCode,
-                creator: app.wallet.returnPublicKey()
+            // newtx.msg.module = "Stun";
+            // newtx.msg.request = "receive room code"
+            // newtx.msg.data = {
+            //     roomCode,
+            //     creator: app.wallet.returnPublicKey()
 
-            };
-            newtx = app.wallet.signTransaction(newtx);
+            // };
+            // newtx = app.wallet.signTransaction(newtx);
             app.network.propagateTransaction(newtx)
             // console.log('sending room code')
         }
