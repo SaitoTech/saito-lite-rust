@@ -179,10 +179,9 @@ class VideoChatManager {
 
 
     renderRemoteStreamPlaceholder(peer) {
-        if (!this.video_boxes[peer]) {
-            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
-            this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
-        }
+        const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
+        this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
+
         this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper');
     }
 

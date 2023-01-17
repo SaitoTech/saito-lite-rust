@@ -622,6 +622,7 @@ class Stun extends ModTemplate {
                 const localStream = this.localStream;
                 localStream.getTracks().forEach(track => {
                     pc.addTrack(track, localStream);
+                    console.log('adding local stream to track')
                 });
 
                 const remoteStream = new MediaStream();
@@ -630,9 +631,7 @@ class Stun extends ModTemplate {
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
                     });
-
                     this.app.connection.emit('add-remote-stream-request', offer_creator, remoteStream, pc, offer.ui_type);
-
 
                 });
                 await pc.setRemoteDescription(offer.offer_sdp);
@@ -961,7 +960,7 @@ class Stun extends ModTemplate {
             const reply = tx.msg.answer.reply;
             if (stunx_self.peer_connections[tx.msg.answer.answer_creator]) {
                 stunx_self.peer_connections[tx.msg.answer.answer_creator].setRemoteDescription(reply.answer).then(result => {
-                    console.log('setting remote description of ', stunx_self.peer_connections[tx.msg.answer.answer_creator]);
+                    console.log('setting remote description of ', stunx_self.peer_connections[tx.msg.answer.answer_creator], 'reply ', reply);
 
                 }).catch(error => console.log(" An error occured with setting remote description for :", stunx_self.peer_connections[tx.msg.answer.answer_creator], error));
                 if (reply.ice_candidates.length > 0) {
