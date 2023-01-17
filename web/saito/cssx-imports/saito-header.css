@@ -160,6 +160,7 @@
   padding: 1.5rem 0;
   font-size: 1.1rem;
   overflow: auto;
+  padding-bottom: 0.5rem;
 }
 
 .saito-header-menu-section li i {

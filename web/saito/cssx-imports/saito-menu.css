@@ -68,3 +68,33 @@
 .saito-menu li:hover i::before {
   -webkit-text-stroke: var(--saito-background-color) 1px;
 }
+
+
+@media screen and (max-width: 768px) {
+
+    .saito-menu > ul {
+        padding: 0;
+        list-style-type: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .saito-menu > ul  > li {
+        display: block;
+    }
+
+    .saito-menu > ul > li > i {
+        font-size: 2.8rem !important;
+        margin-bottom: 0.5rem;
+        width: 100% !important;
+        text-align: center;
+        padding: 0rem;
+    }
+
+    .saito-menu > ul > li > i + span {
+        margin: auto;
+        display: block;
+        text-align: center;
+        font-size: 1.5rem;
+    }
+}
