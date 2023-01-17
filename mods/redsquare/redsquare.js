@@ -449,6 +449,7 @@ class RedSquare extends ModTemplate {
       // if this is a like, we can avoid adding it to our tweet index
       //
       let txmsg = tx.returnMessage();
+console.log("ADDING: " + txmsg.request);
       if (txmsg.request === "like tweet") {
         return;
       }
