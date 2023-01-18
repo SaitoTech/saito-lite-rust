@@ -36,20 +36,6 @@
   .redsquare-page-header-title {
     font-size: 2rem;
   }
-  /*
-  .redsquare-actions-container {
-    position: fixed;
-    bottom: 7rem;
-    left: 0;
-    right: unset;
-    width: 100vw;
-    display: none;
-    background: var(--saito-dark-shim);
-    grid-template-columns: 1fr;
-    grid-gap: 1rem;
-    padding: 1rem;
-    z-index: 2;
-  } */
   div#redsquare-tweet {
     content: "\002B";
     border-radius: 50%;
@@ -71,7 +57,7 @@
     left: 0;
     line-height: 5rem;
     width: 4.7rem;
-}
+  }
   div#redsquare-profile {
     display: none;
   }

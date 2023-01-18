@@ -53,7 +53,7 @@ module.exports = (app, mod) => {
 
 
 </body>
-<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+
 <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 
 <style>

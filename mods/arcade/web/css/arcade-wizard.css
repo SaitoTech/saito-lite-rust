@@ -176,7 +176,7 @@
   background: transparent;
   border: 1px solid var(--saito-primary);
   color: var(--saito-white);
-  font-size: 2.5rem;
+  font-size: 2rem;
   appearance: none;
   padding: 0 1rem;
 }
@@ -284,7 +284,7 @@
   border-radius: 0;
   min-height: 4.8rem;
   margin-bottom: 0.2rem;
-  font-size: 2.5rem;
+  font-size: 2rem;
 }
 
 .saito-multi-select_btn.showAll {
@@ -313,7 +313,6 @@
 .saito-multi-btn {
   width: 100%;
   min-height: 4.8rem;
-  font-weight: bold;
   margin: 0.1rem;
   color: var(--saito-white);
 }
