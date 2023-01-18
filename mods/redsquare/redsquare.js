@@ -141,9 +141,11 @@ class RedSquare extends ModTemplate {
     // fetch content from local archive
     //
     this.tweets_last_viewed_ts = new Date().getTime();
-    app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
-      for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
-    });
+    //app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
+    //  for (let i = 0; i < txs.length; i++) { this.addTweet(tx); 
+//	break;
+//	}
+//    });
 
   }
 
@@ -340,6 +342,8 @@ class RedSquare extends ModTemplate {
       for (let i = 0; i < txs.length; i++) {
         txs[i].decryptMessage(this.app);
         this.addTweet(txs[i]);
+break;
+
       }
       if (post_load_callback != null) { post_load_callback(); }
     });
@@ -421,35 +425,40 @@ class RedSquare extends ModTemplate {
     //
     // maybe this needs to go into notifications too
     //
-    if (tx.isTo(this.app.wallet.returnPublicKey()) && !tx.isFrom(this.app.wallet.returnPublicKey())) {
+    if (tx.isTo(this.app.wallet.returnPublicKey())) {
 
-      let insertion_index = 0;
-      if (prepend == 0) {
-        for (let i = 0; i < this.notifications.length; i++) {
-          if (this.notifications[i].updated_at > tweet.updated_at) {
-            insertion_index++;
-            break;
-          } else {
-            insertion_index++;
+      //
+      // notify of other people's actions, but not ours
+      //
+      if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
+
+        let insertion_index = 0;
+        if (prepend == 0) {
+          for (let i = 0; i < this.notifications.length; i++) {
+            if (this.notifications[i].updated_at > tweet.updated_at) {
+              insertion_index++;
+              break;
+            } else {
+              insertion_index++;
+            }
           }
         }
+
+        this.notifications.splice(insertion_index, 0, tweet);
+        this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
+
+        //
+        // increment notifications in menu unless is our own
+        //
+        if (tx.transaction.ts > this.notifications_last_viewed_ts) {
+          this.menu.incrementNotifications("notifications");
+        }
+
       }
-
-      this.notifications.splice(insertion_index, 0, tweet);
-      this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
-
-      //
-      // increment notifications in menu unless is our own
-      //
-      if (tx.transaction.ts > this.notifications_last_viewed_ts) {
-        this.menu.incrementNotifications("notifications");
-      }
-
       //
       // if this is a like, we can avoid adding it to our tweet index
       //
       let txmsg = tx.returnMessage();
-console.log("ADDING: " + txmsg.request);
       if (txmsg.request === "like tweet") {
         return;
       }

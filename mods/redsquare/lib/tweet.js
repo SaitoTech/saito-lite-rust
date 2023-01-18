@@ -38,6 +38,7 @@ class Tweet {
     this.link_properties = null;
     this.show_controls = 1;
     this.is_long_tweet = false;
+    this.is_retweet = false;
     this.setKeys(tx.msg.data);
     this.setKeys(tx.optional);
 
@@ -46,9 +47,11 @@ class Tweet {
     //
     // create retweet if exists
     //
-    if (this.retweet != null) {
+    if (this.retweet_tx != null) {
       let newtx = new saito.default.transaction(JSON.parse(this.retweet_tx));
       this.retweet = new Tweet(this.app, this.mod, `.tweet-preview-${this.tx.transaction.sig}`, newtx);
+      this.retweet.is_retweet = true;
+      this.retweet.show_controls = 0;
     } else {
       //
       // create image preview if exists
@@ -70,11 +73,30 @@ class Tweet {
   render(prepend=false) {
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
+    let replace_existing_element = true;
 
     //
-    // replace or add
+    // retweets displayed in container even if master exists elsewhere on page
     //
-    if (document.querySelector(myqs)) {
+    if (this.is_retweet) { 
+      myqs = this.container;
+      replace_existing_element = true;
+    } else {
+
+      //
+      // this isn't retweet, but if the original exists, we want to ignore
+      // it unless it is parent-level (top thread).
+      //
+      if (document.querySelector(myqs)) {
+        let obj = document.querySelector(myqs);
+        let parent = obj.parentElement;
+        if (parent.classList.contains("tweet-main")) {
+          replace_existing_element = false;
+        }
+      }
+    }
+
+    if (replace_existing_element && document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
       if (prepend == true) {
@@ -214,9 +236,9 @@ class Tweet {
 
     try {
 
-      // /////////////////
-      // // Expand and Contract long tweet //
-      // /////////////////
+      /////////////////////////////
+      // Expand / Contract Tweet //
+      /////////////////////////////
       {
         let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
         if (el.clientHeight < el.scrollHeight) {
@@ -291,8 +313,11 @@ class Tweet {
         if (tweet_sig != null) {
 
           let post = new Post(this.app, this.mod, this);
-          post.parent_id = tweet_sig;
-          post.source = 'Retweet / Share';
+	  //
+	  // retweets do not have parent_id -- new thread
+	  //
+          //post.parent_id = tweet_sig;
+          post.source = 'Retweet';
           post.render();
           this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".tweet-overlay");
 

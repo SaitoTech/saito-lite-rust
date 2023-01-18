@@ -16,7 +16,8 @@ module.exports = (app, mod, tweet) => {
   let parent_id = optional.parent_id || "";
   let dt = app.browser.formatDate(tweet.tx.transaction.ts);
   let show_controls = tweet.show_controls;
-  
+  let sig_class = "tweet-"+tweet.tx.transaction.sig;
+ 
   if (text == "" && tweet.retweet_tx != "" && notice == "") {
     //
     // set notice
@@ -40,8 +41,10 @@ module.exports = (app, mod, tweet) => {
                 <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
               </div>`;
 
+console.log("SHOW CONTROLS? " + show_controls);
+
   return `
-        <div class="tweet tweet-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
+        <div class="tweet ${sig_class}" data-id="${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header">
 
@@ -53,7 +56,7 @@ module.exports = (app, mod, tweet) => {
             </div>
             <div class="tweet-main">
               <div class="tweet-text">${app.browser.sanitize(text)}</div>
-              <div class="tweet-preview tweet-previous-${tweet.tx.transaction.sig}">
+              <div class="tweet-preview tweet-preview-${tweet.tx.transaction.sig}">
 
               </div>
 
