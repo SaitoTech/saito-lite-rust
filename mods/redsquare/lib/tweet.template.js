@@ -17,7 +17,6 @@ module.exports = (app, mod, tweet) => {
   let dt = app.browser.formatDate(tweet.tx.transaction.ts);
   let show_controls = tweet.show_controls;
   let sig_class = "tweet-"+tweet.tx.transaction.sig;
-  if (tweet.is_retweet) { sig_class = " tweet-preview-"+tweet.tx.transaction.sig; }
  
   if (text == "" && tweet.retweet_tx != "" && notice == "") {
     //
