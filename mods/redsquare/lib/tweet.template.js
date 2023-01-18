@@ -40,6 +40,8 @@ module.exports = (app, mod, tweet) => {
                 <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
               </div>`;
 
+console.log("SHOW CONTROLS? " + show_controls);
+
   return `
         <div class="tweet tweet-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>
@@ -53,7 +55,7 @@ module.exports = (app, mod, tweet) => {
             </div>
             <div class="tweet-main">
               <div class="tweet-text">${app.browser.sanitize(text)}</div>
-              <div class="tweet-preview tweet-previous-${tweet.tx.transaction.sig}">
+              <div class="tweet-preview tweet-preview-${tweet.tx.transaction.sig}">
 
               </div>
 

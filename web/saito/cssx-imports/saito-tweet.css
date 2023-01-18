@@ -6,6 +6,12 @@
   position: relative;
 }
 
+.tweet-main .tweet {
+  border-bottom: 0px;
+  border-top: 0px;
+  padding-top: 0px;
+}
+
 .tweet.has-reply {
   border-bottom: none;
 }

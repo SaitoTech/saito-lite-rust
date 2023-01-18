@@ -141,9 +141,11 @@ class RedSquare extends ModTemplate {
     // fetch content from local archive
     //
     this.tweets_last_viewed_ts = new Date().getTime();
-    app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
-      for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
-    });
+    //app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
+    //  for (let i = 0; i < txs.length; i++) { this.addTweet(tx); 
+//	break;
+//	}
+//    });
 
   }
 
@@ -340,6 +342,8 @@ class RedSquare extends ModTemplate {
       for (let i = 0; i < txs.length; i++) {
         txs[i].decryptMessage(this.app);
         this.addTweet(txs[i]);
+break;
+
       }
       if (post_load_callback != null) { post_load_callback(); }
     });
@@ -455,7 +459,6 @@ class RedSquare extends ModTemplate {
       // if this is a like, we can avoid adding it to our tweet index
       //
       let txmsg = tx.returnMessage();
-console.log("ADDING: " + txmsg.request);
       if (txmsg.request === "like tweet") {
         return;
       }
@@ -686,13 +689,9 @@ console.log("ADDING: " + txmsg.request);
           if (!tx.optional) { tx.optional = {}; }
           if (!tx.optional.num_likes) { tx.optional.num_likes = 0; }
           tx.optional.num_likes++;
-
-console.log("UPDATING NUM LIKES: " + tx.optional.num_likes);
-
           this.app.storage.updateTransactionOptional(txmsg.data.sig, app.wallet.returnPublicKey(), tx.optional);
           tweet.renderLikes();
         } else {
-console.log("BLIND TX OPTIONAL VALUE UPDATE");
           this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_likes");
         }
 
@@ -760,7 +759,6 @@ console.log("BLIND TX OPTIONAL VALUE UPDATE");
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
 
-console.log("SAVING IN RECEIVE TWEET");
         this.app.storage.saveTransaction(tx);
         let txmsg = tx.returnMessage();
 

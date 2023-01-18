@@ -126,7 +126,7 @@ class Post {
         data = { text: text, parent_id: parent_id, thread_id: thread_id };
       }
 
-      if (source == 'Retweet / Share') {
+      if (source == 'Retweet') {
         data.retweet_tx = JSON.stringify(post_self.tweet.tx.transaction);
       }
 

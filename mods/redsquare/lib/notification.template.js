@@ -29,7 +29,7 @@ module.exports = (app, tweet) => {
             </div>
             <div class="tweet-main">
               <div class="tweet-text">${text}</div>
-              <div class="tweet-preview tweet-previous-${tweet.tx.transaction.sig}"></div>
+              <div class="tweet-preview tweet-preview-${tweet.tx.transaction.sig}"></div>
             </div>
           </div>
         </div>
