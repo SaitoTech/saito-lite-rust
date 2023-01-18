@@ -421,30 +421,36 @@ class RedSquare extends ModTemplate {
     //
     // maybe this needs to go into notifications too
     //
-    if (tx.isTo(this.app.wallet.returnPublicKey()) && !tx.isFrom(this.app.wallet.returnPublicKey())) {
+    if (tx.isTo(this.app.wallet.returnPublicKey())) {
 
-      let insertion_index = 0;
-      if (prepend == 0) {
-        for (let i = 0; i < this.notifications.length; i++) {
-          if (this.notifications[i].updated_at > tweet.updated_at) {
-            insertion_index++;
-            break;
-          } else {
-            insertion_index++;
+      //
+      // notify of other people's actions, but not ours
+      //
+      if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
+
+        let insertion_index = 0;
+        if (prepend == 0) {
+          for (let i = 0; i < this.notifications.length; i++) {
+            if (this.notifications[i].updated_at > tweet.updated_at) {
+              insertion_index++;
+              break;
+            } else {
+              insertion_index++;
+            }
           }
         }
+
+        this.notifications.splice(insertion_index, 0, tweet);
+        this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
+
+        //
+        // increment notifications in menu unless is our own
+        //
+        if (tx.transaction.ts > this.notifications_last_viewed_ts) {
+          this.menu.incrementNotifications("notifications");
+        }
+
       }
-
-      this.notifications.splice(insertion_index, 0, tweet);
-      this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
-
-      //
-      // increment notifications in menu unless is our own
-      //
-      if (tx.transaction.ts > this.notifications_last_viewed_ts) {
-        this.menu.incrementNotifications("notifications");
-      }
-
       //
       // if this is a like, we can avoid adding it to our tweet index
       //
@@ -680,9 +686,13 @@ console.log("ADDING: " + txmsg.request);
           if (!tx.optional) { tx.optional = {}; }
           if (!tx.optional.num_likes) { tx.optional.num_likes = 0; }
           tx.optional.num_likes++;
+
+console.log("UPDATING NUM LIKES: " + tx.optional.num_likes);
+
           this.app.storage.updateTransactionOptional(txmsg.data.sig, app.wallet.returnPublicKey(), tx.optional);
           tweet.renderLikes();
         } else {
+console.log("BLIND TX OPTIONAL VALUE UPDATE");
           this.app.storage.incrementTransactionOptionalValue(txmsg.data.sig, "num_likes");
         }
 
@@ -750,6 +760,7 @@ console.log("ADDING: " + txmsg.request);
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
 
+console.log("SAVING IN RECEIVE TWEET");
         this.app.storage.saveTransaction(tx);
         let txmsg = tx.returnMessage();
 

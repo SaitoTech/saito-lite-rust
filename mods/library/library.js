@@ -79,11 +79,11 @@ class Library extends ModTemplate {
     //
     app.connection.on("save-transaction", function (tx) {
 
-console.log("---------------------");
-console.log("---------------------");
-console.log("IN LIBRARY ON SAVE TX");
-console.log("---------------------");
-console.log("---------------------");
+//console.log("---------------------");
+//console.log("---------------------");
+//console.log("IN LIBRARY ON SAVE TX");
+//console.log("---------------------");
+//console.log("---------------------");
 
       //
       // library exists?
