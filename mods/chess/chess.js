@@ -20,6 +20,7 @@ class Chessgame extends GameTemplate {
     this.engine = null;
     this_chess = this;
     this.publickey = app.wallet.returnPublicKey();
+    this.icon = "fa-sharp fa-solid fa-chess";
 
     this.minPlayers = 2;
     this.maxPlayers = 2;
@@ -31,6 +32,24 @@ class Chessgame extends GameTemplate {
     this.app = app;
     return this;
 
+  }
+
+  //
+  // flexible inter-module-communications
+  //
+  respondTo(type = "") {
+    if (type === 'saito-header') {
+      return [{
+        text: this.name,
+        icon: this.icon,
+        allowed_mods: ["arcade"],
+        callback: function (app) {
+          window.location = "/redsquare#wallet";
+        }
+      }]
+    }
+
+    return null;
   }
 
 

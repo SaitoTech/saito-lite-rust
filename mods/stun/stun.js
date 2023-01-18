@@ -123,6 +123,17 @@ class Stun extends ModTemplate {
             return new StunxAppspace(this.app, this);
         }
 
+        if (type === 'saito-header') {
+          return {
+            text: this.appname,
+            icon: this.icon,
+            allowed_mods: ["redsquare"],
+            callback: function (app) {
+              window.location = "/redsquare#wallet";
+            }
+          }
+        }
+
         if (type == "game-menu") {
             this.styles = [`/${this.returnSlug()}/css/style.css`,];
             super.render(this.app, this);
