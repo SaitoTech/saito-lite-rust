@@ -23,7 +23,7 @@
 .slider-button {
     font-size: 3.5rem;
     position: absolute;
-    bottom: 1rem;
+    bottom: 0.5rem;
     background-color: var(--unhover-background-color);
     color: var(--saito-white);
     z-index: 10;
@@ -32,6 +32,7 @@
     line-height: 2rem;
     border: 1px solid var(--saito-white);
     width: 4rem;
+    transform: scale(0.75);
 }
 
 .slider-button-prev {
