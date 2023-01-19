@@ -2,41 +2,33 @@
   background: var(--saito-arcade-background);
   width: 90vw;
   height: max-content;
-  max-height: 90vh;
   max-width: 140rem;
   border-radius: 0.5rem;
-  overflow-y: scroll;
 }
+
 .league-overlay {
-  padding: 2rem;
-  display: grid;
-  grid-template-rows: 7rem max-content 7rem;
-  grid-gap: 1rem;
-  overflow-y: scroll;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  grid-gap: 2rem;
+}
+
+.league-overlay>div {
+  margin: 0 1rem;
 }
 
 .league-overlay-controls button {
-    line-height: 4.5rem;
-    width: 20rem;
-    font-size: 2.2rem;
-    margin: 0;
-    float: right;
-    margin-right: 1rem;
-}
-.league-overlay-controls {
-    height: 7rem;
-    justify-self: flex-start;
-    position: fixed;
-    bottom: 0rem;
-    float: right;
-    width: 100%;
-    display: block;
-    float: right;
-    margin-left: auto;
-    padding-right: 2rem;
-    margin-bottom: 1rem;
+  line-height: 4.5rem;
+  width: 20rem;
+  font-size: 2.2rem;
+  margin: 0;
 }
 
+.league-overlay-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+}
 
 .league-overlay-header {
   display: flex;
@@ -59,11 +51,11 @@
 }
 
 .league-overlay-body>div {
-  overflow-y: auto;
   box-shadow: var(--saito-box-shadow) var(--saito-border-color);
   padding: 2rem;
   border-radius: 0.5rem;
-  max-height: calc(90vh -30rem);
+  max-height: calc(90vh - 22rem);
+  overflow-y: auto;
 }
 
 .league-overlay-header-image {
@@ -83,4 +75,21 @@
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
+}
+
+@media screen and (max-width: 1000px) { 
+  .league-overlay-body {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2rem;
+    max-height: calc(95vh - 22rem);
+    overflow-y: auto;
+    margin: 0 !important;
+    padding: 1px 1rem;
+  }
+
+  .league-overlay-body>div {
+    max-height: unset;
+    overflow-y: unset;
+  }
 }

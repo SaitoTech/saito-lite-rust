@@ -19,9 +19,9 @@ body {
 }
 
 .arcade-main {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
 }
 
 button, .saito-button-primary, .saito-button-secondary:hover {
@@ -42,4 +42,8 @@ button, .saito-button-primary, .saito-button-secondary:hover {
   margin-left: 50%;
   transform: translateX(-50%);
   margin-top: 3rem;
+}
+
+.arcade-central-panel h5 {
+  margin: 0 0 -1rem 0;
 }

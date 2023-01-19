@@ -17,6 +17,7 @@ class Poker extends GameTableTemplate {
       "Texas Hold'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory?";
     this.categories = "Games Cardgame Casino";
     this.card_img_dir = "/poker/img/cards";
+    this.icon = "fa-solid fa-diamond";
 
     this.minPlayers = 2;
     this.maxPlayers = 6;
@@ -29,12 +30,22 @@ class Poker extends GameTableTemplate {
 
   }
 
-  // Opt out of letting League create a default
-  respondTo(type){
-    //if (type == "default-league") {
-    //  return null;
-    //}
-    return super.respondTo(type);
+  //
+  // flexible inter-module-communications
+  //
+  respondTo(type = "") {
+    if (type === 'saito-header') {
+      return [{
+        text: this.name,
+        icon: this.icon,
+        allowed_mods: ["arcade"],
+        callback: function (app) {
+          window.location = "/redsquare#wallet";
+        }
+      }]
+    }
+
+    return null;
   }
 
 

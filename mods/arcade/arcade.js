@@ -389,6 +389,16 @@ alert("Observer Overlay for URL Games not yet implemented");
         }
       }
     }
+    if (type === 'saito-header') {
+      return [{
+        text: "Games",
+        icon: "fas fa-gamepad",
+        allowed_mods: ["redsquare"],
+        callback: function (app) {
+          window.location = "/arcade";
+        }
+      }]
+    }
 
     return null;
   }

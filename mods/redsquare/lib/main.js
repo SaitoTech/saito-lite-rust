@@ -127,7 +127,7 @@ class RedSquareMain {
     var stop = 0;
 
     scrollableElement.addEventListener("scroll", (e) => {
-      if (window.innerHeight - 100 < sidebar.clientHeight) {
+      if (window.innerHeight - 150 < sidebar.clientHeight) {
         if (scrollTop < scrollableElement.scrollTop) {
           stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
           if (scrollableElement.scrollTop + window.innerHeight > sidebar.clientHeight) {

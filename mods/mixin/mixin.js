@@ -70,7 +70,23 @@ class Mixin extends ModTemplate {
   }
 
 
+  //
+  // flexible inter-module-communications
+  //
+  respondTo(type = "") {
+    if (type === 'saito-header') {
+      return [{
+        text: "Wallet",
+        icon: this.icon,
+        allowed_mods: ["redsquare"],
+        callback: function (app) {
+          window.location = "/redsquare#wallet";
+        }
+      }]
+    }
 
+    return null;
+  }
 
 
   async handlePeerRequest(app, message, peer, mycallback = null) {

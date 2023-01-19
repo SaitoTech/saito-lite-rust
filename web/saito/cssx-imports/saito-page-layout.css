@@ -45,8 +45,7 @@
 }
 
 .saito-sidebar.right {
-  padding-top: 2rem;
-  background-color: var(--saito-background-color);
+  padding: 2rem 0 10rem;
   grid-column-start: 3;
   grid-row: 1/2;
   position: relative;

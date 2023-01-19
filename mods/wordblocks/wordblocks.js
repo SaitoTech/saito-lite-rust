@@ -11,6 +11,7 @@ class Wordblocks extends GameTemplate {
     this.mydeck = {};
     this.score = "";
     this.app = app;
+    this.icon = "fa-solid fa-braille";
 
     this.name = "Wordblocks";
     this.description = `A crossword puzzle game, spell out words on the board to earn points.`;
@@ -36,6 +37,24 @@ class Wordblocks extends GameTemplate {
     this.defaultMsg = `Click on the board to enter a word from that square, click a tile to select it for play, or <span class="link tosstiles" title="Double click tiles to select them for deletion">discard tiles</span> if you cannot move.`;
 
     return this;
+  }
+
+  //
+  // flexible inter-module-communications
+  //
+  respondTo(type = "") {
+    if (type === 'saito-header') {
+      return [{
+        text: this.name,
+        icon: this.icon,
+        allowed_mods: ["arcade"],
+        callback: function (app) {
+          window.location = "/redsquare#wallet";
+        }
+      }]
+    }
+
+    return null;
   }
 
 

@@ -60,8 +60,8 @@ class InviteManager {
 	      }
 
 	      if (this.invites[list].length > 0) {
-    	        if (list === "mine") { this.app.browser.addElementToSelector(`<h5>My Games:</h5>`, ".invite-manager"); }
-    	        if (list === "open") { this.app.browser.addElementToSelector(`<h5>Open Invites:</h5>`, ".invite-manager"); }
+    	        if (list === "mine") { this.app.browser.addElementToSelector(`<h5>My Games</h5>`, ".invite-manager"); }
+    	        if (list === "open") { this.app.browser.addElementToSelector(`<h5>Open Invites</h5>`, ".invite-manager"); }
 	      }
 
 	      for (let i = 0; i < this.invites[list].length; i++) {
