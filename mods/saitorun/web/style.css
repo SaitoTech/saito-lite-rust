@@ -1,0 +1,131 @@
+body {
+  margin: 0;
+  background-image: url('img/background.png');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  /* disable pull to refresh on mobile */
+  overscroll-behavior: contain;
+}
+
+#score-panel {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  float: right;
+}
+
+#score {
+  display: inline;
+  position: absolute;
+  top: 35px;
+  right: 100px;
+  font-size: x-large;
+}
+
+#distance-panel {
+  position: absolute;
+  top: 150px;
+  right: 20px;
+  float: right;
+}
+
+#distance {
+  display: inline;
+  position: absolute;
+  top: 25px;
+  right: 100px;
+  font-size: x-large;
+}
+
+#countdown {
+  font-family: 'RocknRoll One', sans-serif;
+  font-size: 40px;
+  color: white;
+  width: 200px;
+  height: 100px;
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  margin: -100px 0 0 -100px;
+  text-align: center;
+}
+
+#dist,
+#points {
+  width: 80px !important;
+}
+
+@media only screen and (max-width: 600px) {
+  #score-panel {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    float: right;
+  }
+
+  #score {
+    display: inline;
+    position: absolute;
+    top: 12px;
+    right: 50px;
+    font-size: x-large;
+  }
+
+  #distance-panel {
+    position: absolute;
+    top: 110px;
+    right: 20px;
+    float: right;
+  }
+
+  #distance {
+    display: inline;
+    position: absolute;
+    top: 8px;
+    right: 50px;
+    font-size: x-large;
+  }
+
+  #dist,
+  #points {
+    width: 40px !important;
+  }
+}
+
+@media only screen and (max-height: 500px) {
+  #score-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    float: right;
+  }
+
+  #score {
+    display: inline;
+    position: absolute;
+    top: 12px;
+    right: 50px;
+    font-size: x-large;
+  }
+
+  #distance-panel {
+    position: absolute;
+    top: 85px;
+    right: 20px;
+    float: right;
+  }
+
+  #distance {
+    display: inline;
+    position: absolute;
+    top: 8px;
+    right: 50px;
+    font-size: x-large;
+  }
+
+  #dist,
+  #points {
+    width: 40px !important;
+  }
+}
