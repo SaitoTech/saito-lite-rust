@@ -51,12 +51,12 @@
     content: "\002B";
     position: absolute;
     color: var(--saito-font-color);
-    font-size: 6rem;
+    font-size: 5rem;
     text-align: center;
     top: 0;
     left: 0;
     line-height: 5rem;
-    width: 4.7rem;
+    width: 5rem;
   }
   div#redsquare-profile {
     display: none;
