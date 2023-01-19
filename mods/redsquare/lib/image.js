@@ -1,4 +1,4 @@
-const ImageOverlay = require("./appspace/image-overlay");
+const SaitoImageOverlay = require("./../../../lib/saito/ui/saito-image-overlay/saito-image-overlay");
 const RedSquareImageTemplate = require("./image.template");
 
 class RedSquareImage {
@@ -8,18 +8,13 @@ class RedSquareImage {
     this.mod = mod;
     this.container = container;
     this.tweet = tweet;
-    this.name = "RedSquareImage";
-    let txmsg = tweet.tx.msg;
-    this.images = txmsg.data.images || [];
-    this.image_overlay = null;
+    this.images = tweet.tx.msg.data.images || [];
+    this.overlay = new SaitoImageOverlay(this.app, this.mod, this.images);
   }
 
   render() {
 
-    //
-    // replace element or insert into page
-    //
-    let element = "#tweett-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .tweet-picture";
+    let element = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .tweet-picture";
     let template = RedSquareImageTemplate(this.app, this.mod, this.images);
 
     if (document.querySelector(element)) {
@@ -38,26 +33,18 @@ class RedSquareImage {
 
 
   attachEvents() {
-    tweet_self = this;
 
-    ///
-    // view image
-    //
     let sel = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-preview .tweet-picture > img";
-
-    console.log("tweet img id");
-    console.log(sel);
 
     if (document.querySelectorAll(sel)) {
       document.querySelectorAll(sel).forEach(image => {
         image.onclick = (e) => {
-          let image = e.target;
-          
-          tweet_self.image_overlay = new ImageOverlay(this.app, this.mod, image);
-          tweet_self.image_overlay.render();
+          let image_idx = e.currentTarget.getAttribute("data-index");	  
+          this.overlay.render(image_idx);
         }
       });
     }
+
   }
 
 }

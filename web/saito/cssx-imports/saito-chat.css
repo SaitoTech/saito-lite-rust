@@ -27,6 +27,7 @@
   border: 1px solid var(--saito-border-color);
   background: var(--saito-background-color);
   color: var(--saito-font-color);
+  max-height: calc(99vh - var(--saito-header-height));
 }
 
 .chat-header {
@@ -34,7 +35,6 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--saito-border-color);
-  background: var(--saito-background-light);
   cursor: grab;
   height: 4.5rem;
   font-size: 2rem;
@@ -119,4 +119,28 @@
 
 .chat-footer i:hover {
   transform: rotate(45deg);
+}
+
+.dockedLeft {
+  border-left: 3px solid var(--saito-primary)!important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.dockedRight {
+  border-right: 3px solid var(--saito-primary)!important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.dockedTop {
+  border-top: 3px solid var(--saito-primary)!important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+.dockedBottom {
+  border-bottom: 3px solid var(--saito-primary)!important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
 }
