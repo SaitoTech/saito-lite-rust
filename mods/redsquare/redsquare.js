@@ -29,17 +29,8 @@ class RedSquare extends ModTemplate {
     this.tweets_sigs_hmap = {};
     this.unknown_children = [];
 
-    //
-    // track which peers give me content / notifications to 
-    // simplify fetching more content
-    //
-    this.results_per_page = 10;
-    this.results_loaded = false;
-
     this.peers_for_tweets = [];
     this.peers_for_notifications = [];
-    this.increment_for_tweets = 1;
-    this.increment_for_notifications = 1;
     this.notifications = [];
     this.notifications_sigs_hmap = {};
 
@@ -53,6 +44,21 @@ class RedSquare extends ModTemplate {
     //
     this.notifications_last_viewed_ts = 0;
     this.notifications_number_unviewed = 0;
+
+    //
+    // used to fetch more content
+    //
+    this.increment_for_tweets = 1;
+    this.increment_for_notifications = 1;
+    this.results_per_page = 10;
+    this.results_loaded = false;
+    //
+    // tracking timestamps of notifications and tweets (potentially useful)
+    //
+    this.notifications_newest_ts = 0;
+    this.notifications_oldest_ts = new Date().getTime();
+    this.tweets_newest_ts = 0;
+    this.tweets_oldest_ts = new Date().getTime();
 
     this.load_more_tweets = 1;
     this.load_more_notifications = 1;
@@ -159,11 +165,9 @@ class RedSquare extends ModTemplate {
     // fetch content from local archive
     //
     this.tweets_last_viewed_ts = new Date().getTime();
-    //app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
-    //  for (let i = 0; i < txs.length; i++) { this.addTweet(tx); 
-//	break;
-//	}
-//    });
+    app.storage.loadTransactionsFromLocal("RedSquare", (50 * 1), (txs) => {
+      for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
+    });
 
   }
 
@@ -332,7 +336,6 @@ class RedSquare extends ModTemplate {
       });
     }
   }
-
   loadMoreTweets() {
     this.increment_for_tweets++;
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
@@ -360,13 +363,10 @@ class RedSquare extends ModTemplate {
       for (let i = 0; i < txs.length; i++) {
         txs[i].decryptMessage(this.app);
         this.addTweet(txs[i]);
-break;
-
       }
       if (post_load_callback != null) { post_load_callback(); }
     });
   }
-
   loadTweetsFromPeerAndReturn(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
 
     let txs = [];
@@ -439,11 +439,23 @@ break;
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, "", tx);
+    let is_notification = 0;
 
     //
     // maybe this needs to go into notifications too
     //
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
+
+
+      //
+      // this is a notification, so update our timestamps
+      //
+      if (tx.transaction.ts > this.notifications_newest_ts) {
+	this.notifications_newest_ts = tx.transaction.ts;
+      }
+      if (tx.transaction.ts < this.notifications_oldest_ts) {
+	this.notifications_oldest_ts = tx.transaction.ts;
+      }
 
       //
       // notify of other people's actions, but not ours
@@ -462,6 +474,7 @@ break;
           }
         }
 
+        is_notification = 1;
         this.notifications.splice(insertion_index, 0, tweet);
         this.notifications_sigs_hmap[tweet.tx.transaction.sig] = 1;
 
@@ -563,6 +576,18 @@ break;
         this.unknown_children.push(tweet);
       }
 
+    }
+
+    //
+    // this is a tweet, so update our 
+    //
+    if (is_notification == 0) {
+      if (tx.transaction.ts > this.tweets_newest_ts) {
+	this.tweets_newest_ts = tx.transaction.ts;
+      }
+      if (tx.transaction.ts < this.notifications_oldest_ts) {
+	this.tweets_oldest_ts = tx.transaction.ts;
+      }
     }
 
     this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
