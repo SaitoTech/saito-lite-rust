@@ -19,6 +19,7 @@ class RedSquareImageOverlay {
   }
 
   render() {
+
     this_self = this;
     this.overlay.show(RedSquareImageOverlayTemplate(this.app, this.mod));
 
@@ -63,6 +64,7 @@ class RedSquareImageOverlay {
 
 
   attachEvents() {
+
     this_self = this;
     document.getElementById("tweet-img-arrow-box-left").addEventListener('click', function(e){
       this_self.hideAllImgs();
@@ -84,6 +86,35 @@ class RedSquareImageOverlay {
         this_self.checkArrows(img_showing);
       }
     });
+
+    //
+    // keypress events
+    //
+    document.onkeydown = (event) => {
+
+console.log(event.keyCode);
+
+      // left
+      if (event.keyCode === 37) {
+	let obj = document.getElementById("tweet-img-arrow-box-left");
+	if (obj) {
+	  if (obj.style.display != "none") {
+	    document.getElementById("tweet-img-arrow-box-left").click();
+	  }
+	}
+      };
+
+      // right
+      if (event.keyCode === 39) {
+	let obj = document.getElementById("tweet-img-arrow-box-right");
+	if (obj) {
+	  if (obj.style.display != "none") {
+	    document.getElementById("tweet-img-arrow-box-right").click();
+	  }
+	}
+      };
+    };
+
   }
 
   checkArrows(img){
