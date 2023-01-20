@@ -34,24 +34,6 @@ class Chessgame extends GameTemplate {
 
   }
 
-  //
-  // flexible inter-module-communications
-  //
-  respondTo(type = "") {
-    if (type === 'saito-header') {
-      return [{
-        text: this.name,
-        icon: this.icon,
-        allowed_mods: ["arcade"],
-        callback: function (app) {
-          window.location = "/redsquare#wallet";
-        }
-      }]
-    }
-
-    return null;
-  }
-
 
   initializeHTML(app) {
 

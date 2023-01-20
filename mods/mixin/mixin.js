@@ -79,7 +79,7 @@ class Mixin extends ModTemplate {
         text: "Wallet",
         icon: this.icon,
         allowed_mods: ["redsquare"],
-        callback: function (app) {
+        callback: function (app, id) {
           window.location = "/redsquare#wallet";
         }
       }]

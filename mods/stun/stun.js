@@ -136,7 +136,7 @@ class Stun extends ModTemplate {
             text: this.appname,
             icon: this.icon,
             allowed_mods: ["redsquare"],
-            callback: function (app) {
+            callback: function (app, id) {
             }
         }
 
@@ -253,7 +253,7 @@ class Stun extends ModTemplate {
         }
         return null;
     }
-
+    }
 
 
     // callback(this.app, this.mod, roomCode)
