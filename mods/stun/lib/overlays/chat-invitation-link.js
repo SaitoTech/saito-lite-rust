@@ -11,7 +11,7 @@ class ChatInvitationLink {
     }
     
     render() {
-        this.overlay.show(InvitationLinkTemplate(this.app, this.mod, this.link));
+        this.overlay.show(ChatInvitationLinkTemplate(this.app, this.mod, this.link));
         this.attachEvents();
     }
 

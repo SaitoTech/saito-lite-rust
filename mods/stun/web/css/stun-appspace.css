@@ -16,6 +16,8 @@
   padding: 3rem;
 }
 
+
+
 .stunx-appspace-card {
   width: 50%;
   margin-left: 7rem;
@@ -34,6 +36,11 @@
   margin-bottom: 1rem;
   font-size: 2.2rem;
   line-height: 3rem;
+
+}
+
+.stunx-appspace-card > p span {
+  text-decoration: underline;
 }
 
 .stunx-appspace-card .saito-badge {

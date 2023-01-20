@@ -12,6 +12,11 @@ class StunAppspace {
     app.connection.on('join-room-with-code', (code) => {
       this.joinVideoInvite(app, mod, code)
     })
+    app.connection.on('remove-overlay-request', () => {
+      this.overlay.remove();
+    })
+
+
   }
 
   render() {
@@ -52,7 +57,7 @@ class StunAppspace {
 
 
   joinVideoInvite(app, mod, room_code) {
-    this.overlay.remove();
+  
     console.log(room_code)
     if (!room_code) return siteMessage("Please insert a room code", 5000);
     let sql = `SELECT * FROM rooms WHERE room_code = "${room_code}"`;
@@ -95,6 +100,7 @@ class StunAppspace {
         mod.sendUpdateRoomTransaction(room_code, data);
         this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
         this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
+        this.app.connection.emit('remove-overlay-request')
         siteMessage("You are the only participant in this room", 3000);
         return;
 
@@ -119,10 +125,14 @@ class StunAppspace {
         peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
         this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
         this.app.connection.emit('render-local-stream-request', localStream, 'large');
+      
+        this.app.connection.emit('remove-overlay-request')
+
         // peers_in_room.forEach(peer => {
         //   this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
         // });
         mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
+        
     
       }
     }

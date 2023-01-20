@@ -1,7 +1,8 @@
 
 const VideoBox = require('./video-box');
 const ChatManagerLargeTemplate = require('./chat-manager-large.template');
-const AddUsers = require('./add-users');
+
+const ChatInvitationOverlay = require('../overlays/chat-invitation-link');
 class VideoChatManager {
 
     // peers = {};
@@ -19,7 +20,8 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        this.addUsersManager = new AddUsers(app, mod)
+        
+     
 
         this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code) => {
             if (ui_type !== "large") return
@@ -96,7 +98,7 @@ class VideoChatManager {
         let add_users = document.querySelector('.add_users')
         if (add_users) {
             add_users.addEventListener('click', (e) => {
-                this.addUsersManager.render(this.room_link);
+                this.chatInvitationOverlay.render()
             })
         }
         document.querySelector('.audio_control').addEventListener('click', (e) => {
@@ -139,7 +141,8 @@ class VideoChatManager {
         const current_url = window.location.toString();
         const myurl = new URL(current_url);
         this.room_link = `${myurl}?stun_video_chat=${base64obj}`;
-        this.addUsersManager.code = this.room_link;
+        this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link)
+   
         if (document.querySelector('.add-users-code-container span')) {
             document.querySelector('.add-users-code-container span').textContent = this.room_link.slice(0, 30);
         }
