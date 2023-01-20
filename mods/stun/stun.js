@@ -70,7 +70,6 @@ class Stun extends ModTemplate {
     onPeerHandshakeComplete(app, peer) {
 
         if (!this.video_chat_loaded) {
-
             if (app.browser.returnURLParameter("stun_video_chat")) {
                 let room_obj = JSON.parse(app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat")));
                 console.log(room_obj, 'stun video chat')
@@ -78,7 +77,13 @@ class Stun extends ModTemplate {
                 this.styles = [`/${this.returnSlug()}/style.css`,];
                 this.attachStyleSheets();
                 super.render(this.app, this);
-                app.connection.emit('join-direct-room-with-link', room_obj);
+                let interval = setInterval(()=> {
+                    if(document.readyState === "complete"){
+                        app.connection.emit('join-direct-room-with-link', room_obj);
+                        clearInterval(interval)
+                    }
+                },500)
+              
             }
 
             this.video_chat_loaded = 1;
