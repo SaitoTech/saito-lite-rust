@@ -123,6 +123,9 @@ class VideoBox {
             case "twenty_seconds": 
                 document.querySelector('#connection-message').innerHTML = `<p>Adding Ice Candidates</p> <span class='lds-dual-ring'>`
             break
+            case "two_minutes": 
+                document.querySelector('#connection-message').innerHTML = `<p>Connection Failed, Retrying</p> <span class='lds-dual-ring'>`
+            break
 
             default:
                 break;

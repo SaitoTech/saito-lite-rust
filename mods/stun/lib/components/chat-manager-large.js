@@ -335,6 +335,12 @@ class VideoChatManager {
                 if(this.waitSeconds === 20){
                     this.updateConnectionState(peer, 'twenty_seconds')
                 }  
+                if(this.waitSeconds === 120){
+                    this.updateConnectionState(peer, 'two_minutes')
+                }  
+                if(this.waitSeconds === 160){
+                    this.updateConnectionState(peer, 'failed')
+                }  
         }, 1000)
     }
 
