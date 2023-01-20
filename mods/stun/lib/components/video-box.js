@@ -15,7 +15,7 @@ class VideoBox {
         this.call_type = call_type;
     }
 
-    render(stream, streamId, containerClass) {
+    render(stream, streamId, containerClass, placeholder_info) {
         // if (!containerClass) return console.log("Please insert a container class to render the stream");
         this.stream_id = streamId;
         this.containerClass = containerClass;
@@ -23,7 +23,8 @@ class VideoBox {
         console.log(this);
 
         if (this.stream === null) {
-            this.renderPlaceholder();
+            console.log('placeholder ', placeholder_info)
+            this.renderPlaceholder(placeholder_info);
         }
 
         if (this.stream_id === 'local' && stream !== null) {
@@ -52,9 +53,9 @@ class VideoBox {
             if (!document.querySelector(`#stream${this.stream_id}`)) {
                 if (this.containerClass) {
                     this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted, this.ui_type), this.containerClass);
-                } else {
-                    this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, muted, this.ui_type));
-                    this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
+                }
+                else {
+                    return console.log("No container class")
                 }
             }
 
@@ -74,44 +75,54 @@ class VideoBox {
 
     }
 
-    renderPlaceholder() {
+    renderPlaceholder(placeholder_info = "Negotiating Peer connection") {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
             if (this.containerClass) {
                 this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, false, this.ui_type), this.containerClass);
             } else {
-
-                this.app.browser.addElementToDom(videoBoxTemplate(this.stream_id, false, this.ui_type));
-                this.app.browser.makeDraggable(`stream${this.stream_id}`, null, true);
+                return console.log("No container class")
             }
-
 
             // makeDraggable(id_to_move, id_to_drag = "", mycallback = null
         }
         const videoBox = document.querySelector(`#stream${this.stream_id}`);
         if (this.placeholderRendered) return;
-        videoBox.insertAdjacentHTML('beforeend', `<div id="connection-message"> <p> Negotiating Peer Connection </p> <span class="lds-dual-ring"> </span></div> `);
+        videoBox.insertAdjacentHTML('beforeend', `<div id="connection-message"> <p> ${placeholder_info} </p> <span class="lds-dual-ring"> </span></div> `);
         this.placeholderRendered = true
     }
 
 
 
     handleConnectionStateChange(connectionState) {
+        let video_box = document.querySelector(`#stream${this.stream_id}`);
+        if(!video_box) return;
         switch (connectionState) {
             case "connecting":
                 document.querySelector('#connection-message').innerHTML = `<p>Starting ${this.call_type} Chat </p> <span class='lds-dual-ring'>`
                 break;
             case "connected":
                 if (this.stream) {
-                    document.querySelector('#connection-message').parentElement.remove(document.querySelector('#connection-message'));
+                    document.querySelector('#connection-message').parentElement.removeChild(document.querySelector('#connection-message'));
                     this.renderStream({ muted: false });
                 }
                 break;
-            // case "disconnected":
-            //     document.querySelector(`#stream${this.stream_id}`).parentElement.remove(document.querySelector(`#stream${this.stream_id}`));
-            //     break;
-            case "failed":
-                document.querySelector('#connection-message').textContent = `Failed to connect`
+            case "disconnected":
+                console.log(`#stream${this.stream_id}`, "stream id")
+                document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
+                salert("User Disconnected");
                 break;
+            case "failed":
+                if(document.querySelector('#connection-message')){
+                    document.querySelector('#connection-message').textContent = `Failed to connect`
+                    salert("Failed to Connect")
+                }   
+                break;
+            case "ten_seconds": 
+                document.querySelector('#connection-message').innerHTML = `<p>Negotiation Peer Connection</p> <span class='lds-dual-ring'>`
+            break
+            case "twenty_seconds": 
+                document.querySelector('#connection-message').innerHTML = `<p>Adding Ice Candidates</p> <span class='lds-dual-ring'>`
+            break
 
             default:
                 break;
