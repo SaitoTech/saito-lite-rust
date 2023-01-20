@@ -69,6 +69,10 @@
   -webkit-text-stroke: var(--saito-background-color) 1px;
 }
 
+.appspace-menu {
+  display: none;
+}
+
 @media screen and (max-width: 768px) {
   .saito-menu>ul {
     padding: 0;
@@ -91,6 +95,9 @@
     display: block;
     text-align: center;
     font-size: 1.5rem;
+  }
+  .appspace-menu {
+    display: block;
   }
 }
 
