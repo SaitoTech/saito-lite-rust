@@ -214,16 +214,21 @@ class VideoChatManager {
 
 
     renderRemoteStreamPlaceholder(peer, placeholder_info) {
-        const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
-        this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
+        this.createVideoBox(peer)
         this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper', placeholder_info);
+    }
+
+    createVideoBox(peer){
+        if(!this.video_boxes[peer]){
+            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
+            this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
+        }
     }
 
 
     updateConnectionState(peer, state) {
-        if (!this.video_boxes[peer].video_box) {
-            return console.log("An error occured with updating connections state");
-        }
+        this.createVideoBox(peer)
+
         this.video_boxes[peer].video_box.handleConnectionStateChange(state);
 
         switch (state) {
