@@ -241,7 +241,6 @@ class VideoChatManager {
                 console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
-                // start counter
                 this.startTimer();
                 this.updateImages();
                 break;
@@ -293,9 +292,9 @@ class VideoChatManager {
 
 
     startTimer() {
-        if (this.timer_interval) {
-            return;
-        }
+        // if (this.timer_interval) {
+        //     return;
+        // }
         let timerElement = document.querySelector(".stunx-chatbox .counter");
         let seconds = 0;
 
