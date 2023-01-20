@@ -340,6 +340,7 @@ class VideoChatManager {
                 }  
                 if(this.waitSeconds === 160){
                     this.updateConnectionState(peer, 'failed')
+                    clearInterval(this.waitTimer)
                 }  
         }, 1000)
     }

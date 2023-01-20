@@ -77,19 +77,16 @@ class Stun extends ModTemplate {
                 this.styles = [`/${this.returnSlug()}/style.css`,];
                 this.attachStyleSheets();
                 super.render(this.app, this);
-                let interval = setInterval(()=> {
-                    if(document.readyState === "complete"){
-                        app.connection.emit('join-direct-room-with-link', room_obj);
-                        clearInterval(interval)
-                    }
-                },500)
+                        app.connection.emit('join-direct-room-with-link', room_obj);   
+                 }
+            
               
             }
 
             this.video_chat_loaded = 1;
         }
 
-    }
+    
 
 
     initialize(app) {
