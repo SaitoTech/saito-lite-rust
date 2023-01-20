@@ -1,7 +1,8 @@
 
 const VideoBox = require('./video-box');
 const ChatManagerLargeTemplate = require('./chat-manager-large.template');
-const AddUsers = require('./add-users');
+
+const ChatInvitationOverlay = require('../overlays/chat-invitation-link');
 class VideoChatManager {
 
     // peers = {};
@@ -11,12 +12,16 @@ class VideoChatManager {
     video_boxes = {}
     videoEnabled = true;
     audioEnabled = true;
+    isActive = false;
+    waitSeconds=0;
+    waitTimer= null;
 
 
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        this.addUsersManager = new AddUsers(app, mod)
+        
+     
 
         this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code) => {
             if (ui_type !== "large") return
@@ -26,31 +31,58 @@ class VideoChatManager {
             this.show(app, mod);
         })
         this.app.connection.on('render-local-stream-request', (localStream, ui_type) => {
+            if(!this.isActive) return;
             if (ui_type !== "large") return
             this.renderLocalStream(localStream)
             this.updateRoomLink()
         })
         this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
+            if(!this.isActive) return;
             if (ui_type !== "large") return
             this.addRemoteStream(peer, remoteStream, pc)
             // this.updateRoomLink()
         });
         this.app.connection.on('render-remote-stream-placeholder-request', (peer, ui_type) => {
+            if(!this.isActive) return;
             if (ui_type !== "large") return
             this.renderRemoteStreamPlaceholder(peer);
             // this.updateRoomLink()
         });
 
-        this.app.connection.on('change-connection-state-request', (peer, state, ui_type) => {
-            if (ui_type !== "large") return
+        this.app.connection.on('change-connection-state-request', (peer, state, ui_type, call_type, room_code) => {
+            if(!this.isActive) return;
+            if (ui_type !== "large" || this.room_code !== room_code) return
             this.updateConnectionState(peer, state)
             // this.updateRoomLink()
+        })
+
+        this.app.connection.on('stun-receive-media-offer', ({ room_code, offer_creator, recipient }) => {
+            if(!this.isActive) return;
+            console.log(room_code, offer_creator, recipient, 'stun-receive-media-offer')
+            if (room_code !== this.room_code) {
+                return;
+            }
+
+            let my_public_key = this.app.wallet.returnPublicKey()
+            if (my_public_key === offer_creator) {
+                this.renderRemoteStreamPlaceholder(recipient, "Sending Offer tx");
+                this.startWaitTimer(recipient)
+            } else {
+                this.renderRemoteStreamPlaceholder(offer_creator, "Receiving Offer tx");
+                this.startWaitTimer(offer_creator)
+            }
+
+            
+
+
+
         })
     }
 
 
     render() {
         this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type, this.room_code), document.getElementById('content__'));
+        this.isActive= true;
     }
 
     attachEvents(app, mod) {
@@ -66,7 +98,7 @@ class VideoChatManager {
         let add_users = document.querySelector('.add_users')
         if (add_users) {
             add_users.addEventListener('click', (e) => {
-                this.addUsersManager.render(this.room_link);
+                this.chatInvitationOverlay.render()
             })
         }
         document.querySelector('.audio_control').addEventListener('click', (e) => {
@@ -109,7 +141,8 @@ class VideoChatManager {
         const current_url = window.location.toString();
         const myurl = new URL(current_url);
         this.room_link = `${myurl}?stun_video_chat=${base64obj}`;
-        this.addUsersManager.code = this.room_link;
+        this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link)
+   
         if (document.querySelector('.add-users-code-container span')) {
             document.querySelector('.add-users-code-container span').textContent = this.room_link.slice(0, 30);
         }
@@ -119,13 +152,15 @@ class VideoChatManager {
         if (!document.querySelector('.stunx-chatbox')) {
             this.render();
             this.attachEvents(app, mod);
+            
         }
+        this.isActive = true
     }
 
     hide() {
         console.log('hiding')
         document.querySelector('#stunx-chatbox').parentElement.removeChild(document.querySelector('#stunx-chatbox'));
-
+        this.isActive = false;
     }
 
     disconnect() {
@@ -173,35 +208,41 @@ class VideoChatManager {
         videoBox.render(localStream, 'local', 'large-wrapper');
         this.video_boxes['local'] = { video_box: videoBox, peer_connection: null }
         this.localStream = localStream;
-        this.addImages();
+        this.updateImages();
     }
 
 
 
-    renderRemoteStreamPlaceholder(peer) {
-        const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
-        this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
+    renderRemoteStreamPlaceholder(peer, placeholder_info) {
+        this.createVideoBox(peer, placeholder_info);
+        this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper', placeholder_info);
+    }
 
-        this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper');
+    createVideoBox(peer){
+        if(!this.video_boxes[peer]){
+            const videoBox = new VideoBox(this.app, this.mod, this.ui_type, this.call_type);
+            this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
+        }
     }
 
 
     updateConnectionState(peer, state) {
-        console.log('connection state ', state);
-        if (!this.video_boxes[peer].video_box) {
-            return console.log("An error occured with updating connections state");
-        }
+        this.createVideoBox(peer)
         this.video_boxes[peer].video_box.handleConnectionStateChange(state);
-
         switch (state) {
+            case "connecting":
+                clearInterval(this.waitTimer)
+            break;
             case "disconnected":
-                this.disconnect();
+                delete this.video_boxes[peer];
+                this.stopTimer();
+                this.updateImages();
+                this.mod.closeMediaConnections()
                 console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
-                // start counter
                 this.startTimer();
-                this.addImages();
+                this.updateImages();
                 break;
 
             default:
@@ -251,9 +292,9 @@ class VideoChatManager {
 
 
     startTimer() {
-        if (this.timer_interval) {
-            return;
-        }
+        // if (this.timer_interval) {
+        //     return;
+        // }
         let timerElement = document.querySelector(".stunx-chatbox .counter");
         let seconds = 0;
 
@@ -284,8 +325,31 @@ class VideoChatManager {
         this.timer_interval = setInterval(timer, 1000);
     }
 
+    stopTimer (){
+        clearInterval(this.timer_interval)
+        this.timer_interval = null
+    }
 
-    addImages() {
+    startWaitTimer(peer){
+       this.waitTimer = setInterval(()=> {
+                this.waitSeconds+= 1;    
+                if(this.waitSeconds === 10){
+                    this.updateConnectionState(peer, 'ten_seconds')
+                }  
+                if(this.waitSeconds === 20){
+                    this.updateConnectionState(peer, 'twenty_seconds')
+                }  
+                if(this.waitSeconds === 120){
+                    this.updateConnectionState(peer, 'two_minutes')
+                }  
+                if(this.waitSeconds === 180){
+                    this.updateConnectionState(peer, 'failed')
+                    clearInterval(this.waitTimer)
+                }  
+        }, 1000)
+    }
+
+    updateImages() {
         let images = ``;
         let count = 0
         console.log('video boxes ', this.video_boxes)

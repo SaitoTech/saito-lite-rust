@@ -37,6 +37,7 @@
 }
 
 .saito-overlay-closebox-btn {
+  cursor: pointer;
   display: block;
   height: 3.2rem;
   width: 3.2rem;
