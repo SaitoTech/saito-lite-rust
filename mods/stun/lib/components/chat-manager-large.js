@@ -214,7 +214,7 @@ class VideoChatManager {
 
 
     renderRemoteStreamPlaceholder(peer, placeholder_info) {
-        this.createVideoBox(peer)
+        this.createVideoBox(peer, placeholder_info);
         this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper', placeholder_info);
     }
 
@@ -228,9 +228,7 @@ class VideoChatManager {
 
     updateConnectionState(peer, state) {
         this.createVideoBox(peer)
-
         this.video_boxes[peer].video_box.handleConnectionStateChange(state);
-
         switch (state) {
             case "connecting":
                 clearInterval(this.waitTimer)
