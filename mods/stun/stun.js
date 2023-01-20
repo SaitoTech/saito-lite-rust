@@ -129,7 +129,6 @@ class Stun extends ModTemplate {
             icon: this.icon,
             allowed_mods: ["redsquare"],
             callback: function (app) {
-              window.location = "/redsquare#wallet";
             }
           }
         }
