@@ -221,7 +221,6 @@ class VideoChatManager {
 
 
     updateConnectionState(peer, state) {
-        console.log('connection state ', state);
         if (!this.video_boxes[peer].video_box) {
             return console.log("An error occured with updating connections state");
         }
@@ -341,7 +340,7 @@ class VideoChatManager {
                 if(this.waitSeconds === 120){
                     this.updateConnectionState(peer, 'two_minutes')
                 }  
-                if(this.waitSeconds === 160){
+                if(this.waitSeconds === 180){
                     this.updateConnectionState(peer, 'failed')
                     clearInterval(this.waitTimer)
                 }  
