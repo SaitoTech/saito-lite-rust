@@ -63,7 +63,7 @@
 .tweet-notice {
   display: flex;
   box-sizing: border-box;
-  color: var(--saito-gray-mid);
+  color: var(--saito-font-color-light);
   font-family: var(--saito-font);
   word-wrap: break-word;
   padding-bottom: 1rem;
@@ -76,7 +76,7 @@
   margin-left: 0.25rem;
   font-weight: bold;
   font-size: 1.4rem;
-  color: var(--saito-gray-mid);
+  color: var(--saito-font-color-light);
 }
 
 .tweet-text {
