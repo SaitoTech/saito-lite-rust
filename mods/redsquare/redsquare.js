@@ -124,7 +124,7 @@ class RedSquare extends ModTemplate {
         text: "Home",
         icon: "fa-solid fa-house",
         allowed_mods: ["redsquare"],
-        callback: function (app) {
+        callback: function (app, id) {
           window.location = "/redsquare";
         }
       },
@@ -132,7 +132,7 @@ class RedSquare extends ModTemplate {
         text: "notifications",
         icon: "fas fa-bell",
         allowed_mods: ["redsquare"],
-        callback: function (app) {
+        callback: function (app, id) {
           window.location = "/redsquare#notifications";
         }
       }]

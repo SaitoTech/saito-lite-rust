@@ -95,11 +95,12 @@ class GameSlider {
               : newIndex;
           slides.children[newIndex].dataset.activeSlide = true;
           delete activeSlide.dataset.activeSlide;
-        
+        /*
           const circles = document.querySelector(".slides-circles");
           const activeCircle = circles.querySelector("[data-active-slide]");
           circles.children[newIndex].dataset.activeSlide = true;
           delete activeCircle.dataset.activeSlide;
+        */
         };
         
         setInterval(changeSlide.bind(null, 1), 6000);

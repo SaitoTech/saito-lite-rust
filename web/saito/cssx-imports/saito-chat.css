@@ -89,12 +89,10 @@
 .chat-footer {
   height: 4.5rem;
   font-size: 2rem;
-  background-color: var(--saito-background-light);
   position: absolute;
   bottom: 0;
   width: 100%;
   padding: 0.5rem;
-  border-top: var(--saito-border-color);
   display: grid;
   grid-template-columns: 1fr max-content;
   grid-gap: 1rem;
@@ -105,8 +103,9 @@
 .chat-footer input {
   height: 3rem;
   padding-left: 1rem;
-  border: none;
+  border-radius: 0.5rem;
   outline: none;
+  background-color: var(--saito-background-light);
 }
 
 .chat-footer i {
