@@ -5,7 +5,7 @@ import { RGBELoader } from './RGBELoader.js';
 import { LoadingBar } from './LoadingBar.js';
 import { Vector3 } from './three.module.js';
 
-class Game {
+class GameEngine {
 	constructor() {
 		const container = document.createElement('div');
 		document.body.appendChild(container);
@@ -67,7 +67,6 @@ class Game {
 		// mobile touch actions
 		document.addEventListener('touchstart', this.handleTouchStart.bind(this), false);
 		document.addEventListener('touchmove', this.handleTouchMove.bind(this), false);
-
 		// mobile touch actions end
 	}
 
@@ -183,8 +182,6 @@ class Game {
 		}
 	}
 
-	floorCubes = [];
-
 	// remove not visible elements from the map
 	removeOldPathTrackingEntries(increment) {
 		if (increment < 8) {
@@ -221,7 +218,7 @@ class Game {
 		const loader = new THREE.TextureLoader();
 
 		const material = new THREE.MeshStandardMaterial({
-			map: loader.load(`${this.assetsPath}/fl.png`),
+			map: loader.load(`${this.assetsPath}/tile.png`),
 		});
 		const transparentMaterial = new THREE.MeshStandardMaterial({
 			map: loader.load(`${this.assetsPath}/floor2.png`),
@@ -272,11 +269,6 @@ class Game {
 		this.cleanupOldFloorCubes(increment);
 		// add cube end
 	}
-
-	// points
-	points = [];
-
-	pointValue = 1;
 
 	addPoint(zIndex, yIndex, xIndex) {
 		this.pointsLeftInSequence--;
@@ -480,25 +472,6 @@ class Game {
 		}
 	}
 
-	previousZpath = 0;
-
-	moveBy = 0;
-
-	pathSegments = 8;
-
-	previousZ = 0;
-	previousX = 0;
-	currentZ = 0;
-	currentX = 0;
-	jumpStart = 0;
-	jumpEnd = 0;
-	diveStart = 0;
-	diveEnd = 0;
-
-	hitHangingObstacle = false;
-
-	pointsEarned = 0;
-
 	increaseScore(points) {
 		this.pointsEarned = this.pointsEarned + points;
 
@@ -512,12 +485,6 @@ class Game {
 
 		elm.innerHTML = distance;
 	}
-
-	// position of next points objects sequence start
-	zNextPoints = 40;
-
-	// add 12 points in one sequence
-	pointsLeftInSequence = 12;
 
 	moveForward() {
 		if (this.character.position.z < 100) {
@@ -555,8 +522,6 @@ class Game {
 		this.setDistance(zFloor);
 
 		// zPosition.toString(), {"ditch": <bool>, "hanging": <bool>, "1": <bool>, "0": <bool>, "-1": <bool>}
-
-		// TODO - simplify at the end
 		if (this.pathTrackingMap.has(zFloor.toString()) && !this.stopped) {
 			let pathMapEntry = this.pathTrackingMap.get(zFloor.toString());
 
@@ -610,11 +575,7 @@ class Game {
 		}
 	}
 
-	stumbleZ = 0;
-
-	fallingIndex = 10;
-
-	stumble() {
+	async stumble() {
 		this.action = 'stop';
 		let indices = [];
 		for (let index = 0; index < this.floorCubes.length; index++) {
@@ -629,18 +590,32 @@ class Game {
 				this.floorCubes.splice(i, 1);
 			}
 		}
-		// TODO - add end game
+		await this.sleep(3000);
+		this.endGame();
 	}
 
-	fall() {
+	async fall() {
 		this.action = 'falling'; // TODO constant
 		if (this.fallingIndex >= 0) {
+			this.fallingIndex--;
 			this.character.translateY(-1);
 			this.updateCamera();
 			setTimeout(this.fall.bind(this), 50);
+		} else {
+			await this.sleep(3000);
+			this.endGame();
 		}
-		// TODO - add end game
 	}
+
+	stumbleZ = 0;
+
+	fallingIndex = 10;
+
+	// position of next points objects sequence start
+	zNextPoints = 40;
+
+	// add 12 points in one sequence
+	pointsLeftInSequence = 12;
 
 	// pathTrackingMap - used to calculate potential collisions
 	pathTrackingMap = new Map();
@@ -654,6 +629,88 @@ class Game {
 	slidingIndex = 0;
 
 	runningAction = "running";
+
+	startCount = 4;
+
+	stopped = false;
+
+	animIndex = 0;
+
+	// points
+	points = [];
+
+	pointValue = 1;
+
+	previousZpath = 0;
+
+	moveBy = 0;
+
+	pathSegments = 8;
+
+	previousZ = 0;
+	previousX = 0;
+	currentZ = 0;
+	currentX = 0;
+	jumpStart = 0;
+	jumpEnd = 0;
+	diveStart = 0;
+	diveEnd = 0;
+
+	hitHangingObstacle = false;
+
+	pointsEarned = 0;
+
+	floorCubes = [];
+
+	endGame() {
+		const instructions = document.getElementById('instructions');
+		instructions.style.display = 'block';
+		instructions.innerHTML = `Game over!<br>Distance: ${this.currentZ}<br>Points: ${this.pointsEarned}<br>Swipe or press any key to continue`;
+		this.cleanupOldFloorCubes(this.currentZ + 30); // cleanup all floor cubes
+		this.pathTrackingMap.clear();
+		this.cleanupAllPointCubes();
+		this.scene.remove(this.character);
+		this.gameLoaded = false;
+		this.animIndex = 0;
+		this.stumbleZ = 0;
+		this.zNextPoints = 40;
+		this.pointsLeftInSequence = 12;
+		this.pathTrackingMap = new Map();
+		this.isJumping = false;
+		this.isSliding = false;
+		this.jumpingIndex = 0;
+		this.slidingIndex = 0;
+		this.startCount = 4;
+		this.stopped = false;
+		this.points = [];
+		this.pointValue = 1;
+		this.previousZpath = 0;
+		this.moveBy = 0;
+		this.pathSegments = 8;
+		this.previousZ = 0;
+		this.previousX = 0;
+		this.currentZ = 0;
+		this.currentX = 0;
+		this.jumpStart = 0;
+		this.jumpEnd = 0;
+		this.diveStart = 0;
+		this.diveEnd = 0;
+		this.hitHangingObstacle = false;
+		this.pointsEarned = 0;
+		this.floorCubes = [];
+		this.increaseScore(0);
+		this.setDistance(0);
+	}
+
+	cleanupAllPointCubes() {
+		let i = this.points.length;
+		while (i--) {
+			this.points[i].material.dispose();
+			this.points[i].geometry.dispose();
+			this.scene.remove(this.points[i]);
+			this.points.splice(i, 1);
+		}
+	}
 
 	slide() {
 		let timeout = 800;
@@ -740,6 +797,7 @@ class Game {
 
 				this.character.position.x = 0;
 				this.character.position.y = -1;
+				this.character.position.z = 0;
 
 				this.character.castShadow = true;
 				this.character.receiveShadow = true;
@@ -749,6 +807,8 @@ class Game {
 				this.character.scale.z = 0.75;
 
 				this.velocity = new Vector3(1, 1, 1);
+
+				this.fallingIndex = 10;
 
 				this.animations = {};
 
@@ -781,26 +841,20 @@ class Game {
 		);
 	}
 
-	startCount = 4;
-
 	async triggerCountDown() {
-		const countdown = document.getElementById('countdown');
-		countdown.style.fontSize = "80px";
+		const instructions = document.getElementById('instructions');
+		instructions.style.fontSize = "80px";
 		if (this.startCount > 0) {
-			countdown.innerHTML = this.startCount;
+			instructions.innerHTML = this.startCount;
 			this.startCount--;
 			setTimeout(this.triggerCountDown.bind(this), 1200);
 		} else {
-			countdown.innerHTML = "Go!";
+			instructions.innerHTML = "Go!";
 			await this.sleep(400);
-			countdown.style.display = 'none';
-			countdown.style.fontSize = "40px";
+			instructions.style.display = 'none';
+			instructions.style.fontSize = "30px";
 		}
 	}
-
-	stopped = false;
-
-	animIndex = 0;
 
 	newAnim() {
 		if (this.animIndex < 2) {
@@ -860,13 +914,15 @@ class Game {
 
 	updateCamera() {
 		this.cameraController.position.copy(this.character.position);
+		this.cameraController.position.x = 0;
 		if (this.character.position.y > -2) {
 			this.cameraController.position.y = -1;
 		}
-		this.cameraTarget.copy(this.character.position);
-		this.cameraTarget.y += 1;
+		this.cameraTarget.z = this.character.position.z;
+		this.cameraTarget.y = this.character.position.y + 1;
+		this.cameraTarget.x = 0;
 		this.camera.lookAt(this.cameraTarget);
 	}
 }
 
-export { Game };
+export { GameEngine };

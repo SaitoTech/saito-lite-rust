@@ -7,7 +7,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Saito Beleaguered Solitrio</title>
+	<title>Saito Run</title>
 
 	<script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
 	<link rel="stylesheet" href="/saito/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
@@ -27,14 +27,14 @@
 
 	<script type="module">
 
-		import { Game } from './Game.js';
+		import { GameEngine } from './GameEngine.js';
 
 		document.addEventListener("DOMContentLoaded", () => {
-			const game = new Game();
+			const gameEngine = new GameEngine();
 			window.game = game;
 		});
 	</script>
-	<div id="countdown">Press any key or swipe to start</div>
+	<div id="instructions">Press any key or swipe to start</div>
 	<div id="score-panel">
 		<div id="score">0</div><img width="80" id="points" src="/saitorun/img/points.png" />
 	</div>
