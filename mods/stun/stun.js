@@ -940,7 +940,6 @@ class Stun extends ModTemplate {
 
     receiveMediaOfferTransaction(blk, tx, conf, app) {
         if (app.BROWSER !== 1) return;
-
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         const offer_creator = tx.msg.data.offer_creator;
@@ -950,7 +949,7 @@ class Stun extends ModTemplate {
 
 
         if(!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
- 
+        
         app.connection.emit('stun-receive-media-offer', {
             room_code,
             offer_creator,
