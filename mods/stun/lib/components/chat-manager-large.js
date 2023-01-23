@@ -98,7 +98,7 @@ class VideoChatManager {
                 if(public_keys.length === 1){
                     this.chatInvitationOverlay.render()
                 }else{
-                    salert("Room filled");
+                    salert("Room filled up");
                 }
                
             })
