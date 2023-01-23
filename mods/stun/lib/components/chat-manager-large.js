@@ -94,8 +94,13 @@ class VideoChatManager {
         let add_users = document.querySelector('.add_users')
         if (add_users) {
             add_users.addEventListener('click', (e) => {
-                this.updateRoomLink();
-                this.chatInvitationOverlay.render()
+              let public_keys =   this.updateRoomLink();
+                if(public_keys.length === 1){
+                    this.chatInvitationOverlay.render()
+                }else{
+                    salert("Room filled");
+                }
+               
             })
         }
         document.querySelector('.audio_control').addEventListener('click', (e) => {
@@ -148,6 +153,8 @@ class VideoChatManager {
         if (document.querySelector('.add-users-code-container span')) {
             document.querySelector('.add-users-code-container span').textContent = this.room_link.slice(0, 30);
         }
+
+        return public_keys;
     }
 
     show(app, mod) {

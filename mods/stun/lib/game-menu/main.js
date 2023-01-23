@@ -41,8 +41,9 @@ class StunxGameMenu {
             console.log("Video call time is not yet reached");
             return "Video call time is not yet reached";
           }
-
-        //   let peers_in_room =  JSON.parse(room.peers);
+          
+         console.log('room', room.peers)
+          let peers_in_room =  JSON.parse(room.peers);
           let my_public_key = this.app.wallet.returnPublicKey();
 
           if(peers_in_room.length === 2 ) {
