@@ -57,7 +57,6 @@ class StunAppspace {
 
 
   joinVideoInvite(app, mod, room_code) {
-  
     console.log(room_code)
     if (!room_code) return siteMessage("Please insert a room code", 5000);
     let sql = `SELECT * FROM rooms WHERE room_code = "${room_code}"`;
@@ -81,9 +80,9 @@ class StunAppspace {
       }
       let peers_in_room = JSON.parse(room.peers);
 
-      if(peers_in_room.length === 2) {
-        return salert("You Can't join this call")
-      }
+      // if(peers_in_room.length === 2) {
+      //   return salert("You Can't join this call")
+      // }
       const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       mod.setLocalStream(localStream);
       let my_public_key = this.app.wallet.returnPublicKey();

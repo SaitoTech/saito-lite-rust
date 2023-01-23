@@ -34,7 +34,7 @@ class VideoChatManager {
             if(!this.isActive) return;
             if (ui_type !== "large") return
             this.renderLocalStream(localStream)
-            this.updateRoomLink()
+            // this.updateRoomLink()
         })
         this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
             if(!this.isActive) return;
@@ -72,10 +72,6 @@ class VideoChatManager {
                 this.startWaitTimer(offer_creator)
             }
 
-            
-
-
-
         })
     }
 
@@ -98,6 +94,7 @@ class VideoChatManager {
         let add_users = document.querySelector('.add_users')
         if (add_users) {
             add_users.addEventListener('click', (e) => {
+                this.updateRoomLink();
                 this.chatInvitationOverlay.render()
             })
         }
@@ -248,6 +245,14 @@ class VideoChatManager {
             case "connected":
                 this.startTimer();
                 this.updateImages();
+                break;
+
+            case "failed":
+                delete this.video_boxes[peer];
+                this.stopTimer();
+                this.updateImages();
+                this.mod.closeMediaConnections()
+                console.log("video boxes: after ", this.video_boxes);
                 break;
 
             default:
