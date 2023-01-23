@@ -486,13 +486,6 @@ class Stun extends ModTemplate {
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, ui_type, call_type, room_code);
 
                     });
-
-                    // const data_channel = pc.createDataChannel('channel');
-                    // pc.dc = data_channel;
-                    // pc.dc.onmessage = (e) => {
-                    //     console.log('new message from client : ', e.data);
-                    // };
-                    // pc.dc.onopen = (e) => console.log("connection opened");
                     const offer = await pc.createOffer();
                     pc.setLocalDescription(offer);
 

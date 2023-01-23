@@ -6,18 +6,6 @@ class StunxGameMenu {
         this.app = app;
         this.mod = mod;
 
-        app.connection.on('game-receive-video-call', (app, offer_creator, offer) => {
-            // this.receiveVideoCall(app, offer_creator, offer);
-        })
-        this.app.connection.on('game-start-video-call', (peers) => {
-            console.log("START VIDEO CALL: " + peers.length);
-            this.startVideoCall(peers);
-        })
-
-        app.connection.on('join-direct-room-with-code', (code) => {
-            console.log('app', this.app, 'mod', this.mod)
-            this.joinVideoInvite(this.app, code)
-        })
 
         app.connection.on('join-direct-room-with-link', (room_obj) => {
             console.log('app', this.app, 'mod', this.mod)
@@ -26,147 +14,174 @@ class StunxGameMenu {
     }
 
 
-    async startVideoCall(peers) {
-        if (peers.constructor !== Array) {
-            peers = [peers]
-        }
-        const stun_mod = this.app.modules.returnModule('Stun');
-
-        let callback = async function (app, mod, roomCode) {
-            app.connection.emit('join-direct-room-with-code', roomCode);
-            // let newtx = app.wallet.createUnsignedTransaction();
-            // peers.forEach(peer => {
-            //     newtx.transaction.to.push(new saito.default.slip(peer))
-            // })
-
-            // newtx.msg.module = "Stun";
-            // newtx.msg.request = "receive room code"
-            // newtx.msg.data = {
-            //     roomCode,
-            //     creator: app.wallet.returnPublicKey()
-
-            // };
-            // newtx = app.wallet.signTransaction(newtx);
-            app.network.propagateTransaction(newtx)
-            // console.log('sending room code')
-        }
-        stun_mod.sendCreateRoomTransaction(callback);
-    }
-
-
-
-    async joinInviteWithLink(app, room_obj) {
-        const mod = app.modules.returnModule('Stun');
-
-        let room_code = room_obj.room_id;
-        let peers_in_room = room_obj.public_keys
-
-        const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        mod.setLocalStream(localStream);
-        let my_public_key = this.app.wallet.returnPublicKey();
-        // add to the room list and save
-        peers_in_room.push(my_public_key);
-        let peer_count = peers_in_room.length;
-
-        let is_max_capacity = false;
-        if (peer_count === 4) {
-            is_max_capacity = true;
-        }
-
-        const data = {
-            peers_in_room: JSON.stringify(peers_in_room),
-            peer_count,
-            is_max_capacity
-        }
-        mod.sendUpdateRoomTransaction(room_code, data);
-        // filter my public key
-        peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
-        this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
-        this.app.connection.emit('render-local-stream-request', localStream, 'large');
-        // peers_in_room.forEach(peer => {
-        //     this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
-        // });
-        mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
-    }
-
-    joinVideoInvite(app, room_code) {
+  
+    async joinInviteWithLink(app, room_obj){
+        let room_code = room_obj.room_id
         console.log(room_code)
-        const mod = app.modules.returnModule('Stun');
         if (!room_code) return siteMessage("Please insert a room code", 5000);
         let sql = `SELECT * FROM rooms WHERE room_code = "${room_code}"`;
-
+        const mod = app.modules.returnModule('Stun');
+    
         let requestCallback = async (res) => {
-            let room = res.rows[0];
-            console.log(res, 'res')
-            if (!room) {
-                console.log('Invite code is invalid');
-                return siteMessage("Invite code is invalid");
+        
+          let room = res.rows[0];
+          console.log(res, 'res')
+          if (!room) {
+            console.log('Invite code is invalid');
+            return siteMessage("Invite code is invalid");
+          }
+          if (room.isMaxCapicity) {
+            console.log("Room has reached max capacity");
+            return siteMessage("Room has reached max capacity");
+          }
+          if (Date.now() < room.startTime) {
+            siteMessage("Video call time is not yet reached", 5000);
+            console.log("Video call time is not yet reached");
+            return "Video call time is not yet reached";
+          }
+    
+          let peers_in_room = JSON.parse(room.peers);
+          if(peers_in_room.length === 2) {
+            return salert("You can't join this call, max allowed exceeded")
+          }
+          const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          mod.setLocalStream(localStream);
+          let my_public_key = this.app.wallet.returnPublicKey();
+    
+          // first to join the room?
+          if (peers_in_room.length === 0) {
+            // add to the room list and save
+            peers_in_room.push(my_public_key);
+            let peer_count = 1;
+            let is_max_capacity = false;
+    
+            const data = {
+              peers_in_room: JSON.stringify(peers_in_room),
+              peer_count,
+              is_max_capacity
             }
-            if (room.isMaxCapicity) {
-                console.log("Room has reached max capacity");
-                return siteMessage("Room has reached max capacity");
+            mod.sendUpdateRoomTransaction(room_code, data);
+            this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
+            this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
+            this.app.connection.emit('remove-overlay-request');
+            siteMessage("You are the only participant in this room", 3000);
+            return;
+    
+          } else {
+            // add to the room list and save
+            peers_in_room.push(my_public_key);
+            let peer_count = peers_in_room.length;
+            let is_max_capacity = false;
+            if (peer_count === 4) {
+              is_max_capacity = true;
             }
-            if (Date.now() < room.startTime) {
-                siteMessage("Video call time is not yet reached", 5000);
-                console.log("Video call time is not yet reached");
-                return "Video call time is not yet reached";
+    
+            const data = {
+              peers_in_room: JSON.stringify(peers_in_room),
+              peer_count,
+              is_max_capacity
             }
-
-            const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            mod.setLocalStream(localStream);
-            let my_public_key = this.app.wallet.returnPublicKey();
-            let peers_in_room = JSON.parse(room.peers);
-
-            // first to join the room?
-            if (peers_in_room.length === 0) {
-                // add to the room list and save
-                peers_in_room.push(my_public_key);
-                let peer_count = 1;
-                let is_max_capacity = false;
-
-                const data = {
-                    peers_in_room: JSON.stringify(peers_in_room),
-                    peer_count,
-                    is_max_capacity
-                }
-                mod.sendUpdateRoomTransaction(room_code, data);
-                this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
-                this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
-                siteMessage("You are the only participant in this room", 5000);
-                return;
-
-            } else {
-                // add to the room list and save
-                peers_in_room.push(my_public_key);
-                let peer_count = peers_in_room.length;
-                let is_max_capacity = false;
-                if (peer_count === 4) {
-                    is_max_capacity = true;
-                }
-
-                const data = {
-                    peers_in_room: JSON.stringify(peers_in_room),
-                    peer_count,
-                    is_max_capacity
-                }
-
-                mod.sendUpdateRoomTransaction(room_code, data);
-
-                // filter my public key
-                peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
-                mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
-                this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
-                this.app.connection.emit('render-local-stream-request', localStream, 'large');
-                // peers_in_room.forEach(peer => {
-                //     this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
-                // });
-            }
+    
+            mod.sendUpdateRoomTransaction(room_code, data);
+    
+            // filter my public key
+            peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
+            this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
+            this.app.connection.emit('render-local-stream-request', localStream, 'large');
+            this.app.connection.emit('remove-overlay-request')
+    
+            // peers_in_room.forEach(peer => {
+            //   this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
+            // });
+            mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
+            
+        
+          }
         }
-
+    
         mod.sendPeerDatabaseRequestWithFilter('Stun', sql, requestCallback)
-        const stun_mod = app.modules.returnModule('Stun');
 
+    
     }
+
+    // joinVideoInvite(app, room_code) {
+    //     console.log(room_code)
+    //     const mod = app.modules.returnModule('Stun');
+    //     if (!room_code) return siteMessage("Please insert a room code", 5000);
+    //     let sql = `SELECT * FROM rooms WHERE room_code = "${room_code}"`;
+
+    //     let requestCallback = async (res) => {
+    //         let room = res.rows[0];
+    //         console.log(res, 'res')
+    //         if (!room) {
+    //             console.log('Invite code is invalid');
+    //             return siteMessage("Invite code is invalid");
+    //         }
+    //         if (room.isMaxCapicity) {
+    //             console.log("Room has reached max capacity");
+    //             return siteMessage("Room has reached max capacity");
+    //         }
+    //         if (Date.now() < room.startTime) {
+    //             siteMessage("Video call time is not yet reached", 5000);
+    //             console.log("Video call time is not yet reached");
+    //             return "Video call time is not yet reached";
+    //         }
+
+    //         const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    //         mod.setLocalStream(localStream);
+    //         let my_public_key = this.app.wallet.returnPublicKey();
+    //         let peers_in_room = JSON.parse(room.peers);
+
+    //         // first to join the room?
+    //         if (peers_in_room.length === 0) {
+    //             // add to the room list and save
+    //             peers_in_room.push(my_public_key);
+    //             let peer_count = 1;
+    //             let is_max_capacity = false;
+
+    //             const data = {
+    //                 peers_in_room: JSON.stringify(peers_in_room),
+    //                 peer_count,
+    //                 is_max_capacity
+    //             }
+    //             mod.sendUpdateRoomTransaction(room_code, data);
+    //             this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
+    //             this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
+    //             siteMessage("You are the only participant in this room", 5000);
+    //             return;
+
+    //         } else {
+    //             // add to the room list and save
+    //             peers_in_room.push(my_public_key);
+    //             let peer_count = peers_in_room.length;
+    //             let is_max_capacity = false;
+    //             if (peer_count === 4) {
+    //                 is_max_capacity = true;
+    //             }
+
+    //             const data = {
+    //                 peers_in_room: JSON.stringify(peers_in_room),
+    //                 peer_count,
+    //                 is_max_capacity
+    //             }
+
+    //             mod.sendUpdateRoomTransaction(room_code, data);
+
+    //             // filter my public key
+    //             peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
+    //             mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
+    //             this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
+    //             this.app.connection.emit('render-local-stream-request', localStream, 'large');
+    //             // peers_in_room.forEach(peer => {
+    //             //     this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
+    //             // });
+    //         }
+    //     }
+
+    //     mod.sendPeerDatabaseRequestWithFilter('Stun', sql, requestCallback)
+    //     const stun_mod = app.modules.returnModule('Stun');
+
+    // }
 
 }
 

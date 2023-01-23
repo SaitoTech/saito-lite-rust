@@ -138,9 +138,13 @@ class VideoChatManager {
             public_keys,
         }
         let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
-        const current_url = window.location.hostname.toString();
-        console.log(current_url, 'current url')
-        const myurl = new URL(current_url);
+
+        let url = window.location.toString();
+        if(url.includes('?')){
+            let index =  url.indexOf('?');
+            url = url.slice(0, index);
+        }
+        const myurl = new URL(url);
         this.room_link = `${myurl}?stun_video_chat=${base64obj}`;
         this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link)
    

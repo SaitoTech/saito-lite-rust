@@ -79,11 +79,17 @@ class StunAppspace {
         console.log("Video call time is not yet reached");
         return "Video call time is not yet reached";
       }
+      let peers_in_room = JSON.parse(room.peers);
 
+      if(peers_in_room.length === 2) {
+        return salert("You Can't join this call")
+      }
       const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       mod.setLocalStream(localStream);
       let my_public_key = this.app.wallet.returnPublicKey();
-      let peers_in_room = JSON.parse(room.peers);
+
+
+
 
       // first to join the room?
       if (peers_in_room.length === 0) {
