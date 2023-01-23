@@ -10,7 +10,7 @@ saitolitedocs
 
 logs
 logs/*
-
+config/modules*
 config/options
 config/options.*
 config/modules.config.js

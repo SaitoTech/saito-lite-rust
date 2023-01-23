@@ -1,0 +1,224 @@
+#saito-header {
+  position: fixed;
+  display: flex;
+  width: 100vw;
+  background: var(--dreamscape);
+  backdrop-filter: blur(5px);
+  margin: 0;
+  align-items: center;
+  padding: 0 calc((100vw - var(--saito-width)) / 2);
+  top: 0;
+  left: 0;
+  z-index: 10;
+  height: var(--saito-header-height);
+  border-bottom: 1px solid var(--saito-border-color);
+}
+
+#saito-header nav {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 2rem;
+}
+
+.saito-header-logo {
+  width: 15rem;
+}
+
+#saito-header-menu-toggle {
+  margin-right: auto;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+#saito-header-menu-toggle:hover {
+  opacity: 0.9;
+  transform: scale(1.2);
+}
+
+#saito-header-menu-toggle:active {
+  transform: scale(0.9);
+}
+
+#saito-header-menu-toggle span {
+  display: block;
+  width: 33px;
+  height: 4px;
+  margin-bottom: 5px;
+  position: relative;
+  background: var(--saito-white);
+  border-radius: 3px;
+  z-index: 1;
+  transform-origin: 4px 0px;
+  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1);
+  background: 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
+  margin-left: auto;
+}
+
+#saito-header-menu-toggle span:first-child {
+  transform-origin: 0% 0%;
+}
+
+#saito-header-menu-toggle span:nth-last-child(2) {
+  transform-origin: 0% 100%;
+}
+
+.saito-header-profile .saito-identicon-box .saito-identicon {
+  width: 4.9rem;
+  height: 4.9rem;
+}
+
+.saito-header-hamburger-contents {
+  display: block;
+  pointer-events: none;
+  background-color: var(--saito-background-color);
+  position: absolute;
+  right: 0;
+  top: var(--saito-header-height);
+  border-top: 1px solid var(--saito-border-color);
+  border-left: 1px solid var(--saito-border-color);
+  transition: all 0.2s;
+  opacity: 0;
+  z-index: 10;
+  padding: 2rem;
+  width: 20rem;
+  height: 100vh;
+  overflow: auto;
+}
+
+.saito-header-profile {
+  padding: 1.4rem 0.5rem;
+  display: flex;
+  row-gap: 1rem;
+  border-bottom: 1px solid var(--saito-border-color);
+  flex-direction: column;
+}
+
+.saito-header-profile-details {
+  display: grid;
+    grid-template-columns: 5rem auto;
+    border: 1px solid var(--saito-primary);
+    border-radius: 0 1.2rem 1.2rem 0;
+}
+
+.saito-header-profile-details .saito-identicon {
+  margin: auto;
+  border: none;
+ }
+
+ .saito-header-profile-balance.saito-select::after {
+  background-color: var(--saito-primary);
+  border: none;
+ }
+
+.saito-header-profile-balance .saito-select-crypto {
+  font-size: 2rem;
+  color: var(--saito-font-color);
+  padding: 0 0 0 1rem;
+  font-size: 2rem;
+  appearance: none;
+  background-color: var(--saito-arcade-background);
+  border: none;
+}
+
+.saito-header-profile-balance .saito-select-crypto:focus {
+  outline: none;
+}
+
+.saito-header-profile-balance > .saito-select-wrapper > div {
+  width: 28rem;
+}
+
+.saito-header-profile-address {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  display: flex;
+  width: 99%;
+  justify-content: center;
+  justify-self: center;
+  padding-top: 1rem;
+  cursor: pointer;
+}
+
+.saito-header-profile-address p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.7rem;
+  margin-right: 0.5rem;
+}
+
+.saito-header-profile-address:hover i {
+  transform: scale(1.05);
+  color: var(--saito-primary);
+}
+
+.saito-header-menu-section {
+  padding: 1.5rem 0;
+  font-size: 1.1rem;
+  overflow: auto;
+  padding-bottom: 0.5rem;
+}
+
+.saito-header-menu-section li i {
+  color: var(--saito-primary);
+  font-size: 2rem !important;
+  width: 0.5rem !important;
+}
+
+.saito-header-menu-section:not(:last-child) {
+  border-bottom: 1px solid var(--saito-border-color);
+}
+
+.show-menu {
+  opacity: 1;
+  width: 40rem;
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+@media screen and (max-width: 1600px) {
+  #saito-header {
+    padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
+  }
+}
+
+@media screen and (max-width: 1500px) {
+  #saito-header {
+    padding: 1.3rem 2rem;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  #saito-header {
+    padding: 1.3rem 2rem;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .saito-header-hamburger-contents {
+    width: 80vw;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .saito-header-hamburger-contents {
+    width: 100vw;
+  }
+  #saito-header {
+    padding: 1.3rem 1rem;
+  }
+  .shortcodes {
+    font-size: 12px;
+    position: absolute;
+    bottom: 0.15rem;
+    margin-left: 2rem;
+  }
+  .saito-header-logo {
+    max-width: 12rem;
+  }
+}

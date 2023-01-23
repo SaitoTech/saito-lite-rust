@@ -1,5 +1,5 @@
 
-.saito-menu {}
+
 
 .saito-menu>ul {
     padding: 0;
@@ -25,7 +25,7 @@
 
 .saito-menu>ul>li:hover p  {
     background-color: var(--saito-white);
-    color: var(--saito-default-font-color);
+    color: var(--saito-font-color);
    
 }
 

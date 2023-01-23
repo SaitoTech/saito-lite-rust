@@ -1,0 +1,58 @@
+select {
+  width: 100%;
+}
+
+/* ----------------------------------------------------------------
+Selects
+-----------------------------------------------------------------*/
+.saito-select {
+  position: relative;
+  display: flex;
+  width: 20em;
+  height: 3em;
+  line-height: 3;
+  background-color: transparent;
+  overflow: hidden;
+  width: 100.01%;
+  border-radius: 0 1rem 1rem 0;
+  outline: none;
+  background-color: none;
+}
+
+.saito-select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 1em;
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-transition: 0.25s all ease;
+  -o-transition: 0.25s all ease;
+  transition: 0.25s all ease;
+  border-radius: 0 1rem 1rem 0;
+}
+
+.saito-select:hover::after {
+  color: var(--saito-white) !important;
+}
+
+.saito-select .saito-slct {
+  font-size: 2rem;
+}
+
+.saito-slct {
+  appearance: none;
+  background-color: var(--saito-white);
+  border-radius: 1rem;
+  padding: 0 1rem;
+}
+
+textarea,
+input {
+  background-color: var(--saito-background-color);
+  color: var(--saito-font-color);
+  border: 1px solid var(--saito-border-color);
+}

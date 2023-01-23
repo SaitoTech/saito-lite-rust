@@ -84,7 +84,7 @@ class Twilight extends GameTemplate {
                 </div>`;
       }
       html += "</div></div>";
-      this.overlay.show(this.app, this, html);
+      this.overlay.show(html);
   }
 
 
@@ -107,7 +107,7 @@ class Twilight extends GameTemplate {
     }  
     html += `</div></div>`;
 
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
 
@@ -153,7 +153,7 @@ class Twilight extends GameTemplate {
     html += `</div>`;
 
     html += `</div>`;
-    this.overlay.show(this.app, this, html); 
+    this.overlay.show(html); 
   }
 
   handleExportMenu() {
@@ -169,7 +169,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
 
     $('.menu-item').on('click', function() {
 
@@ -182,7 +182,7 @@ class Twilight extends GameTemplate {
           break;
       }
 
-      twilight_self.overlay.show(twilight_self.app, twilight_self, "All players are backing up their game...");
+      twilight_self.overlay.show("All players are backing up their game...");
     });
 
   }
@@ -338,7 +338,7 @@ class Twilight extends GameTemplate {
           </div>
         `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
   }
 
 
@@ -357,7 +357,7 @@ class Twilight extends GameTemplate {
     //<li class="menu-item" id="text">Text Cards</li>
     //<li class="menu-item" id="graphics">Graphical Cards</li>
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, user_message);
+    twilight_self.overlay.show(user_message);
 
     $('.menu-item').on('click', function() {
       let action2 = $(this).attr("id");
@@ -474,7 +474,7 @@ class Twilight extends GameTemplate {
       class : "game-rules",
       callback : function(app, game_mod) {
          game_mod.menu.hideSubMenus();
-         game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML()); 
+         game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
 
@@ -487,29 +487,6 @@ class Twilight extends GameTemplate {
         game_mod.handleStatsMenu();
       }
     });
-
-/****
-    this.menu.addSubMenuOption("game-game", {
-      text: "Invite Observer",
-      id: "game-observer",
-      class: "game-observer",
-      callback: function(app, game_mod){
-        game_mod.game.saveGameState = 1;
-        let msgobj = {
-          game_id : game_mod.game.id ,
-          player : app.wallet.returnPublicKey() ,
-          module : game_mod.game.module
-        };
-        let msg = app.crypto.stringToBase64(JSON.stringify(msgobj));
-        let observe_link = window.location.href;
-        let tmpar = observe_link.split("/");
-        let oblink = tmpar[0] + "//" + tmpar[2];
-        let html  = `<div class="status-message" id="status-message">Observer Mode will be enabled on your next move (reload to cancel). Make your move and then share this link:
-        <div style="padding:15px;font-size:0.9em;overflow-wrap:anywhere">${oblink}/arcade/?i=watch&msg=${msg}</div></div>`;
-        game_mod.overlay.show(app, game_mod, html);
-      }
-    });
-****/
 
     this.menu.addSubMenuOption("game-info", {
       text: "Cards",
@@ -1100,6 +1077,8 @@ try {
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
+
+console.log("LATEST MOVE: " + mv);
 
       //
       // cambridge region
@@ -8424,11 +8403,9 @@ playerTurnHeadlineSelected(card, player) {
 
     return `
 
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
+      <div style="padding:40px;width:100vw;height:90vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
 
 	<div style="top:0;left:0;">
-
-            
 
             <label for="deck">Deck:</label>
             <select name="deck" id="deckselect" onchange='

@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS players (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   league_id TEXT,
   pkey TEXT,
+  email TEXT,
   score INTEGER,
   games_started INTEGER DEFAULT 0,
   games_finished INTEGER DEFAULT 0,

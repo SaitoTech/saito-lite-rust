@@ -583,6 +583,8 @@ class Network {
   }
 
   initialize() {
+    console.debug("[DEBUG] initialize network");
+
     if (this.app.options) {
       if (this.app.options.server) {
         if (
@@ -625,9 +627,12 @@ class Network {
     }
 
     if (this.app.options.peers != null) {
+      console.debug("[DEBUG] peers length " + this.app.options.peers.length);
       for (let i = 0; i < this.app.options.peers.length; i++) {
         this.addPeer(JSON.stringify(this.app.options.peers[i]));
       }
+    } else {
+      console.debug("[DEBUG] no peers defined");
     }
 
     this.app.connection.on("peer_disconnect", (peer) => {
@@ -675,7 +680,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    // console.log("network.receiveRequest : ", message);
+    console.log("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -1227,6 +1232,7 @@ class Network {
     for (let i = 0; i < tx.transaction.from.length; ++i) {
       tx.transaction.from[i].generateKey(this.app);
     }
+
     //
     // if this is our (normal) transaction, add to pending
     //

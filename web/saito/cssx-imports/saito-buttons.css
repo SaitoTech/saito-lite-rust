@@ -1,0 +1,59 @@
+/* ----------------------------------------------------------------
+buttons
+-----------------------------------------------------------------*/
+
+button,
+.saito-button-primary {
+  background: var(--saito-primary);
+  text-align: center;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  font-size: 1.8rem;
+  color: var(--saito-white);
+  font-weight: 500;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin: 0.5rem;
+  border: 1px solid transparent;
+}
+
+.saito-button-secondary {
+  padding: 1rem 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  font-size: 1.8rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin: 0.5rem;
+  border: 1px solid var(--saito-primary);
+  color: var(--saito-primary);
+}
+
+.saito-button-primary:hover {
+  background: var(--saito-background-color);
+  color: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
+}
+
+.saito-button-secondary:hover {
+  background: var(--saito-primary);
+  color: var(--saito-white);
+}
+
+button.small,
+.saito-button-primary.small,
+.saito-button-secondary.small,
+.saito-button-gradient.small {
+  padding: 0.75rem 0.7rem;
+  font-size: 1.4rem;
+  min-width: 4rem;
+}
+button.fat, saito-button-primary.fat, .saito-button-seconary.fat, saito-button-gradient.fat {
+  height: 7rem;
+  font-size: 2rem;
+  padding: 2rem !important;
+  width: 30rem;
+}
+

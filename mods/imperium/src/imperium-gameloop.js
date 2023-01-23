@@ -1745,7 +1745,7 @@ this.game.state.end_round_scoring = 0;
   	  subtitle = "view all public and secret objectives in the CARDS menu...";
   	}
 
-        this.overlay.showCardSelectionOverlay(this.app, this, cards, {
+        this.overlay.showCardSelectionOverlay(cards, {
 
 	  title : title,
 	  subtitle : subtitle,
@@ -2796,7 +2796,7 @@ this.game.state.end_round_scoring = 0;
 	    let bonus_buff = 0;
 	    document.querySelectorAll('.overlay_action_card').forEach(el => { bonus_buff++; });
 
-	    this.overlay.show(this.app, this, this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
+	    this.overlay.show(this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
 	    document.getElementById("close-action-cards-btn").onclick = (e) => {
 	      this.overlay.hide();
 	      this.game.state.showing_action_cards_amounts = 0;
@@ -2814,7 +2814,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type === "secret_objectives" || type === "secret_objective") {
           if (this.game.player == player && this.browser_active == 1) {
-	    this.overlay.show(this.app, this, this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
+	    this.overlay.show(this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
 	  }
 	  this.game.players_info[player-1].secret_objectives_in_hand += amount;
 	}
@@ -2901,7 +2901,7 @@ this.game.state.end_round_scoring = 0;
 
           if (this.game.state.use_tutorials == 1 && !this.game.state.seen_goods_tutorial) {
             this.game.state.seen_goods_tutorial = 1;
-            this.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
+            this.overlay.show('<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
           }
 
   	}
@@ -2911,7 +2911,7 @@ this.game.state.end_round_scoring = 0;
 
 	  if (this.game.state.use_tutorials == 1 && !this.game.state.seen_commodities_tutorial) {
 	    this.game.state.seen_commodities_tutorial = 1;
-            this.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/commodities.png" style="width:auto;height:100%" /></div>');
+            this.overlay.show('<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/commodities.png" style="width:auto;height:100%" /></div>');
 // this likely causes disconnects as is not guaranteed to run on player turn
 //            this.playerAcknowledgeNotice("REMEMBER: when you have commodities, trade them with a neighbouring player. They receive trade goods. Two players can trade commodities to each other and receive trade goods in return!", function() {});
 	  }

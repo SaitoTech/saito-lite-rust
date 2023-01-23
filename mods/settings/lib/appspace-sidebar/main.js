@@ -2,27 +2,23 @@ const SettingsAppspaceSidebarTemplate = require('./main.template.js');
 
 class SettingsAppspaceSidebar {
 
-  constructor(app) {
-    this.app;
+  constructor(app, mod, container="") {
+    this.app = app;
+    this.mod = mod;
+    this.container = container;
   }
 
   render(app, mod) {
 
-    if (!document.querySelector(".settings-appspace-sidebar")) {
-      app.browser.addElementToSelector(SettingsAppspaceTemplate(app, mod), ".appspace-sidebar");
+    if (document.querySelector(".settings-appspace-sidebar")) {
+      this.app.browser.replaceElementBySelector(SettingsAppspaceSidebarTemplate(this.app, this.mod), ".settings-appspace-sidebar");
+    } else {
+      this.app.browser.addElementToSelectorOrDom(SettingsAppspaceSidebarTemplate(this.app, this.mod), this.container);
     }
-
-    this.attachEvents(app, mod);
-
-  }
-
-  attachEvents(app, mod) {
 
   }
 
 }
 
-
-module.exports = SettingsAppspace;
-
+module.exports = SettingsAppspaceSidebar;
 

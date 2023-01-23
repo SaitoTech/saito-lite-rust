@@ -1,7 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const MonarchyGameRulesTemplate = require("./lib/monarchy-game-rules.template");
 const MonarchyGameOptionsTemplate = require("./lib/monarchy-game-options.template");
-const SaitoOverlay = require("../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -29,7 +29,7 @@ class Monarchy extends GameTemplate {
     //this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
     this.hud.respectDocking = true;
-    this.attackOverlay = new SaitoOverlay(app, true, false);
+    this.attackOverlay = new SaitoOverlay(app, this, true, false);
     
     this.cards_in_play = [];
     this.is_testing = false;
@@ -84,7 +84,7 @@ class Monarchy extends GameTemplate {
         class : "decks-cards",
         callback : function(app, game_mod) {
            game_mod.menu.hideSubMenus();
-           game_mod.overlay.show(game_mod.app, game_mod, game_mod.formatDeck(game_mod.game.state.decks[i], title)); 
+           game_mod.overlay.show(game_mod.formatDeck(game_mod.game.state.decks[i], title)); 
         }
       });
     }
@@ -109,7 +109,7 @@ class Monarchy extends GameTemplate {
       class : "game-rules",
       callback : function(app, game_mod) {
          game_mod.menu.hideSubMenus();
-         game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML()); 
+         game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
 
@@ -337,7 +337,7 @@ initializeGame(game_id) {
         //For the beginning of the game only...
         if (this.game.state.welcome == 0) {
           try {
-            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            this.overlay.show(this.returnWelcomeOverlay());
             document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
           } catch (err) {}
           this.game.state.welcome = 1;
@@ -1259,7 +1259,7 @@ initializeGame(game_id) {
       html += `<div class="aoc">${this.returnCardImage(cards[i])}</div>`;
     }
     rCol.innerHTML = html;
-    this.attackOverlay.show(this.app, this);
+    this.attackOverlay.show();
   }
 
   displayCardInZone(card){
@@ -1574,7 +1574,7 @@ initializeGame(game_id) {
 
     //Attacks
     if (this.deck[card_to_play].type.includes("attack")){
-      this.attackOverlay.show(this.app, this, this.returnAttackOverlay(card_to_play));
+      this.attackOverlay.show(this.returnAttackOverlay(card_to_play));
       for (let i = 1; i <= this.game.players.length; i++){
         this.game.queue.push(`attack\t${player}\t${i}\t${card_to_play}`);
       }

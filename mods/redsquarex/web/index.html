@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="saito.io redsquare" />
+  <meta name="apple-mobile-web-app-title" content="🟥 Saito Red Square" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="msapplication-navbutton-color" content="#FFFFFF" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="msapplication-starturl" content="/index.html" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@SaitoOfficial" />
+  <meta name="twitter:creator" content="@SaitoOfficial" />
+  <meta name="twitter:title" content="Saito - Enabling a paradigm shift in blockchain applications" />
+  <meta name="twitter:url" content="https://saito.tech/" />
+  <meta name="twitter:description" content="Saito RedSquare - Web3 Social." />
+  <meta name="twitter:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta property="og:title" content="🟥 Saito Red Square" />
+  <meta property="og:url" content="https://saito.io/redsquare" />
+  <meta property="og:type" content="website" />
+  <meta property="og:description" content="Peer to peer social and more" />
+  <meta property="og:site_name" content="🟥 Saito Red Square" />
+  <meta property="og:image" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta property="og:image:url" content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+  <meta property="og:image:secure_url"
+    content="https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png" />
+
+  <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+  <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+  <link rel="stylesheet" href="/saito/saitox.css" type="text/css" media="screen" />
+
+  <title>Saito RedSquare</title>
+</head>
+
+<body>
+  <header id="saito-header">
+    <img alt="Logo" src="/saito/img/logo.svg" />
+    <nav>
+      <div class="relative">
+        <div id="saito-header-menu-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <div id="saito-container" class="saito-container">
+
+    <div class="saito-mobile-bar">
+      <div>
+        <i class="fas fa-angle-right"></i>
+      </div>
+      <div>
+        <div>
+          <i class="fas fa-plus"></i>
+        </div>
+      </div>
+      <div>
+        <i class="far fa-comment-alt"></i>
+      </div>
+      <div>
+        <i class="fas fa-angle-left"></i>
+      </div>
+    </div>
+    <div class="saito-sidebar left">
+      <div class="redsquare-menu">
+        <div class="saito-menu">
+          <ul>
+            <li>
+              <i class="fa-solid fa-house"></i>
+              <span>Home</span>
+            </li>
+            <li>
+              <i class="fas fa-gamepad"></i>
+              <span>Games</span>
+            </li>
+            <li>
+              <i class="fas fa-bell"></i>
+              <span>Notifications</span>
+            </li>
+            <li>
+              <i class="far fa-id-card"></i>
+              <span>Contacts</span>
+            </li>
+            <li>
+              <i class="fas fa-cog"></i>
+              <span>Settings</span>
+            </li>
+            <li>
+              <i class="fas fa-envelope"></i>
+              <span>Email</span>
+            </li>
+            <li>
+              <i class="fas fa-video"></i>
+              <span>Video Call</span>
+            </li>
+            <li>
+              <i class="fas fa-wallet"></i>
+              <span>Crypto</span>
+            </li>
+          </ul>
+        </div>
+        <div class="chat-manager">
+          <div class="saito-list saito-white-background chat-manager-list">
+            <div class="saito-user">
+              <div class="saito-identicon-box">
+                <img class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSg1MywyMTcsMzgsMSk7IHN0cm9rZTpyZ2JhKDUzLDIxNywzOCwxKTsgc3Ryb2tlLXdpZHRoOjIuMTsnPjxyZWN0ICB4PScxNjgnIHk9JzE2OCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzE2OCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nODQnIHk9JzAnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScyNTInIHk9JzAnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScyNTInIHk9Jzg0JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzMzNicgeT0nMCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzAnIHk9JzI1Micgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzMzNicgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48L2c+PC9zdmc+">
+                <div class="saito-notification-counter">1</div>
+              </div>
+              <div class="saito-address saito-address-long">Saito Community Chat</div>
+              <div class="saito-userline">whoami</div>
+              <div class="saito-datetime">7:30</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="saito-main appspace">
+      <div id="redsquare-appspace-home" class="redsquare-appspace-home">
+        <div class="redsquare-appspace-header">
+          <div class="redsquare-actions-buttons">
+            <div class="redsquare-actions-buttons-icon">
+            </div>
+            <div id="redsquare-page-header-title" class="redsquare-page-header-title">🟥 RED SQUARE</div>
+            <div class="redsquare-actions-container">
+              <div class="saito-button-secondary small">New Post</div>
+              <div class="saito-button-secondary small">My Profile</div>
+            </div>
+
+          </div>
+        </div>
+        <div class="tweet has-reply">
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box"><img alt="saito dynamic image" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxMTYsMzgsMjE3LDEpOyBzdHJva2U6cmdiYSgxMTYsMzgsMjE3LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMTY4JyB5PSczMzYnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nMCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PSczMzYnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSczMzYnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PC9nPjwvc3ZnPg==">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">First tweet in the feed.<br>It's a start.
+              </div>
+              <div class="tweet-preview">
+              </div>
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span> <i
+                    class="fa fa-repeat"></i></div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span> <i
+                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i></div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tweet">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box"><img alt="saito dynamic image" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2U6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMTY4JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjwvZz48L3N2Zz4=">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
+                asperiores dignissimos praesentium sit porro nisi blanditiis esse id vero ex quod, ipsam eveniet?
+                Officia, reprehenderit consectetur velit voluptatum non molestiae?
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.<br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.
+                <br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.
+                <br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.
+                <br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.
+                <br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti, cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A aliquam
+                nulla
+                rerum illum facere autem suscipit.
+              </div>
+              <div class="tweet-preview">
+                <!-- For dynamic content -->
+              </div>
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span> <i
+                    class="fa fa-repeat"></i></div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span> <i
+                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i></div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tweet">
+          <div class="tweet-notice">
+            retweeted by
+            <div class="saito-address saito-address-26Q9Wwk9ZfuXM7Rp1nRJrn7b9XfyPRnRCtTfFDVdek96w"
+              data-id="26Q9Wwk9ZfuXM7Rp1nRJrn7b9XfyPRnRCtTfFDVdek96w">davik@saito
+            </div>
+          </div>
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box">
+                <img alt="saito dynamic image" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgyMTcsMzgsMTAzLDEpOyBzdHJva2U6cmdiYSgyMTcsMzgsMTAzLDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzE2OCcgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nMCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMzM2JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PSczMzYnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzMzNicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSczMzYnIHk9JzI1Micgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PC9nPjwvc3ZnPg==">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Tenetur sed odit quia
+                similique blanditiis tempore! Aliquid, natus suscipit! Necessitatibus maiores ea fugiat ab, explicabo
+                commodi corrupti architecto nam tempora repellendus?</div>
+              <div class="tweet-preview">
+                <!-- For dynamic content -->
+              </div>
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span> <i
+                    class="fa fa-repeat"></i></div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span> <i
+                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i></div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tweet">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box">
+                <img alt="saito dynamic image" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxNDgsMjE3LDM4LDEpOyBzdHJva2U6cmdiYSgxNDgsMjE3LDM4LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nODQnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nMzM2JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSczMzYnIHk9Jzg0JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PSczMzYnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSczMzYnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PC9nPjwvc3ZnPg==">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">This is a tweet</div>
+              <div class="tweet-preview">
+                <!-- For dynamic content -->
+                <div class="tweet quoted">
+                  <div class="tweet-notice"></div>
+                  <div class="tweet-header">
+                    <div class="saito-user">
+                      <div class="saito-identicon-box"><img alt="saito dynamic image" class="saito-identicon"
+                          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgyMTcsMzgsMTcyLDEpOyBzdHJva2U6cmdiYSgyMTcsMzgsMTcyLDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nODQnIHk9JzAnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScyNTInIHk9JzAnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScyNTInIHk9Jzg0JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nODQnIHk9JzI1Micgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzMzNicgeT0nMCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzAnIHk9Jzg0JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzAnIHk9JzE2OCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzMzNicgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PSczMzYnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSczMzYnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PC9nPjwvc3ZnPg==">
+                      </div>
+                      <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+                      <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+                    </div>
+                  </div>
+                  <div class="tweet-body">
+                    <div class="tweet-sidebar">
+                    </div>
+                    <div class="tweet-main">
+                      <div class="tweet-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Amet at
+                        similique optio veniam doloremque, quas autem et ea. Totam mollitia necessitatibus nisirerum
+                        ducimus, beatae officia ab tenetur cupiditate obcaecati.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tweet-controls">
+                  <div class="tweet-tool tweet-tool-comment">
+                    <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                  </div>
+                  <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span> <i
+                      class="fa fa-repeat"></i></div>
+                  <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span> <i
+                      class="far fa-heart"></i></div>
+                  <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i></div>
+                  <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- truncated tweet -->
+        <div class="tweet">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box">
+                <img alt="saito dynamic image" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2U6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMTY4JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjwvZz48L3N2Zz4=">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
+                asperiores dignissimos praesentium sit porro nisi blanditiis esse id vero ex quod, ipsam
+                eveniet?
+                Officia, reprehenderit consectetur velit voluptatum non molestiae?
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti,
+                cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A
+                aliquam
+                nulla rerum illum facere autem suscipit.<br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti,
+                cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A
+                aliquam
+                nulla rerum illum facere autem suscipit.
+              </div>
+              <div class="tweet-preview">
+                <!-- For dynamic content -->
+              </div>
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span> <i
+                    class="fa fa-repeat"></i></div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span> <i
+                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i></div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- long tweet -->
+        <div class="tweet">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box"><img alt="saito identicon" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2U6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMTY4JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjwvZz48L3N2Zz4=">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus
+                asperiores dignissimos praesentium sit porro nisi blanditiis esse id vero ex quod, ipsam
+                eveniet?
+                Officia, reprehenderit consectetur velit voluptatum non molestiae?
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti,
+                cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A
+                aliquam
+                nulla rerum illum facere autem suscipit.<br>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, repudiandae corrupti,
+                cumque
+                similique doloribus unde reiciendis, perspiciatis ab iure assumenda dolores cupiditate! A
+                aliquam
+                nulla rerum illum facere autem suscipit.
+              </div>
+              <div class="tweet-preview">
+                <!-- For dynamic content -->
+              </div>
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span> <i
+                    class="fa fa-repeat"></i></div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span> <i
+                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i></div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tweet">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box"><img alt="saito dynamic image" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2U6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMTY4JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjwvZz48L3N2Zz4=">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">Tweet with picture
+              </div>
+              <div class="tweet-preview">
+                <!-- For dynamic content -->
+                <div class="tweet-picture">
+                  <img alt="saito tweet content" src="/saito/img/richard.jpeg" />
+                </div>
+              </div>
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span>
+                  <i class="fa fa-repeat"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span> <i
+                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i></div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tweet">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box"><img alt="saito dynamic image" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2U6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMTY4JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjwvZz48L3N2Zz4=">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">Tweet with pictures
+              </div>
+              <div class="tweet-preview">
+                <!-- For dynamic content -->
+                <div class="tweet-picture">
+                  <img alt="saito dymamic image" src="/saito/img/arcade/poker.jpg" />
+                  <img alt="saito dymamic image" src="/saito/img/arcade/twilight.jpg" />
+                  <img alt="saito dymamic image" src="/saito/img/doom.jpg" />
+                  <img alt="saito dymamic image" src="/saito/img/background.png" />
+                </div>
+              </div>
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span>
+                  <i class="fa fa-repeat"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span> <i
+                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tweet">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box"><img alt="saito dynamic image" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2U6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMTY4JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjwvZz48L3N2Zz4=">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">Tweet with open graph
+              </div>
+              <div class="tweet-preview">
+                <div class="link-preview">
+                  <a target="_blank">
+                    <div class=" link-container">
+                      <div class="link-img" style="background: url(/saito/img/arcade/chess.jpg)"></div>
+                      <div class="link-info">
+                        <div class="link-url">www.instagram.com</div>
+                        <div class="link-title">Preview title</div>
+                        <div class="link-description">Preview description.</div>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span>
+                  <i class="fa fa-repeat"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span> <i
+                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tweet">
+          <div class="tweet-notice"></div>
+          <div class="tweet-header">
+            <div class="saito-user">
+              <div class="saito-identicon-box"><img alt="saito dynamic image" class="saito-identicon"
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2U6cmdiYSgxMDcsMjE3LDM4LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMTY4JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjwvZz48L3N2Zz4=">
+              </div>
+              <div class="saito-address">28r1swEqaqfaXj6bLPPSeMp56nA6zpDhHFuAw1tGDodit</div>
+              <div class="saito-user-timestamp">posted on November 18, 2022 at 12:53</div>
+            </div>
+          </div>
+          <div class="tweet-body">
+            <div class="tweet-sidebar">
+            </div>
+            <div class="tweet-main">
+              <div class="tweet-text">Tweet with youtube embed
+              </div>
+              <div class="tweet-preview">
+                <div class="youtube-embed-container"><iframe class="youtube-embed"
+                    src="https://www.youtube.com/embed/4-G45NbXAtw"></iframe></div>
+              </div>
+              <div class="tweet-controls">
+                <div class="tweet-tool tweet-tool-comment">
+                  <span class="tweet-tool-comment-count">0</span> <i class="far fa-comment"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">0</span> <i
+                    class="fa fa-repeat"></i></div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">0</span>
+                  <i class="far fa-heart"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i>
+                </div>
+                <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="saito-sidebar right appspace-sidebar">
+      <div class="arcade-leaderboard">
+        <h6>Leaderboards:</h6>
+        <div class="saito-table">
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Saitolicious</div>
+            <div class="saito-table-rank">21</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Wordblocks</div>
+            <div class="saito-table-rank">1</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Centers for Disease Control</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Red Imperium</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Epidemic</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Blackjack</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Poker</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Spider</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Twilight Struggle</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Wuziqi</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Dominion</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+          <div class="saito-table-row rs-league-sidebar-ranking">
+            <div class="saito-table-gamename">Solitrio</div>
+            <div class="saito-table-rank saito-deemphasize">…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script id="saito" type="text/javascript" src="/saito/saito.js"></script>
+<script>
+
+  document.querySelectorAll(".tweet-text").forEach(el => {
+    if (el.clientHeight < el.scrollHeight) {
+      el.classList.add("preview");
+    }
+  });
+
+  document.querySelectorAll(".tweet-text.preview").forEach(el => {
+    el.addEventListener("click", e => {
+      e.target.classList.toggle("preview");
+      e.target.classList.toggle("full");
+    });
+  });
+
+
+</script>
+
+</html>

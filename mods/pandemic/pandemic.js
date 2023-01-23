@@ -178,11 +178,7 @@ class Pandemic extends GameTemplate {
       class: "game-welcome",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(
-          game_mod.app,
-          game_mod,
-          game_mod.returnWelcomeOverlay()
-        );
+        game_mod.overlay.show(game_mod.returnWelcomeOverlay());
         document.querySelector(".close_welcome_overlay").onclick = (e) => {
           game_mod.overlay.hide();
         };
@@ -256,7 +252,7 @@ class Pandemic extends GameTemplate {
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
           let html = game_mod.returnPlayerCardHTML(i + 1);
-          game_mod.overlay.show(app, game_mod, `<div class=" bighand">${html}</div>`);
+          game_mod.overlay.show(`<div class=" bighand">${html}</div>`);
           game_mod.attachCardboxEvents(); //Don't do anything on click
         },
       });
@@ -1633,7 +1629,7 @@ class Pandemic extends GameTemplate {
            
           $(".player.active_player .move_counter").html(this.game.state.active_moves);
           if (this.game.state.welcome == 0) {
-            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            this.overlay.show(this.returnWelcomeOverlay());
             document.querySelector(".close_welcome_overlay").onclick = (e) => {
               this.overlay.hide();
             };
@@ -1746,7 +1742,7 @@ class Pandemic extends GameTemplate {
         //
         // show overlay
         //
-        this.overlay.show(this.app, this, this.returnEpidemicOverlay(city));
+        this.overlay.show(this.returnEpidemicOverlay(city));
         document.querySelector(".close_epidemic_overlay").onclick = (e) => {
           pandemic_self.overlay.hide();
         };

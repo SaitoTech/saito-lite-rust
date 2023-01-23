@@ -41,6 +41,7 @@ class Blockchain {
   public debugging: boolean;
 
   constructor(app: Saito) {
+
     this.app = app;
 
     //
@@ -531,6 +532,13 @@ class Blockchain {
                   //     confirmation_count
                   // );
                   // this.blockchain.last_callback_block_id = i;
+
+console.log("^^^^");
+console.log("^^^^");
+console.log("^^^^");
+console.log("^^^^");
+console.log("RUNNING CALLBACKS ON BLOCK ID: " + callback_block.block.id);
+
                   await callback_block.runCallbacks(confirmation_count);
                 }
               }
@@ -859,11 +867,12 @@ class Blockchain {
     //
     // load blockchain from options if exists
     //
-    if (this.app?.options?.blockchain) {
+
+    if (this.app.options.blockchain) {
       let obj = this.app.options.blockchain;
       for (let key in obj) {
         if (typeof obj[key] !== "undefined") {
-          this[key] = obj[key];
+          this.blockchain[key] = obj[key];
         }
       }
       this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
@@ -1061,6 +1070,12 @@ class Blockchain {
   saveBlockchain() {
     this.app.options.blockchain = this.blockchain;
     this.app.storage.saveOptions();
+
+console.log("%%%%%%%%%%%%%%%%%");
+console.log("SAVING BLOCKCHAIN");
+console.log("%%%%%%%%%%%%%%%%%");
+console.log(JSON.stringify(this.app.options.blockchain));
+
   }
 
   async unwindChain(

@@ -1,0 +1,63 @@
+/*  Game Selector Overlay */
+
+.arcade-game-selector {
+  width: 90vw;
+  height: 90vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-y: scroll;
+  transition: all 0.2s;
+  
+}
+
+.arcade-game-selector-game {
+    width: 30rem;
+    height: 20rem;
+    max-width: 30rem;
+    max-height: 30rem;
+    opacity: 0.9;
+}
+.arcade-game-selector-game:hover {
+    opacity: 1;
+}
+
+.arcade-game-selector-game-title {
+    position: relative;
+    height: 6rem;
+    background-color: #000A;
+    overflow-x: hide;
+    color: white;
+    width: 100%;
+    top: -20rem;
+    left: 0px;
+    padding: 1.6rem;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.arcade-game-selector-game-image {
+  width: 100%;
+  height: 100%;
+}
+
+.arcade-game-selector-game-image > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media screen and (max-width: 740px) {
+  .arcade-game-selector-game {
+    max-width: 70rem;
+  }
+}
+@media screen and (max-width: 400px) {
+  .arcade-game-selector-game {
+    grid-template-columns: 30rem;
+  }
+}

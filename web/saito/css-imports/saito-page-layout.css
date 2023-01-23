@@ -12,17 +12,19 @@
 .div4 { grid-area: 1 / 4 / 2 / 5; }*/
 
 .saito-container {
-    width: 100vw;
-    height: calc(100vh - var(--saito-header-height)); /* Should factor in top margin so it fits the screen */
-    display: grid;
-    grid-template-columns: min-content 1fr min-content;
-    padding: 0 calc((100vw - var(--saito-width)) / 2);
-    z-index: 0;
-    margin: 0;
-    position: absolute;
-    top: var(--saito-header-height);
-    overflow-y: auto;
-    overflow-x: hidden;
+  width: 100vw;
+  height: calc(
+    100vh - var(--saito-header-height)
+  ); /* Should factor in top margin so it fits the screen */
+  display: grid;
+  grid-template-columns: min-content 1fr min-content;
+  padding: 0 calc((100vw - var(--saito-width)) / 2);
+  z-index: 0;
+  margin: 0;
+  position: absolute;
+  top: var(--saito-header-height);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .saito-container div {
@@ -30,82 +32,82 @@
 }
 
 .saito-main {
-    background-color: var(--saito-white);
-    padding: 2rem 0;
+  background-color: var(--saito-white);
+  padding: 2rem 0;
 }
 
 .saito-sidebar {
-    background-color: var(--saito-white);
-    top: calc(var(--saito-header-height) + 1rem);
+  background-color: var(--saito-white);
+  top: calc(var(--saito-header-height) + 1rem);
 }
 
 .saito-sidebar.left {
-    position: fixed;
-    width: inherit;
+  position: fixed;
+  width: inherit;
 }
 
 .saito-sidebar.right {
-    min-width: 26rem;
-    padding: 1rem;
-    background-color: var(--saito-white);
-    grid-column-start: 3;
-    grid-row: 1/2;
-    background-color: var(--saito-white);
+  min-width: 26rem;
+  padding: 1rem;
+  background-color: var(--saito-white);
+  grid-column-start: 3;
+  grid-row: 1/2;
+  background-color: var(--saito-white);
 }
 
 .saito-sidebar.right.mobile {
-    visibility: visible;
-    z-index: 2;
+  visibility: visible;
+  z-index: 2;
 }
 
 .saito-sidebar.left.mobile {
-    visibility: visible;
-    z-index: 3;
+  visibility: visible;
+  z-index: 3;
 }
 
 .saito-mobile-bar {
-    display: none;
+  display: none;
 }
 
-.saito-mobile-toggle-chat{
-    position: relative;
+.saito-mobile-toggle-chat {
+  position: relative;
 }
 
 .dockedLeft {
-    border-left: 3px solid orangered !important;
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
+  border-left: 3px solid orangered !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
 }
 
 .dockedRight {
-    border-right: 3px solid orangered !important;
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+  border-right: 3px solid orangered !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
 }
 
 .dockedTop {
-    border-top: 3px solid orangered !important;
-    border-top-left-radius: 0 !important;
-    border-top-right-radius: 0 !important;
+  border-top: 3px solid orangered !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
 }
 
 .dockedBottom {
-    border-bottom: 3px solid orangered !important;
-    border-bottom-left-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+  border-bottom: 3px solid orangered !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
 }
 
 .saito-page-header {
-    z-index: 2;
-    background: #fff;
-    padding-bottom: 0rem;
-    width: -webkit-fill-available;
-    top: 8rem;
-    padding: 1.5rem 0rem;
-    position: sticky;
-    top: 0rem;
-    padding-top: 2.5rem;
-    margin-top: -2rem;
+  z-index: 2;
+  background: var(--saito-white);
+  padding-bottom: 0rem;
+  width: -webkit-fill-available;
+  top: 8rem;
+  padding: 1.5rem 0rem;
+  position: sticky;
+  top: 0rem;
+  padding-top: 2.5rem;
+  margin-top: -2rem;
 }
 /*
 
@@ -240,14 +242,14 @@
 
 }
 
-*/
+
 
 /* ----------------------------------------------------------------
  Sidebars
 -----------------------------------------------------------------*/
 
-.saito-sidebar>div:not(:last-child) {
-    margin-bottom: 2rem;
+.saito-sidebar > div:not(:last-child) {
+  margin-bottom: 2rem;
 }
 
 /* ----------------------------------------------------------------
@@ -255,269 +257,253 @@
 -----------------------------------------------------------------*/
 
 @media screen and (max-width: 1500px) {
-    .saito-container {
-        grid-template-columns: 0 1fr min-content;
-    }
+  .saito-container {
+    grid-template-columns: 0 1fr min-content;
+  }
 
-    .saito-sidebar.left {
-        position: fixed;
-        top: calc(var(--saito-header-height));
-        visibility: hidden;
-        width: 35rem;
-        height: 100vh;
-        background-color: var(--saito-white);
-        left: 0;
-        border-right: 1px solid var(--saito-primary);
-    }
+  .saito-sidebar.left {
+    position: fixed;
+    top: calc(var(--saito-header-height));
+    visibility: hidden;
+    width: 35rem;
+    height: 100vh;
+    background-color: var(--saito-white);
+    left: 0;
+    border-right: 1px solid var(--saito-primary);
+  }
 
-    .saito-sidebar.left .hamburger {
-        visibility: visible;
-        left: 1rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        bottom: -1rem;
-    }
+  .saito-sidebar.left .hamburger {
+    visibility: visible;
+    left: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: -1rem;
+  }
 
-    .saito-sidebar.left .saito-mobile-buttons {
-        visibility: visible;
+  .saito-sidebar.left .saito-mobile-buttons {
+    visibility: visible;
+  }
 
-    }
-
-
-    .saito-sidebar .section>div:nth-child(2) {
-        padding-left: 1rem;
-    }
+  .saito-sidebar .section > div:nth-child(2) {
+    padding-left: 1rem;
+  }
 }
 
+@media screen and (max-width: 1500px) and (min-width: 650px) {
+  .saito-sidebar.left {
+    left: 0;
+    width: 30rem;
+  }
 
-@media screen and (max-width: 1500px) and (min-width: 650px)  {
-    .saito-sidebar.left{
-        left: 0;
-        width: 30rem;
-    }
+  .saito-mobile-bar {
+    z-index: 1;
+    height: 7rem;
+    content: " ";
+    width: 10%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    align-items: center;
+  }
 
-    .saito-mobile-bar {
-        z-index: 1;
-        height: 7rem;
-        content: " ";
-        width: 10%;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        z-index: 2;
-        display: flex;
-        flex-flow: row;
-        justify-content: space-around;
-        align-items: center;
-    }
+  .saito-mobile-bar > div {
+    content: "";
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--saito-primary);
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    display: none;
+  }
 
+  .saito-mobile-bar > div:nth-child(1) {
+    display: flex;
+  }
 
-    .saito-mobile-bar > div {
-        content: "";
-        width: 3.5rem;
-        height: 3.5rem;
-        border-radius: 0.5rem;
-        background-color: var(--saito-primary);
-        cursor: pointer;
-        justify-content: center;
-        align-items: center;
-        display: none;
-    }
-
-    .saito-mobile-bar > div:nth-child(1) {
-        display: flex;
-    }
-
-    .saito-mobile-bar > div i {
-        color: var(--saito-white);
-        display: initial;
-        font-size: 2.5rem;
-    }
-
+  .saito-mobile-bar > div i {
+    color: var(--saito-white);
+    display: initial;
+    font-size: 2.5rem;
+  }
 }
 
 @media screen and (max-width: 650px) {
+  .saito-main.appspace {
+    width: 100vw !important;
+    margin-left: 0rem !important;
+    margin-right: 0rem;
+    padding: 2rem;
+  }
 
-    .saito-main.appspace {
-        width: 100vw !important;
-        margin-left: 0rem !important;
-        margin-right: 0rem;
-        padding: 2rem;
-    }
+  .saito-sidebar.left,
+  .saito-sidebar.right {
+    left: 0;
+    width: 100% !important;
+  }
 
-    .saito-sidebar.left,
-    .saito-sidebar.right {
-        left: 0;
-        width: 100% !important;
-    }
+  .saito-sidebar.right {
+    position: fixed;
+    top: 0;
+    visibility: hidden;
+    margin-top: var(--saito-header-height);
+    background-color: var(--saito-white);
+    height: 100vh;
+    z-index: 12;
+  }
 
-    .saito-sidebar.right {
-        position: fixed;
-        top: 0;
-        visibility: hidden;
-        margin-top: var(--saito-header-height);
-        ;
-        background-color: var(--saito-white);
-        height: 100vh;
-        z-index: 12;
-    }
+  .saito-sidebar.right .caret {
+    visibility: visible;
+    right: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .saito-sidebar.right .caret {
-        visibility: visible;
-        right: 1rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+  .saito-mobile-bar {
+    background: #0009;
+    z-index: 1;
+    height: 7rem;
+    content: " ";
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    align-items: center;
+  }
 
+  .saito-mobile-bar > div {
+    content: "";
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--saito-primary);
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
 
-    .saito-mobile-bar {
-        background: #0009;
-        z-index: 1;
-        height: 7rem;
-        content: " ";
-        width: 100%;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        z-index: 2;
-        display: flex;
-        flex-flow: row;
-        justify-content: space-around;
-        align-items: center;
-    }
+  .saito-mobile-bar > div i {
+    color: var(--saito-white);
+    display: initial;
+    font-size: 2.5rem;
+  }
 
-
-    .saito-mobile-bar > div {
-        content: "";
-        width: 3.5rem;
-        height: 3.5rem;
-        border-radius: 0.5rem;
-        background-color: var(--saito-primary);
-        cursor: pointer;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-    }
-
-    .saito-mobile-bar > div i {
-        color: var(--saito-white);
-        display: initial;
-        font-size: 2.5rem;
-    }
-
-
-    .saito-mobile-bar > div:nth-child(2) {
-        display: none;
-    }
-
+  .saito-mobile-bar > div:nth-child(2) {
+    display: none;
+  }
 }
 
 @media screen and (max-width: 503px) {
-    .saito-container {
-        grid-column-gap: 0;
-    }
+  .saito-container {
+    grid-column-gap: 0;
+  }
 
-    .saito-sidebar .section>div:nth-child(1) {
-        padding-left: 1rem;
-    }
+  .saito-sidebar .section > div:nth-child(1) {
+    padding-left: 1rem;
+  }
 
-    .saito-sidebar .section>div:nth-child(2) {
-        padding-left: 0rem;
-    }
+  .saito-sidebar .section > div:nth-child(2) {
+    padding-left: 0rem;
+  }
 
-    .saito-main {
-        padding-top: 0rem;
-    }
+  .saito-main {
+    padding-top: 0rem;
+  }
 }
-
 
 /* need to fix naming here - redsquare out of module */
 .redsquare-actions-container {
-    display: flex;
-    flex-flow: row-reverse;
-    position: absolute;
-    right: 1rem;
-  }
+  display: flex;
+  flex-flow: row-reverse;
+  position: absolute;
+  right: 1rem;
+}
 
 @media screen and (max-width: 515px) {
+  .saito-main.appspace {
+    margin-left: 0px;
+    padding: 1rem 2rem 1rem 0rem;
+  }
 
-    .saito-main.appspace {
-        margin-left: 0px;
-        padding: 1rem 2rem 1rem 0rem;
-    }
+  .saito-mobile-bar {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    align-items: center;
+  }
 
-    .saito-mobile-bar {
-        display: flex;
-        flex-flow: row;
-        justify-content: space-around;
-        align-items: center;
-    }
+  .saito-mobile-bar > div {
+    content: "";
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--saito-primary);
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
 
-    .saito-mobile-bar > div {
-        content: "";
-        width: 3.5rem;
-        height: 3.5rem;
-        border-radius: 0.5rem;
-        background-color: var(--saito-primary);
-        cursor: pointer;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-    }
+  .saito-mobile-bar > div:nth-child(2) {
+    display: flex;
+  }
 
+  .display-actions {
+    display: grid !important;
+  }
 
-    .saito-mobile-bar > div:nth-child(2) {
-        display: flex;
-    }
+  .redsquare-actions-container {
+    position: fixed;
+    bottom: 7rem;
+    left: 0;
+    right: unset;
+    width: 100vw;
+    display: none;
+    background: #0009;
+    grid-template-columns: 1fr;
+    grid-gap: 1rem;
+    padding: 1rem;
+    z-index: 2;
+  }
 
-    .display-actions {
-        display: grid !important;
-    }
+  .redsquare-actions-container .saito-button-secondary {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+  }
 
-    .redsquare-actions-container {
-        position: fixed;
-        bottom: 7rem;
-        left: 0;
-        right: unset;
-        width: 100vw;
-        display: none;
-        background: #0009;
-        grid-template-columns: 1fr;
-        grid-gap: 1rem;
-        padding: 1rem;
-        z-index: 2;
-    }
-
-    .redsquare-actions-container .saito-button-secondary {
-        background-color: var(--saito-primary);
-        color: var(--saito-white);
-    }
-
-    .saito-redsquare-actions-buttons .saito-button-secondary {
-        display: block;
-    }
-
-
+  .saito-redsquare-actions-buttons .saito-button-secondary {
+    display: block;
+  }
 }
 
 @media screen and (max-width: 396px) {
-    .saito-container {
-        grid-column-gap: 0px;
-    }
+  .saito-container {
+    grid-column-gap: 0px;
+  }
 
-    .saito-sidebar.left .hamburger {
-        left: 1rem;
-        bottom: -1rem;
-    }
+  .saito-sidebar.left .hamburger {
+    left: 1rem;
+    bottom: -1rem;
+  }
 
-    .saito-sidebar.right .caret {
-        right: 1rem;
-        bottom: -1rem;
-    }
+  .saito-sidebar.right .caret {
+    right: 1rem;
+    bottom: -1rem;
+  }
 
-    .saito-main {
-        padding-top: 0rem;
-    }
+  .saito-main {
+    padding-top: 0rem;
+  }
 }

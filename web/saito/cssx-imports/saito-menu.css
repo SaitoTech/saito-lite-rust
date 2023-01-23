@@ -1,0 +1,132 @@
+.saito-menu {
+  margin-top: -1rem;
+}
+
+.saito-menu>ul {
+  padding: 0;
+  list-style-type: none;
+}
+
+.saito-menu>ul>li {
+  padding: 1rem;
+  display: flex;
+  list-style: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-items: center;
+  font-size: 1.92rem;
+  position: relative;
+}
+
+.saito-menu>ul>li:hover, .saito-menu>ul>li:hover>i {
+  background-color: var(--saito-primary);
+  color: var(--saito-background-color);
+}
+
+.saito-menu>ul>li:hover p {
+  background-color: var(--saito-background-color);
+  color: var(--saito-font-color);
+}
+
+.saito-menu>ul>li>i {
+  font-size: 2.6rem;
+  width: 2rem;
+  padding-left: 1.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.saito-menu>ul>li>span {
+  font-size: 1.92rem;
+  margin-right: 1rem;
+}
+
+/*  alert  */
+
+.saito-notification-dot {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: var(--saito-primary);
+  color: var(--saito-background-color);
+  position: absolute;
+  bottom: 2.5rem;
+  left: 3.5rem;
+  text-align: center;
+  line-height: 2.2rem;
+}
+
+.saito-menu>ul>li>i+span {
+  margin-left: 3.8rem;
+}
+
+.saito-menu i::before {
+  -webkit-text-stroke: var(--saito-font-color) 1px;
+  color: transparent;
+  font-size: smaller;
+}
+
+.saito-menu li:hover i::before {
+  -webkit-text-stroke: var(--saito-background-color) 1px;
+}
+
+.appspace-menu {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .saito-menu>ul {
+    padding: 0;
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .saito-menu>ul>li {
+    display: block;
+  }
+  .saito-menu>ul>li>i {
+    font-size: 2.8rem !important;
+    margin-bottom: 0.5rem;
+    width: 100% !important;
+    text-align: center;
+    padding: 0rem;
+  }
+  .saito-menu>ul>li>i+span {
+    margin: auto;
+    display: block;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+  .appspace-menu {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 1500px) {
+  .saito-menu>ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .saito-menu>ul>li {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  .saito-menu>ul>li>i {
+    padding: 0;
+    width: unset !important;
+    font-size: 2.75rem !important;
+    margin-bottom: 0.75rem;
+  }
+  .saito-menu>ul>li>i+span {
+    margin: 0;
+    text-overflow: ellipsis;
+    max-width: 10rem;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0.5rem;
+  }
+  .saito-menu>ul>li>span {
+    font-size: 1.33rem;
+    margin: 0;
+  }
+}

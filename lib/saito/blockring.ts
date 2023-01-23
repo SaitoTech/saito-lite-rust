@@ -37,14 +37,17 @@ export default class Blockring {
     const insert_pos  = Number(block.returnId() % BigInt(this.ring_buffer_length));
     const block_id : bigint = block.returnId();
     const block_hash = block.returnHash();
+console.log("adding block hash to blockring: " + block_hash);
     if (!this.containsBlockHashAtBlockId(block_id, block_hash)) {
       this.ring[insert_pos].block_hashes.push(block_hash);
       this.ring[insert_pos].block_ids.push(block_id);
+console.log("and added!");
     }
   }
 
   containsBlockHashAtBlockId(block_id : bigint, block_hash) {
     const insert_pos = Number(block_id % BigInt(this.ring_buffer_length));
+console.log("does include? " + this.ring[insert_pos].block_hashes.includes(block_hash));
     return this.ring[insert_pos].block_hashes.includes(block_hash);
   }
 
@@ -118,6 +121,7 @@ export default class Blockring {
 
     for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
       if (this.ring[insert_pos].block_hashes[i] === block_hash) {
+console.log("SETTING LONGEST CHAIN!");
         this.ring[insert_pos].lc_pos = i;
       }
     }
@@ -145,8 +149,10 @@ export default class Blockring {
   }
 
   returnLongestChainBlockHashAtBlockId(block_id: bigint) {
-    const insert_pos = Number(block_id % BigInt(this.ring_buffer_length));
+console.log("block_id to return hash at is: " + block_id);
+    const insert_pos = Number(BigInt(block_id) % BigInt(this.ring_buffer_length));
     if (this.ring[insert_pos].lc_pos < this.ring[insert_pos].block_hashes.length) {
+console.log("returning: " + this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos]);
       return this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos];
     }
     return "";

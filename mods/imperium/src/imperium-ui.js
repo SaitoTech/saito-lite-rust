@@ -12,32 +12,32 @@ hideOverlays() {
 }
 
 handleMovementMenuItem() {
-  this.overlay.show(this.app, this, this.returnMovementOverlay());
+  this.overlay.show(this.returnMovementOverlay());
 }
 handleCombatMenuItem() {
-  this.overlay.show(this.app, this, this.returnCombatOverlay());
+  this.overlay.show(this.returnCombatOverlay());
 }
 handleFactionMenuItem() {
-  this.overlay.show(this.app, this, this.returnFactionOverlay());
+  this.overlay.show(this.returnFactionOverlay());
 }
 handleHowToPlayMenuItem() {
-  this.overlay.show(this.app, this, this.returnHowToPlayOverlay());
+  this.overlay.show(this.returnHowToPlayOverlay());
 }
 handleHowToPlayMenuItem() {
-  this.overlay.show(this.app, this, this.returnHowToPlayOverlay());
+  this.overlay.show(this.returnHowToPlayOverlay());
 }
 handleTechMenuItem() {
-  this.overlay.show(this.app, this, this.returnTechOverlay());
+  this.overlay.show(this.returnTechOverlay());
 }
 
 handleAgendasMenuItem() {
-  this.overlay.show(this.app, this, this.returnAgendasOverlay());
+  this.overlay.show(this.returnAgendasOverlay());
 }
 handleLawsMenuItem() {
-  this.overlay.show(this.app, this, this.returnLawsOverlay());
+  this.overlay.show(this.returnLawsOverlay());
 }
 handleUnitsMenuItem() {
-  this.overlay.show(this.app, this, this.returnUnitsOverlay());
+  this.overlay.show(this.returnUnitsOverlay());
   let imperium_self = this;
   $('#close-units-btn').on('click', function() {
     imperium_self.overlay.hide();
@@ -104,7 +104,7 @@ handleStrategyMenuItem() {
 }
 
 handleObjectivesMenuItem() {
-  this.overlay.show(this.app, this, this.returnObjectivesOverlay());
+  this.overlay.show(this.returnObjectivesOverlay());
 }
 
 handleInfoMenuItem() {

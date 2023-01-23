@@ -1,15 +1,26 @@
 module.exports = (app, mod) => {
 
   let options_html = `
+
       <h1 class="overlay-title">Poker Options</h1>
-          <div class="overlay-input">
-            <label for="blind_mode">Mode:</label>
-            <select id="blind_mode" name="blind_mode">
-              <option value="static">static blinds</option>
-              <option value="increase">increasing blinds</option>
-            </select>
-          </div>
-          <div class="options_notice" id="blind_explainer">Small blind is one chip, big blind is two chips throughout the game</div>
+
+      <div class="overlay-input">
+        <label for="blind_mode">Mode:</label>
+        <select id="blind_mode" name="blind_mode">
+          <option value="static">static blinds</option>
+          <option value="increase">increasing blinds</option>
+        </select>
+      </div>
+
+      <div class="options_notice" id="blind_explainer">Small blind is one chip, big blind is two chips throughout the game</div>
+  	 
+  `;
+
+  return options_html;
+
+
+/******
+
           <div class="overlay-input">
             <label for="num_chips">Num chips:</label>
             <select id="num_chips" name="num_chips">
@@ -61,12 +72,14 @@ module.exports = (app, mod) => {
             <option value="50">
             <option value="100">
           </datalist>
+          <!--input type="hidden" id="stake" name="stake" value="0"-->
 
-
-   
-          <!--input type="hidden" id="stake" name="stake" value="0"-->`;
+   `;
 
     return options_html;
+
+******/
+
 
 }
 

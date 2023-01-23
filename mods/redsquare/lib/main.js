@@ -1,107 +1,168 @@
-const SaitoSidebar = require('./../../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
 const RedSquareMainTemplate = require("./main.template");
-const RedSquareTweet = require("./tweet");
-const RedSquareSidebar = require("./sidebar/sidebar");
-const RedSquareMenu = require("./menu");
-const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
+const RedSquareAppspaceProfile = require("./appspace/profile");
 const RedSquareAppspaceHome = require("./appspace/home");
-const RedSquareAppspaceContacts = require("./appspace/contacts");
-const RedSquareAppspaceGames = require("./appspace/games");
 const RedSquareAppspaceNotifications = require("./appspace/notifications");
-
+const RedSquareAppspaceGames = require("./appspace/games");
+const RedSquareAppspaceContacts = require("./appspace/contacts");
 
 class RedSquareMain {
 
-  constructor(app, mod, selector) {
+  constructor(app, mod, container = "") {
 
     this.app = app;
+    this.mod = mod;
+    this.container = container;
     this.name = "RedSquareMain";
+     
 
-    //
-    // left sidebar
-    //
-    mod.lsidebar = new SaitoSidebar(app, mod, ".saito-sidebar-left");
-    mod.lsidebar.align = "left";
-    mod.menu = new RedSquareMenu(app, mod);
-    mod.lsidebar.addComponent(mod.menu);
-    mod.app.modules.respondTo("chat-manager").forEach(m => {
-      mod.lsidebar.addComponent(m.respondTo("chat-manager"));
+    this.components = {};
+    this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
+    this.components['profile'] = new RedSquareAppspaceProfile(app, mod, ".saito-main");
+    this.components['notifications'] = new RedSquareAppspaceNotifications(app, mod, ".saito-main");
+    //this.components['contacts'] = new RedSquareAppspaceContacts(app, mod, ".saito-main");
+    this.render_component = 'home';
+
+
+  
+
+
+
+    this.app.connection.on("redsquare-profile-render-request", (publickey) => {
+      document.querySelector(".saito-main").innerHTML = "";
+      this.render_component = 'profile';
+      this.components[this.render_component].render(publickey);
+      document.querySelector(".saito-sidebar.right").innerHTML = "";
+      this.mod.sidebar.render();
+    });
+
+    this.app.connection.on("redsquare-home-render-request", (tx) => {
+      document.querySelector(".saito-main").innerHTML = "";
+      this.render_component = 'home';
+      this.components[this.render_component].render();
+      document.querySelector(".saito-sidebar.right").innerHTML = "";
+      this.mod.sidebar.render();
+    });
+
+    
+
+    this.app.connection.on("redsquare-home-load-more-tweets-request", (tx) => {
+      this.components[this.render_component].renderMoreTweets();
+    });
+
+
+
+    this.app.connection.on("redsquare-thread-render-request", (tweet) => {
+      document.querySelector(".saito-main").innerHTML = "";
+      this.render_component = 'home';
+      this.components[this.render_component].renderThread(tweet);
+      document.querySelector(".saito-sidebar.right").innerHTML = "";
+      this.mod.sidebar.render();
+    });
+
+    this.app.connection.on("redsquare-notifications-render-request", (tx) => {
+      document.querySelector(".saito-main").innerHTML = "";
+      this.render_component = 'notifications';
+      this.components[this.render_component].render();
+      document.querySelector(".saito-sidebar.right").innerHTML = "";
+      this.mod.sidebar.render();
+      this.mod.notifications_last_viewed_ts = new Date().getTime();
+      this.mod.save();
+    });
+
+    this.app.connection.on("redsquare-contacts-render-request", (tx) => {
+      document.querySelector(".saito-main").innerHTML = "";
+      this.render_component = 'contacts';
+      this.components[this.render_component].render();
+      document.querySelector(".saito-sidebar.right").innerHTML = "";
+      this.mod.sidebar.render();
     });
 
     //
-    // main already includes central panel
+    // this fires when a tweet is added to our tree
     //
+    this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
+      if (this.render_component === "home") {
+	if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
+	  tweet.container = ".redsquare-appspace-body";
+          tweet.render();
+        } else {
+          if (tweet.tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
+	    tweet.container = ".redsquare-appspace-body";
+	    tweet.render(true); // prepend - is mine but is new
+	  }
+	}
+      }
+    });
+
 
     //
-    // right sidebar
+    // this fires when the user has asked to view a tweet / thread
     //
-    mod.rsidebar = new RedSquareSidebar(app, mod, ".saito-sidebar-right");
+    this.app.connection.on("redsquare-tweet-render-request", (tweet_sig) => {
 
 
-    //
-    // settings sidebar
-    //
 
-    mod.settsidebar = new RedSquareSettingsSidebar(app, mod, ".saito-sidebar-right");
-
-    //
-    // main panels
-    //
-    mod.home = new RedSquareAppspaceHome(app, mod, ".appspace");
-    mod.games = new RedSquareAppspaceGames(app, mod, ".appspace");
-    mod.notifications = new RedSquareAppspaceNotifications(app, mod, ".appspace");
-    mod.contacts = new RedSquareAppspaceContacts(app, mod, ".appspace");
+      //tweet.render();
+    });
 
   }
 
-  render(app, mod, selector = "") {
+  render() {
 
-    if (selector === "") { selector = ".saito-container"; }
-
-    if (!document.querySelector(selector)) {
-      app.browser.addElementToDom(RedSquareMainTemplate(app, mod));
+    //
+    // render framework for app
+    //
+    if (document.querySelector(".saito-container")) {
+      this.app.browser.replaceElementBySelector(RedSquareMainTemplate(), ".saito-container");
+    } else {
+      this.app.browser.addElementToSelectorOrDom(RedSquareMainTemplate(), this.container);
     }
 
-    mod.lsidebar.render(app, mod, ".saito-sidebar-left");
-    mod.home.render(app, mod, ".appspace");
-    mod.rsidebar.render(app, mod, ".saito-sidebar-right");
-
-    // check the url for an anchor hash
-    // if one exists ask the menu to render it
-    // if that fails render home
-
-    var hash = new URL(document.URL).hash.split('#')[1];
-    let component = hash;
-    let params = null;
-
-    if (hash) {
-      component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
-      if (hash?.split("").includes("?")) {
-        params = hash.split("?")[1];
-      }
+    //
+    // render home / tweet / games etc.
+    //
+    if (this.components[this.render_component]) {
+      this.components[this.render_component].render();
     }
 
-
-
-
-
-    var hash_matched = 0;
-
-    if (component != "") {
-      let hash_matched = mod.menu.renderItem(app, mod, component, params);
-      if (hash_matched == 1) {
-        return 1;
-      }
-    }
-    //app.connection.on("tweet-render-request", (tx) => {
-    //    let tweet = new RedSquareTweet(app, mod, tx);
-    //    tweet.render(app, mod); 
-    //});
-
-
-  }
-
+    //
+    //
+    //
   
+
+    this.attachEvents();
+
+  }
+
+  attachEvents() {
+    var scrollableElement = document.querySelector(".saito-container");
+    var sidebar = document.querySelector(".saito-sidebar.right");
+    var scrollTop = 0;
+    var stop = 0;
+
+    scrollableElement.addEventListener("scroll", (e) => {
+      if (window.innerHeight - 150 < sidebar.clientHeight) {
+        if (scrollTop < scrollableElement.scrollTop) {
+          stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
+          if (scrollableElement.scrollTop + window.innerHeight > sidebar.clientHeight) {
+            sidebar.style.top = stop + "px";
+          }
+        } else {
+          if (stop > scrollableElement.scrollTop) {
+            stop = scrollableElement.scrollTop;
+            sidebar.style.top = stop + "px";
+          }
+        }
+      } else {
+        stop = scrollableElement.scrollTop;
+        sidebar.style.top = stop + "px";
+      }
+      scrollTop = scrollableElement.scrollTop;
+    });
+
+
+
+  }
 
 }
 

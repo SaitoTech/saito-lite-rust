@@ -16,7 +16,7 @@
 
 body {
   line-height: 1.2;
-  color: var(--saito-default-font-color);
+  color: var(--saito-font-color);
   font-family: var(--saito-font);
   margin: 0;
   font-size: 1.6rem;
@@ -79,7 +79,6 @@ h3,
 h4,
 h5,
 h6 {
-  color: var(--saito-primary);
   font-weight: normal;
 }
 
@@ -148,7 +147,7 @@ Divider
 -----------------------------------------------------------------*/
 
 hr {
-  color: var(--saito-default-font-color);
+  color: var(--saito-font-color);
   margin: 2.5rem;
 }
 
@@ -161,7 +160,7 @@ Scrollbars
 
 ::-webkit-scrollbar-track {
   background: transparent;
-  background: linear-gradient(90deg, transparent 0 45%, var(--saito-border) 45% 55%, transparent 55% 100%);
+  background: linear-gradient(90deg, transparent 0 45%, var(--saito-border-color) 45% 55%, transparent 55% 100%);
 }
 
 ::-webkit-scrollbar-thumb {

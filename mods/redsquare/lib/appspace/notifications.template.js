@@ -1,19 +1,8 @@
-module.exports = RedSquareNotificationsAppspaceTemplate = (app, mod) => {
+module.exports = () => {
 
-  return `
-
-    <div class="redsquare-appspace-notifications">
-
-      <div class="saito-page-header">
-        <div class="saito-page-header-title">NOTIFICATIONS
-        </div>
+   return `
+      <div class="redsquare-notifications">
       </div>
-
-      <div class="redsquare-list redsquare-invites">
-      </div>
-
-    </div>
-
   `;
 
 }

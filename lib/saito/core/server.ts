@@ -474,6 +474,10 @@ class Server {
     /////////////
     // modules //
     /////////////
+    //
+    // res.write -- have to use res.end()
+    // res.send --- is combination of res.write() and res.end()
+    //
     this.app.modules.webServer(app, express);
 
     app.get("*", (req, res) => {
