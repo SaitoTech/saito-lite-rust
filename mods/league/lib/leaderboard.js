@@ -82,7 +82,7 @@ class Leaderboard {
         }
       }
 
-      html = (players == null || html == null) ? `<div class="league-error">No ranking stats for this league</div>` : html;
+      html = (players == null || html == ``) ? `<div class="league-error">No ranking stats for this league</div>` : html;
       if (html != ``) {
        this.app.browser.addElementToSelector(html, ".league-leaderboard .saito-table-body");      
       }
