@@ -116,9 +116,10 @@ class VideoBox {
                 salert("User Disconnected");
                 break;
             case "failed":
-                if(document.querySelector('#connection-message')){
-                    document.querySelector('#connection-message').textContent = `Failed to connect`
-                    salert("Failed to Connect")
+                if(document.querySelector(`#stream${this.stream_id}`)){
+                    console.log(`#stream${this.stream_id}`, "stream id")
+                document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
+                salert("Connection failed");
                 }   
                 break;
             case "ten_seconds": 

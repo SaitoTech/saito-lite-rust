@@ -13,6 +13,7 @@ class RedSquareMain {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareMain";
+     
 
     this.components = {};
     this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
@@ -20,6 +21,9 @@ class RedSquareMain {
     this.components['notifications'] = new RedSquareAppspaceNotifications(app, mod, ".saito-main");
     //this.components['contacts'] = new RedSquareAppspaceContacts(app, mod, ".saito-main");
     this.render_component = 'home';
+
+
+  
 
 
 
@@ -38,6 +42,14 @@ class RedSquareMain {
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
     });
+
+    
+
+    this.app.connection.on("redsquare-home-load-more-tweets-request", (tx) => {
+      this.components[this.render_component].renderMoreTweets();
+    });
+
+
 
     this.app.connection.on("redsquare-thread-render-request", (tweet) => {
       document.querySelector(".saito-main").innerHTML = "";
@@ -116,6 +128,8 @@ class RedSquareMain {
     //
     //
     //
+  
+
     this.attachEvents();
 
   }
@@ -145,6 +159,9 @@ class RedSquareMain {
       }
       scrollTop = scrollableElement.scrollTop;
     });
+
+
+
   }
 
 }

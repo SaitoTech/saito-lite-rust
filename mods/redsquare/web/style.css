@@ -31,6 +31,10 @@
   flex-direction: column;
   row-gap: 2rem;
 }
+#redsquare-intersection {
+  opacity: 1;
+  height: 3rem;
+}
 
 @media screen and (max-width: 768px) {
   .redsquare-page-header-title {

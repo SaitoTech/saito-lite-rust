@@ -486,13 +486,6 @@ class Stun extends ModTemplate {
                         this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, ui_type, call_type, room_code);
 
                     });
-
-                    // const data_channel = pc.createDataChannel('channel');
-                    // pc.dc = data_channel;
-                    // pc.dc.onmessage = (e) => {
-                    //     console.log('new message from client : ', e.data);
-                    // };
-                    // pc.dc.onopen = (e) => console.log("connection opened");
                     const offer = await pc.createOffer();
                     pc.setLocalDescription(offer);
 
@@ -938,7 +931,6 @@ class Stun extends ModTemplate {
 
     receiveMediaOfferTransaction(blk, tx, conf, app) {
         if (app.BROWSER !== 1) return;
-
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         const offer_creator = tx.msg.data.offer_creator;
@@ -948,7 +940,7 @@ class Stun extends ModTemplate {
 
 
         if(!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
- 
+        
         app.connection.emit('stun-receive-media-offer', {
             room_code,
             offer_creator,

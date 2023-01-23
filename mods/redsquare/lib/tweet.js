@@ -102,10 +102,11 @@ class Tweet {
       if (prepend == true) {
         this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
+  
         if (this.render_after_selector) {
           this.app.browser.addElementAfterSelector(TweetTemplate(this.app, this.mod, this), this.render_after_selector);
         } else {
-          this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+          this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
 	}
       }
     }
