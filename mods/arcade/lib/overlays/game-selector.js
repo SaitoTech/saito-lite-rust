@@ -16,9 +16,10 @@ class GameSelector {
     this_self = this;
 
     this.app.connection.on("arcade-launch-game-selector", (obj = {}) => {
-      this_self.mod.styles = ['/arcade/css/arcade-game-selector-overlay.css',
+    
+      mod.styles = ['/arcade/css/arcade-game-selector-overlay.css',
         '/arcade/css/arcade-overlays.css'];
-      this_self.mod.attachStyleSheets();
+      mod.attachStyleSheets();
 
       this.obj = obj;
       this.render();
