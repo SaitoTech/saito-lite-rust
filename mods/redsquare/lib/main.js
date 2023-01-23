@@ -23,20 +23,7 @@ class RedSquareMain {
     this.render_component = 'home';
 
 
-    this.intersectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        
-        // if (mod.viewing == "feed") {
-          if (entry.isIntersecting) {
-            // let saito_loader = this.saito_loader;
-            // saito_loader.render(app, mod, "redsquare-intersection", false);
-            mod.loadMoreTweets();
-          }
-        // }
-      });
-    }, {
-      
-    });
+  
 
 
 
@@ -56,14 +43,10 @@ class RedSquareMain {
       this.mod.sidebar.render();
     });
 
+    
 
     this.app.connection.on("redsquare-home-load-more-tweets-request", (tx) => {
-      // document.querySelector(".saito-main").innerHTML = "";
-      // this.render_component = 'home';
-      console.log(this.mod.tweets, 'new tweets')
-      // this.components[this.render_component].render();
-      // document.querySelector(".saito-sidebar.right").innerHTML = "";
-      // this.mod.sidebar.render();
+      this.components[this.render_component].renderMoreTweets();
     });
 
 
@@ -178,7 +161,7 @@ class RedSquareMain {
     });
 
 
-    this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
+
   }
 
 }

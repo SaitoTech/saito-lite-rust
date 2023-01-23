@@ -1,5 +1,6 @@
 const AppspaceHomeTemplate = require("./home.template");
 const Post = require("./../post");
+const SaitoLoader = require("../../../../lib/saito/new-ui/saito-loader/saito-loader");
 
 
 
@@ -12,6 +13,25 @@ class AppspaceHome {
     this.name = "RedSquareAppspaceHome";
     this.thread_id = "";
     this.parent_id = "";
+    this.saito_loader = new SaitoLoader(app, mod);
+
+
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        
+        // if (mod.viewing == "feed") {
+          if (entry.isIntersecting) {
+            let saito_loader = this.saito_loader;
+            saito_loader.render(app, mod, "redsquare-intersection", false);
+            mod.loadMoreTweets(()=> saito_loader.remove());
+          }
+        // }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1
+    });
   }
 
   render() {
@@ -23,6 +43,21 @@ class AppspaceHome {
 
   }  
 
+
+  renderMoreTweets(){
+    for (let i = 0; i < this.mod.tweets.length; i++) {
+      if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
+	this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
+      }
+      this.mod.tweets[i].container = ".redsquare-appspace-body";
+      this.mod.tweets[i].renderWithCriticalChild();
+
+    }
+
+    console.log('rendering more');
+
+    this.attachEvents();
+  }
 
 
   renderMain() {
@@ -48,6 +83,7 @@ class AppspaceHome {
 
     }
 
+    console.log('first fetch', this.mod.tweets)
     this.attachEvents();
 
   }
@@ -70,6 +106,8 @@ class AppspaceHome {
   }
 
   attachEvents() {
+
+    this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
 
     document.getElementById("redsquare-tweet").onclick = (e) => {
       let post = new Post(this.app, this.mod);
