@@ -11,6 +11,7 @@ class ChatPopup {
     this.container = container;
     this.emoji = new SaitoEmoji(app, mod, `chat-input`);
     this.manually_closed = false;
+    this.manually_moved = false;
     this.group = null;
 
     this.x_pos = 0;
@@ -34,6 +35,8 @@ class ChatPopup {
     // our query selector
     //
     let popup_qs = ".chat-popup-" + this.group.id;
+    let popup_id = "chat-popup-" + this.group.id;
+    let header_id = "chat-header-" + this.group.id;
 
     //
     // calculate some values to determine position on screen...
@@ -61,7 +64,14 @@ class ChatPopup {
     // insert or replace popup on page
     //
     if (am_i_on_page == 1) {
+      let obj = document.querySelector(popup_qs);
+      var rect = obj.getBoundingClientRect();
       this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group), popup_qs);
+      this.x_pos = rect.left;
+      this.y_pos = rect.top;
+      obj = document.querySelector(popup_qs);
+      obj.style.left = this.x_pos + "px";
+      obj.style.top = this.y_pos + "px";
     } else {
       this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
     }
@@ -69,7 +79,7 @@ class ChatPopup {
     //
     // now set left-position of popup
     //
-    if (popups_on_page >= 1 && am_i_on_page == 0) {
+    if (popups_on_page >= 1 && am_i_on_page == 0 && this.manually_moved == false) {
       this.x_pos = x_offset - x_range - 30;
       if (this.x_pos < 0) { this.x_pos = 0; }
       let obj = document.querySelector(popup_qs);
@@ -79,17 +89,18 @@ class ChatPopup {
     //
     // make draggable
     //
-    this.app.browser.makeDraggable(`chat-popup`, `chat-header`, true, () => {
+    this.app.browser.makeDraggable(popup_id, header_id, true, () => {
       let obj = document.querySelector(popup_qs);
       var rect = obj.getBoundingClientRect();
       this.x_pos = rect.left;
       this.y_pos = rect.top;
+      this.manually_moved = true;
     });
 
     //
     // emojis
     //
-    //this.emoji.render(this.app, this.mod);
+    this.emoji.render(this.app, this.mod);
 
     //
     // scroll to bottom

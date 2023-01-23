@@ -5,9 +5,9 @@ module.exports = (app, mod, group) => {
   if (!group.name) { group.name = ""; }
 
   let html = `
-      <div class="chat-container chat-popup chat-popup-${group.id}" id="chat-popup">
+      <div class="chat-container chat-popup chat-popup-${group.id}" id="chat-popup-${group.id}">
 
-        <div class="chat-header" id="chat-header">
+        <div class="chat-header" id="chat-header-${group.id}">
           <i  class="far fa-comment-dots"></i>
           <div id="chat-group-${group.id}" class="chat-group active-chat-tab">${group.name}</div>
           <i id="chat-container-close" class="chat-container-close fas fa-times"></i>
