@@ -18,14 +18,13 @@ class AppspaceHome {
 
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        
-        // if (mod.viewing == "feed") {
+
           if (entry.isIntersecting) {
             let saito_loader = this.saito_loader;
             saito_loader.render(app, mod, "redsquare-intersection", false);
             mod.loadMoreTweets(()=> saito_loader.remove());
           }
-        // }
+
       });
     }, {
       root: null,
