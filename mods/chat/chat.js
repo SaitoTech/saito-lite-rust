@@ -32,36 +32,10 @@ class Chat extends ModTemplate {
 
 
         this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
-console.log("=========");
-console.log("========= create chat group");
-console.log("=========");
-
             this.createChatGroup(data?.members);
             this.app.connection.emit("chat-manager-render-request");
         });
 
-        this.app.connection.on("open-chat-with", (data) => {
-
-            if (!data) {
-                this.openChatBox(app.auto_open_chat_box)
-                return;
-            }
-
-            let group;
-
-            if (Array.isArray(data.key)) {
-                group = this.createChatGroup(data.key, data.name);
-            } else {
-                let name = data.name || app.keys.returnUsername(data.key);
-                group = this.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
-            }
-
-            this.openChatBox(group.id);
-        });
-
-        app.connection.on("open-chat-with-community", () => {
-            this.openChatBox();
-        });
     }
 
 

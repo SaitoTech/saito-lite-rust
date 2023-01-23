@@ -20,9 +20,6 @@ class ChatPopup {
 
   render() {
 
-
-console.log("re-rendering chat popup!");
-
     //
     // exit if group unset
     //
