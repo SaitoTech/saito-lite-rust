@@ -11,6 +11,10 @@ const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
 const redsquareHome = require("./index");
 
+
+const SaitoLoginOverlay = require('../../lib/saito/ui/saito-login-overlay/saito-login-overlay');
+
+
 class RedSquare extends ModTemplate {
 
   constructor(app) {
@@ -120,7 +124,7 @@ class RedSquare extends ModTemplate {
         text: "Home",
         icon: "fa-solid fa-house",
         allowed_mods: ["redsquare"],
-        callback: function (app) {
+        callback: function (app, id) {
           window.location = "/redsquare";
         }
       },
@@ -128,7 +132,7 @@ class RedSquare extends ModTemplate {
         text: "notifications",
         icon: "fas fa-bell",
         allowed_mods: ["redsquare"],
-        callback: function (app) {
+        callback: function (app, id) {
           window.location = "/redsquare#notifications";
         }
       }]
@@ -286,6 +290,8 @@ class RedSquare extends ModTemplate {
     }
 
     super.render();
+
+    this.app.connection.emit("recovery-backup-overlay-render-request");
 
   }
 

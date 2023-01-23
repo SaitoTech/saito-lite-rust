@@ -132,13 +132,11 @@ class Stun extends ModTemplate {
         }
 
         if (type === 'saito-header') {
-            return {
-                text: this.appname,
-                icon: this.icon,
-                allowed_mods: ["redsquare"],
-                callback: function (app) {
-                    window.location = "/redsquare#wallet";
-                }
+          return {
+            text: this.appname,
+            icon: this.icon,
+            allowed_mods: ["redsquare"],
+            callback: function (app, id) {
             }
         }
 
@@ -255,7 +253,7 @@ class Stun extends ModTemplate {
         }
         return null;
     }
-
+    }
 
 
     // callback(this.app, this.mod, roomCode)

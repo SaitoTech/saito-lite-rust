@@ -69,6 +69,10 @@
   -webkit-text-stroke: var(--saito-background-color) 1px;
 }
 
+.appspace-menu {
+  display: none;
+}
+
 @media screen and (max-width: 768px) {
   .saito-menu>ul {
     padding: 0;
@@ -92,6 +96,9 @@
     text-align: center;
     font-size: 1.5rem;
   }
+  .appspace-menu {
+    display: block;
+  }
 }
 
 @media screen and (max-width: 1500px) {
@@ -112,6 +119,11 @@
   }
   .saito-menu>ul>li>i+span {
     margin: 0;
+    text-overflow: ellipsis;
+    max-width: 10rem;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0.5rem;
   }
   .saito-menu>ul>li>span {
     font-size: 1.33rem;

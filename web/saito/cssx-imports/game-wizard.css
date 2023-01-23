@@ -1,0 +1,522 @@
+
+
+/* Overlay -- in case we still have a link to game rules from game creation wizard*/
+
+.dark .rules-overlay{
+  padding: 1em;
+  font-size: 20px;
+  border-radius: 0.5rem;
+  max-width: 80vw;
+  min-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--saito-dark-purple);
+  color: var(--saito-white);
+}
+
+.dark .rules-overlay p, .dark .rules-overlay h1, .dark .rules-overlay h2,
+.dark .rules-overlay h3, .dark .rules-overlay h4 {
+  color: var(--saito-white);
+}
+
+.rules-overlay p{
+  margin-top: 0.5em;
+}
+
+
+/* Game Advanced Options Styling*/
+.game-wizard-advanced-options-overlay .overlay-title {
+  text-align: center;
+}
+
+.game-wizard-advanced-options-overlay .overlay-input {
+  margin-bottom: 1rem;
+}
+
+.game-wizard-advanced-options-overlay select {
+  text-transform: capitalize;
+}
+
+.game-wizard-advanced-options-overlay .options_notice {
+  margin-bottom: 1.2rem;
+  color: var(--saito-white);
+  font-style: italic;
+  text-align: center;
+}
+
+
+
+.game-wizard {
+  color:  rgb(234, 234, 239);;
+  padding: 1em;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  font-size: 1.75rem;
+  background-color: #0009;
+  width: 60vw;
+  max-height: 50vh;
+  /*overflow-y: scroll;*/
+}
+
+.game-wizard-advanced-box {
+  display: block;
+  text-align: left;
+}
+.game-wizard-advanced-box .list-header:nth-of-type(n + 2) {
+  margin-top: 1.2rem;
+}
+
+
+
+
+.game-wizard-controls {
+  display: grid;
+  grid-template-columns: 3fr 7fr;
+  grid-gap: 1rem;
+  margin-top: 2rem;
+}
+
+.game-wizard-controls option {
+  background: var(--saito-black);
+  color: var(--saito-white);
+}
+
+.game-wizard-players {
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.game-wizard-players-no-select {
+  width: 20em;
+  height: 3em;
+  line-height: 3;
+  width: 100%;
+  font-size: 1.2em;
+  padding: 0 1em;
+}
+
+
+/* Custom Select */
+.saito-select {
+  position: relative;
+  display: flex;
+  height: 3em;
+  line-height: 3;
+  background: #55555555;
+  overflow: hidden;
+  border-bottom: 1px solid var(--saito-red);
+  width: 100%;
+}
+
+/* Arrow */
+.saito-select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 1em;
+  background: #55555533;
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-transition: 0.25s all ease;
+  -o-transition: 0.25s all ease;
+  transition: 0.25s all ease;
+}
+
+
+
+.game-wizard-options > .saito-select::after {
+  background: var(--saito-purple);
+}
+
+.game-wizard-options .saito-select::after {
+  background: none;
+}
+
+.rs-create-game-players.dark .saito-select select, .game-wizard-options .saito-select select {
+  border-color: var(--saito-purple);
+  background: var(--saito-light-dark-transparent);
+  color: var(--saito-white);
+}
+
+
+.game-wizard-players-select {
+  background: var(--saito-light-dark-transparent);
+  color: var(--saito-white);
+  border-color: var(--saito-purple);
+}
+
+.game-wizard-players-select option {
+  background: var(--saito-black);
+  color: var(--saito-white);
+}
+
+.game-create-new-overlay.dark .saito-overlay {
+  background: none;
+  color: var(--saito-white);
+}
+
+.game-create-new-overlay.dark .saito-overlay select {
+  background: none;
+  color: var(--saito-white);;
+  border: 2px solid var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .saito-overlay select::focus-visible {
+  border: 2px solid var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .saito-overlay input {
+  border-color: var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .saito-overlay input::after {
+  background: var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .saito-overlay .saito-select {
+  margin: 1.5rem 0rem;
+}
+
+.game-create-new-overlay.dark .saito-overlay .saito-select::after {
+  background: none;
+}
+
+
+.game-create-new-overlay.dark .saito-overlay select option {
+  background: var(--saito-black);
+}
+
+.game-create-new-overlay.dark .saito-overlay .game-wizard-advanced-return-btn {
+  background: var(--saito-purple);
+}
+
+.game-create-new-overlay.dark .saito-overlay .game-wizard-advanced-return-btn:hover {
+  color: #fff;
+  border: none;
+}
+
+.game-create-new-overlay.dark .saito-overlay h1,
+.game-create-new-overlay.dark .saito-overlay h2,
+.game-create-new-overlay.dark .saito-overlay h3, 
+.game-create-new-overlay.dark .saito-overlay h4,
+.game-create-new-overlay.dark .saito-overlay p {
+  color: var(--saito-white);
+  margin: 1.5rem 0rem;
+}
+
+.game-create-new-overlay.dark .saito-overlay p {
+  line-height: 2rem;
+}
+
+.game-wizard-options-toggle {
+  padding-top: 10px;
+}
+.game-wizard-options-toggle-text {
+  border-bottom: 1px dashed;
+  cursor: pointer;
+}
+.game-wizard-invite {
+  width: 100%;
+  min-height: 70px;
+  display: block !important;
+  padding: 0rem !important;
+}
+.game-wizard-other-btns {
+  display: none;
+  /* display: flex; */
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.saito-multi-select_btn {
+  overflow: hidden;
+}
+
+.saito-multi-select_btn.saito-select {
+  border-bottom: unset;
+  height: 4.8rem;
+  width: unset;
+  position: relative;
+  display: flex;
+  line-height: 3;
+  background: #fff;
+  color: var(--saito-primary);
+}
+
+.saito-multi-select_btn_options {
+  width: calc(100% - 60px);
+  padding: 0;
+  border: none;
+}
+
+.saito-multi-select_btn_options.dark {
+  background: none;
+  margin-left: 0.5rem;
+}
+
+.saito-multi-select_btn_options button{
+  border-radius: 0.5rem 0px 0px 0.5rem;
+  min-height: 4.8rem;
+  margin-bottom: 0.2rem;
+}
+
+.saito-multi-select_btn.showAll {
+  overflow: visible;
+}
+
+.saito-multi-select_btn.dark {
+  background: none;
+}
+
+
+.saito-multi-select_btn_options.dark button{
+  background: var(--saito-dark-purple);
+  border-color: var(--saito-purple);
+  margin: 0rem;
+  padding: 0rem;
+  width: 101%;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.game-wizard-invite .saito-select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 1em;
+  background: #55555533;
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-transition: 0.25s all ease;
+  -o-transition: 0.25s all ease;
+  transition: 0.25s all ease;
+  height: 4.8rem;
+  line-height: 4.8rem;
+}
+
+.game-wizard-invite .saito-multi-select_btn.saito-select::after {
+  box-sizing: border-box;
+  border: 1px solid var(--saito-primary);
+  background-color: #fff;
+  color: var(--saito-primary);
+  border-radius: 0 0.5rem 0.5rem 0;
+  height: 4.8rem;
+  line-height: 4.8rem;
+  width: 60px;
+  text-align: center;
+}
+
+
+.game-wizard-invite .saito-multi-select_btn.saito-select.dark::after {
+  background: var(--saito-purple);
+  border-color: var(--saito-purple);
+  color: var(--saito-white);
+}
+
+
+/* Transition */
+.saito-select:hover::after {
+  color: var(--saito-red);
+}
+.dark option {
+  background: var(--saito-black);
+}
+
+
+.saito-multi-btn {
+  width: 100%;
+  min-height: 4.8rem;
+  font-weight: bold;
+  margin: 0.1rem;
+  background: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
+  color: #fff;
+}
+
+
+.game-wizard-form {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: 1fr;
+}
+
+
+
+
+.game-create-new-overlay {
+  display: grid;
+  max-height: 80vh;
+  height: min-content;
+  width: 60vw;
+  overflow-y: visible;
+  grid-template-rows: min-content auto;
+  background-color: var(--saito-white);
+  padding: 2rem;
+  border-radius: 0.5rem;
+}
+
+.game-create-new-overlay.dark {
+  background: var(--saito-dark-transparent);
+  color: var(--saito-white);
+}
+
+
+.info-item-wrapper {
+  border-bottom: 2px dotted #b5b5b5;
+  display: inline-block;
+  cursor: pointer;
+}
+
+
+.game-create-new-overlay .saito-module-intro{
+  min-height: 17rem;
+}
+
+.saito-module-intro {
+  display: grid;
+  grid-template-columns: 3fr 7fr;
+  grid-gap: 1rem;
+}
+
+.saito-module-intro-image {
+  background-color: grey;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+
+.saito-module-intro-text{
+  margin: 0 1.5rem;
+}
+
+.saito-module-intro-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  position: relative;
+  white-space: nowrap;
+  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.saito-module-intro-description {
+  font-size: 1.9rem;
+  line-height: 2.8rem;
+}
+
+.saito-module-intro-details{
+  font-size: 1.6rem;
+  margin: 0.4rem;
+}
+.saito-module-intro-details .detail_row{
+  margin: 0.4rem 0;
+}
+
+.arcade-game-publisher-message {
+  margin-top: 10px;
+  font-size: 1em;
+}
+
+#arcade-advance-opt {
+  margin-top: 1rem;
+  text-transform: lowercase;
+}
+
+
+.saito-labeled-input{
+  width: 100%;
+  padding: 0 1rem;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+
+.game-help-link {
+  position: absolute;
+  right: 2rem;
+  font-size: 2rem;
+  color: #FFFD;
+}
+
+
+
+.game-wizard-advanced-return-btn {
+  font-size: 1.4em;
+  margin-top: 20px;
+  padding: 16px 30px 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+
+
+.redsquare-game-creator {
+  padding: 3rem;
+  border-radius: 0.5rem;
+  background-color: #0009;
+  color: var(--saito-white);
+  max-height: 90vh;
+  max-width: 100vw;
+  overflow-y: auto;
+}
+
+.redsquare-create-game-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
+}
+
+
+.redsquare-create-game-header {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.redsquare-game-container {
+  display: grid;
+  grid-template-columns: 12rem auto;
+  grid-template-rows: min-content 1fr;
+  grid-gap: 1rem;
+  min-height: 12rem;
+  max-height: 12rem;
+  padding: 0.5rem;
+  min-width: 35rem;
+  width: 50rem;
+  max-width: calc(100vw - 4rem);
+}
+
+.redsquare-game-container:hover {
+  cursor: pointer;
+  background-color: #0009;
+}
+
+.redsquare-game-image {
+  grid-row: span 2;
+  width: 12rem;
+  height: auto;
+}
+
+.redsquare-game-image>img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem
+}
+
+.redsquare-game-title {
+  font-size: 3rem;
+}
+
+.redsquare-game-description {
+  font-size: 1.5rem;
+  line-height: 1.9rem;
+  overflow: auto;
+}

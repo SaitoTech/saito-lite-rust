@@ -394,7 +394,7 @@ alert("Observer Overlay for URL Games not yet implemented");
         text: "Games",
         icon: "fas fa-gamepad",
         allowed_mods: ["redsquare"],
-        callback: function (app) {
+        callback: function (app, id) {
           window.location = "/arcade";
         }
       }]

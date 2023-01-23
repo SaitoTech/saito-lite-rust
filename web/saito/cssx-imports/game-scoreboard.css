@@ -1,0 +1,38 @@
+
+.game-scoreboard{
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: fit-content;
+  padding: 4px 8px;
+  /*max-height: 40px;*/
+  background-color: #d5d5d5cc;
+  border: 1px solid #444;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+
+
+.scoreitem{
+  padding: 0 10px;
+}
+
+.table_ctrl{
+  font-weight: bold;
+  cursor: pointer;
+  background-color: whitesmoke;
+  border: 2px solid whitesmoke;
+  padding: 0 10px;
+}
+
+.table_ctrl:hover{
+  background-color: #EEE;
+  color: whitesmoke;  
+}
