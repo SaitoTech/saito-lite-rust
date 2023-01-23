@@ -62,7 +62,7 @@ class StunxGameMenu {
                 peers_in_room.push(my_public_key);
             }
             let peer_count = peers_in_room.length;
-            console.log('peer count', peer_count);
+            // console.log('peer count', peer_count)
             let is_max_capacity = false;
             if (peer_count === 4) {
               is_max_capacity = true;
@@ -84,7 +84,7 @@ class StunxGameMenu {
             // peers_in_room.forEach(peer => {
             //   this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
             // });
-            mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
+            mod.createMediaConnectionWithPeers([peers_in_room[0]], 'large', "Video", room_code);
             
         
           }
