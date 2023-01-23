@@ -46,8 +46,12 @@
 
 .league-overlay-body {
   display: grid;
-  grid-template-columns: 1fr max-content;
+  grid-template-columns: 1fr 0.5fr;
   grid-gap: 2rem;
+}
+
+.league-error {
+  padding: 0rem 1.5rem;
 }
 
 .league-overlay-body>div {

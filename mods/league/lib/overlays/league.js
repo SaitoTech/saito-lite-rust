@@ -18,6 +18,7 @@ class LeagueOverlay {
 
     this.overlay.show(LeagueOverlayTemplate(this.app, this.mod));
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
+    this.leaderboard.league = league;
     this.leaderboard.render();
     this.attachEvents();
     this.mod.attachStyleSheets();
