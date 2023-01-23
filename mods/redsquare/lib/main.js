@@ -13,6 +13,7 @@ class RedSquareMain {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareMain";
+     
 
     this.components = {};
     this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
@@ -20,6 +21,22 @@ class RedSquareMain {
     this.components['notifications'] = new RedSquareAppspaceNotifications(app, mod, ".saito-main");
     //this.components['contacts'] = new RedSquareAppspaceContacts(app, mod, ".saito-main");
     this.render_component = 'home';
+
+
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        
+        // if (mod.viewing == "feed") {
+          if (entry.isIntersecting) {
+            // let saito_loader = this.saito_loader;
+            // saito_loader.render(app, mod, "redsquare-intersection", false);
+            mod.loadMoreTweets();
+          }
+        // }
+      });
+    }, {
+      
+    });
 
 
 
@@ -38,6 +55,18 @@ class RedSquareMain {
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
     });
+
+
+    this.app.connection.on("redsquare-home-load-more-tweets-request", (tx) => {
+      // document.querySelector(".saito-main").innerHTML = "";
+      // this.render_component = 'home';
+      console.log(this.mod.tweets, 'new tweets')
+      // this.components[this.render_component].render();
+      // document.querySelector(".saito-sidebar.right").innerHTML = "";
+      // this.mod.sidebar.render();
+    });
+
+
 
     this.app.connection.on("redsquare-thread-render-request", (tweet) => {
       document.querySelector(".saito-main").innerHTML = "";
@@ -116,6 +145,8 @@ class RedSquareMain {
     //
     //
     //
+  
+
     this.attachEvents();
 
   }
@@ -145,6 +176,9 @@ class RedSquareMain {
       }
       scrollTop = scrollableElement.scrollTop;
     });
+
+
+    this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
   }
 
 }
