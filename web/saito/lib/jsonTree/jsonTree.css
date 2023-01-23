@@ -105,3 +105,21 @@
 .jsontree_node_empty > .jsontree_label-wrapper > .jsontree_label {
     cursor: default !important;
 }
+
+/* saito add ons */
+.jsontree_label {
+    color: var(--saito-font-color);
+}
+
+.jsontree_value_string, 
+.jsontree_value_number,
+.jsontree_value_boolean {
+    color: var(--saito-primary);
+}
+
+.jsontree_expand-button {
+    background-color: var(--saito-font-color);
+    -webkit-mask-image: url(icons.svg);
+    mask-image: url(icons.svg);
+    background-image: none;
+}
