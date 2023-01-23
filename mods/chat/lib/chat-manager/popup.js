@@ -1,4 +1,4 @@
-const SaitoEmoji = require("../../../../lib/saito/new-ui/saito-emoji/saito-emoji");
+const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
 const ChatPopupTemplate = require("./popup.template");
 
 class ChatPopup {
@@ -9,7 +9,7 @@ class ChatPopup {
     this.mod = mod;
 
     this.container = container;
-    this.emoji = new SaitoEmoji(app, mod, `chat-input`);
+    this.emoji = null;
     this.manually_closed = false;
     this.manually_moved = false;
     this.group = null;
@@ -37,6 +37,14 @@ class ChatPopup {
     let popup_qs = ".chat-popup-" + this.group.id;
     let popup_id = "chat-popup-" + this.group.id;
     let header_id = "chat-header-" + this.group.id;
+    let input_id = "chat-input-" + this.group.id;
+
+    //
+    //
+    //
+    if (this.emoji == null) {
+        this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
+    }
 
     //
     // calculate some values to determine position on screen...
@@ -100,7 +108,7 @@ class ChatPopup {
     //
     // emojis
     //
-    this.emoji.render(this.app, this.mod);
+    this.emoji.render();
 
     //
     // scroll to bottom
@@ -129,6 +137,7 @@ class ChatPopup {
     let app = this.app;
     let mod = this.mod;
     let group_id = this.group.id;
+    let input_id = "chat-input-" + this.group.id;
 
     //
     // our query selector
@@ -162,7 +171,7 @@ class ChatPopup {
       // focus on text input
       //
       if (!mod.isOtherInputActive()) {
-        document.getElementById("chat-input").focus();
+        document.getElementById(input_id).focus();
       }
 
       //

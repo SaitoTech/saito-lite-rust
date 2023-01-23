@@ -37,9 +37,11 @@
 }
 
 @media screen and (max-width: 768px) {
+
   .redsquare-page-header-title {
     font-size: 2rem;
   }
+
   div#redsquare-tweet {
     content: "\002B";
     border-radius: 50%;
@@ -51,6 +53,7 @@
     bottom: 2rem;
     right: 2rem;
   }
+
   div#redsquare-tweet::after {
     content: "\002B";
     position: absolute;
@@ -62,7 +65,22 @@
     line-height: 5rem;
     width: 5rem;
   }
+
   div#redsquare-profile {
     display: none;
   }
+
+  .redsquare-appspace-header {
+    display: none;
+  }
+
+  .redsquare-appspace-body {
+    margin-top: -1rem;
+  }
+
 }
+
+
+
+
+

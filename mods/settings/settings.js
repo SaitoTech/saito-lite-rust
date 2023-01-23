@@ -47,6 +47,7 @@ class Settings extends ModTemplate {
   }
 
   renderInto(qs) {
+
     if (qs == ".saito-main") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];

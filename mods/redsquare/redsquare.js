@@ -74,7 +74,7 @@ class RedSquare extends ModTemplate {
     ];
 
     this.styles = [
-      '/saito/saitox.css',
+      '/saito/saito.css',
       '/redsquare/style.css',
     ];
 
@@ -120,7 +120,7 @@ class RedSquare extends ModTemplate {
       }
     }
     if (type === 'saito-header') {
-      return [{
+      let m = [{
         text: "Home",
         icon: "fa-solid fa-house",
         allowed_mods: ["redsquare"],
@@ -129,13 +129,14 @@ class RedSquare extends ModTemplate {
         }
       },
       {
-        text: "notifications",
+        text: "Notifications",
         icon: "fas fa-bell",
         allowed_mods: ["redsquare"],
         callback: function (app, id) {
           window.location = "/redsquare#notifications";
         }
-      }]
+      }];
+      return m;
     }
 
     return null;

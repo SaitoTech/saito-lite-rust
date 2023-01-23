@@ -2,8 +2,6 @@
 buttons
 -----------------------------------------------------------------*/
 
-@import url("./saito-colors.css");
-
 button,
 .saito-button-primary {
   background: var(--saito-primary);
@@ -11,42 +9,30 @@ button,
   padding: 1rem 1.5rem;
   text-align: center;
   letter-spacing: 1px;
-  margin: 2rem 0;
   font-size: 1.8rem;
-  min-width: 18rem;
-  color: #fff;
+  color: var(--saito-white);
   font-weight: 500;
   border-radius: 0.5rem;
   cursor: pointer;
-  margin: .5rem;
-  border: none;
+  margin: 0.5rem;
   border: 1px solid transparent;
 }
 
 .saito-button-secondary {
-  text-align: center;
   padding: 1rem 1.5rem;
   text-align: center;
   letter-spacing: 1px;
-  margin: 2rem 0;
   font-size: 1.8rem;
-  color: #fff;
   font-weight: 500;
   border-radius: 0.5rem;
   cursor: pointer;
-  margin: .5rem;
-  border: none;
+  margin: 0.5rem;
   border: 1px solid var(--saito-primary);
   color: var(--saito-primary);
-
-}
-
-.saito-button-gradient {
-  background: var(--dreamscape)
 }
 
 .saito-button-primary:hover {
-  background: var(--saito-white);
+  background: var(--saito-background-color);
   color: var(--saito-primary);
   border: 1px solid var(--saito-primary);
 }
@@ -60,16 +46,14 @@ button.small,
 .saito-button-primary.small,
 .saito-button-secondary.small,
 .saito-button-gradient.small {
-  padding: .75rem .7rem;
+  padding: 0.75rem 0.7rem;
   font-size: 1.4rem;
   min-width: 4rem;
 }
-
-button.large,
-.saito-button-primary.large,
-.saito-button-secondary.large,
-.saito-button-grandient.large {
-  padding: 1.5rem 2rem;
-  min-width: 27rem;
-  font-size: 2.2rem;
+button.fat, saito-button-primary.fat, .saito-button-seconary.fat, saito-button-gradient.fat {
+  height: 7rem;
+  font-size: 2rem;
+  padding: 2rem !important;
+  width: 30rem;
 }
+

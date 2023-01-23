@@ -3,103 +3,86 @@ Saito Identicon
 -----------------------------------------------------------------*/
 
 .saito-identicon {
-    width: 3.5rem;
-    height: 3.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1px solid var(--saito-background-color);
 }
 
+.saito-identicon-box {
+  width: 3.5rem;
+  height: 3.5rem;
+}
 
 /* ----------------------------------------------------------------
 Saito Username
 -----------------------------------------------------------------*/
 
-.saito-address , .saito-username {
-    max-width: 90%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 1.6rem;
-    display: flex;
-    align-items: center;
+.saito-address, .saito-username {
+  max-width: 99%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  color: var(--saito-font-color-heavy);
 }
 
-.saito-address>*:first-child , .saito-username>*:first-child {
-    margin-right: .5rem;
+.saito-user>.saito-address-long:nth-child(2) {
+  grid-column-end: 4;
 }
-
 
 /* ----------------------------------------------------------------
 Saito User
 -----------------------------------------------------------------*/
 
-
 .saito-user {
-    display: grid;
-    cursor: pointer;
-    grid-template-columns: min-content 1fr min-content;
-    grid-template-rows: min-content 1fr;
-    justify-items: start;
-    margin-bottom: 1px;
-    width: 100%;
-    position: relative;
+  display: grid;
+  column-gap: 1rem;
+  cursor: pointer;
+  grid-template-columns: min-content 1fr min-content;
+  grid-template-rows: min-content 1fr;
+  justify-items: start;
+  width: 100%;
+  position: relative;
 }
-
-
-
 
 /*  saito-identicon-box  */
-.saito-user>div:nth-child(1) {
-    margin-right: 1rem;
-    grid-column-start: 1;
-    grid-column-end: span 1;
-    grid-row: span 2;
+
+.saito-user>.saito-identicon-box {
+  grid-column-start: 1;
+  grid-column-end: span 1;
+  grid-row: span 2;
 }
 
-
-.saito-user>.saito-address-long:nth-child(2) {
-    grid-column-end: 4;
+.saito-user>.saito-address {
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 1;
+  grid-row-end: span 1;
 }
 
-.saito-user>div:nth-child(2) {
-    grid-column-start: 2;
-    grid-column-end: span 1;
-    grid-row-start: 1;
-    grid-row-end: span 1;
+.saito-user>.saito-user-timestamp {
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 2;
+  grid-row-end: span 1;
+  font-size: 1.4rem;
+  color: var(--saito-font-color-light);
 }
 
-.saito-user>div:nth-child(3) {
-    grid-column-start: 2;
-    grid-column-end: span 1;
-    grid-row-start: 2;
-    grid-row-end: span 1;
-    font-size: 1.4rem;
-    color: #888;
+.saito-user>.saito-userline {
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 2;
+  grid-row-end: span 1;
+  font-size: 1.4rem;
 }
 
-.saito-user.small>div:nth-child(3) {
-    line-height: 1.8rem;
-    padding-top: 0.5rem;
+.saito-user .saito-datetime {
+  cursor: pointer;
+  grid-column-start: 3;
+  grid-column-end: span 1;
+  grid-row: span 2;
+  font-size: 1.4rem;
+  align-items: top;
 }
-
-.saito-user>div:nth-child(4).saito-user-alert,
-.saito-user-alert {
-    grid-row-start: 1;
-    grid-row-end: 3;
-    font-size: 3rem;
-    background-color: var(--saito-primary);
-    color: white;
-    padding: 1rem;
-    white-space: nowrap;
-}
-
-.saito-user>div:nth-child(4) {
-    cursor: pointer;
-    grid-column-start: 3;
-    grid-column-end: span 1;
-    grid-row: span 2;
-    font-size: 1.4rem;
-    align-items: top;
-}
-
-
-
-
