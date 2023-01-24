@@ -639,10 +639,6 @@ alert("Observer Overlay for URL Games not yet implemented");
 
 
 
-
-
-
-
   ///////////////////////
   // GAME TRANSACTIONS //
   ///////////////////////
@@ -782,6 +778,54 @@ alert("Observer Overlay for URL Games not yet implemented");
 
     return;
   }
+
+
+
+
+  ///////////
+  // Close //
+  ///////////
+  createCloseTransaction(game_id) {
+
+    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    let my_publickey = this.app.wallet.returnPublicKey();
+    let msg = {
+      request: "close",
+      module: "Arcade",
+      game_id: game_id,
+    };
+    newtx.msg = msg;
+    newtx = app.wallet.signTransaction(newtx);
+
+    return newtx;
+
+  }
+  async receiveCloseTransaction(tx) {
+    let txmsg = tx.returnMessage();
+    let id = txmsg.game_id;
+    this.removeGame(id);
+    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id AND status != 'over'`;
+    let params = { $status: "close", $game_id: id };
+    await this.app.storage.executeDatabase(sql, params, "arcade");
+  }
+  sendCloseTransaction(game_id) {
+
+    let close_tx = this.createCloseTransaction(game_id);
+    this.app.network.propagateTransaction(close_tx);
+
+    let relay_mod = app.modules.returnModule("Relay");
+    if (relay_mod != null) {
+      relay_mod.sendRelayMessage(peers, "arcade spv update", close_tx);
+    }
+  }
+
+
+
+
+
+
+
+
 
   ////////////
   // Invite // TODO -- confirm we still use these, instead of challenge
@@ -1098,22 +1142,6 @@ alert("Observer Overlay for URL Games not yet implemented");
     let challenge = new ChallengeModal(app, this, tx);
     challenge.processChallenge(app, tx);
 
-  }
-
-  ///////////
-  // CLOSE //
-  ///////////
-  //
-  // remove the game from our list of active games and mark the game
-  // as close in any index.
-  //
-  async receiveCloseTransaction(tx) {
-    let txmsg = tx.returnMessage();
-    let id = txmsg.sig || txmsg.game_id;
-    this.removeGame(id);
-    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id AND status != 'over'`;
-    let params = { $status: "close", $game_id: id };
-    await this.app.storage.executeDatabase(sql, params, "arcade");
   }
 
   //////////////

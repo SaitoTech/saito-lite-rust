@@ -34,7 +34,6 @@ class ContinueGameOverlay {
     document.querySelector(".arcade-game-controls-continue-game").onclick = (e) => {
         let game_id = e.currentTarget.getAttribute("data-id");      
 	let game_tx = this.mod.returnGame(game_id);
-console.log("GAME: " + JSON.stringify(game_tx.msg));
         let modname = game_tx.msg.options.game;
         let game_mod = this.app.modules.returnModuleByName(modname);
 	window.location = `/${game_mod.returnSlug()}/#gid=${game_id}`;
@@ -42,7 +41,8 @@ console.log("GAME: " + JSON.stringify(game_tx.msg));
     }
     document.querySelector(".arcade-game-controls-cancel-game").onclick = (e) => {
         let game_id = e.currentTarget.getAttribute("data-id");      
-
+        this.mod.sendCancelTransaction(game_id);
+        this.mod.removeGame();
     }
 
   }
