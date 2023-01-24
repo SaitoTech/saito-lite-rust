@@ -352,6 +352,16 @@
   color: var(--saito-white);
 }
 
+.arcade-wizard-game-invite {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.game-invite-btn {
+  min-width: 25rem;
+}
+
 @media screen and (max-width: 700px) {
   .arcade-wizard-game-container {
     display: flex !important;
@@ -363,9 +373,8 @@
   .arcade-wizard-overlay {
     width: 95vw;
   }
-
-    .arcade-wizard-game-controls {
-      display: flex !important;
+  .arcade-wizard-game-controls {
+    display: flex !important;
     flex-direction: column-reverse;
   }
 }
