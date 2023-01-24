@@ -1,6 +1,8 @@
 module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
 
   let txmsg = component_obj.invite_tx.returnMessage();
+
+  let game_id = txmsg.game_id || "";
   let invite = component_obj.invite;
   let modname = txmsg.name;
   if (!modname) { modname = txmsg.game; }
@@ -97,12 +99,12 @@ module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
 
   	if (invite.players.length == invite.players_needed) {
         
-      html += `<div class="arcade-game-controls-join-game saito-button saito-button-primary" data-cmd="continue">continue game</div>`;
+      html += `<div class="arcade-game-controls-continue-game saito-button saito-button-primary" data-id="${game_id}" data-cmd="continue">continue game</div>`;
 
     }
 
   html +=`
-        <div class="arcade-game-controls-join-game saito-button saito-button-primary" data-cmd="cancel">cancel game</div>
+        <div class="arcade-game-controls-cancel-game saito-button saito-button-primary" data-id="${game_id}" data-cmd="cancel">cancel game</div>
       </div>
     </div>
   `;
