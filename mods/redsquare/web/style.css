@@ -72,19 +72,14 @@
   }
 
   .redsquare-appspace-header {
-<<<<<<< HEAD
     display: none;
+    position: absolute;
+    top: -5rem;
   }
 
   .redsquare-appspace-body {
     margin-top: -1rem;
   }
-
-=======
-    position: absolute;
-    top: -5rem;
-  }
->>>>>>> c05a1c19ab39767995ad121b61bf88bd02377d44
 }
 
 

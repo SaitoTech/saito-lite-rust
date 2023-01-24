@@ -11,7 +11,7 @@ class Mahjong extends GameTemplate {
     super(app);
 
     this.name            = "Mahjong";
-    this.gamename        = "Mahjong Solitaire";
+    this.gamename        = "Mahjong";
     this.game_length     = 10; //Estimated number of minutes to complete a game
     this.description     = `Remove matching mahjong tiles in pairs until the board is clear or you lose`;
     this.categories      = "Games Cardgame one-player";

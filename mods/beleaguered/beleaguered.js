@@ -12,8 +12,8 @@ class Beleaguered extends GameTemplate {
 
     super(app);
 
-    this.name = "Beleaguered Castle Solitaire";
-    this.gamename = "Beleaguered Castle Solitaire";
+    this.name = "Beleaguered";
+    this.gamename = "Beleaguered Castle";
     this.slug = "beleaguered";
     this.description = 'Stack all cards by suit from aces to kings to win this game';
     this.categories = "Games Cardgame one-player";

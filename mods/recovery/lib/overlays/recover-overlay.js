@@ -43,6 +43,8 @@ class RecoverOverlay {
 
     document.querySelector(".saito-restore-button").onclick = (e) => {
 
+alert("TESTING");
+
       let email = document.getElementById("saito-login-email").value;
       let pass  = document.getElementById("saito-login-password").value;
 
@@ -57,8 +59,9 @@ class RecoverOverlay {
 	//
 	// decrypt the transaction using decryption_secret
 	//
-        alert(email + " - " + pass);
         alert(decryption_secret + " - " + retrieval_secret);
+
+	this.mod.sendRecoverTransaction(decryption_secret, retrieval_secret);
 
       }
     }
