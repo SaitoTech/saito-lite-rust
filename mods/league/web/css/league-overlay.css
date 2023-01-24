@@ -81,6 +81,22 @@
   row-gap: 1rem;
 }
 
+.league_recent_player {
+  width: 20rem;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+
+.league-overlay-league-body-games-list .saito-table {
+  overflow-y: scroll;
+  max-height: 25vh;
+
+}
+
 @media screen and (max-width: 1000px) { 
   .league-overlay-body {
     display: flex;
