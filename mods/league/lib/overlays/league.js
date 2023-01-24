@@ -9,20 +9,27 @@ class LeagueOverlay {
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
     this.leaderboard = new Leaderboard(this.app, this.mod, ".league-overlay-leaderboard");
+    this.games = [];
+    this.games['mine'] = [];
+    this.games['others'] = [];
   }
 
-  render() {
+  async render() {
 
     let league = this.mod.leagues[this.mod.league_idx];
-    let game_mod = this.app.modules.returnModuleByName(league.game);
+    
 
-    this.overlay.show(LeagueOverlayTemplate(this.app, this.mod));
+    let game_mod = this.app.modules.returnModuleByName(league.game);    
+    this.overlay.show(LeagueOverlayTemplate(this.app, this.mod, this));
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
+    
     this.leaderboard.league = league;
     this.leaderboard.render();
+    
+    await this.loadRecentGames(league);
+
     this.attachEvents();
     this.mod.attachStyleSheets();
-
   }
 
   attachEvents() {
@@ -43,7 +50,74 @@ class LeagueOverlay {
     });
   }
 
-};
+
+  async loadRecentGames(league){
+    this_obj = this;
+
+    this.mod.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league.id}' LIMIT 10` ,
+      (res) => {
+        let pid = this_obj.app.wallet.returnPublicKey();
+        let html = ``;
+        if (res.rows){
+          for (let g of res.rows){
+
+            let players =  g.players_array.split("_");            
+
+            if (players.includes(pid)) {              
+              this.games['mine'].push(g);  
+            } else {
+              this.games['others'].push(g);
+            } 
+          }
+        }
+
+        let html_mine = ``;
+        if (this_obj.games['mine'].length > 0)  {
+          html_mine = this.create_games_html(this_obj.games['mine']);
+        } else {
+          html_mine = 'No recent games found for you in this league.'  
+        }
+
+        this_obj.app.browser.addElementToSelector(html_mine, ".league_recent_mine .saito-table-body");
+
+        let html_others = ``;
+        if (this_obj.games['others'].length > 0)  {
+          html_others = this.create_games_html(this_obj.games['others']);
+        } else {
+          html_others = 'No recent games found in this league.'         
+        }
+
+        this_obj.app.browser.addElementToSelector(html_others, ".league_recent_others .saito-table-body");
+          
+      });    
+  }
+
+  create_games_html(games) {
+    this_obj = this;
+    let html = ``;
+
+    games.forEach(function(game, key) {
+
+      let dt = this_obj.app.browser.formatDate(game.time_finished);
+      let players_html = ``;
+      let players =  game.players_array.split("_");
+      let date = dt.month + ' ' + dt.day + ', ' + dt.year; 
+
+      players.forEach(function(player, key) {
+          players_html += (key == (players.length-1))  ? `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` 
+          : `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` + ' vs ';
+      });
+
+      html += `
+          <div class="saito-table-row league_recent_game">
+              <div> <span>${date}</span> ( ${players_html}) </div>
+          </div>
+      `;
+    });
+
+    return html;
+  }
+}
 
 module.exports = LeagueOverlay;
 

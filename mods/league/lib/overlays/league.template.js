@@ -1,4 +1,4 @@
-module.exports = LeagueOverlayTemplate = (app, mod) => {
+module.exports = LeagueOverlayTemplate = (app, mod, league_obj) => {
 
     let league = mod.leagues[mod.league_idx];
     let game_mod = app.modules.returnModuleByName(league.game);
@@ -8,7 +8,7 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
     let league_type = "public league"
     let league_desc = game_mod.description;
 
-    return `
+    let html = `
     <div class="league-overlay-container">
     <div class="league-overlay">
     <div class="league-overlay-header">
@@ -22,48 +22,20 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
     <div class="league-overlay-body">
         <div class="league-overlay-league-body-games">
             <div class="league-overlay-description">${game_mod.description}</div>
-            <div class="league-overlay-league-body-games-list">
-                <h5>Upcoming Games</h5>
-                <div class="saito-table">
-                    <div class="saito-table-body">
-                        <div class="saito-table-row">
-                            * June 14th, 2022 (vs david@saito)
-                        </div>
-                        <div class="saito-table-row">
-                            * June 14th, 2022 (vs david@saito)
-                        </div>
-                    </div>
-                </div>
-            </div>
+        
             <div class="league-overlay-league-body-games-list">
                 <h5>My Recent Games</h5>
-                <div class="saito-table">
-                    <div class="saito-table-body">
-                        <div class="saito-table-row">
-                            * June 14th, 2022 (vs david@saito)
-                        </div>
-                        <div class="saito-table-row">
-                            * June 14th, 2022 (vs david@saito)
-                        </div>
+                <div class="saito-table league_recent_mine">
+                    <div class="saito-table-body ">
+                        
                     </div>
                 </div>
             </div>
             <div class="league-overlay-league-body-games-list">
                 <h5>Recent League Matches</h5>
-                <div class="saito-table">
+                <div class="saito-table league_recent_others">
                     <div class="saito-table-body">
-                        <div class="saito-table-row">
-                            * June 14th, 2022 (vs david@saito)
-                        </div>
-                        <div class="saito-table-row">
-                            * June 14th, 2022 (vs david@saito)
-                        </div>
-                        <div class="saito-table-row">
-                            * June 14th, 2022 (vs david@saito)
-                        </div>
-                        <div class="saito-table-row">
-                            * June 14th, 2022 (vs david@saito)
-                        </div>
+                           
                     </div>
                 </div>
             </div>
@@ -80,6 +52,7 @@ module.exports = LeagueOverlayTemplate = (app, mod) => {
  
     `;
 
+    return html;
 };
 
 
