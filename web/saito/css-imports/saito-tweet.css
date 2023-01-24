@@ -299,6 +299,10 @@
   .tweet-picture {
     grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
   }
+
+  .tweet-notice .saito-address {
+    max-width: 70%;
+  }
 }
 
 @media screen and (max-width: 529px) {

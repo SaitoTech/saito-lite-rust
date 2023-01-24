@@ -64,6 +64,7 @@
     left: 0;
     line-height: 5rem;
     width: 5rem;
+    color: #fff;
   }
 
   div#redsquare-profile {
@@ -71,6 +72,7 @@
   }
 
   .redsquare-appspace-header {
+<<<<<<< HEAD
     display: none;
   }
 
@@ -78,6 +80,11 @@
     margin-top: -1rem;
   }
 
+=======
+    position: absolute;
+    top: -5rem;
+  }
+>>>>>>> c05a1c19ab39767995ad121b61bf88bd02377d44
 }
 
 
