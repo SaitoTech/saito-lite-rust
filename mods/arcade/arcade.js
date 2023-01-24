@@ -11,7 +11,7 @@ const JoinGameOverlay = require("./lib/overlays/join-game");
 const ContinueGameOverlay = require("./lib/overlays/continue-game");
 const WaitingGameOverlay = require("./lib/overlays/waiting-game");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
-
+const GameInitializer = require("./lib/main/initializer");
 
 class Arcade extends ModTemplate {
 
@@ -1151,7 +1151,7 @@ alert("Observer Overlay for URL Games not yet implemented");
 
     if (!game_id && !this.viewing_arcade_initialization_page) {
       if (this.browser_active) {
-        let gameLoader = new GameLoader(this.app, this);
+        let gameLoader = new GameInitializer(this.app, this);
         gameLoader.render(this.app, this, "#arcade-main");
       }
       this.viewing_arcade_initialization_page = 1;
@@ -1182,7 +1182,7 @@ alert("Observer Overlay for URL Games not yet implemented");
             if (ready_to_go) {
 
               if (this.browser_active) {
-                let gameLoader = new GameLoader(this.app, this, game_id);
+                let gameLoader = new GameInitializer(this.app, this, game_id);
                 gameLoader.render(this.app, this, "#arcade-main", "Your game is ready to start!");
               } else {
                 let gm = this.app.modules.returnModule(this.app.options.games[i].module);
