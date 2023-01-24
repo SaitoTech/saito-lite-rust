@@ -261,7 +261,7 @@
 .saito-multi-select_btn.saito-select {
   border-bottom: unset;
   height: 4.8rem;
-  width: unset;
+  width: 100%;
   position: relative;
   display: flex;
   line-height: 3;
