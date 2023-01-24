@@ -10,7 +10,7 @@ class GameSlider {
         this.mod = mod;
         this.container = container;
         this.name = "GameSlider";
-
+        this.interval = null;
 
         this.games = [];
 
@@ -24,30 +24,36 @@ class GameSlider {
     }
 
 
+    hide() {
+      if (this.interval) { clearInterval(this.interval); }
+      let obj = document.querySelector(".game-slider");
+      if (obj) { obj.remove(); }
+    }
+
     render() {
 
       //
-    // create HTML of games list
-    //
-    let gamelist = [];
-    let html = '<ul class="slides">';
-    let circles_html = '<div class="slides-circles">';
-    this.mod.game_mods.forEach(game_mod => {
+      // create HTML of games list
+      //
+      let gamelist = [];
+      let html = '<ul class="slides">';
+      let circles_html = '<div class="slides-circles">';
+      this.mod.game_mods.forEach(game_mod => {
         gamelist.push([game_mod.categories, `<li class="slide arcade-game-slider-item-${game_mod.returnSlug()}" data-game-${game_mod.returnSlug()}>
           <span class="game-slider-name">${game_mod.returnName()}</span>
           <img alt="${game_mod.returnName()}" src="/${game_mod.returnSlug()}/img/arcade/arcade-banner-background.png">
           </li>`]); 
-    });
-    if (!this.mod.manual_ordering){
-      gamelist.sort(function (a,b){
-        if (a[0]>b[0]){ return 1;}
-        if (a[0]<b[0]){ return -1;}
-        return 0;
       });
-    }
+      if (!this.mod.manual_ordering){
+        gamelist.sort(function (a,b){
+          if (a[0]>b[0]){ return 1;}
+          if (a[0]<b[0]){ return -1;}
+          return 0;
+        });
+      }
 
-    let first = true;
-    gamelist.forEach(game => {
+      let first = true;
+      gamelist.forEach(game => {
         if (first) {
             html+= game[1].replace("<li", "<li data-active-slide");
             circles_html += "<div data-active-slide></div>"
@@ -56,24 +62,25 @@ class GameSlider {
             html += game[1];
             circles_html += "<div></div>"
         }
-    });
+      });
 
-    html += circles_html + '</div>';
-    html += "</ul>"
+      html += circles_html + '</div>';
+      html += "</ul>"
 
-    if (document.querySelector(".game-slider")) {
-      this.app.browser.replaceElementBySelector(GameSliderTemplate(html), ".game-slider");
-    } else {
-      this.app.browser.addElementToSelector(GameSliderTemplate(html), this.container);
+      if (document.querySelector(".game-slider")) {
+        this.app.browser.replaceElementBySelector(GameSliderTemplate(html), ".game-slider");
+      } else {
+        this.app.browser.addElementToSelector(GameSliderTemplate(html), this.container);
+      }
+
+      this.attachEvents();
+
     }
 
-    this.attachEvents();
-
-  
-    }
 
 
     attachEvents() {
+
         const buttons = document.querySelectorAll("[data-slide-direction]");
 
         buttons.forEach((button) => {
@@ -103,7 +110,7 @@ class GameSlider {
         */
         };
         
-        setInterval(changeSlide.bind(null, 1), 6000);
+        this.interval = setInterval(changeSlide.bind(null, 1), 6000);
         
     }
 

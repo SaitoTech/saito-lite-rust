@@ -19,7 +19,7 @@ class ArcadeMain {
     this.sidebar.align = "nope";
     this.menu = new ArcadeMenu(this.app, this.mod, ".saito-sidebar.left");
     this.sidebar.addComponent(this.menu);
-    this.banner = new GameSlider(this.app, this.mod, ".arcade-game-slider");
+    this.slider = new GameSlider(this.app, this.mod, ".arcade-game-slider");
     this.initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
 
     //
@@ -28,6 +28,7 @@ class ArcadeMain {
     app.connection.on("arcade-game-initialize-render-request", (game_id) => {
       document.querySelector(".arcade-central-panel").innerHTML = "";
       this.mod.is_game_initializing = true;
+      this.slider.hide();
       this.initializer.render(game_id);
     });
 
@@ -46,9 +47,9 @@ class ArcadeMain {
     this.sidebar.render();
 
     //
-    // banner
+    // slider
     //
-    this.banner.render();
+    this.slider.render();
 
     //
     // invite manager
