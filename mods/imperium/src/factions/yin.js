@@ -120,17 +120,17 @@
       type        :       "special" ,
       text        :       "Place additional infantry on planet after producing in sector",
       initialize  :       function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction5_yin_spinner == null) {
-          imperium_self.game.players_info[player-1].faction5_yin_spinner = 0;
+        if (imperium_self.game.state.players_info[player-1].faction5_yin_spinner == null) {
+          imperium_self.game.state.players_info[player-1].faction5_yin_spinner = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction5-yin-spinner") {
-          imperium_self.game.players_info[gainer-1].faction5_yin_spinner = 1;
+          imperium_self.game.state.players_info[gainer-1].faction5_yin_spinner = 1;
         }
       },
       playerEndTurnTriggers : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction5_yin_spinner == 1) {
+        if (imperium_self.game.state.players_info[player-1].faction5_yin_spinner == 1) {
 	  if (imperium_self.game.player == player) {
             if (imperium_self.game.state.active_player_has_produced == 1) {
 	      return 1;

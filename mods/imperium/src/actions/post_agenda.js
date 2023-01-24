@@ -95,9 +95,9 @@
 	  if (imperium_self.game.player == action_card_player) {
 
 	    let html  = '<div class="sf-readable">Spend any number of trade goods to purchase additional votes: </div><ul>';
-	    if (imperium_self.game.players_info[action_card_player-1].goods > 0) {
+	    if (imperium_self.game.state.players_info[action_card_player-1].goods > 0) {
 	      html   += '<li class="textchoice" id="0">0 votes</li>';
-	      for (let i = 1; i <= imperium_self.game.players_info[action_card_player-1].goods+1; i++) {
+	      for (let i = 1; i <= imperium_self.game.state.players_info[action_card_player-1].goods+1; i++) {
 	        if (i == 1) { html   += '<li class="textchoice" id="1">'+i+' vote</li>'; }
 	        else { html   += '<li class="textchoice" id="'+i+'">'+i+' votes</li>'; }
 	      }
@@ -131,7 +131,7 @@
 	    imperium_self.game.queue.splice(qe, 1);
 
 	    imperium_self.game.state.votes_cast[bribing_player-1].votes += goods_spent;
-	    imperium_self.game.players_info[bribing_player-1].goods -= goods_spent;
+	    imperium_self.game.state.players_info[bribing_player-1].goods -= goods_spent;
 	    if (goods_spent == 1) {
 	      imperium_self.updateLog(imperium_self.returnFaction(bribing_player) + " bribes the Council for " + goods_spent + " additional vote");
 	    } else {

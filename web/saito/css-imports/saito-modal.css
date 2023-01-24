@@ -1,39 +1,35 @@
+/* generic modal look and feel */
+/*
+NOTE: the .saito-model class is a grid with two sectiions
+This alows for a header with a header with title to be added without extra CSS
+*/
 .saito-modal {
-  width: 70rem;
+  font-size: 1.25rem;
+  color: var(--saito-white);
+  background: var(--saito-modal-background);
+  min-width: 70rem;
   height: min-content;
   max-width: 80vw;
-  font-size: 1.5rem;
-  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-  background-image: url(/saito/img/dreamscape.png);
-  background-position: 0em;
-  background-size: 120% 100%;
-  color: white;
+  padding: 2rem;
   display: grid;
   grid-template-rows: min-content auto;
-  padding: 2rem;
 }
 
 .saito-modal-title {
-  font-size: 5rem;
-  margin-left: 3rem;
+
+  font-size: 3rem;
 }
 
-.saito-modal-subtitle {
-  font-size: 2.2rem;
-  margin-left: 3rem;
-}
-
-.saito-modal-content {
-  margin-top: 1.5rem;
-  font-size: 1.8rem;
-}
-
+/* saito-modal-menu
+/* theming for a simple menu with font-awesome icon and text in a two col grid */
 .saito-modal-menu-option {
-  margin-left: 2rem;
-  height: 8rem;
-  font-size: 4rem;
-  margin-right: 2rem;
+  font-size: 3rem;
+  height: 6rem;
+  margin: 0 2rem;
   padding: 1.5rem;
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 4rem 1fr;
 }
 
 .saito-modal-menu-option:hover {
@@ -221,7 +217,7 @@
 }
 
 .welcome-modal-action button:hover {
-  border-color: #fff;
+  border-color: var(--saito-background-color);
 }
 
 /* mobile modals */

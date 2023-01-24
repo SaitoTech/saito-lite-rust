@@ -12,7 +12,6 @@ const ContinueGameOverlay = require("./lib/overlays/continue-game");
 const WaitingGameOverlay = require("./lib/overlays/waiting-game");
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
-
 class Arcade extends ModTemplate {
 
   constructor(app) {
@@ -640,10 +639,6 @@ alert("Observer Overlay for URL Games not yet implemented");
 
 
 
-
-
-
-
   ///////////////////////
   // GAME TRANSACTIONS //
   ///////////////////////
@@ -783,6 +778,54 @@ alert("Observer Overlay for URL Games not yet implemented");
 
     return;
   }
+
+
+
+
+  ///////////
+  // Close //
+  ///////////
+  createCloseTransaction(game_id) {
+
+    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    let my_publickey = this.app.wallet.returnPublicKey();
+    let msg = {
+      request: "close",
+      module: "Arcade",
+      game_id: game_id,
+    };
+    newtx.msg = msg;
+    newtx = app.wallet.signTransaction(newtx);
+
+    return newtx;
+
+  }
+  async receiveCloseTransaction(tx) {
+    let txmsg = tx.returnMessage();
+    let id = txmsg.game_id;
+    this.removeGame(id);
+    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id AND status != 'over'`;
+    let params = { $status: "close", $game_id: id };
+    await this.app.storage.executeDatabase(sql, params, "arcade");
+  }
+  sendCloseTransaction(game_id) {
+
+    let close_tx = this.createCloseTransaction(game_id);
+    this.app.network.propagateTransaction(close_tx);
+
+    let relay_mod = app.modules.returnModule("Relay");
+    if (relay_mod != null) {
+      relay_mod.sendRelayMessage(peers, "arcade spv update", close_tx);
+    }
+  }
+
+
+
+
+
+
+
+
 
   ////////////
   // Invite // TODO -- confirm we still use these, instead of challenge
@@ -1101,22 +1144,6 @@ alert("Observer Overlay for URL Games not yet implemented");
 
   }
 
-  ///////////
-  // CLOSE //
-  ///////////
-  //
-  // remove the game from our list of active games and mark the game
-  // as close in any index.
-  //
-  async receiveCloseTransaction(tx) {
-    let txmsg = tx.returnMessage();
-    let id = txmsg.sig || txmsg.game_id;
-    this.removeGame(id);
-    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id AND status != 'over'`;
-    let params = { $status: "close", $game_id: id };
-    await this.app.storage.executeDatabase(sql, params, "arcade");
-  }
-
   //////////////
   // GAMEOVER //
   //////////////
@@ -1151,8 +1178,7 @@ alert("Observer Overlay for URL Games not yet implemented");
 
     if (!game_id && !this.viewing_arcade_initialization_page) {
       if (this.browser_active) {
-        let gameLoader = new GameLoader(this.app, this);
-        gameLoader.render(this.app, this, "#arcade-main");
+        this.app.connection.emit("arcade-game-initialize-render-request");
       }
       this.viewing_arcade_initialization_page = 1;
       return;
@@ -1180,15 +1206,13 @@ alert("Observer Overlay for URL Games not yet implemented");
             }
 
             if (ready_to_go) {
-
               if (this.browser_active) {
-                let gameLoader = new GameLoader(this.app, this, game_id);
-                gameLoader.render(this.app, this, "#arcade-main", "Your game is ready to start!");
+                this.app.connection.emit("arcade-game-initialized", (game_id));
               } else {
                 let gm = this.app.modules.returnModule(this.app.options.games[i].module);
                 if (gm) {
                   let game_name = gm.gamename || gm.name;
-                  this.app.connection.emit("arcade-game-ready-play", { game_id, game_name });
+                  this.app.connection.emit("arcade-game-initialized", (game_id));
                   let go = await sconfirm(`${game_name} is ready. Join now?`);
                   if (go) {
                     this.app.browser.logMatomoEvent("Arcade", "SaitoConfirmStartGame", this.app.options.games[i].module);
@@ -1224,8 +1248,6 @@ alert("Observer Overlay for URL Games not yet implemented");
   async launchSinglePlayerGame(app, gameobj) {
     try {
 
-      this.launchGame();
-
       if (app.options.games) {
         for (let i = 0; i < app.options.games.length; i++) {
           if (app.options.games[i].module == gameobj.name) {
@@ -1246,6 +1268,14 @@ alert("Observer Overlay for URL Games not yet implemented");
 
       let gameMod = app.modules.returnModule(gameobj.name);
       let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
+
+      if (this.app.options.games != undefined) {
+        for (let i = 0; i < this.app.options.games.length; i++) {
+          if (this.app.options.games[i].id == "" && this.app.options.games[i].name === gameMod.name) {
+            this.app.options.games[i].id = game_id;
+          }
+        }
+      }
 
       this.launchGame(game_id);
 

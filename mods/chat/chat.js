@@ -32,36 +32,10 @@ class Chat extends ModTemplate {
 
 
         this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
-console.log("=========");
-console.log("========= create chat group");
-console.log("=========");
-
             this.createChatGroup(data?.members);
             this.app.connection.emit("chat-manager-render-request");
         });
 
-        this.app.connection.on("open-chat-with", (data) => {
-
-            if (!data) {
-                this.openChatBox(app.auto_open_chat_box)
-                return;
-            }
-
-            let group;
-
-            if (Array.isArray(data.key)) {
-                group = this.createChatGroup(data.key, data.name);
-            } else {
-                let name = data.name || app.keys.returnUsername(data.key);
-                group = this.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
-            }
-
-            this.openChatBox(group.id);
-        });
-
-        app.connection.on("open-chat-with-community", () => {
-            this.openChatBox();
-        });
     }
 
 
@@ -185,20 +159,18 @@ console.log("=========");
         //
         if (app.BROWSER) {
             if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600)) {
-                if (app.options.auto_open_chat_box !== -1) {
+	        let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
+	        if (group) {
                     let active_module = app.modules.returnActiveModule();
-                    if (active_module.request_no_interrupts == true) {
-                        // if the module has ASKED leave it alone
-                        return;
-                    }
-                    this.openChatBox(app.options.auto_open_chat_box);
-                }
+                    if (active_module.request_no_interrupts != true) {
+                        this.app.connection.emit('chat-popup-render-request', group);
+		    }
+		}
             } else {
                 //Under mobile use, always wait for user to open chat box
                 this.mute = true;
             }
         }
-
 
     }
 
@@ -582,6 +554,8 @@ console.log("return html: " + html);
     //
     openChatBox(group_id = null) {
 
+alert("open chat box~");
+
         if (!this.app.BROWSER) { return; }
 
         if (!group_id || group_id == -1) {
@@ -648,8 +622,16 @@ console.log("return html: " + html);
 
     }
 
+    returnGroupByMemberPublickey(publickey) {
+      for (let i = 0; i < this.groups.length; i++) {
+        if (this.groups[i].members.includes(publickey)) {
+          return this.groups[i];
+        }
+      }
+      return null;
+    }
+
     returnMembers(group_id) {
-        //Make sure we have an array of unique member keys
 
         for (let i = 0; i < this.groups.length; i++) {
             if (group_id === this.groups[i].id) {

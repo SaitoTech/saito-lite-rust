@@ -10,6 +10,16 @@ class Initializer {
     this.container = container;
     this.initialization_timer = null;
     this.game_id = "";
+
+    //
+    // load init page
+    //
+    app.connection.on("arcade-game-initialized", (game_id) => {
+      this.game_id = game_id;
+      this.render(this.game_id);
+    });
+
+
   }
 
   render(game_id="") {

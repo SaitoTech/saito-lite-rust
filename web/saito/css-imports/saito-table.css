@@ -1,60 +1,50 @@
 /* ----------------------------------------------------------------
 Saito Table
 -----------------------------------------------------------------*/
-.saito-table {
-    /*background-color: #fff;*/
-    display: grid;
-    grid-template-columns: auto;
-    width: 100%;
-    position: relative;
+
+.saito-table-body {
+  font-size: 1.5rem;
+  display: grid;
+  grid-template-columns: auto;
+  grid-gap: 0.3rem;
+  width: 100%;
+  position: relative;
+  border-radius: 0.1rem;
+  max-height: 100%;
+  height: auto;
+  position: relative;
+  overflow-y: auto;
 }
 
 .saito-table-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(3rem, min-content));
-  align-items: center;
+  grid-template-columns: 1fr min-content;
+  grid-gap: 0.5rem;
+  padding: 0.6rem 1rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: var(--saito-gray-transparent);
 }
 
-.saito-table-row.odd {
-    background: var(--saito-gray);
+.saito-table-row:hover {
+  background: var(--saito-hover-background);
+  color: var(--saito-white);
 }
 
-.saito-address {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
-    width: inherit;
+.saito-table-row:hover .saito-address {
+  color: var(--saito-white);
 }
 
 .saito-table-rank {
-    font-family: courier, monospace;
-    font-size: 1.5rem;
+  font-family: courier, monospace;
+  font-size: 1.5rem;
 }
-
-
-.saito-leaderboard-gamename {
-    width: 100%;
-    overflow: hidden;
-}
-
 
 .saito-table-header {
   display: grid;
-  grid-column-gap: 1rem;
-  margin-bottom: 1rem;
-  font-weight: bold;
+  grid-gap: 0.5rem;
+  padding: 0.6rem 1rem 0.5rem;
   width: 100%;
   text-align: center;
+  color: var(--saito-font-color-heavy);
 }
-
-.saito-table-body {
-  max-height: 100%;
-  height: auto;
-  position: relative;
-  overflow-y: scroll;
-  text-align: center;
-}
-
-
-
-

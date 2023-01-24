@@ -3,6 +3,58 @@ img {
   width: unset;
 }
 
+.saito-overlay-backdrop {
+  opacity: 0.8;
+}
+
+.cancel_x {
+  opacity: 0.3;
+}
+.cardimg {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  top: 0px;
+  left: 0px;
+}
+
+.revolt_in_egypt {
+    background-color: transparent;
+    width: 350px;
+    height: 500px;
+    top: 2700px;
+    left: 4600px;
+    position: absolute;
+    transform: rotate(15deg);
+    background-image: url(/his/img/cards/HIS-092.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.revolt_in_ireland {
+    background-color: transparent;
+    width: 350px;
+    height: 500px;
+    top: 800px;
+    left: 900px;
+    position: absolute;
+    transform: rotate(15deg);
+    background-image: url(/his/img/cards/HIS-093.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.war_in_persia {
+    background-color: transparent;
+    width: 350px;
+    height: 500px;
+    top: 2000px;
+    left: 4650px;
+    position: absolute;
+    transform: rotate(15deg);
+    background-image: url(/his/img/cards/HIS-110.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
 .navalspace {
   width: 190px;
   height: 100px;
@@ -163,7 +215,7 @@ img {
   background-image: url('/his/img/factions/NewTestament_German.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 0rem; 
 }
@@ -171,7 +223,7 @@ img {
   background-image: url('/his/img/factions/NewTestament_French.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 1rem; 
 }
@@ -179,7 +231,7 @@ img {
   background-image: url('/his/img/factions/NewTestament_English.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 2rem; 
 }
@@ -188,7 +240,7 @@ img {
   background-image: url('/his/img/factions/BibleGerman.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 0rem; 
 }
@@ -196,7 +248,7 @@ img {
   background-image: url('/his/img/factions/BibleFrench.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 1rem; 
 }
@@ -204,7 +256,7 @@ img {
   background-image: url('/his/img/factions/BibleEnglish.svg');
   background-size: cover;
   width: 50px;
-  height: auto;
+  height: 50px;
   position: absolute;
   margin-top: 2rem; 
 }
@@ -311,7 +363,6 @@ img {
   position: absolute;
   height: 100px;
   width: 100px;
-  background-color: green;
 }
 .faction_sheet_england_keytile1 {
   top: 568px;

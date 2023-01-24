@@ -11,6 +11,7 @@
   left: 0;
   z-index: 10;
   height: var(--saito-header-height);
+  border-bottom: 1px solid var(--saito-border-color);
 }
 
 #saito-header nav {
@@ -71,41 +72,58 @@
 .saito-header-hamburger-contents {
   display: block;
   pointer-events: none;
-  color: var(--saito-font-color);
-  background-color: var(--saito-menu-background);
+  background-color: var(--saito-background-color);
   position: absolute;
   right: 0;
   top: var(--saito-header-height);
-  border: 1px solid var(--saito-border-color);
-  border-top: none;
+  border-top: 1px solid var(--saito-border-color);
+  border-left: 1px solid var(--saito-border-color);
   transition: all 0.2s;
   opacity: 0;
   z-index: 10;
   padding: 2rem;
-  box-shadow: 1px 3px 3px var(--saito-border-color), 1px 3px 3px var(--saito-border-color),
-    1px 3px 3px var(--saito-border-color), 1px 1rem 1rem var(--saito-border-color),
-    1px 1rem 1rem var(--saito-border-color);
   width: 20rem;
   height: 100vh;
   overflow: auto;
 }
 
 .saito-header-profile {
-  background-color: var(--saito-header-profile-background);
   padding: 1.4rem 0.5rem;
-  border-radius: 8px;
-  display: grid;
-  column-gap: 1rem;
-  grid-template-rows: min-content min-content;
-  grid-template-columns: min-content 1fr;
+  display: flex;
+  row-gap: 1rem;
   border-bottom: 1px solid var(--saito-border-color);
+  flex-direction: column;
 }
 
-.saito-header-profile-balance {
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 1;
-  grid-row-end: 2;
+.saito-header-profile-details {
+  display: grid;
+    grid-template-columns: 5rem auto;
+    border: 1px solid var(--saito-primary);
+    border-radius: 0 1.2rem 1.2rem 0;
+}
+
+.saito-header-profile-details .saito-identicon {
+  margin: auto;
+  border: none;
+ }
+
+ .saito-header-profile-balance.saito-select::after {
+  background-color: var(--saito-primary);
+  border: none;
+ }
+
+.saito-header-profile-balance .saito-select-crypto {
+  font-size: 2rem;
+  color: var(--saito-font-color);
+  padding: 0 0 0 1rem;
+  font-size: 2rem;
+  appearance: none;
+  background-color: var(--saito-arcade-background);
+  border: none;
+}
+
+.saito-header-profile-balance .saito-select-crypto:focus {
+  outline: none;
 }
 
 .saito-header-profile-balance > .saito-select-wrapper > div {
@@ -118,7 +136,7 @@
   grid-row-start: 2;
   grid-row-end: 3;
   display: flex;
-  width: 90%;
+  width: 99%;
   justify-content: center;
   justify-self: center;
   padding-top: 1rem;
@@ -126,7 +144,6 @@
 }
 
 .saito-header-profile-address p {
-  width: 70%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -143,6 +160,7 @@
   padding: 1.5rem 0;
   font-size: 1.1rem;
   overflow: auto;
+  padding-bottom: 0.5rem;
 }
 
 .saito-header-menu-section li i {

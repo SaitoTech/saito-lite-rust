@@ -14,6 +14,12 @@
     --transition-delay: 0.5s;
 }
 
+
+.arcade-game-slider .game-slider .carousel .slider-button {
+  display: none;
+}
+
+
 .carousel {
     position: relative;
     width: 100%;
@@ -104,12 +110,15 @@ li.slide[data-active-slide] {
 
 .game-slider-name {
     color: var(--saito-white);
-    font-size: 4rem;
+    font-size: 2.5rem;
     display: inline-block;
     position: absolute;
     top: 0;
     text-align: center;
-    width: 100%;
-    padding: 2rem 0;
+    width: min-content;
+    padding-left: 2rem;
     background: var(--saito-black-faded);
+    white-space: nowrap;
+    padding: 1rem;
+    border-bottom-right-radius: 1rem;
 }

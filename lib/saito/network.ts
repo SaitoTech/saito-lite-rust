@@ -835,7 +835,7 @@ class Network {
         fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         if (this.debugging) {
-          console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
+          //console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
         }
 
         const last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
@@ -844,7 +844,7 @@ class Network {
         );
 
         if (this.debugging) {
-          console.log("last shared ancestor generated at: " + last_shared_ancestor);
+          //console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
         let obj: any = {
           last_id: last_shared_ancestor,
@@ -887,7 +887,7 @@ class Network {
         fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         if (this.debugging) {
-          console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
+          //console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
         }
 
         let last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
@@ -896,7 +896,7 @@ class Network {
         );
 
         if (this.debugging) {
-          console.log("last shared ancestor generated at: " + last_shared_ancestor);
+          //console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
 
         if (last_shared_ancestor <= 0) {

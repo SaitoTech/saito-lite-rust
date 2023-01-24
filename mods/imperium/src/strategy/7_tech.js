@@ -8,11 +8,11 @@
         if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
           imperium_self.playerAcknowledgeNotice("You will first have the option of researching a free-technology, and then invited to purchase an additional tech for 6 resources:", function() {
             imperium_self.playerResearchTechnology(function(tech) {
-	      imperium_self.game.players_info[imperium_self.game.player-1].tech.push(tech);
+	      imperium_self.game.state.players_info[imperium_self.game.player-1].tech.push(tech);
               imperium_self.addMove("resolve\tstrategy");
               imperium_self.addMove("strategy\t"+"technology"+"\t"+strategy_card_player+"\t2");
-              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
-              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
+              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
+              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
               imperium_self.addMove("purchase\t"+player+"\ttechnology\t"+tech);
               imperium_self.endTurn();
             });
@@ -26,12 +26,12 @@
 
         if (imperium_self.game.player == player && imperium_self.game.player != strategy_card_player) {
  
-	  resources_to_spend = imperium_self.game.players_info[imperium_self.game.player-1].cost_of_technology_secondary;
+	  resources_to_spend = imperium_self.game.state.players_info[imperium_self.game.player-1].cost_of_technology_secondary;
 ;
           //
           // auto-submit response if we lack resources and tokens to produce (speed up game);
           //
-          if (imperium_self.game.players_info[player-1].strategy_tokens == 0 || ( (imperium_self.game.players_info[player-1].goods + imperium_self.returnAvailableResources(player)) < 4 && imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources != 1 && imperium_self.game.players_info[player-1].permanent_research_technology_card_must_not_spend_resources != 1)) {
+          if (imperium_self.game.state.players_info[player-1].strategy_tokens == 0 || ( (imperium_self.game.state.players_info[player-1].goods + imperium_self.returnAvailableResources(player)) < 4 && imperium_self.game.state.players_info[player-1].temporary_research_technology_card_must_not_spend_resources != 1 && imperium_self.game.state.players_info[player-1].permanent_research_technology_card_must_not_spend_resources != 1)) {
             imperium_self.updateLog(imperium_self.returnFactionName(imperium_self, player) + " unable to play Technology secondary");
             imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
             imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
@@ -41,19 +41,19 @@
 
           html = '<div class="status-message">Technology has been played. Do you wish to spend 4 resources and a strategy token to research a technology? </div><ul>';
           if (imperium_self.game.state.round == 1) {
-            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Technology strategy card. You may spend 4 resources and a strategy token to gain a permanent new unit or ability. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability?</div><ul>`;
+            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Technology strategy card. You may spend 4 resources and a strategy token to gain a permanent new unit or ability. You have ${imperium_self.game.state.players_info[player-1].strategy_tokens} strategy tokens. Use this ability?</div><ul>`;
           }
 
 	  if (
-	    imperium_self.game.players_info[player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
-	    imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 1
+	    imperium_self.game.state.players_info[player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
+	    imperium_self.game.state.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 1
 	  ) { 
             html = '<div class="status-message">Technology has been played. Do you wish to spend a strategy token to research a technology? </div><ul>';
 	    resources_to_spend = 0;
 	  }
 
 	  let available_resources = imperium_self.returnAvailableResources(imperium_self.game.player);
-	  if (available_resources >= resources_to_spend && imperium_self.game.players_info[player-1].strategy_tokens > 0) {
+	  if (available_resources >= resources_to_spend && imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
             html += '<li class="option" id="yes">Yes</li>';
           }
 	  html += '<li class="option" id="no">No</li>';
@@ -76,7 +76,7 @@
 
             if (id === "yes") {
 
-	      imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources = 0;
+	      imperium_self.game.state.players_info[player-1].temporary_research_technology_card_must_not_spend_resources = 0;
               imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
               imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
               imperium_self.playerSelectResources(resources_to_spend, function(success) {
@@ -105,13 +105,13 @@
 
           if (imperium_self.game.player != strategy_card_player) { return 0; }
 
-	  resources_to_spend = imperium_self.game.players_info[imperium_self.game.player-1].cost_of_technology_primary;
+	  resources_to_spend = imperium_self.game.state.players_info[imperium_self.game.player-1].cost_of_technology_primary;
 
           html = '<div class="status-message">Do you wish to spend '+resources_to_spend+' resources to research an additional technology? </div><ul>';
 
 	  if (
-	    imperium_self.game.players_info[imperium_self.game.player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
-	    imperium_self.game.players_info[imperium_self.game.player-1].temporary_research_technology_card_must_not_spend_resources == 1
+	    imperium_self.game.state.players_info[imperium_self.game.player-1].permanent_research_technology_card_must_not_spend_resources == 1 ||
+	    imperium_self.game.state.players_info[imperium_self.game.player-1].temporary_research_technology_card_must_not_spend_resources == 1
 	  ) { 
             html = '<div class="status-message">Do you wish to research an additional technology? </div><ul>';
 	    resources_to_spend = 0;
@@ -141,7 +141,7 @@
             let id = $(this).attr("id");
 
             if (id == "yes") {
-	      imperium_self.game.players_info[imperium_self.game.player-1].temporary_research_technology_card_must_not_spend_resources == 0;
+	      imperium_self.game.state.players_info[imperium_self.game.player-1].temporary_research_technology_card_must_not_spend_resources == 0;
               imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
               imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
               imperium_self.playerSelectResources(resources_to_spend, function(success) {
@@ -184,29 +184,29 @@
          if (!imperium_self.game.state.ministery_of_technology) {
 	    imperium_self.game.state.minster_of_technology = null;
 	    imperium_self.game.state.minster_of_technology_player = null;
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	      if (!imperium_self.game.players_info[i].temporary_research_technology_card_must_not_spend_resources) {
-	        imperium_self.game.players_info[i].temporary_research_technology_card_must_not_spend_resources = 0;
-	        imperium_self.game.players_info[i].permanent_research_technology_card_must_not_spend_resources = 0;
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	      if (!imperium_self.game.state.players_info[i].temporary_research_technology_card_must_not_spend_resources) {
+	        imperium_self.game.state.players_info[i].temporary_research_technology_card_must_not_spend_resources = 0;
+	        imperium_self.game.state.players_info[i].permanent_research_technology_card_must_not_spend_resources = 0;
 	      }
 	    }
 	  }
 	},
         returnAgendaOptions : function(imperium_self) {
           let options = [];
-          for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+          for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
             options.push(imperium_self.returnFaction(i+1));
           }
           return options;
         },
         onPass : function(imperium_self, winning_choice) {
 	  let player_number = 0;
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    if (imperium_self.returnFaction(i+1) == winning_choice) { player_number = i; }
 	  }
           imperium_self.game.state.minister_of_technology = 1;
           imperium_self.game.state.minister_of_technology_player = player_number+1;
-          imperium_self.game.players_info[player_number].permanent_research_technology_card_must_not_spend_resources = 1;
+          imperium_self.game.state.players_info[player_number].permanent_research_technology_card_must_not_spend_resources = 1;
 
 	  imperium_self.game.state.laws.push({ agenda : "minister-of-technology" , option : winning_choice });
 
@@ -222,7 +222,7 @@
         type : "action" ,
         text : "Do not spend resources to research technology the next time the Technology card is played" ,
         playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.players_info[action_card_player-1].temporary_research_technology_card_must_not_spend_resources = 1;
+	  imperium_self.game.state.players_info[action_card_player-1].temporary_research_technology_card_must_not_spend_resources = 1;
           return 1;
         }
     });

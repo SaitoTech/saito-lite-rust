@@ -41,7 +41,7 @@
 	}
 
 	if (type == "players") {
-	  imperium_self.game.players_info[num-1][valname] = val;
+	  imperium_self.game.state.players_info[num-1][valname] = val;
 	}
 
         this.game.queue.splice(qe, 1);
@@ -62,7 +62,7 @@
         imperium_self.game.state.voted_on_agenda = [];
         imperium_self.game.state.voting_on_agenda = 0;
 
-        for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+        for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 
           imperium_self.game.state.votes_available.push(imperium_self.returnAvailableVotes(i+1));
           imperium_self.game.state.votes_cast.push(0);
@@ -144,7 +144,7 @@
 
 	    if (this.game.confirms_received == undefined || this.game.confirms_received == null) {
 	      if (mv[2] != -1) {
-		this.resetConfirmsNeeded(this.game.players_info.length); 
+		this.resetConfirmsNeeded(this.game.state.players_info.length); 
 	      } else {
 
 		//
@@ -379,7 +379,7 @@
         let to = mv[4];
   	this.game.queue.splice(qe, 1);
 
-	if (this.game.state.retreat_cancelled == 1 || this.game.players_info[opponent-1].temporary_opponent_cannot_retreat == 1 || this.game.players_info[opponent-1].permanent_opponent_cannot_retreat == 1) {
+	if (this.game.state.retreat_cancelled == 1 || this.game.state.players_info[opponent-1].temporary_opponent_cannot_retreat == 1 || this.game.state.players_info[opponent-1].permanent_opponent_cannot_retreat == 1) {
 	  this.updateLog("With retreat impossible, the fleets turns to battle...");
 	  return 1; 
 	}
@@ -595,7 +595,7 @@
 	  // discard extra action cards here
 	  //
 	  let ac_in_hand = this.returnPlayerActionCards(this.game.player);
-	  let excess_ac = ac_in_hand.length - this.game.players_info[this.game.player-1].action_card_limit;
+	  let excess_ac = ac_in_hand.length - this.game.state.players_info[this.game.player-1].action_card_limit;
 	  if (excess_ac > 0) {
 	    this.playerDiscardActionCards(excess_ac);
 	    return 0;
@@ -638,12 +638,12 @@
 	}
 
 	if (strategy_card_player != -1) {
-	  if (!imperium_self.game.players_info[strategy_card_player-1].strategy_cards_played.includes(card)) {
-    	    imperium_self.game.players_info[strategy_card_player-1].strategy_cards_played.push(card);
+	  if (!imperium_self.game.state.players_info[strategy_card_player-1].strategy_cards_played.includes(card)) {
+    	    imperium_self.game.state.players_info[strategy_card_player-1].strategy_cards_played.push(card);
 	  }
 	} else {
-	  if (!imperium_self.game.players_info[imperium_self.game.player-1].strategy_cards_played.includes(card)) {
-    	    imperium_self.game.players_info[imperium_self.game.player-1].strategy_cards_played.push(card);
+	  if (!imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_cards_played.includes(card)) {
+    	    imperium_self.game.state.players_info[imperium_self.game.player-1].strategy_cards_played.push(card);
 	  }
 	}
 
@@ -820,8 +820,8 @@
         this.game.state.active_player_turn = -1;
 
   	let new_round = 1;
-        for (let i = 0; i < this.game.players_info.length; i++) {
-  	  if (this.game.players_info[i].passed == 0) { new_round = 0; }
+        for (let i = 0; i < this.game.state.players_info.length; i++) {
+  	  if (this.game.state.players_info[i].passed == 0) { new_round = 0; }
         }
   
   	//
@@ -875,7 +875,7 @@
 
 	if (redeal_new == 1) {
           this.game.queue.push("revealagendas\t1");
-  	  for (let i = 1; i <= this.game.players_info.length; i++) {
+  	  for (let i = 1; i <= this.game.state.players_info.length; i++) {
             this.game.queue.push("FLIPCARD\t3\t1\t1\t"+i); // deck card poolnum player
    	  }
 	}
@@ -1154,7 +1154,7 @@
 	    // FEB 1
 	    //who_is_next = i+1;
 	    who_is_next = speaker_order[i];
-	    i = this.game.players_info.length; 
+	    i = this.game.state.players_info.length; 
 	  }
         }
 
@@ -1299,7 +1299,7 @@
 	// voting happens simultaneously
 	//
 	let has_everyone_voted = 1;
-	for (let i = 0; i < this.game.players_info.length; i++) {
+	for (let i = 0; i < this.game.state.players_info.length; i++) {
 	  if (this.game.state.voted_on_agenda[i][agenda_num] == 0) { has_everyone_voted = 0; }
         }
 	if (has_everyone_voted == 1) {
@@ -1441,7 +1441,7 @@
   	this.game.queue.push("resolve\tsetinitiativeorder");
 
   	for (let i = initiative_order.length-1; i >= 0; i--) {
-  	  if (this.game.players_info[initiative_order[i]-1].passed == 0) {
+  	  if (this.game.state.players_info[initiative_order[i]-1].passed == 0) {
   	    this.game.queue.push("play\t"+initiative_order[i]);
   	  }
   	}
@@ -1475,7 +1475,7 @@
 	if (parseInt(mv[2])) {
  	  this.playerAllocateNewTokens(parseInt(mv[1]), parseInt(mv[2]), 1, 3);
 	} else { 
- 	  this.playerAllocateNewTokens(this.game.player, (this.game.players_info[this.game.player-1].new_tokens_per_round+this.game.players_info[this.game.player-1].new_token_bonus_when_issued), 1, 3);
+ 	  this.playerAllocateNewTokens(this.game.player, (this.game.state.players_info[this.game.player-1].new_tokens_per_round+this.game.state.players_info[this.game.player-1].new_token_bonus_when_issued), 1, 3);
         }
   	return 0;
       }
@@ -1501,7 +1501,7 @@
 
           this.game.queue.push("strategy\t"+"imperial"+"\t"+"-1"+"\t3\t"+1); // 3 ==> end-of-round tertiary
 	  this.game.state.playing_strategy_card_secondary = 0; // reset to 0 as we are kicking into secondary
-          this.game.queue.push("resetconfirmsneeded\t" + imperium_self.game.players_info.length);
+          this.game.queue.push("resetconfirmsneeded\t" + imperium_self.game.state.players_info.length);
           this.game.queue.push("ACKNOWLEDGE\t"+"As the Imperial card was not played in the previous round, all players now have an opportunity to score Victory Points (in initiative order)");
 
   	  this.game.state.round_scoring = 0;
@@ -1523,7 +1523,7 @@ this.game.state.end_round_scoring = 0;
 	//
 	let io = this.returnInitiativeOrder();
 	for (let i = 0; i < io.length; i++) {
-          if (this.game.players_info[io[i]-1].vp >= this.game.state.vp_target) {
+          if (this.game.state.players_info[io[i]-1].vp >= this.game.state.vp_target) {
 	    this.updateLeaderboard();
             this.updateStatus("Game Over: " + this.returnFaction(io[i]) + " has reached " + this.game.state.vp_target + " VP");
             this.updateLog("Game Over: " + this.returnFactionNickname(io[i]) + " has reached " + this.game.state.vp_target + " VP");
@@ -1538,7 +1538,7 @@ this.game.state.end_round_scoring = 0;
   	//
 	let z = this.returnEventObjects();
         for (let k in z) {
-          for (let i = 0; i < this.game.players_info.length; i++) {
+          for (let i = 0; i < this.game.state.players_info.length; i++) {
             z[k].onNewRound(this, (i+1));
   	  }
   	}
@@ -1552,7 +1552,7 @@ this.game.state.end_round_scoring = 0;
 	//
 	// REFRESH PLANETS
 	//
-	for (let i = 0; i < this.game.players_info.length; i++) {
+	for (let i = 0; i < this.game.state.players_info.length; i++) {
 	  for (let ii in this.game.planets) {
 	    this.game.planets[ii].exhausted = 0;
 	  }
@@ -1573,10 +1573,10 @@ this.game.state.end_round_scoring = 0;
 	//
 	// EXHAUST ANYTHING REQUIRED (before setinitiative order -- which starts play)
 	//
-	for (let i = 0; i < this.game.players_info.length; i++) {
-	  if (this.game.players_info[i].must_exhaust_at_round_start.length > 0) {
-	    for (let b = 0; b < this.game.players_info[i].must_exhaust_at_round_start.length; b++) {
-	      this.game.queue.push("must_exhaust_at_round_start\t"+(i+1)+"\t"+this.game.players_info[i].must_exhaust_at_round_start[b]);
+	for (let i = 0; i < this.game.state.players_info.length; i++) {
+	  if (this.game.state.players_info[i].must_exhaust_at_round_start.length > 0) {
+	    for (let b = 0; b < this.game.state.players_info[i].must_exhaust_at_round_start.length; b++) {
+	      this.game.queue.push("must_exhaust_at_round_start\t"+(i+1)+"\t"+this.game.state.players_info[i].must_exhaust_at_round_start[b]);
 	    }
 	  }
 	}
@@ -1584,12 +1584,12 @@ this.game.state.end_round_scoring = 0;
   	//
   	// RESET USER ACCOUNTS
   	//
-        for (let i = 0; i < this.game.players_info.length; i++) {
-  	  this.game.players_info[i].passed = 0;
-	  this.game.players_info[i].strategy_cards_played = [];
-  	  this.game.players_info[i].strategy = [];
-  	  this.game.players_info[i].must_exhaust_at_round_start = [];
-  	  this.game.players_info[i].objectives_scored_this_round = [];
+        for (let i = 0; i < this.game.state.players_info.length; i++) {
+  	  this.game.state.players_info[i].passed = 0;
+	  this.game.state.players_info[i].strategy_cards_played = [];
+  	  this.game.state.players_info[i].strategy = [];
+  	  this.game.state.players_info[i].must_exhaust_at_round_start = [];
+  	  this.game.state.players_info[i].objectives_scored_this_round = [];
         }
 
 
@@ -1614,7 +1614,7 @@ this.game.state.end_round_scoring = 0;
 	}
 
         if (this.game.state.round == 1) {
-          let faction = this.game.players_info[this.game.player-1].faction;
+          let faction = this.game.state.players_info[this.game.player-1].faction;
           this.game.queue.push("shownewobjectives");
 //	  this.game.queue.push(`ACKNOWLEDGE\t<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px">You are playing as ${this.factions[faction].name}. If you are new to Red Imperium, move a carrier with infantry into a sector beside your homeworld first turn and expand your empire...</div><div style="margin-top:10px;margin-bottom:10px;">Capture resource-rich planets to build ships and wage war. Capture influence-rich planets to purchase tokens for more moves. Good luck.</div>`);
           this.game.queue.push("ACKNOWLEDGE\t"+this.factions[faction].intro);
@@ -1633,18 +1633,18 @@ this.game.state.end_round_scoring = 0;
   	  //
   	  // ALLOCATE TOKENS
   	  //
-          this.game.queue.push("tokenallocation\t"+this.game.players_info.length);
+          this.game.queue.push("tokenallocation\t"+this.game.state.players_info.length);
 	  this.playing_token_allocation = 0; // <--- ensure load
-          this.game.queue.push("resetconfirmsneeded\t"+this.game.players_info.length);
+          this.game.queue.push("resetconfirmsneeded\t"+this.game.state.players_info.length);
 	}
 
   	//
   	// ACTION CARDS
   	//
         if (this.game.state.round > 1) {
-  	  for (let i = 1; i <= this.game.players_info.length; i++) {
-            this.game.queue.push("gain\t"+i+'\t'+"action_cards"+"\t"+(this.game.players_info[i-1].action_cards_per_round+this.game.players_info[i-1].action_cards_bonus_when_issued));
-            this.game.queue.push("DEAL\t2\t"+i+'\t'+(this.game.players_info[i-1].action_cards_per_round+this.game.players_info[i-1].action_cards_bonus_when_issued));
+  	  for (let i = 1; i <= this.game.state.players_info.length; i++) {
+            this.game.queue.push("gain\t"+i+'\t'+"action_cards"+"\t"+(this.game.state.players_info[i-1].action_cards_per_round+this.game.state.players_info[i-1].action_cards_bonus_when_issued));
+            this.game.queue.push("DEAL\t2\t"+i+'\t'+(this.game.state.players_info[i-1].action_cards_per_round+this.game.state.players_info[i-1].action_cards_bonus_when_issued));
   	  }
   	}
   
@@ -1653,7 +1653,7 @@ this.game.state.end_round_scoring = 0;
   	// FLIP NEW AGENDA CARDS
   	//
         this.game.queue.push("revealagendas");
-  	for (let i = 1; i <= this.game.players_info.length; i++) {
+  	for (let i = 1; i <= this.game.state.players_info.length; i++) {
           this.game.queue.push("FLIPCARD\t3\t3\t1\t"+i); // deck card poolnum player
   	}
 
@@ -1670,7 +1670,7 @@ this.game.state.end_round_scoring = 0;
   	//
         if (this.game.state.round == 1) {
           this.game.queue.push("revealobjectives");
-  	  for (let i = 1; i <= this.game.players_info.length; i++) {
+  	  for (let i = 1; i <= this.game.state.players_info.length; i++) {
             // only 1 card because first turn is short
             this.game.queue.push("FLIPCARD\t4\t1\t2\t"+i); // deck card poolnum player
   	  }
@@ -1678,14 +1678,14 @@ this.game.state.end_round_scoring = 0;
 
           if (this.game.state.round < 4) {
             this.game.queue.push("revealobjectives");
-  	    for (let i = 1; i <= this.game.players_info.length; i++) {
+  	    for (let i = 1; i <= this.game.state.players_info.length; i++) {
               this.game.queue.push("FLIPCARD\t4\t1\t2\t"+i); // deck card poolnum player
   	    }
 	  }
 
           if (this.game.state.round >= 4) {
             this.game.queue.push("revealobjectives");
-  	    for (let i = 1; i <= this.game.players_info.length; i++) {
+  	    for (let i = 1; i <= this.game.state.players_info.length; i++) {
               this.game.queue.push("FLIPCARD\t5\t1\t3\t"+i); // deck card poolnum player
   	    }
 	  }
@@ -1835,15 +1835,15 @@ this.game.state.end_round_scoring = 0;
           let my_stage2_objectives = this.returnStageIIPublicObjectives();
           let my_secret_objectives = this.returnSecretObjectives();
 
-	  for (let i = 0; i < this.game.players_info.length; i++) {
-          for (let k = 0; k < this.factions[this.game.players_info[i].faction].action_cards.length; k++) {
+	  for (let i = 0; i < this.game.state.players_info.length; i++) {
+          for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].action_cards.length; k++) {
             if (this.game.player == (i+1)) {
-              this.game.deck[1].hand.push(this.factions[this.game.players_info[i].faction].action_cards[k]);
+              this.game.deck[1].hand.push(this.factions[this.game.state.players_info[i].faction].action_cards[k]);
             }
           }
-          for (let k = 0; k < this.factions[this.game.players_info[i].faction].objectives.length; k++) {
+          for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].objectives.length; k++) {
             if (this.game.player == (i+1)) {
-              let obj = this.factions[this.game.players_info[i].faction].objectives[k];
+              let obj = this.factions[this.game.state.players_info[i].faction].objectives[k];
               if (my_stage1_objectives[obj]) {
                 this.game.pool[1].hand.push(obj);
                 this.game.state.stage_i_objectives.push(obj);
@@ -1905,8 +1905,8 @@ this.game.state.end_round_scoring = 0;
 	  this.updateLog(this.returnFactionNickname(player) + " scores " + objective_name + "<p></p><div style='width:80%;font-size:1.0em;margin-left:auto;margin-right:auto;margin-top:15px;margin-bottom:15px'>" + objective_text +'</div>');
 	}
 
-  	this.game.players_info[player-1].vp += vp;
-  	this.game.players_info[player-1].objectives_scored.push(objective);
+  	this.game.state.players_info[player-1].vp += vp;
+  	this.game.state.players_info[player-1].objectives_scored.push(objective);
 
 	//
 	// end game
@@ -1935,15 +1935,15 @@ this.game.state.end_round_scoring = 0;
 
 	let cards_issued = [];
 
-	for (let i = 0; i < this.game.players_info.length; i++) {
+	for (let i = 0; i < this.game.state.players_info.length; i++) {
 	  cards_issued[i] = 0;
-	  if (this.game.players_info[i].strategy_cards_retained.length >= 1) {
-	    for (let y = 0; y < this.game.players_info[i].strategy_cards_retained.length; y++) {
-	      this.game.players_info[i].strategy.push(this.game.players_info[i].strategy_cards_retained[y]);
+	  if (this.game.state.players_info[i].strategy_cards_retained.length >= 1) {
+	    for (let y = 0; y < this.game.state.players_info[i].strategy_cards_retained.length; y++) {
+	      this.game.state.players_info[i].strategy.push(this.game.state.players_info[i].strategy_cards_retained[y]);
 	      cards_issued[i]++;
 	    }
 	  }
-	  this.game.players_info[i].strategy_cards_retained = [];
+	  this.game.state.players_info[i].strategy_cards_retained = [];
 	}
 
 
@@ -1955,7 +1955,7 @@ this.game.state.end_round_scoring = 0;
   	for (let z in x) {
     	  if (!this.game.state.strategy_cards.includes(z)) {
 	    let include_me = 1;
-	    for (let s = 0; s < this.game.players_info.length; s++) { if (this.game.players_info[s].strategy.includes(z)) { include_me = 0; } }
+	    for (let s = 0; s < this.game.state.players_info.length; s++) { if (this.game.state.players_info[s].strategy.includes(z)) { include_me = 0; } }
 	    if (include_me == 1) {
   	      this.game.state.strategy_cards_bonus[this.game.state.strategy_cards.length] = 0;
   	      this.game.state.strategy_cards.push(z);
@@ -1969,10 +1969,10 @@ this.game.state.end_round_scoring = 0;
   	  this.addMove("addbonustounselectedstrategycards");
   
   	  let cards_to_select = 1;
-  	  if (this.game.players_info.length == 2) { cards_to_select = 3; }
-  	  if (this.game.players_info.length == 3) { cards_to_select = 2; }
-  	  if (this.game.players_info.length == 4) { cards_to_select = 2; }
-  	  if (this.game.players_info.length >= 5) { cards_to_select = 1; }
+  	  if (this.game.state.players_info.length == 2) { cards_to_select = 3; }
+  	  if (this.game.state.players_info.length == 3) { cards_to_select = 2; }
+  	  if (this.game.state.players_info.length == 4) { cards_to_select = 2; }
+  	  if (this.game.state.players_info.length >= 5) { cards_to_select = 1; }
 
   	  //
   	  // TODO -- ROUND 1 players only select 1
@@ -1980,9 +1980,9 @@ this.game.state.end_round_scoring = 0;
           if (this.game.state.round == 1) { cards_to_select = 1; }
 
   	  for (let cts = 0; cts < cards_to_select; cts++) {
-            for (let i = 0; i < this.game.players_info.length; i++) {
+            for (let i = 0; i < this.game.state.players_info.length; i++) {
   	      let this_player = this.game.state.speaker+i;
-  	      if (this_player > this.game.players_info.length) { this_player -= this.game.players_info.length; }
+  	      if (this_player > this.game.state.players_info.length) { this_player -= this.game.state.players_info.length; }
 	      if ((cts+cards_issued[(this_player-1)]) < cards_to_select) {
   	        this.rmoves.push("pickstrategy\t"+this_player+"\t"+(cts+1));
               }
@@ -2279,7 +2279,7 @@ this.game.state.end_round_scoring = 0;
 	if (planet) {
 	  planet.units[planet.owner-1] = [];
 	  if (planet.owner > -1) {
-            this.game.players_info[planet.owner-1].lost_planet_this_round = player; // player who took it
+            this.game.state.players_info[planet.owner-1].lost_planet_this_round = player; // player who took it
 	  }
           this.updateLog(planet.name + " is annexed by " + imperium_self.returnFaction(imperium_self.game.player));
 	  this.updatePlanetOwner(sector, planet_idx, player);
@@ -2302,10 +2302,10 @@ this.game.state.end_round_scoring = 0;
 
 
 	if (type === "strategy") {
-	  this.game.players_info[recipient-1].strategy.push(details);
-	  for (let i = 0; i < this.game.players_info[giver-1].strategy.length; i++) {
-	    if (this.game.players_info[giver-1].strategy[i] === details) {
-	      this.game.players_info[giver-1].strategy.splice(i, 1);
+	  this.game.state.players_info[recipient-1].strategy.push(details);
+	  for (let i = 0; i < this.game.state.players_info[giver-1].strategy.length; i++) {
+	    if (this.game.state.players_info[giver-1].strategy[i] === details) {
+	      this.game.state.players_info[giver-1].strategy.splice(i, 1);
 	    }
 	  }
         }
@@ -2315,7 +2315,7 @@ this.game.state.end_round_scoring = 0;
 	  if (this.game.player == recipient) {
 	    this.game.deck[1].hand.push(details);
             let ac_in_hand = this.returnPlayerActionCards(this.game.player);
-            let excess_ac = ac_in_hand.length - this.game.players_info[this.game.player-1].action_card_limit;
+            let excess_ac = ac_in_hand.length - this.game.state.players_info[this.game.player-1].action_card_limit;
 	    if (excess_ac > 0) {
 	      this.playerDiscardActionCards(excess_ac);
 	      return 0;
@@ -2378,7 +2378,7 @@ this.game.state.end_round_scoring = 0;
 
 	      let selectable = [];
 	      for (let i = 0; i < this.game.deck[1].hand.length; i++) {
-		if (!this.game.players_info[pullee-1].action_cards_played.includes(this.game.deck[1].hand[i])) {
+		if (!this.game.state.players_info[pullee-1].action_cards_played.includes(this.game.deck[1].hand[i])) {
 		  selectable.push(this.game.deck[1].hand[i]);
 		}
 	      }
@@ -2437,33 +2437,33 @@ this.game.state.end_round_scoring = 0;
         let details      = mv[3];
   
         if (type == "command") {
-  	  this.game.players_info[player-1].command_tokens -= parseInt(details);
-  	  if (this.game.players_info[player-1].command_tokens < 0) { 
-  	    this.game.players_info[player-1].command_tokens = 0;
+  	  this.game.state.players_info[player-1].command_tokens -= parseInt(details);
+  	  if (this.game.state.players_info[player-1].command_tokens < 0) { 
+  	    this.game.state.players_info[player-1].command_tokens = 0;
 	  };
   	}
         if (type == "strategy") {
-  	  this.game.players_info[player-1].strategy_tokens -= parseInt(details);
-  	  if (this.game.players_info[player-1].strategy_tokens < 0) { 
-  	    this.game.players_info[player-1].strategy_tokens = 0;
+  	  this.game.state.players_info[player-1].strategy_tokens -= parseInt(details);
+  	  if (this.game.state.players_info[player-1].strategy_tokens < 0) { 
+  	    this.game.state.players_info[player-1].strategy_tokens = 0;
 	  };
   	}
         if (type == "fleet") {
-  	  this.game.players_info[player-1].fleet_supply -= parseInt(details);
-  	  if (this.game.players_info[player-1].fleet_supply < 0) { 
-  	    this.game.players_info[player-1].fleet_supply = 0;
+  	  this.game.state.players_info[player-1].fleet_supply -= parseInt(details);
+  	  if (this.game.state.players_info[player-1].fleet_supply < 0) { 
+  	    this.game.state.players_info[player-1].fleet_supply = 0;
 	  };
   	}
         if (type == "goods") {
-  	  this.game.players_info[player-1].goods -= parseInt(details);
-  	  if (this.game.players_info[player-1].goods < 0) { 
-  	    this.game.players_info[player-1].goods = 0;
+  	  this.game.state.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.state.players_info[player-1].goods < 0) { 
+  	    this.game.state.players_info[player-1].goods = 0;
 	  };
   	}
         if (type == "trade") {
-  	  this.game.players_info[player-1].goods -= parseInt(details);
-  	  if (this.game.players_info[player-1].goods < 0) { 
-  	    this.game.players_info[player-1].goods = 0;
+  	  this.game.state.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.state.players_info[player-1].goods < 0) { 
+  	    this.game.state.players_info[player-1].goods = 0;
 	  };
   	}
         if (type == "planet") {
@@ -2632,8 +2632,8 @@ this.game.state.end_round_scoring = 0;
 	let faction_that_offered = parseInt(mv[2]);
   	this.game.queue.splice(qe, 1);
 
-        this.game.players_info[refusing_faction-1].traded_this_turn = 1;
-        this.game.players_info[faction_that_offered-1].traded_this_turn = 1;
+        this.game.state.players_info[refusing_faction-1].traded_this_turn = 1;
+        this.game.state.players_info[faction_that_offered-1].traded_this_turn = 1;
 
 	if (faction_that_offered == this.game.player) {
 	  this.updateLog(this.returnFactionNickname(refusing_faction) + " spurns trade offer");
@@ -2664,11 +2664,11 @@ this.game.state.end_round_scoring = 0;
         
 	this.updateLog(this.returnFactionNickname(faction_responding) + " accepts trade offer");
 
-        this.game.players_info[offering_faction-1].traded_this_turn = 1;
-        this.game.players_info[faction_responding-1].traded_this_turn = 1;
+        this.game.state.players_info[offering_faction-1].traded_this_turn = 1;
+        this.game.state.players_info[faction_responding-1].traded_this_turn = 1;
 
-  	this.game.players_info[offering_faction-1].commodities -= parseInt(offer.goods);
-       	this.game.players_info[faction_responding-1].commodities -= parseInt(response.goods);
+  	this.game.state.players_info[offering_faction-1].commodities -= parseInt(offer.goods);
+       	this.game.state.players_info[faction_responding-1].commodities -= parseInt(response.goods);
 
 	if (offer.action_cards) {
 	  for (let i = 0; i < offer.action_cards.length; i++) {
@@ -2688,17 +2688,17 @@ this.game.state.end_round_scoring = 0;
 	  }
 	}
 
-  	this.game.players_info[offering_faction-1].goods += parseInt(response.goods);
-  	this.game.players_info[faction_responding-1].goods += parseInt(offer.goods);
+  	this.game.state.players_info[offering_faction-1].goods += parseInt(response.goods);
+  	this.game.state.players_info[faction_responding-1].goods += parseInt(offer.goods);
 
-	if (this.game.players_info[offering_faction-1].commodities < 0) {
-	  this.game.players_info[offering_faction-1].goods += parseInt(this.game.players_info[offering_faction-1].commodities);
-	  this.game.players_info[offering_faction-1].commodities = 0;
+	if (this.game.state.players_info[offering_faction-1].commodities < 0) {
+	  this.game.state.players_info[offering_faction-1].goods += parseInt(this.game.state.players_info[offering_faction-1].commodities);
+	  this.game.state.players_info[offering_faction-1].commodities = 0;
 	}
 
-	if (this.game.players_info[faction_responding-1].commodities < 0) {
-	  this.game.players_info[faction_responding-1].goods += parseInt(this.game.players_info[faction_responding-1].commodities);
-	  this.game.players_info[faction_responding-1].commodities = 0;
+	if (this.game.state.players_info[faction_responding-1].commodities < 0) {
+	  this.game.state.players_info[faction_responding-1].goods += parseInt(this.game.state.players_info[faction_responding-1].commodities);
+	  this.game.state.players_info[faction_responding-1].commodities = 0;
 	}
 
 	this.displayFactionDashboard();
@@ -2760,15 +2760,15 @@ this.game.state.end_round_scoring = 0;
 	let z            = this.returnEventObjects();
 
 	if (type == "action_cards") {
-	  this.game.players_info[player-1].action_cards_in_hand -= amount;
-	  if (this.game.players_info[player-1].action_cards_in_hand > 0) {
-	    this.game.players_info[player-1].action_cards_in_hand = 0;
+	  this.game.state.players_info[player-1].action_cards_in_hand -= amount;
+	  if (this.game.state.players_info[player-1].action_cards_in_hand > 0) {
+	    this.game.state.players_info[player-1].action_cards_in_hand = 0;
 	  }
 	}
 	if (type == "secret_objectives") {
-	  this.game.players_info[player-1].secret_objectives_in_hand -= amount;
-	  if (this.game.players_info[player-1].secret_objectives_in_hand > 0) {
-	    this.game.players_info[player-1].secret_objectives_in_hand = 0;
+	  this.game.state.players_info[player-1].secret_objectives_in_hand -= amount;
+	  if (this.game.state.players_info[player-1].secret_objectives_in_hand > 0) {
+	    this.game.state.players_info[player-1].secret_objectives_in_hand = 0;
 	  }
 	}
 
@@ -2802,7 +2802,7 @@ this.game.state.end_round_scoring = 0;
 	      this.game.state.showing_action_cards_amounts = 0;
             }
 	  }
-	  this.game.players_info[player-1].action_cards_in_hand += amount;
+	  this.game.state.players_info[player-1].action_cards_in_hand += amount;
 
 	  if (run_events == 1) {
 	    z = this.returnEventObjects();
@@ -2816,7 +2816,7 @@ this.game.state.end_round_scoring = 0;
           if (this.game.player == player && this.browser_active == 1) {
 	    this.overlay.show(this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
 	  }
-	  this.game.players_info[player-1].secret_objectives_in_hand += amount;
+	  this.game.state.players_info[player-1].secret_objectives_in_hand += amount;
 	}
 
 	//
@@ -2859,10 +2859,10 @@ this.game.state.end_round_scoring = 0;
             strategy_card = z[z_index].gainStrategyCard(imperium_self, player, strategy_card);
           }
 
-  	  this.game.players_info[player-1].strategy.push(mv[3]);
+  	  this.game.state.players_info[player-1].strategy.push(mv[3]);
   	  for (let i = 0; i < this.game.state.strategy_cards.length; i++) {
   	    if (this.game.state.strategy_cards[i] === mv[3]) {
-  	      this.game.players_info[player-1].goods += this.game.state.strategy_cards_bonus[i];
+  	      this.game.state.players_info[player-1].goods += this.game.state.strategy_cards_bonus[i];
   	      this.game.state.strategy_cards.splice(i, 1);
   	      this.game.state.strategy_cards_bonus.splice(i, 1);
   	      i = this.game.state.strategy_cards.length+2;
@@ -2874,8 +2874,8 @@ this.game.state.end_round_scoring = 0;
 
   	  this.updateLog(this.returnFactionNickname(player) + " gains " + this.tech[mv[3]].name + "<p></p><div style='width:80%;font-size:1.0em;margin-left:auto;margin-right:auto;margin-top:15px;margin-bottom:15px'>" + this.tech[mv[3]].text +'</div>');
 
-  	  if (!this.game.players_info[player-1].tech.includes(mv[3])) {
-	    this.game.players_info[player-1].tech.push(mv[3]);
+  	  if (!this.game.state.players_info[player-1].tech.includes(mv[3])) {
+	    this.game.state.players_info[player-1].tech.push(mv[3]);
 	  }
 
 	  // we added tech, so re-fetch events
@@ -2897,7 +2897,7 @@ this.game.state.end_round_scoring = 0;
 	  for (let z_index in z) {
   	    amount = z[z_index].gainTradeGoods(imperium_self, player, amount);
   	  }
-	  this.game.players_info[player-1].goods += amount;
+	  this.game.state.players_info[player-1].goods += amount;
 
           if (this.game.state.use_tutorials == 1 && !this.game.state.seen_goods_tutorial) {
             this.game.state.seen_goods_tutorial = 1;
@@ -2920,10 +2920,10 @@ this.game.state.end_round_scoring = 0;
 	  for (let z_index in z) {
   	    amount = z[z_index].gainCommodities(imperium_self, player, amount);
   	  }
-  	  this.game.players_info[player-1].commodities += amount;
-	  if (this.game.players_info[player-1].commodities > this.game.players_info[player-1].commodity_limit) {
-  	    this.updateLog(this.returnFactionNickname(player) + " capped at " + this.game.players_info[player-1].commodity_limit);
-	    this.game.players_info[player-1].commodities = this.game.players_info[player-1].commodity_limit;
+  	  this.game.state.players_info[player-1].commodities += amount;
+	  if (this.game.state.players_info[player-1].commodities > this.game.state.players_info[player-1].commodity_limit) {
+  	    this.updateLog(this.returnFactionNickname(player) + " capped at " + this.game.state.players_info[player-1].commodity_limit);
+	    this.game.state.players_info[player-1].commodities = this.game.state.players_info[player-1].commodity_limit;
 	  }
   	}
 
@@ -2933,7 +2933,7 @@ this.game.state.end_round_scoring = 0;
 	    for (let z_index in z) {
   	      amount = z[z_index].gainCommandTokens(imperium_self, player, amount);
   	    }
-  	    this.game.players_info[player-1].command_tokens += amount;
+  	    this.game.state.players_info[player-1].command_tokens += amount;
   	  }
   	}
         if (item === "strategy") {
@@ -2942,7 +2942,7 @@ this.game.state.end_round_scoring = 0;
 	    for (let z_index in z) {
   	      amount = z[z_index].gainStrategyTokens(imperium_self, player, amount);
   	    }
-  	    this.game.players_info[player-1].strategy_tokens += amount;
+  	    this.game.state.players_info[player-1].strategy_tokens += amount;
   	  }
   	}
 
@@ -2951,8 +2951,8 @@ this.game.state.end_round_scoring = 0;
 	    for (let z_index in z) {
   	      amount = z[z_index].gainFleetSupply(imperium_self, player, amount);
   	    }
-  	    this.game.players_info[player-1].fleet_supply += amount;
-  	    this.updateLog(this.returnFactionNickname(player) + " increases fleet supply to " + this.game.players_info[player-1].fleet_supply);
+  	    this.game.state.players_info[player-1].fleet_supply += amount;
+  	    this.updateLog(this.returnFactionNickname(player) + " increases fleet supply to " + this.game.state.players_info[player-1].fleet_supply);
   	  }
   	}
   
@@ -2968,7 +2968,7 @@ this.game.state.end_round_scoring = 0;
 
       if (mv[0] === "pass") {
   	let player       = parseInt(mv[1]);
-  	this.game.players_info[player-1].passed = 1;
+  	this.game.state.players_info[player-1].passed = 1;
   	this.updateLog(this.returnFactionNickname(player) + " has passed");
   	this.game.queue.splice(qe, 1);
   	return 1;  
@@ -3715,8 +3715,8 @@ console.log("K: " + z[k].name);
 	          //
 	          try {
 	          if (planet.units[i][ii].destroyed == 1) {
-	  	    this.game.players_info[i].my_units_destroyed_this_combat_round.push(planet.units[i][ii].type);
-		    this.game.players_info[attacker-1].units_i_destroyed_this_combat_round.push(planet.units[i][ii].type);
+	  	    this.game.state.players_info[i].my_units_destroyed_this_combat_round.push(planet.units[i][ii].type);
+		    this.game.state.players_info[attacker-1].units_i_destroyed_this_combat_round.push(planet.units[i][ii].type);
 	          }
 	 	  } catch (err) {}
 
@@ -3775,8 +3775,8 @@ console.log("K: " + z[k].name);
 	      //
 	      try {
 	      if (sys.s.units[player-1][unit_idx].destroyed == 1) {
-		this.game.players_info[player-1].my_units_destroyed_this_combat_round.push(sys.s.units[player-1][unit_idx].type);
-		this.game.players_info[attacker-1].units_i_destroyed_this_combat_round.push(sys.s.units[player-1][unit_idx].type);
+		this.game.state.players_info[player-1].my_units_destroyed_this_combat_round.push(sys.s.units[player-1][unit_idx].type);
+		this.game.state.players_info[attacker-1].units_i_destroyed_this_combat_round.push(sys.s.units[player-1][unit_idx].type);
 	      }
 	      } catch (err) {}
 
@@ -3982,7 +3982,7 @@ console.log("K: " + z[k].name);
 		//
 		// unless we are infiltrating and get to keep them...
 		//
-		if (this.game.players_info[attacker-1].temporary_infiltrate_infrastructure_on_invasion == 1 || this.game.players_info[attacker-1].temporary_infiltrate_infrastructure_on_invasion == 1) {
+		if (this.game.state.players_info[attacker-1].temporary_infiltrate_infrastructure_on_invasion == 1 || this.game.state.players_info[attacker-1].temporary_infiltrate_infrastructure_on_invasion == 1) {
 		  let infiltration = 0;
 		  for (let i = 0; i < sys.p[planet_idx].units[defender-1].length; i++) {
 		    if (sys.p[planet_idx].units[defender-1][i].type === "pds") {
@@ -3996,7 +3996,7 @@ console.log("K: " + z[k].name);
 		  }
                   sys.p[planet_idx].units[defender-1] = [];
 		  if (infiltration == 1) {
-		    this.game.players_info[attacker-1].temporary_infiltrate_infrastructure_on_invasion = 0;
+		    this.game.state.players_info[attacker-1].temporary_infiltrate_infrastructure_on_invasion = 0;
 		  }
 		} else {
                   sys.p[planet_idx].units[defender-1] = [];
@@ -4045,7 +4045,7 @@ console.log("K: " + z[k].name);
         // note planet lost
         //
         if (sys.p[planet_idx].owner > -1) {
-          this.game.players_info[sys.p[planet_idx].owner].lost_planet_this_round = gainer; // player who took it
+          this.game.state.players_info[sys.p[planet_idx].owner].lost_planet_this_round = gainer; // player who took it
 	}
 
         this.updatePlanetOwner(sector, planet_idx, gainer);
@@ -4178,7 +4178,7 @@ console.log("K: " + z[k].name);
 	  }
 
 
-	  for (let i = 0; i < this.game.players_info[player-1].pds_combat_roll_bonus_shots; i++) {
+	  for (let i = 0; i < this.game.state.players_info[player-1].pds_combat_roll_bonus_shots; i++) {
 
              let bs = {};
                  bs.name = "Bonus";
@@ -4206,11 +4206,11 @@ console.log("K: " + z[k].name);
 	    for (let z_index in z) {
 	      roll = z[z_index].modifyCombatRoll(this, player, attacker, player, "pds", roll);
 	      roll = z[z_index].modifyPDSRoll(this, player, attacker, player, roll);
-	      imperium_self.game.players_info[attacker-1].target_units = z[z_index].modifyTargets(this, attacker, player, imperium_self.game.player, "pds", imperium_self.game.players_info[attacker-1].target_units);
+	      imperium_self.game.state.players_info[attacker-1].target_units = z[z_index].modifyTargets(this, attacker, player, imperium_self.game.player, "pds", imperium_self.game.state.players_info[attacker-1].target_units);
 	    }
 
-	    roll += this.game.players_info[player-1].pds_combat_roll_modifier;
-	    roll += this.game.players_info[player-1].temporary_pds_combat_roll_modifier;
+	    roll += this.game.state.players_info[player-1].pds_combat_roll_modifier;
+	    roll += this.game.state.players_info[player-1].temporary_pds_combat_roll_modifier;
 
             modified_roll.push(roll);
             reroll.push(0);
@@ -4229,11 +4229,11 @@ console.log("K: " + z[k].name);
 	  if (total_hits < total_shots) {
 
 	    let max_rerolls = total_shots - total_hits;
-	    let available_rerolls = this.game.players_info[player-1].combat_dice_reroll + this.game.players_info[player-1].pds_combat_dice_reroll;
+	    let available_rerolls = this.game.state.players_info[player-1].combat_dice_reroll + this.game.state.players_info[player-1].pds_combat_dice_reroll;
 
 	    for (let z_index in z) {
 	      available_rerolls = z[z_index].modifyCombatRerolls(this, player, attacker, player, "pds", available_rerolls);
-	      imperium_self.game.players_info[player-1].target_units = z[z_index].modifyTargets(this, attacker, player, imperium_self.game.player, "pds", imperium_self.game.players_info[player-1].target_units);
+	      imperium_self.game.state.players_info[player-1].target_units = z[z_index].modifyTargets(this, attacker, player, imperium_self.game.player, "pds", imperium_self.game.state.players_info[player-1].target_units);
 	    }
 
 	    let attacker_rerolls = available_rerolls;
@@ -4260,11 +4260,11 @@ console.log("K: " + z[k].name);
 
 	      for (let z_index in z) {
 	        roll =  z[z_index].modifyCombatRerolls(this, player, attacker, player, "pds", roll);
-	        imperium_self.game.players_info[player-1].target_units = z[z_index].modifyTargets(this, attacker, player, imperium_self.game.player, "pds", imperium_self.game.players_info[player-1].target_units);
+	        imperium_self.game.state.players_info[player-1].target_units = z[z_index].modifyTargets(this, attacker, player, imperium_self.game.player, "pds", imperium_self.game.state.players_info[player-1].target_units);
 	      }
 
-	      roll += this.game.players_info[player-1].pds_combat_roll_modifier;
-	      roll += this.game.players_info[player-1].temporary_pds_combat_roll_modifier;
+	      roll += this.game.state.players_info[player-1].pds_combat_roll_modifier;
+	      roll += this.game.state.players_info[player-1].temporary_pds_combat_roll_modifier;
 	      modified_roll[lowest_combat_idx] = roll;
  
 	      if (roll >= hits_on[lowest_combat_idx]) {
@@ -4352,9 +4352,9 @@ console.log("K: " + z[k].name);
 	        let roll = this.rollDice(10);
       	        for (z_index in z) { roll = z[z_index].modifyCombatRoll(imperium_self, attacker, sys.p[planet_idx].owner, this.game.player, "bombardment", roll); }
 
-  	        roll += this.game.players_info[attacker-1].bombardment_roll_modifier;
-	        roll += this.game.players_info[attacker-1].temporary_bombardment_roll_modifier;
-	        roll += this.game.players_info[attacker-1].combat_roll_modifier;
+  	        roll += this.game.state.players_info[attacker-1].bombardment_roll_modifier;
+	        roll += this.game.state.players_info[attacker-1].temporary_bombardment_roll_modifier;
+	        roll += this.game.state.players_info[attacker-1].combat_roll_modifier;
 	        roll += sys.s.units[attacker-1][i].temporary_combat_modifier;
 
 	        if (roll >= sys.p[planet_idx].units[attacker-1][i].bombardment_combat) {
@@ -4379,15 +4379,15 @@ console.log("K: " + z[k].name);
 	    }
 	  }
 
-	  bonus_shots += this.game.players_info[attacker-1].bombardment_combat_roll_bonus_shots;
+	  bonus_shots += this.game.state.players_info[attacker-1].bombardment_combat_roll_bonus_shots;
 	  for (let i = hits_or_misses.length; i < hits_or_misses.length+bonus_shots; i++) {
 	 
 	    let roll = this.rollDice(10);
       	    for (z_index in z) { roll = z[z_index].modifyCombatRoll(imperium_self, attacker, sys.p[planet_idx].owner, this.game.player, "bombardment", roll); }
 
-  	    roll += this.game.players_info[attacker-1].bombardment_roll_modifier;
-	    roll += this.game.players_info[attacker-1].temporary_bombardment_roll_modifier;
-	    roll += this.game.players_info[attacker-1].combat_roll_modifier;
+  	    roll += this.game.state.players_info[attacker-1].bombardment_roll_modifier;
+	    roll += this.game.state.players_info[attacker-1].temporary_bombardment_roll_modifier;
+	    roll += this.game.state.players_info[attacker-1].combat_roll_modifier;
 	    roll += sys.s.units[attacker-1][i].temporary_combat_modifier;
 
 	    if (roll >= bonus_hits_on) {
@@ -4409,7 +4409,7 @@ console.log("K: " + z[k].name);
 	  if (hits_to_assign < total_shots) {
 
 	    let max_rerolls = hits_to_assign - total_hits;
-	    let available_rerolls = this.game.players_info[attacker-1].combat_dice_reroll + this.game.players_info[attacker-1].bombardment_combat_dice_reroll;
+	    let available_rerolls = this.game.state.players_info[attacker-1].combat_dice_reroll + this.game.state.players_info[attacker-1].bombardment_combat_dice_reroll;
 
 	    for (let z_index in z) {
 	      available_rerolls = z[z_index].modifyCombatRerolls(this, attacker, defender, player, "bombardment", available_rerolls);
@@ -4436,13 +4436,13 @@ console.log("K: " + z[k].name);
  
 	      for (let z_index in z) {
 	        roll =  z[z_index].modifyCombatRerolls(this, player, attacker, player, "space", roll);
-	        imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.players_info[defender-1].target_units);
+	        imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.state.players_info[defender-1].target_units);
 	      }
 
       	      for (z_index in z) { roll = z[z_index].modifyCombatRoll(imperium_self, attacker, sys.p[planet_idx].owner, this.game.player, "bombardment", roll); }
-  	      roll += this.game.players_info[attacker-1].bombardment_roll_modifier;
-	      roll += this.game.players_info[attacker-1].temporary_bombardment_roll_modifier;
-	      roll += this.game.players_info[attacker-1].combat_roll_modifier;
+  	      roll += this.game.state.players_info[attacker-1].bombardment_roll_modifier;
+	      roll += this.game.state.players_info[attacker-1].temporary_bombardment_roll_modifier;
+	      roll += this.game.state.players_info[attacker-1].combat_roll_modifier;
 	      roll += sys.s.units[attacker-1][lowest_combat_idx].temporary_combat_modifier;
 
 	      if (roll >= hits_on[lowest_combat_idx]) {
@@ -4538,11 +4538,11 @@ console.log("K: " + z[k].name);
 	      roll = z[z_index].modifyCombatRoll(this, attacker, defender, attacker, "space", roll);
 	      roll = z[z_index].modifySpaceCombatRoll(this, attacker, defender, roll);
 	      total_hits = z[z_index].modifyUnitHits(this, attacker, defender, attacker, "space", sys.s.units[attacker-1][i], roll, total_hits);
-	      imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.players_info[defender-1].target_units);
+	      imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.state.players_info[defender-1].target_units);
 	    }
 
-	    roll += this.game.players_info[attacker-1].space_combat_roll_modifier;
-	    roll += this.game.players_info[attacker-1].temporary_space_combat_roll_modifier;
+	    roll += this.game.state.players_info[attacker-1].space_combat_roll_modifier;
+	    roll += this.game.state.players_info[attacker-1].temporary_space_combat_roll_modifier;
 	    roll += sys.s.units[attacker-1][i].temporary_combat_modifier;
 
 	    modified_roll.push(roll);
@@ -4571,11 +4571,11 @@ console.log("K: " + z[k].name);
 	  if (total_hits < total_shots) {
 
 	    let max_rerolls = total_shots - total_hits;
-	    let available_rerolls = this.game.players_info[attacker-1].combat_dice_reroll + this.game.players_info[attacker-1].space_combat_dice_reroll;
+	    let available_rerolls = this.game.state.players_info[attacker-1].combat_dice_reroll + this.game.state.players_info[attacker-1].space_combat_dice_reroll;
 
 	    for (let z_index in z) {
 	      available_rerolls = z[z_index].modifyCombatRerolls(this, player, attacker, player, "space", available_rerolls);
-	      imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.players_info[defender-1].target_units);
+	      imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.state.players_info[defender-1].target_units);
 	    }
 
 	    let attacker_rerolls = available_rerolls;
@@ -4604,11 +4604,11 @@ console.log("K: " + z[k].name);
 	      for (let z_index in z) {
 	        roll =  z[z_index].modifyCombatRerolls(this, player, attacker, player, "space", roll);
 	        total_hits = z[z_index].modifyUnitHits(this, attacker, defender, attacker, "space", rerolling_unit, roll, total_hits);
-	        imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.players_info[defender-1].target_units);
+	        imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.state.players_info[defender-1].target_units);
 	      }
 
-	      roll += this.game.players_info[player-1].space_combat_roll_modifier;
-	      roll += this.game.players_info[player-1].temporary_space_combat_roll_modifier;
+	      roll += this.game.state.players_info[player-1].space_combat_roll_modifier;
+	      roll += this.game.state.players_info[player-1].temporary_space_combat_roll_modifier;
 	      roll += sys.s.units[attacker-1][lowest_combat_idx].temporary_combat_modifier;
 
 	      modified_roll[lowest_combat_idx] = roll;
@@ -4738,11 +4738,11 @@ console.log("K: " + z[k].name);
 	      for (let z_index in z) {
 	        roll = z[z_index].modifyCombatRoll(this, attacker, defender, attacker, "ground", roll);
 	        roll = z[z_index].modifyGroundCombatRoll(this, attacker, defender, roll);
-	        imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "ground", imperium_self.game.players_info[defender-1].target_units);
+	        imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "ground", imperium_self.game.state.players_info[defender-1].target_units);
 	      }
 
-	      roll += this.game.players_info[attacker-1].ground_combat_roll_modifier;
-	      roll += this.game.players_info[attacker-1].temporary_ground_combat_roll_modifier;
+	      roll += this.game.state.players_info[attacker-1].ground_combat_roll_modifier;
+	      roll += this.game.state.players_info[attacker-1].temporary_ground_combat_roll_modifier;
 	      roll += sys.p[planet_idx].units[attacker-1][i].temporary_combat_modifier;
 
 	      modified_roll.push(roll);
@@ -4769,11 +4769,11 @@ console.log("K: " + z[k].name);
 	  if (total_hits < total_shots) {
 
 	    let max_rerolls = total_shots - total_hits;
-	    let available_rerolls = this.game.players_info[attacker-1].combat_dice_reroll + this.game.players_info[attacker-1].ground_combat_dice_reroll;
+	    let available_rerolls = this.game.state.players_info[attacker-1].combat_dice_reroll + this.game.state.players_info[attacker-1].ground_combat_dice_reroll;
 
 	    for (let z_index in z) {
 	      available_rerolls = z[z_index].modifyCombatRerolls(this, player, attacker, player, "ground", available_rerolls);
-	      imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "ground", imperium_self.game.players_info[defender-1].target_units);
+	      imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "ground", imperium_self.game.state.players_info[defender-1].target_units);
 	    }
 
 	    let attacker_rerolls = available_rerolls;
@@ -4800,11 +4800,11 @@ console.log("K: " + z[k].name);
 
 	      for (let z_index in z) {
 	        roll =  z[z_index].modifyCombatRerolls(this, player, attacker, player, "ground", roll);
-	        imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "ground", imperium_self.game.players_info[defender-1].target_units);
+	        imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "ground", imperium_self.game.state.players_info[defender-1].target_units);
 	      }
 
-	      roll += this.game.players_info[player-1].ground_combat_roll_modifier;
-	      roll += this.game.players_info[player-1].temporary_ground_combat_roll_modifier;
+	      roll += this.game.state.players_info[player-1].ground_combat_roll_modifier;
+	      roll += this.game.state.players_info[player-1].temporary_ground_combat_roll_modifier;
 	      roll += sys.p[planet_idx].units[attacker-1][lowest_combat_idx].temporary_combat_modifier;
 
 	      modified_roll[lowest_combat_idx] = roll;
@@ -5020,11 +5020,11 @@ console.log("K: " + z[k].name);
 	this.game.state.space_combat_round++;
 	this.game.state.assign_hits_to_cancel = 0;
 
-	for (let i = 0; i < this.game.players_info.length; i++) {
-	   this.game.players_info[i].units_i_destroyed_last_combat_round = this.game.players_info[i].units_i_destroyed_last_combat_round;
-	   this.game.players_info[i].units_i_destroyed_this_combat_round = [];
-	   this.game.players_info[i].my_units_destroyed_last_combat_round = this.game.players_info[i].my_units_destroyed_last_combat_round;
-	   this.game.players_info[i].my_units_destroyed_this_combat_round = [];
+	for (let i = 0; i < this.game.state.players_info.length; i++) {
+	   this.game.state.players_info[i].units_i_destroyed_last_combat_round = this.game.state.players_info[i].units_i_destroyed_last_combat_round;
+	   this.game.state.players_info[i].units_i_destroyed_this_combat_round = [];
+	   this.game.state.players_info[i].my_units_destroyed_last_combat_round = this.game.state.players_info[i].my_units_destroyed_last_combat_round;
+	   this.game.state.players_info[i].my_units_destroyed_this_combat_round = [];
 	}
 
 	//
@@ -5179,11 +5179,11 @@ console.log("K: " + z[k].name);
 	      for (let z_index in z) {
 	        roll = z[z_index].modifyCombatRoll(this, attacker, defender, attacker, "anti_fighter_barrage", roll);
 	        total_hits = z[z_index].modifyUnitHits(this, attacker, defender, attacker, "anti_fighter_barrage", sys.s.units[attacker-1][i], roll, total_hits);
-	        imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "anti_fighter_barrage", imperium_self.game.players_info[defender-1].target_units);
+	        imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "anti_fighter_barrage", imperium_self.game.state.players_info[defender-1].target_units);
 	      }
 
-	      roll += this.game.players_info[attacker-1].space_combat_roll_modifier;
-	      roll += this.game.players_info[attacker-1].temporary_space_combat_roll_modifier;
+	      roll += this.game.state.players_info[attacker-1].space_combat_roll_modifier;
+	      roll += this.game.state.players_info[attacker-1].temporary_space_combat_roll_modifier;
 	      roll += sys.s.units[attacker-1][i].temporary_combat_modifier;
 
 	      modified_roll.push(roll);
@@ -5210,11 +5210,11 @@ console.log("K: " + z[k].name);
 	    if (total_hits < total_shots) {
 
 	      let max_rerolls = total_shots - total_hits;
-	      let available_rerolls = this.game.players_info[attacker-1].combat_dice_reroll + this.game.players_info[attacker-1].space_combat_dice_reroll;
+	      let available_rerolls = this.game.state.players_info[attacker-1].combat_dice_reroll + this.game.state.players_info[attacker-1].space_combat_dice_reroll;
 
 	      for (let z_index in z) {
 	        available_rerolls = z[z_index].modifyCombatRerolls(this, player, attacker, player, "anti_fighter_barrage", available_rerolls);
-	        imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "anti_fighter_barrage", imperium_self.game.players_info[defender-1].target_units);
+	        imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "anti_fighter_barrage", imperium_self.game.state.players_info[defender-1].target_units);
 	      }
 
 	      let attacker_rerolls = available_rerolls;
@@ -5243,11 +5243,11 @@ console.log("K: " + z[k].name);
 	        for (let z_index in z) {
 	          roll =  z[z_index].modifyCombatRerolls(this, player, attacker, player, "anti_fighter_barrage", roll);
 	          total_hits = z[z_index].modifyUnitHits(this, attacker, defender, attacker, "space", rerolling_unit, roll, total_hits);
-	          imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.players_info[defender-1].target_units);
+	          imperium_self.game.state.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.state.players_info[defender-1].target_units);
 	        }
 
-	        roll += this.game.players_info[player-1].space_combat_roll_modifier;
-	        roll += this.game.players_info[player-1].temporary_space_combat_roll_modifier;
+	        roll += this.game.state.players_info[player-1].space_combat_roll_modifier;
+	        roll += this.game.state.players_info[player-1].temporary_space_combat_roll_modifier;
 	        roll += sys.s.units[attacker-1][lowest_combat_idx].temporary_combat_modifier;
 
 	        modified_roll[lowest_combat_idx] = roll;
@@ -5578,7 +5578,7 @@ console.log("K: " + z[k].name);
             //
             // unless we are infiltrating and get to keep them...
             //
-            if (this.game.players_info[player-1].temporary_infiltrate_infrastructure_on_invasion == 1 || this.game.players_info[player-1].temporary_infiltrate_infrastructure_on_invasion == 1) {
+            if (this.game.state.players_info[player-1].temporary_infiltrate_infrastructure_on_invasion == 1 || this.game.state.players_info[player-1].temporary_infiltrate_infrastructure_on_invasion == 1) {
               let infiltration = 0;
               for (let i = 0; i < sys.p[planet_idx].units[defender-1].length; i++) {
                 if (sys.p[planet_idx].units[defender-1][i].type === "pds") {
@@ -5592,7 +5592,7 @@ console.log("K: " + z[k].name);
               }
               sys.p[planet_idx].units[defender-1] = [];
               if (infiltration == 1) {
-                this.game.players_info[attacker-1].temporary_infiltrate_infrastructure_on_invasion = 0;
+                this.game.state.players_info[attacker-1].temporary_infiltrate_infrastructure_on_invasion = 0;
               }
             } else {
               sys.p[planet_idx].units[defender-1] = [];
@@ -5603,7 +5603,7 @@ console.log("K: " + z[k].name);
             //
             if (defender > 0) {
 	      if (defender != -1) {
-                this.game.players_info[defender-1].lost_planet_this_round = attacker; // player who took it
+                this.game.state.players_info[defender-1].lost_planet_this_round = attacker; // player who took it
 	      }
 	    }
             this.updatePlanetOwner(sector, planet_idx, player);
@@ -5664,11 +5664,11 @@ console.log("K: " + z[k].name);
         //
         this.game.state.ground_combat_round++;
 
-	for (let i = 0; i < this.game.players_info.length; i++) {
-	 this.game.players_info[i].units_i_destroyed_last_combat_round = this.game.players_info[i].units_i_destroyed_last_combat_round;
-	 this.game.players_info[i].units_i_destroyed_this_combat_round = [];
-	 this.game.players_info[i].my_units_destroyed_last_combat_round = this.game.players_info[i].my_units_destroyed_last_combat_round;
-	 this.game.players_info[i].my_units_destroyed_this_combat_round = [];
+	for (let i = 0; i < this.game.state.players_info.length; i++) {
+	 this.game.state.players_info[i].units_i_destroyed_last_combat_round = this.game.state.players_info[i].units_i_destroyed_last_combat_round;
+	 this.game.state.players_info[i].units_i_destroyed_this_combat_round = [];
+	 this.game.state.players_info[i].my_units_destroyed_last_combat_round = this.game.state.players_info[i].my_units_destroyed_last_combat_round;
+	 this.game.state.players_info[i].my_units_destroyed_this_combat_round = [];
 	}
 
         //
@@ -5685,7 +5685,7 @@ console.log("K: " + z[k].name);
 	  if (sys.p[planet_idx].owner != player) {
             //this.updateLog(this.returnFactionNickname(player) + " seizes " + sys.p[planet_idx].name);
 	    if (sys.p[planet_idx].owner != -1) {
-              this.game.players_info[sys.p[planet_idx].owner-1].lost_planet_this_round = player; // player who took it
+              this.game.state.players_info[sys.p[planet_idx].owner-1].lost_planet_this_round = player; // player who took it
 	    }
 	    this.updatePlanetOwner(sector, planet_idx, player);
 	  }
@@ -5739,7 +5739,7 @@ console.log("K: " + z[k].name);
 
         let speaker_order = this.returnSpeakerOrder();
 
-	this.game.players_info[this.game.player-1].can_intervene_in_action_card = 0;
+	this.game.state.players_info[this.game.player-1].can_intervene_in_action_card = 0;
 
 	//
 	// allow players to respond to their action cards, EVENT always triggers -- simultaneous unsupported now

@@ -17,8 +17,8 @@
   returnPromissaryPlayer(promissary) {
 
     let tmpar = promissary.split("-");
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].faction === tmpar[0]) { return (i+1); }
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.game.state.players_info[i].faction === tmpar[0]) { return (i+1); }
     }
 
     return -1;

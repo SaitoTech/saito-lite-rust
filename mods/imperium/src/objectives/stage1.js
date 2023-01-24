@@ -44,7 +44,7 @@
       img	:	"/imperium/img/victory_point_1.png" ,
       text	:	"Research 2 unit upgrade technologies" ,
       canPlayerScoreVictoryPoints : function(imperium_self, player) {
-	let techlist = imperium_self.game.players_info[player-1].tech;
+	let techlist = imperium_self.game.state.players_info[player-1].tech;
 	let unit_upgrades = 0;
 	for (let i = 0; i < techlist.length; i++) {
 	  if (imperium_self.tech[techlist[i]].unit == 1) {
@@ -64,7 +64,7 @@
       text	:	"Research 2 technologies in two different color paths" ,
       canPlayerScoreVictoryPoints : function(imperium_self, player) {
 
-	let techlist = imperium_self.game.players_info[player-1].tech;
+	let techlist = imperium_self.game.state.players_info[player-1].tech;
 
 	let greentech = 0;
 	let bluetech = 0;
@@ -170,7 +170,7 @@
       img	:	"/imperium/img/victory_point_1.png" ,
       text	:	"Spend 3 command or strategy tokens when scoring" ,
       canPlayerScoreVictoryPoints : function(imperium_self, player) {
-	if ((imperium_self.game.players_info[player-1].strategy_tokens + imperium_self.game.players_info[player-1].command_tokens) >= 3) { return 1; }
+	if ((imperium_self.game.state.players_info[player-1].strategy_tokens + imperium_self.game.state.players_info[player-1].command_tokens) >= 3) { return 1; }
 	return 0;
       },
       scoreObjective : function(imperium_self, player, mycallback) {
@@ -194,7 +194,7 @@
 	return 0;
       },
       scoreObjective : function(imperium_self, player, mycallback) {
-        imperium_self.game.players_info[player-1].goods -= 5;
+        imperium_self.game.state.players_info[player-1].goods -= 5;
 	imperium_self.displayFactionDashboard();
 	mycallback(1);
       },

@@ -7,20 +7,17 @@ module.exports = StunAppspaceTemplate = () => {
 
           <div class="saito-page-header-title"> Saito Video <span class="saito-badge">α</span></div>
 
-          <p>Provide Room Code, or <span class="stun-host-your-own">host your own peer-to-peer video chat!</span></p>
+          <p>Saito lets you host your own peer-to-peer video chat!</p>
 
           <div class="stunx-appspace-actions">
-            <div class="stunx-appspace-join">
-             <input type="text" placeholder="enter code" id="inviteCode" />
-            </div>
             <div class="stunx-appspace-create">
-              <div class="saito-button-primary" id="joinInvite">Join</div>
+              <div class="saito-button-primary" id="createRoom">create chat room!</div>
             </div>
           </div>
 
           <div class="my-stun-container-info">
             <i class="fas fa-info-circle"></i>
-            <span class="saito-info-text">Saito uses the blockchain to negotiate the peer-to-peer connections used for video chat. Please note that connections can take longer to negotiate if you are on a mobile network or behind an aggressive firewall.</span>
+            <span class="saito-info-text">Blockchain-mediated peer-to-peer connections can take longer to negotiate if you are on a mobile network or behind an aggressive firewall.</span>
           </div>
         </card>
       </div>

@@ -249,8 +249,7 @@
 
 
   addReformer(faction, space, reformer) {
-
-    if (!this.reformer[reformer]) {
+    if (!this.reformers[reformer]) {
       console.log("REFORMER: " + reformer + " not found");
       return;
     }
@@ -308,11 +307,20 @@
   }
 
 
-
+  isCommitted(debater) { return this.isDebaterCommitted(debater); }
   isDebaterCommitted(debater) {
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key == debater) {
 	if (this.game.state.debaters[i].committed == 1) { return 1; }
+      }
+    }
+    return 0;
+  }
+
+  isDebaterAvailable(debater) {
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      if (this.game.state.debaters[i].key == debater) {
+	if (this.game.state.debaters[i].committed == 0) { return 1; }
       }
     }
     return 0;

@@ -36,16 +36,46 @@ class ChatManager {
 	  //
 	  // handle requests to re-render chat popups
 	  //
-	  app.connection.on("chat-popup-render-request", (group) => {
-	    if (this.render_popups_to_screen) {
-	      if (!this.popups[group.id]) {
-		this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
-		this.popups[group.id].group = group;
+	  app.connection.on("chat-popup-render-request", (group=null) => {
+	    if (group == null) {
+	      let group = this.mod.returnCommunityChat();
+	      if (group != null) { this.app.connection.emit("chat-popup-render-request", (group)); }
+	    } else {
+	      if (this.render_popups_to_screen) {
+	        if (!this.popups[group.id]) {
+		  this.popups[group.id] = new ChatPopup(this.app, this.mod, "");
+		  this.popups[group.id].group = group;
+	        }
+	        this.popups[group.id].render();
 	      }
-	      this.popups[group.id].render();
 	    }
           });
 
+          app.connection.on("open-chat-with", (data=null) => {
+
+            if (!data) {
+	        let group = this.mod.returnCommunityChat();
+		if (this.popups[group.id]) { this.popups[group.id].manually_closed = false; }
+                this.app.connection.emit('chat-popup-render-request', this.mod.returnCommunityChat());
+                return;
+            }
+
+            let group;
+
+            if (Array.isArray(data.key)) {
+                group = this.mod.createChatGroup(data.key, data.name);
+            } else {
+                let name = data.name || app.keys.returnUsername(data.key);
+                group = this.mod.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
+            }
+
+	    //
+	    // permit re-open
+	    //
+	    if (this.popups[group.id]) { this.popups[group.id].manually_closed = false; }
+
+            app.connection.emit('chat-popup-render-request', group);
+          });
 
 	}
 
@@ -130,26 +160,6 @@ class ChatManager {
 	      cm.app.connection.emit("chat-popup-render-request", group);
 	    }
 	  });
-
-	  //
-	  // clicks on elements inside the element
-	  //
-/***
-	  document.querySelectorAll('.chat-manager-list .saito-user div').forEach(item => {
-	    item.onclick = (e) => {
-
-	      //
-              e.preventDefault();
-              e.stopImmediatePropagation();
-  
-	      let gid = e.currentTarget.parentNode.getAttribute("data-id");
-	      let group = cm.mod.returnGroup(gid);
-	      // unset manually closed to permit re-opening
-	      if (this.popups[gid]) { this.popups[gid].manually_closed = false; }
-	      cm.app.connection.emit("chat-popup-render-request", group);
-	    }
-	  });
-***/
 
 	}
 

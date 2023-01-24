@@ -20,15 +20,15 @@
           imperium_self.addMove("DEAL\t2\t"+imperium_self.game.player+"\t2");
           imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(player) + " gains action cards");
           imperium_self.addMove("strategy\t"+"politics"+"\t"+strategy_card_player+"\t2");
-          imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
+          imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
 
           //
           // pick the speaker
           //
           let factions = imperium_self.returnFactions();
           let html = 'Make which player the speaker? <ul>';
-          for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-            html += '<li class="option" id="'+i+'">' + factions[imperium_self.game.players_info[i].faction].name + '</li>';
+          for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+            html += '<li class="option" id="'+i+'">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
           }
           html += '</ul>';
           imperium_self.updateStatus(html);
@@ -59,7 +59,7 @@
       strategySecondaryEvent 	:	function(imperium_self, player, strategy_card_player) {
 
         if (imperium_self.game.player == player) {
-          if (imperium_self.game.player != strategy_card_player && imperium_self.game.players_info[player-1].strategy_tokens > 0) {
+          if (imperium_self.game.player != strategy_card_player && imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
             imperium_self.playerBuyActionCards(2);
           } else {
             imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
@@ -113,10 +113,10 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                   imperium_self.addMove("post_agenda_stage_post\t"+selected_agendas[i]);
                   imperium_self.addMove("post_agenda_stage\t"+selected_agendas[i]);
                   imperium_self.addMove("simultaneous_agenda\t"+selected_agendas[i]+"\t"+i);
-                  imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
+                  imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
                   imperium_self.addMove("pre_agenda_stage_post\t"+selected_agendas[i]);
                   imperium_self.addMove("pre_agenda_stage\t"+selected_agendas[i]);
-                  imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
+                  imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
 } else {
                   imperium_self.addMove("resolve_agenda\t"+selected_agendas[i]);
                   imperium_self.addMove("post_agenda_stage_post\t"+selected_agendas[i]);
@@ -124,7 +124,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                   imperium_self.addMove("agenda\t"+selected_agendas[i]+"\t"+i);
                   imperium_self.addMove("pre_agenda_stage_post\t"+selected_agendas[i]);
                   imperium_self.addMove("pre_agenda_stage\t"+selected_agendas[i]);
-                  imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
+                  imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
 }
                 }
                 imperium_self.addMove("resetagenda");

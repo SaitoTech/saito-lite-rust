@@ -25,6 +25,7 @@ class StunAppspace {
   }
 
   attachEvents(app, mod) {
+
     document.body.onclick = ('click', (e) => {
       if (e.target.id === "add-to-listeners-btn") {
         let input = document.querySelector('#listeners-input').value.split(',');
@@ -32,39 +33,35 @@ class StunAppspace {
         let stun_mod = app.modules.returnModule("Stun");
         stun_mod.addListeners(listeners);
       }
-      if (e.target.id === "joinInvite") {
-        const inviteCode = document.querySelector("#inviteCode").value;
-        console.log(inviteCode, 'invite code'),
-          this.joinVideoInvite(app, mod, inviteCode.trim());
+// legacy room codes
+//      if (e.target.id === "joinInvite") {
+//        const inviteCode = document.querySelector("#inviteCode").value;
+//          this.joinVideoInvite(app, mod, inviteCode.trim());
+//      }
+      if (e.target.id === "createRoom") {
+        this.mod.sendCreateRoomTransaction((app, mod, roomCode) => {
+          this.app.connection.emit('join-room-with-code', roomCode);
+        });
       }
     })
 
-    document.querySelector(".stun-host-your-own").onclick = (e) => {
-      this.mod.sendCreateRoomTransaction((app, mod, roomCode) => {
-        this.app.connection.emit('join-room-with-code', roomCode);
-      });
-    }
-
-    document.querySelector('#inviteCode').addEventListener('keyup', (e) => {
-      console.log('focusing')
-      let button = document.querySelector('.stunx-appspace-join .saito-button-secondary');
-      button.style.display = "flex"
-      setTimeout(() => {
-        button.style.display = "none"
-      }, 10000)
-    })
+//    document.querySelector('#inviteCode').addEventListener('keyup', (e) => {
+//      let button = document.querySelector('.stunx-appspace-join .saito-button-secondary');
+//      button.style.display = "flex"
+//      setTimeout(() => {
+//        button.style.display = "none"
+//      }, 10000)
+//    })
   }
 
 
   joinVideoInvite(app, mod, room_code) {
-    console.log(room_code)
     if (!room_code) return siteMessage("Please insert a room code", 5000);
     let sql = `SELECT * FROM rooms WHERE room_code = "${room_code}"`;
 
 
     let requestCallback = async (res) => {
       let room = res.rows[0];
-      console.log(res, 'res')
       if (!room) {
         console.log('Invite code is invalid');
         return siteMessage("Invite code is invalid");

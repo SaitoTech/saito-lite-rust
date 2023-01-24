@@ -112,8 +112,8 @@
     this.game.tmp_confirms_players  = [];
 
     // if confirms in the number of players, we set them all as active
-    if (this.game.confirms_needed == this.game.players_info.length) {
-      for (let i = 1; i <= this.game.players_info.length; i++) {
+    if (this.game.confirms_needed == this.game.state.players_info.length) {
+      for (let i = 1; i <= this.game.state.players_info.length; i++) {
 	this.setPlayerActive(i);
       }
     }
