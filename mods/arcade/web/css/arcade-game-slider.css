@@ -120,5 +120,5 @@ li.slide[data-active-slide] {
     background: var(--saito-black-faded);
     white-space: nowrap;
     padding: 1rem;
-    border-bottom-right-radius: 1rem;
+    border-radius: 0 0 0.5rem 0;
 }
