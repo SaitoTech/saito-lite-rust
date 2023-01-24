@@ -1,0 +1,277 @@
+
+body {
+  font-family: serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden; 
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+:root{
+  --steamed-card-width: min(17.5vh, 20vw);
+  --steamed-card-height: min(27.125vh, 31vw);
+}
+
+.gameboard{
+  /* Default fill the background with image */
+  position: absolute;
+  background-image: url("img/gameboard.jpg");
+  background-size: cover;
+  background-position: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+.status-message{
+  background-color: unset;
+}
+
+.field_slot{
+  width: var(--steamed-card-width);
+  height: var(--steamed-card-height);
+  max-width: 150px;
+  max-height: 233px;
+  position: relative;
+  background-size: contain;
+  background-position: center;
+}
+
+.card{
+  position: absolute;
+  width: 100%;
+  max-width: 150px;
+}
+
+.pot{
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  width: calc(95vw - 10px);
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 5fr minmax(150px, 1fr);
+}
+
+.player_field{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  /*width: calc(3 * var(--steamed-card-width) + 90);
+  height: calc(var(--steamed-card-height) + 50);*/
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 5px;
+  background-color: saddlebrown;
+  padding: 5px;
+  justify-items: center;
+  align-content: center;
+}
+
+.status{
+  width: 100%;
+  height: 40px;
+  position: absolute;
+  top: -40px;
+  background-color: tan;
+  color: black;
+}
+
+#draw_deck{
+  margin: 0 10px;
+  background-size: contain;
+  background-position: center;
+  font-size: min(5vh,6vw);
+  text-align: center;
+  line-height: min(21vh, 23vw);
+}
+
+#draw_deck.active_element:hover{
+  box-shadow: 0 0 5px 5px ghostwhite;
+}
+
+#discards{
+  margin: 0 10px;
+}
+
+#discards img{
+  filter: brightness(0.5);
+}
+
+#self{
+  bottom: 5px;
+}
+
+#opponent{
+  top: 40px;
+}
+
+.animation_helper{
+  position: absolute;
+}
+
+#cardfan img{
+  transition: transform 0.3s;
+}
+
+.hidden{
+ visibility: hidden; 
+}
+
+.player_field .field_slot{
+  background-color: rgba(0,0,0,0.4);
+}
+
+.player_field.active{
+  background-color: tan;
+}
+
+.active_element{
+  cursor: pointer;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+
+.score_card{
+  width: calc(var(--steamed-card-width) / 2);
+  height: calc(var(--steamed-card-height) / 2);
+  max-width: 75px;
+  max-height: 116px;
+  position: absolute;
+  background-size: contain;
+  background-position: center;
+  text-align: center;
+  font-size: min(3vh, 3vw);
+  line-height: min(10vh, 12vw);
+  color: crimson;
+}
+
+
+.offer{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  min-width: fit-content;
+}
+
+.offer > img.card{
+  position: relative;
+  width: var(--steamed-card-width);
+  margin: 0 10px;
+}
+
+.offer img.card.active_element:hover{
+  transform: rotate(5deg);
+}
+
+
+
+#my_score { 
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+#opponent_score{
+ position: absolute;
+  top: 40px;
+  right: 20px; 
+}
+
+.profit1{
+  position: absolute;
+  bottom: 3%;
+  width: 23%;
+  height: 37%;
+  left: 4%;
+  background-color: rgba(255, 255, 0, 0.4);
+}
+
+.profit2{
+  position: absolute;
+  bottom: 3%;
+  width: 23%;
+  height: 37%;
+  left: 27%;
+  background-color: rgba(255, 255, 0, 0.4);
+}
+
+.profit3{
+  position: absolute;
+  bottom: 3%;
+  width: 23%;
+  height: 37%;
+  left: 52%;
+  background-color: rgba(255, 255, 0, 0.4);
+}
+
+.profit4{
+  position: absolute;
+  bottom: 3%;
+  width: 23%;
+  height: 37%;
+  left: 77%;
+  background-color: rgba(255, 255, 0, 0.4);
+}
+
+.slot_holder{
+  width: var(--steamed-card-width);
+  height: var(--steamed-card-height);
+  max-width: 150px;
+  max-height: 233px;  
+}
+
+.animated_elem{
+  position: absolute;
+  width: fit-content;
+  z-index: 100;
+}
+
+.flip-card{
+  width: var(--steamed-card-width);
+  height: var(--steamed-card-height);
+  max-width: 150px;
+  max-height: 233px;
+  position: absolute;
+}
+
+#draw_deck .flip-card{
+  top: 0;
+  left: 0;  
+}
+
+
+
+.flip-card .card{
+  position: absolute;
+}
+
+.cardFront, .cardBack{
+  transition: transform 0.5s ease;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cardFront{
+  transform: rotateY(180deg);
+}
+.flipped .cardFront{
+  transform: rotateY(0deg);
+}
+.cardBack{
+  transform: rotateY(0deg);
+}
+.flipped .cardBack{
+  transform: rotateY(-180deg);
+}
+
+.tutorial-highlight{
+  box-shadow: 0 0 0 100vmax rgba(0,0,0,0.8);
+}
+
+.jumpy:hover img.card:last-child{
+  transform: translateY(-15%);
+}
