@@ -14,9 +14,9 @@
     //
     // reset tech bonuses
     //
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].tech.length; ii++) {
-        technologies[this.game.players_info[i].tech[ii]].onNewTurn();
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.state.players_info[i].tech.length; ii++) {
+        technologies[this.game.state.players_info[i].tech[ii]].onNewTurn();
       }
     }
   }
@@ -46,9 +46,9 @@
     // the promissary may be
     //
     let actual_promissary_name = promissary;
-    if (!this.game.players_info[sender-1].promissary_notes.includes(promissary)) {
-      for (let i = 0; i < this.game.players_info[sender-1].promissary_notes.length; i++) {
-	let pm = this.game.players_info[sender-1].promissary_notes[i];
+    if (!this.game.state.players_info[sender-1].promissary_notes.includes(promissary)) {
+      for (let i = 0; i < this.game.state.players_info[sender-1].promissary_notes.length; i++) {
+	let pm = this.game.state.players_info[sender-1].promissary_notes[i];
 	if (pm.indexOf(promissary) > 0) {
 	  let tmpar = pm.split("-");
 	  let tmpname = tmpar[1];
@@ -61,12 +61,12 @@
       }
     }
 
-    this.game.players_info[receiver-1].promissary_notes.push(actual_promissary_name);
+    this.game.state.players_info[receiver-1].promissary_notes.push(actual_promissary_name);
 
-    for (let k = 0; k < this.game.players_info[sender-1].promissary_notes.length; k++) {
-      if (this.game.players_info[sender-1].promissary_notes[k] === actual_promissary_name) {
-        this.game.players_info[sender-1].promissary_notes.splice(k, 1);
-        k = this.game.players_info[sender-1].promissary_notes.length;
+    for (let k = 0; k < this.game.state.players_info[sender-1].promissary_notes.length; k++) {
+      if (this.game.state.players_info[sender-1].promissary_notes[k] === actual_promissary_name) {
+        this.game.state.players_info[sender-1].promissary_notes.splice(k, 1);
+        k = this.game.state.players_info[sender-1].promissary_notes.length;
       }
     }
 
@@ -125,9 +125,9 @@
 
     let imperium_self = this;
 
-    if (imperium_self.game.players_info[player-1].action_cards_in_hand > imperium_self.game.players_info[player-1].action_card_limit) {
+    if (imperium_self.game.state.players_info[player-1].action_cards_in_hand > imperium_self.game.state.players_info[player-1].action_card_limit) {
       if (imperium_self.game.player == player) {
-	imperium_self.playerDiscardActionCards( ( imperium_self.game.players_info[player-1].action_cards_in_hand - imperium_self.game.players_info[player-1].action_card_limit ) );
+	imperium_self.playerDiscardActionCards( ( imperium_self.game.state.players_info[player-1].action_cards_in_hand - imperium_self.game.state.players_info[player-1].action_card_limit ) );
       }
       return 0;
     }
@@ -158,36 +158,36 @@
 
 
   resetTargetUnits() {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      this.game.players_info[i].target_units = [];
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      this.game.state.players_info[i].target_units = [];
     }
   }
 
   resetTurnVariables(player) {
-    this.game.players_info[player-1].planets_conquered_this_turn = [];
-    this.game.players_info[player-1].may_player_produce_without_spacedock = 0;
-    this.game.players_info[player-1].may_player_produce_without_spacedock_production_limit = 0;
-    this.game.players_info[player-1].may_player_produce_without_spacedock_cost_limit = 0;
-    this.game.players_info[player-1].temporary_immune_to_pds_fire = 0;
-    this.game.players_info[player-1].temporary_immune_to_planetary_defense = 0;
-    this.game.players_info[player-1].temporary_space_combat_roll_modifier 	= 0;
-    this.game.players_info[player-1].temporary_ground_combat_roll_modifier 	= 0;
-    this.game.players_info[player-1].temporary_pds_combat_roll_modifier 	= 0;
-    this.game.players_info[player-1].temporary_bombardment_combat_roll_modifier 	= 0;
-    this.game.players_info[player-1].temporary_move_through_sectors_with_opponent_ships = 0;
-    this.game.players_info[player-1].temporary_fleet_move_bonus = 0;
-    this.game.players_info[player-1].temporary_ship_move_bonus = 0;
-    this.game.players_info[player-1].ground_combat_dice_reroll = 0;
-    this.game.players_info[player-1].space_combat_dice_reroll               = 0;
-    this.game.players_info[player-1].pds_combat_dice_reroll                 = 0;
-    this.game.players_info[player-1].bombardment_combat_dice_reroll         = 0;
-    this.game.players_info[player-1].combat_dice_reroll                     = 0;
-    this.game.players_info[player-1].experimental_battlestation		    = "";
-    this.game.players_info[player-1].lost_planet_this_round		= -1; // is player to whom lost
-    this.game.players_info[player-1].temporary_opponent_cannot_retreat = 0;
+    this.game.state.players_info[player-1].planets_conquered_this_turn = [];
+    this.game.state.players_info[player-1].may_player_produce_without_spacedock = 0;
+    this.game.state.players_info[player-1].may_player_produce_without_spacedock_production_limit = 0;
+    this.game.state.players_info[player-1].may_player_produce_without_spacedock_cost_limit = 0;
+    this.game.state.players_info[player-1].temporary_immune_to_pds_fire = 0;
+    this.game.state.players_info[player-1].temporary_immune_to_planetary_defense = 0;
+    this.game.state.players_info[player-1].temporary_space_combat_roll_modifier 	= 0;
+    this.game.state.players_info[player-1].temporary_ground_combat_roll_modifier 	= 0;
+    this.game.state.players_info[player-1].temporary_pds_combat_roll_modifier 	= 0;
+    this.game.state.players_info[player-1].temporary_bombardment_combat_roll_modifier 	= 0;
+    this.game.state.players_info[player-1].temporary_move_through_sectors_with_opponent_ships = 0;
+    this.game.state.players_info[player-1].temporary_fleet_move_bonus = 0;
+    this.game.state.players_info[player-1].temporary_ship_move_bonus = 0;
+    this.game.state.players_info[player-1].ground_combat_dice_reroll = 0;
+    this.game.state.players_info[player-1].space_combat_dice_reroll               = 0;
+    this.game.state.players_info[player-1].pds_combat_dice_reroll                 = 0;
+    this.game.state.players_info[player-1].bombardment_combat_dice_reroll         = 0;
+    this.game.state.players_info[player-1].combat_dice_reroll                     = 0;
+    this.game.state.players_info[player-1].experimental_battlestation		    = "";
+    this.game.state.players_info[player-1].lost_planet_this_round		= -1; // is player to whom lost
+    this.game.state.players_info[player-1].temporary_opponent_cannot_retreat = 0;
 
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      this.game.players_info[i].traded_this_turn 			    = 0;
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      this.game.state.players_info[i].traded_this_turn 			    = 0;
     }
 
     this.game.state.temporary_adjacency = [];
@@ -235,7 +235,7 @@
     //
     if (sector == 'new-byzantium') {
       if (sys.p[planet_idx].owner == -1 && new_owner != -1) {
-	this.game.players_info[new_owner-1].vp += 1;
+	this.game.state.players_info[new_owner-1].vp += 1;
 	this.updateLog(this.returnFaction(new_owner) + " gains 1 VP for first conquest of New Byzantium");
 	this.updateLeaderboard();
       }
@@ -259,7 +259,7 @@
     }
 
     if (existing_owner != owner) {
-      this.game.players_info[owner-1].planets_conquered_this_turn.push(sys.p[planet_idx].name);
+      this.game.state.players_info[owner-1].planets_conquered_this_turn.push(sys.p[planet_idx].name);
       let z = this.returnEventObjects();
       for (let z_index in z) {
 	z[z_index].gainPlanet(this, owner, planetname); 

@@ -10,7 +10,7 @@
 	if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
           imperium_self.addMove("resolve\tstrategy");
           imperium_self.addMove("strategy\t"+"leadership"+"\t"+strategy_card_player+"\t2");
-          imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
+          imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
           imperium_self.playerAllocateNewTokens(imperium_self.game.player, 3, 0, 1, 1);
  	}
 

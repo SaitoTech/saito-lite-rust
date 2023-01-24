@@ -50,20 +50,20 @@
   }
 
   gainVictoryPoints(faction, points, type="special") {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii]) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
+	if (faction === this.game.state.players_info[i].factions[ii]) {
 	  if (type == "base") {
-            this.game.players_info[i].factions[ii].vp += points;
-            this.game.players_info[i].factions[ii].vp_base += points;
+            this.game.state.players_info[i].factions[ii].vp += points;
+            this.game.state.players_info[i].factions[ii].vp_base += points;
 	  }
 	  if (type == "special") {
-            this.game.players_info[i].factions[ii].vp += points;
-            this.game.players_info[i].factions[ii].vp_special += points;
+            this.game.state.players_info[i].factions[ii].vp += points;
+            this.game.state.players_info[i].factions[ii].vp_special += points;
 	  }
 	  if (type == "bonus") {
-            this.game.players_info[i].factions[ii].vp += points;
-            this.game.players_info[i].factions[ii].vp_bonus += points;
+            this.game.state.players_info[i].factions[ii].vp += points;
+            this.game.state.players_info[i].factions[ii].vp_bonus += points;
 	  }
 	  break;
         }
@@ -73,10 +73,10 @@
   }
 
   returnCapitals(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii]) {
-          return this.factions[this.game.players_info[i].factions[ii]].capitals;
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
+	if (faction === this.game.state.players_info[i].factions[ii]) {
+          return this.factions[this.game.state.players_info[i].factions[ii]].capitals;
         }
       }
     }
@@ -84,8 +84,8 @@
   }
 
   returnFactionHandIdx(player, faction) {
-    for (let i = 0; i < this.game.players_info[player-1].factions.length; i++) {
-      if (this.game.players_info[player-1].factions[i] === faction) {
+    for (let i = 0; i < this.game.state.players_info[player-1].factions.length; i++) {
+      if (this.game.state.players_info[player-1].factions[i] === faction) {
 	return i;
       }
     }

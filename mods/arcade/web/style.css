@@ -2,7 +2,7 @@
 -----------------------------------------------------------------*/
 @import url("./css/arcade-base.css");
 @import url("./css/arcade-game-slider.css");
-/* @import url("./css/arcade-wizard.css"); */
+@import url("./css/arcade-wizard.css");
 @import url("./css/arcade-invites.css");
 @import url("./css/arcade-game-selector-overlay.css");
 @import url("./css/arcade-overlays.css");

@@ -26,13 +26,13 @@
       type      :         "ability" ,
       text        :       "Spend 1 strategy token to place 2 fighters or a destroy in sector with your warsun" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].star_forge == undefined) {
-          imperium_self.game.players_info[player-1].star_forge = 0;
+        if (imperium_self.game.state.players_info[player-1].star_forge == undefined) {
+          imperium_self.game.state.players_info[player-1].star_forge = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction7-star-forge") {
-          imperium_self.game.players_info[gainer-1].star_forge = 1;
+          imperium_self.game.state.players_info[gainer-1].star_forge = 1;
         }
       },
       menuOption  :       function(imperium_self, menu, player) {
@@ -44,7 +44,7 @@
         return x;
       },
       menuOptionTriggers:  function(imperium_self, menu, player) {
-        if (imperium_self.doesPlayerHaveTech(player, "faction7-star-forge") && menu === "main" && imperium_self.game.players_info[player-1].strategy_tokens > 0) {
+        if (imperium_self.doesPlayerHaveTech(player, "faction7-star-forge") && menu === "main" && imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
           return 1;
         }
         return 0;
@@ -97,14 +97,14 @@
       type        :       "ability" ,
       text        :       "Player may move through supernovas" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].gashlai_physiology == undefined) {
-          imperium_self.game.players_info[player-1].gashlai_physiology = 0;
+        if (imperium_self.game.state.players_info[player-1].gashlai_physiology == undefined) {
+          imperium_self.game.state.players_info[player-1].gashlai_physiology = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction7-gashlai-physiology") {
-          imperium_self.game.players_info[gainer-1].gashlai_physiology = 1;
-	  imperium_self.game.players_info[gainer-1].fly_through_supernovas = 1;
+          imperium_self.game.state.players_info[gainer-1].gashlai_physiology = 1;
+	  imperium_self.game.state.players_info[gainer-1].fly_through_supernovas = 1;
         }
       },
     });
@@ -125,18 +125,18 @@
       prereqs     :       ["red","red"],
       text        :       "Player may move into supernovas. Gain 1 trade good producing with Warsun or adjacent to Supernova" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].magmus_reactor == undefined) {
-          imperium_self.game.players_info[player-1].magmus_reactor = 0;
+        if (imperium_self.game.state.players_info[player-1].magmus_reactor == undefined) {
+          imperium_self.game.state.players_info[player-1].magmus_reactor = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction7-magmus-reactor") {
-          imperium_self.game.players_info[gainer-1].magmus_reactor = 1;
-	  imperium_self.game.players_info[gainer-1].move_into_supernovas = 1;
+          imperium_self.game.state.players_info[gainer-1].magmus_reactor = 1;
+	  imperium_self.game.state.players_info[gainer-1].move_into_supernovas = 1;
         }
       },
       postProduction : function(imperium_self, player, sector, stuff) {
-	if (imperium_self.game.players_info[player-1].magmus_reactor == 1) {
+	if (imperium_self.game.state.players_info[player-1].magmus_reactor == 1) {
           let as = imperium_self.returnAdjacentSectors(sector);
 	  let give_bonus = 0;
           if (imperium_self.doesSectorContainPlayerUnit(player, sector, "warsun")) { give_bonus = 1; }
@@ -148,7 +148,7 @@
 	  }
 	  if (give_bonus == 1) {
 	    imperium_self.updateLog("Muatt gains 1 trade good from Magmus Reactor - producing in a sector with a Warsun or adjacent to a Supernova");
-            imperium_self.game.players_info[player-1].goods += 1;
+            imperium_self.game.state.players_info[player-1].goods += 1;
             imperium_self.updateTokenDisplay();
             imperium_self.displayFactionDashboard();
 	  }
@@ -179,17 +179,17 @@
       text        :       "A more dangerous and mobile warsun" ,
       prereqs     :       [],
       initialize :       function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction7_advanced_warsun_i == undefined) {
-          imperium_self.game.players_info[player-1].faction7_advanced_warsun_i = 0;
+        if (imperium_self.game.state.players_info[player-1].faction7_advanced_warsun_i == undefined) {
+          imperium_self.game.state.players_info[player-1].faction7_advanced_warsun_i = 0;
 	}
       },
       gainTechnology :       function(imperium_self, gainer, tech) {
-        imperium_self.game.players_info[gainer-1].faction7_advanced_warsun_i = 1;
-	imperium_self.game.players_info[gainer-1].may_produce_warsuns = 1;
+        imperium_self.game.state.players_info[gainer-1].faction7_advanced_warsun_i = 1;
+	imperium_self.game.state.players_info[gainer-1].may_produce_warsuns = 1;
       },
       upgradeUnit :       function(imperium_self, player, unit) {
 
-        if (imperium_self.game.players_info[unit.owner-1].faction7_advanced_warsun_i == 1 && unit.type == "warsun") {
+        if (imperium_self.game.state.players_info[unit.owner-1].faction7_advanced_warsun_i == 1 && unit.type == "warsun") {
           unit.cost = 12;
           unit.combat = 3;
           unit.move = 1;
@@ -217,16 +217,16 @@
       text        :       "A more dangerous and mobile warsun" ,
       prereqs     :       ["red","red","red","yellow"],
       initialize :       function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction7_advanced_warsun_ii == undefined) {
-          imperium_self.game.players_info[player-1].faction7_advanced_warsun_ii = 0;
+        if (imperium_self.game.state.players_info[player-1].faction7_advanced_warsun_ii == undefined) {
+          imperium_self.game.state.players_info[player-1].faction7_advanced_warsun_ii = 0;
 	}
       },
       gainTechnology :       function(imperium_self, gainer, tech) {
-        imperium_self.game.players_info[gainer-1].faction7_advanced_warsun_ii = 1;
+        imperium_self.game.state.players_info[gainer-1].faction7_advanced_warsun_ii = 1;
       },
       upgradeUnit :       function(imperium_self, player, unit) {
 
-        if (imperium_self.game.players_info[unit.owner-1].faction7_advanced_warsun_ii == 1 && unit.type == "warsun") {
+        if (imperium_self.game.state.players_info[unit.owner-1].faction7_advanced_warsun_ii == 1 && unit.type == "warsun") {
           unit.cost = 10;
           unit.combat = 3;
           unit.move = 3;

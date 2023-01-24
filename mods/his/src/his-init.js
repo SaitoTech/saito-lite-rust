@@ -79,6 +79,6 @@ class HereIStand extends GameTemplate {
     this.wives = {};
 
     this.deck = this.returnDeck();
-
+    this.diplomatic_deck = this.returnDiplomaticDeck();
 
 

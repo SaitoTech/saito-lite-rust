@@ -79,6 +79,16 @@
       battle_rating	:	1,
       command_value	:	8,
     });
+
+    this.importArmyLeader('henry-ii', {
+      type		:	"henry-ii" ,
+      name		: 	"Henry II",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Henry_II.svg",
+      battle_rating	:	0,
+      command_value	:	8,
+    });
  
     this.importArmyLeader('montmorency', {
       type		:	"montmorency" ,
@@ -117,6 +127,36 @@
       army_leader       :       true,
       img               :       "Maurice_Hapsburg.svg",
       battle_rating     :       1,
+      command_value     :       6,
+    });
+
+    this.importArmyLeader('dudley', {
+      type              :       "dudley" ,
+      name              :       "Dudley",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "Dudley.svg",
+      battle_rating     :       0,
+      command_value     :       6,
+    });
+
+    this.importArmyLeader('john-frederick', {
+      type              :       "john-frederick" ,
+      name              :       "John Frederick",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "John_Frederick.svg",
+      battle_rating     :       0,
+      command_value     :       6,
+    });
+
+    this.importArmyLeader('philip-hesse', {
+      type              :       "philip-hesse" ,
+      name              :       "Philip Hesse",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "Philip_Hesse.svg",
+      battle_rating     :       0,
       command_value     :       6,
     });
 
