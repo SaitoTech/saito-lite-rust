@@ -16,6 +16,7 @@ button,
   cursor: pointer;
   margin: 0.5rem;
   border: 1px solid transparent;
+  outline: none;
 }
 
 .saito-button-secondary {

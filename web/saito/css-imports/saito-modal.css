@@ -1,4 +1,3 @@
-
 .saito-modal {
   width: 70rem;
   height: min-content;
@@ -13,18 +12,22 @@
   grid-template-rows: min-content auto;
   padding: 2rem;
 }
+
 .saito-modal-title {
   font-size: 5rem;
   margin-left: 3rem;
 }
+
 .saito-modal-subtitle {
   font-size: 2.2rem;
   margin-left: 3rem;
 }
+
 .saito-modal-content {
   margin-top: 1.5rem;
   font-size: 1.8rem;
 }
+
 .saito-modal-menu-option {
   margin-left: 2rem;
   height: 8rem;
@@ -32,39 +35,44 @@
   margin-right: 2rem;
   padding: 1.5rem;
 }
+
 .saito-modal-menu-option:hover {
-  background-color: #0005;
+  background-color: var(--saito-background-hover);
   cursor: pointer;
 }
-.saito-modal-menu-option > i {
+
+.saito-modal-menu-option>i {
   float: left;
   margin-right: 2rem;
 }
-.saito-modal-menu-option > div {
+
+.saito-modal-menu-option>div {
   float: left;
   margin-right: 2rem;
   font-size: 2rem;
   padding-top: 1rem;
 }
+
 .saito-modal-text-input {
-    margin-left: 3rem;
-    margin-right: 3rem;
-    width: 50rem;
-    max-width: 50rem;
-    margin-top: 0.75rem;
-}
-.saito-modal-button {
-    background-color: white;
-    margin-top: 3rem;
-    margin-left: 3rem;
-    max-width: min-content;
-    padding-left: 4rem;
-    padding-right: 4rem;
-}
-.saito-modal-button:hover {
-    border: 1px solid white;
+  margin-left: 3rem;
+  margin-right: 3rem;
+  width: 50rem;
+  max-width: 50rem;
+  margin-top: 0.75rem;
 }
 
+.saito-modal-button {
+  background-color: white;
+  margin-top: 3rem;
+  margin-left: 3rem;
+  max-width: min-content;
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+.saito-modal-button:hover {
+  border: 1px solid white;
+}
 
 #saito-confirm-add-publickey {
   background-color: #fff;
@@ -74,18 +82,18 @@
   padding: 2rem;
 }
 
-#saito-confirm-add-publickey  .saito-identicon-box {
+#saito-confirm-add-publickey .saito-identicon-box {
   display: inline-block;
   margin-left: 50%;
   transform: translateX(-50%);
 }
 
-#saito-confirm-add-publickey  .saito-identicon-box .saito-identicon {
+#saito-confirm-add-publickey .saito-identicon-box .saito-identicon {
   width: 8rem;
-  height: 8rem; 
+  height: 8rem;
 }
 
-#saito-confirm-add-publickey > .saito-address{
+#saito-confirm-add-publickey>.saito-address {
   width: 100%;
   max-width: 100%;
   overflow: inherit;
@@ -99,22 +107,22 @@
   margin-bottom: 1rem;
 }
 
-#saito-confirm-add-publickey > .saito-contact-status {
+#saito-confirm-add-publickey>.saito-contact-status {
   text-align: center;
 }
 
-.saito-modal-title .saito-user .saito-identicon{
+.saito-modal-title .saito-user .saito-identicon {
   width: 4rem;
   height: 4rem;
 }
-.saito-modal-title .saito-user .saito-address{
+
+.saito-modal-title .saito-user .saito-address {
   font-size: 4rem;
 }
 
 .share-link {
   color: #ddd;
 }
-
 
 .welcome-modal-wrapper {
   width: 900px;
@@ -126,23 +134,25 @@
   background: var(--saito-white);
 }
 
-.welcome-modal__input-container {
+.welcome-modal-input-container {
   display: flex;
-  align-items: center;
+  flex-direction: row;
 }
 
-
-
-.welcome-modal__input {
-  background: #efefef;
+.welcome-modal-input {
+  padding: 0.5rem;
   font-size: 2.5rem !important;
+  flex-grow: 5;
 }
 
-.dark .welcome-modal__input{
-  background: #8884;
+.welcome-modal-main {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
 }
 
 /* Exclusively for modal-add-user-confirm.template */
+
 .confirm-modal-wrapper {
   font-size: 1.5em;
   padding: 1.5em;
@@ -169,10 +179,6 @@
 
 .welcome-modal-header {
   font-size: 3rem;
-}
-
-.welcome-modal-main p {
-  font-size: 1.8rem;
 }
 
 .welcome-modal-info {
@@ -225,15 +231,12 @@
     /*grid-template-columns: 1fr;*/
     width: 90vw;
   }
-
   .modal-content-blank {
     width: 100%;
   }
-
   .welcome-modal-action {
     padding: 0.81em;
   }
-
   i.fas.fa-arrow-right {
     right: -1em;
   }
@@ -243,10 +246,7 @@
   .saito-overlay {
     width: 95vw;
   }
-
 }
-
-
 
 /* LIST SELECTION MODAL */
 
@@ -256,7 +256,6 @@
   overflow-y: scroll;
   font-size: 2rem;
   min-width: 400px;
-
 }
 
 .selection-list li {
@@ -272,7 +271,8 @@
 }
 
 .selection-list li .tiptext {
-  width: fit-content;;
+  width: fit-content;
+  ;
   background-color: #000a;
   color: #ffffff !important;
   min-width: 0px;
@@ -281,5 +281,3 @@
   top: 5px;
   right: 0;
 }
-
-

@@ -86,8 +86,10 @@ h6 {
   font-size: 2rem;
 }
 
-textarea {
-  resize: none;
+input {
+  accent-color: var(--saito-primary);
+  outline: none;
+  border-radius: 0.5rem;
 }
 
 iframe {
