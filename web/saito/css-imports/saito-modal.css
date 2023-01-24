@@ -117,7 +117,7 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .share-link {
-  color: #ddd;
+  color: var(--saito-font-color);
 }
 
 .welcome-modal-wrapper {
@@ -127,18 +127,19 @@ This alows for a header with a header with title to be added without extra CSS
   grid-template-columns: 6fr 1fr;*/
   font-size: 1.5em;
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-  background: var(--saito-white);
 }
 
 .welcome-modal-input-container {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 
 .welcome-modal-input {
   padding: 0.5rem;
   font-size: 2.5rem !important;
   flex-grow: 5;
+  border-radius: 0.5rem;
 }
 
 .welcome-modal-main {
@@ -152,7 +153,7 @@ This alows for a header with a header with title to be added without extra CSS
 .confirm-modal-wrapper {
   font-size: 1.5em;
   padding: 1.5em;
-  color: white;
+  color: var(--saito-background-color);
   font-weight: bold;
 }
 
@@ -182,11 +183,20 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .welcome-modal-action {
-  padding: 1.5em;
+  
 }
 
-.welcome-modal-action p {
-  line-height: 1.5em;
+.welcome-modal-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.welcome-modal-input-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  padding: 0 1rem 0 0;
 }
 
 .welcome-modal-signup {
@@ -205,7 +215,6 @@ This alows for a header with a header with title to be added without extra CSS
 .register-modal-controls {
   display: flex;
   flex-direction: row-reverse;
-  padding: 1rem 0;
   justify-content: space-between;
   align-items: center;
 }
