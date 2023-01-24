@@ -88,6 +88,8 @@ h6 {
 
 input {
   accent-color: var(--saito-primary);
+  outline: none;
+  border-radius: 0.5rem;
 }
 
 iframe {

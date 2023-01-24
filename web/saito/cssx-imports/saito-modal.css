@@ -36,3 +36,42 @@ This alows for a header with a header with title to be added without extra CSS
   background-color: #0005;
   cursor: pointer;
 }
+
+/* register modal */
+
+.register-modal-controls {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.welcome-modal-header {
+  font-size: 3rem;
+}
+
+.welcome-modal-left {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+}
+
+.welcome-modal-input-container {
+  display: flex;
+  flex-direction: row;
+  font-size: 3rem;
+  column-gap: 0.5rem;
+  padding: 0 1rem 0 0 ;
+}
+
+.welcome-modal-input {
+  padding: 0.5rem;
+  font-size: 2.5rem !important;
+  flex-grow: 5;
+  text-align: right;
+}
+
+.welcome-modal-main {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+}
