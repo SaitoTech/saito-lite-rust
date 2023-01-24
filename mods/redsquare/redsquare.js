@@ -269,6 +269,7 @@ class RedSquare extends ModTemplate {
     }
 
     if (this.main == null) {
+
       this.main = new SaitoMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
       this.menu = new SaitoMenu(this.app, this, '.saito-sidebar.left');
@@ -291,8 +292,6 @@ class RedSquare extends ModTemplate {
     }
 
     super.render();
-
-    this.app.connection.emit("recovery-backup-overlay-render-request");
 
   }
 
