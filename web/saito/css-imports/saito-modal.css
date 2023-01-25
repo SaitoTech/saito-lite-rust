@@ -33,7 +33,7 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-menu-option:hover {
-  background-color: var(--saito-hover-hover);
+  background-color: var(--saito-hover-background);
   cursor: pointer;
 }
 
