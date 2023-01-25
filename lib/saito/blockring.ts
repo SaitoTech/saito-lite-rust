@@ -121,7 +121,6 @@ console.log("does include? " + this.ring[insert_pos].block_hashes.includes(block
 
     for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
       if (this.ring[insert_pos].block_hashes[i] === block_hash) {
-console.log("SETTING LONGEST CHAIN!");
         this.ring[insert_pos].lc_pos = i;
       }
     }
@@ -149,10 +148,8 @@ console.log("SETTING LONGEST CHAIN!");
   }
 
   returnLongestChainBlockHashAtBlockId(block_id: bigint) {
-console.log("block_id to return hash at is: " + block_id);
     const insert_pos = Number(BigInt(block_id) % BigInt(this.ring_buffer_length));
     if (this.ring[insert_pos].lc_pos < this.ring[insert_pos].block_hashes.length) {
-console.log("returning: " + this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos]);
       return this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos];
     }
     return "";
