@@ -92,7 +92,7 @@ class RedSquareMain {
         } else {
           if (tweet.tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
 	    tweet.container = ".redsquare-appspace-body";
-	    tweet.render(true); // prepend - is mine but is new
+	    tweet.render(); // prepend - is mine but is new
 	  }
 	}
       }
