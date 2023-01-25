@@ -1,5 +1,6 @@
 var saito = require('./../../lib/saito/saito');
 var GameTemplate = require('./../../lib/templates/gametemplate');
+const SaitoManiaGameOptionsTemplate = require("./lib/saitomania-game-options.template");
 
 
 //////////////////
@@ -12,7 +13,7 @@ class SaitoMania extends GameTemplate {
     super(app);
 
     this.name            = "SaitoMania";
-    this.gamename        = "SaitoMania";
+    this.gamename        = "Saito Mania";
     this.slug            = "saitomania";
     this.description     = 'Blast shitcoins, pick up superpowers, destroy rocks to collect Saito and learn about the Saito project while playing ;)';
     this.categories      = "Games Cardgame one-player";
@@ -35,7 +36,8 @@ class SaitoMania extends GameTemplate {
 
 
   initializeGame(game_id) {
-    console.log("SET WITH GAMEID: " + game_id);
+
+
 
     if (!this.game.state) {
       console.log("******Generating the Game******");
@@ -69,10 +71,23 @@ class SaitoMania extends GameTemplate {
 
   initializeHTML(app) {
 
-    console.trace("Initialize HTML");
-
     if (!this.browser_active) { return; }
     
+    let framerate = this.game.options.framerate;
+
+    if (framerate === "60fps") {
+      if (window.location.toString().indexOf("60fps") == -1) {
+	window.location = "/saitomania/60fps/index.html";
+	return;
+      }
+    }
+    if (framerate === "30fps") {
+      if (window.location.toString().indexOf("30fps") == -1) {
+	window.location = "/saitomania/30fps/index.html";
+	return;
+      }
+    }
+
     super.initializeHTML(app);
 
     //
@@ -138,6 +153,22 @@ class SaitoMania extends GameTemplate {
     } 
     return 1;
   }
+
+
+           
+  returnSingularGameOption(){
+    return `<div>
+            <select name="framerate" id="framerate">
+              <option value="60fps" selected>fast (60 FPS)</option>
+              <option value="30fps">slow (30 FPS)</option>
+            </select></div>
+          `;  
+  }           
+     
+
+  //returnGameOptionsHTML() { 
+  //  return SaitoManiaGameOptionsTemplate(this.app, this);
+  //}
 
 }
 
