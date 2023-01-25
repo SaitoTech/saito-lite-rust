@@ -15,10 +15,11 @@ This alows for a header with a header with title to be added without extra CSS
   grid-template-rows: min-content auto;
 }
 
-.saito-modal-title {
 
+.saito-modal-title {
   font-size: 3rem;
 }
+
 
 /* saito-modal-menu
 /* theming for a simple menu with font-awesome icon and text in a two col grid */
@@ -28,6 +29,7 @@ This alows for a header with a header with title to be added without extra CSS
   margin: 0 2rem;
   padding: 1.5rem;
   display: grid;
+  align-items: center;
   grid-gap: 1rem;
   grid-template-columns: 4rem 1fr;
 }
@@ -58,7 +60,7 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-button {
-  background-color: white;
+  background-color: var(--saito-white);
   margin-top: 3rem;
   margin-left: 3rem;
   max-width: min-content;
@@ -67,11 +69,11 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-button:hover {
-  border: 1px solid white;
+  border: 1px solid var(--saito-white);
 }
 
 #saito-confirm-add-publickey {
-  background-color: #fff;
+  background-color:  var(--saito-white);
   height: auto;
   width: 30vh;
   border-radius: 1.5rem;
@@ -117,35 +119,10 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .share-link {
-  color: #ddd;
+  color: var(--saito-font-color);
 }
 
-.welcome-modal-wrapper {
-  width: 900px;
-  max-width: 80vw;
-  /*display: grid;
-  grid-template-columns: 6fr 1fr;*/
-  font-size: 1.5em;
-  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-  background: var(--saito-white);
-}
 
-.welcome-modal-input-container {
-  display: flex;
-  flex-direction: row;
-}
-
-.welcome-modal-input {
-  padding: 0.5rem;
-  font-size: 2.5rem !important;
-  flex-grow: 5;
-}
-
-.welcome-modal-main {
-  display: flex;
-  flex-direction: column;
-  row-gap: 2rem;
-}
 
 /* Exclusively for modal-add-user-confirm.template */
 
@@ -169,80 +146,6 @@ This alows for a header with a header with title to be added without extra CSS
   margin: 1em;
 }
 
-.welcome-invite-box i {
-  margin: 1em;
-}
-
-.welcome-modal-header {
-  font-size: 3rem;
-}
-
-.welcome-modal-info {
-  clear: both;
-}
-
-.welcome-modal-action {
-  padding: 1.5em;
-}
-
-.welcome-modal-action p {
-  line-height: 1.5em;
-}
-
-.welcome-modal-signup {
-  margin: 1em 0;
-  display: flex;
-}
-
-.welcome-modal-explanation {
-  font-size: 0.8em;
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-gap: 1em;
-  line-height: 1.3em;
-}
-
-.register-modal-controls {
-  display: flex;
-  flex-direction: row-reverse;
-  padding: 1rem 0;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#signup {
-  margin: 0;
-  width: 15px;
-  height: 21px;
-}
-
-.welcome-modal-action button:hover {
-  border-color: var(--saito-background-color);
-}
-
-/* mobile modals */
-
-@media only screen and (max-width: 1000px) {
-  .welcome-modal-wrapper {
-    /*grid-template-columns: 1fr;*/
-    width: 90vw;
-  }
-  .modal-content-blank {
-    width: 100%;
-  }
-  .welcome-modal-action {
-    padding: 0.81em;
-  }
-  i.fas.fa-arrow-right {
-    right: -1em;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  .saito-overlay {
-    width: 95vw;
-  }
-}
 
 /* LIST SELECTION MODAL */
 
@@ -276,4 +179,124 @@ This alows for a header with a header with title to be added without extra CSS
   pointer-events: none;
   top: 5px;
   right: 0;
+}
+
+
+
+
+
+/* Welcome modal */
+
+
+
+.welcome-modal-wrapper {
+  width: 900px;
+  max-width: 80vw;
+  /*display: grid;
+  grid-template-columns: 6fr 1fr;*/
+  font-size: 1.5em;
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+}
+
+.welcome-modal-input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.welcome-modal-input {
+  padding: 0.5rem;
+  font-size: 2.5rem !important;
+  flex-grow: 5;
+  border-radius: 0.5rem;
+  color: var(--saito-font-color)
+}
+
+.welcome-modal-main {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+}
+
+/* Exclusively for modal-add-user-confirm.template */
+
+.confirm-modal-wrapper {
+  font-size: 1.5em;
+  padding: 1.5em;
+  color: var(--saito-background-color);
+  font-weight: bold;
+}
+
+.welcome-modal-header {
+  font-size: 3rem;
+}
+
+.welcome-modal-info {
+  clear: both;
+}
+
+.welcome-modal-action {
+  
+}
+
+.welcome-modal-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.welcome-modal-signup {
+  margin: 1em 0;
+  display: flex;
+}
+
+.welcome-modal-explanation {
+  font-size: 0.8em;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 1em;
+  line-height: 1.3em;
+}
+
+.register-modal-controls {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+}
+#signup {
+  margin: 0;
+  width: 15px;
+  height: 21px;
+}
+
+.welcome-modal-action button:hover {
+  border-color: var(--saito-background-color);
+}
+
+
+
+
+/* mobile modals */
+
+@media only screen and (max-width: 1000px) {
+  .welcome-modal-wrapper {
+    /*grid-template-columns: 1fr;*/
+    width: 90vw;
+  }
+  .modal-content-blank {
+    width: 100%;
+  }
+  .welcome-modal-action {
+    padding: 0.81em;
+  }
+  i.fas.fa-arrow-right {
+    right: -1em;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .saito-overlay {
+    width: 95vw;
+  }
 }
