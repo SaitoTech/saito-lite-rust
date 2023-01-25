@@ -44,10 +44,10 @@ class Giphy extends ModTemplate {
 	let mod = this.mod;
 
         // get this parent element
-        let input = document.querySelector(`.saito-emoji-container > #${this.input_id}`);
-        this.parentElement = input.parentElement;
-        if (document.querySelector('.saito-emoji-container')) {
-            this.app.browser.addElementToElement(`<div class="saito-gif"> <i class="fas fa-sticky-note"></i> </div>`, this.parentElement);
+        //let input = document.querySelector(`.saito-emoji-container > #${this.input_id}`);
+        //this.parentElement = input.parentElement;
+        if (document.querySelector('.saito-gif-icon-container')) {
+            this.app.browser.addElementToElement(`<div class="saito-gif"><i class="fa-solid fa-video"></i></div>`, document.querySelector('.saito-gif-icon-container'));
         }
 
         if (!document.getElementById('giphy-styles')) {
@@ -87,7 +87,7 @@ class Giphy extends ModTemplate {
 	let mod = this.mod;
 
         let self = this;
-        let gif_icon = document.querySelector(`#${this.input_id} ~ .saito-gif`);
+        let gif_icon = document.querySelector('.saito-gif');
         let selectorWidth = window.innerWidth;
         let selectorColumns = 3;
 

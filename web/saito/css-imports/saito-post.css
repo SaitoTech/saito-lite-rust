@@ -8,14 +8,20 @@
 
 .tweet-overlay-content {
   display: grid;
-  grid-gap: 1rem;
 }
 
 .tweet-overlay-content-controls {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  height: 5rem;
+  justify-content: right;
+  gap: 1.5rem;
+}
+
+.tweet-overlay-content-controls i {
+  color: transparent;
+  font-size: 2rem;
+  -webkit-text-stroke: var(--saito-primary) 1px;
+  margin: 1rem 0 0;
 }
 
 .post-tweet-preview {
@@ -41,6 +47,7 @@
   width: 100%;
   outline: none;
   font-size: 1.6rem;
+  margin: 1rem 0;
 }
 
 
@@ -69,10 +76,6 @@
 
 .post-tweet-button {
   width: 20rem;
+  margin-right: 0;
 }
 
-.post-tweet-img-icon {
-  font-size: 4.6rem;
-  color: var(--saito-border-color-dark);
-  margin: 0.1rem;
-}
