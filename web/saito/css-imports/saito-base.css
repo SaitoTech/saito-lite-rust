@@ -230,12 +230,13 @@ Scrollbars
   position: fixed;
   bottom: 5rem;
   left: 5rem;
-  color: var(--saito-background-color);
+  color: var(--saito-font-color);
   z-index: 200;
 }
 
 .message-message {
   font-size: 2rem;
+
 }
 
 /* ----------------------------------------------------------------
