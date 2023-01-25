@@ -3,6 +3,7 @@ module.exports = () => {
   return `
       <div class="redsquare-home">
         <div class="redsquare-appspace-header">
+        <div class="redsquare-new-tweets-banner" id="redsquare-new-tweets-banner">Load New Posts</div> 
           <div class="redsquare-actions-buttons">
             <div class="redsquare-actions-buttons-icon"></div>
             <div id="redsquare-page-header-title" class="redsquare-page-header-title">🟥 RED SQUARE</div>

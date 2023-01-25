@@ -66,8 +66,8 @@ class RedSquare extends ModTemplate {
 
     this.load_more_tweets = 1;
     this.load_more_notifications = 1;
-
-    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
+    this.trackedTweet = null
+    this.allowed_upload_types =  ['image/png', 'image/jpg', 'image/jpeg'];
 
     this.postScripts = [
       '/saito/lib/emoji-picker/emoji-picker.js'
@@ -343,6 +343,7 @@ class RedSquare extends ModTemplate {
       });
     }
   }
+
   loadMoreTweets(post_load_tweet_callback = null) {
     this.increment_for_tweets++;
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
@@ -361,6 +362,52 @@ class RedSquare extends ModTemplate {
       });
     }
   }
+
+  loadNewTweets(app, mod) {
+    console.log("Fetching New Posts");
+    if (!mod.trackedTweet) { return; }
+    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+    app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
+      "RedSquare",
+      sql,
+      async (res) => {
+        const tweets = [];
+        if (res.rows) {
+          console.log(res.rows, "result");
+          if (res.rows[0]) {
+            mod.trackedTweet = res.rows[0];
+            res.rows.forEach(row => {
+              let new_tweet = true;
+              let tweet_id = "tweet-box-" + row.sig;
+              if (document.getElementById(tweet_id)) {
+                new_tweet = false;
+              }
+              if (new_tweet) {
+                let tx = new saito.default.transaction(JSON.parse(row.tx));
+                if (!tx.optional) { tx.optional = {}; }
+                tx.optional.parent_id = tx.msg.parent_id;
+                tx.optional.thread_id = tx.msg.thread_id;
+                tx.optional.num_replies = row.num_replies;
+                tx.optional.num_retweets = row.num_retweets;
+                tx.optional.num_likes = row.num_likes;
+                tx.optional.flagged = row.flagged;
+                tx.optional.link_properties = {};
+                try {
+                  let x = JSON.parse(row.link_properties);
+                  tx.optional.link_properties = x;
+                  tweets.push(new Tweet(app, mod, tx));
+                } catch (err) { }
+              }
+            });
+            mod.newTweets = mod.newTweets.concat(tweets);
+            document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
+          }
+        }
+      }
+    );
+  }
+
+
   loadMoreNotifications() {
     this.increment_for_notifications++;
     for (let i = 0; i < this.peers_for_notifications.length; i++) {
@@ -423,20 +470,17 @@ class RedSquare extends ModTemplate {
 
 
   loadTweetsFromPeer(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
-
     let txs = [];
 
     let render_home = false;
     if (this.tweets.length == 0) { render_home = true; }
 
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+      this.trackedTweet = txs[0];
+      console.log(this.trackedTweet, 'tracked tweet', txs)
       for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
       if (post_load_callback != null) {
-        // if(tx.length > 0){
           post_load_callback(txs);
-        // }
-
-      
       }
     }, to_track_tweet, is_server_request);
 
