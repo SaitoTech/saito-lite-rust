@@ -64,8 +64,8 @@ div.h3{
   width: 90%;
   min-width: 400px;
   max-width: 750px;
-  border:  1px solid var(--saito-secondary);
-  background-color: var(--saito-paper);
+  border:  1px solid var(--saito-primary);
+  background-color: var(--saito-background-color);
   font-size: 1.6rem;
   font-style: italic;
   line-height: 2rem;

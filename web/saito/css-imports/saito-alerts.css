@@ -1,6 +1,3 @@
-#saito-alert {
-}
-
 #saito-alert-shim {
   z-index: 2000;
   background-color: var(--saito-dark-shim);
@@ -15,22 +12,27 @@
   max-width: 70rem;
   transition: all 333ms ease-in-out;
   background: var(--saito-background-color);
-  margin: auto;
+  margin: 1rem auto;
   position: relative;
   top: -50rem;
   border: 1px solid var(--saito-border-color);
   border-radius: 0 0 5px 5px;
-  padding: 1em 1em 3.5em 1em;
+  padding: 1em;
   color: var(--saito-font-color);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 #saito-alert-buttons {
-  float: right;
-  margin: 0 0 0 1em;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  flex-flow: row-reverse;
 }
 
 #saito-alert-buttons button {
-  margin: 0 0 0 1em;
+  min-width: 20rem;
 }
 
 #saito-alert-box p {
