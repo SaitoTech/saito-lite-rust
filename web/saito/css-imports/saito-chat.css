@@ -25,7 +25,7 @@
   bottom: 0px;
   right: 0px;
   border: 1px solid var(--saito-border-color);
-  background: var(--saito-background-color);
+  background: var(--saito-background);
   color: var(--saito-font-color);
   max-height: calc(99vh - var(--saito-header-height));
 }
@@ -91,7 +91,7 @@
   font-size: 2rem;
   position: absolute;
   bottom: 0;
-  width: 100%;
+  width: calc(100% - 0.5rem);
   padding: 0.5rem;
   display: grid;
   grid-template-columns: 1fr max-content;
@@ -102,7 +102,7 @@
 
 .chat-footer input {
   height: 3.5rem;
-  padding-left: 1rem;
+  padding: 0 3.5rem 0 1rem;
   border-radius: 0.5rem;
   outline: none;
   background-color: var(--saito-background-light);
