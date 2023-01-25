@@ -25,7 +25,7 @@
   bottom: 0px;
   right: 0px;
   border: 1px solid var(--saito-border-color);
-  background: var(--saito-background);
+  background: var(--saito-arcade-background);
   color: var(--saito-font-color);
   max-height: calc(99vh - var(--saito-header-height));
 }
