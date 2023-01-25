@@ -77,7 +77,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       <div class="settings-appspace-user-details-container">
         <h6>Wallet</h6>
           <div class="settings-appspace-user-details">
-            <div id="register-email-btn" class="saito-black">Email:</div>
+            <div  class="saito-black">Email:</div>
             <div>${email_registered}</div>
             <div id="register-identifier-btn-label" class="saito-black">Username:</div>
             <div>${identifier_registered}</div>

@@ -6,7 +6,7 @@ This alows for a header with a header with title to be added without extra CSS
 .saito-modal {
   font-size: 1.25rem;
   color: var(--saito-white);
-  background: var(--saito-modal-background);
+  background: var(--dreamscape);
   min-width: 70rem;
   height: min-content;
   max-width: 80vw;
@@ -16,7 +16,6 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-title {
-
   font-size: 3rem;
 }
 
@@ -33,7 +32,7 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-menu-option:hover {
-  background-color: var(--saito-hover-hover);
+  background-color: var(--saito-background-hover);
   cursor: pointer;
 }
 
@@ -58,7 +57,7 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-button {
-  background-color: white;
+  background-color: var(--saito-white);
   margin-top: 3rem;
   margin-left: 3rem;
   max-width: min-content;
@@ -67,11 +66,11 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-button:hover {
-  border: 1px solid white;
+  border: 1px solid var(--saito-white);
 }
 
 #saito-confirm-add-publickey {
-  background-color: #fff;
+  background-color:  var(--saito-white);
   height: auto;
   width: 30vh;
   border-radius: 1.5rem;
@@ -117,7 +116,7 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .share-link {
-  color: #ddd;
+  color: var(--saito-font-color);
 }
 
 .welcome-modal-wrapper {
@@ -127,18 +126,19 @@ This alows for a header with a header with title to be added without extra CSS
   grid-template-columns: 6fr 1fr;*/
   font-size: 1.5em;
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-  background: var(--saito-white);
 }
 
 .welcome-modal-input-container {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 
 .welcome-modal-input {
   padding: 0.5rem;
   font-size: 2.5rem !important;
   flex-grow: 5;
+  border-radius: 0.5rem;
 }
 
 .welcome-modal-main {
@@ -152,25 +152,8 @@ This alows for a header with a header with title to be added without extra CSS
 .confirm-modal-wrapper {
   font-size: 1.5em;
   padding: 1.5em;
-  color: white;
+  color: var(--saito-background-color);
   font-weight: bold;
-}
-
-.welcome-invite-box {
-  min-width: 200px;
-  min-height: 120px;
-  max-width: 325px;
-  padding: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  font-size: 25px;
-  border: 1px solid;
-  margin: 1em;
-}
-
-.welcome-invite-box i {
-  margin: 1em;
 }
 
 .welcome-modal-header {
@@ -182,11 +165,20 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .welcome-modal-action {
-  padding: 1.5em;
+  
 }
 
-.welcome-modal-action p {
-  line-height: 1.5em;
+.welcome-modal-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.welcome-modal-input-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  padding: 0 1rem 0 0;
 }
 
 .welcome-modal-signup {
@@ -205,11 +197,9 @@ This alows for a header with a header with title to be added without extra CSS
 .register-modal-controls {
   display: flex;
   flex-direction: row-reverse;
-  padding: 1rem 0;
   justify-content: space-between;
   align-items: center;
 }
-
 #signup {
   margin: 0;
   width: 15px;
@@ -242,38 +232,4 @@ This alows for a header with a header with title to be added without extra CSS
   .saito-overlay {
     width: 95vw;
   }
-}
-
-/* LIST SELECTION MODAL */
-
-.game-selection-list-overlay {
-  background-color: black;
-  max-height: 90vh;
-  overflow-y: scroll;
-  font-size: 2rem;
-  min-width: 400px;
-}
-
-.selection-list li {
-  cursor: pointer;
-  border-bottom: 1px solid transparent;
-  padding: 5px 0 2px 10px;
-  padding: 10px 0px 10px 20px;
-  list-style: none;
-}
-
-.selection-list li:hover {
-  background-color: #33669999;
-}
-
-.selection-list li .tiptext {
-  width: fit-content;
-  ;
-  background-color: #000a;
-  color: #ffffff !important;
-  min-width: 0px;
-  padding: 3px;
-  pointer-events: none;
-  top: 5px;
-  right: 0;
 }
