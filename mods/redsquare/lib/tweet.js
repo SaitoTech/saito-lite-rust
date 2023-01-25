@@ -101,8 +101,7 @@ class Tweet {
     } else {
       console.log('prepending', prepend)
       if (prepend == true) {
-   
-        this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+        this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
   
         if (this.render_after_selector) {

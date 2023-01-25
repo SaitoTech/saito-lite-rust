@@ -180,8 +180,8 @@ class RedSquare extends ModTemplate {
     setInterval(function () {
    
       // if (redsquare_self.viewing == "feed") {
-        console.log('loading new tweets')
-        redsquare_self.loadNewTweets(app, redsquare_self);
+        // console.log('loading new tweets')
+        // redsquare_self.loadNewTweets(app, redsquare_self);
       // }
     }, 3000);
 
@@ -375,21 +375,21 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  loadNewTweets(app, mod) {
-    let redsquare_self = app.modules.returnModule('RedSquare')
-    console.log("Fetching New Posts");
-    // if (!mod.trackedTweet) { return; }
-    for (let i = 0; i < this.peers_for_tweets.length; i++) {
-    let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+  // loadNewTweets(app, mod) {
+  //   let redsquare_self = app.modules.returnModule('RedSquare')
+  //   console.log("Fetching New Posts");
+  //   // if (!mod.trackedTweet) { return; }
+  //   for (let i = 0; i < this.peers_for_tweets.length; i++) {
+  //   let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
     
-    let peer = this.peers_for_tweets[i];
-    this.loadTweetsFromPeer(peer, sql, (tx) => {
-       if(tx.length > 0){
-            this.app.connection.emit("redsquare-show-load-tweet-banner");
-       }
-    }, true);
-  }
-  }
+  //   let peer = this.peers_for_tweets[i];
+  //   this.loadTweetsFromPeer(peer, sql, (tx) => {
+  //      if(tx.length > 0){
+  //           this.app.connection.emit("redsquare-show-load-tweet-banner");
+  //      }
+  //   }, true);
+  // }
+  // }
 
 
   loadMoreNotifications() {

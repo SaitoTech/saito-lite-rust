@@ -88,11 +88,11 @@ class RedSquareMain {
       if (this.render_component === "home") {
 	if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
 	  tweet.container = ".redsquare-appspace-body";
-          tweet.render(true);
+          tweet.render();
         } else {
           if (tweet.tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
 	    tweet.container = ".redsquare-appspace-body";
-	    tweet.render(); // prepend - is mine but is new
+	    tweet.render(true); // prepend - is mine but is new
 	  }
 	}
       }
