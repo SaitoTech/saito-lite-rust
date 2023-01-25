@@ -135,6 +135,11 @@ class SettingsAppspace {
         });
         document.querySelector('#file-input').click();
       }
+
+      document.querySelector('.copy-public-key').onclick = (e) =>{
+        navigator.clipboard.writeText(app.wallet.returnPublicKey());
+        salert("Public key copied");
+      }
       /*
           document.getElementById('reset-account-btn').onclick = async (e) => {
       
@@ -176,7 +181,6 @@ class SettingsAppspace {
             app.wallet.wallet.pending = [];
 
             app.blockchain.resetBlockchain();
-
             await app.wallet.saveWallet();
             window.location = window.location;
           }

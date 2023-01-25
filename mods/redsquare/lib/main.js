@@ -49,6 +49,10 @@ class RedSquareMain {
       this.components[this.render_component].renderMoreTweets();
     });
 
+    this.app.connection.on("redsquare-show-load-tweet-banner", (tx) => {
+      document.querySelector('.redsquare-new-tweets-banner').style.display = "block";
+    });
+
 
 
     this.app.connection.on("redsquare-thread-render-request", (tweet) => {
@@ -84,7 +88,7 @@ class RedSquareMain {
       if (this.render_component === "home") {
 	if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
 	  tweet.container = ".redsquare-appspace-body";
-          tweet.render();
+          tweet.render(true);
         } else {
           if (tweet.tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
 	    tweet.container = ".redsquare-appspace-body";

@@ -82,7 +82,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
             <div id="register-identifier-btn-label" class="saito-black">Username:</div>
             <div>${identifier_registered}</div>
             <div class="saito-black">Public Key:</div>
-            <div class="saito-address">${app.wallet.returnPublicKey()}</div>
+            <div class="saito-address">${app.wallet.returnPublicKey()} <span style="margin-left: .5rem;" class="copy-public-key">  <i class="fas fa-copy"></i></span></div>
             <div class="saito-black">Private Key:</div>
             <div class="settings-appspace-privatekey saito-password">
               ${app.wallet.returnPrivateKey()}

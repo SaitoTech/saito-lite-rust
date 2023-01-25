@@ -71,7 +71,7 @@ class Tweet {
 
 
   render(prepend=false) {
-
+    
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
 
@@ -99,8 +99,10 @@ class Tweet {
     if (replace_existing_element && document.querySelector(myqs)) {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
+      console.log('prepending', prepend)
       if (prepend == true) {
-        this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+   
+        this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
   
         if (this.render_after_selector) {
@@ -125,9 +127,9 @@ class Tweet {
 
   }
 
-  renderWithCriticalChild(prepend=false) {
-
-    this.render();
+  renderWithCriticalChild(prepend = false) {
+ 
+    this.render(prepend);
     this.attachEvents();
 
 
