@@ -158,6 +158,7 @@
     z-index: 12;
   }
 
+  /*
   .saito-mobile-bar {
     background: var(--saito-dark-shim);
     z-index: 1;
@@ -195,4 +196,5 @@
   .saito-mobile-bar > div:nth-child(2) {
     display: none;
   }
+  */
 }

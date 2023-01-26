@@ -57,14 +57,13 @@
   div#redsquare-tweet::after {
     content: "\002B";
     position: absolute;
-    color: var(--saito-font-color);
+    color: var(--saito-white);
     font-size: 5rem;
     text-align: center;
     top: 0;
     left: 0;
     line-height: 5rem;
     width: 5rem;
-    color: #fff;
   }
 
   div#redsquare-profile {
@@ -72,7 +71,6 @@
   }
 
   .redsquare-appspace-header {
-    display: none;
     position: absolute;
     top: -5rem;
   }
