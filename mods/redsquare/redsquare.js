@@ -1050,26 +1050,28 @@ class RedSquare extends ModTemplate {
 
 
 
-/****
   webServer(app, expressapp, express) {
-  
+
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
     let fs = app?.storage?.returnFileSystem();
     let redsquare_self = this;
-  
+
     expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
       let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
   
-      try {
+       try {
   
         if (Object.keys(req.query).length > 0) {
           let query_params = req.query;
-  
+
           if (typeof query_params.tweet_id != "undefined" || typeof query_params.thread_id != "undefined") {
             let sig = query_params.tweet_id || query_params.thread_id;
             let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
   
+            console.log("rows");
+            console.log(rows);
+
             for (let i = 0; i < rows.length; i++) {
               let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
               let txmsg = tx.returnMessage();
@@ -1150,7 +1152,6 @@ class RedSquare extends ModTemplate {
 
     expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
   }
-****/
 
 }
 
