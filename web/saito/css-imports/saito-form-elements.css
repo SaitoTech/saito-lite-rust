@@ -56,3 +56,13 @@ input {
   color: var(--saito-font-color);
   border: 1px solid var(--saito-border-color);
 }
+
+
+textarea:focus, input:focus, select:focus {
+  outline: none;
+}
+
+option {
+  background: var(--saito-background-color);
+  color: var(--saito-font-color);
+}

@@ -236,7 +236,7 @@ Scrollbars
 
 .message-message {
   font-size: 2rem;
-
+  color: var(--saito-white);
 }
 
 /* ----------------------------------------------------------------
