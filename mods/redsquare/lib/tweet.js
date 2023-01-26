@@ -100,7 +100,7 @@ class Tweet {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
       if (prepend == true) {
-        this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+        this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
   
         if (this.render_after_selector) {
@@ -129,7 +129,6 @@ class Tweet {
  
     this.render(prepend);
     this.attachEvents();
-
 
     if (this.critical_child) {
 
