@@ -1,4 +1,4 @@
-.saito-emoji-container {
+/*.saito-emoji-container {
   position: relative;
   z-index: 2000;
 }
@@ -11,7 +11,7 @@
   color: var(--saito-primary);
   cursor: pointer;
 }
-
+*/
 emoji-picker {
   position: fixed;
   height: 40rem;

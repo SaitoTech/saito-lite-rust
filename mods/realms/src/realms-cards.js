@@ -16,10 +16,10 @@
 	power: 3						,
 	toughness: 1						,
 	properties: ['flying']
-	text: "Flight - At the start of the battle pick one of the following:
+	text= "Flight - At the start of the battle pick one of the following:
 		• Flip one creature.
 		• Chose one creature, it will not flip during its Master's unflip phase."				,
-	lore: ""You'll see whatever I choose to show you. Don't get your hopes up.""					,
+	lore: "You'll see whatever I choose to show you. Don't get your hopes up."
 	img: "/realms/img/cards/sample.png"			,
     }
     deck['b002'] 		= { 
@@ -606,4 +606,5 @@ deck['c001'] 	= {
     game_self.game.cards[c.key] = c;
 
   }
+
 

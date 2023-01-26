@@ -118,23 +118,6 @@ p.small {
 }
 
 /* ----------------------------------------------------------------
-QR Code
------------------------------------------------------------------*/
-#qrcode img {
-  height: 80vh;
-  width: auto;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-@media screen and (max-width: 600px) {
-  #qrcode img {
-    height: auto;
-    width: 90vw;
-  }
-}
-
-/* ----------------------------------------------------------------
 Password Font
 -----------------------------------------------------------------*/
 
@@ -212,13 +195,11 @@ Scrollbars
   width: 90%;
   min-width: 300px;
   max-width: 750px;
-  padding: 1em;
-  background-color: var(--saito-background-color);
-  border-left: 2px solid var(--saito-primary);
+  padding: 0.25em 0.5em;
+  background-color: #fefefe;
+  border-bottom: 1px solid var(--saito-primary);
+  color:  var(--saito-font-color);
   font-style: italic;
-  font-size: smaller;
-  border-radius: 0 0.5rem 0.5rem 0;
-  line-height: 2rem;
 }
 
 #message-wrapper {
@@ -230,13 +211,12 @@ Scrollbars
   position: fixed;
   bottom: 5rem;
   left: 5rem;
-  color: var(--saito-font-color);
+  color: var(--saito-background-color);
   z-index: 200;
 }
 
 .message-message {
   font-size: 2rem;
-  color: var(--saito-white);
 }
 
 /* ----------------------------------------------------------------
@@ -290,9 +270,9 @@ Media Queries
     font-size: 1.1rem;
   }
 }
+
 @media screen and (max-width: 375px) {
   body {
     font-size: 1.4rem;
   }
 }
-

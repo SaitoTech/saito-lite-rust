@@ -49,6 +49,10 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-moon'
     };
 
+    this.postScripts = [
+      '/saito/lib/emoji-picker/emoji-picker.js'
+    ];
+
     this.ommit_options = ['game', 'game-wizard-players-select', 'game-wizard-players-select-max'];
   }
 

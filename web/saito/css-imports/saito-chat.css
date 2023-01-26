@@ -41,7 +41,7 @@
   font-size: 2rem;
 }
 
-.chat-header > i {
+.chat-header>i {
   margin: 0;
   padding: 1.2rem;
   color: var(--saito-primary);
@@ -51,12 +51,12 @@
   transition: all 0.2s;
 }
 
-.chat-header > i:last-child {
+.chat-header>i:last-child {
   padding-bottom: 1.3rem;
   cursor: pointer;
 }
 
-.chat-header > i:last-child:hover {
+.chat-header>i:last-child:hover {
   transform: rotate(90deg) scale(1.1);
 }
 
@@ -73,13 +73,13 @@
   margin-bottom: 5.8rem;
 }
 
-.chat-body > .saito-user {
+.chat-body>.saito-user {
   padding-bottom: 1rem;
   cursor: default;
   grid-template-rows: min-content 1fr;
 }
 
-.chat-body > .saito-user > .saito-userline {
+.chat-body>.saito-user>.saito-userline {
   font-size: 1.7rem;
 }
 
@@ -147,8 +147,6 @@
 }
 
 
-
-
 /* Mobile Overlay */
 @media screen and (max-width: 600px) {
 
@@ -177,6 +175,22 @@
     min-height: 100vh;
   }
 
+}
+
+.chat-footer .saito-emoji {
+  position: absolute;
+  top: 1.25rem;
+  right: 4rem;
+}
+
+@media screen and (max-width: 768px) {
+  .chat-container {
+    margin: 0;
+    width: 100vw;
+    height: calc(100vh - var(--saito-header-height));
+    max-height: none;
+    border-radius: 0;
+  }
 }
 
 

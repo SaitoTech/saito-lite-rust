@@ -71,7 +71,7 @@ class Tweet {
 
 
   render(prepend=false) {
-
+    
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
 
@@ -125,9 +125,9 @@ class Tweet {
 
   }
 
-  renderWithCriticalChild(prepend=false) {
-
-    this.render();
+  renderWithCriticalChild(prepend = false) {
+ 
+    this.render(prepend);
     this.attachEvents();
 
 

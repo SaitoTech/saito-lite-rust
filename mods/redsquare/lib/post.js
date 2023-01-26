@@ -23,7 +23,7 @@ class Post {
   render() {
 
     this.overlay.show(PostTemplate(this.app, this.mod, this));
-    this.emoji = new SaitoEmoji(this.app, this.mod, 'post-tweet-textarea');
+    this.emoji = new SaitoEmoji(this.app, this.mod, 'post-tweet-textarea', '.saito-emoji-icon-container');
     this.emoji.render();
 
     let post_self = this;

@@ -185,10 +185,6 @@
   outline: none;
 }
 
-.arcade-wizard-overlay option {
-  background-color: var(--saito-primary);
-}
-
 .saito-select::after {
   background: var(--saito-button-background);
   border-left: 1px solid var(--saito-primary);
@@ -345,11 +341,6 @@
 .game-wizard-players-select {
   color: var(--saito-white);
   border-color: var(--saito-border-color);
-}
-
-.game-wizard-players-select option {
-  background: var(--saito-black-faded);
-  color: var(--saito-white);
 }
 
 .arcade-wizard-game-invite {

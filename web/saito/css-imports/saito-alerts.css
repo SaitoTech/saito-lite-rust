@@ -14,7 +14,7 @@
   background: var(--saito-background-color);
   margin: 1rem auto;
   position: relative;
-  top: -50rem;
+  /* top: -50rem; */
   border: 1px solid var(--saito-border-color);
   border-radius: 0 0 5px 5px;
   padding: 1em;
@@ -44,4 +44,9 @@
   display: block;
   margin: 1em 0;
   overflow-wrap: break-word;
+}
+
+
+#saiot-alert-box button {
+  margin: 0 0 0 1em;
 }
