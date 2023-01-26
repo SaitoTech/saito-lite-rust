@@ -9,7 +9,7 @@ class ChatManager {
 
 	  this.app = app;
 	  this.mod = mod;
-	  this.container = container;
+	  this.container = container || ".chat-manager";
 	  this.name = "ChatManager";
 
 	  //

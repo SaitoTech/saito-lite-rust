@@ -154,15 +154,18 @@
 
   .chat-manager-overlay {
     background-color: var(--saito-background-color);
-    width: 100vw;
+    position: absolute;
+    left: 0;
+    top: var(--saito-header-height);
     height: 100vh;
-    padding-top: 5rem;
+    width: 100vw;
+    padding-top: 1rem;
   }
 
   .chat-manager-overlay .chat-manager {
     margin-left: auto;
     margin-right: auto;
-    width: max-content;
+    width: 95vw;
   }
 
   .chat-popup {
