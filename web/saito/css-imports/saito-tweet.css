@@ -114,7 +114,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 90%;
+  height: 10rem;
   width: 100%;
   background: linear-gradient(180deg, transparent, var(--saito-background-color));
   transition: all 2s ease;
