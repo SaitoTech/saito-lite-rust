@@ -49,6 +49,10 @@ class RedSquareMain {
       this.components[this.render_component].renderMoreTweets();
     });
 
+    this.app.connection.on("redsquare-show-load-tweet-banner", (tx) => {
+      document.querySelector('.redsquare-new-tweets-banner').style.display = "block";
+    });
+
 
 
     this.app.connection.on("redsquare-thread-render-request", (tweet) => {

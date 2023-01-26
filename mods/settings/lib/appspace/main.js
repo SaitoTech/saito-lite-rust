@@ -1,6 +1,6 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
-//const ModalRegisterUsername = require('./../../../../lib/saito/new-ui/modals/modal-register-username/modal-register-username');
-//const ModalRegisterEmail = require('./../../../../lib/saito/ui/modal-register-email/modal-register-email');
+const RegisterUsernameModal = require('./../../../../lib/saito/ui/modals/register-username/register-username.js');
+
 const jsonTree = require('json-tree-viewer');
 
 class SettingsAppspace {
@@ -64,18 +64,18 @@ class SettingsAppspace {
         }
       }
 
-      // document.getElementById("register-email-btn").onclick = function (e) {
-      //   mod.modal_register_email = new ModalRegisterEmail(app, function () {
-      //   });
-      //   mod.modal_register_email.render(app, mod, ModalRegisterEmail.MODES.REGISTEREMAIL);
-      //   mod.modal_register_email.attachEvents(app, mod);
-      // }
+      document.getElementById("register-email-btn").onclick = function (e) {
+        mod.modal_register_username = new RegisterUsernameModal(app, mod, function () {
+        });
+        mod.modal_register_username.render(app, mod, RegisterUsernameModal.MODES.REGISTEREMAIL);
+        mod.modal_register_username.attachEvents(app, mod);
+      }
 
-      //document.getElementById("register-identifier-btn").onclick = function (e) {
-      //  mod.modal_register_username = new ModalRegisterUsername(app);
-      //  mod.modal_register_username.render(app, mod);
-      //  mod.modal_register_username.attachEvents(app, mod);
-      //}
+      document.getElementById("register-identifier-btn").onclick = function (e) {
+       mod.modal_register_username = new RegisterUsernameModal(app, mod);
+       mod.modal_register_username.render(app, mod);
+       mod.modal_register_username.attachEvents(app, mod);
+      }
 
       document.querySelector(".settings-appspace-privatekey").onclick = function (e) {
         document.querySelector(".settings-appspace-privatekey").classList.toggle("saito-password");
@@ -135,6 +135,11 @@ class SettingsAppspace {
         });
         document.querySelector('#file-input').click();
       }
+
+      document.querySelector('.copy-public-key').onclick = (e) =>{
+        navigator.clipboard.writeText(app.wallet.returnPublicKey());
+        salert("Public key copied");
+      }
       /*
           document.getElementById('reset-account-btn').onclick = async (e) => {
       
@@ -176,7 +181,6 @@ class SettingsAppspace {
             app.wallet.wallet.pending = [];
 
             app.blockchain.resetBlockchain();
-
             await app.wallet.saveWallet();
             window.location = window.location;
           }
