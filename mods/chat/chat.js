@@ -2,6 +2,7 @@ const SaitoUserWithTimeTemplate = require('./../../lib/saito/new-ui/templates/sa
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
+const ChatManagerOverlay = require('./lib/overlays/chat-manager');
 const ChatPopup = require("./lib/chat-manager/popup");
 
 const JSON = require('json-bigint');
@@ -30,6 +31,7 @@ class Chat extends ModTemplate {
 
         this.chat_manager = null;
 
+        this.chat_manager_overlay = null;
 
         this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
             this.createChatGroup(data?.members);
@@ -57,6 +59,9 @@ class Chat extends ModTemplate {
             case 'chat-manager':
 		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
                 return this.chat_manager;
+            case 'chat-manager-overlay':
+		if (this.chat_manager_overlay == null) { this.chat_manager_overlay = new ChatManagerOverlay(this.app, this); }
+                return this.chat_manager_overlay;
             default:
                 return super.respondTo(type);
         }

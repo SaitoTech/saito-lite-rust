@@ -23,8 +23,6 @@ class RedSquareMain {
     this.render_component = 'home';
 
 
-  
-
 
 
     this.app.connection.on("redsquare-profile-render-request", (publickey) => {
@@ -37,10 +35,17 @@ class RedSquareMain {
 
     this.app.connection.on("redsquare-home-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
+     let rendered =  this.renderComponentFromHash();
+     console.log('component gotten from hash ', rendered)
+     if(rendered){
+        return;
+     }else {
       this.render_component = 'home';
       this.components[this.render_component].render();
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
+     }
+    
     });
 
     
@@ -125,13 +130,13 @@ class RedSquareMain {
     //
     // render home / tweet / games etc.
     //
-    if (this.components[this.render_component]) {
-      this.components[this.render_component].render();
-    }
+ 
+    //
+    //
+    //
 
-    //
-    //
-    //
+    
+ 
   
 
     this.attachEvents();
@@ -166,6 +171,48 @@ class RedSquareMain {
 
 
 
+  }
+
+  renderComponentFromHash(){
+    var hash = new URL(document.URL).hash.split('#')[1];
+    let component;
+    let params;
+    let render_component;
+    let found = false;
+    if (hash) {
+      // component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
+      if (hash?.split("").includes("?")) {
+        component = hash.split("?")[0];
+        params = hash.split("?")[1];
+      }else {
+        component = hash
+      }
+    }
+    console.log('component ', component);
+    if(component){
+      if (this.components[component]) {
+        this.render_component = component;
+        document.querySelector(".saito-main").innerHTML = "";
+        this.components[this.render_component].render();
+        render_component = component;
+        found = true;
+      }else {
+        this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
+          if(mod.returnSlug() === component){
+            found = true;
+            document.querySelector(".saito-main").innerHTML = "";
+            mod.renderInto(".saito-main");
+            document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
+            if (mod.canRenderInto(".saito-sidebar.right")) {
+              document.querySelector(".saito-sidebar.right").innerHTML = "";
+              mod.renderInto(".saito-sidebar.right");
+            }
+          }
+        });
+      }
+    }
+
+    return found
   }
 
 }

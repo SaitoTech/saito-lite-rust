@@ -146,7 +146,9 @@ class VideoChatManager {
             let index =  url.indexOf('?');
             url = url.slice(0, index);
         }
-        const myurl = new URL(url);
+        let myurl = new URL(url);
+        myurl = myurl.href.split('#')[0];
+        console.log(myurl, 'myurl')
         this.room_link = `${myurl}?stun_video_chat=${base64obj}`;
         this.chatInvitationOverlay = new ChatInvitationOverlay(this.app, this.mod, this.room_link)
    

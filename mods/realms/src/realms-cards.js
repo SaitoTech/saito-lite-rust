@@ -19,7 +19,7 @@
 	text= "Flight - At the start of the battle pick one of the following:
 		• Flip one creature.
 		• Chose one creature, it will not flip during its Master's unflip phase."				,
-	lore: ""You'll see whatever I choose to show you. Don't get your hopes up.""				,
+	lore: "You'll see whatever I choose to show you. Don't get your hopes up."
 	img: "/realms/img/cards/sample.png"			,
     }
     deck['b002'] 		= { 
@@ -27,7 +27,9 @@
 	type: "sorcery"						,
 	color: "blue"						,
 	cost: ['*','*','*','*','blue']				,
-	text: "Each player picks a non-domain permanent under their command. Every other non-domain permanent must return to their Master's hand. After they do, you may draw a card for each opponent that had more cards in their hand than you do.",
+	text: "Each player picks a non-domain permanent under their command. 
+		Every other non-domain permanent must return to their Master's hand. After they do, 
+		you may draw a card for each opponent that had more cards in their hand than you do.",
 	img: "/realms/img/cards/sample.png"			,
 	
     }
