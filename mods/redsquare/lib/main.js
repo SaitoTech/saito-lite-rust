@@ -132,6 +132,33 @@ class RedSquareMain {
     //
     //
     //
+
+
+    
+    var hash = new URL(document.URL).hash.split('#')[1];
+    let component = hash;
+    let params = null;
+
+    if (hash) {
+      // component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
+      component = hash.split("?")[0];
+      if (hash?.split("").includes("?")) {
+        params = hash.split("?")[1];
+      }
+    }
+
+
+
+
+
+    var hash_matched = 0;
+
+    if (component != "") {
+      let hash_matched = mod.menu.renderItem(app, mod, component, params);
+      if (hash_matched == 1) {
+        return 1;
+      }
+    }
   
 
     this.attachEvents();
