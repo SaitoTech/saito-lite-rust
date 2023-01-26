@@ -59,6 +59,25 @@ class AppspaceHome {
   }
 
 
+  renderNewTweets(){
+    for (let i = 0; i < this.mod.tweets.length; i++) {
+      if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
+	this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
+      }
+      this.mod.tweets[i].container = ".redsquare-appspace-body";
+      this.mod.tweets[i].renderWithCriticalChild();
+
+    }
+
+    console.log('rendering more');
+
+    this.attachEvents();
+
+}
+
+
+
+
   renderMain() {
 
     this.thread_id = "";
@@ -116,6 +135,11 @@ class AppspaceHome {
     document.getElementById("redsquare-profile").onclick = (e) => {
       this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.returnPublicKey());
     }
+
+    document.querySelector('.redsquare-new-tweets-banner').onclick = (e) => {
+      this.renderNewTweets();
+}
+
 
   }
 

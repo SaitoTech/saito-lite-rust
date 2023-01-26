@@ -6,7 +6,7 @@ This alows for a header with a header with title to be added without extra CSS
 .saito-modal {
   font-size: 1.25rem;
   color: var(--saito-white);
-  background: var(--saito-modal-background);
+  background: var(--dreamscape);
   min-width: 70rem;
   height: min-content;
   max-width: 80vw;
@@ -15,11 +15,9 @@ This alows for a header with a header with title to be added without extra CSS
   grid-template-rows: min-content auto;
 }
 
-
 .saito-modal-title {
   font-size: 3rem;
 }
-
 
 /* saito-modal-menu
 /* theming for a simple menu with font-awesome icon and text in a two col grid */
@@ -29,7 +27,6 @@ This alows for a header with a header with title to be added without extra CSS
   margin: 0 2rem;
   padding: 1.5rem;
   display: grid;
-  align-items: center;
   grid-gap: 1rem;
   grid-template-columns: 4rem 1fr;
 }
@@ -122,71 +119,6 @@ This alows for a header with a header with title to be added without extra CSS
   color: var(--saito-font-color);
 }
 
-
-/* Exclusively for modal-add-user-confirm.template */
-
-.confirm-modal-wrapper {
-  font-size: 1.5em;
-  padding: 1.5em;
-  color: var(--saito-background-color);
-  font-weight: bold;
-}
-
-.welcome-invite-box {
-  min-width: 200px;
-  min-height: 120px;
-  max-width: 325px;
-  padding: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  font-size: 25px;
-  border: 1px solid;
-  margin: 1em;
-}
-
-
-/* LIST SELECTION MODAL */
-
-.game-selection-list-overlay {
-  background-color: black;
-  max-height: 90vh;
-  overflow-y: scroll;
-  font-size: 2rem;
-  min-width: 400px;
-}
-
-.selection-list li {
-  cursor: pointer;
-  border-bottom: 1px solid transparent;
-  padding: 10px 0px 10px 20px;
-  list-style: none;
-}
-
-.selection-list li:hover {
-  background-color: #33669999;
-}
-
-.selection-list li .tiptext {
-  width: fit-content;
-  ;
-  background-color: #000a;
-  color: #ffffff !important;
-  min-width: 0px;
-  padding: 3px;
-  pointer-events: none;
-  top: 5px;
-  right: 0;
-}
-
-
-
-
-
-/* Welcome modal */
-
-
-
 .welcome-modal-wrapper {
   width: 900px;
   max-width: 80vw;
@@ -207,7 +139,6 @@ This alows for a header with a header with title to be added without extra CSS
   font-size: 2.5rem !important;
   flex-grow: 5;
   border-radius: 0.5rem;
-  color: var(--saito-font-color)
 }
 
 .welcome-modal-main {
@@ -243,6 +174,13 @@ This alows for a header with a header with title to be added without extra CSS
   gap: 2rem;
 }
 
+.welcome-modal-input-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  padding: 0 1rem 0 0;
+}
+
 .welcome-modal-signup {
   margin: 1em 0;
   display: flex;
@@ -271,9 +209,6 @@ This alows for a header with a header with title to be added without extra CSS
 .welcome-modal-action button:hover {
   border-color: var(--saito-background-color);
 }
-
-
-
 
 /* mobile modals */
 

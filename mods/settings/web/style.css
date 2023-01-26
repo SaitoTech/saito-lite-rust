@@ -146,6 +146,51 @@ label.treated {
   .settings-appspace-privatekey>input {
     width: 50%;
   }
+
+}
+
+
+
+
+#alert-shim {
+  z-index: 2000;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+}
+
+#saito-alert-box {
+  width: 75vw;
+  max-width: 700px;
+  transition: all 333ms ease-in-out;
+  margin: auto;
+  position: relative;
+  border: 1px solid var(--saito-primary);
+  border-radius: 0 0 5px 5px;
+  padding: 1em 1em 3.5em 1em;
+}
+
+
+#saito-alert-box button {
+  margin: 0 0 0 1em;
+}
+
+#alert-buttons {
+  float: right;
+  margin: 0 0 0 1em;
+  margin-top: 0.5rem;
+}
+
+#saito-alert-box p {
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  font-size: 1.4em;
+  text-align: center;
+  align-self: center;
+  font-weight: bold;
+  display: block;
+  margin: 1em 0;
+  overflow-wrap: break-word;
 }
 
 .settings-appspace-debug-content {
