@@ -21,7 +21,7 @@
   color: transparent;
   font-size: 2rem;
   -webkit-text-stroke: var(--saito-primary) 1px;
-  margin: 1rem 0 0;
+  margin: 1rem 2px 0;
 }
 
 .post-tweet-preview {

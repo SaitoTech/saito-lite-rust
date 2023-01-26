@@ -224,6 +224,15 @@
   cursor: pointer;
 }
 
+.tweet-overlay-content-controls-spacer {
+  flex-grow: 1;
+}
+
+.post-tweet-button {
+  line-height: 4.5rem;
+  font-size: 2.2rem;
+}
+
 .tweet-img-arrow-box {
   position: absolute;
   top: 50%;
