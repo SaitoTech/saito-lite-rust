@@ -23,8 +23,6 @@ class RedSquareMain {
     this.render_component = 'home';
 
 
-  
-
 
 
     this.app.connection.on("redsquare-profile-render-request", (publickey) => {
@@ -37,10 +35,16 @@ class RedSquareMain {
 
     this.app.connection.on("redsquare-home-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
+     let component =  this.getComponentFromHash();
+     if(component){
+        return;
+     }else {
       this.render_component = 'home';
       this.components[this.render_component].render();
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
+     }
+    
     });
 
     
@@ -125,40 +129,13 @@ class RedSquareMain {
     //
     // render home / tweet / games etc.
     //
-    if (this.components[this.render_component]) {
-      this.components[this.render_component].render();
-    }
-
+ 
     //
     //
     //
-
 
     
-    var hash = new URL(document.URL).hash.split('#')[1];
-    let component = hash;
-    let params = null;
-
-    if (hash) {
-      // component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
-      component = hash.split("?")[0];
-      if (hash?.split("").includes("?")) {
-        params = hash.split("?")[1];
-      }
-    }
-
-
-
-
-
-    var hash_matched = 0;
-
-    if (component != "") {
-      let hash_matched = mod.menu.renderItem(app, mod, component, params);
-      if (hash_matched == 1) {
-        return 1;
-      }
-    }
+ 
   
 
     this.attachEvents();
@@ -193,6 +170,35 @@ class RedSquareMain {
 
 
 
+  }
+
+  getComponentFromHash(){
+    var hash = new URL(document.URL).hash.split('#')[1];
+    let component;
+    let params;
+    let rendered_component;
+    if (hash) {
+      // component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
+      if (hash?.split("").includes("?")) {
+        component = hash.split("?")[0];
+        params = hash.split("?")[1];
+      }else {
+        component = hash
+      }
+    }
+    console.log('component ', component);
+    if(component){
+     
+      if (this.components[this.render_component]) {
+        document.querySelector(".saito-main").innerHTML = "";
+        this.components[this.render_component].render();
+        this.render_component = component
+      }else {
+        
+      }
+    }
+
+    return null
   }
 
 }
