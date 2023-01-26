@@ -35,8 +35,9 @@ class RedSquareMain {
 
     this.app.connection.on("redsquare-home-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
-     let component =  this.getComponentFromHash();
-     if(component){
+     let rendered =  this.renderComponentFromHash();
+     console.log('component gotten from hash ', rendered)
+     if(rendered){
         return;
      }else {
       this.render_component = 'home';
@@ -172,11 +173,12 @@ class RedSquareMain {
 
   }
 
-  getComponentFromHash(){
+  renderComponentFromHash(){
     var hash = new URL(document.URL).hash.split('#')[1];
     let component;
     let params;
-    let rendered_component;
+    let render_component;
+    let found = false;
     if (hash) {
       // component = hash.split("?")[0] === "video-call" ?  "stunx":  hash.split("?")[0];
       if (hash?.split("").includes("?")) {
@@ -188,17 +190,29 @@ class RedSquareMain {
     }
     console.log('component ', component);
     if(component){
-     
-      if (this.components[this.render_component]) {
+      if (this.components[component]) {
+        this.render_component = component;
         document.querySelector(".saito-main").innerHTML = "";
         this.components[this.render_component].render();
-        this.render_component = component
+        render_component = component;
+        found = true;
       }else {
-        
+        this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
+          if(mod.returnSlug() === component){
+            found = true;
+            document.querySelector(".saito-main").innerHTML = "";
+            mod.renderInto(".saito-main");
+            document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
+            if (mod.canRenderInto(".saito-sidebar.right")) {
+              document.querySelector(".saito-sidebar.right").innerHTML = "";
+              mod.renderInto(".saito-sidebar.right");
+            }
+          }
+        });
       }
     }
 
-    return null
+    return found
   }
 
 }

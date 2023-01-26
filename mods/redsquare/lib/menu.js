@@ -43,10 +43,14 @@ class RedSquareMenu {
   attachEvents() {
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
+      window.location.hash = "home"
+      this.mod.main.render_component = "home"
       this.app.connection.emit("redsquare-home-render-request");
     }
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
+      window.location.hash = "notifications"
+      this.mod.main.render_component = "notifications"
       this.app.connection.emit("redsquare-notifications-render-request");
     }
 
@@ -59,6 +63,7 @@ class RedSquareMenu {
     //
     this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
       document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
+        window.location.hash = mod.returnSlug();
         document.querySelector(".saito-main").innerHTML = "";
         mod.renderInto(".saito-main");
         document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
