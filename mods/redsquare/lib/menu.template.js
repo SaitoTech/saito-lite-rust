@@ -2,6 +2,8 @@ module.exports = () => {
 
    return `
       <div class="saito-menu redsquare-menu">
+         <div class="saito-notification-dot">
+         </div>
         <ul class="saito-menu-list">
           <li class="redsquare-menu-home">
             <i class="fa-solid fa-house"></i>

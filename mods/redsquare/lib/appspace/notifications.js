@@ -106,49 +106,67 @@ const SaitoLoader = require("./../../../../lib/saito/new-ui/saito-loader/saito-l
 
 class RedSquareAppspaceNotifications {
 
-  constructor(app, mod) {
+  constructor(app, mod, container = "") {
     this.app = app;
+    this.mod = mod;
     this.name = "RedSquareAppspaceNotifications";
     this.saito_loader = new SaitoLoader(app, mod);
     this.increment = 1;
+    this.container  = container;
   }
 
-  render(app, mod) {
-    if(mod.main.render_component!== "notifications"){
+  render() {
+    let app = this.app;
+    let mod = this.mod;
+
+    console.log('app ', app, 'mod ', mod);
+    if(mod.viewing !== "notifications"){
       return;
     }
-    document.querySelector(".appspace").innerHTML = "";
-    app.browser.addElementToClass(RedSquareAppspaceNotificationsTemplate(app, mod), "appspace");
 
-    for (let i = 0; i < mod.ntfs.length; i++) {
-      let notification = new Notification(app, mod, mod.ntfs[i]);
+       if (document.querySelector(".redsquare-notifications")) {
+      this.app.browser.replaceElementBySelector(RedSquareAppspaceNotificationsTemplate(app, mod), ".redsquare-notifications");
+    } else {
+      if (this.container) {
+        this.app.browser.addElementToSelector(RedSquareAppspaceNotificationsTemplate(app, mod), this.container);
+      } else {
+        this.app.browser.addElementToDom(RedSquareAppspaceNotificationsTemplate(app, mod));
+      }
+    }
 
-      notification.render(app, mod, ".redsquare-list");
+    for (let i = 0; i < mod.notifications.length; i++) {
+      console.log(mod.notifications, 'notifications')
+      let notification = new Notification(app, mod, mod.notifications[i].tx);
+
+      notification.render(app, mod, ".redsquare-notifications");
     }
 
     // let notifications_height = document.querySelector('.redsquare-list').offsetHeight;
     // let body_height = document.body.offsetHeight;
     // let percentage = notifications_height/body_height * 100;
 
-;
-    let num_ntfs = mod.ntfs.length;
-    let max_ntfs = mod.max_ntfs_num;
-    let self = this
-    if(num_ntfs < max_ntfs){
-      mod.num_ntfs = num_ntfs;
-    }else if(num_ntfs >= max_ntfs) {
-      this.increment++;
-      mod.loadNotificationTransactions(app, mod, this.increment, (app, mod)=> {
+// ;
+//     let num_ntfs = mod.ntfs.length;
+//     let max_ntfs = mod.max_ntfs_num;
+//     let self = this
+//     if(num_ntfs < max_ntfs){
+//       mod.num_ntfs = num_ntfs;
+//     }else if(num_ntfs >= max_ntfs) {
+//       this.increment++;
+//       mod.loadNotificationTransactions(app, mod, this.increment, (app, mod)=> {
         
-        self.render(app, mod)
-      })
-    }
+//         self.render(app, mod)
+//       })
+//     }
 
     this.attachEvents(app, mod);
 
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+    let app = this.app;
+    let mod = this.mod
+    
     notificationSelf = this;
 
     sel = ".tweet";

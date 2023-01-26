@@ -71,7 +71,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-notifications-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'notifications';
-      this.components[this.render_component].render();
+      this.components[this.render_component].render(this.app, this.mod);
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
       this.mod.notifications_last_viewed_ts = new Date().getTime();

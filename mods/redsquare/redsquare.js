@@ -49,6 +49,10 @@ class RedSquare extends ModTemplate {
     //
     this.notifications_last_viewed_ts = 0;
     this.notifications_number_unviewed = 0;
+    this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
+    this.ntfs_num = 0;
+    this.max_ntfs_num = 50
+    this.ntfs_counter = {}
 
     //
     // used to fetch more content
@@ -520,11 +524,12 @@ class RedSquare extends ModTemplate {
       if (tx.transaction.ts < this.notifications_oldest_ts) {
 	this.notifications_oldest_ts = tx.transaction.ts;
       }
-
       //
       // notify of other people's actions, but not ours
       //
       if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
+
+        console.log('tweets ', tweet)
 
         let insertion_index = 0;
         if (prepend == 0) {
@@ -611,6 +616,7 @@ class RedSquare extends ModTemplate {
             this.tweets[i].num_replies = tweet.num_replies;
             this.tweets[i].num_retweets = tweet.num_retweets;
             this.tweets[i].num_likes = tweet.num_likes;
+
             //
             // EVENT HERE
             //
@@ -685,6 +691,30 @@ class RedSquare extends ModTemplate {
 
 
 
+  addNotification(app, mod, tx) {
+    if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
+      return;
+    }
+    if (tx.transaction.ts > this.notifications_last_viewed_ts) {
+      this.notifications_number_unviewed++;
+
+    //   this.app.connection.emit("redsquare-notifications-render-request", { menu: "notifications", num: this.notifications_number_unviewed });
+    // }
+    if (this.ntfs.length == 0) {
+      this.ntfs.push(tx);
+      console.log('notifications ', this.ntfs)
+      return;
+    }
+    for (let i = 0; i < this.ntfs.length; i++) {
+      if (this.ntfs[i].transaction.ts < tx.transaction.ts) {
+        this.ntfs.splice(i, 0, tx);
+        return;
+      }
+    }
+    this.ntfs.push(tx);
+ 
+  }
+}
 
 
   async fetchOpenGraphProperties(app, mod, link) {
@@ -806,6 +836,8 @@ class RedSquare extends ModTemplate {
         // convert like into tweet and addTweet to get notifications working
         //
         this.addTweet(tx, true);
+
+        this.addNotification(app, this, tx);
 
       }
 

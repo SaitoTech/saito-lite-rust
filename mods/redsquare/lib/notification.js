@@ -16,7 +16,7 @@ class RedSquareNotification {
   render(app, mod, selector = "") {
 
     if (this.tx == null) { return; }
-
+    console.log('rendering tx', this.tx, this.tx.returnMessage())
     let html = '';
     let txmsg = this.tx.returnMessage();
 
@@ -52,7 +52,7 @@ class RedSquareNotification {
       mod.saveRedSquare();
     }
 
-    app.browser.addElementToSelector(html, ".redsquare-list");
+    app.browser.addElementToSelector(html, ".redsquare-notifications");
     this.attachEvents(app, mod);
   }
 

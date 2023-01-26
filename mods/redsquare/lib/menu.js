@@ -51,7 +51,9 @@ class RedSquareMenu {
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       window.location.hash = "notifications"
       this.mod.main.render_component = "notifications"
+      this.mod.viewing = "notifications";
       this.app.connection.emit("redsquare-notifications-render-request");
+
     }
 
 //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
