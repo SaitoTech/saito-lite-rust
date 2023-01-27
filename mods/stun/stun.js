@@ -38,6 +38,7 @@ class Stun extends ModTemplate {
         this.chatType = null;
         this.peer_connections = {}
         this.stunGameMenu = new StunxGameMenu(app, mod);
+
         this.servers = [
             {
                 urls: "stun:stun-sf.saito.io:3478"
@@ -130,13 +131,14 @@ class Stun extends ModTemplate {
             super.render(this.app, this);
             return new StunxAppspace(this.app, this);
         }
-
         if (type === 'saito-header') {
           return {
             text: this.appname,
             icon: this.icon,
             allowed_mods: ["redsquare"],
             callback: function (app, id) {
+	      let stun_self = app.modules.returnModule("Stun");
+	      stun_self.renderInto(".saito-main"); 
             }
         }
 
