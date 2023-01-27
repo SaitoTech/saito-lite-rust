@@ -278,6 +278,7 @@ console.log(this.game.stake);
 console.log("^^^^^^^^^");
 
     for (let i = 0; i < this.game.players.length; i++) {
+console.log("SETTING PLAYER PASSED AS: 0 for " + i);
       this.game.state.passed[i] = 0;
       this.game.state.player_pot[i] = "0";
       this.game.state.debt[i] = "0";
@@ -603,8 +604,11 @@ console.log("^^^^^^^^^");
           return 1;
       }
 
+      //
       //Player's turn to fold,check,call,raise
+      //
       if (mv[0] === "turn") {
+
         let player_to_go = parseInt(mv[1]);
         this.game.target = player_to_go;
         //
@@ -612,12 +616,16 @@ console.log("^^^^^^^^^");
         //
         let active_players = 0;
         let player_left_idx = 0;
+console.log("passed array: " + JSON.stringify(this.game.state.passed));
         for (let i = 0; i < this.game.state.passed.length; i++) {
           if (this.game.state.passed[i] == 0) {
             active_players++;
             player_left_idx = i;
           }
         }
+
+console.log("players total: " + this.game.players.length);
+console.log("active players: " + active_players);
 
         /***********************/
         /*PLAYER WINS HAND HERE*/
@@ -984,6 +992,7 @@ console.log("^^^^^^^^^");
 
       //Set up bets for beginning of round (new deal)
       if (mv[0] == "ante"){
+
         this.game.queue.splice(qe,1);
 
         this.displayBoard(); //Clean HTML
@@ -992,7 +1001,7 @@ console.log("^^^^^^^^^");
         //
         // Big Blind
         //
-        if (this.game.state.player_credit[bbpi] <= this.game.state.big_blind) {
+        if (this.stf(this.game.state.player_credit[bbpi]) <= this.stf(this.game.state.big_blind)) {
           this.updateLog(this.game.state.player_names[bbpi] + ` posts remaining ${this.game.state.player_credit[bbpi]} chips for big blind and is removed from game`);
           //Put all the player tokens in the pot and have them pass / remove
           this.game.state.player_pot[bbpi] = this.addToString(this.game.state.player_pot[bbpi], this.game.state.player_credit[bbpi]);
@@ -1029,12 +1038,12 @@ console.log("^^^^^^^^^");
 
         this.playerbox.refreshLog(`<div class="plog-update">Small Blind: ${this.formatWager(this.game.state.small_blind)}</div>`,this.game.state.small_blind_player);
         this.displayPlayers(true);        //Update Chip stacks after betting
-        this.game.queue.push("round");    //Start Beting        
+        this.game.queue.push("round");    //Start
         this.game.queue.push("announce"); //Print Hole cards to Log
 
       }
 
-      /* Set up a round of betting 
+      /* Set up a round
          We don't splice it, so we keep coming back here after each player has taken their turn
          until we reach an endgame state which runs startNextRound and clears to queue
       */
@@ -1286,24 +1295,25 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
 
     $(".menu_option").off();
     $(".menu_option").on("click", function () {
+
       let choice = $(this).attr("id");
    
       if (choice === "raise") {
 
-        let credit_remaining = this.subtractFromString(poker_self.game.state.player_credit[poker_self.game.player-1], match_required);
+        let credit_remaining = poker_self.subtractFromString(poker_self.game.state.player_credit[poker_self.game.player-1], match_required);
 
         html = `<div class="menu-player">`;
-        if (this.stf(match_required) > 0) {
+        if (poker_self.stf(match_required) > 0) {
           html += `Match ${poker_self.formatWager(match_required)} and raise: `;
         } else {
           html += "Please select an option below: ";
         }
         html += `</div><ul><li class="menu_option" id="0">${(mobileToggle)? "nope":"cancel raise"}</li>`;
-        let max_raise = Math.min(this.stf(credit_remaining), this.stf(smallest_stack));
+        let max_raise = Math.min(poker_self.stf(credit_remaining), poker_self.stf(smallest_stack));
 
         for (let i = 0; i < 5; i++) {
 
-          let this_raise = this.stf(poker_self.game.state.last_raise) + (i * this.stf(poker_self.game.state.last_raise));
+          let this_raise = poker_self.stf(poker_self.game.state.last_raise) + (i * poker_self.stf(poker_self.game.state.last_raise));
 
           console.log("this raise: " + this_raise);
           console.log("id is: " + (this_raise + match_required));
