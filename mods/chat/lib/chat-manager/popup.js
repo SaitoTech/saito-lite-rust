@@ -39,6 +39,12 @@ class ChatPopup {
     let header_id = "chat-header-" + this.group.id;
     let input_id = "chat-input-" + this.group.id;
 
+    let existing_input = "";
+
+    if (document.getElementById(input_id)) {
+      existing_input = document.getElementById(input_id).value;
+    }
+
     //
     //
     //
@@ -114,6 +120,14 @@ class ChatPopup {
     // scroll to bottom
     //
     document.querySelector(".chat-body").scroll(0, 1000000000);
+
+    //
+    // re-render typed text
+    //
+    if (existing_input != "") {
+      document.getElementById(input_id).value = existing_input;
+    }
+
 
     //
     // attach events

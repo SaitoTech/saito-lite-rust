@@ -3,10 +3,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:">
-  <title>Saito Mania v3 60fps</title>
+  <title>Saito Mania</title>
   <style>
     body {
-      color: #ffffff;
+      color: #a2ec18;
       font-family: sans-serif;
       overflow: hidden;
       margin: 0;
@@ -154,7 +154,10 @@
   <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
   <link rel="stylesheet" type="text/css" href="/saito/game.css" />
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
-    
+
+
+
+
 </head>
 <body>
   <div id="app"></div>
@@ -214,8 +217,8 @@
       const scaffolding = new Scaffolding.Scaffolding();
       scaffolding.width = 640;
       scaffolding.height = 360;
-      scaffolding.resizeMode = "preserve-ratio";
-      scaffolding.editableLists = true;
+      scaffolding.resizeMode = "stretch";
+      scaffolding.editableLists = false;
       scaffolding.usePackagedRuntime = true;
       scaffolding.setup();
       scaffolding.appendTo(appElement);
@@ -234,7 +237,7 @@
       scaffolding.setUsername("player####".replace(/#/g, () => Math.floor(Math.random() * 10)));
       scaffolding.setAccentColor("#ff4c4c");
 
-      scaffolding.addCloudProvider(new Scaffolding.Cloud.WebSocketProvider(["wss://clouddata.turbowarp.org","wss://clouddata.turbowarp.xyz"], "p4-@!_SaitoMania_v3_final_fixing_60fps.sb3"));
+      scaffolding.addCloudProvider(new Scaffolding.Cloud.WebSocketProvider(["wss://clouddata.turbowarp.org","wss://clouddata.turbowarp.xyz"], "p4-@SaitoMania_v3_final.sb3"));
 
       vm.setTurboMode(false);
       if (vm.setInterpolation) vm.setInterpolation(false);
@@ -243,7 +246,7 @@
       if (vm.setRuntimeOptions) vm.setRuntimeOptions({
         fencing: true,
         miscLimits: true,
-        maxClones: 300,
+        maxClones: 9999999999,
       });
       if (vm.setCompilerOptions) vm.setCompilerOptions({
         enabled: true,
@@ -317,8 +320,5 @@
     };
     run().catch(handleError);
   </script>
-
-  <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
-
 </body>
 </html>
