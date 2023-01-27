@@ -1,0 +1,17 @@
+.notification-item {
+    margin-bottom: 1rem;
+}
+
+
+.notification-tweet {
+    cursor: pointer;
+  padding: 1rem 2rem;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid var(--saito-border-color-dark);
+  position: relative;
+}
+
+
+.notification-item:hover {
+    background-color: var(--saito-background-light);
+}

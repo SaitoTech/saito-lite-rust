@@ -20,8 +20,10 @@ class AppspaceHome {
       entries.forEach(entry => {
 
           if (entry.isIntersecting) {
+            if(mod.viewing !== "home") return;
             let saito_loader = this.saito_loader;
             saito_loader.render(app, mod, "redsquare-intersection", false);
+          
             mod.loadMoreTweets(()=> saito_loader.remove());
           }
 

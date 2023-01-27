@@ -27,7 +27,7 @@ class RedSquare extends ModTemplate {
     this.categories = "Social Entertainment";
     this.redsquare = {}; // where settings go, saved to options file
     this.icon_fa = "fas fa-square-full";
-
+    this.viewing = "home";
     this.profiles = {};
     this.tweets = [];
     this.tweets_sigs_hmap = {};
@@ -517,7 +517,6 @@ class RedSquare extends ModTemplate {
 
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
 
-      console.log('this transaction is to me')
       //
       // this is a notification, so update our timestamps
       //
@@ -532,7 +531,6 @@ class RedSquare extends ModTemplate {
       //
       if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
 
-        console.log('this transaction is not from me')
 
         let insertion_index = 0;
         if (prepend == 0) {
@@ -558,16 +556,15 @@ class RedSquare extends ModTemplate {
           this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
         }
 
-        console.log('this transaction is not from me', this.notifications)
 
       }
       //
       // if this is a like, we can avoid adding it to our tweet index
       //
       let txmsg = tx.returnMessage();
-      if (txmsg.request === "like tweet") {
-        return;
-      }
+      // if (txmsg.request === "like tweet") {
+      //   return;
+      // }
 
     }
 
@@ -912,7 +909,6 @@ class RedSquare extends ModTemplate {
         // if replies
         //
         if (txmsg.data?.parent_id) {
-          console.log(tweet, 'replies')
           if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
             let tweet = this.returnTweet(txmsg.data.parent_id);
             if (tweet == null) { return; }
@@ -932,7 +928,6 @@ class RedSquare extends ModTemplate {
 
         if (txmsg.data?.retweet_tx) {
           if (txmsg.data?.retweet_tx) {
-            console.log(tweet, 'retweets')
             let rtxobj = JSON.parse(txmsg.data.retweet_tx);
             let rtxsig = rtxobj.sig;
 
@@ -952,10 +947,10 @@ class RedSquare extends ModTemplate {
         }
       }
 
-      if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
-        // document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
-        return;
-      }
+      // if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
+      //   // document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
+      //   return;
+      // }
 
       this.addTweet(tx,1);
 

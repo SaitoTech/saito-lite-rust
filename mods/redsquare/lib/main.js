@@ -35,6 +35,7 @@ class RedSquareMain {
 
     this.app.connection.on("redsquare-home-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
+      this.mod.viewing = "home";
      let rendered =  this.renderComponentFromHash();
      console.log('component gotten from hash ', rendered)
      if(rendered){
@@ -63,6 +64,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-thread-render-request", (tweet) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'home';
+      this.mod.viewing = "thread";
       this.components[this.render_component].renderThread(tweet);
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();

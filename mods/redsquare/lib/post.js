@@ -90,14 +90,22 @@ class Post {
       //
      keys = post_self.app.browser.extractKeys(text);
 
-      try {
+     if (this.tweet != null) {
+      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
+        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
+          keys.push(this.tweet.tx.transaction.to[i].add);
+        }
+      }
+    }
 
-       const dataId =   document.querySelector('.post-tweet-textarea').parentElement.parentElement.parentElement.querySelector('.saito-user').getAttribute('data-id');
-       keys.push(dataId);
-            }
-       catch(error){
-        console.log('error ', error);
-       }
+      // try {
+
+      //  const dataId =   document.querySelector('.post-tweet-textarea').parentElement.parentElement.parentElement.querySelector('.saito-user').getAttribute('data-id');
+      //  keys.push(dataId);
+      //       }
+      //  catch(error){
+      //   console.log('error ', error);
+      //  }
 
       console.log(keys, 'keys')
 
@@ -116,6 +124,8 @@ class Post {
 	  }
         }
       }
+
+      console.log(keys, 'keys')
 
       if (this.tweet != null) {
         for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {

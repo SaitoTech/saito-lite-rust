@@ -120,9 +120,6 @@ class RedSquareAppspaceNotifications {
     let mod = this.mod;
 
     console.log('app ', app, 'mod ', mod);
-    if(mod.viewing !== "notifications"){
-      return;
-    }
 
        if (document.querySelector(".redsquare-notifications")) {
       this.app.browser.replaceElementBySelector(RedSquareAppspaceNotificationsTemplate(app, mod), ".redsquare-notifications");
