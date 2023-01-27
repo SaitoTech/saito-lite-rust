@@ -166,17 +166,16 @@ body {
 .pot {
   position: absolute;
   background-color: #0007;
-  padding: 2rem;
-  font-size: 4rem;
+  font-size: 3rem;
   top: 22vh;
   left: 50%;
-  height: 6.25rem;
+  height: 5.5rem;
   min-width: 20vw;
   width: 20vw;
   margin-left: -10vw;
   text-align: center;
   padding-top: 1rem;
-  padding-bottom: 1.25rem;
+  padding-bottom: 1rem;
   border-radius: 0.5rem;
 }
 

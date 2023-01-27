@@ -56,7 +56,7 @@ class Mixin extends ModTemplate {
 
   
   canRenderInto(qs) {
-    if (qs === ".saito-main") { return true; }
+    if (qs === ".saito-main" && (this.account_created == 1 || this.mixin.publickey !== "")) { return true; }
     return false;
   }
 
