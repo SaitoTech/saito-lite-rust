@@ -16,7 +16,6 @@ class StunAppspace {
       this.overlay.remove();
     })
 
-
   }
 
   render() {
