@@ -120,6 +120,26 @@
   align-self: center;
 }
 
+.arcade_game_overlay_loader {
+    min-width: 32vw;
+    background: #fff;
+    padding: 6vw 15vh;
+}
+
+.arcade_game_overlay_loader .arcade-game-initializer-success-title,  
+.arcade_game_overlay_loader .game-loader-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-top: 0rem;
+}
+
+
+.arcade_game_overlay_loader .arcade-game-initializer-success-button{
+    font-size: 1.8rem;
+    margin: 1rem;
+    width: -webkit-fill-available;
+}
+
 @media screen and (max-width: 1000px) {
   .arcade-game-overlay {
     width: 90vw;

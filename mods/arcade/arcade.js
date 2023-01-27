@@ -280,6 +280,8 @@ alert("Observer Overlay for URL Games not yet implemented");
             }),
             "open"
           );
+
+          this.app.connection.emit('arcade-invite-manager-render-request');
         }
       }
     );
