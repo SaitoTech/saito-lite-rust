@@ -9,6 +9,12 @@ body {
   height: 100vh;
 }
 
+.cardfan {
+  max-height: 20vh;
+  max-width: 20vw;
+}
+
+
 .gameboard{
   /* Default fill the background with image */
   position: absolute;
