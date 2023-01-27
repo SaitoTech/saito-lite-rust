@@ -262,7 +262,6 @@ class Tweet {
           this.is_long_tweet = true;
         }
 
-        console.log('long tweet', el.innerHTML, this.is_long_tweet)
       }
 
 
