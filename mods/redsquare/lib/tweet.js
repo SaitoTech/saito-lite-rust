@@ -281,6 +281,7 @@ class Tweet {
               tweet_text.classList.add('full');
             } else {
               if (e.target.tagName != "IMG") {
+                window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
                 this.app.connection.emit("redsquare-thread-render-request", (this));
               }
             }
@@ -290,7 +291,8 @@ class Tweet {
           //
           // if we are asking to see a tweet, load from parent if exists
           //
-          if (e.target.tagName != "IMG") {
+          if (e.target.tagName != "IMG") {  window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
+
             this.app.connection.emit("redsquare-thread-render-request", (this));
           }
         })

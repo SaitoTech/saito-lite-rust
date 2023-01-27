@@ -170,6 +170,10 @@ class RedSquare extends ModTemplate {
     // fetch content from options file
     //
     this.load();
+    
+
+
+
 
     //
     // fetch content from local archive
@@ -188,7 +192,6 @@ class RedSquare extends ModTemplate {
         // redsquare_self.loadNewTweets(app, redsquare_self);
       // }
     }, 3000);
-
 
 
   }
@@ -227,12 +230,13 @@ class RedSquare extends ModTemplate {
       let tweet_id = app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
+
         this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
           this.results_loaded = true;
           for (let z = 0; z < txs.length; z++) {
             let tweet = new Tweet(this.app, this.mod, ".redsquare-home", txs[z]);
-            tweet.render();
-            tweet.attachEvents();
+            // app.connection.emit('redsquare-thread-render-request', tweet);
+            console.log('tweet ', tweet);
           }
         }, false, false);
         return;
