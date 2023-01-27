@@ -27,6 +27,9 @@
   transition: all 0.2s;
   background-color: var(--saito-gray-transparent);
 }
+.arcade-game-playerbox.empty {
+  cursor: auto;
+}
 
 .arcade-game-playerbox.requested_player {
   opacity: 0.6;
