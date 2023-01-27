@@ -91,23 +91,7 @@ class RedSquareMain {
     //
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
       
-
-
-      console.log("Render component");
-      console.log(tweet);
-
       if (this.render_component === "home") {
-	   
-        console.log("******************************************")
-        console.log("tweet.updated_at");
-        console.log(tweet.updated_at);
-
-
-        console.log("this.mod.tweets_last_viewed_ts");
-        console.log(this.mod.tweets_last_viewed_ts);
-
-        console.log("******************************************")
-
         if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
 	     
           tweet.container = ".redsquare-appspace-body";
