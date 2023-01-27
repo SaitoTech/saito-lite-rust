@@ -350,8 +350,8 @@ class Browser {
     return "en";
   }
 
-  isMobileBrowser(user_agent="") {
-    if (user_agent == "") { user_agent = navigator.userAgent; }
+
+  isMobileBrowser(user_agent = navigator.userAgent) {
     let check = false;
     (function (user_agent) {
       if (

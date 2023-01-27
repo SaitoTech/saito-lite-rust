@@ -192,18 +192,15 @@ This alows for a header with a header with title to be added without extra CSS
 
 
 .welcome-modal-wrapper {
-  width: 900px;
   max-width: 80vw;
-  /*display: grid;
-  grid-template-columns: 6fr 1fr;*/
-  font-size: 1.5em;
-  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  font-size: 1.4em;
 }
 
 .welcome-modal-input-container {
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 1rem;
 }
 
 .welcome-modal-input {
@@ -211,7 +208,8 @@ This alows for a header with a header with title to be added without extra CSS
   font-size: 2.5rem !important;
   flex-grow: 5;
   border-radius: 0.5rem;
-  color: var(--saito-font-color)
+  color: var(--saito-font-color);
+  text-align: end;
 }
 
 .welcome-modal-main {
@@ -282,6 +280,12 @@ This alows for a header with a header with title to be added without extra CSS
 /* mobile modals */
 
 @media only screen and (max-width: 1000px) {
+  .saito-modal {
+    min-width: unset;
+    max-width: unset;
+    padding: 0.5rem;
+    width: 90vw;
+  }
   .welcome-modal-wrapper {
     /*grid-template-columns: 1fr;*/
     width: 90vw;

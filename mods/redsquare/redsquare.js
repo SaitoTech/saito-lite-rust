@@ -27,7 +27,7 @@ class RedSquare extends ModTemplate {
     this.categories = "Social Entertainment";
     this.redsquare = {}; // where settings go, saved to options file
     this.icon_fa = "fas fa-square-full";
-
+    this.viewing = "home";
     this.profiles = {};
     this.tweets = [];
     this.tweets_sigs_hmap = {};
@@ -49,6 +49,10 @@ class RedSquare extends ModTemplate {
     //
     this.notifications_last_viewed_ts = 0;
     this.notifications_number_unviewed = 0;
+    this.ntfs = []; // notifications, the notifications panel is attached under the full name by subcomponent
+    this.ntfs_num = 0;
+    this.max_ntfs_num = 50
+    this.ntfs_counter = {}
 
     //
     // used to fetch more content
@@ -402,6 +406,7 @@ class RedSquare extends ModTemplate {
   }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
     this.app.storage.loadTransactionsFromPeer("RedSquare", (50 * increment), peer, (txs) => {
+      
       if (!this.peers_for_notifications.includes(peer)) {
         this.peers_for_notifications.push(peer);
       }
@@ -409,6 +414,7 @@ class RedSquare extends ModTemplate {
         txs[i].decryptMessage(this.app);
         this.addTweet(txs[i]);
       }
+      console.log('notificatoins added', this.notifications, this.tweets)
       if (post_load_callback != null) { post_load_callback(); }
     });
   }
@@ -472,7 +478,7 @@ class RedSquare extends ModTemplate {
           this.trackTweet(tweet_to_track);
         }
       
-       console.log(this.trackedTweet, 'tracked tweet');
+  
 
       }
       for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
@@ -508,8 +514,8 @@ class RedSquare extends ModTemplate {
     //
     // maybe this needs to go into notifications too
     //
-    if (tx.isTo(this.app.wallet.returnPublicKey())) {
 
+    if (tx.isTo(this.app.wallet.returnPublicKey())) {
 
       //
       // this is a notification, so update our timestamps
@@ -520,11 +526,11 @@ class RedSquare extends ModTemplate {
       if (tx.transaction.ts < this.notifications_oldest_ts) {
 	this.notifications_oldest_ts = tx.transaction.ts;
       }
-
       //
       // notify of other people's actions, but not ours
       //
       if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
+
 
         let insertion_index = 0;
         if (prepend == 0) {
@@ -546,17 +552,19 @@ class RedSquare extends ModTemplate {
         // increment notifications in menu unless is our own
         //
         if (tx.transaction.ts > this.notifications_last_viewed_ts) {
-          this.menu.incrementNotifications("notifications");
+          this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
+          this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
         }
+
 
       }
       //
       // if this is a like, we can avoid adding it to our tweet index
       //
       let txmsg = tx.returnMessage();
-      if (txmsg.request === "like tweet") {
-        return;
-      }
+      // if (txmsg.request === "like tweet") {
+      //   return;
+      // }
 
     }
 
@@ -611,6 +619,7 @@ class RedSquare extends ModTemplate {
             this.tweets[i].num_replies = tweet.num_replies;
             this.tweets[i].num_retweets = tweet.num_retweets;
             this.tweets[i].num_likes = tweet.num_likes;
+
             //
             // EVENT HERE
             //
@@ -685,6 +694,30 @@ class RedSquare extends ModTemplate {
 
 
 
+//   addNotification(app, mod, tx) {
+//     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
+//       return;
+//     }
+//     if (tx.transaction.ts > this.notifications_last_viewed_ts) {
+//       this.notifications_number_unviewed++;
+
+//     //   this.app.connection.emit("redsquare-notifications-render-request", { menu: "notifications", num: this.notifications_number_unviewed });
+//     // }
+//     if (this.ntfs.length == 0) {
+//       this.ntfs.push(tx);
+//       console.log('notifications ', this.ntfs)
+//       return;
+//     }
+//     for (let i = 0; i < this.ntfs.length; i++) {
+//       if (this.ntfs[i].transaction.ts < tx.transaction.ts) {
+//         this.ntfs.splice(i, 0, tx);
+//         return;
+//       }
+//     }
+//     this.ntfs.push(tx);
+ 
+//   }
+// }
 
 
   async fetchOpenGraphProperties(app, mod, link) {
@@ -807,6 +840,7 @@ class RedSquare extends ModTemplate {
         //
         this.addTweet(tx, true);
 
+
       }
 
       return;
@@ -862,6 +896,8 @@ class RedSquare extends ModTemplate {
     if (app.BROWSER == 1) {
 
       //
+
+  
       // save tweets addressed to me
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
@@ -873,7 +909,6 @@ class RedSquare extends ModTemplate {
         // if replies
         //
         if (txmsg.data?.parent_id) {
-
           if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
             let tweet = this.returnTweet(txmsg.data.parent_id);
             if (tweet == null) { return; }
@@ -890,9 +925,9 @@ class RedSquare extends ModTemplate {
         //
         // if retweets
         //
+
         if (txmsg.data?.retweet_tx) {
           if (txmsg.data?.retweet_tx) {
-
             let rtxobj = JSON.parse(txmsg.data.retweet_tx);
             let rtxsig = rtxobj.sig;
 
@@ -912,10 +947,10 @@ class RedSquare extends ModTemplate {
         }
       }
 
-      if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
-        document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
-        return;
-      }
+      // if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
+      //   // document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
+      //   return;
+      // }
 
       this.addTweet(tx,1);
 
@@ -1074,6 +1109,7 @@ class RedSquare extends ModTemplate {
   // saving and loading wallet state //
   /////////////////////////////////////
   load() {
+ 
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;
       this.notifications_last_viewed_ts = this.redsquare.notifications_last_viewed_ts;

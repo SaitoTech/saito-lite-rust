@@ -82,11 +82,33 @@ class Post {
       let parent_id = document.getElementById("parent_id").value;
       let thread_id = document.getElementById("thread_id").value;
       let source = document.getElementById("source").value;
+      let keys = []
 
+ 
       //
       // extract keys from text AND then tweet
       //
-      let keys = post_self.app.browser.extractKeys(text);
+     keys = post_self.app.browser.extractKeys(text);
+
+     if (this.tweet != null) {
+      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
+        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
+          keys.push(this.tweet.tx.transaction.to[i].add);
+        }
+      }
+    }
+
+      // try {
+
+      //  const dataId =   document.querySelector('.post-tweet-textarea').parentElement.parentElement.parentElement.querySelector('.saito-user').getAttribute('data-id');
+      //  keys.push(dataId);
+      //       }
+      //  catch(error){
+      //   console.log('error ', error);
+      //  }
+
+      console.log(keys, 'keys')
+
 
       //
       // any previous recipients get added to "to"
@@ -102,6 +124,8 @@ class Post {
 	  }
         }
       }
+
+      console.log(keys, 'keys')
 
       if (this.tweet != null) {
         for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
@@ -133,6 +157,9 @@ class Post {
       if (post_self.images.length > 0) {
         data['images'] = post_self.images;
       }
+
+
+ 
 
       setTimeout(() => {
         let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);

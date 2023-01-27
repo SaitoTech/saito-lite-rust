@@ -124,7 +124,7 @@
   font-family: FontAwesome;
   content: "\f0d7";
   position: absolute;
-  bottom: 5rem;
+  bottom: 2rem;
   color: var(--saito-primary);
   font-size: smaller;
   font-size: 1.5rem;
@@ -135,7 +135,7 @@
   border-radius: var(--saito-border-radius);
   left: 50%;
   transform: translateX(-50%);
-  transition: all 1s l;
+  transition: all 1s;
 }
 
 .tweet-text.preview ~ .tweet-controls {
