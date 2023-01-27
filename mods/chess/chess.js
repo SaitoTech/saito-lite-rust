@@ -255,9 +255,6 @@ class Chessgame extends GameTemplate {
   ////////////////
   handleGameLoop(msg={}) {
 
-    console.log("QUEUE IN CHESS: " + JSON.stringify(this.game.queue));
-    console.log(JSON.stringify(msg));
-
 
     msg = {};
     if (this.game.queue.length > 0) {
@@ -271,6 +268,8 @@ class Chessgame extends GameTemplate {
     }
     this.game.queue.splice(this.game.queue.length-1, 1);
 
+    console.log("QUEUE IN CHESS: " + JSON.stringify(this.game.queue));
+    console.log(JSON.parse(JSON.stringify(msg.extra)));
 
     if (msg.extra == undefined) {
       console.log("NO MESSAGE DEFINED!");
@@ -290,7 +289,6 @@ class Chessgame extends GameTemplate {
     let data = JSON.parse(msg.extra.data);
     this.game.position = data.position;
 
-    this.game.target = msg.extra.target;
 
     this.updateLog(data.move);
 
@@ -311,6 +309,9 @@ class Chessgame extends GameTemplate {
         }
       }
     }
+
+    this.game.target = msg.extra.target;
+
     this.updateStatusMessage();
 
     //if (this.game.player == 0) {
@@ -318,7 +319,7 @@ class Chessgame extends GameTemplate {
     //  return 1;
     //}
 
-    this.saveGame(this.game.id);
+    //this.saveGame(this.game.id);
     return 0;
 
   }
@@ -663,6 +664,11 @@ class Chessgame extends GameTemplate {
   };
 
   onChange(oldPos, newPos) {
+    if (this_chess.game.target !== this_chess.game.player){
+      //This gets called when I update my board for my opponents move
+      //Don't want to accidentally trigger a Send Move
+      return;
+    }
 
     if (this_chess.confirm_moves){
       document.getElementById('buttons').style.display = "flex";
