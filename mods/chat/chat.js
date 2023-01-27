@@ -403,7 +403,7 @@ class Chat extends ModTemplate {
     //
     returnChatBody(group_id) {
 
-console.log("group ID: " + group_id);
+//console.log("group ID: " + group_id);
 
         let html = '';
         let group = this.returnGroup(group_id);
@@ -413,7 +413,7 @@ console.log("group ID: " + group_id);
 
         for (let block of message_blocks) {
 
-console.log("block: " + JSON.stringify(block));
+//console.log("block: " + JSON.stringify(block));
 
             let ts = 0;
             if (block.length > 0) {
@@ -426,9 +426,9 @@ console.log("block: " + JSON.stringify(block));
                     msg += txmsg.message;
                     ts = txmsg.timestamp;
                 }
-console.log("pre-sanitize: " + msg);
+//console.log("pre-sanitize: " + msg);
                 msg = this.app.browser.sanitize(msg);
-console.log("post-sanitize: " + msg);
+//console.log("post-sanitize: " + msg);
                 html += `${SaitoUserWithTimeTemplate(this.app, sender, msg, ts)}`;
             }
         }
@@ -439,7 +439,7 @@ console.log("post-sanitize: " + msg);
         //Save to Wallet Here
         this.saveChat(group);
 
-console.log("return html: " + html);
+//console.log("return html: " + html);
         return html;
 
     }
