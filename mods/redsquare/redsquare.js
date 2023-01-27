@@ -478,7 +478,7 @@ class RedSquare extends ModTemplate {
           this.trackTweet(tweet_to_track);
         }
       
-       console.log(this.trackedTweet, 'tracked tweet');
+  
 
       }
       for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
@@ -515,7 +515,6 @@ class RedSquare extends ModTemplate {
     // maybe this needs to go into notifications too
     //
 
-    console.log('tweets ', tweet)
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
 
       // console.
@@ -532,8 +531,6 @@ class RedSquare extends ModTemplate {
       // notify of other people's actions, but not ours
       //
       if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
-
-        console.log('tweets ', tweet)
 
         let insertion_index = 0;
         if (prepend == 0) {
@@ -555,7 +552,7 @@ class RedSquare extends ModTemplate {
         // increment notifications in menu unless is our own
         //
         if (tx.transaction.ts > this.notifications_last_viewed_ts) {
-          this.notifications_number_unviewed++;
+          this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
           this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
         }
 
@@ -564,9 +561,9 @@ class RedSquare extends ModTemplate {
       // if this is a like, we can avoid adding it to our tweet index
       //
       let txmsg = tx.returnMessage();
-      if (txmsg.request === "like tweet") {
-        return;
-      }
+      // if (txmsg.request === "like tweet") {
+      //   return;
+      // }
 
     }
 
@@ -898,6 +895,8 @@ class RedSquare extends ModTemplate {
     if (app.BROWSER == 1) {
 
       //
+
+      console.log(tweet, 'tweet')
       // save tweets addressed to me
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
@@ -1115,7 +1114,6 @@ class RedSquare extends ModTemplate {
       this.redsquare = this.app.options.redsquare;
       this.notifications_last_viewed_ts = this.redsquare.notifications_last_viewed_ts;
       this.notifications_number_unviewed = this.redsquare.notifications_number_unviewed;
-      console.log('notifications', this.redsquare)
     } else {
       this.redsquare = {};
       this.notifications_last_viewed_ts = new Date().getTime();

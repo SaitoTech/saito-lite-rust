@@ -81,6 +81,7 @@ class RedSquareMenu {
 
   incrementNotifications(menu_item, notifications = -1) {
 
+    console.log('notifications number ', notifications)
     let qs = `.redsquare-menu-${menu_item}`;
 
     if (document.querySelector(qs)) {
