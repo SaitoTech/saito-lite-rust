@@ -35,8 +35,8 @@ class RedSquareMain {
 
     this.app.connection.on("redsquare-home-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
+      this.mod.viewing = "home";
      let rendered =  this.renderComponentFromHash();
-     console.log('component gotten from hash ', rendered)
      if(rendered){
         return;
      }else {
@@ -63,6 +63,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-thread-render-request", (tweet) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'home';
+      this.mod.viewing = "thread";
       this.components[this.render_component].renderThread(tweet);
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
@@ -71,10 +72,12 @@ class RedSquareMain {
     this.app.connection.on("redsquare-notifications-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'notifications';
-      this.components[this.render_component].render();
+      this.components[this.render_component].render(this.app, this.mod);
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
-      this.mod.notifications_last_viewed_ts = new Date().getTime();
+       this.mod.notifications_last_viewed_ts = new Date().getTime();
+      this.mod.notifications_number_unviewed = 0;
+      this.mod.menu.incrementNotifications('notifications');
       this.mod.save();
     });
 
@@ -199,7 +202,6 @@ class RedSquareMain {
         component = hash
       }
     }
-    console.log('component ', component);
     if(component){
       if (this.components[component]) {
         this.render_component = component;

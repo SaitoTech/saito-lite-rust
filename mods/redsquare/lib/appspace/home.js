@@ -19,11 +19,13 @@ class AppspaceHome {
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
 
-        if (entry.isIntersecting) {
-          let saito_loader = this.saito_loader;
-          saito_loader.render(app, mod, "redsquare-intersection", false);
-          mod.loadMoreTweets(() => saito_loader.remove());
-        }
+          if (entry.isIntersecting) {
+            if(mod.viewing !== "home") return;
+            let saito_loader = this.saito_loader;
+            saito_loader.render(app, mod, "redsquare-intersection", false);
+          
+            mod.loadMoreTweets(()=> saito_loader.remove());
+          }
 
       });
     }, {
@@ -53,7 +55,6 @@ class AppspaceHome {
 
     }
 
-    console.log('rendering more');
 
     this.attachEvents();
   }
@@ -68,8 +69,6 @@ class AppspaceHome {
       this.mod.tweets[i].renderWithCriticalChild();
 
     }
-
-    console.log('rendering more');
 
     this.attachEvents();
 
@@ -101,7 +100,6 @@ class AppspaceHome {
 
     }
 
-    console.log('first fetch', this.mod.tweets)
     this.attachEvents();
 
   }
@@ -128,7 +126,7 @@ class AppspaceHome {
   attachEvents() {
 
     this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
-
+    
     document.getElementById("redsquare-tweet").onclick = (e) => {
       let post = new Post(this.app, this.mod);
       post.render();
