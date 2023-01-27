@@ -217,7 +217,6 @@ class RedSquare extends ModTemplate {
   // runs when normal peer connects
   //
   async onPeerHandshakeComplete(app, peer) {
-    this.peeer = peer;
     //
     // avoid network overhead if in other apps
     //
@@ -226,6 +225,7 @@ class RedSquare extends ModTemplate {
     //
     // render tweet thread
     //
+   let mod = app.modules.returnModule('RedSquare')
     if (this.results_loaded == false) {
       let tweet_id = app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
@@ -234,9 +234,10 @@ class RedSquare extends ModTemplate {
         this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
           this.results_loaded = true;
           for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(this.app, this.mod, ".redsquare-home", txs[z]);
-            // app.connection.emit('redsquare-thread-render-request', tweet);
+            let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
             console.log('tweet ', tweet);
+            app.connection.emit('redsquare-thread-render-request', tweet);
+           
           }
         }, false, false);
         return;
