@@ -217,7 +217,7 @@ class RedSquare extends ModTemplate {
   // runs when normal peer connects
   //
   async onPeerHandshakeComplete(app, peer) {
-
+    this.peeer = peer;
     //
     // avoid network overhead if in other apps
     //
@@ -481,8 +481,7 @@ class RedSquare extends ModTemplate {
         if(tweet_to_track){
           this.trackTweet(tweet_to_track);
         }
-      
-  
+    
 
       }
       for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
