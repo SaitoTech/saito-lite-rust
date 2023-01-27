@@ -55,14 +55,13 @@ body {
   width: calc(95vw - 10px);
   display: grid;
   grid-template-columns: minmax(150px, 1fr) 5fr minmax(150px, 1fr);
+  align-items: center;
 }
 
 .player_field{
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  /*width: calc(3 * var(--steamed-card-width) + 90);
-  height: calc(var(--steamed-card-height) + 50);*/
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 5px;
@@ -70,6 +69,7 @@ body {
   padding: 5px;
   justify-items: center;
   align-content: center;
+  min-height: 150px;
 }
 
 .status{
@@ -96,6 +96,12 @@ body {
 
 #discards{
   margin: 0 10px;
+
+  width: calc(0.8 * var(--steamed-card-width));
+  height: calc(0.8 * var(--steamed-card-height));
+  max-width: 120px;
+  max-height: 186px;
+
 }
 
 #discards img{
@@ -122,9 +128,14 @@ body {
  visibility: hidden; 
 }
 
-.player_field .field_slot{
+.player_field > .field_slot{
   background-color: rgba(0,0,0,0.4);
 }
+
+.player_field > .field_slot img, .player_field > .field_slot div.field_slot{
+  pointer-events: none;
+}
+
 
 .player_field.active{
   background-color: tan;
@@ -132,8 +143,14 @@ body {
 
 .active_element{
   cursor: pointer;
-  transition: box-shadow 0.25s, transform 0.25s;
+  transition: box-shadow 0.25s, transform 0.25s, filter 0.25s;
 }
+
+
+.player_field > .field_slot.active_element:hover{
+  filter: drop-shadow(0 0 10px yellow);
+}
+
 
 .score_card{
   width: calc(var(--steamed-card-width) / 2);
@@ -226,7 +243,7 @@ body {
 
 .animated_elem{
   position: absolute;
-  width: fit-content;
+  /*width: fit-content;*/
   z-index: 100;
 }
 

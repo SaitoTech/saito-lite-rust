@@ -36,11 +36,11 @@ class Steamed extends GameTemplate {
 
 
   returnWelcomeOverlay(){
-   /*let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
+   let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
            <img src="/${this.name.toLowerCase()}/img/splash_welcome.jpg"/>
                </div>`;
-   */
-    return "";
+   
+    return html;
   }
 
 
@@ -148,14 +148,14 @@ initializeGame(game_id) {
       if (mv[0] == "deal") {
         this.game.queue.splice(qe, 1);
 
-        while (this.game.deck[0].hand.length > 0){
+        for (let i = this.game.deck[0].hand.length; i > 0 ; i--){
             let card = this.game.deck[0].hand.pop();
             card = this.game.deck[0].cards[card].type;
             this.game.state.hand.unshift(card);
             this.animationSequence.push({callback: this.createAndMove, 
                                 params: [this.twoSidedCard(card), "#draw_deck", `#cardfan`, 
-                                            (id)=>{ $(`#${id} .flipped`).removeClass("flipped"); $(`#${id}`).css("transform", `rotate($-25deg) translateX(-120px)`);}, 
-                                            ()=>{ console.log("Next card"); this.finishAnimation();}]});
+                                            (id)=>{ $(`#${id} .flipped`).removeClass("flipped"); $(`#${id}`).css("z-index", `${i}`).css("transform", `rotate(${10*i-40}deg) translateX(${50*i-150}px)`);}, 
+                                            ()=>{ console.log("Next card"); this.finishAnimation(500);}]});
 
         }
         
@@ -178,8 +178,8 @@ initializeGame(game_id) {
         //For the beginning of the game only...
         if (this.game.state.welcome == 0) {
           try {
-          //  this.overlay.show(this.app, this, this.returnWelcomeOverlay());
-          //  document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
+            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
           } catch (err) {}
           this.game.state.welcome = 1;
         }
@@ -215,13 +215,18 @@ initializeGame(game_id) {
 
       if (mv[0] === "gameover"){
         this.game.queue.splice(qe, 1);
+        $("#opponent").remove();
+        $("#self .field_slot").css("display", "none");
+        $(".status").css("width", "");
+        $(".cardfan").fadeOut();
+
         let i_won = false;       
         if (this.game.state.gold[0] == this.game.state.gold[1]){
           if (this.game.player == 2) { 
             i_won = true; 
          }
           this.endGame(this.game.players[1], "Second Player wins tie");
-        }if (this.game.state.gold[0] < this.game.state.gold[1]){
+        }if (this.game.state.gold[0] > this.game.state.gold[1]){
           i_won = true;
           this.endGame(this.game.players[this.game.player-1], "High Score");
         }else{
@@ -235,7 +240,18 @@ initializeGame(game_id) {
         this.removeEvents();
         this.game.queue.splice(qe, 1);       
         if (this.game.deck[0].crypt.length == 0){
+          $(".active").removeClass("active");
+          $(".status").css("display", "block");
+
+          this.updateStatus("<div class='status-message'>Liquidating remaining factories to tally final score</div>");
           this.game.queue.push("gameover");
+          this.game.queue.push(`liquidate\t1\t1`);
+          this.game.queue.push(`liquidate\t1\t2`);
+          this.game.queue.push(`liquidate\t1\t3`);
+          this.game.queue.push(`liquidate\t2\t1`);
+          this.game.queue.push(`liquidate\t2\t2`);
+          this.game.queue.push(`liquidate\t2\t3`);
+
         }else{
           this.game.queue.push("turn\t" + this.returnNextPlayer(parseInt(mv[1])));
         }
@@ -252,7 +268,6 @@ initializeGame(game_id) {
         }else{
           this.removeEvents();
           $(".status").css("display", "none");
-          //this.updateStatus("Waiting for opponent to play");
         }
         return 0;
 
@@ -268,12 +283,14 @@ initializeGame(game_id) {
         }
 
         this.game.state.planted = 3;
+        console.log(JSON.stringify(this.game.state.discards));
 
         if (message){
           message = message.substring(0, message.length-2);
           this.updateLog(message + " are discarded from the offers.");
           Array.from(document.querySelectorAll(".offer img")).forEach(async c => {
             this.animateGameElementMove(c, "#discards", ()=>{this.dealCard();});
+            await this.timeout(250);
           });
         }else{
           this.dealCard();
@@ -292,7 +309,6 @@ initializeGame(game_id) {
       }else{
         this.removeEvents();
         $(".status").css("display", "none");
-        //this.updateStatus("Waiting for opponent to play");
       }
       return 0;
 
@@ -308,6 +324,7 @@ initializeGame(game_id) {
 
       if (nextMove && nextMove.substring(0,5) !== "phase"){
         console.warn("Unexpected queue order for CONTINUE", nextMove);
+        this.game.queue.push("continue");
         this.game.queue.push(nextMove);
       }
 
@@ -339,6 +356,7 @@ initializeGame(game_id) {
         }else{
           $(this.cardToHTML(card)).hide().appendTo(`#o${slot+1}`).slideDown(1500, ()=>{this.finishAnimation();});
         }
+        this.game.halted = 1;
         return 0;
       }
 
@@ -353,36 +371,47 @@ initializeGame(game_id) {
       let gold = this.calculateProfit(player, slot);
 
       //$("#deal").children().animate({left: "1000px"}, 1200, "swing", function(){$(this).remove();});
+      let children = [];
+      let destination = "";
 
       if(this.game.player === player){
         this.updateLog(`You sell ${this.game.state.self[slot].length} ${this.game.state.self[slot][0]} factories for ${gold} gold.`);
         for (let i = gold; i < this.game.state.self[slot].length; i++){
           this.game.state.discards.push(this.game.state.self[slot][0]);
         }
-        this.game.state.self[slot] = [];
-        //$(`#s${mv[2]}`).children().animate({left: "1000px"}, 1200, "swing", function(){$(this).remove(); steamSelf.finishAnimation();});
-        let children = document.querySelectorAll(`#s${mv[2]} img.card`);
-        for (let i = 0; i < children.length; i++){
-          if (i < gold){
-            this.animationSequence.unshift({callback: this.animateGameElementMove, params: [children[i], `#my_score`, ()=>{console.log("Discard2"); this.finishAnimation();}]});            
-          }else{
-            this.animationSequence.unshift({callback: this.animateGameElementMove, params: [children[i], `#discards`, ()=>{console.log("Discard1"); this.finishAnimation();}]});            
-          }
+        
+        if (document.querySelector(`#s${mv[2]} div.field_slot`)){
+          document.querySelector(`#s${mv[2]} div.field_slot`).remove();
+          $(this.cardToHTML(this.game.state.self[slot][0], 10*(this.game.state.self[slot].length-1))).appendTo(`#s${mv[2]}`);
         }
+
+        this.game.state.self[slot] = [];
+
+        children = document.querySelectorAll(`#s${mv[2]} img.card`);
+        destination = "#my_score";
       }else{
         this.updateLog(`Your opponent sells ${this.game.state.opponent[slot].length} ${this.game.state.opponent[slot][0]} factories for ${gold} gold.`);
         for (let i = gold; i < this.game.state.opponent[slot].length; i++){
           this.game.state.discards.push(this.game.state.opponent[slot][0]);
         }
+
+        if (document.querySelector(`#o${mv[2]} div.field_slot`)){
+          document.querySelector(`#o${mv[2]} div.field_slot`).remove();
+          $(this.cardToHTML(this.game.state.opponent[slot][0], 10*(this.game.state.opponent[slot].length-1))).appendTo(`#s${mv[2]}`);
+        }
         this.game.state.opponent[slot] = [];
-        //$(`#o${mv[2]}`).children().animate({left: "1000px"}, 1200, "swing", function(){$(this).remove(); steamSelf.finishAnimation();});
-        let children = document.querySelectorAll(`#o${mv[2]} img.card`);
-        for (let i = 0; i < children.length; i++){
-          if (i < gold){
-            this.animationSequence.unshift({callback: this.animateGameElementMove, params: [children[i], `#opponent_score`, ()=>{console.log("Discard2"); this.finishAnimation();}]});            
-          }else{
-            this.animationSequence.unshift({callback: this.animateGameElementMove, params: [children[i], `#discards`, ()=>{console.log("Discard1"); this.finishAnimation();}]});            
-          }
+
+        children = document.querySelectorAll(`#o${mv[2]} img.card`);
+        destination = "#opponent_score";
+      }
+
+      for (let i = 0; i < children.length; i++){
+        children[i].id = `c${i}`; 
+        console.log(JSON.stringify(children[i]));
+        if (i < gold){
+          this.animationSequence.unshift({callback: this.animateGameElementMove, params: [`#c${i}`, destination, ()=>{console.log("Discard2"); this.finishAnimation();}]});            
+        }else{
+          this.animationSequence.unshift({callback: this.animateGameElementMove, params: [`#c${i}`, `#discards`, ()=>{console.log("Discard1"); this.finishAnimation();}]});            
         }
       }
 
@@ -400,34 +429,30 @@ initializeGame(game_id) {
 
   }
 
-  finishAnimation(){
+  async runAnimationQueue(){
+    console.log(`Sequencing ${this.animationSequence.length} Animations`);
+    this.game.halted = 1;
+    while (this.animationSequence.length > 0){
+      let {callback, params} = this.animationSequence.shift();
+      await this.timeout(500);
+      callback.apply(this, params);
+    }
+
+  }
+  async finishAnimation(delay = 0){
     //this.displayAll();
     console.log("Kickstarting the queue:", this.animation_queue.length, this.animationSequence.length);
     if (this.animation_queue.length + this.animationSequence.length === 0){
-      this.startQueue();  
+      if (delay){
+        await this.timeout(delay);
+      }
+      this.restartQueue();  
     }else{
       console.log("Nevermind, let's wait a bit");
     }
     
   }
 
-  calculateProfit(player, slot){
-    let factory = (this.game.player === player) ? this.game.state.self[slot] : this.game.state.opponent[slot];
-    let resource = factory[0];
-    let reward = this.factory[resource];
-    return (factory.length < reward.length) ? reward[factory.length] : reward[reward.length-1];
-  }
-
-  async runAnimationQueue(){
-    console.log(`Sequencing ${this.animationSequence.length} Animations`);
-
-    while (this.animationSequence.length > 0){
-      let {callback, params} = this.animationSequence.shift();
-      await this.timeout(400);
-      callback.apply(this, params);
-    }
-
-  }
 
   dealCard(){
     if (this.game.pool[0].hand.length == 0){
@@ -456,8 +481,8 @@ initializeGame(game_id) {
     let source_stats = document.querySelector(start).getBoundingClientRect();
     let destination_stats = document.querySelector(end).getBoundingClientRect();
 
-    console.log(start, `${source_stats.top}px`, `${source_stats.left}px`);
-    console.log(end, `${destination_stats.top}px`, `${destination_stats.left}px`);
+    //console.log(start, `${source_stats.top}px`, `${source_stats.left}px`);
+    //console.log(end, `${destination_stats.top}px`, `${destination_stats.left}px`);
 
     let as = `${this.animationSpeed/1000}s`;
 
@@ -465,7 +490,7 @@ initializeGame(game_id) {
     this.animation_queue.push(0);
     let divid = `ae${this.animation_queue.length}`;
 
-    this.app.browser.addElementToSelector(`<div id="${divid}" class="animated_elem fresh" style="top: ${source_stats.top}px; left: ${source_stats.left}px;">${html}</div>`, ".gameboard");
+    this.app.browser.addElementToSelector(`<div id="${divid}" class="animated_elem fresh" style="top: ${source_stats.top}px; left: ${source_stats.left}px; width: fit-content;">${html}</div>`, ".gameboard");
 
     let game_self = this;
 
@@ -541,10 +566,11 @@ initializeGame(game_id) {
 
   playerTurn(){
   
+    this.app.browser.replaceElementById(this.newDrawDeck(), "draw_deck");
+    this.attachBoardEvents();
+
     if (!this.hasPlayableField() && this.game.state.planted == 0){
       this.updateStatus("<div class='status-message'>You must liquidate a factory so you can start a new plant");  
-      this.attachLiquidationEvents();
-      this.attachPlantEvents();
       return;
     }
 
@@ -562,28 +588,16 @@ initializeGame(game_id) {
     }
 
     html += `</div>`;
-
-    if (this.canLiquidate()){
-      //html += `<li class="option" id="liquidate">Liquidate</li>`;
-      this.attachLiquidationEvents();
-    }
     
-    this.app.browser.replaceElementById(this.newDrawDeck(), "draw_deck");
-
     this.updateStatus(html);
-
-    this.attachPlantEvents();
-  }
-
-  liquidate(){
-    this.updateStatus("<div class='status-message'>Select a factory to liquidate");  
-    this.attachLiquidationEvents();
   }
 
 
-  attachPlantEvents(){
+
+  attachBoardEvents(){
     let steamSelf = this;
-
+    this.removeEvents();
+    console.log("Attach board events");
     //
     //Define Helper Function
     //
@@ -635,7 +649,7 @@ initializeGame(game_id) {
         console.log("Sending move(s) to plant");
         this.endTurn();
       });
-      
+      this.attachBoardEvents(); 
       
     };
 
@@ -643,7 +657,6 @@ initializeGame(game_id) {
       $(".cardfan").addClass("jumpy");
       $(".cardfan").addClass("active_element");
       
-      $(".cardfan").off();
       let xpos, ypos;
 
       $(".cardfan").on("mousedown", function (e) {
@@ -667,7 +680,6 @@ initializeGame(game_id) {
       });
     }
 
-    $(".offer img").off();
     $(".offer img").addClass("active_element");
     $(".offer img").on("click", function(){
       $(this).off();
@@ -679,15 +691,14 @@ initializeGame(game_id) {
       plantCard(card, this);
     });
 
-    
-    $("#draw_deck").off();
     if (this.game.state.planted > 0){
       $("#draw_deck").addClass("active_element");  
     }
     
     $("#draw_deck").on("click", function(){
-      $(this).off();
       if (steamSelf.game.state.planted > 0){
+        steamSelf.removeEvents();
+        steamSelf.updateStatus("<div class='status-message'>Dealing new cards...</div>");
         steamSelf.prependMove("continue");
         if (steamSelf.animation_queue.length == 0){
           steamSelf.endTurn();          
@@ -698,6 +709,35 @@ initializeGame(game_id) {
         steamSelf.displayModal("You have to build the first plant in your hand before moving on");
       }
     })
+
+    $("#self > .field_slot").addClass("active_element");
+    $("#self > .field_slot").on("click", function(){
+      console.log($(this).attr("id"));
+      let id = $(this).attr("id");
+      //So stupid, I had a selector that would trigger on a child element so the id would be undefined
+      //Probably don't need this "safety" check any more
+      if (!id || !id.match(/s\d/)){
+        console.warn("Inappropriate click event");
+        return;
+      }
+      let slot = parseInt(id[1]);
+      if (steamSelf.game.state.self[slot-1].length === 0){
+        return;
+      }
+      if (steamSelf.isProtected(slot)){
+        steamSelf.displayModal("You cannot sell a single plant when you have a larger factory");
+      }else{
+        steamSelf.removeEvents();
+        steamSelf.prependMove(`liquidate\t${steamSelf.game.player}\t${slot}`);
+        if (steamSelf.animation_queue.length == 0){
+          steamSelf.endTurn();          
+        }else{
+          console.log(`${steamSelf.animation_queue.length} animations still running....`);
+        }
+      }
+    });
+
+
   }
 
   isProtected(slot){
@@ -715,32 +755,8 @@ initializeGame(game_id) {
     return false;
   }
 
-  attachLiquidationEvents(){
-    let steamSelf = this;
-    $("#self .field_slot").off();
-    $("#self .field_slot").addClass("active_element");
-    $("#self .field_slot").on("click", function(){
-      let id = $(this).attr("id");
-      if (!id.match(/s\d/)){
-        console.warn("Inappropriate click event");
-        return;
-      }
-      $(this).off();
-      let slot = parseInt(id[1]);
-      if (steamSelf.game.state.self[slot-1].length === 0){
-        return;
-      }
-      if (steamSelf.isProtected(slot)){
-        steamSelf.displayModal("You cannot sell a single plant when you have a larger factory");
-      }else{
-        steamSelf.addMove(`liquidate\t${steamSelf.game.player}\t${slot}`);
-        steamSelf.endTurn();
-      }
-    });
-  }
-
   removeEvents(){
-    $("#self .field_slot").off();
+    $("#self > .field_slot").off();
     $("#draw_deck").off(); 
     $(".offer img").off();
     $(".cardfan").off();
@@ -753,9 +769,18 @@ initializeGame(game_id) {
    * DISPLAY FUNCTIONS 
    */
 
-  cardToHTML(card, offset = 0){
+  calculateProfit(player, slot){
+    let factory = (this.game.player === player) ? this.game.state.self[slot] : this.game.state.opponent[slot];
+    let resource = factory[0];
+    let reward = this.factory[resource];
+    return (factory.length < reward.length) ? reward[factory.length] : reward[reward.length-1];
+  }
+
+
+
+  cardToHTML(card, offsety = 0, offsetx = 0){
     if (card && this.factory[card]){
-      return `<img class="card" data-id="${card}" src="${this.card_img_dir}SB_${card}.png" style="top: ${offset}px"/>`;  
+      return `<img class="card" data-id="${card}" src="${this.card_img_dir}SB_${card}.png" style="top: ${offsety}px; left: ${offsetx}px;"/>`;  
     }else{
       return "";
     }
@@ -810,7 +835,12 @@ initializeGame(game_id) {
     $(".animated_elem").remove();
 
     $("#draw_deck").css("background-image", `url("${this.card_img_dir}SB_reward.png")`);
-    $("#draw_deck").html(this.game.deck[0].crypt.length + `<div class="tiptext">The game will end when all ${this.game.deck[0].crypt.length} have been drawn</div>`);
+    if (this.game.deck[0].crypt.length > 0){
+      $("#draw_deck").html(this.game.deck[0].crypt.length + `<div class="tiptext">The game will end when all ${this.game.deck[0].crypt.length} have been drawn</div>`);  
+    }else{
+      $("#draw_deck").css("visibility", "hidden");
+    }
+    
 
     let html = "";
     
@@ -823,8 +853,8 @@ initializeGame(game_id) {
     $(".offer").html(html);
 
     html = "";
-    for (let c of this.game.state.discards){
-      html += this.cardToHTML(c);
+    for (let c = 0; c < this.game.state.discards.length; c++){
+      html += this.cardToHTML(this.game.state.discards[c], -2*c, -2*c);
     }
     $("#discards").html(html);
   }
@@ -932,7 +962,7 @@ initializeGame(game_id) {
   returnFactoryRules(){
     let factory = {};
     factory["cement"]   = [0,0,0,1,1,2,2,3,4];
-    factory["coal"]     = [0,0,0,1,1,2,2,3,3,4];
+    factory["coal"]     = [0,0,0,1,1,1,2,2,3,4];
     factory["coke"]     = [0,0,0,1,1,2,3,4];
     factory["cotton"]   = [0,0,1,1,2,3,4];
     factory["iron"]     = [0,0,1,1,2,2,3,4];
