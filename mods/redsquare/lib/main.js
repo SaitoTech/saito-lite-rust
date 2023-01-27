@@ -37,7 +37,6 @@ class RedSquareMain {
       document.querySelector(".saito-main").innerHTML = "";
       this.mod.viewing = "home";
      let rendered =  this.renderComponentFromHash();
-     console.log('component gotten from hash ', rendered)
      if(rendered){
         return;
      }else {
@@ -203,7 +202,6 @@ class RedSquareMain {
         component = hash
       }
     }
-    console.log('component ', component);
     if(component){
       if (this.components[component]) {
         this.render_component = component;

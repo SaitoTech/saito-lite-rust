@@ -1,5 +1,6 @@
 .notification-item {
     margin-bottom: 1rem;
+
 }
 
 
@@ -14,4 +15,19 @@
 
 .notification-item:hover {
     background-color: var(--saito-background-light);
+}
+
+.notifications-empty {
+    margin-left: 1rem;
+    display: flex;
+    margin-left: 40%;
+}
+
+.notifications-empty p {
+    font-size: 1.8rem;
+}
+
+.notifications-empty span {
+    margin-right: 1rem;
+    font-size: 1.8rem;
 }

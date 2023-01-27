@@ -55,7 +55,6 @@ class AppspaceHome {
 
     }
 
-    console.log('rendering more');
 
     this.attachEvents();
   }
@@ -70,8 +69,6 @@ class AppspaceHome {
       this.mod.tweets[i].renderWithCriticalChild();
 
     }
-
-    console.log('rendering more');
 
     this.attachEvents();
 
@@ -103,7 +100,6 @@ class AppspaceHome {
 
     }
 
-    console.log('first fetch', this.mod.tweets)
     this.attachEvents();
 
   }
