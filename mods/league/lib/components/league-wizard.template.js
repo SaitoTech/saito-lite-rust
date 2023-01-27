@@ -26,9 +26,15 @@ module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
           <div id="league-options-overlay-container"></div>
           <!--div id="league-game-advance-opt" class="info-item-wrapper">select game options...</div>
           <div id="game-options-overlay-container"></div-->
+
+          <div>
+            <button type="button" class="saito-multi-btn game-invite-btn" data-type="public">Create Public League</button>
+            <button type="button" class="saito-multi-btn game-invite-btn" data-type="private">Create Private League</button>
+          </div>
         </form>
       </div>
 
+      <!--
       <div class="game-wizard-invite">
         <div class="saito-multi-select_btn saito-select dark">
           <div class="saito-multi-select_btn_options saito-slct dark">
@@ -37,6 +43,7 @@ module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
           </div>
         </div>
       </div>
+      -->
 
     </div>
   </div>`;

@@ -6,6 +6,7 @@ const InvitesAppspace = require('./lib/appspace/main');
 class Invites extends InviteTemplate {
 
   constructor(app) {
+
     super(app);
 
     this.app = app;
@@ -23,17 +24,33 @@ class Invites extends InviteTemplate {
 
   }
 
-  initialize(app) {
-    this.loadInvites();
+
+  canRenderInto(qs) {
+    if (qs === ".saito-main") { return true; }
+    return false;
   }
 
-  respondTo(type) {
-    if (type == 'appspace') {
-      super.render(this.app, this); // for scripts + styles
-      return new InvitesAppspace(this.app, this);
+  renderInto(qs) {
+    if (qs == ".saito-main") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new InvitesAppspace(this.app, this, qs));
+      }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
-    return null;
   }
+
+  onPeerHandshakeComplete(app, peer) {
+
+    //
+    // emit any invite events for rendering
+    //
+    super.onPeerHandshakeComplete(app, peer);
+
+  }
+
+
 
   async onConfirmation(blk, tx, conf, app) {
     super.onConfirmation(blk, tx, conf, app);

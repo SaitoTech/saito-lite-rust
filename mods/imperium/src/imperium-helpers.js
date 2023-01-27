@@ -112,8 +112,8 @@
     this.game.tmp_confirms_players  = [];
 
     // if confirms in the number of players, we set them all as active
-    if (this.game.confirms_needed == this.game.players_info.length) {
-      for (let i = 1; i <= this.game.players_info.length; i++) {
+    if (this.game.confirms_needed == this.game.state.players_info.length) {
+      for (let i = 1; i <= this.game.state.players_info.length; i++) {
 	this.setPlayerActive(i);
       }
     }
@@ -130,7 +130,7 @@
 
     let html = `
 
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
+      <div style="padding:40px;width:85vw;max-height:90vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
 
         <div style="top:0;left:0;margin-right: 20px;">
 

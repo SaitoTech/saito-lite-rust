@@ -33,7 +33,7 @@ class Blockchain {
   public parent_blocks_fetched: number;
   public parent_blocks_fetched_limit: number;
   public indexing_active: boolean;
-  public run_callbacks: any;
+  public run_callbacks: boolean;
   public callback_limit: number;
   public res_spend: any;
   public res_unspend: any;
@@ -41,6 +41,7 @@ class Blockchain {
   public debugging: boolean;
 
   constructor(app: Saito) {
+
     this.app = app;
 
     //
@@ -76,7 +77,7 @@ class Blockchain {
     //
     // set to zero to disable module execution
     //
-    this.run_callbacks = 1;
+    this.run_callbacks = true;
     this.callback_limit = 2; // 2 blocks
 
     this.debugging = true;
@@ -134,6 +135,7 @@ class Blockchain {
   }
 
   async addBlockToBlockchain(block: Block, force = false) {
+    console.log("adding block : " + block.hash + " to blockchain");
     //
     //
     //
@@ -144,6 +146,7 @@ class Blockchain {
     // first things first, ensure hashes OK
     //
     block.generateHashes();
+    await block.generateConsensusValues();
 
     if (this.debugging) {
       //console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
@@ -174,22 +177,23 @@ class Blockchain {
     let parent_block_hash = block.block.previous_block_hash;
     if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
       if (this.debugging) {
-        console.log("fetching unknown block: " + parent_block_hash);
+        //console.log("fetching unknown block: " + parent_block_hash);
       }
       if (!parent_block_hash) {
         if (this.debugging) {
-          console.log("hash is empty for parent: ", block.returnHash());
+          //console.log("hash is empty for parent: ", block.returnHash());
         }
       } else {
         if (this.debugging) {
-          console.log("parent block hash is not indexed...");
+          //console.log("parent block hash is not indexed...");
         }
 
         if (this.parent_blocks_fetched < this.parent_blocks_fetched_limit) {
           await this.app.network.fetchBlock(parent_block_hash);
           this.parent_blocks_fetched++;
         } else {
-          console.log("OFF CHAIN -- not looping back endlessly.");
+          //console.log("OFF CHAIN -- not looping back endlessly.");
+          this.indexing_active = false;
           return;
         }
       }
@@ -388,7 +392,7 @@ class Blockchain {
         try {
           this.blocks.get(block_hash).lc = true;
         } catch (err) {
-          console.log("block is not stored locally...");
+          //console.log("block is not stored locally...");
         }
         // console.log("emitting stuff");
 
@@ -405,7 +409,7 @@ class Blockchain {
         try {
           this.blocks.get(block_hash).lc = false;
         } catch (err) {
-          console.log("block is not stored locally...");
+          //console.log("block is not stored locally...");
         }
 
         this.app.connection.emit("BlockchainAddBlockFailure", block_hash);
@@ -418,6 +422,7 @@ class Blockchain {
       this.indexing_active = false;
       return 1;
     }
+    this.indexing_active = false;
   }
 
   async addBlockSuccess(block: Block) {
@@ -440,7 +445,7 @@ class Blockchain {
     //
     if (this.app.blockchain.blockchain.genesis_block_hash === "") {
       if (this.debugging) {
-        console.log("setting our genesis block hash to first hash received!");
+        //console.log("setting our genesis block hash to first hash received!");
       }
       this.app.blockchain.blockchain.genesis_block_hash = block.returnHash();
     }
@@ -457,17 +462,17 @@ class Blockchain {
     //
     // propagate block to network
     //
-    this.app.network.propagateBlock(block);
+    this.app.network.propagateBlock(block.hash, block.returnId());
 
     //
     // run callbacks if desired
     //
-    let already_processed_callbacks = 0;
+    let already_processed_callbacks = false;
     if (block_id <= this.blockchain.last_callback_block_id) {
-      already_processed_callbacks = 1;
+      already_processed_callbacks = true;
     }
 
-    if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
+    if (this.run_callbacks && !already_processed_callbacks) {
       //
       // this block is initialized with zero-confs processed
       //
@@ -477,43 +482,64 @@ class Blockchain {
       // don't run callbacks if reloading (force!)
       //
       if (block.lc && !block.force) {
-        let block_id_from_which_to_run_callbacks =
-          block.returnId() - BigInt(this.callback_limit + 1);
+        let block_id_to_run_callbacks_from = block.returnId() - BigInt(this.callback_limit + 1);
         let block_id_in_which_to_delete_callbacks =
           block.returnId() - BigInt(this.prune_after_blocks);
-        if (block_id_from_which_to_run_callbacks <= 0) {
-          block_id_from_which_to_run_callbacks = BigInt(1);
+        if (block_id_to_run_callbacks_from <= BigInt(0)) {
+          block_id_to_run_callbacks_from = BigInt(1);
         }
-        if (block_id_from_which_to_run_callbacks <= block_id_in_which_to_delete_callbacks) {
-          block_id_from_which_to_run_callbacks = block_id_from_which_to_run_callbacks + BigInt(1);
+        if (block_id_to_run_callbacks_from <= block_id_in_which_to_delete_callbacks) {
+          block_id_to_run_callbacks_from = block_id_to_run_callbacks_from + BigInt(1);
         }
 
-        if (block_id_from_which_to_run_callbacks > 0) {
-          for (let i = block_id_from_which_to_run_callbacks; i <= block.returnId(); i++) {
-            let blocks_back = block.returnId() - BigInt(i);
-            let this_confirmation = blocks_back + BigInt(1);
-            let run_callbacks = 1;
+        //console.log("block_id_to_run_callbacks_from = " + block_id_to_run_callbacks_from);
+        //console.log(
+        //   "block_id_in_which_to_delete_callbacks = " + block_id_in_which_to_delete_callbacks
+        // );
 
-            //
+        if (block_id_to_run_callbacks_from > BigInt(0)) {
+          for (let i = block_id_to_run_callbacks_from; i <= block.returnId(); i++) {
+            let confirmation_count = block.returnId() - BigInt(i) + BigInt(1);
+            let run_callbacks = true;
+
             // if bid is less than our last-bid but it is still
             // the biggest BID we have, then we should avoid
             // running callbacks as we will have already run
             // them. We check TS as sanity check as well.
-            //
             if (block.returnId() < this.blockchain.last_block_id) {
               if (block.returnTimestamp() < this.blockchain.last_timestamp) {
                 if (block.lc) {
-                  run_callbacks = 0;
+                  //console.log(
+                  //  "not running callbacks. blockId = " +
+                  //    block.returnId() +
+                  //    " lastId = " +
+                  //    this.blockchain.last_block_id
+                  //);
+                  run_callbacks = false;
                 }
               }
             }
 
-            if (run_callbacks === 1) {
+            if (run_callbacks) {
               let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
               if (callback_block_hash !== "") {
                 let callback_block = this.blocks.get(callback_block_hash);
                 if (callback_block) {
-                  await callback_block.runCallbacks(this_confirmation);
+                  // //console.log(
+                  //   "running callback : hash = " +
+                  //     callback_block_hash +
+                  //     " confirmations = " +
+                  //     confirmation_count
+                  // );
+                  // this.blockchain.last_callback_block_id = i;
+
+//console.log("^^^^");
+//console.log("^^^^");
+//console.log("^^^^");
+//console.log("^^^^");
+//console.log("RUNNING CALLBACKS ON BLOCK ID: " + callback_block.block.id);
+
+                  await callback_block.runCallbacks(confirmation_count);
                 }
               }
             }
@@ -529,18 +555,30 @@ class Blockchain {
           );
           let callback_block = this.blocks.get(callback_block_hash);
           if (callback_block) {
+            // console.log("deleting callbacks : " + callback_block_hash);
             callback_block.callbacks = [];
             callback_block.callbackTxs = [];
           }
         }
       }
 
-      console.log("moving into onNewBlock");
+      console.log("moving into onNewBlock : " + block.hash + " -- id : " + block.returnId());
 
       //
       // callback
       //
-      this.app.modules.onNewBlock(block, true /*i_am_the_longest_chain*/); // TODO : undefined i_am_the_longest_chain ???
+      this.app.modules.onNewBlock(block, block.lc /*i_am_the_longest_chain*/); // TODO : undefined i_am_the_longest_chain ???
+    } else {
+      // console.log(
+      //   "not calling callbacks : run_callbacks = " +
+      //     this.run_callbacks +
+      //     "  -- already_processed_callbacks = " +
+      //     already_processed_callbacks +
+      //     " -- last_callback_block_id = " +
+      //     this.blockchain.last_callback_block_id +
+      //     " -- block_id = " +
+      //     block_id
+      // );
     }
 
     // console.log("done add block success... : " + block.returnHash());
@@ -829,17 +867,18 @@ class Blockchain {
     //
     // load blockchain from options if exists
     //
-    if (this.app?.options?.blockchain) {
+
+    if (this.app.options.blockchain) {
       let obj = this.app.options.blockchain;
       for (let key in obj) {
-        if (typeof obj[key] !== 'undefined') {
-          this[key] = obj[key];
+        if (typeof obj[key] !== "undefined") {
+          this.blockchain[key] = obj[key];
         }
       }
       this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
     }
 
-console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
+    //console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
 
     //
     // prevent mempool from producing blocks while we load
@@ -1031,6 +1070,12 @@ console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
   saveBlockchain() {
     this.app.options.blockchain = this.blockchain;
     this.app.storage.saveOptions();
+
+console.log("%%%%%%%%%%%%%%%%%");
+console.log("SAVING BLOCKCHAIN");
+console.log("%%%%%%%%%%%%%%%%%");
+//console.log(JSON.stringify(this.app.options.blockchain));
+
   }
 
   async unwindChain(
@@ -1116,7 +1161,7 @@ console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
 
   async doesChainMeetGoldenTicketRequirements(
     previous_block_hash: string,
-    mempool_has_gts = false
+    current_block_has_golden_ticket = false
   ) {
     //
     // ensure adequate mining support
@@ -1161,7 +1206,7 @@ console.log("BLOCKCHAIN: " + JSON.stringify(this.blockchain));
       golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR &&
       search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR
     ) {
-      if (mempool_has_gts) {
+      if (current_block_has_golden_ticket) {
         golden_tickets_found++;
       }
     }

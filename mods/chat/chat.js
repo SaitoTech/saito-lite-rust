@@ -2,6 +2,7 @@ const SaitoUserWithTimeTemplate = require('./../../lib/saito/new-ui/templates/sa
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
+const ChatManagerOverlay = require('./lib/overlays/chat-manager');
 const ChatPopup = require("./lib/chat-manager/popup");
 
 const JSON = require('json-bigint');
@@ -26,12 +27,16 @@ class Chat extends ModTemplate {
 
         this.debug = false;
 
-        this.popup = null;  //We define these when we initialize
-
         this.mute = false;
 
-        //This needs to be defined so that it other modules (A-, B- can initialize)
-        this.chat_manager = new ChatManager(app, this);
+        this.chat_manager = null;
+
+        this.chat_manager_overlay = null;
+
+        this.app.connection.on("encrypt-key-exchange-confirm", (data) => {
+            this.createChatGroup(data?.members);
+            this.app.connection.emit("chat-manager-render-request");
+        });
 
     }
 
@@ -42,20 +47,21 @@ class Chat extends ModTemplate {
         let services = [];
 
         // servers with chat service run plaintext community chat groups
-        if (this.app.BROWSER == 0) { services.push({ service: "chat" }); }
+        if (this.app.BROWSER == 0) { services.push({ service: "chat", name: "Saito Community Chat" }); }
 
         return services;
     }
 
 
     respondTo(type) {
+ 
         switch (type) {
-
-            //Left Sidebar wants a widget that can manage a list of ongoing chats
-            //ChatManager will only be rendered by a module which asks for it 
             case 'chat-manager':
-                //We could insert specific CSS here, e.g. this.styles.push()
+		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
                 return this.chat_manager;
+            case 'chat-manager-overlay':
+		if (this.chat_manager_overlay == null) { this.chat_manager_overlay = new ChatManagerOverlay(this.app, this); }
+                return this.chat_manager_overlay;
             default:
                 return super.respondTo(type);
         }
@@ -66,10 +72,8 @@ class Chat extends ModTemplate {
     initialize(app) {
 
         super.initialize(app);
-        
-        this.popup = new ChatPopup(app, this);
-        
-        if (!app.BROWSER){return;}
+
+        if (!app.BROWSER) { return; }
 
         //
         // create chatgroups from keychain -- friends only
@@ -89,39 +93,9 @@ class Chat extends ModTemplate {
             this.createChatGroup(g[i].members, g[i].name);
         }
 
-
-        app.connection.on("encrypt-key-exchange-confirm", (data) => {
-            this.createChatGroup(data?.members);
-        });
-
-        //
-        // Convenience API for games, forces a ChatPopup open
-        // Can provide a single public key or an array of them, + optional chat group name
-        //
-        app.connection.on("open-chat-with", (data) => {
-
-            if (!data){
-                this.openChatBox(app.auto_open_chat_box)    
-                return;
-            }
-
-            let group;
-
-            if (Array.isArray(data.key)){
-                group = this.createChatGroup(data.key, data.name);
-            }else{
-                let name = data.name || app.keys.returnUsername(data.key);
-                group = this.createChatGroup([app.wallet.returnPublicKey(), data.key], name);
-            }
-            
-            this.openChatBox(group.id);
-        });
-
-        app.connection.on("open-chat-with-community", ()=>{
-            this.openChatBox();
-        });
-
     }
+
+
 
 
 
@@ -140,14 +114,19 @@ class Chat extends ModTemplate {
             // We can load the previously messages from our local storage
             //
             this.createChatGroup([peer.peer.publickey], this.communityGroupName);
+
+            this.app.connection.emit("chat-manager-render-request");
+
+
             this.loadChats();
+
 
             //
             //Now we send queries to the Archive to load the last N chats per group
             //this enables us to pick up anything new that we had previously not received
             //
             let sql;
-            for (let i = 0; i < this.groups.length; i++){
+            for (let i = 0; i < this.groups.length; i++) {
                 // not a publickey but group_id gets archived as if it were one
                 sql = `SELECT id, tx FROM txs WHERE publickey = "${this.groups[i].id}" ORDER BY ts DESC LIMIT 100`;
                 this.sendPeerDatabaseRequestWithFilter(
@@ -156,15 +135,15 @@ class Chat extends ModTemplate {
 
                     (res) => {
                         if (res?.rows) {
-                            while (res.rows.length > 0){
-                                
+                            while (res.rows.length > 0) {
+
                                 //Process the chat transaction like a new message
 
                                 let tx = new saito.default.transaction(JSON.parse(res.rows.pop().tx));
-    
+
                                 tx.decryptMessage(app);
 
-                                this.receiveChatTransaction(app, tx); 
+                                this.receiveChatTransaction(app, tx);
                             }
                         }
                     },
@@ -177,21 +156,6 @@ class Chat extends ModTemplate {
                 );
             }
 
-        } 
-
-
-        //
-        // check identifiers
-        //
-        if (this.added_identifiers_post_load == 0) {
-            try {
-                setTimeout(() => {
-                    this.app.browser.addIdentifiersToDom();
-                    this.added_identifiers_post_load = 1;
-                }, 1200);
-            } catch (err) {
-                console.warn("error adding identifiers post-chat");
-            }
         }
 
         //
@@ -200,23 +164,18 @@ class Chat extends ModTemplate {
         //
         if (app.BROWSER) {
             if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600)) {
-                if (app.options.auto_open_chat_box !== -1){
+	        let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
+	        if (group) {
                     let active_module = app.modules.returnActiveModule();
-console.log("NNO INTERUPPTS");
-                    if (active_module.request_no_interrupts == true) {
-                        // if the module has ASKED leave it alone
-                        console.log("ASKED NOT TO INTERRUPT!");
-                        return;
-                    }
-console.log("NNO INTERUPPTS 2");
-                    this.openChatBox(app.options.auto_open_chat_box);
-                } 
-            }else{
+                    if (active_module.request_no_interrupts != true) {
+                        this.app.connection.emit('chat-popup-render-request', group);
+		    }
+		}
+            } else {
                 //Under mobile use, always wait for user to open chat box
                 this.mute = true;
             }
         }
-
 
     }
 
@@ -237,11 +196,11 @@ console.log("NNO INTERUPPTS 2");
             let txmsg = tx.returnMessage();
 
             if (txmsg.request == "chat message") {
-                
                 this.receiveChatTransaction(app, tx);
             }
+
         }
-        
+
     }
 
 
@@ -260,27 +219,24 @@ console.log("NNO INTERUPPTS 2");
             return;
         }
 
-        console.log(message.request);
-
         let tx = new saito.default.transaction(message.data.tx.transaction);
 
         tx.decryptMessage(app); //In case forwarding private messages
-        
+
         let txmsg = tx.returnMessage();
 
-        if (message.request === "chat message"){
+        if (message.request === "chat message") {
 
-            console.log("Receive Chat on RELAY");
             this.receiveChatTransaction(app, tx);
 
-        }else if (message.request === "chat message broadcast"){
-            
+        } else if (message.request === "chat message broadcast") {
+
             //Chat message broadcast is the Relay to the Chat-services server
             //that handles Community chat and will forward the message as a "chat message"
             //Without relay + handlePeerRequest, we do not receive community chat messages
 
             //Tell Archive to save a copy of this TX
-            app.connection.emit("archive-save-transaction", {key: message.data.group_id, type: "Chat", tx});                
+            app.connection.emit("archive-save-transaction", { key: message.data.group_id, type: "Chat", tx });
 
             //Forward to all my peers (but not me again) with new request & same data 
             app.network.peers.forEach(p => {
@@ -290,10 +246,10 @@ console.log("NNO INTERUPPTS 2");
             });
         }
 
-        //Legacy code??? 
-        if (mycallback) {
-            mycallback({ "payload": "success", "error": {} });
-        }
+	//
+	// notify sender if requested
+	//
+        if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
 
     }
 
@@ -325,12 +281,10 @@ console.log("NNO INTERUPPTS 2");
 
             //We want to send this info unencrypted, so save a copy first
             let group_id = tx.msg.group_id;
-
             tx = app.wallet.signAndEncryptTransaction(tx);
-
             app.network.propagateTransaction(tx);
-            
-            app.connection.emit("send-relay-message", {recipient, request: 'chat message broadcast', data: {tx, group_id}});
+
+            app.connection.emit("send-relay-message", { recipient, request: 'chat message broadcast', data: { tx, group_id } });
 
         } else {
             salert("Connection to chat server lost");
@@ -352,11 +306,11 @@ console.log("NNO INTERUPPTS 2");
         }
 
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
-        
+
         if (newtx == null) {
             return;
         }
-        
+
         for (let i = 1; i < members.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(members[i]));
         }
@@ -402,21 +356,18 @@ console.log("NNO INTERUPPTS 2");
         let group = this.returnGroup(txmsg.group_id);
 
         if (group) {
-                        
+
             //Have we already inserted this message into the chat?
             for (let z = 0; z < group.txs.length; z++) {
-                if (group.txs[z].transaction.sig === tx.transaction.sig) { 
-                    return; 
+                if (group.txs[z].transaction.sig === tx.transaction.sig) {
+                    return;
                 }
             }
-
-            if (this.debug) { console.log("receiveChatTrans for defined group: " + JSON.stringify(txmsg)); }
-
             this.addTransactionToGroup(group, tx);
-            
-            app.connection.emit('chat-render-request', txmsg.group_id);
 
-        }else if (tx.isTo(app.wallet.returnPublicKey())) {
+            app.connection.emit('chat-popup-render-request', group);
+
+        } else if (tx.isTo(app.wallet.returnPublicKey())) {
             //
             // no match on groups -- direct message to me
             //
@@ -429,15 +380,15 @@ console.log("NNO INTERUPPTS 2");
             }
 
             let proper_group = this.createChatGroup(members);
-            
-            this.addTransactionToGroup(proper_group, tx);
-            
-            if (this.debug) { console.log("emitting render request to new group: " + proper_group.id); }
-            
-            app.connection.emit('chat-render-request', proper_group.id);
 
-        }else{
-            if (this.debug) { console.log("Chat message not for me"); }            
+            this.addTransactionToGroup(proper_group, tx);
+
+            if (this.debug) { console.log("emitting render request to new group: " + proper_group.id); }
+
+            app.connection.emit('chat-popup-render-request', proper_group);
+
+        } else {
+            if (this.debug) { console.log("Chat message not for me"); }
         }
 
     }
@@ -452,11 +403,18 @@ console.log("NNO INTERUPPTS 2");
     //
     returnChatBody(group_id) {
 
+//console.log("group ID: " + group_id);
+
         let html = '';
         let group = this.returnGroup(group_id);
+	if (!group) { return ""; }
+
         let message_blocks = this.createMessageBlocks(group);
 
         for (let block of message_blocks) {
+
+//console.log("block: " + JSON.stringify(block));
+
             let ts = 0;
             if (block.length > 0) {
                 let sender = "";
@@ -468,16 +426,20 @@ console.log("NNO INTERUPPTS 2");
                     msg += txmsg.message;
                     ts = txmsg.timestamp;
                 }
+//console.log("pre-sanitize: " + msg);
                 msg = this.app.browser.sanitize(msg);
+//console.log("post-sanitize: " + msg);
                 html += `${SaitoUserWithTimeTemplate(this.app, sender, msg, ts)}`;
             }
         }
 
+	if (!group.unread) { group.unread = 0; }
         group.unread = 0;
 
         //Save to Wallet Here
         this.saveChat(group);
 
+//console.log("return html: " + html);
         return html;
 
     }
@@ -486,10 +448,15 @@ console.log("NNO INTERUPPTS 2");
 
         let blocks = [];
         let block = [];
-        let txs = group.txs;
+        let txs = [];
+        if (group) {
+            if (group.txs) {
+                txs = group.txs;
+            }
+        }
         let last_message_sender = "";
 
-        for (let i = 0; i < txs.length; i ++) {
+        for (let i = 0; i < txs.length; i++) {
 
             //First transaction -- start first block
             if (last_message_sender == "") {
@@ -543,7 +510,7 @@ console.log("NNO INTERUPPTS 2");
 
         //So the David + Richard == Richard + David
         members.sort();
-        
+
         let id = this.app.crypto.hash(`${members.join('_')}`);
 
         for (let i = 0; i < this.groups.length; i++) {
@@ -561,8 +528,8 @@ console.log("NNO INTERUPPTS 2");
             }
             if (!name) {
                 name = "me";
-            }else{
-                name = name.substring(0, name.length-2);
+            } else {
+                name = name.substring(0, name.length - 2);
             }
         }
 
@@ -575,14 +542,13 @@ console.log("NNO INTERUPPTS 2");
         }
 
         //Prepend the community chat
-        if (name === this.communityGroupName){
+        if (name === this.communityGroupName) {
             this.groups.unshift(newGroup);
-        }else{
-            this.groups.push(newGroup);            
+        } else {
+            this.groups.push(newGroup);
         }
 
-        //Tell chat manager to add this group to its list
-        this.app.connection.emit("refresh-chat-groups", newGroup.id);
+        this.app.connection.emit("chat-manager-render-request");
 
         return newGroup;
 
@@ -592,8 +558,10 @@ console.log("NNO INTERUPPTS 2");
     // This is a function to open a chat popup, and create it if necessary
     //
     openChatBox(group_id = null) {
-        if (!this.app.BROWSER) {return;}
 
+alert("open chat box~");
+
+        if (!this.app.BROWSER) { return; }
 
         if (!group_id || group_id == -1) {
 
@@ -606,15 +574,15 @@ console.log("NNO INTERUPPTS 2");
         }
 
         let group = this.returnGroup(group_id);
-        
-        if (!group) {return;}
+
+        if (!group) { return; }
 
         this.app.options.auto_open_chat_box = group_id;
         this.app.storage.saveOptions();
-        
+
         this.mute = false;
 
-        this.popup.render(this.app, this, group_id);
+        this.app.connection.emit("chat-popup-render-request", (group.id));
 
     }
 
@@ -623,21 +591,22 @@ console.log("NNO INTERUPPTS 2");
     // Since we were always testing the timestamp its a good thing we don't manipulate it
     //
     addTransactionToGroup(group, tx) {
+
         for (let i = 0; i < group.txs.length; i++) {
             if (group.txs[i].transaction.sig === tx.transaction.sig) {
                 return;
             }
-            if (tx.transaction.ts < group.txs[i].transaction.ts){
-                let pos = Math.max(0, i-1);
+            if (tx.transaction.ts < group.txs[i].transaction.ts) {
+                let pos = Math.max(0, i - 1);
                 group.txs.splice(pos, 0, tx);
                 return;
             }
         }
 
         group.txs.push(tx);
-        
         //We mark "new/unread" messages as we add them to the group
         //and clear them when we render them in the popup
+        if (!group.unread) { group.unread = 0; }
         group.unread++;
     }
 
@@ -658,9 +627,17 @@ console.log("NNO INTERUPPTS 2");
 
     }
 
-    returnMembers(group_id){
-        //Make sure we have an array of unique member keys
-        
+    returnGroupByMemberPublickey(publickey) {
+      for (let i = 0; i < this.groups.length; i++) {
+        if (this.groups[i].members.includes(publickey)) {
+          return this.groups[i];
+        }
+      }
+      return null;
+    }
+
+    returnMembers(group_id) {
+
         for (let i = 0; i < this.groups.length; i++) {
             if (group_id === this.groups[i].id) {
                 return [...new Set(this.groups[i].members)];
@@ -669,7 +646,7 @@ console.log("NNO INTERUPPTS 2");
 
         return [];
     }
- 
+
 
     returnChatByName(name = "") {
         for (let i = 0; i < this.groups.length; i++) {
@@ -737,14 +714,14 @@ console.log("NNO INTERUPPTS 2");
     // LOCAL STORAGE //
     ///////////////////
 
-    loadChats(){
-        if (!this.app.options.chat){
+    loadChats() {
+        if (!this.app.options.chat) {
             return;
         }
 
-        for (let g of this.groups){
-            if (this.app.options.chat[g.id] && g.txs.length == 0){
-                for (let stx of this.app.options.chat[g.id]){
+        for (let g of this.groups) {
+            if (this.app.options.chat[g.id] && g.txs.length == 0) {
+                for (let stx of this.app.options.chat[g.id]) {
                     let newtx = new saito.default.transaction(stx);
                     newtx.decryptMessage(this.app);
                     g.txs.push(newtx);
@@ -753,16 +730,16 @@ console.log("NNO INTERUPPTS 2");
             }
         }
 
-        this.app.connection.emit("refresh-chat-groups");
+        this.app.connection.emit("chat-manager-render-request");
     }
 
     saveChat(group) {
-        if (!this.app.options.chat){
+        if (!this.app.options.chat) {
             this.app.options.chat = {};
         }
-        
-        this.app.options.chat[group.id] = [];       
-        for (let t of group.txs.slice(-100)){
+
+        this.app.options.chat[group.id] = [];
+        for (let t of group.txs.slice(-100)) {
             this.app.options.chat[group.id].push(t.transaction);
         }
 
@@ -780,13 +757,13 @@ console.log("NNO INTERUPPTS 2");
     // exercise in infinite recursion, but we do sometimes want 
     // to inspect the group for debugging purposes
     //
-    printGroup(group){
+    printGroup(group) {
         const filtered = Object.keys(group)
-                            .filter(key => key !== "popup")
-                            .reduce((obj, key) => {
-                                obj[key] = group[key];
-                                return obj;
-                            }, {});
+            .filter(key => key !== "popup")
+            .reduce((obj, key) => {
+                obj[key] = group[key];
+                return obj;
+            }, {});
         console.log(JSON.parse(JSON.stringify(filtered)));
     }
 

@@ -1,0 +1,140 @@
+/* Appspace css */
+
+.stun-appspace {
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+  padding: 2rem;
+  top: 0;
+  display: flex;
+  z-index: 12;
+  /* justify-content: center; */
+  align-items: center;
+  background-color: var(--saito-white);
+  background-color: black;
+  color: white;
+  padding: 3rem;
+}
+
+
+
+.stunx-appspace-card {
+  width: 50%;
+  margin-left: 7rem;
+}
+
+.my-stun-container-info {
+  font-size: 2rem;
+}
+
+.saito-page-header-title {
+  margin-bottom: 1rem;
+  font-size: 5rem;
+}
+
+.stunx-appspace-card > p {
+  margin-bottom: 1rem;
+  font-size: 2.2rem;
+  line-height: 3rem;
+
+}
+
+.stunx-appspace-card > p span {
+  text-decoration: underline;
+}
+
+.stunx-appspace-card .saito-badge {
+  color: var(--saito-white);
+  background: var(--saito-primary);
+  width: 2rem;
+  height: 2rem;
+  display: inline-block;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 1.75rem;
+  vertical-align: super;
+}
+
+.stunx-appspace-card .saito-info-text {
+  color: rgb(195, 195, 195);
+  line-height: 1.2rem;
+}
+
+.stun-host-your-own {
+  display: inline;
+  border-bottom: 2px dashed var(--saito-white);
+  padding-bottom: 1px;
+  cursor: pointer;
+}
+
+.stunx-appspace-actions {
+  margin-bottom: 2rem;
+  display: flex;
+  margin-top: 2rem;
+}
+
+.stunx-appspace-create {
+  /* margin-bottom: 1rem; */
+}
+
+.stunx-appspace-create p {
+  font-weight: bold;
+}
+
+.stunx-appspace-join {
+  display: flex;
+  margin-left: 1.5rem;
+  position: relative;
+}
+
+.stunx-appspace-join input {
+    margin-right: 1rem;
+    padding-left: 1rem;
+    font-size: 3rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    height: 4.5rem;
+    max-width: 20rem;
+}
+
+.stunx-appspace-join p {
+  font-weight: bold;
+}
+
+.stunx-appspace-join {
+  display: flex;
+  align-items: center;
+}
+
+.stunx-appspace-join input {
+  margin-right: 1rem;
+  padding-left: 1rem;
+  /* height: 50.798px; */
+}
+
+.stunx-appspace-join input:focus {
+  outline: none;
+}
+
+.stunx-appspace-join .saito-button-secondary {
+  position: absolute;
+  height: 50%;
+  display: flex;
+  right: 0.5rem;
+  display: none;
+  align-items: center;
+  background: var(--saito-white);
+  color: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
+}
+
+/*  responsive */
+
+@media screen and (max-width: 503px) {
+}
+
+@media screen and (max-width: 396px) {
+  .stunx-appspace-join input {
+    width: 15rem;
+  }
+}

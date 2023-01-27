@@ -1,5 +1,5 @@
 const AppStoreOverlayTemplate = require('./main.template.js');
-const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
+const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const AppstoreAppDetails = require('./details.js');
 const SaitoModuleImageBoxTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module-imagebox.template.js');
 const JSON = require('json-bigint');
@@ -8,13 +8,17 @@ class AppStoreOverlay {
 
   constructor(app, mod) {
     this.app = app;
+    this.mod = mod;
     this.overlay = new SaitoOverlay(app);
     mod.overlay = this.overlay;
   }
 
-  render(app, mod, search_options={}) {
+  render(search_options={}) {
 
-    this.overlay.show(app, mod, AppStoreOverlayTemplate(app, mod, search_options));
+    let app = this.app;
+    let mod = this.mod;
+
+    this.overlay.show(AppStoreOverlayTemplate(app, mod, search_options));
 
     mod.searchForApps(search_options, function(rows) {
 
@@ -64,10 +68,9 @@ class AppStoreOverlay {
   };
 
 
-  attachEvents(app, mod) {
+  attachEvents() {
 
     search_self = this;
-
 
 /****
     //

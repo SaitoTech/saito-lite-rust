@@ -12,8 +12,8 @@ class Beleaguered extends GameTemplate {
 
     super(app);
 
-    this.name = "Beleaguered Castle Solitaire";
-    this.gamename = "Beleaguered Castle Solitaire";
+    this.name = "Beleaguered";
+    this.gamename = "Beleaguered Castle";
     this.slug = "beleaguered";
     this.description = 'Stack all cards by suit from aces to kings to win this game';
     this.categories = "Games Cardgame one-player";
@@ -113,7 +113,7 @@ class Beleaguered extends GameTemplate {
       class: "game-intro",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
     });
 
@@ -123,7 +123,7 @@ class Beleaguered extends GameTemplate {
       class: "game-stats",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnStatsHTML());
+        game_mod.overlay.show(game_mod.returnStatsHTML());
       }
     });
 

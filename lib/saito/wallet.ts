@@ -8,7 +8,7 @@ import Transaction, { TransactionType } from "./transaction";
 import Block from "./block";
 
 const CryptoModule = require("../templates/cryptomodule");
-const ModalSelectCrypto = require("./ui/modal-select-crypto/modal-select-crypto");
+const ModalSelectCrypto = require("./ui/modals/select-crypto/select-crypto");
 
 /**
  * A Saito-lite wallet.
@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.599,
+    version: 4.609,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -282,7 +282,7 @@ console.log("---------------------");
       if (force_merge > 7) { slips_to_merge = force_merge; }
       let slips_merged = 0;
       let output_amount = BigInt(0);
-      let lowest_block = this.app.blockchain.last_bid - this.app.blockchain.genesis_period + 2;
+      let lowest_block = this.app.blockchain.last_bid - this.app.blockchain.returnGenesisPeriod() + 2;
 
       //
       // check pending txs to avoid slip reuse
@@ -691,7 +691,7 @@ console.log("---------------------");
     //
     const lowest_block: bigint =
       this.app.blockchain.blockchain.last_block_id -
-      this.app.blockchain.genesis_period +
+      this.app.blockchain.returnGenesisPeriod() +
       BigInt(2);
 
     //
@@ -995,9 +995,9 @@ console.log("---------------------");
 
     if (cryptomod != null && show_overlay == 1) {
       if (cryptomod.renderModalSelectCrypto() != null) {
-        const modal_select_crypto = new ModalSelectCrypto(this.app, cryptomod);
-        modal_select_crypto.render(this.app, cryptomod);
-        modal_select_crypto.attachEvents(this.app, cryptomod);
+        const modal_select_crypto = new ModalSelectCrypto(this.app, null, cryptomod);
+        modal_select_crypto.render(this.app, null, cryptomod);
+        modal_select_crypto.attachEvents(this.app, null, cryptomod);
       }
     }
 

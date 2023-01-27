@@ -87,17 +87,17 @@
       type        :       "ability",
       text	:	  "Colonize adjacent unprotected planet when diplomacy secondary is played" ,
       initialize  : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].peace_accords == undefined) {
-          imperium_self.game.players_info[player-1].peace_accords = 0;
+        if (imperium_self.game.state.players_info[player-1].peace_accords == undefined) {
+          imperium_self.game.state.players_info[player-1].peace_accords = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction3-peace-accords") {
-          imperium_self.game.players_info[gainer-1].peace_accords = 1;
+          imperium_self.game.state.players_info[gainer-1].peace_accords = 1;
         }
       },
       strategyCardAfterTriggers : function(imperium_self, player, strategy_card_player, card) {
-	if (imperium_self.game.players_info[player-1].peace_accords == 1) { return 1; }
+	if (imperium_self.game.state.players_info[player-1].peace_accords == 1) { return 1; }
 	return 0;
       },
       strategyCardAfterEvent : function(imperium_self, player, strategy_card_player, card) {
@@ -153,7 +153,7 @@
 
 
 
-	  if (imperium_self.game.players_info[player-1].peace_accords == 1) {
+	  if (imperium_self.game.state.players_info[player-1].peace_accords == 1) {
 
 	    imperium_self.updateStatus("XXCha selecting planet to annex with Peace Accords");
 
@@ -192,13 +192,13 @@
       type        :       "ability" ,
       text	:	  "Spend strategy token to quash upcoming agenda" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].quash == undefined) {
-          imperium_self.game.players_info[player-1].quash = 0;
+        if (imperium_self.game.state.players_info[player-1].quash == undefined) {
+          imperium_self.game.state.players_info[player-1].quash = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction3-quash") {
-          imperium_self.game.players_info[gainer-1].quash = 1;
+          imperium_self.game.state.players_info[gainer-1].quash = 1;
         }
       },
       menuOption  :       function(imperium_self, menu, player) {
@@ -211,7 +211,7 @@
       },
       menuOptionTriggers:  function(imperium_self, menu, player) { 
         if (imperium_self.doesPlayerHaveTech(player, "faction3-quash") && menu == "main") {
-          if (imperium_self.game.players_info[player-1].strategy_tokens > 0) { 
+          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) { 
 	    if (imperium_self.game.state.active_player_moved == 0) {
 	      return 1;
 	    }
@@ -261,17 +261,17 @@
       type        :       "special" ,
       text	:	  "Expend strategy token to cancel opponent action card" ,
       initialize  :	  function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].instinct_training == null) {
-          imperium_self.game.players_info[player-1].instinct_training = 0;
+        if (imperium_self.game.state.players_info[player-1].instinct_training == null) {
+          imperium_self.game.state.players_info[player-1].instinct_training = 0;
 	}
       },
       gainTechnology : function(imperium_self, gainer, tech) {
 	if (tech == "faction3-instinct-training") {
-          imperium_self.game.players_info[gainer-1].instinct_training = 1;
+          imperium_self.game.state.players_info[gainer-1].instinct_training = 1;
         }
       },
       playActionCardTriggers : function(imperium_self, player, action_card_player, card) {
-        if (imperium_self.game.players_info[player-1].instinct_training == 1 && imperium_self.game.players_info[player-1].strategy_tokens > 0) { return 1; }
+        if (imperium_self.game.state.players_info[player-1].instinct_training == 1 && imperium_self.game.state.players_info[player-1].strategy_tokens > 0) { return 1; }
 	return 0;
       },
       playActionCardEvent : function(imperium_self, player, action_card_player, card) {
@@ -314,24 +314,24 @@
       prereqs	:	["yellow","yellow"] ,
       text	:	  "Exhaust to terminate turn of player who activates system containing your ship" ,
       initialize  : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].field_nullification == undefined) {
-          imperium_self.game.players_info[player-1].field_nullification = 0;
-          imperium_self.game.players_info[player-1].field_nullification_exhausted = 0;
+        if (imperium_self.game.state.players_info[player-1].field_nullification == undefined) {
+          imperium_self.game.state.players_info[player-1].field_nullification = 0;
+          imperium_self.game.state.players_info[player-1].field_nullification_exhausted = 0;
         }
       },
       onNewRound     :    function(imperium_self, player) {
         if (imperium_self.doesPlayerHaveTech(player, "faction3-field-nullification")) {
-          imperium_self.game.players_info[player-1].field_nullification_exhausted = 0;
+          imperium_self.game.state.players_info[player-1].field_nullification_exhausted = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction3-field-nullification") {
-          imperium_self.game.players_info[gainer-1].field_nullification = 1;
-          imperium_self.game.players_info[gainer-1].field_nullification_exhausted = 0;
+          imperium_self.game.state.players_info[gainer-1].field_nullification = 1;
+          imperium_self.game.state.players_info[gainer-1].field_nullification_exhausted = 0;
         }
       },
       activateSystemTriggers : function(imperium_self, activating_player, player, sector) {
-        if (imperium_self.doesPlayerHaveTech(player, "faction3-field-nullification") && imperium_self.game.players_info[player-1].field_nullification_exhausted == 0) {
+        if (imperium_self.doesPlayerHaveTech(player, "faction3-field-nullification") && imperium_self.game.state.players_info[player-1].field_nullification_exhausted == 0) {
 	  if (imperium_self.doesSectorContainPlayerShips(player, sector)) { 
 	    if (activating_player != player) { return 1; }
 	  }
@@ -341,7 +341,7 @@
       activateSystemEvent : function(imperium_self, activating_player, player, sector) {
         if (imperium_self.doesPlayerHaveTech(player, "faction3-field-nullification")) {
 
-	  if (imperium_self.game.players_info[player-1].field_nullification_exhausted == 1) { return 1; }
+	  if (imperium_self.game.state.players_info[player-1].field_nullification_exhausted == 1) { return 1; }
 
 	  if (imperium_self.game.player != player) {
 	    imperium_self.updateStatus(imperium_self.returnFaction(player) + " is deciding whether to use Nullification Fields");

@@ -10,7 +10,7 @@ Modules can also provide a callback to determine how the image (url) is processe
 */
 const { GiphyFetch } = require('@giphy/js-fetch-api')
 const { renderGif, renderGrid } = require('@giphy/js-components');
-const SaitoOverlay = require("./../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../lib/saito/ui/saito-overlay/saito-overlay");
 const saitoGifTemplate = require('./lib/giphy.template');
 const SaitoLoader = require('./../../lib/saito/new-ui/saito-loader/saito-loader');
 const ModTemplate = require('../../lib/templates/modtemplate');
@@ -38,12 +38,16 @@ class Giphy extends ModTemplate {
         super.initialize(app);
     }
 
-    render(app, mod) {
+    render() {
+
+	let app = this.app;
+	let mod = this.mod;
+
         // get this parent element
-        let input = document.querySelector(`.saito-emoji-container > #${this.input_id}`);
-        this.parentElement = input.parentElement;
-        if (document.querySelector('.saito-emoji-container')) {
-            this.app.browser.addElementToElement(`<div class="saito-gif"> <i class="fas fa-sticky-note"></i> </div>`, this.parentElement);
+        //let input = document.querySelector(`.saito-emoji-container > #${this.input_id}`);
+        //this.parentElement = input.parentElement;
+        if (document.querySelector('.saito-gif-icon-container')) {
+            this.app.browser.addElementToElement(`<div class="saito-gif"><i class="fa-solid fa-video"></i></div>`, document.querySelector('.saito-gif-icon-container'));
         }
 
         if (!document.getElementById('giphy-styles')) {
@@ -60,10 +64,10 @@ class Giphy extends ModTemplate {
             app.network.sendRequestWithCallback("get giphy auth", {}, function (res) {
                 //console.log(res);
                 saitogif_self.auth = res;
-                saitogif_self.attachEvents(app, mod, res);
+                saitogif_self.attachEvents(res);
             });
             } else {
-                this.attachEvents(app, mod, this.auth);
+                this.attachEvents(this.auth);
             }
 
     }
@@ -77,9 +81,13 @@ class Giphy extends ModTemplate {
             reader.readAsDataURL(blob)
         }))
 
-    attachEvents(app, mod, auth) {
-        let self = this
-        let gif_icon = document.querySelector(`#${this.input_id} ~ .saito-gif`);
+    attachEvents(auth) {
+
+	let app = this.app;
+	let mod = this.mod;
+
+        let self = this;
+        let gif_icon = document.querySelector('.saito-gif');
         let selectorWidth = window.innerWidth;
         let selectorColumns = 3;
 
@@ -92,7 +100,7 @@ class Giphy extends ModTemplate {
 
 
         gif_icon.onclick = (e) => {
-            this.overlay.show(app, mod, saitoGifTemplate(app, mod));
+            this.overlay.show(saitoGifTemplate(app, mod));
             this.loader.render(app, mod, "saito-gif-content")
             let onGifClick = (gif, e) => {
                 console.log(gif, e)

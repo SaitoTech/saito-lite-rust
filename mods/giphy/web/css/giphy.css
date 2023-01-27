@@ -2,22 +2,23 @@
     padding: 2rem;
     padding-bottom: 0.5rem;
     border-radius: 0.5rem;
-    background-color: white;
+    background-color: var(--saito-background-color);
     position: relative;
     max-width: 100vw;
     max-height: 95vh;
     overflow-y: auto;
 }
 
+/*
 .saito-gif {
     position: absolute;
     right: 3rem;
     bottom: 0.5rem;
     font-size: 2rem;
-    color: red;
+    color: var(--saito-primary);
     cursor: pointer;
 }
-
+*/
 .saito-gif-content {
     display: flex;
     justify-content: center;
@@ -32,11 +33,18 @@
 }
 
 .saito-gif-search input {
-    margin-right: .5rem;
+    margin-right: 0.5rem;
+    width: calc(100% - 45px);
+    padding: 1rem;
+    border-radius: 0.5rem;
 }
 
 .saito-gif-search i {
     color: var(--saito-primary);
     font-size: 2.2rem;
     cursor: pointer;
+}
+
+.giphy-loader {
+    animation: none;
 }

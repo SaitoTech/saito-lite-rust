@@ -1,0 +1,125 @@
+/*  Appspace */
+.game-tile {
+  width: 100%;
+  overflow-y: hidden;
+  border: solid 1px var(--saito-border-color);
+  background-size: cover;
+  background-position: center;
+  height: fit-content;
+}
+
+.game-tile-content {
+  width: 100%;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 11em auto auto 11em;
+  overflow: hidden;
+  height: 11.2rem;
+}
+
+.game-tile-image {
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--saito-secondary);
+  height: calc(100% - 1rem);
+  margin: 0.5rem;
+}
+
+.game-tile-game-name {
+  margin-left: 0.2em;
+  font-size: 2.5em;
+  font-weight: bold;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--saito-white);
+}
+
+.game-tile-game-short-description .key {
+  display: inline-block;
+}
+
+.game-tile-game-short-description .value {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.game-tile-game-short-description {
+  display: grid;
+  height: 100%;
+  align-content: center;
+  justify-items: start;
+  margin-right: 0.4em;
+  font-size: 1em;
+  overflow: auto;
+  background-color: var(--saito-black-faded);
+  color: var(--saito-white);
+  padding: 0.5rem;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  font-size: 1.2em;
+  height: 2.4em;
+  border-radius: 3px;
+}
+
+.identicon {
+  border: 1px solid var(--saito-border-dark);
+  width: 100%;
+  height: 100%;
+  max-width: 2em;
+  min-width: 2em;
+}
+
+.player-slot {
+  background-color: var(--saito-black-faded);
+  width: 2em;
+  height: 2em;
+  margin: 0.2em 0.2em;
+  float: left;
+  position: relative;
+}
+
+.game-tile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.game-tile-content .tiptext {
+  top: 0;
+  left: 100%;
+  background-color: var(--saito-gray-mid);
+  color: var(--saito-white) !important;
+  width: fit-content;
+  display: none;
+  border: unset;
+}
+.game-tile-game-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+/*  Right sidebar */
+.arcade-leaderboard {
+  padding: 0 0.5rem 0 0.9rem;
+}
+
+.arcade-leaderboard .saito-table-row .me {
+  color: var(--saito-primary);
+}
+
+@media screen and (max-width: 590px) {
+  .game-tile-content {
+    grid-template-columns: 15rem auto auto;
+  }
+  .game-tile-game-short-description {
+    display: none;
+  }
+}

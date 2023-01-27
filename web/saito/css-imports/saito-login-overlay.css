@@ -1,0 +1,72 @@
+
+.saito-login-overlay-field {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.saito-login-overlay-field * {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50rem;
+    text-align: left;
+}
+
+.saito-restore-button {
+    background-color: white;
+    width: min-content;
+    white-space: nowrap;
+    padding: 2.4rem;
+    font-size: 2rem;
+    height: 7rem;
+    margin-top:4rem;
+}
+.saito-restore-button:hover {
+    border: 1px solid white;
+}
+
+.saito-login-overlay-field label {
+    font-size: 2rem;
+    letter-spacing: 0.4rem;
+    text-transform: uppercase;
+}
+
+.saito-login-overlay-field input {
+    font-size: 3rem;
+    padding: 1rem;
+}
+
+.saito-login-overlay {
+    display: block; /* override saito-modal */
+    width: 100vw;
+    height: 100vh;
+    max-width: 95vw;
+    max-height: 95vh;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    opacity: 1;
+}
+
+.saito-modal-title {
+    width: 100%;
+    text-align: center;
+    font-size: 5rem;
+    padding-top: 15vh;
+}
+
+.saito-modal-subtitle {
+    width: 100%;
+    text-align: center;
+    font-size: 2rem;
+    padding-top: 2.5vh;
+    height: 10vh;
+}
+
+
+
+

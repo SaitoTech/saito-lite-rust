@@ -152,11 +152,13 @@ class Transaction {
 
   decryptMessage(app: Saito) {
     if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
+console.log("is not from me...");
       try {
         if (this.msg === null) {
           this.dmsg = "";
         } else {
           const parsed_msg = this.msg;
+console.log("ASKING for decryption of msg from " + this.transaction.from[0].add);
           this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
         }
       } catch (e) {
@@ -169,6 +171,7 @@ class Transaction {
         this.dmsg = "";
         return;
       }
+console.log("looking for key associated with: " + this.transaction.to[0].add + " who is me or not? " + app.wallet.returnPublicKey());
       this.dmsg = app.keys.decryptMessage(this.transaction.to[0].add, this.msg);
     } catch (e) {
       this.dmsg = "";

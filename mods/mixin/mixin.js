@@ -25,6 +25,8 @@ class Mixin extends ModTemplate {
     this.categories = "Finance Utilities";
     this.icon = "fas fa-wallet";
 
+    this.stylesheets = ['/mixin/css/appspace.css'];
+
     this.mixin = {};
     this.mixin.app_id 		= "";    
     this.mixin.user_id 		= "";    
@@ -53,19 +55,40 @@ class Mixin extends ModTemplate {
   }
 
   
-  respondTo(type = "") {
-    let mixin_self = this;
+  canRenderInto(qs) {
+    if (qs === ".saito-main" && (this.account_created == 1 || this.mixin.publickey !== "")) { return true; }
+    return false;
+  }
 
-    if (type === 'appspace') {
-      
-      super.render(this.app, this); // for scripts + styles
-      return new MixinAppspace(this.app, this);
+  renderInto(qs) {
+    if (qs == ".saito-main") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
+      }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+    }
+  }
+
+
+  //
+  // flexible inter-module-communications
+  //
+  respondTo(type = "") {
+    if (type === 'saito-header') {
+      return [{
+        text: "Wallet",
+        icon: this.icon,
+        allowed_mods: ["redsquare"],
+        callback: function (app, id) {
+          window.location = "/redsquare#wallet";
+        }
+      }]
     }
 
     return null;
   }
-
-
 
 
   async handlePeerRequest(app, message, peer, mycallback = null) {

@@ -5,7 +5,7 @@
   	type : "ground_combat" ,
   	text : "Reroll up to 15 dice during this round of ground combat" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.players_info[action_card_player-1].combat_dice_reroll = 15; // 15 
+	  imperium_self.game.state.players_info[action_card_player-1].combat_dice_reroll = 15; // 15 
 	  return 1;
 
 	}

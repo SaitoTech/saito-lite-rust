@@ -8,7 +8,7 @@
         return 0;
       },
       scoreObjective : function(imperium_self, player, mycallback) {
-        imperium_self.game.players_info[player-1].goods -= 10;
+        imperium_self.game.state.players_info[player-1].goods -= 10;
 	imperium_self.displayFactionDashboard();
 	mycallback(1);
       },
@@ -21,8 +21,8 @@
 
 	let homeworlds = [];
 	let homeplanets = [];
-	for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	  let home_sector = imperium_self.game.board[imperium_self.game.players_info[player-1].homeworld].tile;
+	for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	  let home_sector = imperium_self.game.board[imperium_self.game.state.players_info[player-1].homeworld].tile;
 	  let sys = imperium_self.returnSectorAndPlanets(home_sector);
 	  for (let ii = 0; ii < sys.p.length; ii++) {
 	    homeplanets.push(sys.p[ii].name);
@@ -90,7 +90,7 @@
       text	:	"Own 2 tech upgrades in each of 4 tech color paths" ,
       canPlayerScoreVictoryPoints : function(imperium_self, player) {
 
-        let techlist = imperium_self.game.players_info[player-1].tech;
+        let techlist = imperium_self.game.state.players_info[player-1].tech;
 
         let greentech = 0;
         let bluetech = 0;
@@ -152,7 +152,7 @@
       img	:	"/imperium/img/victory_point_2.png" ,
       text	:	"Research 3 unit upgrade technologies" ,
       canPlayerScoreVictoryPoints : function(imperium_self, player) {
-        let techlist = imperium_self.game.players_info[player-1].tech;
+        let techlist = imperium_self.game.state.players_info[player-1].tech;
         let unit_upgrades = 0;
         for (let i = 0; i < techlist.length; i++) {
           if (imperium_self.tech[techlist[i]].unit == 1) {
@@ -217,7 +217,7 @@
       img	:	"/imperium/img/victory_point_2.png" ,
       text	:	"Spend 6 command or strategy tokens when scoring" ,
       canPlayerScoreVictoryPoints : function(imperium_self, player) {
-        if ((imperium_self.game.players_info[player-1].strategy_tokens + imperium_self.game.players_info[player-1].command_tokens) >= 6) { return 1; }
+        if ((imperium_self.game.state.players_info[player-1].strategy_tokens + imperium_self.game.state.players_info[player-1].command_tokens) >= 6) { return 1; }
         return 0;
       },
       scoreObjective : function(imperium_self, player, mycallback) {

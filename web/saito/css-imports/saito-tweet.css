@@ -1,0 +1,333 @@
+.tweet {
+  cursor: pointer;
+  padding: 1rem 2rem;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid var(--saito-border-color-dark);
+  position: relative;
+}
+
+.tweet-main .tweet {
+  border-bottom: 0px;
+  border-top: 0px;
+  padding-top: 0px;
+}
+
+.tweet.has-reply {
+  border-bottom: none;
+}
+
+.tweet.has-reply::after {
+    content: "";
+    position: absolute;
+    width: 0rem;
+    height: 100%;
+    top: 5.5rem;
+    left: 3.5rem;
+    border-left: 5px dotted var(--saito-border-color);
+    z-index: 50;
+}
+.tweet.has-reply-disconnected::after {
+    content: "";
+    position: absolute;
+    width: 0rem;
+    height: 100%;
+    top: 5.5rem;
+    left: 3.5rem;
+    border-left: 5px dotted var(--saito-border-color);
+    z-index: 50;
+}
+.tweet-header .saito-user .saito-identicon-box .saito-identicon {
+    z-index: 51;
+    position: absolute;
+}
+
+.tweet-body {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+}
+
+.tweet.quoted {
+  margin-top: -2rem;
+}
+
+.tweet.quoted .tweet-contents {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+}
+
+.tweet.quoted:hover {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid var(--saito-border-color);
+}
+
+.tweet-notice {
+  display: flex;
+  box-sizing: border-box;
+  color: var(--saito-font-color-light);
+  font-family: var(--saito-font);
+  word-wrap: break-word;
+  padding-bottom: 1rem;
+  position: relative;
+  font-size: 1.4rem;
+  white-space: nowrap;
+}
+
+.tweet-notice .saito-address {
+  display: inline;
+  margin-left: 0.25rem;
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: var(--saito-font-color-light);
+}
+
+.tweet-text {
+  padding: 0.5rem 0;
+  line-height: 2.2rem;
+  max-height: 17.7rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tweet-text.full {
+  transition: all 0.2s linear;
+  max-height: 50rem;
+  overflow-y: auto;
+  margin-bottom: 2rem;
+}
+
+.tweet-text.full::after {
+  content: "";
+  position: absolute;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--saito-primary);
+  font-size: smaller;
+  padding: 0 0.5rem;
+  transition: all 0.2s linear;
+}
+
+.tweet-text.preview::before {
+  content: " ";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 10rem;
+  width: 100%;
+  background: linear-gradient(180deg, transparent, var(--saito-background-color));
+  transition: all 2s ease;
+}
+
+.tweet-text.preview:hover::after {
+  font-family: FontAwesome;
+  content: "\f0d7";
+  position: absolute;
+  bottom: 2rem;
+  color: var(--saito-primary);
+  font-size: smaller;
+  font-size: 1.5rem;
+  z-index: 999;
+  text-align: center;
+  line-height: 2.7rem;
+  padding: 0.3rem 1rem;
+  border-radius: var(--saito-border-radius);
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 1s;
+}
+
+.tweet-text.preview ~ .tweet-controls {
+  display: none;
+}
+.tweet-text.full ~ .tweet-controls {
+  display: flex;
+}
+
+.tweet:hover {
+  background-color: var(--saito-background-light);
+}
+
+.tweet:hover .tweet-text.preview::before {
+  background: linear-gradient(180deg, transparent, var(--saito-background-light));
+}
+
+.tweet-controls {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  cursor: default;
+}
+
+.tweet-controls > div {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  cursor: pointer;
+  color: var(--saito-font-color-light);
+}
+
+.tweet-controls > div:hover {
+  transform: scale(1.05);
+  color: var(--saito-primary);
+}
+
+.tweet-controls span {
+  display: inline-block;
+  font-weight: bold;
+  z-index: 1;
+  font-size: 1.5rem;
+}
+
+.tweet-controls i {
+  font-size: 1.7rem;
+  margin: 0 1rem;
+  text-align: center;
+}
+
+.tweet-tool-flag i {
+  font-weight: normal;
+}
+
+.tweet-picture {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+  grid-gap: 0.3rem;
+  width: 100%;
+}
+
+.tweet-picture > img {
+  width: 100%;
+  height: 20rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.tweet-overlay-img-cont img {
+  min-width: 50vw;
+  max-height: 90vh;
+  max-width: 90vw;
+}
+
+.tweet-img-icon {
+  font-size: 3rem;
+  color: var(--saito-white);
+  background: var(--saito-gray-mid);
+  padding: 1.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.tweet-overlay-content-controls-spacer {
+  flex-grow: 1;
+}
+
+.post-tweet-button {
+  line-height: 4.5rem;
+  font-size: 2.2rem;
+}
+
+.tweet-img-arrow-box {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tweet-overlay-img-cont > img {
+  transition: all 0.2s ease-in-out;
+}
+
+.tweet-img-arrow-box.left {
+  left: -10rem;
+}
+
+.tweet-img-arrow-box.right {
+  right: -10rem;
+}
+
+.link-img {
+  width: 100%;
+  height: 25rem;
+  background-size: cover !important;
+  background-position: center;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.link-info {
+  padding: 2rem;
+  border: 1px solid var(--saito-border-color);
+  border-radius: 0.5rem;
+  border-top: none;
+  border-top-right-radius: unset;
+  border-top-left-radius: unset;
+}
+
+.link-title {
+  color: var(--saito-dark-shim);
+  margin: 0.3rem 0px;
+}
+
+.link-url {
+  color: var(--saito-gray-mid);
+}
+
+.link-description {
+  color: var(--saito-gray-mid);
+}
+
+.youtube-embed-container > iframe {
+  width: 100%;
+  height: 25rem;
+}
+
+@media screen and (max-width: 1280px) {
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .tweet {
+    padding: 1rem 0 0;
+  }
+  .tweet.has-reply::after {
+    top: 4.5rem;
+    left: 1.55rem;
+  }
+  .tweet-text {
+    padding-bottom: 0;
+    line-height: 2rem;
+  }
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
+  }
+
+  .tweet-notice .saito-address {
+    max-width: 70%;
+  }
+}
+
+@media screen and (max-width: 529px) {
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+  .tweet-picture > img {
+    height: 15rem;
+  }
+  .preview-img {
+    height: 15rem;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+}

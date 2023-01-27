@@ -23,11 +23,11 @@
   	text : "For one ship lost in last round of space combat, fire twice. With each hit your opponent must destroy a ship of their chosing" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
-	  if (imperium_self.game.players_info[action_card_player-1].my_units_destroyed_last_combat_round.length > 0) {
+	  if (imperium_self.game.state.players_info[action_card_player-1].my_units_destroyed_last_combat_round.length > 0) {
 
 	    let lowest_combat_roll_ship = 10;
-	    for (let i = 0; i < imperium_self.game.players_info[action_card_player-1].my_units_destroyed_last_combat_round[i]; i++) {
-	      let unittype = imperium_self.game.players_info[action_card_player-1].my_units_destroyed_last_combat_round[i];
+	    for (let i = 0; i < imperium_self.game.state.players_info[action_card_player-1].my_units_destroyed_last_combat_round[i]; i++) {
+	      let unittype = imperium_self.game.state.players_info[action_card_player-1].my_units_destroyed_last_combat_round[i];
 	      let unit = imperium_self.returnUnit(unittype, player);
 	      if (unit.combat < lowest_combat_roll_ship) { lowest_combat_roll_ship = unit.combat; }
 	    }
@@ -71,8 +71,8 @@
 
 	  if (player == action_card_player) {
 
-  	    let a = imperium_self.game.players_info[imperium_self.game.state.space_combat_attacker];
-	    let d = imperium_self.game.players_info[imperium_self.game.state.space_combat_defender];
+  	    let a = imperium_self.game.state.players_info[imperium_self.game.state.space_combat_attacker];
+	    let d = imperium_self.game.state.players_info[imperium_self.game.state.space_combat_defender];
 
 
 	    if (d.commodities > 0) {
@@ -257,7 +257,7 @@
 	    for (let p = 0; p < sys.p.length; p++) {
 	      if (sys.p[p].owner == imperium_self.game.player) {
   	        if (imperium_self.doesPlayerHaveSpaceDockOnPlanet(imperium_self.game.player, sys.p[p])) {
-		  imperium_self.game.players_info[action_card_player-1].experimental_battlestation = sector;
+		  imperium_self.game.state.players_info[action_card_player-1].experimental_battlestation = sector;
 		  return 1;
 		}
 	      }

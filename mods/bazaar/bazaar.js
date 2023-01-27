@@ -37,9 +37,9 @@ class Jaipur extends GameTemplate {
 
   returnWelcomeOverlay(){
    let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay">
-           <img src="/${this.name.toLowerCase()}/img/welcome_splash.jpg"/>
+           <img src="/${this.name.toLowerCase()}/img/splash_welcome.jpg"/>
                </div>`;
-    return "";//html;
+    return html;
   }
 
 
@@ -67,7 +67,7 @@ class Jaipur extends GameTemplate {
       class : "game-rules",
       callback : function(app, game_mod) {
          game_mod.menu.hideSubMenus();
-         game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML()); 
+         game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
 
@@ -113,11 +113,10 @@ initializeGame(game_id) {
   }
 
   if (this.browser_active){
-     $(".Jaipur_board").attr("style","");
+     $(".jaipur_board").attr("style","");
      this.updateTokens();
      this.updateMarket();
      this.displayPlayers();
-
   }
  
 }
@@ -184,8 +183,12 @@ initializeQueue(first_player = 1){
           }
         }
 
+        //Redraw everything for new round
         if (this.browser_active){
-          this.updateMarket();
+           $(".jaipur_board").attr("style","");
+           this.updateTokens();
+           this.updateMarket();
+           this.displayPlayers();
         }
       }
 
@@ -316,7 +319,7 @@ initializeQueue(first_player = 1){
         //For the beginning of the game only...
         if (this.game.state.welcome == 0) {
           try {
-            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            this.overlay.show(this.returnWelcomeOverlay());
             document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
           } catch (err) {}
           this.game.state.welcome = 1;
@@ -532,7 +535,7 @@ initializeQueue(first_player = 1){
 
   playerTurn(){
     
-    let html = `Select a card to buy or sell it, or <span id="trade" class="link">click here to trade</span>`;
+    let html = `Select a card in the market to buy, in your hand to sell, or <span id="trade" class="link">click here to trade</span>`;
     
     this.updateStatusWithCards(html);
     this.attachGameEvents();
@@ -640,11 +643,15 @@ initializeQueue(first_player = 1){
       html += `</div></div> <div class="hand_overlay">
                         <div class="h2">Cards in Hand:</div>
                         <div class="card_group">`;
+      let handCount = game_self.game.state.hand.length + to_take.length - to_give.filter(c=>{ return c !== "camel"}).length
+      console.log(JSON.parse(JSON.stringify(game_self.game.state.hand)), game_self.game.state.hand.length);
+      console.log(JSON.parse(JSON.stringify(to_take)), to_take.length);
+      console.log(JSON.parse(JSON.stringify(to_give)), to_give.filter(c=>{ return c !== "camel"}).length);
       for (let r in hand){
-        if (!to_take.includes(r) && (r != "camel" || (game_self.game.state.hand.length + to_take.length - to_give.filter(c=>{ return c !== "camel"}).length) < 7)){
-          html += game_self.cardWithCountToHTML(r, hand[r]);
-        }else{
+        if (to_take.includes(r) || (r == "camel" && handCount >= 7 && to_give.length >= to_take.length)) {
           html += game_self.cardWithCountToHTML(r, -hand[r]);
+        }else{
+          html += game_self.cardWithCountToHTML(r, hand[r]);
         }
       }
       html += `</div></div> <div class="give_overlay">                            
@@ -662,7 +669,7 @@ initializeQueue(first_player = 1){
         </div>
       `;
     
-      game_self.overlay.show(game_self.app, game_self, html);
+      game_self.overlay.show(html);
       game_self.overlay.blockClose();
 
       $(".market_overlay .card_count").on("click", (e)=>{
@@ -941,7 +948,8 @@ initializeQueue(first_player = 1){
     state.goodtokens = [[], []];
     state.mybonustokens = [];
     state.enemytokens = [];
-
+    state.welcome = 0;
+    
     state.tokens = {cloth: [1, 1, 2, 2, 3, 3, 5],
                     leather:[1, 1, 1, 1, 1, 1, 2, 3, 4],
                     spice:[1, 1, 2, 2, 3, 3, 5],

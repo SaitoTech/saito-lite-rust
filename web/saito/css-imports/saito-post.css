@@ -1,0 +1,81 @@
+.tweet-overlay {
+  width: 75rem;
+  max-width: 90vw;
+  background-color: var(--saito-background-color);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.tweet-overlay-content {
+  display: grid;
+}
+
+.tweet-overlay-content-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  gap: 1.5rem;
+}
+
+.tweet-overlay-content-controls i {
+  color: transparent;
+  font-size: 2rem;
+  -webkit-text-stroke: var(--saito-primary) 1px;
+  margin: 1rem 2px 0;
+}
+
+.post-tweet-preview {
+  margin-bottom: 1.5rem;
+}
+
+.post-tweet-preview > .tweet {
+  margin-bottom: 1.5rem;
+  padding: 0 0 2rem;
+}
+
+.post-tweet-img-preview {
+  position: relative;
+  margin: 0 2rem 0 0;
+  height: auto;
+  display: inline-block;
+}
+
+.post-tweet-textarea {
+  display: block;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  outline: none;
+  font-size: 1.6rem;
+  margin: 1rem 0;
+}
+
+
+.post-tweet-img-preview img {
+  top: 0px;
+  height: 5rem;
+  width: 104%;
+  max-width: 20rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: auto;
+  object-fit: contain;
+}
+
+.post-tweet-img-preview i {
+  position: absolute;
+  z-index: 2;
+  width: 0.5rem;
+  height: 0.5rem;
+  right: 0.5rem;
+  font-size: 2rem;
+  cursor: pointer;
+  top: -0.75rem;
+  background: var(--saito-background-color);
+}
+
+.post-tweet-button {
+  width: 20rem;
+  margin-right: 0;
+}
+

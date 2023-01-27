@@ -2,6 +2,11 @@
  Saito Base: CSS default settings, layouts
 -----------------------------------------------------------------*/
 
+/* @custom-media --breakpoint-xl (max-width: 1920px);
+@custom-media --breakpoint-lg (max-width: 1280px);
+@custom-media --breakpoint-md (max-width: 768px);
+@custom-media --breakpoint-md (max-width: 590px);
+@custom-media --breakpoint-sm (max-width: 375px); */
 *,
 *::before,
 *::after {
@@ -16,7 +21,7 @@
 
 body {
   line-height: 1.2;
-  color: var(--saito-default-font-color);
+  color: var(--saito-font-color);
   font-family: var(--saito-font);
   margin: 0;
   font-size: 1.6rem;
@@ -25,35 +30,7 @@ body {
   position: relative;
   max-width: 100vw;
   overflow: hidden;
-}
-
-.modal-dialog {
-  border: 20rem;
-}
-
-pre {
-  overflow: auto;
-}
-
-img{
-  width: 100%;
-}
-
-.treated {
-  display: none;
-}
-
-.saito-deemphasize {
-  opacity: 0.66;
-}
-
-.saito-treated-link {
-  display: inline;
-}
-
-.saito-active-key {
-  border-bottom: 1px dashed var(--saito-primary);
-  display: inline !important;
+  background-color: var(--saito-background-color);
 }
 
 /* ----------------------------------------------------------------
@@ -63,6 +40,7 @@ img{
 a {
   text-decoration: none;
   cursor: pointer;
+  color: var(--saito-primary);
 }
 
 a:hover {
@@ -79,7 +57,6 @@ h3,
 h4,
 h5,
 h6 {
-  color: var(--saito-primary);
   font-weight: normal;
 }
 
@@ -100,16 +77,21 @@ h4 {
 }
 
 h5 {
-  font-size: 3rem;
-
+  font-size: 2rem;
+  line-height: 3rem;
+  margin-bottom: 1rem;
 }
 
 h6 {
-  font-size: 2rem
+  font-size: 2rem;
 }
 
 textarea {
   resize: none;
+}
+
+iframe {
+  border: none;
 }
 
 /* ----------------------------------------------------------------
@@ -136,6 +118,23 @@ p.small {
 }
 
 /* ----------------------------------------------------------------
+QR Code
+-----------------------------------------------------------------*/
+#qrcode img {
+  height: 80vh;
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media screen and (max-width: 600px) {
+  #qrcode img {
+    height: auto;
+    width: 90vw;
+  }
+}
+
+/* ----------------------------------------------------------------
 Password Font
 -----------------------------------------------------------------*/
 
@@ -148,7 +147,7 @@ Divider
 -----------------------------------------------------------------*/
 
 hr {
-  color: var(--saito-default-font-color);
+  color: var(--saito-font-color);
   margin: 2.5rem;
 }
 
@@ -156,48 +155,103 @@ hr {
 Scrollbars
 -----------------------------------------------------------------*/
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 0.6rem;
 }
 
 ::-webkit-scrollbar-track {
   background: transparent;
-  background: linear-gradient(90deg, transparent 0 45%, var(--saito-border) 45% 55%, transparent 55% 100%);
+  /*
+  background: linear-gradient(
+    90deg,
+    transparent 0 45%,
+    var(--saito-border-color) 45% 55%,
+    transparent 55% 100%
+  );
+  */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--saito-thumbBG);
+  background-color: var(--saito-primary);
   border-radius: 1rem;
+}
+
+/* utils */
+
+.left-align {
+  text-align: left;
+}
+
+.center-align {
+  text-align: center;
+}
+
+.right-align {
+  text-align: right;
+}
+
+.saito-deemphasize {
+  opacity: 0.66;
+}
+
+.saito-address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block !important;
+  width: inherit;
+}
+
+.tip:hover .tiptext {
+  visibility: visible;
+}
+
+.tiptext {
+  visibility: hidden;
+  position: absolute;
+  box-sizing: content-box !important;
+  z-index: 10;
+  width: 90%;
+  min-width: 300px;
+  max-width: 750px;
+  padding: 1em;
+  background-color: var(--saito-background-color);
+  border-left: 2px solid var(--saito-primary);
+  font-style: italic;
+  font-size: smaller;
+  border-radius: 0 0.5rem 0.5rem 0;
+  line-height: 2rem;
+}
+
+#message-wrapper {
+  border: 2px solid var(--saito-primary);
+  min-width: 500px;
+  padding: 3rem;
+  font-size: 2rem;
+  background: var(--saito-primary);
+  position: fixed;
+  bottom: 5rem;
+  left: 5rem;
+  color: var(--saito-font-color);
+  z-index: 200;
+}
+
+.message-message {
+  font-size: 2rem;
+  color: var(--saito-white);
 }
 
 /* ----------------------------------------------------------------
 Media Queries
 -----------------------------------------------------------------*/
 
-@media screen and (min-width: 1600px) {
-  /* body {
-    font-size: 1.4rem;
-  } */
-
-}
-
-@media screen and (max-width: 1200px) {
-  /* body {
-    font-size: 1.4rem;
-  } */
-
-}
-
 @media screen and (max-width: 768px) {
   body {
-    font-size: 1.4rem;
+    font-size: 1.45rem;
   }
 
   .saito-container {
     padding: 0 1rem;
   }
-}
 
-@media (max-width: 767.98px) {
   h1 {
     font-size: 4.5rem;
   }
@@ -236,11 +290,9 @@ Media Queries
     font-size: 1.1rem;
   }
 }
-
-
-
-@media screen and (max-width: 320px) {
+@media screen and (max-width: 375px) {
   body {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
 }
+

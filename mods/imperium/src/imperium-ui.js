@@ -12,32 +12,32 @@ hideOverlays() {
 }
 
 handleMovementMenuItem() {
-  this.overlay.show(this.app, this, this.returnMovementOverlay());
+  this.overlay.show(this.returnMovementOverlay());
 }
 handleCombatMenuItem() {
-  this.overlay.show(this.app, this, this.returnCombatOverlay());
+  this.overlay.show(this.returnCombatOverlay());
 }
 handleFactionMenuItem() {
-  this.overlay.show(this.app, this, this.returnFactionOverlay());
+  this.overlay.show(this.returnFactionOverlay());
 }
 handleHowToPlayMenuItem() {
-  this.overlay.show(this.app, this, this.returnHowToPlayOverlay());
+  this.overlay.show(this.returnHowToPlayOverlay());
 }
 handleHowToPlayMenuItem() {
-  this.overlay.show(this.app, this, this.returnHowToPlayOverlay());
+  this.overlay.show(this.returnHowToPlayOverlay());
 }
 handleTechMenuItem() {
-  this.overlay.show(this.app, this, this.returnTechOverlay());
+  this.overlay.show(this.returnTechOverlay());
 }
 
 handleAgendasMenuItem() {
-  this.overlay.show(this.app, this, this.returnAgendasOverlay());
+  this.overlay.show(this.returnAgendasOverlay());
 }
 handleLawsMenuItem() {
-  this.overlay.show(this.app, this, this.returnLawsOverlay());
+  this.overlay.show(this.returnLawsOverlay());
 }
 handleUnitsMenuItem() {
-  this.overlay.show(this.app, this, this.returnUnitsOverlay());
+  this.overlay.show(this.returnUnitsOverlay());
   let imperium_self = this;
   $('#close-units-btn').on('click', function() {
     imperium_self.overlay.hide();
@@ -79,11 +79,11 @@ handleStrategyMenuItem() {
     }
 
     let thiscard = this.strategy_cards[s];
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].strategy.includes(s)) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.game.state.players_info[i].strategy.includes(s)) {
         strategy_card_state = "unplayed";
         strategy_card_player = (i+1);
-        if (this.game.players_info[i].strategy_cards_played.includes(s)) {
+        if (this.game.state.players_info[i].strategy_cards_played.includes(s)) {
           strategy_card_state = "played";
         };
       };
@@ -104,7 +104,7 @@ handleStrategyMenuItem() {
 }
 
 handleObjectivesMenuItem() {
-  this.overlay.show(this.app, this, this.returnObjectivesOverlay());
+  this.overlay.show(this.returnObjectivesOverlay());
 }
 
 handleInfoMenuItem() {
@@ -130,9 +130,9 @@ handleSystemsMenuItem() {
 
   this.activated_systems_player++;
 
-  if (this.activated_systems_player > this.game.players_info.length) { this.activated_systems_player = 1; }
+  if (this.activated_systems_player > this.game.state.players_info.length) { this.activated_systems_player = 1; }
 
-  salert(`Showing Systems Activated by ${factions[this.game.players_info[this.activated_systems_player - 1].faction].name}`);
+  salert(`Showing Systems Activated by ${factions[this.game.state.players_info[this.activated_systems_player - 1].faction].name}`);
 
   $('.hex_activated').css('background-color', 'transparent');
   $('.hex_activated').css('opacity', '0.3');

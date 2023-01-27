@@ -98,6 +98,9 @@
 
 
       players[i] = {};
+      players[i].tmp_debaters_committed_reformation = 0;
+      players[i].tmp_debaters_committed_translation = 0;
+      players[i].tmp_debaters_committed_counter_reformation = 0;
       players[i].tmp_roll_bonus = 0;
       players[i].tmp_roll_first = 0;
       players[i].tmp_roll_modifiers = [];
@@ -154,11 +157,25 @@
 
   }
 
+  //
+  // runs each new round
+  //
+  resetPlayerRound(player_num) {
+
+    this.game.state.tmp_bonus_protestant_translation_german_zone = 0;
+    this.game.state.tmp_bonus_protestant_translation_french_zone = 0;
+    this.game.state.tmp_bonus_protestant_translation_english_zone = 0;
+    this.game.state.tmp_bonus_papacy_burn_books = 0;
+
+  }
+
+  //
+  // runs each new turn
+  //
   resetPlayerTurn(player_num) {
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
-    this.game.state.tmp_protestant_reformation_bonus = 0;
     this.game.state.tmp_protestant_reformation_bonus = 0;
     this.game.state.tmp_catholic_reformation_bonus = 0;
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
@@ -172,15 +189,16 @@
       }
     }
 
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      let p = this.game.players_info[i];
-      p.tmp_roll_bonus = 0;
-      p.tmp_roll_first = 0;
-      p.tmp_roll_modifiers = [];
-      p.has_colonized = 0;
-      p.has_explored = 0;
-      p.has_conquered = 0;
-    }
+    let p = this.game.state.players_info[(player_num-1)];
+    p.tmp_debaters_committed_reformation = 0;
+    p.tmp_debaters_committed_translation = 0;
+    p.tmp_debaters_committed_counter_reformation = 0;
+    p.tmp_roll_bonus = 0;
+    p.tmp_roll_first = 0;
+    p.tmp_roll_modifiers = [];
+    p.has_colonized = 0;
+    p.has_explored = 0;
+    p.has_conquered = 0;
 
     this.game.state.field_battle = {};
 
@@ -190,22 +208,21 @@
 
   isFactionInPlay(faction) {
     for (let i = 0; i < this.game.players.length; i++) {
-      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-	if (this.game.players_info[i].factions[z] === faction) { return 1; }
+      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	if (this.game.state.players_info[i].factions[z] === faction) { return 1; }
       }
     }
     return 0;
   }
 
   returnPlayerOfFaction(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].factions.includes(faction)) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.game.state.players_info[i].factions.includes(faction)) {
 	return i+1;
       }
-      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-	let f = this.game.players_info[i].factions[z];
+      for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
+	let f = this.game.state.players_info[i].factions[z];
         if (this.game.state.activated_powers[f].includes(faction)) {
-          console.log("this is an activated_power!: " + faction + " -- " + f);
 	  return (i+1);
         }
       }
@@ -219,6 +236,7 @@
   //
   playerAssignHits(faction, spacekey, hits_to_assign, naval_hits_acceptable=0) {
 
+    let his_self = this;
     let space = spacekey;
     try { if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; } } catch (err) {}
 
@@ -282,6 +300,7 @@
   //
   playerAssignNavalHits(faction, hits_to_assign, spacekey) {
 
+    let his_self = this;
     let space;
 
     if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
@@ -401,9 +420,105 @@
   }
 
 
+  playerRetainUnitsWithFilter(faction, filter_func, num_to_retain) {
+
+    let units_available = [];
+    let units_to_retain = [];
+
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units[faction]) {
+	for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (filter_func(key, i)) {
+	    units_available.push({spacekey : key, idx : i});
+	  }
+	}
+      }
+    }
+
+    let selectUnitsInterface = function(his_self, units_to_retain, units_available, selectUnitsInterface) {
+
+      let msg = "Select Units to Retain: ";
+      let html = "<ul>";
+      for (let i = 0; i < units_available.length; i++) {
+	let spacekey = units_available[i].spacekey;
+	let unit = his_self.game.spaces[spacekey].units[faction][units_available[i].idx];
+        if (units_to_retain.includes(parseInt(i))) {
+          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} - (${units_available[i].spacekey})</li>`;
+        } else {
+          html += `<li class="option" id="${i}">${units_available[i].name} - (${units_available[i].spacekey})</li>`;
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+
+console.log("UNITS AVAILABLE: " + JSON.stringify(units_available));
+console.log("UNITS TO RETAIN: " + JSON.stringify(units_to_retain));
+
+	  //
+	  // moves prepended to last removed first
+	  //
+	  for (let i = units_available.length; i >= 0; i--) {
+	    if (!units_to_retain.includes(i)) {
+	      his_self.prependMove("destroy_unit\t"+faction+"\t"+units_available[i].idx);
+	    }
+	  }
+	  his_self.endTurn();
+	  return;
+
+	}
+
+
+	//
+	// add unit to units available
+	//
+        if (units_to_retain.includes(id)) {
+          let idx = units_to_retain.indexOf(id);
+          if (idx > -1) {
+            units_to_move.splice(idx, 1);
+          }
+        } else {
+	  units_to_retain.push(id);
+	}
+
+	//
+	// if this is max to retain, we end as well
+	//
+	if (units_to_retain.length === num_to_retain) {
+
+	  //
+	  // moves prepended to last removed first
+	  //
+	  for (let i = units_available.length; i >= 0; i--) {
+	    if (!units_to_retain.includes(i)) {
+	      his_self.prependMove("destroy_unit\t"+faction+"\t"+units_available[i].idx);
+	    }
+	  }
+	  his_self.endTurn();
+	  return;
+	}
+      });
+    }
+
+    selectUnitsInterface(his_self, units_to_retain, units_available, selectUnitsInterface);
+
+    return 0;
+
+  }
+
+
+
 
   returnPlayerFactions(player) {
-    return this.game.players_info[player-1].factions;
+    return this.game.state.players_info[player-1].factions;
   }
 
   returnActionMenuOptions(player=null, faction=null) {
@@ -579,6 +694,7 @@
 
   playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
 
+    let his_self = this;
     let factions = this.returnImpulseOrder();
     let f = [];
 
@@ -728,7 +844,7 @@
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
     this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
-    this.attachCardboxEvents(function(card) {
+    this.attachCardboxEvents((card) => {
       this.playerPlayCard(card, this.game.player, faction);
     });  
 
@@ -812,15 +928,26 @@
 
   }
 
+  playerPlayDiplomacyCard(faction) {
+
+    let p = this.returnPlayerOfFaction(faction);
+    let his_self = this;
+
+    this.updateStatusAndListCards("Select Diplomacy Card to Play", this.game.deck[1].hand);
+    this.attachCardboxEvents(function(card) {
+      his_self.addMove("diplomacy_card_event\t"+faction+"\t"+card);
+      his_self.addMove("discard_diplomacy_card\t"+faction+"\t"+card);
+      his_self.endTurn();
+    });
+
+  }
 
   playerPlayCard(card, player, faction) {
 
     //
     // mandatory event cards effect first, then 2 OPS
     //
-
     if (this.deck[card].type === "mandatory") {
-      // event before ops
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
@@ -828,7 +955,7 @@
 
       let html = `<ul>`;
       html    += `<li class="card" id="ops">play for ops</li>`;
-      if (this.deck[card].canEvent(his_self, faction)) {
+      if (this.deck[card].canEvent(this, faction)) {
         html    += `<li class="card" id="event">play for event</li>`;
       }
       html    += `</ul>`;
@@ -837,7 +964,7 @@
       this.bindBackButtonFunction(() => {
         this.playerTurn(faction);
       });
-      this.attachCardboxEvents(function(user_choice) {
+      this.attachCardboxEvents((user_choice) => {
         if (user_choice === "ops") {
           let ops = this.game.deck[0].cards[card].ops;
           this.playerPlayOps(card, faction, ops);
@@ -854,16 +981,19 @@
 
   async playerPlayOps(card, faction, ops=null) {
 
+console.log("in PPO");
+
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
-    if (ops == 0) {
-console.log("OPS ARE ZERO!");
-    }
+    if (ops == 0) { console.log("OPS ARE ZERO!"); }
+
 
     if (this.game.state.activated_powers[faction].length > 0) {
+
+console.log("AAA AP");
 
       let html = `<ul>`;
       html    += `<li class="card" id="${faction}">${faction}</li>`;
@@ -924,12 +1054,19 @@ console.log("OPS ARE ZERO!");
       });
     } else {
 
+console.log("AAA AP");
+
       //
       // duplicates code above
       //
       let html = `<ul>`;
       for (let i = 0; i < menu.length; i++) {
+
+console.log("menu: " + menu[i].name);
+console.log("faction is: " + faction);
+
         if (menu[i].check(this, this.game.player, faction)) {
+console.log("returned 1 for " + menu[i].name);
           for (let z = 0; z < menu[i].factions.length; z++) {
             if (menu[i].factions[z] === faction) {
   	      if (menu[i].cost[z] <= ops) {
@@ -1288,6 +1425,146 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
   }
 
+  playerSelectUnitsWithFilterFromSpacesWithFilter(faction, space_filter_func, unit_filter_func, num=1, must_select_max=true, mycallback=null) {
+
+    let his_self = this;
+    let selected = [];
+
+    let selectSpacesInterface = function(his_self, selected, selectSpacesInterface) {
+
+      his_self.playerSelectSpaceWithFilter(
+
+        ("Select Space of Unit" + (selected.length+1)),
+
+	space_filter_func,
+
+        function(spacekey) {
+
+	  let options = [];
+	  let space = his_self.game.spaces[spacekey];
+	  let units = space.units[faction];
+	  let num_remaining = num - selected.length;
+
+          for (let i = 0; i < units; i++) {
+	    if (unit_filter_func(units[i])) {
+	      let add_this_unit = true;
+	      for (let z = 0; z < selected.length; z++) {
+		if (z.spacekey == spacekey && i === unit_idx) { add_this_unit = false; }
+	      }
+	      if (add_this_unit == true) {
+	        options.push({ spacekey : spacekey, unit : units[i] , unit_idx : i });
+	      }
+	    }
+	  }
+
+  	  his_self.playerSelectOptions(options, num_remaining, false, function(array_of_unit_idxs) {
+
+	    //
+	    // selected options copied to selected
+	    //
+	    for (let i = 0; i < array_of_unit_idxs.length; i++) {
+	      let add_this_unit = true;
+	      for (let z = 0; z < selected.length; z++) {
+		if (selected[z].spacekey == options[array_of_unit_idxs[i]].spacekey && selected[z].unit_idx === array_of_unit_idxs[i]) { add_this_unit = false; }
+	      }
+	      if (add_this_unit == true) {
+		selected.push(options[array_of_unit_idxs[i]]);
+	      }
+	    }
+
+	    //    
+	    // still more needed?    
+	    //    
+	    let num_remaining = num - selected.length;
+	    if (num_remaining > 0) {
+	      selectSpacesInterface(his_self, selected, selectSpacesInterface);
+	    } else {
+	      mycallback(selected);
+	    }
+
+	  });
+	}
+      );
+    }
+
+    selectSpacesInterface(his_self, selected, selectSpacesInterface);
+
+  }
+
+  playerSelectOptions(options, num=1, must_select_max=true, mycallback=null) {
+
+    let his_self = this;
+    let options_selected = [];
+    let cancel_func = null;
+
+    let selectOptionsInterface = function(his_self, options_selected, selectOptionsInterface) {
+
+      let remaining = num - options_selected.length;
+
+      let msg = `Select From Options: (${remaining} remaining)`;
+      let html = "<ul>";
+      for (let i = 0; i < options.length; i++) {
+        if (options_selected.includes(parseInt(i))) {
+	  html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	} else {
+          html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+          let id = $(this).attr("id");
+
+	  if (id === "end") {
+	    if (mycallback != null) {
+	      mycallback(options_selected);
+	      return;
+	    } else {
+	      return options_selected;
+	    }
+	  }
+
+          if (options_selected.includes(id)) {
+	    let idx = options_selected.indexOf(id);
+	    if (idx > -1) {
+  	      options_selected.splice(idx, 1);
+	    }
+	  } else {
+	    if (!options_selected.includes(id)) {
+	      options_selected.push(id);
+	    } else {
+	      for (let i = 0; i < options_selected.length; i++) {
+	        if (options_selected[i] === id) {
+		  options_selected.splice(i, 1);
+		  break;
+		}
+	      }
+	    }
+	  }
+
+	  if (options_selected.length == num) {
+	    if (mycallback != null) {
+	      mycallback(options_selected);
+	      return;
+	    } else {
+	      return options_selected;
+	    }
+	  }
+
+
+	  selectOptionsInterface(his_self, options_selected, selectOptionsInterface);
+      });
+
+    }
+
+    selectOptionsInterface(his_self, options_selected, selectUnitsInterface);
+	
+  }
 
 
   playerEvaluateNavalRetreatOpportunity(faction, spacekey) {
@@ -1624,7 +1901,7 @@ console.log("units length: " + space.units[defender].length);
     if (spaces_with_infantry.length == 0) { return 0; }
 
     for (let i = 0; i < spaces_with_infantry.length; i++) {
-      let dest = this.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops);
+      let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[i], ops);
       if (dest.length > 0) { return 1; }
     }
 
@@ -1972,8 +2249,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Mercenary",
 
       function(space) {
-        if (space.owner === faction) { return 1; }
-        if (space.home === faction) { return 1; }
+        if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
 	return 0;
       },
 
@@ -1995,8 +2271,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Destination for Regular",
 
       function(space) {
-        if (space.owner === faction) { return 1; }
-        if (space.home === faction) { return 1; }
+        if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
 	return 0;
       },
 
@@ -2034,7 +2309,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
   canPlayerAssault(his_self, player, faction) {
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) {
+      if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
         if (his_self.game.spaces[conquerable_spaces[i]].besieged > 0) {
 	  return 1;
 	}
@@ -2049,7 +2324,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       "Select Space for Siege/Assault: ",
 
       function(space) {
-        if (!his_self.isSpaceControlledByFaction(space, faction)) {
+        if (!his_self.isSpaceControlled(space, faction)) {
           if (his_self.game.spaces[space.key].type === "fortress") {
   	    return 1;
 	  }
@@ -2065,10 +2340,11 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     );
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
+console.log("CPCUS: " + faction);
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+      if (!his_self.isSpaceControlled(spaces_in_unrest[i]), faction) { 
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) {
@@ -2083,18 +2359,20 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
       }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { 
+console.log("checking: " + conquerable_spaces[i]);
+      if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) { 
 	console.log("SPACE IS: " + conquerable_spaces[i]);
 	return 1;
       } 
-   }
+    }
+console.log("return ZERO");
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let pacifiable_spaces_in_unrest = [];
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (!his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { 
+      if (!his_self.isSpaceControlled(spaces_in_unrest[i], faction)) { 
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]];
 	for (let z = 0; z < neighbours.length; z++) {
 	  if (his_self.returnFactionLandUnitsInSpace(faction, neighbours[z]) > 0) { pacifiable_spaces_in_unrest.push(spaces_in_unrest[i]); } 
@@ -2104,11 +2382,13 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (his_self.isSpaceControlledByFaction(conquerable_spaces[i], faction)) {
+      if (his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
 	conquerable_spaces.splice(i, 1);
 	i--;
       }
     }
+
+console.log("CS: " + JSON.stringify(conquerable_spaces));
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -2116,7 +2396,7 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
 
       function(space) {
         if (pacifiable_spaces_in_unrest.includes(space.key)) { return 1; }
-        if (conquerable_spaces.includes(space.key) && !his_self.isSpaceControlledByFaction(space.key, faction) && !his_self.isSpaceFriendly(space.key, faction)) { return 1; }
+        if (conquerable_spaces.includes(space.key) && !his_self.isSpaceControlled(space.key, faction) && !his_self.isSpaceFriendly(space.key, faction)) { return 1; }
 	return 0;
       },
 
@@ -2129,29 +2409,29 @@ console.log("UNIT WE ARE MOVING: " + JSON.stringify(unit));
     return 0;
   }
   canPlayerExplore(his_self, player, faction) {
-    if (this.game.players_info[player-1].has_explored == 0) { return 1; }
+    if (this.game.state.players_info[player-1].has_explored == 0) { return 1; }
     return 0;
   }
   async playerExplore(his_self, player, faction) {
-    this.game.players_info[player-1].has_explored = 1;
+    this.game.state.players_info[player-1].has_explored = 1;
 console.log("10");
 return;
   }
   canPlayerColonize(his_self, player, faction) {
-    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
+    if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerColonize(his_self, player, faction) {
-    this.game.players_info[player-1].has_colonized = 1;
+    this.game.state.players_info[player-1].has_colonized = 1;
 console.log("11");
 return;
   }
   canPlayerConquer(his_self, player, faction) {
-    if (this.game.players_info[player-1].has_conquered == 0) { return 1; }
+    if (this.game.state.players_info[player-1].has_conquered == 0) { return 1; }
     return 0;
   }
   async playerConquer(his_self, player, faction) {
-    this.game.players_info[player-1].has_conquered = 1;
+    this.game.state.players_info[player-1].has_conquered = 1;
 console.log("12");
 return;
   }
@@ -2213,8 +2493,54 @@ return;
     return 0;
   }
   async playerTranslateScripture(his_self, player, faction) {
-console.log("16");
-return;
+
+    let msg = "Work on Translation?";
+    let html = '<ul>';
+
+    if (his_self.game.state.translations['new']['german'] < 6) {
+      html += '<li class="option" style="" id="1">German (new testament)</li>';
+    }
+    if (his_self.game.state.translations['new']['french'] < 6) {
+      html += '<li class="option" style="" id="2">French (new testament)</li>';
+    }
+    if (his_self.game.state.translations['new']['english'] < 6) {
+      html += '<li class="option" style="" id="3">English (new testament)</li>';
+    }
+    if (his_self.game.state.translations['full']['german'] < 10) {
+      html += '<li class="option" style="" id="4">German (full bible)</li>';
+    }
+    if (his_self.game.state.translations['full']['french'] < 10) {
+      html += '<li class="option" style="" id="5">French (full bible)</li>';
+    }
+    if (his_self.game.state.translations['full']['english'] < 10) {
+      html += '<li class="option" style="" id="6">English (full bible)</li>';
+    }
+    html += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let id = parseInt($(this).attr("id"));
+
+      if (id == 1 || id == 4) {
+	his_self.addMove("translation\tgerman"); 
+	his_self.addMove("counter_or_acknowledge\tProtestants Translate in Germany Language Zone\ttranslation_german_language_zone\tgerman\t"+faction);
+      }
+      if (id == 2 || id == 5) { 
+	his_self.addMove("translation\tfrench"); 
+	his_self.addMove("counter_or_acknowledge\tProtestants Translate in French Language Zone\ttranslation_french_language_zone\tfrench\t"+faction);
+      }
+      if (id == 3 || id == 6) { 
+	his_self.addMove("translation\tenglish"); 
+	his_self.addMove("counter_or_acknowledge\tProtestants Translate in English Language Zone\ttranslation_english_language_zone\tenglish\t"+faction);
+      }
+      his_self.addMove("RESETCONFIRMSNEEDED\tall");
+      his_self.endTurn();
+
+    });
+
   }
   canPlayerPublishTreatise(his_self, player, faction) {
     if (faction === "protestant") { return 1; }
@@ -2243,6 +2569,34 @@ return;
       $('.option').off();
       $('.option').on('click', function () {
         let id = $(this).attr("id");
+
+	if (id === "german" && his_self.isDebaterAvailable("carlstadt-debater")) {
+
+          let msg = "Use Cardstatd Debater Bonus +1 Attempt:";
+          let html = '<ul>';
+            html += '<li class="option" style="" id="yes">Yes, Commit Carlstadt</li>';
+          html += '<li class="option" style="" id="no">No</li>';
+          html += '</ul>';
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let id = $(this).attr("id");
+
+	    if (id === "yes") {
+	      his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    }
+	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    his_self.addMove("protestant_reformation\t"+player+"\tgerman");
+	    his_self.endTurn();
+
+	    return 0;
+	  });
+
+	  return 0;
+        }
+
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.addMove("protestant_reformation\t"+player+"\t"+id);
 	his_self.endTurn();

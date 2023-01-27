@@ -16,7 +16,7 @@
 	  }
 
           if (winning_choice === "against") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	      if (imperium_self.doesPlayerHaveUnitOnBoard((i+1), "pds")) {
 	        imperium_self.game.queue.push("destroy_a_pds\t"+(i+1));
 	      }
@@ -134,8 +134,8 @@
 
           if (winning_choice === "for") {
 	    imperium_self.game.state.laws = [];
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	      imperium_self.game.players_info[i].must_exhaust_at_round_start.push("homeworld");
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	      imperium_self.game.state.players_info[i].must_exhaust_at_round_start.push("homeworld");
             }
           }
 
@@ -163,23 +163,23 @@
 	      imperium_self.returnFactionNamePreSpaceCadet = imperium_self.returnFactionName;
 	      imperium_self.returnFactionName = function(imperium_self, player) {
 	        let max_vp = 0;
-	        for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	          if (max_vp < imperium_self.game.players_info[i].vp) {
-		    max_vp = imperium_self.game.players_info[i].vp;
+	        for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	          if (max_vp < imperium_self.game.state.players_info[i].vp) {
+		    max_vp = imperium_self.game.state.players_info[i].vp;
 		  }
 	        }
-                if (imperium_self.game.players_info[player-1].vp <= (max_vp-3)) { return "Irrelevant Loser"; }
+                if (imperium_self.game.state.players_info[player-1].vp <= (max_vp-3)) { return "Irrelevant Loser"; }
     	        return imperium_self.returnFactionNamePreSpaceCadet(imperium_self, player);
   	      }
 	      imperium_self.returnFactionNameNicknamePreSpaceCadet = imperium_self.returnFactionNameNickname;
 	      imperium_self.returnFactionNameNickname = function(imperium_self, player) {
 	        let max_vp = 0;
-	        for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	          if (max_vp < imperium_self.game.players_info[i].vp) {
-		    max_vp = imperium_self.game.players_info[i].vp;
+	        for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	          if (max_vp < imperium_self.game.state.players_info[i].vp) {
+		    max_vp = imperium_self.game.state.players_info[i].vp;
 		  }
 	        }
-                if (imperium_self.game.players_info[player-1].vp <= (max_vp-3)) { return "Loser"; }
+                if (imperium_self.game.state.players_info[player-1].vp <= (max_vp-3)) { return "Loser"; }
     	        return imperium_self.returnFactionNameNicknamePreSpaceCadet(imperium_self, player);
   	      }
 	    }
@@ -224,7 +224,7 @@
   	text : "Elect a player. They must henceforth be referred to as the Galatic Threat" ,
         returnAgendaOptions : function(imperium_self) { 
 	  let options = [];
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    options.push(imperium_self.returnFaction(i+1));
 	  }
 	  return options;
@@ -249,7 +249,7 @@
 	onPass : function(imperium_self, winning_choice) {
 	  imperium_self.game.state.galactic_threat = 1;
 
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    if (winning_choice === imperium_self.returnFaction((i+1))) {
 	      imperium_self.game.state.galactic_threat_player = i+1;
 	    }
@@ -293,7 +293,7 @@
         text : "Elect a player. They draw an extra action card at the start of each round" ,
         returnAgendaOptions : function(imperium_self) {
           let options = [];
-          for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+          for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
             options.push(imperium_self.returnFaction(i+1));
           }
           return options;
@@ -301,12 +301,12 @@
         onPass : function(imperium_self, winning_choice) {
           imperium_self.game.state.minister_of_policy = 1;
           imperium_self.game.state.minister_of_policy_player = winning_choice;
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    if (winning_choice === imperium_self.returnFaction((i+1))) {
 	      imperium_self.game.state.minister_of_policy_player = i+1;
 	    }
 	  }
-	  imperium_self.game.players_info[imperium_self.game.state.minister_of_policy_player-1].action_cards_bonus_when_issued++;
+	  imperium_self.game.state.players_info[imperium_self.game.state.minister_of_policy_player-1].action_cards_bonus_when_issued++;
 	  let law_to_push = {};
 	      law_to_push.agenda = "minister-of-policy";
 	      law_to_push.option = winning_choice;
@@ -326,7 +326,7 @@
           }
 
           imperium_self.game.state.minister_of_policy = 0;
-	  imperium_self.game.players_info[imperium_self.game.state.minister_of_policy_player-1].action_cards_bonus_when_issued--;
+	  imperium_self.game.state.players_info[imperium_self.game.state.minister_of_policy_player-1].action_cards_bonus_when_issued--;
           imperium_self.game.state.minister_of_policy_player = -1;
 
           return 1;
@@ -345,8 +345,8 @@
         returnAgendaOptions : function(imperium_self) { return ['support','oppose']; },
         onPass : function(imperium_self, winning_choice) {
 	  if (this.returnAgendaOptions(imperium_self)[winning_choice] == "support") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	      imperium_self.game.players_info[i].action_card_limit = 3;
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	      imperium_self.game.state.players_info[i].action_card_limit = 3;
 	    }
 	  }
 	  let law_to_push = {};
@@ -367,9 +367,9 @@
             }
           }
 
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	    if (imperium_self.game.players_info[i].action_card_limit == 3) {
-	      imperium_self.game.players_info[i].action_card_limit = 7;
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	    if (imperium_self.game.state.players_info[i].action_card_limit == 3) {
+	      imperium_self.game.state.players_info[i].action_card_limit = 7;
 	    }
 	  }
 
@@ -389,9 +389,9 @@
         returnAgendaOptions : function(imperium_self) { return ['support','oppose']; },
         onPass : function(imperium_self, winning_choice) {
 	  if (this.returnAgendaOptions(imperium_self)[winning_choice] == "support") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	      imperium_self.game.players_info[i].fleet_supply_limit = 4;
-	      if (imperium_self.game.players_info[i].fleet_supply >= 4) { imperium_self.game.players_info[i].fleet_supply = 4; }
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	      imperium_self.game.state.players_info[i].fleet_supply_limit = 4;
+	      if (imperium_self.game.state.players_info[i].fleet_supply >= 4) { imperium_self.game.state.players_info[i].fleet_supply = 4; }
 	    }
 	  }
 	  return 1;
@@ -408,8 +408,8 @@
             }
           }
 
-          for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	    imperium_self.game.players_info[i].fleet_supply_limit = 16;
+          for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	    imperium_self.game.state.players_info[i].fleet_supply_limit = 16;
           }
 
           return 1;
@@ -426,7 +426,7 @@
   	text : "Elect a player. They may form a committee to vote on which player is elected in a future agenda" ,
         returnAgendaOptions : function(imperium_self) { 
 	  let options = [];
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    options.push(imperium_self.returnFaction(i+1));
 	  }
 	  return options;
@@ -464,7 +464,7 @@
 	    //
 	    // works by "Assassinating all other representatives, so they don't / can't vote"
 	    //
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	      if (i != imperium_self.game.player-1) {
                 imperium_self.addMove("rider\t"+(i+1)+"\tassassinate-representative\t-1");
 	      }
@@ -480,7 +480,7 @@
 	onPass : function(imperium_self, winning_choice) {
 	  imperium_self.game.state.committee_formation = 1;
 
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    if (winning_choice === imperium_self.returnFaction((i+1))) {
 	      imperium_self.game.state.committee_formation_player = (i+1);
 	    }
@@ -543,7 +543,7 @@
   	text : "Elect a Player to earn 1 VP. When this player loses a space combat to another player, they transfer the VP to that player" ,
         returnAgendaOptions : function(imperium_self) {
 	  let options = [];
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    options.push(imperium_self.returnFaction(i+1));
 	  }
 	  return options;
@@ -551,7 +551,7 @@
 	onPass : function(imperium_self, winning_choice) {
 	  imperium_self.game.state.shard_of_the_throne = 1;
 
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    if (winning_choice === imperium_self.returnFaction((i+1))) {
 	      imperium_self.game.state.shard_of_the_throne_player = i+1;
 	    }
@@ -562,7 +562,7 @@
 	      law_to_push.option = winning_choice;
 	  imperium_self.game.state.laws.push(law_to_push);
 
-          imperium_self.game.players_info[imperium_self.game.state.shard_of_the_throne_player-1].vp += 1;
+          imperium_self.game.state.players_info[imperium_self.game.state.shard_of_the_throne_player-1].vp += 1;
 	  imperium_self.updateLeaderboard();
 	  imperium_self.updateLog(imperium_self.returnFaction(imperium_self.game.state.shard_of_the_throne_player) + " gains the Shard of the Throne (1VP)");
 
@@ -592,8 +592,8 @@
 	    if (!imperium_self.doesPlayerHaveShipsInSector(defender, sector)) {
 	      imperium_self.game.state.shard_of_the_throne_player = attacker;
 	      imperium_self.updateLog(imperium_self.returnFaction(imperium_self.game.state.shard_of_the_throne_player) + " gains the Shard of the Throne (1VP)");
-	      imperium_self.game.players_info[attacker-1].vp += 1;
-	      imperium_self.game.players_info[defender-1].vp -= 1;
+	      imperium_self.game.state.players_info[attacker-1].vp += 1;
+	      imperium_self.game.state.players_info[defender-1].vp -= 1;
 	      imperium_self.updateLeaderboard();
 	    }
 	  }
@@ -603,8 +603,8 @@
 	    if (!imperium_self.doesPlayerHaveInfantryOnPlanet(defender, sector, planet_idx)) {
 	      imperium_self.game.state.shard_of_the_throne_player = attacker;
 	      imperium_self.updateLog(imperium_self.returnFaction(imperium_self.game.state.shard_of_the_throne_player) + " gains the Shard of the Throne (1VP)");
-	      imperium_self.game.players_info[attacker-1].vp += 1;
-	      imperium_self.game.players_info[defender-1].vp -= 1;
+	      imperium_self.game.state.players_info[attacker-1].vp += 1;
+	      imperium_self.game.state.players_info[defender-1].vp -= 1;
 	      imperium_self.updateLeaderboard();
 	    }
 	  }
@@ -629,7 +629,7 @@
 	  }
 
           if (winning_choice === "against") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	      if (imperium_self.doesPlayerHaveUnitOnBoard((i+1), "pds")) {
 	        imperium_self.game.queue.push("destroy_a_pds\t"+(i+1));
 	      }
@@ -733,7 +733,7 @@
 	  //
 	  let owner = imperium_self.game.planets[winning_choice].owner;
 	  if (owner != -1) {
-	    imperium_self.game.players_info[owner-1].vp += 1;
+	    imperium_self.game.state.players_info[owner-1].vp += 1;
 	    imperium_self.updateLeaderboard();
 	    imperium_self.updateLog(imperium_self.returnFaction(owner) + " gains 1 VP from Holy Planet of Ixth");
 	  }
@@ -832,7 +832,7 @@
         },
         menuOptionActivated:  function(imperium_self, menu, player) {
           if (menu == "main") {
-            imperium_self.game.players_info[player-1].temporary_green_tech_prerequisite++;
+            imperium_self.game.state.players_info[player-1].temporary_green_tech_prerequisite++;
             imperium_self.game.planets[imperium_self.game.state.research_team_biotic_planet].exhausted = 1;
 	  }
           return 0;
@@ -902,7 +902,7 @@
         },
         menuOptionActivated:  function(imperium_self, menu, player) {
           if (menu == "main") {
-            imperium_self.game.players_info[player-1].temporary_yellow_tech_prerequisite++;
+            imperium_self.game.state.players_info[player-1].temporary_yellow_tech_prerequisite++;
             imperium_self.game.planets[imperium_self.game.state.research_team_cybernetic_planet].exhausted = 1;
 	  }
           return 0;
@@ -972,7 +972,7 @@
         },
         menuOptionActivated:  function(imperium_self, menu, player) {
           if (menu == "main") {
-            imperium_self.game.players_info[player-1].temporary_blue_tech_prerequisite++;
+            imperium_self.game.state.players_info[player-1].temporary_blue_tech_prerequisite++;
             imperium_self.game.planets[imperium_self.game.state.research_team_propulsion_planet].exhausted = 1;
 	  }
           return 0;
@@ -1041,7 +1041,7 @@
         },
         menuOptionActivated:  function(imperium_self, menu, player) {
           if (menu == "main") {
-            imperium_self.game.players_info[player-1].temporary_red_tech_prerequisite++;
+            imperium_self.game.state.players_info[player-1].temporary_red_tech_prerequisite++;
             imperium_self.game.planets[imperium_self.game.state.research_team_warfare_planet].exhausted = 1;
 	  }
           return 0;
@@ -1069,7 +1069,7 @@
 	  imperium_self.game.state.laws.push(law_to_push);
 
 	  imperium_self.game.planets[winning_choice].units = []; 
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    imperium_self.game.planets[winning_choice].units.push([]);
 	  }
 
@@ -1292,8 +1292,8 @@
 
           if (winning_choice === "against") {
             // exhaust two planets
-            for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-              imperium_self.game.players_info[i].must_exhaust_at_round_start.push("planet","planet");
+            for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+              imperium_self.game.state.players_info[i].must_exhaust_at_round_start.push("planet","planet");
             }
           }
 	},
@@ -1319,7 +1319,7 @@
 	  // gain two action cards
 	  //
 	  if (winning_choice === "for") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	      if (imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]] == winning_choice) {
                 imperium_self.game.queue.push("gain\t2\t"+(i+2)+"\taction_cards"+"\t"+2);
                 imperium_self.game.queue.push("DEAL\t2\t"+(i+1)+"\t2");
@@ -1332,13 +1332,13 @@
 	  // everyone who votes against discards action cards
 	  //
 	  if (winning_choice === "against") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	      if (imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]] == "for") {
                 if (imperium_self.game.player == (i+1)) {
-		  imperium_self.game.players_info[i].action_cards_in_hand = 0;
+		  imperium_self.game.state.players_info[i].action_cards_in_hand = 0;
 		  imperium_self.game.deck[1].hand = [];
 		} else {
-		  imperium_self.game.players_info[i].action_cards_in_hand = 0;
+		  imperium_self.game.state.players_info[i].action_cards_in_hand = 0;
 		}
 	      }	      
 	    }
@@ -1364,13 +1364,13 @@
 
 	    let highest_vp = 0;
 	    for (let i = 0; i < io.length; i++) {
-	      if (highest_vp < imperium_self.game.players_info[io[i]-1].vp) { highest_vp = imperium_self.game.players_info[io[i]-1].vp; }
+	      if (highest_vp < imperium_self.game.state.players_info[io[i]-1].vp) { highest_vp = imperium_self.game.state.players_info[io[i]-1].vp; }
 	      imperium_self.game.state.seeds_of_an_empire = io[i];
 	    }
 
 	    for (let i = 0; i < io.length; i++) {
-	      if (highest_vp == imperium_self.game.players_info[io[i]-1].vp) {
-		imperium_self.game.players_info[io[i]-1].vp += 1;
+	      if (highest_vp == imperium_self.game.state.players_info[io[i]-1].vp) {
+		imperium_self.game.state.players_info[io[i]-1].vp += 1;
 		imperium_self.game.queue.push("NOTIFY\t"+imperium_self.returnFaction((io[i])) + " gains 1 VP from Seeds of an Empire");
 	        imperium_self.game.state.seeds_of_an_empire = (io[i]);
 		if (imperium_self.checkForVictory()) { return 0; }
@@ -1387,12 +1387,12 @@
 
 	    let lowest_vp = 10000;
 	    for (let i = 0; i < io.length; i++) {
-	      if (lowest_vp > imperium_self.game.players_info[io[i]-1].vp) { lowest_vp = imperium_self.game.players_info[io[i]-1].vp; }
+	      if (lowest_vp > imperium_self.game.state.players_info[io[i]-1].vp) { lowest_vp = imperium_self.game.state.players_info[io[i]-1].vp; }
 	    }
 
 	    for (let i = 0; i < io.length; i++) {
-	      if (lowest_vp == imperium_self.game.players_info[io[i]-1].vp) {
-		imperium_self.game.players_info[io[i]-1].vp += 1;
+	      if (lowest_vp == imperium_self.game.state.players_info[io[i]-1].vp) {
+		imperium_self.game.state.players_info[io[i]-1].vp += 1;
 		imperium_self.game.queue.push("NOTIFY\t"+imperium_self.returnFaction((io[i]+1)) + " gains 1 VP from Seeds of an Empire");
 	        imperium_self.game.state.seeds_of_an_empire = (io[i]);
 		if (imperium_self.checkForVictory()) { return 0; }
@@ -1494,7 +1494,7 @@
   	text : "Elected Player draws one secret objective" ,
         returnAgendaOptions : function(imperium_self) {
 	  let options = [];
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    options.push(imperium_self.returnFaction(i+1));
 	  }
 	  return options;
@@ -1502,7 +1502,7 @@
 	onPass : function(imperium_self, winning_choice) {
 	  imperium_self.game.state.archived_secret = 1;
 
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    if (winning_choice === imperium_self.returnFaction((i+1))) {
 	      imperium_self.game.state.archived_secret_player = i+1;
 	    }
@@ -1533,15 +1533,15 @@
 	  imperium_self.game.state.economic_equality = 1;
 
           if (winning_choice === "for") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	      imperium_self.game.players_info[i].goods = 0;
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	      imperium_self.game.state.players_info[i].goods = 0;
 	    }
 	    imperium_self.updateLog("All players have 0 trade goods");
           }
 
           if (winning_choice === "against") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	      imperium_self.game.players_info[i].goods = 5;
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+	      imperium_self.game.state.players_info[i].goods = 5;
 	    }
 	    imperium_self.updateLog("All players have 5 trade goods");
           }
@@ -1570,9 +1570,9 @@
 	  imperium_self.game.state.mutiny = 1;
 
           if (winning_choice === "for") {
-            for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+            for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
               if (imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]] == "for") {
-                imperium_self.game.players_info[i].vp++;
+                imperium_self.game.state.players_info[i].vp++;
 	        imperium_self.updateLog(imperium_self.returnFaction(i+1) + " gains 1 VP from Mutiny");
               }
             }
@@ -1582,9 +1582,9 @@
           // everyone who votes against discards action cards
           //
           if (winning_choice === "against") {
-            for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+            for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
               if (imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]] === "for") {
-                imperium_self.game.players_info[i].vp--;
+                imperium_self.game.state.players_info[i].vp--;
 	        imperium_self.updateLog(imperium_self.returnFaction(i+1) + " loses 1 VP from Mutiny");
               }
             }
@@ -1612,9 +1612,9 @@
 	  imperium_self.game.state.conventions_of_war = 1;
 
           if (winning_choice === "for") {
-            for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+            for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
               if (imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]] == "against") {
-                imperium_self.game.players_info[i].action_cards_in_hand = 0;
+                imperium_self.game.state.players_info[i].action_cards_in_hand = 0;
 		if (imperium_self.game.player == (i+1)) {
 		  imperium_self.game.deck[1].hand = [];
 		}
@@ -1769,11 +1769,11 @@
           // everyone who votes against loses command token
           //
           if (winning_choice === "against") {
-            for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+            for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
               if (imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]] == "against") {
-                imperium_self.game.players_info[i].command_tokens--;
-                if (imperium_self.game.players_info[i].command_tokens <= 0) {
-                  imperium_self.game.players_info[i].command_tokens = 0;
+                imperium_self.game.state.players_info[i].command_tokens--;
+                if (imperium_self.game.state.players_info[i].command_tokens <= 0) {
+                  imperium_self.game.state.players_info[i].command_tokens = 0;
 		}
 	      }
 	    }
@@ -1805,13 +1805,13 @@
 	  let players_to_research_tech = [];
 
           if (winning_choice === "for") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	      imperium_self.game.queue.push("activate\t"+(i+1)+"\t"+imperium_self.returnPlayerHomeworld((i+1)));
             }
           }
 
           if (winning_choice === "against") {
-	    imperium_self.game.players_info[i].fly_through_nebulas = 1;
+	    imperium_self.game.state.players_info[i].fly_through_nebulas = 1;
 	  }
 
 	  return 1;
@@ -1843,7 +1843,7 @@
           if (winning_choice === "against") {
 	    for (let i in imperium_self.game.sectors) {
 	      if (imperium_self.game.sectors[i].wormhole == 1 || imperium_self.game.sectors[i].wormhole == 2) {
-		for (let ii = 0; ii < imperium_self.game.players_info.length; ii++) {
+		for (let ii = 0; ii < imperium_self.game.state.players_info.length; ii++) {
 		  imperium_self.game.sectors[i].activated[ii] = 1;
 		}
 	        let sys = imperium_self.returnSectorAndPlanets(i);
@@ -1870,7 +1870,7 @@
         text : "Elect a Player to earn 1 VP. When this player loses a homeworld to another player, they lose 1 VP and their opponent gains 1 VP" ,
         returnAgendaOptions : function(imperium_self) {
           let options = [];
-          for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+          for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
             options.push(imperium_self.returnFaction(i+1));
           }
           return options;
@@ -1878,7 +1878,7 @@
         onPass : function(imperium_self, winning_choice) {
           imperium_self.game.state.crown_of_emphidia = 1;
 
-          for (let ii = 0; ii < imperium_self.game.players_info.length; ii++) {
+          for (let ii = 0; ii < imperium_self.game.state.players_info.length; ii++) {
             if (winning_choice === imperium_self.returnFaction((ii+1))) {
               imperium_self.game.state.crown_of_emphidia_player = ii+1;
             }
@@ -1889,7 +1889,7 @@
               law_to_push.option = winning_choice;
           imperium_self.game.state.laws.push(law_to_push);
 
-          imperium_self.game.players_info[imperium_self.game.state.crown_of_emphidia_player-1].vp += 1;
+          imperium_self.game.state.players_info[imperium_self.game.state.crown_of_emphidia_player-1].vp += 1;
           imperium_self.updateLeaderboard();
           imperium_self.updateLog(imperium_self.returnFaction(imperium_self.game.state.crown_of_emphidia_player) + " gains 1 VP from Crown of Emphidia");
 
@@ -1919,8 +1919,8 @@
                 imperium_self.updateLog(imperium_self.returnFaction(imperium_self.game.state.crown_of_emphidia_player) + " loses the Crown of Emphidia (-1VP)");
                 imperium_self.game.state.crown_of_emphidia_player = attacker;
                 imperium_self.updateLog(imperium_self.returnFaction(imperium_self.game.state.crown_of_emphidia_player) + " gains the Crown of Emphidia (+1VP)");
-                imperium_self.game.players_info[attacker-1].vp += 1;
-                imperium_self.game.players_info[defender-1].vp -= 1;
+                imperium_self.game.state.players_info[attacker-1].vp += 1;
+                imperium_self.game.state.players_info[defender-1].vp -= 1;
                 imperium_self.updateLeaderboard();
 	      }
             }
@@ -2052,7 +2052,7 @@
           imperium_self.game.state.publicize_weapons_schematics = 1;
 
           if (winning_choice === "for") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	      if (!imperium_self.doesPlayerHaveTech((i+1), "warsun")) {
 		imperium_self.game.queue.push("purchase\t"+(i+1)+"\t"+"tech"+"\t"+"warsun");
 	      }
@@ -2060,9 +2060,9 @@
           }
 
           if (winning_choice === "against") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	    for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	      if (imperium_self.doesPlayerHaveTech((i+1), "warsun")) {
-		imperium_self.game.players_info[i].action_cards_in_hand = 0;
+		imperium_self.game.state.players_info[i].action_cards_in_hand = 0;
 		if (imperium_self.game.player == (i+1)) {
 		  imperium_self.game.deck[1].hand = [];
 		}
@@ -2091,14 +2091,14 @@
 
           if (winning_choice === "for") {
             imperium_self.game.queue.push("revealobjectives");
-            for (let i = 1; i <= imperium_self.game.players_info.length; i++) {
+            for (let i = 1; i <= imperium_self.game.state.players_info.length; i++) {
               imperium_self.game.queue.push("FLIPCARD\t4\t1\t2\t"+i); // deck card poolnum player
             }
           }
 
           if (winning_choice === "against") {
             imperium_self.game.queue.push("revealobjectives");
-            for (let i = 1; i <= imperium_self.game.players_info.length; i++) {
+            for (let i = 1; i <= imperium_self.game.state.players_info.length; i++) {
               imperium_self.game.queue.push("FLIPCARD\t5\t1\t3\t"+i); // deck card poolnum player
             }
 	  }
@@ -2151,8 +2151,8 @@
               function(p) {
 	        let lower_vp_player = 0;
 		let this_player_vp = p.vp;
-	        for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-		  if (imperium_self.game.players_info[i] < this_player_vp) { lower_vp_player = 1; }
+	        for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
+		  if (imperium_self.game.state.players_info[i] < this_player_vp) { lower_vp_player = 1; }
 		}
 	        if (lower_vp_player == 1) { return 0; }
 		return 1;
@@ -2271,7 +2271,7 @@ console.log("planet is: " + winning_choice);
         text : "Elect a player. They discard all their action cards, lose the speaker token to the next player in initiative order (if they have it) and lose all of their votes." ,
         returnAgendaOptions : function(imperium_self) {
 	  let options = [];
-	  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	  for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 	    options.push(imperium_self.returnFaction(i+1));
 	  }
 	  return options;
@@ -2282,14 +2282,14 @@ console.log("planet is: " + winning_choice);
 
           imperium_self.game.state.public_execution = 1;
 
-          for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+          for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
             if (winning_choice === imperium_self.returnFaction((i+1))) {
               imperium_self.game.state.public_execution_player = i+1;
             }
           }
 
 	  // lose action cards
-          imperium_self.game.players_info[imperium_self.game.state.public_execution_player-1].action_cards_in_hand = 0;
+          imperium_self.game.state.players_info[imperium_self.game.state.public_execution_player-1].action_cards_in_hand = 0;
 	  if (imperium_self.game.player == imperium_self.game.state.public_execution_player) {
 	    imperium_self.game.deck[1].hand = [];
 	  }
@@ -2336,14 +2336,14 @@ console.log("planet is: " + winning_choice);
 	    if (roll <= 5) {
 
 	      // destroy all units
-	      for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	      for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 		imperium_self.game.planets['new-byzantium'].units[i] = [];
 		imperium_self.game.sectors['new-byzantium'].units[i] = [];
 	      }
 
      	      let as = imperium_self.returnAdjacentSectors('new-byzantium');
  	      for (let i = 0; i < as.length; i++) {
-	        for (let ii = 0; ii < imperium_self.game.players_info.length; ii++) {
+	        for (let ii = 0; ii < imperium_self.game.state.players_info.length; ii++) {
   	          if (imperium_self.doesSectorContainPlayerUnits((ii+1), as[i])) {
 		    imperium_self.game.queue.push("destroy_units\t"+(ii+1)+"\t"+3+"\t"+as[i]+"\t"+0);
     	          }
@@ -2353,7 +2353,7 @@ console.log("planet is: " + winning_choice);
 	    }
 
 	    if (roll >= 6) {
-	      for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	      for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
 		imperium_self.game.queue.push("research\t"+(i+1));
 		imperium_self.game.queue.push("research\t"+(i+1));
 	      }

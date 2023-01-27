@@ -1,209 +1,222 @@
-const SaitoEmoji = require("../../../../lib/saito/new-ui/saito-emoji/saito-emoji");
+const SaitoEmoji = require("../../../../lib/saito/ui/saito-emoji/saito-emoji");
 const ChatPopupTemplate = require("./popup.template");
 
 class ChatPopup {
 
-  constructor(app, mod) {
+  constructor(app, mod, container = "") {
+
     this.app = app;
     this.mod = mod;
 
-    this.emoji = new SaitoEmoji(app, mod, `chat-input`);
-    this.minimized = false;
+    this.container = container;
+    this.emoji = null;
+    this.manually_closed = false;
+    this.manually_moved = false;
+    this.group = null;
 
-    //Each ChatPopup has listeners so we need to only act if it is for us
-    app.connection.on("chat-render-request", (gid) => {
-      if (gid) {
-        if (!mod.mute){
-          let at = this.activeTab();
-          if (!at || at == gid){
-            if (!this.minimized){
-              this.render(app, mod, gid);
-              return;              
-            }
-          }else{
-            if (!document.getElementById(`chat-group-${gid}`)){
-              this.insertBackgroundTab(app, mod, gid);
-            }
-          }  
-        }
-        app.connection.emit("chat-render-request-notify", mod.returnGroup(gid));        
-      }
-    });
-
-    app.connection.on("chat-render-request-notify", (chat_group)=>{
-      if (chat_group?.id && (chat_group.id != this.activeTab() || this.minimized) ) {
-        let tab = document.getElementById(`chat-group-${chat_group.id}`);
-        if (tab && chat_group?.unread){
-          tab.innerHTML = `${chat_group.name}<div class="saito-notification-counter">${chat_group.unread}</div>`;
-        }
-      }
-    });
+    this.x_pos = 0;
+    this.y_pos = 0;
 
   }
 
-  activeTab(){
-    let tab = document.querySelector(".active-chat-tab");
-    if (tab){
-      return tab.getAttribute("id")?.replace("chat-group-", "");
+  render() {
+
+    //
+    // exit if group unset
+    //
+    if (this.group == null) { return; }
+
+    //
+    // exit if manually minimized
+    //
+    if (this.manually_closed) { return; }
+
+    //
+    // our query selector
+    //
+    let popup_qs = ".chat-popup-" + this.group.id;
+    let popup_id = "chat-popup-" + this.group.id;
+    let header_id = "chat-header-" + this.group.id;
+    let input_id = "chat-input-" + this.group.id;
+
+    let existing_input = "";
+
+    if (document.getElementById(input_id)) {
+      existing_input = document.getElementById(input_id).value;
     }
-    return null;
-  }
 
-  render(app, mod, group_id = "") {
-
-    if (!group_id){ return; }
-    let group = mod.returnGroup(group_id);
-
-    if (this.minimized){
-      this.toggleDisplay();
+    //
+    //
+    //
+    if (this.emoji == null) {
+        this.emoji = new SaitoEmoji(this.app, this.mod, input_id);
     }
 
-    if (!document.getElementById(`chat-container`)) {
-      app.browser.addElementToDom(ChatPopupTemplate(app, mod, group));
-      app.browser.makeDraggable(`chat-container`, `chat-header`, true);
+    //
+    // calculate some values to determine position on screen...
+    //
+    let x_offset = 1000000;
+    let x_range = 440;
+    let popups_on_page = 0;
+    let am_i_on_page = 0;
 
-      this.emoji.render(app, mod);
+    document.querySelectorAll(".chat-popup").forEach((el) => {
+        popups_on_page++;
+	var rect = el.getBoundingClientRect();
+        x_range = rect.right - rect.left;
+        if (rect.left < x_offset) {
+	  x_offset = rect.left;
+	}
+    });    
 
-    }else{
-      //Deactivate other tabs
-      let activeTab = document.querySelector(".active-chat-tab");
-      if (activeTab){
-        activeTab.classList.remove("active-chat-tab");
-      }
+    if (document.querySelector(popup_qs)) {
+      am_i_on_page = 1;
+    }
 
-      if (document.getElementById(`chat-group-${group_id}`)){
-        //Update tab
-        document.getElementById(`chat-group-${group_id}`).innerHTML = group.name;
-        document.getElementById(`chat-group-${group_id}`).classList.add("active-chat-tab");
-        //Load chat messages
-        app.browser.replaceElementBySelector(`<div class="chat-body">${mod.returnChatBody(group_id)}</div>`, `#chat-container .chat-body`);
-      }else{
-        let tabContainer = document.querySelector(".chat-group-tabs");
-        if (tabContainer){
-          tabContainer.classList.add("show-multi");
-        }
 
-        //Insert new tab
-        app.browser.addElementToSelector(`<div id="chat-group-${group_id}" class="chat-group active-chat-tab">${group.name}</div>`, ".chat-group-tabs");
-        app.browser.replaceElementBySelector(`<div class="chat-body">${mod.returnChatBody(group_id)}</div>`, `#chat-container .chat-body`);
-      }
+    //
+    // insert or replace popup on page
+    //
+    if (am_i_on_page == 1) {
+      let obj = document.querySelector(popup_qs);
+      var rect = obj.getBoundingClientRect();
+      this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group), popup_qs);
+      this.x_pos = rect.left;
+      this.y_pos = rect.top;
+      obj = document.querySelector(popup_qs);
+      obj.style.left = this.x_pos + "px";
+      obj.style.top = this.y_pos + "px";
+    } else {
+      this.app.browser.addElementToDom(ChatPopupTemplate(this.app, this.mod, this.group));
+    }
 
-    } 
+    //
+    // now set left-position of popup
+    //
+    if (popups_on_page >= 1 && am_i_on_page == 0 && this.manually_moved == false) {
+      this.x_pos = x_offset - x_range - 30;
+      if (this.x_pos < 0) { this.x_pos = 0; }
+      let obj = document.querySelector(popup_qs);
+      obj.style.left = this.x_pos + "px";
+    }
 
-    app.connection.emit("refresh-chat-groups");
+    //
+    // make draggable
+    //
+    this.app.browser.makeDraggable(popup_id, header_id, true, () => {
+      let obj = document.querySelector(popup_qs);
+      var rect = obj.getBoundingClientRect();
+      this.x_pos = rect.left;
+      this.y_pos = rect.top;
+      this.manually_moved = true;
+    });
+
+    //
+    // emojis
+    //
+    this.emoji.render();
+
+    //
+    // scroll to bottom
+    //
     document.querySelector(".chat-body").scroll(0, 1000000000);
-    this.attachEvents(app, mod);
-      
+
+    //
+    // re-render typed text
+    //
+    if (existing_input != "") {
+      document.getElementById(input_id).value = existing_input;
+    }
+
+
+    //
+    // attach events
+    //
+    this.attachEvents();
+
   }
 
-  insertBackgroundTab(app, mod, gid){
+  insertBackgroundTab(app, mod, gid) {
     let tabContainer = document.querySelector(".chat-group-tabs");
-    if (tabContainer){
+    if (tabContainer) {
       tabContainer.classList.add("show-multi");
     }
 
     let group = mod.returnGroup(gid);
-
-    //Insert new tab
-    app.browser.addElementToSelector(`<div id="chat-group-${gid}" class="chat-group">${group.name}</div>`, ".chat-group-tabs");
     this.attachEvents(app, mod);
-
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
 
-    let group_id = this.activeTab();
-
-    //
-    // close
-    //
-    document.querySelector(`#chat-container-close`).onclick = (e) => {
-      this.minimized = false;
-      mod.mute = true;
-      document.getElementById(`chat-container`).remove();
-
-      app.options.auto_open_chat_box = -1;
-      app.storage.saveOptions();
-    }
+    let app = this.app;
+    let mod = this.mod;
+    let group_id = this.group.id;
+    let input_id = "chat-input-" + this.group.id;
 
     //
-    // minimize
+    // our query selector
     //
-    let chat_bubble = document.getElementById(`chat-container-minimize`);
-    if (chat_bubble){
-      chat_bubble.onclick = (e) =>{
-        this.toggleDisplay();
+    let popup_qs = ".chat-popup-" + this.group.id;
+
+
+    try {
+
+      //
+      // close
+      //
+      document.querySelector(`${popup_qs} .chat-header .chat-container-close`).onclick = (e) => {
+        this.manually_closed = true;
+        mod.mute = true;
+        document.querySelector(`${popup_qs}`).remove();
+        app.storage.saveOptions();
       }
-    }
 
-    //
-    // focus on text input
-    //
-    if (!mod.isOtherInputActive()){
-      document.getElementById("chat-input").focus();
-    }
+      //
+      // minimize
+      //
+      let chat_bubble = document.getElementById(`${popup_qs} .chat-header .fa-comment-dots`);
+      if (chat_bubble) {
+        chat_bubble.onclick = (e) => {
+          this.toggleDisplay();
+        }
+      }
 
-    //
-    // submit
-    //
-    let msg_input = document.getElementById("chat-input");
+      //
+      // focus on text input
+      //
+      if (!mod.isOtherInputActive()) {
+        document.getElementById(input_id).focus();
+      }
 
-    msg_input.onkeydown = (e) => {
-      if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
+      //
+      // submit
+      //
+      let msg_input = document.querySelector(`${popup_qs} .chat-footer .chat-input`);
+      msg_input.onkeydown = (e) => {
+        if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
+          e.preventDefault();
+          if (msg_input.textContent == "") { return; }
+          let newtx = mod.createChatTransaction(group_id, msg_input.textContent);
+          mod.sendChatTransaction(app, newtx);
+          mod.receiveChatTransaction(app, newtx);
+          msg_input.textContent = "";
+        }
+      }
+
+      //
+      // submit (button)
+      //
+      document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
         e.preventDefault();
-        if (msg_input.value == "") { return; }
-        let newtx = mod.createChatTransaction(group_id, msg_input.value);
+        if (msg_input.textContent == "") { return; }
+        let newtx = mod.createChatTransaction(group_id, msg_input.textContent);
         mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(app, newtx);
-        msg_input.value = "";
-      }
-    }
-
-    //
-    // submit (button)
-    //
-    document.getElementById("chat-input-submit").onclick = (e) => {
-      e.preventDefault();
-      if (msg_input.value == "") { return; }
-      let newtx = mod.createChatTransaction(group_id, msg_input.value);
-      mod.sendChatTransaction(app, newtx);
-      mod.receiveChatTransaction(app, newtx);
-      msg_input.value = "";
-    }
-
-    //
-    // View Other tab
-    //
-    Array.from(document.getElementsByClassName("chat-group")).forEach((tab) =>{
-      if (!tab.classList.contains("active-chat-tab")){
-        tab.onclick = (e) => {
-          let id = e.currentTarget.getAttribute("id");
-          id = id.replace("chat-group-", "");
-
-          this.app.options.auto_open_chat_box = id;
-          this.app.storage.saveOptions();
-
-          this.render(this.app, this.mod, id);
-        };
-      }
-    });
-
-  }
-
-  toggleDisplay(){
-    let chat_bubble = document.getElementById(`chat-container-minimize`);
-    if (chat_bubble){
-      chat_bubble.parentElement.parentElement.classList.toggle("minimize");
-      chat_bubble.parentElement.parentElement.removeAttribute("style");
-      chat_bubble.innerHTML = "";
-
-      this.minimized = !this.minimized;
-
-      //Upon restoring chat popup, resend message to render
-      if (!this.minimized){
-        this.render(this.app, this.mod, this.activeTab());
+        msg_input.textContent = "";
       }
 
+    } catch (err) {
+      console.log("ERROR IN CHAT POPUP -- we can fix later: " + err);
     }
 
   }

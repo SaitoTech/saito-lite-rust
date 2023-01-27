@@ -47,7 +47,7 @@
 .email-compose-text {
     border-radius: 0rem;
     padding: 1rem 1.5rem;
-    border-top: 1px solid var(--saito-border);
+    border-top: 1px solid var(--saito-border-color);
 }
 
 

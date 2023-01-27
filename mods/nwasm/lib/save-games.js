@@ -1,29 +1,27 @@
 const saito = require('./../../../lib/saito/saito');
 const SaveGamesTemplate = require("./save-games.template");
-const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 const JSON = require('json-bigint');
 
 class SaveGamesOverlay {
 
-  constructor(app, mod = null, selector = "") {
+  constructor(app, mod = null, container = "") {
     this.app = app;
     this.mod = mod;
-    this.overlay = new SaitoOverlay(app);
+    this.container = container;
+    this.overlay = new SaitoOverlay(this.app, this.mod);
   }
 
-  render(app, mod, selector = "") {
-    this.overlay.show(app, mod, SaveGamesTemplate(app, mod));
+  render() {
 
-console.log("ACTIVE GAME SAVES: " + mod.active_game_saves.length);
+    let app = this.app;
+    let mod = this.mod;
 
+    this.overlay.show(SaveGamesTemplate(app, mod));
     document.getElementById("nwasm-saved-games").innerHTML = "";
 
-    
-
     for (let i = 0; i < mod.active_game_saves.length; i++) {
-console.log("i1: " + i);
       let s = mod.active_game_saves[i];
-console.log("i2: " + i);
       let stxmsg = s.returnMessage();
       let time_played = stxmsg.time_played;
 
@@ -72,23 +70,22 @@ console.log("i2: " + i);
 
       let time_elapsed = hours_full + minutes_full + seconds_full;
 
-console.log("i3: " + i);
       let html = `
         <div id="save_game_${i}" data-id="${s.transaction.sig}" class="nwasm-saved-games-item">
           <div class="nwasm-saved-games-screenshot"><img src="${stxmsg.screenshot}" /><div class="nwasn_time_elapsed">${time_elapsed}</div></div>
         </div>
       `;
-console.log("i4: " + i);
       if (!document.getElementById(`save_game_${i}`)) {
         app.browser.addElementToId(html, "nwasm-saved-games");
       }
-console.log("i5: " + i);
     }
-console.log("DONE");
-    this.attachEvents(app, mod);
+    this.attachEvents();
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     let sgo = this;
 
@@ -99,7 +96,6 @@ console.log("DONE");
 	sgo.overlay.hide();	
 	sgo.overlay.remove();	
 	let sig = e.currentTarget.getAttribute("data-id");
-console.log(sig);
         mod.loadSaveGame(sig);
 	sgo.overlay.hide();
       };

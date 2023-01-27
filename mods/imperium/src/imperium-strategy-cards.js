@@ -34,7 +34,7 @@
 
 
   playStrategyCardPrimary(player, card) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
       if (this.strategy_cards[card]) {
 	this.strategy_cards[card].strategyPrimaryEvent(this, (i+1), player);
       }
@@ -43,7 +43,7 @@
   }
 
   playStrategyCardSecondary(player, card) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
       if (this.strategy_cards[card]) {
 	this.strategy_cards[card].strategySecondaryEvent(this, (i+1), player);
       }
@@ -52,7 +52,7 @@
   }
 
   playStrategyCardTertiary(player, card) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
       if (this.strategy_cards[card]) {
 	this.strategy_cards[card].strategyTertiaryEvent(this, (i+1), player);
       }

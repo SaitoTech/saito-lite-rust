@@ -28,6 +28,13 @@ class Network {
   public peer_monitor_connection_timeout = 2000;
   public peer_monitor_timer: any;
   public debugging: boolean;
+  public blocks_to_fetch: Array<{ id: bigint; hash: string; peer: Peer }> = new Array<{
+    id: bigint;
+    hash: string;
+    peer: Peer;
+  }>();
+
+  public block_fetch_running = false;
 
   constructor(app: Saito) {
     this.app = app;
@@ -310,7 +317,7 @@ class Network {
         block.deserialize(buffer);
         // console.debug("block deserialized : " + block_hash);
         block.generateMetadata();
-        await block.generateConsensusValues();
+        // await block.generateConsensusValues();
         console.assert(
           block_hash === block.hash,
           `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
@@ -318,7 +325,7 @@ class Network {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;
-        this.app.mempool.addBlock(block);
+        await this.app.mempool.addBlock(block);
       } else {
         // if (this.debugging) {
         console.error(
@@ -576,6 +583,8 @@ class Network {
   }
 
   initialize() {
+    console.debug("[DEBUG] initialize network");
+
     if (this.app.options) {
       if (this.app.options.server) {
         if (
@@ -618,9 +627,12 @@ class Network {
     }
 
     if (this.app.options.peers != null) {
+      console.debug("[DEBUG] peers length " + this.app.options.peers.length);
       for (let i = 0; i < this.app.options.peers.length; i++) {
         this.addPeer(JSON.stringify(this.app.options.peers[i]));
       }
+    } else {
+      console.debug("[DEBUG] no peers defined");
     }
 
     this.app.connection.on("peer_disconnect", (peer) => {
@@ -668,7 +680,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    // console.log("network.receiveRequest : ", message);
+    //console.log("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -753,7 +765,7 @@ class Network {
 
         try {
           peer.peer.services = JSON.parse(buffer.toString("utf8"));
-          console.log("services : ", peer.peer.services);
+          //console.log("services : ", peer.peer.services);
         } catch (err) {
           console.error("ERROR parsing peer services list or setting services in peer");
         }
@@ -765,27 +777,35 @@ class Network {
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
-        //if (this.debugging) { console.log("RECEIVED GSTCHAIN 1: " + JSON.stringify(syncobj)); }
+        if (this.debugging) {
+          console.log("RECEIVED GSTCHAIN 1: ", syncobj);
+        }
 
         let previous_block_hash = syncobj.start;
 
         for (let i = 0; i < syncobj.prehash.length; i++) {
           let buf = Buffer.concat([
-            Buffer.from(previous_block_hash, "hex"),
-            Buffer.from(syncobj.prehash[i], "hex"),
+            this.app.binary.hexToSizedArray(previous_block_hash, 32),
+            this.app.binary.hexToSizedArray(syncobj.prehash[i], 32),
           ]);
           let block_hash = this.app.crypto.hash(buf);
 
-          //if (this.debugging) { console.log("block hash as: " + block_hash); }
+          if (this.debugging) {
+            console.log("block hash as: " + block_hash);
+          }
 
           if (parseInt(syncobj.txs[i]) > 0) {
-            //if (this.debugging) { console.log("fetching blcok! " + block_hash); }
+            if (this.debugging) {
+              console.log("fetching block! " + block_hash);
+            }
             await this.fetchBlock(block_hash);
-            //if (this.debugging) { console.log("done fetch block!"); }
+            if (this.debugging) {
+              console.log("done fetch block!");
+            }
           } else {
             // ghost block
             if (this.debugging) {
-              //              console.log("adding ghostchain blcok! " + block_hash);
+              console.log("adding ghostchain block! " + block_hash);
             }
             this.app.blockchain.addGhostToBlockchain(
               BigInt(syncobj.block_ids[i]),
@@ -815,7 +835,7 @@ class Network {
         fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         if (this.debugging) {
-          console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
+          //console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
         }
 
         const last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
@@ -824,21 +844,34 @@ class Network {
         );
 
         if (this.debugging) {
-          console.log("last shared ancestor generated at: " + last_shared_ancestor);
+          //console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
+        let obj: any = {
+          last_id: last_shared_ancestor,
+        };
+        obj.timer = setInterval(() => {
+          let count = 100;
+          // notify peer of longest-chain after this amount
+          for (let i = obj.last_id; i <= this.app.blockring.returnLatestBlockId(); i++) {
+            --count;
+            block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+            if (block_hash !== "") {
+              // block = await this.app.blockchain.loadBlockAsync(block_hash);
+              // if (block) {
+              this.propagateBlock(block_hash, i, peer);
+              obj.last_id = i;
+              // }
+            }
 
-        //
-        // notify peer of longest-chain after this amount
-        //
-        for (let i = last_shared_ancestor; i <= this.app.blockring.returnLatestBlockId(); i++) {
-          block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-          if (block_hash !== "") {
-            block = await this.app.blockchain.loadBlockAsync(block_hash);
-            if (block) {
-              this.propagateBlock(block, peer);
+            if (count === 0) {
+              break;
             }
           }
-        }
+
+          if (obj.last_id === this.app.blockring.returnLatestBlockId()) {
+            clearInterval(obj.timer);
+          }
+        }, 1000);
 
         break;
       }
@@ -854,7 +887,7 @@ class Network {
         fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         if (this.debugging) {
-          console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
+          //console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
         }
 
         let last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
@@ -863,7 +896,7 @@ class Network {
         );
 
         if (this.debugging) {
-          console.log("last shared ancestor generated at: " + last_shared_ancestor);
+          //console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
 
         if (last_shared_ancestor <= 0) {
@@ -874,12 +907,12 @@ class Network {
 
         let syncobj = {
           start: "",
-          prehash: [],
-          previous_block_hash: [],
+          prehash: new Array<string>(),
+          previous_block_hash: new Array<string>(),
           block_ids: new Array<bigint>(),
-          block_ts: [],
-          txs: [],
-          gts: [],
+          block_ts: new Array<number>(),
+          txs: new Array<number>(),
+          gts: new Array<boolean>(),
         };
         syncobj.start =
           this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
@@ -907,6 +940,8 @@ class Network {
           }
         }
 
+        //console.log("sync obj for gst chain : ", syncobj);
+
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
       }
@@ -932,10 +967,12 @@ class Network {
       //
       case MessageType.BlockHeaderHash:
         block_hash = Buffer.from(message.message_data.slice(0, 32), "hex").toString("hex");
-        console.log("BlockHeaderHash received : " + block_hash);
+        block_id = this.app.binary.u64FromBytes(message.message_data.slice(32, 40));
+        console.log("BlockHeaderHash received : " + block_hash + " - " + block_id);
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
-          await this.fetchBlock(block_hash, peer);
+          this.blocks_to_fetch.push({ id: block_id, hash: block_hash, peer: peer });
+          await this.fetchBlocks();
         }
         break;
 
@@ -1100,25 +1137,21 @@ class Network {
   //
   // propagate block
   //
-  propagateBlock(blk: Block | null, peer = null) {
+  propagateBlock(hash: string, id: bigint, peer = null) {
     if (this.app.BROWSER) {
       return;
     }
     //console.debug("network.propagateBlock", blk.returnHash());
-    if (!blk) {
+    if (!hash) {
       return;
     }
-    if (!blk.is_valid) {
+    if (!id) {
       return;
     }
 
-    const data = { bhash: blk.returnHash(), bid: blk.block.id };
     for (let i = 0; i < this.peers.length; i++) {
       if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
-        let blockheader = Buffer.concat([
-          Buffer.from(blk.returnHash(), "hex"),
-          this.app.binary.u64AsBytes(blk.returnId()),
-        ]);
+        let blockheader = Buffer.concat([Buffer.from(hash, "hex"), this.app.binary.u64AsBytes(id)]);
         this.sendRequest("SNDBLKHH", blockheader, this.peers[i]);
       }
     }
@@ -1199,6 +1232,7 @@ class Network {
     for (let i = 0; i < tx.transaction.from.length; ++i) {
       tx.transaction.from[i].generateKey(this.app);
     }
+
     //
     // if this is our (normal) transaction, add to pending
     //
@@ -1309,8 +1343,10 @@ class Network {
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
         if (this.app.SPVMODE == 1) {
+          console.log("requesting ghost chain from peer : " + peer.id);
           this.sendRequest("REQGSTCN", buffer_to_send, peer);
         } else {
+          console.log("requesting full chain from peer : " + peer.id);
           this.sendRequest("REQCHAIN", buffer_to_send, peer);
         }
         return;
@@ -1319,8 +1355,10 @@ class Network {
 
     if (this.peers.length > 0) {
       if (this.app.SPVMODE == 1) {
+        console.log("requesting ghost chain from first peer");
         this.sendRequest("REQGSTCN", buffer_to_send, this.peers[0]);
       } else {
+        console.log("requesting full chain from first peer");
         this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);
       }
     }
@@ -1385,6 +1423,25 @@ class Network {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   close() {}
+
+  async fetchBlocks() {
+    if (this.block_fetch_running) {
+      return;
+    }
+    this.block_fetch_running = true;
+    do {
+      let promises = [];
+      this.blocks_to_fetch.sort((a, b) => Number(b.id - a.id));
+      for (let i = 0; i < 1 && this.blocks_to_fetch.length > 0; ++i) {
+        let entry = this.blocks_to_fetch.pop();
+        console.debug("fetching : " + entry.hash + " - " + entry.id);
+        promises.push(this.fetchBlock(entry.hash, entry.peer));
+        // await this.fetchBlock(entry.hash, entry.peer);
+      }
+      await Promise.all(promises);
+    } while (this.blocks_to_fetch.length > 0);
+    this.block_fetch_running = false;
+  }
 }
 
 export default Network;
