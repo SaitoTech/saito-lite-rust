@@ -116,9 +116,14 @@ class AppspaceHome {
       this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
       document.querySelector(".redsquare-home").dataset.thread_id = this.thread_id;
     }
-
     tweet.renderWithParentAndChildren();
 
+    // make tweets full
+    document.querySelectorAll('.tweet-text').forEach(item => {
+      if(item.classList.contains('preview')){
+        item.classList.replace('preview', 'full')
+      }
+    })
     this.attachEvents();
 
   }

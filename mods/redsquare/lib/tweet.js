@@ -261,7 +261,10 @@ class Tweet {
           el.classList.add("preview");
           this.is_long_tweet = true;
         }
+
+        console.log('long tweet', el.innerHTML, this.is_long_tweet)
       }
+
 
       /////////////////
       // view thread //
