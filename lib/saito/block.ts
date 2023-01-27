@@ -1224,7 +1224,7 @@ class Block {
         for (let ii = 0; ii < this.callbacks.length; ii++) {
           try {
             if (run_callbacks === 1) {
-console.log("running callback!");
+//console.log("running callback!");
               await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
             }
           } catch (err) {

@@ -108,7 +108,7 @@
   font-size: 1.6rem;
   padding: 0.9rem 3rem 0.5rem 0.5rem;
   outline: none;
-  background-color: var(--saito-background-color);
+  background: var(--saito-arcade-background);
   max-height: 15rem;
   overflow-y: auto;
 }

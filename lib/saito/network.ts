@@ -680,7 +680,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    console.log("network.receiveRequest : ", message);
+    //console.log("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -765,7 +765,7 @@ class Network {
 
         try {
           peer.peer.services = JSON.parse(buffer.toString("utf8"));
-          console.log("services : ", peer.peer.services);
+          //console.log("services : ", peer.peer.services);
         } catch (err) {
           console.error("ERROR parsing peer services list or setting services in peer");
         }
@@ -940,7 +940,7 @@ class Network {
           }
         }
 
-        console.log("sync obj for gst chain : ", syncobj);
+        //console.log("sync obj for gst chain : ", syncobj);
 
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
