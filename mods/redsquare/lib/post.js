@@ -92,9 +92,9 @@ class Post {
 
       try {
 
-       const dataId =   document.getElementById('post-tweet-textarea').parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-       console.log(dataId);
-       }
+       const dataId =   document.querySelector('.post-tweet-textarea').parentElement.parentElement.parentElement.querySelector('.saito-user').getAttribute('data-id');
+       keys.push(dataId);
+            }
        catch(error){
         console.log('error ', error);
        }
