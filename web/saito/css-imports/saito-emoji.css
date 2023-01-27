@@ -21,3 +21,7 @@ emoji-picker {
   --emoji-size: 2rem;
   --emoji-padding: 0.5rem;
 }
+
+.saito-emoji-container {
+  width: 100%;
+}
