@@ -74,20 +74,20 @@ class LeagueOverlay {
         let html_mine = ``;
         if (this_obj.games['mine'].length > 0)  {
           html_mine = this.create_games_html(this_obj.games['mine']);
+          this_obj.app.browser.addElementToSelector(html_mine, ".league_recent_mine .saito-table-body");
         } else {
-          html_mine = 'No recent games found for you in this league.'  
+          document.querySelector(".league_recent_parent_mine").style.display = "none";
         }
 
-        this_obj.app.browser.addElementToSelector(html_mine, ".league_recent_mine .saito-table-body");
+        
 
         let html_others = ``;
         if (this_obj.games['others'].length > 0)  {
           html_others = this.create_games_html(this_obj.games['others']);
+          this_obj.app.browser.addElementToSelector(html_others, ".league_recent_others .saito-table-body");
         } else {
-          html_others = 'No recent games found in this league.'         
+          document.querySelector(".league_recent_parent_others").style.display = "none";  
         }
-
-        this_obj.app.browser.addElementToSelector(html_others, ".league_recent_others .saito-table-body");
           
       });    
   }
