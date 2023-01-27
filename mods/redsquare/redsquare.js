@@ -501,6 +501,8 @@ class RedSquare extends ModTemplate {
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, "", tx);
+    tweet.updated_at = tx.transaction.ts;
+
     let is_notification = 0;
 
     //
