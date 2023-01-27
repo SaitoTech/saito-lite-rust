@@ -42,7 +42,7 @@ class ChatPopup {
     let existing_input = "";
 
     if (document.getElementById(input_id)) {
-      existing_input = document.getElementById(input_id).value;
+      existing_input = document.getElementById(input_id).innerHTML;
     }
 
     //
@@ -125,7 +125,8 @@ class ChatPopup {
     // re-render typed text
     //
     if (existing_input != "") {
-      document.getElementById(input_id).value = existing_input;
+      document.getElementById(input_id).innerHTML = existing_input;
+      existing_input = "";
     }
 
 
@@ -186,6 +187,8 @@ class ChatPopup {
       //
       if (!mod.isOtherInputActive()) {
         document.getElementById(input_id).focus();
+	document.execCommand('selectAll', false, null);
+	document.getSelection().collapseToEnd();
       }
 
       //
@@ -200,6 +203,10 @@ class ChatPopup {
           mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(app, newtx);
           msg_input.textContent = "";
+          msg_input.innerHTML = "";
+	  if (document.getElementById(input_id)) {
+	    document.getElementById(input_id).innerHTML = "";
+	  }
         }
       }
 
@@ -213,6 +220,10 @@ class ChatPopup {
         mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(app, newtx);
         msg_input.textContent = "";
+        msg_input.innerHTML = "";
+	if (document.getElementById(input_id)) {
+	  document.getElementById(input_id).innerHTML = "";
+	}
       }
 
     } catch (err) {
