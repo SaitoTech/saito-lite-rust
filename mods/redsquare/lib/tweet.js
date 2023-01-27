@@ -100,7 +100,7 @@ class Tweet {
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
       if (prepend == true) {
-        this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
+        this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
   
         if (this.render_after_selector) {
@@ -129,7 +129,6 @@ class Tweet {
  
     this.render(prepend);
     this.attachEvents();
-
 
     if (this.critical_child) {
 
@@ -187,14 +186,27 @@ class Tweet {
   }
 
 
+  renderWithParentAsCritical() {
+    let parent = this.mod.returnTweet(this.parent_id);
+    
+    if (parent) {
+      parent.critical_child = this;
+      parent.renderWithCriticalChild(true);
+    } else {
+      this.render();
+    }
+  }
+
+
   renderWithParentAndChildren() {
 
     //
     // first render parent if it exists
     //
     let parent = this.mod.returnTweet(this.parent_id);
+    
     if (parent) {
-      parent.critical_child = this;
+      parent.critical_child = this;  
       parent.render();
       this.render_after_selector = `.tweet-${this.parent_id}`;
       this.render();
@@ -202,9 +214,9 @@ class Tweet {
       this.render();
     }
 
+    
     //
-    // then render its children
-    //
+    //then render its children
     if (this.children.length > 0) {
       if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
         if (this.children[0].children.length > 0) {
@@ -430,7 +442,6 @@ class Tweet {
     //
     this.unknown_children.push(tweet);
     this.unknown_children_sigs_hmap[tweet.tx.transaction.sig] = 1;
-
     //
     // if this tweet is the parent-tweet of a tweet we have already downloaded
     // and indexed here. this can happen if tweets arrive out-of-order.
