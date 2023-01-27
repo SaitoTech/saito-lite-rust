@@ -19815,7 +19815,7 @@ console.log("HGL 1: " + z[i].name);
 
     let html = `
 
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
+      <div style="padding:40px;width:85vw;max-height:90vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
 
         <div style="top:0;left:0;margin-right: 20px;">
 
