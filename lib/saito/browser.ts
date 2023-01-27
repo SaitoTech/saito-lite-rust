@@ -10,6 +10,8 @@ var sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
 const UserMenu = require("./ui/modals/user-menu/user-menu");
+const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
+
 
 
 class Browser {
@@ -253,7 +255,15 @@ class Browser {
 
             let userMenu = new UserMenu(app, publickey);
             userMenu.render(app);
-          }
+
+          } else {
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            let myUserMenu = new MyUserMenu(app, publickey);
+            myUserMenu.render(app);
+	  }
         }
       },
       {

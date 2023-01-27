@@ -48,7 +48,7 @@ module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
     for (let i = 0; i < invite.desired_opponent_publickeys.length; i++) {
       html += `
 
-      <div class="arcade-game-playerbox saito-table-row requested_player">
+      <div class="arcade-game-playerbox empty saito-table-row requested_player">
 	      <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keys.returnIdenticon(invite.desired_opponent_publickeys[i])}"></div>
  	      <div class="saito-username">${invite.desired_opponent_publickeys[i]}</div>
 	    </div>

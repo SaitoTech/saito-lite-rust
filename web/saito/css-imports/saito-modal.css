@@ -48,7 +48,11 @@ This alows for a header with a header with title to be added without extra CSS
   float: left;
   margin-right: 2rem;
   font-size: 2rem;
-  padding-top: 1rem;
+  vertical-align: middle;
+  margin-bottom: auto;
+  margin-top: auto;
+  line-height: 3rem;
+  height: 3rem;
 }
 
 .saito-modal-text-input {

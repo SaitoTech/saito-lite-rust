@@ -40,9 +40,9 @@ module.exports = WaitingGameOverlayTemplate = (app, mod, invite_tx) => {
     let missing_slots = txmsg.players_needed - txmsg.players.length;
     for (let i=0; i<missing_slots; i++) {
       html += `
-            <div class="arcade-game-playerbox saito-table-row">  
+            <div class="arcade-game-playerbox empty saito-table-row">  
   	      <div class="saito-identicon-box empty-slot"></div>
-	      <div class="saito-username">open player slot</div>
+	      <div class="saito-username empty">open player slot</div>
 	    </div>
       `;
     }
