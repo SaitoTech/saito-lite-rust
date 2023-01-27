@@ -65,6 +65,20 @@
   overflow: hidden;
 }
 
+.chat-input {
+  position: absolute;
+    bottom: 0.5rem;
+    border: 1px solid var(--saito-border-color);
+    border-radius: 0.5rem;
+    width: calc(100% - 4rem);
+    font-size: 1.6rem;
+    padding: 0.9rem 3rem 0.5rem 0.5rem;
+    outline: none;
+    background-color: var(--saito-background-color);
+    max-height: 25rem;
+    overflow-y: auto;
+}
+
 .chat-body {
   padding: 1rem;
   display: block;

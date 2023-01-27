@@ -195,11 +195,11 @@ class ChatPopup {
       msg_input.onkeydown = (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();
-          if (msg_input.value == "") { return; }
-          let newtx = mod.createChatTransaction(group_id, msg_input.value);
+          if (msg_input.textContent == "") { return; }
+          let newtx = mod.createChatTransaction(group_id, msg_input.textContent);
           mod.sendChatTransaction(app, newtx);
           mod.receiveChatTransaction(app, newtx);
-          msg_input.value = "";
+          msg_input.textContent = "";
         }
       }
 
@@ -208,11 +208,11 @@ class ChatPopup {
       //
       document.querySelector(`${popup_qs} .chat-footer .chat-input-submit`).onclick = (e) => {
         e.preventDefault();
-        if (msg_input.value == "") { return; }
-        let newtx = mod.createChatTransaction(group_id, msg_input.value);
+        if (msg_input.textContent == "") { return; }
+        let newtx = mod.createChatTransaction(group_id, msg_input.textContent);
         mod.sendChatTransaction(app, newtx);
         mod.receiveChatTransaction(app, newtx);
-        msg_input.value = "";
+        msg_input.textContent = "";
       }
 
     } catch (err) {

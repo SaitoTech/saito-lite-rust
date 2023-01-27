@@ -90,16 +90,27 @@ class RedSquareMain {
     // this fires when a tweet is added to our tree
     //
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
+      
       if (this.render_component === "home") {
-	if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
-	  tweet.container = ".redsquare-appspace-body";
+        if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
+	     
+          tweet.container = ".redsquare-appspace-body";
           tweet.render();
+
         } else {
+         
           if (tweet.tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
-	    tweet.container = ".redsquare-appspace-body";
-	    tweet.render(true); // prepend - is mine but is new
-	  }
-	}
+      	    tweet.container = ".redsquare-appspace-body";
+
+            if (tweet.parent_id != "") {
+              document.querySelector(".tweet-"+tweet.parent_id).remove();
+              tweet.renderWithParentAsCritical();
+            } else {
+              tweet.render(true);
+            }
+            
+      	  }
+	      }
       }
     });
 

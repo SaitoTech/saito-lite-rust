@@ -57,64 +57,6 @@ module.exports = (app, mod) => {
 <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 
 <style>
-  body::before {
-    content: "";
-    position: absolute;
-    height: 100vh;
-    width: 100vw;
-    background: #fff;
-    z-index: 100000000000;
-  }
-  body::after {
-    content: "";
-    background-color: transparent;
-    background-image: url("./images/saito-loader.svg");
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    animation-duration: 2s;
-    animation-name: homepulse;
-    animation-iteration-count: infinite;
-    position: absolute;
-    top: 25%;
-    left: 50%;
-    width: 70px;
-    height: 70px;
-    z-index: 100000000001;
-  }
-
-  @keyframes homepulse {
-  0% {
-      transform: translate(-50%, -50%) scale(0.2);
-      border-radius: 50%;
-      background-size: 0px;
-  }
-
-  30% {
-      transform: translate(-50%, -50%) scale(1);
-      border-radius: 0;
-      background-color: red;
-      background-size: 0px;
-  }
-
-  50% {
-      background-size: 50px;
-      transform: translate(-50%, -50%) scale(1.1);
-  }
-
-  70% {
-      transform: translate(-50%, -50%) scale(1);
-      border-radius: 0;
-      background-color: red;
-      background-size: 50px;
-  }
-
-  100% {
-      transform: translate(-50%, -50%) scale(0.5);
-      border-radius: 50%;
-      background-size: 0px;
-  }
-}
 
 </style>
 
