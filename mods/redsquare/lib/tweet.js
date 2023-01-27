@@ -70,15 +70,15 @@ class Tweet {
   }
 
 
-  render(prepend=false) {
-    
+  render(prepend = false) {
+
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
 
     //
     // retweets displayed in container even if master exists elsewhere on page
     //
-    if (this.is_retweet) { 
+    if (this.is_retweet) {
       myqs = this.container;
       replace_existing_element = true;
     } else {
@@ -102,12 +102,12 @@ class Tweet {
       if (prepend == true) {
         this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
-  
+
         if (this.render_after_selector) {
           this.app.browser.addElementAfterSelector(TweetTemplate(this.app, this.mod, this), this.render_after_selector);
         } else {
           this.app.browser.addElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
-	}
+        }
       }
     }
 
@@ -126,7 +126,7 @@ class Tweet {
   }
 
   renderWithCriticalChild(prepend = false) {
- 
+
     this.render(prepend);
     this.attachEvents();
 
@@ -138,11 +138,11 @@ class Tweet {
       let myqs = `.tweet-${this.tx.transaction.sig}`;
       let obj = document.querySelector(myqs);
       if (obj) {
-	if (this.critical_child.parent_id == this.tx.transaction.sig) {
-	  obj.classList.add("has-reply");
-	} else {
-	  obj.classList.add("has-reply-disconnected");
-	}
+        if (this.critical_child.parent_id == this.tx.transaction.sig) {
+          obj.classList.add("has-reply");
+        } else {
+          obj.classList.add("has-reply-disconnected");
+        }
       }
 
     }
@@ -188,7 +188,7 @@ class Tweet {
 
   renderWithParentAsCritical() {
     let parent = this.mod.returnTweet(this.parent_id);
-    
+
     if (parent) {
       parent.critical_child = this;
       parent.renderWithCriticalChild(true);
@@ -204,9 +204,9 @@ class Tweet {
     // first render parent if it exists
     //
     let parent = this.mod.returnTweet(this.parent_id);
-    
+
     if (parent) {
-      parent.critical_child = this;  
+      parent.critical_child = this;
       parent.render();
       this.render_after_selector = `.tweet-${this.parent_id}`;
       this.render();
@@ -214,7 +214,7 @@ class Tweet {
       this.render();
     }
 
-    
+
     //
     //then render its children
     if (this.children.length > 0) {
@@ -252,8 +252,11 @@ class Tweet {
       /////////////////////////////
       // Expand / Contract Tweet //
       /////////////////////////////
-      {
-        let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
+      let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
+      
+      if (document.querySelector(".redsquare-home").dataset.thread_id) {
+        el.classList.add('full');
+      } else {
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
           this.is_long_tweet = true;
@@ -263,27 +266,32 @@ class Tweet {
       /////////////////
       // view thread //
       /////////////////
-      document.querySelector(`.tweet-${this.tx.transaction.sig}`).addEventListener('click', (e) => {
-        let tweet_text = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
-        if (this.is_long_tweet) {
-          if (!tweet_text.classList.contains('full')) {
-            tweet_text.classList.remove('preview');
-            tweet_text.classList.add('full');
-          } else {
-            if (e.target.tagName != "IMG") {
-              this.app.connection.emit("redsquare-thread-render-request", (this));
-            }
-          }
-          return;
-        }
+      let this_tweet = document.querySelector(`.tweet-${this.tx.transaction.sig}`);
+      if (!this_tweet.dataset.hasClickEvent) {
+        this_tweet.dataset.hasClickEvent = true;
+        this_tweet.addEventListener('click', (e) => {
 
-	//
-	// if we are asking to see a tweet, load from parent if exists
-	//
-        if (e.target.tagName != "IMG") {
-          this.app.connection.emit("redsquare-thread-render-request", (this));
-        }
-      })
+          let tweet_text = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
+          if (this.is_long_tweet) {
+            if (!tweet_text.classList.contains('full')) {
+              tweet_text.classList.remove('preview');
+              tweet_text.classList.add('full');
+            } else {
+              if (e.target.tagName != "IMG") {
+                this.app.connection.emit("redsquare-thread-render-request", (this));
+              }
+            }
+            return;
+          }
+
+          //
+          // if we are asking to see a tweet, load from parent if exists
+          //
+          if (e.target.tagName != "IMG") {
+            this.app.connection.emit("redsquare-thread-render-request", (this));
+          }
+        })
+      }
 
 
 
@@ -326,9 +334,9 @@ class Tweet {
         if (tweet_sig != null) {
 
           let post = new Post(this.app, this.mod, this);
-	  //
-	  // retweets do not have parent_id -- new thread
-	  //
+          //
+          // retweets do not have parent_id -- new thread
+          //
           //post.parent_id = tweet_sig;
           post.source = 'Retweet';
           post.render();
@@ -403,8 +411,8 @@ class Tweet {
           this.mod.sendFlagTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
           let obj = document.querySelector(`.tweet-flag-${tweet_sig}`);
           if (obj) { obj.classList.add("saito-tweet-activity"); }
-	  obj = document.querySelector(`.tweet-${tweet_sig}`);
-	  if (obj) { obj.style.display = 'none'; }
+          obj = document.querySelector(`.tweet-${tweet_sig}`);
+          if (obj) { obj.style.display = 'none'; }
           salert("Tweet reported to moderators successfully.");
 
         }

@@ -19,11 +19,11 @@ class AppspaceHome {
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
 
-          if (entry.isIntersecting) {
-            let saito_loader = this.saito_loader;
-            saito_loader.render(app, mod, "redsquare-intersection", false);
-            mod.loadMoreTweets(()=> saito_loader.remove());
-          }
+        if (entry.isIntersecting) {
+          let saito_loader = this.saito_loader;
+          saito_loader.render(app, mod, "redsquare-intersection", false);
+          mod.loadMoreTweets(() => saito_loader.remove());
+        }
 
       });
     }, {
@@ -40,13 +40,13 @@ class AppspaceHome {
     //
     this.renderMain();
 
-  }  
+  }
 
 
-  renderMoreTweets(){
+  renderMoreTweets() {
     for (let i = 0; i < this.mod.tweets.length; i++) {
       if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
-	this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
+        this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
       }
       this.mod.tweets[i].container = ".redsquare-appspace-body";
       this.mod.tweets[i].renderWithCriticalChild();
@@ -59,10 +59,10 @@ class AppspaceHome {
   }
 
 
-  renderNewTweets(){
+  renderNewTweets() {
     for (let i = 0; i < this.mod.tweets.length; i++) {
       if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
-	this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
+        this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
       }
       this.mod.tweets[i].container = ".redsquare-appspace-body";
       this.mod.tweets[i].renderWithCriticalChild();
@@ -73,7 +73,7 @@ class AppspaceHome {
 
     this.attachEvents();
 
-}
+  }
 
 
 
@@ -94,7 +94,7 @@ class AppspaceHome {
     //
     for (let i = 0; i < this.mod.tweets.length; i++) {
       if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
-	this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
+        this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
       }
       this.mod.tweets[i].container = ".redsquare-appspace-body";
       this.mod.tweets[i].renderWithCriticalChild();
@@ -113,8 +113,10 @@ class AppspaceHome {
 
     if (document.querySelector(".redsquare-home")) {
       this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
+      document.querySelector(".redsquare-home").dataset.thread_id = this.thread_id;
     } else {
       this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+      document.querySelector(".redsquare-home").dataset.thread_id = this.thread_id;
     }
 
     tweet.renderWithParentAndChildren();
@@ -138,7 +140,7 @@ class AppspaceHome {
 
     document.querySelector('.redsquare-new-tweets-banner').onclick = (e) => {
       this.renderNewTweets();
-}
+    }
 
 
   }
