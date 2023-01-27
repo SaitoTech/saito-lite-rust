@@ -406,6 +406,7 @@ class RedSquare extends ModTemplate {
   }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
     this.app.storage.loadTransactionsFromPeer("RedSquare", (50 * increment), peer, (txs) => {
+      
       if (!this.peers_for_notifications.includes(peer)) {
         this.peers_for_notifications.push(peer);
       }
@@ -413,6 +414,7 @@ class RedSquare extends ModTemplate {
         txs[i].decryptMessage(this.app);
         this.addTweet(txs[i]);
       }
+      console.log('notificatoins added', this.notifications, this.tweets)
       if (post_load_callback != null) { post_load_callback(); }
     });
   }
@@ -512,9 +514,11 @@ class RedSquare extends ModTemplate {
     //
     // maybe this needs to go into notifications too
     //
+
+    console.log('tweets ', tweet)
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
 
-
+      // console.
       //
       // this is a notification, so update our timestamps
       //
@@ -551,7 +555,8 @@ class RedSquare extends ModTemplate {
         // increment notifications in menu unless is our own
         //
         if (tx.transaction.ts > this.notifications_last_viewed_ts) {
-          this.menu.incrementNotifications("notifications");
+          this.notifications_number_unviewed++;
+          this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
         }
 
       }
@@ -691,30 +696,30 @@ class RedSquare extends ModTemplate {
 
 
 
-  addNotification(app, mod, tx) {
-    if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
-      return;
-    }
-    if (tx.transaction.ts > this.notifications_last_viewed_ts) {
-      this.notifications_number_unviewed++;
+//   addNotification(app, mod, tx) {
+//     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
+//       return;
+//     }
+//     if (tx.transaction.ts > this.notifications_last_viewed_ts) {
+//       this.notifications_number_unviewed++;
 
-    //   this.app.connection.emit("redsquare-notifications-render-request", { menu: "notifications", num: this.notifications_number_unviewed });
-    // }
-    if (this.ntfs.length == 0) {
-      this.ntfs.push(tx);
-      console.log('notifications ', this.ntfs)
-      return;
-    }
-    for (let i = 0; i < this.ntfs.length; i++) {
-      if (this.ntfs[i].transaction.ts < tx.transaction.ts) {
-        this.ntfs.splice(i, 0, tx);
-        return;
-      }
-    }
-    this.ntfs.push(tx);
+//     //   this.app.connection.emit("redsquare-notifications-render-request", { menu: "notifications", num: this.notifications_number_unviewed });
+//     // }
+//     if (this.ntfs.length == 0) {
+//       this.ntfs.push(tx);
+//       console.log('notifications ', this.ntfs)
+//       return;
+//     }
+//     for (let i = 0; i < this.ntfs.length; i++) {
+//       if (this.ntfs[i].transaction.ts < tx.transaction.ts) {
+//         this.ntfs.splice(i, 0, tx);
+//         return;
+//       }
+//     }
+//     this.ntfs.push(tx);
  
-  }
-}
+//   }
+// }
 
 
   async fetchOpenGraphProperties(app, mod, link) {
@@ -837,7 +842,6 @@ class RedSquare extends ModTemplate {
         //
         this.addTweet(tx, true);
 
-        this.addNotification(app, this, tx);
 
       }
 
@@ -1106,10 +1110,12 @@ class RedSquare extends ModTemplate {
   // saving and loading wallet state //
   /////////////////////////////////////
   load() {
+ 
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;
       this.notifications_last_viewed_ts = this.redsquare.notifications_last_viewed_ts;
       this.notifications_number_unviewed = this.redsquare.notifications_number_unviewed;
+      console.log('notifications', this.redsquare)
     } else {
       this.redsquare = {};
       this.notifications_last_viewed_ts = new Date().getTime();

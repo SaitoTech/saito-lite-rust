@@ -75,6 +75,8 @@ class RedSquareMain {
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
       this.mod.notifications_last_viewed_ts = new Date().getTime();
+      this.mod.notifications_number_unviewed = 0;
+      this.mod.menu.incrementNotifications('notifications');
       this.mod.save();
     });
 

@@ -84,7 +84,6 @@ class RedSquareMenu {
     let qs = `.redsquare-menu-${menu_item}`;
 
     if (document.querySelector(qs)) {
-
       qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
       let obj = document.querySelector(qs);
       if (!obj) {

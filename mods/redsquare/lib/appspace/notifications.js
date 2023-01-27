@@ -140,24 +140,8 @@ class RedSquareAppspaceNotifications {
 
       notification.render(app, mod, ".redsquare-notifications");
     }
+    mod.notifications_number_unviewed = 0;
 
-    // let notifications_height = document.querySelector('.redsquare-list').offsetHeight;
-    // let body_height = document.body.offsetHeight;
-    // let percentage = notifications_height/body_height * 100;
-
-// ;
-//     let num_ntfs = mod.ntfs.length;
-//     let max_ntfs = mod.max_ntfs_num;
-//     let self = this
-//     if(num_ntfs < max_ntfs){
-//       mod.num_ntfs = num_ntfs;
-//     }else if(num_ntfs >= max_ntfs) {
-//       this.increment++;
-//       mod.loadNotificationTransactions(app, mod, this.increment, (app, mod)=> {
-        
-//         self.render(app, mod)
-//       })
-//     }
 
     this.attachEvents(app, mod);
 

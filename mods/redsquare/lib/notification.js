@@ -49,7 +49,7 @@ class RedSquareNotification {
 
     if (this.tx.transaction.ts > mod.last_viewed_notifications_ts) {
       mod.last_viewed_notifications_ts = this.tx.transaction.ts;
-      mod.saveRedSquare();
+      mod.save();
     }
 
     app.browser.addElementToSelector(html, ".redsquare-notifications");
