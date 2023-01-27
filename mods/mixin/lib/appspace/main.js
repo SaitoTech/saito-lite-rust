@@ -9,12 +9,12 @@ class MixinAppspace {
   constructor(app, mod, container = "") {
     this.app = app;
     this.mod = mod;
-    this.container = container;
+    this.container = container || ".saito-main";
     this.history_overlay = new SaitoOverlay(app, mod, true, true); 
   }
 
   render() {
-    document.querySelector(".appspace").innerHTML = MixinAppspaceTemplate(this.app, this.mod);
+    document.querySelector(this.container).innerHTML = MixinAppspaceTemplate(this.app, this.mod);
     this.attachEvents();
   }
 

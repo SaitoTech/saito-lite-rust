@@ -6,15 +6,14 @@ module.exports = MixinAppspaceTemplate = (app) => {
 
   let html = `
 
-  <div class="saito-page-header">
+  <div class="redsquare-page-header">
 `;
 
     if (account_created) {
         html += ` <div class="saito-button-secondary small" style="float: right;" id="mixin-backup-btn">Backup Wallet</div>`;
     }
 
-    html += `    <div class="saito-page-header-title">CRYPTO WALLET
-    </div>
+    html += `    <div class="redsquare-page-header-title">CRYPTO WALLET</div>
   </div>
 
   <div class="mixin-appspace">
