@@ -30,7 +30,7 @@ class WaitingGameOverlay {
     document.querySelector(".arcade-game-controls-cancel-invite").onclick = (e) => {
       let game_id = e.currentTarget.getAttribute("data-id");      
       this.mod.sendCloseTransaction(game_id);
-      this.mod.removeGame();
+      this.mod.removeGame(game_id);
       this.overlay.remove();
     }
 
