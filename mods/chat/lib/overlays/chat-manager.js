@@ -67,7 +67,8 @@ class ChatManagerOverlay {
     // if an icon-click in header triggered this, avoid pain
     if (cl.indexOf("fa-") > -1) { should_remove = false; }
     if (cl.indexOf("fas ") > -1) { should_remove = false; }
-    
+    if (cl.indexOf("saito-header-chat") > -1) { should_remove = false; }
+
     if (should_remove && document.querySelector(".chat-manager-overlay")) {
       let sh = document.getElementById("saito-header");
       sh.removeEventListener("click", this.onOffChatClick, false);
