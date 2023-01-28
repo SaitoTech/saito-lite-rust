@@ -1364,6 +1364,21 @@ class Network {
     }
   }
 
+  returnPeersWithService(service) {
+    let peers = [];
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].hasService(service)) { peers.push(this.peers[i]); }
+    }
+    return peers;
+  }
+  returnPeerPublicKeysWithService(service) {
+    let peers = [];
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].hasService(service)) { peers.push(this.peers[i].returnPublicKey()); }
+    }
+    return peers;
+  }
+
   sendRequest(message: string, data: any = "", peer: Peer = null) {
     if (peer !== null) {
       peer.sendRequest(message, data);

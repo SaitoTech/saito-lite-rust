@@ -33,12 +33,10 @@ class InviteManager {
 			if (this.mod.browser_active == 1) { // dont add overlay if arcade
 			  return; 
 			} else {
-			
-				this.loader_overlay.hide();	  	
-				this.loader_overlay.show('<div class="arcade_game_overlay_loader"></div>');
-				let game_loader = new ArcadeInitializer(app, mod, ".arcade_game_overlay_loader");
-				game_loader.render(game_id);	
-			
+			  this.loader_overlay.hide();	  	
+			  this.loader_overlay.show('<div class="arcade_game_overlay_loader"></div>');
+			  let game_loader = new ArcadeInitializer(app, mod, ".arcade_game_overlay_loader");
+			  game_loader.render(game_id);	
 			}
 		});
 
