@@ -76,7 +76,7 @@ module.exports = WaitingGameOverlayTemplate = (app, mod, invite_tx) => {
 	</div>
       </div>
       <div class="arcade-game-controls">
-        <div class="arcade-game-controls-cancel-game saito-button saito-button-primary" data-id="${txmsg.game_id}" data-cmd="cancel">cancel game</div>
+        <div class="arcade-game-controls-cancel-invite saito-button saito-button-primary" data-id="${txmsg.game_id}" data-cmd="cancel">cancel invite</div>
       </div>
     </div>
   `;
