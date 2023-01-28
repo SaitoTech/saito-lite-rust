@@ -1058,9 +1058,9 @@ alert("Observer Overlay for URL Games not yet implemented");
       this.app.connection.emit("arcade-game-initialize-render-request", (txmsg.game_id));
       siteMessage(txmsg.module + ' invite accepted.', 20000);
       let game_id = await gamemod.processAcceptRequest(tx, this.app);
-      if (!game_id) {
-        await sconfirm("Something went wrong with the game initialization, reload: " + game_id);
-      }
+      //if (!game_id) {
+      //  await sconfirm("Something went wrong with the game initialization, reload: " + game_id);
+      //}
     }
 
   }
