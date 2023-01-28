@@ -97,10 +97,8 @@ class RedSquareMenu {
       let obj = document.querySelector(qs);
       if (!obj) {
         if (notifications > 0) {
-alert("ADDING 1: " + notifications);
 	  this.app.browser.addElementToSelector(`<div class="saito-notification-dot">${notifications}</div>`, `.redsquare-menu-${menu_item}`);
 	} else {
-alert("ADDING 2: " + notifications);
           this.app.browser.addElementToSelector(`<div class="saito-notification-dot"></div>`, `.redsquare-menu-${menu_item}`);
           qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
           let obj = document.querySelector(qs);
