@@ -1226,6 +1226,7 @@ console.log("ADDING AS NOTIFICATION!");
                 img_type = 'image/svg';
               }
   
+              console.info('### write from 1229 of redsquare.js');
               res.writeHead(200, {
                 'Content-Type': img_type,
                 'Content-Length': img.length
@@ -1238,7 +1239,7 @@ console.log("ADDING AS NOTIFICATION!");
       } catch (err) {
         console.log("Loading OG data failed with error: " + err);
       }
-  
+      console.info('### write from line 1242 of server.ts.')
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
       res.send(redsquareHome(app, redsquare_self));
