@@ -2,13 +2,11 @@
 
 module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
 
-  let image = game_mod.respondTo("arcade-games")?.img;
-
   let html = `<div class="game-create-new-overlay dark">`;
 
   html += ` 
     <div class="saito-module-intro">
-      <div class="saito-module-intro-image" style="background-image:url('${image}');"></div>
+      <div class="saito-module-intro-image" style="background-image:url('${game_mod.returnArcadeImg()}');"></div>
       <div class="saito-module-intro-text">
         <div class="saito-module-intro-title editable-content" id="league-name" contenteditable data-placeholder="Name your league....">Name your league....</div>
         <div id="league-desc" class="saito-module-intro-description post-create-textarea editable-content markdown medium-editor-element" data-placeholder="Describe your league here..." contenteditable="true" spellcheck="true" data-medium-editor-element="true" role="textbox" aria-multiline="true">Describe your league here...</div>

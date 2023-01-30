@@ -22,7 +22,7 @@ class ContinueGameOverlay {
     let game_mod = this.app.modules.returnModuleByName(modname);
 
     this.overlay.show(ContinueGameOverlayTemplate(this.app, this.mod, this));
-    this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
+    this.overlay.setBackground(`${game_mod.returnArcadeImg()}`);
 
     this.attachEvents();
 
