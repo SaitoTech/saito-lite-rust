@@ -225,7 +225,7 @@ class Arcade extends ModTemplate {
     //
     // load open games from server
     //
-    let sql = `SELECT * FROM games WHERE ( status = "open" OR game_id = "${game_id}" ) AND created_at > ${cutoff}`;
+    let sql = `SELECT * FROM games WHERE status = "open" AND created_at > ${cutoff}`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql,
       (res) => {
         if (res.rows) {
