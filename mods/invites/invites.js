@@ -26,7 +26,7 @@ class Invites extends InviteTemplate {
 
 
   canRenderInto(qs) {
-    if (qs === ".saito-main") { return true; }
+    if (qs === ".saito-main" && this.invites.length > 0) { return true; }
     return false;
   }
 
