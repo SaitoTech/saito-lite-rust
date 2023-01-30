@@ -33,6 +33,10 @@
   row-gap: 2rem;
 }
 
+.redsquare-appspace-body{
+  min-height: 100vh;
+}
+
 #redsquare-intersection {
   opacity: 1;
   height: 1rem;

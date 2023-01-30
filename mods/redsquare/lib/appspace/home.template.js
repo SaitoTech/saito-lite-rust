@@ -1,7 +1,7 @@
 module.exports = () => {
 
   return `
-      <div class="redsquare-home">
+      <div id="redsquare-home" class="redsquare-home">
         <div class="redsquare-appspace-header">
         <div style="display: none" class="redsquare-new-tweets-banner" id="redsquare-new-tweets-banner">Load New Posts</div> 
           <div class="redsquare-actions-buttons">
@@ -13,7 +13,7 @@ module.exports = () => {
             </div>
           </div>
         </div>
-        <div class="redsquare-appspace-body">
+        <div id="redsquare-appspace-body" class="redsquare-appspace-body">
 	</div>
   <div id="redsquare-intersection">
   </div>
