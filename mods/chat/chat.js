@@ -145,6 +145,11 @@ class Chat extends ModTemplate {
 
                                 this.receiveChatTransaction(app, tx);
                             }
+
+			    //
+			    // add identifiers
+			    //
+			    app.browser.addIdentifiersToDom();
                         }
                     },
 
