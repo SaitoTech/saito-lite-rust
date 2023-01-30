@@ -15,11 +15,11 @@ class RedSquareAppspaceNotifications {
   }
 
   render() {
+
     let app = this.app;
     let mod = this.mod;
 
-
-       if (document.querySelector(".redsquare-notifications")) {
+    if (document.querySelector(".redsquare-notifications")) {
       this.app.browser.replaceElementBySelector(RedSquareAppspaceNotificationsTemplate(app, mod), ".redsquare-notifications");
     } else {
       if (this.container) {
@@ -30,20 +30,15 @@ class RedSquareAppspaceNotifications {
     }
 
     for (let i = 0; i < mod.notifications.length; i++) {
-      console.log(mod.notifications, 'notifications')
       let notification = new Notification(app, mod, mod.notifications[i].tx);
-
-      notification.render(app, mod, ".redsquare-notifications");
+      notification.render(".redsquare-notifications");
     }
 
     if(mod.notifications.length === 0){
       let notification = new Notification(app, mod, null);
-      notification.render(app, mod, ".redsquare-notifications");
+      notification.render(".redsquare-notifications");
     }
     
-
-
-
     this.attachEvents(app, mod);
 
   }

@@ -187,6 +187,7 @@ class Tweet {
 
 
   renderWithParentAsCritical() {
+
     let parent = this.mod.returnTweet(this.parent_id);
 
     if (parent) {

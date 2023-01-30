@@ -45,10 +45,7 @@ class RedSquareMain {
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
      }
-    
     });
-
-    
 
     this.app.connection.on("redsquare-home-load-more-tweets-request", (tx) => {
       this.components[this.render_component].renderMoreTweets();
@@ -57,8 +54,6 @@ class RedSquareMain {
     this.app.connection.on("redsquare-show-load-tweet-banner", (tx) => {
       document.querySelector('.redsquare-new-tweets-banner').style.display = "block";
     });
-
-
 
     this.app.connection.on("redsquare-thread-render-request", (tweet) => {
       document.querySelector(".saito-main").innerHTML = "";
@@ -115,17 +110,6 @@ class RedSquareMain {
       	  }
 	      }
       }
-    });
-
-
-    //
-    // this fires when the user has asked to view a tweet / thread
-    //
-    this.app.connection.on("redsquare-tweet-render-request", (tweet_sig) => {
-
-
-
-      //tweet.render();
     });
 
   }
