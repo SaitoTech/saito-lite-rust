@@ -4,9 +4,7 @@ module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
 
   let game_id = txmsg.game_id || "";
   let invite = component_obj.invite;
-  let modname = txmsg.name;
-  if (!modname) { modname = txmsg.game; }
-  if (!modname) { modname = txmsg.module; }
+  let modname = txmsg.name || txmsg.game || txmsg.module;
   let game_mod = app.modules.returnModuleByName(modname);
   let options = txmsg.options;
 
@@ -21,7 +19,7 @@ module.exports = ContinueGameOverlayTemplate = (app, mod, component_obj) => {
     <div class="arcade-game-overlay">
 
       <div class="arcade-game-overlay-header">
-				<div class="arcade-game-overlay-header-image" style="background-image: url('/${game_mod.returnSlug()}/img/arcade/arcade.jpg')"></div>
+				<div class="arcade-game-overlay-header-image" style="background-image: url('${game_mod.returnArcadeImg()}')"></div>
 				<div class="arcade-game-overlay-header-title-box">
 				  <div class="arcade-game-overlay-header-title-box-title">${game_mod.returnName()}</div>
 				  <div class="arcade-game-overlay-header-title-box-desc">${desc}</div>

@@ -93,7 +93,7 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
       let backdrop_image = `/saito/img/dreamscape.png`;
       let game = this.app.browser.returnURLParameter("game");
       let game_mod = this.app.modules.returnModuleByName(game);
-      if (game_mod != null) { backdrop_image = `/${game_mod.returnSlug()}/img/arcade/arcade.jpg`; }
+      if (game_mod != null) { backdrop_image = game_mod.returnArcadeImg(); }
       so.setBackground(backdrop_image);
       so.render(' ');
     }
