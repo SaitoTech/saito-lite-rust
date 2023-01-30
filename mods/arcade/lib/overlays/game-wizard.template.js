@@ -2,7 +2,6 @@
 module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
 
   let html = `<div class="arcade-wizard-overlay">`;
-  let image = `/${game_mod.returnSlug()}/img/arcade/arcade.jpg`;
   let invite = null;
   let publickey = null;
   if (invite_obj.invite) { invite = invite_obj.invite; }
@@ -14,7 +13,7 @@ module.exports = GameWizardTemplate = (app, mod, game_mod, invite_obj = {}) => {
     
       <!- ***Game thumbnail & options start*** -->
       <div class="arcade-wizard-game-image">
-        <img class="arcade-wizard-game-thumbnail" src="${image}">
+        <img class="arcade-wizard-game-thumbnail" src="${game_mod.returnArcadeImg()}">
       </div>
       <!- ***Game thumbnail & options end*** -->
 
