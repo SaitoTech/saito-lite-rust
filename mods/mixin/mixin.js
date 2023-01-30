@@ -56,7 +56,7 @@ class Mixin extends ModTemplate {
 
   
   canRenderInto(qs) {
-    if (qs === ".saito-main" && (this.account_created == 1 || this.mixin.publickey !== "")) { return true; }
+    if (1==1 || qs === ".saito-main" && (this.account_created == 1 || this.mixin.publickey !== "")) { return true; }
     return false;
   }
 
@@ -77,6 +77,8 @@ class Mixin extends ModTemplate {
   //
   respondTo(type = "") {
     if (type === 'saito-header') {
+      console.log("INSIDE MIXIN RESPONDTO");
+      
       return [{
         text: "Wallet",
         icon: this.icon,
