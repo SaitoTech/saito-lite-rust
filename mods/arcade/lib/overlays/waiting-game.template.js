@@ -7,6 +7,9 @@ module.exports = WaitingGameOverlayTemplate = (app, mod, invite_tx) => {
   let game_mod = app.modules.returnModuleByName(modname);
   let options = txmsg.options;
   let desc = "waiting for players";
+  let game_id = invite_tx.transaction.sig;
+  if (txmsg.game_id) { game_id = txmsg.game_id; }
+
 
   console.log("Waiting for players tx");
   console.log(txmsg);
@@ -76,7 +79,7 @@ module.exports = WaitingGameOverlayTemplate = (app, mod, invite_tx) => {
 	</div>
       </div>
       <div class="arcade-game-controls">
-        <div class="arcade-game-controls-join-game saito-button saito-button-primary" data-cmd="cancel">cancel game</div>
+        <div class="arcade-game-controls-cancel-invite saito-button saito-button-primary" data-id="${game_id}" data-cmd="cancel">cancel invite</div>
       </div>
     </div>
   `;

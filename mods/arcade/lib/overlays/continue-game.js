@@ -41,8 +41,9 @@ class ContinueGameOverlay {
     }
     document.querySelector(".arcade-game-controls-cancel-game").onclick = (e) => {
         let game_id = e.currentTarget.getAttribute("data-id");      
-        this.mod.sendCancelTransaction(game_id);
-        this.mod.removeGame();
+        this.mod.sendCloseTransaction(game_id);
+        this.mod.removeGame(game_id);
+        this.overlay.remove();
     }
 
   }

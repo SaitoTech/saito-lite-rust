@@ -501,7 +501,14 @@ alert("Observer Overlay for URL Games not yet implemented");
         }
 
         //
-        // cancel open games
+        // cancel open invites
+        //
+        if (txmsg.module == "Arcade" && txmsg.request == "cancel") {
+          arcade_self.receiveCancelTransaction(tx);
+        }
+
+        //
+        // cancel games in-process
         //
         if (txmsg.module == "Arcade" && txmsg.request == "close") {
           arcade_self.receiveCloseTransaction(tx);
@@ -798,6 +805,46 @@ alert("Observer Overlay for URL Games not yet implemented");
 
 
 
+  ////////////
+  // Cancel //
+  ////////////
+  createCancelTransaction(game_id) {
+
+    let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    let my_publickey = this.app.wallet.returnPublicKey();
+    let msg = {
+      request: "cancel",
+      module: "Arcade",
+      game_id: game_id,
+    };
+    newtx.msg = msg;
+    newtx = this.app.wallet.signTransaction(newtx);
+
+    return newtx;
+
+  }
+  async receiveCancelTransaction(tx) {
+    let txmsg = tx.returnMessage();
+    let id = txmsg.game_id;
+    this.removeGame(id);
+    let sql = `UPDATE games SET status = $status WHERE game_id = $game_id AND status != 'over'`;
+    let params = { $status: "close", $game_id: id };
+    await this.app.storage.executeDatabase(sql, params, "arcade");
+  }
+  sendCancelTransaction(game_id) {
+
+    let close_tx = this.createCloseTransaction(game_id);
+    this.app.network.propagateTransaction(close_tx);
+
+    let relay_mod = this.app.modules.returnModule("Relay");
+    if (relay_mod != null) {
+      relay_mod.sendRelayMessage(this.app.network.returnPeerPublicKeysWithService("arcade"), "arcade spv update", close_tx);
+    }
+  }
+
+
+
+
   ///////////
   // Close //
   ///////////
@@ -811,7 +858,7 @@ alert("Observer Overlay for URL Games not yet implemented");
       game_id: game_id,
     };
     newtx.msg = msg;
-    newtx = app.wallet.signTransaction(newtx);
+    newtx = this.app.wallet.signTransaction(newtx);
 
     return newtx;
 
@@ -829,9 +876,9 @@ alert("Observer Overlay for URL Games not yet implemented");
     let close_tx = this.createCloseTransaction(game_id);
     this.app.network.propagateTransaction(close_tx);
 
-    let relay_mod = app.modules.returnModule("Relay");
+    let relay_mod = this.app.modules.returnModule("Relay");
     if (relay_mod != null) {
-      relay_mod.sendRelayMessage(peers, "arcade spv update", close_tx);
+      relay_mod.sendRelayMessage(this.app.network.returnPeerPublicKeysWithService("arcade"), "arcade spv update", close_tx);
     }
   }
 
@@ -1069,7 +1116,7 @@ alert("Observer Overlay for URL Games not yet implemented");
   // CHANGE //
   ////////////
   //
-  // requesting that peers update the state of the game in any
+  // requesting that this.app.network.peers update the state of the game in any
   // index of available games that they maintain.
   //
   async receiveChangeTransaction(tx) {
@@ -1425,6 +1472,12 @@ alert("Observer Overlay for URL Games not yet implemented");
     if (!this.games["open"]) { this.games["open"] = []; }
     if (!this.games["mine"]) { this.games["mine"] = []; }
     txs.forEach((tx, i) => {
+
+
+console.log("FOR EACH TX");
+console.log(JSON.stringify(tx.transaction));
+
+
       let for_us = false;
       let valid_game = this.validateGame(tx);
       if (valid_game) {
@@ -1516,6 +1569,7 @@ alert("Observer Overlay for URL Games not yet implemented");
   }
 
   removeGame(game_sig, list) {
+console.log("START: " + JSON.stringify(this.games));
     if (!this.games[list]) { this.games[list] = []; }
     for (let key in this.games) {
       this.games[key] = this.games[key].filter(game => {
@@ -1526,6 +1580,11 @@ alert("Observer Overlay for URL Games not yet implemented");
         }
       });
     }
+console.log("FINISH: " + JSON.stringify(this.games));
+    // save local game references
+    this.save();
+    // and let us know we can redraw
+    this.app.connection.emit('arcade-invite-manager-render-request');
   }
   removeOldGames() {
     let removed_old_games = 0;
@@ -1943,6 +2002,17 @@ alert("Observer Overlay for URL Games not yet implemented");
       harmony.disconnect();
     }, 3000);
 
+  }
+
+  save() {
+    let games = [];
+    for (let key in this.games) {
+      for (let i = 0; i < this.games[key].length; i++) {
+        games.push(this.games[key][i]);
+      }
+    }
+    this.app.options.games = games;
+    this.app.storage.saveOptions();
   }
 
 }

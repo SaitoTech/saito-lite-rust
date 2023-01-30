@@ -33,6 +33,11 @@ class RedSquare extends ModTemplate {
     this.tweets_sigs_hmap = {};
     this.unknown_children = [];
 
+    //
+    // cache common queries
+    //
+    this.sqlcache_enabled = 1;
+
     this.peers_for_tweets = [];
     this.peers_for_notifications = [];
     this.notifications = [];
