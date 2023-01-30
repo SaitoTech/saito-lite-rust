@@ -221,6 +221,10 @@ Scrollbars
   line-height: 2rem;
 }
 
+.hidden {
+  display: none;
+}
+
 #message-wrapper {
   border: 2px solid var(--saito-primary);
   min-width: 500px;

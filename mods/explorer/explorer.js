@@ -104,7 +104,7 @@ class ExplorerCore extends ModTemplate {
     <meta name=\"description\" content=\"\"> \
     <meta name=\"author\" content=\"\"> \
     <title>Saito Network: Blockchain Explorer</title> \
-    <link rel=\"stylesheet\" type=\"text/css\" href=\"/saito/style.css\" /> \
+    <link rel=\"stylesheet\" type=\"text/css\" href=\"/saito/saito.css\" /> \
     <link rel=\"stylesheet\" type=\"text/css\" href=\"/explorer/style.css\" /> \
     <link rel=\"stylesheet\" type=\"text/css\" href=\"/saito/lib/jsonTree/jsonTree.css\" /> \
     <link rel=\"stylesheet\" href=\"/saito/lib/font-awesome-5/css/all.css\" type=\"text/css\" media=\"screen\"> \
@@ -120,8 +120,8 @@ class ExplorerCore extends ModTemplate {
   returnHeader() {
     return "<body> \
         \
-        <div class=\"header header-home\"> \
-        <img class=\"logo\" src=\"/saito/img/logo.svg\"> \
+        <div id=\"saito-header\" class=\"header header-home\"> \
+        <img class=\"saito-header-logo\" src=\"/saito/img/logo.svg\"> \
     </div>";
   }
 
