@@ -42,14 +42,13 @@ class GameWizard {
 
     //Create the game wizard overlay
     this.overlay.show(GameWizardTemplate(app, mod, this.game_mod, this.obj));
-    let backdrop_image = this.game_mod.respondTo("arcade-games")?.img || `/${this.slug}/img/arcade/arcade.jpg`;
-    this.overlay.setBackground(backdrop_image);
+    this.overlay.setBackground(this.game_mod.returnArcadeImg());
 
     //Test if we should include Advanced Options
     let advancedOptions = this.game_mod.returnGameOptionsHTML();
     if (!advancedOptions) {
       if (document.getElementById("arcade-advance-opt")) {
-        document.getElementById("arcade-advance-opt").style.display = "none";
+        document.getElementById("arcade-advance-opt").style.visibility = "hidden";
       }
     } else {
 

@@ -6,26 +6,25 @@ class InvitationLink {
     constructor(app, mod, data={}){
         this.app = app;
         this.mod = mod;
-        this.data = data;
+        this.game = data.game;
+        this.link = data.link;
         this.overlay = new SaitoOverlay(app, mod);
     }
     
-    render(data = null) {
-        if (data != null) { this.data = data; }
-        this.overlay.show(InvitationLinkTemplate(this.app, this.mod, this.data));
-        this.attachEvents();
-    }
+    render() {
+        this.overlay.show(InvitationLinkTemplate(this.game));
 
-    attachEvents() {
         try{
             document.querySelector('#copy-invite-link').addEventListener('click', (e) => {
-                navigator.clipboard.writeText(e.currentTarget.dataset.link);
+                navigator.clipboard.writeText(this.invite_link);
                 this.overlay.remove();
             });
         }catch(err){
             console.error(err);
         }
+
     }
+
 }
 
 

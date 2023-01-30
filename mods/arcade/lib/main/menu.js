@@ -15,9 +15,9 @@ class ArcadeMenu {
     //
     let gamelist = [];
     let html = "";
-    for (let i = 0; i < this.mod.game_mods.length; i++) {
-      let game_mod = this.mod.game_mods[i];
-      gamelist.push([game_mod.categories, `<li class="arcade-menu-item${(game_mod.name == this.mod.viewing_game_homepage)? " selected":""}" id="${game_mod.name}">${game_mod.returnName()}</li>`]);
+    for (let i = 0; i < this.mod.arcade_games.length; i++) {
+      let game_mod = this.mod.arcade_games[i];
+      gamelist.push([game_mod.categories, `<li class="arcade-menu-item" id="${game_mod.name}">${game_mod.returnName()}</li>`]);
     };
     if (!this.mod.manual_ordering){
       gamelist.sort(function (a,b){
@@ -46,10 +46,7 @@ class ArcadeMenu {
 
     Array.from(document.getElementsByClassName('arcade-menu-item')).forEach(game => {
       game.addEventListener('click', (e) => {
-        let gameName = e.currentTarget.id;
-
-        menu_self.app.connection.emit("arcade-launch-game-wizard", { game: gameName });
-      
+        menu_self.app.connection.emit("arcade-launch-game-wizard", { game: e.currentTarget.id });
       });
     });
 

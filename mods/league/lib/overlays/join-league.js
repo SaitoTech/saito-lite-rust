@@ -25,8 +25,7 @@ class JoinLeague {
 
     this.game_mod = this.app.modules.returnModuleByName(league.game);
     this.overlay.show(JoinLeagueTemplate(this.app, this.mod, league));
-    let backdrop_image = `/${this.game_mod.returnSlug()}/img/arcade/arcade.jpg`;
-    this.overlay.setBackground(backdrop_image);
+    this.overlay.setBackground(this.game_mod.returnArcadeImg());
 
     this.attachEvents();
   }
