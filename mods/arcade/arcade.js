@@ -1381,6 +1381,7 @@ alert("Observer Overlay for URL Games not yet implemented");
         let games = await app.storage.queryDatabase(sql, params, "arcade");
 
         if (games.length > 0) {
+          console.info('### Write @ arcade line 1337;');
           let game = games[0];
           res.setHeader('Content-type', 'text/html');
           res.charset = 'UTF-8';
@@ -1410,6 +1411,7 @@ alert("Observer Overlay for URL Games not yet implemented");
             if (game.player_pkey == recovering_pkey) { stop_now = 1; } else { games_to_push.push(game.state); }
             if (recovering_pkey == "" || stop_now == 1) { z = games.length + 1; }
           }
+          console.info('### Write @ arcade line 1367;');
           res.setHeader('Content-type', 'text/html');
           res.charset = 'UTF-8';
           res.write(JSON.stringify(games_to_push));

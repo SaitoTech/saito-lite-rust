@@ -941,7 +941,7 @@ class AppStore extends ModTemplate {
             let scriptn = './bundler/dist/' + scriptname;
             let mods_dir_path = path.resolve(__dirname, scriptn);
             let filename = mods_dir_path;
-
+            console.info('### write from line 944 of appstore.')
             res.writeHead(200, {
               "Content-Type": "text/javascript",
               "Content-Transfer-Encoding": "utf8",
