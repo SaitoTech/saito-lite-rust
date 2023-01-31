@@ -254,15 +254,22 @@ class Tweet {
       // Expand / Contract Tweet //
       /////////////////////////////
       let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
-      
-      if (document.querySelector(".redsquare-home").dataset.thread_id) {
-        el.classList.add('full');
-      } else {
+      let cobj = document.querySelector(this.container);     
+      let is_full = false;
+
+      if (cobj.dataset) {
+	if (cobj.dataset.thread_id) {
+	  is_full = true;
+        }
+      }
+
+      if (is_full) {
+          el.classList.add('full');
+      } else { 
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
           this.is_long_tweet = true;
         }
-
       }
 
 
