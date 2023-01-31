@@ -20,6 +20,7 @@ class Mixin extends ModTemplate {
     super(app);
 
     this.name = "Crypto Wallet";
+    this.slug = "wallet";
     this.appname = "Crypto";
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";
@@ -56,18 +57,23 @@ class Mixin extends ModTemplate {
 
   
   canRenderInto(qs) {
-    if (1==1 || qs === ".saito-main" && (this.account_created == 1 || this.mixin.publickey !== "")) { return true; }
+    if (qs === ".saito-main") { return true; }
     return false;
   }
 
   renderInto(qs) {
+    
     if (qs == ".saito-main") {
       if (!this.renderIntos[qs]) {
+
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
+      
+        this.attachStyleSheets();
+        this.renderIntos[qs].forEach((comp) => { 
+          comp.render(); 
+        });
       }
-      this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
   }
 
@@ -107,8 +113,7 @@ class Mixin extends ModTemplate {
 
         m = JSON.parse(process.env.MIXIN);
  
-        
-	if (m.appId) {
+        if (m.appId) {
 
           let method = "POST";
           let uri = '/users';
