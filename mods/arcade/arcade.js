@@ -794,6 +794,9 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
     let game = this.returnGame(txmsg.game_id);
 
+    if (!game) { return; }
+    if (!game.msg) { return; }
+
     if (this.debug){
       console.log(`Removing Player (${tx.transaction.from[0].add}) from Game: `, JSON.parse(JSON.stringify(game.msg)));
     }
