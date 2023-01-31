@@ -457,3 +457,32 @@
   margin-bottom: 1rem;
   font-size: 2rem;  
 }
+
+
+@media screen and (max-width: 768px) {
+
+
+  .mixin-items-container .saito-table-header {
+    grid-template-columns: 8rem 8rem;
+  }
+
+  .mixin-items-container .saito-table-row {
+    grid-template-columns: 7rem 7rem 7rem 7rem 7rem;
+  }
+
+  .email-appspace-deposit-overlay {
+    max-width: fit-content;
+    width: 95vw;
+  }
+
+  .email-appspace-deposit-overlay #qrcode img {
+    width: 24vw;
+    height: auto;
+  }
+
+  .email-appspace-withdraw-overlay {
+    width: 95vw;
+  }
+}
+
+
