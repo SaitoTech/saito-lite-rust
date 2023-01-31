@@ -364,26 +364,47 @@ class Tweet {
       //////////
       document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like`).onclick = (e) => {
 
-        e.preventDefault();
-        e.stopImmediatePropagation();
 
-        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-        if (tweet_sig != null) {
 
-          this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
-
-          //
-          // increase num likes
-          //
-          let obj = document.querySelector(`.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`);
-          obj.innerHTML = parseInt(obj.innerHTML) + 1;
-          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-            obj.parentNode.classList.remove("saito-tweet-no-activity");
-            obj.parentNode.classList.add("saito-tweet-activity");
-          };
-        }
 
       };
+
+      
+     const heartIcon = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-like-button .heart-icon`);
+
+
+     heartIcon.onclick =  (e) => {
+      if (heartIcon.classList.contains("liked")) {
+        heartIcon.classList.remove("liked");
+        setTimeout(()=> {
+          heartIcon.classList.add("liked");
+        })
+
+      }else {
+        heartIcon.classList.add("liked");
+      }
+
+      
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+      if (tweet_sig != null) {
+
+        this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
+
+        //
+        // increase num likes
+        //
+        let obj = document.querySelector(`.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`);
+        obj.innerHTML = parseInt(obj.innerHTML) + 1;
+        if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+          obj.parentNode.classList.remove("saito-tweet-no-activity");
+          obj.parentNode.classList.add("saito-tweet-activity");
+        };
+      }
+    }
+
 
       ///////////
       // share //
