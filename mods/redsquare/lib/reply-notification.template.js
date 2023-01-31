@@ -1,4 +1,4 @@
-const SaitoUserWithTimeTemplate = require('./../../../lib/saito/new-ui/templates/saito-user-with-time.template');
+const SaitoUserTemplate = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tx, txmsg) => {
 

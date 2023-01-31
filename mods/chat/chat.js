@@ -1,4 +1,4 @@
-const SaitoUserWithTimeTemplate = require('./../../lib/saito/new-ui/templates/saito-user-with-time.template.js');
+const SaitoUserTemplate = require('./../../lib/saito/ui/templates/saito-user.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
@@ -434,7 +434,7 @@ class Chat extends ModTemplate {
 //console.log("pre-sanitize: " + msg);
                 msg = this.app.browser.sanitize(msg);
 //console.log("post-sanitize: " + msg);
-                html += `${SaitoUserWithTimeTemplate(this.app, sender, msg, ts)}`;
+                html += `${SaitoUserTemplate(this.app, sender, msg, ts)}`;
             }
         }
 

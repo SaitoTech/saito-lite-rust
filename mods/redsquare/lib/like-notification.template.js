@@ -1,6 +1,4 @@
-
-
-const SaitoUserWithTimeTemplate = require('./../../../lib/saito/new-ui/templates/saito-user-with-time.template');
+const SaitoUserTemplate = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tx) => {
 
@@ -10,7 +8,7 @@ module.exports = (app, mod, tx) => {
 
     return `
        <div class="notification-item notification-item-${tx.transaction.sig} likedd-tweet-${txsig}" data-id="${txsig}">
-         ${SaitoUserWithTimeTemplate(app, tx.transaction.from[0].add, "<i class='fas fa-heart fa-notification'></i> <span class='notification-type'>liked your tweet</span>", new Date().getTime())}
+         ${SaitoUserTemplate(app, tx.transaction.from[0].add, "<i class='fas fa-heart fa-notification'></i> <span class='notification-type'>liked your tweet</span>", new Date().getTime())}
          <div class="notification-item-contents" id="notification-item-contents-${tx.transaction.sig}" data-id="${tx.transaction.sig}">           
             <div class="notification-tweet" id="tweet-${tx.transaction.sig}" data-id="${tx.transaction.sig}"></div>
          </div>
