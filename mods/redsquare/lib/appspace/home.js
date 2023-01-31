@@ -83,11 +83,13 @@ class AppspaceHome {
     } else {
       this.container.innerHTML = "";
       this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+
     }
 
-    //
+    let saito_loader = this.saito_loader;
+    saito_loader.render(this.app, this.mod, 'redsquare-appspace-body', false);
     // render all top-level tweets, possibly with critical children
-    //
+    
     for (let i = 0; i < this.mod.tweets.length; i++) {
       if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
         this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
@@ -96,6 +98,8 @@ class AppspaceHome {
       this.mod.tweets[i].renderWithCriticalChild();
 
     }
+
+    saito_loader.remove(true);
 
     this.attachEvents();
 

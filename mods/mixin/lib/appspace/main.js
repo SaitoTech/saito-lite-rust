@@ -27,7 +27,10 @@ class MixinAppspace {
     try {
       document.querySelector("#mixin-create-wallet").onclick = (e) => {
         mod.createAccount(function(){
-          salert("Third party cryptos enabled. Reload the page.");
+          salert("Enabling Third party cryptos...");
+          setTimeout(function(){
+            window.location.reload();
+          }, 2000);
         });
       }
     } catch (err) {
