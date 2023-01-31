@@ -235,18 +235,10 @@ class RedSquare extends ModTemplate {
       let tweet_id = app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-
-console.log("^^^");
-console.log("^^^");
-console.log("^^^");
-console.log("initializing load request: " + new Date().getTime());
-
         this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
           this.results_loaded = true;
           for (let z = 0; z < txs.length; z++) {
             let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-            console.log('tweet ', tweet);
-console.log("thread render request: " + new Date().getTime());
             app.connection.emit('redsquare-thread-render-request', tweet);
            
           }
@@ -275,7 +267,14 @@ console.log("thread render request: " + new Date().getTime());
     // check peer for any tweets they want to send us
     //
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("initializing load request: " + new Date().getTime());
+
     this.loadTweetsFromPeer(peer, sql, () => {
+console.log("thread render request: " + new Date().getTime());
       this.app.connection.emit("redsquare-home-render-request");
       this.app.browser.addIdentifiersToDom();
     }, true);
