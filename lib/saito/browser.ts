@@ -3,7 +3,6 @@
 import screenfull, { element } from "screenfull";
 import html2canvas from "html2canvas";
 import { getDiffieHellman } from "crypto";
-const ModalAddPublicKey = require("./new-ui/modals/confirm-add-publickey/confirm-add-publickey");
 
 var marked = require("marked");
 var sanitizeHtml = require("sanitize-html");
