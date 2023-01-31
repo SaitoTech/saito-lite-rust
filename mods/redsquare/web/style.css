@@ -86,3 +86,55 @@
 
 
 
+
+.tweet-like-button .heart-icon {
+
+  background: url("/redsquare/images/heart.png");
+  cursor: pointer;
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-size: cover;
+  /* margin-right: .5rem; */
+
+}
+
+.tweet-like-button .heart-icon.liked {
+  animation: like-anim 0.7s steps(28) forwards;
+}
+
+@keyframes like-anim {
+  to {
+    background-position: right;
+  }
+}
+
+.tweet-like-button .heart-bg {
+  background: rgba(255, 192, 200, 0);
+  border-radius: 50%;
+  width: 60px;
+  display: flex;
+  margin-left: -8px;
+  align-items: center;
+  justify-content: center;
+  transition: all 100ms ease;
+}
+
+.tweet-like-button .heart-bg:hover {
+  background: rgba(255, 192, 200, 0.7);
+}
+
+.tweet-like-button {
+  display: flex;
+  align-items: center;
+}
+
+.tweet-like-button .likes-amount {
+  font-size: 20px;
+  font-family: "Roboto", sans-serif;
+  color: #888;
+  font-weight: 900;
+  margin-left: 6px;
+}
+
+
