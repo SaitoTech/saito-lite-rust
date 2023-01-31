@@ -69,6 +69,14 @@ class Archive extends ModTemplate {
     // only handle archive request 
     //
     if (req.request === "archive") {
+
+console.log("...");
+console.log("...");
+console.log("THIS IS AN ARCHIVE REQUEST!");
+console.log("...");
+console.log("...");
+console.log("req is: "+ JSON.stringify(req));
+
       if (req.data.request === "delete") {
         this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
       }
@@ -114,6 +122,7 @@ class Archive extends ModTemplate {
         txs = await this.loadTransactions(req.data.publickey, req.data.sig, type, num);
         response.err = "";
         response.txs = txs;
+
         mycallback(response);
 	return;
       }

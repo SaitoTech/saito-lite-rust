@@ -270,13 +270,14 @@ class RedSquare extends ModTemplate {
 
 console.log("^^^");
 console.log("^^^");
+console.log("^R^");
 console.log("^^^");
 console.log("initializing load request: " + new Date().getTime());
 
     this.loadTweetsFromPeer(peer, sql, () => {
-console.log("^^^");
-console.log("^^^");
-console.log("^^^");
+console.log("^^^^");
+console.log("^R2^");
+console.log("^^^^");
 console.log("thread render request: " + new Date().getTime());
       this.app.connection.emit("redsquare-home-render-request");
       this.app.browser.addIdentifiersToDom();

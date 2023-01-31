@@ -992,6 +992,9 @@ class Network {
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
+let txmsg = tx.returnMessage();
+console.log("RECEIVED: " + JSON.stringify(txmsg));
+
         let app = this.app;
 
         const mycallback = function (response_object) {
@@ -1454,6 +1457,7 @@ console.log("BBB FINISH");
     newtx.presign(this.app);
 
 console.log("sending as TX with callback...");
+console.log("TXDATA SENT: " + JSON.stringify(newtx.msg));
 
     this.sendTransactionWithCallback(newtx, callback, peer);
 

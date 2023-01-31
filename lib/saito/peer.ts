@@ -265,81 +265,26 @@ class Peer {
   // new default implementation
   //
   sendRequestWithCallback(message: string, data: any = "", callback = null, loop = true) {
-    //console.log("sendRequestWithCallback : " + message);
-    //
-    // respect prohibitions
-    //
-    if (this.peer.receiveblks === 0 && message === "block") {
-      return;
-    }
-    if (this.peer.receiveblks === 0 && message === "blockchain") {
-      return;
-    }
-    if (this.peer.receivetxs === 0 && message === "transaction") {
-      return;
-    }
-    if (this.peer.receivegts === 0 && message === "golden ticket") {
-      return;
-    }
 
-    const data_to_send = { message: message, data: data };
-    const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
+    //
+    // convert request to zero-fee transaction, send that
+    //
+    let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+        newtx.msg.request = message;
+        newtx.msg.data = data;
+    //
+    // everything but time-intensive sig
+    //
+    newtx.presign(this.app);
 
-    if (this.uses_stun) {
-      let data_channel = this.stun.data_channel;
-      if (data_channel && data_channel.readyState === "open") {
-        this.app.networkApi
-          .sendAPICall(data_channel, MessageType.ApplicationMessage, buffer)
-          .then((response: Buffer) => {
-            if (callback) {
-              let content = Buffer.from(response).toString("utf-8");
-              content = JSON.parse(content);
-              callback(content);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            if (callback) {
-              callback({ err: error.toString() });
-            }
-          });
-      } else {
-        if (loop) {
-          this.sendRequestWithCallbackAndRetry(message, data, callback);
-        } else {
-          if (callback) {
-            callback({ err: "Socket Not Connected" });
-          }
-        }
-      }
-    } else if (this.socket) {
-      if (this.socket && this.socket.readyState === this.socket.OPEN) {
-        this.app.networkApi
-          .sendAPICall(this.socket, MessageType.ApplicationMessage, buffer)
-          .then((response: Buffer) => {
-            if (callback) {
-              let content = Buffer.from(response).toString("utf-8");
-              content = JSON.parse(content);
-              callback(content);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            if (callback) {
-              callback({ err: error.toString() });
-            }
-          });
-      } else {
-        if (loop) {
-          this.sendRequestWithCallbackAndRetry(message, data, callback);
-        } else {
-          if (callback) {
-            callback({ err: "Socket Not Connected" });
-          }
-        }
-      }
-    }
+console.log("sending as TX with callback in peer not network...");
+console.log("TXDATA SENT: " + JSON.stringify(newtx.msg));
+    
+    this.sendTransactionWithCallback(newtx, callback);   
+ 
   }
+
+
 
   //
   // repeats until success. this should no longer be called directly, it is called by the
