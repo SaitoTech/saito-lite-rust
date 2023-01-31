@@ -84,10 +84,8 @@ class AppspaceHome {
 
     if (document.querySelector(".redsquare-home")) {
       this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
-
-    } 
-    
-    else {
+    } else {
+      this.container.innerHTML = "";
       this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
 
     }
