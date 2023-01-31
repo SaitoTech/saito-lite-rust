@@ -44,37 +44,8 @@ class InviteManager {
 	}
 
 
-	render() {
 
-        //
-        // replace element or insert into page (deletes invites for a full refresh)
- 	    //
-		if (document.querySelector(".invite-manager")) {
-		  	this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), ".invite-manager");
-		} else {
-	 		this.app.browser.addElementToSelectorOrDom(InviteManagerTemplate(this.app, this.mod), this.container);
-	 	}
 
-	    for (let list of this.lists) {
-	    	if (this.list === "all" || this.list === list) {
-
-            	if (!this.mod.games[list]) { this.mod.games[list] = []; }
-
-				if (this.invites) {
-					if (this.invites[list].length > 0) {
-						if (list === "mine") { this.app.browser.addElementToSelector(`<h5>My Games</h5>`, ".invite-manager"); }
-						if (list === "open") { this.app.browser.addElementToSelector(`<h5>Open Invites</h5>`, ".invite-manager"); }
-					  }
-	
-					for (let i = 0; i < this.mod.games[list].length; i++) {
-						let newInvite = new Invite(this.app, this.mod, ".invite-manager", this.mod.games[list][i]);
-						newInvite.render();
-					  }
-				}
-		    }
-	  	}
-
-	}
 
 
 }
