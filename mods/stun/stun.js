@@ -291,6 +291,36 @@ class Stun extends ModTemplate {
 
 
 
+    async handlePeerTransaction(app, tx=null, peer, mycallback) {
+
+      if (tx == null) { return; }
+      let message = tx.returnMessage();
+
+        if (message.request == null) {
+            return;
+        }
+        if (message.data == null) {
+            return;
+        }
+        if (message.request === "stunx offchain update") {
+            let tx = message.data.tx;
+            if (tx.msg.request === "create room") {
+                this.receiveCreateRoomTransaction(app, tx);
+
+            }
+            if (tx.msg.request === "update room") {
+                this.receiveUpdateRoomTransaction(app, tx);
+            }
+
+        }
+        if (message.request === "testing stunx") {
+            console.log('message received ', message, message.data, message.data.tx);
+        }
+
+        super.handlePeerTransaction(app, tx, peer, mycallback)
+
+    }
+
 
     handlePeerRequest(app, message, peer, mycallback) {
         if (message.request == null) {
@@ -314,7 +344,7 @@ class Stun extends ModTemplate {
             console.log('message received ', message, message.data, message.data.tx);
         }
 
-        super.handlePeerRequest(app, message, peer, mycallback)
+        super.handlePeerRequest(app, tx, peer, mycallback)
     }
 
 

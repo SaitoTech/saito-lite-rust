@@ -68,8 +68,11 @@ class Registry extends ModTemplate {
   }
 
 
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-  async handlePeerRequest(app, message, peer, mycallback = null) {
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
+
     //
     // this code doubles onConfirmation
     //

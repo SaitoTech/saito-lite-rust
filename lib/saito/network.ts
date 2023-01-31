@@ -1012,7 +1012,9 @@ console.log("response size: " + JSON.stringify(response_object).length);
 //          );
         };
 
+console.log("AAAA START");
         await this.app.modules.handlePeerTransaction(tx, peer, mycallback);
+console.log("AAAA FINISH");
         break;
       }
 
@@ -1073,7 +1075,11 @@ console.log("response size: " + JSON.stringify(response_object).length);
                 }
               }
             }
-            await this.app.modules.handlePeerRequest(msg, peer, mycallback);
+	    let newtx = new Transaction();
+	    newtx.msg = msg.data;
+console.log("BBB START");
+            await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
+console.log("BBB FINISH");
         }
         break;
       }

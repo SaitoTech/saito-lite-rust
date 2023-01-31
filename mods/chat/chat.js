@@ -209,6 +209,53 @@ class Chat extends ModTemplate {
     }
 
 
+
+
+
+    async handlePeerTransaction(app, tx2=null, peer, mycallback) {
+
+      if (tx2 == null) { return; }
+      let message = tx2.returnMessage();
+
+        if (!message.request || !message.data || !message.request.includes("chat message")) {
+            return;
+        }
+
+        let tx = new saito.default.transaction(message.data.tx.transaction);
+
+        tx.decryptMessage(app); //In case forwarding private messages
+
+        let txmsg = tx.returnMessage();
+
+        if (message.request === "chat message") {
+
+            this.receiveChatTransaction(app, tx);
+
+        } else if (message.request === "chat message broadcast") {
+
+            //Chat message broadcast is the Relay to the Chat-services server
+            //that handles Community chat and will forward the message as a "chat message"
+            //Without relay + handlePeerRequest, we do not receive community chat messages
+
+            //Tell Archive to save a copy of this TX
+            app.connection.emit("archive-save-transaction", { key: message.data.group_id, type: "Chat", tx });
+
+            //Forward to all my peers (but not me again) with new request & same data 
+            app.network.peers.forEach(p => {
+                if (p.peer.publickey !== peer.peer.publickey) {
+                    p.sendRequest("chat message", message.data);
+                }
+            });
+        }
+
+	//
+	// notify sender if requested
+	//
+        if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
+
+
+    }
+
     //
     // We have a Chat-services peer that does 2 things
     // 1) it uses archive to save all the chat messages passing through it

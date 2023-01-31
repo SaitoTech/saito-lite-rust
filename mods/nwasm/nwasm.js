@@ -51,6 +51,22 @@ class Nwasm extends GameTemplate {
   }
 
 
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
+
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
+    //
+    // this code doubles onConfirmation
+    //
+    if (message.request === "nwasm testing") {
+      mycallback("HPR RESPONSE FROM NWASM");
+      return;
+    }
+
+    super.handlePeerTransaction(app, tx, peer, mycallback);
+  }
+
+
 
   async handlePeerRequest(app, message, peer, mycallback = null) {
     //

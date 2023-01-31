@@ -72,6 +72,38 @@ class AppStore extends ModTemplate {
   }
 
 
+
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
+
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
+
+    super.handlePeerTransaction(app, tx, peer, mycallback);
+
+    if (message.request === "appstore search modules") {
+
+      let squery1 = "%" + message.data + "%";
+      let squery2 = message.data;
+
+      let sql = "SELECT name, description, version, categories, publickey, unixtime, bid, bsh FROM modules WHERE description LIKE $squery1 OR name = $squery2";
+      let params = {
+        $squery1: squery1,
+        $squery2: squery2,
+      };
+
+      let rows = await this.app.storage.queryDatabase(sql, params, "appstore");
+
+      let res = {};
+      res.err = "";
+      res.rows = rows;
+
+      mycallback(res);
+
+    }
+  }
+
+
+
   //
   // database queries inbound here
   //

@@ -165,6 +165,22 @@ class Giphy extends ModTemplate {
         }
     }
 
+
+    async handlePeerTransaction(app, tx=null, peer, mycallback) {
+      if (tx == null) { return; }
+      let message = tx.returnMessage();
+      if (message.request === "get giphy auth") {
+          let api_key = "";
+          try {
+              api_key = process.env.GIPHY_KEY;
+              if (mycallback) { mycallback(api_key) }
+          } catch (err) {
+              console.log('Failed to find key with error: ' + err);
+          }          
+      }
+    }
+
+
     async handlePeerRequest(app, message, peer, mycallback = null) {
         if (message.request === "get giphy auth") {
             let api_key = "";
