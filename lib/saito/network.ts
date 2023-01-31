@@ -988,16 +988,28 @@ class Network {
       //   break;
 
       case MessageType.ApplicationTransaction: {
+
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
+
+        let app = this.app;
 
         const mycallback = function (response_object) {
 console.log("ApplicationTransaction sending response!");
 console.log("response size: " + JSON.stringify(response_object).length);
-          peer.sendResponse(
+	  let newtx = new Transaction();
+	  newtx.msg.response = response_object;
+	  newtx.presign(app);
+
+          peer.sendTransactionResponse(
             message.message_id,
-            Buffer.from(JSON.stringify(response_object), "utf-8")
+            newtx.serialize(app)
           );
+
+//          peer.sendResponse(
+//            message.message_id,
+//            Buffer.from(JSON.stringify(response_object), "utf-8")
+//          );
         };
 
         await this.app.modules.handlePeerTransaction(tx, peer, mycallback);
@@ -1420,18 +1432,36 @@ console.log("response size: " + JSON.stringify(response_object).length);
     }
   }
 
+  
+
   sendRequestWithCallback(message: string, data = "", callback, peer = null) {
-    if (peer !== null) {
-      for (let x = this.peers.length - 1; x >= 0; x--) {
-        if (this.peers[x] === peer) {
-          this.peers[x].sendRequestWithCallback(message, data, callback);
-        }
-      }
-      return;
-    }
-    for (let x = this.peers.length - 1; x >= 0; x--) {
-      this.peers[x].sendRequestWithCallback(message, data, callback);
-    }
+
+    //
+    // convert request to zero-fee transaction, send that
+    //
+    let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+        newtx.msg.request = message;
+        newtx.msg.data = data;
+    //
+    // everything but time-intensive sig
+    //
+    newtx.presign(this.app);
+
+console.log("sending as TX with callback...");
+
+    this.sendTransactionWithCallback(newtx, callback, peer);
+
+//    if (peer !== null) {
+//      for (let x = this.peers.length - 1; x >= 0; x--) {
+//        if (this.peers[x] === peer) {
+//          this.peers[x].sendRequestWithCallback(message, data, callback);
+//        }
+//      }
+//      return;
+//    }
+//    for (let x = this.peers.length - 1; x >= 0; x--) {
+//      this.peers[x].sendRequestWithCallback(message, data, callback);
+//    }
   }
 
   //

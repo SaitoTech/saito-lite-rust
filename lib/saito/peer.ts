@@ -174,6 +174,13 @@ class Peer {
   ////////////////
   // NETWORKING //
   ////////////////
+  //
+  // tags as response and sends as direct binary stream
+  //
+  async sendTransactionResponse(message_id, data) {
+    let channel = this.uses_stun ? this.stun.data_channel : this.socket;
+    await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
+  }
   async sendResponse(message_id, data) {
     let channel = this.uses_stun ? this.stun.data_channel : this.socket;
     await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
@@ -381,9 +388,16 @@ class Peer {
           .sendAPICall(data_channel, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {
             if (callback) {
-              let content = Buffer.from(response).toString("utf-8");
-              content = JSON.parse(content);
-              callback(content);
+console.log("TESTING CALLBACK RESPONSE");
+              let newtx = new Transaction();
+              newtx.deserialize(this.app, response, 0);
+	      let txmsg = newtx.returnMessage();
+console.log("RESPONSE IS: " + JSON.stringify(txmsg));
+              callback(txmsg.response);
+
+              //let content = Buffer.from(response).toString("utf-8");
+              //content = JSON.parse(content);
+              //callback(content);
             }
           })
           .catch((error) => {
@@ -408,9 +422,15 @@ class Peer {
           .sendAPICall(this.socket, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {
             if (callback) {
-              let content = Buffer.from(response).toString("utf-8");
-              content = JSON.parse(content);
-              callback(content);
+console.log("TESTING CALLBACK RESPONSE");
+              let newtx = new Transaction();
+              newtx.deserialize(this.app, response, 0);
+	      let txmsg = newtx.returnMessage();
+console.log("RESPONSE IS: " + JSON.stringify(txmsg));
+              callback(txmsg.response);
+//              let content = Buffer.from(response).toString("utf-8");
+//              content = JSON.parse(content);
+//              callback(content);
             }
           })
           .catch((error) => {
