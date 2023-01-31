@@ -69,23 +69,11 @@ class Mods {
     }
   }
 
-  async handlePeerRequest(message, peer: Peer, mycallback = null) {
-console.log("!!!!!!!!!!!!!!!!!!");
-console.log("BAD SHOULD NOT HIT");
-console.log("!!!!!!!!!!!!!!!!!!");
-    for (let iii = 0; iii < this.mods.length; iii++) {
-      try {
-        this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);
-      } catch (err) {
-        console.log("handlePeerRequest Unknown Error: ", err);
-      }
-    }
-    return;
-  }
-
   async handlePeerTransaction(tx, peer: Peer, mycallback = null) {
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
+console.log("trying for: " + this.mods[iii].name);
+console.log("and TXMSG is: " + JSON.stringify(tx.returnMessage()));
         this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
       } catch (err) {
         console.log("handlePeerTransaction Unknown Error: \n" + err);

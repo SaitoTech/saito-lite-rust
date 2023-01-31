@@ -389,7 +389,6 @@ class Network {
       peer.socket.onmessage = async (event) => {
         try {
           const data = new Uint8Array(await event.data.arrayBuffer());
-          // console.log("data buffer 2 first: ", data[0]);
           const api_message = this.app.networkApi.deserializeAPIMessage(data);
           if (api_message.message_type == MessageType.Result) {
             this.app.networkApi.receiveAPIResponse(api_message);
@@ -680,7 +679,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    //console.log("network.receiveRequest : ", message);
+    console.log("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -694,12 +693,14 @@ class Network {
 
     switch (message.message_type) {
       case MessageType.HandshakeChallenge: {
+console.log("handshake challenge");
         await this.app.handshake.handleIncomingHandshakeChallenge(peer, message.message_data);
 
         break;
       }
 
       case MessageType.HandshakeResponse: {
+console.log("handshake response");
         await this.app.handshake.handleHandshakeResponse(peer, message.message_data);
 
         //
@@ -738,7 +739,7 @@ class Network {
       //   break;
       // }
       case MessageType.Ping:
-        // console.log("received ping...");
+         console.log("received ping...");
         // job already done!
         break;
 
@@ -751,6 +752,7 @@ class Network {
       //   break;
 
       case MessageType.SPVChain: {
+console.log(" 2handshake response");
         //if (this.debugging) { console.log("RECEIVED SPVCHAIN"); }
 
         const buffer = Buffer.from(message.message_data, "utf8");
@@ -761,6 +763,7 @@ class Network {
       }
 
       case MessageType.Services: {
+console.log(" 3handshake response");
         const buffer = Buffer.from(message.message_data, "utf8");
 
         try {
@@ -774,6 +777,7 @@ class Network {
       }
 
       case MessageType.GhostChain: {
+console.log(" 4handshake response");
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
@@ -824,6 +828,7 @@ class Network {
       }
 
       case MessageType.BlockchainRequest: {
+console.log(" 5handshake response");
         block_id = BigInt(0);
         block_hash = "";
         fork_id = "";
@@ -877,6 +882,7 @@ class Network {
       }
 
       case MessageType.GhostChainRequest: {
+console.log(" 6handshake response");
         block_hash = "";
         fork_id = "";
         publickey = peer.peer.publickey;
@@ -950,6 +956,7 @@ class Network {
       // this delivers the block as BlockType.Header
       //
       case MessageType.Block:
+console.log(" 8handshake response");
         block = new Block(this.app);
         block.deserialize(message.message_data);
         block_hash = block.returnHash();
@@ -966,6 +973,7 @@ class Network {
       // this delivers the block as block_hash
       //
       case MessageType.BlockHeaderHash:
+console.log(" 9handshake response");
         block_hash = Buffer.from(message.message_data.slice(0, 32), "hex").toString("hex");
         block_id = this.app.binary.u64FromBytes(message.message_data.slice(32, 40));
         console.log("BlockHeaderHash received : " + block_hash + " - " + block_id);
@@ -977,6 +985,7 @@ class Network {
         break;
 
       case MessageType.Transaction:
+console.log("is tx");
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
         // await this.app.mempool.addTransaction(tx);
@@ -989,25 +998,36 @@ class Network {
 
       case MessageType.ApplicationTransaction: {
 
+console.log("application transaction");
+
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
+console.log("RECEIVED TX: " + JSON.stringify(tx));
+
 let txmsg = tx.returnMessage();
-console.log("RECEIVED: " + JSON.stringify(txmsg));
+console.log("RECEIVED TXMSG: " + JSON.stringify(txmsg));
 
         let app = this.app;
 
         const mycallback = function (response_object) {
+
 console.log("ApplicationTransaction sending response!");
 console.log("response size: " + JSON.stringify(response_object).length);
+
 	  let newtx = new Transaction();
 	  newtx.msg.response = response_object;
+console.log("about to presign...");
 	  newtx.presign(app);
+
+console.log("sending tx response...");
 
           peer.sendTransactionResponse(
             message.message_id,
             newtx.serialize(app)
           );
+
+console.log("and done...");
 
 //          peer.sendResponse(
 //            message.message_id,
@@ -1016,6 +1036,7 @@ console.log("response size: " + JSON.stringify(response_object).length);
         };
 
 console.log("AAAA START");
+console.log("sending in a transaction to handlePeerTransaction!");
         await this.app.modules.handlePeerTransaction(tx, peer, mycallback);
 console.log("AAAA FINISH");
         break;

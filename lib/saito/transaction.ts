@@ -422,6 +422,7 @@ console.log("looking for key associated with: " + this.transaction.to[0].add + "
   }
 
   returnMessage() {
+
     if (this.dmsg !== "") {
       return this.dmsg;
     }

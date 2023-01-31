@@ -322,31 +322,6 @@ class Stun extends ModTemplate {
     }
 
 
-    handlePeerRequest(app, message, peer, mycallback) {
-        if (message.request == null) {
-            return;
-        }
-        if (message.data == null) {
-            return;
-        }
-        if (message.request === "stunx offchain update") {
-            let tx = message.data.tx;
-            if (tx.msg.request === "create room") {
-                this.receiveCreateRoomTransaction(app, tx);
-
-            }
-            if (tx.msg.request === "update room") {
-                this.receiveUpdateRoomTransaction(app, tx);
-            }
-
-        }
-        if (message.request === "testing stunx") {
-            console.log('message received ', message, message.data, message.data.tx);
-        }
-
-        super.handlePeerRequest(app, tx, peer, mycallback)
-    }
-
 
 
     async sendCreateRoomTransaction(callback = null) {

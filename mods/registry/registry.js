@@ -100,7 +100,7 @@ class Registry extends ModTemplate {
       }
     }
 
-    super.handlePeerRequest(app, message, peer, mycallback);
+    super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
 

@@ -140,52 +140,6 @@ class Mixin extends ModTemplate {
   }
 
 
-  async handlePeerRequest(app, message, peer, mycallback = null) {
-
-    //
-    // we receive requests to create accounts here
-    //
-    if (message.request === "mixin create account") {
-
-      let saito_publickey = message.data.saito_publickey;
-      let mixin_publickey = message.data.mixin_publickey;
-
-      if (app.BROWSER == 0) {
-
-        m = JSON.parse(process.env.MIXIN);
- 
-        
-	if (m.appId) {
-
-          let method = "POST";
-          let uri = '/users';
-          let body = {
-            session_secret: mixin_publickey,
-            full_name: `Saito User ${saito_publickey}`,
-          };
-
-          let appId = m.appId;
-          let sessionId = m.sessionId;
-          let privateKey = m.privateKey;
-
-          try {
-            this.request(appId, sessionId, privateKey, method, uri, body).then(
-              (res) => {
-		let d = res.data;
-		// send response to browser
-		if (mycallback) { mycallback(d); }
-              }
-            );
-          } catch (err) {
-            console.log("ERROR: Mixin error sending network request: " + err);
-          }
-        }
-      }
-    }
-  }
-
-
-
 
   loadCryptos() {
 

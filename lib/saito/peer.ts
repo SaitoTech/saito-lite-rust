@@ -159,7 +159,6 @@ class Peer {
     }
     this.keep_alive_timer = setInterval(() => {
       try {
-        // console.log("send ping request...");
         this.sendRequest("PINGPING");
       } catch (err) {
         console.log("ping is not working");
@@ -276,9 +275,6 @@ class Peer {
     // everything but time-intensive sig
     //
     newtx.presign(this.app);
-
-console.log("sending as TX with callback in peer not network...");
-console.log("TXDATA SENT: " + JSON.stringify(newtx.msg));
     
     this.sendTransactionWithCallback(newtx, callback);   
  
@@ -333,11 +329,9 @@ console.log("TXDATA SENT: " + JSON.stringify(newtx.msg));
           .sendAPICall(data_channel, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {
             if (callback) {
-console.log("TESTING CALLBACK RESPONSE");
               let newtx = new Transaction();
               newtx.deserialize(this.app, response, 0);
 	      let txmsg = newtx.returnMessage();
-console.log("RESPONSE IS: " + JSON.stringify(txmsg));
               callback(txmsg.response);
 
               //let content = Buffer.from(response).toString("utf-8");
@@ -367,11 +361,9 @@ console.log("RESPONSE IS: " + JSON.stringify(txmsg));
           .sendAPICall(this.socket, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {
             if (callback) {
-console.log("TESTING CALLBACK RESPONSE");
               let newtx = new Transaction();
               newtx.deserialize(this.app, response, 0);
 	      let txmsg = newtx.returnMessage();
-console.log("RESPONSE IS: " + JSON.stringify(txmsg));
               callback(txmsg.response);
 //              let content = Buffer.from(response).toString("utf-8");
 //              content = JSON.parse(content);

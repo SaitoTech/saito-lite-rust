@@ -499,20 +499,26 @@ class Arcade extends ModTemplate {
     }
   }
 
+
+
+
+
   /////////////////////////////
   // HANDLE PEER TRANSACTION //
   /////////////////////////////
   //
   // handles off-chain transactions
   //
-  async handlePeerRequest(app, message, peer, mycallback = null) {
+  async handlePeerTransaction(app, newtx=null, peer, mycallback = null) {
+  
+    if (newtx==null) { return; }
+    let message = newtx.returnMessage();
+    let tx = null;
 
     //
     // this code doubles onConfirmation
     //
     if (message.request === "arcade spv update" || message.request === "game relay gameover") {
-
-      let tx = null;
 
       if (!message.data.tx) {
         if (message.data.transaction) {
@@ -599,7 +605,7 @@ class Arcade extends ModTemplate {
       }
     }
 
-    super.handlePeerRequest(app, message, peer, mycallback);
+    super.handlePeerTransaction(app, newtx, peer, mycallback);
 
   }
 

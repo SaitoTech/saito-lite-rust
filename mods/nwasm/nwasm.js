@@ -68,20 +68,6 @@ class Nwasm extends GameTemplate {
 
 
 
-  async handlePeerRequest(app, message, peer, mycallback = null) {
-    //
-    // this code doubles onConfirmation
-    //
-    if (message.request === "nwasm testing") {
-      mycallback("HPR RESPONSE FROM NWASM");
-      return;
-    }
-
-    super.handlePeerRequest(app, message, peer, mycallback);
-
-  }
-  
-
   startPlaying(ts=null) {
     if (ts == null) { ts = new Date().getTime(); }
     this.active_game_load_ts = ts;
@@ -285,9 +271,14 @@ class Nwasm extends GameTemplate {
         message.data.collection = "Nwasm";
         message.data.publickey = this.app.wallet.returnPublicKey();
 
+	let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+	newtx.msg = message;
+	newtx.presign(this.app);
+	newtx.sign(this.app);
+
 	let library_mod = this.app.modules.returnModule("Library");
 	if (library_mod) {
-	  library_mod.handlePeerRequest(this.app, message, null, function() {
+	  library_mod.handlePeerTransaction(this.app, newtx, null, function() {
             nwasm_mod.libraries = {};
 	    nwasm_mod.save();
             nwasm_mod.updateVisibleLibrary();

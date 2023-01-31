@@ -151,7 +151,7 @@ class Relay extends ModTemplate {
                     }
 
                     //console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
-                    app.modules.handlePeerRequest(txmsg, peer, mycallback);
+                    app.modules.handlePeerTransaction(txmsg, peer, mycallback);
                     return;
 
                 //
@@ -194,92 +194,6 @@ class Relay extends ModTemplate {
 
     }
 
-    async handlePeerRequest(app, message, peer, mycallback = null) {
-
-        try {
-
-            let relay_self = app.modules.returnModule("Relay");
-
-            if (message.request === "relay peer message") {
-
-                //
-                // sanity check on tx
-                //
-                let txjson = message.data;
-                let tx = new saito.default.transaction(txjson);
-                if (tx.transaction.to.length <= 0) {
-                    return;
-                }
-                if (tx.transaction.to[0].add == undefined) {
-                    return;
-                }
-                tx.decryptMessage(this.app);
-                let txmsg = tx.returnMessage();
-
-                //
-                // the embedded message to examine is txmsg
-                //
-
-                //
-                // if interior transaction is intended for me, I process regardless
-                //
-                if (tx.isTo(app.wallet.returnPublicKey())) {
-
-                    if (txmsg.request === "ping"){
-                        this.sendRelayMessage(tx.transaction.from[0].add, "echo", {status:this.busy});
-                        return;
-                    }
-
-                    if (txmsg.request === "echo"){
-                        if (txmsg.data.status){
-                            app.connection.emit("relay-is-busy", tx.transaction.from[0].add);
-                        }else{
-                            app.connection.emit("relay-is-online", tx.transaction.from[0].add);
-                        }
-                    }
-
-                    //console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
-                    app.modules.handlePeerRequest(txmsg, peer, mycallback);
-                    return;
-
-                //
-                // otherwise relay
-                //
-                } else {
-
-                    //
-                    // check to see if original tx is for a peer
-                    //
-                    let peer_found = 0;
-
-                    //console.log("number of peers: " + app.network.peers.length);
-
-                    for (let i = 0; i < app.network.peers.length; i++) {
-
-                        //if (!tx.isFrom(app.network.peers[i].peer.publickey)) {
-                        if (tx.isTo(app.network.peers[i].peer.publickey)) {
-
-                            peer_found = 1;
-
-                            app.network.peers[i].sendRequest("relay peer message", message.data, function () {
-                                if (mycallback != null) {
-                                    mycallback({ err: "", success: 1 });
-                                }
-                            });
-                        }
-                        //}
-                    }
-                    if (peer_found == 0) {
-                        if (mycallback != null) {
-                            mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
-                        }
-                    }
-                }
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    }
 }
 
 module.exports = Relay;
