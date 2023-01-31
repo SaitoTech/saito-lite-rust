@@ -258,14 +258,6 @@ class Tweet {
       let cobj = document.querySelector(this.container);     
       let is_full = false;
 
-      if (cobj) {
-        if (cobj.dataset) {
-	  if (cobj.dataset.thread_id) {
-	    is_full = true;
-          }
-        }
-      }
-
       if (is_full) {
           el.classList.add('full');
       } else { 
