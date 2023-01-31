@@ -56,6 +56,11 @@ class Relay extends ModTemplate {
             recipients.push(recipient);
         }
 
+
+console.log("RECIPIENTS: " + JSON.stringify(recipients));
+console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
+console.log("MESSAGE_DATA: " + +JSON.stringify(message_data));
+
         //
         // transaction to end-user, containing msg.request / msg.data is
         //
@@ -114,6 +119,11 @@ class Relay extends ModTemplate {
 
             if (message.request === "relay peer message") {
 
+console.log("**!!!!**");
+console.log("**!!!!**");
+console.log("**!!!!**");
+console.log("in relay peer message");
+
                 //
                 // sanity check on tx
                 //
@@ -129,13 +139,12 @@ class Relay extends ModTemplate {
                 let txmsg = tx.returnMessage();
 
                 //
-                // the embedded message to examine is txmsg
-                //
-
-                //
                 // if interior transaction is intended for me, I process regardless
                 //
                 if (tx.isTo(app.wallet.returnPublicKey())) {
+
+console.log("tx is for me, so I process!");
+
 
                     if (txmsg.request === "ping"){
                         this.sendRelayMessage(tx.transaction.from[0].add, "echo", {status:this.busy});
@@ -145,12 +154,13 @@ class Relay extends ModTemplate {
                     if (txmsg.request === "echo"){
                         if (txmsg.data.status){
                             app.connection.emit("relay-is-busy", tx.transaction.from[0].add);
-                        }else{
+                        } else {
                             app.connection.emit("relay-is-online", tx.transaction.from[0].add);
                         }
                     }
 
-                    //console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
+                    console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
+
                     app.modules.handlePeerTransaction(txmsg, peer, mycallback);
                     return;
 
@@ -159,19 +169,20 @@ class Relay extends ModTemplate {
                 //
                 } else {
 
+console.log("tx is not for me, so I relay!");
+
                     //
                     // check to see if original tx is for a peer
                     //
                     let peer_found = 0;
 
-                    //console.log("number of peers: " + app.network.peers.length);
-
                     for (let i = 0; i < app.network.peers.length; i++) {
 
-                        //if (!tx.isFrom(app.network.peers[i].peer.publickey)) {
                         if (tx.isTo(app.network.peers[i].peer.publickey)) {
 
                             peer_found = 1;
+
+console.log("PEER FOUND AND FORWARDING: ");
 
                             app.network.peers[i].sendRequest("relay peer message", message.data, function () {
                                 if (mycallback != null) {

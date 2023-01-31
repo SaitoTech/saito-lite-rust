@@ -176,8 +176,17 @@ class Arcade extends ModTemplate {
       } else {
 
         let sql = `SELECT * FROM games WHERE game_id = "${game_id}" AND created_at > ${cutoff}`;
+console.log("SEND SQL: " + sql);
         this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
+
+console.log("RECEIVE RES:");
+console.log(JSON.stringify(res));
+
           if (res.rows) {
+
+console.log("and passing into games");
+
+
             arcade_self.addGames(
               res.rows.map((row) => {
                 if (row.status == "open" || row.status == "private") {
@@ -226,8 +235,14 @@ class Arcade extends ModTemplate {
     // load open games from server
     //
     let sql = `SELECT * FROM games WHERE status = "open" AND created_at > ${cutoff}`;
+console.log(">>>");
+console.log(">>>");
+console.log(">>>");
+console.log(sql);
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql,
       (res) => {
+console.log(" <<< ");
+console.log(" <<< " + JSON.stringify(res));
         if (res.rows) {
           this.addGames(
             res.rows.map((row) => {
@@ -246,6 +261,8 @@ class Arcade extends ModTemplate {
             }),
             "open"
           );
+
+console.log("AND NOW WE CAN RENDER THE INVITE MANAGER!");
 
           this.app.connection.emit('arcade-invite-manager-render-request');
         }
@@ -613,6 +630,9 @@ class Arcade extends ModTemplate {
   // send TX to our SPV peers
   //
   notifyPeers(tx) {
+
+console.log("NOTIFY PEERS");
+
     if (this.app.BROWSER == 1) { return; }
     for (let i = 0; i < this.app.network.peers.length; i++) {
       if (this.app.network.peers[i].peer.synctype == "lite") {
@@ -622,7 +642,11 @@ class Arcade extends ModTemplate {
         let message = {};
         message.request = "arcade spv update";
         message.data = {};
-        message.data.tx = tx;
+        message.data.tx = txa;
+//
+//
+//
+
         this.app.network.peers[i].sendRequest(message.request, message.data);
       }
     }

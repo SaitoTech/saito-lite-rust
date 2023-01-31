@@ -679,6 +679,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
+
     console.log("network.receiveRequest : ", message);
 
     let block;
@@ -1003,7 +1004,9 @@ console.log("application transaction");
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
+console.log("!!!!!!!!!!!!!!!!!!!!!!!!");
 console.log("RECEIVED TX: " + JSON.stringify(tx));
+console.log("!!!!!!!!!!!!!!!!!!!!!!!!");
 
 let txmsg = tx.returnMessage();
 console.log("RECEIVED TXMSG: " + JSON.stringify(txmsg));
