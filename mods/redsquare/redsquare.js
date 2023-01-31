@@ -336,15 +336,15 @@ class RedSquare extends ModTemplate {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
           this.receiveTweetTransaction(blk, tx, conf, app);
-          this.sqlcache = [];
+          this.sqlcache = {};
         }
         if (txmsg.request === "like tweet") {
           this.receiveLikeTransaction(blk, tx, conf, app);
-          this.sqlcache = [];
+          this.sqlcache = {};
         }
         if (txmsg.request === "flag tweet") {
           this.receiveFlagTransaction(blk, tx, conf, app);
-          this.sqlcache = [];
+          this.sqlcache = {};
         }
       }
     } catch (err) {
