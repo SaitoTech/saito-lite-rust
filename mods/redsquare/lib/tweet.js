@@ -102,7 +102,6 @@ class Tweet {
       if (prepend == true) {
         this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
-
         if (this.render_after_selector) {
           this.app.browser.addElementAfterSelector(TweetTemplate(this.app, this.mod, this), this.render_after_selector);
         } else {
@@ -253,11 +252,11 @@ class Tweet {
       /////////////////////////////
       // Expand / Contract Tweet //
       /////////////////////////////
-      let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
+      let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-text`);
+      // skip tweets that aren't on the page -- like comments
+      if (!el) { return; }
       let cobj = document.querySelector(this.container);     
       let is_full = false;
-
-console.log("this container: " + this.container);
 
       if (cobj) {
         if (cobj.dataset) {

@@ -275,8 +275,6 @@ class Peer {
       return;
     }
 
-console.log("SENDING PEER REQUEST: " + new Date().getTime());
-
     const data_to_send = { message: message, data: data };
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
@@ -287,7 +285,6 @@ console.log("SENDING PEER REQUEST: " + new Date().getTime());
           .sendAPICall(data_channel, MessageType.ApplicationMessage, buffer)
           .then((response: Buffer) => {
             if (callback) {
-console.log("RECEIVED CALLBACK: " + new Date().getTime());
               let content = Buffer.from(response).toString("utf-8");
               content = JSON.parse(content);
               callback(content);
