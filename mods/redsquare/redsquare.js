@@ -230,17 +230,23 @@ class RedSquare extends ModTemplate {
     //
     // render tweet thread
     //
-   let mod = app.modules.returnModule('RedSquare')
+    let mod = app.modules.returnModule('RedSquare')
     if (this.results_loaded == false) {
       let tweet_id = app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
+
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("initializing load request: " + new Date().getTime());
 
         this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
           this.results_loaded = true;
           for (let z = 0; z < txs.length; z++) {
             let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
             console.log('tweet ', tweet);
+console.log("thread render request: " + new Date().getTime());
             app.connection.emit('redsquare-thread-render-request', tweet);
            
           }

@@ -40,7 +40,7 @@ class ChatManager {
 	    //
 	    // mobile devices should not force open chat for us
 	    //
-	    if (app.browser.isMobileDevice()) {
+	    if (app.browser.isMobileBrowser()) {
 	      return;
 	    }
 
@@ -63,7 +63,7 @@ class ChatManager {
 	    //
 	    // mobile devices should not force open chat for us
 	    //
-	    if (app.browser.isMobileDevice()) {
+	    if (app.browser.isMobileBrowser()) {
 	      return;
 	    }
 
