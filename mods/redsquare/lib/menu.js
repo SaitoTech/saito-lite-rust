@@ -46,15 +46,12 @@ class RedSquareMenu {
       this.setHash('home')
       this.mod.main.render_component = "home"
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.mod.results_per_page}'`;
-      this.mod.tweets= [];
+      this.mod.tweets = [];
       this.mod.loadTweetsFromPeer(this.mod.peers_for_tweets[0], sql, (txs) => {
-        console.log(this.mod.peers_for_tweets, this.mod.results_per_page, txs)
-        console.log(txs)
-
         this.app.connection.emit("redsquare-home-render-request");
       }, true);
-  
     }
+
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       this.setHash('notifications')
