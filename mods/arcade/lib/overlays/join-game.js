@@ -1,6 +1,15 @@
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const JoinGameOverlayTemplate = require('./join-game.template');
 
+/*
+  General Interface for the Overlay that comes up when you click on a (game) "invite".
+  There are several circumstances that affect what a user can do with the overlay, but because
+  so much of the UI is identical it is better to have it all in one file instead of multiple
+  files with the logic spread out across all the places where you might need to trigger the overlay.
+
+  The basic purpose is to display the game details (results of game-selector/game-wizard) and allow a player to join/cance
+*/
+
 class JoinGameOverlay {
 
   constructor(app, mod, invite) {
@@ -56,11 +65,10 @@ class JoinGameOverlay {
       }
     }
 
-    if (document.getElementById("arcade-game-controls-cancel-invite")){
-      document.getElementById("arcade-game-controls-cancel-invite").onclick = (e) => {
-            this.mod.sendCloseTransaction(this.invite.game_id);
-            this.mod.removeGame(this.invite.game_id);
-            this.overlay.remove();
+    if (document.getElementById("arcade-game-controls-cancel-join")){
+      document.getElementById("arcade-game-controls-cancel-join").onclick = (e) => {
+          this.mod.sendCancelTransaction(this.invite.game_id);
+          this.overlay.remove();
       }
     }
 
