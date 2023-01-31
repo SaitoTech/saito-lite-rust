@@ -37,9 +37,10 @@ class RedSquareMain {
       document.querySelector(".saito-main").innerHTML = "";
       this.mod.viewing = "home";
      let rendered =  this.renderComponentFromHash();
-     if(rendered){
+     if (rendered) {
+        this.mod.sidebar.render();
         return;
-     }else {
+     } else {
       this.render_component = 'home';
       this.components[this.render_component].render();
       document.querySelector(".saito-sidebar.right").innerHTML = "";

@@ -204,7 +204,7 @@
 
 .tweet-picture > img {
   width: 100%;
-  height: 20rem;
+  height: auto;
   border-radius: 0.5rem;
   object-fit: cover;
 }

@@ -102,7 +102,6 @@ class Tweet {
       if (prepend == true) {
         this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
-
         if (this.render_after_selector) {
           this.app.browser.addElementAfterSelector(TweetTemplate(this.app, this.mod, this), this.render_after_selector);
         } else {
@@ -253,16 +252,27 @@ class Tweet {
       /////////////////////////////
       // Expand / Contract Tweet //
       /////////////////////////////
-      let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
-      
-      if (document.querySelector(".redsquare-home").dataset.thread_id) {
-        el.classList.add('full');
-      } else {
+      let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-text`);
+      // skip tweets that aren't on the page -- like comments
+      if (!el) { return; }
+      let cobj = document.querySelector(this.container);     
+      let is_full = false;
+
+      if (cobj) {
+        if (cobj.dataset) {
+	  if (cobj.dataset.thread_id) {
+	    is_full = true;
+          }
+        }
+      }
+
+      if (is_full) {
+          el.classList.add('full');
+      } else { 
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
           this.is_long_tweet = true;
         }
-
       }
 
 

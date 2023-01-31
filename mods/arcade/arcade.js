@@ -7,35 +7,28 @@ const GameWizard = require("./lib/overlays/game-wizard");
 const GameSelector = require("./lib/overlays/game-selector");
 const GameScheduler = require("./lib/overlays/game-scheduler");
 const GameInvitationLink = require("./lib/overlays/game-invitation-link");
-const JoinGameOverlay = require("./lib/overlays/join-game");
-const ContinueGameOverlay = require("./lib/overlays/continue-game");
-const WaitingGameOverlay = require("./lib/overlays/waiting-game");
+
 const GameCryptoTransferManager = require("./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
 class Arcade extends ModTemplate {
 
   constructor(app) {
     super(app);
+
     this.name = "Arcade";
-    this.slug = 'arcade';
+
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment Utilities";
 
-    this.mods = [];
-    this.game_mods = [];
+    this.arcade_games = [];
 
     this.games = {};
     this.games['open'] = [];
     this.games['mine'] = [];
 
-    this.wizard = null;
-    this.game_selector = null;
-    this.game_scheduler = null;
-
     this.is_game_initializing = false;
 
     this.icon_fa = "fas fa-gamepad";
-    this.ui_initialized = false;
 
     this.styles = ['/arcade/style.css'];
 
@@ -54,6 +47,8 @@ class Arcade extends ModTemplate {
     ];
 
     this.ommit_options = ['game', 'game-wizard-players-select', 'game-wizard-players-select-max'];
+
+    this.debug = true;
   }
 
 
@@ -72,61 +67,33 @@ class Arcade extends ModTemplate {
     //
     // compile list of arcade games
     //
-    if (app.modules.respondTo("arcade-games")) {
-      app.modules.respondTo("arcade-games").forEach(game_mod => {
-        this.game_mods.push(game_mod);
+    
+    app.modules.returnModulesRespondingTo("arcade-games").forEach(game_mod => {
+        this.arcade_games.push(game_mod);
         //
         // and listen to their transactions
         //
         this.affix_callbacks_to.push(game_mod.name);
-      });
-    }
+    });
+    
 
-
+    //
+    // If we have a browser (are a user)
+    // initialize some UI components and query the list of games to display 
+    //
     if (this.app.BROWSER == 1) {
 
-      //
-      // game wizard
-      //
+      // These are three overlays with event listeners that can function outside of the Arcade
       this.wizard = new GameWizard(app, this, null, {});
-
-      //
-      // game selector
-      //
       this.game_selector = new GameSelector(app, this, {});
-
-      //
-      // game crypto transfer manager
-      //
-      this.game_crypto_transfer_manager = new GameCryptoTransferManager(app, this);
-
-      //
-      // game scheduler
-      //
       this.game_scheduler = new GameScheduler(app, this, {});
 
-      //
-      // game invitation link
-      //
-      this.game_invitation_link = new GameInvitationLink(app, this, {});
+      // Necessary?
+      this.game_crypto_transfer_manager = new GameCryptoTransferManager(app, this);
+
 
       //
-      // join game overlay
-      //
-      this.join_game_overlay = new JoinGameOverlay(app, this, {});
-
-      //
-      // continue game overlay
-      //
-      this.continue_game_overlay = new ContinueGameOverlay(app, this, {});
-
-      //
-      // continue game overlay
-      //
-      this.waiting_game_overlay = new WaitingGameOverlay(app, this, {});
-
-      //
-      // my games
+      // my games stored in local wallet
       //
       if (this.app.options.games) {
         for (let game of this.app.options.games) {
@@ -173,40 +140,39 @@ class Arcade extends ModTemplate {
 
     if (!app.BROWSER) { return; }
     let arcade_self = this;
-    //
-    // TODO for game invites do we really want this cut-off ? 
-    //
+
     let cutoff = new Date().getTime() - this.old_game_removal_delay;
 
     //
+    // For processing direct link to game invite
     //
-    //
-    if (this.app.browser.returnURLParameter("arcade_game_id")) {
+    if (this.app.browser.returnURLParameter("game_id")) {
     
-      let game_id = this.app.browser.returnURLParameter("arcade_game_id");    
+      let game_id = this.app.browser.returnURLParameter("game_id");    
+      
+      if (this.debug) { console.log("attempting to join game... " + game_id); }
+      
       let invite_tx = null;
+
       let game = this.returnGame(game_id);
       if (game != null) {
-
-	//
-	// game exists locally
-	//
+/*
         if (this.isMyGame(game)) {
           if (this.isAccepted(game, this.app.wallet.returnPublicKey())) {
-  	    let txmsg = game.returnMessage();
-	    if (txmsg.players_needed > txmsg.players) {
-	      this.waiting_game_overlay.invite_tx = game;
-	      this.waiting_game_overlay.render();
-	    } else {
-	      this.continue_game_overlay.invite_tx = game;
-	      this.continue_game_overlay.render();
-	    }
-	  } else {
-	    this.continue_game_overlay.invite_tx = game;
-	    this.continue_game_overlay.render();
-	  }
-	}
-
+  	        let txmsg = game.returnMessage();
+	          if (txmsg.players_needed > txmsg.players) {
+	            this.waiting_game_overlay.invite_tx = game;
+	            this.waiting_game_overlay.render();
+	          } else {
+	            this.continue_game_overlay.invite_tx = game;
+	            this.continue_game_overlay.render();
+	          }
+	        } else {
+	          this.continue_game_overlay.invite_tx = game;
+	          this.continue_game_overlay.render();
+	        }
+	      }
+*/
       } else {
 
         let sql = `SELECT * FROM games WHERE game_id = "${game_id}" AND created_at > ${cutoff}`;
@@ -226,32 +192,32 @@ class Arcade extends ModTemplate {
                       newtx.msg.players_sigs.push(sig);
                     }
                   }
-		  invite_tx = newtx;
+		              invite_tx = newtx;
                   return newtx;
                 } else { return null; }
               })
             );
 
-	    if (invite_tx != null) {
-	      if (this.isMyGame(invite_tx)) {
-	        if (this.isAccepted(invite_tx, this.app.wallet.returnPublicKey())) {
-		  let txmsg = invite_tx.returnMessage();
-		  if (txmsg.players_needed > txmsg.players) {
-	            this.waiting_game_overlay.invite_tx = invite_tx;
-	            this.waiting_game_overlay.render();
-		  } else {
-	            this.continue_game_overlay.invite_tx = invite_tx;
-	            this.continue_game_overlay.render();
-		  }
-	        } else {
-	          this.continue_game_overlay.invite_tx = invite_tx;
-	          this.continue_game_overlay.render();
-	        }
-	      }
-	    } else {
-alert("Observer Overlay for URL Games not yet implemented");
-	    }
-	  }
+  	        if (invite_tx != null) {
+  	          if (this.isMyGame(invite_tx)) {
+  	            /*if (this.isAccepted(invite_tx, this.app.wallet.returnPublicKey())) {
+  		            let txmsg = invite_tx.returnMessage();
+  		            if (txmsg.players_needed > txmsg.players) {
+  	                this.waiting_game_overlay.invite_tx = invite_tx;
+  	                this.waiting_game_overlay.render();
+  		            } else {
+  	                this.continue_game_overlay.invite_tx = invite_tx;
+  	                this.continue_game_overlay.render();
+  		            }
+  	            } else {
+  	              this.continue_game_overlay.invite_tx = invite_tx;
+  	              this.continue_game_overlay.render();
+  	            }*/
+  	          }
+  	        } else {
+              alert("Observer Overlay for URL Games not yet implemented");
+  	        }
+  	      }
         });
       }
     }
@@ -420,18 +386,14 @@ alert("Observer Overlay for URL Games not yet implemented");
 
 
 
-
-
   ////////////////////////////////////////////////////
   // NETWORK FUNCTIONS -- sending and receiving TXS //
   ////////////////////////////////////////////////////
   //
-  /////////////////////
-  // ON CONFIRMATION //
-  /////////////////////
-  //
-  // processes on-chain transactions
-  //
+  ////////////////////////////////////////////////////
+  // ON CONFIRMATION === process on-chain transactions
+  ////////////////////////////////////////////////////
+
   async onConfirmation(blk, tx, conf, app) {
 
     let txmsg = tx.returnMessage();
@@ -472,9 +434,9 @@ alert("Observer Overlay for URL Games not yet implemented");
           arcade_self.receiveOpenTransaction(tx, blk);
         }
 
-	//
-	// private invites
-	//
+        //
+        // private invites
+        //
         if (txmsg.module === "ArcadeInvite" && txmsg.request == "private") {
           arcade_self.receiveOpenTransaction(tx, blk);
         }
@@ -722,9 +684,7 @@ alert("Observer Overlay for URL Games not yet implemented");
 
     return tx;
   }
-  sendOpenTransaction(gametx) {
-    this.app.network.propagateTransaction(this.createOpenTransaction(gametx));
-  }
+
   async receiveOpenTransaction(tx, blk = null) {
 
     //
@@ -809,7 +769,6 @@ alert("Observer Overlay for URL Games not yet implemented");
   // Cancel //
   ////////////
   createCancelTransaction(game_id) {
-
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     let my_publickey = this.app.wallet.returnPublicKey();
     let msg = {
@@ -821,8 +780,8 @@ alert("Observer Overlay for URL Games not yet implemented");
     newtx = this.app.wallet.signTransaction(newtx);
 
     return newtx;
-
   }
+
   async receiveCancelTransaction(tx) {
     let txmsg = tx.returnMessage();
     let id = txmsg.game_id;
@@ -831,6 +790,7 @@ alert("Observer Overlay for URL Games not yet implemented");
     let params = { $status: "close", $game_id: id };
     await this.app.storage.executeDatabase(sql, params, "arcade");
   }
+
   sendCancelTransaction(game_id) {
 
     let close_tx = this.createCloseTransaction(game_id);
@@ -1438,8 +1398,33 @@ alert("Observer Overlay for URL Games not yet implemented");
 
 
 
-  //
+  /************************************************************
   // functions to manipulate the local games list
+  ************************************************************/
+
+  validateGame(tx) {
+    if (!tx || !tx.msg || !tx.transaction || !tx.transaction.sig) {
+      return false;
+    }
+
+    if (tx.msg.over == 1) {
+      return false;
+    }
+
+    for (let i = 0; i < this.games.length; i++) {
+      if (tx.transaction.sig === this.games[i].transaction.sig) {
+        console.log("TX is already in Arcade list");
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+
+
+  //
+  //Add a game (tx) to a specified list
   //
   addGame(tx, list = "open") {
 
@@ -1447,37 +1432,25 @@ alert("Observer Overlay for URL Games not yet implemented");
     if (!this.games["open"]) { this.games["open"] = []; }
     if (!this.games["mine"]) { this.games["mine"] = []; }
 
-    let already_exists = 0;
-
     for (let key in this.games) {
       for (let z = 0; z < this.games[key].length; z++) {
         if (tx.transaction.sig === this.games[key][z].transaction.sig) {
-	  already_exists = 1;
-	}
+	         return;
+	      }
       }
     }
 
-    if (already_exists == 0) {
-      let valid_game = this.validateGame(tx);
-      let game_exists = false;
-      if (valid_game) {
-        if (!this.games[list]) { this.games[list] = []; }
-        this.games[list].push(tx);
-      }
+    if (this.validateGame(tx)) {
+      this.games[list].push(tx);
     }
-
   }
+
+
   addGames(txs, list = "open") {
     if (!this.games[list]) { this.games[list] = []; }
     if (!this.games["open"]) { this.games["open"] = []; }
     if (!this.games["mine"]) { this.games["mine"] = []; }
     txs.forEach((tx, i) => {
-
-
-console.log("FOR EACH TX");
-console.log(JSON.stringify(tx.transaction));
-
-
       let for_us = false;
       let valid_game = this.validateGame(tx);
       if (valid_game) {
@@ -1617,26 +1590,6 @@ console.log("FINISH: " + JSON.stringify(this.games));
       if (game) { return game; }
     }
     return null;
-  }
-  validateGame(tx) {
-    if (!tx) { return false; }
-    if (!tx.transaction) {
-      return false;
-    } else {
-      if (!tx.transaction.sig) { return false; }
-      if (tx.msg.over == 1) { return false; }
-    }
-    for (let i = 0; i < this.games.length; i++) {
-
-      let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
-      if (tx.transaction.sig == transaction.sig) { return false; }
-      if (tx.returnMessage().game_id != "" && tx.returnMessage().game_id == transaction.sig) { return false; }
-      if (tx.returnMessage().game_id === this.games[i].transaction.sig) {
-        console.log("ERROR 480394: not re-adding existing game to list");
-        return false;
-      }
-    }
-    return true;
   }
 
 
@@ -1860,13 +1813,15 @@ console.log("FINISH: " + JSON.stringify(this.games));
       inviteLink += "#";
     }
     if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&arcade_game_id=" + game_sig);
+      inviteLink = inviteLink.replace("#", "&game_id=" + game_sig);
     } else {
-      inviteLink = inviteLink.replace("#", "?arcade_game_id=" + game_sig);
+      inviteLink = inviteLink.replace("#", "?game_id=" + game_sig);
     }
 
     data.invite_link = inviteLink;
-    this.game_invitation_link.render(data);
+
+    let game_invitation_link = new GameInvitationLink(app, this, data);
+    game_invitation_link.render();
 
   }
 

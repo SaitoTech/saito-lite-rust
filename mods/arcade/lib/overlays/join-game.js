@@ -21,7 +21,7 @@ console.log("TXMSG: " + JSON.stringify(txmsg));
     let game_mod = this.app.modules.returnModuleByName(modname);
 
     this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite_tx));
-    this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
+    this.overlay.setBackground(game_mod.returnArcadeImg());
     this.attachEvents();
   }
   

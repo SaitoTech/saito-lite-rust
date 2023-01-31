@@ -1461,6 +1461,8 @@ class Browser {
 
   activatePublicKeyObserver(app) {
 
+return;
+
     let mutationObserver = new MutationObserver((entries) => {
 
       entries.forEach((entry) => {

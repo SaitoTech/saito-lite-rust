@@ -87,18 +87,12 @@ class Invite {
       this.empty_slots = this.players_needed - this.players.length;
     }
 
-    //console.log('invite data');
-    //console.log(this);
-
     // remove empty slots if any players are requested
     if (this.game_type == 'private invite') {
       if (this.desired_opponent_publickeys.length != 0) {
         this.empty_slots = this.empty_slots - this.desired_opponent_publickeys.length;
       }
     }
-
-    //console.log('invite data');
-    //console.log(this);
 
     //
     //
