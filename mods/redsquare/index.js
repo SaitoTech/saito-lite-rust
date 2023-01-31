@@ -51,6 +51,7 @@ module.exports = (app, mod) => {
 
 <body>
 
+<div class="saito-loader"></div>
 
 </body>
 

@@ -14,9 +14,8 @@ module.exports = () => {
           </div>
         </div>
         <div class="redsquare-appspace-body">
-	</div>
-  <div id="redsquare-intersection">
-  </div>
+	      </div>
+        <div id="redsquare-intersection"></div>
       </div>
   `;
 
