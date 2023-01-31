@@ -38,6 +38,10 @@
   height: 1rem;
 }
 
+.saito-main>.saito-loader {
+  margin-top: 15vh;
+}
+
 @media screen and (max-width: 768px) {
 
   .redsquare-page-header-title {

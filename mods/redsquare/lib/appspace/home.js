@@ -15,18 +15,14 @@ class AppspaceHome {
     this.parent_id = "";
     this.saito_loader = new SaitoLoader(app, mod);
 
-
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-
           if (entry.isIntersecting) {
-            if(mod.viewing !== "home") return;
+            if (mod.viewing !== "home") { return; }
             let saito_loader = this.saito_loader;
             saito_loader.render(app, mod, "redsquare-intersection", false);
-          
             mod.loadMoreTweets(()=> saito_loader.remove());
           }
-
       });
     }, {
       root: null,
@@ -85,6 +81,7 @@ class AppspaceHome {
     if (document.querySelector(".redsquare-home")) {
       this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
     } else {
+      this.container.innerHTML = "";
       this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
     }
 
