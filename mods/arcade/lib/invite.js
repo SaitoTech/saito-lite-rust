@@ -1,6 +1,4 @@
 const JoinGameOverlay = require("./overlays/join-game");
-const ContinueGameOverlay = require("./overlays/continue-game");
-const WaitingGameOverlay = require("./overlays/waiting-game");
 const InviteTemplate = require("./invite.template");
 const JSON = require('json-bigint');
 
@@ -11,9 +9,8 @@ class Invite {
     this.app = app;
     this.mod = mod;
     this.container = container;
-    this.join = new JoinGameOverlay(app, mod, tx);
-    this.continue_game = new ContinueGameOverlay(app, mod, tx);
-    this.waiting_game = new WaitingGameOverlay(app, mod, tx);
+
+    //Save a copy of the tx, though we parse it for info here
     this.tx = tx;
 
     //
@@ -29,6 +26,7 @@ class Invite {
     this.game_status = "";
     this.originator = null;
     this.desired_opponent_publickeys = [];
+    this.options = {};
 
     if (this.tx) {
 
@@ -38,7 +36,6 @@ class Invite {
       if (this.tx.transaction.sig) { this.game_id = this.tx.transaction.sig; }
       if (txmsg.game_id) { this.game_id = txmsg.game_id; }
       if (txmsg.name) { this.game_name = txmsg.name; }
-      if (this.game_name) { this.game_slug = this.game_name.toLowerCase(); }
       if (!txmsg.name) { this.game_name = txmsg.game; }
       if (txmsg.players) { this.players = txmsg.players; }
       if (txmsg.players_needed) { this.players_needed = txmsg.players_needed; }
@@ -47,10 +44,13 @@ class Invite {
       this.game_mod = app.modules.returnModule(txmsg.game);
       this.originator = txmsg.originator || null;
 
+      this.game_slug = this.game_mod.returnSlug() || this.game_name.toLowerCase();
+
       //
       // crypto invites and games
       //
       if (txmsg.options) {
+        this.options = txmsg.options;
         if (txmsg.options.crypto) {
           this.game_type = `${txmsg.options.crypto} invite`;
           if (this.players_needed <= this.players.length) {
@@ -61,16 +61,10 @@ class Invite {
 
     }
 
-    if (this.game_mod) {
-      this.game_name = this.game_mod.returnName();
-      this.game_slug = this.game_mod.returnSlug();
-    }
-
-
     //
     // private invites
     //
-    if (mod.isMyGame(this.tx)) {
+    /*if (mod.isMyGame(this.tx)) {
       if (!mod.isJoined(tx, app.wallet.returnPublicKey())) {
         this.game_type = "private invite";
       }
@@ -80,7 +74,7 @@ class Invite {
       if (this.players_needed <= this.players.length) {
         this.game_type = "private game";
       }
-    }
+    }*/
 
     // calculate empty slots 
     if (this.players.length < this.players_needed) {
@@ -94,26 +88,18 @@ class Invite {
       }
     }
 
-    //
-    //
-    // handle requests to re-render invites -- move to INVITE FILE
-    //
-    this.app.connection.on("arcade-invite-render-request", (game_id) => {
-      this.game_id = game_id;
-      if (this.tx == null) { return; }
-      if (this.mod.is_game_initializing == true) { return; }
-      if (game_id === this.tx.transaction.sig) {
-        this.render();
-      }
-    });
-
   }
 
+
   render() {
-    if (document.querySelector(".arcade-invites")) {
-      this.app.browser.replaceElementBySelector(InviteTemplate(this.app, this.mod, this), ".arcade-invites");
-    } else {
+    if (this.debug){
+      console.log("Rendering Invite into: ", this.container);
+    }
+
+    if (this.container && document.querySelector(this.container)) {
       this.app.browser.addElementToSelector(InviteTemplate(this.app, this.mod, this), this.container);
+    } else {
+      this.app.browser.replaceElementBySelector(InviteTemplate(this.app, this.mod, this), ".arcade-invites");
     }
     this.attachEvents();
   }
@@ -121,27 +107,14 @@ class Invite {
 
   attachEvents() {
 
-    let qs = `.saito-game-${this.game_id}`;
+    let qs = `#saito-game-${this.game_id}`;
 
     document.querySelector(qs).onclick = (e) => {
       e.stopImmediatePropagation();
 
-    	if (this.mod.isMyGame(this.tx)) {
-    	  if (this.mod.isAccepted(this.tx, this.app.wallet.returnPublicKey())) {
-    	    if (this.players.length < this.players_needed) {
-            this.waiting_game.invite = this;
-            this.waiting_game.render();
-    	      return;
-    	    } else {
-            this.continue_game.invite = this;
-            this.continue_game.render();
-    	      return;
-    	    }
-    	  }
-    	}
+      let game_overlay = new JoinGameOverlay(this.app, this.mod, this);
+      game_overlay.render();
 
-  	  this.join.invite = this;
-  	  this.join.render();
   	  return;
     };
 

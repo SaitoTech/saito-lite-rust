@@ -1,6 +1,6 @@
 const AppspaceHomeTemplate = require("./home.template");
 const Post = require("./../post");
-const SaitoLoader = require("../../../../lib/saito/new-ui/saito-loader/saito-loader");
+const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
 
 
 
@@ -19,8 +19,8 @@ class AppspaceHome {
       entries.forEach(entry => {
           if (entry.isIntersecting) {
             if (mod.viewing !== "home") { return; }
-            let saito_loader = this.saito_loader;
-            saito_loader.render(app, mod, "redsquare-intersection", false);
+            let saito_loader =  new SaitoLoader(app, mod, 'redsquare-intersection');
+            saito_loader.render();
             mod.loadMoreTweets(()=> saito_loader.remove());
           }
       });
