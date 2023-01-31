@@ -493,12 +493,15 @@ console.log("thread render request: " + new Date().getTime());
     if (this.tweets.length == 0) { render_home = true; }
 
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
-      if(to_track_tweet){
+
+console.log("CALLBACK FROM LOAD TWEETS AND RETURN: ");
+console.log("time: " + new Date().getTime());
+console.log("num txs: " + txs.length);
+
+      if (to_track_tweet){
         if(tweet_to_track){
           this.trackTweet(tweet_to_track);
         }
-    
-
       }
       for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
       if (post_load_callback != null) {
