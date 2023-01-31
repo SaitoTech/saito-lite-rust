@@ -28,7 +28,7 @@ class RedSquareSidebar {
     //
     // appspace modules
     //
-    this.app.modules.renderInto(".redsquare-sidebar");
+    // this.app.modules.renderInto(".redsquare-sidebar");
 
     this.attachEvents();
   }  

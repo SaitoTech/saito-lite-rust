@@ -1,10 +1,8 @@
 module.exports = (app, mod, invite) => {
 
-    let txmsg = invite.tx.returnMessage();
-
     let html = `
 
-      <div class="saito-module saito-game saito-game-${invite.game_id}" style="background-image: url('/${invite.game_slug}/img/arcade/arcade.jpg');">
+      <div class="saito-module saito-game" id="saito-game-${invite.game_id}" style="background-image: url('/${invite.game_slug}/img/arcade/arcade.jpg');">
         <div class="saito-module-titlebar">
           <span class="saito-module-titlebar-title">${invite.game_name}</span>
           <div class="saito-module-titlebar-details game-type">${(invite.game_type).toUpperCase()}</div>

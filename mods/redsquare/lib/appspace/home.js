@@ -1,6 +1,6 @@
 const AppspaceHomeTemplate = require("./home.template");
 const Post = require("./../post");
-const SaitoLoader = require("../../../../lib/saito/new-ui/saito-loader/saito-loader");
+const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
 
 
 
@@ -19,8 +19,8 @@ class AppspaceHome {
       entries.forEach(entry => {
           if (entry.isIntersecting) {
             if (mod.viewing !== "home") { return; }
-            let saito_loader = this.saito_loader;
-            saito_loader.render(app, mod, "redsquare-intersection", false);
+            let saito_loader =  new SaitoLoader(app, mod, 'redsquare-intersection');
+            saito_loader.render();
             mod.loadMoreTweets(()=> saito_loader.remove());
           }
       });
@@ -83,11 +83,13 @@ class AppspaceHome {
     } else {
       this.container.innerHTML = "";
       this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+
     }
 
-    //
+    let saito_loader = this.saito_loader;
+    saito_loader.render(this.app, this.mod, 'redsquare-appspace-body', false);
     // render all top-level tweets, possibly with critical children
-    //
+    
     for (let i = 0; i < this.mod.tweets.length; i++) {
       if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
         this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
@@ -96,6 +98,8 @@ class AppspaceHome {
       this.mod.tweets[i].renderWithCriticalChild();
 
     }
+
+    saito_loader.remove(true);
 
     this.attachEvents();
 
