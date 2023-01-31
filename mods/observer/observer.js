@@ -35,7 +35,7 @@ class Observer extends ModTemplate {
     //
     // listen for txs from arcade-supporting games
     //
-    app.modules.respondTo("arcade-games").forEach((mod) => {
+    app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
       this.affix_callbacks_to.push(mod.name);
     });
 

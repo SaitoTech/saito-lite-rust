@@ -37,18 +37,16 @@ class RedSquareMain {
       document.querySelector(".saito-main").innerHTML = "";
       this.mod.viewing = "home";
      let rendered =  this.renderComponentFromHash();
-     if(rendered){
+     if (rendered) {
+        this.mod.sidebar.render();
         return;
-     }else {
+     } else {
       this.render_component = 'home';
       this.components[this.render_component].render();
       document.querySelector(".saito-sidebar.right").innerHTML = "";
       this.mod.sidebar.render();
      }
-    
     });
-
-    
 
     this.app.connection.on("redsquare-home-load-more-tweets-request", (tx) => {
       this.components[this.render_component].renderMoreTweets();
@@ -57,8 +55,6 @@ class RedSquareMain {
     this.app.connection.on("redsquare-show-load-tweet-banner", (tx) => {
       document.querySelector('.redsquare-new-tweets-banner').style.display = "block";
     });
-
-
 
     this.app.connection.on("redsquare-thread-render-request", (tweet) => {
       document.querySelector(".saito-main").innerHTML = "";
@@ -115,17 +111,6 @@ class RedSquareMain {
       	  }
 	      }
       }
-    });
-
-
-    //
-    // this fires when the user has asked to view a tweet / thread
-    //
-    this.app.connection.on("redsquare-tweet-render-request", (tweet_sig) => {
-
-
-
-      //tweet.render();
     });
 
   }

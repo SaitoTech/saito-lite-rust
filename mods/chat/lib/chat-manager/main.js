@@ -18,6 +18,7 @@ class ChatManager {
 	  this.rendered = 0;
 	  this.render_manager_to_screen = 1;
 	  this.render_popups_to_screen = 1;
+	  
 
 	  //
 	  // track popups
@@ -37,6 +38,14 @@ class ChatManager {
 	  // handle requests to re-render chat popups
 	  //
 	  app.connection.on("chat-popup-render-request", (group=null) => {
+
+	    //
+	    // mobile devices should not force open chat for us
+	    //
+	    if (app.browser.isMobileBrowser()) {
+	      return;
+	    }
+
 	    if (group == null) {
 	      let group = this.mod.returnCommunityChat();
 	      if (group != null) { this.app.connection.emit("chat-popup-render-request", (group)); }
@@ -52,6 +61,13 @@ class ChatManager {
           });
 
           app.connection.on("open-chat-with", (data=null) => {
+
+	    //
+	    // mobile devices should not force open chat for us
+	    //
+	    if (app.browser.isMobileBrowser()) {
+	      return;
+	    }
 
             if (!data) {
 	        let group = this.mod.returnCommunityChat();

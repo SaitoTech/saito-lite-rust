@@ -1,33 +1,31 @@
 .notification-item {
-    margin-bottom: 1rem;
-
+    padding-top: 1rem;
 }
 
-
 .notification-tweet {
-    cursor: pointer;
+  cursor: pointer;
   padding: 1rem 2rem;
   border-top: 1px solid transparent;
   border-bottom: 1px solid var(--saito-border-color-dark);
   position: relative;
 }
 
-
 .notification-item:hover {
-    background-color: var(--saito-background-light);
+  background-color: var(--saito-background-light);
 }
 
 .notifications-empty {
-    margin-left: 1rem;
-    display: flex;
-    margin-left: 40%;
+  margin-left: 1rem;
+  display: flex;
+  margin-left: 40%;
 }
 
 .notifications-empty p {
-    font-size: 1.8rem;
+  font-size: 1.8rem;
 }
 
 .notifications-empty span {
-    margin-right: 1rem;
-    font-size: 1.8rem;
+  margin-right: 1rem;
+  font-size: 1.8rem;
 }
+

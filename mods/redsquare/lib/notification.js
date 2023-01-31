@@ -10,10 +10,15 @@ const saito = require("./../../../lib/saito/saito");
 class RedSquareNotification {
 
   constructor(app, mod, tx = null) {
+    this.app = app;
+    this.mod = mod;
     this.tx = tx;
   }
 
-  render(app, mod, selector = "") {
+  render(selector = "") {
+
+    let app = this.app;
+    let mod = this.mod;
 
     if (this.tx == null) { 
          document.querySelector(selector).innerHTML = `<div class="notifications-empty"><span> <i class="far fa-folder-open" aria-hidden="true"></i> </span> <p>No new notifications </p> </div>`
@@ -56,12 +61,15 @@ class RedSquareNotification {
       }
   
       app.browser.addElementToSelector(html, ".redsquare-notifications");
-      this.attachEvents(app, mod);
+      this.attachEvents();
     }
   
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     let qs = ".notification-item-" + this.tx.transaction.sig;
     let obj = document.querySelector(qs);
@@ -69,18 +77,14 @@ class RedSquareNotification {
     if (obj) {
       obj.onclick = (e) => {
         let sig = e.currentTarget.getAttribute("data-id");
-        mod.renderParentWithChildren(app, mod, sig);
+        let tweet = mod.returnTweet(sig);
+        if (tweet) {
+	  app.connection.emit("redsquare-thread-render-request", (tweet));
+	}
       }
     }
-
   }
 }
 
 module.exports = RedSquareNotification;
-
-
-
-
-module.exports = RedSquareNotification;
-
 

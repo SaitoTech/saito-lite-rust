@@ -992,6 +992,8 @@ class Network {
         tx.deserialize(this.app, message.message_data, 0);
 
         const mycallback = function (response_object) {
+console.log("ApplicationTransaction sending response!");
+console.log("response size: " + JSON.stringify(response_object).length);
           peer.sendResponse(
             message.message_id,
             Buffer.from(JSON.stringify(response_object), "utf-8")
@@ -1032,6 +1034,8 @@ class Network {
           msg.data = reconstructed_data;
         }
         const mycallback = function (response_object) {
+console.log("ApplicationTransaction sending response!");
+console.log("response size: " + JSON.stringify(response_object).length);
           peer.sendResponse(
             message.message_id,
             Buffer.from(JSON.stringify(response_object), "utf-8")

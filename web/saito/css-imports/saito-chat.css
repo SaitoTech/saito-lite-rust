@@ -111,6 +111,7 @@
   background: var(--saito-arcade-background);
   max-height: 15rem;
   overflow-y: auto;
+  word-break: break-word;
 }
 
 

@@ -26,6 +26,7 @@ class Browser {
   public host: any;
   public port: any;
   public protocol: any;
+  public identifiers_added_to_dom: any;
 
   constructor(app) {
     this.app = app || {};
@@ -37,6 +38,8 @@ class Browser {
     this.host = "";
     this.port = "";
     this.protocol = "";
+
+    this.identifiers_added_to_dom = false;
 
     //
     // tells us the browser window is visible, as opposed to
@@ -1457,7 +1460,11 @@ class Browser {
 
 
   activatePublicKeyObserver(app) {
-    let mutaionObserver = new MutationObserver((entries) => {
+
+return;
+
+    let mutationObserver = new MutationObserver((entries) => {
+
       entries.forEach((entry) => {
         entry.addedNodes.forEach((node) => {
           recursive_search(app, node);
@@ -1472,8 +1479,14 @@ class Browser {
             //Replace identifier from Registry -- there should just be one child
             Array.from(node.children).forEach((child_node) => {
               if (child_node?.classList?.contains("saito-address")) {
+
+console.log("FOUND PUBLIC KEY!: " + address);
+
                 let identifier = app.keys.returnIdentifierByPublicKey(address, true);
                 if (identifier) {
+
+console.log("IDENTIFIER: " + identifier);
+
                   try {
                     document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
                       item.innerHTML = identifier;
@@ -1496,7 +1509,7 @@ class Browser {
       }
     });
 
-    mutaionObserver.observe(document.documentElement, {
+    mutationObserver.observe(document.documentElement, {
       childList: true,
       subtree: true,
     });

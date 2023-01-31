@@ -41,8 +41,6 @@ module.exports = (app, mod, tweet) => {
                 <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>
               </div>`;
 
-console.log("SHOW CONTROLS? " + show_controls);
-
   return `
         <div class="tweet ${sig_class}" data-id="${tweet.tx.transaction.sig}">
           <div class="tweet-notice">${notice}</div>

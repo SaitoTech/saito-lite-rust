@@ -16,6 +16,35 @@ class RedSquareImage {
 
     let element = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body  .tweet-picture";
     let template = RedSquareImageTemplate(this.app, this.mod, this.images);
+    let sig = this.tweet.tx.transaction.sig;
+
+    let expected_width = "100%";
+    let expected_height = "auto";
+
+
+    let available_width_qs = ".tweet-"+this.tweet.tx.transaction.sig+ " > .tweet-body .tweet-main";
+    if (document.querySelector(available_width_qs)) {
+      let obj = document.querySelector(available_width_qs);
+      expected_width = obj.getBoundingClientRect().width;
+    }
+
+    //
+    // avoid length vertical posts
+    //
+    var img = new Image;
+    img.onload = function() {
+      expected_height = parseInt((expected_width / img.width) * img.height);
+      expected_width = parseInt(expected_width);
+      if (expected_height > (expected_width+10)) {
+        let qs = ".tweet-"+sig+ " > .tweet-body  .tweet-picture img";
+	let obj = document.querySelector(qs);
+	obj.style.maxHeight = expected_width + "px";
+	obj.style.maxWidth = expected_width + "px";
+      }
+    };
+    img.src = this.images[0];
+
+
 
     if (document.querySelector(element)) {
       this.app.browser.replaceElementBySelector(template, element);

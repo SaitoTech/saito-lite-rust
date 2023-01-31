@@ -230,17 +230,15 @@ class RedSquare extends ModTemplate {
     //
     // render tweet thread
     //
-   let mod = app.modules.returnModule('RedSquare')
+    let mod = app.modules.returnModule('RedSquare')
     if (this.results_loaded == false) {
       let tweet_id = app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-
         this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
           this.results_loaded = true;
           for (let z = 0; z < txs.length; z++) {
             let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-            console.log('tweet ', tweet);
             app.connection.emit('redsquare-thread-render-request', tweet);
            
           }
@@ -269,9 +267,21 @@ class RedSquare extends ModTemplate {
     // check peer for any tweets they want to send us
     //
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("initializing load request: " + new Date().getTime());
+
     this.loadTweetsFromPeer(peer, sql, () => {
+console.log("^^^");
+console.log("^^^");
+console.log("^^^");
+console.log("thread render request: " + new Date().getTime());
       this.app.connection.emit("redsquare-home-render-request");
+      this.app.browser.addIdentifiersToDom();
     }, true);
+
 
     //
     // this triggers onArchiveHandshakeComplete if peer is archive etc.
@@ -334,15 +344,15 @@ class RedSquare extends ModTemplate {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
           this.receiveTweetTransaction(blk, tx, conf, app);
-          this.sqlcache = [];
+          this.sqlcache = {};
         }
         if (txmsg.request === "like tweet") {
           this.receiveLikeTransaction(blk, tx, conf, app);
-          this.sqlcache = [];
+          this.sqlcache = {};
         }
         if (txmsg.request === "flag tweet") {
           this.receiveFlagTransaction(blk, tx, conf, app);
-          this.sqlcache = [];
+          this.sqlcache = {};
         }
       }
     } catch (err) {
@@ -483,12 +493,15 @@ class RedSquare extends ModTemplate {
     if (this.tweets.length == 0) { render_home = true; }
 
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
-      if(to_track_tweet){
+
+console.log("CALLBACK FROM LOAD TWEETS AND RETURN: ");
+console.log("time: " + new Date().getTime());
+console.log("num txs: " + txs.length);
+
+      if (to_track_tweet){
         if(tweet_to_track){
           this.trackTweet(tweet_to_track);
         }
-    
-
       }
       for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
       if (post_load_callback != null) {
