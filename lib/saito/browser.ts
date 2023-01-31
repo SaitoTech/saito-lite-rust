@@ -734,6 +734,15 @@ class Browser {
 
   }
 
+  returnTime(timestamp) {
+    let d = this.formatDate(timestamp);
+    let h = d.hours;
+    let m = d.minutes;
+    let x = '';
+    if (h < 10) { x = `0${h}`; } else { x = `${h}`; }
+    if (m < 10) { x += `:0${m}`; } else { x += `:${m}`; }
+    return x;
+  }
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
 
