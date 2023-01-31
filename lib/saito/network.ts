@@ -1031,7 +1031,7 @@ console.log("and done...");
 
 //          peer.sendResponse(
 //            message.message_id,
-//            Buffer.from(JSON.stringify(response_object), "utf-8")
+//            Buffer.from(this.app.crypto.fastSerialize(response_object), "utf-8")
 //          );
         };
 
@@ -1076,7 +1076,7 @@ console.log("ApplicationTransaction sending response!");
 console.log("response size: " + JSON.stringify(response_object).length);
           peer.sendResponse(
             message.message_id,
-            Buffer.from(JSON.stringify(response_object), "utf-8")
+            Buffer.from(this.app.crypto.fastSerialize(response_object), "utf-8")
           );
         };
 

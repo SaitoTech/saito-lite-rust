@@ -72,8 +72,6 @@ class Mods {
   async handlePeerTransaction(tx, peer: Peer, mycallback = null) {
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
-console.log("trying for: " + this.mods[iii].name);
-console.log("and TXMSG is: " + JSON.stringify(tx.returnMessage()));
         this.mods[iii].handlePeerTransaction(this.app, tx, peer, mycallback);
       } catch (err) {
         console.log("handlePeerTransaction Unknown Error: \n" + err);
