@@ -418,8 +418,6 @@ class Chat extends ModTemplate {
 
         for (let block of message_blocks) {
 
-//console.log("block: " + JSON.stringify(block));
-
             let ts = 0;
             if (block.length > 0) {
                 let sender = "";
@@ -431,10 +429,8 @@ class Chat extends ModTemplate {
                     msg += txmsg.message;
                     ts = txmsg.timestamp;
                 }
-//console.log("pre-sanitize: " + msg);
                 msg = this.app.browser.sanitize(msg);
-//console.log("post-sanitize: " + msg);
-                html += `${SaitoUserTemplate(this.app, sender, msg, ts)}`;
+                html += `${SaitoUserTemplate(this.app, sender, msg, this.app.browser.returnTime(ts))}`;
             }
         }
 
@@ -444,7 +440,6 @@ class Chat extends ModTemplate {
         //Save to Wallet Here
         this.saveChat(group);
 
-//console.log("return html: " + html);
         return html;
 
     }
