@@ -1451,12 +1451,6 @@ class Arcade extends ModTemplate {
     if (!this.games["open"]) { this.games["open"] = []; }
     if (!this.games["mine"]) { this.games["mine"] = []; }
     txs.forEach((tx, i) => {
-
-
-console.log("FOR EACH TX");
-console.log(JSON.stringify(tx.transaction));
-
-
       let for_us = false;
       let valid_game = this.validateGame(tx);
       if (valid_game) {
