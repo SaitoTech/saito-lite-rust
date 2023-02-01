@@ -59,7 +59,7 @@ class Relay extends ModTemplate {
 
 console.log("RECIPIENTS: " + JSON.stringify(recipients));
 console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
-console.log("MESSAGE_DATA: " + +JSON.stringify(message_data));
+console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
 
         //
         // transaction to end-user, containing msg.request / msg.data is
@@ -94,7 +94,9 @@ console.log("MESSAGE_DATA: " + +JSON.stringify(message_data));
 
                 //console.log("relay peer message");
 
-                peer.sendRequest("relay peer message", tx.transaction);
+console.log("RELAY MESSAGE AS TRANSACTION");
+
+                peer.sendRequestAsTransaction("relay peer message", tx.transaction);
 
             }
             //}
@@ -122,6 +124,7 @@ console.log("MESSAGE_DATA: " + +JSON.stringify(message_data));
 console.log("**!!!!**");
 console.log("**!!!!**");
 console.log("**!!!!**");
+console.log("**!!!!**");
 console.log("in relay peer message");
 
                 //
@@ -145,7 +148,6 @@ console.log("in relay peer message");
 
 console.log("tx is for me, so I process!");
 
-
                     if (txmsg.request === "ping"){
                         this.sendRelayMessage(tx.transaction.from[0].add, "echo", {status:this.busy});
                         return;
@@ -157,11 +159,16 @@ console.log("tx is for me, so I process!");
                         } else {
                             app.connection.emit("relay-is-online", tx.transaction.from[0].add);
                         }
+			return;
                     }
 
                     console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
+                    console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.data));
+		    let newtx = new saito.default.transaction(txmsg.data);
 
-                    app.modules.handlePeerTransaction(txmsg, peer, mycallback);
+console.log("DESERIALIED INTO: " + JSON.stringify(newtx));
+
+                    app.modules.handlePeerTransaction(newtx, peer, mycallback);
                     return;
 
                 //
@@ -184,7 +191,7 @@ console.log("tx is not for me, so I relay!");
 
 console.log("PEER FOUND AND FORWARDING: ");
 
-                            app.network.peers[i].sendRequest("relay peer message", message.data, function () {
+                            app.network.peers[i].sendRequestAsTransaction("relay peer message", message.data, function () {
                                 if (mycallback != null) {
                                     mycallback({ err: "", success: 1 });
                                 }
@@ -208,4 +215,3 @@ console.log("PEER FOUND AND FORWARDING: ");
 }
 
 module.exports = Relay;
-

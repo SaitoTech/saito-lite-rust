@@ -529,7 +529,7 @@ console.log("AND NOW WE CAN RENDER THE INVITE MANAGER!");
   //
   async handlePeerTransaction(app, newtx=null, peer, mycallback = null) {
   
-    if (newtx==null) { return; }
+    if (newtx == null) { return; }
     let message = newtx.returnMessage();
     let tx = null;
 

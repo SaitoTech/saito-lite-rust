@@ -221,7 +221,6 @@ class Chat extends ModTemplate {
     // the trick is that receiveChatTransaction checks if the message is to a group I belong to
     // or addressed to me
     //
-
     async handlePeerTransaction(app, tx2=null, peer, mycallback) {
 
       if (tx2 == null) { return; }
@@ -239,9 +238,13 @@ class Chat extends ModTemplate {
 
         if (message.request === "chat message") {
 
+console.log("RECEIVE CHAT MESSAGE REQUEST");
+
             this.receiveChatTransaction(app, tx);
 
         } else if (message.request === "chat message broadcast") {
+
+console.log("RECEIVE CHAT MESSAGE BROADCAST");
 
             //Chat message broadcast is the Relay to the Chat-services server
             //that handles Community chat and will forward the message as a "chat message"
@@ -251,9 +254,11 @@ class Chat extends ModTemplate {
             app.connection.emit("archive-save-transaction", { key: message.data.group_id, type: "Chat", tx });
 
             //Forward to all my peers (but not me again) with new request & same data 
+console.log("CHECKING ALL TX");
             app.network.peers.forEach(p => {
                 if (p.peer.publickey !== peer.peer.publickey) {
-                    p.sendRequest("chat message", message.data);
+console.log("SENDING REQUEST AS TX");
+                    p.sendRequestAsTransaction("chat message", message.data);
                 }
             });
         }
@@ -263,8 +268,9 @@ class Chat extends ModTemplate {
 	//
         if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
 
-
     }
+
+
 
 
     /**
@@ -297,7 +303,9 @@ class Chat extends ModTemplate {
             tx = app.wallet.signAndEncryptTransaction(tx);
             app.network.propagateTransaction(tx);
 
-            app.connection.emit("send-relay-message", { recipient, request: 'chat message broadcast', data: { tx, group_id } });
+console.log("CHAT SENDS RELAY MESSAGE");
+
+            app.connection.emit("send-relay-message", { recipient, request: 'chat message broadcast', data: tx });
 
         } else {
             salert("Connection to chat server lost");

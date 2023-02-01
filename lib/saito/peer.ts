@@ -184,7 +184,28 @@ class Peer {
     let channel = this.uses_stun ? this.stun.data_channel : this.socket;
     await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
   }
+  sendRequestAsTransaction(message: string, data: any = "") {
 
+    //
+    // convert request to zero-fee transaction, send that
+    //
+    let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+        newtx.msg.request = message;
+        newtx.msg.data = data;
+    //
+    // everything but time-intensive sig
+    //
+    newtx.presign(this.app);
+
+    const buffer = newtx.serialize(this.app);
+    let channel = this.uses_stun ? this.stun.data_channel : this.socket;
+
+console.log("SENDING REQUEST AS TRANSACTION");
+
+    this.app.networkApi.send(channel, MessageType.ApplicationTransaction, buffer);
+    return;
+  }
+  
   sendRequest(message: string, data: any = "") {
     let socket = this.socket;
     if (this.uses_stun) {

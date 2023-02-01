@@ -739,7 +739,7 @@ console.log("looking for key associated with: " + this.transaction.to[0].add + "
       if (Object.keys(this.msg).length === 0) {
         this.transaction.m = Buffer.alloc(0);
       } else {
-        this.transaction.m = Buffer.from(app.crypto.fastSerialize(this.msg), "utf-8");
+        this.transaction.m = Buffer.from(JSON.stringify(this.msg), "utf-8");
       }
     }
   }
