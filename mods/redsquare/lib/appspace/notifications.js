@@ -1,7 +1,7 @@
 
 const RedSquareAppspaceNotificationsTemplate = require("./notifications.template");
 const Notification = require("./../notification");
-const SaitoLoader = require("./../../../../lib/saito/new-ui/saito-loader/saito-loader");
+const SaitoLoader = require("./../../../../lib/saito/ui/saito-loader/saito-loader");
 
 class RedSquareAppspaceNotifications {
 
@@ -9,7 +9,7 @@ class RedSquareAppspaceNotifications {
     this.app = app;
     this.mod = mod;
     this.name = "RedSquareAppspaceNotifications";
-    this.saito_loader = new SaitoLoader(app, mod);
+    this.saito_loader = new SaitoLoader(app, mod, '#redsquare-home-header');
     this.increment = 1;
     this.container  = container;
   }
@@ -56,7 +56,7 @@ class RedSquareAppspaceNotifications {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        notificationSelf.saito_loader.render(app, mod, 'redsquare-home-header', false);
+        notificationSelf.saito_loader.render();
 
         let el = e.target;
         let tweet_sig_id = el.getAttribute("data-id");
