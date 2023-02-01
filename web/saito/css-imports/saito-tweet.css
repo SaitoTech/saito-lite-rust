@@ -17,28 +17,30 @@
 }
 
 .tweet.has-reply::after {
-    content: "";
-    position: absolute;
-    width: 0rem;
-    height: 100%;
-    top: 5.5rem;
-    left: 3.5rem;
-    border-left: 5px dotted var(--saito-border-color);
-    z-index: 50;
+  content: "";
+  position: absolute;
+  width: 0rem;
+  height: 100%;
+  top: 5.5rem;
+  left: 3.5rem;
+  border-left: 5px dotted var(--saito-border-color);
+  z-index: 50;
 }
+
 .tweet.has-reply-disconnected::after {
-    content: "";
-    position: absolute;
-    width: 0rem;
-    height: 100%;
-    top: 5.5rem;
-    left: 3.5rem;
-    border-left: 5px dotted var(--saito-border-color);
-    z-index: 50;
+  content: "";
+  position: absolute;
+  width: 0rem;
+  height: 100%;
+  top: 5.5rem;
+  left: 3.5rem;
+  border-left: 5px dotted var(--saito-border-color);
+  z-index: 50;
 }
+
 .tweet-header .saito-user .saito-identicon-box .saito-identicon {
-    z-index: 51;
-    position: absolute;
+  z-index: 51;
+  position: absolute;
 }
 
 .tweet-body {
@@ -58,6 +60,11 @@
 .tweet.quoted:hover {
   border-top: 1px solid transparent;
   border-bottom: 1px solid var(--saito-border-color);
+}
+
+.tweet-overlay .tweet-main {
+  overflow-y: auto;
+  max-height: calc(95vh - 40rem);
 }
 
 .tweet-notice {
@@ -138,10 +145,11 @@
   transition: all 1s;
 }
 
-.tweet-text.preview ~ .tweet-controls {
+.tweet-text.preview~.tweet-controls {
   display: none;
 }
-.tweet-text.full ~ .tweet-controls {
+
+.tweet-text.full~.tweet-controls {
   display: flex;
 }
 
@@ -163,7 +171,7 @@
   cursor: default;
 }
 
-.tweet-controls > div {
+.tweet-controls>div {
   position: relative;
   display: flex;
   align-items: center;
@@ -173,7 +181,7 @@
   color: var(--saito-font-color-light);
 }
 
-.tweet-controls > div:hover {
+.tweet-controls>div:hover {
   transform: scale(1.05);
   color: var(--saito-primary);
 }
@@ -202,7 +210,7 @@
   width: 100%;
 }
 
-.tweet-picture > img {
+.tweet-picture>img {
   width: 100%;
   height: auto;
   border-radius: 0.5rem;
@@ -239,7 +247,7 @@
   transform: translateY(-50%);
 }
 
-.tweet-overlay-img-cont > img {
+.tweet-overlay-img-cont>img {
   transition: all 0.2s ease-in-out;
 }
 
@@ -282,7 +290,7 @@
   color: var(--saito-gray-mid);
 }
 
-.youtube-embed-container > iframe {
+.youtube-embed-container>iframe {
   width: 100%;
   height: 25rem;
 }
@@ -308,7 +316,6 @@
   .tweet-picture {
     grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
   }
-
   .tweet-notice .saito-address {
     max-width: 70%;
   }
@@ -318,7 +325,7 @@
   .tweet-picture {
     grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   }
-  .tweet-picture > img {
+  .tweet-picture>img {
     height: 15rem;
   }
   .preview-img {
