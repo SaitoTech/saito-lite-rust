@@ -84,9 +84,8 @@
     display: none;
   }
 
-  .redsquare-appspace-header {
-    position: absolute;
-    top: -5rem;
+  .redsquare-appspace-header .redsquare-page-header-title{
+    display: none;
   }
 
   .redsquare-appspace-body {
