@@ -18,11 +18,6 @@ module.exports = (app, mod, invite) => {
 
           <div class="tip">
             <img class="saito-module-identicon saito-identicon" id-${invite.players[i]}" src="${app.keys.returnIdenticon(invite.players[i])}">
-<!---- only re-implement if UI/UX is good
-            <div class="tiptext">
-              <div class="saito-address saito-address-${invite.players[i]}" data-id="${invite.players[i]}">${invite.players[i]}</div>
-            </div>
------>
           </div>
 
       `;
@@ -34,9 +29,6 @@ module.exports = (app, mod, invite) => {
 
           <div class="tip requested_player">
             <img class="saito-module-identicon saito-identicon" id-${invite.desired_opponent_publickeys[i]}" src="${app.keys.returnIdenticon(invite.desired_opponent_publickeys[i])}">
-            <div class="tiptext">
-              <div class="saito-address saito-address-${invite.desired_opponent_publickeys[i]}" data-id="${invite.desired_opponent_publickeys[i]}">${invite.desired_opponent_publickeys[i]}</div>
-            </div>
           </div>
 
       `;
