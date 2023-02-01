@@ -78,7 +78,7 @@ class Registry extends ModTemplate {
     //
     if (message.request === 'registry username update') {
 
-      let tx = message.data.tx;
+      let tx = message?.data?.tx;
       let registry_self = app.modules.returnModule("Registry");
 
       //

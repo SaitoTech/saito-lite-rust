@@ -247,7 +247,7 @@ class Observer extends ModTemplate {
         message.request = "observer spv update";
         message.data = {};
         message.data.tx = tx;
-        app.network.peers[i].sendRequest(message.request, message.data);
+        app.network.peers[i].sendRequestAsTransaction(message.request, message.data);
       }
     }
   }

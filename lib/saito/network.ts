@@ -1396,6 +1396,16 @@ class Network {
     }
   }
 
+  sendRequestAsTransaction(message: string, data: any = "", peer: Peer = null) {
+    if (peer !== null) {
+      peer.sendRequestAsTransaction(message, data);
+    } else {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        this.peers[x].sendRequestAsTransaction(message, data);
+      }
+    }
+  }
+
   sendTransaction(tx: any = "", peer: Peer = null) {
     if (peer !== null) {
       peer.sendTransactionWithCallback(tx);
