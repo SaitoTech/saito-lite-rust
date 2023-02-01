@@ -27,7 +27,7 @@ class ArcadeMain {
     //
     app.connection.on("arcade-game-initialize-render-request", (game_id) => {
       document.querySelector(".arcade-central-panel").innerHTML = "";
-      this.mod.is_game_initializing = true;
+
       this.slider.hide();
       this.initializer.render(game_id);
     });
