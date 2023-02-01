@@ -64,6 +64,10 @@
     right: 2rem;
   }
 
+  div#redsquare-tweet:hover {
+    color: transparent;
+  }
+
   div#redsquare-tweet::after {
     content: "\002B";
     position: absolute;
