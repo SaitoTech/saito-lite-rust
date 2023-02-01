@@ -221,52 +221,57 @@ class Chat extends ModTemplate {
     // the trick is that receiveChatTransaction checks if the message is to a group I belong to
     // or addressed to me
     //
-    async handlePeerTransaction(app, tx2=null, peer, mycallback) {
+    async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-      if (tx2 == null) { return; }
-      let message = tx2.returnMessage();
+      if (tx == null) { return; }
 
-        if (!message.request || !message.data || !message.request.includes("chat message")) {
-            return;
-        }
+      tx.decryptMessage(app); //In case forwarding private messages
 
-        let tx = new saito.default.transaction(message.data.tx.transaction);
+      let txmsg = tx.returnMessage();
 
-        tx.decryptMessage(app); //In case forwarding private messages
+        if (!txmsg.request) { return; }
 
-        let txmsg = tx.returnMessage();
+        if (txmsg.request === "chat message") {
 
-        if (message.request === "chat message") {
+          this.receiveChatTransaction(app, tx);
 
-console.log("RECEIVE CHAT MESSAGE REQUEST");
+	  //
+	  // notify sender if requested
+	  //
+          if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
 
-            this.receiveChatTransaction(app, tx);
+        } else if (txmsg.request === "chat message broadcast") {
 
-        } else if (message.request === "chat message broadcast") {
+	  let inner_tx = new saito.default.transaction(txmsg.data);
+	  let inner_txmsg = inner_tx.returnMessage();
 
-console.log("RECEIVE CHAT MESSAGE BROADCAST");
+	  if (!inner_txmsg?.group_id) { return; }
 
-            //Chat message broadcast is the Relay to the Chat-services server
-            //that handles Community chat and will forward the message as a "chat message"
-            //Without relay + handlePeerTransaction, we do not receive community chat messages
+          //Chat message broadcast is the Relay to the Chat-services server
+          //that handles Community chat and will forward the message as a "chat message"
+          //Without relay + handlePeerTransaction, we do not receive community chat messages
 
-            //Tell Archive to save a copy of this TX
-            app.connection.emit("archive-save-transaction", { key: message.data.group_id, type: "Chat", tx });
+          //Tell Archive to save a copy of this TX
+          app.connection.emit("archive-save-transaction", { key: inner_txmsg.group_id, type: "Chat", inner_tx });
 
-            //Forward to all my peers (but not me again) with new request & same data 
-console.log("CHECKING ALL TX");
+          //Forward to all my peers (but not me again) with new request & same data 
+	  //
+	  // servers can forward if they get chat broadcast
+	  //
+	  if (app.BROWSER == 0) {
             app.network.peers.forEach(p => {
-                if (p.peer.publickey !== peer.peer.publickey) {
-console.log("SENDING REQUEST AS TX");
-                    p.sendRequestAsTransaction("chat message", message.data);
-                }
+              if (p.peer.publickey !== peer.peer.publickey) {
+                p.sendTransactionWithCallback(inner_tx, () => {});
+              }
             });
-        }
+	  }
 
-	//
-	// notify sender if requested
-	//
-        if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
+	  //
+	  // notify sender if requested
+	  //
+          if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
+
+        }
 
     }
 
@@ -303,9 +308,7 @@ console.log("SENDING REQUEST AS TX");
             tx = app.wallet.signAndEncryptTransaction(tx);
             app.network.propagateTransaction(tx);
 
-console.log("CHAT SENDS RELAY MESSAGE");
-
-            app.connection.emit("send-relay-message", { recipient, request: 'chat message broadcast', data: tx });
+            app.connection.emit("send-relay-message", { recipient, request: 'chat message broadcast', data: tx.transaction });
 
         } else {
             salert("Connection to chat server lost");

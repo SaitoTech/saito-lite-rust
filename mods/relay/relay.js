@@ -91,17 +91,12 @@ console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
                 //
                 // forward to peer
                 //
-
-                //console.log("relay peer message");
-
-console.log("RELAY MESSAGE AS TRANSACTION");
-
                 peer.sendRequestAsTransaction("relay peer message", tx.transaction);
 
+            //}
+            //}
+            //}
             }
-            //}
-            //}
-            //}
         }
 
         return;
@@ -121,62 +116,46 @@ console.log("RELAY MESSAGE AS TRANSACTION");
 
             if (message.request === "relay peer message") {
 
-console.log("**!!!!**");
-console.log("**!!!!**");
-console.log("**!!!!**");
-console.log("**!!!!**");
-console.log("in relay peer message");
-
                 //
                 // sanity check on tx
                 //
                 let txjson = message.data;
-                let tx = new saito.default.transaction(txjson);
-                if (tx.transaction.to.length <= 0) {
+                let inner_tx = new saito.default.transaction(txjson);
+                if (inner_tx.transaction.to.length <= 0) {
                     return;
                 }
-                if (tx.transaction.to[0].add == undefined) {
+                if (inner_tx.transaction.to[0].add == undefined) {
                     return;
                 }
-                tx.decryptMessage(this.app);
-                let txmsg = tx.returnMessage();
+                inner_tx.decryptMessage(this.app);
+                let inner_txmsg = inner_tx.returnMessage();
 
                 //
                 // if interior transaction is intended for me, I process regardless
                 //
-                if (tx.isTo(app.wallet.returnPublicKey())) {
+                if (inner_tx.isTo(app.wallet.returnPublicKey())) {
 
-console.log("tx is for me, so I process!");
-
-                    if (txmsg.request === "ping"){
-                        this.sendRelayMessage(tx.transaction.from[0].add, "echo", {status:this.busy});
+                    if (inner_txmsg.request === "ping"){
+                        this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", {status:this.busy});
                         return;
                     }
 
-                    if (txmsg.request === "echo"){
-                        if (txmsg.data.status){
-                            app.connection.emit("relay-is-busy", tx.transaction.from[0].add);
+                    if (inner_txmsg.request === "echo"){
+                        if (inner_txmsg.data.status){
+                            app.connection.emit("relay-is-busy", inner_tx.transaction.from[0].add);
                         } else {
-                            app.connection.emit("relay-is-online", tx.transaction.from[0].add);
+                            app.connection.emit("relay-is-online", inner_tx.transaction.from[0].add);
                         }
 			return;
                     }
 
-                    console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
-                    console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.data));
-		    let newtx = new saito.default.transaction(txmsg.data);
-
-console.log("DESERIALIED INTO: " + JSON.stringify(newtx));
-
-                    app.modules.handlePeerTransaction(newtx, peer, mycallback);
+                    app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
                     return;
 
                 //
                 // otherwise relay
                 //
                 } else {
-
-console.log("tx is not for me, so I relay!");
 
                     //
                     // check to see if original tx is for a peer
@@ -185,19 +164,18 @@ console.log("tx is not for me, so I relay!");
 
                     for (let i = 0; i < app.network.peers.length; i++) {
 
-                        if (tx.isTo(app.network.peers[i].peer.publickey)) {
+                        if (inner_tx.isTo(app.network.peers[i].peer.publickey)) {
 
                             peer_found = 1;
 
-console.log("PEER FOUND AND FORWARDING: ");
-
-                            app.network.peers[i].sendRequestAsTransaction("relay peer message", message.data, function () {
+			    if (this.app.BROWSER == 0) {
+                              app.network.peers[i].sendTransactionWithCallback(tx, function () {
                                 if (mycallback != null) {
                                     mycallback({ err: "", success: 1 });
                                 }
-                            });
+                              });
+			    }
                         }
-                        //}
                     }
                     if (peer_found == 0) {
                         if (mycallback != null) {
@@ -207,7 +185,7 @@ console.log("PEER FOUND AND FORWARDING: ");
                 }
             }
         } catch (err) {
-            console.log(err);
+          console.log(err);
         }
 
     }

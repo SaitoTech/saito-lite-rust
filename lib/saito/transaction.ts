@@ -71,6 +71,12 @@ class Transaction {
 
     if (jsonobj != null) {
       this.transaction = jsonobj;
+
+      //
+      // experiment
+      //
+      this.transaction.m = Buffer.from(this.transaction.m);
+
       if (this.transaction.type === TransactionType.Normal) {
         try {
           let buffer = Buffer.from(this.transaction.m);
@@ -151,14 +157,13 @@ class Transaction {
   }
 
   decryptMessage(app: Saito) {
+try {
     if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
-console.log("is not from me...");
       try {
         if (this.msg === null) {
           this.dmsg = "";
         } else {
           const parsed_msg = this.msg;
-console.log("ASKING for decryption of msg from " + this.transaction.from[0].add);
           this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
         }
       } catch (e) {
@@ -166,16 +171,14 @@ console.log("ASKING for decryption of msg from " + this.transaction.from[0].add)
       }
       return;
     }
-    try {
       if (this.msg === null) {
         this.dmsg = "";
         return;
       }
-console.log("looking for key associated with: " + this.transaction.to[0].add + " who is me or not? " + app.wallet.returnPublicKey());
       this.dmsg = app.keys.decryptMessage(this.transaction.to[0].add, this.msg);
-    } catch (e) {
-      this.dmsg = "";
-    }
+} catch (e) {
+  this.dmsg = "";
+}
     return;
   }
 
@@ -591,11 +594,15 @@ console.log("looking for key associated with: " + this.transaction.to[0].add + "
    * @param app
    */
   serialize(app: Saito): Uint8Array {
+
+    //
     //console.log("tx.serialize", this.transaction);
+    //
 
     const inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
     const outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
     const message_len = app.binary.u32AsBytes(this.transaction.m.byteLength);
+
     const path_len = this.path ? this.path.length : 0;
     const path_len_buffer = app.binary.u32AsBytes(path_len);
     const signature = app.binary.hexToSizedArray(this.transaction.sig, 64);
@@ -621,6 +628,7 @@ console.log("looking for key associated with: " + this.transaction.to[0].add + "
     /// [output][output][output]...
     /// [message]
     /// [hop][hop][hop]...
+    ///
 
     const start_of_inputs = TRANSACTION_SIZE;
     const start_of_outputs = TRANSACTION_SIZE + this.transaction.from.length * SLIP_SIZE;
@@ -636,6 +644,7 @@ console.log("looking for key associated with: " + this.transaction.to[0].add + "
       this.transaction.m.byteLength +
       path_len * HOP_SIZE;
     const ret = new Uint8Array(size_of_tx_data);
+
     ret.set(
       new Uint8Array([
         ...inputs_len,

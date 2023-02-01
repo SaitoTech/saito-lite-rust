@@ -197,12 +197,8 @@ class Peer {
     //
     newtx.presign(this.app);
 
-    const buffer = newtx.serialize(this.app);
-    let channel = this.uses_stun ? this.stun.data_channel : this.socket;
+    this.sendTransactionWithCallback(newtx, () => {});
 
-console.log("SENDING REQUEST AS TRANSACTION");
-
-    this.app.networkApi.send(channel, MessageType.ApplicationTransaction, buffer);
     return;
   }
   
@@ -377,7 +373,9 @@ console.log("SENDING REQUEST AS TRANSACTION");
       }
     } else if (this.socket) {
       if (this.socket && this.socket.readyState === this.socket.OPEN) {
+console.log("pre serialize buffer:");
         const buffer = tx.serialize(this.app);
+console.log("post serialize buffer:");
         this.app.networkApi
           .sendAPICall(this.socket, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {

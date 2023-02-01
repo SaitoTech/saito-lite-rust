@@ -680,8 +680,6 @@ class Network {
 
   async receiveRequest(peer, message) {
 
-    console.log("network.receiveRequest : ", message);
-
     let block;
     let block_hash;
     let fork_id;
@@ -694,14 +692,11 @@ class Network {
 
     switch (message.message_type) {
       case MessageType.HandshakeChallenge: {
-console.log("handshake challenge");
         await this.app.handshake.handleIncomingHandshakeChallenge(peer, message.message_data);
-
         break;
       }
 
       case MessageType.HandshakeResponse: {
-console.log("handshake response");
         await this.app.handshake.handleHandshakeResponse(peer, message.message_data);
 
         //
@@ -740,7 +735,6 @@ console.log("handshake response");
       //   break;
       // }
       case MessageType.Ping:
-         console.log("received ping...");
         // job already done!
         break;
 
@@ -753,7 +747,6 @@ console.log("handshake response");
       //   break;
 
       case MessageType.SPVChain: {
-console.log(" 2handshake response");
         //if (this.debugging) { console.log("RECEIVED SPVCHAIN"); }
 
         const buffer = Buffer.from(message.message_data, "utf8");
@@ -764,7 +757,6 @@ console.log(" 2handshake response");
       }
 
       case MessageType.Services: {
-console.log(" 3handshake response");
         const buffer = Buffer.from(message.message_data, "utf8");
 
         try {
@@ -778,7 +770,6 @@ console.log(" 3handshake response");
       }
 
       case MessageType.GhostChain: {
-console.log(" 4handshake response");
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
@@ -829,7 +820,6 @@ console.log(" 4handshake response");
       }
 
       case MessageType.BlockchainRequest: {
-console.log(" 5handshake response");
         block_id = BigInt(0);
         block_hash = "";
         fork_id = "";
@@ -883,7 +873,6 @@ console.log(" 5handshake response");
       }
 
       case MessageType.GhostChainRequest: {
-console.log(" 6handshake response");
         block_hash = "";
         fork_id = "";
         publickey = peer.peer.publickey;
@@ -957,7 +946,6 @@ console.log(" 6handshake response");
       // this delivers the block as BlockType.Header
       //
       case MessageType.Block:
-console.log(" 8handshake response");
         block = new Block(this.app);
         block.deserialize(message.message_data);
         block_hash = block.returnHash();
@@ -974,7 +962,6 @@ console.log(" 8handshake response");
       // this delivers the block as block_hash
       //
       case MessageType.BlockHeaderHash:
-console.log(" 9handshake response");
         block_hash = Buffer.from(message.message_data.slice(0, 32), "hex").toString("hex");
         block_id = this.app.binary.u64FromBytes(message.message_data.slice(32, 40));
         console.log("BlockHeaderHash received : " + block_hash + " - " + block_id);
@@ -986,7 +973,6 @@ console.log(" 9handshake response");
         break;
 
       case MessageType.Transaction:
-console.log("is tx");
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
         // await this.app.mempool.addTransaction(tx);
@@ -999,49 +985,25 @@ console.log("is tx");
 
       case MessageType.ApplicationTransaction: {
 
-console.log("application transaction");
-
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
-
-console.log("!!!!!!!!!!!!!!!!!!!!!!!!");
-console.log("RECEIVED TX: " + JSON.stringify(tx));
-console.log("!!!!!!!!!!!!!!!!!!!!!!!!");
-
-let txmsg = tx.returnMessage();
-console.log("RECEIVED TXMSG: " + JSON.stringify(txmsg));
 
         let app = this.app;
 
         const mycallback = function (response_object) {
 
-console.log("ApplicationTransaction sending response!");
-console.log("response size: " + JSON.stringify(response_object).length);
-
 	  let newtx = new Transaction();
 	  newtx.msg.response = response_object;
-console.log("about to presign...");
 	  newtx.presign(app);
-
-console.log("sending tx response...");
 
           peer.sendTransactionResponse(
             message.message_id,
             newtx.serialize(app)
           );
 
-console.log("and done...");
-
-//          peer.sendResponse(
-//            message.message_id,
-//            Buffer.from(this.app.crypto.fastSerialize(response_object), "utf-8")
-//          );
         };
 
-console.log("AAAA START");
-console.log("sending in a transaction to handlePeerTransaction!");
         await this.app.modules.handlePeerTransaction(tx, peer, mycallback);
-console.log("AAAA FINISH");
         break;
       }
 
@@ -1074,9 +1036,7 @@ console.log("AAAA FINISH");
         if (reconstructed_data) {
           msg.data = reconstructed_data;
         }
-        const mycallback = function (response_object) {
-console.log("ApplicationTransaction sending response!");
-console.log("response size: " + JSON.stringify(response_object).length);
+        const mycallback = (response_object) => {
           peer.sendResponse(
             message.message_id,
             Buffer.from(this.app.crypto.fastSerialize(response_object), "utf-8")
@@ -1104,9 +1064,7 @@ console.log("response size: " + JSON.stringify(response_object).length);
             }
 	    let newtx = new Transaction();
 	    newtx.msg = msg.data;
-console.log("BBB START");
             await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
-console.log("BBB FINISH");
         }
         break;
       }
