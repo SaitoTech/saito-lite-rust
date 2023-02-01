@@ -20,16 +20,17 @@ class ArcadeMain {
     this.menu = new ArcadeMenu(this.app, this.mod, ".saito-sidebar.left");
     this.sidebar.addComponent(this.menu);
     this.slider = new GameSlider(this.app, this.mod, ".arcade-game-slider");
-    this.initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
+    
 
     //
     // load init page
     //
-    app.connection.on("arcade-game-initialize-render-request", (game_id) => {
+    app.connection.on("arcade-game-initialize-render-request", () => {
       document.querySelector(".arcade-central-panel").innerHTML = "";
-
       this.slider.hide();
-      this.initializer.render(game_id);
+      
+      let initializer = new ArcadeInitializer(this.app, this.mod, ".arcade-central-panel");
+      initializer.render();
     });
 
   }

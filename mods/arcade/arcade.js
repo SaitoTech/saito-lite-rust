@@ -778,11 +778,12 @@ class Arcade extends ModTemplate {
     if (!game) { return; }
     if (!game.msg) { return; }
 
-    if (this.debug){
-      console.log(`Removing Player (${tx.transaction.from[0].add}) from Game: `, JSON.parse(JSON.stringify(game.msg)));
-    }
-
     if (game.msg.players.includes(tx.transaction.from[0].add)) {
+  
+      if (this.debug){
+        console.log(`Removing Player (${tx.transaction.from[0].add}) from Game: `, JSON.parse(JSON.stringify(game.msg)));
+      }
+
       let p_index = game.msg.players.indexOf(tx.transaction.from[0].add);
       game.msg.players.splice(p_index, 1);
       //Make sure player_sigs array exists and add invite_sig
@@ -1009,11 +1010,16 @@ class Arcade extends ModTemplate {
         this.app.network.propagateTransaction(newtx);
         this.app.connection.emit("send-relay-message", { recipient: "PEERS", request: "arcade spv update", data: newtx });
         this.app.connection.emit("send-relay-message", { recipient: game.msg.players, request: "arcade spv update", data: newtx });
+    
+        //Start Spinner  
+        this.app.connection.emit("arcade-game-initialize-render-request");
+        return;
       }
     }
-
-
-    this.app.connection.emit("arcade-invite-manager-render-request");
+    
+    //Redraw invites with new identicon
+    this.app.connection.emit("arcade-invite-manager-render-request");  
+        
   }
 
 
@@ -1073,24 +1079,20 @@ class Arcade extends ModTemplate {
       if (!tx.isTo(this.app.wallet.returnPublicKey())) { return; }
 
       //
-      // do not re-accept old games
+      // do not re-accept already initialized games
       //
       for (let i = 0; i < this.app?.options?.games?.length; i++) {
         if (this.app.options.games[i].id == txmsg.game_id) {
-          let currentTime = new Date().getTime();
-          if (currentTime - this.app.options.games[i].ts > 5000) {
-            console.log("ERROR 4132: nope out of old game");
             return;
-          }
         }
       }
 
       //
       // remove from open list
       //
-      let game = this.returnGame(txmsg.game_id);
+      //let game = this.returnGame(txmsg.game_id);
       this.removeGame(txmsg.game_id);
-      this.addGame(game, "mine");
+      //this.addGame(game, "mine");
 
     }
 
@@ -1110,9 +1112,11 @@ class Arcade extends ModTemplate {
     // kick-off game
     //
     if (txmsg.players.includes(this.app.wallet.returnPublicKey())) {
-      this.app.connection.emit("arcade-game-initialize-render-request", (txmsg.game_id));
+      
+      this.app.connection.emit("arcade-game-initialize-render-request");
+      
       siteMessage(txmsg.game + ' invite accepted.', 20000);
-      let game_id = await gamemod.processAcceptRequest(tx, this.app);
+      let game_engine_id = await gamemod.processAcceptRequest(tx, this.app);
       //if (!game_id) {
       //  await sconfirm("Something went wrong with the game initialization, reload: " + game_id);
       //}
@@ -1282,89 +1286,23 @@ class Arcade extends ModTemplate {
   ///////////////////////////////
   // LOADING AND RUNNING GAMES //
   ///////////////////////////////
-  //
-  // launch multiplayer games
-  //
-  async launchGame(game_id) {
-
-    if (!game_id && !this.viewing_arcade_initialization_page) {
-      if (this.browser_active) {
-        this.app.connection.emit("arcade-game-initialize-render-request");
-      }
-      this.viewing_arcade_initialization_page = 1;
-      return;
-    }
-
-    if (this.app.options?.games) {
-      for (let i = 0; i < this.app.options.games.length; i++) {
-        if (this.app.options.games[i].id == game_id) {
-          if (this.app.options.games[i].initializing == 0) {
-
-            let ready_to_go = 1;
-
-            if (this.app.wallet.wallet.pending.length > 0) {
-              for (let j = 0; j < this.app.wallet.wallet.pending.length; j++) {
-                let thistx = new saito.default.transaction(JSON.parse(this.app.wallet.wallet.pending[j]));
-                let thistxmsg = thistx.returnMessage();
-
-                if (thistxmsg.game == this.app.options.games[i].module && thistxmsg.game_id == game_id && thistxmsg?.step?.game) {
-                  ready_to_go = 0;
-                  if (thistxmsg?.step?.game <= this.app.options.games[i].step.game) {
-                    ready_to_go = 1;
-                  }
-                }
-              }
-            }
-
-            if (ready_to_go) {
-              if (this.browser_active) {
-                this.app.connection.emit("arcade-game-initialized", (game_id));
-              } else {
-                let gm = this.app.modules.returnModule(this.app.options.games[i].module);
-                if (gm) {
-                  let game_name = gm.gamename || gm.name;
-                  this.app.connection.emit("arcade-game-initialized", (game_id));
-                  let go = await sconfirm(`${game_name} is ready. Join now?`);
-                  if (go) {
-                    this.app.browser.logMatomoEvent("Arcade", "SaitoConfirmStartGame", this.app.options.games[i].module);
-                    window.location = "/" + gm.returnSlug();
-                  }
-                }
-              }
-
-              let hidden = "hidden";
-              if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
-                hiddenTab = "hidden";
-              } else if (typeof document.msHidden !== "undefined") {
-                hiddenTab = "msHidden";
-              } else if (typeof document.webkitHidden !== "undefined") {
-                hiddenTab = "webkitHidden";
-              }
-
-              this.startNotification("Game ready!", this.app.options.games[i].module);
-
-              if (document[hidden]) {
-                this.ringTone();
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 
   //
   // single player game
   //
-  async launchSinglePlayerGame(app, gameobj) {
+  async launchSinglePlayerGame(gameobj) {
     try {
 
-      if (app.options.games) {
-        for (let i = 0; i < app.options.games.length; i++) {
-          if (app.options.games[i].module == gameobj.name) {
-            this.launchGame(app.options.games[i].id);
-            return;
-          }
+      this.app.connection.emit("arcade-game-initialize-render-request");
+
+      console.log(JSON.parse(JSON.stringify(gameobj)));
+
+      let gameMod = this.app.modules.returnModule(gameobj.name);
+
+      for (let i = 0; i < this.app.options?.games.length; i++) {
+        if (this.app.options.games[i].module == gameobj.name) {
+          this.app.connection.emit("arcade-game-ready-render-request", { name: gameobj.name, slug: gameMod.returnSlug(), id: this.app.options.games[i].id })
+          return;
         }
       }
 
@@ -1377,18 +1315,15 @@ class Arcade extends ModTemplate {
       tx = this.app.wallet.signTransaction(tx);
       this.app.network.propagateTransaction(tx);
 
-      let gameMod = app.modules.returnModule(gameobj.name);
       let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
 
-      if (this.app.options.games != undefined) {
-        for (let i = 0; i < this.app.options.games.length; i++) {
-          if (this.app.options.games[i].id == "" && this.app.options.games[i].name === gameMod.name) {
-            this.app.options.games[i].id = game_id;
-          }
+      for (let i = 0; i < this.app.options?.games.length; i++) {
+        if (this.app.options.games[i].id == "" && this.app.options.games[i].name === gameMod.name) {
+          this.app.options.games[i].id = game_id;
         }
       }
 
-      this.launchGame(game_id);
+      this.app.connection.emit("arcade-game-ready-render-request", { name: gameobj.name, slug: gameMod.returnSlug(), id: game_id })
 
     } catch (err) {
       console.log(err);
@@ -1761,18 +1696,6 @@ console.log("FINISH: " + JSON.stringify(this.games));
   }
 
 
-  startNotification(msg, game) {
-    //If we haven't already started flashing the tab
-    if (!this.tabInterval) {
-      this.tabInterval = setInterval(() => {
-        if (document.title === game) {
-          document.title = msg;
-        } else {
-          document.title = game;
-        }
-      }, 575);
-    }
-  }
 
 
   updateIdentifier() {
@@ -1900,7 +1823,7 @@ console.log("FINISH: " + JSON.stringify(this.games));
     };
 
     if (players_needed == 1) {
-      this.launchSinglePlayerGame(this.app, gamedata); //Game options don't get saved....
+      this.launchSinglePlayerGame(gamedata); //Game options don't get saved....
     } else {
 
       if (gameType == "private" || gameType == "direct") {
@@ -1931,62 +1854,6 @@ console.log("FINISH: " + JSON.stringify(this.games));
 
 
 
-
-  ringTone() {
-    var context = new AudioContext(),
-      gainNode = context.createGain(),
-      start = document.querySelector('#start'),
-      stop = document.querySelector("#stop"),
-      oscillator = null,
-      harmony = null;
-
-    var volume = context.createGain();
-    volume.connect(context.destination);
-    gainNode.connect(context.destination);
-
-    //Play first note
-    oscillator = context.createOscillator();
-    oscillator.type = "sine";
-    oscillator.frequency.setTargetAtTime(523.25, context.currentTime, 0.001);
-    gainNode.gain.setTargetAtTime(0.5, context.currentTime, 0.001);
-    oscillator.connect(gainNode);
-    oscillator.start(context.currentTime);
-
-    harmony = context.createOscillator();
-    //harmony.type = "sawtooth";
-    harmony.frequency.value = 440;
-    volume.gain.setTargetAtTime(0.6, context.currentTime, 0.001);
-    harmony.start();
-    harmony.connect(volume);
-
-    //Play Second note
-    setTimeout(() => {
-      oscillator.frequency.setTargetAtTime(659.25, context.currentTime, 0.001);
-    }, 350);
-    //Play Third note
-    setTimeout(() => {
-      oscillator.frequency.setTargetAtTime(329.63, context.currentTime, 0.001);
-      gainNode.gain.setTargetAtTime(0.8, context.currentTime, 0.01);
-    }, 750);
-    //Play fourth note
-    setTimeout(() => {
-      oscillator.frequency.setTargetAtTime(415.3, context.currentTime, 0.001);
-      harmony.frequency.setTargetAtTime(554.37, context.currentTime, 0.001);
-    }, 1100);
-    //Fade out
-    setTimeout(() => {
-      volume.gain.setTargetAtTime(0, context.currentTime, 0.25);
-      gainNode.gain.setTargetAtTime(0, context.currentTime, 0.25);
-    }, 1300);
-    //To silence
-    setTimeout(() => {
-      oscillator.stop(context.currentTime);
-      oscillator.disconnect();
-      harmony.stop(context.currentTime);
-      harmony.disconnect();
-    }, 3000);
-
-  }
 
 
 }

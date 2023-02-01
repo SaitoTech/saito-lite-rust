@@ -20,7 +20,8 @@ class InviteManager {
 		this.lists = ["mine", "open"];
 
 		this.loader_overlay = new SaitoOverlay(app, mod, false, true);
-
+		
+		
 		//
 		// handle requests to re-render invite manager
 		//
@@ -33,7 +34,7 @@ class InviteManager {
 			}
 		});
 
-		app.connection.on("arcade-game-initialize-render-request", (game_id) => {
+		app.connection.on("arcade-game-initialize-render-request", () => {
 			//
 			// If Arcade is the active module, Arcade.main will respond to this event
 			// Otherwise we launch an overlay and stick the spinner in there
@@ -41,7 +42,7 @@ class InviteManager {
 			if (!this.mod.browser_active) {
 				this.loader_overlay.show('<div class="arcade_game_overlay_loader"></div>');
 				let game_loader = new ArcadeInitializer(app, mod, ".arcade_game_overlay_loader");
-				game_loader.render(game_id);
+				game_loader.render();
 			}
 		});
 	}
