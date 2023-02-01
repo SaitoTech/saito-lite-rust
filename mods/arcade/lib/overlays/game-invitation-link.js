@@ -4,16 +4,17 @@ const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-ove
 class InvitationLink {
 
     constructor(app, mod, data={}){
-        this.app = app;
-        this.mod = mod;
         this.game = data.game;
-        this.link = data.link;
+        this.invite_link = data.invite_link;
         this.overlay = new SaitoOverlay(app, mod);
     }
     
     render() {
         this.overlay.show(InvitationLinkTemplate(this.game));
+        this.attachEvents();
+    }
 
+    attachEvents(){
         try{
             document.querySelector('#copy-invite-link').addEventListener('click', (e) => {
                 navigator.clipboard.writeText(this.invite_link);
@@ -22,7 +23,6 @@ class InvitationLink {
         }catch(err){
             console.error(err);
         }
-
     }
 
 }

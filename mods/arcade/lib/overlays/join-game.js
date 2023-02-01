@@ -65,6 +65,37 @@ class JoinGameOverlay {
       }
     }
 
+    //
+    // This is a little complicated because an initialized game will persist in the 
+    // app.options and keep getting added back to the arcade list because it didn't 
+    // reach a gameover. So, we send a game over request through the game, but if the opponent
+    // isn't online it doesn't process, so we need an additional fallback just to make 
+    // sure we aren't annoyed by being unable to close a game.
+    // Of course, forfeiting a game might hurt one's leaderboard standings, but the leaderboard
+    // and game engine have checks to prevent that in most cases where a game breaks early on
+    //
+    if (document.getElementById("arcade-game-controls-forfeit-game")){
+      document.getElementById("arcade-game-controls-forfeit-game").onclick = (e) => {
+          this.mod.removeGame(this.invite.game_id);
+          this.overlay.remove();
+
+          for (let i = 0; i < this.app.options?.games.length; i++) {
+            if (this.app.options.games[i].id == this.invite.game_id) { 
+              let gamemod = this.app.modules.returnModule(this.app.options.games[i].module);
+              if (gamemod) {
+                gamemod.resignGame(this.invite.game_id, "cancellation");
+                setTimeout(()=>{ 
+                  gamemod.removeGameFromOptions(this.invite.game_id);
+                  this.mod.sendCloseTransaction(this.invite.game_id); 
+                }, 3000);
+                return;
+              }
+            }
+          }
+
+          this.mod.sendCloseTransaction(this.invite.game_id); 
+      }
+    }
     if (document.getElementById("arcade-game-controls-cancel-join")){
       document.getElementById("arcade-game-controls-cancel-join").onclick = (e) => {
           this.mod.sendCancelTransaction(this.invite.game_id);
