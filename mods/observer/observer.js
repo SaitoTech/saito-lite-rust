@@ -2,7 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeObserver = require("./lib/appspace/arcade-observer");
 const GameObserver = require("./lib/components/game-observer");
-const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
+const GameLoader = require("./../../lib/saito/ui/game-loader/game-loader");
 const JSON = require("json-bigint");
 
 
@@ -502,8 +502,8 @@ class Observer extends ModTemplate {
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade.browser_active){
       arcade.viewing_arcade_initialization_page = 1;
-      let gameLoader = new GameLoader(this.app, this);
-      gameLoader.render(this.app, this, "#arcade-main", "Loading Game Moves"); //Start Spinner
+      let gameLoader = new GameLoader(this.app, this, "#arcade-main");
+      gameLoader.render("Loading Game Moves"); //Start Spinner
     }
 
     //let address_to_watch = msgobj.player;

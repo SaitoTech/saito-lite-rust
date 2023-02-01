@@ -1,4 +1,4 @@
-const SaitoUserWithTimeTemplate = require('./../../lib/saito/new-ui/templates/saito-user-with-time.template.js');
+const SaitoUserTemplate = require('./../../lib/saito/ui/templates/saito-user.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
@@ -426,8 +426,6 @@ class Chat extends ModTemplate {
 
         for (let block of message_blocks) {
 
-//console.log("block: " + JSON.stringify(block));
-
             let ts = 0;
             if (block.length > 0) {
                 let sender = "";
@@ -439,10 +437,8 @@ class Chat extends ModTemplate {
                     msg += txmsg.message;
                     ts = txmsg.timestamp;
                 }
-//console.log("pre-sanitize: " + msg);
                 msg = this.app.browser.sanitize(msg);
-//console.log("post-sanitize: " + msg);
-                html += `${SaitoUserWithTimeTemplate(this.app, sender, msg, ts)}`;
+                html += `${SaitoUserTemplate(this.app, sender, msg, this.app.browser.returnTime(ts))}`;
             }
         }
 
@@ -452,7 +448,6 @@ class Chat extends ModTemplate {
         //Save to Wallet Here
         this.saveChat(group);
 
-//console.log("return html: " + html);
         return html;
 
     }

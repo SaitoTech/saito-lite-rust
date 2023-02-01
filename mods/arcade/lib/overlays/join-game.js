@@ -1,84 +1,77 @@
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const JoinGameOverlayTemplate = require('./join-game.template');
 
+/*
+  General Interface for the Overlay that comes up when you click on a (game) "invite".
+  There are several circumstances that affect what a user can do with the overlay, but because
+  so much of the UI is identical it is better to have it all in one file instead of multiple
+  files with the logic spread out across all the places where you might need to trigger the overlay.
+
+  The basic purpose is to display the game details (results of game-selector/game-wizard) and allow a player to join/cance
+*/
+
 class JoinGameOverlay {
 
-  constructor(app, mod, tx=null) {
+  constructor(app, mod, invite) {
     this.app = app;
     this.mod = mod;
-    this.invite_tx = tx;
-    this.overlay = new SaitoOverlay(app, mod, false, true);
+    this.invite = invite;
+    this.overlay = new SaitoOverlay(app, mod, false, true);   //No close button, auto-delete overlay
   }
 
   render() {
     
-    let txmsg = this.invite_tx.returnMessage();
-    let modname = txmsg.name;
-    if (!modname) { modname = txmsg.game; }
-    if (!modname) { modname = txmsg.module; }
-console.log("TXMSG: " + JSON.stringify(txmsg));
+    let game_mod = this.app.modules.returnModuleBySlug(this.invite.game_slug);
 
-    let game_mod = this.app.modules.returnModuleByName(modname);
-
-    this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite_tx));
+    this.overlay.show(JoinGameOverlayTemplate(this.app, this.mod, this.invite));
     this.overlay.setBackground(game_mod.returnArcadeImg());
     this.attachEvents();
   }
   
   attachEvents() {
 
-    document.querySelector(".arcade-game-controls-join-game").onclick = (e) => {
+    if (document.getElementById("arcade-game-controls-join-game")){
+      document.getElementById("arcade-game-controls-join-game").onclick = (e) => {
+          //
+          // Create Transaction
+          //
+          let newtx = this.mod.createJoinTransaction(this.invite.tx);
 
-      //
-      // join or accept?
-      //
-      let newtx;
-      let txmsg = this.invite_tx.returnMessage();
-      let players_needed = parseInt(txmsg.players_needed);
-      let players_current = parseInt(txmsg.players_sigs.length);
+          //
+          // send it on-chain and off-chain
+          //
+          this.app.network.propagateTransaction(newtx);
 
-      if (players_needed == (players_current-1)) {
-        newtx = this.mod.createJoinTransaction(this.invite_tx);
-      } else {
-        newtx = this.mod.createAcceptTransaction(this.invite_tx);
-        this.app.connection.emit("arcade-game-initialize-render-request", (newtx.transaction.sig));
+          this.app.connection.emit("send-relay-message", {recipient: this.invite.players, request: "arcade spv update", data: newtx});
+          this.app.connection.emit("send-relay-message", {recipient: "PEERS", request: "arcade spv update", data: newtx});
+
+          this.overlay.remove();
+     
+          this.app.connection.emit("arcade-invite-manager-render-request");        
+        }
+     }
+
+    if (document.getElementById("arcade-game-controls-continue-game")){
+      document.getElementById("arcade-game-controls-continue-game").onclick = (e) => {
+          window.location = `/${this.invite.game_slug}/#gid=${this.invite.game_id}`;
       }
-
-      //
-      // send on-chain
-      //
-      this.app.network.propagateTransaction(newtx);
-
-      //
-      // refresh with latest data, including me !
-      //
-      let newtxmsg = newtx.returnMessage();
-      let players = newtxmsg.players;
-
-      //
-      // send off-chain
-      //
-      let relay_mod = this.app.modules.returnModule("Relay");
-      if (relay_mod != null) {
-        relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
-      }
-
-      //
-      // hello world!
-      //
-      salert("Joining game! Please wait a moment");
-
-      //
-      // hide overlay
-      //
-      this.overlay.hide();
- 
-      //
-      // let main panel take action
-      //
-      this.app.connection.emit("arcade-invite-manager-render-request");        
-
     }
+    
+    if (document.getElementById("arcade-game-controls-cancel-game")){
+      document.getElementById("arcade-game-controls-cancel-game").onclick = (e) => {
+          this.mod.sendCloseTransaction(this.invite.game_id);
+          this.mod.removeGame(this.invite.game_id);
+          this.overlay.remove();
+      }
+    }
+
+    if (document.getElementById("arcade-game-controls-cancel-join")){
+      document.getElementById("arcade-game-controls-cancel-join").onclick = (e) => {
+          this.mod.sendCancelTransaction(this.invite.game_id);
+          this.overlay.remove();
+      }
+    }
+
   }
 
 }

@@ -13,19 +13,21 @@ class InviteManager {
 		this.container = container;
 		this.name = "InviteManager";
 		this.type = "short";
-
-		//For filtering which games get displayed
 		this.list = "all";
-		//For categeorizing types of game invites
+
 		this.lists = ["mine","open"];
 		this.invites = {};
 
+		this.invites = {};
 		this.loader_overlay = new SaitoOverlay(app, mod, false, true);
 
 		//
 		// handle requests to re-render invite manager
 		//
 		this.app.connection.on("arcade-invite-manager-render-request", () => {
+		  if (this.mod.debug){
+		    console.log("Arcade render request");
+		  }
 		  if (!this.mod.is_game_initializing) {
 console.log("AND GAME IS NOT INITIALIZING SO WE CAN RENDER!");
 		    this.render();
@@ -44,7 +46,6 @@ console.log("AND GAME IS NOT INITIALIZING SO WE CAN RENDER!");
 		});
 
 	}
-
 
 
 	render() {

@@ -34,8 +34,12 @@ module.exports = (app, mod, tweet) => {
                 <div class="tweet-tool tweet-tool-retweet"><span class="tweet-tool-retweet-count">${num_retweets}</span>
                   <i class="fa fa-repeat"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">${num_likes}</span> <i
-                    class="far fa-heart"></i></div>
+                <div class="tweet-tool tweet-tool-like"><span class="tweet-tool-like-count  ">${num_likes}</span> <div class="tweet-like-button">
+                <div class="heart-bg">
+                  <div class="heart-icon"></div>
+                </div>
+              </div></div>
+                    
                 <div class="tweet-tool tweet-tool-share "><i class="fa fa-arrow-up-from-bracket"></i>
                 </div>
                 <div class="tweet-tool tweet-tool-flag"><i class="fa fa-flag"></i></div>

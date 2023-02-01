@@ -1,10 +1,8 @@
 module.exports = (app, mod, invite) => {
 
-    let txmsg = invite.tx.returnMessage();
-
     let html = `
 
-      <div class="saito-module saito-game saito-game-${invite.game_id}" style="background-image: url('/${invite.game_slug}/img/arcade/arcade.jpg');">
+      <div class="saito-module saito-game" id="saito-game-${invite.game_id}" style="background-image: url('/${invite.game_slug}/img/arcade/arcade.jpg');">
         <div class="saito-module-titlebar">
           <span class="saito-module-titlebar-title">${invite.game_name}</span>
           <div class="saito-module-titlebar-details game-type">${(invite.game_type).toUpperCase()}</div>
@@ -20,9 +18,6 @@ module.exports = (app, mod, invite) => {
 
           <div class="tip">
             <img class="saito-module-identicon saito-identicon" id-${invite.players[i]}" src="${app.keys.returnIdenticon(invite.players[i])}">
-            <div class="tiptext">
-              <div class="saito-address saito-address-${invite.players[i]}" data-id="${invite.players[i]}">${invite.players[i]}</div>
-            </div>
           </div>
 
       `;
@@ -34,9 +29,6 @@ module.exports = (app, mod, invite) => {
 
           <div class="tip requested_player">
             <img class="saito-module-identicon saito-identicon" id-${invite.desired_opponent_publickeys[i]}" src="${app.keys.returnIdenticon(invite.desired_opponent_publickeys[i])}">
-            <div class="tiptext">
-              <div class="saito-address saito-address-${invite.desired_opponent_publickeys[i]}" data-id="${invite.desired_opponent_publickeys[i]}">${invite.desired_opponent_publickeys[i]}</div>
-            </div>
           </div>
 
       `;

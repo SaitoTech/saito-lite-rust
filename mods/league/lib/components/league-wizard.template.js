@@ -1,5 +1,3 @@
-//const SaitoModuleIntro = require("./../../../../lib/saito/new-ui/templates/saito-module-intro.template");
-
 module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
 
   let html = `<div class="game-create-new-overlay dark">`;
