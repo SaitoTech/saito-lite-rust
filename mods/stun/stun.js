@@ -290,7 +290,7 @@ class Stun extends ModTemplate {
             console.log('message received ', message, message.data, message.data.tx);
         }
 
-        super.handlePeerTransaction(app, tx, peer, mycallback)
+        super.handlePeerTransaction(app, newtx, peer, mycallback)
 
     }
 
