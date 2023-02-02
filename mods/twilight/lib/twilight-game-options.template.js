@@ -1,8 +1,8 @@
-module.exports = (app, mod) => {
+module.exports = () => {
 
   let html =  `
 
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
+      <div style="padding:40px;width:90vw;height:90vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
 
   <div style="top:0;left:0;">
 
@@ -75,7 +75,7 @@ module.exports = (app, mod) => {
               <option value="enable" >enable</option>
               <option value="disable" selected>disable</option>
             </select>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary small">Accept</div>
   </div>
 
             <div id="game-wizard-advanced-box" class="game-wizard-advanced-box" style="display:block;padding-left:20px;">

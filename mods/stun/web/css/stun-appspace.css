@@ -130,7 +130,20 @@
 
 /*  responsive */
 
+@media screen and (max-width: 900px) {
+  .stunx-appspace-card {
+    width: 80%;
+    margin-left: 2rem;
+  }  
+}
 @media screen and (max-width: 503px) {
+  .stun-appspace {
+    padding: 1rem;
+  }
+  .stunx-appspace-card {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
 @media screen and (max-width: 396px) {

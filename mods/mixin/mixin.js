@@ -99,7 +99,11 @@ class Mixin extends ModTemplate {
   }
 
 
-  async handlePeerRequest(app, message, peer, mycallback = null) {
+
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
+
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
 
     //
     // we receive requests to create accounts here
@@ -141,7 +145,6 @@ class Mixin extends ModTemplate {
       }
     }
   }
-
 
 
 
@@ -732,7 +735,7 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
       };
 
 //console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-      mixin_self.app.network.peers[0].sendRequestWithCallback("mixin create account", data, function(res) {
+      mixin_self.app.network.peers[0].sendRequestAsTransactionWithCallback("mixin create account", data, function(res) {
 //console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
 	mixin_self.createAccountCallback(res, callback);
       });

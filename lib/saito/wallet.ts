@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.659,
+    version: 4.667,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -133,10 +133,12 @@ export default class Wallet {
   }
 
   addTransactionToPending(tx: Transaction) {
+return;
     const txjson = JSON.stringify(tx.transaction);
     if (txjson.length > 100000) {
       return;
     }
+console.log("ADDING TX TO PENDING: " + txjson);
     if (!this.wallet.pending.includes(txjson)) {
       this.wallet.pending.push(txjson);
       this.saveWallet();

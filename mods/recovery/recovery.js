@@ -70,13 +70,9 @@ class Recovery extends ModTemplate {
 
     try {
 
-console.log("HPR: handle peer transaction in recovery");
-
       if (tx == null) { return; }
 
       let txmsg = tx.returnMessage();
-
-console.log("TXMSG: " + JSON.stringify(txmsg));
 
       if (txmsg.request == "backup") {
 	this.receiveBackupTransaction(tx);
