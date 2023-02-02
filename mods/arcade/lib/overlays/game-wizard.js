@@ -1,32 +1,34 @@
 const GameWizardTemplate = require('./game-wizard.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 
+  //
+      // {
+      //    game   : module_name
+      //    league : league_obj { id , name , mod }
+      // }
+      //
+
+
 class GameWizard {
+
   constructor(app, mod, game_mod = null, obj = {}) {
 
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
-    this.overlay = new SaitoOverlay(app);
+    this.overlay = new SaitoOverlay(app, mod);
     this.obj = obj;
 
     app.connection.on("arcade-launch-game-wizard", (obj) => {
 
-      if (obj.game) {
-
-	//
-	// {
-	//    game   : module_name
-	//    league : league_obj { id , name , mod }
- 	// }
-	//
+      if (obj?.game) {
 
         let game_mod = this.app.modules.returnModule(obj.game);
 
         if (game_mod) {
           this.game_mod = game_mod;
           this.obj = obj;
-          this.render(this.app, this.mod);
+          this.render();
         } else {
           salert("Module not found: " + game_mod);
         }
@@ -36,12 +38,11 @@ class GameWizard {
   }
 
   render() {
-
-    let app = this.app;
-    let mod = this.mod;
-
-    //Create the game wizard overlay
-    this.overlay.show(GameWizardTemplate(app, mod, this.game_mod, this.obj));
+    //
+    // Create the game wizard overlay
+    //  & set a callback to remove the advanced options overlay if we change our mind about creating a game
+    //
+    this.overlay.show(GameWizardTemplate(this.game_mod, this.obj), () => { if (this.meta_overlay) { this.meta_overlay.remov();}});
     this.overlay.setBackground(this.game_mod.returnArcadeImg());
 
     //Test if we should include Advanced Options
@@ -53,9 +54,8 @@ class GameWizard {
     } else {
 
       advancedOptions = `<div id="advanced-options-overlay-container">${advancedOptions}</div>`;
-      this.meta_overlay = new SaitoOverlay(app, mod, false, false);
+      this.meta_overlay = new SaitoOverlay(this.app, this.mod, false, false); // Have to manually delete when done
       this.meta_overlay.show(advancedOptions);
-      this.meta_overlay.setBackgroundColor("#000");
       this.meta_overlay.hide();
 
     }
@@ -68,9 +68,6 @@ class GameWizard {
   // Note: mod = Arcade
   //
   attachEvents() {
-
-    let app = this.app;
-    let mod = this.mod;
 
     if (document.querySelector(".saito-multi-select_btn")) {
       document.querySelector(".saito-multi-select_btn").addEventListener("click", (e) => {
@@ -111,7 +108,7 @@ class GameWizard {
     //
     if (document.getElementById('game-rules-btn')) {
       document.getElementById('game-rules-btn').onclick = function () {
-        let rules_overlay = new SaitoOverlay(app);
+        let rules_overlay = new SaitoOverlay(this.app, this.mod);
         rules_overlay.show(this.game_mod.returnGameRulesHTML());
       }
     }
@@ -126,23 +123,23 @@ class GameWizard {
           let options = this.getOptions();
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
 
-          let c = await mod.verifyOptions(isPrivateGame, options);
+          let c = await this.mod.verifyOptions(isPrivateGame, options);
           if (!c) {
             this.overlay.remove();
             return;
           }
 
           if (isPrivateGame == "private") {
-            app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
+            this.app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
           } else if (isPrivateGame == "single") {
-            app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.game);
+            this.app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.game);
           } else if (isPrivateGame == "direct") {
-            app.browser.logMatomoEvent("Arcade", "ArcadeCreateDirectInvite", options.game);
+            this.app.browser.logMatomoEvent("Arcade", "ArcadeCreateDirectInvite", options.game);
           } else {
-            app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
+            this.app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
-          mod.makeGameInvite(options, isPrivateGame, this.obj);
+          this.mod.makeGameInvite(options, isPrivateGame, this.obj);
 
         } catch (err) {
           console.warn(err);
@@ -171,8 +168,11 @@ class GameWizard {
       }
     });
 
-console.log("SELECT TESTING: " + JSON.stringify(options));
+    if (this.mod.debug){
+      console.log("GAMEWIZARD -- reading options from HTML: ", JSON.stringify(options));
+    }
 
+    this.meta_overlay.remove();
     return options;
   }
 }
