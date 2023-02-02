@@ -6,7 +6,6 @@ import fs from "fs-extra";
 import * as JSON from "json-bigint";
 
 import mods_config from "./config/modules.config";
-import { readBlockUsers } from "mixin-node-sdk";
 import hashLoader from "./apps/core/hash-loader";
 
 async function initCLI() {

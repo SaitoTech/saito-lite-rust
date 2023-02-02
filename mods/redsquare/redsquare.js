@@ -494,9 +494,9 @@ console.log("thread render request: " + new Date().getTime());
 
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
 
-console.log("CALLBACK FROM LOAD TWEETS AND RETURN: ");
-console.log("time: " + new Date().getTime());
-console.log("num txs: " + txs.length);
+//console.log("CALLBACK FROM LOAD TWEETS AND RETURN: ");
+//console.log("time: " + new Date().getTime());
+//console.log("num txs: " + txs.length);
 
       if (to_track_tweet){
         if(tweet_to_track){

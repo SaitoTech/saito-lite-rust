@@ -5,12 +5,14 @@ const webpack = require("webpack");
 // const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 // const __dirname = path.resolve();
-let devtool = undefined;
+//let devtool = undefined;
+let minimize = true;
 let entrypoint = "./../bundler/default/apps/lite/index.ts";
 let outputfile = "saito.js";
 if (process.argv.includes("dev")) {
-  console.log("dev mode source map used");
-  devtool = "eval";
+  console.log("dev mode source not minified");
+  //devtool = "eval";
+  minimize = false;
 }
 if (process.argv.includes("web3")) {
   //TODO: build a separate saito.js for web3
@@ -19,7 +21,7 @@ if (process.argv.includes("web3")) {
 }
 webpack({
   optimization: {
-    minimize: true,
+    minimize: minimize,
     minimizer: [
       new TerserPlugin({
         parallel: true,
@@ -119,7 +121,7 @@ webpack({
             }
           }
         ],
-        exclude: /(node_modules)/
+        exclude: /(node_modules)/ 
       },
       {
         test: /\.mjs$/,
@@ -202,9 +204,9 @@ webpack({
   experiments: {
     asyncWebAssembly: true,
     syncWebAssembly: true
-  },
-  mode: "production",
-  devtool: devtool
+  }//,
+  //mode: "production",
+  //devtool: devtool
 
 }, (err, stats) => {
   if (err || stats.hasErrors()) {

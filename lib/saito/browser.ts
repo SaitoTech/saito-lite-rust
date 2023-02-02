@@ -6,7 +6,6 @@ import { getDiffieHellman } from "crypto";
 
 var marked = require("marked");
 var sanitizeHtml = require("sanitize-html");
-const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
 const UserMenu = require("./ui/modals/user-menu/user-menu");
 const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
