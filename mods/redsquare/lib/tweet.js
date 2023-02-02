@@ -117,7 +117,12 @@ class Tweet {
       this.img_preview.render();
     }
     if (this.link_preview != null) {
-      this.link_preview.render();
+      
+      if (this.link_properties != null) {
+        if (Object.keys(this.link_properties).length > 0) {
+          this.link_preview.render();
+        }
+      }
     }
 
     this.attachEvents();
