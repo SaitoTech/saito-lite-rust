@@ -687,18 +687,15 @@ class Network {
     let response;
     let is_block_indexed;
     let tx;
-console.log(" >>> " + message.message_type);
     let publickey;
 
     switch (message.message_type) {
       case MessageType.HandshakeChallenge: {
-console.log("handshake inbound 1");
         await this.app.handshake.handleIncomingHandshakeChallenge(peer, message.message_data);
         break;
       }
 
       case MessageType.HandshakeResponse: {
-console.log("handshake inbound 2");
         await this.app.handshake.handleHandshakeResponse(peer, message.message_data);
 
         //
@@ -737,7 +734,6 @@ console.log("handshake inbound 2");
       //   break;
       // }
       case MessageType.Ping:
-console.log(" >>>1  ping");
         // job already done!
         break;
 
@@ -750,7 +746,6 @@ console.log(" >>>1  ping");
       //   break;
 
       case MessageType.SPVChain: {
-console.log(" >>>2 ping");
         //if (this.debugging) { console.log("RECEIVED SPVCHAIN"); }
 
         const buffer = Buffer.from(message.message_data, "utf8");
@@ -761,7 +756,6 @@ console.log(" >>>2 ping");
       }
 
       case MessageType.Services: {
-console.log(" >>> 3ping");
         const buffer = Buffer.from(message.message_data, "utf8");
 
         try {
@@ -775,7 +769,6 @@ console.log(" >>> 3ping");
       }
 
       case MessageType.GhostChain: {
-console.log(" >>> 4ping");
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
@@ -826,7 +819,6 @@ console.log(" >>> 4ping");
       }
 
       case MessageType.BlockchainRequest: {
-console.log(" >>> 4ping");
         block_id = BigInt(0);
         block_hash = "";
         fork_id = "";
@@ -880,7 +872,6 @@ console.log(" >>> 4ping");
       }
 
       case MessageType.GhostChainRequest: {
-console.log(" >>> 5ping");
         block_hash = "";
         fork_id = "";
         publickey = peer.peer.publickey;
@@ -981,7 +972,6 @@ console.log(" >>> 5ping");
         break;
 
       case MessageType.Transaction:
-console.log(" >>> 6ping");
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
         // await this.app.mempool.addTransaction(tx);
@@ -993,14 +983,6 @@ console.log(" >>> 6ping");
       //   break;
 
       case MessageType.ApplicationTransaction: {
-
-console.log("!!!");
-console.log("!!!");
-console.log("!!!");
-console.log("APPLICATION TRANSACTION");
-console.log("!!!");
-console.log("!!!");
-console.log("!!!");
 
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
@@ -1025,7 +1007,6 @@ console.log("!!!");
       }
 
       case MessageType.ApplicationMessage: {
-console.log(" >>> 7ping");
         let mdata;
         let reconstructed_obj;
         let reconstructed_message = "";
@@ -1262,7 +1243,9 @@ console.log(" >>> 7ping");
     // if this is our (normal) transaction, add to pending
     //
     if (tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
-      this.app.wallet.addTransactionToPending(tx);
+      if (!tx.isGoldenTicket()) {
+        this.app.wallet.addTransactionToPending(tx);
+      }
       this.app.connection.emit("update_balance", this.app.wallet);
     }
 

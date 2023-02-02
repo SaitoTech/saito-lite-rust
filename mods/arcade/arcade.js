@@ -434,9 +434,9 @@ console.log("AND NOW WE CAN RENDER THE INVITE MANAGER!");
     try {
       if (conf == 0) {
 
-        if (this.debug){
-          console.log("ON CONFIRMATION:", JSON.parse(JSON.stringify(txmsg)));
-        }
+        //if (this.debug) {
+        //  console.log("ON CONFIRMATION:", JSON.parse(JSON.stringify(txmsg)));
+        //}
 
         //
         // public invites

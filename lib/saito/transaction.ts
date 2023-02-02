@@ -75,7 +75,9 @@ class Transaction {
       //
       // experiment
       //
-      this.transaction.m = Buffer.from(this.transaction.m);
+      if (jsonobj?.m?.data) {
+        this.transaction.m = Buffer.from(jsonobj.m.data);
+      }
 
       if (this.transaction.type === TransactionType.Normal) {
         try {
@@ -87,15 +89,15 @@ class Transaction {
               const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
               this.msg = JSON.parse(reconstruct);
             } catch (error) {
-              console.log("failed from utf8. trying if base64 still works for old version");
-              console.error(error);
+              //console.log("failed from utf8. trying if base64 still works for old version");
+              //console.error(error);
               const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
               this.msg = JSON.parse(reconstruct);
             }
           }
         } catch (err) {
-          console.log("failed converting buffer in tx : ", this.transaction);
-          console.error(err);
+          //console.log("failed converting buffer in tx : ", this.transaction);
+          //console.error(err);
         }
       }
       for (let i = 0; i < this.transaction.from.length; i++) {
@@ -452,10 +454,13 @@ console.log("E");
       }
     } catch (err) {
       // TODO : handle this without printing an error
+console.log("ERROR: " + JSON.stringify(err));
       try {
-console.log("fallback on failure...");
+console.log("fallback on failure... 1");
         const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+console.log("fallback on failure... 2");
         this.msg = JSON.parse(reconstruct);
+console.log("fallback on failure... 3");
       } catch (err) {
         console.log(
           `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
@@ -464,6 +469,7 @@ console.log("fallback on failure...");
         console.log("here: " + JSON.stringify(this.msg));
       }
     }
+console.log("RETURN ON FAILURE");
     return this.msg;
   }
 
