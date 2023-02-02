@@ -40,13 +40,13 @@
   font-size: 1.4em;
   text-align: center;
   align-self: center;
-  font-weight: bold;
   display: block;
   margin: 1em 0;
   overflow-wrap: break-word;
 }
 
-
-#saiot-alert-box button {
-  margin: 0 0 0 1em;
+@media screen and (max-width: 740px) {
+  #saito-alert-buttons {
+    flex-direction: column;
+  }
 }
