@@ -1038,7 +1038,7 @@ class Network {
         const mycallback = (response_object) => {
           peer.sendResponse(
             message.message_id,
-            Buffer.from(this.app.crypto.fastSerialize(response_object), "utf-8")
+            Buffer.from(JSON.stringify(response_object), "utf-8")
           );
         };
 
