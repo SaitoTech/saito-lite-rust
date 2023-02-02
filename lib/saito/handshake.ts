@@ -60,6 +60,7 @@ class Handshake {
   }
 
   serializeHandshakeResponse(r) {
+console.log("IN SERIALIZE HR");
     return Buffer.concat([
       Buffer.from(this.app.crypto.fromBase58(r.publickey), "hex"),
       r.signature,
@@ -174,10 +175,13 @@ class Handshake {
         console.log("block fetch url received = " + r.block_fetch_url);
       }
 
+      console.log("about to emit handshake complete");
       this.app.connection.emit("handshake_complete", peer);
       console.log("handshake completed with ", peer.returnPublicKey());
 
       this.app.network.requestBlockchain(peer);
+
+      console.log("DONE REQUESTING BLOCKCHAIN");
 
       if (peer.initiated_handshake) {
         const c = this.newHandshakeResponse();
@@ -185,6 +189,7 @@ class Handshake {
           this.app.crypto.signBuffer(r.challenge, this.app.wallet.returnPrivateKey()),
           "hex"
         );
+      console.log("sending handshake response!");
         this.app.networkApi.send(
           peer.socket,
           MessageType.HandshakeResponse,
@@ -192,6 +197,8 @@ class Handshake {
         );
       }
     }
+
+console.log("about to leave handshake challenge too...");
 
     peer.challenge = null;
     peer.initiated_handshake = false;

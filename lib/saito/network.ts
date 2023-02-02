@@ -184,7 +184,6 @@ class Network {
         console.log("direct data channel created with ", peer.peer.publickey);
       }
       this.app.handshake.initiateHandshake(peer.stun.data_channel);
-
       this.app.network.requestBlockchain(peer);
       this.app.connection.emit("peer_connect", peer);
       this.app.connection.emit("connection_up", peer);
@@ -688,15 +687,18 @@ class Network {
     let response;
     let is_block_indexed;
     let tx;
+console.log(" >>> " + message.message_type);
     let publickey;
 
     switch (message.message_type) {
       case MessageType.HandshakeChallenge: {
+console.log("handshake inbound 1");
         await this.app.handshake.handleIncomingHandshakeChallenge(peer, message.message_data);
         break;
       }
 
       case MessageType.HandshakeResponse: {
+console.log("handshake inbound 2");
         await this.app.handshake.handleHandshakeResponse(peer, message.message_data);
 
         //
@@ -735,6 +737,7 @@ class Network {
       //   break;
       // }
       case MessageType.Ping:
+console.log(" >>>1  ping");
         // job already done!
         break;
 
@@ -747,6 +750,7 @@ class Network {
       //   break;
 
       case MessageType.SPVChain: {
+console.log(" >>>2 ping");
         //if (this.debugging) { console.log("RECEIVED SPVCHAIN"); }
 
         const buffer = Buffer.from(message.message_data, "utf8");
@@ -757,6 +761,7 @@ class Network {
       }
 
       case MessageType.Services: {
+console.log(" >>> 3ping");
         const buffer = Buffer.from(message.message_data, "utf8");
 
         try {
@@ -770,6 +775,7 @@ class Network {
       }
 
       case MessageType.GhostChain: {
+console.log(" >>> 4ping");
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
@@ -820,6 +826,7 @@ class Network {
       }
 
       case MessageType.BlockchainRequest: {
+console.log(" >>> 4ping");
         block_id = BigInt(0);
         block_hash = "";
         fork_id = "";
@@ -873,6 +880,7 @@ class Network {
       }
 
       case MessageType.GhostChainRequest: {
+console.log(" >>> 5ping");
         block_hash = "";
         fork_id = "";
         publickey = peer.peer.publickey;
@@ -973,6 +981,7 @@ class Network {
         break;
 
       case MessageType.Transaction:
+console.log(" >>> 6ping");
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
         // await this.app.mempool.addTransaction(tx);
@@ -984,6 +993,14 @@ class Network {
       //   break;
 
       case MessageType.ApplicationTransaction: {
+
+console.log("!!!");
+console.log("!!!");
+console.log("!!!");
+console.log("APPLICATION TRANSACTION");
+console.log("!!!");
+console.log("!!!");
+console.log("!!!");
 
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
@@ -1008,6 +1025,7 @@ class Network {
       }
 
       case MessageType.ApplicationMessage: {
+console.log(" >>> 7ping");
         let mdata;
         let reconstructed_obj;
         let reconstructed_message = "";

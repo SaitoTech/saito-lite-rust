@@ -426,8 +426,8 @@ try {
 
   returnMessage() {
 
-console.log("TRANSACTION:");
-console.log(JSON.stringify(this));
+//console.log("TRANSACTION:");
+//console.log(JSON.stringify(this));
 
     if (this.dmsg !== "") {
       return this.dmsg;
