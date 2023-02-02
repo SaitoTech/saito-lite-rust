@@ -70,14 +70,15 @@ class Transaction {
     this.path = new Array<Hop>();
 
     if (jsonobj != null) {
+
       this.transaction = jsonobj;
 
       //
       // experiment
       //
-      if (jsonobj?.m?.data) {
-        this.transaction.m = Buffer.from(jsonobj.m.data);
-      }
+      //if (jsonobj?.m?.data) {
+      //  this.transaction.m = Buffer.from(jsonobj.m.data);
+      //}
 
       if (this.transaction.type === TransactionType.Normal) {
         try {
