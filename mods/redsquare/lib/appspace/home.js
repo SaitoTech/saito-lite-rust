@@ -19,7 +19,7 @@ class AppspaceHome {
       entries.forEach(entry => {
           if (entry.isIntersecting) {
             if (mod.viewing !== "home") { return; }
-            let saito_loader =  new SaitoLoader(app, mod, 'redsquare-intersection');
+            let saito_loader =  new SaitoLoader(app, mod, '#redsquare-intersection');
             saito_loader.render();
             mod.loadMoreTweets(()=> saito_loader.remove());
           }
@@ -86,8 +86,6 @@ class AppspaceHome {
 
     }
 
-    let saito_loader = this.saito_loader;
-    saito_loader.render(this.app, this.mod, 'redsquare-appspace-body', false);
     // render all top-level tweets, possibly with critical children
     
     for (let i = 0; i < this.mod.tweets.length; i++) {
@@ -99,7 +97,7 @@ class AppspaceHome {
 
     }
 
-    saito_loader.remove(true);
+
 
     this.attachEvents();
 

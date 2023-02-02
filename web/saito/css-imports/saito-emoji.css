@@ -20,6 +20,7 @@ emoji-picker {
   right: 5rem;
   --emoji-size: 2rem;
   --emoji-padding: 0.5rem;
+  z-index: 2;
 }
 
 .saito-emoji-container {
