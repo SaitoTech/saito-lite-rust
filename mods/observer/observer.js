@@ -569,7 +569,7 @@ class Observer extends ModTemplate {
     //Relay too...
     let relay_mod = this.app.modules.returnModule("Relay");
     if (relay_mod){
-   	    relay_mod.sendRelayMessage(addesses_to_watch, "game relay update", tx);
+      relay_mod.sendRelayMessage(addesses_to_watch, "game relay update", tx.transaction);
     }
   }
 
