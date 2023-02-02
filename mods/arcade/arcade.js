@@ -225,8 +225,8 @@ class Arcade extends ModTemplate {
           //
           arcade_self.app.network.propagateTransaction(newtx);
 
-          arcade_self.app.connection.emit("send-relay-message", {recipient: game.msg.players, request: "arcade spv update", data: newtx});
-          arcade_self.app.connection.emit("send-relay-message", {recipient: "PEERS", request: "arcade spv update", data: newtx});
+          arcade_self.app.connection.emit("send-relay-message", {recipient: game.msg.players, request: "arcade spv update", data: newtx.transaction });
+          arcade_self.app.connection.emit("send-relay-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
 
           arcade_self.overlay.remove();
      
@@ -497,7 +497,7 @@ console.log("Arcade HPT: " + JSON.stringify(message));
         }
       }
       if (tx == null) {
-        tx = new saito.default.transaction(message.data);
+        return;
       }
 
       let txmsg = tx.returnMessage();
