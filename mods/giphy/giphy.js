@@ -12,7 +12,7 @@ const { GiphyFetch } = require('@giphy/js-fetch-api')
 const { renderGif, renderGrid } = require('@giphy/js-components');
 const SaitoOverlay = require("./../../lib/saito/ui/saito-overlay/saito-overlay");
 const saitoGifTemplate = require('./lib/giphy.template');
-const SaitoLoader = require('./../../lib/saito/new-ui/saito-loader/saito-loader');
+const SaitoLoader = require('./../../lib/saito/ui/saito-loader/saito-loader');
 const ModTemplate = require('../../lib/templates/modtemplate');
 
 class Giphy extends ModTemplate {
