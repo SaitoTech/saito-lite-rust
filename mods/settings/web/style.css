@@ -136,6 +136,49 @@ label.treated {
   overflow-y: clip;
 }
 
+
+@media only screen and (max-width: 768px) {
+
+  .settings-appspace-user-details .saito-address {
+    
+      position: relative;
+  }
+
+  .settings-appspace-user-details .saito-address span {
+    height: auto;
+    width: auto;
+    position: relative;
+    position: absolute;
+    z-index: 1;
+    right: 0rem;
+    top: 0rem;
+    font-size: 2rem;
+    background: var(--saito-background-color);
+    padding-left: 1rem;
+    margin: none;
+  }
+
+
+.settings-appspace-privatekey {
+    display: grid;
+    grid-template-columns: 25rem 1fr;
+    grid-column-gap: 0.4rem;
+    white-space: initial;
+    /* text-overflow: ellipsis; */
+    /* align-items: center; */
+    word-wrap: break-word;
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+.settings-appspace-privatekey i {
+  font-size: 2rem;
+  background: var(--saito-background-color);
+  padding: 0rem 0.8rem;
+}
+
+
 @media only screen and (max-width: 600px) {
   .settings-appspace-modules {
     grid-template-columns: 1fr 1fr;
