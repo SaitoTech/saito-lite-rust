@@ -172,7 +172,10 @@ class GameWizard {
       console.log("GAMEWIZARD -- reading options from HTML: ", JSON.stringify(options));
     }
 
-    this.meta_overlay.remove();
+    if (this.meta_overlay){
+      this.meta_overlay.remove();  
+    }
+    
     return options;
   }
 }

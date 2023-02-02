@@ -68,7 +68,7 @@ class Steamed extends GameTemplate {
       class : "game-rules",
       callback : function(app, game_mod) {
          game_mod.menu.hideSubMenus();
-         game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML()); 
+         game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
 
@@ -178,7 +178,7 @@ initializeGame(game_id) {
         //For the beginning of the game only...
         if (this.game.state.welcome == 0) {
           try {
-            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            this.overlay.show(this.returnWelcomeOverlay());
             document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
           } catch (err) {}
           this.game.state.welcome = 1;
@@ -203,12 +203,15 @@ initializeGame(game_id) {
         this.game.queue.push("checkgameover\t" + mv[1]);
         this.game.queue.push("deal");
         this.game.queue.push(`DEAL\t1\t${mv[1]}\t2`);
-        this.game.queue.push("phase3\t" + mv[1]);
-        this.game.queue.push("flush_market");
+        this.game.queue.push("phase\t" + mv[1]);
+        this.game.queue.push("draw_offer");
         this.game.queue.push("POOLDEAL\t1\t3\t1");
-        this.game.queue.push("phase2\t" + mv[1]);
-
-        this.game.state.planted = 0;
+        this.game.queue.push("phase\t" + mv[1]);
+        this.game.queue.push("flush_market");
+        if (this.game.state.market.length > 0 ){
+          this.game.queue.push("phase\t" + mv[1]);
+        }
+        this.game.state.planted = -1;
 
         return 1;
       }
@@ -258,7 +261,7 @@ initializeGame(game_id) {
         return 1;
       }
 
-      if (mv[0] === "phase3"){
+      if (mv[0] === "phase"){
 
         let player = parseInt(mv[1]);
 
@@ -282,37 +285,30 @@ initializeGame(game_id) {
           this.game.state.discards.push(card);
         }
 
-        this.game.state.planted = 3;
+        this.game.state.planted = 0;
         console.log(JSON.stringify(this.game.state.discards));
 
         if (message){
           message = message.substring(0, message.length-2);
           this.updateLog(message + " are discarded from the offers.");
           Array.from(document.querySelectorAll(".offer img")).forEach(async c => {
-            this.animateGameElementMove(c, "#discards", ()=>{this.dealCard();});
+            this.animateGameElementMove(c, "#discards", ()=>{this.finishAnimation();});
             await this.timeout(250);
           });
         }else{
-          this.dealCard();
+          return 1;
         }
 
         return 0;
      }
 
-     if (mv[0] === "phase2"){
+     if (mv[0] === "draw_offer"){
+        this.game.queue.splice(qe, 1);
+        this.game.state.planted = 3;
+        this.dealCard();
+        return 0;
+     }
 
-      let player = parseInt(mv[1]);
-
-      if (this.game.player === player){
-        $(".status").css("display", "block");
-        this.playerTurn();
-      }else{
-        this.removeEvents();
-        $(".status").css("display", "none");
-      }
-      return 0;
-
-     }    
 
      // A slight variation of the resolve command
      if (mv[0] === "continue"){
@@ -322,7 +318,7 @@ initializeGame(game_id) {
       //Remove the next step
       let nextMove = this.game.queue.pop();
 
-      if (nextMove && nextMove.substring(0,5) !== "phase"){
+      if (nextMove !== "phase"){
         console.warn("Unexpected queue order for CONTINUE", nextMove);
         this.game.queue.push("continue");
         this.game.queue.push(nextMove);
@@ -575,15 +571,17 @@ initializeGame(game_id) {
     }
 
     let html = `<div class="status-message">`;
-    if (this.game.state.planted == 0){
+    if (this.game.state.planted < 0){
+      html += "Build any offers or discard them";
+    } else if (this.game.state.planted == 0){
       html += `Build the first plant from your hand (mandatory)`;
-    }else if (this.game.state.planted == 1){
-      html += `Build the next plant from your hand or available offers (options)`;
-    }else if (this.game.state.market.length > 0){
-      html += `Build any available offers (optional)`;
-    }else if (this.game.state.planted == 2){
+    } else if (this.game.state.planted == 1){
+      html += `Build the next plant from your hand (optional)`;
+    } else if (this.game.state.market.length > 0){
+      html += `Build any available offers or leave them for your opponent`;
+    } else if (this.game.state.planted == 2){
       html += `Deal 3 new offers from the deck`;
-    }else{
+    } else{
       html += `Draw 2 cards and end your turn`;
     }
 
@@ -653,7 +651,7 @@ initializeGame(game_id) {
       
     };
 
-    if (this.game.state.planted < 2){
+    if (this.game.state.planted >= 0 && this.game.state.planted < 2){
       $(".cardfan").addClass("jumpy");
       $(".cardfan").addClass("active_element");
       
@@ -672,10 +670,6 @@ initializeGame(game_id) {
           return;
         }
 
-        if (steamSelf.game.state.planted >= 2){
-          steamSelf.displayModal("You have already planted the maximum from your hand this turn");
-          return;
-        }
         plantCard(steamSelf.game.state.hand.pop());
       });
     }
@@ -691,12 +685,12 @@ initializeGame(game_id) {
       plantCard(card, this);
     });
 
-    if (this.game.state.planted > 0){
+    if (this.game.state.planted !== 0){
       $("#draw_deck").addClass("active_element");  
     }
     
     $("#draw_deck").on("click", function(){
-      if (steamSelf.game.state.planted > 0){
+      if (steamSelf.game.state.planted !== 0){
         steamSelf.removeEvents();
         steamSelf.updateStatus("<div class='status-message'>Dealing new cards...</div>");
         steamSelf.prependMove("continue");
