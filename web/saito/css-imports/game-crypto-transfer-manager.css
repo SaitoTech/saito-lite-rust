@@ -1,12 +1,13 @@
 
 .game-crypto-transfer-manager-container {
-  min-width:300px;
+  min-width:30vw;
   max-width: 95vw;
   border-radius: 0.5rem;
-  padding: 40px 24px;
+  padding: 3rem 3rem;
   text-align:center;
   color: white;
   background-color:rgba(0,0,0,0.9);
+  border-radius: 1rem;
 }
 
 .ignore {

@@ -1,4 +1,7 @@
 module.exports = (app, mod, league) => {
+
+  console.log("inside existing-league template");
+
   let html = `
       <div class="league-component-existing-league-box" id="${league.id}">
         <div class="league-component-existing-league-details">

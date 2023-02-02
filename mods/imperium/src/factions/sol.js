@@ -56,13 +56,13 @@
       type	:	  "ability" ,
       text	  :	  "Drop two infantry onto any controlled planet" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].orbital_drop == undefined) {
-          imperium_self.game.players_info[player-1].orbital_drop = 0;
+        if (imperium_self.game.state.players_info[player-1].orbital_drop == undefined) {
+          imperium_self.game.state.players_info[player-1].orbital_drop = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction1-orbital-drop") {
-          imperium_self.game.players_info[gainer-1].orbital_drop = 1;
+          imperium_self.game.state.players_info[gainer-1].orbital_drop = 1;
         }
       },
       menuOption  :       function(imperium_self, menu, player) {
@@ -75,7 +75,7 @@
       },
       menuOptionTriggers:  function(imperium_self, menu, player) { 
         if (imperium_self.doesPlayerHaveTech(player, "faction1-orbital-drop") && menu === "main") {
-          if (imperium_self.game.players_info[player-1].strategy_tokens > 0) { 
+          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) { 
 	    if (imperium_self.game.state.active_player_moved == 0) {
 	      return 1;
 	    }
@@ -119,7 +119,7 @@
       text	  :	  "Gain an extra command token each round" ,
       onNewRound     :    function(imperium_self, player) {
         if (imperium_self.doesPlayerHaveTech(player, "faction1-versatile")) {
-          imperium_self.game.players_info[player-1].new_tokens_per_round = 3;
+          imperium_self.game.state.players_info[player-1].new_tokens_per_round = 3;
 	}
       },
 
@@ -136,16 +136,16 @@
       text	  :	  "A more sophisticated carrier" ,
       prereqs     :       ["blue","blue"],
       initialize :       function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction1_advanced_carrier_ii == undefined) {
-	  imperium_self.game.players_info[player-1].faction1_advanced_carrier_ii = 0;
+        if (imperium_self.game.state.players_info[player-1].faction1_advanced_carrier_ii == undefined) {
+	  imperium_self.game.state.players_info[player-1].faction1_advanced_carrier_ii = 0;
 	}
       },
       gainTechnology :       function(imperium_self, gainer, tech) {
-	imperium_self.game.players_info[gainer-1].faction1_advanced_carrier_ii = 1;
+	imperium_self.game.state.players_info[gainer-1].faction1_advanced_carrier_ii = 1;
       },
       upgradeUnit :       function(imperium_self, player, unit) {
 
-	if (imperium_self.game.players_info[unit.owner-1].faction1_advanced_carrier_ii == 1 && unit.type == "carrier") {
+	if (imperium_self.game.state.players_info[unit.owner-1].faction1_advanced_carrier_ii == 1 && unit.type == "carrier") {
           unit.cost = 3;
           unit.combat = 9;
           unit.move = 2;
@@ -168,14 +168,14 @@
       text	  :	  "Battle-hardened infantry" ,
       prereqs     :       ["green","green"],
       initialize  :       function(imperium_self, player) {
-	imperium_self.game.players_info[player-1].faction1_advanced_infantry_ii = 0;
+	imperium_self.game.state.players_info[player-1].faction1_advanced_infantry_ii = 0;
       },
       gainTechnology :       function(imperium_self, gainer, tech) {
-	imperium_self.game.players_info[gainer-1].faction1_advanced_infantry_ii = 1;
+	imperium_self.game.state.players_info[gainer-1].faction1_advanced_infantry_ii = 1;
       },
       upgradeUnit :       function(imperium_self, player, unit) {
 
-	if (imperium_self.game.players_info[unit.owner-1].faction1_advanced_infantry_ii == 1 && unit.type == "infantry") {
+	if (imperium_self.game.state.players_info[unit.owner-1].faction1_advanced_infantry_ii == 1 && unit.type == "infantry") {
           unit.cost = 0.5;
           unit.combat = 6;
         }

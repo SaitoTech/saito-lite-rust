@@ -51,8 +51,10 @@ class Nwasm extends GameTemplate {
   }
 
 
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-  async handlePeerRequest(app, message, peer, mycallback = null) {
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
     //
     // this code doubles onConfirmation
     //
@@ -61,10 +63,10 @@ class Nwasm extends GameTemplate {
       return;
     }
 
-    super.handlePeerRequest(app, message, peer, mycallback);
-
+    super.handlePeerTransaction(app, tx, peer, mycallback);
   }
-  
+
+
 
   startPlaying(ts=null) {
     if (ts == null) { ts = new Date().getTime(); }
@@ -269,9 +271,14 @@ class Nwasm extends GameTemplate {
         message.data.collection = "Nwasm";
         message.data.publickey = this.app.wallet.returnPublicKey();
 
+	let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+	newtx.msg = message;
+	newtx.presign(this.app);
+	newtx.sign(this.app);
+
 	let library_mod = this.app.modules.returnModule("Library");
 	if (library_mod) {
-	  library_mod.handlePeerRequest(this.app, message, null, function() {
+	  library_mod.handlePeerTransaction(this.app, newtx, null, function() {
             nwasm_mod.libraries = {};
 	    nwasm_mod.save();
             nwasm_mod.updateVisibleLibrary();
@@ -302,7 +309,7 @@ class Nwasm extends GameTemplate {
         message.request = "library collection";
         message.data = {};
         message.data.collection = "Nwasm";
-        app.network.sendRequestWithCallback(message.request, message.data, function(res) {
+        app.network.sendRequestAsTransactionWithCallback(message.request, message.data, function(res) {
 	  if (res.length > 0) {
             nwasm_mod.addCollectionToLibrary(peer.peer.publickey, res);
             nwasm_mod.updateVisibleLibrary();

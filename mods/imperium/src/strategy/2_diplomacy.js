@@ -16,10 +16,10 @@
               imperium_self.addMove("resolve\tstrategy");
               imperium_self.addMove("strategy\t"+"diplomacy"+"\t"+strategy_card_player+"\t2");
               imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
-              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
+              imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.state.players_info.length);
               imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player)+" uses Diplomacy to activate "+imperium_self.game.sectors[sector].name);
 
-              for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+              for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
                 imperium_self.addMove("activate\t"+(i+1)+"\t"+sector);
               }
 
@@ -54,9 +54,9 @@
 
           let html = '<div class="status-message">Do you wish to spend 1 strategy token to unexhaust two planet cards? </div><ul>';
 	  if (imperium_self.game.state.round == 1) {
-            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens.</div><ul>`;
+            html = `<div class="status-message doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.state.players_info[player-1].strategy_tokens} strategy tokens.</div><ul>`;
           }
-          if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
+          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
 	    html += '<li class="option" id="yes">Yes</li>';
 	  }
           html += '<li class="option" id="no">No</li>';

@@ -55,8 +55,8 @@
   }  
 
   doesPlayerHaveTech(player, tech) {
-    for (let i = 0; i < this.game.players_info[player-1].tech.length; i++) {
-      if (this.game.players_info[player-1].tech[i] == tech) { return 1; }
+    for (let i = 0; i < this.game.state.players_info[player-1].tech.length; i++) {
+      if (this.game.state.players_info[player-1].tech[i] == tech) { return 1; }
     }
     return 0;
   }

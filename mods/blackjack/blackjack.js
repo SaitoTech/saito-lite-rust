@@ -19,13 +19,14 @@ class Blackjack extends GameTableTemplate {
     this.categories = "Games Cardgame Casino";
 
     this.card_img_dir = '/blackjack/img/cards';
- 
+
+    this.crypto_msg = "settles round-by-round";
     this.minPlayers = 2;
     this.maxPlayers = 6;
 
     this.settlement = [];
     this.updateHTML = "";
-    this.decimal_precision = 0;
+    this.decimal_precision = 8;
 
     return this;
   }
@@ -49,7 +50,7 @@ class Blackjack extends GameTableTemplate {
       class : "game-intro",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
     });
     this.menu.addSubMenuOption("game-info", {
@@ -95,6 +96,39 @@ class Blackjack extends GameTableTemplate {
     return super.respondTo(type);
   }
 
+
+
+  //
+  // if we switch into a staked game, we reset to a new round, while keeping all of the
+  // other settings identical.
+  //
+  initializeGameStake(crypto, stake) {
+
+    this.game.crypto = this.game.options.crypto = crypto;
+    this.game.stake = this.game.options.stake = parseFloat(stake);
+
+    for (let i = 0; i < this.game.state.player.length; i++) {
+      this.game.state.player[i].credit = parseFloat(stake);
+      this.game.state.player[i].wager = 0;
+      this.game.state.player[i].payout = 1;
+      this.game.state.player[i].hand = [];
+      this.game.state.player[i].total = 0;
+      this.game.state.player[i].winner = null;
+      this.game.state.player[i].split = [];
+    }
+
+console.log("PLAYER STATE: " + JSON.stringify(this.game.state.player));
+
+    this.game.state.round = 1;
+
+    //
+    // and redisplay board
+    //
+    this.displayBoard();
+
+  }
+
+
   initializeGame() {
     
     super.initializeGame();
@@ -105,7 +139,7 @@ class Blackjack extends GameTableTemplate {
     if (this.game.options?.crypto){
       this.game.crypto =  this.game.options.crypto || ""; 
       this.game.stake = (this.game.options.stake)? parseFloat(this.game.options.stake) : 500; 
-    }else {
+    } else {
       this.game.stake = 500;
       this.game.crypto = "";
     }
@@ -125,7 +159,8 @@ class Blackjack extends GameTableTemplate {
 
     let minbet = (this.game.stake / 100).toString();
     if (minbet.includes(".")){
-      this.decimal_precision = minbet.split(".")[1].length;
+      this.decimal_precision = 8;
+      //this.decimal_precision = minbet.split(".")[1].length;
     }
     //console.log("Num dec places needed:" + this.decimal_precision);
     if (this.browser_active) {
@@ -769,7 +804,7 @@ class Blackjack extends GameTableTemplate {
     let fractions = [0.01, 0.05, 0.1];
     let myCredit = this.game.state.player[blackjack_self.game.player-1].credit
 
-    let html = `<div class="status-info">Select a wager: (credit: ${myCredit.toFixed(this.decimal_precision)})</div>`;
+    let html = `<div class="status-info">Select a wager: (credit: ${this.app.crypto.convertStringToDecimalPrecision(myCredit)})</div>`;
     html += '<ul>';
     for (let i = 0; i < fractions.length; i++){
       if (fractions[i]*this.game.stake<myCredit)
@@ -890,9 +925,9 @@ class Blackjack extends GameTableTemplate {
         this.playerbox.refreshName(i+1);
 
         if (this.game.state.player[i].wager>0 && this.game.state.dealer !== (i+1)){
-          newhtml = `<div class="chips">${(this.game.state.player[i].credit-this.game.state.player[i].wager).toFixed(this.decimal_precision)} ${this.game.crypto || "SAITO"}, Bet: ${this.game.state.player[i].wager}</div>`;
-        }else{
-          newhtml = `<div class="chips">${this.game.state.player[i].credit.toFixed(this.decimal_precision)} ${this.game.crypto || "SAITO"}</div>`;
+          newhtml = `<div class="chips">${(this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit-this.game.state.player[i].wager))} ${this.game.crypto || "SAITO"}, Bet: ${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].wager)}</div>`;
+        } else {
+          newhtml = `<div class="chips">${this.app.crypto.convertStringToDecimalPrecision(this.game.state.player[i].credit)} ${this.game.crypto || "SAITO"}</div>`;
         }
         
         if (this.game.state.dealer == (i+1)) {
@@ -949,6 +984,7 @@ class Blackjack extends GameTableTemplate {
 
 
   displayHand() {
+
     if (this.game.player == 0) { return; }
     try{
       let cardhtml = "";
@@ -1239,13 +1275,13 @@ class Blackjack extends GameTableTemplate {
     }
 
     if (this.settlement.length > 0){
-      this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, ()=>{
+      this.overlay.show(`<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, ()=>{
         this.restartQueue();
       });
       this.game.halted = 1;  
       return 0;
     }else{
-      this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`);
+      this.overlay.show(`<div class="shim-notice">${dealerHTML}${playerHTML}</div>`);
     } 
     return 1;
   }

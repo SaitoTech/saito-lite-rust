@@ -1,52 +1,52 @@
+
 const RedSquareAppspaceNotificationsTemplate = require("./notifications.template");
 const Notification = require("./../notification");
-const SaitoLoader = require("./../../../../lib/saito/new-ui/saito-loader/saito-loader");
+const SaitoLoader = require("./../../../../lib/saito/ui/saito-loader/saito-loader");
 
 class RedSquareAppspaceNotifications {
 
-  constructor(app, mod) {
+  constructor(app, mod, container = "") {
     this.app = app;
+    this.mod = mod;
     this.name = "RedSquareAppspaceNotifications";
-    this.saito_loader = new SaitoLoader(app, mod);
+    this.saito_loader = new SaitoLoader(app, mod, '#redsquare-home-header');
     this.increment = 1;
+    this.container  = container;
   }
 
-  render(app, mod) {
-    if(mod.viewing !== "notifications"){
-      return;
-    }
-    document.querySelector(".appspace").innerHTML = "";
-    app.browser.addElementToClass(RedSquareAppspaceNotificationsTemplate(app, mod), "appspace");
+  render() {
 
-    for (let i = 0; i < mod.ntfs.length; i++) {
-      let notification = new Notification(app, mod, mod.ntfs[i]);
+    let app = this.app;
+    let mod = this.mod;
 
-      notification.render(app, mod, ".redsquare-list");
-    }
-
-    // let notifications_height = document.querySelector('.redsquare-list').offsetHeight;
-    // let body_height = document.body.offsetHeight;
-    // let percentage = notifications_height/body_height * 100;
-
-;
-    let num_ntfs = mod.ntfs.length;
-    let max_ntfs = mod.max_ntfs_num;
-    let self = this
-    if(num_ntfs < max_ntfs){
-      mod.num_ntfs = num_ntfs;
-    }else if(num_ntfs >= max_ntfs) {
-      this.increment++;
-      mod.loadNotificationTransactions(app, mod, this.increment, (app, mod)=> {
-        
-        self.render(app, mod)
-      })
+    if (document.querySelector(".redsquare-notifications")) {
+      this.app.browser.replaceElementBySelector(RedSquareAppspaceNotificationsTemplate(app, mod), ".redsquare-notifications");
+    } else {
+      if (this.container) {
+        this.app.browser.addElementToSelector(RedSquareAppspaceNotificationsTemplate(app, mod), this.container);
+      } else {
+        this.app.browser.addElementToDom(RedSquareAppspaceNotificationsTemplate(app, mod));
+      }
     }
 
+    for (let i = 0; i < mod.notifications.length; i++) {
+      let notification = new Notification(app, mod, mod.notifications[i].tx);
+      notification.render(".redsquare-notifications");
+    }
+
+    if(mod.notifications.length === 0){
+      let notification = new Notification(app, mod, null);
+      notification.render(".redsquare-notifications");
+    }
+    
     this.attachEvents(app, mod);
 
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+    let app = this.app;
+    let mod = this.mod
+    
     notificationSelf = this;
 
     sel = ".tweet";
@@ -56,7 +56,7 @@ class RedSquareAppspaceNotifications {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        notificationSelf.saito_loader.render(app, mod, 'redsquare-home-header', false);
+        notificationSelf.saito_loader.render();
 
         let el = e.target;
         let tweet_sig_id = el.getAttribute("data-id");

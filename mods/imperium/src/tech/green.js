@@ -5,14 +5,14 @@
       prereqs             :       [],
       text		:	"Gain an extra action card each turn" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].neural_motivator == undefined) {
-          imperium_self.game.players_info[player-1].neural_motivator = 0;
+        if (imperium_self.game.state.players_info[player-1].neural_motivator == undefined) {
+          imperium_self.game.state.players_info[player-1].neural_motivator = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "neural-motivator") {
-          imperium_self.game.players_info[gainer-1].neural_motivator = 1;
-          imperium_self.game.players_info[gainer-1].action_cards_bonus_when_issued = 1;
+          imperium_self.game.state.players_info[gainer-1].neural_motivator = 1;
+          imperium_self.game.state.players_info[gainer-1].action_cards_bonus_when_issued = 1;
         }
       },
     });
@@ -24,13 +24,13 @@
       prereqs             :       ["green"],
       text		:	"Place an extra infantry on any planet after winning a defensive ground combat tbere" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].dacxive_animators == undefined) {
-          imperium_self.game.players_info[player-1].dacxive_animators = 0;
+        if (imperium_self.game.state.players_info[player-1].dacxive_animators == undefined) {
+          imperium_self.game.state.players_info[player-1].dacxive_animators = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "dacxive-animators") {
-          imperium_self.game.players_info[gainer-1].dacxive_animators = 1;
+          imperium_self.game.state.players_info[gainer-1].dacxive_animators = 1;
         }
       },
       groundCombatRoundEnd : function(imperium_self, attacker, defender, sector, planet_idx) {
@@ -58,14 +58,14 @@
       prereqs     	:       ['green','green'],
       text		:	"Gain an extra command token each round" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].hyper_metabolism == undefined) {
-          imperium_self.game.players_info[player-1].hyper_metabolism = 0;
+        if (imperium_self.game.state.players_info[player-1].hyper_metabolism == undefined) {
+          imperium_self.game.state.players_info[player-1].hyper_metabolism = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "hyper-metabolism") {
-          imperium_self.game.players_info[gainer-1].hyper_metabolism = 1;
-          imperium_self.game.players_info[gainer-1].new_token_bonus_when_issued = 1;
+          imperium_self.game.state.players_info[gainer-1].hyper_metabolism = 1;
+          imperium_self.game.state.players_info[gainer-1].new_token_bonus_when_issued = 1;
         }
       },
     });
@@ -79,23 +79,23 @@
       prereqs     	:       ['green','green','green'],
       text		:	"Bombardment destroys all infantry on planet" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].x89_bacterial_weapon == undefined) {
-          imperium_self.game.players_info[player-1].x89_bacterial_weapon = 0;
-          imperium_self.game.players_info[player-1].x89_bacterial_weapon_exhausted = 0;
+        if (imperium_self.game.state.players_info[player-1].x89_bacterial_weapon == undefined) {
+          imperium_self.game.state.players_info[player-1].x89_bacterial_weapon = 0;
+          imperium_self.game.state.players_info[player-1].x89_bacterial_weapon_exhausted = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "x89-bacterial-weapon") {
-          imperium_self.game.players_info[gainer-1].x89_bacterial_weapon = 1;
-          imperium_self.game.players_info[gainer-1].x89_bacterial_weapon_exhausted = 0;
+          imperium_self.game.state.players_info[gainer-1].x89_bacterial_weapon = 1;
+          imperium_self.game.state.players_info[gainer-1].x89_bacterial_weapon_exhausted = 0;
         }
       },
       onNewRound : function(imperium_self, player) {
-        imperium_self.game.players_info[player-1].x89_bacterial_weapon_exhausted = 0;
+        imperium_self.game.state.players_info[player-1].x89_bacterial_weapon_exhausted = 0;
         return 1;
       },
       bombardmentTriggers : function(imperium_self, player, bombarding_player, sector) { 
-	if (imperium_self.game.players_info[bombarding_player-1].x89_bacterial_weapon == 1 && imperium_self.game.players_info[bombarding_player-1].x89_bacterial_weapon_exhausted == 0) {
+	if (imperium_self.game.state.players_info[bombarding_player-1].x89_bacterial_weapon == 1 && imperium_self.game.state.players_info[bombarding_player-1].x89_bacterial_weapon_exhausted == 0) {
 	  if (imperium_self.doesSectorContainPlayerUnit(bombarding_player, sector, "warsun") || imperium_self.doesSectorContainPlayerUnit(bombarding_player, sector, "dreadnaught")) { 
 	    return 1;
  	  }

@@ -115,7 +115,6 @@ class Block {
     for (let z = 0; z < this.transactions.length; z++) {
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
         const txmsg = this.transactions[z].returnMessage();
-        // console.log("txmsg length: ", txmsg ? JSON.stringify(txmsg).length : txmsg);
         this.app.modules.affixCallbacks(
           this.transactions[z],
           z,
@@ -396,15 +395,11 @@ class Block {
       }
     }
 
-    // console.log(`${typeof this.block.id} > ${typeof this.app.blockchain.returnGenesisPeriod()} + ${typeof this.app.blockchain.genesis_period}`);
-
     // calculate automatic transaction rebroadcasts / ATR / atr
     if (this.block.id > this.app.blockchain.returnGenesisPeriod() + BigInt(1)) {
       const pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
       const pruned_block_hash =
         this.app.blockring.returnLongestChainBlockHashByBlockId(pruned_block_id);
-      console.log("pruned block id: " + pruned_block_id);
-      console.log("pruned block hash: " + pruned_block_hash);
       const pruned_block = await this.app.blockchain.loadBlockAsync(pruned_block_hash);
 
       //
@@ -506,7 +501,7 @@ class Block {
       if (previous_block.block.avg_income > cv.total_fees) {
         let adjustment =
           (previous_block.block.avg_income - cv.total_fees) /
-          this.app.blockchain.genesis_period;
+          this.app.blockchain.returnGenesisPeriod();
         if (adjustment > 0) {
           cv.avg_income -= adjustment;
         }
@@ -514,7 +509,7 @@ class Block {
       if (previous_block.block.avg_income < cv.total_fees) {
         let adjustment =
           (cv.total_fees - previous_block.block.avg_income) /
-          this.app.blockchain.genesis_period;
+          this.app.blockchain.returnGenesisPeriod();
         if (adjustment > 0) {
           cv.avg_income += adjustment;
         }
@@ -526,7 +521,7 @@ class Block {
       if (previous_block.block.avg_atr_income > cv.total_rebroadcast_nolan) {
         let adjustment =
           (previous_block.block.avg_atr_income - cv.total_rebroadcast_nolan) /
-          this.app.blockchain.genesis_period;
+          this.app.blockchain.returnGenesisPeriod();
         if (adjustment > 0) {
           cv.avg_atr_income -= adjustment;
         }
@@ -534,7 +529,7 @@ class Block {
       if (previous_block.block.avg_atr_income < cv.total_rebroadcast_nolan) {
         let adjustment =
           (cv.total_rebroadcast_nolan - previous_block.block.avg_atr_income) /
-          this.app.blockchain.genesis_period;
+          this.app.blockchain.returnGenesisPeriod();
         if (adjustment > 0) {
           cv.avg_atr_income += adjustment;
         }
@@ -1228,6 +1223,7 @@ class Block {
         for (let ii = 0; ii < this.callbacks.length; ii++) {
           try {
             if (run_callbacks === 1) {
+//console.log("running callback!");
               await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
             }
           } catch (err) {
@@ -1293,6 +1289,7 @@ class Block {
   // returns a lite-version of the block
   //
   returnLiteBlock(keylist = []): Block {
+
     let pruned_transactions = [];
 
     //
@@ -1315,7 +1312,7 @@ class Block {
         pruned_transactions.push(this.transactions[i]);
       } else {
         let spv = new Transaction();
-        spv.transaction.type = 9;
+        spv.transaction.type = TransactionType.Vip;
         spv.transaction.r = 1;
         // the sig contains the hash of this TX
         spv.transaction.sig = this.app.crypto.hash(
@@ -1349,7 +1346,7 @@ class Block {
     while (no_simplification_needed == 0) {
       let action_taken = 0;
       for (let i = 1; i < pruned_transactions.length; i++) {
-        if (pruned_transactions[i].transaction.type == 9 && pruned_transactions[i-1].transaction.type == 9) {
+        if (pruned_transactions[i].transaction.type == TransactionType.SPV && pruned_transactions[i-1].transaction.type == TransactionType.SPV) {
           if (pruned_transactions[i].transaction.r == pruned_transactions[i-1].transaction.r) {
             pruned_transactions[i].transaction.r *= 2;
             pruned_transactions[i].transaction.sig = this.app.crypto.hash(pruned_transactions[i-1].transaction.sig + pruned_transactions[i].transaction.sig);

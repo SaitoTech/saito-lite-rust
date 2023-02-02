@@ -1,10 +1,11 @@
 const saito = require("./../../../lib/saito/saito");
 const ControlsTemplate = require("./controls.template");
-const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class QuakeControls {
 
  constructor(app, mod, tx) {
+    this.app = app;
     this.mod = mod;
     this.overlay = new SaitoOverlay(app);
     this.current_setting = "";
@@ -43,15 +44,20 @@ class QuakeControls {
     this.loadSavedControls();
   }
 
-  render(app, mod) {
-    this.overlay.show(app, mod, ControlsTemplate(app, mod, this));
-    this.attachEvents(app, mod);
+  render() {
+    let app = this.app;
+    let mod = this.mod;
+    this.overlay.show(ControlsTemplate(app, mod, this));
+    this.attachEvents();
 //    this.loadSavedControls();
     // render menu with saved or default config
     this.fill_menu()
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     let thisobj = this;
 

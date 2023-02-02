@@ -1,4 +1,8 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
+const TwilightRules = require('./lib/twilight-game-rules.template');
+const TwilightOptions = require('./lib/twilight-game-options.template');
+const TwilightSingularOption = require('./lib/twilight-singular-game-options.template');
+
 const JSON = require('json-bigint');
 
 
@@ -84,7 +88,7 @@ class Twilight extends GameTemplate {
                 </div>`;
       }
       html += "</div></div>";
-      this.overlay.show(this.app, this, html);
+      this.overlay.show(html);
   }
 
 
@@ -107,7 +111,7 @@ class Twilight extends GameTemplate {
     }  
     html += `</div></div>`;
 
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
 
@@ -153,7 +157,7 @@ class Twilight extends GameTemplate {
     html += `</div>`;
 
     html += `</div>`;
-    this.overlay.show(this.app, this, html); 
+    this.overlay.show(html); 
   }
 
   handleExportMenu() {
@@ -169,7 +173,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
 
     $('.menu-item').on('click', function() {
 
@@ -182,7 +186,7 @@ class Twilight extends GameTemplate {
           break;
       }
 
-      twilight_self.overlay.show(twilight_self.app, twilight_self, "All players are backing up their game...");
+      twilight_self.overlay.show("All players are backing up their game...");
     });
 
   }
@@ -338,7 +342,7 @@ class Twilight extends GameTemplate {
           </div>
         `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
   }
 
 
@@ -357,7 +361,7 @@ class Twilight extends GameTemplate {
     //<li class="menu-item" id="text">Text Cards</li>
     //<li class="menu-item" id="graphics">Graphical Cards</li>
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, user_message);
+    twilight_self.overlay.show(user_message);
 
     $('.menu-item').on('click', function() {
       let action2 = $(this).attr("id");
@@ -474,7 +478,7 @@ class Twilight extends GameTemplate {
       class : "game-rules",
       callback : function(app, game_mod) {
          game_mod.menu.hideSubMenus();
-         game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML()); 
+         game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
 
@@ -487,29 +491,6 @@ class Twilight extends GameTemplate {
         game_mod.handleStatsMenu();
       }
     });
-
-/****
-    this.menu.addSubMenuOption("game-game", {
-      text: "Invite Observer",
-      id: "game-observer",
-      class: "game-observer",
-      callback: function(app, game_mod){
-        game_mod.game.saveGameState = 1;
-        let msgobj = {
-          game_id : game_mod.game.id ,
-          player : app.wallet.returnPublicKey() ,
-          module : game_mod.game.module
-        };
-        let msg = app.crypto.stringToBase64(JSON.stringify(msgobj));
-        let observe_link = window.location.href;
-        let tmpar = observe_link.split("/");
-        let oblink = tmpar[0] + "//" + tmpar[2];
-        let html  = `<div class="status-message" id="status-message">Observer Mode will be enabled on your next move (reload to cancel). Make your move and then share this link:
-        <div style="padding:15px;font-size:0.9em;overflow-wrap:anywhere">${oblink}/arcade/?i=watch&msg=${msg}</div></div>`;
-        game_mod.overlay.show(app, game_mod, html);
-      }
-    });
-****/
 
     this.menu.addSubMenuOption("game-info", {
       text: "Cards",
@@ -1100,6 +1081,8 @@ try {
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
+
+console.log("LATEST MOVE: " + mv);
 
       //
       // cambridge region
@@ -8411,269 +8394,15 @@ playerTurnHeadlineSelected(card, player) {
 
 
   returnSingularGameOption(){
-    return `<div>
-            <select name="player1">
-              <option value="random" selected>random sides</option>
-              <option value="ussr">play as USSR</option>
-              <option value="us">play as US</option>
-            </select></div>
-          `;
+    return TwilightSingularOption();
   }
 
   returnGameOptionsHTML() {
-
-    return `
-
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
-
-	<div style="top:0;left:0;">
-
-            
-
-            <label for="deck">Deck:</label>
-            <select name="deck" id="deckselect" onchange='
-	      if ($("#deckselect").val() == "saito") { 
-		$(".saito_edition").prop("checked",true); 
-		$(".endofhistory_edition").prop("checked", false); 
-	      } else { 
-		$(".saito_edition").prop("checked", false); 
-	        if ($("#deckselect").val() == "optional") { 
-		  $(".optional_edition").prop("checked", false); 
-	 	} else { 
-		  $(".optional_edition").prop("checked", true); 
-		  if ($("#deckselect").val() == "endofhistory") { 
-		    $(".endofhistory_edition").prop("checked",true); 
-		    $(".optional_edition").prop("checked", false);
-		  } else {
-		    if ($("#deckselect").val() == "coldwarcrazies") { 
-		      $(".coldwarcrazies_edition").prop("checked",true); 
-		      $(".optional_edition").prop("checked", false);
-		    } else {
-		      if ($("#deckselect").val() == "absurdum") { 
-		        $(".absurdum_edition").prop("checked",true); 
-		        $(".optional_edition").prop("checked",true);
-		      }
-		    }
-		  }
-		}
-	      } '>
-            <option value="original">original</option>
-              <option value="optional" selected>optional</option>
-              <option value="late-war">late war</option>
-              <option value="saito">saito edition</option>
-              <option value="absurdum">twilight absurdum</option>
-              <option value="endofhistory">end of history</option>
-              <option value="coldwarcrazies">cold war crazies</option>
-            </select>
-
-            <label for="usbonus">US bonus: </label>
-            <select name="usbonus">
-              <option value="0">0</option>
-              <option value="1">1</option>
-              <option value="2" selected>2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-            </select>
-
-            <label for="clock">Player Time Limit:</label>
-            <select name="clock">
-              <option value="0" default>no limit</option>
-              <option value="10">10 minutes</option>
-              <option value="20">20 minutes</option>
-              <option value="30">30 minutes</option>
-              <option value="60">60 minutes</option>
-              <option value="90">90 minutes</option>
-              <option value="120">120 minutes</option>
-            </select>
-
-            <label for="observer_mode">Observer Mode:</label>
-            <select name="observer">
-              <option value="enable" >enable</option>
-              <option value="disable" selected>disable</option>
-            </select>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-	</div>
-
-            <div id="game-wizard-advanced-box" class="game-wizard-advanced-box" style="display:block;padding-left:20px;">
-
-	      <style type="text/css">li { list-style: none; } .saito-select { margin-bottom: 10px; margin-top:5px; } label { text-transform: uppercase; } .removecards { grid-gap: 0.1em; } .list-header { font-weight: bold; font-size:1.5em; margin-top:0px; margin-bottom:10px; margin-left: 15px; text-transform: uppercase; } </style>
-              <div class="list-header">remove cards:</div>
-              <ul id="removecards" class="removecards">
-              <li><input class="remove_card" type="checkbox" name="asia" /> Asia Scoring</li>
-              <li><input class="remove_card" type="checkbox" name="europe" /> Europe Scoring</li>
-              <li><input class="remove_card" type="checkbox" name="mideast" /> Middle-East Scoring</li>
-              <li><input class="remove_card" type="checkbox" name="duckandcover" /> Duck and Cover</li>
-              <li><input class="remove_card" type="checkbox" name="fiveyearplan" /> Five Year Plan</li>
-              <li><input class="remove_card" type="checkbox" name="socgov" /> Socialist Governments</li>
-              <li><input class="remove_card" type="checkbox" name="fidel" /> Fidel</li>
-              <li><input class="remove_card" type="checkbox" name="vietnamrevolts" /> Vietnam Revolts</li>
-              <li><input class="remove_card" type="checkbox" name="blockade" /> Blockade</li>
-              <li><input class="remove_card" type="checkbox" name="koreanwar" /> Korean War</li>
-              <li><input class="remove_card" type="checkbox" name="romanianab" /> Romanian Abdication</li>
-              <li><input class="remove_card" type="checkbox" name="arabisraeli" /> Arab Israeli War</li>
-              <li><input class="remove_card" type="checkbox" name="comecon" /> Comecon</li>
-              <li><input class="remove_card" type="checkbox" name="nasser" /> Nasser</li>
-              <li><input class="remove_card" type="checkbox" name="warsawpact" /> Warsaw Pact</li>
-              <li><input class="remove_card" type="checkbox" name="degaulle" /> De Gaulle Leads France</li>
-              <li><input class="remove_card" type="checkbox" name="naziscientist" /> Nazi Scientists Captured</li>
-              <li><input class="remove_card" type="checkbox" name="truman" /> Truman</li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="olympic" /> Olympic Games</li>
-              <li><input class="remove_card" type="checkbox" name="nato" /> NATO</li>
-              <li><input class="remove_card" type="checkbox" name="indreds" /> Independent Reds</li>
-              <li><input class="remove_card" type="checkbox" name="marshall" /> Marshall Plan</li>
-              <li><input class="remove_card" type="checkbox" name="indopaki" /> Indo-Pakistani War</li>
-              <li><input class="remove_card" type="checkbox" name="containment" /> Containment</li>
-              <li><input class="remove_card" type="checkbox" name="cia" /> CIA Created</li>
-              <li><input class="remove_card" type="checkbox" name="usjapan" /> US/Japan Defense Pact</li>
-              <li><input class="remove_card" type="checkbox" name="suezcrisis" /> Suez Crisis</li>
-              <li><input class="remove_card" type="checkbox" name="easteuropean" /> East European Unrest</li>
-              <li><input class="remove_card" type="checkbox" name="decolonization" /> Decolonization</li>
-              <li><input class="remove_card" type="checkbox" name="redscare" /> Red Scare</li>
-              <li><input class="remove_card" type="checkbox" name="unintervention" /> UN Intervention</li>
-              <li><input class="remove_card" type="checkbox" name="destalinization" /> Destalinization</li>
-              <li><input class="remove_card" type="checkbox" name="nucleartestban" /> Nuclear Test Ban Treaty</li>
-              <li><input class="remove_card" type="checkbox" name="formosan" /> Formosan Resolution</li>
-              <li><input class="remove_card optional_edition" type="checkbox" name="defectors" /> Defectors</li>
-              <li><input class="remove_card optional_edition " type="checkbox" name="specialrelation" /> Special Relationship</li>
-              <li><input class="remove_card optional_edition" type="checkbox" name="cambridge" /> The Cambridge Five</li>
-              <li><input class="remove_card optional_edition" type="checkbox" name="norad" /> NORAD</li>
-            </ul>
-            <ul class="removecards" style="clear:both;margin-top:13px">
-              <li><input class="remove_card" type="checkbox" name="brushwar" /> Brush War</li>
-              <li><input class="remove_card" type="checkbox" name="camerica" /> Central America Scoring</li>
-              <li><input class="remove_card" type="checkbox" name="seasia" /> Southeast Asia Scoring</li>
-              <li><input class="remove_card" type="checkbox" name="armsrace" /> Arms Race</li>
-              <li><input class="remove_card" type="checkbox" name="cubanmissile" /> Cuban Missile Crisis</li>
-              <li><input class="remove_card" type="checkbox" name="nuclearsubs" /> Nuclear Subs</li>
-              <li><input class="remove_card" type="checkbox" name="quagmire" /> Quagmire</li>
-              <li><input class="remove_card" type="checkbox" name="saltnegotiations" /> Salt Negotiations</li>
-              <li><input class="remove_card" type="checkbox" name="beartrap" /> Bear Trap</li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="summit" /> Summit</li>
-              <li><input class="remove_card" type="checkbox" name="howilearned" /> How I Learned to Stop Worrying</li>
-              <li><input class="remove_card" type="checkbox" name="junta" /> Junta</li>
-              <li><input class="remove_card" type="checkbox" name="kitchendebates" /> Kitchen Debates</li>
-              <li><input class="remove_card" type="checkbox" name="missileenvy" /> Missile Envy</li>
-              <li><input class="remove_card" type="checkbox" name="wwby" /> We Will Bury You</li>
-              <li><input class="remove_card" type="checkbox" name="brezhnev" /> Brezhnev Doctrine</li>
-              <li><input class="remove_card" type="checkbox" name="portuguese" /> Portuguese Empire Crumbles</li>
-              <li><input class="remove_card" type="checkbox" name="southafrican" /> South African Unrest</li>
-              <li><input class="remove_card" type="checkbox" name="allende" /> Allende</li>
-              <li><input class="remove_card" type="checkbox" name="willybrandt" /> Willy Brandt</li>
-              <li><input class="remove_card" type="checkbox" name="muslimrevolution" /> Muslim Revolution</li>
-              <li><input class="remove_card" type="checkbox" name="abmtreaty" /> ABM Treaty</li>
-              <li><input class="remove_card" type="checkbox" name="culturalrev" /> Cultural Revolution</li>
-              <li><input class="remove_card" type="checkbox" name="flowerpower" /> Flower Power</li>
-              <li><input class="remove_card" type="checkbox" name="u2" /> U-2 Incident</li>
-              <li><input class="remove_card" type="checkbox" name="opec" /> OPEC</li>
-              <li><input class="remove_card" type="checkbox" name="lonegunman" /> Lone Gunman</li>
-              <li><input class="remove_card" type="checkbox" name="colonial" /> Colonial</li>
-              <li><input class="remove_card" type="checkbox" name="panamacanal" /> Panama Canal</li>
-              <li><input class="remove_card" type="checkbox" name="campdavid" /> Camp David Accords</li>
-              <li><input class="remove_card" type="checkbox" name="puppet" /> Puppet Governments</li>
-              <li><input class="remove_card" type="checkbox" name="grainsales" /> Grain Sales to Soviets</li>
-              <li><input class="remove_card" type="checkbox" name="johnpaul" /> John Paul</li>
-              <li><input class="remove_card" type="checkbox" name="deathsquads" /> Death Squads</li>
-              <li><input class="remove_card" type="checkbox" name="oas" /> OAS Founded</li>
-              <li><input class="remove_card" type="checkbox" name="nixon" /> Nixon Plays the China Card</li>
-              <li><input class="remove_card" type="checkbox" name="sadat" /> Sadat Expels Soviets</li>
-              <li><input class="remove_card" type="checkbox" name="shuttle" /> Shuttle Diplomacy</li>
-              <li><input class="remove_card" type="checkbox" name="voiceofamerica" /> Voice of America</li>
-              <li><input class="remove_card" type="checkbox" name="liberation" /> Liberation Theology</li>
-              <li><input class="remove_card" type="checkbox" name="ussuri" /> Ussuri River Skirmish</li>
-              <li><input class="remove_card" type="checkbox" name="asknot" /> Ask Not What Your Country Can Do For You</li>
-              <li><input class="remove_card" type="checkbox" name="alliance" /> Alliance for Progress</li>
-              <li><input class="remove_card" type="checkbox" name="africa" /> Africa Scoring</li>
-              <li><input class="remove_card" type="checkbox" name="onesmallstep" /> One Small Step</li>
-              <li><input class="remove_card" type="checkbox" name="samerica" /> South America</li>
-              <li><input class="remove_card optional_edition" type="checkbox" name="che" /> Che</li>
-              <li><input class="remove_card optional_edition" type="checkbox" name="tehran" /> Our Man in Tehran</li>
-            </ul>
-            <ul class="removecards" style="clear:both;margin-top:13px">
-              <li><input class="remove_card" type="checkbox" name="iranianhostage" /> Iranian Hostage Crisis</li>
-              <li><input class="remove_card" type="checkbox" name="ironlady" /> The Iron Lady</li>
-              <li><input class="remove_card" type="checkbox" name="reagan" /> Reagan Bombs Libya</li>
-              <li><input class="remove_card" type="checkbox" name="starwars" /> Star Wars</li>
-              <li><input class="remove_card" type="checkbox" name="northseaoil" /> North Sea Oil</li>
-              <li><input class="remove_card" type="checkbox" name="reformer" /> The Reformer</li>
-              <li><input class="remove_card" type="checkbox" name="marine" /> Marine Barracks Bombing</li>
-              <li><input class="remove_card" type="checkbox" name="KAL007" /> Soviets Shoot Down KAL-007</li>
-              <li><input class="remove_card" type="checkbox" name="glasnost" /> Glasnost</li>
-              <li><input class="remove_card" type="checkbox" name="ortega" /> Ortega Elected in Nicaragua</li>
-              <li><input class="remove_card" type="checkbox" name="terrorism" /> Terrorism</li>
-              <li><input class="remove_card" type="checkbox" name="ironcontra" /> Iran Contra Scandal</li>
-              <li><input class="remove_card" type="checkbox" name="chernobyl" /> Chernobyl</li>
-              <li><input class="remove_card" type="checkbox" name="debtcrisis" /> Latin American Debt Crisis</li>
-              <li><input class="remove_card" type="checkbox" name="teardown" /> Tear Down this Wall</li>
-              <li><input class="remove_card" type="checkbox" name="evilempire" /> An Evil Empire</li>
-              <li><input class="remove_card" type="checkbox" name="aldrichames" /> Aldrich Ames Remix</li>
-              <li><input class="remove_card" type="checkbox" name="pershing" /> Pershing II Deployed</li>
-              <li><input class="remove_card" type="checkbox" name="wargames" /> Wargames</li>
-              <li><input class="remove_card" type="checkbox" name="solidarity" /> Solidarity</li>
-              <li><input class="remove_card optional_edition" type="checkbox" name="iraniraq" /> Iran-Iraq War</li>
-              <li><input class="remove_card optional_edition" type="checkbox" name="yuri" /> Yuri and Samantha</li>
-              <li><input class="remove_card optional_edition" type="checkbox" name="awacs" /> AWACS Sale to Saudis</li>
-            </ul>
-
-            <div class="list-header">add cards:</div>
-            <ul id="removecards" class="removecards">
-              <li><input class="remove_card saito_edition" type="checkbox" name="culturaldiplomacy" /> Cultural Diplomacy (Early-War)</li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="handshake" /> Handshake in Space (Mid-War)</li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="rustinredsquare" /> Rust Lands in Red Square (Late-War)</li>
-              <li><input class="remove_card" type="checkbox" name="gouzenkoaffair" /> Gouzenko Affair (Early-War)</li>
-              <li><input class="remove_card" type="checkbox" name="poliovaccine" /> Polio Vaccine (Early-War)</li>
-              <li><input class="remove_card saito_edition" type="checkbox" name="berlinagreement" /> 1971 Berlin Agreement (Mid-War)</li>
-              <li><input class="remove_card endofhistory_edition" type="checkbox" name="peronism" /> Peronism (Early-War)</li>
-              <li><input class="remove_card endofhistory_edition" type="checkbox" name="manwhosavedtheworld" /> The Man Who Saved the World (Mid-War)</li>
-              <li><input class="remove_card endofhistory_edition" type="checkbox" name="breakthroughatlopnor" /> Breakthrough at Lop Nor (Mid-War)</li>
-              <li><input class="remove_card endofhistory_edition" type="checkbox" name="nationbuilding" /> Nation Building (Mid-War)</li>
-              <li><input class="remove_card endofhistory_edition" type="checkbox" name="greatsociety" /> Great Society (Mid-War)</li>
-              <li><input class="remove_card endofhistory_edition" type="checkbox" name="perestroika"  /> Perestroika (Late-War)</li>
-              <li><input class="remove_card endofhistory_edition" type="checkbox" name="eurocommunism" /> Eurocommunism (Mid-War)</li>
-              <li><input class="remove_card endofhistory_edition" type="checkbox" name="inftreaty" /> INF Treaty (Late-War)</li>
-              <li><input class="remove_card coldwarcrazies_edition" type="checkbox" name="communistrevolution" /> Communist Revolution (Early-War)</li>
-            </div>
-
-      </div>
-    </div>
-          `;
-
+    return TwilightOptions();
   }
 
-
   returnGameRulesHTML(){
-    return `<div class="rules-overlay">
-    <h1>Twilight Struggle</h1>
-    <p>Players take the roles of the US and the USSR and vie for global dominance over ten turns that cover the cold war. Twilight Struggle is a card-based board game. Most cards describes an EVENT, which may be associated with the US, the USSR, or neutral. Every card has an OPERATIONS value. Some SCORING cards trigger a pause to score the current board state. The board show the amount of influence each player has in various countries across the globe. Every country has a STABILITY number and lines on the board show adjacency between countries.</p>
-    <p>Each turn begins with the selection of a HEADLINE, wherein both players select one card from their hand to play first. The card with the higher OPERATIONS value takes effect first, or in the event of a tie the US player's card goes into effect first. A HEADLINE card must be chosen and played, regardless of whether the event helps the player or their opponent.</p>
-    <p>After the HEADLINE, the players alternate playing cards for 6-7 ACTION ROUNDS. The USSR always starts. Cards may be played for EVENTS or OPERATIONS. Playing a card associated with one's opponent (for OPERATION points) still triggers the EVENT as if the opponent had played it themselves. OPERATIONS may be used to place INFLUENCE markers, make REALIGNMENT rolls, attempt COUPS, or advance in the SPACE RACE. </p>
-    <dl>
-    <dt>INFLUENCE</dt><dd>Influence markers are placed on countries with friendly influence or their immediate neighbors. It costs 1 OP to place influence in a friendly or uncontrolled country, and 2 OP to place influence in an enemy controlled country. To control a country, your influence must exceed your opponent's by at least the STABILITY number of the country.</dd>
-    <dt>REALIGNMENT</dt><dd>Realignment rolls reduce enemy influence in a country regardless of whether the player has any influence in the country or its neighbors. It costs 1 OP per roll. Both players roll and the high roller can remove the difference in die values of influence in the target country. Players get +1 if the target country borders their SUPERPOWER, +1 if they have more influence in the target country, and +1 for each adjacent controlled country.</dd>
-    <dt>COUP</dt><dd>A Coup is an attempt to replace the enemy's influence in a target country with that of your own. Roll the dice and add the OP of the card and subtract double the STABILITY number of the country. The result, if positive, is a successful coup and the player may first remove that many enemy influence then add any remaining amount of friendly influence.</dd>
-    <dt>SPACE RACE</dt><dd>Players gain victory points and special abilities for advancing in the SPACE RACE. A player may only attempt to advance in the SPACE RACE once per turn and success depends upon a dice roll. The player must DISCARD a card with a minimum OPERATIONS values. Unlike other actions, the EVENT of the discarded card does not get triggered.</dd>
-    </dl>
-    <h3>DEFCON STATUS</h3>
-    <p>If the DEFCON level (a measure of threat of nuclear war) ever reaches 1, the game immediately ends and the PHASING player (who plays the card) loses. DEFCON level degrades for any COUP in a BATTLEGROUND country. Any DEFCON level below 5 will place geographic restrictions on where COUPS or REALIGNMENT rolls may be attempted. DEFCON is improved at the beginning of each turn. Many Events will improve or degrade the DEFCON level.</p>
-    <h3>MILITARY OPERATIONS</h3>
-    <p>Each player must conduct a minimum amount of military operations per turn (determined by DEFCON), or risk losing VP. Wars and COUPS are military operations. The OP spent on the COUP or the amount specified in the text of the war EVENT card. </p>
-    <h3>CHINA CARD</h3>
-    <p>The USSR starts with the China card, which may be played like any regular card. When played, the China card is passed to the opponent who may use it in the next turn. </p>
-    <h3>SCORING</h3>
-    <p>Scoring is conducted regionally when a SCORING card is played. SCORING cards must be played at some point during the turn if in your hand. The card specifies the number of VP for each of the possible conditions:</p>
-    <ul>
-    <li>PRESENCE: You control at least one country in the region.</li>
-    <li>DOMINATION: You control more countries and more Battleground countries than your opponent in the region</li>
-    <li>CONTROL: You control more countries than your opponent and all of the Battleground countries.</li>
-    </ul>
-    <p>Players are also awarded +1 VP for each Battleground country they control in the region and +1 VP for each controlled country adjacent to the enemy superpower.</p>
-    <p>If a player ever reaches a 20 VP lead over the opponent, then they win the game. </p>
-    </div>`;
+    return TwilightRules();
   }
 
   settleVPOutstanding() {

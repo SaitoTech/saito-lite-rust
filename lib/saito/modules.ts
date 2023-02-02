@@ -50,8 +50,7 @@ class Mods {
     //
     // no callbacks on type=9 spv stubs
     //
-
-    if (tx.transaction.type == 9) {
+    if (tx.transaction.type == 5) {
       return;
     }
 
@@ -68,18 +67,6 @@ class Mods {
         }
       }
     }
-  }
-
-  async handlePeerRequest(message, peer: Peer, mycallback = null) {
-
-    for (let iii = 0; iii < this.mods.length; iii++) {
-      try {
-        this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);
-      } catch (err) {
-        console.log("handlePeerRequest Unknown Error: ", err);
-      }
-    }
-    return;
   }
 
   async handlePeerTransaction(tx, peer: Peer, mycallback = null) {
@@ -245,6 +232,24 @@ class Mods {
     return null;
   }
 
+  renderInto(qs) {
+    this.mods.forEach((mod) => {
+      mod.renderInto(qs);
+    });
+  }
+
+  returnModulesRenderingInto(qs) {
+    return this.mods.filter((mod) => {
+      return mod.canRenderInto(qs) != false;
+    });
+  }
+
+  returnModulesRespondingTo(request) {
+    return this.mods.filter((mod) => {
+      return mod.respondTo(request) != null;
+    });
+  }
+
   respondTo(request) {
     return this.mods.filter((mod) => {
       return mod.respondTo(request) != null;
@@ -256,7 +261,9 @@ class Mods {
     this.mods.forEach((mod) => {
       const itnerface = mod.respondTo(request);
       if (itnerface != null) {
-        compliantInterfaces.push({ ...itnerface, modname: mod.name });
+        if (Object.keys(itnerface)) {
+          compliantInterfaces.push({ ...itnerface, modname: mod.returnName() });
+        }
       }
     });
     return compliantInterfaces;
@@ -347,6 +354,16 @@ class Mods {
   returnModuleBySlug(modslug) {
     for (let i = 0; i < this.mods.length; i++) {
       if (modslug === this.mods[i].returnSlug()) {
+        return this.mods[i];
+      }
+    }
+    return null;
+  }
+
+  // checks against full name (with spaces too)
+  returnModuleByName(modname) {
+    for (let i = 0; i < this.mods.length; i++) {
+      if (modname === this.mods[i].name || modname === this.mods[i].returnName()) {
         return this.mods[i];
       }
     }

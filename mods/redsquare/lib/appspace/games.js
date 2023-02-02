@@ -1,58 +1,41 @@
-const saito = require('./../../../../lib/saito/saito');
-const RedSquareAppspaceGamesTemplate = require("./games.template");
-const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const AppspaceGamesTemplate = require("./games.template");
 
-class RedSquareAppspaceGames {
+class AppspaceGames {
 
-  constructor(app) {
+  constructor(app, mod, container = "") {
     this.app = app;
+    this.mod = mod;
+    this.container = container;
     this.name = "RedSquareAppspaceGames";
   }
 
-  render(app, mod) {
-    document.querySelector(".appspace").innerHTML = "";
-    app.browser.addElementToClass(RedSquareAppspaceGamesTemplate(app, mod), "appspace");
-    this.attachEvents(app, mod);
-  }
+  render() {
 
+console.log("RENDERING GAMES!");
 
-  attachEvents(app, mod) {
-
-    this.overlay = new SaitoOverlay(app);
-
-    document.getElementById("redsquare-create-game").onclick = (e) => {
-      app.connection.emit("launch-game-selector", true);
+    //
+    // replace element or insert into page
+    //
+    if (document.querySelector(".redsquare-games")) {
+      this.app.browser.replaceElementBySelector(AppspaceGamesTemplate(), ".redsquare-games");
+    } else {
+      if (this.container) {
+        this.app.browser.addElementToSelector(AppspaceGamesTemplate(), this.container);
+      } else {
+        this.app.browser.addElementToDom(AppspaceGamesTemplate());
+      }
     }
 
-    //
-    // create game direct-links
-    //
-    Array.from(document.querySelectorAll('.create-game-link')).forEach(game => {
-      game.onclick = (e) => {
-        let modname = e.currentTarget.getAttribute("data-id");
-        app.connection.emit("launch-game-wizard", {game: modname});
-      };
-    });
+    this.attachEvents();
+  }  
 
-/****
-    Array.from(document.querySelectorAll(".load-game-instructions")).forEach(game => {
-      game.onclick = (e) => {
-        e.stopPropagation();
-        let gameName = e.currentTarget.getAttribute("data-id");
-        let gamemod = app.modules.returnModule(gameName);
-        if (gamemod){
-          gamemod.overlay.show(app, gamemod, gamemod.returnGameRulesHTML());
-        }else{
-          console.log("Module not found");
-        }
-      };
-    });
-****/
-
+  attachEvents() {
 
   }
 
 }
 
-module.exports = RedSquareAppspaceGames;
+module.exports = AppspaceGames;
+
+
 

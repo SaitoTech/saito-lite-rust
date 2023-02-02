@@ -5,36 +5,36 @@
   // Return Factions //
   /////////////////////
   returnFaction(player) {
-    if (this.game.players_info[player-1] == null) { return "Unknown"; }
-    if (this.game.players_info[player-1] == undefined) { return "Unknown"; }
+    if (this.game.state.players_info[player-1] == null) { return "Unknown"; }
+    if (this.game.state.players_info[player-1] == undefined) { return "Unknown"; }
     return this.returnFactionName(this, player);
   }
   returnFactionNickname(player) {
-    if (this.game.players_info[player-1] == null) { return "Unknown"; }
-    if (this.game.players_info[player-1] == undefined) { return "Unknown"; }
+    if (this.game.state.players_info[player-1] == null) { return "Unknown"; }
+    if (this.game.state.players_info[player-1] == undefined) { return "Unknown"; }
     return this.returnFactionNameNickname(this, player);
   }
   returnFactionName(imperium_self, player) {
     let factions = imperium_self.returnFactions();
-    return factions[imperium_self.game.players_info[player-1].faction].name;
+    return factions[imperium_self.game.state.players_info[player-1].faction].name;
   }
   returnPlayerOfFaction(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].faction === faction) { return (i+1); }
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.game.state.players_info[i].faction === faction) { return (i+1); }
     }
     return 0;
   }
   returnFactionNameNickname(imperium_self, player) {
     let factions = imperium_self.returnFactions();
-    return factions[imperium_self.game.players_info[player-1].faction].nickname;
+    return factions[imperium_self.game.state.players_info[player-1].faction].nickname;
   }
   returnPlayerHomeworld(player) {
     let factions = this.returnFactions();
-    return factions[this.game.players_info[player-1].faction].homeworld
+    return factions[this.game.state.players_info[player-1].faction].homeworld
   }
   returnSpeaker() {
     let factions = this.returnFactions();
-    return factions[this.game.players_info[this.game.state.speaker-1].faction].name;
+    return factions[this.game.state.players_info[this.game.state.speaker-1].faction].name;
   }
   returnSectorName(pid) {
     return this.game.sectors[this.game.board[pid].tile].name;
@@ -48,7 +48,7 @@
     let imperium_self = this;
     let highest_vp = 0;
     let array_of_leaders = [];
-    let p = imperium_self.game.players_info;
+    let p = imperium_self.game.state.players_info;
 
     for (let i = 0; i < p.length; i++) {
       if (p[i].vp > highest_vp) {
@@ -72,7 +72,7 @@
     let imperium_self = this;
     let lowest_vp = 1000;
     let array_of_leaders = [];
-    let p = imperium_self.game.players_info;
+    let p = imperium_self.game.state.players_info;
 
     for (let i = 0; i < p.length; i++) {
       if (p[i].vp < lowest_vp) {
@@ -195,7 +195,7 @@
 
     let imperium_self = this;
     let sys = this.returnSectorAndPlanets(sector);
-    let fleet_supply = this.game.players_info[player-1].fleet_supply;
+    let fleet_supply = this.game.state.players_info[player-1].fleet_supply;
 
     let capital_ships = 0;
     let fighter_ships = 0;
@@ -224,7 +224,7 @@
 
     let imperium_self = this;
     let sys = this.returnSectorAndPlanets(sector);
-    let fleet_supply = this.game.players_info[player-1].fleet_supply;
+    let fleet_supply = this.game.state.players_info[player-1].fleet_supply;
 
     let spare_capacity = 0;
     let capital_ships = 0;
@@ -255,7 +255,7 @@
 
     let imperium_self = this;
     let sys = this.returnSectorAndPlanets(sector);
-    let fleet_supply = this.game.players_info[player-1].fleet_supply;
+    let fleet_supply = this.game.state.players_info[player-1].fleet_supply;
 
     let spare_capacity = 0;
     let capital_ships = 0;
@@ -305,8 +305,8 @@
   }
 
   checkForVictory() {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].vp >= this.game.state.vp_target) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.game.state.players_info[i].vp >= this.game.state.vp_target) {
         this.updateStatus("Game Over: " + this.returnFaction(i+1) + " has reached "+this.game.state.vo_target+" VP");
         return 1;
       }
@@ -346,22 +346,22 @@
   
 
   canPlayerTrade(player) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.game.players_info[i].traded_this_turn == 0 && (i+1) != this.game.player) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.game.state.players_info[i].traded_this_turn == 0 && (i+1) != this.game.player) {
         if (this.arePlayersAdjacent(this.game.player, (i+1))) {
 	  // must have tradeables too
-	  if (this.game.players_info[this.game.player-1].commodities > 0 || this.game.players_info[this.game.player-1].goods > 0) {
-	    if (this.game.players_info[i].commodities > 0 || this.game.players_info[i].goods > 0) {
+	  if (this.game.state.players_info[this.game.player-1].commodities > 0 || this.game.state.players_info[this.game.player-1].goods > 0) {
+	    if (this.game.state.players_info[i].commodities > 0 || this.game.state.players_info[i].goods > 0) {
 	      return 1;
 	    }
 	  }
-	  if (this.game.players_info[this.game.player-1].promissary_notes.length > 0 || this.game.players_info[i].promissary_notes.length > 0) {
+	  if (this.game.state.players_info[this.game.player-1].promissary_notes.length > 0 || this.game.state.players_info[i].promissary_notes.length > 0) {
 	    return 1;
 	  }
         } else {
-          if (this.game.players_info[this.game.player-1].may_trade_with_non_neighbours == 1) { return 1; }
+          if (this.game.state.players_info[this.game.player-1].may_trade_with_non_neighbours == 1) { return 1; }
 	}
-        if (this.game.players_info[i].may_trade_with_non_neighbours == 1) { return 1; }
+        if (this.game.state.players_info[i].may_trade_with_non_neighbours == 1) { return 1; }
       }
     }
     return 0;
@@ -381,8 +381,8 @@
   }
 
   canPlayerPlayStrategyCard(player) {
-    for (let i = 0; i < this.game.players_info[player-1].strategy.length; i++) {
-      if (!this.game.players_info[player-1].strategy_cards_played.includes(this.game.players_info[player-1].strategy[i])) {
+    for (let i = 0; i < this.game.state.players_info[player-1].strategy.length; i++) {
+      if (!this.game.state.players_info[player-1].strategy_cards_played.includes(this.game.state.players_info[player-1].strategy[i])) {
         return 1;
       }
     }
@@ -407,7 +407,7 @@
 
   exhaustPlayerResearchTechnologyPrerequisites(tech) {
 
-    let mytech = this.game.players_info[this.game.player-1].tech;
+    let mytech = this.game.state.players_info[this.game.player-1].tech;
     if (mytech.includes(tech)) { return 0; }
 
     let prereqs = JSON.parse(JSON.stringify(this.tech[tech].prereqs));
@@ -429,7 +429,7 @@
     //
     // permanent blue tech skip
     //
-    if (this.game.players_info[this.game.player-1].permanent_blue_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].permanent_blue_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "blue") {
           prereqs.splice(j, 1);
@@ -441,7 +441,7 @@
     //
     // permanent green tech skip
     //
-    if (this.game.players_info[this.game.player-1].permanent_green_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].permanent_green_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "green") {
           prereqs.splice(j, 1);
@@ -453,7 +453,7 @@
     //
     // permanent red tech skip
     //
-    if (this.game.players_info[this.game.player-1].permanent_red_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].permanent_red_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "red") {
           prereqs.splice(j, 1);
@@ -465,7 +465,7 @@
     //
     // permanent yellow tech skip
     //
-    if (this.game.players_info[this.game.player-1].permanent_yellow_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].permanent_yellow_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "yellow") {
           prereqs.splice(j, 1);
@@ -477,12 +477,12 @@
     //
     // temporary blue tech skip
     //
-    if (this.game.players_info[this.game.player-1].temporary_blue_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].temporary_blue_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "blue") {
           prereqs.splice(j, 1);
   	  j = prereqs.length;
-	  this.game.players_info[this.game.player-1].temporary_blue_tech_prerequisite = 0;
+	  this.game.state.players_info[this.game.player-1].temporary_blue_tech_prerequisite = 0;
         }
       }
     }
@@ -490,12 +490,12 @@
     //
     // temporary green tech skip
     //
-    if (this.game.players_info[this.game.player-1].temporary_green_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].temporary_green_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "green") {
           prereqs.splice(j, 1);
   	  j = prereqs.length;
-	  this.game.players_info[this.game.player-1].temporary_green_tech_prerequisite = 0;
+	  this.game.state.players_info[this.game.player-1].temporary_green_tech_prerequisite = 0;
         }
       }
     }
@@ -503,12 +503,12 @@
     //
     // temporary red tech skip
     //
-    if (this.game.players_info[this.game.player-1].temporary_red_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].temporary_red_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "red") {
           prereqs.splice(j, 1);
   	  j = prereqs.length;
-	  this.game.players_info[this.game.player-1].temporary_red_tech_prerequisite = 0;
+	  this.game.state.players_info[this.game.player-1].temporary_red_tech_prerequisite = 0;
         }
       }
     }
@@ -516,12 +516,12 @@
     //
     // temporary yellow tech skip
     //
-    if (this.game.players_info[this.game.player-1].temporary_yellow_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].temporary_yellow_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "yellow") {
           prereqs.splice(j, 1);
   	  j = prereqs.length;
-	  this.game.players_info[this.game.player-1].temporary_yellow_tech_prerequisite = 0;
+	  this.game.state.players_info[this.game.player-1].temporary_yellow_tech_prerequisite = 0;
         }
       }
     }
@@ -529,7 +529,7 @@
     //
     // we don't meet the prereqs but have a skip
     //
-    if (prereqs.length >= 1 && this.game.players_info[this.game.player-1].permanent_ignore_number_of_tech_prerequisites_on_nonunit_upgrade >= 1) {
+    if (prereqs.length >= 1 && this.game.state.players_info[this.game.player-1].permanent_ignore_number_of_tech_prerequisites_on_nonunit_upgrade >= 1) {
       prereqs.splice(0, 1);
     }
 
@@ -537,9 +537,9 @@
     //
     // we don't meet the prereqs but have a skip
     //
-    if (prereqs.length >= 1 && this.game.players_info[this.game.player-1].temporary_ignore_number_of_tech_prerequisites_on_nonunit_upgrade >= 1) {
+    if (prereqs.length >= 1 && this.game.state.players_info[this.game.player-1].temporary_ignore_number_of_tech_prerequisites_on_nonunit_upgrade >= 1) {
       prereqs.splice(0, 1);
-      this.game_players_info[this.game.player-1].temporary_ignore_number_of_tech_prerequisities_on_nonunit_upgrade = 0;
+      this.game_state.players_info[this.game.player-1].temporary_ignore_number_of_tech_prerequisities_on_nonunit_upgrade = 0;
     }
 
 
@@ -564,7 +564,7 @@
     // we meet the pre-reqs
     //
     if (prereqs.length == 0) {
-      if (techfaction == "all" || techfaction == this.game.players_info[this.game.player-1].faction) {
+      if (techfaction == "all" || techfaction == this.game.state.players_info[this.game.player-1].faction) {
 	if (techtype == "normal") {
           return 1;
 	}
@@ -583,8 +583,8 @@
 
   canPlayerResearchTechnology(tech) {
 
-    let mytech = this.game.players_info[this.game.player-1].tech;
-    let myfaction = this.game.players_info[this.game.player-1].faction;
+    let mytech = this.game.state.players_info[this.game.player-1].tech;
+    let myfaction = this.game.state.players_info[this.game.player-1].faction;
     if (mytech.includes(tech)) { return 0; }
  
     if (this.tech[tech] == undefined) {
@@ -622,7 +622,7 @@
     // research it.
     //
     if (techtype == "special") { 
-      if (techfaction != this.game.players_info[this.game.player-1].faction) {
+      if (techfaction != this.game.state.players_info[this.game.player-1].faction) {
 	return 0;
       }
     };
@@ -642,7 +642,7 @@
     //
     // temporary blue tech skip
     //
-    if (this.game.players_info[this.game.player-1].temporary_blue_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].temporary_blue_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "blue") {
           prereqs.splice(j, 1);
@@ -654,7 +654,7 @@
     //
     // temporary green tech skip
     //
-    if (this.game.players_info[this.game.player-1].temporary_green_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].temporary_green_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "green") {
           prereqs.splice(j, 1);
@@ -666,7 +666,7 @@
     //
     // temporary red tech skip
     //
-    if (this.game.players_info[this.game.player-1].temporary_red_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].temporary_red_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "red") {
           prereqs.splice(j, 1);
@@ -678,7 +678,7 @@
     //
     // temporary yellow tech skip
     //
-    if (this.game.players_info[this.game.player-1].temporary_yellow_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].temporary_yellow_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "yellow") {
           prereqs.splice(j, 1);
@@ -690,7 +690,7 @@
     //
     // permanent blue tech skip
     //
-    if (this.game.players_info[this.game.player-1].permanent_blue_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].permanent_blue_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "blue") {
           prereqs.splice(j, 1);
@@ -702,7 +702,7 @@
     //
     // permanent green tech skip
     //
-    if (this.game.players_info[this.game.player-1].permanent_green_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].permanent_green_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "green") {
           prereqs.splice(j, 1);
@@ -714,7 +714,7 @@
     //
     // permanent red tech skip
     //
-    if (this.game.players_info[this.game.player-1].permanent_red_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].permanent_red_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "red") {
           prereqs.splice(j, 1);
@@ -726,7 +726,7 @@
     //
     // permanent yellow tech skip
     //
-    if (this.game.players_info[this.game.player-1].permanent_yellow_tech_prerequisite == 1) {
+    if (this.game.state.players_info[this.game.player-1].permanent_yellow_tech_prerequisite == 1) {
       for (let j = 0; j < prereqs.length; j++) {
         if (prereqs[j] == "yellow") {
           prereqs.splice(j, 1);
@@ -738,7 +738,7 @@
     //
     // we don't meet the prereqs but have a skip
     //
-    if (prereqs.length == 1 && this.game.players_info[this.game.player-1].permanent_ignore_number_of_tech_prerequisites_on_nonunit_upgrade >= 1) {
+    if (prereqs.length == 1 && this.game.state.players_info[this.game.player-1].permanent_ignore_number_of_tech_prerequisites_on_nonunit_upgrade >= 1) {
       prereqs.splice(0, 1);
     }
 
@@ -746,7 +746,7 @@
     //
     // we don't meet the prereqs but have a skip
     //
-    if (prereqs.length == 1 && this.game.players_info[this.game.player-1].temporary_ignore_number_of_tech_prerequisites_on_nonunit_upgrade >= 1) {
+    if (prereqs.length == 1 && this.game.state.players_info[this.game.player-1].temporary_ignore_number_of_tech_prerequisites_on_nonunit_upgrade >= 1) {
       prereqs.splice(0, 1);
     }
 
@@ -769,7 +769,7 @@
     // we meet the pre-reqs
     //
     if (prereqs.length == 0) {
-      if (techfaction == "all" || techfaction == this.game.players_info[this.game.player-1].faction) {
+      if (techfaction == "all" || techfaction == this.game.state.players_info[this.game.player-1].faction) {
 	if (techtype == "normal" || techtype == "special") {
           return 1;
 	}
@@ -890,7 +890,7 @@
     for (let z = 0; z < array_of_cards.length; z++) {
       total_available_resources += this.game.planets[array_of_cards[z]].resources;
     }
-    total_available_resources += this.game.players_info[player-1].goods;
+    total_available_resources += this.game.state.players_info[player-1].goods;
     return total_available_resources;
   
   }
@@ -903,7 +903,7 @@
     for (let z = 0; z < array_of_cards.length; z++) {
       total_available_influence += this.game.planets[array_of_cards[z]].influence;
     }
-    total_available_influence += this.game.players_info[player-1].goods;
+    total_available_influence += this.game.state.players_info[player-1].goods;
     return total_available_influence;
   
   }
@@ -915,7 +915,7 @@
     for (let z = 0; z < array_of_cards.length; z++) {
       total_available_resources += this.game.planets[array_of_cards[z]].resources;
     }
-    total_available_resources += this.game.players_info[player-1].goods;
+    total_available_resources += this.game.state.players_info[player-1].goods;
     return total_available_resources;
   
   }
@@ -928,7 +928,7 @@
     for (let z = 0; z < array_of_cards.length; z++) {
       total_available_influence += this.game.planets[array_of_cards[z]].influence;
     }
-    total_available_influence += this.game.players_info[player-1].goods;
+    total_available_influence += this.game.state.players_info[player-1].goods;
     return total_available_influence;
   
   }
@@ -936,7 +936,7 @@
   
   returnAvailableTradeGoods(player) {
   
-    return this.game.players_info[player-1].goods;
+    return this.game.state.players_info[player-1].goods;
   
   }
   
@@ -1254,7 +1254,7 @@
   }
 
   canPlayerProduceInSector(player, sector) {
-    if (this.game.players_info[player-1].may_player_produce_without_spacedock == 1) {
+    if (this.game.state.players_info[player-1].may_player_produce_without_spacedock == 1) {
       return 1;
     }
     let sys = this.returnSectorAndPlanets(sector);
@@ -1406,12 +1406,12 @@
       card_io_hmap[j] = strategy_cards[j].rank;
     }
 
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
 
       player_lowest[i] = 100000;
 
-      for (let k = 0; k < this.game.players_info[i].strategy.length; k++) {
-        let sc = this.game.players_info[i].strategy[k];
+      for (let k = 0; k < this.game.state.players_info[i].strategy.length; k++) {
+        let sc = this.game.state.players_info[i].strategy[k];
         let or = card_io_hmap[sc];
         if (or < player_lowest[i]) { player_lowest[i] = or; }
       }
@@ -1490,7 +1490,7 @@
 	  let sector_type = this.game.sectors[this.game.board[tmp[k]].tile].type;
 
 	  if (player == null) {} else {
-	    if (this.game.players_info[player-1].move_through_sectors_with_opponent_ships == 1 || this.game.players_info[player-1].temporary_move_through_sectors_with_opponent_ships == 1) {
+	    if (this.game.state.players_info[player-1].move_through_sectors_with_opponent_ships == 1 || this.game.state.players_info[player-1].temporary_move_through_sectors_with_opponent_ships == 1) {
 	    } else {
 	      if (this.doesSectorContainNonPlayerShips(player, tmp[k])) {
 	        can_hop_through_this_sector = -1;
@@ -1512,7 +1512,7 @@
             // ASTEROIDS
             //
             if (sector_type == 3) {
-              if (this.game.players_info[player-1].fly_through_asteroids == 0) {
+              if (this.game.state.players_info[player-1].fly_through_asteroids == 0) {
                 can_hop_through_this_sector = 0;
               }
             }
@@ -1522,7 +1522,7 @@
             // SUPERNOVA
             //
             if (sector_type == 4) {
-              if (this.game.players_info[player-1].fly_through_supernovas == 0) {
+              if (this.game.state.players_info[player-1].fly_through_supernovas == 0) {
                 can_hop_through_this_sector = 0;
               }
             }
@@ -1532,7 +1532,7 @@
             // NEBULA
             //
             if (sector_type == 2) {
-              if (this.game.players_info[player-1].fly_through_nebulas == 0) {
+              if (this.game.state.players_info[player-1].fly_through_nebulas == 0) {
                 can_hop_through_this_sector = 0;
               }
             }
@@ -2096,11 +2096,11 @@
   // either a full match on promissary name
   // or a partial match where player is not the promissary owner
   doesPlayerHavePromissary(player, promissary) {
-    if (this.game.players_info[player-1].promissary_notes.includes(promissary)) { return 1; }
-    for (let i = 0; i < this.game.players_info[player-1].promissary_notes.length; i++) {
-      let pn = this.game.players_info[player-1].promissary_notes[i];
+    if (this.game.state.players_info[player-1].promissary_notes.includes(promissary)) { return 1; }
+    for (let i = 0; i < this.game.state.players_info[player-1].promissary_notes.length; i++) {
+      let pn = this.game.state.players_info[player-1].promissary_notes[i];
       if (pn.indexOf(promissary) > 0) {
-        let player_faction = this.game.players_info[player-1].faction.id;
+        let player_faction = this.game.state.players_info[player-1].faction.id;
         if (pn.indexOf(player_faction) == 0) { return 0; }
 	return 1;
       }
@@ -2111,9 +2111,9 @@
 
   returnPlayablePromissaryArray(player, promissary) {
     let tmpar = [];
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
       if ((i+1) != player) {
-        tmpar.push(this.game.players_info[i].faction + "-" + promissary);
+        tmpar.push(this.game.state.players_info[i].faction + "-" + promissary);
       }
     }
     return tmpar;
@@ -2274,7 +2274,7 @@
     //
     let z = this.returnEventObjects();
     for (let z_index in z) {
-      for (let i = 0; i < this.game.players_info.length; i++) {
+      for (let i = 0; i < this.game.state.players_info.length; i++) {
         battery = z[z_index].returnPDSUnitsWithinRange(this, (i+1), attacker, player, sector, battery);
       }
     }
@@ -2305,7 +2305,7 @@
     let distance = [];
 
     let defender = -1;
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
       if (sys.s.units[i].length > 0 && (i+1) != attacker) {
 	defender = (i+1);
       }
@@ -2321,7 +2321,7 @@
 
     let z = this.returnEventObjects();
     for (let z_index in z) {
-      for (let i = 0; i < this.game.players_info.length; i++) {
+      for (let i = 0; i < this.game.state.players_info.length; i++) {
 	battery = z[z_index].returnPDSUnitsWithinRange(this, (i+1), attacker, defender, sector, battery);
       }
     }
@@ -2344,8 +2344,8 @@
       //
       // experimental battlestation +3 shots
       //
-      for (let z = 0; z < this.game.players_info.length; z++) {
-        if (this.game.players_info[z].experimental_battlestation === sectors[i]) {
+      for (let z = 0; z < this.game.state.players_info.length; z++) {
+        if (this.game.state.players_info[z].experimental_battlestation === sectors[i]) {
           let pds = {};
   	      pds.range = this.returnUnit("pds", (z+1)).range;
   	      pds.combat = this.returnUnit("pds", (z+1)).combat;
@@ -2493,7 +2493,7 @@
   
     let planets = [];
   
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
       if (this.game.player != (i+1)) {
         let their_home_planets = this.returnPlayerHomeworldPlanets((i+1));
         for (let z = 0; z < their_home_planets.length; z++) {
@@ -2517,13 +2517,13 @@
   }
   returnPlayerHomeworldSector(player=null) {
     if (player == null) { player = this.game.player; }
-    let home_sector = this.game.board[this.game.players_info[player-1].homeworld].tile;  // "sector";
+    let home_sector = this.game.board[this.game.state.players_info[player-1].homeworld].tile;  // "sector";
     return home_sector;
   }
 
   returnPlayerHomeworldPlanets(player=null) {
     if (player == null) { player = this.game.player; }
-    let home_sector = this.game.board[this.game.players_info[player-1].homeworld].tile;  // "sector";
+    let home_sector = this.game.board[this.game.state.players_info[player-1].homeworld].tile;  // "sector";
     return this.game.sectors[home_sector].planets;
   }
   // 0 = all
@@ -2595,12 +2595,12 @@
     //
     for (let i = 0; i < this.game.deck[1].hand.length; i++) {
       if (types.length == 0) {
-        if (!this.game.players_info[player-1].action_cards_played.includes(this.game.deck[1].hand[i])) {
+        if (!this.game.state.players_info[player-1].action_cards_played.includes(this.game.deck[1].hand[i])) {
 	  x.push(this.game.deck[1].hand[i]);
 	}
       } else {
 	if (types.includes(this.action_cards[this.game.deck[1].hand[i]].type)) {
-          if (!this.game.players_info[player-1].action_cards_played.includes(this.game.deck[1].hand[i])) {
+          if (!this.game.state.players_info[player-1].action_cards_played.includes(this.game.deck[1].hand[i])) {
 	    x.push(this.game.deck[1].hand[i]);
 	  }
 	}
@@ -2619,9 +2619,9 @@
 
     let x = [];
 
-    for (let i = 0; i < this.game.players_info[player-1].objectives_scored.length; i++) {
+    for (let i = 0; i < this.game.state.players_info[player-1].objectives_scored.length; i++) {
 
-	let objective_idx = this.game.players_info[player-1].objectives_scored[i];
+	let objective_idx = this.game.state.players_info[player-1].objectives_scored[i];
 
         if (this.stage_i_objectives[objective_idx] !== undefined) {
           if (types.length == 0) {
@@ -2823,7 +2823,7 @@
 
   doesSectorContainNonPlayerUnit(player, sector, unittype) {
 
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
       if ((i+1) != player) {
 	if (this.doesSectorContainPlayerUnit((i+1), sector, unittype)) { return 1; }
       }
@@ -2834,7 +2834,7 @@
   }
   
   doesSectorContainNonPlayerShips(player, sector) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
       if ((i+1) != player) {
 	if (this.doesSectorContainPlayerShips((i+1), sector)) { return 1; }
       }
@@ -2866,7 +2866,7 @@
     //
     // supernovas ?
     //
-    if (this.game.players_info[player-1].move_into_supernovas == 0) {
+    if (this.game.state.players_info[player-1].move_into_supernovas == 0) {
       let sys = this.returnSectorAndPlanets(destination);
       if (sys.s.type == 4) { return 0; }
     }
@@ -2889,8 +2889,8 @@
 
     let obj = {};
     obj.max_hops = 2;
-    obj.ship_move_bonus = this.game.players_info[this.game.player - 1].ship_move_bonus + this.game.players_info[this.game.player - 1].temporary_ship_move_bonus;
-    obj.fleet_move_bonus = this.game.players_info[this.game.player - 1].fleet_move_bonus + this.game.players_info[this.game.player - 1].temporary_fleet_move_bonus;
+    obj.ship_move_bonus = this.game.state.players_info[this.game.player - 1].ship_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_ship_move_bonus;
+    obj.fleet_move_bonus = this.game.state.players_info[this.game.player - 1].fleet_move_bonus + this.game.state.players_info[this.game.player - 1].temporary_fleet_move_bonus;
     obj.ships_and_sectors = [];
     obj.stuff_to_move = [];
     obj.stuff_to_load = [];

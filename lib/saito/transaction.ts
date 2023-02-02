@@ -71,6 +71,14 @@ class Transaction {
 
     if (jsonobj != null) {
       this.transaction = jsonobj;
+
+      //
+      // experiment
+      //
+      if (jsonobj?.m?.data) {
+        this.transaction.m = Buffer.from(jsonobj.m.data);
+      }
+
       if (this.transaction.type === TransactionType.Normal) {
         try {
           let buffer = Buffer.from(this.transaction.m);
@@ -81,15 +89,15 @@ class Transaction {
               const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
               this.msg = JSON.parse(reconstruct);
             } catch (error) {
-              console.log("failed from utf8. trying if base64 still works for old version");
-              console.error(error);
+              //console.log("failed from utf8. trying if base64 still works for old version");
+              //console.error(error);
               const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
               this.msg = JSON.parse(reconstruct);
             }
           }
         } catch (err) {
-          console.log("failed converting buffer in tx : ", this.transaction);
-          console.error(err);
+          //console.log("failed converting buffer in tx : ", this.transaction);
+          //console.error(err);
         }
       }
       for (let i = 0; i < this.transaction.from.length; i++) {
@@ -151,6 +159,7 @@ class Transaction {
   }
 
   decryptMessage(app: Saito) {
+try {
     if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
       try {
         if (this.msg === null) {
@@ -164,15 +173,14 @@ class Transaction {
       }
       return;
     }
-    try {
       if (this.msg === null) {
         this.dmsg = "";
         return;
       }
       this.dmsg = app.keys.decryptMessage(this.transaction.to[0].add, this.msg);
-    } catch (e) {
-      this.dmsg = "";
-    }
+} catch (e) {
+  this.dmsg = "";
+}
     return;
   }
 
@@ -419,6 +427,10 @@ class Transaction {
   }
 
   returnMessage() {
+
+//console.log("TRANSACTION:");
+//console.log(JSON.stringify(this));
+
     if (this.dmsg !== "") {
       return this.dmsg;
     }
@@ -429,18 +441,35 @@ class Transaction {
 
     try {
       if (this.transaction.m && this.transaction.m.byteLength > 0) {
-        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+console.log("A");
+        const reconstruct = this.transaction.m.toString("utf-8");
+        //const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+console.log("B - " + reconstruct);
         this.msg = JSON.parse(reconstruct);
+console.log("C");
       } else {
+console.log("D");
         this.msg = {};
+console.log("E");
       }
     } catch (err) {
       // TODO : handle this without printing an error
-      console.log(
-        `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
-      );
-      console.error("error parsing return message", err);
+console.log("ERROR: " + JSON.stringify(err));
+      try {
+console.log("fallback on failure... 1");
+        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+console.log("fallback on failure... 2");
+        this.msg = JSON.parse(reconstruct);
+console.log("fallback on failure... 3");
+      } catch (err) {
+        console.log(
+          `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
+        );
+        console.error("error parsing return message", err);
+        console.log("here: " + JSON.stringify(this.msg));
+      }
     }
+console.log("RETURN ON FAILURE");
     return this.msg;
   }
 
@@ -587,11 +616,15 @@ class Transaction {
    * @param app
    */
   serialize(app: Saito): Uint8Array {
+
+    //
     //console.log("tx.serialize", this.transaction);
+    //
 
     const inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
     const outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
     const message_len = app.binary.u32AsBytes(this.transaction.m.byteLength);
+
     const path_len = this.path ? this.path.length : 0;
     const path_len_buffer = app.binary.u32AsBytes(path_len);
     const signature = app.binary.hexToSizedArray(this.transaction.sig, 64);
@@ -617,6 +650,7 @@ class Transaction {
     /// [output][output][output]...
     /// [message]
     /// [hop][hop][hop]...
+    ///
 
     const start_of_inputs = TRANSACTION_SIZE;
     const start_of_outputs = TRANSACTION_SIZE + this.transaction.from.length * SLIP_SIZE;
@@ -632,6 +666,7 @@ class Transaction {
       this.transaction.m.byteLength +
       path_len * HOP_SIZE;
     const ret = new Uint8Array(size_of_tx_data);
+
     ret.set(
       new Uint8Array([
         ...inputs_len,

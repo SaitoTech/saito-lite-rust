@@ -63,7 +63,7 @@ class Thirteen extends GameTemplate {
       class: "game-rules",
       callback: function(app, game_mod){
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
     })
 
@@ -140,7 +140,7 @@ class Thirteen extends GameTemplate {
     </div>
     `;
 
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(html);
 
     $('.menu-item').on('click', function() {
 
@@ -178,7 +178,7 @@ class Thirteen extends GameTemplate {
         `;
       }
 
-      twilight_self.overlay.show(twilight_self.app, twilight_self, html);
+      twilight_self.overlay.show(html);
     });
 
   }

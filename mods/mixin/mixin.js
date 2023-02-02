@@ -20,10 +20,13 @@ class Mixin extends ModTemplate {
     super(app);
 
     this.name = "Crypto Wallet";
+    this.slug = "wallet";
     this.appname = "Crypto";
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";
     this.icon = "fas fa-wallet";
+
+    this.stylesheets = ['/mixin/css/appspace.css'];
 
     this.mixin = {};
     this.mixin.app_id 		= "";    
@@ -53,13 +56,43 @@ class Mixin extends ModTemplate {
   }
 
   
-  respondTo(type = "") {
-    let mixin_self = this;
+  canRenderInto(qs) {
+    if (qs === ".saito-main") { return true; }
+    return false;
+  }
 
-    if (type === 'appspace') {
+  renderInto(qs) {
+    
+    if (qs == ".saito-main") {
+      if (!this.renderIntos[qs]) {
+
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
       
-      super.render(this.app, this); // for scripts + styles
-      return new MixinAppspace(this.app, this);
+        this.attachStyleSheets();
+        this.renderIntos[qs].forEach((comp) => { 
+          comp.render(); 
+        });
+      }
+    }
+  }
+
+
+  //
+  // flexible inter-module-communications
+  //
+  respondTo(type = "") {
+    if (type === 'saito-header') {
+      console.log("INSIDE MIXIN RESPONDTO");
+      
+      return [{
+        text: "Wallet",
+        icon: this.icon,
+        allowed_mods: ["redsquare"],
+        callback: function (app, id) {
+          window.location = "/redsquare#wallet";
+        }
+      }]
     }
 
     return null;
@@ -67,8 +100,10 @@ class Mixin extends ModTemplate {
 
 
 
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-  async handlePeerRequest(app, message, peer, mycallback = null) {
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
 
     //
     // we receive requests to create accounts here
@@ -82,8 +117,7 @@ class Mixin extends ModTemplate {
 
         m = JSON.parse(process.env.MIXIN);
  
-        
-	if (m.appId) {
+        if (m.appId) {
 
           let method = "POST";
           let uri = '/users';
@@ -111,7 +145,6 @@ class Mixin extends ModTemplate {
       }
     }
   }
-
 
 
 
@@ -702,7 +735,7 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
       };
 
 //console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
-      mixin_self.app.network.peers[0].sendRequestWithCallback("mixin create account", data, function(res) {
+      mixin_self.app.network.peers[0].sendRequestAsTransactionWithCallback("mixin create account", data, function(res) {
 //console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
 	mixin_self.createAccountCallback(res, callback);
       });

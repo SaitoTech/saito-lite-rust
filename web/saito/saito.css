@@ -1,144 +1,29 @@
-/* ----------------------------------------------------------------
-global saito alerts
+/* global saito css variables
 -----------------------------------------------------------------*/
 @import url("./css-imports/saito-alerts.css");
-
-/* ----------------------------------------------------------------
-global saito css variables
------------------------------------------------------------------*/
-@import url("./css-imports/saito-variables.css");
-
-/* ----------------------------------------------------------------
-global saito colors
------------------------------------------------------------------*/
-@import url("./css-imports/saito-colors.css");
-
-/* ----------------------------------------------------------------
-global saito game wizard stuff
------------------------------------------------------------------*/
-@import url("./css-imports/game-wizard.css");
-
-/* ----------------------------------------------------------------
-global saito module components
------------------------------------------------------------------*/
-@import url("./css-imports/saito-modules.css");
-
-/* ----------------------------------------------------------------
-global saito users
------------------------------------------------------------------*/
-@import url("./css-imports/saito-user.css");
-
-/* ----------------------------------------------------------------
-global saito menus
------------------------------------------------------------------*/
-@import url("./css-imports/saito-menu.css");
-
-/* ----------------------------------------------------------------
-global saito lists
------------------------------------------------------------------*/
-@import url("./css-imports/saito-list.css");
-
-/* ----------------------------------------------------------------
-global saito base css 
------------------------------------------------------------------*/
 @import url("./css-imports/saito-base.css");
-
-/* ----------------------------------------------------------------
-global saito grid
------------------------------------------------------------------*/
-@import url("./css-imports/saito-grid.css");
-
-/* ----------------------------------------------------------------
-saito buttons
------------------------------------------------------------------*/
+@import url("./css-imports/saito-variables.css");
+@import url("./css-imports/saito-user.css");
 @import url("./css-imports/saito-buttons.css");
-
-/* ----------------------------------------------------------------
-saito form elements
------------------------------------------------------------------*/
-@import url("./css-imports/saito-form-elements.css");
-
-/* ----------------------------------------------------------------
-saito table
------------------------------------------------------------------*/
-@import url("./css-imports/saito-table.css");
-
-/* ----------------------------------------------------------------
-saito Components
------------------------------------------------------------------*/
-@import url("./css-imports/saito-components.css");
-@import url("./css-imports/saito-components2.css");
-
-/* ----------------------------------------------------------------
-saito overlay
------------------------------------------------------------------*/
-@import url("./css-imports/saito-overlay.css");
-
-/* ----------------------------------------------------------------
-saito overlay
------------------------------------------------------------------*/
-@import url("./css-imports/saito-modal.css");
-
-
-@import url("./css-imports/saito-emoji.css");
-/* ----------------------------------------------------------------
-
-saito header
------------------------------------------------------------------*/
+@import url("./css-imports/saito-menu.css");
 @import url("./css-imports/saito-header.css");
-/* ----------------------------------------------------------------
-
-saito page layout
------------------------------------------------------------------*/
-@import url("./css-imports/saito-page-layout.css");
-/* ----------------------------------------------------------------
-saito chat
------------------------------------------------------------------*/
-@import url("./css-imports/saito-chat.css");
-/* ----------------------------------------------------------------
-/* ----------------------------------------------------------------
-saito calendar
------------------------------------------------------------------*/
 @import url("./css-imports/saito-calendar.css");
-/* ----------------------------------------------------------------
-saito DatePicker
------------------------------------------------------------------*/
-@import url("./css-imports/saito-datepicker.css");
-/* ----------------------------------------------------------------
-saito Scheduler
------------------------------------------------------------------*/
+@import url("./css-imports/saito-chat.css");
+@import url("./css-imports/saito-table.css");
+@import url("./css-imports/saito-modal.css");
+@import url("./css-imports/saito-module.css");
+@import url("./css-imports/saito-page-layout.css");
+@import url("./css-imports/saito-tweet.css");
+@import url("./css-imports/saito-post.css");
+@import url("./css-imports/saito-components.css");
+@import url("./css-imports/saito-header.css");
+@import url("./css-imports/saito-image-overlay.css");
+@import url("./css-imports/saito-login-overlay.css");
+@import url("./css-imports/saito-overlay.css");
 @import url("./css-imports/saito-scheduler.css");
-/* ----------------------------------------------------------------
-/* ----------------------------------------------------------------
-saito Invite
------------------------------------------------------------------*/
-@import url("./css-imports/saito-inviter.css");
-/* ----------------------------------------------------------------
-saito Video
------------------------------------------------------------------*/
-@import url("./css-imports/saito-video.css");
-/* ----------------------------------------------------------------
-
-saito loader
------------------------------------------------------------------*/
-@import url("./css-imports/saito-loader.css");
-/* ----------------------------------------------------------------
-
-
-
-/* ----------------------------------------------------------------
-global saito Borders
------------------------------------------------------------------*/
-@import url("./css-imports/saito-borders.css");
-
-/* ----------------------------------------------------------------
-last loaded show body
------------------------------------------------------------------*/
-@import url("./css-imports/saito-last.css");
-
-
-/* ----------------------------------------------------------------
-Saito tooltip
------------------------------------------------------------------*/
+@import url("./css-imports/saito-form-elements.css");
+@import url("./css-imports/saito-emoji.css");
 @import url("./css-imports/saito-tooltip.css");
-
+@import url("./css-imports/saito-loader.css");
+@import url("./css-imports/saito-notification.css");
+@import url("./css-imports/saito-wallet.css");

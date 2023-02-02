@@ -2,7 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ArcadeObserver = require("./lib/appspace/arcade-observer");
 const GameObserver = require("./lib/components/game-observer");
-const GameLoader = require("./../../lib/saito/new-ui/game-loader/game-loader");
+const GameLoader = require("./../../lib/saito/ui/game-loader/game-loader");
 const JSON = require("json-bigint");
 
 
@@ -35,7 +35,7 @@ class Observer extends ModTemplate {
     //
     // listen for txs from arcade-supporting games
     //
-    app.modules.respondTo("arcade-games").forEach((mod) => {
+    app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
       this.affix_callbacks_to.push(mod.name);
     });
 
@@ -247,7 +247,7 @@ class Observer extends ModTemplate {
         message.request = "observer spv update";
         message.data = {};
         message.data.tx = tx;
-        app.network.peers[i].sendRequest(message.request, message.data);
+        app.network.peers[i].sendRequestAsTransaction(message.request, message.data);
       }
     }
   }
@@ -282,7 +282,11 @@ class Observer extends ModTemplate {
     }
   }
 
- async handlePeerRequest(app, message, peer, mycallback = null) {
+  async handlePeerTransaction(app, tx=null, peer, mycallback = null) {
+
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
+
     //
     // this code doubles onConfirmation
     //
@@ -314,12 +318,11 @@ class Observer extends ModTemplate {
         if (app.BROWSER == 0 && app.SPVMODE == 0) {
           this.notifyPeers(app, tx);
         }
-
-  	  }
-      
+      }
     }    
 
-    super.handlePeerRequest(app, message, peer, mycallback);
+    super.handlePeerTransaction(app, tx, peer, mycallback);
+
   }
 
   createGameFromTX(tx){
@@ -499,8 +502,8 @@ class Observer extends ModTemplate {
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade.browser_active){
       arcade.viewing_arcade_initialization_page = 1;
-      let gameLoader = new GameLoader(this.app, this);
-      gameLoader.render(this.app, this, "#arcade-main", "Loading Game Moves"); //Start Spinner
+      let gameLoader = new GameLoader(this.app, this, "#arcade-main");
+      gameLoader.render("Loading Game Moves"); //Start Spinner
     }
 
     //let address_to_watch = msgobj.player;

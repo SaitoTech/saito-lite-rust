@@ -1,4 +1,4 @@
-module.exports = (app, mod) => {
+module.exports = () => {
 
   let html =  `<div><label for="player1">Play as:</label>
             <select name="player1">

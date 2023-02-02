@@ -173,7 +173,7 @@ body {
 
 
 .cardFront, .cardBack{
-  transition: transform .6s linear;
+  transition: transform .4s linear;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }

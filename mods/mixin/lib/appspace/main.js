@@ -2,26 +2,35 @@ const MixinAppspaceTemplate = require('./main.template.js');
 const MixinDepositTemplate = require('./mixin-deposit.template.js');
 const MixinWithdrawTemplate = require('./mixin-withdraw.template.js');
 const MixinHistoryTemplate = require('./mixin-history-template');
-const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 class MixinAppspace {
 
-  constructor(app) {
-    this.history_overlay = new SaitoOverlay(app, true, true); 
+  constructor(app, mod, container = "") {
+    this.app = app;
+    this.mod = mod;
+    this.container = container || ".saito-main";
+    this.history_overlay = new SaitoOverlay(app, mod, true, true); 
   }
 
-  render(app, mod) {
-    document.querySelector(".appspace").innerHTML = MixinAppspaceTemplate(app, mod);
-  
-    this.attachEvents(app, mod);
+  render() {
+    document.querySelector(this.container).innerHTML = MixinAppspaceTemplate(this.app, this.mod);
+    this.attachEvents();
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
+
     main_self = this;
     try {
       document.querySelector("#mixin-create-wallet").onclick = (e) => {
         mod.createAccount(function(){
-          salert("Third party cryptos enabled. Reload the page.");
+          salert("Enabling Third party cryptos...");
+          setTimeout(function(){
+            window.location.reload();
+          }, 2000);
         });
       }
     } catch (err) {
@@ -49,13 +58,13 @@ class MixinAppspace {
       withdraw.forEach(function(el) {
       el.addEventListener('click', function (event) {
 
-        let overlay = new SaitoOverlay(app, true, true);
+        let overlay = new SaitoOverlay(app, mod, true, true);
         let ticker = event.target.getAttribute("data-ticker");
         let asset_id = event.target.getAttribute("data-assetid");
         let balance = event.target.getAttribute("data-balance");
         let sender = event.target.getAttribute("data-sender");
 
-        overlay.show(app, mod, MixinWithdrawTemplate(app, ticker, balance), function() {});
+        overlay.show(MixinWithdrawTemplate(app, ticker, balance), function() {});
 
         document.querySelector("#withdraw-reject").onclick = (e) => {
             document.querySelector("#withdrawl-confirm-cont").style.display = 'none';
@@ -129,12 +138,12 @@ class MixinAppspace {
     const deposit = document.querySelectorAll('.mixin-balances_deposit');
     deposit.forEach(function(el) {
       el.addEventListener('click', function (event) {
-          let overlay = new SaitoOverlay(app, true, true);
+          let overlay = new SaitoOverlay(app, mod, true, true);
           let address = event.target.getAttribute("data-address").split("|")[0];
           let confs = event.target.getAttribute("data-confs");
           let ticker = event.target.getAttribute("data-ticker");
 
-          overlay.show(app, mod, MixinDepositTemplate(app, address, confs, ticker), function() {
+          overlay.show(MixinDepositTemplate(app, address, confs, ticker), function() {
           });
 
           document.querySelector("#copy-deposit-add").onclick = (e) => {
@@ -165,7 +174,7 @@ class MixinAppspace {
         let his_asset_id = event.target.getAttribute("data-assetid");
         let ticker = event.target.getAttribute("data-ticker");
         let his_exists = false;
-        main_self.history_overlay.show(app, mod, MixinHistoryTemplate(app, ticker));
+        main_self.history_overlay.show(MixinHistoryTemplate(app, ticker));
  
         mod.fetchSnapshots("", 20, "DESC", (d) => { 
           let html = "";

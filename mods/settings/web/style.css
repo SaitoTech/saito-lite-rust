@@ -1,22 +1,7 @@
-.settings-appspace .saito-grid-1-1-1 {
-  margin-bottom: 2rem;
-}
-
-.settings-appspace-link {
-  text-decoration: underline;
-}
-
-.settings-appspace>button {
-  margin: 0px;
-}
-
-.settings-appspace-qrcode {
-  display: inline-block;
-}
-
-.settings-appspace-user-details-container {
-  margin-bottom: 4rem;
-  margin-top: 3rem;
+.settings-appspace {
+  display: flex;
+  flex-direction: column;
+  row-gap: 3rem;
 }
 
 .settings-appspace-user-details {
@@ -31,35 +16,17 @@
   overflow: auto;
 }
 
-.settings-appspace-user-details-container .saito-grid-1-1-1 {
-  grid-row-gap: .5rem;
-}
-
 .settings-appspace-user-actions {
   display: grid;
-  /* grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr)); */
-  grid-gap: .5rem;
-}
-
-.settings-appspace-modules-container>.saito-button-primary {
-  width: 5rem;
-}
-
-.settings-appspace-user-details-container>h4 {
-  /* margin-bottom: 1rem; */
-}
-
-.settings-appspace-modules-container>h4 {
-  /* margin-bottom: 1rem; */
+  grid-gap: 0.5rem;
 }
 
 .settings-appspace-modules {
   display: grid;
   grid-gap: 1em;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   border-radius: .5rem;
   padding: 1rem;
-
 }
 
 .settings-appspace-modules-modal {
@@ -68,14 +35,11 @@
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   border-radius: .5rem;
   padding: 2rem 0 0 2rem;
-
 }
 
 .settings-appspace-modules-container {
   margin-bottom: 4rem;
 }
-
-
 
 .settings-appspace-privatekey {
   display: grid;
@@ -91,7 +55,6 @@
   font-family: p-word;
 }
 
-
 .settings-appspace-privatekey>i {
   cursor: pointer;
 }
@@ -106,11 +69,14 @@
   align-items: center;
 }
 
-
 .settings-appspace-app label {
   text-transform: none;
   font-size: 1.6rem;
-  margin-right: .5rem;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 13rem;
 }
 
 .settings-appspace-installed-app {
@@ -129,14 +95,11 @@ label.treated {
   display: none;
 }
 
-
 .settings-appspace-versions-container {
   margin-bottom: 4rem;
 }
 
 .settings-appspace-versions-container {}
-
-
 
 .settings-appspace-versions {
   display: grid;
@@ -147,7 +110,6 @@ label.treated {
   padding: 1rem;
   grid-row-gap: 1.5rem;
 }
-
 
 .settings-appspace-icons {
   display: grid;
@@ -169,24 +131,61 @@ label.treated {
   margin: 0 1rem 0 0;
 }
 
-
-
 .settings-priv-key-text {
   font-family: inherit !important;
   overflow-y: clip;
 }
 
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 768px) {
 
+  .settings-appspace-user-details .saito-address {
+    
+      position: relative;
+  }
+
+  .settings-appspace-user-details .saito-address span {
+    height: auto;
+    width: auto;
+    position: relative;
+    position: absolute;
+    z-index: 1;
+    right: 0rem;
+    top: 0rem;
+    font-size: 2rem;
+    background: var(--saito-background-color);
+    padding-left: 1rem;
+    margin: none;
+  }
+
+
+.settings-appspace-privatekey {
+    display: grid;
+    grid-template-columns: 25rem 1fr;
+    grid-column-gap: 0.4rem;
+    white-space: initial;
+    /* text-overflow: ellipsis; */
+    /* align-items: center; */
+    word-wrap: break-word;
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+.settings-appspace-privatekey i {
+  font-size: 2rem;
+  background: var(--saito-background-color);
+  padding: 0rem 0.8rem;
+}
+
+
+@media only screen and (max-width: 600px) {
   .settings-appspace-modules {
     grid-template-columns: 1fr 1fr;
   }
-
   .settings-appspace-user-details {
     grid-template-columns: auto 1fr;
   }
-
   .settings-appspace-privatekey>input {
     width: 50%;
   }
@@ -196,72 +195,13 @@ label.treated {
 
 
 
-#alert-shim {
-  z-index: 2000;
-  background-color: #0008;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-}
-
-#alert-box {
-  width: 75vw;
-  max-width: 700px;
-  transition: all 333ms ease-in-out;
-  background: rgb(234, 234, 239);
-  margin: auto;
-  position: relative;
-  top: -500px;
-  border: 1px solid var(--saito-red);
-  border-radius: 0 0 5px 5px;
-  padding: 1em 1em 3.5em 1em;
-}
-
-#alert-buttons {
-  float: right;
-  margin: 0 0 0 1em;
-  margin-top: 0.5rem;
-}
-
-#alert-box button {
-  margin: 0 0 0 1em;
-}
-
-#alert-ok {
-  margin: 0 0 0 1em;
-}
-
-#alert-box p {
-  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-  font-size: 1.4em;
-  text-align: center;
-  align-self: center;
-  font-weight: bold;
-  display: block;
-  margin: 1em 0;
-  overflow-wrap: break-word;
-}
-
-div#message-wrapper {
-  border: 2px solid var(--saito-red);
-  min-width: 500px;
-  padding: 1em;
-  font-size: 2em;
-  background: var(--saito-red);
-  position: fixed;
-  bottom: 1em;
-  left: 1em;
-  color: #fff;
-  z-index: 200;
-}
-
 .settings-appspace-debug-content {
   margin: 1rem 0;
   padding: 1rem 0;
 }
 
 /*json tree */
+
 .jsontree_node {
   list-style: none;
 }

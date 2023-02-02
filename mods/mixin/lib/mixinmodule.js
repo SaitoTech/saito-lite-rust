@@ -148,7 +148,7 @@ console.log("this.options.transfers_outbound length: " + this.options.transfers_
  * @abstract
  * @return {Number}
  */
-MixinModule.prototype.renderModalSelectCrypto = function() {
+MixinModule.prototype.renderModalSelectCrypto = function(app, mod, cryptomod) {
   return `
     <div class="mixin_crypto_overlay" id="mixin_crypto_overlay">
 
@@ -172,7 +172,7 @@ MixinModule.prototype.renderModalSelectCrypto = function() {
 
 
 
-MixinModule.prototype.attachEventsModalSelectCrypto = function(app, cryptomod) {
+MixinModule.prototype.attachEventsModalSelectCrypto = function(app, mod, cryptomod) {
   let ab = document.querySelector(".mixin_risk_acknowledge");
   ab.onclick = (e) => {
     cryptomod.modal_overlay.hide(function(){

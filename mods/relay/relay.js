@@ -56,6 +56,11 @@ class Relay extends ModTemplate {
             recipients.push(recipient);
         }
 
+
+console.log("RECIPIENTS: " + JSON.stringify(recipients));
+console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
+console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
+
         //
         // transaction to end-user, containing msg.request / msg.data is
         //
@@ -86,15 +91,12 @@ class Relay extends ModTemplate {
                 //
                 // forward to peer
                 //
+                peer.sendRequestAsTransaction("relay peer message", tx.transaction);
 
-                //console.log("relay peer message");
-
-                peer.sendRequest("relay peer message", tx.transaction);
-
+            //}
+            //}
+            //}
             }
-            //}
-            //}
-            //}
         }
 
         return;
@@ -102,7 +104,11 @@ class Relay extends ModTemplate {
     }
 
 
-    async handlePeerRequest(app, message, peer, mycallback = null) {
+
+    async handlePeerTransaction(app, tx=null, peer, mycallback) {
+  
+      if (tx == null) { return; }
+      let message = tx.returnMessage();
 
         try {
 
@@ -114,40 +120,36 @@ class Relay extends ModTemplate {
                 // sanity check on tx
                 //
                 let txjson = message.data;
-                let tx = new saito.default.transaction(txjson);
-                if (tx.transaction.to.length <= 0) {
+                let inner_tx = new saito.default.transaction(txjson);
+                if (inner_tx.transaction.to.length <= 0) {
                     return;
                 }
-                if (tx.transaction.to[0].add == undefined) {
+                if (inner_tx.transaction.to[0].add == undefined) {
                     return;
                 }
-                tx.decryptMessage(this.app);
-                let txmsg = tx.returnMessage();
-
-                //
-                // the embedded message to examine is txmsg
-                //
+                inner_tx.decryptMessage(this.app);
+                let inner_txmsg = inner_tx.returnMessage();
 
                 //
                 // if interior transaction is intended for me, I process regardless
                 //
-                if (tx.isTo(app.wallet.returnPublicKey())) {
+                if (inner_tx.isTo(app.wallet.returnPublicKey())) {
 
-                    if (txmsg.request === "ping"){
-                        this.sendRelayMessage(tx.transaction.from[0].add, "echo", {status:this.busy});
+                    if (inner_txmsg.request === "ping"){
+                        this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", {status:this.busy});
                         return;
                     }
 
-                    if (txmsg.request === "echo"){
-                        if (txmsg.data.status){
-                            app.connection.emit("relay-is-busy", tx.transaction.from[0].add);
-                        }else{
-                            app.connection.emit("relay-is-online", tx.transaction.from[0].add);
+                    if (inner_txmsg.request === "echo"){
+                        if (inner_txmsg.data.status){
+                            app.connection.emit("relay-is-busy", inner_tx.transaction.from[0].add);
+                        } else {
+                            app.connection.emit("relay-is-online", inner_tx.transaction.from[0].add);
                         }
+			return;
                     }
 
-                    //console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
-                    app.modules.handlePeerRequest(txmsg, peer, mycallback);
+                    app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
                     return;
 
                 //
@@ -160,22 +162,20 @@ class Relay extends ModTemplate {
                     //
                     let peer_found = 0;
 
-                    //console.log("number of peers: " + app.network.peers.length);
-
                     for (let i = 0; i < app.network.peers.length; i++) {
 
-                        //if (!tx.isFrom(app.network.peers[i].peer.publickey)) {
-                        if (tx.isTo(app.network.peers[i].peer.publickey)) {
+                        if (inner_tx.isTo(app.network.peers[i].peer.publickey)) {
 
                             peer_found = 1;
 
-                            app.network.peers[i].sendRequest("relay peer message", message.data, function () {
+			    if (this.app.BROWSER == 0) {
+                              app.network.peers[i].sendTransactionWithCallback(tx, function () {
                                 if (mycallback != null) {
                                     mycallback({ err: "", success: 1 });
                                 }
-                            });
+                              });
+			    }
                         }
-                        //}
                     }
                     if (peer_found == 0) {
                         if (mycallback != null) {
@@ -185,10 +185,11 @@ class Relay extends ModTemplate {
                 }
             }
         } catch (err) {
-            console.log(err);
+          console.log(err);
         }
+
     }
+
 }
 
 module.exports = Relay;
-

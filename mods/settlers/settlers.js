@@ -124,7 +124,7 @@ class Settlers extends GameTemplate {
       class: "game-help",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
     });
     this.menu.addSubMenuOption("game-info", {
@@ -133,7 +133,7 @@ class Settlers extends GameTemplate {
       class: "game-stats",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnStatsOverlay());
+        game_mod.overlay.show(game_mod.returnStatsOverlay());
       },
     });
     
@@ -193,7 +193,7 @@ class Settlers extends GameTemplate {
         class: "game-trade-help",
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
-          game_mod.overlay.show(app, game_mod, game_mod.returnTradeHelpOverlay());
+          game_mod.overlay.show(game_mod.returnTradeHelpOverlay());
         },
       });
     }
@@ -517,7 +517,7 @@ class Settlers extends GameTemplate {
           `Player ${winner + 1} is ${this.skin.winState} of Saitoa! The game is over.`
         );
 
-        this.overlay.show(this.app, this, this.returnStatsOverlay());
+        this.overlay.show(this.returnStatsOverlay());
         $(".rules-overlay h1").text(`Game Over: Player ${winner + 1 } wins!`);
         
         this.endGame(this.game.players[winner]); 
@@ -743,7 +743,7 @@ class Settlers extends GameTemplate {
         //For the beginning of the game only...
         if (this.game.state.welcome == 0 && this.browser_active) {
   	    try {
-          this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+          this.overlay.show(this.returnWelcomeOverlay());
           document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
   	    } catch (err) {}
           this.game.state.welcome = 1;
@@ -3404,7 +3404,7 @@ class Settlers extends GameTemplate {
           </div></div>`;
 
       settlers_self.overlay.closebox = true;
-      settlers_self.overlay.show(settlers_self.app, settlers_self.this, html);
+      settlers_self.overlay.show(html);
       $(".trade_button.select").off();
       $(".trade_button.select").on("click", function () {
         //Update Offer
@@ -3519,7 +3519,7 @@ class Settlers extends GameTemplate {
           </div></div>`;
 
     this.overlay.closebox = true;
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
 
     $(".trade_button.select").on("click", function () {
       $(this).toggleClass("selected");
@@ -3618,7 +3618,7 @@ class Settlers extends GameTemplate {
     //<div class="trade_overlay_button button" id="chat">Chat</div>
     html += `</div></div>`;
 
-    settlers_self.overlay.show(settlers_self.app, settlers_self.this, html);
+    settlers_self.overlay.show(html);
     settlers_self.overlay.blockClose();
     $(".trade_overlay_button").on("click", function () {
       let choice = $(this).attr("id");

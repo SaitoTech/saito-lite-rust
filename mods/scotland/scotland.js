@@ -107,7 +107,7 @@ class Scotland extends GameTemplate {
       html += `<div>Click a ticket type to see where you can move, then click on the board to move there.</div>`;
     }
     html += `</div>`;
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
   // Opt out of letting League create a default
@@ -134,7 +134,7 @@ class Scotland extends GameTemplate {
       class: "game-rules",
       callback: function(app, game_mod){
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
     });
     this.menu.addSubMenuOption("game-info", {

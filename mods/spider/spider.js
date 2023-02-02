@@ -317,7 +317,7 @@ class Spider extends GameTemplate {
       class : "game-intro",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
     });
 
@@ -327,7 +327,7 @@ class Spider extends GameTemplate {
       class : "game-stats",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnStatsHTML());
+        game_mod.overlay.show(game_mod.returnStatsHTML());
       }
     });
 
@@ -801,7 +801,7 @@ class Spider extends GameTemplate {
         this.game.state.wins++;
         this.animateFinalVictory();
         this.endGame(this.app.wallet.returnPublicKey());
-        this.overlay.show(this.app, this, this.returnStatsHTML("Winner!"), ()=>{
+        this.overlay.show(this.returnStatsHTML("Winner!"), ()=>{
           this.newRound();
           $(".completed_card").remove();
           this.restartQueue();

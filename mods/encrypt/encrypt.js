@@ -48,11 +48,15 @@ class Encrypt extends ModTemplate {
       return {
         text: "Add Contact",
         icon: "far fa-id-card",
-        callback: function (app, public_key) {
+        callback: function (app, publickey) {
             encrypt_self.app.keys.saveKeys();
-            encrypt_self.initiate_key_exchange(public_key, 0);
-            let stunx_mod = app.modules.returnModule("Stunx");
-            stunx_mod.createStunConnectionWithPeers([public_key]);
+            encrypt_self.initiate_key_exchange(publickey, 0);
+//	    encrypt_self.app.connection.emit("stun-create-peer-connection", ([publickey]));
+	    //
+	    // TODO - remove if above works
+	    //
+            //let stun_mod = app.modules.returnModule("Stun");
+            //stun_mod.createStunConnectionWithPeers([public_key]);
         }
       }
     }
@@ -60,11 +64,21 @@ class Encrypt extends ModTemplate {
   }
 
 
-  handlePeerRequest(app, message, peer, mycallback = null) {
+                    
+                    
+  async handlePeerTransaction(app, newtx=null, peer, mycallback) {
 
+    if (newtx == null) { return; }
+    let message = newtx.returnMessage();
     let encrypt_self = this;
+                
+
 
     if (message.request === "diffie hellman key exchange") {
+
+console.log("!!!!");
+console.log("!!!! dhke !!!!");
+console.log("!!!!");
 
       let tx = new saito.default.transaction(message.data.tx);
 
@@ -130,6 +144,7 @@ class Encrypt extends ModTemplate {
 
     }
   }
+
 
 
   onPeerHandshakeComplete(app, peer) {
@@ -230,10 +245,7 @@ console.log("error: " + err);
       let data = {};
       data.module = "Encrypt";
       data.tx = tx;
-      console.log("sending request on network");
-console.log("WHAT NAME IS THIS: " + this.name);
-      this.app.network.sendRequest("diffie hellman key exchange", data, peer);
-console.log("SENT THE REQUEST");
+      this.app.network.sendRequestAsTransaction("diffie hellman key exchange", data, peer);
     }
     this.saveEncrypt();
 

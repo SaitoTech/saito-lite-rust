@@ -184,7 +184,6 @@ class Network {
         console.log("direct data channel created with ", peer.peer.publickey);
       }
       this.app.handshake.initiateHandshake(peer.stun.data_channel);
-
       this.app.network.requestBlockchain(peer);
       this.app.connection.emit("peer_connect", peer);
       this.app.connection.emit("connection_up", peer);
@@ -389,7 +388,6 @@ class Network {
       peer.socket.onmessage = async (event) => {
         try {
           const data = new Uint8Array(await event.data.arrayBuffer());
-          // console.log("data buffer 2 first: ", data[0]);
           const api_message = this.app.networkApi.deserializeAPIMessage(data);
           if (api_message.message_type == MessageType.Result) {
             this.app.networkApi.receiveAPIResponse(api_message);
@@ -583,6 +581,8 @@ class Network {
   }
 
   initialize() {
+    console.debug("[DEBUG] initialize network");
+
     if (this.app.options) {
       if (this.app.options.server) {
         if (
@@ -625,9 +625,12 @@ class Network {
     }
 
     if (this.app.options.peers != null) {
+      console.debug("[DEBUG] peers length " + this.app.options.peers.length);
       for (let i = 0; i < this.app.options.peers.length; i++) {
         this.addPeer(JSON.stringify(this.app.options.peers[i]));
       }
+    } else {
+      console.debug("[DEBUG] no peers defined");
     }
 
     this.app.connection.on("peer_disconnect", (peer) => {
@@ -675,7 +678,6 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    // console.log("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -690,7 +692,6 @@ class Network {
     switch (message.message_type) {
       case MessageType.HandshakeChallenge: {
         await this.app.handshake.handleIncomingHandshakeChallenge(peer, message.message_data);
-
         break;
       }
 
@@ -733,7 +734,6 @@ class Network {
       //   break;
       // }
       case MessageType.Ping:
-        // console.log("received ping...");
         // job already done!
         break;
 
@@ -760,7 +760,7 @@ class Network {
 
         try {
           peer.peer.services = JSON.parse(buffer.toString("utf8"));
-          console.log("services : ", peer.peer.services);
+          //console.log("services : ", peer.peer.services);
         } catch (err) {
           console.error("ERROR parsing peer services list or setting services in peer");
         }
@@ -830,7 +830,7 @@ class Network {
         fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         if (this.debugging) {
-          console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
+          //console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
         }
 
         const last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
@@ -839,7 +839,7 @@ class Network {
         );
 
         if (this.debugging) {
-          console.log("last shared ancestor generated at: " + last_shared_ancestor);
+          //console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
         let obj: any = {
           last_id: last_shared_ancestor,
@@ -882,7 +882,7 @@ class Network {
         fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         if (this.debugging) {
-          console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
+          //console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
         }
 
         let last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
@@ -891,7 +891,7 @@ class Network {
         );
 
         if (this.debugging) {
-          console.log("last shared ancestor generated at: " + last_shared_ancestor);
+          //console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
 
         if (last_shared_ancestor <= 0) {
@@ -935,7 +935,7 @@ class Network {
           }
         }
 
-        console.log("sync obj for gst chain : ", syncobj);
+        //console.log("sync obj for gst chain : ", syncobj);
 
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
@@ -983,14 +983,23 @@ class Network {
       //   break;
 
       case MessageType.ApplicationTransaction: {
+
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
+        let app = this.app;
+
         const mycallback = function (response_object) {
-          peer.sendResponse(
+
+	  let newtx = new Transaction();
+	  newtx.msg.response = response_object;
+	  newtx.presign(app);
+
+          peer.sendTransactionResponse(
             message.message_id,
-            Buffer.from(JSON.stringify(response_object), "utf-8")
+            newtx.serialize(app)
           );
+
         };
 
         await this.app.modules.handlePeerTransaction(tx, peer, mycallback);
@@ -1026,10 +1035,10 @@ class Network {
         if (reconstructed_data) {
           msg.data = reconstructed_data;
         }
-        const mycallback = function (response_object) {
+        const mycallback = (response_object) => {
           peer.sendResponse(
             message.message_id,
-            Buffer.from(JSON.stringify(response_object), "utf-8")
+            Buffer.from(this.app.crypto.fastSerialize(response_object), "utf-8")
           );
         };
 
@@ -1052,7 +1061,9 @@ class Network {
                 }
               }
             }
-            await this.app.modules.handlePeerRequest(msg, peer, mycallback);
+	    let newtx = new Transaction();
+	    newtx.msg = msg.data;
+            await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
         }
         break;
       }
@@ -1227,11 +1238,14 @@ class Network {
     for (let i = 0; i < tx.transaction.from.length; ++i) {
       tx.transaction.from[i].generateKey(this.app);
     }
+
     //
     // if this is our (normal) transaction, add to pending
     //
     if (tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
-      this.app.wallet.addTransactionToPending(tx);
+      if (!tx.isGoldenTicket()) {
+        this.app.wallet.addTransactionToPending(tx);
+      }
       this.app.connection.emit("update_balance", this.app.wallet);
     }
 
@@ -1358,12 +1372,37 @@ class Network {
     }
   }
 
+  returnPeersWithService(service) {
+    let peers = [];
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].hasService(service)) { peers.push(this.peers[i]); }
+    }
+    return peers;
+  }
+  returnPeerPublicKeysWithService(service) {
+    let peers = [];
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].hasService(service)) { peers.push(this.peers[i].returnPublicKey()); }
+    }
+    return peers;
+  }
+
   sendRequest(message: string, data: any = "", peer: Peer = null) {
     if (peer !== null) {
       peer.sendRequest(message, data);
     } else {
       for (let x = this.peers.length - 1; x >= 0; x--) {
         this.peers[x].sendRequest(message, data);
+      }
+    }
+  }
+
+  sendRequestAsTransaction(message: string, data: any = "", peer: Peer = null) {
+    if (peer !== null) {
+      peer.sendRequestAsTransaction(message, data);
+    } else {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        this.peers[x].sendRequestAsTransaction(message, data);
       }
     }
   }
@@ -1395,7 +1434,28 @@ class Network {
     }
   }
 
+  
+  //
+  //
+  //
+  sendRequestAsTransactionWithCallback(message: string, data = "", callback, peer = null) {
+
+    //
+    // convert request to zero-fee transaction, send that
+    //
+    let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+        newtx.msg.request = message;
+        newtx.msg.data = data;
+    //
+    // everything but time-intensive sig
+    //
+    newtx.presign(this.app);
+    this.sendTransactionWithCallback(newtx, callback, peer);
+
+  }
+
   sendRequestWithCallback(message: string, data = "", callback, peer = null) {
+
     if (peer !== null) {
       for (let x = this.peers.length - 1; x >= 0; x--) {
         if (this.peers[x] === peer) {

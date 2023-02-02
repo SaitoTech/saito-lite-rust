@@ -28,12 +28,14 @@ class Archive extends ModTemplate {
 
   }
 
-  /*shouldAffixCallbackToModule(modname = "") {
-     if (modname == "Chat"){
-      return 1;
-     }
-    return 0;
-  }*/
+
+
+  returnServices() {
+      let services = [];
+      if (this.app.BROWSER == 0) { services.push({ service: "archive" }); }
+      return services;
+  }
+
 
   onConfirmation(blk, tx, conf, app) {
 
@@ -51,35 +53,11 @@ class Archive extends ModTemplate {
     }
   }
 
+
   async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-    try {
-
-      if (tx == null) {
-	return;
-      }
-
-      let txmsg = tx.returnMessage();
-
-      if (txmsg.request === "archive save") {
-        console.log("++++++++++++++++++++++++++++++++++++");
-        console.log("archive save as request specifically");
-        console.log("++++++++++++++++++++++++++++++++++++");
-        this.saveTransaction(tx, txmsg.type);
-	mycallback({});
-	return;
-      }
-      
-    } catch (err) {
-      console.log("Error in handlePeerTransaction in Archive module: " + err);
-    }
-
-    super.handlePeerTransaction(app, tx, peer, mycallback);
-
-  }
-
-
-  async handlePeerRequest(app, req, peer, mycallback) {
+    if (tx == null) { return; }
+    let req = tx.returnMessage();
 
     if (req.request == null) { return; }
     if (req.data == null) { return; }
@@ -91,6 +69,14 @@ class Archive extends ModTemplate {
     // only handle archive request 
     //
     if (req.request === "archive") {
+
+console.log("...");
+console.log("...");
+console.log("THIS IS AN ARCHIVE REQUEST!");
+console.log("...");
+console.log("...");
+console.log("req is: "+ JSON.stringify(req));
+
       if (req.data.request === "delete") {
         this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
       }
@@ -129,7 +115,6 @@ class Archive extends ModTemplate {
 	return;
       }
       if (req.data.request === "load") {
-        console.log("archive load");
         let type = "";
         let num  = 50;
         if (req.data.num != "")  { num = req.data.num; }
@@ -137,6 +122,7 @@ class Archive extends ModTemplate {
         txs = await this.loadTransactions(req.data.publickey, req.data.sig, type, num);
         response.err = "";
         response.txs = txs;
+
         mycallback(response);
 	return;
       }
@@ -162,74 +148,10 @@ console.log("TXS is the object returned!");
       }
     }
 
-    super.handlePeerRequest(app, req, peer, mycallback);
+    super.handlePeerTransaction(app, tx, peer, mycallback);
 
 
   }
-
-
-
-  async updateTransactionOptional(sig, publickey, optional) {
-
-    let sql = "UPDATE txs SET optional = $optional WHERE sig = $sig AND publickey = $publickey";
-    let params = {
-        $optional	:	JSON.stringify(optional) ,
-        $sig		:	sig ,
-        $publickey	:	publickey ,
-    };
-    await this.app.storage.executeDatabase(sql, params, "archive");
-
-  }
-
-
-  async updateTransactionOptionalValue(sig, publickey, key, new_value) {
-
-    let sql = "SELECT id, sig, publickey, tx, optional FROM txs WHERE sig = $sig AND publickey = $publickey";
-    let params = {
-        $sig		:	sig ,
-        $publickey	:	publickey ,
-    };
-
-    let rows = await this.app.storage.queryDatabase(sql, params, "archive");
-    if (rows != undefined) {
-      if (rows.length > 0) {
-	for (let i = 0; i < rows.length; i++) {
-
-          let optional = JSON.parse(rows[i].optional);
-	  if (!optional) { optional = {}; }
-	  optional[key] = new_value;
-	  await this.updateTransactionOptional(rows[i].sig, rows[i].publickey, optional);
-        }
-      }
-    }
-  }
-
-
-
-  async incrementTransactionOptionalValue(sig, publickey, key) {
-
-    let sql = "SELECT id, sig, publickey, tx, optional FROM txs WHERE sig = $sig AND publickey = $publickey";
-    let params = {
-        $sig		:	sig ,
-        $publickey	:	publickey ,
-    };
-
-    let rows = await this.app.storage.queryDatabase(sql, params, "archive");
-    if (rows != undefined) {
-      if (rows.length > 0) {
-	for (let i = 0; i < rows.length; i++) {
-
-          let optional = JSON.parse(rows[i].optional);
-	  if (!optional) { optional = {}; }
-	  if (!optional[key]) { optional[key] = 0; }
-	  optional[key]++;
-	  await this.updateTransactionOptional(rows[i].sig, rows[i].publickey, optional);
-        }
-      }
-    }
-  }
-
-
 
 
 

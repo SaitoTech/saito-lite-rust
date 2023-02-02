@@ -8,14 +8,6 @@
     min-width: var(--calendar-minwidth);
 }
 
-.saito-calendar-popup {
-    min-width: 30rem;
-    min-height: 30rem;
-    background-color: whitesmoke;
-    border-radius: 1rem;
-    padding: 2rem;
-}
-
 .saito-calendar {
     border-radius: 0.5rem;
     width: 100%;
@@ -24,23 +16,53 @@
     flex-direction: column;
 }
 
-.saito-calendar-events {
-    margin: 0.5rem;
-    border: 1px solid #888;
-    height: 22rem;
-    width: 28rem;
+
+.saito-modal.saito-modal-calendar {
+    display: grid;
+    grid-template-columns: 30rem 1fr;
+    width: 100%;
+    padding: 4rem;
+    grid-gap: 0;
+    margin: 0;
+}
+
+.saito-modal-calendar-content {
+    padding-right: 3rem;
+}
+
+.saito-modal-calendar-title {
+    font-size: 5rem;
     margin-bottom: 1rem;
-    border-radius: 0.5rem;
+}
+.saito-modal-calendar-note {
+    font-size: 2rem;
+    line-height: 2.8rem;
+    display: block;
+}
+
+.saito-calendar-events {
+    background-color: var(--saito-background-color);
+    width: 40rem;
+    height: 35rem;
+    padding: 0px;
+    margin: 0px;
+    border: 1px solid var(--saito-background-color);
 }
 
 .saito-calendar-events-date {
   float: right;
   padding: 0.5rem;
   color: #777;
+  font-size: 2rem;
+  font-style: italic;
 }
 
 .saito-calendar-events-details {
   clear: both;
+  font-size: 2rem;
+  color: var(--saito-font-color);
+  font-weight: bold;
+  padding-left: 2rem;
 }
 
 .saito-calendar-month {
@@ -94,7 +116,6 @@
     min-height: 3rem;
     font-size: 1.2rem;
     padding: 3px;
-    background-color: #fcfcfc;
     cursor: pointer;
     display: flex;
     align-items:  center;

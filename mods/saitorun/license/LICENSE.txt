@@ -1,0 +1,3 @@
+This game uses animated character from https://www.mixamo.com/#/, which can be used for non-commercial purposes
+
+The game engine is built with https://threejs.org/

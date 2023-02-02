@@ -185,6 +185,7 @@ class Server {
           return;
         }
         const filename = blk.returnFilename();
+        console.info('### write from line 188 of server.ts.')
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
@@ -198,6 +199,7 @@ class Server {
         //let blk = await this.app.blockchain.returnBlockByHash(bsh);
 
         console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+        console.info('### write from line 202 of server.ts.')
         res.status(400);
         res.end({
           error: {
@@ -228,6 +230,7 @@ class Server {
         blkwtx.transactions = blk.transactions;
         blkwtx.app = null;
 
+        console.info('### write from line 232 of server.ts.')
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
@@ -240,6 +243,7 @@ class Server {
         //let blk = await this.app.blockchain.returnBlockByHash(bsh);
 
         console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+        console.info('### write from line 188 of server.ts.')
         res.status(400);
         res.end({
           error: {
@@ -302,6 +306,7 @@ class Server {
         return;
       }
       if (!block.hasKeylistTransactions(keylist)) {
+        console.info('### write from line 307 of server.ts.')
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
@@ -327,6 +332,7 @@ class Server {
         } else {
           const newblk = blk.returnLiteBlock(keylist);
 
+          console.info('### write from line 333 of server.ts.')
           res.writeHead(200, {
             "Content-Type": "text/plain",
             "Content-Transfer-Encoding": "utf8",
@@ -360,6 +366,7 @@ class Server {
         // let bufferString = Buffer.from(buffer); //.toString("base64");
 
         res.status(200);
+        console.info('### write from line 369 of server.ts.')
         console.log("serving block . : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
 
@@ -402,6 +409,7 @@ class Server {
         buffer = Buffer.from(buffer, "utf-8");
 
         res.status(200);
+        console.info('### write from line 412 of server.ts.')
         console.log("serving block .. : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
       } catch (err) {
@@ -474,6 +482,10 @@ class Server {
     /////////////
     // modules //
     /////////////
+    //
+    // res.write -- have to use res.end()
+    // res.send --- is combination of res.write() and res.end()
+    //
     this.app.modules.webServer(app, express);
 
     app.get("*", (req, res) => {

@@ -1,25 +1,30 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
-const ModalRegisterUsername = require('./../../../../lib/saito/new-ui/modals/modal-register-username/modal-register-username');
-const ModalRegisterEmail = require('./../../../../lib/saito/ui/modal-register-email/modal-register-email');
+const RegisterUsernameModal = require('./../../../../lib/saito/ui/modals/register-username/register-username.js');
+
 const jsonTree = require('json-tree-viewer');
 
 class SettingsAppspace {
 
-  constructor(app) {
+  constructor(app, mod, container="") {
+    this.app = app;
+    this.mod = mod;
+    this.container = container;
   }
 
-  render(app, mod) {
+  render() {
 
-    if (!document.querySelector(".settings-appspace")) {
-      app.browser.addElementToSelector(SettingsAppspaceTemplate(app, mod), ".appspace");
+    if (document.querySelector(".settings-appspace")) {
+      this.app.browser.replaceElementBySelector(SettingsAppspaceTemplate(this.app, this.mod), ".settings-appspace");
+    } else {
+      this.app.browser.addElementToSelectorOrDom(SettingsAppspaceTemplate(this.app, this.mod), this.container);
     }
 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
-      for (let i = 0; i < app.modules.mods.length; i++) {
-        if (app.modules.mods[i].respondTo("settings-appspace") != null) {
-          let mod_settings_obj = app.modules.mods[i].respondTo("settings-appspace");
-          mod_settings_obj.render(app, mod);
+      for (let i = 0; i < this.app.modules.mods.length; i++) {
+        if (this.app.modules.mods[i].respondTo("settings-appspace") != null) {
+          let mod_settings_obj = this.app.modules.mods[i].respondTo("settings-appspace");
+          mod_settings_obj.render(this.app, this.mod);
         }
       }
     }
@@ -28,7 +33,7 @@ class SettingsAppspace {
     let el = document.querySelector(".settings-appspace-debug-content");
 
     try {
-      let optjson = JSON.parse(JSON.stringify(app.options, (key, value) =>
+      let optjson = JSON.parse(JSON.stringify(this.app.options, (key, value) =>
             typeof value === 'bigint'
                 ? value.toString()
                 : value // return everything else unchanged
@@ -38,11 +43,14 @@ class SettingsAppspace {
       console.log("error creating jsonTree: " + err);
     }
 
-    this.attachEvents(app, mod);
+    this.attachEvents();
 
   }
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     try {
 
@@ -57,20 +65,20 @@ class SettingsAppspace {
       }
 
       document.getElementById("register-email-btn").onclick = function (e) {
-        mod.modal_register_email = new ModalRegisterEmail(app, function () {
+        mod.modal_register_username = new RegisterUsernameModal(app, mod, function () {
         });
-        mod.modal_register_email.render(app, mod, ModalRegisterEmail.MODES.REGISTEREMAIL);
-        mod.modal_register_email.attachEvents(app, mod);
-      }
-
-      document.getElementById("register-identifier-btn").onclick = function (e) {
-        mod.modal_register_username = new ModalRegisterUsername(app);
-        mod.modal_register_username.render(app, mod);
+        mod.modal_register_username.render(app, mod, RegisterUsernameModal.MODES.REGISTEREMAIL);
         mod.modal_register_username.attachEvents(app, mod);
       }
 
+      document.getElementById("register-identifier-btn").onclick = function (e) {
+       mod.modal_register_username = new RegisterUsernameModal(app, mod);
+       mod.modal_register_username.render(app, mod);
+       mod.modal_register_username.attachEvents(app, mod);
+      }
+
       document.querySelector(".settings-appspace-privatekey").onclick = function (e) {
-        document.querySelector(".settings-appspace-privatekey").toggleClass("saito-password");
+        document.querySelector(".settings-appspace-privatekey").classList.toggle("saito-password");
       }
 
 
@@ -127,6 +135,11 @@ class SettingsAppspace {
         });
         document.querySelector('#file-input').click();
       }
+
+      document.querySelector('.copy-public-key').onclick = (e) =>{
+        navigator.clipboard.writeText(app.wallet.returnPublicKey());
+        salert("Public key copied");
+      }
       /*
           document.getElementById('reset-account-btn').onclick = async (e) => {
       
@@ -168,7 +181,6 @@ class SettingsAppspace {
             app.wallet.wallet.pending = [];
 
             app.blockchain.resetBlockchain();
-
             await app.wallet.saveWallet();
             window.location = window.location;
           }

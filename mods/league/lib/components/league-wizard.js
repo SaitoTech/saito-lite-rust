@@ -1,6 +1,6 @@
 const LeagueWizardTemplate = require('./league-wizard.template');
 const LeagueAdvancedOptions = require('./league-advanced-options.template');
-const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
+const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 
 class LeagueWizard {
@@ -12,16 +12,24 @@ class LeagueWizard {
     this.overlay = new SaitoOverlay(app);
     this.super_overlay = new SaitoOverlay(app, false, false);
 
+    this.app.connection.on("league-launch-wizard", (game_mod = {}) => {
+
+      if (!game_mod){ console.log("No game module to launch league wizard"); return;}
+      this.game_mod = game_mod;
+
+      this.render();
+    });
+
   }
 
-  render(app, mod) {
+  render() {
 
     //Create the game wizard overlay
-    this.overlay.show(app, mod, LeagueWizardTemplate(app, mod, this.game_mod), ()=>{ this.super_overlay.remove(); });
+    this.overlay.show(LeagueWizardTemplate(this.app, this.mod, this.game_mod), ()=>{ this.super_overlay.remove(); });
 
     //Create (hidden) the advanced options window
-    this.meta_overlay = new SaitoOverlay(app, false, false);
-    this.meta_overlay.show(app, mod, LeagueAdvancedOptions());
+    this.meta_overlay = new SaitoOverlay(this.app, false, false);
+    this.meta_overlay.show(LeagueAdvancedOptions());
     this.meta_overlay.hide();      
 
     //
@@ -36,10 +44,10 @@ class LeagueWizard {
     overlay_backdrop_el.style.opacity = 0.95;
     overlay_backdrop_el.style.backgroundColor = "#111";
 
-    this.attachEvents(app, mod);
+    this.attachEvents();
   }
 
-  attachEvents(app, mod){
+  attachEvents(){
     if (document.querySelector(".saito-multi-select_btn")){
       document.querySelector(".saito-multi-select_btn").addEventListener("click", (e) => {
       e.currentTarget.classList.toggle("showAll");
@@ -78,7 +86,7 @@ class LeagueWizard {
       advancedOptionsToggle.onclick = (e) => {
 
         //Requery advancedOptions on the click so it can dynamically update based on # of players
-        this.meta_overlay.show(app, this.game_mod, LeagueAdvancedOptions());
+        this.meta_overlay.show(LeagueAdvancedOptions());
         this.attachAdvancedOptionsEventListeners();
         this.meta_overlay.blockClose();
 
@@ -106,7 +114,7 @@ class LeagueWizard {
         let newLeague = {
           game: this.game_mod.name,
           type: e.currentTarget.getAttribute("data-type"),
-          admin: app.wallet.returnPublicKey(),
+          admin: this.app.wallet.returnPublicKey(),
           name: sanitize(document.getElementById("league-name").innerHTML),
           description: sanitize(document.getElementById("league-desc").innerHTML),
           ranking: document.getElementById("ranking").value,
@@ -118,11 +126,15 @@ class LeagueWizard {
           allowlate: (document.getElementById("lateregister").checked) ? '1' : '0',
         };
 
-        mod.sendCreateLeagueTransaction(newLeague);
+        this.mod.sendCreateLeagueTransaction(newLeague);
 
         //Destroy both overlays
         this.overlay.remove();
         this.super_overlay.remove();
+
+        setTimeout(function(){
+          location.reload();
+        }, 1000);
         return false;
       });
     });
@@ -218,7 +230,7 @@ class LeagueWizard {
           }          
 
           //Display Game Options
-          this.super_overlay.show(this.app, this.mod, html);  
+          this.super_overlay.show(html);  
           //Attach dynamic listeners
           this.game_mod.attachAdvancedOptionsEventListeners();
           //Hide overlay if clicking button
@@ -254,7 +266,7 @@ class LeagueWizard {
                       </form>
                       </div>
                       `;
-          this.super_overlay.show(this.app, this.mod, html);  
+          this.super_overlay.show(html);  
           this.super_overlay.hide();
         }
       };
@@ -287,18 +299,18 @@ class LeagueWizard {
     let title = document.getElementById("league-name");
     
     if (!title || !title.innerHTML || title.innerHTML == title.getAttribute("data-placeholder")){
-      salert("Your league must have a name");
+      alert("Your league must have a name");
       return false;
     }
 
     if (title.innerHTML == this.game_mod.name || title.innerHTML == this.game_mod.gamename){
-      salert("You can't just name your league after the game");
+      alert("You can't just name your league after the game");
       return false;
     }
 
     let desc = document.getElementById("league-desc");
     if (!desc || !desc.innerHTML || desc.innerHTML == desc.getAttribute("data-placeholder")){
-      salert("Your league must have a description");
+      alert("Your league must have a description");
       return false;
     }
 
@@ -312,14 +324,14 @@ class LeagueWizard {
       let startTime = Date.parse(start);
 
       if (startTime < today){
-        salert("Invalid Start Date! Must be after today, otherwise leave blank for League to take immediate effect.");
+        alert("Invalid Start Date! Must be after today, otherwise leave blank for League to take immediate effect.");
         return false;
       }
 
       if (end){
         let endTime = Date.parse(end);
         if (endTime < startTime){
-          salert("Invalid Date Range!");
+          alert("Invalid Date Range!");
           return false;
         }
       }
@@ -329,7 +341,7 @@ class LeagueWizard {
     if (end){
       let endTime = Date.parse(end);
       if (endTime < today){
-        salert("Invalid End Date!");
+        alert("Invalid End Date!");
         return false;
       }
     }

@@ -11,7 +11,7 @@ class Mahjong extends GameTemplate {
     super(app);
 
     this.name            = "Mahjong";
-    this.gamename        = "Mahjong Solitaire";
+    this.gamename        = "Mahjong";
     this.game_length     = 10; //Estimated number of minutes to complete a game
     this.description     = `Remove matching mahjong tiles in pairs until the board is clear or you lose`;
     this.categories      = "Games Cardgame one-player";
@@ -268,7 +268,7 @@ class Mahjong extends GameTemplate {
       class : "game-intro",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
     });
     this.menu.addSubMenuOption("game-info", {
@@ -277,7 +277,7 @@ class Mahjong extends GameTemplate {
       class : "game-stats",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnStatsHTML());
+        game_mod.overlay.show(game_mod.returnStatsHTML());
       }
     });
 

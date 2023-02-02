@@ -24,7 +24,7 @@
       text	  :	  "+1 on all combat rolls" ,
       onNewRound     :    function(imperium_self, player) {
         if (imperium_self.doesPlayerHaveTech(player, "faction4-unrelenting")) {
-          imperium_self.game.players_info[player-1].faction4_unrelenting = 1;
+          imperium_self.game.state.players_info[player-1].faction4_unrelenting = 1;
         }
       },
       modifyCombatRoll :	  function(imperium_self, attacker, defender, player, combat_type, roll) {
@@ -71,15 +71,15 @@
       text	  :	  "A more powerful dreadnaught" ,
       prereqs     :       [],
       initialize :       function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction4_advanced_dreadnaught_i == undefined) {
-          imperium_self.game.players_info[player-1].faction4_advanced_dreadnaught_i = 0;
+        if (imperium_self.game.state.players_info[player-1].faction4_advanced_dreadnaught_i == undefined) {
+          imperium_self.game.state.players_info[player-1].faction4_advanced_dreadnaught_i = 0;
         }
       },
       gainTechnology :       function(imperium_self, gainer, tech) {
-        imperium_self.game.players_info[gainer-1].faction4_advanced_dreadnaught_i = 1;
+        imperium_self.game.state.players_info[gainer-1].faction4_advanced_dreadnaught_i = 1;
       },
       upgradeUnit :       function(imperium_self, player, unit) {
-        if (imperium_self.game.players_info[unit.owner-1].faction4_advanced_dreadnaught_i == 1 && unit.type == "dreadnaught") {
+        if (imperium_self.game.state.players_info[unit.owner-1].faction4_advanced_dreadnaught_i == 1 && unit.type == "dreadnaught") {
           unit.cost = 4;
           unit.combat = 5;
           unit.move = 1;
@@ -107,16 +107,16 @@
       prereqs     :       ["blue","blue","yellow"],
       text	  :	  "A much more powerful dreadnaught" ,
       initialize :       function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction4_advanced_dreadnaught_ii == undefined) {
-          imperium_self.game.players_info[player-1].faction4_advanced_dreadnaught_ii = 0;
+        if (imperium_self.game.state.players_info[player-1].faction4_advanced_dreadnaught_ii == undefined) {
+          imperium_self.game.state.players_info[player-1].faction4_advanced_dreadnaught_ii = 0;
         }
       },
       gainTechnology :       function(imperium_self, gainer, tech) {
-        imperium_self.game.players_info[gainer-1].faction4_advanced_dreadnaught_ii = 1;
-        imperium_self.game.players_info[gainer-1].faction4_advanced_dreadnaught_i = 0;
+        imperium_self.game.state.players_info[gainer-1].faction4_advanced_dreadnaught_ii = 1;
+        imperium_self.game.state.players_info[gainer-1].faction4_advanced_dreadnaught_i = 0;
       },
       upgradeUnit :       function(imperium_self, player, unit) {
-        if (imperium_self.game.players_info[unit.owner-1].faction4_advanced_dreadnaught_ii == 1 && unit.type == "dreadnaught") {
+        if (imperium_self.game.state.players_info[unit.owner-1].faction4_advanced_dreadnaught_ii == 1 && unit.type == "dreadnaught") {
           unit.cost = 4;
           unit.combat = 5;
           unit.move = 2;
@@ -238,15 +238,15 @@
       prereqs	  :	["red","red"],
       text	  :	  "Infantry vaporize 1 opponent for each hit received" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction4_particle_weave == undefined) {
-          imperium_self.game.players_info[player-1].faction4_particle_weave = 0;
-          imperium_self.game.players_info[player-1].faction4_particle_weave_opponent = 0;
-          imperium_self.game.players_info[player-1].faction4_particle_weave_my_forces = 0;
+        if (imperium_self.game.state.players_info[player-1].faction4_particle_weave == undefined) {
+          imperium_self.game.state.players_info[player-1].faction4_particle_weave = 0;
+          imperium_self.game.state.players_info[player-1].faction4_particle_weave_opponent = 0;
+          imperium_self.game.state.players_info[player-1].faction4_particle_weave_my_forces = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
 	if (tech == "faction4-particle-weave") {
-          imperium_self.game.players_info[gainer-1].faction4_particle_weave = 1;
+          imperium_self.game.state.players_info[gainer-1].faction4_particle_weave = 1;
         }
       },
       groundCombatTriggers : function(imperium_self, player, sector, planet_idx) {
@@ -256,7 +256,7 @@
 	  //
 	  let sys = imperium_self.returnSectorAndPlanets(sector);
           let planet = sys.p[planet_idx];
-          imperium_self.game.players_info[player-1].faction4_particle_weave_my_forces = planet.units[player-1].length;
+          imperium_self.game.state.players_info[player-1].faction4_particle_weave_my_forces = planet.units[player-1].length;
 
         }
         return 0;
@@ -268,7 +268,7 @@
 	  let sys = imperium_self.returnSectorAndPlanets(sector);
 	  let planet = sys.p[planet_idx];
 	  let current_forces = planet.units[attacker-1].length;
-	  if (current_forces < imperium_self.game.players_info[attacker-1].faction4_particle_weave_my_forces) {
+	  if (current_forces < imperium_self.game.state.players_info[attacker-1].faction4_particle_weave_my_forces) {
 	    imperium_self.updateLog("Sardakk Particle Weave vaporizes 1 opponent infantry...");
 	    for (let z = 0; z < planet.units[defender-1].length; z++) {
 	      if (planet.units[defender-1][z].type == "infantry") {
@@ -284,7 +284,7 @@
 	  let sys = imperium_self.returnSectorAndPlanets(sector);
 	  let planet = sys.p[planet_idx];
 	  let current_forces = planet.units[defender-1].length;
-	  if (current_forces < imperium_self.game.players_info[defender-1].faction4_particle_weave_my_forces) {
+	  if (current_forces < imperium_self.game.state.players_info[defender-1].faction4_particle_weave_my_forces) {
 	    imperium_self.updateLog("Sardakk Particle Weave vaporizes 1 opponent infantry...");
 	    for (let z = 0; z < planet.units[attacker-1].length; z++) {
 	      if (planet.units[attacker-1][z].type == "infantry") {
@@ -308,10 +308,10 @@
       faction     :       -1,
       text        :       "Redeemer gets +1 on all combat rolls this combat, owner gets -1 if in combat",
       initialize  : function(imperium_self, player) {
-	imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
+	imperium_self.game.state.players_info[player - 1].tekklar_legion_modifier = 0;
       },
       modifySpaceCombatRoll : function(imperium_self, attacker, defender, roll) {
-	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	let tmod = imperium_self.game.state.players_info[attacker - 1].tekklar_legion_modifier;
 	if (tmod != 0) {
 	  roll += tmod;
 	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
@@ -319,7 +319,7 @@
 	return roll;
       },
       modifySpaceCombatRoll : function(imperium_self, attacker, defender, roll) {
-	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	let tmod = imperium_self.game.state.players_info[attacker - 1].tekklar_legion_modifier;
 	if (tmod != 0) {
 	  roll += tmod;
 	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
@@ -327,7 +327,7 @@
 	return roll;
       },
       modifyGroundCombatRoll : function(imperium_self, attacker, defender, roll) {
-	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	let tmod = imperium_self.game.state.players_info[attacker - 1].tekklar_legion_modifier;
 	if (tmod != 0) {
 	  roll += tmod;
 	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
@@ -335,7 +335,7 @@
 	return roll;
       },
       modifyGroundCombatRoll : function(imperium_self, attacker, defender, roll) {
-	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	let tmod = imperium_self.game.state.players_info[attacker - 1].tekklar_legion_modifier;
 	if (tmod != 0) {
 	  roll += tmod;
 	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
@@ -343,7 +343,7 @@
 	return roll;
       },
       spaceCombatTriggers : function(imperium_self, player, sector) {
-	if (imperium_self.game.players_info[player - 1].tekklar_legion_modifier == 1) { return 0; };
+	if (imperium_self.game.state.players_info[player - 1].tekklar_legion_modifier == 1) { return 0; };
         if (imperium_self.hasUnresolvedSpaceCombat(player, sector)) {
           if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
             if (imperium_self.returnPlayerOfFaction("faction4") != player) {
@@ -386,7 +386,7 @@
 	return 0;
       },
       groundCombatTriggers : function(imperium_self, player, sector, planet_idx) {
-	if (imperium_self.game.players_info[player - 1].tekklar_legion_modifier == 1) { return 0; };
+	if (imperium_self.game.state.players_info[player - 1].tekklar_legion_modifier == 1) { return 0; };
         if (imperium_self.hasUnresolvedGroundCombat(player, sector, planet_idx)) {
           if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
             if (imperium_self.returnPlayerOfFaction("faction4") != player) {
@@ -428,14 +428,14 @@
       },
       spaceCombatRoundEnd : function(imperium_self, attacker, defender, sector) {
         if (imperium_self.hasUnresolvedSpaceCombat(attacker, sector) || imperium_self.hasUnresolvedSpaceCombat(defender, sector)) {
-	  imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
+	  imperium_self.game.state.players_info[player - 1].tekklar_legion_modifier = 0;
 	};
 	return 1;
       },
       groundCombatRoundEnd : function(imperium_self, attacker, defender, sector, planet_idx) {
         if (imperium_self.hasUnresolvedGroundCombat(attacker, sector, planet_idx) || imperium_self.hasUnresolvedGroundCombat(defender, sector, planet_idx)) {
-	  imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier = 0;
-	  imperium_self.game.players_info[defender - 1].tekklar_legion_modifier = 0;
+	  imperium_self.game.state.players_info[attacker - 1].tekklar_legion_modifier = 0;
+	  imperium_self.game.state.players_info[defender - 1].tekklar_legion_modifier = 0;
 	};
 	return 1;
       }

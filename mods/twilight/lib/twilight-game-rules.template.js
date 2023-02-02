@@ -1,4 +1,4 @@
-module.exports = (app, mod) => {
+module.exports = () => {
 
   let html =  `<div class="rules-overlay">
     <h1>Twilight Struggle</h1>

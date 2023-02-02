@@ -1,131 +1,155 @@
-const RedSquareAppspaceHomeTemplate = require("./home.template");
-const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-const PostTweet = require("./../post");
-const Tweet = require("./../tweet");
-const SaitoLoader = require("../../../../lib/saito/new-ui/saito-loader/saito-loader");
+const AppspaceHomeTemplate = require("./home.template");
+const Post = require("./../post");
+const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
 
 
 
-class RedSquareAppspaceHome {
+class AppspaceHome {
 
-  constructor(app, mod) {
+  constructor(app, mod, container = "") {
     this.app = app;
+    this.mod = mod;
+    this.container = container;
     this.name = "RedSquareAppspaceHome";
-    this.prevTweetLength = null;
+    this.thread_id = "";
+    this.parent_id = "";
     this.saito_loader = new SaitoLoader(app, mod);
-
-    this.observed = false
-
-    // not currently used, kept for flexibility for future
-    app.connection.on('tweets-render-request', (tweets, appendToSelector = true) => {
-      tweets.forEach(tweet => {
-        tweet.render(app, mod, '.redsquare-list', appendToSelector)
-      })
-    })
-
-    //not used - keeping for legacy
-    app.connection.on("new-tweet-render-request", (tweet) => {
-      //console.log("ADDING TRR: " + tweet.tx.transaction.sig);
-      tweet.render(app, mod, ".redsquare-list", false);
-    });
-
-    app.connection.on("tweet-render-request", (tweet, append = true) => {
-      //console.log("ADDING TRR: " + tweet.tx.transaction.sig);
-      tweet.render(app, mod, ".redsquare-list", append);
-    });
-
-    app.connection.on("tweet-render-feed-request", () => {
-      mod.renderMainPage(app, mod, false);
-    });
-    app.connection.on("redquare-show-user-feed", (key) => {
-      mod.mode = "user";
-      mod.viewing = key;
-      mod.loadTweets(app, mod);
-    });
-
-
-
-    let options = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 1
-    }
-
-    //renderWithParents
 
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (mod.viewing == "feed") {
           if (entry.isIntersecting) {
-            let saito_loader = this.saito_loader;
-            saito_loader.render(app, mod, "redsquare-intersection", false);
-            mod.fetchMoreTweets(app, mod, (app, mod) => saito_loader.remove());
+            if (mod.viewing !== "home") { return; }
+            let saito_loader =  new SaitoLoader(app, mod, '#redsquare-intersection');
+            saito_loader.render();
+            mod.loadMoreTweets(()=> saito_loader.remove());
           }
-        }
       });
-    }, options);
-
-    this.ptweet = new PostTweet(app, mod);
+    }, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1
+    });
   }
 
-  async render(app, mod) {
-    document.querySelector(".appspace").innerHTML = "";
+  render() {
 
-    if (!document.querySelector('#redsquare-appspace-home')) {
-      app.browser.addElementToClass(RedSquareAppspaceHomeTemplate(app, mod), "appspace");
+    //
+    // render main feed by default
+    //
+    this.renderMain();
+
+  }
+
+
+  renderMoreTweets() {
+    for (let i = 0; i < this.mod.tweets.length; i++) {
+      if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
+        this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
+      }
+      this.mod.tweets[i].container = ".redsquare-appspace-body";
+      this.mod.tweets[i].renderWithCriticalChild();
+
     }
 
-    mod.renderMainPage(app, mod);
+
+    this.attachEvents();
+  }
+
+
+  renderNewTweets() {
+    for (let i = 0; i < this.mod.tweets.length; i++) {
+      if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
+        this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
+      }
+      this.mod.tweets[i].container = ".redsquare-appspace-body";
+      this.mod.tweets[i].renderWithCriticalChild();
+
+    }
+
+    this.attachEvents();
+
+  }
+
+
+
+
+  renderMain() {
+
+    this.thread_id = "";
+    this.parent_id = "";
+
+    if (document.querySelector(".redsquare-home")) {
+      this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
+    } else {
+      this.container.innerHTML = "";
+      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+
+    }
+
+    // render all top-level tweets, possibly with critical children
+    
+    for (let i = 0; i < this.mod.tweets.length; i++) {
+      if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
+        this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
+      }
+      this.mod.tweets[i].container = ".redsquare-appspace-body";
+      this.mod.tweets[i].renderWithCriticalChild();
+
+    }
+
+
+
+    this.attachEvents();
+
+  }
+
+  renderThread(tweet) {
+
+    this.thread_id = tweet.tx.transaction.sig;
+    this.parent_id = tweet.tx.transaction.sig;
+
+    if (document.querySelector(".redsquare-home")) {
+      this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
+      document.querySelector(".redsquare-home").dataset.thread_id = this.thread_id;
+    } else {
+      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+      document.querySelector(".redsquare-home").dataset.thread_id = this.thread_id;
+    }
+    tweet.renderWithParentAndChildren();
+
+    // make tweets full
+    document.querySelectorAll('.tweet-text').forEach(item => {
+      if(item.classList.contains('preview')){
+        item.classList.replace('preview', 'full')
+      }
+    })
+    this.attachEvents();
+
+  }
+
+  attachEvents() {
 
     this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
-
-    this.attachEvents(app, mod);
-
-  }
-
-  attachEvents(app, mod) {
-
-    this.overlay = new SaitoOverlay(app);
-
-    //
-    // if PostTweet was a template file, we could write it directly into the overlay
-    // since it is a class, we put an element in the overlay and render into that.
-    //
-    document.getElementById("redsquare-new-tweet").onclick = (e) => {
-      this.ptweet.render(app, mod);
-      // app.browser.addIdentifiersToDom();
+    
+    document.getElementById("redsquare-tweet").onclick = (e) => {
+      let post = new Post(this.app, this.mod);
+      post.render();
     }
-    document.getElementById("redsquare-my-profile").onclick = (e) => {
-      app.connection.emit('redquare-show-user-feed', app.wallet.returnPublicKey());
-    }
-    /*
-    document.getElementById("redsquare-fetch-new").onclick = (e) => {
-      mod.fetchNewTweets(app, mod);
-    }
-    */
-    document.getElementById("redsquare-new-tweets-banner").onclick = (e) => {
-      e.target.style.display = 'none';
-      mod.newTweets.reverse();
-      mod.newTweets.forEach(tweet => {
-        let tweet_id = "tweet-box-" + tweet.tx.transaction.sig;
-        let parent_id = "parent-" + tweet.parent_id;
 
-        //if tweet is a reply
-        if (tweet.tx.transaction.sig != tweet.parent_id) {
-          mod.addTweetAndBroadcastRenderFamilyRequest(app, mod, tweet, 'true');
-        } else {
-          if (!document.getElementById(tweet_id)) {
-            mod.addTweetAndBroadcastRenderRequest(app, mod, tweet, 'true');
-          }
-        }
-      });
-      mod.newTweets = [];
-      e.target.style.display = "none";
-      document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
+    document.getElementById("redsquare-profile").onclick = (e) => {
+      this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.returnPublicKey());
     }
+
+    document.querySelector('.redsquare-new-tweets-banner').onclick = (e) => {
+      this.renderNewTweets();
+    }
+
+
   }
 
 }
 
-module.exports = RedSquareAppspaceHome;
+module.exports = AppspaceHome;
+
+
 

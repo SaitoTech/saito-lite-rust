@@ -289,11 +289,19 @@ class Crypto {
   isPublicKey(publickey: string) {
     if (publickey.length == 44 || publickey.length == 45) {
       if (publickey.indexOf("@") <= 0) {
-        return 1;
+	if (this.isBase58(publickey)) {
+          return 1;
+	}
       }
     }
     return 0;
   }
+
+  isBase58(t: string) { 
+    return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);
+  }
+
+ 
 
   //////////////////
   // MERKLE TREES //
@@ -404,6 +412,12 @@ class Crypto {
   fastSerialize(jsobj) {
     return stringify(jsobj);
   }
+
+  convertStringToDecimalPrecision(stringx, p=8) {
+    stringx = parseFloat(stringx);
+    return stringx.toFixed(p).replace(/0+$/,'').replace(/\.$/,'\.0').replace(/\.0$/, '');
+  }
+
 }
 
 export default Crypto;

@@ -105,7 +105,7 @@ class NetworkAPI {
    * @returns
    */
   sendAPICall(ws, command: MessageType, message_bytes: Buffer) {
-    //console.debug("sendAPICall : " + command);
+    console.debug("sendAPICall : " + command);
     return new Promise((resolve, reject) => {
       this.api_callbacks[this.api_call_index] = {
         resolve: resolve,
@@ -123,7 +123,7 @@ class NetworkAPI {
   }
 
   sendAPIResponse(ws, command: MessageType, message_id, message_bytes) {
-    //console.debug("sendAPIResponse : " + command + " : " + message_id);
+    console.debug("sendAPIResponse : " + command + " : " + message_id);
     const serialized_api_message = this.serializeAPIMessage(command, message_id, message_bytes);
     ws.send(serialized_api_message);
   }
@@ -136,7 +136,8 @@ class NetworkAPI {
    * @param {array} bytes
    */
   receiveAPIResponse(api_message) {
-    //console.log("receiveAPIResponse : " + api_message.message_id);
+
+    console.log("receiveAPIResponse : " + api_message.message_id);
 
     if (this.api_callbacks[api_message.message_id]) {
       //console.log("resolving callback : " + api_message.message_name, api_message.message_data)

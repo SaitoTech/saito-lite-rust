@@ -1,6 +1,6 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
 const NewDesignMain = require("./lib/main/newdesign-main");
-const SaitoHeader = require("./../../lib/saito/new-ui/saito-header/saito-header");
+const SaitoHeader = require("./../../lib/saito/ui/saito-header/saito-header");
 
 class NewDesign extends ModTemplate {
 

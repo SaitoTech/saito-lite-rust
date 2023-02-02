@@ -1,36 +1,41 @@
-const RedSquareAppspaceContactsTemplate = require("./contacts.template");
-const ModalAddContact = require("./../../../../lib/saito/new-ui/modals/add-contact/add-contact");
+const AppspaceContactsTemplate = require("./contacts.template");
 
-class RedSquareAppspaceContacts {
+class AppspaceContacts {
 
-  constructor(app, mod = null, selector = "") {
+  constructor(app, mod, container = "") {
     this.app = app;
+    this.mod = mod;
+    this.container = container;
     this.name = "RedSquareAppspaceContacts";
-    this.add_user_modal = new ModalAddContact(app, mod);
   }
 
-  render(app, mod, selector = "") {
-    document.querySelector(".appspace").innerHTML = "";
-    app.browser.addElementToSelector(RedSquareAppspaceContactsTemplate(app, mod), ".appspace");
-    this.attachEvents(app, mod);
-  }
+  render() {
 
-  attachEvents(app, mod) {
+console.log("RENDERING CONTACTS!");
 
     //
-    // "add contact"
+    // replace element or insert into page
     //
-    document.getElementById("redsquare-add-contact").onclick = (e) => {
-      this.add_user_modal.render(app, mod);
+    if (document.querySelector(".redsquare-contacts")) {
+      this.app.browser.replaceElementBySelector(AppspaceContactsTemplate(), ".redsquare-contacts");
+    } else {
+      if (this.container) {
+        this.app.browser.addElementToSelector(AppspaceContactsTemplate(), this.container);
+      } else {
+        this.app.browser.addElementToDom(AppspaceContactsTemplate());
+      }
     }
 
-  }
+    this.attachEvents();
+  }  
 
-  showAddModalContact(app, mod) {
-    this.add_user_modal.render(app, mod);
+  attachEvents() {
+
   }
 
 }
 
-module.exports = RedSquareAppspaceContacts;
+module.exports = AppspaceContacts;
+
+
 

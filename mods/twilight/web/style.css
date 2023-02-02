@@ -20,6 +20,10 @@
   padding: 10px;
 }
 
+.card {
+  position: relative;
+}
+
 .hud-header {
   max-width: 500px;
   margin: auto;
