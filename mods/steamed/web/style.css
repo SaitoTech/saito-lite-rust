@@ -28,7 +28,13 @@ body {
 
 
 .status-message{
-  background-color: unset;
+  background-color: tan;
+  margin-bottom: unset;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 5px 0;
 }
 
 .field_slot{
@@ -64,9 +70,9 @@ body {
   transform: translateX(-50%);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 5px;
+  grid-gap: 10px;
   background-color: saddlebrown;
-  padding: 5px;
+  padding: 7px;
   justify-items: center;
   align-content: center;
   min-height: 150px;
@@ -77,7 +83,6 @@ body {
   height: 40px;
   position: absolute;
   top: -40px;
-  background-color: tan;
   color: black;
 }
 
@@ -147,8 +152,27 @@ body {
 }
 
 
+.delete{
+  width: fit-content;
+  padding: 5px;
+  border-radius: 1px solid black;
+  background-color: tan;
+  filter: drop-shadow(2px 2px 2px black);
+  cursor: pointer;
+}
+
+.delete:hover, .delete.active_element{
+  background-color: saddlebrown;
+  color: ghostwhite;
+}
+
+.delete.active_element:hover{
+  background-color: tan;
+  color: black;
+}
+
 .player_field > .field_slot.active_element:hover{
-  filter: drop-shadow(0 0 10px yellow);
+  filter: drop-shadow(0 0 10px yellow) hue-rotate(30deg);
 }
 
 
@@ -289,6 +313,50 @@ body {
   box-shadow: 0 0 0 100vmax rgba(0,0,0,0.8);
 }
 
-.jumpy:hover img.card:last-child{
-  transform: translateY(-15%);
+.jumpy img.card:hover{
+  transform: translateY(-20%);
+}
+
+.cardfan .active_element:hover {
+  filter: hue-rotate(120deg);
+  box-shadow: 0 0 2px 5px lime;
+}
+
+.bighand>.card:nth-child(7n+1) {
+  transform: rotate(-30deg);
+  left: 0px;
+}
+
+.bighand>.card:nth-child(7n+2) {
+  transform: rotate(-20deg);
+  left: 2.5vh;
+}
+
+.bighand>.card:nth-child(7n+3) {
+  transform: rotate(-10deg);
+  left: 5vh;
+}
+
+.bighand>.card:nth-child(7n+4) {
+  transform: rotate(0deg);
+  left: 7.5vh;
+}
+
+.bighand>.card:nth-child(7n+5) {
+  transform: rotate(10deg);
+  left: 10vh;
+}
+
+.bighand>.card:nth-child(7n+6) {
+  transform: rotate(20deg);
+  left: 12.5vh;
+}
+
+.bighand>.card:nth-child(7n+7) {
+  transform: rotate(30deg);
+  left: 15vh;
+}
+
+.bighand>.card:nth-child(n+8) {
+  top: 5vh;
 }

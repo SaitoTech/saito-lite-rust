@@ -171,6 +171,7 @@ initializeGame(game_id) {
 
       }
 
+
       if (mv[0] == "turn"){
         if (!this.browser_active) {return 0;}
 
@@ -190,13 +191,6 @@ initializeGame(game_id) {
 
 
         let player = parseInt(mv[1]);
-        $(".active").removeClass("active");
-        if (this.game.player === player){
-          $("#self").addClass("active");
-        }else{
-          $("#opponent").addClass("active");
-        }
-
 
         this.game.queue.splice(qe, 1);
 
@@ -211,8 +205,10 @@ initializeGame(game_id) {
         if (this.game.state.market.length > 0 ){
           this.game.queue.push("phase\t" + mv[1]);
         }
-        this.game.state.planted = -1;
 
+        this.game.state.planted = -1;
+        this.game.state.discarded = false;
+        
         return 1;
       }
 
@@ -272,6 +268,15 @@ initializeGame(game_id) {
           this.removeEvents();
           $(".status").css("display", "none");
         }
+
+        $(".active").removeClass("active");
+        if (this.game.player === player){
+          $("#self").addClass("active");
+        }else{
+          $("#opponent").addClass("active");
+        }
+
+
         return 0;
 
      }
@@ -318,7 +323,7 @@ initializeGame(game_id) {
       //Remove the next step
       let nextMove = this.game.queue.pop();
 
-      if (nextMove !== "phase"){
+      if (nextMove.slice(0,5) !== "phase"){
         console.warn("Unexpected queue order for CONTINUE", nextMove);
         this.game.queue.push("continue");
         this.game.queue.push(nextMove);
@@ -358,6 +363,27 @@ initializeGame(game_id) {
 
       return 1;
      }
+
+
+     if (mv[0] === "discard"){
+      let player = parseInt(mv[1]);
+
+      this.game.queue.splice(qe, 1);
+      let card = mv[2];
+      
+      //So only allow one discard
+      this.game.state.discarded = true;
+
+      this.game.state.discards.push(card);
+      
+      if (this.game.player !== player){
+         $(this.cardToHTML(card)).hide().appendTo(`#discards`).slideDown(1500, ()=>{this.finishAnimation();});
+         this.game.halted = 1;
+        return 0;
+      }          
+      return 1;
+     }
+
 
      if (mv[0] === "liquidate"){
       let player = parseInt(mv[1]);
@@ -563,18 +589,24 @@ initializeGame(game_id) {
   playerTurn(){
   
     this.app.browser.replaceElementById(this.newDrawDeck(), "draw_deck");
-    this.attachBoardEvents();
 
-    if (!this.hasPlayableField() && this.game.state.planted == 0){
-      this.updateStatus("<div class='status-message'>You must liquidate a factory so you can start a new plant");  
-      return;
-    }
+    let html = `<div class="status-message"><span>`;
 
-    let html = `<div class="status-message">`;
     if (this.game.state.planted < 0){
       html += "Build any offers or discard them";
+
+      //If no offers available any more, just end the turn
+      if (this.game.state.market.length == 0){
+        this.addMove("continue");
+        this.endTurn();
+        return;
+      }
     } else if (this.game.state.planted == 0){
-      html += `Build the first plant from your hand (mandatory)`;
+      if (this.hasPlayableField()){
+        html += `Build the first plant from your hand (mandatory)`;
+      }else{
+        html += "You must liquidate a factory so you can start a new plant";
+      }
     } else if (this.game.state.planted == 1){
       html += `Build the next plant from your hand (optional)`;
     } else if (this.game.state.market.length > 0){
@@ -585,9 +617,15 @@ initializeGame(game_id) {
       html += `Draw 2 cards and end your turn`;
     }
 
-    html += `</div>`;
+    if (this.game.state.planted >= 1 && this.game.state.planted <= 2 && !this.game.state.discarded){
+      html += `...or...</span> <span class="delete"> Discard a card`;
+    }
+
+    html += `</span></div>`;
     
     this.updateStatus(html);
+    this.attachBoardEvents();
+
   }
 
 
@@ -647,22 +685,22 @@ initializeGame(game_id) {
         console.log("Sending move(s) to plant");
         this.endTurn();
       });
+      this.displayHand();
       this.attachBoardEvents(); 
       
     };
 
     if (this.game.state.planted >= 0 && this.game.state.planted < 2){
-      $(".cardfan").addClass("jumpy");
-      $(".cardfan").addClass("active_element");
+      $(".cardfan img.card:last-child").addClass("active_element");
       
       let xpos, ypos;
 
-      $(".cardfan").on("mousedown", function (e) {
+      $(".cardfan img.card:last-child").on("mousedown", function (e) {
         xpos = e.clientX;
         ypos = e.clientY;
       });
 
-      $(".cardfan").on("mouseup", function (e) {
+      $(".cardfan img.card:last-child").on("mouseup", function (e) {
         if (Math.abs(xpos - e.clientX) > 4) {
           return;
         }
@@ -704,33 +742,55 @@ initializeGame(game_id) {
       }
     })
 
-    $("#self > .field_slot").addClass("active_element");
-    $("#self > .field_slot").on("click", function(){
-      console.log($(this).attr("id"));
-      let id = $(this).attr("id");
-      //So stupid, I had a selector that would trigger on a child element so the id would be undefined
-      //Probably don't need this "safety" check any more
-      if (!id || !id.match(/s\d/)){
-        console.warn("Inappropriate click event");
-        return;
-      }
-      let slot = parseInt(id[1]);
-      if (steamSelf.game.state.self[slot-1].length === 0){
-        return;
-      }
-      if (steamSelf.isProtected(slot)){
-        steamSelf.displayModal("You cannot sell a single plant when you have a larger factory");
-      }else{
-        steamSelf.removeEvents();
-        steamSelf.prependMove(`liquidate\t${steamSelf.game.player}\t${slot}`);
-        if (steamSelf.animation_queue.length == 0){
-          steamSelf.endTurn();          
+    /*
+    We want to be a little selective so that we don't mislead users about where you can click (empty or otherwise unavailable to sell fields)
+    But we attach a click event with the error message for the single card fields because users may want to click on it (despite the lack of hover action)
+    and think the game is a mistake when there is actually an intentional rule preventing the action
+    */
+    for (let slot = 1; slot <= 3; slot++){
+      let field = `#s${slot}`;
+      $(field).off();
+      if (steamSelf.game.state.self[slot-1].length > 0){        
+        if (!steamSelf.isProtected(slot)){
+          $(field).addClass("active_element");  
+          $(field).on("click", function(){
+            steamSelf.removeEvents();
+            steamSelf.prependMove(`liquidate\t${steamSelf.game.player}\t${slot}`);
+            if (steamSelf.animation_queue.length == 0){
+              steamSelf.endTurn();          
+            }else{
+              console.log(`${steamSelf.animation_queue.length} animations still running....`);
+            }
+          });
         }else{
-          console.log(`${steamSelf.animation_queue.length} animations still running....`);
+          $(field).on("click", function(){
+            steamSelf.displayModal("You cannot sell a single plant when you have a larger factory");
+          });
         }
+        
+        
       }
-    });
+    }
 
+    $(".delete").on("click", function(){
+      steamSelf.removeEvents();
+      $(".delete").addClass("active_element");
+      $(".cardfan img.card").addClass("active_element");
+      $(".cardfan img.card").on("click", function (){
+        steamSelf.removeEvents();
+        let card = $(this).attr("data-id");
+
+
+
+        steamSelf.addMove(`discard\t${steamSelf.game.player}\t${card}`);
+        steamSelf.endTurn();
+      });
+
+      $(".delete").on("click", function(){
+        steamSelf.removeEvents();
+        steamSelf.attachBoardEvents();
+      });
+    });
 
   }
 
@@ -753,9 +813,10 @@ initializeGame(game_id) {
     $("#self > .field_slot").off();
     $("#draw_deck").off(); 
     $(".offer img").off();
-    $(".cardfan").off();
+    $(".cardfan img.card").off();
     $(".active_element").removeClass("active_element");
-    $(".jumpy").removeClass("jumpy");
+    $(".delete").off();
+    //$(".jumpy").removeClass("jumpy");
   }
 
 
@@ -860,10 +921,13 @@ initializeGame(game_id) {
   }
 
   displayHand(){
-    let cards_html = this.game.state.hand.map((card) => `<img class="card" data-id="${card}" src="${this.card_img_dir}SB_${card}.png">`).join("");
+    let cards_html = this.game.state.hand.map((card, i) => `<img class="card" id="c${i}" data-id="${card}" src="${this.card_img_dir}SB_${card}.png">`).join("");
 
     this.cardfan.render(cards_html);
     this.cardfan.addClass("bighand");  
+    this.cardfan.addClass("jumpy");
+
+    //this.cardfan.addClass("staggered-hand");  
   }
 
   displayFields(){
