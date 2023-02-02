@@ -1434,8 +1434,10 @@ class Network {
   }
 
   
-
-  sendRequestWithCallback(message: string, data = "", callback, peer = null) {
+  //
+  //
+  //
+  sendRequestAsTransactionWithCallback(message: string, data = "", callback, peer = null) {
 
     //
     // convert request to zero-fee transaction, send that
@@ -1447,23 +1449,23 @@ class Network {
     // everything but time-intensive sig
     //
     newtx.presign(this.app);
-
-console.log("sending as TX with callback...");
-console.log("TXDATA SENT: " + JSON.stringify(newtx.msg));
-
     this.sendTransactionWithCallback(newtx, callback, peer);
 
-//    if (peer !== null) {
-//      for (let x = this.peers.length - 1; x >= 0; x--) {
-//        if (this.peers[x] === peer) {
-//          this.peers[x].sendRequestWithCallback(message, data, callback);
-//        }
-//      }
-//      return;
-//    }
-//    for (let x = this.peers.length - 1; x >= 0; x--) {
-//      this.peers[x].sendRequestWithCallback(message, data, callback);
-//    }
+  }
+
+  sendRequestWithCallback(message: string, data = "", callback, peer = null) {
+
+    if (peer !== null) {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        if (this.peers[x] === peer) {
+          this.peers[x].sendRequestWithCallback(message, data, callback);
+        }
+      }
+      return;
+    }
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendRequestWithCallback(message, data, callback);
+    }
   }
 
   //

@@ -134,10 +134,7 @@ console.log("Error showing libraries in NwasmLibrary... " + err);
 		    }
 		  }
 
-        	  app.network.sendRequestWithCallback(message.request, message.data, function(res) {
-console.log("======-----======");
-console.log("======--1--======");
-console.log("======-----======");
+        	  app.network.sendRequestAsTransactionWithCallback(message.request, message.data, function(res) {
                   }, peer);
 	        }
 	      }

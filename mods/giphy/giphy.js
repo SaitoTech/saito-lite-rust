@@ -61,7 +61,7 @@ class Giphy extends ModTemplate {
 
         if (!this.auth) {
             let saitogif_self = this;
-            app.network.sendRequestWithCallback("get giphy auth", {}, function (res) {
+            app.network.sendRequestAsTransactionWithCallback("get giphy auth", {}, function (res) {
                 //console.log(res);
                 saitogif_self.auth = res;
                 saitogif_self.attachEvents(res);

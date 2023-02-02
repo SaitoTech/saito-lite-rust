@@ -426,6 +426,9 @@ try {
 
   returnMessage() {
 
+console.log("TRANSACTION:");
+console.log(JSON.stringify(this));
+
     if (this.dmsg !== "") {
       return this.dmsg;
     }
@@ -436,17 +439,30 @@ try {
 
     try {
       if (this.transaction.m && this.transaction.m.byteLength > 0) {
-        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+console.log("A");
+        const reconstruct = this.transaction.m.toString("utf-8");
+        //const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+console.log("B - " + reconstruct);
         this.msg = JSON.parse(reconstruct);
+console.log("C");
       } else {
+console.log("D");
         this.msg = {};
+console.log("E");
       }
     } catch (err) {
       // TODO : handle this without printing an error
-      console.log(
-        `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
-      );
-      console.error("error parsing return message", err);
+      try {
+console.log("fallback on failure...");
+        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+        this.msg = JSON.parse(reconstruct);
+      } catch (err) {
+        console.log(
+          `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
+        );
+        console.error("error parsing return message", err);
+        console.log("here: " + JSON.stringify(this.msg));
+      }
     }
     return this.msg;
   }

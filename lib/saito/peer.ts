@@ -184,7 +184,12 @@ class Peer {
     let channel = this.uses_stun ? this.stun.data_channel : this.socket;
     await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
   }
-  sendRequestAsTransaction(message: string, data: any = "") {
+  sendRequestAsTransactionWithCallback(message: string, data: any = "", mycallback = null) {
+    return this.sendRequestAsTransaction(message, data, mycallback);
+  }
+  sendRequestAsTransaction(message: string, data: any = "", mycallback = null) {
+
+    if (mycallback == null) { mycallback = () => {}; }
 
     //
     // convert request to zero-fee transaction, send that
@@ -197,7 +202,7 @@ class Peer {
     //
     newtx.presign(this.app);
 
-    this.sendTransactionWithCallback(newtx, () => {});
+    this.sendTransactionWithCallback(newtx, mycallback);
 
     return;
   }
@@ -373,9 +378,7 @@ class Peer {
       }
     } else if (this.socket) {
       if (this.socket && this.socket.readyState === this.socket.OPEN) {
-console.log("pre serialize buffer:");
         const buffer = tx.serialize(this.app);
-console.log("post serialize buffer:");
         this.app.networkApi
           .sendAPICall(this.socket, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {
@@ -384,9 +387,6 @@ console.log("post serialize buffer:");
               newtx.deserialize(this.app, response, 0);
 	      let txmsg = newtx.returnMessage();
               callback(txmsg.response);
-//              let content = Buffer.from(response).toString("utf-8");
-//              content = JSON.parse(content);
-//              callback(content);
             }
           })
           .catch((error) => {
