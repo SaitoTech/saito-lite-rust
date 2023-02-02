@@ -68,14 +68,17 @@ class Registry extends ModTemplate {
   }
 
 
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-  async handlePeerRequest(app, message, peer, mycallback = null) {
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
+
     //
     // this code doubles onConfirmation
     //
     if (message.request === 'registry username update') {
 
-      let tx = message.data.tx;
+      let tx = message?.data?.tx;
       let registry_self = app.modules.returnModule("Registry");
 
       //
@@ -97,7 +100,7 @@ class Registry extends ModTemplate {
       }
     }
 
-    super.handlePeerRequest(app, message, peer, mycallback);
+    super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
 

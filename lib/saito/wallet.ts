@@ -133,10 +133,12 @@ export default class Wallet {
   }
 
   addTransactionToPending(tx: Transaction) {
+return;
     const txjson = JSON.stringify(tx.transaction);
     if (txjson.length > 100000) {
       return;
     }
+console.log("ADDING TX TO PENDING: " + txjson);
     if (!this.wallet.pending.includes(txjson)) {
       this.wallet.pending.push(txjson);
       this.saveWallet();

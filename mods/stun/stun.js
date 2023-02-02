@@ -225,33 +225,7 @@ class Stun extends ModTemplate {
                 callback: function (app, public_key) {
                     app.connection.emit('game-start-video-call', public_key);
                 }
-            },
-                // {
-                //     text: "Audio Call",
-                //     icon: "fas fa-microphone",
-                //     callback: function (app, public_key) {
-                //         app.connection.emit('game-start-audio-call', public_key);
-                //     }
-                // },
-                // {
-                //     text: "Stun connect",
-                //     icon: "",
-                //     callback: function (app, public_key) {
-                //         // app.connection.emit('game-start-audio-call', public_key);
-                //         let stunx = app.modules.returnModule("Stun");
-                //         stunx.createStunConnectionWithPeers([public_key]);
-                //     }
-                // },
-                // {
-                //     text: "Send Message to peer",
-                //     icon: "",
-                //     callback: function (app, public_key) {
-                //         // app.connection.emit('game-start-audio-call', public_key);
-                //         let stunx = app.modules.returnModule("Stun");
-                //         stunx.sendRequest(public_key);
-                //     }
-                // }
-            ]
+            }];
         }
         return null;
     }
@@ -291,8 +265,11 @@ class Stun extends ModTemplate {
 
 
 
+    async handlePeerTransaction(app, newtx=null, peer, mycallback) {
 
-    handlePeerRequest(app, message, peer, mycallback) {
+      if (newtx == null) { return; }
+      let message = newtx.returnMessage();
+
         if (message.request == null) {
             return;
         }
@@ -303,7 +280,6 @@ class Stun extends ModTemplate {
             let tx = message.data.tx;
             if (tx.msg.request === "create room") {
                 this.receiveCreateRoomTransaction(app, tx);
-
             }
             if (tx.msg.request === "update room") {
                 this.receiveUpdateRoomTransaction(app, tx);
@@ -314,8 +290,10 @@ class Stun extends ModTemplate {
             console.log('message received ', message, message.data, message.data.tx);
         }
 
-        super.handlePeerRequest(app, message, peer, mycallback)
+        super.handlePeerTransaction(app, newtx, peer, mycallback)
+
     }
+
 
 
 
@@ -339,7 +317,7 @@ class Stun extends ModTemplate {
         };
         message.request = "stunx offchain update";
         message.data.tx = newtx;
-        server.sendRequest(message.request, message.data);
+        server.sendRequestAsTransaction(message.request, message.data);
         // siteMessage("Call created", 5000);
         if (callback) {
             callback(this.app, this.mod, roomCode)
@@ -368,7 +346,7 @@ class Stun extends ModTemplate {
         };
         message.request = "stunx offchain update";
         message.data.tx = newtx;
-        server.sendRequest(message.request, message.data);
+        server.sendRequestAsTransaction(message.request, message.data);
     }
 
 
@@ -1093,30 +1071,6 @@ class Stun extends ModTemplate {
         }
         // update database and delete public key from room
     }
-    // sendRequest( publickey){
-    //   let newtx = this.app.wallet.createUnsignedTransaction();
-    //   // get recipient -- server in this case
-    // //   let server_pub_key = 
-
-
-    //   let peer = this.app.network.peers.find(peer => peer.peer.publickey == publickey)
-
-    //   newtx.transaction.to.push(new saito.default.slip(publickey));
-    //   newtx.msg.module = "Stun";
-    //   newtx.msg.request = "testing stunx"
-    //   newtx.msg.data = {
-    //     name: 'test'
-    //   }
-    //   newtx = this.app.wallet.signTransaction(newtx);
-    //   let message = {
-    //       data: {}
-    //   };
-    //   message.request = "testing stunx";
-    //   message.data.tx = newtx;
-    //   peer.sendRequest(message.request, message.data);
-
-    // }
-
 
 
 

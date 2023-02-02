@@ -268,16 +268,7 @@ class RedSquare extends ModTemplate {
     //
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
 
-console.log("^^^");
-console.log("^^^");
-console.log("^^^");
-console.log("initializing load request: " + new Date().getTime());
-
     this.loadTweetsFromPeer(peer, sql, () => {
-console.log("^^^");
-console.log("^^^");
-console.log("^^^");
-console.log("thread render request: " + new Date().getTime());
       this.app.connection.emit("redsquare-home-render-request");
       this.app.browser.addIdentifiersToDom();
     }, true);
@@ -494,10 +485,6 @@ console.log("thread render request: " + new Date().getTime());
 
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
 
-console.log("CALLBACK FROM LOAD TWEETS AND RETURN: ");
-console.log("time: " + new Date().getTime());
-console.log("num txs: " + txs.length);
-
       if (to_track_tweet){
         if(tweet_to_track){
           this.trackTweet(tweet_to_track);
@@ -564,8 +551,6 @@ console.log("num txs: " + txs.length);
             }
           }
         }
-
-console.log("ADDING AS NOTIFICATION!");
 
         is_notification = 1;
         this.notifications.splice(insertion_index, 0, tweet);
@@ -1183,9 +1168,6 @@ console.log("ADDING AS NOTIFICATION!");
             let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
   
-            console.log("rows");
-            console.log(rows);
-
             for (let i = 0; i < rows.length; i++) {
               let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
               let txmsg = tx.returnMessage();

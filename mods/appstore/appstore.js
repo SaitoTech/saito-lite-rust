@@ -72,12 +72,13 @@ class AppStore extends ModTemplate {
   }
 
 
-  //
-  // database queries inbound here
-  //
-  async handlePeerRequest(app, message, peer, mycallback = null) {
 
-    super.handlePeerRequest(app, message, peer, mycallback);
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
+
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
+
+    super.handlePeerTransaction(app, tx, peer, mycallback);
 
     if (message.request === "appstore search modules") {
 
@@ -99,8 +100,9 @@ class AppStore extends ModTemplate {
       mycallback(res);
 
     }
-
   }
+
+
 
 
   //

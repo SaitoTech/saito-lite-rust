@@ -192,11 +192,11 @@ class Arcade extends ModTemplate {
               }
             }
 
+            this.app.connection.emit('arcade-invite-manager-render-request');
             if (arcade_self.debug){
               console.log(record.status, game_tx.returnMessage());
             }
             arcade_self.addGame(game_tx, record.status);
-
           }
         }
 
@@ -387,9 +387,9 @@ class Arcade extends ModTemplate {
     try {
       if (conf == 0) {
 
-        if (arcade_self.debug){
-          console.log("ON CONFIRMATION:", JSON.parse(JSON.stringify(txmsg)));
-        }
+        //if (this.debug) {
+        //  console.log("ON CONFIRMATION:", JSON.parse(JSON.stringify(txmsg)));
+        //}
 
         if (txmsg.module === "ArcadeInvite") {
          
@@ -468,28 +468,36 @@ class Arcade extends ModTemplate {
     }
   }
 
+
+
+
+
   /////////////////////////////
   // HANDLE PEER TRANSACTION //
   /////////////////////////////
   //
   // handles off-chain transactions
   //
-  async handlePeerRequest(app, message, peer, mycallback = null) {
+  async handlePeerTransaction(app, newtx=null, peer, mycallback = null) {
+  
+    if (newtx == null) { return; }
+    let message = newtx.returnMessage();
+    let tx = null;
 
     //
     // this code doubles onConfirmation
     //
     if (message.request === "arcade spv update" || message.request === "game relay gameover") {
 
-      let tx = null;
+console.log("Arcade HPT: " + JSON.stringify(message));
 
-      if (!message.data.tx) {
-        if (message.data.transaction) {
-          tx = new saito.default.transaction(message.data.transaction);
+      if (!message.data) {
+        if (message.data) {
+          tx = new saito.default.transaction(message.data);
         }
       }
       if (tx == null) {
-        tx = new saito.default.transaction(message.data.tx.transaction);
+        tx = new saito.default.transaction(message.data);
       }
 
       let txmsg = tx.returnMessage();
@@ -592,7 +600,7 @@ class Arcade extends ModTemplate {
 
     }
 
-    super.handlePeerRequest(app, message, peer, mycallback);
+    super.handlePeerTransaction(app, newtx, peer, mycallback);
 
   }
 
@@ -600,6 +608,7 @@ class Arcade extends ModTemplate {
   // send TX to our SPV peers
   //
   notifyPeers(tx) {
+
     if (this.app.BROWSER == 1) { return; }
     for (let i = 0; i < this.app.network.peers.length; i++) {
       if (this.app.network.peers[i].peer.synctype == "lite") {
@@ -608,9 +617,9 @@ class Arcade extends ModTemplate {
         //  
         let message = {};
         message.request = "arcade spv update";
-        message.data = {};
-        message.data.tx = tx;
-        this.app.network.peers[i].sendRequest(message.request, message.data);
+        message.data = tx.transaction;
+
+        this.app.network.peers[i].sendRequestAsTransaction(message.request, message.data);
       }
     }
   }
@@ -804,8 +813,8 @@ class Arcade extends ModTemplate {
     let close_tx = this.createCancelTransaction(game);
     this.app.network.propagateTransaction(close_tx);
 
-    this.app.connection.emit("send-relay-message", { recipient: game.msg.players, request: "arcade spv update", data: close_tx });
-    this.app.connection.emit("send-relay-message", { recipient: "PEERS", request: "arcade spv update", data: close_tx });
+    this.app.connection.emit("send-relay-message", { recipient: game.msg.players, request: "arcade spv update", data: close_tx.transaction });
+    this.app.connection.emit("send-relay-message", { recipient: "PEERS", request: "arcade spv update", data: close_tx.transaction });
  
   }
 
@@ -864,8 +873,8 @@ class Arcade extends ModTemplate {
     let close_tx = this.createCloseTransaction(game);
     this.app.network.propagateTransaction(close_tx);
 
-    this.app.connection.emit("send-relay-message", { recipient: game.msg.players, request: "arcade spv update", data: close_tx });
-    this.app.connection.emit("send-relay-message", { recipient: "PEERS", request: "arcade spv update", data: close_tx });
+    this.app.connection.emit("send-relay-message", { recipient: game.msg.players, request: "arcade spv update", data: close_tx.transaction });
+    this.app.connection.emit("send-relay-message", { recipient: "PEERS", request: "arcade spv update", data: close_tx.transaction });
 
   }
 
@@ -1008,8 +1017,8 @@ class Arcade extends ModTemplate {
         game.msg.players_sigs.splice(0, 1);
         let newtx = this.createAcceptTransaction(game);
         this.app.network.propagateTransaction(newtx);
-        this.app.connection.emit("send-relay-message", { recipient: "PEERS", request: "arcade spv update", data: newtx });
-        this.app.connection.emit("send-relay-message", { recipient: game.msg.players, request: "arcade spv update", data: newtx });
+        this.app.connection.emit("send-relay-message", { recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
+        this.app.connection.emit("send-relay-message", { recipient: game.msg.players, request: "arcade spv update", data: newtx.transaction });
     
         //Start Spinner  
         this.app.connection.emit("arcade-game-initialize-render-request");
@@ -1840,7 +1849,7 @@ console.log("FINISH: " + JSON.stringify(this.games));
 
       let newtx = this.createOpenTransaction(gamedata, desired_opponent_publickey);
       this.app.network.propagateTransaction(newtx);
-      this.app.connection.emit("send-relay-message", { recipient: "PEERS", request: "arcade spv update", data: newtx });
+      this.app.connection.emit("send-relay-message", { recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
 
       this.addGame(newtx, "mine");
 

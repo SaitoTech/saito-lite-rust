@@ -159,7 +159,6 @@ class Peer {
     }
     this.keep_alive_timer = setInterval(() => {
       try {
-        // console.log("send ping request...");
         this.sendRequest("PINGPING");
       } catch (err) {
         console.log("ping is not working");
@@ -174,11 +173,40 @@ class Peer {
   ////////////////
   // NETWORKING //
   ////////////////
+  //
+  // tags as response and sends as direct binary stream
+  //
+  async sendTransactionResponse(message_id, data) {
+    let channel = this.uses_stun ? this.stun.data_channel : this.socket;
+    await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
+  }
   async sendResponse(message_id, data) {
     let channel = this.uses_stun ? this.stun.data_channel : this.socket;
     await this.app.networkApi.sendAPIResponse(channel, MessageType.Result, message_id, data);
   }
+  sendRequestAsTransactionWithCallback(message: string, data: any = "", mycallback = null) {
+    return this.sendRequestAsTransaction(message, data, mycallback);
+  }
+  sendRequestAsTransaction(message: string, data: any = "", mycallback = null) {
 
+    if (mycallback == null) { mycallback = () => {}; }
+
+    //
+    // convert request to zero-fee transaction, send that
+    //
+    let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+        newtx.msg.request = message;
+        newtx.msg.data = data;
+    //
+    // everything but time-intensive sig
+    //
+    newtx.presign(this.app);
+
+    this.sendTransactionWithCallback(newtx, mycallback);
+
+    return;
+  }
+  
   sendRequest(message: string, data: any = "") {
     let socket = this.socket;
     if (this.uses_stun) {
@@ -258,81 +286,23 @@ class Peer {
   // new default implementation
   //
   sendRequestWithCallback(message: string, data: any = "", callback = null, loop = true) {
-    //console.log("sendRequestWithCallback : " + message);
-    //
-    // respect prohibitions
-    //
-    if (this.peer.receiveblks === 0 && message === "block") {
-      return;
-    }
-    if (this.peer.receiveblks === 0 && message === "blockchain") {
-      return;
-    }
-    if (this.peer.receivetxs === 0 && message === "transaction") {
-      return;
-    }
-    if (this.peer.receivegts === 0 && message === "golden ticket") {
-      return;
-    }
 
-    const data_to_send = { message: message, data: data };
-    const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
-
-    if (this.uses_stun) {
-      let data_channel = this.stun.data_channel;
-      if (data_channel && data_channel.readyState === "open") {
-        this.app.networkApi
-          .sendAPICall(data_channel, MessageType.ApplicationMessage, buffer)
-          .then((response: Buffer) => {
-            if (callback) {
-              let content = Buffer.from(response).toString("utf-8");
-              content = JSON.parse(content);
-              callback(content);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            if (callback) {
-              callback({ err: error.toString() });
-            }
-          });
-      } else {
-        if (loop) {
-          this.sendRequestWithCallbackAndRetry(message, data, callback);
-        } else {
-          if (callback) {
-            callback({ err: "Socket Not Connected" });
-          }
-        }
-      }
-    } else if (this.socket) {
-      if (this.socket && this.socket.readyState === this.socket.OPEN) {
-        this.app.networkApi
-          .sendAPICall(this.socket, MessageType.ApplicationMessage, buffer)
-          .then((response: Buffer) => {
-            if (callback) {
-              let content = Buffer.from(response).toString("utf-8");
-              content = JSON.parse(content);
-              callback(content);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            if (callback) {
-              callback({ err: error.toString() });
-            }
-          });
-      } else {
-        if (loop) {
-          this.sendRequestWithCallbackAndRetry(message, data, callback);
-        } else {
-          if (callback) {
-            callback({ err: "Socket Not Connected" });
-          }
-        }
-      }
-    }
+    //
+    // convert request to zero-fee transaction, send that
+    //
+    let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+        newtx.msg.request = message;
+        newtx.msg.data = data;
+    //
+    // everything but time-intensive sig
+    //
+    newtx.presign(this.app);
+    
+    this.sendTransactionWithCallback(newtx, callback);   
+ 
   }
+
+
 
   //
   // repeats until success. this should no longer be called directly, it is called by the
@@ -381,9 +351,14 @@ class Peer {
           .sendAPICall(data_channel, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {
             if (callback) {
-              let content = Buffer.from(response).toString("utf-8");
-              content = JSON.parse(content);
-              callback(content);
+              let newtx = new Transaction();
+              newtx.deserialize(this.app, response, 0);
+	      let txmsg = newtx.returnMessage();
+              callback(txmsg.response);
+
+              //let content = Buffer.from(response).toString("utf-8");
+              //content = JSON.parse(content);
+              //callback(content);
             }
           })
           .catch((error) => {
@@ -408,9 +383,10 @@ class Peer {
           .sendAPICall(this.socket, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {
             if (callback) {
-              let content = Buffer.from(response).toString("utf-8");
-              content = JSON.parse(content);
-              callback(content);
+              let newtx = new Transaction();
+              newtx.deserialize(this.app, response, 0);
+	      let txmsg = newtx.returnMessage();
+              callback(txmsg.response);
             }
           })
           .catch((error) => {

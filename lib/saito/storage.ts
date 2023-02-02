@@ -82,6 +82,8 @@ class Storage {
     data.num = num;
     data.publickey = this.app.wallet.returnPublicKey();
 
+console.log("archive load!");
+
     peer.sendRequestWithCallback(message, data, (obj) => {
       let txs = [];
       if (obj) {
@@ -108,7 +110,7 @@ class Storage {
   //
   // check local archive if exists
   //
-  loadTransactionsFromLocal(type = "all", num = 50, peer, mycallback) {
+  loadTransactionsFromLocal(type = "all", num = 50, mycallback) {
     const message = "archive";
     const data: any = {};
     data.request = "load";
@@ -116,10 +118,17 @@ class Storage {
     data.num = num;
     data.publickey = this.app.wallet.returnPublicKey();
 
+console.log("archive load!");
+
+    let newtx = new Transaction();
+    newtx.msg.request = message;
+    newtx.msg.data = data;
+    newtx.presign(this.app);
+
     let archive_mod = this.app.modules.returnModule("Archive");
     if (archive_mod) {
 
-      let res = archive_mod.handlePeerRequest(this.app, message, null, (obj) => {
+      let res = archive_mod.handlePeerTransaction(this.app, newtx, null, (obj) => {
         let txs = [];
         if (obj) {
           if (obj.txs) {

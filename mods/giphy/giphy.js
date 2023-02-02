@@ -61,7 +61,7 @@ class Giphy extends ModTemplate {
 
         if (!this.auth) {
             let saitogif_self = this;
-            app.network.sendRequestWithCallback("get giphy auth", {}, function (res) {
+            app.network.sendRequestAsTransactionWithCallback("get giphy auth", {}, function (res) {
                 //console.log(res);
                 saitogif_self.auth = res;
                 saitogif_self.attachEvents(res);
@@ -165,17 +165,19 @@ class Giphy extends ModTemplate {
         }
     }
 
-    async handlePeerRequest(app, message, peer, mycallback = null) {
-        if (message.request === "get giphy auth") {
-            let api_key = "";
-            try {
-                api_key = process.env.GIPHY_KEY;
-                if (mycallback) { mycallback(api_key) }
-            } catch (err) {
-                console.log('Failed to find key with error: ' + err);
-            }
-               
-        }
+
+    async handlePeerTransaction(app, tx=null, peer, mycallback) {
+      if (tx == null) { return; }
+      let message = tx.returnMessage();
+      if (message.request === "get giphy auth") {
+          let api_key = "";
+          try {
+              api_key = process.env.GIPHY_KEY;
+              if (mycallback) { mycallback(api_key) }
+          } catch (err) {
+              console.log('Failed to find key with error: ' + err);
+          }          
+      }
     }
 
 }

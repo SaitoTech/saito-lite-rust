@@ -184,7 +184,6 @@ class Network {
         console.log("direct data channel created with ", peer.peer.publickey);
       }
       this.app.handshake.initiateHandshake(peer.stun.data_channel);
-
       this.app.network.requestBlockchain(peer);
       this.app.connection.emit("peer_connect", peer);
       this.app.connection.emit("connection_up", peer);
@@ -389,7 +388,6 @@ class Network {
       peer.socket.onmessage = async (event) => {
         try {
           const data = new Uint8Array(await event.data.arrayBuffer());
-          // console.log("data buffer 2 first: ", data[0]);
           const api_message = this.app.networkApi.deserializeAPIMessage(data);
           if (api_message.message_type == MessageType.Result) {
             this.app.networkApi.receiveAPIResponse(api_message);
@@ -680,7 +678,6 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    //console.log("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -695,7 +692,6 @@ class Network {
     switch (message.message_type) {
       case MessageType.HandshakeChallenge: {
         await this.app.handshake.handleIncomingHandshakeChallenge(peer, message.message_data);
-
         break;
       }
 
@@ -738,7 +734,6 @@ class Network {
       //   break;
       // }
       case MessageType.Ping:
-        // console.log("received ping...");
         // job already done!
         break;
 
@@ -988,16 +983,23 @@ class Network {
       //   break;
 
       case MessageType.ApplicationTransaction: {
+
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
 
+        let app = this.app;
+
         const mycallback = function (response_object) {
-console.log("ApplicationTransaction sending response!");
-console.log("response size: " + JSON.stringify(response_object).length);
-          peer.sendResponse(
+
+	  let newtx = new Transaction();
+	  newtx.msg.response = response_object;
+	  newtx.presign(app);
+
+          peer.sendTransactionResponse(
             message.message_id,
-            Buffer.from(JSON.stringify(response_object), "utf-8")
+            newtx.serialize(app)
           );
+
         };
 
         await this.app.modules.handlePeerTransaction(tx, peer, mycallback);
@@ -1033,12 +1035,10 @@ console.log("response size: " + JSON.stringify(response_object).length);
         if (reconstructed_data) {
           msg.data = reconstructed_data;
         }
-        const mycallback = function (response_object) {
-console.log("ApplicationTransaction sending response!");
-console.log("response size: " + JSON.stringify(response_object).length);
+        const mycallback = (response_object) => {
           peer.sendResponse(
             message.message_id,
-            Buffer.from(JSON.stringify(response_object), "utf-8")
+            Buffer.from(this.app.crypto.fastSerialize(response_object), "utf-8")
           );
         };
 
@@ -1061,7 +1061,9 @@ console.log("response size: " + JSON.stringify(response_object).length);
                 }
               }
             }
-            await this.app.modules.handlePeerRequest(msg, peer, mycallback);
+	    let newtx = new Transaction();
+	    newtx.msg = msg.data;
+            await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
         }
         break;
       }
@@ -1241,7 +1243,9 @@ console.log("response size: " + JSON.stringify(response_object).length);
     // if this is our (normal) transaction, add to pending
     //
     if (tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
-      this.app.wallet.addTransactionToPending(tx);
+      if (!tx.isGoldenTicket()) {
+        this.app.wallet.addTransactionToPending(tx);
+      }
       this.app.connection.emit("update_balance", this.app.wallet);
     }
 
@@ -1393,6 +1397,16 @@ console.log("response size: " + JSON.stringify(response_object).length);
     }
   }
 
+  sendRequestAsTransaction(message: string, data: any = "", peer: Peer = null) {
+    if (peer !== null) {
+      peer.sendRequestAsTransaction(message, data);
+    } else {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        this.peers[x].sendRequestAsTransaction(message, data);
+      }
+    }
+  }
+
   sendTransaction(tx: any = "", peer: Peer = null) {
     if (peer !== null) {
       peer.sendTransactionWithCallback(tx);
@@ -1420,7 +1434,28 @@ console.log("response size: " + JSON.stringify(response_object).length);
     }
   }
 
+  
+  //
+  //
+  //
+  sendRequestAsTransactionWithCallback(message: string, data = "", callback, peer = null) {
+
+    //
+    // convert request to zero-fee transaction, send that
+    //
+    let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+        newtx.msg.request = message;
+        newtx.msg.data = data;
+    //
+    // everything but time-intensive sig
+    //
+    newtx.presign(this.app);
+    this.sendTransactionWithCallback(newtx, callback, peer);
+
+  }
+
   sendRequestWithCallback(message: string, data = "", callback, peer = null) {
+
     if (peer !== null) {
       for (let x = this.peers.length - 1; x >= 0; x--) {
         if (this.peers[x] === peer) {

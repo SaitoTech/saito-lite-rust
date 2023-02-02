@@ -69,17 +69,6 @@ class Mods {
     }
   }
 
-  async handlePeerRequest(message, peer: Peer, mycallback = null) {
-    for (let iii = 0; iii < this.mods.length; iii++) {
-      try {
-        this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);
-      } catch (err) {
-        console.log("handlePeerRequest Unknown Error: ", err);
-      }
-    }
-    return;
-  }
-
   async handlePeerTransaction(tx, peer: Peer, mycallback = null) {
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {

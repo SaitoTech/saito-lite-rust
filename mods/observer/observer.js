@@ -247,7 +247,7 @@ class Observer extends ModTemplate {
         message.request = "observer spv update";
         message.data = {};
         message.data.tx = tx;
-        app.network.peers[i].sendRequest(message.request, message.data);
+        app.network.peers[i].sendRequestAsTransaction(message.request, message.data);
       }
     }
   }
@@ -282,7 +282,11 @@ class Observer extends ModTemplate {
     }
   }
 
- async handlePeerRequest(app, message, peer, mycallback = null) {
+  async handlePeerTransaction(app, tx=null, peer, mycallback = null) {
+
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
+
     //
     // this code doubles onConfirmation
     //
@@ -314,12 +318,11 @@ class Observer extends ModTemplate {
         if (app.BROWSER == 0 && app.SPVMODE == 0) {
           this.notifyPeers(app, tx);
         }
-
-  	  }
-      
+      }
     }    
 
-    super.handlePeerRequest(app, message, peer, mycallback);
+    super.handlePeerTransaction(app, tx, peer, mycallback);
+
   }
 
   createGameFromTX(tx){
