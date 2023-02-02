@@ -483,24 +483,32 @@ class Arcade extends ModTemplate {
     if (newtx == null) { return; }
     let message = newtx.returnMessage();
 
+    if (!message?.data) { return; }
+
     //
     // this code doubles onConfirmation
     //
-    if (message.request === "arcade spv update" || message.request === "game relay gameover") {
+    if (message?.request === "arcade spv update" || message?.request === "game relay gameover") {
 
       if (this.debug){
-          console.log("Arcade HPT: " + JSON.stringify(message));
+        console.log("Arcade HPT: " + JSON.stringify(message));
       }
 
       let tx = new saito.default.transaction(message.data);
 
       let txmsg = tx.returnMessage();
 
+      if (this.debug){
+          console.log("HPT embedded txmsg:", JSON.parse(JSON.stringify(txmsg)));
+      }
+
       //
       // only servers notify lite-clients
       //
+
       if (app.BROWSER == 0 && app.SPVMODE == 0) {
-        //this.notifyPeers(tx);
+        console.log("notify peers?");
+        this.notifyPeers(tx);
       }
 
       if (txmsg.module === "ArcadeInvite") {

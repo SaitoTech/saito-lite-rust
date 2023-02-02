@@ -49,7 +49,7 @@ class GameScheduler {
         }
         let relay_mod = app.modules.returnModule("Relay");
         if (relay_mod != null) {
-          relay_mod.sendRelayMessage(peers, "arcade spv update", scheduler_self.invite_tx);
+          relay_mod.sendRelayMessage(peers, "arcade spv update", scheduler_self.invite_tx.transaction);
         }
 
         console.log('add game invite_tx');
