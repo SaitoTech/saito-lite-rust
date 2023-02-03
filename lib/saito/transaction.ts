@@ -106,28 +106,22 @@ class Transaction {
           fslip.tx_ordinal
         ));
       }
-console.log("N");
 
       if (jsonobj.ts) { this.transaction.ts = jsonobj.ts; }
       if (jsonobj.sig) { this.transaction.sig = jsonobj.sig; }
       if (jsonobj.r) { this.transaction.r = jsonobj.r; }
       if (jsonobj.type) { this.transaction.type = jsonobj.type; }
       if (jsonobj.m) {
-console.log("data is: " + JSON.stringify(jsonobj.m));
         if (jsonobj.m.data) {
-console.log("EXISTS: " + jsonobj.m.data);
-console.log("AA");
           this.transaction.m = Buffer.from(jsonobj.m.data);
-console.log("BB: " + this.transaction.m.byteLength);
           const reconstruct2 = Buffer.from(this.transaction.m).toString("utf-8");
           this.msg = JSON.parse(reconstruct2);
-console.log("CC: " + JSON.stringify(this.msg));
         }
       }
 
 
 //
-// DEPRECATED -- delete if no problems
+// FRI FEB 3 -- DEPRECATED -- delete if no problems
 //
 /***********
       if (this.transaction.type === TransactionType.Normal) {
