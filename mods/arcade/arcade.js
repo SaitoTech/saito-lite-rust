@@ -225,8 +225,8 @@ class Arcade extends ModTemplate {
           //
           arcade_self.app.network.propagateTransaction(newtx);
 
-          arcade_self.app.connection.emit("send-relay-message", {recipient: game.msg.players, request: "arcade spv update", data: newtx});
-          arcade_self.app.connection.emit("send-relay-message", {recipient: "PEERS", request: "arcade spv update", data: newtx});
+          arcade_self.app.connection.emit("send-relay-message", {recipient: game.msg.players, request: "arcade spv update", data: newtx.transaction });
+          arcade_self.app.connection.emit("send-relay-message", {recipient: "PEERS", request: "arcade spv update", data: newtx.transaction });
 
           arcade_self.overlay.remove();
      
@@ -484,6 +484,8 @@ class Arcade extends ModTemplate {
     let message = newtx.returnMessage();
     let tx = null;
 
+    if (!message) { return; }
+
     //
     // this code doubles onConfirmation
     //
@@ -491,16 +493,17 @@ class Arcade extends ModTemplate {
 
 console.log("Arcade HPT: " + JSON.stringify(message));
 
-      if (!message.data) {
-        if (message.data) {
-          tx = new saito.default.transaction(message.data);
-        }
+      if (message.data) {
+        tx = new saito.default.transaction(message.data);
       }
       if (tx == null) {
-        tx = new saito.default.transaction(message.data);
+console.log("returning!");
+        return;
       }
 
       let txmsg = tx.returnMessage();
+
+console.log("embedded txmsg: " + JSON.stringify(txmsg));
 
       if (this.debug){
           console.log("HANDLE PEER REQUEST:", JSON.parse(JSON.stringify(txmsg)));
@@ -509,6 +512,7 @@ console.log("Arcade HPT: " + JSON.stringify(message));
       //
       // only servers notify lite-clients
       //
+console.log("notify peers?");
       if (app.BROWSER == 0 && app.SPVMODE == 0) {
         this.notifyPeers(tx);
       }

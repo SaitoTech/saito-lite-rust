@@ -119,7 +119,6 @@ class Saito {
       // blockchain after modules create dbs
       //
       await this.blockchain.initialize();
-
       this.network.initialize();
 
       if (this.server) {

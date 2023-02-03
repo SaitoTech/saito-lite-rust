@@ -56,7 +56,6 @@ class Relay extends ModTemplate {
             recipients.push(recipient);
         }
 
-
 console.log("RECIPIENTS: " + JSON.stringify(recipients));
 console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
 console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
@@ -73,29 +72,19 @@ console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
         tx.transaction.ts = new Date().getTime();
         tx.msg.request = message_request;
         tx.msg.data = message_data;
+
         tx.presign(this.app);
 
         //
         // ... wrapped in transaction to relaying peer
         //
         for (let i = 0; i < this.app.network.peers.length; i++) {
-
             if (this.app.network.peers[i].peer) {
-
-                //if (this.app.network.peers[i].peer.modules) {
-                //if (this.app.network.peers[i].peer.modules.length > 0) {
-                //if (this.app.network.peers[i].peer.modules.includes(this.name)) {
-
-                let peer = this.app.network.peers[i];
-
-                //
-                // forward to peer
-                //
-                peer.sendRequestAsTransaction("relay peer message", tx.transaction);
-
-            //}
-            //}
-            //}
+              //
+              // forward to peer
+              //
+              let peer = this.app.network.peers[i];
+              peer.sendRequestAsTransaction("relay peer message", tx.transaction);
             }
         }
 
@@ -169,7 +158,7 @@ console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
                             peer_found = 1;
 
 			    if (this.app.BROWSER == 0) {
-                              app.network.peers[i].sendTransactionWithCallback(tx, function () {
+                              app.network.peers[i].sendTransactionWithCallback(inner_tx, function () {
                                 if (mycallback != null) {
                                     mycallback({ err: "", success: 1 });
                                 }
