@@ -37,7 +37,7 @@ class SaitoMania extends GameTemplate {
 
   initializeGame(game_id) {
 
-
+    this.app.connection.emit("chat-manager-request-no-interrupts");
 
     if (!this.game.state) {
       console.log("******Generating the Game******");
@@ -73,20 +73,26 @@ class SaitoMania extends GameTemplate {
 
     if (!this.browser_active) { return; }
     
-    let framerate = this.game.options.framerate;
-
+    //
+    // leaving here as an example of how we can parse game.options
+    // on game load, and incorporate the variables in the init
+    // sequence -- in this case splitting to different versions of 
+    // the binary depending on system framerate support.
+    //
+    //let framerate = this.game.options.framerate;
+    let framerate = "60fps";
     if (framerate === "60fps") {
       if (window.location.toString().indexOf("60fps") == -1) {
-	window.location = "/saitomania/60fps/index.html";
-	return;
+    	window.location = "/saitomania/60fps/index.html";
+    	return;
       }
     }
-    if (framerate === "30fps") {
-      if (window.location.toString().indexOf("30fps") == -1) {
-	window.location = "/saitomania/30fps/index.html";
-	return;
-      }
-    }
+    //if (framerate === "30fps") {
+    //  if (window.location.toString().indexOf("30fps") == -1) {
+    //	window.location = "/saitomania/30fps/index.html";
+    //	return;
+    //  }
+    //}
 
     super.initializeHTML(app);
 
@@ -104,7 +110,6 @@ class SaitoMania extends GameTemplate {
 	  alert("Sorry, not available!");
         },
     });
-
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -155,15 +160,18 @@ class SaitoMania extends GameTemplate {
   }
 
 
-           
-  returnSingularGameOption(){
-    return `<div>
-            <select name="framerate" id="framerate">
-              <option value="60fps" selected>fast (60 FPS)</option>
-              <option value="30fps">slow (30 FPS)</option>
-            </select></div>
-          `;  
-  }           
+    
+  //
+  // want framerate options?
+  //       
+  //returnSingularGameOption(){
+  //  return `<div>
+  //          <select name="framerate" id="framerate">
+  //            <option value="60fps" selected>fast (60 FPS)</option>
+  //            <option value="30fps">slow (30 FPS)</option>
+  //          </select></div>
+  //        `;  
+  //}           
      
 
   //returnGameOptionsHTML() { 

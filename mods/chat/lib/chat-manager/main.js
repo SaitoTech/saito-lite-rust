@@ -34,6 +34,10 @@ class ChatManager {
 	    }
 	  });
 
+	  app.connection.on("chat-manager-request-no-interrupts", () => {
+	    this.render_popups_to_screen = 0;
+	  });
+
 	  //
 	  // handle requests to re-render chat popups
 	  //
@@ -61,6 +65,8 @@ class ChatManager {
           });
 
           app.connection.on("open-chat-with", (data=null) => {
+
+	    this.render_popups_to_screen = 1;
 
 	    //
 	    // mobile devices should not force open chat for us

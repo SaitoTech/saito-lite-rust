@@ -1,5 +1,7 @@
 module.exports = (app, mod) => {
 
+  return "";
+
   let html =  `
         <div class="overlay-input">
             <p>Play Mode:</p>
