@@ -410,7 +410,8 @@ class Crypto {
   // until it makes sense to create a dedicated helper class.
   //
   fastSerialize(jsobj) {
-    return stringify(jsobj);
+    return JSON.stringify(jsobj);
+//    return stringify(jsobj);
   }
 
   convertStringToDecimalPrecision(stringx, p=8) {
