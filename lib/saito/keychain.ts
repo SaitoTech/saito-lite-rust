@@ -567,6 +567,7 @@ class Keychain {
   }
 
   fetchManyIdentifiers(publickeys = [], mycallback) {
+
     const found_keys = [];
     const missing_keys = [];
 

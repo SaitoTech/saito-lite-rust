@@ -204,7 +204,7 @@ class RedSquare extends ModTemplate {
   //
   // runs when archive peer connects
   //
-  async onArchiveHandshakeComplete(app, peer) {
+  async onServiceUp(app, peer, service={}) {
 
     //
     // avoid network overhead if in other apps
@@ -212,11 +212,24 @@ class RedSquare extends ModTemplate {
     if (!this.browser_active) { return; }
 
     //
-    // check peer for any archived tweets
+    // archive -- load our own tweets
     //
-    this.loadNotificationsFromPeer(peer);
+    if (service.service === "archive") {
+      this.loadNotificationsFromPeer(peer);
+    }
+
+    //
+    // registry -- load DNS names
+    //
+    if (service.service === "registry") {
+      this.app.connection.emit("registry-fetch-identifiers-and-update-dom", { unidentified_keys , peer });
+    }
 
   }
+
+
+
+
 
   //
   // runs when normal peer connects
@@ -273,13 +286,10 @@ class RedSquare extends ModTemplate {
       this.app.browser.addIdentifiersToDom();
     }, true);
 
-
-    //
-    // this triggers onArchiveHandshakeComplete if peer is archive etc.
-    //
-    super.onPeerHandshakeComplete(app, peer);
-
   }
+
+
+
   //
   // this initializes the DOM but does not necessarily show the loaded content 
   // onto the page, as we are likely being asked to render the components on 

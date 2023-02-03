@@ -15,10 +15,21 @@ class Registry extends ModTemplate {
     this.description = "Adds support for the Saito DNS system, so that users can register user-generated names. Runs DNS server on core nodes.";
     this.categories = "Core Utilities Messaging";
 
+    this.fetched_keys = [];
+
     //
     // master DNS publickey for this module
     //
     this.publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
+
+    this.app.connection.on("registry-fetch-identifiers-and-update-dom", (keys, peer) => {
+console.log("REGISTRY-FETCH-IDENTIFIERS-AND-UPDATE-DOM");
+      this.fetchManyIdentifiers(keys, peer, (answer) => {
+console.log("REGISTRY-FETCH-IDENTIFIERS-AND-UPDATE-DOM-RES");
+console.log(JSON.stringify(answer));
+        Object.entries(answer).forEach(([key, value]) => this.app.browser.updateAddressHTML(key, value));
+      });
+    });
 
     return this;
   }
@@ -31,11 +42,165 @@ class Registry extends ModTemplate {
     // responses to inbound requests for DNS queries, only services that are actually
     // registering domains should report they run the registry module.
     //
+    if (this.app.BROWSER == 0) {
     //if (this.publickey == this.app.wallet.returnPublicKey()) {
-    services.push({ service: "registry", domain: "saito" });
-    //}
+      services.push({ service: "registry", domain: "saito" });
+    }
     return services;
   }
+
+
+
+
+  //
+  // fetching identifiers
+  //
+  fetchManyIdentifiers(publickeys = [], peer = null, mycallback = null) {
+
+console.log("FETCHING THE IDENTIFIERS... 2");
+
+    if (mycallback == null) { return; }
+
+    const found_keys = [];
+    const missing_keys = [];
+
+console.log("FETCHING THE IDENTIFIERS...3 ");
+    publickeys.forEach((publickey) => {
+      const identifier = this.app.keys.returnIdentifierByPublicKey(publickey);
+      if (identifier.length > 0) {
+        found_keys[publickey] = identifier;
+      } else {
+        missing_keys.push(`'${publickey}'`);
+      }
+    });
+
+    if (missing_keys.length == 0) {
+      mycallback(found_keys);
+      return;
+    }
+
+console.log("FETCHING THE IDENTIFIERS... 3.5");
+    const where_statement = `publickey in (${missing_keys.join(",")})`;
+    const sql = `select * from records where ${where_statement}`;
+
+    this.sendPeerDatabaseRequestWithFilter(
+
+      "Registry",
+
+      sql,
+
+      (res) => {
+console.log("FETCHING THE IDENTIFIERS... 4");
+        try {
+          let rows = [];
+          if (typeof res.rows != "undefined") {
+            if (!res.err) {
+              if (res.rows.length > 0) {
+                rows = res.rows.map((row) => {
+                  const { publickey, identifier, bid, bsh, lc } = row;
+                  this.addKey(publickey, {
+                    identifier: identifier,
+                    watched: false,
+                    block_id: bid,
+                    block_hash: bsh,
+                    lc: lc,
+                  });
+                  if (!found_keys.includes(publickey)) {
+                    found_keys[publickey] = identifier;
+                  }
+                });
+              }
+            }
+          }
+          mycallback(found_keys);
+        } catch (err) {
+          console.log(err);
+        }
+      },
+
+      (p) => {
+	if (peer == null) {
+          if (peer.peer.services) {
+            for (let z = 0; z < peer.peer.services.length; z++) {
+              if (peer.peer.services[z].service === "registry") {
+                return 1;
+              }
+            }
+          }
+        } else {
+          if (p == peer) {
+	    return 1;
+	  }
+	}
+      }
+    );
+  }
+
+
+  fetchIdentifier(publickey, peer = null, mycallback = null) {
+
+    if (mycallback == null) { return; }
+
+    this.sendPeerDatabaseRequestWithFilter(
+
+      "Registry",
+
+      'SELECT * FROM records WHERE publickey = "' + publickey + '"',
+
+      (res) => {
+        let rows = [];
+    
+        if (res.rows == undefined) {
+          mycallback(rows);
+        }
+        if (res.err) {
+          mycallback(rows);
+        }
+        if (res.rows == undefined) {
+          mycallback(rows);
+        }
+        if (res.rows.length == 0) {
+          mycallback(rows);
+        }
+        rows = res.rows.map((row) => {
+          const { publickey, identifier, bid, bsh, lc } = row;
+      
+          // keep track that we fetched this already
+          this.fetched_keys[publickey] = 1;
+          this.addKey(publickey, {
+            identifier: identifier,
+            watched: false,
+            block_id: bid, 
+            block_hash: bsh,
+            lc: lc,
+          });
+          if (!found_keys.includes(publickey)) {
+            found_keys[publickey] = identifier;
+          }
+        });
+        mycallback(found_keys);
+      },
+
+      (p) => {
+	if (peer == null) {
+          if (peer.peer.services) {
+            for (let z = 0; z < peer.peer.services.length; z++) {
+              if (peer.peer.services[z].service === "registry") {
+                return 1;
+              }
+            }
+          }
+        } else {
+          if (p == peer) {
+	    return 1;
+	  }
+	}
+      }
+    );
+  }
+
+
+
 
   respondTo(type = "") {
     if (type == "do-registry-prompt") {
