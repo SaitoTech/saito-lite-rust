@@ -71,15 +71,65 @@ class Transaction {
 
     if (jsonobj != null) {
 
-      this.transaction = jsonobj;
-
       //
-      // experiment
+      // if the jsonobj has been provided, we have JSON.parsed something
+      // and are providing it to the transaction, but should add sanity
+      // checks on import to ensure our transaction is type-safe.
       //
-      //if (jsonobj?.m?.data) {
-      //  this.transaction.m = Buffer.from(jsonobj.m.data);
-      //}
+      // to: new Array<Slip>(),
+      // from: new Array<Slip>(),
+      // ts: 0,
+      // sig: "",
+      // r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
+      // type: TransactionType.Normal,
+      // m: Buffer.alloc(0),
+      //
+      for (let i = 0; i < jsonobj.from.length; i++) {
+        const fslip = jsonobj.from[i];
+        this.transaction.from.push(new Slip(
+          fslip.add,
+          fslip.amt,
+          fslip.type,
+          fslip.sid,
+          fslip.block_id,
+          fslip.tx_ordinal
+        ));
+      }
+      for (let i = 0; i < jsonobj.to.length; i++) {
+        const fslip = jsonobj.to[i];
+        this.transaction.to.push(new Slip(
+          fslip.add,
+          fslip.amt,
+          fslip.type,
+          fslip.sid,
+          fslip.block_id,
+          fslip.tx_ordinal
+        ));
+      }
+console.log("N");
 
+      if (jsonobj.ts) { this.transaction.ts = jsonobj.ts; }
+      if (jsonobj.sig) { this.transaction.sig = jsonobj.sig; }
+      if (jsonobj.r) { this.transaction.r = jsonobj.r; }
+      if (jsonobj.type) { this.transaction.type = jsonobj.type; }
+      if (jsonobj.m) {
+console.log("data is: " + JSON.stringify(jsonobj.m));
+        if (jsonobj.m.data) {
+console.log("EXISTS: " + jsonobj.m.data);
+console.log("AA");
+          this.transaction.m = Buffer.from(jsonobj.m.data);
+console.log("BB: " + this.transaction.m.byteLength);
+          const reconstruct2 = Buffer.from(this.transaction.m).toString("utf-8");
+          this.msg = JSON.parse(reconstruct2);
+console.log("CC: " + JSON.stringify(this.msg));
+        }
+      }
+
+
+//
+// DEPRECATED -- delete if no problems
+//
+/***********
       if (this.transaction.type === TransactionType.Normal) {
         try {
           let buffer = Buffer.from(this.transaction.m);
@@ -101,28 +151,8 @@ class Transaction {
           //console.error(err);
         }
       }
-      for (let i = 0; i < this.transaction.from.length; i++) {
-        const fslip = this.transaction.from[i];
-        this.transaction.from[i] = new Slip(
-          fslip.add,
-          fslip.amt,
-          fslip.type,
-          fslip.sid,
-          fslip.block_id,
-          fslip.tx_ordinal
-        );
-      }
-      for (let i = 0; i < this.transaction.to.length; i++) {
-        const fslip = this.transaction.to[i];
-        this.transaction.to[i] = new Slip(
-          fslip.add,
-          fslip.amt,
-          fslip.type,
-          fslip.sid,
-          fslip.block_id,
-          fslip.tx_ordinal
-        );
-      }
+***********/
+
     }
 
     return this;
