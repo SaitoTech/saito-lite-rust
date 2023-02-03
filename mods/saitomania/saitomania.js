@@ -37,7 +37,7 @@ class SaitoMania extends GameTemplate {
 
   initializeGame(game_id) {
 
-
+    this.app.connection.emit("chat-manager-request-no-interrupts");
 
     if (!this.game.state) {
       console.log("******Generating the Game******");
@@ -110,7 +110,6 @@ class SaitoMania extends GameTemplate {
 	  alert("Sorry, not available!");
         },
     });
-
 
     this.menu.addChatMenu();
     this.menu.render();
