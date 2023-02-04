@@ -76,7 +76,6 @@ class Network {
   // we initiate an outgoing connection
   //
   addPeer(peerjson) {
-return;
 
     let peerhost = "";
     let peerport = "";
