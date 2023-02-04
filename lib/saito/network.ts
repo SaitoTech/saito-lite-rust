@@ -76,6 +76,8 @@ class Network {
   // we initiate an outgoing connection
   //
   addPeer(peerjson) {
+return;
+
     let peerhost = "";
     let peerport = "";
 
@@ -223,6 +225,7 @@ class Network {
   // server sends us a websocket
   //
   async addRemotePeer(socket) {
+return;
     // deny excessive connections
     if (this.peers_connected >= this.peers_connected_limit) {
       if (this.debugging) {
