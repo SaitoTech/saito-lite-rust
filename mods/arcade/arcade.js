@@ -1539,7 +1539,7 @@ console.log("notify peers?");
     if (tx.msg.options) {
       if (tx.msg.options.players_invited) {
         tx.msg.options.players_invited.forEach(player => {
-          if (player == this.app.wallet.returnPublicKey() || player == this.app.keys.returnIdentifierByPublicKey(this.app.wallet.returnPublicKey())) {
+          if (player == this.app.wallet.returnPublicKey() || player == this.app.keychain.returnIdentifierByPublicKey(this.app.wallet.returnPublicKey())) {
             return true;
           }
         });

@@ -1694,7 +1694,7 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
   
   returnPlayerStackHTML(player,numChips){
     let html = `<div class="chip_stack tip">`;
-    let identicon = this.app.keys.returnIdenticon(this.app.keys.returnUsername(this.game.players[player-1]));
+    let identicon = this.app.keychain.returnIdenticon(this.app.keychain.returnUsername(this.game.players[player-1]));
 
     let chipSizes = [100, 25, 5, 1];
     let idx = 0;

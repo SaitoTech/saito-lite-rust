@@ -284,7 +284,7 @@ class Browser {
         if (w[i][0] === "@") {
           if (w.length > 1) {
             let cleaner = w[i].substring(1);
-            let add = this.app.keys.returnPublicKeyByIdentifier(cleaner);
+            let add = this.app.keychain.returnPublicKeyByIdentifier(cleaner);
             if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
               add = cleaner;
             }
@@ -309,7 +309,7 @@ class Browser {
     }
     if (identifiers) {
       identifiers.forEach(id => {
-        let add = this.app.keys.returnPublicKeyByIdentifier(id);
+        let add = this.app.keychain.returnPublicKeyByIdentifier(id);
         if (this.app.crypto.isPublicKey(add)) {
           if (!keys.includes(add)) {
             keys.push(add);
@@ -1155,10 +1155,10 @@ class Browser {
     let keys = this.returnArrayOfPublicKeysInDom();
     let unidentified_keys = [];
     for (let i = 0; i < keys.length; i++) {
-      if (this.app.keys.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
+      if (this.app.keychain.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
 	unidentified_keys.push(keys[i]);
       } else {
-        this.updateAddressHTML(keys[i], this.app.keys.returnIdentifierByPublicKey(keys[i]));
+        this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
       }
     }
     return unidentified_keys;
@@ -1195,7 +1195,7 @@ class Browser {
   }
 
   returnAddressHTML(key) {
-    const identifier = this.app.keys.returnIdentifierByPublicKey(key);
+    const identifier = this.app.keychain.returnIdentifierByPublicKey(key);
     const id = !identifier ? key : identifier;
     return `<div class="saito-address saito-address-${key}" data-id="${key}">${id}</div>`;
   }
@@ -1444,7 +1444,7 @@ class Browser {
           try {
 
             identifiers.forEach(async (identifier) => {
-              let answer = this.app.keys.fetchPublicKey(identifier);
+              let answer = this.app.keychain.fetchPublicKey(identifier);
               console.log(answer + " - " + identifier);
               if (answer != identifier && answer != null) {
                 //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
@@ -1455,7 +1455,7 @@ class Browser {
             //deduplicate keys list
             keys = [...new Set(keys)];
 
-            const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
+            const answer = await this.app.keychain.fetchManyIdentifiersPromise(keys);
             mappedKeyIdentifiers = Object.assign({}, mappedKeyIdentifiers, answer);
 
             keys.forEach(k => {
@@ -1508,7 +1508,7 @@ return;
 
 console.log("FOUND PUBLIC KEY!: " + address);
 
-                let identifier = app.keys.returnIdentifierByPublicKey(address, true);
+                let identifier = app.keychain.returnIdentifierByPublicKey(address, true);
                 if (identifier) {
 
 console.log("IDENTIFIER: " + identifier);
