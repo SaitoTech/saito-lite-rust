@@ -209,12 +209,6 @@ class Chessgame extends GameTemplate {
           opponent = this.app.keys.returnIdentifierByPublicKey(opponent);
         }
         else {
-          try {
-            // opponent = await this.app.keys.fetchIdentifierPromise(opponent);
-          }
-          catch (err) {
-            console.log(err);
-          }
         }
       }
 

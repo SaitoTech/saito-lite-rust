@@ -15,7 +15,7 @@ class Registry extends ModTemplate {
     this.description = "Adds support for the Saito DNS system, so that users can register user-generated names. Runs DNS server on core nodes.";
     this.categories = "Core Utilities Messaging";
 
-    this.fetched_keys = [];
+    this.cached_keys = {};
 
     //
     // master DNS publickey for this module
@@ -24,14 +24,10 @@ class Registry extends ModTemplate {
 
     this.app.connection.on("registry-fetch-identifiers-and-update-dom", () => {
       let keys = this.app.browser.returnArrayOfUnidentifiedPublicKeysInDom();
-console.log("KEYS ARE: " + JSON.stringify(keys));
       for (let i = 0; i < this.app.network.peers.length; i++) {
-console.log("PEER : " + i);
+	let peer = this.app.network.peers[i];
 	if (this.app.network.peers[i].hasService("registry")) {
-console.log("REGISTRY-FETCH-IDENTIFIERS-AND-UPDATE-DOM");
           this.fetchManyIdentifiers(keys, peer, (answer) => {
-console.log("REGISTRY-FETCH-IDENTIFIERS-AND-UPDATE-DOM-RES");
-console.log(JSON.stringify(answer));
             Object.entries(answer).forEach(([key, value]) => this.app.browser.updateAddressHTML(key, value));
           });
         }
@@ -58,20 +54,16 @@ console.log(JSON.stringify(answer));
 
 
 
-
   //
   // fetching identifiers
   //
   fetchManyIdentifiers(publickeys = [], peer = null, mycallback = null) {
-
-console.log("FETCHING THE IDENTIFIERS... 2");
 
     if (mycallback == null) { return; }
 
     const found_keys = [];
     const missing_keys = [];
 
-console.log("FETCHING THE IDENTIFIERS...3 ");
     publickeys.forEach((publickey) => {
       const identifier = this.app.keys.returnIdentifierByPublicKey(publickey);
       if (identifier.length > 0) {
@@ -86,7 +78,6 @@ console.log("FETCHING THE IDENTIFIERS...3 ");
       return;
     }
 
-console.log("FETCHING THE IDENTIFIERS... 3.5");
     const where_statement = `publickey in (${missing_keys.join(",")})`;
     const sql = `select * from records where ${where_statement}`;
 
@@ -97,7 +88,6 @@ console.log("FETCHING THE IDENTIFIERS... 3.5");
       sql,
 
       (res) => {
-console.log("FETCHING THE IDENTIFIERS... 4");
         try {
           let rows = [];
           if (typeof res.rows != "undefined") {
@@ -105,7 +95,7 @@ console.log("FETCHING THE IDENTIFIERS... 4");
               if (res.rows.length > 0) {
                 rows = res.rows.map((row) => {
                   const { publickey, identifier, bid, bsh, lc } = row;
-                  this.addKey(publickey, {
+                  this.app.keys.addKey(publickey, {
                     identifier: identifier,
                     watched: false,
                     block_id: bid,
@@ -173,7 +163,7 @@ console.log("FETCHING THE IDENTIFIERS... 4");
           const { publickey, identifier, bid, bsh, lc } = row;
       
           // keep track that we fetched this already
-          this.fetched_keys[publickey] = 1;
+          this.cached_keys[publickey] = 1;
           this.addKey(publickey, {
             identifier: identifier,
             watched: false,
@@ -359,13 +349,16 @@ console.log("FETCHING THE IDENTIFIERS... 4");
 
     let registry_self = app.modules.returnModule("Registry");
 
-    /***** UNCOMMENT FOR LOCAL DEVELOPMENT *****
+    /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******/
     if (registry_self.app.options.server != undefined) {
       registry_self.publickey = registry_self.app.wallet.returnPublicKey();
     } else {
       registry_self.publickey = peer.peer.publickey;
     }
-    *******************************************/
+
+console.log("WE ARE NOW LOCAL SERVER");
+
+    /*******************************************/
 
   }
 
