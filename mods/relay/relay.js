@@ -18,7 +18,7 @@ class Relay extends ModTemplate {
 
         this.busy = false;
 
-        app.connection.on("send-relay-message", (obj)=>{
+        app.connection.on("relay-send-message", (obj)=>{
             if (obj.recipient === "PEERS"){
                 let peers = [];
                 for (let i = 0; i < app.network.peers.length; i++) {

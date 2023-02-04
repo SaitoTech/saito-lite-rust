@@ -308,7 +308,7 @@ class Chat extends ModTemplate {
             tx = app.wallet.signAndEncryptTransaction(tx);
             app.network.propagateTransaction(tx);
 
-            app.connection.emit("send-relay-message", { recipient, request: 'chat message broadcast', data: tx.transaction });
+            app.connection.emit("relay-send-message", { recipient, request: 'chat message broadcast', data: tx.transaction });
 
         } else {
             salert("Connection to chat server lost");

@@ -566,11 +566,12 @@ class Observer extends ModTemplate {
     tx = this.app.wallet.signTransaction(tx);
 
     this.app.network.propagateTransaction(tx);
-    //Relay too...
-    let relay_mod = this.app.modules.returnModule("Relay");
-    if (relay_mod){
-      relay_mod.sendRelayMessage(addesses_to_watch, "game relay update", tx.transaction);
-    }
+
+    //
+    // relay too
+    //
+    this.app.connection.emit("relay-send-message", { recipient: addresses_to_watch, request: "game relay update", data: tx.transaction });
+
   }
 
   insertFutureMoves(game_mod){

@@ -15,20 +15,42 @@ class Registry extends ModTemplate {
     this.description = "Adds support for the Saito DNS system, so that users can register user-generated names. Runs DNS server on core nodes.";
     this.categories = "Core Utilities Messaging";
 
-    this.cached_keys = {};
-
     //
     // master DNS publickey for this module
     //
     this.publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
 
-    this.app.connection.on("registry-fetch-identifiers-and-update-dom", () => {
-      let keys = this.app.browser.returnArrayOfUnidentifiedPublicKeysInDom();
+    //
+    // we could save the cached keys here instead of inserting them
+    // into our wallet / keychain ? perhaps that would be a much more
+    // efficient way of handling things that stuffing the wallet with
+    // the information of strangers....
+    //
+    this.cached_keys = {};
+
+    //
+    // event listeners - browser.ts calls this in addIdentifiersToDom()
+    //
+    this.app.connection.on("registry-fetch-identifiers-and-update-dom", (keys) => {
+
+      let unidentified_keys = [];
+
+      for (let i = 0; i < keys.length; i++) {
+	if (this.cached_keys[keys[i]]) {
+	  this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
+	} else {
+	  unidentified_keys.push(keys[i]);
+	}
+      }
+
       for (let i = 0; i < this.app.network.peers.length; i++) {
 	let peer = this.app.network.peers[i];
 	if (this.app.network.peers[i].hasService("registry")) {
-          this.fetchManyIdentifiers(keys, peer, (answer) => {
-            Object.entries(answer).forEach(([key, value]) => this.app.browser.updateAddressHTML(key, value));
+          this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
+            Object.entries(answer).forEach(([key, value]) => {
+	      this.cached_keys[key] = value;
+	      this.app.browser.updateAddressHTML(key, value);
+	    });
           });
         }
       }
