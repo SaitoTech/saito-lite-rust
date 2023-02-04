@@ -39,7 +39,7 @@ class Saito {
   mempool: Mempool;
   wallet: Wallet;
   miner: Miner;
-  keys: Keychain;
+  keychain: Keychain;
   network: Network;
   networkApi: NetworkAPI;
   burnfee: BurnFee;
@@ -76,7 +76,7 @@ class Saito {
     this.mempool = new Mempool(this);
     this.wallet = new Wallet(this);
     this.miner = new Miner(this);
-    this.keys = new Keychain(this);
+    this.keychain = new Keychain(this);
     this.network = new Network(this);
     this.networkApi = new NetworkAPI(this);
     this.burnfee = new BurnFee();
@@ -99,7 +99,7 @@ class Saito {
       await this.wallet.initialize();
       this.mempool.initialize();
       this.miner.initialize();
-      this.keys.initialize();
+      this.keychain.initialize();
 
       this.modules.mods = this.modules.mods_list.map((mod_path) => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires

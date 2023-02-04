@@ -1641,7 +1641,7 @@ class Pandemic extends GameTemplate {
             this.removeEvents();
             let cards = (this.game.player > 0) ? this.game.players_info[this.game.player - 1].cards : null;
             this.updateStatusAndListCards(
-              `Waiting for ${this.app.keys.returnUsername(this.game.players[player - 1])} 
+              `Waiting for ${this.app.keychain.returnUsername(this.game.players[player - 1])} 
               (${this.game.players_info[player - 1].name})`,
               cards
             );
@@ -1658,10 +1658,10 @@ class Pandemic extends GameTemplate {
           this.playEvent(mv[3]);
         }else{
           if (this.game.player === victim){
-            this.updateStatusAndListCards(`Hang on, ${this.app.keys.returnUsername(this.game.players[rudePlayer - 1])} 
+            this.updateStatusAndListCards(`Hang on, ${this.app.keychain.returnUsername(this.game.players[rudePlayer - 1])} 
               (${this.game.players_info[rudePlayer - 1].name}) is playing an event card`,this.game.players_info[this.game.player - 1].cards);
           }else{
-            this.updateStatusAndListCards(`Waiting for ${this.app.keys.returnUsername(this.game.players[rudePlayer - 1])} 
+            this.updateStatusAndListCards(`Waiting for ${this.app.keychain.returnUsername(this.game.players[rudePlayer - 1])} 
               (${this.game.players_info[rudePlayer - 1].name}) to play an event`,this.game.players_info[this.game.player - 1].cards);
           }
         }
@@ -2545,7 +2545,7 @@ displayDisease() {
                 <td class="player_role_description_header">Player ${
                   i + 1
                 }: </td>
-                <td>${this.app.keys.returnUsername(this.game.players[i])}</td>
+                <td>${this.app.keychain.returnUsername(this.game.players[i])}</td>
               </tr>
               <tr>
                 <td class="player_role_description_header">Role: </td>

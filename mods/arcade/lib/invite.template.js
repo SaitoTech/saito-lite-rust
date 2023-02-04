@@ -17,7 +17,7 @@ module.exports = (app, mod, invite) => {
       html += `
 
           <div class="tip">
-            <img class="saito-module-identicon saito-identicon" id-${invite.players[i]}" src="${app.keys.returnIdenticon(invite.players[i])}">
+            <img class="saito-module-identicon saito-identicon" id-${invite.players[i]}" src="${app.keychain.returnIdenticon(invite.players[i])}">
           </div>
 
       `;
@@ -28,7 +28,7 @@ module.exports = (app, mod, invite) => {
       html += `
 
           <div class="tip requested_player">
-            <img class="saito-module-identicon saito-identicon" id-${invite.desired_opponent_publickeys[i]}" src="${app.keys.returnIdenticon(invite.desired_opponent_publickeys[i])}">
+            <img class="saito-module-identicon saito-identicon" id-${invite.desired_opponent_publickeys[i]}" src="${app.keychain.returnIdenticon(invite.desired_opponent_publickeys[i])}">
           </div>
 
       `;

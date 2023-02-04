@@ -9,7 +9,7 @@ module.exports = ChatTeaser = (app, publickey = "", userline = "", timestamp = 0
     time = x.hours + ":" + x.minutes;
   }
 
-  let imgsrc = (publickey) ? app.keys.returnIdenticon(publickey) : '/saito/img/no-profile.png';
+  let imgsrc = (publickey) ? app.keychain.returnIdenticon(publickey) : '/saito/img/no-profile.png';
 
   return `
   <div class="saito-user" id="saito-user-${id}" data-id="${id}">
