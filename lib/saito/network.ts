@@ -974,6 +974,9 @@ class Network {
       case MessageType.Transaction:
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
+        //
+        // adding TX done in propagate TX
+        //
         // await this.app.mempool.addTransaction(tx);
         this.propagateTransaction(tx);
         break;

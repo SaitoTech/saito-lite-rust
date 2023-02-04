@@ -22,13 +22,20 @@ class Registry extends ModTemplate {
     //
     this.publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
 
-    this.app.connection.on("registry-fetch-identifiers-and-update-dom", (keys, peer) => {
+    this.app.connection.on("registry-fetch-identifiers-and-update-dom", () => {
+      let keys = this.app.browser.returnArrayOfUnidentifiedPublicKeysInDom();
+console.log("KEYS ARE: " + JSON.stringify(keys));
+      for (let i = 0; i < this.app.network.peers.length; i++) {
+console.log("PEER : " + i);
+	if (this.app.network.peers[i].hasService("registry")) {
 console.log("REGISTRY-FETCH-IDENTIFIERS-AND-UPDATE-DOM");
-      this.fetchManyIdentifiers(keys, peer, (answer) => {
+          this.fetchManyIdentifiers(keys, peer, (answer) => {
 console.log("REGISTRY-FETCH-IDENTIFIERS-AND-UPDATE-DOM-RES");
 console.log(JSON.stringify(answer));
-        Object.entries(answer).forEach(([key, value]) => this.app.browser.updateAddressHTML(key, value));
-      });
+            Object.entries(answer).forEach(([key, value]) => this.app.browser.updateAddressHTML(key, value));
+          });
+        }
+      }
     });
 
     return this;

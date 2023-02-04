@@ -194,6 +194,16 @@ class Mempool {
   addTransaction(transaction: Transaction): boolean {
     //console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
+
+      //
+      // if we are not the source, skip for now
+      //
+      if (transaction.transaction.from[0].add != this.app.wallet.returnPublicKey()) {
+console.log("DEBUGGING: skipping GT import");
+        return;
+      }
+
+
       const new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
 
       //
