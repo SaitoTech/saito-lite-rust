@@ -1134,27 +1134,45 @@ class Browser {
     }
   }
 
+
+  /**
+  * Fetches publickeys visible in application HTML
+  * 
+  **/
+  returnArrayOfPublicKeysInDom() {
+    let keys = [];
+    const addresses = document.getElementsByClassName(`saito-address`);
+    Array.from(addresses).forEach((add) => {
+      const pubkey = add.getAttribute("data-id");
+      if (pubkey) {
+        keys.push(pubkey);
+      }
+    });
+    return keys;
+  }
+
+  returnArrayOfUnidentifiedPublicKeysInDom() {
+    let keys = this.returnArrayOfPublicKeysInDom();
+    let unidentified_keys = [];
+    for (let i = 0; i < keys.length; i++) {
+      if (this.app.keys.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
+	unidentified_keys.push(keys[i]);
+      } else {
+        this.updateAddressHTML(keys[i], this.app.keys.returnIdentifierByPublicKey(keys[i]));
+      }
+    }
+    return unidentified_keys;
+  }
+
+
+
   /**
    * Fetchs identifiers from a set of keys
    *
    * @param {Array} keys
    */
   async addIdentifiersToDom(keys = []) {
-    if (keys.length == 0) {
-      const addresses = document.getElementsByClassName(`saito-address`);
-      Array.from(addresses).forEach((add) => {
-        const pubkey = add.getAttribute("data-id");
-        if (pubkey) {
-          keys.push(pubkey);
-        }
-      });
-    }
-    try {
-      const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
-      Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
-    } catch (err) {
-      console.error(err);
-    }
+    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
   }
 
   addModalIdentifierAddPublickey(app, mod) {

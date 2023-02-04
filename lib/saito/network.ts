@@ -76,6 +76,7 @@ class Network {
   // we initiate an outgoing connection
   //
   addPeer(peerjson) {
+
     let peerhost = "";
     let peerport = "";
 
@@ -223,6 +224,7 @@ class Network {
   // server sends us a websocket
   //
   async addRemotePeer(socket) {
+
     // deny excessive connections
     if (this.peers_connected >= this.peers_connected_limit) {
       if (this.debugging) {
@@ -974,6 +976,9 @@ class Network {
       case MessageType.Transaction:
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
+        //
+        // adding TX done in propagate TX
+        //
         // await this.app.mempool.addTransaction(tx);
         this.propagateTransaction(tx);
         break;
