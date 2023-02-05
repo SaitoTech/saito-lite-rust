@@ -1313,9 +1313,7 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
             html += `<li class="menu_option" id="${this_raise + poker_self.stf(match_required)}">${(mobileToggle)? " ":"raise "}${poker_self.formatWager(this_raise)}</li>`;
           } else {
             i = 6; //Stop for-loop
-          console.log("max raise 2: " + max_raise);
-          console.log("match_req:   " + match_required);
-            html += `<li class="menu_option" id="${max_raise + match_required}">
+            html += `<li class="menu_option" id="${poker_self.addToString(max_raise, match_required)}">
                       raise ${poker_self.formatWager(max_raise)} 
                       (all in${(smallest_stack_player !== poker_self.game.player - 1)?` for ${poker_self.game.state.player_names[smallest_stack_player]}`:""})</li>`;
           }
