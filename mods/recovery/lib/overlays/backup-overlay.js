@@ -32,6 +32,7 @@ class BackupOverlay {
    */
   render() {
     this.overlay.show(SaitoLoginOverlayTemplate(this.app, this.mod));
+    document.getElementById("saito-login-email").focus();
     this.attachEvents();
   }
 
@@ -41,6 +42,13 @@ class BackupOverlay {
     let hash1 = "WHENINDISGRACEWITHFORTUNEANDMENSEYESIALLALONEBEWEEPMYOUTCASTSTATE";
     let hash2 = "ANDTROUBLEDEAFHEAVENWITHMYBOOTLESSCRIESANDLOOKUPONMYSELFANDCURSEMYFATE";
 
+    document.querySelector("#saito-login-password").onkeydown = (e) => {
+      if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
+        e.preventDefault(); 
+        document.querySelector(".saito-restore-button").click();
+      }
+    }
+
     document.querySelector(".saito-backup-button").onclick = (e) => {
 
       let email = document.getElementById("saito-login-email").value;
@@ -49,7 +57,8 @@ class BackupOverlay {
       let decryption_secret = this.app.crypto.hash(this.app.crypto.hash(email+pass)+hash1);
       let retrieval_hash    = this.app.crypto.hash(this.app.crypto.hash(hash2+email)+pass);
 
-      this.mod.sendBackupTransaction(decryption_secret, retrieval_hash);
+      let newtx = this.mod.createBackupTransaction(decryption_secret, retrieval_hash);
+      this.app.network.propagateTransaction(newtx);
       this.overlay.hide();
 
     }

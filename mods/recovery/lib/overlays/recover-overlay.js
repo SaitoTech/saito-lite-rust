@@ -1,3 +1,4 @@
+const saito = require("./../../../../lib/saito/saito");
 const SaitoLoginOverlayTemplate = require("./recover-overlay.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
@@ -32,6 +33,7 @@ class RecoverOverlay {
    */
   render() {
     this.overlay.show(SaitoLoginOverlayTemplate(this.app, this.mod));
+    document.getElementById("saito-login-email").focus();
     this.attachEvents();
   }
 
@@ -41,9 +43,14 @@ class RecoverOverlay {
     let hash1 = "WHENINDISGRACEWITHFORTUNEANDMENSEYESIALLALONEBEWEEPMYOUTCASTSTATE";
     let hash2 = "ANDTROUBLEDEAFHEAVENWITHMYBOOTLESSCRIESANDLOOKUPONMYSELFANDCURSEMYFATE";
 
-    document.querySelector(".saito-restore-button").onclick = (e) => {
+    document.querySelector("#saito-login-password").onkeydown = (e) => {
+      if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
+        e.preventDefault(); 
+        document.querySelector(".saito-restore-button").click();
+      }
+    }
 
-alert("TESTING");
+    document.querySelector(".saito-restore-button").onclick = (e) => {
 
       let email = document.getElementById("saito-login-email").value;
       let pass  = document.getElementById("saito-login-password").value;
@@ -51,19 +58,29 @@ alert("TESTING");
       let decryption_secret = this.app.crypto.hash(this.app.crypto.hash(email+pass)+hash1);
       let retrieval_secret = this.app.crypto.hash(this.app.crypto.hash(hash2+email)+pass);
 
-      //
-      // fetch the transaction identified by retrieval_secret from the network
-      //
-      if (1) {
+      let newtx = this.mod.createRecoverTransaction(retrieval_secret);
+      this.app.network.sendTransactionWithCallback(newtx, async (res) => {
 
-	//
-	// decrypt the transaction using decryption_secret
-	//
-        alert(decryption_secret + " - " + retrieval_secret);
+        if (res) {
+          if (res.rows) {
+            if (res.rows[0]) {
 
-	this.mod.sendRecoverTransaction(decryption_secret, retrieval_secret);
+              let tx = JSON.parse(res.rows[0].tx);
+              let newtx = new saito.default.transaction(tx);
+              let txmsg = newtx.returnMessage();
 
-      }
+              let encrypted_wallet = txmsg.wallet;
+              let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
+
+	      this.app.wallet.wallet = JSON.parse(decrypted_wallet);
+	      this.app.wallet.saveWallet();
+	      this.overlay.hide();
+
+            } 
+          } 
+        }
+      });
+
     }
   }
 
