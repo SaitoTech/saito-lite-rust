@@ -96,6 +96,7 @@ initializeGame(game_id) {
 
     this.game.state = {};
     Object.assign(this.game.state, this.returnState());
+    this.game.tutorial = this.returnTutorial();
 
     console.log("\n\n\n\n");
     console.log("---------------------------");
@@ -623,6 +624,10 @@ initializeGame(game_id) {
 
     html += `</span></div>`;
     
+    //if (this.game.tutorial.show){
+    //  this.showTutorial(this.game.state.planted.toString());
+    //}
+
     this.updateStatus(html);
     this.attachBoardEvents();
 
@@ -780,10 +785,13 @@ initializeGame(game_id) {
         steamSelf.removeEvents();
         let card = $(this).attr("data-id");
 
-
-
         steamSelf.addMove(`discard\t${steamSelf.game.player}\t${card}`);
-        steamSelf.endTurn();
+
+        steamSelf.animateGameElementMove(this, `#discards`, ()=>{
+          console.log("Sending move to discard card");
+          steamSelf.endTurn();
+        });
+        
       });
 
       $(".delete").on("click", function(){
@@ -995,7 +1003,8 @@ initializeGame(game_id) {
     state.self = [[], [], []];
 
     state.welcome = 0;
-          
+    state.tutorial = true;
+
     return state;
 
   }
@@ -1039,7 +1048,64 @@ initializeGame(game_id) {
   }
 
 
-} // end Jaipur class
+  showTutorial(step){
+    let hints = this.game.tutorial[step];
+    let steamSelf = this;
+
+    let showHint = ()=>{
+      if (steamSelf.game.tutorial.show){
+        let hint = hints.shift();
+        $(hint.element).addClass("tutorial-highlight");
+
+        $(this.formatHelpMessage(hint.message, hints.length)).appendTo("body");
+
+        $(".tutorial-help button").on("click", function(){
+          $(".tutorial-highlight").removeClass("tutorial-highlight");
+          if ($("#dontshowme").is(':checked')){
+
+          }
+          steamSelf.game.tutorial.show = false;
+          $(".tutorial-help").remove();
+          if (hints.length > 0){
+            showHint();
+          }        
+        });
+      }
+    }
+
+    if (hints?.length > 0){
+      showHint();
+    }
+  }
+
+  formatHelpMessage(message, cont){
+    let html = `<div class="tutorial-help">
+                  <div class="message">${message}</div>`;
+    if (cont > 0){
+      html += `<div>...or...</div>`;
+    }              
+
+    html +=   `<li><input type="checkbox" id="dontshowme" value="false"/> don't show me any more hints...</li>
+                  <button>${ (cont > 0) ? "Continue" : "Okay"}</button>
+                </div>`;
+
+    return html;
+  }
+
+  returnTutorial(){
+    let tutorial = {};
+    tutorial.show = true;
+    tutorial["-1"] =  [{element: ".offer", message: "Click a card in the offer to build the plant"}, 
+                       {element: "#draw_deck", message: "Click here to discard the offers and move on"}];
+                   
+
+    tutorial["0"] = [{element: ".cardfan img.card:last-child ", message: "Click the first card in your hand to build it"}];
+
+    return tutorial;
+  }
+
+
+} // end Steam Bohnanza class
 
 module.exports = Steamed;
 
