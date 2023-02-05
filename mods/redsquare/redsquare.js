@@ -204,7 +204,7 @@ class RedSquare extends ModTemplate {
   //
   // runs when archive peer connects
   //
-  async onArchiveHandshakeComplete(app, peer) {
+  async onServiceUp(app, peer, service={}) {
 
     //
     // avoid network overhead if in other apps
@@ -212,11 +212,24 @@ class RedSquare extends ModTemplate {
     if (!this.browser_active) { return; }
 
     //
-    // check peer for any archived tweets
+    // archive -- load our own tweets
     //
-    this.loadNotificationsFromPeer(peer);
+    if (service.service === "archive") {
+      this.loadNotificationsFromPeer(peer);
+    }
+
+    //
+    // registry -- load DNS names
+    //
+    if (service.service === "registry") {
+      this.app.browser.addIdentifiersToDom();
+    }
 
   }
+
+
+
+
 
   //
   // runs when normal peer connects
@@ -271,15 +284,13 @@ class RedSquare extends ModTemplate {
     this.loadTweetsFromPeer(peer, sql, () => {
       this.app.connection.emit("redsquare-home-render-request");
       this.app.browser.addIdentifiersToDom();
+      this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
     }, true);
 
-
-    //
-    // this triggers onArchiveHandshakeComplete if peer is archive etc.
-    //
-    super.onPeerHandshakeComplete(app, peer);
-
   }
+
+
+
   //
   // this initializes the DOM but does not necessarily show the loaded content 
   // onto the page, as we are likely being asked to render the components on 
@@ -1173,7 +1184,7 @@ class RedSquare extends ModTemplate {
               let txmsg = tx.returnMessage();
               let text = tx.msg.data.text;
               let publickey = tx.transaction.from[0].add;
-              let user = app.keys.returnIdentifierByPublicKey(publickey, true);
+              let user = app.keychain.returnIdentifierByPublicKey(publickey, true);
   
               redsquare_self.social.twitter_description = text;
               redsquare_self.social.og_description = text;
@@ -1183,7 +1194,7 @@ class RedSquare extends ModTemplate {
               //   let image = tx.msg.data?.images[0];
               // } else {
               //   let publickey = tx.transaction.from[0].add;
-              //   let image = app.keys.returnIdenticon(publickey);
+              //   let image = app.keychain.returnIdenticon(publickey);
               // }
   
               let image = redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug()) + '?og_img_sig=' + sig;
@@ -1216,7 +1227,7 @@ class RedSquare extends ModTemplate {
  
               } else {
                 let publickey = tx.transaction.from[0].add;
-                let img_uri = app.keys.returnIdenticonasPNG(publickey);
+                let img_uri = app.keychain.returnIdenticonasPNG(publickey);
                 let base64Data = img_uri.replace(/^data:image\/png;base64,/, '');
                 let img = Buffer.from(base64Data, 'base64');
                 let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));

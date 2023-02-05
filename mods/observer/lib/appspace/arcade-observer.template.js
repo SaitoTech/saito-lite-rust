@@ -6,7 +6,7 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
 
   let playersHtml = `<div class="playerInfo">`;
   msg.players_array.split("_").forEach((player) => {
-    let identicon = app.keys.returnIdenticon(player);
+    let identicon = app.keychain.returnIdenticon(player);
     playersHtml += `<div class="player-slot`;
     if (msg.winner && msg.winner.includes(player)){
       playersHtml += " winner";

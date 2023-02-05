@@ -210,7 +210,7 @@ try {
           this.dmsg = "";
         } else {
           const parsed_msg = this.msg;
-          this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
+          this.dmsg = app.keychain.decryptMessage(this.transaction.from[0].add, parsed_msg);
         }
       } catch (e) {
         console.error("ERROR: " + e);
@@ -221,7 +221,7 @@ try {
         this.dmsg = "";
         return;
       }
-      this.dmsg = app.keys.decryptMessage(this.transaction.to[0].add, this.msg);
+      this.dmsg = app.keychain.decryptMessage(this.transaction.to[0].add, this.msg);
 } catch (e) {
   this.dmsg = "";
 }

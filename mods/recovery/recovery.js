@@ -60,7 +60,7 @@ class Recovery extends ModTemplate {
 
       let txmsg = tx.returnMessage();
 
-      if (txmsg.request == "backup") {
+      if (txmsg.request == "recovery backup") {
 	this.receiveBackupTransaction(tx);
       }
     }
@@ -74,11 +74,11 @@ class Recovery extends ModTemplate {
 
       let txmsg = tx.returnMessage();
 
-      if (txmsg.request == "backup") {
+      if (txmsg.request == "recovery backup") {
 	this.receiveBackupTransaction(tx);
       }
 
-      if (txmsg.request === "recover") {
+      if (txmsg.request === "recovery recover") {
         this.receiveRecoverTransaction(tx, mycallback);
 	return;
       }
@@ -102,7 +102,7 @@ class Recovery extends ModTemplate {
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     newtx.msg = {
       module: "Recover",
-      request: "backup",
+      request: "recovery backup",
       email: "",
       hash: retrieval_hash,
       wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.wallet.wallet), decryption_secret),
@@ -171,6 +171,7 @@ console.log("decrypted wallet is: " + JSON.stringify(decrypted_wallet));
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     newtx.msg = {
       module: "Recover",
+      request: "recovery recover",
       email: "",
       hash: retrieval_hash,
     };

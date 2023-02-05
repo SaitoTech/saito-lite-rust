@@ -205,16 +205,10 @@ class Chessgame extends GameTemplate {
       var opponent = this.game.opponents[0];
 
       if (this.app.crypto.isPublicKey(opponent)) {
-        if (this.app.keys.returnIdentifierByPublicKey(opponent).length >= 6) {
-          opponent = this.app.keys.returnIdentifierByPublicKey(opponent);
+        if (this.app.keychain.returnIdentifierByPublicKey(opponent).length >= 6) {
+          opponent = this.app.keychain.returnIdentifierByPublicKey(opponent);
         }
         else {
-          try {
-            // opponent = await this.app.keys.fetchIdentifierPromise(opponent);
-          }
-          catch (err) {
-            console.log(err);
-          }
         }
       }
 
@@ -227,8 +221,8 @@ class Chessgame extends GameTemplate {
       let identicon = "";
 
       name = this.game.players[0];
-      name = this.app.keys.returnUsername(opponent);
-      identicon = this.app.keys.returnIdenticon(name);
+      name = this.app.keychain.returnUsername(opponent);
+      identicon = this.app.keychain.returnIdenticon(name);
       
       if (name != "") {
         if (name.indexOf("@") > 0) {

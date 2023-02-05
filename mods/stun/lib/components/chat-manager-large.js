@@ -375,10 +375,10 @@ class VideoChatManager {
         for (let i in this.video_boxes) {
             if (i === "local") {
                 let publickey = this.app.wallet.returnPublicKey()
-                let imgsrc = this.app.keys.returnIdenticon(publickey);
+                let imgsrc = this.app.keychain.returnIdenticon(publickey);
                 images += `<img data-id="${publickey}" src="${imgsrc}"/>`
             } else {
-                let imgsrc = this.app.keys.returnIdenticon(i);
+                let imgsrc = this.app.keychain.returnIdenticon(i);
                 images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`
             }
             count++;
