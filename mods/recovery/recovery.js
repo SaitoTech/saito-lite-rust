@@ -58,14 +58,10 @@ class Recovery extends ModTemplate {
 
     if (conf == 0) {
 
-console.log("RECOVERY ONCONFIRMATION 0");
-
       let txmsg = tx.returnMessage();
 
       if (txmsg.request == "recovery backup") {
-console.log("RECEIVE BACKUP TRANSACTION 1");
 	this.receiveBackupTransaction(tx);
-console.log("RECEIVE BACKUP TRANSACTION 2");
       }
     }
   }
@@ -107,10 +103,6 @@ console.log("RECEIVE BACKUP TRANSACTION 2");
       hash: retrieval_hash,
       wallet: this.app.crypto.aesEncrypt(JSON.stringify(this.app.wallet.wallet), decryption_secret),
     };
-console.log("-----");
-console.log("-----");
-console.log("-----");
-console.log("SENDING: " + JSON.stringify(newtx.transaction));
     return this.app.wallet.signTransaction(newtx);
   }
   async receiveBackupTransaction(tx) {
@@ -126,7 +118,6 @@ console.log("SENDING: " + JSON.stringify(newtx.transaction));
         $hash		:	hash ,
         $tx		:	txjson ,
     };
-console.log("INSERTING");
     await this.app.storage.executeDatabase(sql, params, "recovery");
 
   }
@@ -161,7 +152,6 @@ console.log("INSERTING");
     };
     let res = {};
     res.rows = await this.app.storage.queryDatabase(sql, params, "recovery");
-console.log("Recovering...");
     mycallback(res);
 
   }

@@ -1,6 +1,7 @@
 const saito = require("./../../../../lib/saito/saito");
 const SaitoLoginOverlayTemplate = require("./recover-overlay.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const SaitoLoader = require("./../../../../lib/saito/ui/saito-loader/saito-loader");
 
 /**
  * This near full-screen overlay allows users to restore their account by providing an email
@@ -59,6 +60,17 @@ class RecoverOverlay {
       let retrieval_secret = this.app.crypto.hash(this.app.crypto.hash(hash2+email)+pass);
 
       let newtx = this.mod.createRecoverTransaction(retrieval_secret);
+
+      //
+      // Update UI
+      //
+      document.querySelector(".saito-modal-subtitle").innerHTML = "looking for wallet to restore...";
+      document.querySelectorAll(".saito-login-overlay-field").forEach((el) => {
+	el.style.display = "none";
+      });
+      let ld = new SaitoLoader(this.app, this.mod, ".saito-login-overlay");
+      ld.render();
+
       this.app.network.sendTransactionWithCallback(newtx, async (res) => {
 
         if (res) {
