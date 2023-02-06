@@ -1043,7 +1043,6 @@ class Stun extends ModTemplate {
         if (tx.msg.data.creator === app.wallet.returnPublicKey()) {
             return;
         }
-
         sconfirm("Accept video call from " + tx.msg.data.creator).then((e) => {
             console.log(e, 'result')
             if (e === false) {
@@ -1056,7 +1055,9 @@ class Stun extends ModTemplate {
                 this.app.connection.emit('join-direct-room-with-code', tx.msg.data.roomCode);
             }, 3000)
         })
+    }
 
+    sendVideoEffectsTransaction(effects_obj){
 
     }
 
