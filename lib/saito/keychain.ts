@@ -4,11 +4,10 @@ import * as JSON from "json-bigint";
 
 import Identicon from "identicon.js";
 import { Saito } from "../../apps/core";
-import Key from "./key";
 
 class Keychain {
   public app: Saito;
-  public keys: Array<Key>;
+  public keys: Array<any>;
   public groups: any;
   public modtemplate: any;
   public fetched_keys: Map<string, number>;
@@ -64,7 +63,7 @@ class Keychain {
   //
   addKey(pa = null, da = null) {
 
-    let data = {};
+    let data = { publickey : "" };
 
     //
     // argument-overloading permitted !!
@@ -84,13 +83,13 @@ class Keychain {
     //
     // skip empty keys
     //
-    if (publickey === "") { return; }
+    if (data.publickey === "") { return; }
 
     //
     // update existing entry
     //
     for (let i = 0; i < this.keys.length; i++) { 
-      if (this.keys[i].publickey === publickey) {
+      if (this.keys[i].publickey === data.publickey) {
         let newkey = {};
         for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
 	this.saveKeys();
@@ -101,8 +100,8 @@ class Keychain {
     //
     // or add new entry
     //
-    let newkey = {};
-    newkey.publickey = publickey;
+    let newkey = { publickey : "" };
+    newkey.publickey = data.publickey;
     for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
     this.keys.push(newkey);
     this.saveKeys();
@@ -246,7 +245,7 @@ class Keychain {
     // suitable object for searching
     //
     if (typeof data === 'string') {
-      d = {};
+      let d = { publickey : "" };
       d.publickey = data;
       data = d;
     }
@@ -343,7 +342,7 @@ class Keychain {
       format: img_format, // use SVG instead of PNG
     };
     const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
-    return "data:image/"+img_format"+xml;base64," + data;
+    return "data:image/"+img_format+"+xml;base64," + data;
   }
 
 
