@@ -1231,7 +1231,7 @@ class RedSquare extends ModTemplate {
 
               } else {
                 let publickey = tx.transaction.from[0].add;
-                let img_uri = app.keychain.returnIdenticonasPNG(publickey);
+                let img_uri = app.keychain.returnIdenticon(publickey, "png");
                 let base64Data = img_uri.replace(/^data:image\/png;base64,/, '');
                 let img = Buffer.from(base64Data, 'base64');
                 let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));

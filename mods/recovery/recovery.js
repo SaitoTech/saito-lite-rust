@@ -94,14 +94,10 @@ class Recovery extends ModTemplate {
   ////////////
   // Backup //
   ////////////
-  sendBackupTransaction(decryption_secret, retrieval_hash) {
-    let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
-    this.app.network.propagateTransaction(newtx);
-  }
   createBackupTransaction(decryption_secret, retrieval_hash) {
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     newtx.msg = {
-      module: "Recover",
+      module: "Recovery",
       request: "recovery backup",
       email: "",
       hash: retrieval_hash,
@@ -113,14 +109,12 @@ class Recovery extends ModTemplate {
 
     let txmsg = tx.returnMessage();
     let publickey = tx.transaction.from[0].add;
-    let email = txmsg.email || "";
     let hash = txmsg.hash || "";
     let txjson = JSON.stringify(tx.transaction);    
 
-    let sql = "INSERT OR REPLACE INTO recovery (publickey, email, hash, tx) VALUES ($publickey, $email, $hash, $tx)";
+    let sql = "INSERT OR REPLACE INTO recovery (publickey, hash, tx) VALUES ($publickey, $hash, $tx)";
     let params = {
         $publickey	:	publickey ,
-        $email		:	email ,
         $hash		:	hash ,
         $tx		:	txjson ,
     };
@@ -131,63 +125,34 @@ class Recovery extends ModTemplate {
   /////////////
   // Recover //
   /////////////
-  sendRecoverTransaction(decryption_secret, retrieval_hash) {
-
-console.log("just in!");
-
-    let newtx = this.createRecoverTransaction(retrieval_hash);
-
-console.log("ABOUT TO SEND TX W/ CALLBACK");
-
-    this.app.network.sendTransactionWithCallback(newtx, async function (res) {
-
-console.log("SEND RECOVER TX: receive response: ");
-console.log(JSON.stringify(res));
-      if (res) {
-        if (res.rows) {
-          if (res.rows[0]) {
-
-	    let tx = JSON.parse(res.rows[0].tx);
-	    let newtx = new saito.default.transaction(tx.transaction);
-
-	    let txmsg = newtx.returnMessage();
-
-console.log("TXMSG: " + JSON.stringify(txmsg));
-
-	    let encrypted_wallet = txmsg.wallet;
-
-	    let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
-
-console.log("decrypted wallet is: " + JSON.stringify(decrypted_wallet));
-
-          } 
-        } 
-      } 
-
-    });
-
-  }
   createRecoverTransaction(retrieval_hash) {
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     newtx.msg = {
-      module: "Recover",
+      module: "Recovery",
       request: "recovery recover",
-      email: "",
       hash: retrieval_hash,
     };
     return this.app.wallet.signTransaction(newtx);
   }
-  async receiveBackupTransaction(tx) {
+  //
+  // this is never run, see overlay
+  //
+  async receiveRecoverTransaction(tx, mycallback=null) {
+
+    if (mycallback == null) { return; }
+    if (this.app.BROWSER == 1) { return; }
 
     let txmsg = tx.returnMessage();
     let publickey = tx.transaction.from[0].add;
-    let email = txmsg.email || "";
     let hash = txmsg.hash || "";
 
     let sql = "SELECT * FROM recovery WHERE hash = $hash";
-    let params = { $hash : hash };
-    let rows = await this.app.storage.queryDatabase(sql, params, "recovery");
-    if (mycallback != null) { mycallback(rows); }
+    let params = {
+        $hash           :       hash ,
+    };
+    let res = {};
+    res.rows = await this.app.storage.queryDatabase(sql, params, "recovery");
+    mycallback(res);
 
   }
 

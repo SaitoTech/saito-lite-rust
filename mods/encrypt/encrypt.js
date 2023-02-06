@@ -121,7 +121,7 @@ console.log("!!!!");
       //
       let bob_publickey = Buffer.from(txmsg.bob, "hex");
       
-      var senderkeydata = app.keychain.findByPublicKey(sender);
+      var senderkeydata = app.keychain.returnKey(sender);
 
       if (senderkeydata == null) {
         if (app.BROWSER == 1) {
@@ -333,7 +333,7 @@ console.log("error: " + err);
 
           let bob_publickey = Buffer.from(txmsg.bob, "hex");
           
-          var senderkeydata = app.keychain.findByPublicKey(sender);
+          var senderkeydata = app.keychain.returnKey(sender);
           if (senderkeydata == null) {
             if (app.BROWSER == 1) {
               alert("Cannot find original diffie-hellman keys for key-exchange");
