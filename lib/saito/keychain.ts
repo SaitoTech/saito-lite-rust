@@ -1,9 +1,8 @@
 import modtemplate from "./../templates/modtemplate";
-
 import * as JSON from "json-bigint";
-
 import Identicon from "identicon.js";
 import { Saito } from "../../apps/core";
+
 
 class Keychain {
   public app: Saito;
@@ -322,10 +321,10 @@ class Keychain {
       for (let x = 0; x < this.keys.length; x++) {
         if (this.keys[x].publickey === publickey) {
           if (
-            this.keys[x].data.identicon != "" &&
-            typeof this.keys[x].data.identicon !== "undefined"
+            this.keys[x].identicon != "" &&
+            typeof this.keys[x].identicon !== "undefined"
           ) {
-            return this.keys[x].data.identicon;
+            return this.keys[x].identicon;
           }
         }
       }
