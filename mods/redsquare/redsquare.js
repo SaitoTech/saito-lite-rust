@@ -257,7 +257,6 @@ class RedSquare extends ModTemplate {
           for (let z = 0; z < txs.length; z++) {
             let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
             app.connection.emit('redsquare-thread-render-request', tweet);
-
           }
         }, false, false);
         return;
@@ -450,8 +449,8 @@ class RedSquare extends ModTemplate {
     this.trackedTweet = tweet;
   }
 
-  loadTweetsFromPeerAndReturn(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
 
+  loadTweetsFromPeerAndReturn(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
     let txs = [];
     let tweet_to_track = null;
     let render_home = false;

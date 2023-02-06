@@ -1,4 +1,4 @@
-const SaitoModuleLong = require("./../../../../lib/saito/new-ui/templates/saito-module-long.template");
+const SaitoModuleLong = require("./../../../../lib/saito/ui/templates/saito-module-long.template");
 
 module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
 
