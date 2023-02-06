@@ -1,4 +1,4 @@
-const LeagueWizard = require("./components/league-wizard");
+const LeagueWizard = require("./overlays/league-wizard");
 const LeagueMainTemplate    = require("./main.template");
 const LeagueComponentExistingLeague = require("./components/existing-league");
 
@@ -28,9 +28,7 @@ class LeagueMain {
       this.app.browser.addElementToDom(LeagueMainTemplate());
     }
 
-
-
-    let leagues = this.mod.filterLeagues(this.app, false);
+    let leagues = this.mod.leagues;
 
     let filter1 = leagues.filter(l => l.admin == this.app.wallet.returnPublicKey());
     let filter2 = leagues.filter(l => l.myRank > 0 && l.admin != this.app.wallet.returnPublicKey());

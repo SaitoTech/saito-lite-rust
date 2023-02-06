@@ -1,15 +1,10 @@
 CREATE TABLE IF NOT EXISTS league (
   id TEXT PRIMARY KEY,
   game TEXT,
-  type TEXT,
-  admin TEXT,
   name TEXT,
+  admin TEXT,
+  status TEXT,
   description TEXT,
-  ranking TEXT,
-  starting_score INTEGER,
-  max_players INTEGER,
-  options TEXT DEFAULT '',
-  startdate TEXT DEFAULT '',
-  enddate TEXT DEFAULT '',
-  allowlate INTEGER DEFAULT 0
+  ranking_algorithm TEXT,
+  default_score INTEGER,
 );

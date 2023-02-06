@@ -1,5 +1,6 @@
 /* league module css variables
 -----------------------------------------------------------------*/
 @import url("./css/league-leaderboard.css");
-@import url("./css/league-overlay.css");
+@import url("./css/league-wizard.css");
 @import url("./css/league-admin.css");
+@import url("./css/league-overlay.css");

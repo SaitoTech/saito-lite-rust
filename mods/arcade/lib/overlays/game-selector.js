@@ -24,11 +24,13 @@ class GameSelector {
       this.obj = obj;
       this.render();
       this.attachEvents();
+
     });
 
   }
 
   render() {
+alert(GameSelectorTemplate(this.app, this.mod, this));
     this.overlay.show(GameSelectorTemplate(this.app, this.mod, this));
     this.attachEvents();
   }

@@ -74,7 +74,6 @@ class Arcade extends ModTemplate {
     //
     // compile list of arcade games
     //
-    
     app.modules.returnModulesRespondingTo("arcade-games").forEach(game_mod => {
         this.arcade_games.push(game_mod);
         //
@@ -82,7 +81,6 @@ class Arcade extends ModTemplate {
         //
         this.affix_callbacks_to.push(game_mod.name);
     });
-    
 
     //
     // If we have a browser (are a user)
