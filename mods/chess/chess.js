@@ -119,6 +119,27 @@ class Chessgame extends GameTemplate {
         confirm_btn.style.display = "none";
       }
     }
+
+    //Plug Opponent Information into the Controls 
+    if (this.game.player){
+      let opponent = this.game.opponents[0];
+
+      let identicon = this.app.keychain.returnIdenticon(opponent);
+      identicon = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
+
+      let name = this.app.keychain.returnUsername(opponent);
+      if (name && name.indexOf("@") > 0) {
+        name = name.substring(0, name.indexOf("@"));
+      }
+
+      $("#opponent_id").html(name);
+      $("#opponent_identicon").html(identicon)
+
+    }else{
+      //Hide some controls in Observer Mode
+      $(".hide_in_observer").remove();
+    }
+
   }
 
   switchColors(){
@@ -200,45 +221,9 @@ class Chessgame extends GameTemplate {
       if (this.useClock) { this.startClock(); }
     }
 
-    //Plug Opponent Information into the Controls 
-    if (this.game.player){
-      var opponent = this.game.opponents[0];
-
-      if (this.app.crypto.isPublicKey(opponent)) {
-        if (this.app.keychain.returnIdentifierByPublicKey(opponent).length >= 6) {
-          opponent = this.app.keychain.returnIdentifierByPublicKey(opponent);
-        }
-        else {
-        }
-      }
-
-      let opponent_elem = document.getElementById('opponent_id');
-      if (opponent_elem) {
-        opponent_elem.innerHTML = sanitize(opponent);
-        opponent_elem.setAttribute('data-add', opponent)
-      }
-
-      let identicon = "";
-
-      name = this.game.players[0];
-      name = this.app.keychain.returnUsername(opponent);
-      identicon = this.app.keychain.returnIdenticon(name);
-      
-      if (name != "") {
-        if (name.indexOf("@") > 0) {
-          name = name.substring(0, name.indexOf("@"));
-        }
-      }
-
-      let html = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
-      document.getElementById("opponent_identicon").innerHTML = html;
-
-    }else{
-      //Hide some controls in Observer Mode
-      $(".hide_in_observer").remove();
-    }
 
     this.updateStatusMessage();
+    this.game.draw_offered = this.game.draw_offered || 0;
     this.attachGameEvents();
 
 
@@ -252,10 +237,6 @@ class Chessgame extends GameTemplate {
 
     msg = {};
     if (this.game.queue.length > 0) {
-      //if (this.game.queue[this.game.queue.length-1] == "OBSERVER_CHECKPOINT") {
-      //  return;
-      //}
-
       msg.extra = JSON.parse(this.app.crypto.base64ToString(this.game.queue[this.game.queue.length-1]));
     } else {
       msg.extra = {};
@@ -281,8 +262,35 @@ class Chessgame extends GameTemplate {
     // game
     //
     let data = JSON.parse(msg.extra.data);
-    this.game.position = data.position;
+    
+    if (data.draw){
+    
+      if (data.draw === "accept"){
+        console.log("Ending game");
+        this.endGame(this.game.players, "draw");
+        return;
+      }else{ //(data.draw == "offer")
+        if (this.game.player === msg.extra.target){
+          this.game.draw_offered = 2; //I am receving offer
+          this.updateStatusMessage("Opponent offers a draw; " + this.status);
+        } 
+      }
+      //Refresh events
+      this.attachGameEvents();
+      
+      //Process independently of game moves
+      //i.e. don't disrupt turn system
+      return;
+    }
 
+    if (this.game.draw_offered !== 0){
+      this.game.draw_offered = 0; //No offer on table
+      this.attachGameEvents();      
+    }
+
+
+    this.game.position = data.position;
+    this.game.target = msg.extra.target;
 
     this.updateLog(data.move);
 
@@ -298,13 +306,11 @@ class Chessgame extends GameTemplate {
           this.resignGame(this.game.id, "checkmate");
           return 0;
         }else if (this.engine.in_draw() === true) {
-          this.tieGame(this.game.id, "draw");
+          this.endGame(this.game.players, "draw");
           return 0;
         }
       }
     }
-
-    this.game.target = msg.extra.target;
 
     this.updateStatusMessage();
 
@@ -320,6 +326,13 @@ class Chessgame extends GameTemplate {
 
   removeEvents(){
     this.lockBoard(this.game.position);
+  }
+
+  endGameCleanUp(){
+    let cont = document.getElementById("commands-cont");
+    if (cont){
+      cont.style.display = "none";
+    }
   }
 
   endTurn(data) {
@@ -342,9 +355,10 @@ class Chessgame extends GameTemplate {
     }
 
     let resign_icon = document.getElementById('resign_icon');
+    let draw_icon = document.getElementById('draw_icon');
     let move_accept = document.getElementById('move_accept');
     let move_reject = document.getElementById('move_reject');
-    let copy_btn = document.getElementById('copy-btn');
+    let chat_btn = document.getElementById('chat-btn');
     if (!move_accept) return;
 
 
@@ -361,21 +375,46 @@ class Chessgame extends GameTemplate {
       }
     }
 
-    if (copy_btn){
-      copy_btn.onclick = () => {
-            let public_key = document.getElementById('opponent_id').getAttribute('data-add');
-
-            navigator.clipboard.writeText(public_key).then(function(x) {
-              copy_btn.classList.add("copy-check");
-            });
-             copy_btn.classList.add("copy-check");
-
-            setTimeout(() => {
-              copy_btn.classList.remove("copy-check");            
-            }, 400);
-          
+    if (draw_icon){
+      draw_icon.style.visiblity = "visible";
+      $(".flash").removeClass("flash");
+      if (this.game.draw_offered >= 0){
+        draw_icon.onclick = async () => {
+          if (this.game.draw_offered == 0){
+            let c = await sconfirm("Offer to end the game in a draw?");
+            if (c) {
+              this.updateStatusMessage("Draw offer sent; " + this.status);
+              this.game.draw_offered = -1; //Offer already sent
+              var data = {draw: "offer"};
+              this.endTurn(data);
+              return;
+            }  
+          }else{
+            let c = await sconfirm("Accept offer to end the game in a draw?");
+            if (c) {
+              this.updateStatusMessage("Draw offer accepted!");
+              this.game.draw_offered = -1; //Offer already sent
+              var data = {draw: "accept"};
+              this.endTurn(data);
+              return;
+            }
+          }
+        }
+        if (this.game.draw_offered > 0){
+          draw_icon.classList.add("flash");
+        }
+      }else{
+        console.log("Hide draw icon");
+        draw_icon.style.visiblity = "hidden";
       }
     }
+
+    if (chat_btn){
+      chat_btn.onclick = () => {
+        this.app.connection.emit("open-chat-with", {key: this.game.players[2-this.game.player], name: "Opponent"});
+      }
+    }
+
     if (move_accept){
       move_accept.onclick = () => {
         console.log('send move transaction and wait for reply.');
@@ -413,12 +452,19 @@ class Chessgame extends GameTemplate {
     if (this.browser_active != 1) { return; }
 
     let statusEl = document.getElementById('status');
+    let casualtiesEl = document.getElementById('captured');
+    
+    if (!statusEl || !casualtiesEl){
+      console.warn("Updating status to null elements");
+      return;
+    }
 
     //
     // print message if provided
     //
     if (str != "") {
       statusEl.innerHTML = sanitize(str);
+      this.status = str;
       return;
     }
 
@@ -432,7 +478,6 @@ class Chessgame extends GameTemplate {
       moveColor = 'Black';
       bgColor = '#111';
     }
-
 
     document.getElementById('turn-shape').style.backgroundColor = bgColor;
 
@@ -449,14 +494,10 @@ class Chessgame extends GameTemplate {
     
     document.getElementById('buttons').style.display = "none";
 
+    this.status = status;
     statusEl.innerHTML = sanitize(status);
-    document.getElementById('captured').innerHTML = sanitize(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
+    casualtiesEl.innerHTML = sanitize(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
 
-    //console.log(this.game.position);
-    //console.log(this.engine.fen());
-    //console.log(this.returnCaptured(this.engine.fen()));
-    //console.log(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
-    
   };
 
   updateBoard(position){

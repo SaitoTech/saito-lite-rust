@@ -490,7 +490,6 @@ var ChessBoard = function (containerElOrId, cfg) {
 // our square size
     function calculateSquareSize() {
         var containerWidth = parseInt(containerEl.width(), 10);
-        let denominator = 8;
 
         // defensive, prevent infinite loop
         if (!containerWidth || containerWidth <= 0) {
@@ -500,13 +499,11 @@ var ChessBoard = function (containerElOrId, cfg) {
         // pad one pixel
         var boardWidth = containerWidth - 1;
 
-        if (screen.width < 1000) denominator = 6.5;
-
-        while (boardWidth % denominator !== 0 && boardWidth > 0) {
+        while (boardWidth % 8 !== 0 && boardWidth > 0) {
             boardWidth--;
         }
 
-        return (boardWidth / denominator);
+        return (boardWidth / 8);
     }
 
 // create random IDs for elements
