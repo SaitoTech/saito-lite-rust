@@ -7,4 +7,5 @@ CREATE TABLE IF NOT EXISTS league (
   description TEXT,
   ranking_algorithm TEXT,
   default_score INTEGER,
+  UNIQUE (id)
 );

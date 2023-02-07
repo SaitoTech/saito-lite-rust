@@ -30,7 +30,6 @@ class GameSelector {
   }
 
   render() {
-alert(GameSelectorTemplate(this.app, this.mod, this));
     this.overlay.show(GameSelectorTemplate(this.app, this.mod, this));
     this.attachEvents();
   }

@@ -1,32 +1,21 @@
-/* 
 
-/* Overlay -- in case we still have a link to game rules from game creation wizard*/
-
-/* .rules-overlay {
-  padding: 1em;
-  font-size: 20px;
-  border-radius: 0.5rem;
-  max-width: 80vw;
-  min-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  background: var(--saito-dark-purple);
-  color: var(--saito-white);
+.saito-multi-select_btn_options button {
+    background: transparent;
+    margin: 0rem;
+    padding: 0rem;
+    width: 101%;
+    display: block;
+    margin-bottom: 0.2rem;
+    border: 1px solid var(--saito-primary);
 }
 
-.rules-overlay p,
-.rules-overlay h1,
-.rules-overlay h2,
-.rules-overlay h3,
-.rules-overlay h4 {
-  color: var(--saito-white);
+.saito-multi-select_btn_options button {
+    border-radius: 0;
+    min-height: 4.8rem;
+    margin-bottom: 0.2rem;
+    font-size: 2rem;
 }
 
-.rules-overlay p {
-  margin-top: 0.5em;
-} */
-
-/* Game Advanced Options Styling*/
 
 #advanced-options-overlay-container {
   color: var(--saito-font-color-dark-modal);

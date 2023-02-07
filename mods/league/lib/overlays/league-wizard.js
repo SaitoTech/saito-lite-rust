@@ -33,10 +33,7 @@ class LeagueWizard {
 
         let title = document.getElementById("league-name").innerHTML;
         let desc = document.getElementById("league-desc").innerHTML;
-	let status = document.querySelector(".league-wizard-rankings-select").value;
-
-alert(title + " - " + desc + " - " + status);
-
+	let status = document.querySelector(".league-wizard-status-select").value;
 
         //
         // id TEXT PRIMARY KEY <--- TX SIG
@@ -50,15 +47,16 @@ alert(title + " - " + desc + " - " + status);
         //
         let obj = {
           game: this.game_mod.name ,
-          name: FORM_NAME ,
+          name: title ,
           admin: this.app.wallet.returnPublicKey() ,
-	  status: PUBLIC_OR_PRIVATE ,
-          description: FORM_DESCRIPTION ,
+	  status: status ,
+          description: desc ,
           ranking_algorithm: "ELO" ,
           default_score: 1500 ,
         };
 
-        this.mod.sendCreateLeagueTransaction(obj);
+        let newtx = this.mod.createCreateTransaction(obj);
+	this.app.network.propagateTransaction(newtx);
         this.overlay.remove();
 
         return false;
