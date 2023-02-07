@@ -249,7 +249,8 @@ class Tweet {
 
 
   attachEvents() {
-
+    let mod  = this.mod;
+    let app = this.app;
     if (this.show_controls == 0) { return; }
 
     try {
@@ -277,11 +278,12 @@ class Tweet {
       // view thread //
       /////////////////
       let this_tweet = document.querySelector(`.tweet-${this.tx.transaction.sig}`);
+      console.log('sig ', this.tx.transaction.sig)
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
-        this_tweet.addEventListener('click', (e) => {
+        this_tweet.onclick =  (e) => {
 
-          let tweet_text = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-text`);
+          let tweet_text = document.querySelector(`.tweet-${this.tx.transaction.sig} > .tweet-body > .tweet-main > .tweet-text`);
           if (this.is_long_tweet) {
             if (!tweet_text.classList.contains('full')) {
               tweet_text.classList.remove('preview');
@@ -289,7 +291,15 @@ class Tweet {
             } else {
               if (e.target.tagName != "IMG") {
                 window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
-                this.app.connection.emit("redsquare-thread-render-request", (this));
+                let sig = this.tx.transaction.sig;
+                let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+                mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+                  for (let z = 0; z < txs.length; z++) {
+                    let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+                    console.log('a tweet ', tweet)
+                    app.connection.emit('redsquare-thread-render-request', tweet);
+                  }
+                }, false, false);
               }
             }
             return;
@@ -299,12 +309,37 @@ class Tweet {
           // if we are asking to see a tweet, load from parent if exists
           //
           if (e.target.tagName != "IMG") {  window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
-
-            this.app.connection.emit("redsquare-thread-render-request", (this));
+          let sig = this.tx.transaction.sig;
+          let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+           mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+            for (let z = 0; z < txs.length; z++) {
+              let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+              console.log('a tweet ', tweet)
+              app.connection.emit('redsquare-thread-render-request', tweet);
+            }
+          }, false, false);
           }
-        })
+        }
       }
 
+
+
+      
+        /////////////////
+      // view preview//
+      /////////////////
+
+      document.querySelectorAll(`.tweet-${this.tx.transaction.sig} .tweet`).forEach(item => {
+        item.addEventListener('click', (e)=> {
+        e.stopImmediatePropagation();
+         let sig =  item.getAttribute('data-id');
+         console.log('sig', sig);
+         if (e.target.tagName != "IMG" && sig) {  
+            window.location.href = `/redsquare/?tweet_id=${sig}`
+        }
+      } 
+        )
+      }) 
 
 
       ///////////
@@ -332,6 +367,8 @@ class Tweet {
 
         }
       };
+
+
 
 
       /////////////
