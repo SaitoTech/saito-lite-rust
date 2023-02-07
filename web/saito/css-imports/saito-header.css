@@ -203,11 +203,13 @@
   .saito-header-hamburger-contents {
     width: 80vw;
   }
+
 }
 
 @media screen and (max-width: 500px) {
   .saito-header-hamburger-contents {
     width: 100vw;
+    padding: 0rem;
   }
   #saito-header {
     padding: 1.3rem 1rem;

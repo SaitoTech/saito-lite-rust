@@ -77,6 +77,24 @@ class Settings extends ModTemplate {
       }
   }
 
+  respondTo(type = "") {
+    if (type === 'saito-header') {
+      console.log("INSIDE MIXIN RESPONDTO");
+      
+      return [{
+        text: "Settings",
+        icon: this.icon,
+        allowed_mods: ["redsquare"],
+        callback: function (app, id) {
+          window.location = "/redsquare#wallet";
+        }
+      }]
+    }
+
+    return null;
+  }
+
+
 
 }
 

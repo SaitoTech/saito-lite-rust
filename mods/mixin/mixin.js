@@ -82,18 +82,18 @@ class Mixin extends ModTemplate {
   // flexible inter-module-communications
   //
   respondTo(type = "") {
-    if (type === 'saito-header') {
-      console.log("INSIDE MIXIN RESPONDTO");
+    // if (type === 'saito-header') {
+    //   console.log("INSIDE MIXIN RESPONDTO");
       
-      return [{
-        text: "Wallet",
-        icon: this.icon,
-        allowed_mods: ["redsquare"],
-        callback: function (app, id) {
-          window.location = "/redsquare#wallet";
-        }
-      }]
-    }
+    //   return [{
+    //     text: "Wallet",
+    //     icon: this.icon,
+    //     allowed_mods: ["redsquare"],
+    //     callback: function (app, id) {
+    //       window.location = "/redsquare#wallet";
+    //     }
+    //   }]
+    // }
 
     return null;
   }
