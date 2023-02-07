@@ -48,13 +48,6 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    /*
-     This should not be here...
-    */
-    this.postScripts = [
-      '/saito/lib/emoji-picker/emoji-picker.js'
-    ];
-
     this.debug = true;
   }
 
