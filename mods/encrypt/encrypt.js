@@ -49,7 +49,7 @@ class Encrypt extends ModTemplate {
         text: "Add Contact",
         icon: "far fa-id-card",
         callback: function (app, publickey) {
-            encrypt_self.app.keys.saveKeys();
+            encrypt_self.app.keychain.saveKeys();
             encrypt_self.initiate_key_exchange(publickey, 0);
 //	    encrypt_self.app.connection.emit("stun-create-peer-connection", ([publickey]));
 	    //
@@ -86,7 +86,7 @@ console.log("!!!!");
       let receiver = tx.transaction.to[0].add;
       let txmsg = tx.returnMessage();
       let request = txmsg.request;  // "request"
-      if (app.keys.alreadyHaveSharedSecret(sender)) {
+      if (app.keychain.alreadyHaveSharedSecret(sender)) {
         return;
       }
 
@@ -111,7 +111,7 @@ console.log("!!!!");
       let receiver = tx.transaction.to[0].add;
       let txmsg = tx.returnMessage();
       let request = txmsg.request;  // "request"
-      if (app.keys.alreadyHaveSharedSecret(sender)) {
+      if (app.keychain.alreadyHaveSharedSecret(sender)) {
         console.log("Already Have Shared Sectret");
         return;
       }
@@ -121,7 +121,7 @@ console.log("!!!!");
       //
       let bob_publickey = Buffer.from(txmsg.bob, "hex");
       
-      var senderkeydata = app.keys.findByPublicKey(sender);
+      var senderkeydata = app.keychain.findByPublicKey(sender);
 
       if (senderkeydata == null) {
         if (app.BROWSER == 1) {
@@ -134,7 +134,7 @@ console.log("!!!!");
       let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
       let alice = app.crypto.createDiffieHellman(alice_publickey, alice_privatekey);
       let alice_secret = app.crypto.createDiffieHellmanSecret(alice, bob_publickey);
-      app.keys.updateCryptoByPublicKey(sender, alice_publickey.toString("hex"), alice_privatekey.toString("hex"), alice_secret.toString("hex"));
+      app.keychain.updateCryptoByPublicKey(sender, alice_publickey.toString("hex"), alice_privatekey.toString("hex"), alice_secret.toString("hex"));
 
       //
       //
@@ -171,7 +171,7 @@ console.log("!!!!");
     // check if we have a diffie-key-exchange with peer
     //
     //if (peer.peer.publickey != "") {
-    //  if (!app.keys.hasSharedSecret(peer.peer.publickey)) {
+    //  if (!app.keychain.hasSharedSecret(peer.peer.publickey)) {
     //	this.initiate_key_exchange(peer.peer.publickey, 1, peer);  // offchain diffie-hellman with server
     //  }
     //}
@@ -223,7 +223,7 @@ console.log("error: " + err);
 
     tx.msg.module = this.name;
     tx.msg.request = "key exchange request";
-    tx.msg.alice_publickey = this.app.keys.initializeKeyExchange(recipient);
+    tx.msg.alice_publickey = this.app.keychain.initializeKeyExchange(recipient);
 
     //
     // does not currently support n > 2
@@ -287,7 +287,7 @@ console.log("error: " + err);
       this.app.network.sendPeerRequest("diffie hellman key response", data, peer);
     }
 
-    this.app.keys.updateCryptoByPublicKey(remote_address, bob_publickey.toString("hex"), bob_privatekey.toString("hex"), bob_secret.toString("hex"));
+    this.app.keychain.updateCryptoByPublicKey(remote_address, bob_publickey.toString("hex"), bob_privatekey.toString("hex"), bob_secret.toString("hex"));
     this.sendEvent('encrypt-key-exchange-confirm', {members: [remote_address, our_address]});
     this.saveEncrypt();
 
@@ -309,7 +309,7 @@ console.log("error: " + err);
         let receiver = tx.transaction.to[0].add;
         let txmsg = tx.returnMessage();
         let request = txmsg.request;  // "request"
-        if (app.keys.alreadyHaveSharedSecret(sender)) {
+        if (app.keychain.alreadyHaveSharedSecret(sender)) {
           return;
         }
 
@@ -333,7 +333,7 @@ console.log("error: " + err);
 
           let bob_publickey = Buffer.from(txmsg.bob, "hex");
           
-          var senderkeydata = app.keys.findByPublicKey(sender);
+          var senderkeydata = app.keychain.findByPublicKey(sender);
           if (senderkeydata == null) {
             if (app.BROWSER == 1) {
               alert("Cannot find original diffie-hellman keys for key-exchange");
@@ -344,7 +344,7 @@ console.log("error: " + err);
           let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
           let alice = app.crypto.createDiffieHellman(alice_publickey, alice_privatekey);
           let alice_secret = app.crypto.createDiffieHellmanSecret(alice, bob_publickey);
-          app.keys.updateCryptoByPublicKey(sender, alice_publickey.toString("hex"), alice_privatekey.toString("hex"), alice_secret.toString("hex"));
+          app.keychain.updateCryptoByPublicKey(sender, alice_publickey.toString("hex"), alice_privatekey.toString("hex"), alice_secret.toString("hex"));
 
           //
           //

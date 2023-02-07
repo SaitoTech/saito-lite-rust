@@ -1313,9 +1313,7 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
             html += `<li class="menu_option" id="${this_raise + poker_self.stf(match_required)}">${(mobileToggle)? " ":"raise "}${poker_self.formatWager(this_raise)}</li>`;
           } else {
             i = 6; //Stop for-loop
-          console.log("max raise 2: " + max_raise);
-          console.log("match_req:   " + match_required);
-            html += `<li class="menu_option" id="${max_raise + match_required}">
+            html += `<li class="menu_option" id="${poker_self.addToString(max_raise, match_required)}">
                       raise ${poker_self.formatWager(max_raise)} 
                       (all in${(smallest_stack_player !== poker_self.game.player - 1)?` for ${poker_self.game.state.player_names[smallest_stack_player]}`:""})</li>`;
           }
@@ -1694,7 +1692,7 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
   
   returnPlayerStackHTML(player,numChips){
     let html = `<div class="chip_stack tip">`;
-    let identicon = this.app.keys.returnIdenticon(this.app.keys.returnUsername(this.game.players[player-1]));
+    let identicon = this.app.keychain.returnIdenticon(this.app.keychain.returnUsername(this.game.players[player-1]));
 
     let chipSizes = [100, 25, 5, 1];
     let idx = 0;

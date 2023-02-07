@@ -530,7 +530,7 @@ class Observer extends ModTemplate {
 	      //}
 
 	      game.ts = new Date().getTime();
-	      //this.app.keys.addWatchedPublicKey(address_to_watch);
+	      //this.app.keychain.addWatchedPublicKey(address_to_watch);
 	      this.app.storage.saveOptions();
 	      let slug = this.app.modules.returnModule(msgobj.module).returnSlug();
 	      window.location = "/" + slug;
@@ -539,7 +539,7 @@ class Observer extends ModTemplate {
 	  }
 
 	  //It doesn't look like the watched flag in keychain actually affects message relays...
-    //this.app.keys.addWatchedPublicKey(address_to_watch);
+    //this.app.keychain.addWatchedPublicKey(address_to_watch);
 
     //We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
     this.sendFollowTx(msgobj);

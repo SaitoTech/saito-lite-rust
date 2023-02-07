@@ -78,7 +78,7 @@ class Chat extends ModTemplate {
         //
         // create chatgroups from keychain -- friends only
         //
-        let keys = app.keys.returnKeys();
+        let keys = app.keychain.returnKeys();
         for (let i = 0; i < keys.length; i++) {
             if (keys[i].aes_publickey) {
                 this.createChatGroup([keys[i].publickey, app.wallet.returnPublicKey()], keys[i].name);
@@ -88,7 +88,7 @@ class Chat extends ModTemplate {
         //
         // create chatgroups from groups
         //
-        let g = app.keys.returnGroups();
+        let g = app.keychain.returnGroups();
         for (let i = 0; i < g.length; i++) {
             this.createChatGroup(g[i].members, g[i].name);
         }
@@ -371,7 +371,7 @@ class Chat extends ModTemplate {
         // (i.e. I am sending an encrypted message and not waiting for relay)
         //
         if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
-            if (app.keys.hasSharedSecret(tx.transaction.to[0].add)) {
+            if (app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
                 tx.decryptMessage(app);
                 txmsg = tx.returnMessage();
             }

@@ -2,7 +2,7 @@ module.exports = JoinLeagueTemplate = (app, mod, league) => {
 
 	let game = league.game.toLowerCase();
 	let pubKey = app.wallet.returnPublicKey();
-	let user_email = app.keys.returnEmail(pubKey);
+	let user_email = app.keychain.returnEmail(pubKey);
 
 	let info_html = `<span class="saito-tooltip-box"></span>`;
 	let html = 	`

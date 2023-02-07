@@ -868,8 +868,8 @@ console.log("---------------------");
     //
     try {
 
-      if (this.app.keys.hasSharedSecret(tx.transaction.to[0].add)) {
-        tx.msg = this.app.keys.encryptMessage(tx.transaction.to[0].add, tx.msg);
+      if (this.app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
+        tx.msg = this.app.keychain.encryptMessage(tx.transaction.to[0].add, tx.msg);
       }
       //
       // nov 25 2022 - eliminate base64 formatting for TXS

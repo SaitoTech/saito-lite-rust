@@ -35,41 +35,18 @@ class SaitoRun extends GameTemplate {
 
 
   initializeGame(game_id) {
-    console.log("SET WITH GAMEID: " + game_id);
 
     if (!this.game.state) {
-      console.log("******Generating the Game******");
       this.game.state = this.returnState();
       this.game.queue = [];
-      this.game.queue.push("round");
+      this.game.queue.push("play");
       this.game.queue.push("READY");
     }
     
-    console.log(JSON.parse(JSON.stringify(this.game)));
-
-    if (this.browser_active){
-      $('.slot').css('min-height', $('.card').css('min-height'));  
-    }
-  }
-
-  newRound(){
-
-    //Set up queue
-    this.game.queue = [];
-    this.game.queue.push("play");
-
-    //Clear board
-    this.game.board = {};
-
-    //Reset/Increment State
-    this.game.state.round++;
-    this.game.state.recycles_remaining = 2;
   }
 
 
   initializeHTML(app) {
-
-    console.trace("Initialize HTML");
 
     if (!this.browser_active) { return; }
     
@@ -79,17 +56,6 @@ class SaitoRun extends GameTemplate {
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
-
-
-    this.menu.addSubMenuOption("game-game", {
-        text : "Screenshot",
-        id : "game-post",
-        class : "game-post",
-        callback : async function(app, game_mod) {
-	  alert("Sorry, not available!");
-        },
-    });
-
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -120,10 +86,8 @@ class SaitoRun extends GameTemplate {
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-      console.log(JSON.stringify(mv));
-
-
       if (mv[0] === "play") {
+        this.game.queue.splice(qe,1);
         return 0;
       }
 

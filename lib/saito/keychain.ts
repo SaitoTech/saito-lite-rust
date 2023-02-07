@@ -338,16 +338,6 @@ class Keychain {
     }
   }
 
-  // unused
-  // removeKeywordByIdentifierAndKeyword(identifier, tag) {
-  //   for (let x = this.keys.length - 1; x >= 0; x--) {
-  //     if (this.keys[x].isIdentifier(identifier) && this.keys[x].isTagged(tag)) {
-  //       this.removeKey(this.keys[x].publickey);
-  //       return;
-  //     }
-  //   }
-  // }
-
   returnKeys() {
     const kx = [];
     for (let x = 0; x < this.keys.length; x++) {
