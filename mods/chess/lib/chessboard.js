@@ -491,6 +491,11 @@ var ChessBoard = function (containerElOrId, cfg) {
     function calculateSquareSize() {
         var containerWidth = parseInt(containerEl.width(), 10);
 
+        //Daniel Worlton (7/2/2023) -- border added to inner element
+        //So want to account for the width out of container element size
+        var boardBoundary = parseInt(boardEl.css("borderWidth"));
+        containerWidth -= boardBoundary * 2;
+
         // defensive, prevent infinite loop
         if (!containerWidth || containerWidth <= 0) {
             return 0;

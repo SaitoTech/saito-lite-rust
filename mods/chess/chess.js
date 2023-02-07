@@ -28,6 +28,8 @@ class Chessgame extends GameTemplate {
     this.description = "An implementation of Chess for the Saito Blockchain";
     this.categories  = "Games Boardgame Classic";
     
+    this.confirm_moves = 1; 
+
     this.player_roles = ["Observer", "White", "Black"];
     this.app = app;
     return this;
@@ -40,19 +42,13 @@ class Chessgame extends GameTemplate {
     if (!this.browser_active) { return; }
     super.initializeHTML(app);
 
-    this.confirm_moves = this.loadGamePreference("chess_expert_mode"); 
-    if (this.confirm_moves == null || this.confirm_moves == undefined){
-      this.confirm_moves = 1;
-      console.log("Default to move confirmations");
-    }
-
-
     //
     // ADD MENU
     //
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");
 
+    /*
     this.menu.addSubMenuOption("game-game", {
       text : "Play Mode",
       id : "game-confirm",
@@ -68,8 +64,8 @@ class Chessgame extends GameTemplate {
       class:"game-confirm-newbie",
       callback: function(app,game_mod){
         if (game_mod.confirm_moves == 0){
-          game_mod.saveGamePreference('chess_expert_mode', 1);
-          setTimeout(function() { window.location.reload(); }, 1000);
+          //game_mod.saveGamePreference('chess_expert_mode', 1);
+          //setTimeout(function() { window.location.reload(); }, 1000);
         }else{
           game_mod.menu.hideSubMenus();
         }
@@ -82,13 +78,15 @@ class Chessgame extends GameTemplate {
       class:"game-confirm-expert",
       callback: function(app,game_mod){
         if (game_mod.confirm_moves == 1){
-          game_mod.saveGamePreference('chess_expert_mode', 0);
-          setTimeout(function() { window.location.reload(); }, 1000);
+          //game_mod.saveGamePreference('chess_expert_mode', 0);
+          //setTimeout(function() { window.location.reload(); }, 1000);
         }else{
           game_mod.menu.hideSubMenus();
         }
       }
     });
+    */
+
     this.menu.addSubMenuOption("game-info", {
       text: "Rules",
       id: "game-rules",
@@ -113,13 +111,7 @@ class Chessgame extends GameTemplate {
 
     this.log.render();
 
-    if (!this.confirm_moves){
-      let confirm_btn = document.getElementById("buttons");
-      if (confirm_btn){
-        confirm_btn.style.display = "none";
-      }
-    }
-
+    
     //Plug Opponent Information into the Controls 
     if (this.game.player){
       let opponent = this.game.opponents[0];
@@ -221,6 +213,10 @@ class Chessgame extends GameTemplate {
       if (this.useClock) { this.startClock(); }
     }
 
+    // If we have a fast-ish timed game turn off move confirmations initially    
+    if (this.useClock && parseInt(this.game.options.clock) < 15){
+      this.confirm_moves = 0;
+    }
 
     this.updateStatusMessage();
     this.game.draw_offered = this.game.draw_offered || 0;
@@ -290,14 +286,14 @@ class Chessgame extends GameTemplate {
 
 
     this.game.position = data.position;
-    this.game.target = msg.extra.target;
 
     this.updateLog(data.move);
 
     if (this.browser_active == 1) {
       
       this.updateBoard(this.game.position);
-      //this.setBoard(this.game.position);
+  
+      this.game.target = msg.extra.target;
 
       if (msg.extra.target == this.game.player) {
         if (this.useClock) { this.startClock(); }
@@ -313,13 +309,8 @@ class Chessgame extends GameTemplate {
     }
 
     this.updateStatusMessage();
+    this.saveGame(this.game.id);
 
-    //if (this.game.player == 0) {
-    //  this.game.queue.push("OBSERVER_CHECKPOINT");
-    //  return 1;
-    //}
-
-    //this.saveGame(this.game.id);
     return 0;
 
   }
@@ -356,12 +347,7 @@ class Chessgame extends GameTemplate {
 
     let resign_icon = document.getElementById('resign_icon');
     let draw_icon = document.getElementById('draw_icon');
-    let move_accept = document.getElementById('move_accept');
-    let move_reject = document.getElementById('move_reject');
     let chat_btn = document.getElementById('chat-btn');
-    if (!move_accept) return;
-
-
 
     if (resign_icon) {
       resign_icon.onclick = async () => {
@@ -376,7 +362,7 @@ class Chessgame extends GameTemplate {
     }
 
     if (draw_icon){
-      draw_icon.style.visiblity = "visible";
+      draw_icon.classList.remove("hidden");
       $(".flash").removeClass("flash");
       if (this.game.draw_offered >= 0){
         draw_icon.onclick = async () => {
@@ -405,7 +391,7 @@ class Chessgame extends GameTemplate {
         }
       }else{
         console.log("Hide draw icon");
-        draw_icon.style.visiblity = "hidden";
+        draw_icon.classList.add("hidden");
       }
     }
 
@@ -415,34 +401,6 @@ class Chessgame extends GameTemplate {
       }
     }
 
-    if (move_accept){
-      move_accept.onclick = () => {
-        console.log('send move transaction and wait for reply.');
-
-        var data = {};
-        data.white = this.game.white;
-        data.black = this.game.black;
-        data.id = this.game.id;
-        data.position = this.engine.fen();
-        data.move = this.game.move;
-        this.endTurn(data);
-
-        move_accept.disabled = true;
-        move_reject.disabled = true;
-      };
-    }
-
-    if (move_reject){
-      move_reject.onclick = () => {
-        document.getElementById('buttons').style.display = "none";
-        this.setBoard(this.game.position);
-
-        move_accept.disabled = true;
-        move_reject.disabled = true;
-
-        document.getElementById('promotion').style.display = "none";
-      };
-    }
     window.onresize = () => this.board.resize();
 
   }
@@ -492,8 +450,6 @@ class Chessgame extends GameTemplate {
       }
     }
     
-    document.getElementById('buttons').style.display = "none";
-
     this.status = status;
     statusEl.innerHTML = sanitize(status);
     casualtiesEl.innerHTML = sanitize(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
@@ -501,7 +457,7 @@ class Chessgame extends GameTemplate {
   };
 
   updateBoard(position){
-    console.log("MOVING PIECE");
+    console.log("MOVING OPPONENT's PIECE");
 
     this.engine.load(position);
     this.board.position(position, true);
@@ -589,6 +545,8 @@ class Chessgame extends GameTemplate {
 
     this_chess.game.move = this_chess.engine.fen().split(" ").slice(-1)[0] + " " + this_chess.colours(this_chess.engine.fen().split(" ")[1]) + ": ";
 
+    this_chess.slot = target;
+
     //was a pawn moved to the last rank
     if ((source.charAt(1) == 7 && target.charAt(1) == 8 && piece == 'wP')
         || (source.charAt(1) == 2 && target.charAt(1) == 1 && piece == 'bP')) {
@@ -608,6 +566,13 @@ class Chessgame extends GameTemplate {
       this_chess.game.move += this_chess.pieces(move.piece) + " ";
 
       this_chess.game.move += " - " + move.san;
+    
+        this_chess.confirmPlacement(()=>{ var data = {};
+        data.position = this_chess.engine.fen();
+        data.move = this_chess.game.move;
+        this_chess.endTurn(data);
+      });
+
     }
   }
 
@@ -621,39 +586,62 @@ class Chessgame extends GameTemplate {
     // legal move - make it
     this_chess.game.move += `${this_chess.pieces(move.piece)} - ${move.san}`;
   
-    if (this_chess.confirm_moves == 0){
-      var data = {};
-      data.white = this.game.white;
-      data.black = this.game.black;
-      data.id = this.game.id;
-      data.position = this.engine.fen();
-      data.move = this.game.move;
-      this.endTurn(data);
-      this_chess.updateStatusMessage('Pawn promoted to ' + this_chess.pieces(piece) + '.');
-    }else{
-      document.getElementById('buttons').style.display = "flex";
-      this_chess.updateStatusMessage("Confirm Move to Send!");
-    }
-
+    
+    var data = {};
+    data.position = this.engine.fen();
+    data.move = this.game.move;
+    this.endTurn(data);
+    this_chess.updateStatusMessage('Pawn promoted to ' + this_chess.pieces(piece) + '.');
+    
   };
 
   checkPromotion(source, target, color) {
-    let promotion = document.getElementById('promotion');
-    let promotion_choices = document.getElementById('promotion-choices');
-    //let buttons = document.getElementById('buttons');
-    //buttons.style.display = "none";
 
-    let html = ['q', 'r', 'b', 'n'].map(n => this.piecehtml(n, color)).join('');
-    promotion_choices.innerHTML = html;
-    promotion_choices.childNodes.forEach(node => {
-      node.onclick = () => {
-        promotion.style.display = "none";
-        //buttons.style.display = "flex";
-        this_chess.promoteAfterDrop(source, target, node.alt);
+    let html = ['q', 'r', 'b', 'n'].map(n =>  
+      `<div class="action piece" id="${n}">${this.piecehtml(n, color)}</div>`
+      ).join('');
+
+    html = `<div class="popup-confirm-menu promotion-choices">
+              <div class="popup-prompt">Promote to:</div>
+              ${html}
+              <div class="action" id="cancel"> ✘ cancel</div>
+              </div>`;
+
+    let left = $(`#board`).offset().left;
+    let top = $(`#board`).offset().top;
+
+    if (this.slot){
+      left =  $(`.square-${this.slot}`).offset().left + $(`.square-${this.slot}`).width();
+      if (left + 100 > window.innerWidth){
+        left = $(`.square-${this.slot}`).offset().left - 150;
       }
-    });
-    this.updateStatusMessage('Choose promotion piece');
-    promotion.style.display = "block";
+      top  =  $(`.square-${this.slot}`).offset().top;
+    }
+          
+    $(".popup-confirm-menu").remove();
+    $("body").append(html);
+
+    $(".popup-confirm-menu").css({
+      position: "absolute",
+          top: top,
+          left: left,
+      });
+    if ($(".popup-confirm-menu").height() + top > window.innerHeight){
+      $(".popup-confirm-menu").css("top", window.innerHeight - $(".popup-confirm-menu").height());
+    }
+
+    $(".action").off();
+    $(".action").on("click", function () {
+      let confirmation = $(this).attr("id");
+      
+      $(".action").off();
+      $(".popup-confirm-menu").remove();
+      if (confirmation == "cancel"){
+        this_chess.setBoard(this_chess.game.position);
+      }else{
+        this_chess.promoteAfterDrop(source, target, confirmation);
+      }
+    });  
   }
 
   onMouseoverSquare(square, piece) {
@@ -705,24 +693,71 @@ class Chessgame extends GameTemplate {
       return;
     }
 
-    if (this_chess.confirm_moves){
-      document.getElementById('buttons').style.display = "flex";
-      let move_accept = document.getElementById('move_accept');
-      let move_reject = document.getElementById('move_reject');
+    console.log(oldPos, newPos);
 
-      move_accept.disabled = false;
-      move_reject.disabled = false;
-    }else{
-      var data = {};
-      data.white = this_chess.game.white;
-      data.black = this_chess.game.black;
-      data.id = this_chess.game.id;
-      data.position = this_chess.engine.fen();
-      data.move = this_chess.game.move;
-      this_chess.endTurn(data);
-    }
-    
+      
   };
+
+  confirmPlacement(callback){
+    if (this.confirm_moves == 0){
+      callback();
+      return;
+    }
+
+    let html = `
+          <div class="popup-confirm-menu">
+            <div class="popup-prompt">Are you sure?</div>
+            <div class="action" id="confirm"> ✔ yes</div>
+            <div class="action" id="cancel"> ✘ cancel</div>
+            <div class="confirm_check"><input type="checkbox" name="dontshowme" value="true"/> don't ask </div>
+          </div>`;
+
+    let left = $(`#board`).offset().left;
+    let top = $(`#board`).offset().top;
+
+    if (this.slot){
+      left =  $(`.square-${this.slot}`).offset().left + $(`.square-${this.slot}`).width();
+      if (left + 100 > window.innerWidth){
+        left = $(`.square-${this.slot}`).offset().left - 150;
+      }
+      top  =  $(`.square-${this.slot}`).offset().top;
+    }
+          
+    $(".popup-confirm-menu").remove();
+    $("body").append(html);
+
+    $(".popup-confirm-menu").css({
+      position: "absolute",
+          top: top,
+          left: left,
+      });
+    if ($(".popup-confirm-menu").height() + top > window.innerHeight){
+      $(".popup-confirm-menu").css("top", window.innerHeight - $(".popup-confirm-menu").height());
+    }
+
+    $(".action").off();
+    $(".action").on("click", function () {
+      let confirmation = $(this).attr("id");
+      
+      $(".action").off();
+      $(".popup-confirm-menu").remove();
+      if (confirmation == "confirm"){
+        callback();
+      }else{
+        this_chess.setBoard(this_chess.game.position);
+
+      }
+    });
+
+    $('input:checkbox').change(function() {
+      if ($(this).is(':checked')) {
+        this_chess.confirm_moves = 0;
+      }else{
+        this_chess.confirm_moves = 1;
+      }
+    });
+  }
+
 
   colours(x) {
 
