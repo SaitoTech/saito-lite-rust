@@ -27,8 +27,8 @@ class LeagueWizard {
   attachEvents(){
 
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
-
       gameButton.addEventListener("click", async (e) => {
+
         e.stopPropagation();
 
         let title = document.getElementById("league-name").innerHTML;
