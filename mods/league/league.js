@@ -619,10 +619,6 @@ class League extends ModTemplate {
 
 
 
-
-
-
-
   /////////////////////
   // update rankings //
   /////////////////////
@@ -642,7 +638,7 @@ class League extends ModTemplate {
 
       for (let i = players.length-1; i>=0; i--){
         if (txmsg.winner.includes(players[i])){
-          await this.incrementPlayer(players[i], league.id, numPoints, gamekey);
+          await this.addEXP(players[i], league.id, numPoints, gamekey);
           players.splice(i,1);
         }
       }
@@ -650,7 +646,7 @@ class League extends ModTemplate {
     } else {
       for (let i = players.length-1; i>=0; i--){
         if (txmsg.winner == players[i]){
-          await this.incrementPlayer(players[i], league.id, 5, "games_won");
+          await this.addEXP(players[i], league.id, 5, "games_won");
           players.splice(i,1);
         }
       }
@@ -662,8 +658,6 @@ class League extends ModTemplate {
     }
 
   }
-
-
 
   async updateELORanking(players, league){
 
@@ -725,61 +719,44 @@ class League extends ModTemplate {
 
   }
 
+  async addEXP(publickey, league_id, points, game_status = null){
 
+    let sql = `UPDATE players SET score = (score + $points), games_finished = (games_finished + 1), ts = $ts`;
+    if (game_status) { sql += `, ${game_status} = (${game_status} + 1)`; }
 
-
-
-
-
-
-
-
-
-
-
-
-
-  async incrementPlayer(pkey, lid, amount, game_status = null){
-    //if (this.app.wallet.returnPublicKey() !== pkey){ return; }
-    let now = new Date().getTime();
-    let sql = `UPDATE players SET score = (score + ${amount}), games_finished = (games_finished + 1), ts = $ts`;
-    if (game_status){
-      sql += `, ${game_status} = (${game_status} + 1)`;
-    }
     sql+= ` WHERE pkey = $pkey AND league_id = $lid`;
     console.log(sql);
     let params = {
-      $ts: now,
-      $pkey: pkey,
-      $lid: lid
+      $amount : points ,
+      $ts: new Date().getTime() ,
+      $publickey: publickey ,
+      $league_id: league_id
     }
-    console.log(params);
     await this.app.storage.executeDatabase(sql, params, "league");
-    this.app.connection.emit("league-rankings-render-request");
     return 1;
   }
 
-  async updatePlayerScore(playerObj, game_status = null){
-    let now = new Date().getTime();
+
+
+
+  async updatePlayerScore(playerObj, game_status = null) {
+
     let sql = `UPDATE players SET score = $score, games_finished = ${playerObj.games_finished + 1}, ts = $ts`;
     if (game_status){
       sql += `, ${game_status} = ${playerObj[game_status] + 1}`;
     }
-    sql+= ` WHERE pkey = $pkey AND league_id = $lid`;
+    sql+= ` WHERE pkey = $pkey AND league_id = $league_id`;
     console.log(sql);
     let params = {
       $score: playerObj.score,
-      $ts: now,
-      $pkey: playerObj.pkey,
-      $lid: playerObj.league_id
+      $ts: new Date().getTime() ,
+      $publickey: playerObj.publickey,
+      $league_id: playerObj.league_id
     }
     console.log(params);
     await this.app.storage.executeDatabase(sql, params, "league");
-    this.app.connection.emit("league-rankings-render-request");
     return 1;
   }
-
-
 
 }
 
