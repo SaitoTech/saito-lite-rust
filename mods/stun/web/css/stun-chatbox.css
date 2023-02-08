@@ -87,6 +87,7 @@
   border: none;
 }
 
+
 #localStream {
   display: block;
 }
@@ -126,6 +127,7 @@
   align-items: center;
   color: var(--saito-white);
   border-radius: 1rem;
+  position: relative;
 }
 
 .video-box-container video {
@@ -295,6 +297,7 @@
   align-items: center;
   color: var(--saito-white);
   border-radius: 1rem;
+  position: relative;
 }
 
 .video-box-container-large video {
@@ -317,7 +320,15 @@
   font-size: 2.3rem;
 }
 
-.video-box-container {
+.video-box-container-large canvas {
+  position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+
+
+/* .video-box-container {
   background-color: black;
   display: flex;
   height: 100%;
@@ -354,7 +365,7 @@
 
 .video-box-container > div > p {
   color: var(--saito-white);
-}
+} */
 
 .lds-dual-ring {
   display: inline-block;
@@ -519,5 +530,11 @@
 
   .control-panel {
     padding-bottom: 5rem;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+  }
+
+  .control-panel .control-list {
+    margin-bottom: 1.5rem;
   }
 }

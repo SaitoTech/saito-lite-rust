@@ -3,6 +3,7 @@ const LikeNotificationTemplate = require("./like-notification.template");
 const ReplyNotificationTemplate = require("./reply-notification.template");
 const RetweetNotificationTemplate = require("./retweet-notification.template");
 const saito = require("./../../../lib/saito/saito");
+const Tweet = require("./tweet");
 
 
 
@@ -76,11 +77,15 @@ class RedSquareNotification {
 
     if (obj) {
       obj.onclick = (e) => {
-        let sig = e.currentTarget.getAttribute("data-id");
-        let tweet = mod.returnTweet(sig);
-        if (tweet) {
-	  app.connection.emit("redsquare-thread-render-request", (tweet));
-	}
+          let sig = e.currentTarget.getAttribute("data-id");
+          let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+          mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+            for (let z = 0; z < txs.length; z++) {
+              let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+              app.connection.emit('redsquare-thread-render-request', tweet);
+            }
+          }, false, false);
+          return;
       }
     }
   }

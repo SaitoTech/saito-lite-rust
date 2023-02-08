@@ -38,6 +38,11 @@ class Chat extends ModTemplate {
             this.app.connection.emit("chat-manager-render-request");
         });
 
+        this.postScripts = [
+            '/saito/lib/emoji-picker/emoji-picker.js'
+        ];
+
+
     }
 
 
@@ -54,13 +59,13 @@ class Chat extends ModTemplate {
 
 
     respondTo(type) {
- 
+
         switch (type) {
             case 'chat-manager':
-		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
+                if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
                 return this.chat_manager;
             case 'chat-manager-overlay':
-		if (this.chat_manager_overlay == null) { this.chat_manager_overlay = new ChatManagerOverlay(this.app, this); }
+                if (this.chat_manager_overlay == null) { this.chat_manager_overlay = new ChatManagerOverlay(this.app, this); }
                 return this.chat_manager_overlay;
             default:
                 return super.respondTo(type);
@@ -92,6 +97,8 @@ class Chat extends ModTemplate {
         for (let i = 0; i < g.length; i++) {
             this.createChatGroup(g[i].members, g[i].name);
         }
+
+        this.attachPostScripts();
 
     }
 
@@ -146,10 +153,10 @@ class Chat extends ModTemplate {
                                 this.receiveChatTransaction(app, tx);
                             }
 
-			    //
-			    // add identifiers
-			    //
-			    app.browser.addIdentifiersToDom();
+                            //
+                            // add identifiers
+                            //
+                            app.browser.addIdentifiersToDom();
                         }
                     },
 
@@ -169,13 +176,13 @@ class Chat extends ModTemplate {
         //
         if (app.BROWSER) {
             if ((!app.browser.isMobileBrowser(navigator.userAgent) && window.innerWidth > 600)) {
-	        let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
-	        if (group) {
+                let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
+                if (group) {
                     let active_module = app.modules.returnActiveModule();
                     if (active_module.request_no_interrupts != true) {
                         this.app.connection.emit('chat-popup-render-request', group);
-		    }
-		}
+                    }
+                }
             } else {
                 //Under mobile use, always wait for user to open chat box
                 this.mute = true;
@@ -221,55 +228,55 @@ class Chat extends ModTemplate {
     // the trick is that receiveChatTransaction checks if the message is to a group I belong to
     // or addressed to me
     //
-    async handlePeerTransaction(app, tx=null, peer, mycallback) {
+    async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
-      if (tx == null) { return; }
+        if (tx == null) { return; }
 
-      tx.decryptMessage(app); //In case forwarding private messages
+        tx.decryptMessage(app); //In case forwarding private messages
 
-      let txmsg = tx.returnMessage();
+        let txmsg = tx.returnMessage();
 
         if (!txmsg.request) { return; }
 
         if (txmsg.request === "chat message") {
 
-          this.receiveChatTransaction(app, tx);
+            this.receiveChatTransaction(app, tx);
 
-	  //
-	  // notify sender if requested
-	  //
-          if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
+            //
+            // notify sender if requested
+            //
+            if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
 
         } else if (txmsg.request === "chat message broadcast") {
 
-	  let inner_tx = new saito.default.transaction(txmsg.data);
-	  let inner_txmsg = inner_tx.returnMessage();
+            let inner_tx = new saito.default.transaction(txmsg.data);
+            let inner_txmsg = inner_tx.returnMessage();
 
-	  if (!inner_txmsg?.group_id) { return; }
+            if (!inner_txmsg?.group_id) { return; }
 
-          //Chat message broadcast is the Relay to the Chat-services server
-          //that handles Community chat and will forward the message as a "chat message"
-          //Without relay + handlePeerTransaction, we do not receive community chat messages
+            //Chat message broadcast is the Relay to the Chat-services server
+            //that handles Community chat and will forward the message as a "chat message"
+            //Without relay + handlePeerTransaction, we do not receive community chat messages
 
-          //Tell Archive to save a copy of this TX
-          app.connection.emit("archive-save-transaction", { key: inner_txmsg.group_id, type: "Chat", inner_tx });
+            //Tell Archive to save a copy of this TX
+            app.connection.emit("archive-save-transaction", { key: inner_txmsg.group_id, type: "Chat", inner_tx });
 
-          //Forward to all my peers (but not me again) with new request & same data 
-	  //
-	  // servers can forward if they get chat broadcast
-	  //
-	  if (app.BROWSER == 0) {
-            app.network.peers.forEach(p => {
-              if (p.peer.publickey !== peer.peer.publickey) {
-                p.sendTransactionWithCallback(inner_tx, () => {});
-              }
-            });
-	  }
+            //Forward to all my peers (but not me again) with new request & same data 
+            //
+            // servers can forward if they get chat broadcast
+            //
+            if (app.BROWSER == 0) {
+                app.network.peers.forEach(p => {
+                    if (p.peer.publickey !== peer.peer.publickey) {
+                        p.sendTransactionWithCallback(inner_tx, () => { });
+                    }
+                });
+            }
 
-	  //
-	  // notify sender if requested
-	  //
-          if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
+            //
+            // notify sender if requested
+            //
+            if (mycallback) { mycallback({ "payload": "success", "error": {} }); }
 
         }
 
@@ -308,7 +315,7 @@ class Chat extends ModTemplate {
             tx = app.wallet.signAndEncryptTransaction(tx);
             app.network.propagateTransaction(tx);
 
-            app.connection.emit("send-relay-message", { recipient, request: 'chat message broadcast', data: tx.transaction });
+            app.connection.emit("relay-send-message", { recipient, request: 'chat message broadcast', data: tx.transaction });
 
         } else {
             salert("Connection to chat server lost");
@@ -427,11 +434,11 @@ class Chat extends ModTemplate {
     //
     returnChatBody(group_id) {
 
-//console.log("group ID: " + group_id);
+        //console.log("group ID: " + group_id);
 
         let html = '';
         let group = this.returnGroup(group_id);
-	if (!group) { return ""; }
+        if (!group) { return ""; }
 
         let message_blocks = this.createMessageBlocks(group);
 
@@ -453,7 +460,7 @@ class Chat extends ModTemplate {
             }
         }
 
-	if (!group.unread) { group.unread = 0; }
+        if (!group.unread) { group.unread = 0; }
         group.unread = 0;
 
         //Save to Wallet Here
@@ -578,7 +585,7 @@ class Chat extends ModTemplate {
     //
     openChatBox(group_id = null) {
 
-alert("open chat box~");
+        alert("open chat box~");
 
         if (!this.app.BROWSER) { return; }
 
@@ -647,12 +654,12 @@ alert("open chat box~");
     }
 
     returnGroupByMemberPublickey(publickey) {
-      for (let i = 0; i < this.groups.length; i++) {
-        if (this.groups[i].members.includes(publickey)) {
-          return this.groups[i];
+        for (let i = 0; i < this.groups.length; i++) {
+            if (this.groups[i].members.includes(publickey)) {
+                return this.groups[i];
+            }
         }
-      }
-      return null;
+        return null;
     }
 
     returnMembers(group_id) {

@@ -24,6 +24,7 @@ const ChatManagerLargeTemplate = (call_type, code) => {
         <div class="control-list">
       ${add_user}
        
+      <span> <i class="fas fa-chalkboard effects-control"></i> </span>
 
            <span>
             <i class=" audio_control fa fa-microphone" > </i>
