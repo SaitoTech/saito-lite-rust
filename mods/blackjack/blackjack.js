@@ -187,7 +187,7 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state.player));
 
     for (let i = 0; i < num_of_players; i++) {
       state.player[i] = { credit : this.game.stake,
-                          name : this.app.keys.returnIdentifierByPublicKey(this.game.players[i], 1),
+                          name : this.app.keychain.returnIdentifierByPublicKey(this.game.players[i], 1),
                           wager : 0,
                           payout : 1,
                           hand : [],
@@ -215,7 +215,7 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state.player));
   addPlayerToState(address){
     let new_player = {
                           credit : this.game.stake,
-                          name : this.app.keys.returnIdentifierByPublicKey(address, 1),
+                          name : this.app.keychain.returnIdentifierByPublicKey(address, 1),
                           wager : 0,
                           payout : 1,
                           hand : [],

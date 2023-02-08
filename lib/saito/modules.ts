@@ -328,8 +328,23 @@ class Mods {
   }
 
   onPeerHandshakeComplete(peer) {
+    //
+    // all modules learn about the peer connecting
+    //
     for (let i = 0; i < this.mods.length; i++) {
       this.mods[i].onPeerHandshakeComplete(this.app, peer);
+    }
+    //
+    // then they learn about any services now-available
+    //
+    for (let i = 0; i < peer.peer.services.length; i++) {
+      this.onPeerServiceUp(peer, peer.peer.services[i]);
+    }
+  }
+
+  onPeerServiceUp(peer, service) {
+    for (let i = 0; i < this.mods.length; i++) {
+      this.mods[i].onPeerServiceUp(this.app, peer, service);
     }
   }
 

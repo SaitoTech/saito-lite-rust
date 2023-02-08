@@ -1,4 +1,4 @@
-const SaitoModuleLong = require("./../../../../lib/saito/new-ui/templates/saito-module-long.template");
+const SaitoModuleLong = require("./../../../../lib/saito/ui/templates/saito-module-long.template");
 
 module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
 
@@ -6,7 +6,7 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
 
   let playersHtml = `<div class="playerInfo">`;
   msg.players_array.split("_").forEach((player) => {
-    let identicon = app.keys.returnIdenticon(player);
+    let identicon = app.keychain.returnIdenticon(player);
     playersHtml += `<div class="player-slot`;
     if (msg.winner && msg.winner.includes(player)){
       playersHtml += " winner";

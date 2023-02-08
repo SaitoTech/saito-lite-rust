@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.667,
+    version: 4.693,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -868,8 +868,8 @@ console.log("---------------------");
     //
     try {
 
-      if (this.app.keys.hasSharedSecret(tx.transaction.to[0].add)) {
-        tx.msg = this.app.keys.encryptMessage(tx.transaction.to[0].add, tx.msg);
+      if (this.app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
+        tx.msg = this.app.keychain.encryptMessage(tx.transaction.to[0].add, tx.msg);
       }
       //
       // nov 25 2022 - eliminate base64 formatting for TXS

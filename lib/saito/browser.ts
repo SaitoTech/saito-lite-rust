@@ -284,18 +284,20 @@ class Browser {
         if (w[i][0] === "@") {
           if (w.length > 1) {
             let cleaner = w[i].substring(1);
-            let add = this.app.keys.returnPublicKeyByIdentifier(cleaner);
+	    let key = this.app.keychain.returnKey({ identifier : cleaner });
+	    if (key) {
+              let add = key.publickey;
+	    }
             if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
               add = cleaner;
-            }
-            if (!keys.includes(add)) {
+	    }
+            if (!keys.includes(add) && (add != "" && add != null)) {
               keys.push(add);
             }
           }
         }
       }
     }
-
 
     let identifiers = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
     let adds = text.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
@@ -309,10 +311,13 @@ class Browser {
     }
     if (identifiers) {
       identifiers.forEach(id => {
-        let add = this.app.keys.returnPublicKeyByIdentifier(id);
-        if (this.app.crypto.isPublicKey(add)) {
-          if (!keys.includes(add)) {
-            keys.push(add);
+        let key = this.app.keychain.returnKey({ identifier : id });
+	if (key.publickey) {
+        let add = key.publickey;
+          if (this.app.crypto.isPublicKey(add)) {
+            if (!keys.includes(add)) {
+              keys.push(add);
+            }
           }
         }
       });
@@ -739,7 +744,7 @@ class Browser {
     let m = d.minutes;
     let x = '';
     if (h < 10) { x = `0${h}`; } else { x = `${h}`; }
-    if (m < 10) { x += `:0${m}`; } else { x += `:${m}`; }
+    if (m < 10) { x += `:${m}`; } else { x += `:${m}`; }
     return x;
   }
   formatDate(timestamp) {
@@ -1134,28 +1139,42 @@ class Browser {
     }
   }
 
+
+  /**
+  * Fetches publickeys visible in application HTML
+  * 
+  **/
+  returnArrayOfPublicKeysInDom() {
+    let keys = [];
+    const addresses = document.getElementsByClassName(`saito-address`);
+    Array.from(addresses).forEach((add) => {
+      const pubkey = add.getAttribute("data-id");
+      if (pubkey) {
+        keys.push(pubkey);
+      }
+    });
+    return keys;
+  }
+
+
   /**
    * Fetchs identifiers from a set of keys
    *
    * @param {Array} keys
    */
   async addIdentifiersToDom(keys = []) {
-    if (keys.length == 0) {
-      const addresses = document.getElementsByClassName(`saito-address`);
-      Array.from(addresses).forEach((add) => {
-        const pubkey = add.getAttribute("data-id");
-        if (pubkey) {
-          keys.push(pubkey);
-        }
-      });
+
+    let keys = this.returnArrayOfPublicKeysInDom();
+    let unidentified_keys = [];
+    for (let i = 0; i < keys.length; i++) {
+      if (this.app.keychain.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
+	unidentified_keys.push(keys[i]);
+      } else {
+        this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
+      }
     }
-    try {
-      const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
-      Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
-    } catch (err) {
-      console.error(err);
-    }
-  }
+    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  }
+
 
   addModalIdentifierAddPublickey(app, mod) {
     try {
@@ -1177,7 +1196,7 @@ class Browser {
   }
 
   returnAddressHTML(key) {
-    const identifier = this.app.keys.returnIdentifierByPublicKey(key);
+    const identifier = this.app.keychain.returnIdentifierByPublicKey(key);
     const id = !identifier ? key : identifier;
     return `<div class="saito-address saito-address-${key}" data-id="${key}">${id}</div>`;
   }
@@ -1426,7 +1445,7 @@ class Browser {
           try {
 
             identifiers.forEach(async (identifier) => {
-              let answer = this.app.keys.fetchPublicKey(identifier);
+              let answer = this.app.keychain.returnKey({ identifier : identifier });
               console.log(answer + " - " + identifier);
               if (answer != identifier && answer != null) {
                 //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
@@ -1437,7 +1456,7 @@ class Browser {
             //deduplicate keys list
             keys = [...new Set(keys)];
 
-            const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
+            const answer = await this.app.keychain.fetchManyIdentifiersPromise(keys);
             mappedKeyIdentifiers = Object.assign({}, mappedKeyIdentifiers, answer);
 
             keys.forEach(k => {
@@ -1490,7 +1509,7 @@ return;
 
 console.log("FOUND PUBLIC KEY!: " + address);
 
-                let identifier = app.keys.returnIdentifierByPublicKey(address, true);
+                let identifier = app.keychain.returnIdentifierByPublicKey(address, true);
                 if (identifier) {
 
 console.log("IDENTIFIER: " + identifier);

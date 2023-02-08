@@ -1,5 +1,6 @@
 
 const videoBoxTemplate = require("./video-box.template");
+// import {applyVideoBackground, } from 'virtual-bg';
 
 
 
@@ -65,7 +66,6 @@ class VideoBox {
                 videoBox.insertAdjacentHTML('beforeend', `<div class="audio-stream"> <i class="fas fa-microphone"></i></div> `);
             } else if (this.call_type === "video") {
                 videoBox.firstElementChild.srcObject = this.stream;
-
                 console.log('rendered stream ', this.stream, videoBox.firstElementChild.srcObject)
             }
         }
@@ -96,15 +96,14 @@ class VideoBox {
     handleConnectionStateChange(connectionState) {
         let video_box = document.querySelector(`#stream${this.stream_id}`);
         let connection_message = document.querySelector('#connection-message');
-        if(!video_box) return;
+        if (!video_box) return;
         switch (connectionState) {
             case "connecting":
-                
-                document.querySelector('#connection-message').innerHTML = `<p>Starting ${this.call_type} Chat </p> <span class='lds-dual-ring'>`
+                document.querySelector('#connection-message').innerHTML = `<p>Starting ${this.call_type.capitalize()} Chat </p> <span class='lds-dual-ring'>`
                 break;
             case "connected":
                 if (this.stream) {
-                    if(document.querySelector('#connection-message')){
+                    if (document.querySelector('#connection-message')) {
                         document.querySelector('#connection-message').parentElement.removeChild(document.querySelector('#connection-message'));
                     }
                     this.renderStream({ muted: false });
@@ -116,29 +115,29 @@ class VideoBox {
                 salert("User Disconnected");
                 break;
             case "failed":
-                if(document.querySelector(`#stream${this.stream_id}`)){
+                if (document.querySelector(`#stream${this.stream_id}`)) {
                     console.log(`#stream${this.stream_id}`, "stream id")
-                document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
-                salert("Connection failed");
-                }   
+                    document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
+                    salert("Connection failed");
+                }
                 break;
-            case "ten_seconds": 
-            if(document.querySelector('#connection-message')){
-                document.querySelector('#connection-message').innerHTML = `<p>Negotiation Peer Connection</p> <span class='lds-dual-ring'>`
-            }
-            
-            break
-            case "twenty_seconds": 
-            if(document.querySelector('#connection-message')){
-                document.querySelector('#connection-message').innerHTML = `<p>Adding Ice Candidates</p> <span class='lds-dual-ring'>`
-            }
-            
-            break
-            case "two_minutes": 
-            if(document.querySelector('#connection-message')){
-                document.querySelector('#connection-message').innerHTML = `<p>Connection Failed, Retrying</p> <span class='lds-dual-ring'>`
-            }
-            break
+            case "ten_seconds":
+                if (document.querySelector('#connection-message')) {
+                    document.querySelector('#connection-message').innerHTML = `<p>Negotiation Peer Connection</p> <span class='lds-dual-ring'>`
+                }
+
+                break
+            case "twenty_seconds":
+                if (document.querySelector('#connection-message')) {
+                    document.querySelector('#connection-message').innerHTML = `<p>Adding Ice Candidates</p> <span class='lds-dual-ring'>`
+                }
+
+                break
+            case "two_minutes":
+                if (document.querySelector('#connection-message')) {
+                    document.querySelector('#connection-message').innerHTML = `<p>Connection Failed, Retrying</p> <span class='lds-dual-ring'>`
+                }
+                break
 
             default:
                 break;

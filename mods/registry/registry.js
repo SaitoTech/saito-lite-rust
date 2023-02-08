@@ -20,6 +20,42 @@ class Registry extends ModTemplate {
     //
     this.publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
 
+    //
+    // we could save the cached keys here instead of inserting them
+    // into our wallet / keychain ? perhaps that would be a much more
+    // efficient way of handling things that stuffing the wallet with
+    // the information of strangers....
+    //
+    this.cached_keys = {};
+
+    //
+    // event listeners - browser.ts calls this in addIdentifiersToDom()
+    //
+    this.app.connection.on("registry-fetch-identifiers-and-update-dom", (keys) => {
+
+      let unidentified_keys = [];
+
+      for (let i = 0; i < keys.length; i++) {
+	if (this.cached_keys[keys[i]]) {
+	  this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
+	} else {
+	  unidentified_keys.push(keys[i]);
+	}
+      }
+
+      for (let i = 0; i < this.app.network.peers.length; i++) {
+	let peer = this.app.network.peers[i];
+	if (this.app.network.peers[i].hasService("registry")) {
+          this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
+            Object.entries(answer).forEach(([key, value]) => {
+	      this.cached_keys[key] = value;
+	      this.app.browser.updateAddressHTML(key, value);
+	    });
+          });
+        }
+      }
+    });
+
     return this;
   }
 
@@ -31,11 +67,159 @@ class Registry extends ModTemplate {
     // responses to inbound requests for DNS queries, only services that are actually
     // registering domains should report they run the registry module.
     //
+    if (this.app.BROWSER == 0) {
     //if (this.publickey == this.app.wallet.returnPublicKey()) {
-    services.push({ service: "registry", domain: "saito" });
-    //}
+      services.push({ service: "registry", domain: "saito" });
+    }
     return services;
   }
+
+
+
+  //
+  // fetching identifiers
+  //
+  fetchManyIdentifiers(publickeys = [], peer = null, mycallback = null) {
+
+    if (mycallback == null) { return; }
+
+    const found_keys = [];
+    const missing_keys = [];
+
+    publickeys.forEach((publickey) => {
+      const identifier = this.app.keychain.returnIdentifierByPublicKey(publickey);
+      if (identifier.length > 0) {
+        found_keys[publickey] = identifier;
+      } else {
+        missing_keys.push(`'${publickey}'`);
+      }
+    });
+
+    if (missing_keys.length == 0) {
+      mycallback(found_keys);
+      return;
+    }
+
+    const where_statement = `publickey in (${missing_keys.join(",")})`;
+    const sql = `select * from records where ${where_statement}`;
+
+    this.sendPeerDatabaseRequestWithFilter(
+
+      "Registry",
+
+      sql,
+
+      (res) => {
+        try {
+          let rows = [];
+          if (typeof res.rows != "undefined") {
+            if (!res.err) {
+              if (res.rows.length > 0) {
+                rows = res.rows.map((row) => {
+                  const { publickey, identifier, bid, bsh, lc } = row;
+                  this.app.keychain.addKey(publickey, {
+                    identifier: identifier,
+                    watched: false,
+                    block_id: bid,
+                    block_hash: bsh,
+                    lc: lc,
+                  });
+                  if (!found_keys.includes(publickey)) {
+                    found_keys[publickey] = identifier;
+                  }
+                });
+              }
+            }
+          }
+          mycallback(found_keys);
+        } catch (err) {
+          console.log(err);
+        }
+      },
+
+      (p) => {
+	if (peer == null) {
+          if (peer.peer.services) {
+            for (let z = 0; z < peer.peer.services.length; z++) {
+              if (peer.peer.services[z].service === "registry") {
+                return 1;
+              }
+            }
+          }
+        } else {
+          if (p == peer) {
+	    return 1;
+	  }
+	}
+      }
+    );
+  }
+
+
+  fetchIdentifier(publickey, peer = null, mycallback = null) {
+
+    if (mycallback == null) { return; }
+
+    this.sendPeerDatabaseRequestWithFilter(
+
+      "Registry",
+
+      'SELECT * FROM records WHERE publickey = "' + publickey + '"',
+
+      (res) => {
+        let rows = [];
+    
+        if (res.rows == undefined) {
+          mycallback(rows);
+        }
+        if (res.err) {
+          mycallback(rows);
+        }
+        if (res.rows == undefined) {
+          mycallback(rows);
+        }
+        if (res.rows.length == 0) {
+          mycallback(rows);
+        }
+        rows = res.rows.map((row) => {
+          const { publickey, identifier, bid, bsh, lc } = row;
+      
+          // keep track that we fetched this already
+          this.cached_keys[publickey] = 1;
+          this.addKey(publickey, {
+            identifier: identifier,
+            watched: false,
+            block_id: bid, 
+            block_hash: bsh,
+            lc: lc,
+          });
+          if (!found_keys.includes(publickey)) {
+            found_keys[publickey] = identifier;
+          }
+        });
+        mycallback(found_keys);
+      },
+
+      (p) => {
+	if (peer == null) {
+          if (peer.peer.services) {
+            for (let z = 0; z < peer.peer.services.length; z++) {
+              if (peer.peer.services[z].service === "registry") {
+                return 1;
+              }
+            }
+          }
+        } else {
+          if (p == peer) {
+	    return 1;
+	  }
+	}
+      }
+    );
+  }
+
+
+
 
   respondTo(type = "") {
     if (type == "do-registry-prompt") {
@@ -90,7 +274,7 @@ class Registry extends ModTemplate {
 
       try {
         if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-          registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: registry_self.app.blockchain.returnLatestBlockId(), block_hash: registry_self.app.blockchain.returnLatestBlockHash(), lc: 1 });
+          registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: registry_self.app.blockchain.returnLatestBlockId(), block_hash: registry_self.app.blockchain.returnLatestBlockHash(), lc: 1 });
           registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
         } else {
           console.debug("failed verifying message for username registration : ", tx);
@@ -187,12 +371,13 @@ class Registry extends ModTemplate {
 
     let registry_self = app.modules.returnModule("Registry");
 
-    /***** UNCOMMENT FOR LOCAL DEVELOPMENT *****
+    /***** UNCOMMENT FOR LOCAL DEVELOPMENT ******
     if (registry_self.app.options.server != undefined) {
       registry_self.publickey = registry_self.app.wallet.returnPublicKey();
     } else {
       registry_self.publickey = peer.peer.publickey;
     }
+console.log("WE ARE NOW LOCAL SERVER");
     *******************************************/
 
   }
@@ -277,7 +462,7 @@ class Registry extends ModTemplate {
 
               try {
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-                  registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
+                  registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
                 }else{
                   console.debug("verification failed for sig : ", tx);
                 }

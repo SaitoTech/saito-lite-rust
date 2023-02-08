@@ -25,7 +25,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		for (let i=0; i < invite.players.length; i++) {
   		  html += `
 		  <div class="arcade-game-playerbox saito-table-row">
-		    <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keys.returnIdenticon(invite.players[i])}"></div>
+		    <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(invite.players[i])}"></div>
 		    <div class="saito-username">${invite.players[i]}</div>
 		  </div>					  	  
 			`;
@@ -36,7 +36,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
       html += `
 
       <div class="arcade-game-playerbox empty saito-table-row requested_player">
-	      <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keys.returnIdenticon(invite.desired_opponent_publickeys[i])}"></div>
+	      <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(invite.desired_opponent_publickeys[i])}"></div>
  	      <div class="saito-username">${invite.desired_opponent_publickeys[i]}</div>
 	    </div>
 

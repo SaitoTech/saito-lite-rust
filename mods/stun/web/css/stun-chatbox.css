@@ -1,4 +1,4 @@
-.saito-overlay-closebox{
+.saito-overlay-closebox {
   right: 1rem;
   width: 3rem;
   height: 3rem;
@@ -7,8 +7,8 @@
 
 .saito-overlay-closebox-btn {
   width: 3rem;
-    height: 3rem;
-    font-size: 3rem;
+  height: 3rem;
+  font-size: 3rem;
 }
 .stunx-chatbox {
   top: 0 !important;
@@ -87,6 +87,7 @@
   border: none;
 }
 
+
 #localStream {
   display: block;
 }
@@ -126,6 +127,7 @@
   align-items: center;
   color: var(--saito-white);
   border-radius: 1rem;
+  position: relative;
 }
 
 .video-box-container video {
@@ -145,6 +147,8 @@
 
 .video-box-container > #connection-message > p {
   color: var(--saito-white);
+  font-size: 2.3rem !important;
+  text-transform: lowercase;
 }
 
 .lds-dual-ring {
@@ -293,6 +297,7 @@
   align-items: center;
   color: var(--saito-white);
   border-radius: 1rem;
+  position: relative;
 }
 
 .video-box-container-large video {
@@ -312,9 +317,18 @@
 
 .video-box-container-large > #connection-message > p {
   color: var(--saito-white);
+  font-size: 2.3rem;
 }
 
-.video-box-container {
+.video-box-container-large canvas {
+  position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+
+
+/* .video-box-container {
   background-color: black;
   display: flex;
   height: 100%;
@@ -351,7 +365,7 @@
 
 .video-box-container > div > p {
   color: var(--saito-white);
-}
+} */
 
 .lds-dual-ring {
   display: inline-block;
@@ -502,7 +516,6 @@
   color: var(--saito-gray-mid);
 }
 
-
 @media screen and (max-width: 900px) {
   .stunx-chatbox .large-wrapper {
     display: grid;
@@ -516,8 +529,12 @@
   }
 
   .control-panel {
- 
     padding-bottom: 5rem;
+    flex-direction: column-reverse;
+    align-items: flex-end;
   }
-  
+
+  .control-panel .control-list {
+    margin-bottom: 1.5rem;
+  }
 }

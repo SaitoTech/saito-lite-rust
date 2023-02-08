@@ -34,9 +34,10 @@
     text-transform: uppercase;
 }
 
-.saito-login-overlay-field input {
+.saito-login-overlay-field input[type="text"] , .saito-login-overlay-field input[type="password"] {
     font-size: 3rem;
     padding: 1rem;
+    width: 50rem;
 }
 
 .saito-login-overlay {

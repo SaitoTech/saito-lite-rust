@@ -1,14 +1,12 @@
 import modtemplate from "./../templates/modtemplate";
-
 import * as JSON from "json-bigint";
-
 import Identicon from "identicon.js";
 import { Saito } from "../../apps/core";
-import Key from "./key";
+
 
 class Keychain {
   public app: Saito;
-  public keys: Array<Key>;
+  public keys: Array<any>;
   public groups: any;
   public modtemplate: any;
   public fetched_keys: Map<string, number>;
@@ -31,121 +29,82 @@ class Keychain {
       this.app.options.keys = [];
     }
 
+    //
+    // saved keys
+    //
     for (let i = 0; i < this.app.options.keys.length; i++) {
-      const tk = this.app.options.keys[i];
-
-      const k = new Key();
-      k.publickey = tk.publickey;
-      k.watched = tk.watched;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      k.bid = tk.bid;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      k.bsh = tk.bsh;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      k.lc = tk.lc;
-      k.aes_publickey = tk.aes_publickey;
-      k.aes_privatekey = tk.aes_privatekey;
-      k.aes_secret = tk.aes_secret;
-      k.data = tk.data;
-
-      for (let m = 0; m < tk.identifiers.length; m++) {
-        k.identifiers[m] = tk.identifiers[m];
-        if (m == 0) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          k.name = tk.identifiers[m];
-        }
-      }
-      for (let m = 0; m < tk.tags.length; m++) {
-        k.tags[m] = tk.tags[m];
-      }
-      this.keys.push(k);
+      this.keys.push(this.app.options.keys[i]);
     }
 
     //
-    // add my key if nothing else
+    // saved groups
     //
-    if (this.app.options.keys.length == 0) {
-      this.addKey(this.app.wallet.returnPublicKey(), { watched: true });
-    }
-
-    // Load groups from storage
-
     if (this.app.options.groups == null) {
       this.app.options.groups = [];
     } else {
       this.groups = this.app.options.groups;
     }
+
+    //
+    // add my key if needed
+    //
+    if (this.app.options.keys.length == 0) {
+      this.addKey({ publickey : this.app.wallet.returnPublicKey() , watched: true });
+    }
+
   }
 
   //
-  // adds an individual key
+  // adds an individual key, we have two ways of doing this !
   //
-  addKey(publickey = "", data = {}) {
-    if (publickey === "") {
-      return;
+  // (publickey, data)
+  // ({ publickey : x, data : y })
+  //
+  addKey(pa = null, da = null) {
+
+    let data = { publickey : "" };
+
+    //
+    // argument-overloading permitted !!
+    //
+    if (typeof pa === 'string') {
+      data.publickey = pa;
+      for (let key in da) { if (key !== "publickey") { data[key] = da[key]; } }
+    } else {
+      if (pa == null) { return; }
+      if (!pa.publickey) {
+        console.log("Error: cannot add publickey to keychain without publickey...");
+	return;
+      }
+      data = pa;
     }
 
     //
-    // eliminate excessive keys if needed
+    // skip empty keys
     //
-    this.pruneKeys();
+    if (data.publickey === "") { return; }
 
-    publickey = publickey.trim();
-
-    let tmpkey = this.findByPublicKey(publickey);
-    let added_identifier = 0;
-    let added_tag = 0;
-    if (tmpkey == null) {
-      tmpkey = new Key();
-      tmpkey.publickey = publickey;
-      tmpkey.watched = false;
-      tmpkey.lc = true;
-      this.keys.push(tmpkey);
-    }
-
-    //console.log("IS THIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
-
-    for (let key in data) {
-      if (key === "identifiers") {
-        for (let z = 0; z < data[key].length; z++) {
-          if (!tmpkey.identifiers.includes(data[key][z])) {
-            tmpkey.identifiers.push(data[key][z]);
-            added_identifier = 1;
-          }
-        }
-      } else {
-        if (key === "tags") {
-          for (let z = 0; z < data[key].length; z++) {
-            if (!tmpkey.tags.includes(data[key][z])) {
-              tmpkey.tags.push(data[key][z]);
-              added_tag = 1;
-            }
-          }
-        } else {
-          if (key === "identifier") {
-            if (!tmpkey.identifiers.includes(data[key])) {
-              tmpkey.identifiers.push(data[key]);
-              added_identifier = 1;
-            }
-          } else {
-            tmpkey[key] = data[key];
-          }
-        }
+    //
+    // update existing entry
+    //
+    for (let i = 0; i < this.keys.length; i++) { 
+      if (this.keys[i].publickey === data.publickey) {
+        let newkey = {};
+        for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
+	this.saveKeys();
+	return;
       }
     }
 
+    //
+    // or add new entry
+    //
+    let newkey = { publickey : "" };
+    newkey.publickey = data.publickey;
+    for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
+    this.keys.push(newkey);
     this.saveKeys();
 
-    if (added_identifier == 1) {
-      this.app.connection.emit("update_identifier", tmpkey);
-    }
-    if (added_tag == 1) {
-      this.app.connection.emit("update_tag", tmpkey);
-    }
   }
 
   decryptMessage(publickey: string, encrypted_msg) {
@@ -232,24 +191,6 @@ class Keychain {
     return msg;
   }
 
-  findByPublicKey(publickey: string): Key | null {
-    for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].publickey === publickey) {
-        return this.keys[x];
-      }
-    }
-    return null;
-  }
-
-  findByIdentifier(identifier) {
-    for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].isIdentifier(identifier)) {
-        return this.keys[x];
-      }
-    }
-    return null;
-  }
-
   hasSharedSecret(publickey: string) {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey === publickey || this.keys[x].isIdentifier(publickey)) {
@@ -272,6 +213,10 @@ class Keychain {
     return false;
   }
 
+  //
+  // used in the encrypt module, provided here for convenience of generating DHKE
+  // in other ways.
+  //
   initializeKeyExchange(publickey: string) {
     const alice = this.app.crypto.createDiffieHellman();
     const alice_publickey = alice.getPublicKey(null, "compressed").toString("hex");
@@ -280,12 +225,82 @@ class Keychain {
     return alice_publickey;
   }
 
-  isTagged(publickey, tag) {
-    const x = this.findByPublicKey(publickey);
-    if (x == null) {
-      return false;
+
+  removeKey(publickey=null) {
+    if (publickey == null) { return; }
+    for (let x = this.keys.length - 1; x >= 0; x--) {
+      let match = true;
+      if (this.keys[x].publickey == publickey) {
+        this.keys.splice(x, 1);
+      }
     }
-    return x.isTagged(tag);
+  }
+
+  returnKey(data=null) {
+
+    //
+    // data might be a publickey, permit flexibility
+    // in how this is called by pushing it into a 
+    // suitable object for searching
+    //
+    if (typeof data === 'string') {
+      let d = { publickey : "" };
+      d.publickey = data;
+      data = d;
+    }
+
+    //
+    // if keys exist
+    //
+    for (let x = 0; x < this.keys.length; x++) {
+      let match = true;
+      for (let key in data) { 
+        if (this.keys[x][key] !== data[key]) {
+          match = false;
+	}
+      }
+      if (match == true) {
+        return this.keys[x];
+      }
+    }
+
+    return null;
+  }
+
+  returnKeys(data=null) {
+    const kx = [];
+
+    //
+    // no filters? return everything
+    //
+    if (data == null) {
+      for (let x = 0; x < this.keys.length; x++) {
+        if (this.keys[x].lc && this.keys[x].publickey != this.app.wallet.returnPublicKey()) {
+          kx.push(this.keys[x]);
+        }
+      }
+    }
+
+    //
+    // if keys exist
+    //
+    for (let x = 0; x < this.keys.length; x++) {
+      let match = true;
+      for (let key in data) { 
+        if (this.keys[x][key] !== data[key]) {
+	  match = false;
+	}
+      }
+      if (match == true) {
+	kx.push(this.keys[x]);
+      }
+    }
+
+    return kx;
+  }
+
+  returnGroups() {
+    return this.groups;
   }
 
   saveKeys() {
@@ -298,138 +313,18 @@ class Keychain {
     this.app.storage.saveOptions();
   }
 
-  pruneKeys() {
-    let replacement_key_array = [];
-    let keys_replaced = 0;
-    if (this.keys.length > 200) {
-      for (let x = 0; x < this.keys.length && keys_replaced < 50; x++) {
-        let k = this.keys[x];
-        let keep_key = 0;
-        if (k.watched) {
-          keep_key = 1;
-        }
-        if (k.aes_publickey) {
-          keep_key = 1;
-        }
-        if (k.aes_secret) {
-          keep_key = 1;
-        }
-        if (k.tags.length > 0) {
-          keep_key = 1;
-        }
-        if (k.data) {
-          keep_key = 1;
-        }
-        if (keep_key) {
-          replacement_key_array.push(k);
-        } else {
-          keys_replaced++;
-        }
-      }
-      this.keys = replacement_key_array;
-    }
-  }
 
-  removeKey(publickey) {
-    for (let x = this.keys.length - 1; x >= 0; x--) {
-      if (this.keys[x].publickey == publickey) {
-        this.keys.splice(x, 1);
-      }
-    }
-  }
 
-  // unused
-  // removeKeywordByIdentifierAndKeyword(identifier, tag) {
-  //   for (let x = this.keys.length - 1; x >= 0; x--) {
-  //     if (this.keys[x].isIdentifier(identifier) && this.keys[x].isTagged(tag)) {
-  //       this.removeKey(this.keys[x].publickey);
-  //       return;
-  //     }
-  //   }
-  // }
+  returnIdenticon(publickey: string, img_format = "svg") {
 
-  returnKeys() {
-    const kx = [];
-    for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].lc && this.keys[x].publickey != this.app.wallet.returnPublicKey()) {
-        kx.push(this.keys[x]);
-      }
-    }
-    return kx;
-  }
-
-  returnGroups() {
-    return this.groups;
-  }
-
-  returnKeychainByTag(tag) {
-    const kx = [];
-    for (let x = 0; x < this.keys.length; x++) {
-      if (this.keys[x].isTagged(tag)) {
-        kx[kx.length] = this.keys[x];
-      }
-    }
-    return kx;
-  }
-
-  // used by email registration
-  updateEmail(publickey, email) {
-    let added = 0;
-    if (this.keys != undefined) {
-      for (let x = 0; x < this.keys.length; x++) {
-        if (this.keys[x].publickey === publickey) {
-          if (!this.keys[x].data) {
-            this.keys[x].data = {};
-          }
-          added = 1;
-          this.keys[x].data.email = email;
-          this.app.connection.emit("update_email", this.keys[x]);
-        }
-      }
-    }
-    if (added == 0) {
-      this.addKey(publickey);
-      this.updateEmail(publickey, email);
-    }
-    this.saveKeys();
-  }
-
-  returnEmail(publickey) {
-    if (this.keys != undefined) {
-      for (let x = 0; x < this.keys.length; x++) {
-        if (this.keys[x].publickey === publickey) {
-          if (this.keys[x].data.email != "" && typeof this.keys[x].data.email !== "undefined") {
-            return this.keys[x].data.email;
-          }
-        }
-      }
-    }
-    return "";
-  }
-
-  updateIdenticon(publickey, identicon) {
-    if (this.keys != undefined) {
-      for (let x = 0; x < this.keys.length; x++) {
-        if (this.keys[x].publickey === publickey) {
-          if (!this.keys[x].data) {
-            this.keys[x].data = {};
-          }
-          this.keys[x].data.identicon = identicon;
-        }
-      }
-    }
-    this.saveKeys();
-  }
-
-  returnIdenticon(publickey: string) {
     if (this.keys != undefined) {
       for (let x = 0; x < this.keys.length; x++) {
         if (this.keys[x].publickey === publickey) {
           if (
-            this.keys[x].data.identicon != "" &&
-            typeof this.keys[x].data.identicon !== "undefined"
+            this.keys[x].identicon != "" &&
+            typeof this.keys[x].identicon !== "undefined"
           ) {
-            return this.keys[x].data.identicon;
+            return this.keys[x].identicon;
           }
         }
       }
@@ -443,26 +338,14 @@ class Keychain {
       //background: [255, 255, 255, 255],
       margin: 0.0, // 0% margin
       size: 420, // 420px square
-      format: "svg", // use SVG instead of PNG
+      format: img_format, // use SVG instead of PNG
     };
-    // console.debug("publickey for identicon 1 : ", publickey);
     const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
-    return "data:image/svg+xml;base64," + data;
+    return "data:image/"+img_format+"+xml;base64," + data;
   }
 
-  returnIdenticonasPNG(publickey: string) {
-    const options = {
-      margin: 0.0, // 0% margin
-      size: 420, // 420px square
-      format: "png", // use SVG instead of PNG
-    };
-    // console.debug("publickey for identicon 2 : ", publickey);
-    const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
-    return "data:image/png;base64," + data;
-  }
 
   returnIdenticonColor(publickey) {
-    // foreground defaults to last 7 chars as hue at 70% saturation, 50% brightness
     const hue = parseInt(this.app.crypto.hash(publickey).substr(-7), 16) / 0xfffffff;
     const saturation = 0.7;
     const brightness = 0.5;
@@ -488,220 +371,20 @@ class Keychain {
     ];
   }
 
-  fetchIdentifierPromise(publickey) {
-    return new Promise((resolve, reject) => {
-      this.fetchIdentifier(publickey, (answer) => {
-        resolve(answer);
-      });
-    });
-  }
-
-  fetchManyIdentifiersPromise(publickeys) {
-    return new Promise((resolve, reject) => {
-      this.fetchManyIdentifiers(publickeys, (answer) => {
-        resolve(answer);
-      });
-    });
-  }
-
-  fetchIdentifier(publickey = "", mycallback) {
-    let identifier = "";
-    const found_keys = [];
-    if (publickey == "") {
-      mycallback(identifier);
-    }
-
-    identifier = this.returnIdentifierByPublicKey(publickey);
-    if (this.fetched_keys[publickey] == 1) {
-      mycallback(identifier);
-    }
-    if (!identifier) {
-      mycallback(identifier);
-    }
-
-    this.modtemplate.sendPeerDatabaseRequestWithFilter(
-      "Registry",
-      'SELECT * FROM records WHERE publickey = "' + publickey + '"',
-      (res) => {
-        let rows = [];
-
-        if (res.rows == undefined) {
-          mycallback(rows);
-        }
-        if (res.err) {
-          mycallback(rows);
-        }
-        if (res.rows == undefined) {
-          mycallback(rows);
-        }
-        if (res.rows.length == 0) {
-          mycallback(rows);
-        }
-        rows = res.rows.map((row) => {
-          const { publickey, identifier, bid, bsh, lc } = row;
-
-          // keep track that we fetched this already
-          this.fetched_keys[publickey] = 1;
-          this.addKey(publickey, {
-            identifier: identifier,
-            watched: false,
-            block_id: bid,
-            block_hash: bsh,
-            lc: lc,
-          });
-          if (!found_keys.includes(publickey)) {
-            found_keys[publickey] = identifier;
-          }
-        });
-        mycallback(found_keys);
-      },
-
-      (peer) => {
-        for (let z = 0; z < peer.peer.services.length; z++) {
-          if (peer.peer.services[z].service === "registry") {
-            return 1;
-          }
-        }
-      }
-    );
-  }
-
-  fetchManyIdentifiers(publickeys = [], mycallback) {
-    const found_keys = [];
-    const missing_keys = [];
-
-    publickeys.forEach((publickey) => {
-      const identifier = this.returnIdentifierByPublicKey(publickey);
-      if (identifier.length > 0) {
-        found_keys[publickey] = identifier;
-      } else {
-        missing_keys.push(`'${publickey}'`);
-      }
-    });
-
-    if (missing_keys.length == 0) {
-      mycallback(found_keys);
-      return;
-    }
-
-    const where_statement = `publickey in (${missing_keys.join(",")})`;
-    const sql = `select *
-                     from records
-                     where ${where_statement}`;
-
-    this.modtemplate.sendPeerDatabaseRequestWithFilter(
-      "Registry",
-
-      sql,
-
-      (res) => {
-        try {
-          let rows = [];
-          if (typeof res.rows != "undefined") {
-            if (!res.err) {
-              if (res.rows.length > 0) {
-                rows = res.rows.map((row) => {
-                  const { publickey, identifier, bid, bsh, lc } = row;
-                  this.addKey(publickey, {
-                    identifier: identifier,
-                    watched: false,
-                    block_id: bid,
-                    block_hash: bsh,
-                    lc: lc,
-                  });
-                  if (!found_keys.includes(publickey)) {
-                    found_keys[publickey] = identifier;
-                  }
-                });
-              }
-            }
-          }
-          mycallback(found_keys);
-        } catch (err) {
-          console.log(err);
-        }
-      },
-
-      (peer) => {
-        if (peer.peer.services) {
-          for (let z = 0; z < peer.peer.services.length; z++) {
-            if (peer.peer.services[z].service === "registry") {
-              return 1;
-            }
-          }
-        }
-      }
-    );
-  }
-
-  fetchPublicKeyPromise(identifier = "") {
-    return new Promise((resolve, reject) => {
-      this.fetchPublicKey(identifier, (answer) => {
-        resolve(answer);
-      });
-    });
-  }
-
-  fetchPublicKey(identifier = null, mycallback = null) {
-    if (!identifier) {
-      return null;
-    }
-    if (this.app.crypto.isPublicKey(identifier)) {
-      return identifier;
-    }
-    const publickey = this.returnPublicKeyByIdentifier(identifier);
-    if (publickey != "") {
-      return publickey;
-    }
-    //
-    // if no result, fetch from server (modtemplate)
-    //
-    this.modtemplate.sendPeerDatabaseRequestWithFilter(
-      "Registry",
-      `SELECT * FROM records WHERE identifier = '${identifier}'`,
-      (res) => {
-        if (res.rows && res.rows.length > 0) {
-          //It should be unique....
-          res.rows.forEach((row) => {
-            const { publickey, identifier, bid, bsh, lc } = row;
-            this.addKey(publickey, {
-              identifier: identifier,
-              watched: false,
-              block_id: bid,
-              block_hash: bsh,
-              lc: lc,
-            });
-          });
-          return res.rows[0].publickey;
-        }
-      }
-    );
+  returnPublicKeyByIdentifier(identifier: string) {
+    let key = this.returnKey({ identifier : identifier });
+    if (key) { if (key.publickey) { return key.publickey; } }
     return null;
   }
 
-  returnPublicKeyByIdentifier(identifier: string): string {
-    for (let x = 0; x < this.keys.length; x++) {
-      const key = this.keys[x];
-      if (key.lc && key.isIdentifier(identifier)) {
-        return key.publickey;
-      }
-    }
-    return "";
-  }
-
   returnIdentifierByPublicKey(publickey: string, returnKey = false): string {
-    if (this.keys != undefined) {
-      for (let x = 0; x < this.keys.length; x++) {
-        const key = this.keys[x];
-        if (key.publickey === publickey) {
-          if (key.identifiers != undefined && key.lc) {
-            if (key.identifiers.length > 0) {
-              return key.identifiers[0];
-            }
-          }
-        }
+    let key = this.returnKey({ publickey : publickey });
+    if (key) {
+      if (key.identifier) { 
+        return key.identifier;
       }
     }
+
     if (returnKey) {
       return publickey;
     } else {
@@ -781,22 +464,6 @@ class Keychain {
     return false;
   }
 
-  clean() {
-    for (let x = 0; x < this.keys.length; x++) {
-      if (!this.keys[x].isWatched()) {
-        if (this.keys[x].aes_secret != "") {
-          console.log(
-            "purging key records: " +
-              this.keys[x].publickey +
-              " " +
-              JSON.stringify(this.keys[x].identifiers)
-          );
-          this.keys.splice(x, 1);
-          x--;
-        }
-      }
-    }
-  }
 }
 
 export default Keychain;

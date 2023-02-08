@@ -194,6 +194,7 @@ class Mempool {
   addTransaction(transaction: Transaction): boolean {
     //console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
+
       const new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
 
       //

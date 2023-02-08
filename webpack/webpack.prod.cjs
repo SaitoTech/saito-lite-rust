@@ -19,8 +19,7 @@ if (process.argv.includes("web3")) {
 }
 webpack({
   optimization: {
-    //minimize: true,
-    minimize: false,
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         parallel: true,

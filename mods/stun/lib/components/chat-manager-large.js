@@ -1,8 +1,11 @@
 
 const VideoBox = require('./video-box');
 const ChatManagerLargeTemplate = require('./chat-manager-large.template');
-
 const ChatInvitationOverlay = require('../overlays/chat-invitation-link');
+const Effects = require('../overlays/effects');
+
+
+
 class VideoChatManager {
 
     // peers = {};
@@ -20,8 +23,7 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        
-     
+        this.effectsMenu = new Effects(app, mod)
 
         this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code) => {
             if (ui_type !== "large") return
@@ -79,10 +81,13 @@ class VideoChatManager {
     render() {
         this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type, this.room_code), document.getElementById('content__'));
         this.isActive= true;
+
+    
     }
 
     attachEvents(app, mod) {
         // app.browser.makeDraggable("stunx-chatbox", null, true);
+
 
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
 
@@ -108,6 +113,10 @@ class VideoChatManager {
         })
         document.querySelector('.video_control').addEventListener('click', (e) => {
             this.toggleVideo();
+        })
+
+        document.querySelector('.effects-control').addEventListener('click', (e) => {
+            this.effectsMenu.render();
         })
 
         document.querySelector('.stunx-chatbox .minimizer').addEventListener('click', (e) => {
@@ -220,6 +229,9 @@ class VideoChatManager {
         this.video_boxes['local'] = { video_box: videoBox, peer_connection: null }
         this.localStream = localStream;
         this.updateImages();
+        segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);  
+        
+        // applyBlur(7); 
     }
 
 
@@ -375,10 +387,10 @@ class VideoChatManager {
         for (let i in this.video_boxes) {
             if (i === "local") {
                 let publickey = this.app.wallet.returnPublicKey()
-                let imgsrc = this.app.keys.returnIdenticon(publickey);
+                let imgsrc = this.app.keychain.returnIdenticon(publickey);
                 images += `<img data-id="${publickey}" src="${imgsrc}"/>`
             } else {
-                let imgsrc = this.app.keys.returnIdenticon(i);
+                let imgsrc = this.app.keychain.returnIdenticon(i);
                 images += `<img data-id ="${i}" class="saito-identicon" src="${imgsrc}"/>`
             }
             count++;
