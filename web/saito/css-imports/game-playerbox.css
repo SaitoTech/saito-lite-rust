@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   width: 30vh;
+  min-width: 150px;
   max-width: 30vw;
   min-height: 15vh;
   max-height: 30vh;
@@ -199,11 +200,12 @@
   }
 
   /*Maximize my space to play*/
-  #player-box-1{
+  #player-box-1:not(.opponents .player-box){
     max-width: unset;
     width: min(45vw,400px);
     font-size: 18px;
   }
+
   .plog.status ul{
     display: flex;
   }
