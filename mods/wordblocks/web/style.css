@@ -30,14 +30,14 @@ body {
   Format Player Boxes for score keeping
 */
 
+#game-scoreboard{
+  display: none;
+}
+
 #opponentbox{
   position: absolute;
   right: 40px;
   top: 50px;
-/*  position: absolute; */
-/*  left: 1em; */
-/*  top: 50vh; */
-/*  transform: translateY(-50%); */
 }
 .plog {
   padding: 0.5em;
@@ -283,7 +283,7 @@ thead,  tfoot{
 .tiles {
   margin: auto;
   display: flex;
-  height: 76px;
+  /*height: 76px;*/
 }
 
 .tiles div.tile {
@@ -334,10 +334,12 @@ thead,  tfoot{
 }
 
 .slot:hover {
-  background-color: #036;
-  opacity: 0.8;
+  filter: brightness(0.5);
 }
 
+.slot.selected_space{
+  filter: brightness(0.4) hue-rotate(90deg);
+}
 
 /*
   Double/Triple Letter/Word Bonus Tiles and Star Tiles
@@ -413,7 +415,7 @@ thead,  tfoot{
 }
 
 .rack-controls i {
-  padding: 0.6em;
+  padding: 10px;
 }
 
 
@@ -464,7 +466,57 @@ thead,  tfoot{
 
 /*Rearrange HUD/Playerbox elements for portrait layout  */
 @media  (orientation: portrait){
-  .hud-status-update-message, .subrack {
+
+  #opponentbox{
+    top: 45px;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-evenly;
+  }
+
+  .opponents > .player-box{
+    min-height: unset;
+    width: 20vh;
+    max-width: 23vw;
+    padding: 0.25em;
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: -4px 2px 3px black;
+    font-size: 15px;
+  }
+
+  .player-info-name{
+    font-size: 2vh;
+  }
+
+  .player-box .plog, .player-box .player-box-info{
+    padding: 0.25em;
+  }
+}
+
+/*
+Resize board on smaller screens
+*/
+@media only screen and (max-width: 600px) {
+  #game-scoreboard{
+    display: flex;
+    cursor: pointer;
+    width: 40%;
+    font-size: 24px;
+    justify-content: space-between;
+  }
+
+  #opponentbox{
+    display: none;
+  }
+
+  .visible#opponentbox{
+    display: flex;
+  }
+
+    .hud-status-update-message, .subrack {
     font-size: 0.8em;
   }
   
@@ -507,80 +559,32 @@ thead,  tfoot{
 
   .tiles {
     width: auto;
-    height: 72px;
+    /*height: 72px;*/
   }
   .tiles div.tile {
-    margin: 0 1vw;
-    font-size: min(7vw,42px);
-    width: 72px;
-    height: 72px;
+    margin: 1vw;
+    font-size: min(7vw,36px);
+    /*width: 72px;
+    height: 72px;*/
     max-width: 11vw;
     max-height: 11vw;
-    padding: min(2vw,12px);
   }
 
-  #opponentbox{
-    top: 45px;
-    left: 0;
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-evenly;
+  .rack-controls i {
+    padding: 8px;
   }
 
-  .opponents > .player-box{
-    min-height: unset;
-    width: 20vh;
-    max-width: 23vw;
-    padding: 0.25em;
-    margin: 0;
-    border-radius: 12px;
-    box-shadow: -4px 2px 3px black;
-    font-size: 15px;
-  }
-
-  .player-info-name{
-    font-size: 2vh;
-  }
-
-  .player-box .plog, .player-box .player-box-info{
-    padding: 0.25em;
-  }
 }
 
-/*
-Resize board on smaller screens
-*/
-/*@media only screen and (max-width: 910px) {
-  .gameboard {
-    grid-gap: 2px;
-    border-width: 5px;
-    padding: 6px;
-  }
+.game-scoreboard .player-identicon{
+  width: 30px;
+}
 
-  .slot {
-    width: 6vw;
-    height: 6vw;
-  }
-  .slot div {
-    font-size: 1.5vw;
-    padding: 0.5vw 0;
-  }
- 
-  .slot .bonus{
-    padding: 2px 1px;
-  }
-  
-  .bonus.starbk {
-    padding: 10px 0px;
-    font-size: 3.2vw !important;
-  }
-  .slot div.tile {
-    font-size: 4vw;
-    text-indent: 2px;
-  }
-}*/
-
+.game-scoreboard .score{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 
 /* End of responsive layout */
 
