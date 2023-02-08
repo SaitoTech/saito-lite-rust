@@ -27,11 +27,6 @@ class League extends ModTemplate {
     this.leagueCount = 0;
 
     //
-    // used in onPeerHandshakeComplete
-    //
-    this.services = [{ service : "league" , domain : "saito" }];
-
-    //
     // UI components
     //
     this.main = null;
@@ -41,6 +36,11 @@ class League extends ModTemplate {
 
   }
 
+
+  returnServices() {
+    if (this.app.BROWSER) { return []; }
+    return [{ service : "league" , domain : "saito" }];
+  }
 
   initialize(app) {
 
@@ -168,11 +168,15 @@ class League extends ModTemplate {
 
   async onServiceUp(peer, service) {
 
+console.log("...");
+
     //
     // add remote leagues
     //
 
-    if (service === "league") {
+    if (service.service === "league") {
+
+alert("fetching feedk database request");
 
       //    
       // fetch remote leagues
@@ -181,6 +185,13 @@ class League extends ModTemplate {
         "League" , 
         `SELECT * FROM league` ,
         (res) => {
+
+console.log("WE HAVE SELECTED OUR ENTRIES FROM LEAGUE");
+console.log(">>>");
+console.log(">>>");
+console.log(">>>");
+console.log(JSON.stringify(res));
+
           let rows = res.rows || [];
           if (rows.length > 0) {
             rows.forEach(function(league, key) {

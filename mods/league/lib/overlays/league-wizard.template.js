@@ -11,10 +11,10 @@ module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
           <div class="league-wizard-game-image"><img class="league-wizard-game-thumbnail" src="${game_mod.returnArcadeImg()}"></div>
           <div class="leaguee-wizard-game-details  rs-create-game-desc-wrapper">
             <div class="league-wizard-game-name">
-	      <div class="saito-module-intro-title editable-content" id="league-name" contenteditable="" data-placeholder="Name your league....">Name your league....</div>
+	      <input type="text" id="league-name" value="Name League" />
 	    </div>
             <div class="league-wizard-game-description">
-	      <div id="league-desc" class="saito-module-intro-description post-create-textarea editable-content markdown medium-editor-element" data-placeholder="Describe your league here..." contenteditable="true" spellcheck="true" data-medium-editor-element="true" role="textbox" aria-multiline="true">Describe your league here...</div>
+	      <textarea id="league-desc">${game_mod.description}</textarea>
 	    </div>
           </div> 
           <input type="hidden" name="game" value="${game_mod.name}">  

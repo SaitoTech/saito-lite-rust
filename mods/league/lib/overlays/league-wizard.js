@@ -26,13 +26,23 @@ class LeagueWizard {
 
   attachEvents(){
 
+    document.querySelector("#league-name").onclick = (e) => {
+      document.querySelector("#league-name").select();
+    }
+
+    document.querySelector("#league-desc").onclick = (e) => {
+      document.querySelector("#league-desc").select();
+    }
+
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
       gameButton.addEventListener("click", async (e) => {
 
         e.stopPropagation();
 
-        let title = document.getElementById("league-name").innerHTML;
-        let desc = document.getElementById("league-desc").innerHTML;
+	if (!this.validateLeague()) { return; }
+
+        let title = document.getElementById("league-name").value;
+        let desc = document.getElementById("league-desc").value;
 	let status = document.querySelector(".league-wizard-status-select").value;
 
         //
@@ -77,15 +87,15 @@ class LeagueWizard {
 
   validateLeague(){
 
-    let title = document.getElementById("league-name").innerHTML;
-    let desc = document.getElementById("league-desc").innerHTML;
+    let title = document.getElementById("league-name").value;
+    let desc = document.getElementById("league-desc").value;
 
-    if (!title || !title.innerHTML || title.innerHTML == title.getAttribute("data-placeholder")){
+    if (!title || title === "League Name") {
       alert("Your league must have a name");
       return false;
     }
 
-    if (!desc || !desc.innerHTML || desc.innerHTML == desc.getAttribute("data-placeholder")){
+    if (!desc) {
       alert("Your league must have a description");
       return false;
     }
