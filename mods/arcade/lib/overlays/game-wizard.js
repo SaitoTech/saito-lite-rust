@@ -175,7 +175,7 @@ class GameWizard {
     if (this.meta_overlay){
       this.meta_overlay.remove();  
     }
-  
+
     return options;
   }
 }
