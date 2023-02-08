@@ -204,6 +204,18 @@
     width: 80vw;
   }
 
+  ::-webkit-scrollbar-track {
+    background: #00000029;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10rem;
+  }
+
+  ::-webkit-scrollbar {
+    height: 0.3rem;
+  }
+
 }
 
 @media screen and (max-width: 500px) {
