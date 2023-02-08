@@ -57,6 +57,15 @@ class LeagueWizard {
 
         let newtx = this.mod.createCreateTransaction(obj);
 	this.app.network.propagateTransaction(newtx);
+
+	//
+	// and add the league
+	//
+	let txmsg = newtx.returnMessage();
+	txmsg.id = newtx.transaction.sig;
+	this.mod.addLeague(txmsg);
+	this.app.connection.emit("leagues-render-request");
+
         this.overlay.remove();
 
         return false;

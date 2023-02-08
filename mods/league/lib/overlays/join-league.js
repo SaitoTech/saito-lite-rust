@@ -16,8 +16,6 @@ class JoinLeague {
     if (league_id != "") { this.league_id = league_id; }
     let league = this.mod.returnLeague(this.league_id);
 
-//    let league = await this.mod.getAllLeagueData(this.league_id);
-
     if (league == null) {
       alert("League not found");
       return;

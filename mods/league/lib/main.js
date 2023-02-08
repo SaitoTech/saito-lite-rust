@@ -1,6 +1,6 @@
 const LeagueWizard = require("./overlays/league-wizard");
 const LeagueMainTemplate    = require("./main.template");
-const LeagueComponentExistingLeague = require("./components/existing-league");
+const LeagueMenu = require("./menu");
 
 class LeagueMain {
 
@@ -10,7 +10,10 @@ class LeagueMain {
     this.mod = mod;
     this.wizard = null;
 
-    app.connection.on("league-add-league", (league) => {
+    app.connection.on("leagues-render-request", (league) => {
+      this.render();
+    });
+    app.connection.on("league-render-request", (league) => {
       this.render();
     });
 
@@ -35,25 +38,28 @@ class LeagueMain {
     let filter3 = leagues.filter(l => l.myRank <= 0 && l.admin != this.app.wallet.returnPublicKey());
 
     if (filter1.length > 0) {
-      filter1.forEach((game) => {
-        LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-admin");
+      filter1.forEach((lg) => {
+        let x = new LeagueMenu(this.app, this.mod, ".leagues-for-admin" , lg);
+        x.render();
       });
     }
 
     if (filter2.length > 0) {
-      filter2.forEach((game) => {
-        LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-play");
+      filter2.forEach((lg) => {
+        let x = new LeagueMenu(this.app, this.mod, ".leagues-for-play" , lg);
+        x.render();
       });
     }
 
     if (filter3.length > 0) {
-      filter3.forEach((game) => {
-        LeagueComponentExistingLeague.render(this.app, this.mod, game, "leagues-for-join");
+      filter3.forEach((lg) => {
+        let x = new LeagueMenu(this.app, this.mod, ".leagues-for-play" , lg);
+        x.render();
       });
     }
 
     this.attachEvents();
-    LeagueComponentExistingLeague.attachEvents(this.app, this.mod);
+
   }
 
 

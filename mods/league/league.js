@@ -11,6 +11,7 @@ const JoinLeagueOverlay = require('./lib/overlays/join-league');
 class League extends ModTemplate {
 
   constructor(app) {
+
     super(app);
 
     this.name = "League";
@@ -71,41 +72,28 @@ class League extends ModTemplate {
 		default_score 		:	1500 					// default ranking for newbies
        });
     });
-
   }
 
 
-  render(app, mod) {
+  //////////////////////////
+  // Rendering Components //
+  //////////////////////////
+  render() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     this.main = new LeagueMain(app, this)
     this.header = new SaitoHeader(app, this);
     this.addComponent(this.main);
     this.addComponent(this.header);
 
-    //
-    // league join league
-    //
-    if (this.app.browser.returnURLParameter("league_join_league")) {
-      let so = new SaitoOverlay(app, this);
-      let backdrop_image = `/saito/img/dreamscape.png`;
-      let game = this.app.browser.returnURLParameter("game");
-      let game_mod = this.app.modules.returnModuleByName(game);
-      if (game_mod != null) { backdrop_image = game_mod.returnArcadeImg(); }
-      so.setBackground(backdrop_image);
-      so.render(' ');
-    }
-
     super.render(app, this);
   }
 
-
   canRenderInto(qs) {
-    if (qs == ".redsquare-sidebar") {
-      return true;
-    }
-    if (qs == ".arcade-leagues") {
-      return true;
-    }
+    if (qs == ".redsquare-sidebar") { return true; }
+    if (qs == ".arcade-leagues") { return true; }
     return false;
   }
 
@@ -135,12 +123,27 @@ class League extends ModTemplate {
 
 
 
+  returnLeague(league_id) {
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].id === league_id) { return this.leagues[i]; }
+    }
+    return null;
+  }
+
+  removeLeague(league_id) {
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].id === league_id) { this.leagues.splice(i, 1); }
+    }
+    return null;
+  }
+
   addLeague(obj) {
 
     //
     // default values
     //
     if (!obj)                   { return; }
+    if (!obj.id)                { return; }
     if (!obj.game)              { obj.game = "Unknown"; }
     if (!obj.name)              { obj.name = "Unknown"; }
     if (!obj.admin)             { obj.admin = ""; }
@@ -163,13 +166,6 @@ class League extends ModTemplate {
 
   }
 
-  returnLeague(league_id) {
-    for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) { return this.leagues[i]; }
-    }
-    return null;
-  }
-
   async onServiceUp(peer, service) {
 
     //
@@ -190,16 +186,17 @@ class League extends ModTemplate {
             rows.forEach(function(league, key) {
               league_self.addLeague(league);
             }); 
-
-	    //
-	    // league join league
-	    //
-            if (this.app.browser.returnURLParameter("league_join_league")) {
-              let league_id = this.app.browser.returnURLParameter("league_join_league");
-              let jlo = new JoinLeagueOverlay(app, this, league_id);
-              jlo.render();
-            }
           }
+
+          //
+          // league join league
+          //
+          if (this.app.browser.returnURLParameter("league_join_league")) {
+            let league_id = this.app.browser.returnURLParameter("league_join_league");
+            let jlo = new JoinLeagueOverlay(app, this, league_id);
+            jlo.render();
+          }
+
         },
         (p) => {
 	  if (p == peer) { return 1; }
@@ -214,12 +211,20 @@ class League extends ModTemplate {
 
   async onConfirmation(blk, tx, conf, app) {
 
+console.log("!!!!!!!!");
+console.log("!!!!!!!!");
+console.log("!!!!!!!!");
+console.log("in onConfirmation!");
+console.log("conf: " + conf);
+
     try {
 
       let txmsg = tx.returnMessage();
 
       if (txmsg.request === "league create") {
+console.log("CREATE A LEAGUE!");
         this.receiveCreateTransaction(blk, tx, conf, app);
+console.log("CREATED A LEAGUE!");
       }
 
       if (txmsg.request === "league join") {
@@ -252,6 +257,8 @@ class League extends ModTemplate {
     } catch (err) {
       console.log("ERROR in league onConfirmation: " + err);
     }
+
+    return;
   }
 
 
@@ -327,18 +334,45 @@ class League extends ModTemplate {
     // default_score INTEGER,
     //
     let txmsg = tx.returnMessage();
-    let sql = `INSERT INTO league (id, game, name, admin, status, description, ranking_algorithm, default_score) VALUES ($id, $game, $name, $admin, $status, $description, $ranking_algorithm, $default_score)`;
+    let sql = `INSERT INTO league (
+	id, 
+	game, 
+	name, 
+	admin, 
+	status, 
+	description, 
+	ranking_algorithm, 
+	default_score
+      ) VALUES (
+	$id, 
+	$game, 
+	$name, 
+	$admin, 
+	$status, 
+	$description, 
+	$ranking_algorithm, 
+	$default_score
+      )`;
     let params = {
-	id			:		tx.transaction.sig ,
-	game			:		txmsg.game || "" ,
-	name			:		txmsg.name || "" ,
-	admin			:		txmsg.admin || "" ,
-	status			:		txmsg.status || "" ,
-	description		:		txmsg.description || "" ,
-	ranking_algorithm	:		txmsg.ranking_algorithm || "" ,
-	default_score		:		1500 ,
+	$id			:		tx.transaction.sig ,
+	$game			:		txmsg.game || "" ,
+	$name			:		txmsg.name || "" ,
+	$admin			:		txmsg.admin || "" ,
+	$status			:		txmsg.status || "" ,
+	$description		:		txmsg.description || "" ,
+	$ranking_algorithm	:		txmsg.ranking_algorithm || "" ,
+	$default_score		:		1500
     };
+console.log("-------------");
+console.log("-------------");
+console.log("-------------");
+console.log(sql);
+console.log(params);
+console.log("^^^^^^^^^^^^^");
+
     await app.storage.executeDatabase(sql, params, "league");
+
+
     this.addLeague(params);
     return;
 

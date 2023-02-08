@@ -9,3 +9,4 @@ CREATE TABLE IF NOT EXISTS league (
   default_score INTEGER,
   UNIQUE (id)
 );
+
