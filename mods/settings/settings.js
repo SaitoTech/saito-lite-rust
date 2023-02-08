@@ -77,21 +77,21 @@ class Settings extends ModTemplate {
       }
   }
 
-  respondTo(type = "") {
-    if (type === 'saito-header') {
+  // respondTo(type = "") {
+  //   if (type === 'saito-header') {
       
-      return [{
-        text: "Settings",
-        icon: this.icon,
-        allowed_mods: ["redsquare"],
-        callback: function (app, id) {
-          document.querySelector('.slidein-panel').style.left = '0vw';
-        }
-      }]
-    }
+  //     return [{
+  //       text: "Settings",
+  //       icon: this.icon,
+  //       allowed_mods: ["redsquare"],
+  //       callback: function (app, id) {
+          
+  //       }
+  //     }]
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
 
 

@@ -81,7 +81,6 @@
   transition: all 0.2s;
   opacity: 0;
   z-index: 10;
-  padding: 2rem;
   width: 20rem;
   height: 100vh;
   overflow: auto;
@@ -181,6 +180,130 @@
   pointer-events: auto;
 }
 
+
+.wallet-btn-container {
+  white-space: nowrap;
+  width: 88vw;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.wallet-btn {
+  text-align: center;
+  color: #333;
+  display:inline-block;
+}
+
+.wallet-btn i {
+  display: block;
+  padding: 0rem;
+  margin: 0rem;
+  line-height: 4rem;
+  margin-bottom: 0.5rem;
+}
+
+.wallet-balance {
+  margin: auto;
+  min-width: fit-content;
+  position: relative;
+}
+
+.balance-amount {
+  font-size: 3rem;
+  display: inline-block;
+  float: left;
+}
+
+.wallet-balance select {
+  border: none;
+  background: none;
+  display: inline-block;
+  float: left;
+  width: 7rem;
+  margin: 0rem;
+  padding: 0rem;
+  margin-top: 1.2rem;
+  margin-left: 0.5rem;
+}
+
+.balance-ticker {
+  display: inline-block;
+  font-size: 1.5rem;
+  padding-left: 0.5rem;
+  vertical-align: -webkit-baseline-middle;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.header-wallet {
+  background-color: var(--saito-tertiary);
+  padding-bottom: 1.5rem;
+  padding-top: 1.5rem;
+}
+
+.header-wallet img {
+  margin: auto;
+  border-radius: 50%;
+  width: 5rem;
+  height: 5rem;
+  border: 1px solid #bbb;
+}
+
+.header-wallet .saito-header-profile-address {
+  width: 45%;
+  margin: auto;
+  padding-top: 0rem;
+}
+
+.header-wallet .saito-header-profile-address i {
+  line-height: 1.7rem;
+}
+
+.slidein-panel {
+  position: absolute;
+  top: 25vh;
+  background: #fff;
+  width: 100vw;
+  height: 99vh;
+  overflow: hidden;
+  z-index: 2;
+  transition: all 0.2s ease-in-out;
+  padding: 1.5rem 0rem;
+  left: 100vw;
+}
+
+.slidein-panel.show {
+  left: 0vw;
+}
+
+.panel-nav {
+  color: var(--saito-primary);
+  margin-left: 4rem;
+}
+
+.menu-back {
+  font-size: 2rem;
+}
+
+.panel-nav .seperator {
+  font-size: 2rem;
+  color: var(--saito-gray-mid);
+  padding: 0rem 1rem;
+}
+
+.nav-option {
+  font-size: 2rem;
+  color: var(--saito-gray-mid);
+}
+
+.more-options i.active {
+  transform: rotate(45deg);
+  transition: all 0.2s ease-in-out;
+}
+
 @media screen and (max-width: 1600px) {
   #saito-header {
     padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
@@ -202,19 +325,9 @@
 @media screen and (max-width: 700px) {
   .saito-header-hamburger-contents {
     width: 80vw;
+    overflow-x: hidden;
   }
 
-  ::-webkit-scrollbar-track {
-    background: #00000029;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    border-radius: 10rem;
-  }
-
-  ::-webkit-scrollbar {
-    height: 0.3rem;
-  }
 
 }
 
