@@ -49,7 +49,7 @@ class Keychain {
     // add my key if needed
     //
     if (this.app.options.keys.length == 0) {
-      this.addKey({ publickey : this.app.wallet.returnPublicKey() , watched: true });
+      this.addKey({ publickey: this.app.wallet.returnPublicKey(), watched: true });
     }
 
   }
@@ -62,7 +62,7 @@ class Keychain {
   //
   addKey(pa = null, da = null) {
 
-    let data = { publickey : "" };
+    let data = { publickey: "" };
 
     //
     // argument-overloading permitted !!
@@ -74,7 +74,7 @@ class Keychain {
       if (pa == null) { return; }
       if (!pa.publickey) {
         console.log("Error: cannot add publickey to keychain without publickey...");
-	return;
+        return;
       }
       data = pa;
     }
@@ -87,19 +87,19 @@ class Keychain {
     //
     // update existing entry
     //
-    for (let i = 0; i < this.keys.length; i++) { 
+    for (let i = 0; i < this.keys.length; i++) {
       if (this.keys[i].publickey === data.publickey) {
         let newkey = {};
         for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
-	this.saveKeys();
-	return;
+        this.saveKeys();
+        return;
       }
     }
 
     //
     // or add new entry
     //
-    let newkey = { publickey : "" };
+    let newkey = { publickey: "" };
     newkey.publickey = data.publickey;
     for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
     this.keys.push(newkey);
@@ -226,7 +226,7 @@ class Keychain {
   }
 
 
-  removeKey(publickey=null) {
+  removeKey(publickey = null) {
     if (publickey == null) { return; }
     for (let x = this.keys.length - 1; x >= 0; x--) {
       let match = true;
@@ -236,7 +236,7 @@ class Keychain {
     }
   }
 
-  returnKey(data=null) {
+  returnKey(data = null) {
 
     //
     // data might be a publickey, permit flexibility
@@ -244,7 +244,7 @@ class Keychain {
     // suitable object for searching
     //
     if (typeof data === 'string') {
-      let d = { publickey : "" };
+      let d = { publickey: "" };
       d.publickey = data;
       data = d;
     }
@@ -254,10 +254,10 @@ class Keychain {
     //
     for (let x = 0; x < this.keys.length; x++) {
       let match = true;
-      for (let key in data) { 
+      for (let key in data) {
         if (this.keys[x][key] !== data[key]) {
           match = false;
-	}
+        }
       }
       if (match == true) {
         return this.keys[x];
@@ -267,7 +267,7 @@ class Keychain {
     return null;
   }
 
-  returnKeys(data=null) {
+  returnKeys(data = null) {
     const kx = [];
 
     //
@@ -286,13 +286,13 @@ class Keychain {
     //
     for (let x = 0; x < this.keys.length; x++) {
       let match = true;
-      for (let key in data) { 
+      for (let key in data) {
         if (this.keys[x][key] !== data[key]) {
-	  match = false;
-	}
+          match = false;
+        }
       }
       if (match == true) {
-	kx.push(this.keys[x]);
+        kx.push(this.keys[x]);
       }
     }
 
@@ -341,7 +341,7 @@ class Keychain {
       format: img_format, // use SVG instead of PNG
     };
     const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
-    return "data:image/"+img_format+"+xml;base64," + data;
+    return "data:image/" + img_format + "+xml;base64," + data;
   }
 
 
@@ -372,15 +372,15 @@ class Keychain {
   }
 
   returnPublicKeyByIdentifier(identifier: string) {
-    let key = this.returnKey({ identifier : identifier });
+    let key = this.returnKey({ identifier: identifier });
     if (key) { if (key.publickey) { return key.publickey; } }
     return null;
   }
 
   returnIdentifierByPublicKey(publickey: string, returnKey = false): string {
-    let key = this.returnKey({ publickey : publickey });
+    let key = this.returnKey({ publickey: publickey });
     if (key) {
-      if (key.identifier) { 
+      if (key.identifier) {
         return key.identifier;
       }
     }
@@ -394,20 +394,17 @@ class Keychain {
 
   returnUsername(publickey: string): string {
     const name = this.returnIdentifierByPublicKey(publickey, true);
-    if (name != "" && name != publickey) {
-      return name;
-    }
-    if (name.length > 12) {
-      return name.substr(0, 12) + "...";
-    }
-    if (name[0]) {
-      if (name[0].length > 12) {
-        return name[0].substr(0, 12) + "...";
+    if (name != publickey) {
+      if (name.length > 12) {
+        return name.substring(0, 12) + "...";
+      }
+      if (name[0]) {
+        if (name[0].length > 12) {
+          return name[0].substring(0, 12) + "...";
+        }
       }
     }
-    if (name) {
-      return name;
-    } else {
+    else {
       return publickey;
     }
   }

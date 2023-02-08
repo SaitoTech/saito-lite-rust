@@ -42,6 +42,7 @@
   height: inherit;
   width: 25rem;
   top: 0;
+  margin: 0 0 0 1rem;
 }
 
 .saito-sidebar.right {
