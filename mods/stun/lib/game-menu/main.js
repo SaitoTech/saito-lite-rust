@@ -46,11 +46,11 @@ class StunxGameMenu {
           let peers_in_room =  JSON.parse(room.peers);
           let my_public_key = this.app.wallet.returnPublicKey();
 
-          if(peers_in_room.length === 2 ) {
-            if(!peers_in_room.includes(my_public_key)){
-                return salert("You can't join this call, max allowed exceeded")
-            }
-          }
+          // if(peers_in_room.length === 2 ) {
+          //   if(!peers_in_room.includes(my_public_key)){
+          //       return salert("You can't join this call, max allowed exceeded")
+          //   }
+          // }
           
           const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
           mod.setLocalStream(localStream);
@@ -85,7 +85,7 @@ class StunxGameMenu {
             // peers_in_room.forEach(peer => {
             //   this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
             // });
-            mod.createMediaConnectionWithPeers([peers_in_room[0]], 'large', "Video", room_code);
+            mod.createMediaConnectionWithPeers([...peers_in_room], 'large', "Video", room_code);
             
         
           }

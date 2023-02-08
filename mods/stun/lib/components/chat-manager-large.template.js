@@ -24,7 +24,7 @@ const ChatManagerLargeTemplate = (call_type, code) => {
         <div class="control-list">
       ${add_user}
        
-      <span> <i class="fas fa-chalkboard effects-control"></i> </span>
+
 
            <span>
             <i class=" audio_control fa fa-microphone" > </i>
@@ -73,3 +73,6 @@ module.exports = ChatManagerLargeTemplate;
       //     <video id="remoteStream4" style="display: none"   autoplay class="box">
       //       <button class="b-btngrid">2h5dt6dd678s..</button>
       //     </video>
+
+
+      // <span> <i class="fas fa-chalkboard effects-control"></i> </span>

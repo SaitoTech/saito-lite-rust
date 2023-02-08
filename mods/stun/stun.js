@@ -9,6 +9,7 @@ const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxInvite = require("./lib/invite/main");
 const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
+const Relay = require("../relay/relay");
 
 
 
@@ -242,22 +243,22 @@ class Stun extends ModTemplate {
         if (conf === 0) {
             if (txmsg.module === 'Stun') {
                 if (tx.msg.request === "media answer") {
-                    this.receiveMediaAnswerTransaction(blk, tx, conf, app)
+                    this.receiveMediaAnswerTransaction(app, tx, conf, blk)
                 }
                 if (tx.msg.request === "stun answer") {
-                    this.receiveStunAnswerTransaction(blk, tx, conf, app)
+                    this.receiveStunAnswerTransaction(app, tx, conf, blk)
                 }
                 if (tx.msg.request === "media offer") {
-                    this.receiveMediaOfferTransaction(blk, tx, conf, app)
+                    this.receiveMediaOfferTransaction(app, tx, conf, blk)
                 }
                 if (tx.msg.request === "stun offer") {
-                    this.receiveStunOfferTransaction(blk, tx, conf, app)
+                    this.receiveStunOfferTransaction(app, tx, conf, blk)
                 }
                 if (tx.msg.request === "open media chat") {
-                    this.receiveOpenMediaChatTransaction(blk, tx, conf, app)
+                    this.receiveOpenMediaChatTransaction(app, tx, conf, blk)
                 }
                 if (tx.msg.request === "receive room code") {
-                    this.receiveRoomCodeTransaction(blk, tx, conf, app)
+                    this.receiveRoomCodeTransaction(app, tx, conf, blk)
                 }
             }
         }
@@ -269,7 +270,7 @@ class Stun extends ModTemplate {
 
       if (newtx == null) { return; }
       let message = newtx.returnMessage();
-
+     console.log(message)
         if (message.request == null) {
             return;
         }
@@ -289,6 +290,39 @@ class Stun extends ModTemplate {
         if (message.request === "testing stunx") {
             console.log('message received ', message, message.data, message.data.tx);
         }
+
+
+        if(app.BROWSER === 1){
+            console.log('module name', message.data.tx.msg.module);
+            if (message.data.tx.msg.module === 'Stun') {
+                let tx = message.data.tx;
+                if (message.request === "stunx offchain update") {
+                        if (tx.msg.request === "media answer") {
+                            this.receiveMediaAnswerTransaction(app, tx)
+                        }
+                        if (tx.msg.request === "stun answer") {
+                            this.receiveStunAnswerTransaction(app, tx)
+                        }
+                        if (tx.msg.request === "media offer") {
+                            this.receiveMediaOfferTransaction(app, tx)
+                        }
+                        if (tx.msg.request === "stun offer") {
+                            this.receiveStunOfferTransaction(app, tx)
+                        }
+                        if (tx.msg.request === "open media chat") {
+                            this.receiveOpenMediaChatTransaction(app, tx)
+                        }
+                        if (tx.msg.request === "receive room code") {
+                            this.receiveRoomCodeTransaction(app, tx)
+                        }
+                }
+                console.log('peer transacrtion ', message, "peer ", peer );
+        }
+         
+
+        }
+
+
 
         super.handlePeerTransaction(app, newtx, peer, mycallback)
 
@@ -317,6 +351,7 @@ class Stun extends ModTemplate {
         };
         message.request = "stunx offchain update";
         message.data.tx = newtx;
+ 
         server.sendRequestAsTransaction(message.request, message.data);
         // siteMessage("Call created", 5000);
         if (callback) {
@@ -823,7 +858,18 @@ class Stun extends ModTemplate {
         }
         newtx = this.app.wallet.signTransaction(newtx);
         console.log(this.app.network);
-        this.app.network.propagateTransaction(newtx);
+
+
+        let obj = {
+            recipient: [offer.recipient, offer_creator],
+            request: "stunx offchain update",
+            data: {
+                tx: newtx
+            }
+        }
+
+        this.app.connection.emit('relay-send-message', obj)
+        // this.app.network.propagateTransaction(newtx);
     }
 
     sendStunOfferTransaction(offer_creator, offers) {
@@ -890,7 +936,16 @@ class Stun extends ModTemplate {
         };
         newtx = this.app.wallet.signTransaction(newtx);
         console.log(this.app.network);
-        this.app.network.propagateTransaction(newtx);
+        let obj = {
+            recipient: [offer_creator, answer_creator],
+            request: "stunx offchain update",
+            data: {
+                tx: newtx
+            }
+        }
+
+        this.app.connection.emit('relay-send-message', obj)
+        // this.app.network.propagateTransaction(newtx);
     }
 
     sendStunAnswerTransaction(answer_creator, offer_creator, reply) {
@@ -909,7 +964,7 @@ class Stun extends ModTemplate {
         this.app.network.propagateTransaction(newtx);
     }
 
-    receiveMediaOfferTransaction(blk, tx, conf, app) {
+    receiveMediaOfferTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
@@ -937,7 +992,7 @@ class Stun extends ModTemplate {
 
     }
 
-    receiveStunOfferTransaction(blk, tx, conf, app) {
+    receiveStunOfferTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
@@ -953,7 +1008,7 @@ class Stun extends ModTemplate {
         }
     }
 
-    receiveMediaAnswerTransaction(blk, tx, conf, app) {
+    receiveMediaAnswerTransaction(app, tx, conf, blk) {
         if(!this.ChatManagerLarge.isActive) return;
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
@@ -985,7 +1040,7 @@ class Stun extends ModTemplate {
         }
     }
 
-    receiveStunAnswerTransaction(blk, tx, conf, app) {
+    receiveStunAnswerTransaction(app, tx, conf, blk) {
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         if (my_pubkey === tx.msg.answer.offer_creator) {
@@ -1028,7 +1083,7 @@ class Stun extends ModTemplate {
         this.app.network.propagateTransaction(newtx);
     }
 
-    receiveOpenMediaChatTransaction(blk, tx, conf, app) {
+    receiveOpenMediaChatTransaction(app, tx, conf, blk) {
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         if (my_pubkey === tx.msg.data.peer) {
@@ -1037,7 +1092,7 @@ class Stun extends ModTemplate {
         }
     }
 
-    receiveRoomCodeTransaction(blk, tx, conf, app) {
+    receiveRoomCodeTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
         console.log(tx.msg.data)
         if (tx.msg.data.creator === app.wallet.returnPublicKey()) {
@@ -1062,14 +1117,28 @@ class Stun extends ModTemplate {
     }
 
 
-    closeMediaConnections() {
+    closeMediaConnections(peer) {
+        if(peer){
+            for (let i in this.peer_connections) {
+                console.log(i, this.peer_connections);
+                if(i === peer){
+                    this.peer_connections[i].close();
+                    delete this.peer_connections[i];
+                    console.log('closing peer connection', this.peer_connections);
+                }
+            }
+
+            return
+        }
+
         for (let i in this.peer_connections) {
-            if (this.peer_connections[i]) {
                 this.peer_connections[i].close();
                 delete this.peer_connections[i];
                 console.log('closing peer connection', this.peer_connections);
-            }
         }
+
+
+      
         // update database and delete public key from room
     }
 
