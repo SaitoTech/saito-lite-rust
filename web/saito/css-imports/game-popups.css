@@ -61,8 +61,8 @@
 .popup-confirm-menu .confirm_check{
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: end;
 }
 
 .popup-confirm-menu .action{

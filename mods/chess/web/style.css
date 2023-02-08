@@ -16,6 +16,16 @@ h1 {
     margin: 0;
 }
 
+input[type="checkbox"] {
+    border: 1px solid #644b37;
+    margin: 0;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #533a26;
+}
+
+
 .main{
     width: 100vw;
     height: 100vh;
@@ -57,6 +67,7 @@ h1 {
     background: #f9efdf;
     border-radius: 10px;
     box-shadow: 0 2px 3px 2px #644b37;
+    gap: 1rem;
 }
 
 .player-identicon {
@@ -68,8 +79,8 @@ h1 {
 #opponent_id {
     font-family: 'Courier New', Courier, monospace;
     text-overflow: ellipsis;
-    max-width: 60%;
     overflow: hidden;
+    flex-grow: 1;
 }
 
 
@@ -78,6 +89,7 @@ h1 {
     font-size: 32px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+    flex-grow: 1;
 }
 
 .tool-cont i:hover {
