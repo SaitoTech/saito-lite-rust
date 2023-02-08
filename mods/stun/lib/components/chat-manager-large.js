@@ -81,7 +81,6 @@ class VideoChatManager {
     render() {
         this.app.browser.addElementToDom(ChatManagerLargeTemplate(this.call_type, this.room_code), document.getElementById('content__'));
         this.isActive= true;
-
     
     }
 
@@ -100,13 +99,17 @@ class VideoChatManager {
         if (add_users) {
             add_users.addEventListener('click', (e) => {
               let public_keys =   this.updateRoomLink();
-                if(public_keys.length === 1){
-                    this.chatInvitationOverlay.render()
-                }else{
-                    salert("Room filled up");
-                }
+            //     if(public_keys.length === 1){
+            //         this.chatInvitationOverlay.render()
+            //     }else{
+            //         salert("Room filled up");
+            //     }
+
+                this.chatInvitationOverlay.render()
                
             })
+
+        
         }
         document.querySelector('.audio_control').addEventListener('click', (e) => {
             this.toggleAudio();
@@ -115,9 +118,12 @@ class VideoChatManager {
             this.toggleVideo();
         })
 
-        document.querySelector('.effects-control').addEventListener('click', (e) => {
-            this.effectsMenu.render();
-        })
+        if(document.querySelector('.effects-control')){
+            document.querySelector('.effects-control').addEventListener('click', (e) => {
+                this.effectsMenu.render();
+            })
+        }
+     
 
         document.querySelector('.stunx-chatbox .minimizer').addEventListener('click', (e) => {
             let chat_box = document.querySelector(".stunx-chatbox")
@@ -171,8 +177,7 @@ class VideoChatManager {
     show(app, mod) {
         if (!document.querySelector('.stunx-chatbox')) {
             this.render();
-            this.attachEvents(app, mod);
-            
+            this.attachEvents(app, mod);  
         }
         this.isActive = true
     }
@@ -229,8 +234,7 @@ class VideoChatManager {
         this.video_boxes['local'] = { video_box: videoBox, peer_connection: null }
         this.localStream = localStream;
         this.updateImages();
-        segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);  
-        
+        // segmentBackground(document.querySelector('#streamlocal video'), document.querySelector('#streamlocal canvas'), 1);  
         // applyBlur(7); 
     }
 
@@ -260,7 +264,7 @@ class VideoChatManager {
                 delete this.video_boxes[peer];
                 this.stopTimer();
                 this.updateImages();
-                this.mod.closeMediaConnections()
+                this.mod.closeMediaConnections(peer)
                 console.log("video boxes: after ", this.video_boxes);
                 break;
             case "connected":
@@ -272,7 +276,7 @@ class VideoChatManager {
                 delete this.video_boxes[peer];
                 this.stopTimer();
                 this.updateImages();
-                this.mod.closeMediaConnections()
+                this.mod.closeMediaConnections(peer)
                 console.log("video boxes: after ", this.video_boxes);
                 break;
 
@@ -323,9 +327,9 @@ class VideoChatManager {
 
 
     startTimer() {
-        // if (this.timer_interval) {
-        //     return;
-        // }
+        if (this.timer_interval) {
+            return;
+        }
         let timerElement = document.querySelector(".stunx-chatbox .counter");
         let seconds = 0;
 
