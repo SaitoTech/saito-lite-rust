@@ -353,7 +353,7 @@ class VideoChatManager {
                 secs = `0${secs}`;
             }
 
-            timerElement.innerHTML = `<sapn style="color:orangered; font-size: 3rem;" >${hours}:${minutes}:${secs} </sapn>`;
+            timerElement.innerHTML = `<span style="" >${hours}:${minutes}:${secs} </span>`;
 
         };
 

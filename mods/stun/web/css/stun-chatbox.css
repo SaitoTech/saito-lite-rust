@@ -459,9 +459,14 @@
   color: var(--saito-white);
 }
 .timer .counter {
-  font-size: 3rem;
+  font-size: 2rem;
   margin-bottom: 0.5rem;
 }
+.timer .counter  span{
+  color:orangered;
+   font-size: 2rem;
+}
+
 
 .users-on-call {
   display: flex;
@@ -535,6 +540,38 @@
   }
 
   .control-panel .control-list {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
+}
+
+
+@media screen  and (max-width: 850px) {
+  .video-box-container-large:nth-child(2) {
+    height: 80%;
+  }
+
+  .control-panel {
+    padding-bottom: 10rem;
+}
+
+.control-panel span {
+  width: 4rem;
+  height: 4rem;
+}
+
+.control-panel .timer {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+}
+
+.control-panel .timer .counter {
+  margin-left: 1rem;
+}
+
+.control-panel .timer .counter  span{
+  color:orangered;
+   font-size: 2rem;
+}
+
 }
