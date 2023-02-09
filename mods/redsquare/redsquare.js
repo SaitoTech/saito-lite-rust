@@ -208,7 +208,7 @@ class RedSquare extends ModTemplate {
   //
   // runs when archive peer connects
   //
-  async onServiceUp(app, peer, service = {}) {
+  async onPeerServiceUp(app, peer, service = {}) {
 
     //
     // avoid network overhead if in other apps

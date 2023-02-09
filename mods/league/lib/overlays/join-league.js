@@ -36,7 +36,7 @@ class JoinLeague {
 
     const league_join_form = document.getElementById('league-join-form');
 
-    league_join_form.addEventListener('submit', function(e){
+    league_join_form.addEventListener('submit', (e) => {
 
       e.preventDefault();
 
@@ -48,13 +48,12 @@ class JoinLeague {
         co.style.display = "none";
       }
 
-      mod.sendJoinLeagueTransaction(league_id, {"email": email});
-    
-      salert("League join request sent");
-
+      let newtx = this.mod.createJoinTransaction(league_id, {"email": email});
+      this.app.network.propagateTransaction(newtx);
+ 
       setTimeout(function(){
         window.location = window.location.origin+"/arcade";
-      }, 2500);
+      }, 1500);
     });  
 
   }

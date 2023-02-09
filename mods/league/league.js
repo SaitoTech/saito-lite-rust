@@ -37,6 +37,10 @@ class League extends ModTemplate {
   }
 
 
+  //
+  // declare that we support the "league" service, which allows peers to query
+  // us for league-related information (leagues, players, leaderboards, etc.)
+  //
   returnServices() {
     if (this.app.BROWSER) { return []; }
     return [{ service : "league" , domain : "saito" }];
@@ -63,8 +67,8 @@ class League extends ModTemplate {
     this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
        this.addLeague({
         	id     			: 	app.crypto.hash(mod.returnName()) ,	// id
-    	   	game   			: 	mod.returnName() , 			// game - name of game mod
-    	   	name   			: 	mod.returnName() , 			// name - name of league
+    	   	game   			: 	mod.name , 				// game - name of game mod
+    	   	name   			: 	mod.name , 				// name - name of league
     	   	admin  			: 	"" ,					// admin - publickey (if exists)
 		status 			: 	"public" ,				// status - public or private
 		description 		: 	mod.description ,			// 
@@ -122,7 +126,9 @@ class League extends ModTemplate {
 
 
 
-
+  /////////////////////////////
+  // League Array Management //
+  /////////////////////////////
   returnLeague(league_id) {
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) { return this.leagues[i]; }
@@ -155,48 +161,198 @@ class League extends ModTemplate {
     //
     // dynamic data-storage
     //
-    if (!obj.mod)               { obj.mod = this.app.modules.returnModuleByName(obj.name); }
     if (!obj.players)           { obj.players = []; }
+		//
+		// {
+		//    publickey TEXT ,
+		//    score INT ,
+		// }
+		//
     if (!obj.games)             { obj.games = []; }
+    if (!obj.rank)		{ obj.rank = 0; } // my rank in this league
+
+console.log("WE GET HERE: " + JSON.stringify(obj));
 
     if (!this.returnLeague(obj.id)) {
+
+console.log("PUSHING: " + JSON.stringify(obj));
+
       this.leagues.push(obj);
       this.app.connection.emit("league-add-league", (this.leagues[(this.leagues.length-1)]));
     }
 
   }
 
-  async onServiceUp(peer, service) {
+  addLeagueGame(game_id, winner, players_array, rank, time_started, time_finished, method) {
 
-console.log("...");
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].id === league_id) {
+	let game_idx = -1;
+        for (let z = 0; z < this.leagues[i].games.length; z++) {
+	  if (this.leagues[i].players[z].game_id === game_id) {
+	    game_idx = z;
+	    z = this.leagues[i].games.length+1;
+	    i = this.leagues.length;
+	  }
+	}
+	if (game_idx == -1) {
+	  this.leagues[i].games.push({ 
+	    game_id : game_id ,
+	    winner : winner ,
+	    players_array : players_array ,
+	    rank : rank ,
+	    time_started : time_started ,
+	    time_finished : time_finished ,
+	    method : method 
+	  });
+	} else {
+	  this.leagues[i].games[game_idx].game_id = game_id;
+	  this.leagues[i].games[game_idx].winner = winner;
+	  this.leagues[i].games[game_idx].players_array = players_array;
+	  this.leagues[i].games[game_idx].rank = rank;
+	  this.leagues[i].games[game_idx].time_started = time_started;
+	  this.leagues[i].games[game_idx].time_finished = time_finished;
+	  this.leagues[i].games[game_idx].method = method;
+	}
+      }
+    }
+  }
+
+
+  addLeaguePlayer(league_id, publickey, score, games_won, games_tied, games_finished) {
+
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].id === league_id) {
+	let player_idx = -1;
+        for (let z = 0; z < this.leagues[i].players.length; z++) {
+	  if (this.leagues[i].players[z].publickey === publickey) {
+	    player_idx = z;
+	    z = this.leagues[i].players.length+1;
+	    i = this.leagues.length;
+	  }
+	}
+	if (player_idx == -1) {
+	  this.leagues[i].players.push({ 
+	    publickey : publickey ,
+	    score : score ,
+	    games_won : games_won ,
+	    games_tied : games_tied ,
+	    games_finished : games_finished
+	  });
+	} else {
+	  this.leagues[i].players[player_idx].score = score;
+	  this.leagues[i].players[player_idx].games_won = games_won;
+	  this.leagues[i].players[player_idx].games_tied = games_tied;
+	  this.leagues[i].players[player_idx].games_finished = games_finished;
+	}
+      }
+    }
+  }
+
+  fetchLeagueGames(league_id, mycallback=null) {
+
+    this.mod.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league.id}' LIMIT 10` ,
+      (res) => {
+        if (res.rows) {
+          for (let g of res.rows) {
+
+  	    let game_id 	= g.game_id;
+  	    let winner		= g.winner;
+  	    let players_array   = g.players_array;
+	    let rank		= g.rank;
+	    let time_started	= g.time_started;
+	    let time_finished	= g.time_finished;
+	    let method		= g.method;
+
+            this.addLeagueGame(game_id, winner, players_array, rank, time_started, time_finished, method);
+          }
+        }
+      }
+    );
+
+  }
+
+  fetchLeagueLeaderboard(league_id, mycallback=null) {
+
+    let league = this.returnLeague(league_id);
+
+    this.sendPeerDatabaseRequestWithFilter(
+      "League" ,
+      `SELECT * FROM players WHERE league_id = '${league.id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
+      (res) => {
+        if (res.rows) {
+          for (let p of res.rows){
+
+	    let publickey 	= p.publickey;
+	    let score 		= p.score;
+	    let games_won 	= p.games_won;
+	    let games_tied 	= p.games_tied;
+	    let games_finished 	= p.games_finished;
+
+            if (publickey == this.app.wallet.returnPublicKey()) {
+              let league = this.returnLeague(league_id);
+	      league.rank = score;
+            }
+            this.addLeaguePlayer(publickey, score, games_won, games_tied, games_finished);
+
+          }
+	}
+	if (mycallback != null) { mycallback(res.rows); }
+      },
+      (p) => {
+	if (p.hasService("league")) { return 1; }
+	return 0;
+      }
+    );
+  }
+
+
+  async onPeerServiceUp(app, peer, service) {
 
     //
     // add remote leagues
     //
-
     if (service.service === "league") {
 
-alert("fetching feedk database request");
+      let league_self = this;
+
+      //
+      // fetch updated rankings
+      //
+      for (let i = 0; i < this.leagues.length; i++) {
+console.log("FETCHING LEADERBOARD FOR GAME: " + this.leagues[i].name);
+        this.sendPeerDatabaseRequestWithFilter(
+          "League" ,
+	  `SELECT league_id, publickey, score, games_won, games_tied, games_finished FROM players WHERE league_id = ${league_self.leagues[i].id}` ,
+          (res) => {
+            let rows = res.rows || [];
+            if (rows.length > 0) {
+	      for (let z = 0; z < rows.length; z++) {
+		league_self.addLeaguePlayer(rows[z].league_id, rows[z].publickey, rows[z].score, rows[z].games_won, rows[z].games_tied, rows[z].games_finished);
+	      }
+            }
+          },
+          (p) => {
+	    if (p == peer) { return 1; }
+	    return 0;
+  	  }
+        );
+      }
 
       //    
-      // fetch remote leagues
+      // if we want to see all remote leagues
       //    
       this.sendPeerDatabaseRequestWithFilter(
         "League" , 
         `SELECT * FROM league` ,
         (res) => {
-
-console.log("WE HAVE SELECTED OUR ENTRIES FROM LEAGUE");
-console.log(">>>");
-console.log(">>>");
-console.log(">>>");
-console.log(JSON.stringify(res));
-
           let rows = res.rows || [];
           if (rows.length > 0) {
             rows.forEach(function(league, key) {
               league_self.addLeague(league);
             }); 
+	    league_self.app.connection.emit("leagues-render-request");
+	    league_self.app.connection.emit("league-rankings-render-request");
           }
 
           //
@@ -222,20 +378,14 @@ console.log(JSON.stringify(res));
 
   async onConfirmation(blk, tx, conf, app) {
 
-console.log("!!!!!!!!");
-console.log("!!!!!!!!");
-console.log("!!!!!!!!");
-console.log("in onConfirmation!");
-console.log("conf: " + conf);
+    if (conf != 0) { return; }
 
     try {
 
       let txmsg = tx.returnMessage();
 
       if (txmsg.request === "league create") {
-console.log("CREATE A LEAGUE!");
         this.receiveCreateTransaction(blk, tx, conf, app);
-console.log("CREATED A LEAGUE!");
       }
 
       if (txmsg.request === "league join") {
@@ -374,15 +524,8 @@ console.log("CREATED A LEAGUE!");
 	$ranking_algorithm	:		txmsg.ranking_algorithm || "" ,
 	$default_score		:		1500
     };
-console.log("-------------");
-console.log("-------------");
-console.log("-------------");
-console.log(sql);
-console.log(params);
-console.log("^^^^^^^^^^^^^");
 
     await app.storage.executeDatabase(sql, params, "league");
-
 
     this.addLeague(params);
     return;
