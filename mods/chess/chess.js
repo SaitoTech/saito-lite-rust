@@ -87,6 +87,49 @@ class Chessgame extends GameTemplate {
     });
     */
 
+    this.menu.addSubMenuOption("game-game", {
+      text : "Offer Draw",
+      id : "game-draw",
+      class : "game-draw",
+      callback : async function(app, game_mod) {
+         if (game_mod.game.draw_offered == 0){
+            let c = await sconfirm("Offer to end the game in a draw?");
+            if (c) {
+              game_mod.updateStatusMessage("Draw offer sent; " + game_mod.status);
+              game_mod.game.draw_offered = -1; //Offer already sent
+              var data = {draw: "offer"};
+              game_mod.endTurn(data);
+              return;
+            }  
+          }else{
+            let c = await sconfirm("Accept offer to end the game in a draw?");
+            if (c) {
+              game_mod.updateStatusMessage("Draw offer accepted!");
+              game_mod.game.draw_offered = -1; //Offer already sent
+              var data = {draw: "accept"};
+              game_mod.endTurn(data);
+              return;
+            }
+          }
+      }
+    });
+
+    this.menu.addSubMenuOption("game-game", {
+      text : "Resign Game",
+      id : "game-resign",
+      class : "game-resign",
+      callback : async function(app, game_mod) {
+        let c = await sconfirm("Do you really want to resign?");
+        if (c) {
+          game_mod.game.over = 1;
+          game_mod.resignGame(game_mod.game.id, "resignation");
+          return;
+        }
+      }
+    });
+
+
+
     this.menu.addSubMenuOption("game-info", {
       text: "Rules",
       id: "game-rules",
@@ -355,7 +398,6 @@ class Chessgame extends GameTemplate {
         if (c) {
           this.game.over = 1;
         	this.resignGame(this.game.id, "resignation");
-        	//window.location.href = '/arcade';
         	return;
         }
       }
@@ -452,7 +494,13 @@ class Chessgame extends GameTemplate {
     
     this.status = status;
     statusEl.innerHTML = sanitize(status);
-    casualtiesEl.innerHTML = sanitize(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
+    let captHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()));
+    if (captHTML !== "<br/>"){
+      casualtiesEl.innerHTML = sanitize(captHTML);
+      $("#captured-cont").removeClass("hidden");  
+    }
+    
+    
 
   };
 
@@ -716,7 +764,7 @@ class Chessgame extends GameTemplate {
     let top = $(`#board`).offset().top;
 
     if (this.slot){
-      left =  $(`.square-${this.slot}`).offset().left + $(`.square-${this.slot}`).width();
+      left =  $(`.square-${this.slot}`).offset().left + 1.5*$(`.square-${this.slot}`).width();
       if (left + 100 > window.innerWidth){
         left = $(`.square-${this.slot}`).offset().left - 150;
       }
@@ -805,7 +853,9 @@ class Chessgame extends GameTemplate {
     for (var i = 0; i < acapt[0].length; i++) {
       captHTML += this.piecehtml(acapt[0][i], "w");
     }
-    captHTML += "<br />";
+    
+    captHTML += "<br/>";  
+    
     for (var i = 0; i < acapt[1].length; i++) {
       captHTML += this.piecehtml(acapt[1][i], "b");
     }
