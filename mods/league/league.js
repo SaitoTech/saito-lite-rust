@@ -65,7 +65,6 @@ class League extends ModTemplate {
     // default_score INTEGER,
     //
     this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
-console.log("adding league: " + mod.returnName());
        this.addLeague({
         	id     			: 	app.crypto.hash(mod.returnName()) ,	// id
     	   	game   			: 	mod.name , 				// game - name of game mod
@@ -134,9 +133,6 @@ console.log("adding league: " + mod.returnName());
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) { return this.leagues[i]; }
     }
-
-console.log("returning league...");
-
     return null;
   }
 
@@ -176,16 +172,13 @@ console.log("returning league...");
     if (!obj.rank)		{ obj.rank = 0; } // my rank in this league
 
     if (!this.returnLeague(obj.id)) {
-
-console.log("PUSHING: " + JSON.stringify(obj));
-
       this.leagues.push(obj);
       this.app.connection.emit("league-add-league", (this.leagues[(this.leagues.length-1)]));
     }
 
   }
 
-  addLeagueGame(game_id, winner, players_array, rank, time_started, time_finished, method) {
+  addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method) {
 
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) {
@@ -223,8 +216,6 @@ console.log("PUSHING: " + JSON.stringify(obj));
 
   addLeaguePlayer(league_id, publickey, score, games_won, games_tied, games_finished) {
 
-console.log("add league player...");
-
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) {
 	let player_idx = -1;
@@ -252,8 +243,6 @@ console.log("add league player...");
       }
     }
 
-console.log("add league player... 2");
-
   }
 
   fetchLeagueGames(league_id, mycallback=null) {
@@ -271,7 +260,8 @@ console.log("add league player... 2");
 	    let time_finished	= g.time_finished;
 	    let method		= g.method;
 
-            this.addLeagueGame(game_id, winner, players_array, rank, time_started, time_finished, method);
+            this.addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method);
+
           }
         }
       }
@@ -285,12 +275,11 @@ console.log("add league player... 2");
 
     this.sendPeerDatabaseRequestWithFilter(
       "League" ,
-      `SELECT * FROM players WHERE league_id = '${league.id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
+      `SELECT * FROM players WHERE league_id = '${league_id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
       (res) => {
-
-console.log(" AND BACK WITH ! ");
-
+	if (res) {
         if (res.rows) {
+
           for (let p of res.rows){
 
 	    let publickey 	= p.publickey;
@@ -299,20 +288,17 @@ console.log(" AND BACK WITH ! ");
 	    let games_tied 	= p.games_tied;
 	    let games_finished 	= p.games_finished;
 
-console.log("TEST DONE 1: " + league_id);
-
             if (publickey == this.app.wallet.returnPublicKey()) {
               let league = this.returnLeague(league_id);
 	      league.rank = score;
             }
 
-console.log("TEST DONE2: " + league_id);
-
             this.addLeaguePlayer(league.id, publickey, score, games_won, games_tied, games_finished);
 
           }
 	}
-	if (mycallback != null) { mycallback(res.rows); }
+	}
+	if (mycallback != null) { mycallback(res); }
       },
       (p) => {
 	if (p.hasService("league")) { return 1; }
@@ -442,7 +428,7 @@ console.log("TEST DONE2: " + league_id);
     if (modname == "League") { return 1; }
     if (modname == "Arcade") { return 1; }
     for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].module == modname) {
+      if (this.leagues[i].name === modname) {
         return 1;
       }
     }
@@ -699,8 +685,58 @@ console.log("TEST DONE2: " + league_id);
     // fetch leagues
     //
     let sql = `SELECT * FROM league WHERE game = $game OR id='SAITOLICIOUS'`;
-    let params = { $gamename : game };   
-    const relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
+    let params = { $game : game };   
+    let relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
+
+    //
+    // if there are no relevant leagues, add one
+    //
+    if (relevantLeagues.length == 0) {
+      for (let i = 0; i < this.leagues.length; i++) {
+
+	if (this.leagues[i].name === game) {
+
+	  let league = this.leagues[i];
+
+          //
+          // insert into DB if not exists
+          //
+          let sql = `INSERT INTO league (
+            id,
+            game,
+            name,
+            admin,
+            status,
+            description,
+            ranking_algorithm,
+            default_score
+          ) VALUES (
+            $id,
+            $game,
+            $name,
+            $admin,
+            $status,
+            $description,
+            $ranking_algorithm,
+            $default_score
+          )`;
+          let params = {
+            $id                     :               league.id ,
+            $game                   :               league.game || "" ,
+            $name                   :               league.name || "" ,
+            $admin                  :               league.admin || "" ,
+            $status                 :               league.status || "" ,
+            $description            :               league.description || "" ,
+            $ranking_algorithm      :               league.ranking_algorithm || "" ,
+            $default_score          :               league.default_score
+          };
+          await app.storage.executeDatabase(sql, params, "league");
+          sql = `SELECT * FROM league WHERE game = $game OR id='SAITOLICIOUS'`;
+          params = { $game : game };   
+          relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
+        }
+      }
+    }
 
     //
     // fetch players
@@ -732,10 +768,12 @@ console.log("TEST DONE2: " + league_id);
           $time_finished: new Date().getTime(),
           $method: txmsg.reason,
         };
+
         await this.app.storage.executeDatabase(sql, params, "league");
 
         sql = `UPDATE games SET rank=rank+1 WHERE league_id = $league_id`;
         params = { $league_id : leag.id };
+
         await this.app.storage.executeDatabase(sql, params, "league");
 
       }
@@ -909,7 +947,6 @@ console.log("TEST DONE2: " + league_id);
       }
     }
 
-    console.log(winner, loser);
     for (let p of winner){
       let outcome = (winner.length == 1) ? "games_won" : "games_tied";
       p.score += p.k * ( (1/winner.length) - (p.q / qsum));
@@ -927,8 +964,7 @@ console.log("TEST DONE2: " + league_id);
     let sql = `UPDATE players SET score = (score + $points), games_finished = (games_finished + 1), ts = $ts`;
     if (game_status) { sql += `, ${game_status} = (${game_status} + 1)`; }
 
-    sql+= ` WHERE pkey = $pkey AND league_id = $lid`;
-    console.log(sql);
+    sql += ` WHERE pkey = $pkey AND league_id = $lid`;
     let params = {
       $amount : points ,
       $ts: new Date().getTime() ,
@@ -949,14 +985,12 @@ console.log("TEST DONE2: " + league_id);
       sql += `, ${game_status} = ${playerObj[game_status] + 1}`;
     }
     sql+= ` WHERE pkey = $pkey AND league_id = $league_id`;
-    console.log(sql);
     let params = {
       $score: playerObj.score,
       $ts: new Date().getTime() ,
       $publickey: playerObj.publickey,
       $league_id: playerObj.league_id
     }
-    console.log(params);
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
   }

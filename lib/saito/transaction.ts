@@ -98,10 +98,6 @@ try {
           fslip.tx_ordinal
         ));
       }
-if (jsonobj.from.length > 0) {
-  console.log("important tx: " + jsonobj.from[0].add);
-}
-
       for (let i = 0; i < jsonobj.to.length; i++) {
         const fslip = jsonobj.to[i];
         this.transaction.to.push(new Slip(
@@ -121,17 +117,17 @@ if (jsonobj.from.length > 0) {
       if (jsonobj.m) {
         if (jsonobj.m.data) {
           this.transaction.m = Buffer.from(jsonobj.m.data);
-try {
-          const reconstruct2 = Buffer.from(this.transaction.m).toString("utf-8");
-          this.msg = JSON.parse(reconstruct2);
-} catch (err) {
-try {
-          const reconstruct3 = this.base64ToString(Buffer.from(this.transaction.m).toString());
-          this.msg = JSON.parse(reconstruct3);
-} catch (err) {
-  console.log("real issues reconstructing...");
-}
-}
+	  try {
+            const reconstruct2 = Buffer.from(this.transaction.m).toString("utf-8");
+            this.msg = JSON.parse(reconstruct2);
+	  } catch (err) {
+	    try {
+              const reconstruct3 = this.base64ToString(Buffer.from(this.transaction.m).toString());
+              this.msg = JSON.parse(reconstruct3);
+	    } catch (err) {
+	      console.log("real issues reconstructing...");
+	    }
+	  }
         }
       }
 

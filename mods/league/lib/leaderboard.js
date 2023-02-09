@@ -35,8 +35,11 @@ class Leaderboard {
       //
       // ask for update
       //
+console.log("submitting with leagueid: " + this.league.id);
       this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
+console.log("INTO RENDER LEADERBOAR CONTENST");
         this.renderLeaderboardContents();
+console.log("OUT OF RENDER LEADERBOAR CONTENST");
       });
     }
   }
@@ -57,19 +60,24 @@ class Leaderboard {
     //
     // add players
     //
-    for (let i = 0; i < this.league.players.length; i++) {
-      html = "";
-      let player = this.league.players[i];
-      let publickey = player.publickey;
-      html += `
-        <div class="saito-table-row">
-          <div class="center-align">${i+1}</div>
-          <div class="saito-address saito-address-${publickey}" data-id="${publickey}">${publickey}</div>
-          <div class="right-align">${Math.round(player.score)}</div>
-        </div>
-      `;
-      this.app.browser.addElementToSelector(html, ".league-leaderboard .saito-table-body");
+    if (this.league) {
+console.log("league exists...");
+      for (let i = 0; i < this.league.players.length; i++) {
+console.log("league exists... i: " + i);
+        html = "";
+        let player = this.league.players[i];
+        let publickey = player.publickey;
+        html += `
+          <div class="saito-table-row">
+            <div class="center-align">${i+1}</div>
+            <div class="saito-address saito-address-${publickey}" data-id="${publickey}">${publickey}</div>
+            <div class="right-align">${Math.round(player.score)}</div>
+          </div>
+        `;
+        this.app.browser.addElementToSelector(html, ".league-leaderboard .saito-table-body");
+      }
     }
+console.log("league exists done.");
   }
 
 }

@@ -797,12 +797,12 @@ class Network {
             }
             await this.fetchBlock(block_hash);
             if (this.debugging) {
-              console.log("done fetch block!");
+              //console.log("done fetch block!");
             }
           } else {
             // ghost block
             if (this.debugging) {
-              console.log("adding ghostchain block! " + block_hash);
+              //console.log("adding ghostchain block! " + block_hash);
             }
             this.app.blockchain.addGhostToBlockchain(
               BigInt(syncobj.block_ids[i]),
