@@ -129,7 +129,7 @@
 }
 
 .saito-header-profile-address {
-  grid-column-start: 1;
+  /*grid-column-start: 1;
   grid-column-end: 3;
   grid-row-start: 2;
   grid-row-end: 3;
@@ -138,20 +138,27 @@
   justify-content: center;
   justify-self: center;
   padding-top: 1rem;
-  cursor: pointer;
+  cursor: pointer;*/
+
 }
 
+
 .saito-header-profile-address p {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 1.7rem;
-  margin-right: 0.5rem;
+
+      white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.7rem;
+    margin: 0rem 1rem;
+    float: left;
+    display: inline-block;
+    width: 30%;
 }
 
 .saito-header-profile-address:hover i {
   transform: scale(1.05);
   color: var(--saito-primary);
+      display: inline-block;
 }
 
 .saito-header-menu-section {
@@ -182,10 +189,11 @@
 
 .wallet-btn-container {
   white-space: nowrap;
-  width: 88vw;
-  margin: auto;
+  width: fit-content;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  border: none;
+  grid-row-gap: 2.3rem;
 }
 
 .wallet-btn {
@@ -203,9 +211,11 @@
 }
 
 .wallet-balance {
-  margin: auto;
-  min-width: fit-content;
+  display: block;
   position: relative;
+  padding: 0rem;
+  width: fit-content;
+  margin-top: 0.5rem;
 }
 
 .balance-amount {
@@ -242,33 +252,28 @@
   padding-top: 1.5rem;
 }
 
-.header-wallet img {
-/*  margin: auto;
-  border-radius: 50%;
-  width: 5rem;
-  height: 5rem;
-  border: 1px solid #bbb;*/
-}
-
 .wallet-qrcode {
-  margin: auto;
-  width: 12rem;
-  height: 12rem;
+  width: 66vw;
 }
 
 .header-wallet .saito-header-profile-address {
-  width: 45%;
-  margin: auto;
-  padding-top: 0rem;
+  display: block;
+  padding: 0rem;
+  max-width: 100%;
+  margin: 0rem;
+  position: relative;
+  margin-top: 0.5rem;
 }
 
 .header-wallet .saito-header-profile-address i {
-  line-height: 1.7rem;
+  float: left;
+  line-height: 3.5rem;
+  display: inline-block;
 }
 
 .slidein-panel {
   position: absolute;
-  top: 33vh;
+  top: 45vh;
   background: #fff;
   width: 100vw;
   height: 99vh;
@@ -308,15 +313,46 @@
   transition: all 0.2s ease-in-out;
 }
 
-.wallet-bg-idenicon {
-  width: 100%;
+.wallet-idenicon {
+/*  width: 100%;
   height: 103%;
   border-radius: 0rem;
   position: absolute;
   left: 0rem;
   top: -1rem;
   z-index: -1;
-  filter: blur(6px) opacity(0.4);
+  filter: blur(6px) opacity(0.4);*/
+  width: 3.5rem;
+  height: 3.5rem;
+  display: inline-block !important;
+  float: left;
+}
+
+.saito-header-profile-address {
+  line-height: 3.5rem;
+}
+
+.profile-public-key {
+  margin: 0rem 1rem;
+  display: inline-block;
+  float: left;
+  width: 30%;
+}
+
+.wallet-info-container {
+  display: grid;
+  grid-template-columns: 57% 43%;
+  width: 100%;
+  margin: 1rem 0rem;
+}
+
+.wallet-infoo {
+  display: grid;
+  grid-template-columns: max-content 10%;
+  grid-column-gap: 2rem;
+  margin: auto;
+  padding: 0rem;
+  margin: 0rem;
 }
 
 @media screen and (max-width: 1600px) {
