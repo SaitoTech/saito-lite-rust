@@ -14,11 +14,7 @@ class LeagueOverlay {
 
   async render() {
 
-console.log("LEAGUES IDX: " + this.mod.league_idx);
-
     let league = this.mod.leagues[this.mod.league_idx];
-
-console.log(JSON.stringify(league));
 
     if (this.leaderboards[this.mod.leagues[this.mod.league_idx].id]) {
     } else {
@@ -29,17 +25,13 @@ console.log(JSON.stringify(league));
     this.overlay.show(LeagueOverlayTemplate(this.app, this.mod, this));
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
     
-console.log("render recent 3");
-
     this.leaderboards[this.mod.leagues[this.mod.league_idx].id].render();
-
-console.log("render recent 4");
 
     //
     //
     //
     this.renderRecentGames(league);
-    this.fetchLeagueGames(league.id, () => {
+    this.mod.fetchLeagueGames(league.id, () => {
       this.renderRecentGames(league);
     });
 
@@ -63,6 +55,7 @@ console.log("render recent 4");
 	}
       };
     });
+
   }
 
 
@@ -73,6 +66,13 @@ console.log("render recent 4");
     //
     // recent league games 
     //
+    if (league.games.length > 0) {
+      html += `
+        <h5>Recent League Matches</h5>
+        <div class="saito-table league_recent_others">
+          <div class="saito-table-body">
+      `;
+    }
     for (let i = 0; i < league.games.length; i++) {
 
       let g = league.games[i];
@@ -89,6 +89,12 @@ console.log("render recent 4");
       html += `
         <div class="saito-table-row league_recent_game">
           <div> <span>${date}</span> ( ${players_html}) </div>
+        </div>
+      `;
+    }
+    if (league.games.length > 0) {
+      html += `
+          </div>
         </div>
       `;
     }

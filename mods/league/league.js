@@ -65,6 +65,7 @@ class League extends ModTemplate {
     // default_score INTEGER,
     //
     this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
+console.log("adding league: " + mod.returnName());
        this.addLeague({
         	id     			: 	app.crypto.hash(mod.returnName()) ,	// id
     	   	game   			: 	mod.name , 				// game - name of game mod
@@ -133,6 +134,9 @@ class League extends ModTemplate {
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) { return this.leagues[i]; }
     }
+
+console.log("returning league...");
+
     return null;
   }
 
@@ -170,8 +174,6 @@ class League extends ModTemplate {
 		//
     if (!obj.games)             { obj.games = []; }
     if (!obj.rank)		{ obj.rank = 0; } // my rank in this league
-
-console.log("WE GET HERE: " + JSON.stringify(obj));
 
     if (!this.returnLeague(obj.id)) {
 
@@ -221,6 +223,8 @@ console.log("PUSHING: " + JSON.stringify(obj));
 
   addLeaguePlayer(league_id, publickey, score, games_won, games_tied, games_finished) {
 
+console.log("add league player...");
+
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) {
 	let player_idx = -1;
@@ -247,11 +251,14 @@ console.log("PUSHING: " + JSON.stringify(obj));
 	}
       }
     }
+
+console.log("add league player... 2");
+
   }
 
   fetchLeagueGames(league_id, mycallback=null) {
 
-    this.mod.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league.id}' LIMIT 10` ,
+    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league_id}' LIMIT 10` ,
       (res) => {
         if (res.rows) {
           for (let g of res.rows) {
@@ -280,6 +287,9 @@ console.log("PUSHING: " + JSON.stringify(obj));
       "League" ,
       `SELECT * FROM players WHERE league_id = '${league.id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
       (res) => {
+
+console.log(" AND BACK WITH ! ");
+
         if (res.rows) {
           for (let p of res.rows){
 
@@ -289,11 +299,16 @@ console.log("PUSHING: " + JSON.stringify(obj));
 	    let games_tied 	= p.games_tied;
 	    let games_finished 	= p.games_finished;
 
+console.log("TEST DONE 1: " + league_id);
+
             if (publickey == this.app.wallet.returnPublicKey()) {
               let league = this.returnLeague(league_id);
 	      league.rank = score;
             }
-            this.addLeaguePlayer(publickey, score, games_won, games_tied, games_finished);
+
+console.log("TEST DONE2: " + league_id);
+
+            this.addLeaguePlayer(league.id, publickey, score, games_won, games_tied, games_finished);
 
           }
 	}
@@ -320,10 +335,9 @@ console.log("PUSHING: " + JSON.stringify(obj));
       // fetch updated rankings
       //
       for (let i = 0; i < this.leagues.length; i++) {
-console.log("FETCHING LEADERBOARD FOR GAME: " + this.leagues[i].name);
         this.sendPeerDatabaseRequestWithFilter(
           "League" ,
-	  `SELECT league_id, publickey, score, games_won, games_tied, games_finished FROM players WHERE league_id = ${league_self.leagues[i].id}` ,
+	  `SELECT league_id, publickey, score, games_won, games_tied, games_finished FROM players WHERE league_id = "${league_self.leagues[i].id}"` ,
           (res) => {
             let rows = res.rows || [];
             if (rows.length > 0) {
@@ -340,36 +354,37 @@ console.log("FETCHING LEADERBOARD FOR GAME: " + this.leagues[i].name);
       }
 
       //    
-      // if we want to see all remote leagues
+      // load any requested league we may not have in options file
       //    
-      this.sendPeerDatabaseRequestWithFilter(
-        "League" , 
-        `SELECT * FROM league` ,
-        (res) => {
-          let rows = res.rows || [];
-          if (rows.length > 0) {
-            rows.forEach(function(league, key) {
-              league_self.addLeague(league);
-            }); 
-	    league_self.app.connection.emit("leagues-render-request");
-	    league_self.app.connection.emit("league-rankings-render-request");
-          }
+      if (this.app.browser.returnURLParameter("league_join_league")) {
 
-          //
-          // league join league
-          //
-          if (this.app.browser.returnURLParameter("league_join_league")) {
+        this.sendPeerDatabaseRequestWithFilter(
+          "League" , 
+          `SELECT * FROM league WHERE id = "${this.app.browser.returnURLParameter("league_join_league")}"` ,
+          (res) => {
+            let rows = res.rows || [];
+            if (rows.length > 0) {
+              rows.forEach(function(league, key) {
+                league_self.addLeague(league);
+              }); 
+	      league_self.app.connection.emit("leagues-render-request");
+	      league_self.app.connection.emit("league-rankings-render-request");
+            }
+
+            //
+            // league join league
+            //
             let league_id = this.app.browser.returnURLParameter("league_join_league");
             let jlo = new JoinLeagueOverlay(app, this, league_id);
             jlo.render();
-          }
 
-        },
-        (p) => {
-	  if (p == peer) { return 1; }
-	  return 0;
-	}
-      );
+          },
+          (p) => {
+  	    if (p == peer) { return 1; }
+ 	    return 0;
+	  }
+        );
+      }
 
     }
 
@@ -445,7 +460,7 @@ console.log("FETCHING LEADERBOARD FOR GAME: " + this.leagues[i].name);
 
   saveLeagues() {
     this.app.options.leagues = this.leagues;
-    this.app.options.saveOptions();
+    this.app.storage.saveOptions();
   }
 
 
@@ -574,20 +589,20 @@ console.log("FETCHING LEADERBOARD FOR GAME: " + this.leagues[i].name);
     let email = txmsg.email;
     let publickey  = tx.transaction.from[0].add;
     let base_score = 0;
-    if (this.returnLeague(league_id)) { base_score = returnLeague(league_id).default_score; }
+    if (this.returnLeague(league_id)) { base_score = this.returnLeague(league_id).default_score; }
 
     let sql = `INSERT INTO players (
                 league_id,
                 publickey,
                 score,
 		email,
-                timestamp
+                ts
               ) VALUES (
                 $league_id,
                 $publickey,
                 $score,
                 $email,
-                $timestamp
+                $ts
               )`;
 
     let params = {
@@ -595,7 +610,7 @@ console.log("FETCHING LEADERBOARD FOR GAME: " + this.leagues[i].name);
       $publickey: publickey,
       $score: base_score,
       $email: email,
-      $timestamp: parseInt(txmsg.timestamp)
+      $ts: parseInt(tx.transaction.ts)
     };
     app.storage.executeDatabase(sql, params, "league");
     return;
@@ -786,13 +801,13 @@ console.log("FETCHING LEADERBOARD FOR GAME: " + this.leagues[i].name);
                 $league_id,
                 $publickey,
                 $score,
-                $timestamp
+                $ts
               )`;
             let params = {
               $league_id: leag.id,
               $publickey: player,
               $score: leag.starting_score,
-              $timestamp: new Date().getTime(),
+              $ts: new Date().getTime(),
             };
             await this.app.storage.executeDatabase(sql, params, "league");
           }

@@ -50,7 +50,10 @@ class JoinLeague {
 
       let newtx = this.mod.createJoinTransaction(league_id, {"email": email});
       this.app.network.propagateTransaction(newtx);
- 
+
+      this.mod.addLeaguePlayer(league_id, this.app.wallet.returnPublicKey(), 0, 0, 0, 0); 
+      this.mod.saveLeagues();
+
       setTimeout(function(){
         window.location = window.location.origin+"/arcade";
       }, 1500);
