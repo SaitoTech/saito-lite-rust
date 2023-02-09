@@ -1,4 +1,5 @@
 const saito = require("../../lib/saito/saito");
+import Browser from '../../lib/saito/browser';
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
 const StunAppspace = require('./lib/appspace/main');
@@ -14,7 +15,6 @@ const Relay = require("../relay/relay");
 
 
 class Stun extends ModTemplate {
-
     constructor(app, mod) {
 
         super(app);
@@ -233,7 +233,6 @@ class Stun extends ModTemplate {
     }
 
 
-    // callback(this.app, this.mod, roomCode)
 
 
 
@@ -266,64 +265,38 @@ class Stun extends ModTemplate {
 
 
 
-    async handlePeerTransaction(app, newtx=null, peer, mycallback) {
-      if (newtx == null) { return; }
-      let message = newtx.returnMessage();
-     console.log(message, 'message')
-        if (message.request == null) {
-            return;
+    async handlePeerTransaction(app, tx=null, peer, mycallback) {
+        let txmsg = tx.returnMessage();
+            if (txmsg.module === 'Stun') {
+                    console.log(txmsg, 'server ')
+                    if (tx.msg.request === "create room") {
+                        this.receiveCreateRoomTransaction(app, tx);
+                    }
+                    if (tx.msg.request === "update room") {
+                        this.receiveUpdateRoomTransaction(app, tx);
+                    }
+                    if (tx.msg.request === "media answer") {
+                        this.receiveMediaAnswerTransaction(app, tx, conf, blk)
+                    }
+                    if (tx.msg.request === "stun answer") {
+                        this.receiveStunAnswerTransaction(app, tx, conf, blk)
+                    }
+                    if (tx.msg.request === "media offer") {
+                        this.receiveMediaOfferTransaction(app, tx, conf, blk)
+                    }
+                    if (tx.msg.request === "stun offer") {
+                        this.receiveStunOfferTransaction(app, tx, conf, blk)
+                    }
+                    if (tx.msg.request === "open media chat") {
+                        this.receiveOpenMediaChatTransaction(app, tx, conf, blk)
+                    }
+                    if (tx.msg.request === "receive room code") {
+                        this.receiveRoomCodeTransaction(app, tx, conf, blk)
+                    }
+                
         }
-        if (message.data == null) {
-            return;
-        }
-        if (message.request === "stunx offchain update") {
-            let tx = message.data.tx;
-            if (tx.msg.request === "create room") {
-                this.receiveCreateRoomTransaction(app, tx);
-            }
-            if (tx.msg.request === "update room") {
-                this.receiveUpdateRoomTransaction(app, tx);
-            }
-
-        }
-        if (message.request === "testing stunx") {
-            console.log('message received ', message, message.data, message.data.tx);
-        }
-
-
-        if(app.BROWSER === 1){
-            console.log('module name', message.data.tx.msg.module);
-            if (message.data.tx.msg.module === 'Stun') {
-                let tx = message.data.tx;
-                if (message.request === "stunx offchain update") {
-                        if (tx.msg.request === "media answer") {
-                            this.receiveMediaAnswerTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "stun answer") {
-                            this.receiveStunAnswerTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "media offer") {
-                            this.receiveMediaOfferTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "stun offer") {
-                            this.receiveStunOfferTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "open media chat") {
-                            this.receiveOpenMediaChatTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "receive room code") {
-                            this.receiveRoomCodeTransaction(app, tx)
-                        }
-                }
-                console.log('peer transacrtion ', message, "peer ", peer );
-        }
-         
-
-        }
-
-
-
-        super.handlePeerTransaction(app, newtx, peer, mycallback)
+        
+        super.handlePeerTransaction(app, tx, peer, mycallback)
 
     }
 
@@ -345,14 +318,8 @@ class Stun extends ModTemplate {
             room
         };
         newtx = this.app.wallet.signTransaction(newtx);
-        let message = {
-            data: {}
-        };
-        message.request = "stunx offchain update";
-        message.data.tx = newtx;
- 
-        server.sendRequestAsTransaction(message.request, message.data);
-        // siteMessage("Call created", 5000);
+        console.log(newtx.returnMessage(), 'return new tx message');
+        server.sendRequestAsTransaction("create room", newtx);
         if (callback) {
             callback(this.app, this.mod, roomCode)
         }
@@ -866,6 +833,7 @@ class Stun extends ModTemplate {
                 tx: newtx
             }
         }
+        
 
         this.app.connection.emit('relay-send-message', obj)
         // this.app.network.propagateTransaction(newtx);
@@ -1169,5 +1137,5 @@ class Stun extends ModTemplate {
 
 }
 
-module.exports = Stun;
+module.exports = Stun
 
