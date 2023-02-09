@@ -25,6 +25,10 @@ input[type="checkbox"]:checked {
     background-color: #533a26;
 }
 
+.game-menu{
+    background-color: #f9efdf;
+    box-shadow: 2px 2px 5px 0px #644b37;
+}
 
 .main{
     width: 100vw;
@@ -62,12 +66,13 @@ input[type="checkbox"]:checked {
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    width: 95%;
+    width: 100%;
     max-width: 450px;
     background: #f9efdf;
     border-radius: 10px;
     box-shadow: 0 2px 3px 2px #644b37;
     gap: 1rem;
+    overflow: hidden;
 }
 
 .player-identicon {
@@ -129,10 +134,12 @@ input[type="checkbox"]:checked {
 .popup-confirm-menu{
     background-color: #644b37;
     padding: 5px;
+    font-size: 18px;
 }
 .popup-confirm-menu div{
     background-color: #f9efdf;
-    margin: 5px 0;
+    margin: 7px 0;
+    padding: 7px 5px;
 }
 .popup-confirm-menu .action:hover{
     background-color: #fffff8;
@@ -206,9 +213,8 @@ img.captured {
     .controls-space {    
         width: 100%;
         max-width: 700px;
-        grid-template-rows: repeat(2, 1fr);
-        grid-template-columns: repeat(2, 1fr);
-        grid-gap: 9px;
+        grid-template-columns: repeat(2, calc(50% - 4px));
+        grid-gap: 8px;
     }
 
 
@@ -233,12 +239,12 @@ img.captured {
 
 @media only screen and (max-width: 525px) {
     .main{
-        padding: 40px 10px;
+        padding: 40px 5px;
     }
 
     #board {
         width: 100%;
-        max-width: min(100vw, 55vh);
+        max-width: min(100vw, 60vh);
     }
 
     .alpha-d2270 {
@@ -252,7 +258,7 @@ img.captured {
     }
 
     .board-b72b1 {
-        border-width: 18px;
+        border-width: 16px;
     }
 
     img.captured {
@@ -276,11 +282,18 @@ img.captured {
         min-height: unset;
     }
 
+    #identicon-cont{
+        display: none;
+    }
+    #commands-cont{
+        display: none;
+    }
+
 }
 
 @media only screen and (max-height: 525px) and (orientation:landscape){
     .main{
-        padding: 0 50px;
+        padding: 5px 50px;
     }
 
    .board-b72b1{
