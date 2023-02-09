@@ -195,7 +195,7 @@
 
 .saito-select::after {
   background: var(--saito-button-background);
-  border-left: 1px solid var(--saito-primary);
+  border-left: 3px solid var(--saito-primary);
 }
 
 .arcade-wizard-game-controls .settings>div:first-of-type {
@@ -298,19 +298,19 @@
 }
 
 .saito-multi-select_btn_options button {
-  background: transparent;
+  background: var(--saito-button-background);
   margin: 0rem;
   padding: 0rem;
-  width: 101%;
+  width: 100%;
   display: block;
   margin-bottom: 0.2rem;
   border: 1px solid var(--saito-primary);
 }
 
-.saito-multi-select_btn.showAll>.saito-multi-select_btn_options button {
+/*.saito-multi-select_btn.showAll>.saito-multi-select_btn_options button {
   background-color: var(--saito-primary);
   color: #fff;
-}
+}*/
 
 .saito-multi-btn {
   width: 100%;
@@ -320,7 +320,8 @@
 }
 
 .saito-multi-btn:hover {
-  background: var(--saito-button-background);
+  background: var(--saito-background-color);
+  color: var(--saito-primary);
 }
 
 .game-wizard-form {
@@ -344,11 +345,6 @@
   cursor: pointer;
   border-bottom: 2px dotted var(--saito-border-color);
   font-size: 2rem;
-}
-
-.game-wizard-players-select {
-  color: var(--saito-white);
-  border-color: var(--saito-border-color);
 }
 
 .arcade-wizard-game-invite {

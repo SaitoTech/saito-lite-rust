@@ -46,7 +46,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  // render empty slots; empty slots =  players needed - (players joined + players requested)
 	  for (let i = 0; i < invite.empty_slots; i++) {    
 		    html += `
-	        <div class="arcade-game-playerbox saito-table-row">  
+	        <div class="arcade-game-playerbox saito-table-row${(app.wallet.returnPublicKey() === invite.originator)?" available_slot":""}">  
 	      		<div class="saito-identicon-box empty-slot"></div>
 	    			<div class="saito-username">open player slot</div>	
 	  			</div>
