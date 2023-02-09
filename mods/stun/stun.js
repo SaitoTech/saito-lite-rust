@@ -267,10 +267,9 @@ class Stun extends ModTemplate {
 
 
     async handlePeerTransaction(app, newtx=null, peer, mycallback) {
-
       if (newtx == null) { return; }
       let message = newtx.returnMessage();
-     console.log(message)
+     console.log(message, 'message')
         if (message.request == null) {
             return;
         }
