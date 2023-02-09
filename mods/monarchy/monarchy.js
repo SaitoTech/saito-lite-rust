@@ -33,7 +33,8 @@ class Monarchy extends GameTemplate {
     
     this.cards_in_play = [];
     this.is_testing = false;
-    this.animation_queue = [];
+
+    this.animationSequence = [];
     
     this.turn_count = 1;
     this.card_img_dir = `/${this.name.toLowerCase()}/img/cards`;
@@ -43,7 +44,7 @@ class Monarchy extends GameTemplate {
     this.menu_backup_callback = ()=>{this.endTurn();} //Default behavior
   }
 
-
+  
 
   formatDeck(cardStats, title = ""){
     let html = `
@@ -218,7 +219,6 @@ initializeGame(game_id) {
 
     let we_self = this;
     
-    this.saveGame(this.game.id);
     ///////////
     // QUEUE //
     ///////////
@@ -536,13 +536,18 @@ initializeGame(game_id) {
           this.updateScore();
         }
 
-        //Animation
         if (!this.browser_active){return 1;}  
+
+        /*  
+          Animate the purchase
+        */
+
         const game_self = this;
        
         if (player !== this.game.player){
             $(`.cardstacks #${card_to_buy}.passivecard`).animate({bottom: '500px', left:"300px", opacity: '0.4'}, 1200, function(){
               $(this).remove();
+              game_self.finishAnimation();
             });    
         }else{
 
@@ -552,11 +557,11 @@ initializeGame(game_id) {
           }
 
           this.game.halted = 1;
-          let callback = () => { this.restartQueue(); };
+          let callback = () => { this.finishAnimation(); };
           if (direct_to_hand){
             callback = () => {
               $(".discardpile:last-child").fadeOut();
-              this.hud.insertCard(html, () => { this.restartQueue();});
+              this.hud.insertCard(html, () => { this.finishAnimation(); });
             }
           }
           /*if (add_to_deck){
@@ -565,10 +570,10 @@ initializeGame(game_id) {
             $(`.discardpile .flippable-card#${card_to_buy}`).addClass
           }*/
           this.animateGameElementMove(`.cardstacks #${card_to_buy}.passivecard`, ".discardpile", callback);
-          return 0;
+          
         }
 
-        return 1;
+        return 0;
       }
 
       if (mv[0] == "play"){
@@ -1537,14 +1542,9 @@ initializeGame(game_id) {
           this.animation_queue.push("remove");
 
           callback = ()=> {
-            this.animation_queue.shift();
-
-            if (this.animation_queue.length == 0){
               this.gaming_active = 0;
-              this.displayDecks();
-              this.restartQueue();  
+              this.finishAnimation();
             }
-          } 
         }  
 
         this.animateGameElementMove(`#status #${card}`, target, callback);
@@ -2071,6 +2071,70 @@ initializeGame(game_id) {
   returnGameOptionsHTML(){
     return MonarchyGameOptionsTemplate(this.app, this);
   }
+
+  //Animation functions
+
+  async runAnimationQueue(){
+    console.log(`Sequencing ${this.animationSequence.length} Animations`);
+    this.game.halted = 1;
+    while (this.animationSequence.length > 0){
+      let {callback, params} = this.animationSequence.shift();
+      await this.timeout(500);
+      callback.apply(this, params);
+    }
+
+  }
+
+  async finishAnimation(delay = 0){
+    console.log("Kickstarting the queue:", this.animation_queue.length, this.animationSequence.length);
+    if (this.animation_queue.length + this.animationSequence.length === 0){
+      if (delay){
+        await this.timeout(delay);
+      }
+      this.restartQueue();  
+    }else{
+      console.log("Nevermind, let's wait a bit");
+    }
+    
+  }
+
+  createAndMove(html, start, end, callback1 = null, callback2 = null){
+
+    let source_stats = document.querySelector(start).getBoundingClientRect();
+    let destination_stats = document.querySelector(end).getBoundingClientRect();
+
+    //console.log(start, `${source_stats.top}px`, `${source_stats.left}px`);
+    //console.log(end, `${destination_stats.top}px`, `${destination_stats.left}px`);
+
+    let as = `${this.animationSpeed/1000}s`;
+
+
+    this.animation_queue.push(0);
+    let divid = `ae${this.animation_queue.length}`;
+
+    this.app.browser.addElementToSelector(`<div id="${divid}" class="animated_elem fresh" style="top: ${source_stats.top}px; left: ${source_stats.left}px; width: fit-content;">${html}</div>`, ".gameboard");
+
+    let game_self = this;
+
+    $(".animated_elem.fresh").css("transition", `left ${as}, top ${as}, transform ${as} ease`);
+
+    $(".animated_elem.fresh").delay(50).queue(function(){
+        $(this).removeClass("fresh");
+        if (callback1){
+          callback1(divid);
+        }
+        $(this).css("top",`${destination_stats.top}px`).css("left", `${destination_stats.left}px`).dequeue();
+      }).delay(game_self.animationSpeed).queue(function(){
+          console.log("CreateAndMove finsihed");
+          game_self.animation_queue.shift();
+          if (game_self.animation_queue.length == 0 && callback2){
+            console.log("Running callback");
+            callback2();
+          }
+      });
+  }
+
+
 
 
 } // end Monarchy class

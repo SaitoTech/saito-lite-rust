@@ -98,6 +98,7 @@ try {
           fslip.tx_ordinal
         ));
       }
+
       for (let i = 0; i < jsonobj.to.length; i++) {
         const fslip = jsonobj.to[i];
         this.transaction.to.push(new Slip(
@@ -133,7 +134,7 @@ try {
       }
     }
 } catch (err) {
-  console.log("POTENTIAL CRASH ERROR: " + err);
+  console.error("POTENTIAL CRASH ERROR: " + err);
 }
 
     return this;
@@ -878,7 +879,7 @@ try {
       // validate sender exists
       //
       if (this.transaction.from.length < 1) {
-        console.log("ERROR 582039: less than 1 input in transaction");
+        console.error("ERROR 582039: less than 1 input in transaction");
         return false;
       }
 
@@ -886,7 +887,7 @@ try {
       // validate signature
       //
       if (!this.validateSignature(app)) {
-        console.log("ERROR:382029: transaction signature does not validate");
+        console.error("ERROR:382029: transaction signature does not validate");
         return false;
       }
 
@@ -894,7 +895,7 @@ try {
       // validate routing path sigs
       //
       if (!this.validateRoutingPath(app)) {
-        console.log("ERROR 482033: routing paths do not validate, transaction invalid");
+        console.error("ERROR 482033: routing paths do not validate, transaction invalid");
         return false;
       }
 
@@ -910,7 +911,7 @@ try {
         total_out += this.transaction.to[i].returnAmount();
       }
       if (total_out > total_in) {
-        console.log("ERROR 802394: transaction spends more than it has available");
+        console.error("ERROR 802394: transaction spends more than it has available");
         return false;
       }
     }
@@ -958,7 +959,7 @@ try {
     // must have outputs
     //
     if (this.transaction.to.length === 0) {
-      console.log("ERROR 582039: transaction does not have a single output");
+      console.error("ERROR 582039: transaction does not have a single output");
       return false;
     }
 
@@ -967,7 +968,7 @@ try {
     //
     for (let i = 0; i < this.transaction.from.length; i++) {
       if (this.transaction.from[i].validate(app) !== true) {
-        console.log("ERROR 858043: transaction does not have valid slips");
+        console.error("ERROR 858043: transaction does not have valid slips");
         return false;
       }
     }
@@ -1013,7 +1014,7 @@ try {
         this.transaction.from[0].add
       )
     ) {
-      console.log("ERROR:382029: transaction signature does not validate");
+      console.error("ERROR:382029: transaction signature does not validate");
       return false;
     }
 

@@ -319,33 +319,35 @@ class Network {
         if (this.debugging) {
           console.log("block fetched : " + block_hash + " size = " + buffer.length);
         }
+
         const block = new Block(this.app);
         block.deserialize(buffer);
         // console.debug("block deserialized : " + block_hash);
         block.generateMetadata();
         // await block.generateConsensusValues();
-        console.assert(
-          block_hash === block.hash,
-          `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
-        );
+        if (this.debugging)
+          {
+              console.assert(
+            block_hash === block.hash,
+            `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
+          );
+          }
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;
         await this.app.mempool.addBlock(block);
       } else {
-        // if (this.debugging) {
+         if (this.debugging) {
         console.error(
           `Error fetching block from :${url}: Status ${res.status} -- ${res.statusText}`
         );
-        // }
+         }
       }
     } catch (err) {
-      // if (this.debugging) {
-      console.error(`Error fetching block: ${url}`);
-      // }
-      // if (this.debugging) {
-      console.error(err);
-      // }
+       if (this.debugging) {
+        console.error(`Error fetching block: ${url}`);
+        console.error(err);
+       }
     }
     return;
   }
@@ -588,7 +590,7 @@ class Network {
   }
 
   initialize() {
-    console.debug("[DEBUG] initialize network");
+    if (this.debugging) console.debug("[DEBUG] initialize network");
 
     if (this.app.options) {
       if (this.app.options.server) {
@@ -632,12 +634,12 @@ class Network {
     }
 
     if (this.app.options.peers != null) {
-      console.debug("[DEBUG] peers length " + this.app.options.peers.length);
+      if (this.debugging) console.debug("[DEBUG] peers length " + this.app.options.peers.length);
       for (let i = 0; i < this.app.options.peers.length; i++) {
         this.addPeer(JSON.stringify(this.app.options.peers[i]));
       }
     } else {
-      console.debug("[DEBUG] no peers defined");
+      if (this.debugging) console.debug("[DEBUG] no peers defined");
     }
 
     this.app.connection.on("peer_disconnect", (peer) => {
@@ -1215,12 +1217,12 @@ class Network {
     if (peer == null) {
       for (let i = 0; i < this.peers.length; i++) {
         if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
-          console.log("sending services request: " + JSON.stringify(my_services));
+          if (this.debugging) console.log("sending services request: " + JSON.stringify(my_services));
           this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), this.peers[i]);
         }
       }
     } else {
-      console.log("sending services request: " + JSON.stringify(my_services));
+      if (this.debugging) console.log("sending services request: " + JSON.stringify(my_services));
       this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), peer);
     }
   }
@@ -1233,15 +1235,15 @@ class Network {
       return;
     }
     if (!tx.transaction) {
-      console.log("TX not found in propagate transaction");
+      if (this.debugging) console.log("TX not found in propagate transaction");
       return;
     }
     if (!tx.transaction.from) {
-      console.log("TX FROM not found in propagate transaction");
+      if (this.debugging) console.log("TX FROM not found in propagate transaction");
       return;
     }
     if (!tx.is_valid) {
-      console.warn("tx is not valid. not propagating", tx);
+      if (this.debugging) console.warn("tx is not valid. not propagating", tx);
       return;
     }
 
@@ -1286,7 +1288,7 @@ class Network {
       }
     }
 
-    console.log("propagating tx with sig: ", tx.transaction.sig);
+    if (this.debugging) console.log("propagating tx with sig: ", tx.transaction.sig);
 
     //
     // now send the transaction out with the appropriate routing hop
@@ -1329,9 +1331,11 @@ class Network {
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;
 
-    console.log(
-      `requesting blockchain from peer : latest block id= ${latest_block_id} latest block hash = ${latest_block_hash} fork id = ${fork_id}`
-    );
+    if (this.debugging){
+      console.log(
+        `requesting blockchain from peer : latest block id= ${latest_block_id} latest block hash = ${latest_block_hash} fork id = ${fork_id}`
+      );
+    }
 
     if (this.app.BROWSER == 1) {
       if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {
@@ -1361,10 +1365,10 @@ class Network {
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
         if (this.app.SPVMODE == 1) {
-          console.log("requesting ghost chain from peer : " + peer.id);
+          if (this.debugging) console.log("requesting ghost chain from peer : " + peer.id);
           this.sendRequest("REQGSTCN", buffer_to_send, peer);
         } else {
-          console.log("requesting full chain from peer : " + peer.id);
+          if (this.debugging) console.log("requesting full chain from peer : " + peer.id);
           this.sendRequest("REQCHAIN", buffer_to_send, peer);
         }
         return;
@@ -1373,10 +1377,10 @@ class Network {
 
     if (this.peers.length > 0) {
       if (this.app.SPVMODE == 1) {
-        console.log("requesting ghost chain from first peer");
+        if (this.debugging) console.log("requesting ghost chain from first peer");
         this.sendRequest("REQGSTCN", buffer_to_send, this.peers[0]);
       } else {
-        console.log("requesting full chain from first peer");
+        if (this.debugging) console.log("requesting full chain from first peer");
         this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);
       }
     }
@@ -1498,7 +1502,7 @@ class Network {
       this.blocks_to_fetch.sort((a, b) => Number(b.id - a.id));
       for (let i = 0; i < 1 && this.blocks_to_fetch.length > 0; ++i) {
         let entry = this.blocks_to_fetch.pop();
-        console.debug("fetching : " + entry.hash + " - " + entry.id);
+        if (this.debugging) console.debug("fetching : " + entry.hash + " - " + entry.id);
         promises.push(this.fetchBlock(entry.hash, entry.peer));
         // await this.fetchBlock(entry.hash, entry.peer);
       }
