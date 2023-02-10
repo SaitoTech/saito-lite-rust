@@ -197,8 +197,8 @@ class League extends ModTemplate {
       }
     }
 
-    if (game_idx == -1) {
-      this.leagues[i].games.push({ 
+    if (game_idx == -1 && league_idx > -1) {
+      this.leagues[league_idx].games.push({ 
 	    game_id : game_id ,
 	    winner : winner ,
 	    players_array : players_array ,
@@ -1014,6 +1014,7 @@ console.log("DONE ADDING LEAGUE GAME");
         params = { $league_id : obj.league_id };
         await this.app.storage.executeDatabase(sql, params, "league");
 	return;
+
   }
 
   async playerInsert(obj) {
