@@ -253,7 +253,7 @@
 }
 
 .wallet-qrcode {
-  width: 66vw;
+  width: 28rem;
 }
 
 .header-wallet .saito-header-profile-address {
@@ -379,6 +379,9 @@
     overflow: hidden;
   }
 
+  .wallet-qrcode {
+    width: 66vw;
+  }
 
 }
 
