@@ -30,7 +30,7 @@ class LeagueOverlay {
     //
     //
     //
-    this.renderRecentGames(league);
+    //this.renderRecentGames(league);
     this.mod.fetchLeagueGames(league.id, () => {
 console.log("ABOUT TO RENDER RECENT GAMES1");
       this.renderRecentGames(league);
@@ -69,6 +69,11 @@ console.log("CLICK 12");
 
     let html = "";
 
+console.log("-------------------");
+console.log("-------------------");
+console.log("-------------------");
+console.log(JSON.stringify(league));
+
     //
     // recent league games 
     //
@@ -81,11 +86,15 @@ console.log("CLICK 12");
     }
     for (let i = 0; i < league.games.length; i++) {
 
+console.log("GAMES: " + JSON.stringify(league.games[i]));
+
       let g = league.games[i];
       let players = g.players_array.split("_");
       let datetime = this.app.browser.formatDate(g.time_finished);
       let date = datetime.month + ' ' + datetime.day + ', ' + datetime.year; 
       let players_html = "";
+
+console.log("GAMES 2: ");
 
       players.forEach( (player, key) => {
         players_html += (key == (players.length-1))  ? `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` 
@@ -104,6 +113,8 @@ console.log("CLICK 12");
         </div>
       `;
     }
+
+console.log("GAMES 3: ");
 
     this.app.browser.addElementToSelector(html, ".league_recent_games");
 
