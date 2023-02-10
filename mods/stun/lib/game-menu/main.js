@@ -85,7 +85,7 @@ class StunxGameMenu {
             // peers_in_room.forEach(peer => {
             //   this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
             // });
-            mod.createMediaConnectionWithPeers([...peers_in_room], 'large', "Video", room_code);
+            mod.createMediaChannelConnectionWithPeers([...peers_in_room], 'large', "Video", room_code);
             
         
           }

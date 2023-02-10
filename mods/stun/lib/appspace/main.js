@@ -57,8 +57,7 @@ class StunAppspace {
   joinVideoInvite(app, mod, room_code) {
     if (!room_code) return siteMessage("Please insert a room code", 5000);
     let sql = `SELECT * FROM rooms WHERE room_code = "${room_code}"`;
-
-
+    mod.resetStep();
     let requestCallback = async (res) => {
       let room = res.rows[0];
       if (!room) {
@@ -132,7 +131,7 @@ class StunAppspace {
         // peers_in_room.forEach(peer => {
         //   this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
         // });
-        mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
+        mod.createMediaChannelConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
         
     
       }
