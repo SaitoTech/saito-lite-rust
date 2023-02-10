@@ -76,9 +76,6 @@ class League extends ModTemplate {
 		default_score 		:	1500 					// default ranking for newbies
        });
     });
-
-console.log("LEAGUES POST INIT: " + JSON.stringify(this.leagues));
-
   }
 
 
@@ -161,12 +158,6 @@ console.log("LEAGUES POST INIT: " + JSON.stringify(this.leagues));
     if (!obj.ranking_algorithm)	{ obj.ranking_algorithm = "ELO"; }
     if (!obj.default_score)	{ obj.default_score = 1500; }
 
-console.log(" ) ");
-console.log(" ) ");
-console.log(" ) ");
-console.log("adding league with default score of: " + obj.default_score);
-console.log(" ) ");
-
     //
     // dynamic data-storage
     //
@@ -181,9 +172,6 @@ console.log(" ) ");
     if (!obj.rank)		{ obj.rank = 0; } // my rank in this league
 
     if (!this.returnLeague(obj.id)) {
-
-console.log("LEAGUE ADDED AT: " + this.leagues.length);
-
       this.leagues.push(obj);
       this.app.connection.emit("league-add-league", (this.leagues[(this.leagues.length-1)]));
     }
@@ -219,13 +207,9 @@ console.log("LEAGUE ADDED AT: " + this.leagues.length);
 	    time_finished : time_finished ,
 	    method : method 
       });
-console.log("A5");
     } else {
-console.log("A6");
       if (league_idx > -1 && game_idx > -1) {
-console.log("A7 - " + this.leagues[league_idx].games.length);
         this.leagues[league_idx].games[game_idx].game_id = game_id;
-console.log("A8");
         this.leagues[league_idx].games[game_idx].winner = winner;
         this.leagues[league_idx].games[game_idx].players_array = players_array;
         this.leagues[league_idx].games[game_idx].rank = rank;
@@ -239,23 +223,18 @@ console.log("A8");
 
   addLeaguePlayer(league_id, publickey, score, games_won, games_tied, games_finished) {
 
-console.log("league id is: " + league_id);
     let league_idx = -1;
     let player_idx = -1;
     for (let i = 0; i < this.leagues.length; i++) {
-console.log("check: " + this.leagues[i].id);
       if (this.leagues[i].id === league_id) {
 	league_idx = i;
-console.log("leagues[i] structure at " + i + " is: " + JSON.stringify(this.leagues[i]));
         for (let z = 0; z < this.leagues[i].players.length; z++) {
-console.log("z is: " + z);
 	  if (this.leagues[i].players[z].publickey === publickey) {
 	    player_idx = z;
 	    z = this.leagues[i].players.length+1;
 	    i = this.leagues.length+1;
 	    break;
 	  }
-console.log("done loop");
 	}
 	if (player_idx == -1) {
 	  this.leagues[league_idx].players.push({ 
@@ -273,18 +252,15 @@ console.log("done loop");
 	    this.leagues[league_idx].players[player_idx].games_tied = games_tied;
 	    this.leagues[league_idx].players[player_idx].games_finished = games_finished;
 	  }
-console.log("leagues[i] structure is 5: " + JSON.stringify(this.leagues[i]));
 	}
       }
     }
-console.log("all done!");
   }
 
   fetchLeagueGames(league_id, mycallback=null) {
 
     this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league_id}' LIMIT 10` ,
       (res) => {
-console.log("flg");
         if (res.rows) {
           for (let g of res.rows) {
 
@@ -296,11 +272,7 @@ console.log("flg");
 	    let time_finished	= g.time_finished;
 	    let method		= g.method;
 
-console.log("MOVING IN WITH GAME ID: " + game_id);
-
             this.addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method);
-
-console.log("DONE ADDING LEAGUE GAME");
 
           }
         }
@@ -314,43 +286,29 @@ console.log("DONE ADDING LEAGUE GAME");
 
   fetchLeagueLeaderboard(league_id, mycallback=null) {
 
-console.log("LEAGUES HERE");
-console.log(" > ");
-console.log(" > ");
-console.log(" > ");
-console.log(JSON.stringify(this.leagues));
-
     let league = this.returnLeague(league_id);
 
-console.log("fll1");
     this.sendPeerDatabaseRequestWithFilter(
       "League" ,
       `SELECT * FROM players WHERE league_id = '${league_id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
       (res) => {
-console.log("fll2");
 	if (res) {
-console.log("fll3");
         if (res.rows) {
-console.log("fll4");
 
           for (let p of res.rows){
 
-console.log("fll5");
 	    let publickey 	= p.publickey;
 	    let score 		= p.score;
 	    let games_won 	= p.games_won;
 	    let games_tied 	= p.games_tied;
 	    let games_finished 	= p.games_finished;
-console.log("fll6");
 
             if (publickey == this.app.wallet.returnPublicKey()) {
               let league = this.returnLeague(league_id);
 	      league.rank = score;
             }
 
-console.log("fll7");
             this.addLeaguePlayer(league.id, publickey, score, games_won, games_tied, games_finished);
-console.log("fll8");
 
           }
 	}
@@ -458,7 +416,9 @@ console.log("fll8");
       }
 
       if (txmsg.request === "gameover"){
+console.log("START GAMEOVER TX IN LEAGUE");
         this.receiveGameoverTransaction(app, txmsg, true);
+console.log("FINISH GAMEOVER TX IN LEAGUE");
       }
 
       if (txmsg.request === "roundover"){
@@ -496,8 +456,6 @@ console.log("fll8");
   loadLeagues() {
     if (this.app.options.leagues) {
       this.leagues = this.app.options.leagues;
-console.log("LOADING LEAGUES: ");
-console.log(JSON.stringify(this.leagues));
       return;
     }
     this.leagues = [];
@@ -554,10 +512,6 @@ console.log(JSON.stringify(this.leagues));
     // ranking_algorithm TEXT,
     // default_score INTEGER,
     //
-
-console.log(" >>> ");
-console.log(" >>> insert ");
-console.log(" >>> 1500 default");
 
     let txmsg = tx.returnMessage();
     let sql = `INSERT INTO leagues (
@@ -754,19 +708,12 @@ console.log(" >>> 1500 default");
     let params = { $game : game };   
     let relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
 
-console.log("RELEVANT LEAGUES: " + JSON.stringify(relevantLeagues));
-
     //
     // if there are no game-specific leagues, add one (-1 is because Saito is default)
     //
     if (relevantLeagues.length <= 1) {
       for (let i = 0; i < this.leagues.length; i++) {
 	if (this.leagues[i].name === game) {
-
-console.log(" <<< ");
-console.log("THIS LEAGUE: " + JSON.stringify(this.leagues[i]));
-console.log("LEAGUE DEFAULT SCORE: " + this.leagues[i].default_score);
-console.log(" <<< ");
 
 	  let league = this.leagues[i];
 
@@ -803,16 +750,10 @@ console.log(" <<< ");
             $default_score          :               league.default_score
           };
 
-console.log(" > ");
-console.log(" > insert with: " + league.default_score);
-console.log(" > ");
-
           await app.storage.executeDatabase(sql, params, "league");
           sql = `SELECT * FROM leagues WHERE game = $game OR id='Saito'`;
           params = { $game : game };   
           relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
-
-console.log("storage queries databases: " + JSON.stringify(relevantLeagues));
 
         }
       }
@@ -826,19 +767,10 @@ console.log("storage queries databases: " + JSON.stringify(relevantLeagues));
 
       let leag = relevantLeagues[y];
 
-console.log("is gameover? " + is_gameover);
-console.log("league default score: " + leag.default_score);
-
       //
       // update games table if game is over 
       //
       if (is_gameover) {
-
-console.log("!!!!");
-console.log("!!!!");
-console.log("!!!!");
-console.log("!!!!");
-console.log(JSON.stringify(txmsg));
 
         obj = {
           league_id: leag.id,
@@ -854,8 +786,6 @@ console.log(JSON.stringify(txmsg));
 
       }
 
-console.log(" X > " + JSON.stringify(leag));
-
       //
       // insert players if not in league
       //
@@ -866,9 +796,6 @@ console.log(" X > " + JSON.stringify(leag));
               score: leag.default_score ,
               ts: new Date().getTime()
         };
-console.log(" 2> ");
-console.log(" 2> insert with: " + leag.default_score);
-console.log(" 2> ");
 
 	await this.playerInsert(obj);
       }
@@ -876,12 +803,10 @@ console.log(" 2> ");
       //
       // update rankings (ELO)
       //
-      if (leag.ranking_algorithm === "elo"){
-console.log("UPDATING ELO SCORES!");
-	this.updateELORanking(publickeys, leag);
+      if (leag.ranking_algorithm === "ELO"){
+	this.updateELORanking(publickeys, leag, txmsg);
       }
-      if (leag.ranking_algorithm === "exp"){
-console.log("UPDATING EXP SCORES!");
+      if (leag.ranking_algorithm === "EXP"){
         this.updateEXPRanking(publickeys, leag, txmsg);
       }
     }
@@ -982,31 +907,28 @@ console.log("UPDATING EXP SCORES!");
 
     // everyone left gets a point for playing
     for (let i = 0; i < players.length; i++){
-      await this.incrementPlayer(players[i], league.id, 1);
+      this.addEXP(players[i], league.id, 1);
     }
 
   }
 
-  async updateELORanking(players, league){
-
-console.log("IN UPDATE ELO");
+  async updateELORanking(players, league, txmsg){
 
     //
     // no change for 1P games
     //
     if (players.length < 2) { return; }
 
+
     let sql2 = `SELECT * FROM players WHERE league_id = ? AND publickey IN (`;
     for (let pk of players) { sql2 += `'${pk}', `; }
     sql2 = sql2.substr(0, sql2.length - 2) + `)`;
+
     let playerStats = await this.app.storage.queryDatabase(sql2, [league.id], "league");
     if (playerStats.length !== players.length){
       // skip out - not all players are league members
-console.log("SKIPPING OUT - not all players are league members...");
       return; 
     }
-
-console.log("NOT SKIPPING OUT - all players are league members...");
 
     let winner = [], loser = [];
     let qsum = 0;
@@ -1020,7 +942,7 @@ console.log("NOT SKIPPING OUT - all players are league members...");
       //Dynamically calculate each player's K-factor
       //
       player.k = 10;
-      if (playerObj?.score < 2400){
+      if (player?.score < 2400){
         player.k = 20;
       }
       if (player?.games_finished < 30 && player?.score < 2300){
@@ -1049,7 +971,7 @@ console.log("NOT SKIPPING OUT - all players are league members...");
 
   }
 
-  async addEXP(publickey, league_id, points, game_status = null){
+  async addEXP(publickey, league_id, points, game_status = null) {
 
     let sql = `UPDATE players SET score = (score + $points), games_finished = (games_finished + 1), ts = $ts`;
     if (game_status) { sql += `, ${game_status} = (${game_status} + 1)`; }
@@ -1081,6 +1003,7 @@ console.log("NOT SKIPPING OUT - all players are league members...");
       $publickey: playerObj.publickey,
       $league_id: playerObj.league_id
     }
+
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
   }

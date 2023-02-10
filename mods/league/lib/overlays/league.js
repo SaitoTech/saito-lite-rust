@@ -32,7 +32,6 @@ class LeagueOverlay {
     //
     //this.renderRecentGames(league);
     this.mod.fetchLeagueGames(league.id, () => {
-console.log("ABOUT TO RENDER RECENT GAMES1");
       this.renderRecentGames(league);
     });
 
@@ -42,16 +41,11 @@ console.log("ABOUT TO RENDER RECENT GAMES1");
 
   attachEvents() {
 
-console.log("ABOUT TO ATTACH EVENTS");
-
     Array.from(document.querySelectorAll('.league-overlay-create-game-button')).forEach(game => {
-console.log("CLICK 12");
       game.onclick = (e) => {
-console.log("CLICK 12");
         let modname = e.currentTarget.getAttribute("data-id");
         let league = this.mod.leagues[this.mod.league_idx];
 	this.overlay.remove();
-console.log("CLICK 12");
 	if (league.default == 0) {
 	  // private leagues get league provided
           this.app.connection.emit("arcade-launch-game-wizard", ({ game: modname , league : league }));
@@ -69,11 +63,6 @@ console.log("CLICK 12");
 
     let html = "";
 
-console.log("-------------------");
-console.log("-------------------");
-console.log("-------------------");
-console.log(JSON.stringify(league));
-
     //
     // recent league games 
     //
@@ -86,15 +75,11 @@ console.log(JSON.stringify(league));
     }
     for (let i = 0; i < league.games.length; i++) {
 
-console.log("GAMES: " + JSON.stringify(league.games[i]));
-
       let g = league.games[i];
       let players = g.players_array.split("_");
       let datetime = this.app.browser.formatDate(g.time_finished);
       let date = datetime.month + ' ' + datetime.day + ', ' + datetime.year; 
       let players_html = "";
-
-console.log("GAMES 2: ");
 
       players.forEach( (player, key) => {
         players_html += (key == (players.length-1))  ? `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` 
@@ -113,8 +98,6 @@ console.log("GAMES 2: ");
         </div>
       `;
     }
-
-console.log("GAMES 3: ");
 
     this.app.browser.addElementToSelector(html, ".league_recent_games");
 
