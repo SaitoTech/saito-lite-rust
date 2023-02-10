@@ -180,18 +180,25 @@ class League extends ModTemplate {
 
   addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method) {
 
+    let game_idx = -1;
+    let league_idx = -1;
+
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) {
-	let game_idx = -1;
+	league_idx = i;
         for (let z = 0; z < this.leagues[i].games.length; z++) {
-	  if (this.leagues[i].players[z].game_id === game_id) {
+	  if (this.leagues[i].games[z].game_id === game_id) {
 	    game_idx = z;
 	    z = this.leagues[i].games.length+1;
-	    i = this.leagues.length;
+	    i = this.leagues.length+1;
+	    break;
 	  }
 	}
-	if (game_idx == -1) {
-	  this.leagues[i].games.push({ 
+      }
+    }
+
+    if (game_idx == -1) {
+      this.leagues[i].games.push({ 
 	    game_id : game_id ,
 	    winner : winner ,
 	    players_array : players_array ,
@@ -199,16 +206,20 @@ class League extends ModTemplate {
 	    time_started : time_started ,
 	    time_finished : time_finished ,
 	    method : method 
-	  });
-	} else {
-	  this.leagues[i].games[game_idx].game_id = game_id;
-	  this.leagues[i].games[game_idx].winner = winner;
-	  this.leagues[i].games[game_idx].players_array = players_array;
-	  this.leagues[i].games[game_idx].rank = rank;
-	  this.leagues[i].games[game_idx].time_started = time_started;
-	  this.leagues[i].games[game_idx].time_finished = time_finished;
-	  this.leagues[i].games[game_idx].method = method;
-	}
+      });
+console.log("A5");
+    } else {
+console.log("A6");
+      if (league_idx > -1 && game_idx > -1) {
+console.log("A7 - " + this.leagues[league_idx].games.length);
+        this.leagues[league_idx].games[game_idx].game_id = game_id;
+console.log("A8");
+        this.leagues[league_idx].games[game_idx].winner = winner;
+        this.leagues[league_idx].games[game_idx].players_array = players_array;
+        this.leagues[league_idx].games[game_idx].rank = rank;
+        this.leagues[league_idx].games[game_idx].time_started = time_started;
+        this.leagues[league_idx].games[game_idx].time_finished = time_finished;
+        this.leagues[league_idx].games[game_idx].method = method;
       }
     }
   }
@@ -260,7 +271,11 @@ class League extends ModTemplate {
 	    let time_finished	= g.time_finished;
 	    let method		= g.method;
 
+console.log("MOVING IN WITH GAME ID: " + game_id);
+
             this.addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method);
+
+console.log("DONE ADDING LEAGUE GAME");
 
           }
         }
@@ -346,7 +361,7 @@ class League extends ModTemplate {
 
         this.sendPeerDatabaseRequestWithFilter(
           "League" , 
-          `SELECT * FROM league WHERE id = "${this.app.browser.returnURLParameter("league_join_league")}"` ,
+          `SELECT * FROM leagues WHERE id = "${this.app.browser.returnURLParameter("league_join_league")}"` ,
           (res) => {
             let rows = res.rows || [];
             if (rows.length > 0) {
@@ -496,7 +511,7 @@ class League extends ModTemplate {
     // default_score INTEGER,
     //
     let txmsg = tx.returnMessage();
-    let sql = `INSERT INTO league (
+    let sql = `INSERT INTO leagues (
 	id, 
 	game, 
 	name, 
@@ -577,28 +592,13 @@ class League extends ModTemplate {
     let base_score = 0;
     if (this.returnLeague(league_id)) { base_score = this.returnLeague(league_id).default_score; }
 
-    let sql = `INSERT INTO players (
-                league_id,
-                publickey,
-                score,
-		email,
-                ts
-              ) VALUES (
-                $league_id,
-                $publickey,
-                $score,
-                $email,
-                $ts
-              )`;
-
     let params = {
-      $league_id: league_id,
-      $publickey: publickey,
-      $score: base_score,
-      $email: email,
-      $ts: parseInt(tx.transaction.ts)
+      league_id: league_id,
+      publickey: publickey,
+      score: base_score,
+      ts: parseInt(tx.transaction.ts)
     };
-    app.storage.executeDatabase(sql, params, "league");
+    await this.playerInsert(params);
     return;
   }
 
@@ -647,7 +647,7 @@ class League extends ModTemplate {
   async receiveRemoveTransaction(blk, tx, conf, app){
 
     let txmsg = tx.returnMessage();
-    let sql1 = `DELETE FROM league WHERE id=$league_id AND admin=$publickey`;
+    let sql1 = `DELETE FROM leagues WHERE id=$league_id AND admin=$publickey`;
     let params1 = {
       $league_id : txmsg.league_id ,
       $publickey : tx.transaction.from[0].add ,
@@ -682,9 +682,17 @@ class League extends ModTemplate {
     if ((txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose") && is_gameover) { return; }
 
     //
+    // fetch players
+    //
+    let publickeys = txmsg.players.split("_");
+    if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1){
+      txmsg.winner = txmsg.winner[0];
+    }
+
+    //
     // fetch leagues
     //
-    let sql = `SELECT * FROM league WHERE game = $game OR id='SAITOLICIOUS'`;
+    let sql = `SELECT * FROM leagues WHERE game = $game OR id='SAITOLICIOUS'`;
     let params = { $game : game };   
     let relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
 
@@ -693,7 +701,6 @@ class League extends ModTemplate {
     //
     if (relevantLeagues.length == 0) {
       for (let i = 0; i < this.leagues.length; i++) {
-
 	if (this.leagues[i].name === game) {
 
 	  let league = this.leagues[i];
@@ -701,7 +708,7 @@ class League extends ModTemplate {
           //
           // insert into DB if not exists
           //
-          let sql = `INSERT INTO league (
+          let sql = `INSERT INTO leagues (
             id,
             game,
             name,
@@ -731,20 +738,12 @@ class League extends ModTemplate {
             $default_score          :               league.default_score
           };
           await app.storage.executeDatabase(sql, params, "league");
-          sql = `SELECT * FROM league WHERE game = $game OR id='SAITOLICIOUS'`;
+          sql = `SELECT * FROM leagues WHERE game = $game OR id='SAITOLICIOUS'`;
           params = { $game : game };   
           relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
         }
       }
-    }
 
-    //
-    // fetch players
-    //
-    let publickeys = txmsg.players.split("_");
-
-    if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1){
-      txmsg.winner = txmsg.winner[0];
     }
 
     //
@@ -757,25 +756,31 @@ class League extends ModTemplate {
       //
       if (is_gameover) {
 
-        sql = `INSERT INTO games (league_id, game_id, module, winner, players_array, time_started, time_finished, method) VALUES ($league_id, $game_id, $module, $winner, $players_array, $time_started, $time_finished, $method)`;
-        params = {
-          $league_id: leag.id,
-          $game_id: txmsg.game_id,
-          $module: game,
-          $winner: (Array.isArray(txmsg.winner))? txmsg.winner.join("_") : txmsg.winner,
-          $players_array: txmsg.players,
-          $time_started: 0,
-          $time_finished: new Date().getTime(),
-          $method: txmsg.reason,
+        obj = {
+          league_id: leag.id,
+          game_id: txmsg.game_id,
+          module: game,
+          winner: (Array.isArray(txmsg.winner))? txmsg.winner.join("_") : txmsg.winner,
+          players_array: txmsg.players,
+          time_started: 0,
+          time_finished: new Date().getTime(),
+          method: txmsg.reason,
         };
+        await this.gameInsert(obj);
 
-        await this.app.storage.executeDatabase(sql, params, "league");
+      }
 
-        sql = `UPDATE games SET rank=rank+1 WHERE league_id = $league_id`;
-        params = { $league_id : leag.id };
-
-        await this.app.storage.executeDatabase(sql, params, "league");
-
+      //
+      // insert players if not in league
+      //
+      for (let i = 0; i < publickeys.length; i++) {
+        let obj = {
+              league_id: leag.id,
+              publickey: publickeys[i] ,
+              score: leag.default_score ,
+              ts: new Date().getTime()
+        };
+	await this.playerInsert(obj);
       }
 
       //
@@ -804,7 +809,7 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
     let game = txmsg.module;
 
-    let sql = `SELECT * FROM league WHERE game = $gamename OR id='SAITOLICIOUS'`;
+    let sql = `SELECT * FROM leagues WHERE game = $gamename OR id='SAITOLICIOUS'`;
     let params = { $gamename : game };
     const relevantLeagues = await this.app.storage.queryDatabase(sql, params, "league");
 
@@ -830,24 +835,14 @@ class League extends ModTemplate {
           let rows = await this.app.storage.queryDatabase(sql, params, "league");
 
           if (!rows || !rows.length || rows.length == 0){
-            sql = `INSERT INTO players (
-                league_id,
-                publickey,
-                score,
-                ts
-              ) VALUES (
-                $league_id,
-                $publickey,
-                $score,
-                $ts
-              )`;
-            let params = {
-              $league_id: leag.id,
-              $publickey: player,
-              $score: leag.starting_score,
-              $ts: new Date().getTime(),
+            let obj = {
+              league_id: leag.id,
+              publickey: player,
+              score: leag.default_score,
+              ts: new Date().getTime(),
             };
-            await this.app.storage.executeDatabase(sql, params, "league");
+	    await this.playerInsert(obj);
+	    return;
           }
         }
       }
@@ -993,6 +988,55 @@ class League extends ModTemplate {
     }
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
+  }
+
+
+
+  ////////////////////////////////////////////////
+  // convenience functions for database inserts //
+  ////////////////////////////////////////////////
+  async gameInsert(obj) {
+
+        let sql = `INSERT INTO games (league_id, game_id, module, winner, players_array, time_started, time_finished, method) VALUES ($league_id, $game_id, $module, $winner, $players_array, $time_started, $time_finished, $method)`;
+        let params = {
+          $league_id: obj.league_id,
+          $game_id: obj.game_id,
+          $module: obj.module,
+          $winner: obj.winner ,
+          $players_array: obj.players,
+          $time_started: obj.time_started,
+          $time_finished: obj.time_finished,
+          $method: obj.reason,
+        };
+        await this.app.storage.executeDatabase(sql, params, "league");
+
+        sql = `UPDATE games SET rank=rank+1 WHERE league_id = $league_id`;
+        params = { $league_id : obj.league_id };
+        await this.app.storage.executeDatabase(sql, params, "league");
+	return;
+  }
+
+  async playerInsert(obj) {
+
+        let sql = `INSERT INTO players (
+                league_id,
+                publickey,
+                score,
+                ts
+              ) VALUES (
+                $league_id,
+                $publickey,
+                $score,
+                $ts
+              )`;
+        let params = {
+              $league_id: obj.league_id,
+              $publickey: obj.publickey,
+              $score: obj.default_score,
+              $ts: obj.ts
+            };
+        await this.app.storage.executeDatabase(sql, params, "league");
+	return;
   }
 
 }

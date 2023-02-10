@@ -32,6 +32,7 @@ class LeagueOverlay {
     //
     this.renderRecentGames(league);
     this.mod.fetchLeagueGames(league.id, () => {
+console.log("ABOUT TO RENDER RECENT GAMES1");
       this.renderRecentGames(league);
     });
 
@@ -41,11 +42,16 @@ class LeagueOverlay {
 
   attachEvents() {
 
+console.log("ABOUT TO ATTACH EVENTS");
+
     Array.from(document.querySelectorAll('.league-overlay-create-game-button')).forEach(game => {
+console.log("CLICK 12");
       game.onclick = (e) => {
+console.log("CLICK 12");
         let modname = e.currentTarget.getAttribute("data-id");
         let league = this.mod.leagues[this.mod.league_idx];
 	this.overlay.remove();
+console.log("CLICK 12");
 	if (league.default == 0) {
 	  // private leagues get league provided
           this.app.connection.emit("arcade-launch-game-wizard", ({ game: modname , league : league }));
@@ -77,7 +83,7 @@ class LeagueOverlay {
 
       let g = league.games[i];
       let players = g.players_array.split("_");
-      let datetime = this_obj.app.browser.formatDate(g.time_finished);
+      let datetime = this.app.browser.formatDate(g.time_finished);
       let date = datetime.month + ' ' + datetime.day + ', ' + datetime.year; 
       let players_html = "";
 

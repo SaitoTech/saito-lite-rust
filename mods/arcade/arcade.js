@@ -443,6 +443,7 @@ class Arcade extends ModTemplate {
           // We listen to game module txs for gameover
           //
           if (txmsg.request === "gameover") {
+console.log("onConfirmation: receive gameover transaction");
             if (txmsg.reason == "cancellation") {
               arcade_self.receiveCloseTransaction(tx);
             } else {
