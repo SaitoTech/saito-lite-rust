@@ -164,10 +164,6 @@ class Arcade extends ModTemplate {
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql,
       (res) => {
         if (res.rows) {
-          if (arcade_self.debug){
-            console.log("Loading games from DB...");
-          }
-
           for (let record of res.rows){
             //This is the save openTX
             let game_tx = new saito.default.transaction(JSON.parse(record.tx));
