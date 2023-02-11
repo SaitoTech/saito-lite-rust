@@ -35,11 +35,8 @@ class Leaderboard {
       //
       // ask for update
       //
-console.log("submitting with leagueid: " + this.league.id);
       this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
-console.log("INTO RENDER LEADERBOAR CONTENST");
         this.renderLeaderboardContents();
-console.log("OUT OF RENDER LEADERBOAR CONTENST");
       });
     }
   }
@@ -61,9 +58,7 @@ console.log("OUT OF RENDER LEADERBOAR CONTENST");
     // add players
     //
     if (this.league) {
-console.log("league exists...");
       for (let i = 0; i < this.league.players.length; i++) {
-console.log("league exists... i: " + i);
         html = "";
         let player = this.league.players[i];
         let publickey = player.publickey;
@@ -77,7 +72,6 @@ console.log("league exists... i: " + i);
         this.app.browser.addElementToSelector(html, ".league-leaderboard .saito-table-body");
       }
     }
-console.log("league exists done.");
   }
 
 }

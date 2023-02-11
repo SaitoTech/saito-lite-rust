@@ -416,9 +416,7 @@ class League extends ModTemplate {
       }
 
       if (txmsg.request === "gameover"){
-console.log("START GAMEOVER TX IN LEAGUE");
         this.receiveGameoverTransaction(app, txmsg, true);
-console.log("FINISH GAMEOVER TX IN LEAGUE");
       }
 
       if (txmsg.request === "roundover"){
