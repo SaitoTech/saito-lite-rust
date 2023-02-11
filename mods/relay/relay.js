@@ -56,10 +56,6 @@ class Relay extends ModTemplate {
             recipients.push(recipient);
         }
 
-console.log("RECIPIENTS: " + JSON.stringify(recipients));
-console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
-console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
-
         //
         // transaction to end-user, containing msg.request / msg.data is
         //
