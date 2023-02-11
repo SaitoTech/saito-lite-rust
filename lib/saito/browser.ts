@@ -284,18 +284,20 @@ class Browser {
         if (w[i][0] === "@") {
           if (w.length > 1) {
             let cleaner = w[i].substring(1);
-            let add = this.app.keychain.returnPublicKeyByIdentifier(cleaner);
+	    let key = this.app.keychain.returnKey({ identifier : cleaner });
+	    if (key) {
+              let add = key.publickey;
+	    }
             if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
               add = cleaner;
-            }
-            if (!keys.includes(add)) {
+	    }
+            if (!keys.includes(add) && (add != "" && add != null)) {
               keys.push(add);
             }
           }
         }
       }
     }
-
 
     let identifiers = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
     let adds = text.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
@@ -309,10 +311,13 @@ class Browser {
     }
     if (identifiers) {
       identifiers.forEach(id => {
-        let add = this.app.keychain.returnPublicKeyByIdentifier(id);
-        if (this.app.crypto.isPublicKey(add)) {
-          if (!keys.includes(add)) {
-            keys.push(add);
+        let key = this.app.keychain.returnKey({ identifier : id });
+	if (key.publickey) {
+        let add = key.publickey;
+          if (this.app.crypto.isPublicKey(add)) {
+            if (!keys.includes(add)) {
+              keys.push(add);
+            }
           }
         }
       });
@@ -1440,7 +1445,7 @@ class Browser {
           try {
 
             identifiers.forEach(async (identifier) => {
-              let answer = this.app.keychain.fetchPublicKey(identifier);
+              let answer = this.app.keychain.returnKey({ identifier : identifier });
               console.log(answer + " - " + identifier);
               if (answer != identifier && answer != null) {
                 //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);

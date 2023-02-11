@@ -17,12 +17,12 @@ class AppspaceHome {
 
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            if (mod.viewing !== "home") { return; }
-            let saito_loader =  new SaitoLoader(app, mod, '#redsquare-intersection');
-            saito_loader.render();
-            mod.loadMoreTweets(()=> saito_loader.remove());
-          }
+        if (entry.isIntersecting) {
+          if (mod.viewing !== "home") { return; }
+          let saito_loader = new SaitoLoader(app, mod, '#redsquare-intersection');
+          saito_loader.render();
+          mod.loadMoreTweets(() => saito_loader.remove());
+        }
       });
     }, {
       root: null,
@@ -87,7 +87,7 @@ class AppspaceHome {
     }
 
     // render all top-level tweets, possibly with critical children
-    
+
     for (let i = 0; i < this.mod.tweets.length; i++) {
       if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
         this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
@@ -96,8 +96,6 @@ class AppspaceHome {
       this.mod.tweets[i].renderWithCriticalChild();
 
     }
-
-
 
     this.attachEvents();
 
@@ -119,10 +117,13 @@ class AppspaceHome {
 
     // make tweets full
     document.querySelectorAll('.tweet-text').forEach(item => {
-      if(item.classList.contains('preview')){
+      if (item.classList.contains('preview')) {
         item.classList.replace('preview', 'full')
       }
     })
+
+    document.querySelectorAll(".tweet")[0].scrollIntoView({behavior: "smooth", block: "start"});
+
     this.attachEvents();
 
   }
@@ -130,7 +131,7 @@ class AppspaceHome {
   attachEvents() {
 
     this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
-    
+
     document.getElementById("redsquare-tweet").onclick = (e) => {
       let post = new Post(this.app, this.mod);
       post.render();

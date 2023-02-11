@@ -8,7 +8,9 @@ module.exports = ArcadeMainTemplate = () => {
           <div id="arcade-invites-box" class="arcade-invites-box"></div>
 	      </div>
       </div>
-      <div id="arcade-leagues" class="saito-sidebar right arcade-leagues"></div>
+      <div class="saito-sidebar right">
+        <div id="arcade-leagues" class="arcade-leagues"></div>
+      </div>
     </div>
   `;
 }
