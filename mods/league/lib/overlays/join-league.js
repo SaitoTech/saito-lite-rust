@@ -16,8 +16,6 @@ class JoinLeague {
     if (league_id != "") { this.league_id = league_id; }
     let league = this.mod.returnLeague(this.league_id);
 
-//    let league = await this.mod.getAllLeagueData(this.league_id);
-
     if (league == null) {
       alert("League not found");
       return;
@@ -38,7 +36,7 @@ class JoinLeague {
 
     const league_join_form = document.getElementById('league-join-form');
 
-    league_join_form.addEventListener('submit', function(e){
+    league_join_form.addEventListener('submit', (e) => {
 
       e.preventDefault();
 
@@ -50,13 +48,15 @@ class JoinLeague {
         co.style.display = "none";
       }
 
-      mod.sendJoinLeagueTransaction(league_id, {"email": email});
-    
-      salert("League join request sent");
+      let newtx = this.mod.createJoinTransaction(league_id, {"email": email});
+      this.app.network.propagateTransaction(newtx);
+
+      this.mod.addLeaguePlayer(league_id, this.app.wallet.returnPublicKey(), 0, 0, 0, 0); 
+      this.mod.saveLeagues();
 
       setTimeout(function(){
         window.location = window.location.origin+"/arcade";
-      }, 2500);
+      }, 1500);
     });  
 
   }

@@ -67,7 +67,6 @@ class Arcade extends ModTemplate {
     //
     // compile list of arcade games
     //
-    
     app.modules.returnModulesRespondingTo("arcade-games").forEach(game_mod => {
         this.arcade_games.push(game_mod);
         //
@@ -75,7 +74,6 @@ class Arcade extends ModTemplate {
         //
         this.affix_callbacks_to.push(game_mod.name);
     });
-    
 
     //
     // If we have a browser (are a user)
@@ -446,6 +444,7 @@ class Arcade extends ModTemplate {
           // We listen to game module txs for gameover
           //
           if (txmsg.request === "gameover") {
+console.log("onConfirmation: receive gameover transaction");
             if (txmsg.reason == "cancellation") {
               arcade_self.receiveCloseTransaction(tx);
             } else {

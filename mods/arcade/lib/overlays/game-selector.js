@@ -24,6 +24,7 @@ class GameSelector {
       this.obj = obj;
       this.render();
       this.attachEvents();
+
     });
 
   }

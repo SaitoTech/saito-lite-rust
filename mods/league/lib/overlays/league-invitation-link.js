@@ -3,10 +3,20 @@ const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-ove
 
 class InvitationLink {
 
-    constructor(app, mod, link="") {
+    constructor(app, mod, league) {
         this.app = app;
         this.mod = mod;
-        this.link = link;
+        this.league = league;
+
+        let inviteLink = window.location.href;
+        if (inviteLink.includes("arcade")) { inviteLink = inviteLink.replace("arcade", "league"); }
+        if (!inviteLink.includes("#")) { inviteLink += "#"; }
+        if (inviteLink.includes("?")) { inviteLink = inviteLink.replace("#", "&league_join_league=" + this.league.id); } 
+ 	else { inviteLink = inviteLink.replace("#", "?league_join_league=" + this.league.id); }
+        inviteLink += "&game=";
+        inviteLink += league.game;
+
+        this.link = inviteLink;
         this.overlay = new SaitoOverlay(app, mod);
     }
     

@@ -4,6 +4,7 @@ const LeagueOverlay = require("./overlays/league");
 class LeagueRankings {
 	
   constructor(app, mod, container="") {
+
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -12,7 +13,6 @@ class LeagueRankings {
     app.connection.on('league-rankings-render-request', () => {
       this.render();
     });
-
 
   }
 
@@ -35,7 +35,6 @@ class LeagueRankings {
     if (leagues.length > 0){
       let cnt = 0;
       leagues.forEach(l => {
-
         if (l.rank > 0) {
           html += `
 	    <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
