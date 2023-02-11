@@ -182,12 +182,12 @@ class Handshake {
           this.app.crypto.signBuffer(r.challenge, this.app.wallet.returnPrivateKey()),
           "hex"
         );
-      //console.log("sending handshake response!");
-      //  this.app.networkApi.send(
-      //    peer.socket,
-      //    MessageType.HandshakeResponse,
-      //    this.serializeHandshakeResponse(c)
-      //  );
+        //console.log("sending handshake response!");
+        this.app.networkApi.send(
+          peer.socket,
+          MessageType.HandshakeResponse,
+          this.serializeHandshakeResponse(c)
+        );
       }
     }
 
