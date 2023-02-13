@@ -241,19 +241,19 @@ class Stun extends ModTemplate {
         
         if (conf === 0) {
             if (txmsg.module === 'Stun') {
-                if (tx.msg.request === "stun media channel answer") {
+                if (txmsg.request === "stun media channel answer") {
                     this.receiveMediaChannelAnswerTransaction(app, tx, conf, blk)
                 }
-                if (tx.msg.request === "stun data channel answer") {
+                if (txmsg.request === "stun data channel answer") {
                     this.receiveDataChannelAnswerTransaction(app, tx, conf, blk)
                 }
-                if (tx.msg.request === "stun media channel offer") {
+                if (txmsg.request === "stun media channel offer") {
                     this.receiveMediaChannelOfferTransaction(app, tx, conf, blk)
                 }
-                if (tx.msg.request === "stun data channel offer") {
+                if (txmsg.request === "stun data channel offer") {
                     this.receiveDataChannelOfferTransaction(app, tx, conf, blk)
                 }
-                if (tx.msg.request === "receive room code") {
+                if (txmsg.request === "receive room code") {
                     this.receiveRoomCodeTransaction(app, tx, conf, blk)
                 }
             }
@@ -261,33 +261,33 @@ class Stun extends ModTemplate {
     }
 
 
-
     async handlePeerTransaction(app, tx=null, peer, mycallback) {
-        if (tx.msg.request === "stun media channel offer") {
-                this.receiveMediaChannelOfferTransaction(app, tx)
-            }
-            if (tx.msg.request === "stun data channel offer") {
-                this.receiveDataChannelOfferTransaction(app, tx)
-            }
-            if (tx.msg.request === "stun media channel answer") {
-                this.receiveMediaChannelAnswerTransaction(app, tx)
-            }
-            if (tx.msg.request === "stun data channel answer") {
-                this.receiveDataChannelAnswerTransaction(app, tx)
-            }
-            if (tx.msg.request === "receive room code") {
-                this.receiveRoomCodeTransaction(app, tx)
-            }
-            if (tx.msg.request === "create room") {
-                this.receiveCreateRoomTransaction(app, tx)
-            }
-            if (tx.msg.request === "update room") {
-                this.receiveUpdateRoomTransaction(app, tx)
-            }
 
+	if (tx == null) { return; }
+        let txmsg = tx.returnMessage();
 
-        
-        
+        if (txmsg.request === "stun media channel offer") {
+            this.receiveMediaChannelOfferTransaction(app, tx)
+        }
+        if (txmsg.request === "stun data channel offer") {
+            this.receiveDataChannelOfferTransaction(app, tx)
+        }
+        if (txmsg.request === "stun media channel answer") {
+            this.receiveMediaChannelAnswerTransaction(app, tx)
+        }
+        if (txmsg.request === "stun data channel answer") {
+            this.receiveDataChannelAnswerTransaction(app, tx)
+        }
+        if (txmsg.request === "receive room code") {
+            this.receiveRoomCodeTransaction(app, tx)
+        }
+        if (txmsg.request === "create room") {
+            this.receiveCreateRoomTransaction(app, tx)
+        }
+        if (txmsg.request === "update room") {
+            this.receiveUpdateRoomTransaction(app, tx)
+        }
+
         super.handlePeerTransaction(app, tx, peer, mycallback)
 
     }
