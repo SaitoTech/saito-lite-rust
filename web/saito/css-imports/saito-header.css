@@ -191,14 +191,12 @@
   white-space: nowrap;
   width: fit-content;
   display: grid;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
   border: none;
-  grid-row-gap: 2.3rem;
 }
 
 .wallet-btn {
   text-align: center;
-  color: #333;
+  color: #fff;
   display:inline-block;
 }
 
@@ -206,7 +204,7 @@
   display: block;
   padding: 0rem;
   margin: 0rem;
-  line-height: 3rem;
+  line-height: 2rem;
   margin-bottom: 0.5rem;
 }
 
@@ -380,7 +378,7 @@
   }
 
   .wallet-qrcode {
-    width: 66vw;
+    width: 50vw;
   }
 
 }
