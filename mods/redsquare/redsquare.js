@@ -42,7 +42,6 @@ class RedSquare extends ModTemplate {
     this.peers_for_notifications = [];
     this.notifications = [];
     this.notifications_sigs_hmap = {};
-    this.tweet_fetch_interval = 3000;
     this.lastest_tweets = []
     //  
     // view tweet or cache it for "load more"...
@@ -172,6 +171,7 @@ class RedSquare extends ModTemplate {
   // live.
   //
   initialize(app) {
+
     let redsquare_self = app.modules.returnModule('RedSquare');
     super.initialize(app);
 
@@ -179,9 +179,6 @@ class RedSquare extends ModTemplate {
     // fetch content from options file
     //
     this.load();
-
-
-
 
 
     //
@@ -192,16 +189,15 @@ class RedSquare extends ModTemplate {
       for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
     });
 
-    let tweet_fetch_interval = 3000
 
-    setInterval(function () {
-
-      // if (redsquare_self.viewing == "feed") {
-      // console.log('loading new tweets')
-      // redsquare_self.loadNewTweets(app, redsquare_self);
-      // }
-    }, 3000);
-
+    //
+    // this prints the last 10 tweets to ./web/tweets.js which is optionally
+    // fetched by browsers. It allows us to rapidly put the last 10 tweets we
+    // prefer at the top of their feed for more rapid page load.
+    //
+    if (app.BROWSER == 0) {
+      this.updateTweetsCacheForBrowsers();
+    }
 
   }
 
@@ -219,7 +215,7 @@ class RedSquare extends ModTemplate {
     // archive -- load our own tweets
     //
     if (service.service === "archive") {
-      this.loadNotificationsFromPeer(peer);
+//      this.loadNotificationsFromPeer(peer);
     }
 
     //
@@ -239,6 +235,7 @@ class RedSquare extends ModTemplate {
   // runs when normal peer connects
   //
   async onPeerHandshakeComplete(app, peer) {
+/***
     //
     // avoid network overhead if in other apps
     //
@@ -290,6 +287,7 @@ class RedSquare extends ModTemplate {
       this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
     }, true);
 
+***/
   }
 
 
@@ -333,7 +331,34 @@ class RedSquare extends ModTemplate {
 
     }
 
+
     super.render();
+
+    //
+    // if our browser has loaded cached tweets through a direct
+    // download they will be in our tweets object and we can load
+    // them dynamically.
+    //
+    // this runs after components are rendered or it breaks/fails
+    //
+    try {
+      this.app.connection.emit("redsquare-home-render-request");
+      for (let z = 0; z < tweets.length; z++) {
+	let newtx = new saito.default.transaction(JSON.parse(tweets[z]));
+        this.addTweet(newtx);
+console.log(" > ");
+console.log(" > ");
+console.log(" > ");
+console.log("ADDED TWEET");
+      }
+      this.app.connection.emit("redsquare-home-render-request");
+    } catch (err) {
+console.log(" < ");
+console.log(" < ");
+console.log(" < ");
+      console.log("TWEETS " + err);
+    }
+
 
   }
 
@@ -397,8 +422,6 @@ class RedSquare extends ModTemplate {
         if (post_load_tweet_callback) {
           post_load_tweet_callback()
         }
-
-
       });
     }
   }
@@ -453,8 +476,6 @@ class RedSquare extends ModTemplate {
   loadTweetsFromPeerAndReturn(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
     let txs = [];
     let tweet_to_track = null;
-    let render_home = false;
-    if (this.tweets.length == 0) { render_home = true; }
 
     this.sendPeerDatabaseRequestWithFilter(
       "RedSquare",
@@ -494,8 +515,6 @@ class RedSquare extends ModTemplate {
 
   loadTweetsFromPeer(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
     let txs = [];
-    let render_home = false;
-    if (this.tweets.length == 0) { render_home = true; }
 
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
 
@@ -694,6 +713,8 @@ class RedSquare extends ModTemplate {
         this.tweets_oldest_ts = tx.transaction.ts;
       }
     }
+
+console.log("TT: " + tweet.text);
 
     this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
 
@@ -1088,6 +1109,61 @@ class RedSquare extends ModTemplate {
 
   }
 
+  //
+  // writes the latest 10 tweets to tweets.js
+  //
+  async updateTweetsCacheForBrowsers() {
+
+console.log(" ) ");
+console.log(" ) ");
+console.log(" ) ");
+
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10`;
+    let params = {};
+    let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
+
+console.log("ROWS IS");
+console.log(JSON.stringify(rows));
+console.log("DONE ROWS IS");
+
+    try {
+
+console.log("returning path");
+
+      let path = this.app.storage.returnPath(); 
+      if (!path) { return; }
+
+console.log("returning filename");
+
+      const filename = path.join(__dirname, 'web/tweets.js');
+      let fs = this.app.storage.returnFileSystem();
+      if (fs != null) {
+
+console.log("filename: " + filename.toString());
+
+        if (fs.existsSync(filename)) {
+          const fd = fs.openSync(filename, "w");
+          let html = `
+            var tweets = [];
+          `;
+          for (let i = 0; i < rows.length; i++) {
+            html += `  tweets.push(\`${rows[i].tx}\`);   `; 
+          }
+console.log("WRITING: " + html);
+          fs.writeSync(fd, html);
+          fs.fsyncSync(fd);
+          fs.closeSync(fd);
+        }
+      }
+    } catch (err) {
+      console.error("ERROR 285029: error saving block to disk ", err);
+    }
+    return "";
+
+  }
+
+
+
   sendFlagTransaction(app, mod, data) {
 
     let redsquare_self = this;
@@ -1170,6 +1246,7 @@ class RedSquare extends ModTemplate {
     let redsquare_self = this;
 
     expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
+
       let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
 
       try {

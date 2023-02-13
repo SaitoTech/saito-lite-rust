@@ -46,6 +46,9 @@ class StorageCore extends Storage {
     }
   }
 
+  returnPath() {
+    return path;
+  }
   returnFileSystem() {
     return fs;
   }

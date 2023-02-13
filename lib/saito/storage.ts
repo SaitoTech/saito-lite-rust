@@ -393,6 +393,10 @@ console.log("archive load!");
     return null;
   }
 
+  returnPath() {
+    return null;
+  }
+
   returnFileSystem() {
     return null;
   }

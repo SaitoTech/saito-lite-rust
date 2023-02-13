@@ -23,8 +23,6 @@ class RedSquareMain {
     this.render_component = 'home';
 
 
-
-
     this.app.connection.on("redsquare-profile-render-request", (publickey) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'profile';
@@ -36,16 +34,16 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-render-request", (tx) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.mod.viewing = "home";
-     let rendered =  this.renderComponentFromHash();
-     if (rendered) {
+      let rendered =  this.renderComponentFromHash();
+      if (rendered) {
         this.mod.sidebar.render();
         return;
-     } else {
-      this.render_component = 'home';
-      this.components[this.render_component].render();
-      document.querySelector(".saito-sidebar.right").innerHTML = "";
-      this.mod.sidebar.render();
-     }
+      } else {
+        this.render_component = 'home';
+        this.components[this.render_component].render();
+        document.querySelector(".saito-sidebar.right").innerHTML = "";
+        this.mod.sidebar.render();
+      }
     });
 
     this.app.connection.on("redsquare-home-load-more-tweets-request", (tx) => {
@@ -92,7 +90,13 @@ class RedSquareMain {
       
       if (this.render_component === "home") {
         if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
-	     
+
+	  if (this.render_component === "home") {
+	    if (!document.querySelector(".redsquare-appspace-body")) {
+ 	      this.components["home"].renderMain();             
+	    }
+	  }
+
           tweet.container = ".redsquare-appspace-body";
           tweet.render();
 
@@ -109,7 +113,8 @@ class RedSquareMain {
             }
             
       	  }
-	      }
+
+	}
       }
     });
 
@@ -173,30 +178,30 @@ class RedSquareMain {
   }
 
   renderComponentFromHash(){
+
     var hash = new URL(document.URL).hash.split('#')[1];
     let component;
     let params;
     let render_component;
     let found = false;
     if (hash) {
-
       if (hash?.split("").includes("?")) {
         component = hash.split("?")[0];
         params = hash.split("?")[1];
-      }else {
-        component = hash
+      } else {
+        component = hash;
       }
     }
-    if(component){
+    if (component) {
       if (this.components[component]) {
         this.render_component = component;
         document.querySelector(".saito-main").innerHTML = "";
         this.components[this.render_component].render();
         render_component = component;
         found = true;
-      }else {
+      } else {
         this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
-          if(mod.returnSlug() === component){
+          if (mod.returnSlug() === component) {
             found = true;
             document.querySelector(".saito-main").innerHTML = "";
             mod.renderInto(".saito-main");
@@ -210,7 +215,7 @@ class RedSquareMain {
       }
     }
 
-    return found
+    return found;
   }
 
 }
