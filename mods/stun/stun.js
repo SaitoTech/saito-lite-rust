@@ -14,9 +14,7 @@ const Relay = require("../relay/relay");
 
 
 class Stun extends ModTemplate {
-
     constructor(app, mod) {
-
         super(app);
 
         this.appname = "Video Call";
@@ -39,6 +37,7 @@ class Stun extends ModTemplate {
         this.chatType = null;
         this.peer_connections = {}
         this.stunGameMenu = new StunxGameMenu(app, mod);
+        this.current_step = 0;
 
         this.servers = [
             {
@@ -100,7 +99,7 @@ class Stun extends ModTemplate {
     initialize(app) {
         super.initialize(app);
         this.app.connection.on("stun-create-peer-connection", (array_of_publickeys) => {
-            this.createStunConnectionWithPeers(array_of_publickeys);
+            this.createDataChannelConnectionWithPeers(array_of_publickeys);
         });
     }
 
@@ -233,29 +232,26 @@ class Stun extends ModTemplate {
     }
 
 
-    // callback(this.app, this.mod, roomCode)
 
 
 
 
     onConfirmation(blk, tx, conf, app) {
         let txmsg = tx.returnMessage();
+        
         if (conf === 0) {
             if (txmsg.module === 'Stun') {
-                if (tx.msg.request === "media answer") {
-                    this.receiveMediaAnswerTransaction(app, tx, conf, blk)
+                if (tx.msg.request === "stun media channel answer") {
+                    this.receiveMediaChannelAnswerTransaction(app, tx, conf, blk)
                 }
-                if (tx.msg.request === "stun answer") {
-                    this.receiveStunAnswerTransaction(app, tx, conf, blk)
+                if (tx.msg.request === "stun data channel answer") {
+                    this.receiveDataChannelAnswerTransaction(app, tx, conf, blk)
                 }
-                if (tx.msg.request === "media offer") {
-                    this.receiveMediaOfferTransaction(app, tx, conf, blk)
+                if (tx.msg.request === "stun media channel offer") {
+                    this.receiveMediaChannelOfferTransaction(app, tx, conf, blk)
                 }
-                if (tx.msg.request === "stun offer") {
-                    this.receiveStunOfferTransaction(app, tx, conf, blk)
-                }
-                if (tx.msg.request === "open media chat") {
-                    this.receiveOpenMediaChatTransaction(app, tx, conf, blk)
+                if (tx.msg.request === "stun data channel offer") {
+                    this.receiveDataChannelOfferTransaction(app, tx, conf, blk)
                 }
                 if (tx.msg.request === "receive room code") {
                     this.receiveRoomCodeTransaction(app, tx, conf, blk)
@@ -266,65 +262,33 @@ class Stun extends ModTemplate {
 
 
 
-    async handlePeerTransaction(app, newtx=null, peer, mycallback) {
-
-      if (newtx == null) { return; }
-      let message = newtx.returnMessage();
-     console.log(message)
-        if (message.request == null) {
-            return;
-        }
-        if (message.data == null) {
-            return;
-        }
-        if (message.request === "stunx offchain update") {
-            let tx = message.data.tx;
+    async handlePeerTransaction(app, tx=null, peer, mycallback) {
+        if (tx.msg.request === "stun media channel offer") {
+                this.receiveMediaChannelOfferTransaction(app, tx)
+            }
+            if (tx.msg.request === "stun data channel offer") {
+                this.receiveDataChannelOfferTransaction(app, tx)
+            }
+            if (tx.msg.request === "stun media channel answer") {
+                this.receiveMediaChannelAnswerTransaction(app, tx)
+            }
+            if (tx.msg.request === "stun data channel answer") {
+                this.receiveDataChannelAnswerTransaction(app, tx)
+            }
+            if (tx.msg.request === "receive room code") {
+                this.receiveRoomCodeTransaction(app, tx)
+            }
             if (tx.msg.request === "create room") {
-                this.receiveCreateRoomTransaction(app, tx);
+                this.receiveCreateRoomTransaction(app, tx)
             }
             if (tx.msg.request === "update room") {
-                this.receiveUpdateRoomTransaction(app, tx);
+                this.receiveUpdateRoomTransaction(app, tx)
             }
 
-        }
-        if (message.request === "testing stunx") {
-            console.log('message received ', message, message.data, message.data.tx);
-        }
 
-
-        if(app.BROWSER === 1){
-            console.log('module name', message.data.tx.msg.module);
-            if (message.data.tx.msg.module === 'Stun') {
-                let tx = message.data.tx;
-                if (message.request === "stunx offchain update") {
-                        if (tx.msg.request === "media answer") {
-                            this.receiveMediaAnswerTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "stun answer") {
-                            this.receiveStunAnswerTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "media offer") {
-                            this.receiveMediaOfferTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "stun offer") {
-                            this.receiveStunOfferTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "open media chat") {
-                            this.receiveOpenMediaChatTransaction(app, tx)
-                        }
-                        if (tx.msg.request === "receive room code") {
-                            this.receiveRoomCodeTransaction(app, tx)
-                        }
-                }
-                console.log('peer transacrtion ', message, "peer ", peer );
-        }
-         
-
-        }
-
-
-
-        super.handlePeerTransaction(app, newtx, peer, mycallback)
+        
+        
+        super.handlePeerTransaction(app, tx, peer, mycallback)
 
     }
 
@@ -339,55 +303,18 @@ class Stun extends ModTemplate {
         // get recipient -- server in this case
         let server_pub_key = this.app.network.peers[0].peer.publicKey;
         let server = this.app.network.peers[0];
-        newtx.transaction.to.push(new saito.default.slip(server_pub_key));
-        newtx.msg.module = "Stun";
-        newtx.msg.request = "create room"
-        newtx.msg.room = {
-            room
-        };
+         
         newtx = this.app.wallet.signTransaction(newtx);
-        let message = {
-            data: {}
-        };
-        message.request = "stunx offchain update";
-        message.data.tx = newtx;
- 
-        server.sendRequestAsTransaction(message.request, message.data);
-        // siteMessage("Call created", 5000);
+        console.log(newtx.returnMessage(), 'return new tx message');
+        server.sendRequestAsTransaction('create room', room);
         if (callback) {
             callback(this.app, this.mod, roomCode)
         }
     }
 
-    async sendUpdateRoomTransaction(room_code, data) {
-        const { peers_in_room, peer_count, is_max_capacity } = data;
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        // get recipient -- server in this case
-        let server_pub_key = this.app.network.peers[0].peer.publicKey;
-        let server = this.app.network.peers[0];
-        newtx.transaction.to.push(new saito.default.slip(server_pub_key));
-        newtx.msg.module = "Stun";
-        newtx.msg.request = "update room"
-        newtx.msg.data = {
-            room_code,
-            peers_in_room,
-            peer_count,
-            is_max_capacity
-        };
-        newtx = this.app.wallet.signTransaction(newtx);
-
-        let message = {
-            data: {}
-        };
-        message.request = "stunx offchain update";
-        message.data.tx = newtx;
-        server.sendRequestAsTransaction(message.request, message.data);
-    }
-
-
-
     async receiveCreateRoomTransaction(app, tx) {
-        let room = tx.msg.room.room;
+        if(app.BROWSER === 1) return;
+        let room = tx.msg.data;
         let sql = `INSERT INTO rooms (
             room_code,
             peers,
@@ -419,7 +346,25 @@ class Stun extends ModTemplate {
         console.log('db result ', result, app.storage.executeDatabase);
     }
 
+    async sendUpdateRoomTransaction(room_code, data) {
+        const { peers_in_room, peer_count, is_max_capacity } = data;
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        // get recipient -- server in this case
+        let server = this.app.network.peers[0];
+
+       let data_ = {
+            room_code,
+            peers_in_room,
+            peer_count,
+            is_max_capacity
+        };
+
+        server.sendRequestAsTransaction('update room', data_);
+    }
+
+
     receiveUpdateRoomTransaction(app, tx) {
+        if(app.BROWSER === 1) return;
         let peers_in_room = tx.msg.data.peers_in_room;
         let room_code = tx.msg.data.room_code;
         let peer_count = tx.msg.data.peer_count;
@@ -582,13 +527,7 @@ class Stun extends ModTemplate {
     }
 
 
-
-
-
-
-
-
-    acceptMediaConnectionOffer(app, offer_creator, offer) {
+    acceptMediaChannelConnectionOffer(app, offer_creator, offer) {
         console.log('rendering remote stream place holder');
         // this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, offer.ui_type);
         const room_code = offer.room_code
@@ -607,7 +546,7 @@ class Stun extends ModTemplate {
                         console.log('ice candidate check closed');
                         let stunx_mod = app.modules.returnModule("Stun");
                         stunx_mod.peer_connections[offer_creator] = pc;
-                        stunx_mod.sendMediaAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
+                        stunx_mod.sendMediaChannelAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
                         return;
                     };
                     reply.ice_candidates.push(ice.candidate);
@@ -680,8 +619,7 @@ class Stun extends ModTemplate {
         createPeerConnection();
     }
 
-
-    acceptStunConnectionOffer(app, offer_creator, offer) {
+    acceptDataChannelConnectionOffer(app, offer_creator, offer) {
         const createPeerConnection = async () => {
             let reply = {
                 answer: "",
@@ -697,7 +635,7 @@ class Stun extends ModTemplate {
                         let stunx_mod = app.modules.returnModule("Stun");
                         stunx_mod.peer_connections[offer_creator] = pc;
                         // stunx_mod.initializeStun(stunx_mod.peer_connections[offer_creator]);
-                        stunx_mod.sendStunAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
+                        stunx_mod.sendDataChannelAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
                         return;
                     };
                     reply.ice_candidates.push(ice.candidate);
@@ -750,9 +688,8 @@ class Stun extends ModTemplate {
     }
 
 
-
-
-    async createMediaConnectionWithPeers(public_keys, ui_type, call_type, room_code) {
+    async createMediaChannelConnectionWithPeers(public_keys, ui_type, call_type, room_code) {
+        console.log('this current step ', this.current_step)
         let peerConnectionOffers = [];
         if (public_keys.length > 0) {
             // send connection to other peers if they exit
@@ -768,7 +705,6 @@ class Stun extends ModTemplate {
             if (peerConnectionOffers.length > 0) {
                 const offers = [];
                 peerConnectionOffers.forEach((offer) => {
-
                     console.log('offer :', offer)
                     this.peer_connections[offer.recipient] = offer.pc
                     offers.push({
@@ -785,7 +721,7 @@ class Stun extends ModTemplate {
                 let interval = setInterval(() => {
                     let offer;
                     offer = offers[index];
-                    this.sendMediaOfferTransaction(this.app.wallet.returnPublicKey(), offer)
+                    this.sendMediaChannelOfferTransaction(this.app.wallet.returnPublicKey(), offer)
                     console.log('sending offer', index)
                     if (offers.length - 1 === index) {
                         clearInterval(interval)
@@ -804,8 +740,8 @@ class Stun extends ModTemplate {
     }
 
 
-
-    async createStunConnectionWithPeers(public_keys) {
+    async createDataChannelConnectionWithPeers(public_keys) {
+        
         let peerConnectionOffers = [];
         if (public_keys.length > 0) {
             // send connection to other peers if they exit
@@ -831,7 +767,7 @@ class Stun extends ModTemplate {
                     })
                 })
                 // const offers = peerConnectionOffers.map(item => item.offer_sdp);         
-                this.sendStunOfferTransaction(this.app.wallet.returnPublicKey(), offers);
+                this.sendDataChannelOfferTransaction(this.app.wallet.returnPublicKey(), offers);
             }
         } catch (error) {
             console.log('an error occurred with peer connection creation', error);
@@ -839,40 +775,161 @@ class Stun extends ModTemplate {
         console.log("peer connections ", this.peer_connections);
     }
 
-
     setLocalStream(localStream) {
         this.localStream = localStream;
     }
 
 
-    sendMediaOfferTransaction(offer_creator, offer) {
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        console.log('broadcasting offer', offer);
-        newtx.transaction.to.push(new saito.default.slip(offer.recipient));
 
-        newtx.msg.module = "Stun";
-        newtx.msg.request = "media offer"
-        newtx.msg.data = {
+    createMediaChannelOfferTransaction(offer_creator, offer){
+        console.log('broadcasting offer', offer)
+        let _data = {
             offer_creator,
             offer
         }
+        let request = "stun media channel offer"
+
+        // onchain 
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        newtx.transaction.to.push(new saito.default.slip(offer.recipient));
+        newtx.msg.module = "Stun";
+        newtx.msg.request = request
+        newtx.msg.data = _data
+   
         newtx = this.app.wallet.signTransaction(newtx);
-        console.log(this.app.network);
 
-
-        let obj = {
-            recipient: [offer.recipient, offer_creator],
-            request: "stunx offchain update",
-            data: {
-                tx: newtx
-            }
+         // offchain data
+        let data = {
+            recipient: [offer_creator, offer.recipient],
+            request,
+            data: _data
         }
-
-        this.app.connection.emit('relay-send-message', obj)
-        // this.app.network.propagateTransaction(newtx);
+        return [newtx, data]
     }
 
-    sendStunOfferTransaction(offer_creator, offers) {
+    sendMediaChannelOfferTransaction(offer_creator, offer) {
+         let [newtx, data ] = this.createMediaChannelOfferTransaction(offer_creator, offer);
+
+         // offchain
+        this.app.connection.emit('relay-send-message', data);
+
+        // onchain
+        this.app.network.propagateTransaction(newtx);
+    }
+
+    receiveMediaChannelOfferTransaction(app, tx, conf, blk) {
+        if (app.BROWSER !== 1) return;
+        if(this.current_step >= 1) return;
+        this.current_step = 1;
+
+        let stunx_self = app.modules.returnModule("Stun");
+        let my_pubkey = app.wallet.returnPublicKey();
+        console.log(tx, 'stun media channel offer')
+        const offer_creator = tx.msg.data.offer_creator;
+        const room_code = tx.msg.data.offer.room_code
+        const recipient = tx.msg.data.offer.recipient;
+
+        if(!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
+        app.connection.emit('stun-receive-media-offer', {
+            room_code,
+            offer_creator,
+            recipient
+        })
+
+
+        // offer creator should not respond
+        if (my_pubkey === offer_creator) return;
+        console.log("offer received from ", offer_creator);
+        // check if current instance is a recipent
+        if (my_pubkey === recipient) {
+            stunx_self.acceptMediaChannelOfferAndBroadcastAnswer(app, offer_creator, tx.msg.data.offer);
+        }
+
+    }
+
+    createMediaChannelAnswerTransaction(answer_creator, offer_creator, reply){
+        console.log('broadcasting answer to ', offer_creator);
+        let _data = {
+            answer_creator,
+            offer_creator,
+            reply,
+            
+        };
+        let request = "stun media channel answer"
+
+        // onchain
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        newtx.transaction.to.push(new saito.default.slip(offer_creator));
+        newtx.msg.module = "Stun";
+        newtx.msg.request = request
+        newtx.msg.data= _data;
+        newtx = this.app.wallet.signTransaction(newtx);
+
+       
+        // offchain
+          let data = {
+              request,
+              recipient: [offer_creator, answer_creator],
+              data:_data
+          }
+
+          return [newtx, data]
+    }
+
+    sendMediaChannelAnswerTransaction(answer_creator, offer_creator, reply) {
+        [newtx, data]=  this.createMediaChannelAnswerTransaction(answer_creator, offer_creator, reply)
+
+        // offchain
+        this.app.connection.emit('relay-send-message', data)
+
+        // onchain
+        this.app.network.propagateTransaction(newtx);
+    }
+
+
+    receiveMediaChannelAnswerTransaction(app, tx, conf, blk) {
+        if (app.BROWSER !== 1) return;
+        if(this.current_step >= 2) return;
+
+        this.current_step = 2;;
+        if(!this.ChatManagerLarge.isActive) return;
+        let stunx_self = app.modules.returnModule("Stun");
+        let my_pubkey = app.wallet.returnPublicKey();
+        console.log('receiving stun media channel answer');
+
+        app.connection.emit('stun-receive-media-answer', {
+            room_code:tx.msg.data.reply.room_code,
+            offer_creator: tx.msg.data.offer_creator,
+            recipient:tx.msg.data.answer_creator
+        })
+        if (my_pubkey === tx.msg.data.offer_creator) {
+
+            console.log('receiving stun media channel answer');
+            console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.data);
+            console.log("peer connections: ", stunx_self.peer_connections);
+            const reply = tx.msg.data.reply;
+            if (stunx_self.peer_connections[tx.msg.data.answer_creator]) {
+                stunx_self.peer_connections[tx.msg.data.answer_creator].setRemoteDescription(reply.answer).then(result => {
+                    console.log('setting remote description of ', stunx_self.peer_connections[tx.msg.data.answer_creator], 'reply ', reply);
+
+                }).catch(error => console.log(" An error occured with setting remote description for :", stunx_self.peer_connections[tx.msg.data.answer_creator], error));
+                if (reply.ice_candidates.length > 0) {
+                    console.log("Adding answer candidates");
+                    for (let i = 0; i < reply.ice_candidates.length; i++) {
+                        stunx_self.peer_connections[tx.msg.data.answer_creator].addIceCandidate(reply.ice_candidates[i]);
+                    }
+                }
+            } else {
+                console.log("peer connection not found");
+            }
+        }
+    }
+
+
+
+
+
+    sendDataChannelOfferTransaction(offer_creator, offers) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting offers');
         for (let i = 0; i < offers.length; i++) {
@@ -880,7 +937,7 @@ class Stun extends ModTemplate {
         }
 
         newtx.msg.module = "Stun";
-        newtx.msg.request = "stun offer"
+        newtx.msg.request = "stun data channel offer"
         newtx.msg.offers = {
             offer_creator,
             offers
@@ -893,7 +950,7 @@ class Stun extends ModTemplate {
 
 
 
-    acceptMediaOfferAndBroadcastAnswer(app, offer_creator, offer) {
+    acceptMediaChannelOfferAndBroadcastAnswer(app, offer_creator, offer) {
 
         console.log('accepting offer');
         console.log('from:', offer_creator, offer);
@@ -903,7 +960,7 @@ class Stun extends ModTemplate {
         // }
 
         if (offer.ui_type == "large") {
-            this.acceptMediaConnectionOffer(app, offer_creator, offer);
+            this.acceptMediaChannelConnectionOffer(app, offer_creator, offer);
         }
 
 
@@ -915,46 +972,22 @@ class Stun extends ModTemplate {
 
 
 
-    acceptStunOfferAndBroadcastAnswer(app, offer_creator, offer) {
+    acceptDataChannelOfferAndBroadcastAnswer(app, offer_creator, offer) {
         console.log('accepting offer');
         console.log('from:', offer_creator, offer);
-        this.acceptStunConnectionOffer(app, offer_creator, offer);
+        this.acceptDataChannelConnectionOffer(app, offer_creator, offer);
     }
 
 
 
-    sendMediaAnswerTransaction(answer_creator, offer_creator, reply) {
+   
+    sendDataChannelAnswerTransaction(answer_creator, offer_creator, reply) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting answer to ', offer_creator);
         newtx.transaction.to.push(new saito.default.slip(offer_creator));
         newtx.msg.module = "Stun";
-        newtx.msg.request = "media answer"
-        newtx.msg.answer = {
-            answer_creator,
-            offer_creator,
-            reply: reply
-        };
-        newtx = this.app.wallet.signTransaction(newtx);
-        console.log(this.app.network);
-        let obj = {
-            recipient: [offer_creator, answer_creator],
-            request: "stunx offchain update",
-            data: {
-                tx: newtx
-            }
-        }
-
-        this.app.connection.emit('relay-send-message', obj)
-        // this.app.network.propagateTransaction(newtx);
-    }
-
-    sendStunAnswerTransaction(answer_creator, offer_creator, reply) {
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        console.log('broadcasting answer to ', offer_creator);
-        newtx.transaction.to.push(new saito.default.slip(offer_creator));
-        newtx.msg.module = "Stun";
-        newtx.msg.request = "stun answer"
-        newtx.msg.answer = {
+        newtx.msg.request = "stun data channel answer"
+        newtx.msg.data = {
             answer_creator,
             offer_creator,
             reply: reply
@@ -964,35 +997,9 @@ class Stun extends ModTemplate {
         this.app.network.propagateTransaction(newtx);
     }
 
-    receiveMediaOfferTransaction(app, tx, conf, blk) {
-        if (app.BROWSER !== 1) return;
-        let stunx_self = app.modules.returnModule("Stun");
-        let my_pubkey = app.wallet.returnPublicKey();
-        const offer_creator = tx.msg.data.offer_creator;
-        const room_code = tx.msg.data.offer.room_code
-        const recipient = tx.msg.data.offer.recipient;
+  
 
-
-
-        if(!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
-        
-        app.connection.emit('stun-receive-media-offer', {
-            room_code,
-            offer_creator,
-            recipient
-        })
-
-        // offer creator should not respond
-        if (my_pubkey === offer_creator) return;
-        console.log("offer received from ", offer_creator);
-        // check if current instance is a recipent
-        if (my_pubkey === recipient) {
-            stunx_self.acceptMediaOfferAndBroadcastAnswer(app, offer_creator, tx.msg.data.offer);
-        }
-
-    }
-
-    receiveStunOfferTransaction(app, tx, conf, blk) {
+    receiveDataChannelOfferTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
@@ -1004,43 +1011,12 @@ class Stun extends ModTemplate {
         // check if current instance is a recipent
         const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
         if (index !== -1) {
-            stunx_self.acceptStunOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
+            stunx_self.acceptDataChannelOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
         }
     }
 
-    receiveMediaAnswerTransaction(app, tx, conf, blk) {
-        if(!this.ChatManagerLarge.isActive) return;
-        let stunx_self = app.modules.returnModule("Stun");
-        let my_pubkey = app.wallet.returnPublicKey();
-
-        app.connection.emit('stun-receive-media-answer', {
-            room_code:tx.msg.answer.reply.room_code,
-            offer_creator: tx.msg.answer.offer_creator,
-            recipient:tx.msg.answer.answer_creator
-        })
-        if (my_pubkey === tx.msg.answer.offer_creator) {
-            if (app.BROWSER !== 1) return;
-            console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.answer);
-            console.log("peer connections: ", stunx_self.peer_connections);
-            const reply = tx.msg.answer.reply;
-            if (stunx_self.peer_connections[tx.msg.answer.answer_creator]) {
-                stunx_self.peer_connections[tx.msg.answer.answer_creator].setRemoteDescription(reply.answer).then(result => {
-                    console.log('setting remote description of ', stunx_self.peer_connections[tx.msg.answer.answer_creator], 'reply ', reply);
-
-                }).catch(error => console.log(" An error occured with setting remote description for :", stunx_self.peer_connections[tx.msg.answer.answer_creator], error));
-                if (reply.ice_candidates.length > 0) {
-                    console.log("Adding answer candidates");
-                    for (let i = 0; i < reply.ice_candidates.length; i++) {
-                        stunx_self.peer_connections[tx.msg.answer.answer_creator].addIceCandidate(reply.ice_candidates[i]);
-                    }
-                }
-            } else {
-                console.log("peer connection not found");
-            }
-        }
-    }
-
-    receiveStunAnswerTransaction(app, tx, conf, blk) {
+ 
+    receiveDataChannelAnswerTransaction(app, tx, conf, blk) {
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         if (my_pubkey === tx.msg.answer.offer_creator) {
@@ -1068,29 +1044,6 @@ class Stun extends ModTemplate {
 
 
 
-    sendOpenMediaChatTransaction(peer, ui_type, call_type) {
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        newtx.transaction.to.push(new saito.default.slip(peer));
-        newtx.msg.module = "Stun";
-        newtx.msg.request = "open media chat"
-        newtx.msg.data = {
-            ui_type,
-            peer,
-            call_type
-        };
-        newtx = this.app.wallet.signTransaction(newtx);
-        console.log(this.app.network);
-        this.app.network.propagateTransaction(newtx);
-    }
-
-    receiveOpenMediaChatTransaction(app, tx, conf, blk) {
-        let stunx_self = app.modules.returnModule("Stun");
-        let my_pubkey = app.wallet.returnPublicKey();
-        if (my_pubkey === tx.msg.data.peer) {
-            // open media chat
-            this.app.connection.emit('show-video-chat-request', this.app, this, tx.msg.data.ui_type);
-        }
-    }
 
     receiveRoomCodeTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
@@ -1166,6 +1119,10 @@ class Stun extends ModTemplate {
 
     }
 
+
+    resetStep(){
+        this.current_step = 0;
+    }
 
 
 }
