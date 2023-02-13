@@ -705,8 +705,6 @@ class RedSquare extends ModTemplate {
       }
     }
 
-console.log("TT: " + tweet.text);
-
     this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
 
   }
