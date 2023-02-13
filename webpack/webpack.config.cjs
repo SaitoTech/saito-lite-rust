@@ -4,11 +4,13 @@ const TerserPlugin = require("terser-webpack-plugin");
 const webpack = require("webpack");
 
 let minimize = true;
+let devtool = undefined;
 let entrypoint = "./../bundler/default/apps/lite/index.ts";
 let outputfile = "saito.js";
 if (process.argv.includes("dev")) {
   console.log("dev mode source not minified");
   minimize = false;
+  devtool = "eval";
 }
 if (process.argv.includes("web3")) {
   //TODO: build a separate saito.js for web3
@@ -16,11 +18,11 @@ if (process.argv.includes("web3")) {
   outputfile = "web3saito.js";
 }
 webpack({
- cache: {
+  cache: {
     type: 'filesystem',
   },
   optimization: {
-    minimize: minimize,
+    // minimize: minimize,
     minimizer: [
       new TerserPlugin({
         parallel: true,
@@ -143,7 +145,7 @@ webpack({
             }
           }
         ],
-        exclude: /(node_modules)/ 
+        exclude: /(node_modules)/
       },
       {
         test: /\.mjs$/,
@@ -194,7 +196,9 @@ webpack({
   experiments: {
     asyncWebAssembly: true,
     syncWebAssembly: true
-  }
+  },
+  mode: "production",
+  devtool: devtool
 }, (err, stats) => {
   if (err || stats.hasErrors()) {
     console.log(err);

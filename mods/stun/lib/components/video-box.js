@@ -99,7 +99,7 @@ class VideoBox {
         if (!video_box) return;
         switch (connectionState) {
             case "connecting":
-                document.querySelector('#connection-message').innerHTML = `<p>Starting ${this.call_type.capitalize()} Chat </p> <span class='lds-dual-ring'>`
+                document.querySelector('#connection-message').innerHTML = `<p>Starting ${this.call_type.toUpperCase()} Chat </p> <span class='lds-dual-ring'>`
                 break;
             case "connected":
                 if (this.stream) {
@@ -112,13 +112,13 @@ class VideoBox {
             case "disconnected":
                 console.log(`#stream${this.stream_id}`, "stream id")
                 document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
-                salert("User Disconnected");
+                siteMessage("User Disconnected");
                 break;
             case "failed":
                 if (document.querySelector(`#stream${this.stream_id}`)) {
                     console.log(`#stream${this.stream_id}`, "stream id")
                     document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
-                    salert("Connection failed");
+                    siteMessage("Connection failed");
                 }
                 break;
             case "ten_seconds":

@@ -60,7 +60,6 @@ class Handshake {
   }
 
   serializeHandshakeResponse(r) {
-console.log("IN SERIALIZE HR");
     return Buffer.concat([
       Buffer.from(this.app.crypto.fromBase58(r.publickey), "hex"),
       r.signature,
@@ -103,7 +102,6 @@ console.log("IN SERIALIZE HR");
   // }
 
   async initiateHandshake(socket) {
-    console.log("initiating handshake");
     const h = this.newHandshakeChallenge();
     socket.peer.challenge = h.challenge;
     socket.peer.initiated_handshake = true;
@@ -115,7 +113,7 @@ console.log("IN SERIALIZE HR");
   }
 
   async handleIncomingHandshakeChallenge(peer: Peer, buffer: Buffer) {
-    console.log("handling handshake challenge from : " + peer.peer.host + ":" + peer.peer.port);
+    //console.log("handling handshake challenge from : " + peer.peer.host + ":" + peer.peer.port);
     const h2 = this.deserializeHandshakeChallenge(buffer);
     //this.app.network.requestBlockchain(peer);
 
@@ -144,30 +142,30 @@ console.log("IN SERIALIZE HR");
 
   async handleHandshakeResponse(peer: Peer, buffer: Buffer) {
     const r = this.deserializeHandshakeResponse(buffer);
-    console.log(
-      "handling handshake response from : " +
-        peer.peer.host +
-        ":" +
-        peer.peer.port +
-        ", public key : " +
-        r.publickey +
-        " lite = " +
-        r.lite
-    );
+    //console.log(
+    //  "handling handshake response from : " +
+    //    peer.peer.host +
+    //    ":" +
+    //    peer.peer.port +
+    //    ", public key : " +
+    //    r.publickey +
+    //    " lite = " +
+    //    r.lite
+    //);
 
     if (
       peer.challenge &&
       this.app.crypto.verifyHash(peer.challenge, r.signature.toString("hex"), r.publickey)
     ) {
       peer.peer.publickey = r.publickey;
-      console.log(
-        "Setting public key for peer " +
-          peer.peer.host +
-          ":" +
-          peer.peer.port +
-          ", public key : " +
-          r.publickey
-      );
+      //console.log(
+      //  "Setting public key for peer " +
+      //    peer.peer.host +
+      //    ":" +
+      //    peer.peer.port +
+      //    ", public key : " +
+      //    r.publickey
+      //);
       if (r.lite === 1) {
         peer.peer.synctype = "lite";
       } else {
@@ -175,13 +173,8 @@ console.log("IN SERIALIZE HR");
         console.log("block fetch url received = " + r.block_fetch_url);
       }
 
-      console.log("about to emit handshake complete");
       this.app.connection.emit("handshake_complete", peer);
-      console.log("handshake completed with ", peer.returnPublicKey());
-
       this.app.network.requestBlockchain(peer);
-
-      console.log("DONE REQUESTING BLOCKCHAIN");
 
       if (peer.initiated_handshake) {
         const c = this.newHandshakeResponse();
@@ -189,7 +182,7 @@ console.log("IN SERIALIZE HR");
           this.app.crypto.signBuffer(r.challenge, this.app.wallet.returnPrivateKey()),
           "hex"
         );
-      console.log("sending handshake response!");
+        //console.log("sending handshake response!");
         this.app.networkApi.send(
           peer.socket,
           MessageType.HandshakeResponse,
@@ -197,8 +190,6 @@ console.log("IN SERIALIZE HR");
         );
       }
     }
-
-console.log("about to leave handshake challenge too...");
 
     peer.challenge = null;
     peer.initiated_handshake = false;

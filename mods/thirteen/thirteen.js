@@ -828,7 +828,7 @@ class Thirteen extends GameTemplate {
           this.endGame(this.game.players[1], "prestige track");
         }
         if (this.game.state.prestige == 7) {
-          this.tieGame("tie game");
+          this.tieGame();
         }
         return 0;
       }

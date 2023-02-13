@@ -83,8 +83,6 @@ class Mixin extends ModTemplate {
   //
   respondTo(type = "") {
     if (type === 'saito-header') {
-      console.log("INSIDE MIXIN RESPONDTO");
-      
       return [{
         text: "Wallet",
         icon: this.icon,

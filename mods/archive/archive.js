@@ -70,26 +70,16 @@ class Archive extends ModTemplate {
     //
     if (req.request === "archive") {
 
-console.log("...");
-console.log("...");
-console.log("THIS IS AN ARCHIVE REQUEST!");
-console.log("...");
-console.log("...");
-console.log("req is: "+ JSON.stringify(req));
-
       if (req.data.request === "delete") {
         this.deleteTransaction(req.data.tx, req.data.publickey, req.data.sig);
       }
       if (req.data.request === "save") {
-        console.log("archive save");
         this.saveTransaction(req.data.tx, req.data.type);
       }
       if (req.data.request === "update") {
-        console.log("archive update");
         this.updateTransaction(req.data.tx);
       }
       if (req.data.request === "save_key") {
-        console.log("PeerRequest: save TX by Key");
         if (!req.data.key) { return; }
         this.saveTransactionByKey(req.data.key, req.data.tx, req.data.type);
       }
@@ -107,7 +97,6 @@ console.log("req is: "+ JSON.stringify(req));
       }
       if (req.data.request === "delete") {
         if (!req.data.publickey) { return; }
-        console.log("archive delete / purge");
         await this.deleteTransactions(req.data.type, req.data.publickey);
         response.err = "";
         response.txs = [];
@@ -127,7 +116,6 @@ console.log("req is: "+ JSON.stringify(req));
 	return;
       }
       if (req.data.request === "load_keys") {
-        console.log("PeerRequest: load TX by Keys");
         if (!req.data.keys) { return; }
         txs = await this.loadTransactionsByKeys(req.data);
         response.err = "";
@@ -136,13 +124,10 @@ console.log("req is: "+ JSON.stringify(req));
 	return;
       }
       if (req.data.request === "load_sig") {
-        console.log("PeerRequest: load TX by Sig");
         if (!req.data.sig) { return; }
-        console.log("PeerRequest: load TX by Sig 2");
         txs = await this.loadTransactionBySig(req.data.sig);
         response.err = "";
         response.txs = txs;
-console.log("TXS is the object returned!");
         mycallback(response);
 	return;
       }
@@ -174,8 +159,6 @@ console.log("TXS is the object returned!");
 
 
   async saveTransaction(tx=null, msgtype="") {
-
-console.log("SAVING TX");
 
     if (tx == null) { return; }
 
@@ -425,18 +408,13 @@ console.log("SAVING TX");
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
       let txs = [];
 
-console.log("ROWS: " + rows.length);
-
       if (rows?.length > 0) {
         for (let row of rows){
-console.log("push TX and optional!");
           txs.push({ tx : row.tx , optional : row.optional });
         }
       }
-console.log("TXS returned: " + txs.length);
       return txs;
     } catch (err) {
-console.log("ERROR WITH TXS returned");
       console.log(err);
       return [];
     }
