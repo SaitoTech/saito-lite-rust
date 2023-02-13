@@ -554,16 +554,21 @@ class Stun extends ModTemplate {
                 pc.onconnectionstatechange = e => {
                     console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
+
                         case "connecting":
+                            this.resetStep()
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "connected":
+                            this.resetStep()
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "disconnected":
+                            this.resetStep()
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "failed":
+                            this.resetStep()
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         default:
@@ -814,7 +819,7 @@ class Stun extends ModTemplate {
         this.app.connection.emit('relay-send-message', data);
 
         // onchain
-        this.app.network.propagateTransaction(newtx);
+        // this.app.network.propagateTransaction(newtx);
     }
 
     receiveMediaChannelOfferTransaction(app, tx, conf, blk) {
@@ -883,7 +888,7 @@ class Stun extends ModTemplate {
         this.app.connection.emit('relay-send-message', data)
 
         // onchain
-        this.app.network.propagateTransaction(newtx);
+        // this.app.network.propagateTransaction(newtx);
     }
 
 
