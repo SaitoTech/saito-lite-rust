@@ -14,6 +14,7 @@ body {
   height: 100vh;
 }
 
+
 .animation_helper{
   position: absolute;
 }
@@ -70,36 +71,20 @@ body {
  filter:  brightness(1.0); 
 }
 
+
+.card_count{
+  text-align: center;
+  color: ghostwhite;
+  position: relative;
+  top: 2px;
+}
+
 #log-wrapper{
   z-index: 510;
 }
 
 
-.player_decks{
-  position: absolute;
-  bottom: 10px;
-  left: 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
 
-  /*width: 240px;
-  height: 180px;*/
-}
-
-.player_decks .cardpile{
-  position: relative;
-  width: 120px;
-  height: 190px;
-}
-
-.player_decks.tip .tiptext{
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: fit-content;
-  white-space: nowrap;
-}
 
 .logcard{
   font-weight: bold;
@@ -110,21 +95,62 @@ body {
 }*/
 
 .tip .tiptext{
-  width: calc(100% + 30px);
+  width: fit-content;
   min-width: unset;
   color: black;
   background-color: var(--dominion-parchment);
+  font-weight: bold;
+  text-align: center;
+  pointer-events: none;
+}
+
+.status-header, .status-message{
+  background-color: #030303;
+  color: ghostwhite;
 }
 
 .hud-long{
   max-height: 310px;
 }
 
+.hud-body{
+  position: relative;
+}
+
+.hud-body #drawpile{
+  position: absolute;
+  right: 105%;
+  bottom: 5%;
+}
+
+.hud-body #discardpile{
+  position: absolute;
+  left: 105%;
+  bottom: 5%;
+}
+
+.hud .cardpile{
+  width: 120px;
+  height: 190px;
+}
+
+.hud .cardpile div{
+  position: absolute;
+  width: 100%;
+  top: 0;
+  color: ghostwhite;
+  font-size: 18px;
+  text-align: center;
+  text-shadow: 1px 1px 2px black;
+}
+
+
 .game-scoreboard{
   background-color: var(--dominion-parchment);
+  height: 40px;
 }
 .game-scoreboard .score{
-  font-size: 16px;
+  font-size: 20px;
   font-family: "Papyrus";
   font-weight: bold;
   margin: 0 8px;
@@ -224,9 +250,39 @@ body {
   font-size: 28px;
 }
 
-/* Default is compact square 1:1*/
+.cardstacks .tiptext img.passivecard {
+  position: static;
+  transform: unset;
+  width: 300px;
+}
 
 .cardstacks{
+  position: absolute;
+  display: grid;
+  grid-gap: 2px;
+  grid-template-columns: repeat(30, 20px);
+  width: 660px;
+  transition: opacity 1s ease;
+  margin: 60px 30px 250px 30px;
+}
+
+.cardstacks .cardpile{
+  width: 100px;
+  height: 95px;
+  grid-column: span 5;
+  position: relative;
+}
+
+.cardstacks .cardpile:nth-child(n+7){
+  grid-column: span 6;
+  width: 120px;
+  height: 110px;
+}
+
+
+/* Default is compact square 1:1*/
+
+.cardstacks.old{
   position: absolute;
   display: grid;
   grid-gap: 5px;
@@ -237,20 +293,20 @@ body {
   margin: 60px 30px 250px 30px;
 }
 
-.cardstacks .cardpile{
+.cardstacks.old .cardpile{
   width: 100px;
   height: 160px;
   grid-column: span 5;
   position: relative;
 }
 
-.cardstacks .cardpile:nth-child(n+7){
+.cardstacks.old .cardpile:nth-child(n+7){
   grid-column: span 6;
   width: 120px;
   height: 192px;
 }
 
-.cardstacks .cardpile:nth-child(n+7) img{
+.cardstacks.old .cardpile:nth-child(n+7) img{
   transform: translateX(5%);
 }
 
@@ -328,11 +384,9 @@ body {
 
 
 .game-cardbox {
-  left: 1rem;
-  top: 50%;
-  width: 30vh;
-  max-width: 250px;
-  transform: translateY(-50%);
+  width: 40vh;
+  max-width: 350px;
+  pointer-events: none;
 }
 
 

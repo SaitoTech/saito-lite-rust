@@ -32,12 +32,13 @@ class Monarchy extends GameTemplate {
     this.attackOverlay = new SaitoOverlay(app, this, true, false);
     
     this.cards_in_play = [];
-    this.is_testing = false;
+    this.is_testing = true;
 
     this.animationSequence = [];
     
     this.turn_count = 1;
     this.card_img_dir = `/${this.name.toLowerCase()}/img/cards`;
+    
     this.card_back = "blank.jpg";
     this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
@@ -258,7 +259,7 @@ initializeGame(game_id) {
           }
         }
         if (this.is_testing){
-          supply = ["bandit", "bureaucrat", "spy", "thief", "witch", "moat", "adventurer", "library", "vassal", "harbinger"];
+          supply = ["cellar", "merchant", "militia", "mine", "witch", "moat", "adventurer", "moneylender", "remodel", "smithy"];
         }
         supply.sort((a,b) =>{
           let c_a = this.deck[a];
@@ -442,7 +443,7 @@ initializeGame(game_id) {
             }
             
             for (let j = this.game.deck[player-1].hand.length - 1; j >= 0; j--){
-              this.removeCardFromHand(this.game.deck[player-1].cards[this.game.deck[player-1].hand[j]], ".discardpile", true);
+              this.removeCardFromHand(this.game.deck[player-1].cards[this.game.deck[player-1].hand[j]], "#discardpile", true);
               this.addMove(`DISCARD\t${player}\t${this.lastCardKey}`);
             }
             if (this.game.deck[player-1].hand.length > 0){
@@ -560,16 +561,16 @@ initializeGame(game_id) {
           let callback = () => { this.finishAnimation(); };
           if (direct_to_hand){
             callback = () => {
-              $(".discardpile:last-child").fadeOut();
+              $("#discardpile:last-child").fadeOut();
               this.hud.insertCard(html, () => { this.finishAnimation(); });
             }
           }
           /*if (add_to_deck){
-            $(".discardpile:last-child").remove();
-            $(".discardpile").append(this.flipCardHTML(card_to_buy));
-            $(`.discardpile .flippable-card#${card_to_buy}`).addClass
+            $("#discardpile:last-child").remove();
+            $("#discardpile").append(this.flipCardHTML(card_to_buy));
+            $(`#discardpile .flippable-card#${card_to_buy}`).addClass
           }*/
-          this.animateGameElementMove(`.cardstacks #${card_to_buy}.passivecard`, ".discardpile", callback);
+          this.animateGameElementMove(`.cardstacks #${card_to_buy}.passivecard`, "#discardpile", callback);
           
         }
 
@@ -847,7 +848,7 @@ initializeGame(game_id) {
             this.endTurn();
           }
           this.updateStatusAndListCards(`Select a card to put on top of your deck or cancel (X):`,my_discards, true);
-          $(".discardpile").fadeOut("fast");
+          $("#discardpile").fadeOut("fast");
           this.attachCardboxEvents(function(oldcard){
             console.log("DECK1:",JSON.parse(JSON.stringify(this.game.deck)));
             let index = my_discards.indexOf(oldcard);
@@ -856,7 +857,7 @@ initializeGame(game_id) {
             delete we_self.game.deck[player-1].discards[my_keys[index]];
             this.addMove(`PUSHONDECK\t${player}\t${JSON.stringify(card)}`);
             console.log("DECK2:",JSON.parse(JSON.stringify(this.game.deck)));
-            $(".discardpile").fadeIn("fast");
+            $("#discardpile").fadeIn("fast");
             this.endTurn();
           });
         }
@@ -1283,7 +1284,7 @@ initializeGame(game_id) {
 
     //Show temporary discard
     let shift = Object.keys(this.game.deck[this.game.player-1].discards) + 1;
-    $(`<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`).hide().appendTo(".discardpile").slideDown();
+    $(`<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`).hide().appendTo("#discardpile").slideDown();
 
   }
 
@@ -1291,19 +1292,22 @@ initializeGame(game_id) {
   displayBoard(){
     console.log("Redrawing board");
     let html = "";
-    let cardClass = " showcard";
     for (let c in this.game.state.supply){
       if (c !== "curse"){
-        html += `<div class="cardpile tip${cardClass}" id="${c}">`;
+        html += `<div class="cardpile showcard" id="${c}">`;
         let count = this.game.state.supply[c]; 
         if (count > 0){
+          /*
           for (let i = 0; i < count - 1; i++){
             let shift = (count > 12) ? i : i*2;
             html += `<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;  
           }
             let shift = (count > 12) ? count : count*2;
-          html += `<img class="passivecard" id="${c}" src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
-          html += `<div class="tiptext">Remaining Supply: ${this.game.state.supply[c]}</div>`;
+            */
+
+          html += `<div class="card_count">${this.game.state.supply[c]}</div>
+                  <img class="passivecard" id="${c}" src="/${this.name.toLowerCase()}/img/minicards/${this.deck[c].img}">
+                  </div>`;
         }else{
           html += `<div class="tiptext">No more ${this.cardToText(c,true)}</div>`;
         }
@@ -1311,7 +1315,7 @@ initializeGame(game_id) {
       }
     }
 
-    html += `<i id="board-display" class="board-display fas fa-recycle"></i>`;
+    //html += `<i id="board-display" class="board-display fas fa-recycle"></i>`;
 
     if (document.querySelector(".cardstacks")){
       $(".cardstacks").html(html);
@@ -1323,7 +1327,7 @@ initializeGame(game_id) {
 
     //Toggle card pile configuration
 
-    $("#board-display").off();
+    /*$("#board-display").off();
     $("#board-display").on("click", ()=>{
       if ($(".cardstacks").hasClass("large")){
         $(".cardstacks").removeClass("large");
@@ -1334,7 +1338,7 @@ initializeGame(game_id) {
         $(".cardstacks").addClass("large");
       }
     });
-
+    */
     this.displayDecks();
   }
 
@@ -1344,30 +1348,35 @@ initializeGame(game_id) {
     $(".animated_elem").remove();
 
     try{
-      let html = `<div class="player_decks tip">`;
-      html += `<div class="drawpile cardpile">`;
+      let html = ""; //`<div class="player_decks tip">`;
+      html += `<div id="drawpile" class="cardpile">`;
       for (let i = 0; i < this.game.deck[this.game.player-1].crypt.length; i++){
         html += `<img src="${this.card_img_dir}/blank.jpg" style="bottom:${i}px;right:${i}px;">`;
       }
-      html += `</div>
-              <div class="discardpile cardpile">
-      `;
+      html +=   `<div>Draw: ${this.game.deck[this.game.player-1].crypt.length}</div>
+               </div>`;
+
+      if (document.getElementById("drawpile")){
+        this.app.browser.replaceElementBySelector(html, "#drawpile");
+      }else{
+        this.app.browser.addElementToId(html, "hud-body");
+      }
+
+      html = `<div id="discardpile" class="cardpile">`;
       let shift = 0;
       for (let card in this.game.deck[this.game.player-1].discards){
         let c = this.game.deck[this.game.player-1].discards[card];
-        html += `<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`;
+        html += `<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;left:${shift}px;">`;
         shift++;
       }
-      html += `</div>
-              <div class="tiptext">
-                Deck: ${this.game.deck[this.game.player-1].crypt.length}, Discards: ${Object.keys(this.game.deck[this.game.player-1].discards).length}
-              </div>
-            </div>`
 
-      if (document.querySelector(".player_decks")){
-        this.app.browser.replaceElementBySelector(html, ".player_decks");
+      html += `<div>Discards: ${this.game.deck[this.game.player-1].crypt.length}</div>
+               </div>`;
+      
+      if (document.getElementById("discardpile")){
+        this.app.browser.replaceElementBySelector(html, "#discardpile");
       }else{
-        this.app.browser.addElementToId(html, "main");
+        this.app.browser.addElementToId(html, "hud-body");
       }
     }catch(err){
       console.error(err);
@@ -1525,7 +1534,7 @@ initializeGame(game_id) {
   /*
   Get the card out of the hand (but don't add it to the discards ...yet)
   */
-  removeCardFromHand(card, target = ".discardpile", pause = false) {
+  removeCardFromHand(card, target = "#discardpile", pause = false) {
     if (this.game.player === 0) { return; }
     let pi = this.game.player-1;
 
