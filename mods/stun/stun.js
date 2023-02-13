@@ -819,7 +819,7 @@ class Stun extends ModTemplate {
         this.app.connection.emit('relay-send-message', data);
 
         // onchain
-        this.app.network.propagateTransaction(newtx);
+        // this.app.network.propagateTransaction(newtx);
     }
 
     receiveMediaChannelOfferTransaction(app, tx, conf, blk) {
@@ -888,7 +888,7 @@ class Stun extends ModTemplate {
         this.app.connection.emit('relay-send-message', data)
 
         // onchain
-        this.app.network.propagateTransaction(newtx);
+        // this.app.network.propagateTransaction(newtx);
     }
 
 
