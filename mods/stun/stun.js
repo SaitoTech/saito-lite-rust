@@ -555,15 +555,19 @@ class Stun extends ModTemplate {
                     console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
                         case "connecting":
+                            this.resetStep();
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "connected":
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
+                            this.resetStep();
                             break;
                         case "disconnected":
+                            this.resetStep();
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "failed":
+                            this.resetStep();
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         default:
@@ -821,7 +825,6 @@ class Stun extends ModTemplate {
         if (app.BROWSER !== 1) return;
         if(this.current_step >= 1) return;
         this.current_step = 1;
-
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
         console.log(tx, 'stun media channel offer')
