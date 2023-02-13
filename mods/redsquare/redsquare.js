@@ -215,7 +215,7 @@ class RedSquare extends ModTemplate {
     // archive -- load our own tweets
     //
     if (service.service === "archive") {
-//      this.loadNotificationsFromPeer(peer);
+      this.loadNotificationsFromPeer(peer);
     }
 
     //
@@ -235,7 +235,7 @@ class RedSquare extends ModTemplate {
   // runs when normal peer connects
   //
   async onPeerHandshakeComplete(app, peer) {
-/***
+
     //
     // avoid network overhead if in other apps
     //
@@ -287,7 +287,6 @@ class RedSquare extends ModTemplate {
       this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
     }, true);
 
-***/
   }
 
 
@@ -1115,7 +1114,7 @@ console.log("TT: " + tweet.text);
   //
   async updateTweetsCacheForBrowsers() {
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10`;
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND parent_id = "" ORDER BY updated_at DESC LIMIT 6`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
