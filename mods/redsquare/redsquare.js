@@ -346,17 +346,9 @@ class RedSquare extends ModTemplate {
       for (let z = 0; z < tweets.length; z++) {
 	let newtx = new saito.default.transaction(JSON.parse(tweets[z]));
         this.addTweet(newtx);
-console.log(" > ");
-console.log(" > ");
-console.log(" > ");
-console.log("ADDED TWEET");
       }
       this.app.connection.emit("redsquare-home-render-request");
     } catch (err) {
-console.log(" < ");
-console.log(" < ");
-console.log(" < ");
-      console.log("TWEETS " + err);
     }
 
 
@@ -942,6 +934,7 @@ console.log("TT: " + tweet.text);
   async receiveTweetTransaction(blk, tx, conf, app) {
 
     let tweet = new Tweet(app, this, "", tx);
+    let not_reply_or_retweet = false;
 
     //
     // browsers
@@ -949,8 +942,6 @@ console.log("TT: " + tweet.text);
     if (app.BROWSER == 1) {
 
       //
-
-
       // save tweets addressed to me
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
@@ -962,6 +953,7 @@ console.log("TT: " + tweet.text);
         // if replies
         //
         if (txmsg.data?.parent_id) {
+          not_reply_or_retweet = true;
           if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
             let tweet = this.returnTweet(txmsg.data.parent_id);
             if (tweet == null) { return; }
@@ -978,8 +970,8 @@ console.log("TT: " + tweet.text);
         //
         // if retweets
         //
-
         if (txmsg.data?.retweet_tx) {
+          not_reply_or_retweet = true;
           if (txmsg.data?.retweet_tx) {
             let rtxobj = JSON.parse(txmsg.data.retweet_tx);
             let rtxsig = rtxobj.sig;
@@ -1000,6 +992,14 @@ console.log("TT: " + tweet.text);
         }
       }
 
+
+      //
+      // update cache
+      //
+      if (this.app.BROWSER == 0) {
+        this.updateTweetsCacheForBrowsers();
+      }
+
       // if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
       //   // document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
       //   return;
@@ -1009,6 +1009,7 @@ console.log("TT: " + tweet.text);
 
       return;
     }
+
 
     //
     // servers
@@ -1114,33 +1115,18 @@ console.log("TT: " + tweet.text);
   //
   async updateTweetsCacheForBrowsers() {
 
-console.log(" ) ");
-console.log(" ) ");
-console.log(" ) ");
-
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 10`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
-console.log("ROWS IS");
-console.log(JSON.stringify(rows));
-console.log("DONE ROWS IS");
-
     try {
-
-console.log("returning path");
 
       let path = this.app.storage.returnPath(); 
       if (!path) { return; }
 
-console.log("returning filename");
-
       const filename = path.join(__dirname, 'web/tweets.js');
       let fs = this.app.storage.returnFileSystem();
       if (fs != null) {
-
-console.log("filename: " + filename.toString());
-
         if (fs.existsSync(filename)) {
           const fd = fs.openSync(filename, "w");
           let html = `
@@ -1149,7 +1135,6 @@ console.log("filename: " + filename.toString());
           for (let i = 0; i < rows.length; i++) {
             html += `  tweets.push(\`${rows[i].tx}\`);   `; 
           }
-console.log("WRITING: " + html);
           fs.writeSync(fd, html);
           fs.fsyncSync(fd);
           fs.closeSync(fd);
