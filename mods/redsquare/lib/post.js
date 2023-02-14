@@ -57,7 +57,7 @@ class Post {
             if (post_self.mod.allowed_upload_types.includes(type)) {
               post_self.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
             } else {
-              salert("allowed file types: " + mod.allowed_upload_types.join(', '));
+              salert("allowed file types: " + post_self.mod.allowed_upload_types.join(', '));
             }
           }
 

@@ -776,6 +776,7 @@ class Browser {
   }
 
   addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true, read_as_array_buffer = false) {
+
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
