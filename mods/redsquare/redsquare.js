@@ -236,7 +236,6 @@ class RedSquare extends ModTemplate {
   //
   async onPeerHandshakeComplete(app, peer) {
 
-/***
     //
     // avoid network overhead if in other apps
     //
@@ -277,7 +276,6 @@ class RedSquare extends ModTemplate {
     //
     this.peers_for_tweets.push(peer);
 
-***/
   }
 
 
@@ -340,12 +338,8 @@ class RedSquare extends ModTemplate {
     //
     try {
       this.app.connection.emit("redsquare-home-render-request");
-console.log("number of tweets: " + tweets.length);
       for (let z = 0; z < tweets.length; z++) {
-console.log("processing: " +z);
 	let newtx = new saito.default.transaction(JSON.parse(tweets[z]));
-let txmsg = newtx.returnMessage();
-console.log("and txmsg: " + JSON.stringify(txmsg));
         this.addTweet(newtx);
       }
       this.app.connection.emit("redsquare-home-render-request");
@@ -1120,7 +1114,7 @@ console.log("tweet text is: " + tweet.text);
   //
   async updateTweetsCacheForBrowsers() {
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND tx_size > 1600 AND parent_id = "" ORDER BY updated_at DESC LIMIT 10`;
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 10`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
