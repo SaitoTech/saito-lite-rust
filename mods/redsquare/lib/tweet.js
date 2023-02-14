@@ -17,6 +17,9 @@ class Tweet {
     this.tx = tx;
     let txmsg = tx.returnMessage();
 
+console.log("1: " + JSON.stringify(txmsg));
+
+    this.text = "";
     this.parent_id = "";
     this.thread_id = "";
     this.updated_at = 0;
@@ -39,10 +42,16 @@ class Tweet {
     this.show_controls = 1;
     this.is_long_tweet = false;
     this.is_retweet = false;
-    this.setKeys(tx.msg.data);
+try {
+    this.setKeys(txmsg.data);
+} catch (err) {}
+try {
     this.setKeys(tx.optional);
+} catch (err) {}
 
+console.log("1: " + this.text);
     this.generateTweetProperties(app, mod, 1);
+
 
     //
     // create retweet if exists
@@ -67,10 +76,15 @@ class Tweet {
         }
       }
     }
+
+console.log("2: " + this.text);
+
   }
 
 
   render(prepend = false) {
+
+console.log("into tweet render!");
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
@@ -79,9 +93,11 @@ class Tweet {
     // retweets displayed in container even if master exists elsewhere on page
     //
     if (this.is_retweet) {
+console.log("into tweet render 2!");
       myqs = this.container;
       replace_existing_element = true;
     } else {
+console.log("into tweet render 3!");
 
       //
       // this isn't retweet, but if the original exists, we want to ignore
@@ -94,11 +110,16 @@ class Tweet {
           replace_existing_element = false;
         }
       }
+console.log("into tweet render 3 - 2!");
     }
 
+console.log("into tweet render 3 - 3!");
+
     if (replace_existing_element && document.querySelector(myqs)) {
+console.log("into tweet render 3 - 4!");
       this.app.browser.replaceElementBySelector(TweetTemplate(this.app, this.mod, this), myqs);
     } else {
+console.log("into tweet render 4!");
       if (prepend == true) {
         this.app.browser.prependElementToSelector(TweetTemplate(this.app, this.mod, this), this.container);
       } else {
@@ -111,20 +132,28 @@ class Tweet {
     }
 
     if (this.retweet != null) {
+console.log("into retweet render 5!");
       this.retweet.render();
+console.log("into retweet render 6!");
     }
     if (this.img_preview != null) {
+console.log("into retweet render 7!");
       this.img_preview.render();
+console.log("into retweet render 8!");
     }
     if (this.link_preview != null) {
-      
+console.log("into retweet render 9!");
       if (this.link_properties != null) {
+console.log("into retweet render 10!");
         if (Object.keys(this.link_properties).length > 0) {
+console.log("into retweet render 11!");
           this.link_preview.render();
+console.log("into retweet render 12!");
         }
       }
     }
 
+console.log("done render");
     this.attachEvents();
 
   }

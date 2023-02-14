@@ -4,6 +4,7 @@ const RedSquareAppspaceHome = require("./appspace/home");
 const RedSquareAppspaceNotifications = require("./appspace/notifications");
 const RedSquareAppspaceGames = require("./appspace/games");
 const RedSquareAppspaceContacts = require("./appspace/contacts");
+const SaitoLoader = require("../../../lib/saito/ui/saito-loader/saito-loader");
 
 class RedSquareMain {
 
@@ -13,7 +14,7 @@ class RedSquareMain {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareMain";
-     
+    this.saito_loader = new SaitoLoader(app, mod, ".saito-main");     
 
     this.components = {};
     this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
@@ -87,13 +88,17 @@ class RedSquareMain {
     // this fires when a tweet is added to our tree
     //
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
+
+console.log("in redsquare tweet added render request...");
       
       if (this.render_component === "home") {
         if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
 
 	  if (this.render_component === "home") {
 	    if (!document.querySelector(".redsquare-appspace-body")) {
+console.log("in redsquare tweet added render request... 2");
  	      this.components["home"].renderMain();             
+console.log("in redsquare tweet added render request... 3");
 	    }
 	  }
 
@@ -107,9 +112,13 @@ class RedSquareMain {
 
             if (tweet.parent_id != "") {
               document.querySelector(".tweet-"+tweet.parent_id).remove();
+console.log("in redsquare tweet added render request... 4");
               tweet.renderWithParentAsCritical();
+console.log("in redsquare tweet added render request... 5");
             } else {
+console.log("in redsquare tweet added render request... 6");
               tweet.render(true);
+console.log("in redsquare tweet added render request... 7");
             }
             
       	  }
@@ -132,13 +141,9 @@ class RedSquareMain {
     }
 
     //
-    // render home / tweet / games etc.
+    // first load? show loader
     //
- 
-    //
-    //
-    //
-
+    this.saito_loader.render();
     
  
   

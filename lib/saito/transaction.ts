@@ -481,26 +481,17 @@ try {
 
     try {
       if (this.transaction.m && this.transaction.m.byteLength > 0) {
-console.log("A");
         const reconstruct = this.transaction.m.toString("utf-8");
         //const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-console.log("B - " + reconstruct);
         this.msg = JSON.parse(reconstruct);
-console.log("C");
       } else {
-console.log("D");
         this.msg = {};
-console.log("E");
       }
     } catch (err) {
       // TODO : handle this without printing an error
-console.log("ERROR: " + JSON.stringify(err));
       try {
-console.log("fallback on failure... 1");
         const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-console.log("fallback on failure... 2");
         this.msg = JSON.parse(reconstruct);
-console.log("fallback on failure... 3");
       } catch (err) {
         console.log(
           `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
@@ -509,7 +500,6 @@ console.log("fallback on failure... 3");
         console.log("here: " + JSON.stringify(this.msg));
       }
     }
-console.log("RETURN ON FAILURE");
     return this.msg;
   }
 
