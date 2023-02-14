@@ -92,5 +92,6 @@ mods/reddit/web/*
 mods/redsquare/web/tweets.js
 mods/mailrelay/lib/template-credentials.js
 mods/tutorial4/web/txid
+mods/redsquare/web/tweets.js
 
 extras/shashmap/build
