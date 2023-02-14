@@ -86,10 +86,11 @@
   overflow: auto;
 }
 
+
+
 .saito-header-profile {
   padding: 1.4rem 0.5rem;
   display: flex;
-  row-gap: 1rem;
   flex-direction: column;
 }
 
@@ -260,7 +261,6 @@
   max-width: 100%;
   margin: 0rem;
   position: relative;
-  margin-top: 0.5rem;
 }
 
 .header-wallet .saito-header-profile-address i {
