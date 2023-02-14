@@ -230,7 +230,7 @@ class RedSquare extends ModTemplate {
 
 
 
-
+/****
   //
   // runs when normal peer connects
   //
@@ -277,6 +277,65 @@ class RedSquare extends ModTemplate {
     this.peers_for_tweets.push(peer);
 
   }
+****/
+
+  //
+  // runs when normal peer connects
+  //
+  async onPeerHandshakeComplete(app, peer) {
+    //
+    // avoid network overhead if in other apps
+    //
+    if (!this.browser_active) { return; }
+
+    //
+    // render tweet thread
+    //
+    let mod = app.modules.returnModule('RedSquare')
+    if (this.results_loaded == false) {
+      let tweet_id = app.browser.returnURLParameter('tweet_id');
+      if (tweet_id != "") {
+        let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
+        this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+          this.results_loaded = true;
+          for (let z = 0; z < txs.length; z++) {
+            let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+            app.connection.emit('redsquare-thread-render-request', tweet);
+          }
+        }, false, false);
+        return;
+      }
+
+      //
+      // render user profile
+      //
+      let user_id = app.browser.returnURLParameter('user_id');
+      if (user_id != "") {
+        this.app.connection.emit("redsquare-profile-render-request", (user_id));
+        this.results_loaded = true;
+        return;
+      }
+    } else {
+      if (this.results_loaded == true) {
+        let user_id = app.browser.returnURLParameter('user_id');
+        let tweet_id = app.browser.returnURLParameter('tweet_id');
+        if (user_id != "" || tweet_id != "") { return; }
+      }
+    }
+
+    //
+    // check peer for any tweets they want to send us
+    //
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+    this.loadTweetsFromPeer(peer, sql, (txs) => {
+      this.app.connection.emit("redsquare-home-render-request");
+      this.app.browser.addIdentifiersToDom();
+      this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
+    }, true);
+
+  }
+
+
 
 
 
@@ -397,9 +456,9 @@ console.log("error in initial processing: " + err);
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
       let peer = this.peers_for_tweets[i];
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
-      this.loadTweetsFromPeer(peer, sql, (tx) => {
-        if (tx.length > 0) {
-          this.app.connection.emit("redsquare-home-load-more-tweets-request");
+      this.loadTweetsFromPeer(peer, sql, (txs) => {
+        if (txs.length > 0) {
+          this.app.connection.emit("redsquare-home-load-more-tweets-request",);
         }
         if (post_load_tweet_callback) {
           post_load_tweet_callback()
@@ -407,23 +466,6 @@ console.log("error in initial processing: " + err);
       });
     }
   }
-
-  // loadNewTweets(app, mod) {
-  //   let redsquare_self = app.modules.returnModule('RedSquare')
-  //   console.log("Fetching New Posts");
-  //   // if (!mod.trackedTweet) { return; }
-  //   for (let i = 0; i < this.peers_for_tweets.length; i++) {
-  //   let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-
-  //   let peer = this.peers_for_tweets[i];
-  //   this.loadTweetsFromPeer(peer, sql, (tx) => {
-  //      if(tx.length > 0){
-  //           this.app.connection.emit("redsquare-show-load-tweet-banner");
-  //      }
-  //   }, true);
-  // }
-  // }
-
 
   loadMoreNotifications() {
     this.increment_for_notifications++;
@@ -497,9 +539,7 @@ console.log("error in initial processing: " + err);
 
   loadTweetsFromPeer(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
     let txs = [];
-
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
-
       if (to_track_tweet) {
         if (tweet_to_track) {
           this.trackTweet(tweet_to_track);
@@ -540,9 +580,9 @@ console.log("tweet text is: " + tweet.text);
     //
     // maybe this needs to go into notifications too
     //
-console.log("tweet text is: " + tweet.text);
-
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
+
+console.log("is for me...");
 
       //
       // this is a notification, so update our timestamps
@@ -604,7 +644,16 @@ console.log("tweet text is: " + tweet.text);
 
     }
 
-console.log("tweet text is: " + tweet.text);
+
+    //
+    // if this is a like, we can avoid adding it to our tweet index
+    //
+    let txmsg = tx.returnMessage();
+    if (txmsg.request === "like tweet") {
+console.log("THIS IS A LIKE - skip it!");
+      return;
+    }
+
     //
     // add tweet to tweet and tweets_sigs_hmap for easy-reference
     //
@@ -612,6 +661,8 @@ console.log("tweet text is: " + tweet.text);
     // this is a post
     //
     if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
+
+console.log("is a post...");
 
       //
       // we do not have this tweet indexed, it's new
@@ -632,6 +683,11 @@ console.log("tweet text is: " + tweet.text);
             }
           }
         }
+
+console.log("what is the text?");
+console.log("text: " + tweet.text);
+console.log("tx: " + JSON.stringify(tweet.tx));
+console.log("is a retweet? " + JSON.stringify(tweet.retweet_tx));
 
         //
         // and insert it
@@ -656,11 +712,6 @@ console.log("tweet text is: " + tweet.text);
             this.tweets[i].num_replies = tweet.num_replies;
             this.tweets[i].num_retweets = tweet.num_retweets;
             this.tweets[i].num_likes = tweet.num_likes;
-
-            //
-            // EVENT HERE
-            //
-            // this.tweets[i].renderOptional();
           }
         }
       }
@@ -669,6 +720,8 @@ console.log("tweet text is: " + tweet.text);
       // this is a comment
       //
     } else {
+
+console.log("is a comment ...");
 
       let inserted = false;
 
@@ -1108,7 +1161,7 @@ console.log("tweet text is: " + tweet.text);
   //
   async updateTweetsCacheForBrowsers() {
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 6`;
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 7000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 

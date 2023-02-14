@@ -121,6 +121,7 @@ try {
             const reconstruct2 = Buffer.from(this.transaction.m).toString("utf-8");
             this.msg = JSON.parse(reconstruct2);
 	  } catch (err) {
+console.log("minor issues reconstructing: " + err);
 	    try {
               const reconstruct3 = this.base64ToString(Buffer.from(this.transaction.m).toString());
               this.msg = JSON.parse(reconstruct3);

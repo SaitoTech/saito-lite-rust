@@ -52,7 +52,8 @@ class RedSquareMain {
     });
 
     this.app.connection.on("redsquare-show-load-tweet-banner", (tx) => {
-      document.querySelector('.redsquare-new-tweets-banner').style.display = "block";
+      let obj = document.querySelector('.redsquare-new-tweets-banner');
+      if (obj) { obj.style.display = "block"; }
     });
 
     this.app.connection.on("redsquare-thread-render-request", (tweet) => {
@@ -96,9 +97,7 @@ console.log("in redsquare tweet added render request...");
 
 	  if (this.render_component === "home") {
 	    if (!document.querySelector(".redsquare-appspace-body")) {
-console.log("in redsquare tweet added render request... 2");
  	      this.components["home"].renderMain();             
-console.log("in redsquare tweet added render request... 3");
 	    }
 	  }
 
@@ -112,13 +111,9 @@ console.log("in redsquare tweet added render request... 3");
 
             if (tweet.parent_id != "") {
               document.querySelector(".tweet-"+tweet.parent_id).remove();
-console.log("in redsquare tweet added render request... 4");
               tweet.renderWithParentAsCritical();
-console.log("in redsquare tweet added render request... 5");
             } else {
-console.log("in redsquare tweet added render request... 6");
               tweet.render(true);
-console.log("in redsquare tweet added render request... 7");
             }
             
       	  }
@@ -163,17 +158,29 @@ console.log("in redsquare tweet added render request... 7");
         if (scrollTop < scrollableElement.scrollTop) {
           stop = window.innerHeight - sidebar.clientHeight + scrollableElement.scrollTop;
           if (scrollableElement.scrollTop + window.innerHeight > sidebar.clientHeight) {
+try {
             sidebar.style.top = stop + "px";
+} catch (err) {
+  console.log("SIDEBAR ERROR 1");
+}
           }
         } else {
           if (stop > scrollableElement.scrollTop) {
             stop = scrollableElement.scrollTop;
+try {
             sidebar.style.top = stop + "px";
+} catch (err) {
+  console.log("SIDEBAR ERROR 2");
+}
           }
         }
       } else {
         stop = scrollableElement.scrollTop;
+try {
         sidebar.style.top = stop + "px";
+} catch (err) {
+  console.log("SIDEBAR ERROR 3");
+}
       }
       scrollTop = scrollableElement.scrollTop;
     });
