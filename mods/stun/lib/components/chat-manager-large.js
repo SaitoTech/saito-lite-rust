@@ -58,17 +58,17 @@ class VideoChatManager {
             // this.updateRoomLink()
         })
 
-        this.app.connection.on('stun-receive-media-offer', ({ room_code, offer_creator, recipient }) => {
+        this.app.connection.on('stun-receive-media-offer', ({ room_code, offer_creator, offer_recipient }) => {
             if(!this.isActive) return;
-            console.log(room_code, offer_creator, recipient, 'stun-receive-media-offer')
+            console.log(room_code, offer_creator, offer_recipient, 'stun-receive-media-offer')
             if (room_code !== this.room_code) {
                 return;
             }
 
             let my_public_key = this.app.wallet.returnPublicKey()
             if (my_public_key === offer_creator) {
-                this.renderRemoteStreamPlaceholder(recipient, "Sending Offer tx");
-                this.startWaitTimer(recipient)
+                this.renderRemoteStreamPlaceholder(offer_recipient, "Sending Offer tx");
+                this.startWaitTimer(offer_recipient)
             } else {
                 this.renderRemoteStreamPlaceholder(offer_creator, "Receiving Offer tx");
                 this.startWaitTimer(offer_creator)

@@ -278,6 +278,9 @@ class Stun extends ModTemplate {
         if (txmsg.request === "stun data channel answer") {
             this.receiveDataChannelAnswerTransaction(app, tx)
         }
+        if (txmsg.request === "stun notifcation transmission request") {
+            this.receiveMediaChannelNotificationTransaciton(app, tx)
+        }
         if (txmsg.request === "receive room code") {
             this.receiveRoomCodeTransaction(app, tx)
         }
@@ -381,6 +384,9 @@ class Stun extends ModTemplate {
     }
 
 
+  
+
+
 
     createMediaConnectionOffer(publicKey, ui_type, call_type, room_code) {
         console.log('call type ', call_type)
@@ -461,6 +467,7 @@ class Stun extends ModTemplate {
         return createPeerConnection;
 
     }
+    
     createStunConnectionOffer(publickey, app) {
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
@@ -695,11 +702,15 @@ class Stun extends ModTemplate {
 
     async createMediaChannelConnectionWithPeers(public_keys, ui_type, call_type, room_code) {
         console.log('this current step ', this.current_step)
+     
         let peerConnectionOffers = [];
         if (public_keys.length > 0) {
             // send connection to other peers if they exit
             for (let i = 0; i < public_keys.length; i++) {
                 console.log('public key ', public_keys[i], ' ui_type ', ui_type);
+
+                // send notification
+                this.sendMediaChannelNotificationTransaction(this.app.wallet.returnPublicKey(), public_keys[i], room_code)
                 peerConnectionOffers.push(this.createMediaConnectionOffer(public_keys[i], ui_type, call_type, room_code));
             }
         }
@@ -745,6 +756,8 @@ class Stun extends ModTemplate {
     }
 
 
+  
+
     async createDataChannelConnectionWithPeers(public_keys) {
         
         let peerConnectionOffers = [];
@@ -784,6 +797,51 @@ class Stun extends ModTemplate {
         this.localStream = localStream;
     }
 
+
+
+    createMediaChannelNotificationTransaction(offer_creator, offer_recipient, room_code){
+        console.log('offer creator ', offer_recipient, offer_creator)
+        let _data = {
+            offer_creator,
+            offer_recipient,
+            room_code
+        }
+        let request = "stun notifcation transmission request"
+
+         // offchain data
+        let data = {
+            recipient: [offer_creator, offer_recipient],
+            request,
+            data: _data
+        }
+
+        return [null, data];
+    }
+
+    async sendMediaChannelNotificationTransaction(offer_creator, recipient, room_code){
+        let [tx, data] = this.createMediaChannelNotificationTransaction(offer_creator, recipient, room_code);
+        console.log('data sending ', data)
+        this.app.connection.emit('relay-send-message', data);
+
+    }
+
+   async receiveMediaChannelNotificationTransaciton(app, tx, conf, blk){
+        if (app.BROWSER !== 1) return;
+        console.log('notifications gotten ');
+        console.log(tx, 'receive notification')
+        const offer_creator = tx.msg.data.offer_creator;
+        const room_code = tx.msg.data.room_code
+        const offer_recipient = tx.msg.data.offer_recipient;
+
+        if(!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
+        app.connection.emit('stun-receive-media-offer', {
+            room_code,
+            offer_creator,
+            offer_recipient
+        })
+
+    
+   }
 
 
     createMediaChannelOfferTransaction(offer_creator, offer){
@@ -834,12 +892,12 @@ class Stun extends ModTemplate {
         const room_code = tx.msg.data.offer.room_code
         const recipient = tx.msg.data.offer.recipient;
 
-        if(!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
-        app.connection.emit('stun-receive-media-offer', {
-            room_code,
-            offer_creator,
-            recipient
-        })
+        // if(!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
+        // app.connection.emit('stun-receive-media-offer', {
+        //     room_code,
+        //     offer_creator,
+        //     recipient
+        // })
 
 
         // offer creator should not respond
