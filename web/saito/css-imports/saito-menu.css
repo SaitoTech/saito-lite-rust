@@ -122,7 +122,7 @@
     text-overflow: ellipsis;
     max-width: 10rem;
     overflow: hidden;
-    white-space: nowrap;
+    white-space: pre-wrap;
     padding: 0.5rem;
   }
   .saito-menu>ul>li>span {
