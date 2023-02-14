@@ -53,11 +53,15 @@ class Post {
           if (post_self.images.length >= 4) {
             salert("Maximum 4 images allowed per tweet.");
           } else {
+console.log(" > ");
+console.log(" > ");
+console.log(" > ");
+console.log("file: " + file);
             let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
             if (post_self.mod.allowed_upload_types.includes(type)) {
               post_self.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
             } else {
-              salert("allowed file types: " + post_self.mod.allowed_upload_types.join(', '));
+              salert("allowed file types: " + post_self.mod.allowed_upload_types.join(', ') + " - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.");
             }
           }
 
