@@ -378,10 +378,8 @@ class RedSquare extends ModTemplate {
 
     }
 
-
     super.render();
 
-/***
     //
     // if our browser has loaded cached tweets through a direct
     // download they will be in our tweets object and we can load
@@ -399,7 +397,6 @@ class RedSquare extends ModTemplate {
     } catch (err) {
 console.log("error in initial processing: " + err);
     }
-***/
 
   }
 
@@ -573,16 +570,12 @@ console.log("error in initial processing: " + err);
     let tweet = new Tweet(this.app, this, "", tx);
     tweet.updated_at = tx.transaction.ts;
 
-console.log("tweet text is: " + tweet.text);
-
     let is_notification = 0;
 
     //
     // maybe this needs to go into notifications too
     //
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
-
-console.log("is for me...");
 
       //
       // this is a notification, so update our timestamps
@@ -650,7 +643,6 @@ console.log("is for me...");
     //
     let txmsg = tx.returnMessage();
     if (txmsg.request === "like tweet") {
-console.log("THIS IS A LIKE - skip it!");
       return;
     }
 
@@ -661,8 +653,6 @@ console.log("THIS IS A LIKE - skip it!");
     // this is a post
     //
     if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
-
-console.log("is a post...");
 
       //
       // we do not have this tweet indexed, it's new
@@ -683,11 +673,6 @@ console.log("is a post...");
             }
           }
         }
-
-console.log("what is the text?");
-console.log("text: " + tweet.text);
-console.log("tx: " + JSON.stringify(tweet.tx));
-console.log("is a retweet? " + JSON.stringify(tweet.retweet_tx));
 
         //
         // and insert it
@@ -721,8 +706,6 @@ console.log("is a retweet? " + JSON.stringify(tweet.retweet_tx));
       //
     } else {
 
-console.log("is a comment ...");
-
       let inserted = false;
 
       for (let i = 0; i < this.tweets.length; i++) {
@@ -740,7 +723,6 @@ console.log("is a comment ...");
       }
 
     }
-console.log("tweet text is: " + tweet.text);
 
     //
     // this is a tweet, so update our 

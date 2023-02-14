@@ -50,8 +50,6 @@ try {
     this.generateTweetProperties(app, mod, 1);
 
 
-console.log("RECEIVED: " + this.text);
-
     //
     // create retweet if exists
     //
