@@ -11,7 +11,6 @@ const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
 const redsquareHome = require("./index");
 
-
 const SaitoLoginOverlay = require('../../lib/saito/ui/saito-login-overlay/saito-login-overlay');
 
 
@@ -390,7 +389,11 @@ class RedSquare extends ModTemplate {
     try {
       this.app.connection.emit("redsquare-home-render-request");
       for (let z = 0; z < tweets.length; z++) {
-	let newtx = new saito.default.transaction(JSON.parse(tweets[z]));
+console.log("TWEET: " + (z+1));
+	let newtx = new saito.default.transaction();
+console.log("TWEET2: " + (z+1));
+	newtx.deserialize_from_hex(this.app, tweets[z]);
+console.log("ADDING TWEET");
         this.addTweet(newtx);
       }
       this.app.connection.emit("redsquare-home-render-request");
@@ -1154,24 +1157,21 @@ console.log("error in initial processing: " + err);
   //
   async updateTweetsCacheForBrowsers() {
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 7000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 1`;
+    let hex_entries = [];
+
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 8000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
-console.log(" > ");
-console.log(" > ");
-console.log(" > ");
     for (let i = 0; i < rows.length; i++) {
-console.log("raw length: " + rows[i].tx.length);
-let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
-let txmsg = tx.returnMessage();
-console.log("txmsg: " + JSON.stringify(txmsg));
-let buff = Buffer.from(tx.serialize(this.app));
-let hexbuff = buff.toString('hex');
-let utfbuff = buff.toString('utf-8');
-console.log("txmsg len: " + JSON.stringify(txmsg).length);
-console.log("hex len: " + hexbuff.length);
-console.log("utf-8 len: " + utfbuff.length);
+
+      //
+      // create the transaction
+      //
+      let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+      let hexstring = tx.serialize_to_hex(this.app);      
+      hex_entries.push(hexstring);
+
     }
 
     try {
@@ -1187,8 +1187,8 @@ console.log("utf-8 len: " + utfbuff.length);
           let html = `
             var tweets = [];
           `;
-          for (let i = 0; i < rows.length; i++) {
-            html += `  tweets.push(\`${rows[i].tx}\`);   `; 
+          for (let i = 0; i < hex_entries.length; i++) {
+            html += `  tweets.push(\`${hex_entries[i]}\`);   `; 
           }
           fs.writeSync(fd, html);
           fs.fsyncSync(fd);

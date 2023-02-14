@@ -288,6 +288,7 @@ try {
       path.push(hop);
     }
 
+
     this.transaction.from = inputs;
     this.transaction.to = outputs;
     this.transaction.ts = Number(timestamp);
@@ -781,6 +782,28 @@ try {
     buffer = Buffer.concat([buffer, this.transaction.m]);
 
     return buffer;
+  }
+
+  //
+  // serialize / deserialize with less compact encodings
+  //
+  serialize_to_hex(app) {
+    let b = Buffer.from(this.serialize(app));
+    return b.toString("hex");
+  }
+  serialize_to_utf8(app) {
+    let b = Buffer.from(this.serialize(app));
+console.log("EXPORTING AS: " + b.toString("utf8").length);
+    return b.toString("utf8");
+  }
+  deserialize_from_hex(app: Saito, hexstring) {
+    let b = Buffer.from(hexstring, "hex");
+    this.deserialize(app, b, 0); 
+  }
+  deserialize_from_utf8(app: Saito, utf8string) {
+console.log("IMPORTING: " + utf8string.length);
+    let b = Buffer.from(utf8string, "utf8");
+    this.deserialize(app, b, 0);
   }
 
   //
