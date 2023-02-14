@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS tweets (
   `text` 		TEXT,
   link			TEXT,
   link_properties	TEXT,
+  type			INTEGER,
   processed		INTEGER,
   flagged 		INTEGER,
   moderated 		INTEGER,

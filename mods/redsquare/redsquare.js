@@ -962,8 +962,8 @@ console.log("error in initial processing: " + err);
   async receiveTweetTransaction(blk, tx, conf, app) {
 
     let tweet = new Tweet(app, this, "", tx);
-    let not_reply_or_retweet = false;
-
+    let txmsg = tx.returnMessage();
+ 
     //
     // browsers
     //
@@ -975,13 +975,11 @@ console.log("error in initial processing: " + err);
       if (tx.isTo(app.wallet.returnPublicKey())) {
 
         this.app.storage.saveTransaction(tx);
-        let txmsg = tx.returnMessage();
 
         //
         // if replies
         //
         if (txmsg.data?.parent_id) {
-          not_reply_or_retweet = true;
           if (this.tweets_sigs_hmap[txmsg.data.parent_id]) {
             let tweet = this.returnTweet(txmsg.data.parent_id);
             if (tweet == null) { return; }
@@ -999,7 +997,6 @@ console.log("error in initial processing: " + err);
         // if retweets
         //
         if (txmsg.data?.retweet_tx) {
-          not_reply_or_retweet = true;
           if (txmsg.data?.retweet_tx) {
             let rtxobj = JSON.parse(txmsg.data.retweet_tx);
             let rtxsig = rtxobj.sig;
@@ -1028,15 +1025,11 @@ console.log("error in initial processing: " + err);
         this.updateTweetsCacheForBrowsers();
       }
 
-      // if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
-      //   // document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
-      //   return;
-      // }
-
       this.addTweet(tx, 1);
 
       return;
     }
+
 
 
     //
@@ -1045,6 +1038,21 @@ console.log("error in initial processing: " + err);
     // fetch supporting link properties
     //
     tweet = await tweet.generateTweetProperties(app, this, 1);
+
+
+    let type_of_tweet = 0; // unknown
+    if (txmsg.data?.parent_id) {
+      type_of_tweet = 1; // reply
+    }
+    if (txmsg.data?.retweet_tx) {
+      type_of_tweet = 2; // retweet
+    }
+    if (tweet.link != null) {
+      type_of_tweet = 3; // link
+    }
+    if (tweet.images?.length > 0) {
+      type_of_tweet = 4; // images
+    }
 
     let created_at = tx.transaction.ts;
     let updated_at = tx.transaction.ts;
@@ -1059,6 +1067,7 @@ console.log("error in initial processing: " + err);
             	updated_at,
             	parent_id,
             	thread_id,
+                type,
                 publickey,
                 link,
             	link_properties,
@@ -1074,6 +1083,7 @@ console.log("error in initial processing: " + err);
             	$updated_at,
             	$parent_id,
             	$thread_id,
+            	$type,
                 $publickey,
             	$link,
             	$link_properties,
@@ -1095,6 +1105,7 @@ console.log("error in initial processing: " + err);
       $created_at: created_at,
       $updated_at: updated_at,
       $parent_id: tweet.parent_id,
+      $type: type_of_tweet,
       $thread_id: tweet.thread_id,
       $publickey: tx.transaction.from[0].add,
       $link: tweet.link,
@@ -1143,9 +1154,25 @@ console.log("error in initial processing: " + err);
   //
   async updateTweetsCacheForBrowsers() {
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 7000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 7000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 1`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
+
+console.log(" > ");
+console.log(" > ");
+console.log(" > ");
+    for (let i = 0; i < rows.length; i++) {
+console.log("raw length: " + rows[i].tx.length);
+let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+let txmsg = tx.returnMessage();
+console.log("txmsg: " + JSON.stringify(txmsg));
+let buff = Buffer.from(tx.serialize(this.app));
+let hexbuff = buff.toString('hex');
+let utfbuff = buff.toString('utf-8');
+console.log("txmsg len: " + JSON.stringify(txmsg).length);
+console.log("hex len: " + hexbuff.length);
+console.log("utf-8 len: " + utfbuff.length);
+    }
 
     try {
 
