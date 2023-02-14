@@ -54,7 +54,7 @@ module.exports = (app, mod) => {
 <div class="saito-loader"></div>
 
 </body>
-<script id="saito" type="text/javascript" src="/redsquare/tweets.js"></script>
+<script id="saito" type="text/javascript" src="/redsquare/tweets.js?x=${new Date().getTime()}"></script>
 <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 <style></style>
 </html>

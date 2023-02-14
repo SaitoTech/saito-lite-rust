@@ -245,7 +245,8 @@ class RedSquare extends ModTemplate {
     //
     // render tweet thread
     //
-    let mod = app.modules.returnModule('RedSquare')
+    let mod = app.modules.returnModule('RedSquare');
+
     if (this.results_loaded == false) {
       let tweet_id = app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
@@ -259,34 +260,22 @@ class RedSquare extends ModTemplate {
         }, false, false);
         return;
       }
-
       //
       // render user profile
       //
       let user_id = app.browser.returnURLParameter('user_id');
       if (user_id != "") {
         this.app.connection.emit("redsquare-profile-render-request", (user_id));
-        this.results_loaded = true;
         return;
       }
-    } else {
-      if (this.results_loaded == true) {
-        let user_id = app.browser.returnURLParameter('user_id');
-        let tweet_id = app.browser.returnURLParameter('tweet_id');
-        if (user_id != "" || tweet_id != "") { return; }
-      }
-    }
 
+       this.results_loaded = true;
+    } 
+    
     //
     // check peer for any tweets they want to send us
     //
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-
-    this.loadTweetsFromPeer(peer, sql, () => {
-      this.app.connection.emit("redsquare-home-render-request");
-      this.app.browser.addIdentifiersToDom();
-      this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
-    }, true);
+    this.peers_for_tweets.push(peer);
 
 ***/
   }
@@ -334,6 +323,13 @@ class RedSquare extends ModTemplate {
 
 
     super.render();
+
+    // let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+    // this.loadTweetsFromPeer(peer, sql, () => {
+    //   this.app.connection.emit("redsquare-home-render-request");
+    //   this.app.browser.addIdentifiersToDom();
+    //   this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
+    // }, true);
 
     //
     // if our browser has loaded cached tweets through a direct
