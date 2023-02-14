@@ -8,7 +8,6 @@ module.exports = () => {
       </div>
       
       <div class="saito-main">
-        <div class="saito-loader"></div>
       </div>
      
       <div class="saito-sidebar right">

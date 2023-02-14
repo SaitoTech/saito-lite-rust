@@ -22,7 +22,9 @@ webpack({
     type: 'filesystem',
   },
   optimization: {
-    // minimize: minimize,
+    //set the appropriate value for minimisation
+    //dev => false, prod => true
+    minimize: minimize,
     minimizer: [
       new TerserPlugin({
         parallel: true,

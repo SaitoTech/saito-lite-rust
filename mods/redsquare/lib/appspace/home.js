@@ -89,12 +89,12 @@ class AppspaceHome {
     // render all top-level tweets, possibly with critical children
 
     for (let i = 0; i < this.mod.tweets.length; i++) {
+      // if any tweets remove loader
       if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
         this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
       }
       this.mod.tweets[i].container = ".redsquare-appspace-body";
       this.mod.tweets[i].renderWithCriticalChild();
-
     }
 
     this.attachEvents();

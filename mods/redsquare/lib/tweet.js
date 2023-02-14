@@ -17,6 +17,7 @@ class Tweet {
     this.tx = tx;
     let txmsg = tx.returnMessage();
 
+    this.text = "";
     this.parent_id = "";
     this.thread_id = "";
     this.updated_at = 0;
@@ -39,10 +40,15 @@ class Tweet {
     this.show_controls = 1;
     this.is_long_tweet = false;
     this.is_retweet = false;
-    this.setKeys(tx.msg.data);
+try {
+    this.setKeys(txmsg.data);
+} catch (err) {}
+try {
     this.setKeys(tx.optional);
+} catch (err) {}
 
     this.generateTweetProperties(app, mod, 1);
+
 
     //
     // create retweet if exists
@@ -117,7 +123,6 @@ class Tweet {
       this.img_preview.render();
     }
     if (this.link_preview != null) {
-      
       if (this.link_properties != null) {
         if (Object.keys(this.link_properties).length > 0) {
           this.link_preview.render();
@@ -278,7 +283,6 @@ class Tweet {
       // view thread //
       /////////////////
       let this_tweet = document.querySelector(`.tweet-${this.tx.transaction.sig}`);
-      console.log('sig ', this.tx.transaction.sig)
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
         this_tweet.onclick =  (e) => {
@@ -296,7 +300,6 @@ class Tweet {
                 mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
                   for (let z = 0; z < txs.length; z++) {
                     let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-                    console.log('a tweet ', tweet)
                     app.connection.emit('redsquare-thread-render-request', tweet);
                   }
                 }, false, false);
@@ -314,7 +317,6 @@ class Tweet {
            mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
             for (let z = 0; z < txs.length; z++) {
               let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-              console.log('a tweet ', tweet)
               app.connection.emit('redsquare-thread-render-request', tweet);
             }
           }, false, false);
@@ -333,7 +335,6 @@ class Tweet {
         item.addEventListener('click', (e)=> {
         e.stopImmediatePropagation();
          let sig =  item.getAttribute('data-id');
-         console.log('sig', sig);
          if (e.target.tagName != "IMG" && sig) {  
             window.location.href = `/redsquare/?tweet_id=${sig}`
         }

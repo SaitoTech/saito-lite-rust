@@ -1,0 +1,3523 @@
+
+#saito-alert-shim {
+  z-index: 2000;
+  background-color: var(--saito-dark-shim);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+}
+
+#saito-alert-box {
+  width: 75vw;
+  max-width: 70rem;
+  transition: all 333ms ease-in-out;
+  background: var(--saito-background-color);
+  margin: 1rem auto;
+  position: relative;
+  /* top: -50rem; */
+  border: 1px solid var(--saito-border-color);
+  border-radius: 0 0 5px 5px;
+  padding: 1em;
+  color: var(--saito-font-color);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+#saito-alert-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  flex-flow: row-reverse;
+}
+
+#saito-alert-buttons button {
+  min-width: 20rem;
+}
+
+#saito-alert-box p {
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  font-size: 1.4em;
+  text-align: center;
+  align-self: center;
+  display: block;
+  margin: 1em 0;
+  overflow-wrap: break-word;
+}
+
+@media screen and (max-width: 740px) {
+  #saito-alert-buttons {
+    flex-direction: column;
+  }
+}/* ----------------------------------------------------------------
+ Saito Base: CSS default settings, layouts
+-----------------------------------------------------------------*/
+
+/* @custom-media --breakpoint-xl (max-width: 1920px);
+@custom-media --breakpoint-lg (max-width: 1280px);
+@custom-media --breakpoint-md (max-width: 768px);
+@custom-media --breakpoint-md (max-width: 590px);
+@custom-media --breakpoint-sm (max-width: 375px); */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-size: 10px;
+}
+
+body {
+  line-height: 1.2;
+  color: var(--saito-font-color);
+  font-family: var(--saito-font);
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 400;
+  height: 100vh;
+  position: relative;
+  max-width: 100vw;
+  overflow: hidden;
+  background-color: var(--saito-background-color);
+}
+
+/* ----------------------------------------------------------------
+ Link
+-----------------------------------------------------------------*/
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--saito-primary);
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* ----------------------------------------------------------------
+	Headings
+-----------------------------------------------------------------*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+}
+
+h1 {
+  font-size: 5rem;
+}
+
+h2 {
+  font-size: 4.5rem;
+}
+
+h3 {
+  font-size: 4rem;
+}
+
+h4 {
+  font-size: 3.5rem;
+}
+
+h5 {
+  font-size: 2rem;
+  line-height: 3rem;
+  margin-bottom: 1rem;
+}
+
+h6 {
+  font-size: 2rem;
+}
+
+textarea {
+  resize: none;
+}
+
+iframe {
+  border: none;
+}
+
+/* ----------------------------------------------------------------
+ Paragraph
+-----------------------------------------------------------------*/
+p.large {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+p,
+p.middle {
+  color: var(--saito-black);
+  font-size: 1.5rem;
+  overflow: auto;
+}
+
+p::-webkit-scrollbar {
+  display: none;
+}
+
+p.small {
+  font-size: 1.3rem;
+}
+
+/* ----------------------------------------------------------------
+QR Code
+-----------------------------------------------------------------*/
+#qrcode img {
+  height: 80vh;
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media screen and (max-width: 600px) {
+  #qrcode img {
+    height: auto;
+    width: 90vw;
+  }
+}
+
+/* ----------------------------------------------------------------
+Password Font
+-----------------------------------------------------------------*/
+
+.saito-password {
+  font-family: "p-word";
+}
+
+/* ----------------------------------------------------------------
+Divider
+-----------------------------------------------------------------*/
+
+hr {
+  color: var(--saito-font-color);
+  margin: 2.5rem;
+}
+
+/*-----------------------------------------------------------------
+Scrollbars
+-----------------------------------------------------------------*/
+::-webkit-scrollbar {
+  width: 0.6rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  /*
+  background: linear-gradient(
+    90deg,
+    transparent 0 45%,
+    var(--saito-border-color) 45% 55%,
+    transparent 55% 100%
+  );
+  */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--saito-primary);
+  border-radius: 1rem;
+}
+
+/* utils */
+
+.left-align {
+  text-align: left;
+}
+
+.center-align {
+  text-align: center;
+}
+
+.right-align {
+  text-align: right;
+}
+
+.saito-deemphasize {
+  opacity: 0.66;
+}
+
+.saito-address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block !important;
+  width: inherit;
+}
+
+.tip:hover .tiptext {
+  visibility: visible;
+}
+
+.tiptext {
+  visibility: hidden;
+  position: absolute;
+  box-sizing: content-box !important;
+  z-index: 10;
+  width: 90%;
+  min-width: 300px;
+  max-width: 750px;
+  padding: 1em;
+  background-color: var(--saito-background-color);
+  border-left: 2px solid var(--saito-primary);
+  font-style: italic;
+  font-size: smaller;
+  border-radius: 0 0.5rem 0.5rem 0;
+  line-height: 2rem;
+}
+
+.hidden {
+  display: none;
+}
+
+#message-wrapper {
+  border: 2px solid var(--saito-primary);
+  min-width: 500px;
+  padding: 3rem;
+  font-size: 2rem;
+  background: var(--saito-primary);
+  position: fixed;
+  bottom: 5rem;
+  left: 5rem;
+  color: var(--saito-font-color);
+  z-index: 200;
+}
+
+.message-message {
+  font-size: 2rem;
+  color: var(--saito-white);
+}
+
+/* ----------------------------------------------------------------
+Media Queries
+-----------------------------------------------------------------*/
+
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 1.45rem;
+  }
+
+  .saito-container {
+    padding: 0 1rem;
+  }
+
+  h1 {
+    font-size: 4.5rem;
+  }
+
+  h2 {
+    font-size: 4rem;
+  }
+
+  h3 {
+    font-size: 3.5rem;
+  }
+
+  h4 {
+    font-size: 3rem;
+  }
+
+  h5 {
+    font-size: 2.5rem;
+  }
+
+  h6 {
+    font-size: 2rem;
+  }
+
+  p.large {
+    font-size: 1.8rem;
+  }
+
+  p,
+  p.middle {
+    color: var(--saito-black);
+    font-size: 1.4rem;
+  }
+
+  p.small {
+    font-size: 1.1rem;
+  }
+}
+@media screen and (max-width: 375px) {
+  body {
+    font-size: 1.4rem;
+  }
+}
+
+/* ----------------------------------------------------------------
+buttons
+-----------------------------------------------------------------*/
+
+button,
+.saito-button-primary {
+  background: var(--saito-primary);
+  text-align: center;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  min-width: 18rem;
+  font-size: 1.8rem;
+  color: var(--saito-white);
+  font-weight: 500;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin: 0.5rem;
+  border: 1px solid transparent;
+}
+
+.saito-button-secondary {
+  padding: 1rem 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  font-size: 1.8rem;
+  font-weight: 500;
+  min-width: 18rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin: 0.5rem;
+  border: 1px solid var(--saito-primary);
+  color: var(--saito-primary);
+}
+
+.saito-button-primary:hover {
+  background: var(--saito-background-color);
+  color: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
+}
+
+.saito-button-secondary:hover {
+  background: var(--saito-primary);
+  color: var(--saito-white);
+}
+
+button.small,
+.saito-button-primary.small,
+.saito-button-secondary.small,
+.saito-button-gradient.small {
+  padding: 0.75rem 0.7rem;
+  font-size: 1.4rem;
+  min-width: 4rem;
+}
+button.fat, saito-button-primary.fat, .saito-button-seconary.fat, saito-button-gradient.fat {
+  height: 7rem;
+  font-size: 2rem;
+  padding: 2rem !important;
+  width: 30rem;
+}
+
+:root {
+    --calendar-width: 25rem;
+    --calendar-minwidth: 10rem;
+}
+
+.container {
+    max-width: var(--calendar-width);
+    min-width: var(--calendar-minwidth);
+}
+
+.saito-calendar {
+    border-radius: 0.5rem;
+    width: 100%;
+    display: grid;
+    grid-template-rows: min-content min-content min-content;
+    flex-direction: column;
+}
+
+
+.saito-modal.saito-modal-calendar {
+    display: grid;
+    grid-template-columns: 30rem 1fr;
+    width: 100%;
+    padding: 4rem;
+    grid-gap: 0;
+    margin: 0;
+}
+
+.saito-modal-calendar-content {
+    padding-right: 3rem;
+}
+
+.saito-modal-calendar-title {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+.saito-modal-calendar-note {
+    font-size: 2rem;
+    line-height: 2.8rem;
+    display: block;
+}
+
+.saito-calendar-events {
+    background-color: var(--saito-background-color);
+    width: 40rem;
+    height: 35rem;
+    padding: 0px;
+    margin: 0px;
+    border: 1px solid var(--saito-background-color);
+}
+
+.saito-calendar-events-date {
+  float: right;
+  padding: 0.5rem;
+  color: #777;
+  font-size: 2rem;
+  font-style: italic;
+}
+
+.saito-calendar-events-details {
+  clear: both;
+  font-size: 2rem;
+  color: var(--saito-font-color);
+  font-weight: bold;
+  padding-left: 2rem;
+}
+
+.saito-calendar-month {
+    /* padding: 1rem 1rem; */
+    display: grid;
+    grid-template-columns: min-content max-content min-content;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 2rem;
+}
+
+.saito-calendar-month i {
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.saito-calendar-date div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.saito-calendar-date h4 {
+    font-size: 2.3rem;
+    margin-right: 1rem;
+}
+
+.saito-calendar-date p {
+    font-size: 2.3rem;
+}
+
+.x {
+    display: flex;
+    justify-content: center;
+    padding: .5rem .5rem;
+}
+
+.saito-calendar-weekdays div {
+    font-size: 1.6rem;
+    text-align: center;
+}
+
+.saito-calendar-days, .saito-calendar-weekdays  {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 3px;
+}
+.saito-calendar-day {
+    min-height: 3rem;
+    font-size: 1.2rem;
+    padding: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items:  center;
+}
+
+.saito-calendar-day-date {
+    margin-right: auto;
+}
+
+.saito-calendar-day-icon {
+    font-size: 2.3rem;
+    padding-right: 0.75rem;
+}
+
+.saito-calendar-day > span {
+    margin-left: .5rem;
+}
+
+.saito-calendar-days div:hover {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+
+.prev-date {
+    color: rgba(0, 0, 0, 0.391);
+}
+
+.next-date {
+    color: rgba(0, 0, 0, 0.391);
+}
+
+.today {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+.chat-manager {
+  margin: 0 0 0 1.5rem;
+}
+
+.chat-manager .saito-userline {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 13rem;
+  white-space: nowrap;
+}
+
+.chat-manager .saito-user {
+  column-gap: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+
+/*  Chat / Popup  */
+.chat-container {
+  margin-right: 1rem;
+  height: 66rem;
+  width: 44rem;
+  border-radius: 0.5rem;
+  z-index: 90;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  border: 1px solid var(--saito-border-color);
+  background: var(--saito-arcade-background);
+  color: var(--saito-font-color);
+  max-height: calc(99vh - var(--saito-header-height));
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--saito-border-color);
+  cursor: grab;
+  height: 4.5rem;
+  font-size: 2rem;
+}
+
+.chat-header>i {
+  margin: 0;
+  padding: 1.2rem;
+  color: var(--saito-primary);
+  font-size: 2rem;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.chat-header>i:last-child {
+  padding-bottom: 1.3rem;
+  cursor: pointer;
+}
+
+.chat-header>i:last-child:hover {
+  transform: rotate(90deg) scale(1.1);
+}
+
+.chat-header .chat-group {
+  max-width: 99%;
+  overflow: hidden;
+}
+
+.chat-body {
+  padding: 1rem;
+  display: block;
+  height: calc(100% - 10.4rem);
+  overflow: auto;
+  margin-bottom: 5.8rem;
+}
+
+.chat-body>.saito-user {
+  padding-bottom: 1rem;
+  cursor: default;
+  grid-template-rows: min-content 1fr;
+}
+
+.chat-body>.saito-user>.saito-userline {
+  font-size: 1.7rem;
+}
+
+.chat-body .saito-userline {
+  overflow-wrap: anywhere;
+}
+
+.chat-footer {
+  height: 4.5rem;
+  font-size: 2rem;
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 0.5rem);
+  padding: 0.5rem;
+  display: flex;
+  flex-flow: row;
+  grid-gap: 1rem;
+  align-items: end;
+  z-index: 2;
+}
+
+.chat-input {
+  border: 1px solid var(--saito-border-color);
+  border-radius: 0.5rem;
+  width: calc(100% - 0rem);
+  font-size: 1.6rem;
+  padding: 0.9rem 3rem 0.5rem 0.5rem;
+  outline: none;
+  background: var(--saito-arcade-background);
+  max-height: 15rem;
+  overflow-y: auto;
+  word-break: break-word;
+}
+
+
+.chat-footer i {
+  color: var(--saito-primary);
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.2s;
+  font-size: 2rem;
+  margin-bottom: 0.8rem;
+}
+
+.chat-footer i:hover {
+  transform: rotate(45deg);
+}
+
+.dockedLeft {
+  border-left: 3px solid var(--saito-primary)!important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.dockedRight {
+  border-right: 3px solid var(--saito-primary)!important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.dockedTop {
+  border-top: 3px solid var(--saito-primary)!important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+.dockedBottom {
+  border-bottom: 3px solid var(--saito-primary)!important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.chat-footer .saito-emoji {
+  position: absolute;
+  top: 1.25rem;
+  right: 4rem;
+}
+
+
+/* Mobile Overlay */
+@media screen and (max-width: 600px) {
+
+  .chat-manager-overlay {
+    background-color: var(--saito-background-color);
+    position: absolute;
+    left: 0;
+    top: var(--saito-header-height);
+    height: 100vh;
+    width: 100vw;
+    padding-top: 1rem;
+  }
+
+  .chat-manager-overlay .chat-manager {
+    margin-left: auto;
+    margin-right: auto;
+    width: 95vw;
+  }
+/*
+  .chat-popup {
+    z-index: 10000;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    min-height: 100vh;
+  }
+*/
+}
+
+
+@media screen and (max-width: 768px) {
+  .chat-container {
+    margin: 0;
+    width: 100vw;
+    height: calc(100vh - var(--saito-header-height));
+    max-height: none;
+    border-radius: 0;
+  }
+}
+
+
+.saito-notification-counter {
+  position: absolute;
+  top: -0.5rem;
+  right: 0;
+  font-size: 1.25rem;
+  line-height: 2rem;
+  text-align: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
+  overflow: auto;
+}
+/*.saito-emoji-container {
+  position: relative;
+  z-index: 2000;
+}
+
+.saito-emoji {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.4rem;
+  font-size: 2rem;
+  color: var(--saito-primary);
+  cursor: pointer;
+}
+*/
+emoji-picker {
+  position: fixed;
+  height: 40rem;
+  bottom: 7rem;
+  width: 30rem;
+  right: 5rem;
+  --emoji-size: 2rem;
+  --emoji-padding: 0.5rem;
+  z-index: 2;
+}
+
+.saito-emoji-container {
+  width: 100%;
+}select {
+  width: 100%;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------
+Selects
+-----------------------------------------------------------------*/
+.saito-select {
+  position: relative;
+  display: flex;
+  width: 20em;
+  height: 3em;
+  line-height: 3;
+  background-color: transparent;
+  overflow: hidden;
+  width: 100.01%;
+  border-radius: 0 1rem 1rem 0;
+  outline: none;
+  background-color: none;
+}
+
+.saito-select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 1em;
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-transition: 0.25s all ease;
+  -o-transition: 0.25s all ease;
+  transition: 0.25s all ease;
+  border-radius: 0 1rem 1rem 0;
+}
+
+.saito-select:hover::after {
+  color: var(--saito-white) !important;
+}
+
+.saito-select .saito-slct {
+  font-size: 2rem;
+}
+
+.saito-slct {
+  appearance: none;
+  background-color: var(--saito-white);
+  border-radius: 1rem;
+  padding: 0 1rem;
+}
+
+textarea,
+input {
+  background-color: var(--saito-background-color);
+  color: var(--saito-font-color);
+  border: 1px solid var(--saito-border-color);
+}
+
+
+textarea:focus, input:focus, select:focus {
+  outline: none;
+}
+
+option {
+  background: var(--saito-background-color);
+  color: var(--saito-font-color);
+}
+
+/* ----------------------------------------------------------------
+text and password inputs
+-----------------------------------------------------------------*/
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime-local"] {
+  padding: 1rem 1.5rem;
+  font-size: 1.6rem;
+  width: 20rem;
+  color: var(--saito-font-color);
+  border-radius: .5rem;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime-local"] {
+  outline: none;
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+  color: var(--saito-border-color);
+}
+
+/* ----------------------------------------------------------------
+checkbox input
+-----------------------------------------------------------------*/
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border: 1px solid var(--saito-primary);
+  width: 2rem;
+  height: 2rem;
+  margin: 0 0.5rem;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+}
+
+input[type="checkbox"]::after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f00c";
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 1.6rem;
+  opacity: 0;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--saito-primary);
+}
+
+input[type="checkbox"]:checked::after {
+  color: var(--saito-white);
+  opacity: 1;
+}
+
+/* ----------------------------------------------------------------
+radio inputs
+-----------------------------------------------------------------*/
+
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--saito-primary);
+  width: 2rem;
+  height: 2rem;
+  margin: 0 0.5rem;
+  border-radius: 3px;
+  position: relative;
+}
+
+input[type="radio"]::after {
+  font-weight: 900;
+  content: "";
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--saito-primary);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  font-size: 1rem;
+  opacity: 0;
+  border-radius: 3px;
+}
+
+input[type="radio"]:checked::after {
+  color: var(--saito-white);
+  opacity: 1;
+}
+
+/* ----------------------------------------------------------------
+Range inputs
+-----------------------------------------------------------------*/
+
+input[type="range"] {
+  -webkit-appearance: none;
+  margin: 1.8rem 0;
+  width: 100%;
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 0.6rem;
+  cursor: pointer;
+  box-shadow: var(--saito-box-shadow);
+  background: var(--saito-primary);
+  border-radius: .5rempx;
+  border: var(--saito-border-color);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  box-shadow: var(--saito-box-shadow);
+  border: 1px solid var(--saito-black-faded);
+  height: 3rem;
+  width: 2rem;
+  border-radius: .5rem;
+  background: var(--saito-white);
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -1.2rem;
+}
+
+input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 0.6rem;
+  cursor: pointer;
+  box-shadow: var(--saito-box-shadow);
+  background: var(--saito-primary);
+  border-radius: .5rempx;
+  border: var(--saito-border-color);
+}
+
+input[type="range"]::-moz-range-thumb {
+  box-shadow: var(--saito-box-shadow);
+  border: 1px solid var(--saito-black-faded);
+  height: 3rem;
+  width: 2rem;
+  border-radius: .5rem;
+  background: var(--saito-white);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  margin-top: -1.2rem;
+}
+
+input[type="range"]:focus::-webkit-slider-runnable-track {
+  background: var(--saito-primary);
+}
+
+input[type="range"]::-ms-track {
+  width: 100%;
+  height: 8.4px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  border-width: 1.6rem 0;
+  color: transparent;
+}
+
+input[type="range"]::-ms-fill-lower {
+  background: var(--saito-primary);
+  border: var(--saito-border-color);
+  border-radius: .5rempx;
+  box-shadow: var(--saito-box-shadow);
+}
+
+input[type="range"]::-ms-fill-upper {
+  /* background: #3071a9; */
+  border: var(--saito-border-color);
+  border-radius: .5rempx;
+  box-shadow: var(--saito-box-shadow);
+}
+
+input[type="range"]::-ms-thumb {
+  box-shadow: var(--saito-box-shadow);
+  border: 1px solid var(--saito-black-faded);
+  height: 3.6rem;
+  width: 1.6rem;
+  border-radius: .5rem;
+  background: var(--saito-white);
+  cursor: pointer;
+}
+
+input[type="range"]:focus::-ms-fill-lower {
+  background: var(--saito-primary);
+}
+
+input[type="range"]:focus::-ms-fill-upper {
+  background: var(--saito-primary);
+}
+
+input[type="text"],
+input[type="password"],
+select {
+  width: 100%;
+}
+#saito-header {
+  position: fixed;
+  display: flex;
+  width: 100vw;
+  background: var(--dreamscape);
+  backdrop-filter: blur(5px);
+  margin: 0;
+  align-items: center;
+  padding: 0 calc((100vw - var(--saito-width)) / 2);
+  top: 0;
+  left: 0;
+  z-index: 10;
+  height: var(--saito-header-height);
+  border-bottom: 1px solid var(--saito-border-color);
+}
+
+#saito-header nav {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 2rem;
+}
+
+.saito-header-logo {
+  width: 15rem;
+}
+
+#saito-header-menu-toggle {
+  margin-right: auto;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+#saito-header-menu-toggle:hover {
+  opacity: 0.9;
+  transform: scale(1.2);
+}
+
+#saito-header-menu-toggle:active {
+  transform: scale(0.9);
+}
+
+#saito-header-menu-toggle span {
+  display: block;
+  width: 33px;
+  height: 4px;
+  margin-bottom: 5px;
+  position: relative;
+  background: var(--saito-white);
+  border-radius: 3px;
+  z-index: 1;
+  transform-origin: 4px 0px;
+  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1);
+  background: 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
+  margin-left: auto;
+}
+
+#saito-header-menu-toggle span:first-child {
+  transform-origin: 0% 0%;
+}
+
+#saito-header-menu-toggle span:nth-last-child(2) {
+  transform-origin: 0% 100%;
+}
+
+.saito-header-profile .saito-identicon-box .saito-identicon {
+  width: 4.9rem;
+  height: 4.9rem;
+}
+
+.saito-header-hamburger-contents {
+  display: block;
+  pointer-events: none;
+  background-color: var(--saito-background-color);
+  position: absolute;
+  right: 0;
+  top: var(--saito-header-height);
+  border-top: 1px solid var(--saito-border-color);
+  border-left: 1px solid var(--saito-border-color);
+  transition: all 0.2s;
+  opacity: 0;
+  z-index: 10;
+  padding: 2rem;
+  width: 20rem;
+  height: 100vh;
+  overflow: auto;
+}
+
+.saito-header-profile {
+  padding: 1.4rem 0.5rem;
+  display: flex;
+  row-gap: 1rem;
+  border-bottom: 1px solid var(--saito-border-color);
+  flex-direction: column;
+}
+
+.saito-header-profile-details {
+  display: grid;
+    grid-template-columns: 5rem auto;
+    border: 1px solid var(--saito-primary);
+    border-radius: 0 1.2rem 1.2rem 0;
+}
+
+.saito-header-profile-details .saito-identicon {
+  margin: auto;
+  border: none;
+ }
+
+ .saito-header-profile-balance.saito-select::after {
+  background-color: var(--saito-primary);
+  border: none;
+ }
+
+.saito-header-profile-balance .saito-select-crypto {
+  font-size: 2rem;
+  color: var(--saito-font-color);
+  padding: 0 0 0 1rem;
+  font-size: 2rem;
+  appearance: none;
+  background-color: var(--saito-arcade-background);
+  border: none;
+}
+
+.saito-header-profile-balance .saito-select-crypto:focus {
+  outline: none;
+}
+
+.saito-header-profile-balance > .saito-select-wrapper > div {
+  width: 28rem;
+}
+
+.saito-header-profile-address {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  display: flex;
+  width: 99%;
+  justify-content: center;
+  justify-self: center;
+  padding-top: 1rem;
+  cursor: pointer;
+}
+
+.saito-header-profile-address p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.7rem;
+  margin-right: 0.5rem;
+}
+
+.saito-header-profile-address:hover i {
+  transform: scale(1.05);
+  color: var(--saito-primary);
+}
+
+.saito-header-menu-section {
+  padding: 1.5rem 0;
+  font-size: 1.1rem;
+  overflow: hidden;
+  padding-bottom: 0.5rem;
+}
+
+.saito-header-menu-section li i {
+  color: var(--saito-primary);
+  font-size: 2rem !important;
+  width: 0.5rem !important;
+}
+
+.saito-header-menu-section:not(:last-child) {
+  border-bottom: 1px solid var(--saito-border-color);
+}
+
+.show-menu {
+  opacity: 1;
+  width: 40rem;
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+@media screen and (max-width: 1600px) {
+  #saito-header {
+    padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
+  }
+}
+
+@media screen and (max-width: 1500px) {
+  #saito-header {
+    padding: 1.3rem 2rem;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  #saito-header {
+    padding: 1.3rem 2rem;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .saito-header-hamburger-contents {
+    width: 80vw;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .saito-header-hamburger-contents {
+    width: 100vw;
+  }
+  #saito-header {
+    padding: 1.3rem 1rem;
+  }
+  .shortcodes {
+    font-size: 12px;
+    position: absolute;
+    bottom: 0.15rem;
+    margin-left: 2rem;
+  }
+  .saito-header-logo {
+    max-width: 12rem;
+  }
+}
+
+.saito-img-arrow-box {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.saito-img-arrow-box.left {
+  left: -10rem;
+}
+
+.saito-img-arrow-box.right {
+  right: -10rem;
+}
+
+.saito-img-icon {
+  font-size: 3rem;
+  color: var(--saito-white);
+  background: var(--saito-gray-mid);
+  padding: 1.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.saito-overlay-img-cont > img {
+  transition: all 0.2s ease-in-out;
+}
+
+.saito-overlay-img-cont img {
+  max-height: 90vh;
+  max-width: 90vw;
+}
+
+
+
+
+.saito-loader {
+    /* border struggles with overlay 8?
+/*  border: 1px solid aqua; */
+    position: relative;
+    width: 100%;
+}
+
+.saito-loader::after {
+    background-color: transparent;
+    background-image: url(../img/saito-loader.svg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    animation-duration: 2s;
+    animation-name: pulse;
+    animation-iteration-count: infinite;
+    position: relative;
+    width: 70px;
+    height: 70px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    content: "";
+    display: block;
+    transform-origin: 50%, 50%;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        border-radius: 50%;
+        background-size: 0px;
+    }
+
+    30% {
+        transform: translate(-50%, -50%) scale(1);
+        border-radius: 0;
+        background-color: red;
+        background-size: 0px;
+    }
+
+    50% {
+        background-size: 50px;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    70% {
+        transform: translate(-50%, -50%) scale(1);
+        border-radius: 0;
+        background-color: red;
+        background-size: 50px;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(0.5);
+        border-radius: 50%;
+        background-size: 0px;
+    }
+}
+
+.saito-loader-container.blocker {
+  height: 100vh; 
+  width: 100vw; 
+  position: fixed;  
+  z-index: 20;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+}
+
+.saito-loader-container.non-blocker {
+    z-index: 20;
+    margin-top: 7rem;
+}
+
+.game-loader-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.game-loader-spinner {
+  margin: auto;
+  border: 16px solid var(--saito-skyline-grey);
+  border-top: 16px solid var(--saito-red);
+  border: 16px solid var(--saito-primary);
+  border-top: 16px solid var(--saito-tertiary);
+
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  width: 5em;
+  height: 5em;
+  margin-top: 3rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(720deg);
+  }
+}
+
+.saito-login-overlay-field {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.saito-login-overlay-field * {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50rem;
+    text-align: left;
+}
+
+.saito-restore-button {
+    background-color: white;
+    width: min-content;
+    white-space: nowrap;
+    padding: 2.4rem;
+    font-size: 2rem;
+    height: 7rem;
+    margin-top:4rem;
+}
+.saito-restore-button:hover {
+    border: 1px solid white;
+}
+
+.saito-login-overlay-field label {
+    font-size: 2rem;
+    letter-spacing: 0.4rem;
+    text-transform: uppercase;
+}
+
+.saito-login-overlay-field input[type="text"] , .saito-login-overlay-field input[type="password"] {
+    font-size: 3rem;
+    padding: 1rem;
+    width: 50rem;
+}
+
+.saito-login-overlay {
+    display: block; /* override saito-modal */
+    width: 100vw;
+    height: 100vh;
+    max-width: 95vw;
+    max-height: 95vh;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    opacity: 1;
+}
+
+.saito-modal-title {
+    width: 100%;
+    text-align: center;
+    font-size: 5rem;
+    padding-top: 15vh;
+}
+
+.saito-modal-subtitle {
+    width: 100%;
+    text-align: center;
+    font-size: 2rem;
+    padding-top: 2.5vh;
+    height: 10vh;
+}
+
+
+
+
+.saito-menu {
+  margin-top: -1rem;
+}
+
+.saito-menu>ul {
+  padding: 0;
+  list-style-type: none;
+}
+
+.saito-menu>ul>li {
+  padding: 1rem;
+  display: flex;
+  list-style: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-items: center;
+  font-size: 1.92rem;
+  position: relative;
+}
+
+.saito-menu>ul>li:hover, .saito-menu>ul>li:hover>i {
+  background-color: var(--saito-primary);
+  color: var(--saito-background-color);
+}
+
+.saito-menu>ul>li:hover p {
+  background-color: var(--saito-background-color);
+  color: var(--saito-font-color);
+}
+
+.saito-menu>ul>li>i {
+  font-size: 2.6rem;
+  width: 2rem;
+  padding-left: 1.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.saito-menu>ul>li>span {
+  font-size: 1.92rem;
+  margin-right: 1rem;
+}
+
+/*  alert  */
+
+.saito-notification-dot {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: var(--saito-primary);
+  color: var(--saito-background-color);
+  position: absolute;
+  bottom: 2.5rem;
+  left: 3.5rem;
+  text-align: center;
+  line-height: 2.2rem;
+}
+
+.saito-menu>ul>li>i+span {
+  margin-left: 3.8rem;
+}
+
+.saito-menu i::before {
+  -webkit-text-stroke: var(--saito-font-color) 1px;
+  color: transparent;
+  font-size: smaller;
+}
+
+.saito-menu li:hover i::before {
+  -webkit-text-stroke: var(--saito-background-color) 1px;
+}
+
+.appspace-menu {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .saito-menu>ul {
+    padding: 0;
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .saito-menu>ul>li {
+    display: block;
+  }
+  .saito-menu>ul>li>i {
+    font-size: 2.8rem !important;
+    margin-bottom: 0.5rem;
+    width: 100% !important;
+    text-align: center;
+    padding: 0rem;
+  }
+  .saito-menu>ul>li>i+span {
+    margin: auto;
+    display: block;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .appspace-menu {
+    display: block;
+  }
+  .saito-menu>ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .saito-menu>ul>li {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  .saito-menu>ul>li>i {
+    padding: 0;
+    width: unset !important;
+    font-size: 2.75rem !important;
+    margin-bottom: 0.75rem;
+  }
+  .saito-menu>ul>li>i+span {
+    margin: 0;
+    text-overflow: ellipsis;
+    max-width: 10rem;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0.5rem;
+  }
+  .saito-menu>ul>li>span {
+    font-size: 1.33rem;
+    margin: 0;
+  }
+}/* generic modal look and feel */
+/*
+NOTE: the .saito-model class is a grid with two sectiions
+This alows for a header with a header with title to be added without extra CSS
+*/
+.saito-modal {
+  font-size: 1.25rem;
+  color: var(--saito-white);
+  background: var(--saito-modal-background);
+  min-width: 70rem;
+  height: min-content;
+  max-width: 80vw;
+  padding: 2rem;
+  display: grid;
+  grid-template-rows: min-content auto;
+}
+
+
+.saito-modal-title {
+  font-size: 3rem;
+}
+
+
+/* saito-modal-menu
+/* theming for a simple menu with font-awesome icon and text in a two col grid */
+.saito-modal-menu-option {
+  font-size: 3rem;
+  height: 6rem;
+  margin: 0 2rem;
+  padding: 1.5rem;
+  display: grid;
+  align-items: center;
+  grid-gap: 1rem;
+  grid-template-columns: 4rem 1fr;
+}
+
+.saito-modal-menu-option:hover {
+  background-color: var(--saito-hover-background);
+  cursor: pointer;
+}
+
+.saito-modal-menu-option>i {
+  float: left;
+  margin-right: 2rem;
+}
+
+.saito-modal-menu-option>div {
+  float: left;
+  margin-right: 2rem;
+  font-size: 2rem;
+  vertical-align: middle;
+  margin-bottom: auto;
+  margin-top: auto;
+  line-height: 3rem;
+  height: 3rem;
+}
+
+.saito-modal-text-input {
+  margin-left: 3rem;
+  margin-right: 3rem;
+  width: 50rem;
+  max-width: 50rem;
+  margin-top: 0.75rem;
+}
+
+.saito-modal-button {
+  background-color: var(--saito-white);
+  margin-top: 3rem;
+  margin-left: 3rem;
+  max-width: min-content;
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+.saito-modal-button:hover {
+  border: 1px solid var(--saito-white);
+}
+
+#saito-confirm-add-publickey {
+  background-color:  var(--saito-white);
+  height: auto;
+  width: 30vh;
+  border-radius: 1.5rem;
+  padding: 2rem;
+}
+
+#saito-confirm-add-publickey .saito-identicon-box {
+  display: inline-block;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+#saito-confirm-add-publickey .saito-identicon-box .saito-identicon {
+  width: 8rem;
+  height: 8rem;
+}
+
+#saito-confirm-add-publickey>.saito-address {
+  width: 100%;
+  max-width: 100%;
+  overflow: inherit;
+  display: block;
+  height: auto;
+  word-break: break-word;
+  text-overflow: inherit;
+  white-space: break-spaces;
+  text-align: center;
+  margin-top: 5rem;
+  margin-bottom: 1rem;
+}
+
+#saito-confirm-add-publickey>.saito-contact-status {
+  text-align: center;
+}
+
+.saito-modal-title .saito-user .saito-identicon {
+  width: 4rem;
+  height: 4rem;
+}
+
+.saito-modal-title .saito-user .saito-address {
+  font-size: 4rem;
+}
+
+.share-link {
+  color: var(--saito-font-color);
+}
+
+
+/* Exclusively for modal-add-user-confirm.template */
+
+.confirm-modal-wrapper {
+  font-size: 1.5em;
+  padding: 1.5em;
+  color: var(--saito-background-color);
+  font-weight: bold;
+}
+
+.welcome-invite-box {
+  min-width: 200px;
+  min-height: 120px;
+  max-width: 325px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 25px;
+  border: 1px solid;
+  margin: 1em;
+}
+
+
+/* LIST SELECTION MODAL */
+
+.game-selection-list-overlay {
+  background-color: black;
+  max-height: 90vh;
+  overflow-y: scroll;
+  font-size: 2rem;
+  min-width: 400px;
+}
+
+.selection-list li {
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  padding: 10px 0px 10px 20px;
+  list-style: none;
+}
+
+.selection-list li:hover {
+  background-color: #33669999;
+}
+
+.selection-list li .tiptext {
+  width: fit-content;
+  ;
+  background-color: #000a;
+  color: #ffffff !important;
+  min-width: 0px;
+  padding: 3px;
+  pointer-events: none;
+  top: 5px;
+  right: 0;
+}
+
+
+
+
+
+/* Welcome modal */
+
+
+
+.welcome-modal-wrapper {
+  max-width: 80vw;
+  font-size: 1.4em;
+}
+
+.welcome-modal-input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome-modal-input {
+  padding: 0.5rem;
+  font-size: 2.5rem !important;
+  flex-grow: 5;
+  border-radius: 0.5rem;
+  color: var(--saito-font-color);
+  text-align: end;
+}
+
+.welcome-modal-main {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+}
+
+/* Exclusively for modal-add-user-confirm.template */
+
+.confirm-modal-wrapper {
+  font-size: 1.5em;
+  padding: 1.5em;
+  color: var(--saito-background-color);
+  font-weight: bold;
+}
+
+.welcome-modal-header {
+  font-size: 3rem;
+}
+
+.welcome-modal-info {
+  clear: both;
+}
+
+.welcome-modal-action {
+  
+}
+
+.welcome-modal-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.welcome-modal-signup {
+  margin: 1em 0;
+  display: flex;
+}
+
+.welcome-modal-explanation {
+  font-size: 0.8em;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 1em;
+  line-height: 1.3em;
+}
+
+.register-modal-controls {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+}
+#signup {
+  margin: 0;
+  width: 15px;
+  height: 21px;
+}
+
+.welcome-modal-action button:hover {
+  border-color: var(--saito-background-color);
+}
+
+
+
+
+/* mobile modals */
+
+@media only screen and (max-width: 1000px) {
+  .saito-modal {
+    min-width: unset;
+    max-width: unset;
+    padding: 0.5rem;
+    width: 90vw;
+  }
+  .welcome-modal-wrapper {
+    /*grid-template-columns: 1fr;*/
+    width: 90vw;
+  }
+  .modal-content-blank {
+    width: 100%;
+  }
+  .welcome-modal-action {
+    padding: 0.81em;
+  }
+  i.fas.fa-arrow-right {
+    right: -1em;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .saito-overlay {
+    width: 95vw;
+  }
+}
+.saito-module {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+    row-gap: 2rem;
+    flex-direction: row;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+    padding: 1rem;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    background-color: #4444;
+    background-blend-mode: soft-light;
+}
+
+.saito-module-titlebar {
+    font-size: 1.8rem;
+    background-color: var(--saito-background-color);
+    padding: 1rem;
+    width: 18rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    overflow-wrap: break-word;
+    opacity: 0.80;
+}
+
+.saito-module-titlebar-title {
+    color: var(--saito-font-color-heavy);
+}
+
+.saito-module-details {
+    display: flex;
+    flex-direction: row;
+    column-gap: 1rem;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+.saito-module-identicon {
+    border: none;
+}
+.notification-item {
+    padding-top: 1rem;
+}
+
+.notification-tweet {
+  cursor: pointer;
+  padding: 1rem 2rem;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid var(--saito-border-color-dark);
+  position: relative;
+}
+
+.notification-item:hover {
+  background-color: var(--saito-background-light);
+}
+
+.notifications-empty {
+  margin-left: 1rem;
+  display: flex;
+  margin-left: 40%;
+}
+
+.notifications-empty p {
+  font-size: 1.8rem;
+}
+
+.notifications-empty span {
+  margin-right: 1rem;
+  font-size: 1.8rem;
+}
+
+.saito-overlay-backdrop {
+  position: fixed !important;
+  display: none;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--saito-dark-shim);
+  z-index: 100;
+}
+
+.saito-overlay {
+  position: fixed;
+  display: inline-block;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0 auto;
+  z-index: 1000;
+  height: min-content;
+  width: min-content;
+  min-height: 10%;
+  min-height: 10%;
+  max-height: 100vh;
+  max-width: 100vw;
+}
+
+.saito-overlay-closebox {
+  position: absolute;
+  width: 3rem;
+  height: 3rem;
+  right: -1.3rem;
+  border-radius: 50%;
+  top: -1.5rem;
+  background-color: var(--saito-white);
+  z-index: 100;
+}
+
+.saito-overlay-closebox-btn {
+  cursor: pointer;
+  display: block;
+  height: 3.2rem;
+  width: 3.2rem;
+  color: var(--saito-primary);
+  font-size: 3.1rem;
+}
+.saito-container {
+  width: 100vw;
+  height: calc(100vh - var(--saito-header-height));
+  display: grid;
+  grid-template-columns: min-content 5fr 3fr;
+  padding: 0 calc((100vw - var(--saito-width)) / 2);
+  z-index: 0;
+  margin: 0;
+  position: absolute;
+  top: var(--saito-header-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.saito-main {
+  padding: 2rem 0;
+  min-width: 54rem;
+  margin: 0 2rem 15rem;
+  position: relative;
+}
+
+.saito-mobile-bar {
+  display: none;
+}
+
+.saito-sidebar {
+  top: calc(var(--saito-header-height) + 1rem);
+}
+
+.saito-sidebar > div:not(:last-child) {
+  margin-bottom: 2rem;
+}
+
+.saito-sidebar-container {
+  width: 25rem;
+  position: relative;
+}
+
+.saito-sidebar.left {
+  padding-top: 2rem;
+  position: sticky;
+  height: inherit;
+  width: 25rem;
+  top: 0;
+  margin: 0 0 0 1rem;
+}
+
+.saito-sidebar.right {
+  padding: 2rem 1rem 10rem 0;
+  grid-column-start: 3;
+  grid-row: 1/2;
+  position: relative;
+  top: 0;
+  min-width: 30rem;
+  height: max-content;
+}
+
+.saito-sidebar.right.mobile {
+  visibility: visible;
+  z-index: 3;
+}
+
+.saito-sidebar.left.mobile {
+  visibility: visible;
+  z-index: 3;
+}
+
+@media screen and (max-width: 1200px) {
+  .saito-container {
+    grid-template-columns: 1fr min-content;
+  }
+
+  .saito-sidebar.left {
+    position: fixed;
+    top: calc(var(--saito-header-height));
+    visibility: hidden;
+    width: 35rem;
+    height: 100vh;
+    left: 0;
+    border-right: 1px solid var(--saito-primary);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .saito-main {
+    min-width: 0;
+    width: 100vw !important;
+    margin-left: 0rem !important;
+    margin-right: 0rem;
+    padding: 1rem;
+  }
+
+  .saito-sidebar.left {
+    left: 0;
+    width: 100% !important;
+  }
+
+  .saito-sidebar.right {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    top: 0;
+    visibility: hidden;
+    margin-top: var(--saito-header-height);
+    height: 100vh;
+    z-index: 12;
+  }
+
+  /*
+  .saito-mobile-bar {
+    background: var(--saito-dark-shim);
+    z-index: 1;
+    height: 7rem;
+    content: " ";
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .saito-mobile-bar > div {
+    content: "";
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--saito-primary);
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
+
+  .saito-mobile-bar > div i {
+    color: var(--saito-background-color);
+    display: initial;
+    font-size: 2.5rem;
+  }
+
+  .saito-mobile-bar > div:nth-child(2) {
+    display: none;
+  }
+  */
+}
+.tweet-overlay {
+  width: 75rem;
+  max-width: 90vw;
+  background-color: var(--saito-background-color);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.tweet-overlay-content {
+  display: grid;
+}
+
+.tweet-overlay-content-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.tweet-overlay-content-controls i {
+  color: transparent;
+  font-size: 2rem;
+  -webkit-text-stroke: var(--saito-primary) 1px;
+  margin: 1rem 2px 0;
+}
+
+.post-tweet-preview {
+  margin-bottom: 1.5rem;
+}
+
+.post-tweet-preview > .tweet {
+  margin-bottom: 1.5rem;
+  padding: 0 0 2rem;
+}
+
+.post-tweet-img-preview {
+  position: relative;
+  margin: 0 2rem 0 0;
+  height: auto;
+  display: inline-block;
+}
+
+.post-tweet-textarea {
+  display: block;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  outline: none;
+  font-size: 1.6rem;
+  margin: 1rem 0;
+}
+
+
+.post-tweet-img-preview img {
+  top: 0px;
+  height: 5rem;
+  width: 104%;
+  max-width: 20rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: auto;
+  object-fit: contain;
+}
+
+.post-tweet-img-preview i {
+  position: absolute;
+  z-index: 2;
+  width: 0.5rem;
+  height: 0.5rem;
+  right: 0.5rem;
+  font-size: 2rem;
+  cursor: pointer;
+  top: -0.75rem;
+  background: var(--saito-background-color);
+}
+
+.post-tweet-button {
+  width: 20rem;
+  margin-right: 0;
+}
+
+.saito-scheduler {
+  min-width: 50rem;
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 3rem;
+}
+
+.saito-scheduler-title {
+  font-size: 2.5rem;
+  margin-top: 1.5rem;
+}
+
+.saito-scheduler-details {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 1fr 5fr;
+}
+
+.saito-scheduler-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 1rem;
+}
+.saito-scheduler h5 {
+  padding-top: 0.5rem;
+}
+
+.saito-scheduler-label {
+  padding-top: 2rem;
+  clear: both;
+  margin-bottom: 1rem;
+}
+.saito-scheduler-button {
+  margin-top: 2rem;
+  margin-left: 0rem;
+}
+
+.saito-select-btn {
+  width: 100%;
+}
+
+.saito-scheduler-time-outputs {
+  display: grid;
+  grid-template-columns: 4fr 2fr;
+}
+
+input#schedule-datetime-input, .saito-scheduler-natural-time {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--saito-border-color);
+  border-radius: 0;
+  height: 3rem;
+  line-height: 3rem;
+}
+
+
+
+/*  Responsive */
+
+
+@media screen and (max-width: 503px) {
+  .saito-scheduler { 
+    min-width: auto;
+  }
+}
+
+
+
+@media screen and (max-width: 396px) {
+
+}
+/* ----------------------------------------------------------------
+Saito Table
+-----------------------------------------------------------------*/
+
+.saito-table-body {
+  font-size: 1.5rem;
+  display: grid;
+  grid-template-columns: auto;
+  grid-gap: 0.3rem;
+  width: 100%;
+  position: relative;
+  border-radius: 0.1rem;
+  max-height: 100%;
+  height: auto;
+  position: relative;
+  overflow-y: auto;
+  min-height: 2rem;
+}
+
+.saito-table-row {
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  grid-gap: 0.5rem;
+  padding: 0.6rem 1rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: var(--saito-gray-transparent);
+}
+
+.saito-table-row:hover {
+  background: var(--saito-hover-background);
+  color: var(--saito-white);
+}
+
+.saito-table-row:hover .saito-address {
+  color: var(--saito-white);
+}
+
+.saito-table-rank {
+  font-family: courier, monospace;
+  font-size: 1.5rem;
+}
+
+.saito-table-header {
+  display: grid;
+  grid-gap: 0.5rem;
+  padding: 0.6rem 1rem 0.5rem;
+  width: 100%;
+  text-align: center;
+  color: var(--saito-font-color-heavy);
+}.saito-tooltip {
+  display: inline-block;
+  position: relative;
+}
+
+.saito-tooltip .saito-tooltip-icon {
+  margin: 0rem 1rem;
+  color: var(--saito-white);
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+.saito-tooltip .saito-tooltip-info {
+  border-radius: 1rem;
+  position: fixed;
+  background: var(--saito-white);
+  padding: 1rem;
+  box-shadow: 1px 1px 4px var(--saito-font-color-light);
+  z-index: 2;
+  color: var(--saito-font-color-heavy);
+  font-weight: 400;
+  min-width: 20rem;
+}
+
+.tooltip-info-hide {
+  display: none;
+}
+.tweet {
+  cursor: pointer;
+  padding: 1rem 2rem;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid var(--saito-border-color-dark);
+  position: relative;
+}
+
+.tweet-main .tweet {
+  border-bottom: 0px;
+  border-top: 0px;
+  padding-top: 0px;
+}
+
+.tweet.has-reply {
+  border-bottom: none;
+}
+
+.tweet.has-reply::after {
+  content: "";
+  position: absolute;
+  width: 0rem;
+  height: 100%;
+  top: 5.5rem;
+  left: 3.5rem;
+  border-left: 5px dotted var(--saito-border-color);
+  z-index: 50;
+}
+
+.tweet.has-reply-disconnected::after {
+  content: "";
+  position: absolute;
+  width: 0rem;
+  height: 100%;
+  top: 5.5rem;
+  left: 3.5rem;
+  border-left: 5px dotted var(--saito-border-color);
+  z-index: 50;
+}
+
+.tweet-header .saito-user .saito-identicon-box .saito-identicon {
+  z-index: 51;
+  position: absolute;
+}
+
+.tweet-body {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+}
+
+.tweet.quoted {
+  margin-top: -2rem;
+}
+
+.tweet.quoted .tweet-contents {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+}
+
+.tweet.quoted:hover {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid var(--saito-border-color);
+}
+
+.tweet-overlay .tweet-main {
+  overflow-y: auto;
+  max-height: calc(95vh - 40rem);
+}
+
+.tweet-notice {
+  display: flex;
+  box-sizing: border-box;
+  color: var(--saito-font-color-light);
+  font-family: var(--saito-font);
+  word-wrap: break-word;
+  padding-bottom: 1rem;
+  position: relative;
+  font-size: 1.4rem;
+  white-space: nowrap;
+}
+
+.tweet-notice .saito-address {
+  display: inline;
+  margin-left: 0.25rem;
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: var(--saito-font-color-light);
+}
+
+.tweet-text {
+  padding: 0.5rem 0;
+  line-height: 2.2rem;
+  max-height: 17.7rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tweet-text.full {
+  transition: all 0.2s linear;
+  max-height: 50rem;
+  overflow-y: auto;
+  margin-bottom: 2rem;
+}
+
+.tweet-text.full::after {
+  content: "";
+  position: absolute;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--saito-primary);
+  font-size: smaller;
+  padding: 0 0.5rem;
+  transition: all 0.2s linear;
+}
+
+.tweet-text.preview::before {
+  content: " ";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 10rem;
+  width: 100%;
+  background: linear-gradient(180deg, transparent, var(--saito-background-color));
+  transition: all 2s ease;
+}
+
+.tweet-text.preview:hover::after {
+  font-family: FontAwesome;
+  content: "\f0d7";
+  position: absolute;
+  bottom: 2rem;
+  color: var(--saito-primary);
+  font-size: smaller;
+  font-size: 1.5rem;
+  z-index: 999;
+  text-align: center;
+  line-height: 2.7rem;
+  padding: 0.3rem 1rem;
+  border-radius: var(--saito-border-radius);
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 1s;
+}
+
+.tweet-text.preview~.tweet-controls {
+  display: none;
+}
+
+.tweet-text.full~.tweet-controls {
+  display: flex;
+}
+
+.tweet:hover {
+  background-color: var(--saito-background-light);
+}
+
+.tweet:hover .tweet-text.preview::before {
+  background: linear-gradient(180deg, transparent, var(--saito-background-light));
+}
+
+.tweet-controls {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  cursor: default;
+}
+
+.tweet-controls>div {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  cursor: pointer;
+  color: var(--saito-font-color-light);
+}
+
+.tweet-controls>div:hover {
+  transform: scale(1.05);
+  color: var(--saito-primary);
+}
+
+.tweet-controls span {
+  display: inline-block;
+  font-weight: bold;
+  z-index: 1;
+  font-size: 1.5rem;
+}
+
+.tweet-controls i {
+  font-size: 1.7rem;
+  margin: 0 1rem;
+  text-align: center;
+}
+
+.tweet-tool-flag i {
+  font-weight: normal;
+}
+
+.tweet-picture {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+  grid-gap: 0.3rem;
+  width: 100%;
+}
+
+.tweet-picture>img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.tweet-overlay-img-cont img {
+  min-width: 50vw;
+  max-height: 90vh;
+  max-width: 90vw;
+}
+
+.tweet-img-icon {
+  font-size: 3rem;
+  color: var(--saito-white);
+  background: var(--saito-gray-mid);
+  padding: 1.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.tweet-overlay-content-controls-spacer {
+  flex-grow: 1;
+}
+
+.post-tweet-button {
+  line-height: 4.5rem;
+  font-size: 2.2rem;
+}
+
+.tweet-img-arrow-box {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tweet-overlay-img-cont>img {
+  transition: all 0.2s ease-in-out;
+}
+
+.tweet-img-arrow-box.left {
+  left: -10rem;
+}
+
+.tweet-img-arrow-box.right {
+  right: -10rem;
+}
+
+.link-img {
+  width: 100%;
+  height: 25rem;
+  background-size: cover !important;
+  background-position: center;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.link-info {
+  padding: 2rem;
+  border: 1px solid var(--saito-border-color);
+  border-radius: 0.5rem;
+  border-top: none;
+  border-top-right-radius: unset;
+  border-top-left-radius: unset;
+}
+
+.link-title {
+  color: var(--saito-dark-shim);
+  margin: 0.3rem 0px;
+}
+
+.link-url {
+  color: var(--saito-gray-mid);
+}
+
+.link-description {
+  color: var(--saito-gray-mid);
+}
+
+.youtube-embed-container>iframe {
+  width: 100%;
+  height: 25rem;
+}
+
+@media screen and (max-width: 1280px) {
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .tweet {
+    padding: 1rem 0 0;
+  }
+  .tweet.has-reply::after {
+    top: 4.5rem;
+    left: 1.55rem;
+  }
+  .tweet-text {
+    padding-bottom: 0;
+    line-height: 2rem;
+  }
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
+  }
+  .tweet-notice .saito-address {
+    max-width: 70%;
+  }
+}
+
+@media screen and (max-width: 529px) {
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+  .tweet-picture>img {
+    height: 15rem;
+  }
+  .preview-img {
+    height: 15rem;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .tweet-picture {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+}/* ----------------------------------------------------------------
+Saito Identicon
+-----------------------------------------------------------------*/
+
+.saito-identicon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1px solid var(--saito-background-color);
+}
+
+.saito-identicon-box {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+/* ----------------------------------------------------------------
+Saito Username
+-----------------------------------------------------------------*/
+
+.saito-address, .saito-username {
+  max-width: 99%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  color: var(--saito-font-color-heavy);
+}
+
+.saito-user>.saito-address-long:nth-child(2) {
+  grid-column-end: 4;
+}
+
+/* ----------------------------------------------------------------
+Saito User
+-----------------------------------------------------------------*/
+
+.saito-user {
+  display: grid;
+  column-gap: 1rem;
+  cursor: pointer;
+  grid-template-columns: min-content 1fr min-content;
+  grid-template-rows: min-content 1fr;
+  justify-items: start;
+  width: 100%;
+  position: relative;
+}
+
+/*  saito-identicon-box  */
+
+.saito-user>.saito-identicon-box {
+  grid-column-start: 1;
+  grid-column-end: span 1;
+  grid-row: span 2;
+}
+
+.saito-user>.saito-address {
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 1;
+  grid-row-end: span 1;
+}
+
+.saito-user>.saito-user-timestamp {
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 2;
+  grid-row-end: span 1;
+  font-size: 1.4rem;
+  color: var(--saito-font-color-light);
+}
+
+.saito-user>.saito-userline {
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-start: 2;
+  grid-row-end: span 1;
+  font-size: 1.4rem;
+}
+
+.saito-user .saito-datetime {
+  cursor: pointer;
+  grid-column-start: 3;
+  grid-column-end: span 1;
+  grid-row: span 2;
+  font-size: 1.4rem;
+  align-items: top;
+}
+/* ----------------------------------------------------------------
+font imports
+-----------------------------------------------------------------*/
+
+@font-face {
+  font-family: "visuelt-black";
+  src: url("/saito/fonts/visuelt-black.eot");
+  src: url("/saito/fonts/visuelt-black.eot?#iefix") format("embedded-opentype"),
+    url("/saito/fonts/visuelt-black.woff2") format("woff2"),
+    url("/saito/fonts/visuelt-black.woff") format("woff"),
+    url("/saito/fonts/visuelt-black.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "visuelt-light";
+  src: url("/saito/fonts/visuelt-light.eot");
+  src: url("/saito/fonts/visuelt-light.eot?#iefix") format("embedded-opentype"),
+    url("/saito/fonts/visuelt-light.woff2") format("woff2"),
+    url("/saito/fonts/visuelt-light.woff") format("woff"),
+    url("/saito/fonts/visuelt-light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "visuelt-medium";
+  src: url("/saito/fonts/visuelt-medium.eot");
+  src: url("/saito/fonts/visuelt-medium.eot?#iefix") format("embedded-opentype"),
+    url("/saito/fonts/visuelt-medium.woff2") format("woff2"),
+    url("/saito/fonts/visuelt-medium.woff") format("woff"),
+    url("/saito/fonts/visuelt-medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "p-word";
+  src: url("/saito/fonts/password.ttf") format("truetype");
+}
+
+:root {
+  --saito-font: "visuelt-light";
+
+  --saito-header-height: 5em;
+  --saito-width: 1500px;
+
+  --saito-left-sidebar-width: 26rem;
+  --saito-main-appspace-width: 70rem;
+
+  /* static colors for all themes */
+
+  --saito-gray: #eaeaef45;
+  --saito-gray-mid: #444;
+  --saito-primary: #f71f3d;
+  --saito-secondary: #ff8235;
+  --saito-tertiary: rgb(234, 234, 239);
+  --saito-white: #fff;
+  --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%),
+    linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000),
+    linear-gradient(180deg, #e9ce93, #f71f3d);
+
+  /* variable colors overridden in themes */
+
+  --saito-font-color: #3d3d3d;
+  --saito-font-color-heavy: #222;
+  --saito-font-color-light: #888;
+  --saito-font-color-inverse: #efefef;
+  --saito-profile-background: #fff;
+  --saito-border-color: #c5c5c5bb;
+  --saito-border-color-dark: #a5a5a5bb;
+  --saito-border: 1px solid #c5c5c5bb;
+  --saito-border-radius: 0.5rem;
+  --saito-background-color: #fff;
+  --saito-background-light: #f4f4f4;
+  --saito-gray-transparent: #5555550a;
+  --saito-hover-background: #00000045;
+  --saito-black-faded: #1c1c23b5;
+  --saito-dark-shim: #0009;
+  --saito-light-shim: #0001;
+  --saito-arcade-overlay-background: #11101ed1;
+  --saito-box-shadow: -1px 1px 0.5rem 1px;
+  --saito-arcade-background: var(--saito-background-color);
+  --saito-button-background: var(--saito-primary);
+  --saito-arcade-header-background: var(--dreamscape);
+  --saito-modal-background: var(--dreamscape);
+  --saito-font-color-dark-modal: #efefef;
+}
+
+html[data-theme="dark"] {
+  --saito-primary: #e05b08;
+  --saito-secondary: #060606;
+  --saito-font-color: #dedede;
+  --saito-font-color-heavy: #ddd;
+  --saito-font-color-light: #aaa;
+  --saito-font-color-inverse: #010101;
+  --saito-profile-background: #222;
+  --saito-border-color: #343434;
+  --saito-border-color-dark: #454545;
+  --saito-border: 1px solid #c5c5c5bb;
+  --saito-background-color: #211f25;
+  --saito-background-light: #181a29;
+  --saito-gray-transparent: #88888818;
+  --saito-box-shadow: 0 0 0 1px;
+  --saito-arcade-header-background: transparent;
+  --saito-button-background: var(--saito-primary);
+  --saito-modal-background: #2e2636;
+  --saito-font-color-dark-modal: #efefef;
+}
+
+html[data-theme="arcade"] {
+  --saito-arcade-background: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
+  --saito-primary: #84a;
+  /* --dreamscape: #84a; */
+  --saito-secondary: #060606;
+  --saito-font-color: #dedede;
+  --saito-font-color-heavy: #ddd;
+  --saito-font-color-light: #aaa;
+  --saito-font-color-inverse: #010101;
+  --saito-profile-background: #22222269;
+  --saito-border: 1px solid #c5c5c5bb;
+  --saito-border-color: #639;
+  --saito-background-color: #3b1b5b;
+  --saito-background-light: #2e2636;
+  --saito-gray-transparent: #88888818;
+  --saito-background-shim: #0008;
+  --saito-dark-shim: #0009;
+  --saito-light-shim: #0001;
+  --saito-box-shadow: 0 0 0 1px;
+  --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
+  --saito-arcade-header-background: transparent;
+  --saito-modal-background: var(--saito-background-light);
+  --saito-font-color-dark-modal: #efefef;
+}
+
+.mixin_crypto_overlay {
+  padding: 2rem;
+  background-color: var(--saito-white);
+  color: black;
+  line-height: 1.6em;
+  font-size: 1.5em;
+  width: 90rem;
+}
+.mixin_crypto_title {
+  margin: 0.5em 0;
+  font-size: 2em;
+  font-weight: bold;
+}
+.mixin_crypto_warning {
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+.mixin_risk_acknowledge {
+  max-width: 200px;
+  text-align: center;
+  margin-right: auto;
+}
+
+
+.email-appspace-deposit-overlay {
+    padding: 2rem;
+    background-image: linear-gradient(to bottom right, #EA4843, #f78754);
+    color: #fff;
+    background-image: url(/saito/img/dreamscape.png);
+    background-position: 0em;
+    background-size: 120% 100%;
+    color: white;
+    border-radius: 1rem;
+    width: 40vw;
+  }
+
+  .email-appspace-deposit-overlay p {
+    font-size: 17px;
+  }
+
+  .input-cont {
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+  }
+
+  .input-cont p {
+    color: #fff;
+  }
+
+  .input-heading{
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  .input-elem {
+    width: 99%;
+    height: 35px;
+    padding: 7px 10px;
+    position:relative;
+  }
+
+  #copy-deposit-add {
+    position: absolute;
+    top: 54%;
+    right: 4%;
+    color: #444;
+    cursor: pointer;
+  }
+
+  .copy-check::before {
+    content:  "\f00c";
+  }
+
+  .info-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .info-item {
+  }
+
+  .info-item-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .info-item-detail {
+    font-size: 12px;
+  }
+
+  .note {
+    margin-top: 30px;
+    font-size: 13px;
+  }
+
+  .add-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .add-item-cont {
+  }
+
+  #qrcode img {
+    height: 17vh;
+  }
+
+  .add-input-box {
+    width: 70%;
+  }
+
+  .email-appspace-deposit-overlay {
+    max-width: 80vw;
+  }
+  .deposit_title {
+    font-size: 2em;
+  }
+  .deposit_desc {
+    font-size: 1.2em;
+    line-height: 1.6em;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .deposit_qrcode {
+    clear:both;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  .deposit_address {
+    font-size: 1.2em;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+  }
+
+   #withdrawl-confirm-cont, #withdrawl-sent-cont {
+    display: none;
+  }
+
+  .decision-cont a {
+    color: #fff;
+    transition: all 0.1s ease-in-out;
+  }
+
+  .decision-cont a:hover {
+    color: #333;
+  }
+
+  .email-appspace-withdraw-overlay {
+    width: 38vw;
+    padding: 2rem;
+    background-image: linear-gradient(to bottom right, #EA4843, #f78754);
+    color: #fff;
+    background-image: url(/saito/img/dreamscape.png);
+    background-position: 0em;
+    background-size: 120% 100%;
+    color: white;
+    border-radius: 1rem;
+  }
+
+  .mixin-withdraw-token-wrapper {
+    margin-bottom: 2rem;
+  }
+
+  .mixin-withdraw-token-wrapper p {
+    color: #fff;
+  }
+
+  .mixin-withdraw-input {
+    margin-bottom: 1rem;
+    position: relative;
+    padding-bottom: 20px;
+  }
+
+  .no-margin {
+    margin: 0px;
+  }
+
+  .max-amount-error {
+    display: none;
+    color: #5d1919;
+  }
+
+  .input-heading{
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  .input-elem {
+    width: 100% !important;
+    height: 45px;
+    padding: 10px 10px !important;
+    font-size: 16px !important;
+  }
+
+  .info-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .info-item {
+  }
+
+  .info-item-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .info-item-detail {
+    font-size: 12px;
+  }
+
+  .note {
+    margin-top: 30px;
+    font-size: 12px;
+  }
+
+  .note.withdrawl {
+    font-size: 15px;
+    margin-top: 25px;
+    margin-bottom: 30px;
+  }
+
+  .add-cont {
+    display: flex;
+    justify-content: space-between;
+  } 
+
+  .add-input-box {
+  }
+
+  .withdraw_submit {
+    cursor: pointer;
+    background-color: #fff;
+    color: var(--saito-primary);
+    font-size: 1.5rem;
+  }
+
+  .amount-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .max-amount-btn {
+    display: inline-block;
+    background-color: #fff;
+    color: #222;
+    position: absolute;
+    right: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    top: 50%;
+    transform: translateY(-10%);
+  }
+
+
+#mixin-warning-note {
+    font-size: 1.7rem;
+    color: #4a4848;
+    margin-bottom: 1.5rem;
+}
+
+  .mixin-no-history {
+    margin-left: 2rem;
+  }
+
+  .mixin-txn-his-container {
+    margin-top: 1rem;
+  }
+
+  .mixin-txn-his-container .saito-table-body {
+    height: auto;
+  }
+
+  .mixin-txn-his-container .saito-table-header {
+    grid-template-columns: 15rem 15rem  15rem 15rem;
+    text-align: center;
+  }
+
+  .mixin-txn-his-container .saito-table-row {
+    grid-template-columns: 16rem 16rem 14rem 16rem;
+    text-align: center;
+  }
+
+  .hide-btn {
+    display: none;
+  }
+
+  .mixin-items-container {
+    margin-top: 3rem;
+  }
+
+.mixin-items-container .saito-table-header,
+.mixin-txn-his-container .saito-table-header {
+  background: #e9e9e9;
+  padding: 1rem 0rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+
+.mixin-items-container .saito-table-header {
+  grid-template-columns: 14rem 14rem;
+}
+
+.mixin-items-container .saito-table-body {
+  height: auto;
+}
+
+.mixin-items-container .saito-table-row {
+  grid-template-columns: 13rem 13rem 13rem 13rem 13rem;
+  text-align: center;
+  margin-bottom: 1rem;
+
+}
+
+.mixin-items-container .saito-table-row,
+.mixin-txn-his-container .saito-table-row {
+  margin-bottom: 1rem;
+}
+
+.mixin-item {
+  height: 50px;
+  width: calc(100% * (1/5));
+  flex-grow: 1;
+}
+
+.mixin-item-header {
+  background-color: #e7ebed;
+  font-weight: 700;
+}
+
+.mixin-history-button {
+  max-width: 200px;
+  text-align: center;
+}
+
+.balances_container {
+    box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 2px 1px -1px rgb(0 0 0 / 12%);
+    border-radius: 4px;
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 1.5rem;
+    font-weight: 400;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.35417em;
+    padding: 15px;
+}
+.balances_header {
+    display: flex;
+}
+.balances_header_title {
+    flex: 1 1 auto;
+}
+.balances_header_icons {
+}
+.balances_header_icon {
+    fill: currentColor;
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    font-size: 24px;
+    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    user-select: none;
+    flex-shrink: 0;
+    display: none;
+}
+.balances_table {
+    width: 100%;
+    display: table;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+.balances_tablehead {
+    display: table-header-group;
+}
+.balances_tablerow {
+    color: inherit;
+    height: 48px;
+    display: table-row;
+    outline: none;
+    vertical-align: middle;
+    box-sizing: inherit;
+}
+.balances_tablerow:hover {
+    background-color: #e7e7e7;
+}
+.balances_tablecell {
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 1.2rem;
+    font-weight: 400;
+    display: table-cell;
+    padding: 4px 56px 4px 24px;
+    text-align: left;
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+    vertical-align: inherit;
+}
+.balances_link {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+.deposit {
+    color: #14b214;
+}
+.withdrawal {
+    color: #e34927;
+}
+
+#mixin-balance-container .mixin-item {
+    width: calc(100% * (1/4));
+}
+
+.mixin-his-created-at {
+    font-size: 1.15rem;
+}
+
+.mixin-balances_deposit, .mixin-balances_withdraw, .mixin-balance-history {
+    color: var(--saito-primary);
+}
+
+.mixin-overlay-history {
+  background: #fff;
+  min-height: 20rem;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+
+
+/********************************************************/
+/********    Checking balance overlay       *************/
+
+.game-crypto-transfer-manager-container {
+  background: #fff;
+  padding: 1rem;
+  width: 60rem;
+  text-align: center;
+  border-radius: 1rem;
+}
+
+.auth_title {
+  font-size:3.5rem;
+  margin-bottom: 1rem;
+}
+
+.balance {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.from_address,
+.to_address {
+  margin-bottom: 1rem;
+  font-size: 2rem;  
+}
+
+
+@media screen and (max-width: 768px) {
+
+
+  .mixin-items-container .saito-table-header {
+    grid-template-columns: 8rem 8rem;
+  }
+
+  .mixin-items-container .saito-table-row {
+    grid-template-columns: 7rem 7rem 7rem 7rem 7rem;
+  }
+
+  .email-appspace-deposit-overlay {
+    max-width: fit-content;
+    width: 95vw;
+  }
+
+  .email-appspace-deposit-overlay #qrcode img {
+    width: 24vw;
+    height: auto;
+  }
+
+  .email-appspace-withdraw-overlay {
+    width: 95vw;
+  }
+}
+
+

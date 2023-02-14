@@ -121,7 +121,6 @@ class Chessgame extends GameTemplate {
       callback : async function(app, game_mod) {
         let c = await sconfirm("Do you really want to resign?");
         if (c) {
-          game_mod.game.over = 1;
           game_mod.resignGame(game_mod.game.id, "resignation");
           return;
         }
@@ -336,18 +335,23 @@ class Chessgame extends GameTemplate {
       
       this.updateBoard(this.game.position);
   
+      //Check for draw according to game engine
+      if (this.engine.in_draw() === true) {
+        this.endGame(this.game.players, "draw");
+        return 0;
+      }
+
       this.game.target = msg.extra.target;
 
       if (msg.extra.target == this.game.player) {
-        if (this.useClock) { this.startClock(); }
+        //I announce that I am in checkmate to end the game
         if (this.engine.in_checkmate() === true) {
-          this.game.over = 1;
           this.resignGame(this.game.id, "checkmate");
           return 0;
-        }else if (this.engine.in_draw() === true) {
-          this.endGame(this.game.players, "draw");
-          return 0;
         }
+
+        if (this.useClock) { this.startClock(); }
+
       }
     }
 
@@ -396,7 +400,6 @@ class Chessgame extends GameTemplate {
       resign_icon.onclick = async () => {
         let c = await sconfirm("Do you really want to resign?");
         if (c) {
-          this.game.over = 1;
         	this.resignGame(this.game.id, "resignation");
         	return;
         }

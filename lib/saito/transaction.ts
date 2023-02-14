@@ -121,6 +121,7 @@ try {
             const reconstruct2 = Buffer.from(this.transaction.m).toString("utf-8");
             this.msg = JSON.parse(reconstruct2);
 	  } catch (err) {
+console.log("minor issues reconstructing: " + err);
 	    try {
               const reconstruct3 = this.base64ToString(Buffer.from(this.transaction.m).toString());
               this.msg = JSON.parse(reconstruct3);
@@ -286,6 +287,7 @@ try {
       hop.deserialize(app, buffer.slice(start_of_data, end_of_data));
       path.push(hop);
     }
+
 
     this.transaction.from = inputs;
     this.transaction.to = outputs;
@@ -481,26 +483,17 @@ try {
 
     try {
       if (this.transaction.m && this.transaction.m.byteLength > 0) {
-console.log("A");
         const reconstruct = this.transaction.m.toString("utf-8");
         //const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-console.log("B - " + reconstruct);
         this.msg = JSON.parse(reconstruct);
-console.log("C");
       } else {
-console.log("D");
         this.msg = {};
-console.log("E");
       }
     } catch (err) {
       // TODO : handle this without printing an error
-console.log("ERROR: " + JSON.stringify(err));
       try {
-console.log("fallback on failure... 1");
         const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-console.log("fallback on failure... 2");
         this.msg = JSON.parse(reconstruct);
-console.log("fallback on failure... 3");
       } catch (err) {
         console.log(
           `buffer length = ${this.transaction.m.byteLength} type = ${typeof this.transaction.m}`
@@ -509,7 +502,6 @@ console.log("fallback on failure... 3");
         console.log("here: " + JSON.stringify(this.msg));
       }
     }
-console.log("RETURN ON FAILURE");
     return this.msg;
   }
 
@@ -791,6 +783,35 @@ console.log("RETURN ON FAILURE");
 
     return buffer;
   }
+
+  //
+  // serialize / deserialize with less compact encodings
+  //
+  serialize_to_hex(app) {
+    let b = Buffer.from(this.serialize(app));
+    return b.toString("hex");
+  }
+  deserialize_from_hex(app: Saito, hexstring) {
+    let b = Buffer.from(hexstring, "hex");
+    this.deserialize(app, b, 0); 
+  }
+  serialize_to_base64(app) {
+    let b = Buffer.from(this.serialize(app));
+    return b.toString("base64");
+  }
+  deserialize_from_base64(app: Saito, base64string) {
+    let b = Buffer.from(base64string, "base64");
+    this.deserialize(app, b, 0); 
+  }
+// seems buggy
+//  serialize_to_utf8(app) {
+//    let b = Buffer.from(this.serialize(app));
+//    return b.toString("utf8");
+//  }
+//  deserialize_from_utf8(app: Saito, utf8string) {
+//    let b = Buffer.from(utf8string, "utf8");
+//    this.deserialize(app, b, 0);
+//  }
 
   //
   // everything but the signature
