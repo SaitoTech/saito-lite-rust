@@ -791,20 +791,27 @@ try {
     let b = Buffer.from(this.serialize(app));
     return b.toString("hex");
   }
-  serialize_to_utf8(app) {
-    let b = Buffer.from(this.serialize(app));
-console.log("EXPORTING AS: " + b.toString("utf8").length);
-    return b.toString("utf8");
-  }
   deserialize_from_hex(app: Saito, hexstring) {
     let b = Buffer.from(hexstring, "hex");
     this.deserialize(app, b, 0); 
   }
-  deserialize_from_utf8(app: Saito, utf8string) {
-console.log("IMPORTING: " + utf8string.length);
-    let b = Buffer.from(utf8string, "utf8");
-    this.deserialize(app, b, 0);
+  serialize_to_base64(app) {
+    let b = Buffer.from(this.serialize(app));
+    return b.toString("base64");
   }
+  deserialize_from_base64(app: Saito, base64string) {
+    let b = Buffer.from(base64string, "base64");
+    this.deserialize(app, b, 0); 
+  }
+// seems buggy
+//  serialize_to_utf8(app) {
+//    let b = Buffer.from(this.serialize(app));
+//    return b.toString("utf8");
+//  }
+//  deserialize_from_utf8(app: Saito, utf8string) {
+//    let b = Buffer.from(utf8string, "utf8");
+//    this.deserialize(app, b, 0);
+//  }
 
   //
   // everything but the signature
