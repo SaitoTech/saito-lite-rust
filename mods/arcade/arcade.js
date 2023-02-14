@@ -141,6 +141,7 @@ class Arcade extends ModTemplate {
       this.app.connection.emit('arcade-invite-manager-render-request');
 
     }
+
   }
 
 

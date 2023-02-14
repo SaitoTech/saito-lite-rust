@@ -83,7 +83,7 @@ class JoinGameOverlay {
             if (this.app.options.games[i].id == this.invite.game_id) { 
               let gamemod = this.app.modules.returnModule(this.app.options.games[i].module);
               if (gamemod) {
-                gamemod.resignGame(this.invite.game_id, "cancellation");
+                gamemod.quitGame(this.invite.game_id, "cancellation");
                 setTimeout(()=>{ 
                   gamemod.removeGameFromOptions(this.invite.game_id);
                   this.mod.sendCloseTransaction(this.invite.game_id); 
