@@ -1114,7 +1114,7 @@ console.log("tweet text is: " + tweet.text);
   //
   async updateTweetsCacheForBrowsers() {
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 10`;
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 6`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
