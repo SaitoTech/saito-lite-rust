@@ -970,19 +970,10 @@ console.log("error in initial processing: " + err);
         }
       }
 
-
-      //
-      // update cache
-      //
-      if (this.app.BROWSER == 0) {
-        this.updateTweetsCacheForBrowsers();
-      }
-
       this.addTweet(tx, 1);
-
       return;
-    }
 
+    }
 
 
     //
@@ -1067,7 +1058,7 @@ console.log("error in initial processing: " + err);
       $tx_size: tx_size
     };
 
-    app.storage.executeDatabase(sql, params, "redsquare");
+    await app.storage.executeDatabase(sql, params, "redsquare");
 
     let ts = new Date().getTime();
     let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
@@ -1075,7 +1066,7 @@ console.log("error in initial processing: " + err);
       $timestamp: ts,
       $sig: tweet.thread_id,
     }
-    app.storage.executeDatabase(sql2, params2, "redsquare");
+    await app.storage.executeDatabase(sql2, params2, "redsquare");
 
     if (tweet.retweet_tx != null) {
       let ts = new Date().getTime();
@@ -1083,9 +1074,8 @@ console.log("error in initial processing: " + err);
       let params3 = {
         $sig: tweet.thread_id,
       }
-      app.storage.executeDatabase(sql3, params3, "redsquare");
+      await app.storage.executeDatabase(sql3, params3, "redsquare");
     }
-
 
     if (tweet.parent_id !== tweet.tx.transaction.sig && tweet.parent_id !== "") {
       let ts = new Date().getTime();
@@ -1095,6 +1085,12 @@ console.log("error in initial processing: " + err);
       }
       app.storage.executeDatabase(sql4, params4, "redsquare");
     }
+
+
+    //
+    // update cache
+    //
+    this.updateTweetsCacheForBrowsers();
 
     this.sqlcache = [];
 
@@ -1109,7 +1105,7 @@ console.log("error in initial processing: " + err);
 
     let hex_entries = [];
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 800000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
 
 console.log(sql);
 
