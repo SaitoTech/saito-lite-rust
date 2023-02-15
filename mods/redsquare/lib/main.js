@@ -32,7 +32,7 @@ class RedSquareMain {
       this.mod.sidebar.render();
     });
 
-    this.app.connection.on("redsquare-home-render-request", (tx) => {
+    this.app.connection.on("redsquare-home-render-request", () => {
       document.querySelector(".saito-main").innerHTML = "";
       this.mod.viewing = "home";
       let rendered =  this.renderComponentFromHash();
@@ -89,9 +89,6 @@ class RedSquareMain {
     // this fires when a tweet is added to our tree
     //
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
-
-console.log("in redsquare tweet added render request...");
-      
       if (this.render_component === "home") {
         if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
 

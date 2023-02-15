@@ -21,7 +21,7 @@ class AppspaceProfile {
       this.app.browser.addElementToSelectorOrDom(AppspaceProfileTemplate(), this.container);
     }
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND publickey = '${publickey}';`;
+    let sql = `SELECT * FROM tweets WHERE publickey = '${publickey}' ORDER BY created_at DESC;`;
     for (let i = 0; i < this.mod.peers_for_tweets.length; i++) {   
       this.mod.loadTweetsFromPeerAndReturn(this.mod.peers_for_tweets[i], sql, (txs) => {
         for (let z = 0; z < txs.length; z++) {
