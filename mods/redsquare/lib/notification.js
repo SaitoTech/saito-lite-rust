@@ -4,6 +4,7 @@ const ReplyNotificationTemplate = require("./reply-notification.template");
 const RetweetNotificationTemplate = require("./retweet-notification.template");
 const saito = require("./../../../lib/saito/saito");
 const Tweet = require("./tweet");
+const SaitoLoader = require("./../../../lib/saito/ui/saito-loader/saito-loader");
 
 
 
@@ -13,6 +14,7 @@ class RedSquareNotification {
   constructor(app, mod, tx = null) {
     this.app = app;
     this.mod = mod;
+    this.loader = new SaitoLoader(app, mod, ".redsquare-appspace-header")
     this.tx = tx;
   }
 
@@ -77,11 +79,18 @@ class RedSquareNotification {
 
     if (obj) {
       obj.onclick = (e) => {
+
+	  //
+	  // show loader
+	  //
+	  this.loader.render();
+
           let sig = e.currentTarget.getAttribute("data-id");
           let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
           mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
             for (let z = 0; z < txs.length; z++) {
               let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+	      this.loader.hide();
               app.connection.emit('redsquare-thread-render-request', tweet);
             }
           }, false, false);
