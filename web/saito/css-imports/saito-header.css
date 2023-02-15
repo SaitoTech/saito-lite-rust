@@ -216,7 +216,7 @@
   color: #fff;
   background: var(--saito-arcade-overlay-background);
   border-radius: 0.7rem;
-  padding: 1rem 1rem;
+  padding: 0.75rem;
   margin: auto;
   width: 95%;
   margin-bottom: 1.5rem;
@@ -310,7 +310,7 @@
 
 .slidein-panel {
   position: absolute;
-  top: 45vh;
+  top: 46vh;
   background: #fff;
   width: 100%;
   height: 99vh;
@@ -363,14 +363,16 @@
 
 .pubkey-containter {
   position: relative;
-  margin-bottom: 6rem;  
+  max-width: 82%;
+  margin: auto;
+  margin-bottom: 2rem;
+  height: 3rem;
 }
 
 .pubkey-containter i {
-  line-height: 12rem;
-  position: absolute;
-  bottom: -7.5rem;
-  right: 2rem;
+  display: inline-block;
+  float: left;
+  line-height: 2.5rem;
 }
 
 .wallet-info-container {
@@ -397,10 +399,8 @@
 }
 
 .profile-public-key {
-  width: 88%;
-  display: block;
-  margin-left: 50%;
-  transform: translateX(-52%);
+  width: 95%;
+  display: inline-block;
   float: left;
   font-size: 1.7rem;
   margin-top: 0.5rem;
@@ -445,10 +445,8 @@
   }
 
   .profile-public-key {
-    width: 88%;
-    display: block;
-    margin-left: 50%;
-    transform: translateX(-52%);
+    width: 95%;
+    display: inline-block;
     float: left;
     font-size: 1.7rem;
     margin-top: 0.5rem;
@@ -461,7 +459,7 @@
   }
 
   .slidein-panel {
-    top: 49vh;
+    top: 48vh;
   }
 
 }
