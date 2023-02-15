@@ -121,7 +121,7 @@ try {
             const reconstruct2 = Buffer.from(this.transaction.m).toString("utf-8");
             this.msg = JSON.parse(reconstruct2);
 	  } catch (err) {
-console.log("minor issues reconstructing: " + err);
+	    console.log("minor issues reconstructing: " + err);
 	    try {
               const reconstruct3 = this.base64ToString(Buffer.from(this.transaction.m).toString());
               this.msg = JSON.parse(reconstruct3);
@@ -131,35 +131,6 @@ console.log("minor issues reconstructing: " + err);
 	  }
         }
       }
-
-
-//
-// FRI FEB 3 -- DEPRECATED -- delete if no problems
-//
-/***********
-      if (this.transaction.type === TransactionType.Normal) {
-        try {
-          let buffer = Buffer.from(this.transaction.m);
-          if (buffer.byteLength === 0) {
-            this.msg = {};
-          } else {
-            try {
-              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-              this.msg = JSON.parse(reconstruct);
-            } catch (error) {
-              //console.log("failed from utf8. trying if base64 still works for old version");
-              //console.error(error);
-              const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
-              this.msg = JSON.parse(reconstruct);
-            }
-          }
-        } catch (err) {
-          //console.log("failed converting buffer in tx : ", this.transaction);
-          //console.error(err);
-        }
-      }
-***********/
-
     }
 } catch (err) {
   console.log("POTENTIAL CRASH ERROR: " + err);
@@ -802,6 +773,23 @@ try {
   deserialize_from_base64(app: Saito, base64string) {
     let b = Buffer.from(base64string, "base64");
     this.deserialize(app, b, 0); 
+  }
+  serialize_to_web(app) {
+    let m = this.transaction.m;
+    this.transaction.m = Buffer.alloc(0);
+    let b = Buffer.from(this.serialize(app));
+    let web_obj = {
+      t : this.serialize_to_base64(app) ,
+      m : m.toString('base64')
+    }
+    return JSON.stringify(web_obj);
+  }
+  deserialize_from_web(app: Saito, webstring) {
+    try {
+      let web_obj = JSON.parse(webstring);
+      this.deserialize_from_base64(app, web_obj.t); 
+      this.transaction.m = Buffer.from(web_obj.m, 'base64');
+    } catch (err) {}
   }
 // seems buggy
 //  serialize_to_utf8(app) {

@@ -228,56 +228,6 @@ class RedSquare extends ModTemplate {
 
 
 
-
-/****
-  //
-  // runs when normal peer connects
-  //
-  async onPeerHandshakeComplete(app, peer) {
-
-    //
-    // avoid network overhead if in other apps
-    //
-    if (!this.browser_active) { return; }
-
-    //
-    // render tweet thread
-    //
-    let mod = app.modules.returnModule('RedSquare');
-
-    if (this.results_loaded == false) {
-      let tweet_id = app.browser.returnURLParameter('tweet_id');
-      if (tweet_id != "") {
-        let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-        this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
-          this.results_loaded = true;
-          for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-            app.connection.emit('redsquare-thread-render-request', tweet);
-          }
-        }, false, false);
-        return;
-      }
-      //
-      // render user profile
-      //
-      let user_id = app.browser.returnURLParameter('user_id');
-      if (user_id != "") {
-        this.app.connection.emit("redsquare-profile-render-request", (user_id));
-        return;
-      }
-
-       this.results_loaded = true;
-    } 
-    
-    //
-    // check peer for any tweets they want to send us
-    //
-    this.peers_for_tweets.push(peer);
-
-  }
-****/
-
   //
   // runs when normal peer connects
   //
@@ -388,10 +338,16 @@ class RedSquare extends ModTemplate {
     //
     try {
       this.app.connection.emit("redsquare-home-render-request");
+console.log("A");
       for (let z = 0; z < tweets.length; z++) {
+console.log("B: " + z);
 	let newtx = new saito.default.transaction();
-	newtx.deserialize_from_base64(this.app, tweets[z]);
+console.log("C: " + z);
+	//newtx.deserialize_from_base64(this.app, tweets[z]);
+	newtx.deserialize_from_web(this.app, tweets[z]);
+console.log("D: " + z);
         this.addTweet(newtx);
+console.log("E: " + z);
       }
       this.app.connection.emit("redsquare-home-render-request");
     } catch (err) {
@@ -1017,19 +973,10 @@ console.log("error in initial processing: " + err);
         }
       }
 
-
-      //
-      // update cache
-      //
-      if (this.app.BROWSER == 0) {
-        this.updateTweetsCacheForBrowsers();
-      }
-
       this.addTweet(tx, 1);
-
       return;
-    }
 
+    }
 
 
     //
@@ -1114,7 +1061,7 @@ console.log("error in initial processing: " + err);
       $tx_size: tx_size
     };
 
-    app.storage.executeDatabase(sql, params, "redsquare");
+    await app.storage.executeDatabase(sql, params, "redsquare");
 
     let ts = new Date().getTime();
     let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
@@ -1122,7 +1069,7 @@ console.log("error in initial processing: " + err);
       $timestamp: ts,
       $sig: tweet.thread_id,
     }
-    app.storage.executeDatabase(sql2, params2, "redsquare");
+    await app.storage.executeDatabase(sql2, params2, "redsquare");
 
     if (tweet.retweet_tx != null) {
       let ts = new Date().getTime();
@@ -1130,9 +1077,8 @@ console.log("error in initial processing: " + err);
       let params3 = {
         $sig: tweet.thread_id,
       }
-      app.storage.executeDatabase(sql3, params3, "redsquare");
+      await app.storage.executeDatabase(sql3, params3, "redsquare");
     }
-
 
     if (tweet.parent_id !== tweet.tx.transaction.sig && tweet.parent_id !== "") {
       let ts = new Date().getTime();
@@ -1140,8 +1086,14 @@ console.log("error in initial processing: " + err);
       let params4 = {
         $sig: tweet.parent_id,
       }
-      app.storage.executeDatabase(sql4, params4, "redsquare");
+      await app.storage.executeDatabase(sql4, params4, "redsquare");
     }
+
+
+    //
+    // update cache
+    //
+    this.updateTweetsCacheForBrowsers();
 
     this.sqlcache = [];
 
@@ -1156,7 +1108,7 @@ console.log("error in initial processing: " + err);
 
     let hex_entries = [];
 
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 800000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1400000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
@@ -1166,7 +1118,8 @@ console.log("error in initial processing: " + err);
       // create the transaction
       //
       let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
-      let hexstring = tx.serialize_to_base64(this.app);      
+      //let hexstring = tx.serialize_to_base64(this.app);      
+      let hexstring = tx.serialize_to_web(this.app);      
       hex_entries.push(hexstring);
 
     }
