@@ -11,6 +11,8 @@ const StunxGameMenu = require("./lib/game-menu/main");
 const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
 
+const adapter = require('webrtc-adapter')
+
 
 
 class Stun extends ModTemplate {
@@ -56,9 +58,9 @@ class Stun extends ModTemplate {
                 username: "guest",
                 credential: "somepassword",
             },
-            {
-                urls: "stun:stun-de.saito.io:3478"
-            },
+            // {
+            //     urls: "stun:stun-de.saito.io:3478"
+            // },
             {
                 urls: "turn:stun-de.saito.io:3478",
                 username: "guest",
@@ -408,27 +410,33 @@ class Stun extends ModTemplate {
                         }
 
                     };
-                    pc.onconnectionstatechange = e => {
+
+                    pc.addEventListener('connectionstatechange', e => {
                         console.log("connection state ", pc.connectionState);
 
                         switch (pc.connectionState) {
                             case "connecting":
+                                this.resetStep()
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             case "connected":
+                                this.resetStep()
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             case "disconnected":
+                                this.resetStep()
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             case "failed":
+                                this.resetStep()
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             default:
                                 ""
                                 break;
                         }
-                    }
+                    } )
+                
 
                     const stunx_self = this.app.modules.returnModule('Stun');
                     let localStream = stunx_self.localStream;
@@ -558,7 +566,7 @@ class Stun extends ModTemplate {
                     };
                     reply.ice_candidates.push(ice.candidate);
                 }
-                pc.onconnectionstatechange = e => {
+                pc.addEventListener('connectionstatechange',e => {
                     console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
 
@@ -582,7 +590,8 @@ class Stun extends ModTemplate {
                             ""
                             break;
                     }
-                }
+                } )
+           
 
                 // add data channels 
                 const data_channel = pc.createDataChannel('channel');
@@ -882,8 +891,8 @@ class Stun extends ModTemplate {
 
     receiveMediaChannelOfferTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
-        if(this.current_step >= 1) return;
-        this.current_step = 1;
+        // if(this.current_step >= 1) return;
+        // this.current_step = 1;
 
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
@@ -952,30 +961,33 @@ class Stun extends ModTemplate {
 
     receiveMediaChannelAnswerTransaction(app, tx, conf, blk) {
         if (app.BROWSER !== 1) return;
-        if(this.current_step >= 2) return;
+        // if(this.current_step >= 2) return;
 
-        this.current_step = 2;;
+        // this.current_step = 2;;
         if(!this.ChatManagerLarge.isActive) return;
         let stunx_self = app.modules.returnModule("Stun");
         let my_pubkey = app.wallet.returnPublicKey();
-        console.log('receiving stun media channel answer');
+        // console.log('receiving stun media channel answer');
 
-        app.connection.emit('stun-receive-media-answer', {
-            room_code:tx.msg.data.reply.room_code,
-            offer_creator: tx.msg.data.offer_creator,
-            recipient:tx.msg.data.answer_creator
-        })
+        // app.connection.emit('stun-receive-media-answer', {
+        //     room_code:tx.msg.data.reply.room_code,
+        //     offer_creator: tx.msg.data.offer_creator,
+        //     recipient:tx.msg.data.answer_creator
+        // })
+
         if (my_pubkey === tx.msg.data.offer_creator) {
-
             console.log('receiving stun media channel answer');
             console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.data);
             console.log("peer connections: ", stunx_self.peer_connections);
             const reply = tx.msg.data.reply;
+            
             if (stunx_self.peer_connections[tx.msg.data.answer_creator]) {
-                stunx_self.peer_connections[tx.msg.data.answer_creator].setRemoteDescription(reply.answer).then(result => {
-                    console.log('setting remote description of ', stunx_self.peer_connections[tx.msg.data.answer_creator], 'reply ', reply);
-
-                }).catch(error => console.log(" An error occured with setting remote description for :", stunx_self.peer_connections[tx.msg.data.answer_creator], error));
+                if(stunx_self.peer_connections[tx.msg.data.answer_creator].remoteDescription == null || stunx_self.peer_connections[tx.msg.data.answer_creator].currentRemoteDescription == null ){
+                    stunx_self.peer_connections[tx.msg.data.answer_creator].setRemoteDescription(reply.answer).then(result => {
+                        console.log('setting remote description of ', stunx_self.peer_connections[tx.msg.data.answer_creator], 'reply ', reply);
+                    }).catch(error => console.log(" An error occured with setting remote description for :", stunx_self.peer_connections[tx.msg.data.answer_creator], error));
+                }   
+             
                 if (reply.ice_candidates.length > 0) {
                     console.log("Adding answer candidates");
                     for (let i = 0; i < reply.ice_candidates.length; i++) {
