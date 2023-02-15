@@ -121,7 +121,7 @@ try {
             const reconstruct2 = Buffer.from(this.transaction.m).toString("utf-8");
             this.msg = JSON.parse(reconstruct2);
 	  } catch (err) {
-console.log("minor issues reconstructing: " + err);
+	    console.log("minor issues reconstructing: " + err);
 	    try {
               const reconstruct3 = this.base64ToString(Buffer.from(this.transaction.m).toString());
               this.msg = JSON.parse(reconstruct3);
@@ -131,35 +131,6 @@ console.log("minor issues reconstructing: " + err);
 	  }
         }
       }
-
-
-//
-// FRI FEB 3 -- DEPRECATED -- delete if no problems
-//
-/***********
-      if (this.transaction.type === TransactionType.Normal) {
-        try {
-          let buffer = Buffer.from(this.transaction.m);
-          if (buffer.byteLength === 0) {
-            this.msg = {};
-          } else {
-            try {
-              const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-              this.msg = JSON.parse(reconstruct);
-            } catch (error) {
-              //console.log("failed from utf8. trying if base64 still works for old version");
-              //console.error(error);
-              const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
-              this.msg = JSON.parse(reconstruct);
-            }
-          }
-        } catch (err) {
-          //console.log("failed converting buffer in tx : ", this.transaction);
-          //console.error(err);
-        }
-      }
-***********/
-
     }
 } catch (err) {
   console.log("POTENTIAL CRASH ERROR: " + err);

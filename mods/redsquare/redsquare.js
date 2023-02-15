@@ -195,6 +195,9 @@ class RedSquare extends ModTemplate {
     // prefer at the top of their feed for more rapid page load.
     //
     if (app.BROWSER == 0) {
+console.log(" > ");
+console.log(" > UPDATING TWEET CACHE");
+console.log(" > ");
       this.updateTweetsCacheForBrowsers();
     }
 
@@ -227,56 +230,6 @@ class RedSquare extends ModTemplate {
   }
 
 
-
-
-/****
-  //
-  // runs when normal peer connects
-  //
-  async onPeerHandshakeComplete(app, peer) {
-
-    //
-    // avoid network overhead if in other apps
-    //
-    if (!this.browser_active) { return; }
-
-    //
-    // render tweet thread
-    //
-    let mod = app.modules.returnModule('RedSquare');
-
-    if (this.results_loaded == false) {
-      let tweet_id = app.browser.returnURLParameter('tweet_id');
-      if (tweet_id != "") {
-        let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-        this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
-          this.results_loaded = true;
-          for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-            app.connection.emit('redsquare-thread-render-request', tweet);
-          }
-        }, false, false);
-        return;
-      }
-      //
-      // render user profile
-      //
-      let user_id = app.browser.returnURLParameter('user_id');
-      if (user_id != "") {
-        this.app.connection.emit("redsquare-profile-render-request", (user_id));
-        return;
-      }
-
-       this.results_loaded = true;
-    } 
-    
-    //
-    // check peer for any tweets they want to send us
-    //
-    this.peers_for_tweets.push(peer);
-
-  }
-****/
 
   //
   // runs when normal peer connects
@@ -1157,6 +1110,9 @@ console.log("error in initial processing: " + err);
     let hex_entries = [];
 
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 800000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
+
+console.log(sql);
+
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
