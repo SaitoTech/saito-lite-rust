@@ -774,6 +774,23 @@ try {
     let b = Buffer.from(base64string, "base64");
     this.deserialize(app, b, 0); 
   }
+  serialize_to_web(app) {
+    let m = this.transaction.m;
+    this.transaction.m = Buffer.alloc(0);
+    let b = Buffer.from(this.serialize(app));
+    let web_obj = {
+      t : this.serialize_to_base64(app) ,
+      m : m.toString('base64')
+    }
+    return JSON.stringify(web_obj);
+  }
+  deserialize_from_web(app: Saito, webstring) {
+    try {
+      let web_obj = JSON.parse(webstring);
+      this.deserialize_from_base64(app, web_obj.t); 
+      this.transaction.m = Buffer.from(web_obj.m, 'base64');
+    } catch (err) {}
+  }
 // seems buggy
 //  serialize_to_utf8(app) {
 //    let b = Buffer.from(this.serialize(app));
