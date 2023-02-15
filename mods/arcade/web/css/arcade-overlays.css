@@ -122,7 +122,7 @@
 
 .arcade_game_overlay_loader {
     min-width: 32vw;
-    background: #fff;
+    background: var(--saito-arcade-background);
     padding: 6vw 15vh;
 }
 

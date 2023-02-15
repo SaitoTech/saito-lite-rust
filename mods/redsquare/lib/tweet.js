@@ -130,6 +130,7 @@ try {
       }
     }
 
+    this.app.browser.addIdentifiersToDom();
     this.attachEvents();
 
   }
@@ -137,6 +138,7 @@ try {
   renderWithCriticalChild(prepend = false) {
 
     this.render(prepend);
+    this.app.browser.addIdentifiersToDom();
     this.attachEvents();
 
     if (this.critical_child) {
@@ -190,7 +192,7 @@ try {
         }
       }
     }
-
+    this.app.browser.addIdentifiersToDom();
     this.attachEvents();
   }
 
@@ -204,6 +206,7 @@ try {
       parent.renderWithCriticalChild(true);
     } else {
       this.render();
+      this.app.browser.addIdentifiersToDom();
     }
   }
 
@@ -248,7 +251,7 @@ try {
         }
       }
     }
-
+    this.app.browser.addIdentifiersToDom();
     this.attachEvents();
   }
 
