@@ -197,11 +197,20 @@
 }
 
 
+#qrcode img {
+  height: auto;
+  width: 50%;
+  border: 2px solid;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin: 3rem auto;
+}
+
 .wallet-btn-container {
   white-space: nowrap;
   width: fit-content;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   border: none;
   grid-column-gap: 3.3rem;
   color: #fff;
@@ -217,12 +226,20 @@
   text-align: center;
   color: #fff;
   display:inline-block;
+  cursor: pointer;
 }
+
+
+.wallet-btn:hover .wallet-btn > i {
+  margin-bottom: 1.3rem;
+}
+
 
 .wallet-btn i {
   display: block;
   margin-bottom: 1rem;
   margin-top: 0.5rem;
+  transition: all 0.2s ease-in-out;
 }
 
 .wallet-balance {
@@ -295,7 +312,7 @@
   position: absolute;
   top: 45vh;
   background: #fff;
-  width: 100vw;
+  width: 100%;
   height: 99vh;
   overflow: hidden;
   z-index: 2;
@@ -353,7 +370,7 @@
   line-height: 12rem;
   position: absolute;
   bottom: -7.5rem;
-  right: 5rem;
+  right: 2rem;
 }
 
 .wallet-info-container {
@@ -380,10 +397,10 @@
 }
 
 .profile-public-key {
-  width: 74%;
+  width: 88%;
   display: block;
   margin-left: 50%;
-  transform: translateX(-54%);
+  transform: translateX(-52%);
   float: left;
   font-size: 1.7rem;
   margin-top: 0.5rem;
@@ -419,15 +436,19 @@
     overflow: hidden;
   }
 
-  .wallet-qrcode {
+  .slidein-panel {
+    width: 100vw;
+  }
+
+  #qrcode img {
     width: 50vw;
   }
 
   .profile-public-key {
-    width: 74%;
+    width: 88%;
     display: block;
     margin-left: 50%;
-    transform: translateX(-54%);
+    transform: translateX(-52%);
     float: left;
     font-size: 1.7rem;
     margin-top: 0.5rem;
@@ -437,6 +458,10 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .slidein-panel {
+    top: 49vh;
   }
 
 }
