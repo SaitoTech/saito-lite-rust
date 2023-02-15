@@ -195,9 +195,6 @@ class RedSquare extends ModTemplate {
     // prefer at the top of their feed for more rapid page load.
     //
     if (app.BROWSER == 0) {
-console.log(" > ");
-console.log(" > UPDATING TWEET CACHE");
-console.log(" > ");
       this.updateTweetsCacheForBrowsers();
     }
 
@@ -1106,9 +1103,6 @@ console.log("error in initial processing: " + err);
     let hex_entries = [];
 
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1000000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
-
-console.log(sql);
-
     let params = {};
     let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
 
