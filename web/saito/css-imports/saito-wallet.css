@@ -480,6 +480,19 @@
     width: 95vw;
   }
 
+  .mixin-no-history {
+    margin-top: 1rem;
+    margin-left: 0rem;
+  }
+
+  .mixin-txn-his-container {
+    width: 86vw;
+  }
+
+  .mixin-txn-his-container .saito-table-header  {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
 }
 
 
