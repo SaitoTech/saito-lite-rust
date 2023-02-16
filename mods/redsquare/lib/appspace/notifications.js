@@ -16,8 +16,6 @@ class RedSquareAppspaceNotifications {
 
   render() {
 
-alert("rendering notifications!");
-
     let app = this.app;
     let mod = this.mod;
 
@@ -30,8 +28,6 @@ alert("rendering notifications!");
         this.app.browser.addElementToDom(RedSquareAppspaceNotificationsTemplate(app, mod));
       }
     }
-
-alert("rendering notifications 2!");
 
     for (let i = 0; i < mod.notifications.length; i++) {
       let notification = new Notification(app, mod, mod.notifications[i].tx);

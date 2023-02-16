@@ -223,22 +223,17 @@ alert("container: " + this.container);
   }
 
 
+  renderThread(tweets) {
 
-
-
-  renderThread(tweet) {
+    //
+    // organize into thread
+    //
+    for (let z = 1; z < tweets.length; z++) { tweets[0].addTweet(tweets[z], 0); }
 
     this.thread_id = tweet.tx.transaction.sig;
     this.parent_id = tweet.tx.transaction.sig;
 
-    if (document.querySelector(".redsquare-appspace-body")) {
-      this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
-      document.querySelector(".redsquare-home").dataset.thread_id = this.thread_id;
-    } else {
-      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
-      document.querySelector(".redsquare-home").dataset.thread_id = this.thread_id;
-    }
-    tweet.renderWithParentAndChildren();
+    tweet[0].renderWithChildren();
 
     // make tweets full
     document.querySelectorAll('.tweet-text').forEach(item => {

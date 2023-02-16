@@ -37,6 +37,10 @@ class RedSquareMain {
       this.renderAppspaceComponent("home");
       this.components["home"].renderLoader();        
     });
+    this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {
+      this.renderAppspaceComponent("home");
+      this.components["home"].renderThread(tweets);        
+    });
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
       this.renderAppspaceComponent("home");
       this.components["home"].appendTweet(tweet);
@@ -47,9 +51,25 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-tweet-prepend-render-request", (tweet) => {
       this.components["home"].prependTweet(tweet);
     });
+    this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
+      if (this.render_component === "home") {
+        if (tweet.updated_at < this.mod.tweets_last_viewed_ts) {
+          this.app.connection.emit("redsquare-home-tweet-append-render-request", (tweet));
+        } else {
+          if (tweet.tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
+            this.app.connection.emit("redsquare-home-tweet-prepend-render-request", (tweet));
+      	  }
+	}
+      }
+    });
+
+
     this.app.connection.on("redsquare-profile-render-request", () => {
       this.renderAppspaceComponent("profile");
     });
+    //this.app.connection.on("redsquare-contacts-render-request", () => {
+    //  this.renderAppspaceComponent("contacts");
+    //});
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.renderAppspaceComponent("notifications");
     });
@@ -72,44 +92,6 @@ class RedSquareMain {
         document.querySelector(".saito-sidebar.right").innerHTML = "";
         this.mod.sidebar.render();
       }
-    });
-
-    this.app.connection.on("redsquare-home-load-more-tweets-request", (tx) => {
-      this.components[this.render_component].renderMoreTweets();
-    });
-
-    this.app.connection.on("redsquare-show-load-tweet-banner", (tx) => {
-      let obj = document.querySelector('.redsquare-new-tweets-banner');
-      if (obj) { obj.style.display = "block"; }
-    });
-
-    this.app.connection.on("redsquare-thread-render-request", (tweet) => {
-      document.querySelector(".saito-main").innerHTML = "";
-      this.render_component = 'home';
-      this.mod.viewing = "thread";
-      this.components[this.render_component].renderThread(tweet);
-      document.querySelector(".saito-sidebar.right").innerHTML = "";
-      this.mod.sidebar.render();
-    });
-
-    this.app.connection.on("redsquare-notifications-render-request", (tx) => {
-      document.querySelector(".saito-main").innerHTML = "";
-      this.render_component = 'notifications';
-      this.components[this.render_component].render(this.app, this.mod);
-      document.querySelector(".saito-sidebar.right").innerHTML = "";
-      this.mod.sidebar.render();
-       this.mod.notifications_last_viewed_ts = new Date().getTime();
-      this.mod.notifications_number_unviewed = 0;
-      this.mod.menu.incrementNotifications('notifications');
-      this.mod.save();
-    });
-
-    this.app.connection.on("redsquare-contacts-render-request", (tx) => {
-      document.querySelector(".saito-main").innerHTML = "";
-      this.render_component = 'contacts';
-      this.components[this.render_component].render();
-      document.querySelector(".saito-sidebar.right").innerHTML = "";
-      this.mod.sidebar.render();
     });
 
     //

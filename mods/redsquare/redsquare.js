@@ -245,10 +245,12 @@ class RedSquare extends ModTemplate {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
         this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
           this.results_loaded = true;
+	  let x = [];
           for (let z = 0; z < txs.length; z++) {
             let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-            app.connection.emit('redsquare-thread-render-request', tweet);
+            x.push(tweet);
           }
+	  app.connection.emit('redsquare-home-thread-render-request', x);
         }, false, false);
         return;
       }
@@ -472,7 +474,11 @@ class RedSquare extends ModTemplate {
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         if (txs.length > 0) {
-          this.app.connection.emit("redsquare-home-load-more-tweets-request",);
+          let x = [];
+	  for (let z = 0; z < txs.length; z++) {
+	    let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+            this.app.connection.emit("redsquare-home-tweet-append-render-request", (tweet));
+	  }
         }
         if (post_load_tweet_callback) {
           post_load_tweet_callback()
