@@ -8,25 +8,32 @@ class LeagueOverlay {
     this.app = app;
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod, false);
-    this.leaderboard = new Leaderboard(this.app, this.mod, ".league-overlay-leaderboard");
     this.games = [];
-    this.games['mine'] = [];
-    this.games['others'] = [];
+    this.leaderboards = {};
   }
 
   async render() {
 
     let league = this.mod.leagues[this.mod.league_idx];
-    
+
+    if (this.leaderboards[this.mod.leagues[this.mod.league_idx].id]) {
+    } else {
+      this.leaderboards[this.mod.leagues[this.mod.league_idx].id] = new Leaderboard(this.app, this.mod, ".league-overlay-leaderboard", league);    
+    }
 
     let game_mod = this.app.modules.returnModuleByName(league.game);    
     this.overlay.show(LeagueOverlayTemplate(this.app, this.mod, this));
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
     
-    this.leaderboard.league = league;
-    this.leaderboard.render();
-    
-    await this.loadRecentGames(league);
+    this.leaderboards[this.mod.leagues[this.mod.league_idx].id].render();
+
+    //
+    //
+    //
+    //this.renderRecentGames(league);
+    this.mod.fetchLeagueGames(league.id, () => {
+      this.renderRecentGames(league);
+    });
 
     this.attachEvents();
     this.mod.attachStyleSheets();
@@ -48,75 +55,54 @@ class LeagueOverlay {
 	}
       };
     });
+
   }
 
 
-  async loadRecentGames(league){
-    this_obj = this;
+  renderRecentGames(league) {
 
-    this.mod.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league.id}' LIMIT 10` ,
-      (res) => {
-        let pid = this_obj.app.wallet.returnPublicKey();
-        let html = ``;
-        if (res.rows){
-          for (let g of res.rows){
+    let html = "";
 
-            let players =  g.players_array.split("_");            
+    //
+    // recent league games 
+    //
+    if (league.games.length > 0) {
+      html += `
+        <h5>Recent League Matches</h5>
+        <div class="saito-table league_recent_others">
+          <div class="saito-table-body">
+      `;
+    }
+    for (let i = 0; i < league.games.length; i++) {
 
-            if (players.includes(pid)) {              
-              this.games['mine'].push(g);  
-            } else {
-              this.games['others'].push(g);
-            } 
-          }
-        }
+      let g = league.games[i];
+      let players = g.players_array.split("_");
+      let datetime = this.app.browser.formatDate(g.time_finished);
+      let date = datetime.month + ' ' + datetime.day + ', ' + datetime.year; 
+      let players_html = "";
 
-        let html_mine = ``;
-        if (this_obj.games['mine'].length > 0)  {
-          html_mine = this.create_games_html(this_obj.games['mine']);
-          this_obj.app.browser.addElementToSelector(html_mine, ".league_recent_mine .saito-table-body");
-        } else {
-          document.querySelector(".league_recent_parent_mine").style.display = "none";
-        }
-
-        
-
-        let html_others = ``;
-        if (this_obj.games['others'].length > 0)  {
-          html_others = this.create_games_html(this_obj.games['others']);
-          this_obj.app.browser.addElementToSelector(html_others, ".league_recent_others .saito-table-body");
-        } else {
-          document.querySelector(".league_recent_parent_others").style.display = "none";  
-        }
-          
-      });    
-  }
-
-  create_games_html(games) {
-    this_obj = this;
-    let html = ``;
-
-    games.forEach(function(game, key) {
-
-      let dt = this_obj.app.browser.formatDate(game.time_finished);
-      let players_html = ``;
-      let players =  game.players_array.split("_");
-      let date = dt.month + ' ' + dt.day + ', ' + dt.year; 
-
-      players.forEach(function(player, key) {
-          players_html += (key == (players.length-1))  ? `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` 
+      players.forEach( (player, key) => {
+        players_html += (key == (players.length-1))  ? `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` 
           : `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` + ' vs ';
       });
 
       html += `
-          <div class="saito-table-row league_recent_game">
-              <div> <span>${date}</span> ( ${players_html}) </div>
-          </div>
+        <div class="saito-table-row league_recent_game">
+          <div> <span>${date}</span> ( ${players_html}) </div>
+        </div>
       `;
-    });
+    }
+    if (league.games.length > 0) {
+      html += `
+          </div>
+        </div>
+      `;
+    }
 
-    return html;
+    this.app.browser.addElementToSelector(html, ".league_recent_games");
+
   }
+
 }
 
 module.exports = LeagueOverlay;

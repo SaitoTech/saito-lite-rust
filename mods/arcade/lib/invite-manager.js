@@ -11,9 +11,8 @@ class InviteManager {
 		this.container = container;
 		this.name = "InviteManager";
 		this.type = "short";
-		this.invites = {};
 
-    // For filtering which games get displayed
+    	// For filtering which games get displayed
 		// We may want to only display one type of game invite, so overwrite this before render()
 		this.list = "all";
 		this.lists = ["mine","open"];
@@ -26,9 +25,6 @@ class InviteManager {
 		// handle requests to re-render invite manager
 		//
 		this.app.connection.on("arcade-invite-manager-render-request", () => {
-			if (this.mod.debug) {
-				console.log("Arcade render request");
-			}
 			if (!this.mod.is_game_initializing) {
 				this.render();
 			}

@@ -22,8 +22,8 @@ module.exports = LeagueOverlayTemplate = (app, mod, league_obj) => {
     <div class="league-overlay-body">
         <div class="league-overlay-league-body-games">
             <div class="league-overlay-description">${game_mod.description}</div>
-        
-            <div class="league-overlay-league-body-games-list league_recent_parent_mine">
+<!----
+            <div class="league-overlay-league-body-games-list league_recent_games">
                 <h5>My Recent Games</h5>
                 <div class="saito-table league_recent_mine">
                     <div class="saito-table-body ">
@@ -31,13 +31,8 @@ module.exports = LeagueOverlayTemplate = (app, mod, league_obj) => {
                     </div>
                 </div>
             </div>
-            <div class="league-overlay-league-body-games-list league_recent_parent_others">
-                <h5>Recent League Matches</h5>
-                <div class="saito-table league_recent_others">
-                    <div class="saito-table-body">
-                           
-                    </div>
-                </div>
+------>
+            <div class="league-overlay-league-body-games-list league_recent_games">
             </div>
         </div>
         <div class="league-overlay-league-body-leaderboard">

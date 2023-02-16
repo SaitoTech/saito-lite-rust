@@ -849,7 +849,6 @@ class Block {
         i = this.app.mempool.mempool.golden_tickets.length + 2;
       }
     }
-    console.log("-----------------------------------");
 
     //
     // contextual values
@@ -1217,13 +1216,12 @@ class Block {
     return this.prehash;
   }
 
-  async runCallbacks(conf, run_callbacks = 1) {
+  async runCallbacks(from_blocks_back, run_callbacks = 1) {
     if (Number(this.confirmations) && this.callbacks) {
-      for (let i = Number(this.confirmations) + 1; i <= conf; i++) {
+      for (let i = Number(this.confirmations) + 1; i < from_blocks_back; i++) {
         for (let ii = 0; ii < this.callbacks.length; ii++) {
           try {
             if (run_callbacks === 1) {
-//console.log("running callback!");
               await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
             }
           } catch (err) {
@@ -1232,7 +1230,7 @@ class Block {
         }
       }
     }
-    this.confirmations = conf;
+    this.confirmations = from_blocks_back;
   }
 
   generateMerkleRoot(): string {

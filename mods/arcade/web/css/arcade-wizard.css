@@ -30,13 +30,23 @@
 
 #advanced-options-overlay-container {
   color: var(--saito-font-color-dark-modal);
-  background: #181818;
+  background: var(--hover-background-color);
   border-radius: 0.5rem;
-  min-width: 40rem;
+  width: min-content;
   min-height: 15rem;
   display: flex;
-  padding: 1.5rem;
+  padding: 2.5rem;
   flex-direction: column;
+  border: 1px solid var(--saito-primary);
+  gap: 2rem;
+  max-width: 90vw;
+  max-height: 95vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.overlay-title {
+  min-width: 40rem;
 }
 
 #advanced-options-overlay-container .overlay-title {
@@ -45,7 +55,7 @@
 }
 
 #advanced-options-overlay-container .overlay-input {
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 #advanced-options-overlay-container select {
@@ -56,7 +66,6 @@
   font-size: 2.5rem;
   padding: 1rem;
   height: 5rem;
-  margin-bottom: 2rem;
 }
 
 #advanced-options-overlay-container .options_notice {
@@ -75,22 +84,21 @@
   color: var(--saito-primary);
 }
 
-.game-wizard-advanced-box .list-header:nth-of-type(n + 2) {
-  margin-top: 1.2rem;
+#advanced-options-overlay-container label {
+  margin: 1rem 0 0.5rem;
 }
 
-#advanced-options-overlay-container label {
-  margin-top: 0.5rem;
+.overlay-input label {
+  line-height: 3rem;
 }
 
 .game-wizard-advanced-return-btn {
   font-size: 1.5rem;
-  padding: 1rem 1.5rem;
+  padding: 1rem;
   text-align: center;
   text-transform: uppercase;
   width: 100%;
-  margin-top: auto;
-  border: 1px solid white;
+  margin: 0;
 }
 
 .game-wizard-advanced-return-btn:hover {
@@ -125,7 +133,7 @@
 
 .arcade-wizard-overlay {
   display: grid;
-  max-height: 80vh;
+  max-height: 95vh;
   height: min-content;
   width: 60vw;
   overflow-y: auto;
@@ -187,7 +195,7 @@
 
 .saito-select::after {
   background: var(--saito-button-background);
-  border-left: 1px solid var(--saito-primary);
+  border-left: 3px solid var(--saito-primary);
 }
 
 .arcade-wizard-game-controls .settings>div:first-of-type {
@@ -290,19 +298,19 @@
 }
 
 .saito-multi-select_btn_options button {
-  background: transparent;
+  background: var(--saito-button-background);
   margin: 0rem;
   padding: 0rem;
-  width: 101%;
+  width: 100%;
   display: block;
   margin-bottom: 0.2rem;
   border: 1px solid var(--saito-primary);
 }
 
-.saito-multi-select_btn.showAll>.saito-multi-select_btn_options button {
+/*.saito-multi-select_btn.showAll>.saito-multi-select_btn_options button {
   background-color: var(--saito-primary);
   color: #fff;
-}
+}*/
 
 .saito-multi-btn {
   width: 100%;
@@ -312,7 +320,8 @@
 }
 
 .saito-multi-btn:hover {
-  background: var(--saito-button-background);
+  background: var(--saito-background-color);
+  color: var(--saito-primary);
 }
 
 .game-wizard-form {
@@ -338,11 +347,6 @@
   font-size: 2rem;
 }
 
-.game-wizard-players-select {
-  color: var(--saito-white);
-  border-color: var(--saito-border-color);
-}
-
 .arcade-wizard-game-invite {
   display: flex;
   flex-direction: row;
@@ -354,59 +358,47 @@
 }
 
 .twilight-advanced-options-container {
-  padding:40px;
-  width:90vw;
-  height:90vh;
-  overflow-y:scroll;
-  display:grid;
-  grid-template-columns: 200px auto
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+  min-width: 75vw;
+  max-width: 100rem;
+}
+
+.twilight-advanced-options-container div {
+  display: grid;
+  gap: 1rem;
 }
 
 .game-wizard-advanced-box {
-  display:block;
-  padding-left:20px;
+  display: block;
+  padding-left: 20px;
+}
+
+.game-wizard-advanced-box ul li {
+  width: 20rem;
+}
+
+.game-wizard-advanced-box ul {
+  display: flex;
+  gap: 1rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.game-wizard-advanced-box ul li {
+  display: grid;
+  grid-template-columns: 0.25fr 1fr;
 }
 
 @media screen and (max-width: 900px) {
   .arcade-wizard-overlay {
     width: 95vw;
   }
-}
-
-@media screen and (max-width: 768px) {
-  #game-wizard-advanced-return-btn {
-      position: absolute;
-      bottom: -2rem;
-      left: 50%;
-      transform: translateX(-51%);
-      z-index: 2;
-  }
-
-  .twilight-advanced-options-container {
-    padding: 10px !important;
-    display: block;
-  }
-
-  .game-wizard-advanced-box {
-    padding: 0px !important ;
-    margin-top: 2rem;
-  }
-
-  .game-wizard-advanced-box ul {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
   .game-wizard-advanced-box ul li {
-    margin-bottom: 2rem;
-    display: grid;
-    grid-template-columns: 0.25fr 1fr;
-  }
-
-  .list-header {
-    margin-left: 0rem !important;
-  }
-
+    width: 15rem;
+  }  
 }
 
 @media screen and (max-width: 700px) {

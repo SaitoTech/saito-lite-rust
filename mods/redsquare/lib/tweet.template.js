@@ -2,12 +2,11 @@ const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template
 
 module.exports = (app, mod, tweet) => {
 
-  let txmsg = tweet.tx.msg;
   let optional = tweet.tx.optional;
   let notice = "";
   if (tweet.notice != "") { notice = tweet.notice; }
   let publickey = tweet.tx.transaction.from[0].add || "";
-  let text = txmsg.data.text || "";
+  let text = tweet.text || "";
   let flagged =  optional.flagged ||  null;
   let link_properties =  optional.link_properties ||  null;
   let num_likes =  optional.num_likes ||  0;

@@ -50,15 +50,32 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
   `;
 
   if (game_mod.maxPlayers == 1) {
-    html += `<button type="button" id="game-invite-btn" class="game-invite-btn" data-type="single">Play</button>`;
+    /*html += `<select name="invite_type" style="display:none;">
+              <option value="single" selected default></option>
+             </select>
+    `;*/
+
+    html += `<button type="button" id="game-invite-btn" class="saito-button saito-button-primary game-invite-btn" data-type="single">Play</button>`;
   } else {
+
+    /*html += `<select name="invite_type">
+              <option value="open" selected default>public invite</option>
+              <option value="private">private invite</option>
+             </select>
+    `;
+
+    html += ` 
+              <button type="button" id="game-invite-btn" class="saito-button saito-button-primary">Create Game</button>
+         `;
+
+    */
     html += `
           <div class="saito-multi-select_btn saito-select">
            <div class="saito-multi-select_btn_options saito-slct">
       `;
     if (invite_obj.league) {
       if (publickey) {
-        html += `
+        html += ` 
               <button type="button" class="saito-multi-btn  game-invite-btn" data-type="open">next...</button>
          `;
       } else {
@@ -78,10 +95,9 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
          `;
       }
     }
-    html += `
-           </div>
-          </div>
-	`;
+    html += `</div>
+          </div>`;
+    
   }
 
 

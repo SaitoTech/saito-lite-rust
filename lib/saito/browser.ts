@@ -776,6 +776,7 @@ class Browser {
   }
 
   addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true, read_as_array_buffer = false) {
+
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
@@ -1156,7 +1157,14 @@ class Browser {
     return keys;
   }
 
-  returnArrayOfUnidentifiedPublicKeysInDom() {
+
+  /**
+   * Fetchs identifiers from a set of keys
+   *
+   * @param {Array} keys
+   */
+  async addIdentifiersToDom(keys = []) {
+
     let keys = this.returnArrayOfPublicKeysInDom();
     let unidentified_keys = [];
     for (let i = 0; i < keys.length; i++) {
@@ -1166,19 +1174,8 @@ class Browser {
         this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
       }
     }
-    return unidentified_keys;
-  }
+    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  }
 
-
-
-  /**
-   * Fetchs identifiers from a set of keys
-   *
-   * @param {Array} keys
-   */
-  async addIdentifiersToDom(keys = []) {
-    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
-  }
 
   addModalIdentifierAddPublickey(app, mod) {
     try {

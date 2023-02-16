@@ -3,7 +3,7 @@ const LikeNotificationTemplate = require("./like-notification.template");
 const ReplyNotificationTemplate = require("./reply-notification.template");
 const RetweetNotificationTemplate = require("./retweet-notification.template");
 const saito = require("./../../../lib/saito/saito");
-
+const Tweet = require("./tweet");
 
 
 
@@ -21,10 +21,9 @@ class RedSquareNotification {
     let mod = this.mod;
 
     if (this.tx == null) { 
-         document.querySelector(selector).innerHTML = `<div class="notifications-empty"><span> <i class="far fa-folder-open" aria-hidden="true"></i> </span> <p>No new notifications </p> </div>`
-     }
-    else {
-      console.log('rendering tx', this.tx, this.tx.returnMessage())
+      document.querySelector(selector).innerHTML = `<div class="notifications-empty"><span> <i class="far fa-folder-open" aria-hidden="true"></i> </span> <p>No new notifications </p> </div>`
+    } else {
+
       let html = '';
       let txmsg = this.tx.returnMessage();
   
@@ -59,8 +58,16 @@ class RedSquareNotification {
         mod.last_viewed_notifications_ts = this.tx.transaction.ts;
         mod.save();
       }
-  
-      app.browser.addElementToSelector(html, ".redsquare-notifications");
+ 
+      //
+      //
+      //
+      let nqs = ".notification-item-"+this.tx.transaction.sig;
+      if (document.querySelector(nqs)) {
+        app.browser.replaceElementBySelector(html, ".redsquare-notifications");
+      } else {
+        app.browser.addElementToSelector(html, ".redsquare-notifications");
+      }
       this.attachEvents();
     }
   
@@ -77,12 +84,34 @@ class RedSquareNotification {
     if (obj) {
       obj.onclick = (e) => {
         let sig = e.currentTarget.getAttribute("data-id");
-        let tweet = mod.returnTweet(sig);
-        if (tweet) {
-	  app.connection.emit("redsquare-thread-render-request", (tweet));
+	let tweet = this.mod.returnTweet(sig);
+	if (tweet) {
+
+          app.connection.emit('redsquare-home-tweet-render-request', (tweet));
+          app.connection.emit('redsquare-home-loader-render-request');
+          mod.loadChildrenOfTweet(sig, (tweets) => {
+            app.connection.emit('redsquare-home-loader-hide-request');
+	    for (let i = 0; i < tweets.length; i++) {
+              app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
+	    }
+          });
+
+	} else {
+
+          mod.loadTweetWithSig(sig, (tweet) => {
+            app.connection.emit('redsquare-home-tweet-append-render-request', (tweet));
+            mod.loadChildrenOfTweet(tweet.tx.transaction.sig, (tweets) => {
+	      for (let i = 0; i < tweets.length; i++) {
+                app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
+              }
+            });
+          });
+
 	}
       }
     }
+
+
   }
 }
 

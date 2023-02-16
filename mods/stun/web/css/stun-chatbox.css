@@ -87,6 +87,7 @@
   border: none;
 }
 
+
 #localStream {
   display: block;
 }
@@ -126,6 +127,7 @@
   align-items: center;
   color: var(--saito-white);
   border-radius: 1rem;
+  position: relative;
 }
 
 .video-box-container video {
@@ -145,7 +147,7 @@
 
 .video-box-container > #connection-message > p {
   color: var(--saito-white);
-  font-size: 2.3rem !important;
+  font-size: 2.8rem !important;
   text-transform: lowercase;
 }
 
@@ -295,6 +297,7 @@
   align-items: center;
   color: var(--saito-white);
   border-radius: 1rem;
+  position: relative;
 }
 
 .video-box-container-large video {
@@ -314,10 +317,18 @@
 
 .video-box-container-large > #connection-message > p {
   color: var(--saito-white);
-  font-size: 2.3rem;
+  font-size: 2.8rem;
 }
 
-.video-box-container {
+.video-box-container-large canvas {
+  position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+
+
+/* .video-box-container {
   background-color: black;
   display: flex;
   height: 100%;
@@ -354,7 +365,7 @@
 
 .video-box-container > div > p {
   color: var(--saito-white);
-}
+} */
 
 .lds-dual-ring {
   display: inline-block;
@@ -448,9 +459,14 @@
   color: var(--saito-white);
 }
 .timer .counter {
-  font-size: 3rem;
+  font-size: 2rem;
   margin-bottom: 0.5rem;
 }
+.timer .counter  span{
+  color:orangered;
+   font-size: 2rem;
+}
+
 
 .users-on-call {
   display: flex;
@@ -513,11 +529,53 @@
     grid-auto-rows: 1fr;
     grid-gap: 1rem;
     padding: 1rem;
-    height: 80%;
+    height: 70%;
     background: black;
+  }
+
+  .stunx-chatbox .footer {
+    height: 30%;
   }
 
   .control-panel {
     padding-bottom: 5rem;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    justify-content: start;
   }
+
+  .control-panel .control-list {
+    margin-bottom: 1rem;
+  }
+}
+
+
+@media screen  and (max-height: 850px) {
+  .video-box-container-large:nth-child(2) {
+  }
+
+  .control-panel {
+    padding-bottom: 10rem;
+}
+
+.control-panel span {
+  width: 4rem;
+  height: 4rem;
+}
+
+.control-panel .timer {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+}
+
+.control-panel .timer .counter {
+  margin-left: 1rem;
+}
+
+.control-panel .timer .counter  span{
+  color:orangered;
+   font-size: 2rem;
+}
+
 }

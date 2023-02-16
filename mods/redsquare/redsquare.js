@@ -12,9 +12,6 @@ const prettify = require('html-prettify');
 const redsquareHome = require("./index");
 
 
-const SaitoLoginOverlay = require('../../lib/saito/ui/saito-login-overlay/saito-login-overlay');
-
-
 class RedSquare extends ModTemplate {
 
   constructor(app) {
@@ -42,7 +39,6 @@ class RedSquare extends ModTemplate {
     this.peers_for_notifications = [];
     this.notifications = [];
     this.notifications_sigs_hmap = {};
-    this.tweet_fetch_interval = 3000;
     this.lastest_tweets = []
     //  
     // view tweet or cache it for "load more"...
@@ -77,10 +73,14 @@ class RedSquare extends ModTemplate {
     this.load_more_tweets = 1;
     this.load_more_notifications = 1;
     this.trackedTweet = null
-    this.allowed_upload_types =  ['image/png', 'image/jpg', 'image/jpeg'];
-    
+    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg'];
+
+    this.scripts = [
+      '/saito/lib/virtual-bg/virtual-bg.js'
+    ]
+
     this.postScripts = [
-      '/saito/lib/emoji-picker/emoji-picker.js'
+      '/saito/lib/emoji-picker/emoji-picker.js',
     ];
 
     this.styles = [
@@ -168,16 +168,14 @@ class RedSquare extends ModTemplate {
   // live.
   //
   initialize(app) {
-    let redsquare_self =app.modules.returnModule('RedSquare');
+
+    let redsquare_self = app.modules.returnModule('RedSquare');
     super.initialize(app);
 
     //
     // fetch content from options file
     //
     this.load();
-    
-
-
 
 
     //
@@ -188,23 +186,22 @@ class RedSquare extends ModTemplate {
       for (let i = 0; i < txs.length; i++) { this.addTweet(tx); }
     });
 
-    let tweet_fetch_interval = 3000
 
-    setInterval(function () {
-   
-      // if (redsquare_self.viewing == "feed") {
-        // console.log('loading new tweets')
-        // redsquare_self.loadNewTweets(app, redsquare_self);
-      // }
-    }, 3000);
-
+    //
+    // this prints the last 10 tweets to ./web/tweets.js which is optionally
+    // fetched by browsers. It allows us to rapidly put the last 10 tweets we
+    // prefer at the top of their feed for more rapid page load.
+    //
+    if (app.BROWSER == 0) {
+      this.updateTweetsCacheForBrowsers();
+    }
 
   }
 
   //
   // runs when archive peer connects
   //
-  async onServiceUp(app, peer, service={}) {
+  async onPeerServiceUp(app, peer, service = {}) {
 
     //
     // avoid network overhead if in other apps
@@ -229,8 +226,6 @@ class RedSquare extends ModTemplate {
 
 
 
-
-
   //
   // runs when normal peer connects
   //
@@ -245,16 +240,17 @@ class RedSquare extends ModTemplate {
     //
     let mod = app.modules.returnModule('RedSquare')
     if (this.results_loaded == false) {
-      let tweet_id = app.browser.returnURLParameter('tweet_id');
+      let tweet_id = this.app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
         this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
           this.results_loaded = true;
+	  let x = [];
           for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-            app.connection.emit('redsquare-thread-render-request', tweet);
-           
+            let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+            x.push(tweet);
           }
+	  this.app.connection.emit('redsquare-home-thread-render-request', x);
         }, false, false);
         return;
       }
@@ -262,7 +258,7 @@ class RedSquare extends ModTemplate {
       //
       // render user profile
       //
-      let user_id = app.browser.returnURLParameter('user_id');
+      let user_id = this.app.browser.returnURLParameter('user_id');
       if (user_id != "") {
         this.app.connection.emit("redsquare-profile-render-request", (user_id));
         this.results_loaded = true;
@@ -270,8 +266,8 @@ class RedSquare extends ModTemplate {
       }
     } else {
       if (this.results_loaded == true) {
-        let user_id = app.browser.returnURLParameter('user_id');
-        let tweet_id = app.browser.returnURLParameter('tweet_id');
+        let user_id = this.app.browser.returnURLParameter('user_id');
+        let tweet_id = this.app.browser.returnURLParameter('tweet_id');
         if (user_id != "" || tweet_id != "") { return; }
       }
     }
@@ -280,14 +276,15 @@ class RedSquare extends ModTemplate {
     // check peer for any tweets they want to send us
     //
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-
-    this.loadTweetsFromPeer(peer, sql, () => {
+    this.loadTweetsFromPeer(peer, sql, (txs) => {
       this.app.connection.emit("redsquare-home-render-request");
       this.app.browser.addIdentifiersToDom();
       this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
     }, true);
 
   }
+
+
 
 
 
@@ -331,6 +328,24 @@ class RedSquare extends ModTemplate {
     }
 
     super.render();
+
+    //
+    // if our browser has loaded cached tweets through a direct
+    // download they will be in our tweets object and we can load
+    // them dynamically.
+    //
+    // this runs after components are rendered or it breaks/fails
+    //
+    try {
+      for (let z = 0; z < tweets.length; z++) {
+	let newtx = new saito.default.transaction();
+	newtx.deserialize_from_web(this.app, tweets[z]);
+        this.addTweet(newtx);
+      }
+      this.app.connection.emit("redsquare-home-render-request");
+    } catch (err) {
+      console.log("error in initial redsquare post fetch: " + err);
+    }
 
   }
 
@@ -382,40 +397,95 @@ class RedSquare extends ModTemplate {
     }
   }
 
+  loadChildrenOfTweet(sig, mycallback=null) {
+
+    if (this.peers_for_tweets.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let x = [];
+    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}'`;
+    this.loadTweetsFromPeerAndReturn(this.peers_for_tweets[0], sql, (txs) => {
+      for (let z = 0; z < txs.length; z++) {
+        let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+        x.push(tweet);
+      }
+      mycallback(x);
+      return;
+    });
+
+  }
+  loadTweetWithSig(sig, mycallback=null) {
+
+    if (this.peers_for_tweets.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let t = this.returnTweet(sig);
+    if (t != null) { mycallback(t); return; }
+
+    let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
+    this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+      this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+        for (let z = 0; z < txs.length; z++) {
+          let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+          mycallback(tweet);
+        }
+      }, false, false);
+      return;
+    });
+
+  }
+
+  loadTweetsWithParentId(sig, mycallback=null) {
+
+    if (this.peers_for_tweets.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let t = this.returnTweet(sig);
+    if (t != null) { 
+      let x = [];
+      for (let z = 0; z < t.children.length; z++) {
+	x.push(t.children[z]);
+      }
+      mycallback(x);
+      return;
+    }
+
+    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}'`;
+    this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+      let x = [];
+      this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+        for (let z = 0; z < txs.length; z++) {
+	  let tweet = new Tweet(app, mod, ".redsquare-appspace-body", txs[z]);
+          x.push(tweet);
+	}
+	mycallback(x);
+      }, false, false);
+      return;
+    });
+
+  }
+
+
+
   loadMoreTweets(post_load_tweet_callback = null) {
     this.increment_for_tweets++;
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
       let peer = this.peers_for_tweets[i];
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
-      this.loadTweetsFromPeer(peer, sql, (tx) => {
-        if(tx.length > 0){
-          this.app.connection.emit("redsquare-home-load-more-tweets-request");
+      this.loadTweetsFromPeer(peer, sql, (txs) => {
+        if (txs.length > 0) {
+          let x = [];
+	  for (let z = 0; z < txs.length; z++) {
+	    let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+            this.app.connection.emit("redsquare-home-tweet-append-render-request", (tweet));
+	  }
         }
-        if( post_load_tweet_callback){
+        if (post_load_tweet_callback) {
           post_load_tweet_callback()
         }
-     
-
       });
     }
   }
-
-  // loadNewTweets(app, mod) {
-  //   let redsquare_self = app.modules.returnModule('RedSquare')
-  //   console.log("Fetching New Posts");
-  //   // if (!mod.trackedTweet) { return; }
-  //   for (let i = 0; i < this.peers_for_tweets.length; i++) {
-  //   let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 AND created_at > '${mod.trackedTweet.created_at}' ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-    
-  //   let peer = this.peers_for_tweets[i];
-  //   this.loadTweetsFromPeer(peer, sql, (tx) => {
-  //      if(tx.length > 0){
-  //           this.app.connection.emit("redsquare-show-load-tweet-banner");
-  //      }
-  //   }, true);
-  // }
-  // }
-
 
   loadMoreNotifications() {
     this.increment_for_notifications++;
@@ -428,7 +498,7 @@ class RedSquare extends ModTemplate {
   }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
     this.app.storage.loadTransactionsFromPeer("RedSquare", (50 * increment), peer, (txs) => {
-      
+
       if (!this.peers_for_notifications.includes(peer)) {
         this.peers_for_notifications.push(peer);
       }
@@ -442,16 +512,14 @@ class RedSquare extends ModTemplate {
   }
 
 
-  trackTweet(tweet){
-    this.trackedTweet =tweet;
+  trackTweet(tweet) {
+    this.trackedTweet = tweet;
   }
 
-  loadTweetsFromPeerAndReturn(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
 
+  loadTweetsFromPeerAndReturn(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
     let txs = [];
     let tweet_to_track = null;
-    let render_home = false;
-    if (this.tweets.length == 0) { render_home = true; }
 
     this.sendPeerDatabaseRequestWithFilter(
       "RedSquare",
@@ -491,19 +559,15 @@ class RedSquare extends ModTemplate {
 
   loadTweetsFromPeer(peer, sql, post_load_callback = null, to_track_tweet = false, is_server_request = false) {
     let txs = [];
-    let render_home = false;
-    if (this.tweets.length == 0) { render_home = true; }
-
     this.loadTweetsFromPeerAndReturn(peer, sql, (txs, tweet_to_track = null) => {
-
-      if (to_track_tweet){
-        if(tweet_to_track){
+      if (to_track_tweet) {
+        if (tweet_to_track) {
           this.trackTweet(tweet_to_track);
         }
       }
       for (let z = 0; z < txs.length; z++) { this.addTweet(txs[z]); }
       if (post_load_callback != null) {
-          post_load_callback(txs);
+        post_load_callback(txs);
       }
     }, to_track_tweet, is_server_request);
 
@@ -534,17 +598,16 @@ class RedSquare extends ModTemplate {
     //
     // maybe this needs to go into notifications too
     //
-
     if (tx.isTo(this.app.wallet.returnPublicKey())) {
 
       //
       // this is a notification, so update our timestamps
       //
       if (tx.transaction.ts > this.notifications_newest_ts) {
-	this.notifications_newest_ts = tx.transaction.ts;
+        this.notifications_newest_ts = tx.transaction.ts;
       }
       if (tx.transaction.ts < this.notifications_oldest_ts) {
-	this.notifications_oldest_ts = tx.transaction.ts;
+        this.notifications_oldest_ts = tx.transaction.ts;
       }
       //
       // notify of other people's actions, but not ours
@@ -587,14 +650,23 @@ class RedSquare extends ModTemplate {
         // skip out on likes but still update timestamps
         //
         if (tx.transaction.ts > this.tweets_newest_ts) {
-  	  this.tweets_newest_ts = tx.transaction.ts;
+          this.tweets_newest_ts = tx.transaction.ts;
         }
         if (tx.transaction.ts < this.notifications_oldest_ts) {
-	  this.tweets_oldest_ts = tx.transaction.ts;
+          this.tweets_oldest_ts = tx.transaction.ts;
         }
         return;
       }
 
+    }
+
+
+    //
+    // if this is a like, we can avoid adding it to our tweet index
+    //
+    let txmsg = tx.returnMessage();
+    if (txmsg.request === "like tweet") {
+      return;
     }
 
     //
@@ -648,11 +720,6 @@ class RedSquare extends ModTemplate {
             this.tweets[i].num_replies = tweet.num_replies;
             this.tweets[i].num_retweets = tweet.num_retweets;
             this.tweets[i].num_likes = tweet.num_likes;
-
-            //
-            // EVENT HERE
-            //
-            // this.tweets[i].renderOptional();
           }
         }
       }
@@ -685,10 +752,10 @@ class RedSquare extends ModTemplate {
     //
     if (is_notification == 0) {
       if (tx.transaction.ts > this.tweets_newest_ts) {
-	this.tweets_newest_ts = tx.transaction.ts;
+        this.tweets_newest_ts = tx.transaction.ts;
       }
       if (tx.transaction.ts < this.notifications_oldest_ts) {
-	this.tweets_oldest_ts = tx.transaction.ts;
+        this.tweets_oldest_ts = tx.transaction.ts;
       }
     }
 
@@ -723,30 +790,30 @@ class RedSquare extends ModTemplate {
 
 
 
-//   addNotification(app, mod, tx) {
-//     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
-//       return;
-//     }
-//     if (tx.transaction.ts > this.notifications_last_viewed_ts) {
-//       this.notifications_number_unviewed++;
+  //   addNotification(app, mod, tx) {
+  //     if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
+  //       return;
+  //     }
+  //     if (tx.transaction.ts > this.notifications_last_viewed_ts) {
+  //       this.notifications_number_unviewed++;
 
-//     //   this.app.connection.emit("redsquare-notifications-render-request", { menu: "notifications", num: this.notifications_number_unviewed });
-//     // }
-//     if (this.ntfs.length == 0) {
-//       this.ntfs.push(tx);
-//       console.log('notifications ', this.ntfs)
-//       return;
-//     }
-//     for (let i = 0; i < this.ntfs.length; i++) {
-//       if (this.ntfs[i].transaction.ts < tx.transaction.ts) {
-//         this.ntfs.splice(i, 0, tx);
-//         return;
-//       }
-//     }
-//     this.ntfs.push(tx);
- 
-//   }
-// }
+  //     //   this.app.connection.emit("redsquare-notifications-render-request", { menu: "notifications", num: this.notifications_number_unviewed });
+  //     // }
+  //     if (this.ntfs.length == 0) {
+  //       this.ntfs.push(tx);
+  //       console.log('notifications ', this.ntfs)
+  //       return;
+  //     }
+  //     for (let i = 0; i < this.ntfs.length; i++) {
+  //       if (this.ntfs[i].transaction.ts < tx.transaction.ts) {
+  //         this.ntfs.splice(i, 0, tx);
+  //         return;
+  //       }
+  //     }
+  //     this.ntfs.push(tx);
+
+  //   }
+  // }
 
 
   async fetchOpenGraphProperties(app, mod, link) {
@@ -918,21 +985,19 @@ class RedSquare extends ModTemplate {
   async receiveTweetTransaction(blk, tx, conf, app) {
 
     let tweet = new Tweet(app, this, "", tx);
-
+    let txmsg = tx.returnMessage();
+ 
     //
     // browsers
     //
     if (app.BROWSER == 1) {
 
       //
-
-  
       // save tweets addressed to me
       //
       if (tx.isTo(app.wallet.returnPublicKey())) {
 
         this.app.storage.saveTransaction(tx);
-        let txmsg = tx.returnMessage();
 
         //
         // if replies
@@ -954,7 +1019,6 @@ class RedSquare extends ModTemplate {
         //
         // if retweets
         //
-
         if (txmsg.data?.retweet_tx) {
           if (txmsg.data?.retweet_tx) {
             let rtxobj = JSON.parse(txmsg.data.retweet_tx);
@@ -976,15 +1040,11 @@ class RedSquare extends ModTemplate {
         }
       }
 
-      // if (tx.transaction.from[0].add != app.wallet.returnPublicKey()) {
-      //   // document.querySelector("#redsquare-new-tweets-banner").style.display = "block";
-      //   return;
-      // }
-
-      this.addTweet(tx,1);
-
+      this.addTweet(tx, 1);
       return;
+
     }
+
 
     //
     // servers
@@ -992,6 +1052,21 @@ class RedSquare extends ModTemplate {
     // fetch supporting link properties
     //
     tweet = await tweet.generateTweetProperties(app, this, 1);
+
+
+    let type_of_tweet = 0; // unknown
+    if (txmsg.data?.parent_id) {
+      type_of_tweet = 1; // reply
+    }
+    if (txmsg.data?.retweet_tx) {
+      type_of_tweet = 2; // retweet
+    }
+    if (tweet.link != null) {
+      type_of_tweet = 3; // link
+    }
+    if (tweet.images?.length > 0) {
+      type_of_tweet = 4; // images
+    }
 
     let created_at = tx.transaction.ts;
     let updated_at = tx.transaction.ts;
@@ -1006,6 +1081,7 @@ class RedSquare extends ModTemplate {
             	updated_at,
             	parent_id,
             	thread_id,
+                type,
                 publickey,
                 link,
             	link_properties,
@@ -1021,6 +1097,7 @@ class RedSquare extends ModTemplate {
             	$updated_at,
             	$parent_id,
             	$thread_id,
+            	$type,
                 $publickey,
             	$link,
             	$link_properties,
@@ -1042,6 +1119,7 @@ class RedSquare extends ModTemplate {
       $created_at: created_at,
       $updated_at: updated_at,
       $parent_id: tweet.parent_id,
+      $type: type_of_tweet,
       $thread_id: tweet.thread_id,
       $publickey: tx.transaction.from[0].add,
       $link: tweet.link,
@@ -1050,7 +1128,7 @@ class RedSquare extends ModTemplate {
       $tx_size: tx_size
     };
 
-    app.storage.executeDatabase(sql, params, "redsquare");
+    await app.storage.executeDatabase(sql, params, "redsquare");
 
     let ts = new Date().getTime();
     let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
@@ -1058,7 +1136,7 @@ class RedSquare extends ModTemplate {
       $timestamp: ts,
       $sig: tweet.thread_id,
     }
-    app.storage.executeDatabase(sql2, params2, "redsquare");
+    await app.storage.executeDatabase(sql2, params2, "redsquare");
 
     if (tweet.retweet_tx != null) {
       let ts = new Date().getTime();
@@ -1066,9 +1144,8 @@ class RedSquare extends ModTemplate {
       let params3 = {
         $sig: tweet.thread_id,
       }
-      app.storage.executeDatabase(sql3, params3, "redsquare");
+      await app.storage.executeDatabase(sql3, params3, "redsquare");
     }
-
 
     if (tweet.parent_id !== tweet.tx.transaction.sig && tweet.parent_id !== "") {
       let ts = new Date().getTime();
@@ -1076,14 +1153,72 @@ class RedSquare extends ModTemplate {
       let params4 = {
         $sig: tweet.parent_id,
       }
-      app.storage.executeDatabase(sql4, params4, "redsquare");
+      await app.storage.executeDatabase(sql4, params4, "redsquare");
     }
+
+
+    //
+    // update cache
+    //
+    this.updateTweetsCacheForBrowsers();
 
     this.sqlcache = [];
 
     return;
 
   }
+
+  //
+  // writes the latest 10 tweets to tweets.js
+  //
+  async updateTweetsCacheForBrowsers() {
+
+    let hex_entries = [];
+
+    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 1400000 AND tx_size > 1500 AND parent_id = "" ORDER BY updated_at DESC LIMIT 3`;
+    let params = {};
+    let rows = await this.app.storage.queryDatabase(sql, params, "redsquare");
+
+    for (let i = 0; i < rows.length; i++) {
+
+      //
+      // create the transaction
+      //
+      let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+      let hexstring = tx.serialize_to_web(this.app);      
+      hex_entries.push(hexstring);
+
+    }
+
+    try {
+
+      let path = this.app.storage.returnPath(); 
+      if (!path) { return; }
+
+      const filename = path.join(__dirname, 'web/tweets.js');
+      let fs = this.app.storage.returnFileSystem();
+      if (fs != null) {
+        if (fs.existsSync(filename)) {
+          const fd = fs.openSync(filename, "w");
+          let html = `
+            var tweets = [];
+          `;
+          for (let i = 0; i < hex_entries.length; i++) {
+            html += `  tweets.push(\`${hex_entries[i]}\`);   `; 
+          }
+          fs.writeSync(fd, html);
+          fs.fsyncSync(fd);
+          fs.closeSync(fd);
+        }
+      }
+    } catch (err) {
+      console.error("ERROR 285029: error saving block to disk ", err);
+    }
+    return "";
+
+  }
+
+
 
   sendFlagTransaction(app, mod, data) {
 
@@ -1138,7 +1273,7 @@ class RedSquare extends ModTemplate {
   // saving and loading wallet state //
   /////////////////////////////////////
   load() {
- 
+
     if (this.app.options.redsquare) {
       this.redsquare = this.app.options.redsquare;
       this.notifications_last_viewed_ts = this.redsquare.notifications_last_viewed_ts;
@@ -1167,10 +1302,11 @@ class RedSquare extends ModTemplate {
     let redsquare_self = this;
 
     expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
+
       let reqBaseURL = req.protocol + "://" + req.headers.host + "/";
-  
-       try {
-  
+
+      try {
+
         if (Object.keys(req.query).length > 0) {
           let query_params = req.query;
 
@@ -1178,25 +1314,25 @@ class RedSquare extends ModTemplate {
             let sig = query_params.tweet_id || query_params.thread_id;
             let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
-  
+
             for (let i = 0; i < rows.length; i++) {
               let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
               let txmsg = tx.returnMessage();
               let text = tx.msg.data.text;
               let publickey = tx.transaction.from[0].add;
               let user = app.keychain.returnIdentifierByPublicKey(publickey, true);
-  
+
               redsquare_self.social.twitter_description = text;
               redsquare_self.social.og_description = text;
               redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
-  
+
               // if (typeof tx.msg.data.images != "undefined") {
               //   let image = tx.msg.data?.images[0];
               // } else {
               //   let publickey = tx.transaction.from[0].add;
               //   let image = app.keychain.returnIdenticon(publickey);
               // }
-  
+
               let image = redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug()) + '?og_img_sig=' + sig;
               redsquare_self.social.og_title = user + " posted on Saito 🟥";
               redsquare_self.social.twitter_title = user + " posted on Saito 🟥"
@@ -1204,27 +1340,27 @@ class RedSquare extends ModTemplate {
               redsquare_self.social.og_image_url = image;
               redsquare_self.social.og_image_secure_url = image;
               redsquare_self.social.twitter_image = image;
-  
+
             }
           }
-  
+
           if (typeof query_params.og_img_sig != "undefined") {
-  
+
             let sig = query_params.og_img_sig;
             let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
-  
+
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
-  
+
             for (let i = 0; i < rows.length; i++) {
               let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
               let txmsg = tx.returnMessage();
-  
+
               if (typeof tx.msg.data.images != "undefined") {
-                let img_uri = tx.msg.data?.images[0];   
+                let img_uri = tx.msg.data?.images[0];
                 let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
                 let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
                 let img = Buffer.from(base64Data, 'base64');
- 
+
               } else {
                 let publickey = tx.transaction.from[0].add;
                 let img_uri = app.keychain.returnIdenticon(publickey, "png");
@@ -1232,11 +1368,11 @@ class RedSquare extends ModTemplate {
                 let img = Buffer.from(base64Data, 'base64');
                 let img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
               }
-  
+
               if (img_type == 'image/svg+xml') {
                 img_type = 'image/svg';
               }
-  
+
               console.info('### write from 1229 of redsquare.js');
               res.writeHead(200, {
                 'Content-Type': img_type,

@@ -47,13 +47,7 @@ class GameScheduler {
         for (let i = 0; i < app.network.peers.length; i++) {
           peers.push(app.network.peers[i].returnPublicKey());
         }
-        let relay_mod = app.modules.returnModule("Relay");
-        if (relay_mod != null) {
-          relay_mod.sendRelayMessage(peers, "arcade spv update", scheduler_self.invite_tx.transaction);
-        }
-
-        console.log('add game invite_tx');
-        console.log(scheduler_self.invite_tx);
+        this.app.connection.emit("relay-send-message", { recipient: peers, request: "arcade spv update", data: scheduler_self.invite_tx.transaction });
 
         mod.addGame(scheduler_self.invite_tx, "open");
 

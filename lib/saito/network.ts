@@ -67,7 +67,7 @@ class Network {
     // reconnect to a rebooted peer
     //
     this.dead_peers = [];
-    this.debugging = true;
+    this.debugging = false;
   }
 
   //
@@ -215,7 +215,9 @@ class Network {
     }
     this.peers.push(peer);
     this.peers_connected++;
-    console.log("adding stun peer", peer);
+    if (this.debugging) {
+      console.log("adding stun peer", peer);
+    }
   }
 
   //
@@ -306,14 +308,17 @@ class Network {
           peer.peer.port
         }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
       }
-      console.log("fetching url : " + url);
+      if (this.debugging) {
+        console.log("fetching url : " + url);
+      }
       const res = await fetch(url);
       if (res.ok) {
         const blob = await res.blob(); //arrayBuffer();
         // const buffer = Buffer.from(Buffer.from(base64Buffer).toString("utf-8"), "base64");
         const buffer = Buffer.from(await blob.arrayBuffer());
-        console.log("block fetched : " + block_hash + " size = " + buffer.length);
-
+        if (this.debugging) {
+          console.log("block fetched : " + block_hash + " size = " + buffer.length);
+        }
         const block = new Block(this.app);
         block.deserialize(buffer);
         // console.debug("block deserialized : " + block_hash);
@@ -797,12 +802,12 @@ class Network {
             }
             await this.fetchBlock(block_hash);
             if (this.debugging) {
-              console.log("done fetch block!");
+              //console.log("done fetch block!");
             }
           } else {
             // ghost block
             if (this.debugging) {
-              console.log("adding ghostchain block! " + block_hash);
+              //console.log("adding ghostchain block! " + block_hash);
             }
             this.app.blockchain.addGhostToBlockchain(
               BigInt(syncobj.block_ids[i]),
