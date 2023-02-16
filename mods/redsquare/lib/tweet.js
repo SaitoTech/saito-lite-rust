@@ -262,6 +262,7 @@ class Tweet {
 
 
   attachEvents() {
+
     let mod  = this.mod;
     let app = this.app;
     if (this.show_controls == 0) { return; }
@@ -306,7 +307,9 @@ class Tweet {
                 window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
                 let sig = this.tx.transaction.sig;
                 app.connection.emit('redsquare-home-tweet-render-request', (this));
+                app.connection.emit('redsquare-home-loader-render-request');
 		mod.loadChildrenOfTweet(sig, (tweets) => {
+                  app.connection.emit('redsquare-home-loader-hide-request');
 		  for (let i = 0; i < tweets.length; i++) {
                     app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
 		  }
@@ -323,7 +326,9 @@ class Tweet {
 	    window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
             let sig = this.tx.transaction.sig;
             app.connection.emit('redsquare-home-tweet-render-request', (this));
+            app.connection.emit('redsquare-home-loader-render-request');
 	    mod.loadChildrenOfTweet(sig, (tweets) => {
+              app.connection.emit('redsquare-home-loader-hide-request');
 	      for (let i = 0; i < tweets.length; i++) {
                 app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
 	      }

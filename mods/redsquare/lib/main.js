@@ -14,7 +14,6 @@ class RedSquareMain {
     this.mod = mod;
     this.container = container;
     this.name = "RedSquareMain";
-    this.loader = new SaitoLoader(app, mod, ".saito-main");     
 
     this.components = {};
     this.components['home'] = new RedSquareAppspaceHome(app, mod, ".saito-main");
@@ -34,8 +33,10 @@ class RedSquareMain {
       this.components["home"].renderTweets();
     });
     this.app.connection.on("redsquare-home-loader-render-request", () => {
-      this.renderAppspaceComponent("home");
-      this.components["home"].renderLoader();        
+      this.components["home"].loader.render();
+    });
+    this.app.connection.on("redsquare-home-loader-hide-request", () => {
+      this.components["home"].loader.hide();
     });
     this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {
       this.renderAppspaceComponent("home");

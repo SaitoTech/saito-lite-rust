@@ -88,7 +88,9 @@ class RedSquareNotification {
 	if (tweet) {
 
           app.connection.emit('redsquare-home-tweet-render-request', (tweet));
+          app.connection.emit('redsquare-home-loader-render-request');
           mod.loadChildrenOfTweet(sig, (tweets) => {
+            app.connection.emit('redsquare-home-loader-hide-request');
 	    for (let i = 0; i < tweets.length; i++) {
               app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
 	    }
