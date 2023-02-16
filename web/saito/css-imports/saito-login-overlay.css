@@ -69,5 +69,9 @@
 }
 
 
-
-
+@media screen and (max-width: 768px) {
+    .saito-login-overlay-field input[type="text"],
+    .saito-login-overlay-field input[type="password"]  {
+        width: 100%;
+    }
+}

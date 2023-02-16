@@ -1,8 +1,5 @@
 module.exports = (link) => {
 
-  console.log('inside link template');
-  console.log(link.tweet);
-
   if (typeof link.tweet.youtube_id != "undefined" && link.tweet.youtube_id != "") {
   
     return `

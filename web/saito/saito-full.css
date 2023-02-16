@@ -1292,6 +1292,7 @@ select {
   padding: 0.5rem;
   border-radius: 0.5rem;
   margin: 3rem auto;
+  background: #fff;
 }
 
 .wallet-btn-container {
@@ -1301,8 +1302,7 @@ select {
   grid-template-columns: 1fr 1fr 1fr;
   border: none;
   grid-column-gap: 3.3rem;
-  color: #fff;
-  background: var(--saito-arcade-overlay-background);
+  background: var(--saito-font-color);
   border-radius: 0.7rem;
   padding: 0.75rem;
   margin: auto;
@@ -1312,7 +1312,7 @@ select {
 
 .wallet-btn {
   text-align: center;
-  color: #fff;
+  color: var(--saito-background-color);
   display:inline-block;
   cursor: pointer;
 }
@@ -1364,6 +1364,7 @@ select {
   text-align: center;
   width: auto;
   font-size: 2.2rem;
+  color: var(--saito-font-color);
 }
 
 .balance-ticker {
@@ -1399,7 +1400,7 @@ select {
 .slidein-panel {
   position: absolute;
   top: 46vh;
-  background: #fff;
+  background: var(--saito-background-color);
   width: 100%;
   height: 99vh;
   overflow: hidden;
@@ -1781,9 +1782,12 @@ select {
 }
 
 
-
-
-.saito-menu {
+@media screen and (max-width: 768px) {
+    .saito-login-overlay-field input[type="text"],
+    .saito-login-overlay-field input[type="password"]  {
+        width: 100%;
+    }
+}.saito-menu {
   margin-top: -1rem;
 }
 
