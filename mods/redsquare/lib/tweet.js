@@ -130,7 +130,6 @@ class Tweet {
       }
     }
 
-    this.app.browser.addIdentifiersToDom();
     this.attachEvents();
 
   }
@@ -138,8 +137,6 @@ class Tweet {
   renderWithCriticalChild(prepend = false) {
 
     this.render(prepend);
-    this.app.browser.addIdentifiersToDom();
-    this.attachEvents();
 
     if (this.critical_child) {
 
@@ -158,8 +155,8 @@ class Tweet {
 
     }
 
+    this.attachEvents();
   }
-
 
 
   renderWithChildren() {
@@ -192,7 +189,7 @@ class Tweet {
         }
       }
     }
-    this.app.browser.addIdentifiersToDom();
+
     this.attachEvents();
   }
 
@@ -206,7 +203,6 @@ class Tweet {
       parent.renderWithCriticalChild(true);
     } else {
       this.render();
-      this.app.browser.addIdentifiersToDom();
     }
   }
 
@@ -227,8 +223,6 @@ class Tweet {
       this.render();
     }
 
-
-    //
     //then render its children
     if (this.children.length > 0) {
       if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add || this.children.length == 1) {
@@ -251,20 +245,15 @@ class Tweet {
         }
       }
     }
-    this.app.browser.addIdentifiersToDom();
     this.attachEvents();
   }
-
-
-
-
-
 
 
   attachEvents() {
 
     let mod  = this.mod;
     let app = this.app;
+
     if (this.show_controls == 0) { return; }
 
     try {
@@ -272,19 +261,21 @@ class Tweet {
       /////////////////////////////
       // Expand / Contract Tweet //
       /////////////////////////////
+      //
+      // if you don't want a tweet to auto-contract on display, set this.is_long_tweet
+      // to be true before running attachEvents(); this will avoid it getting compressed
+      // with full / preview toggle.
+      //
       let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-text`);
-      // skip tweets that aren't on the page -- like comments
       if (!el) { return; }
       let cobj = document.querySelector(this.container);     
-      let is_full = false;
-
-      if (is_full) {
-          el.classList.add('full');
-      } else { 
+      if (this.is_long_tweet == false) {
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
           this.is_long_tweet = true;
         }
+      } else {
+        el.classList.add("full");
       }
 
 

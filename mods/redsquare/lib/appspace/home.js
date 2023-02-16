@@ -132,6 +132,10 @@ class AppspaceHome {
     this.thread_id = tweets[0].tx.transaction.sig;
     this.parent_id = tweets[0].tx.transaction.sig;
 
+    //
+    // do not compress parent
+    //
+    tweets[0].is_long_tweet = true;
     tweets[0].renderWithChildren();
 
 

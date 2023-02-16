@@ -247,7 +247,7 @@ class RedSquare extends ModTemplate {
           this.results_loaded = true;
 	  let x = [];
           for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(this.app, this, ".redsquare-home", txs[z]);
+            let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
             x.push(tweet);
           }
 	  this.app.connection.emit('redsquare-home-thread-render-request', x);
@@ -455,7 +455,7 @@ class RedSquare extends ModTemplate {
       let x = [];
       this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
         for (let z = 0; z < txs.length; z++) {
-	  let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+	  let tweet = new Tweet(app, mod, ".redsquare-appspace-body", txs[z]);
           x.push(tweet);
 	}
 	mycallback(x);
@@ -476,7 +476,7 @@ class RedSquare extends ModTemplate {
         if (txs.length > 0) {
           let x = [];
 	  for (let z = 0; z < txs.length; z++) {
-	    let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+	    let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
             this.app.connection.emit("redsquare-home-tweet-append-render-request", (tweet));
 	  }
         }

@@ -2606,9 +2606,9 @@ Saito Table
   content: "\f0d7";
   position: absolute;
   bottom: 2rem;
-  color: var(--saito-primary);
-  font-size: smaller;
-  font-size: 1.5rem;
+  /* color: var(--saito-primary); */
+  color: var(--saito-border-color-dark);
+  font-size: 6rem;
   z-index: 999;
   text-align: center;
   line-height: 2.7rem;
@@ -2811,7 +2811,8 @@ Saito Table
   .tweet-picture {
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   }
-}/* ----------------------------------------------------------------
+}
+/* ----------------------------------------------------------------
 Saito Identicon
 -----------------------------------------------------------------*/
 

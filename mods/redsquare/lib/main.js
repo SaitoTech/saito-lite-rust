@@ -31,6 +31,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-render-request", () => {
       this.renderAppspaceComponent("home");
       this.components["home"].renderTweets();
+      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-loader-render-request", () => {
       this.components["home"].loader.render();
@@ -41,16 +42,20 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-thread-render-request", (tweets) => {
       this.renderAppspaceComponent("home");
       this.components["home"].renderThread(tweets);        
+      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-tweet-render-request", (tweet) => {
       this.renderAppspaceComponent("home");
       this.components["home"].appendTweet(tweet);
+      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-tweet-append-render-request", (tweet) => {
       this.components["home"].appendTweet(tweet);
+      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-home-tweet-prepend-render-request", (tweet) => {
       this.components["home"].prependTweet(tweet);
+      this.app.browser.addIdentifiersToDom();
     });
     this.app.connection.on("redsquare-tweet-added-render-request", (tweet) => {
       if (this.render_component === "home") {
@@ -62,6 +67,7 @@ class RedSquareMain {
       	  }
 	}
       }
+      this.app.browser.addIdentifiersToDom();
     });
 
 
