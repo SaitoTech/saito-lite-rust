@@ -230,6 +230,7 @@ class RedSquare extends ModTemplate {
   // runs when normal peer connects
   //
   async onPeerHandshakeComplete(app, peer) {
+
     //
     // avoid network overhead if in other apps
     //
@@ -243,7 +244,8 @@ class RedSquare extends ModTemplate {
       let tweet_id = this.app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-        this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+        //this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+        this.loadTweetsFromPeer(peer, sql, (txs) => {
           this.results_loaded = true;
 	  let x = [];
           for (let z = 0; z < txs.length; z++) {
@@ -277,9 +279,12 @@ class RedSquare extends ModTemplate {
     //
     let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
     this.loadTweetsFromPeer(peer, sql, (txs) => {
-      this.app.connection.emit("redsquare-home-render-request");
-      this.app.browser.addIdentifiersToDom();
-      this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
+      let hash = this.app.browser.returnHashAndParameters();
+      if (!hash.hash) {
+        this.app.connection.emit("redsquare-home-render-request");
+        this.app.browser.addIdentifiersToDom();
+        this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
+      }
     }, true);
 
   }
@@ -328,6 +333,23 @@ class RedSquare extends ModTemplate {
     }
 
     super.render();
+
+
+
+    //
+    // check if hash component exists
+    //
+    let hash = this.app.browser.returnHashAndParameters();
+    if (hash.hash) {
+      this.app.connection.emit("redsquare-component-render-request", (hash));
+      return;
+    }
+
+
+
+
+
+
 
     //
     // if our browser has loaded cached tweets through a direct
@@ -404,7 +426,8 @@ class RedSquare extends ModTemplate {
 
     let x = [];
     let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}'`;
-    this.loadTweetsFromPeerAndReturn(this.peers_for_tweets[0], sql, (txs) => {
+    //this.loadTweetsFromPeerAndReturn(this.peers_for_tweets[0], sql, (txs) => {
+    this.loadTweetsFromPeer(this.peers_for_tweets[0], sql, (txs) => {
       for (let z = 0; z < txs.length; z++) {
         let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
         x.push(tweet);
@@ -423,7 +446,8 @@ class RedSquare extends ModTemplate {
     if (t != null) { mycallback(t); return; }
 
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
-    this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+    //this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+    this.loadTweetsFromPeer(mod.peers_for_tweets[0], sql, (txs) => {
       this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
         for (let z = 0; z < txs.length; z++) {
           let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
@@ -451,9 +475,11 @@ class RedSquare extends ModTemplate {
     }
 
     let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}'`;
-    this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+    //this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+    this.loadTweetsFromPeer(mod.peers_for_tweets[0], sql, (txs) => {
       let x = [];
-      this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+      //this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+      this.loadTweetsFromPeer(peer, sql, (txs) => {
         for (let z = 0; z < txs.length; z++) {
 	  let tweet = new Tweet(app, mod, ".redsquare-appspace-body", txs[z]);
           x.push(tweet);
