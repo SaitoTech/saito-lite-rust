@@ -36,21 +36,21 @@ class Registry extends ModTemplate {
       let unidentified_keys = [];
 
       for (let i = 0; i < keys.length; i++) {
-	if (this.cached_keys[keys[i]]) {
-	  this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
-	} else {
-	  unidentified_keys.push(keys[i]);
-	}
+        if (this.cached_keys[keys[i]]) {
+          this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
+        } else {
+          unidentified_keys.push(keys[i]);
+        }
       }
 
       for (let i = 0; i < this.app.network.peers.length; i++) {
-	let peer = this.app.network.peers[i];
-	if (this.app.network.peers[i].hasService("registry")) {
+        let peer = this.app.network.peers[i];
+        if (this.app.network.peers[i].hasService("registry")) {
           this.fetchManyIdentifiers(unidentified_keys, peer, (answer) => {
             Object.entries(answer).forEach(([key, value]) => {
-	      this.cached_keys[key] = value;
-	      this.app.browser.updateAddressHTML(key, value);
-	    });
+              this.cached_keys[key] = value;
+              this.app.browser.updateAddressHTML(key, value);
+            });
           });
         }
       }
@@ -68,7 +68,7 @@ class Registry extends ModTemplate {
     // registering domains should report they run the registry module.
     //
     if (this.app.BROWSER == 0) {
-    //if (this.publickey == this.app.wallet.returnPublicKey()) {
+      //if (this.publickey == this.app.wallet.returnPublicKey()) {
       services.push({ service: "registry", domain: "saito" });
     }
     return services;
@@ -138,7 +138,7 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-	if (peer == null) {
+        if (peer == null) {
           if (peer.peer.services) {
             for (let z = 0; z < peer.peer.services.length; z++) {
               if (peer.peer.services[z].service === "registry") {
@@ -148,9 +148,9 @@ class Registry extends ModTemplate {
           }
         } else {
           if (p == peer) {
-	    return 1;
-	  }
-	}
+            return 1;
+          }
+        }
       }
     );
   }
@@ -168,7 +168,7 @@ class Registry extends ModTemplate {
 
       (res) => {
         let rows = [];
-    
+
         if (res.rows == undefined) {
           mycallback(rows);
         }
@@ -183,13 +183,13 @@ class Registry extends ModTemplate {
         }
         rows = res.rows.map((row) => {
           const { publickey, identifier, bid, bsh, lc } = row;
-      
+
           // keep track that we fetched this already
           this.cached_keys[publickey] = 1;
           this.addKey(publickey, {
             identifier: identifier,
             watched: false,
-            block_id: bid, 
+            block_id: bid,
             block_hash: bsh,
             lc: lc,
           });
@@ -201,7 +201,7 @@ class Registry extends ModTemplate {
       },
 
       (p) => {
-	if (peer == null) {
+        if (peer == null) {
           if (peer.peer.services) {
             for (let z = 0; z < peer.peer.services.length; z++) {
               if (peer.peer.services[z].service === "registry") {
@@ -211,9 +211,9 @@ class Registry extends ModTemplate {
           }
         } else {
           if (p == peer) {
-	    return 1;
-	  }
-	}
+            return 1;
+          }
+        }
       }
     );
   }
@@ -252,7 +252,7 @@ class Registry extends ModTemplate {
   }
 
 
-  async handlePeerTransaction(app, tx=null, peer, mycallback) {
+  async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
     if (tx == null) { return; }
     let message = tx.returnMessage();
@@ -280,7 +280,7 @@ class Registry extends ModTemplate {
           console.debug("failed verifying message for username registration : ", tx);
         }
       } catch (err) {
-        console.error("ERROR verifying username registration message: " , err);
+        console.error("ERROR verifying username registration message: ", err);
       }
     }
 
@@ -463,11 +463,11 @@ console.log("WE ARE NOW LOCAL SERVER");
               try {
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
-                }else{
+                } else {
                   console.debug("verification failed for sig : ", tx);
                 }
               } catch (err) {
-                console.error("ERROR verifying username registration message: " , err);
+                console.error("ERROR verifying username registration message: ", err);
               }
             }
           } else {

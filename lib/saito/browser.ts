@@ -265,7 +265,7 @@ class Browser {
 
             let myUserMenu = new MyUserMenu(app, publickey);
             myUserMenu.render(app);
-	  }
+          }
         }
       },
       {
@@ -284,13 +284,13 @@ class Browser {
         if (w[i][0] === "@") {
           if (w.length > 1) {
             let cleaner = w[i].substring(1);
-	    let key = this.app.keychain.returnKey({ identifier : cleaner });
-	    if (key) {
+            let key = this.app.keychain.returnKey({ identifier: cleaner });
+            if (key) {
               let add = key.publickey;
-	    }
+            }
             if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
               add = cleaner;
-	    }
+            }
             if (!keys.includes(add) && (add != "" && add != null)) {
               keys.push(add);
             }
@@ -311,9 +311,9 @@ class Browser {
     }
     if (identifiers) {
       identifiers.forEach(id => {
-        let key = this.app.keychain.returnKey({ identifier : id });
-	if (key.publickey) {
-        let add = key.publickey;
+        let key = this.app.keychain.returnKey({ identifier: id });
+        if (key.publickey) {
+          let add = key.publickey;
           if (this.app.crypto.isPublicKey(add)) {
             if (!keys.includes(add)) {
               keys.push(add);
@@ -695,7 +695,7 @@ class Browser {
       }
       el.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : "  + err);
+      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : " + err);
       console.log(html);
     }
   }
@@ -1145,9 +1145,14 @@ class Browser {
   * Fetches publickeys visible in application HTML
   * 
   **/
-  returnArrayOfPublicKeysInDom() {
+  returnArrayOfPublicKeysInDom(rootElement = null) {
     let keys = [];
-    const addresses = document.getElementsByClassName(`saito-address`);
+    let addresses = [];
+    if (rootElement) {
+      addresses = rootElement.getElementsByClassName(`saito-address`);
+    } else {
+      addresses = document.getElementsByClassName(`saito-address`);
+    }
     Array.from(addresses).forEach((add) => {
       const pubkey = add.getAttribute("data-id");
       if (pubkey) {
@@ -1163,18 +1168,19 @@ class Browser {
    *
    * @param {Array} keys
    */
-  async addIdentifiersToDom(keys = []) {
+  async addIdentifiersToDom(keys = [], rootElement = null) {
 
-    let keys = this.returnArrayOfPublicKeysInDom();
+    let keys = this.returnArrayOfPublicKeysInDom(rootElement = null);
     let unidentified_keys = [];
     for (let i = 0; i < keys.length; i++) {
       if (this.app.keychain.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
-	unidentified_keys.push(keys[i]);
+        unidentified_keys.push(keys[i]);
       } else {
         this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
       }
     }
-    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  }
+    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);
+  }
 
 
   addModalIdentifierAddPublickey(app, mod) {
@@ -1446,7 +1452,7 @@ class Browser {
           try {
 
             identifiers.forEach(async (identifier) => {
-              let answer = this.app.keychain.returnKey({ identifier : identifier });
+              let answer = this.app.keychain.returnKey({ identifier: identifier });
               console.log(answer + " - " + identifier);
               if (answer != identifier && answer != null) {
                 //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
@@ -1489,7 +1495,7 @@ class Browser {
 
   activatePublicKeyObserver(app) {
 
-return;
+    return;
 
     let mutationObserver = new MutationObserver((entries) => {
 
@@ -1508,12 +1514,12 @@ return;
             Array.from(node.children).forEach((child_node) => {
               if (child_node?.classList?.contains("saito-address")) {
 
-console.log("FOUND PUBLIC KEY!: " + address);
+                console.log("FOUND PUBLIC KEY!: " + address);
 
                 let identifier = app.keychain.returnIdentifierByPublicKey(address, true);
                 if (identifier) {
 
-console.log("IDENTIFIER: " + identifier);
+                  console.log("IDENTIFIER: " + identifier);
 
                   try {
                     document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
@@ -1628,6 +1634,24 @@ console.log("IDENTIFIER: " + identifier);
         subtree: true,
         attributeOldValue: true,
       });
+
+      var identObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.addedNodes.length > 0) {
+            console.info("######################333########################################");
+            console.info(mutation);
+            browser_self.treatElements(mutation.addedNodes);
+          }
+        });
+      });
+
+      identObserver.observe(document.documentElement, {
+        attributes: false,
+        characterData: false,
+        childList: true,
+        subtree: true,
+      });
+
 
       window.sanitize = function (msg) {
         let result = browser_self.sanitize(msg);
@@ -1786,7 +1810,7 @@ console.log("IDENTIFIER: " + identifier);
 
     }
 
-  
+
   }
 
 
@@ -1841,8 +1865,8 @@ console.log("IDENTIFIER: " + identifier);
       }
 
       if (mod_obj.slug != null) {
-          this.app.options.theme[mod_obj.slug] = theme;
-          this.app.storage.saveOptions();
+        this.app.options.theme[mod_obj.slug] = theme;
+        this.app.storage.saveOptions();
       }
       console.log(this.app.options);
     }
