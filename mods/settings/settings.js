@@ -77,6 +77,23 @@ class Settings extends ModTemplate {
       }
   }
 
+  // respondTo(type = "") {
+  //   if (type === 'saito-header') {
+      
+  //     return [{
+  //       text: "Settings",
+  //       icon: this.icon,
+  //       allowed_mods: ["redsquare"],
+  //       callback: function (app, id) {
+          
+  //       }
+  //     }]
+  //   }
+
+  //   return null;
+  // }
+
+
 
 }
 

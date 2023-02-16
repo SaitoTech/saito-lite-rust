@@ -133,16 +133,6 @@ class Stun extends ModTemplate {
             super.render(this.app, this);
             return new StunxAppspace(this.app, this);
         }
-        if (type === 'saito-header') {
-          return {
-            text: this.appname,
-            icon: this.icon,
-            allowed_mods: ["redsquare"],
-            callback: function (app, id) {
-	      let stun_self = app.modules.returnModule("Stun");
-	      stun_self.renderInto(".saito-main"); 
-            }
-        }
 
         if (type == "game-menu") {
             this.styles = [`/${this.returnSlug()}/css/style.css`,];
@@ -230,7 +220,6 @@ class Stun extends ModTemplate {
             }];
         }
         return null;
-    }
     }
 
 
