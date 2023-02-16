@@ -112,30 +112,30 @@ class VideoBox {
             case "disconnected":
                 console.log(`#stream${this.stream_id}`, "stream id")
                 document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
-                siteMessage("User Disconnected");
+                siteMessage("User Disconnected", 5000);
                 break;
             case "failed":
                 if (document.querySelector(`#stream${this.stream_id}`)) {
                     console.log(`#stream${this.stream_id}`, "stream id")
                     document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
-                    siteMessage("Connection failed");
+                    siteMessage("Connection failed", 5000);
                 }
                 break;
             case "ten_seconds":
                 if (document.querySelector('#connection-message')) {
-                    document.querySelector('#connection-message').innerHTML = `<p>Negotiation Peer Connection</p> <span class='lds-dual-ring'>`
+                    document.querySelector('#connection-message').innerHTML = `<p>Negotiating Peer Connection</p> <span class='lds-dual-ring'>`
                 }
 
                 break
             case "twenty_seconds":
                 if (document.querySelector('#connection-message')) {
-                    document.querySelector('#connection-message').innerHTML = `<p>Adding Ice Candidates</p> <span class='lds-dual-ring'>`
+                    document.querySelector('#connection-message').innerHTML = `<p>Trying Alternative Route</p> <span class='lds-dual-ring'>`
                 }
 
                 break
             case "two_minutes":
                 if (document.querySelector('#connection-message')) {
-                    document.querySelector('#connection-message').innerHTML = `<p>Connection Failed, Retrying</p> <span class='lds-dual-ring'>`
+                    document.querySelector('#connection-message').innerHTML = `<p>Retrying Connection</p> <span class='lds-dual-ring'>`
                 }
                 break
 

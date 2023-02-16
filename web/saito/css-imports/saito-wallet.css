@@ -104,16 +104,12 @@
   .add-item-cont {
   }
 
-  #qrcode img {
-    height: 17vh;
-  }
-
   .add-input-box {
-    width: 70%;
+    width: 100%;
   }
 
   .email-appspace-deposit-overlay {
-    max-width: 80vw;
+    max-width: 32vw;
   }
   .deposit_title {
     font-size: 2em;
@@ -483,6 +479,20 @@
   .email-appspace-withdraw-overlay {
     width: 95vw;
   }
+
+  .mixin-no-history {
+    margin-top: 1rem;
+    margin-left: 0rem;
+  }
+
+  .mixin-txn-his-container {
+    width: 86vw;
+  }
+
+  .mixin-txn-his-container .saito-table-header  {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
 }
 
 
