@@ -1,8 +1,8 @@
-module.exports = MixinHistoryTemplate = (app, ticker) => {
+module.exports = MixinHistoryTemplate = (app, this_history) => {
 
   let html = `
     <div class="mixin-overlay-history">
-        <h5 class="transaction-header">Transaction History (${ticker})</h5>
+        <h5 class="transaction-header">Transaction History (${this_history.ticker})</h5>
         <div class="mixin-txn-his-container saito-table">
             <div class="saito-table-header">
                 <div>Time</div>

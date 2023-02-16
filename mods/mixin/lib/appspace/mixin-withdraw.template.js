@@ -1,4 +1,4 @@
-module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=0) => {
+module.exports = MixinWithdrawTemplate = (app, withdraw_this) => {
 
   let html = `
 
@@ -9,15 +9,15 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
         
         <form class="withdrawal-form" id="withdrawal-form" action="/" method="POST">
           <div class="mixin-withdraw-input">
-            <div class="input-heading">Receiving Address (${deposit_ticker})</div>
+            <div class="input-heading">Receiving Address (${withdraw_this.deposit_ticker})</div>
             <input type="text" class="input-elem withdraw_address" value="" required>
           </div>
 
           <div class="mixin-withdraw-input">
             <div class="amount-cont">
               <div class="input-heading amount-item">Amount</div>
-              <div class="amount-item" id="amount-avl" data-amount-avl="${withdraw_balance}">
-                Available Balance &nbsp; ${withdraw_balance} ${deposit_ticker}
+              <div class="amount-item" id="amount-avl" data-amount-avl="${withdraw_this.withdraw_balance}">
+                Available Balance &nbsp; ${withdraw_this.withdraw_balance} ${withdraw_this.deposit_ticker}
               </div>
             </div>
             <div class="max-amount-error error-msg"></div>
