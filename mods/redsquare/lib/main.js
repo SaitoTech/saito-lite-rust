@@ -69,7 +69,6 @@ class RedSquareMain {
       }
       this.app.browser.addIdentifiersToDom();
     });
-
     this.app.connection.on("redsquare-profile-render-request", () => {
       this.renderAppspaceComponent("profile");
     });
