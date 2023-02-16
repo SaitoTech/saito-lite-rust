@@ -11,8 +11,6 @@ const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
 const redsquareHome = require("./index");
 
-const SaitoLoginOverlay = require('../../lib/saito/ui/saito-login-overlay/saito-login-overlay');
-
 
 class RedSquare extends ModTemplate {
 
@@ -242,15 +240,17 @@ class RedSquare extends ModTemplate {
     //
     let mod = app.modules.returnModule('RedSquare')
     if (this.results_loaded == false) {
-      let tweet_id = app.browser.returnURLParameter('tweet_id');
+      let tweet_id = this.app.browser.returnURLParameter('tweet_id');
       if (tweet_id != "") {
         let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
         this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
           this.results_loaded = true;
+	  let x = [];
           for (let z = 0; z < txs.length; z++) {
-            let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-            app.connection.emit('redsquare-thread-render-request', tweet);
+            let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+            x.push(tweet);
           }
+	  this.app.connection.emit('redsquare-home-thread-render-request', x);
         }, false, false);
         return;
       }
@@ -258,7 +258,7 @@ class RedSquare extends ModTemplate {
       //
       // render user profile
       //
-      let user_id = app.browser.returnURLParameter('user_id');
+      let user_id = this.app.browser.returnURLParameter('user_id');
       if (user_id != "") {
         this.app.connection.emit("redsquare-profile-render-request", (user_id));
         this.results_loaded = true;
@@ -266,8 +266,8 @@ class RedSquare extends ModTemplate {
       }
     } else {
       if (this.results_loaded == true) {
-        let user_id = app.browser.returnURLParameter('user_id');
-        let tweet_id = app.browser.returnURLParameter('tweet_id');
+        let user_id = this.app.browser.returnURLParameter('user_id');
+        let tweet_id = this.app.browser.returnURLParameter('tweet_id');
         if (user_id != "" || tweet_id != "") { return; }
       }
     }
@@ -337,21 +337,14 @@ class RedSquare extends ModTemplate {
     // this runs after components are rendered or it breaks/fails
     //
     try {
-      this.app.connection.emit("redsquare-home-render-request");
-console.log("A");
       for (let z = 0; z < tweets.length; z++) {
-console.log("B: " + z);
 	let newtx = new saito.default.transaction();
-console.log("C: " + z);
-	//newtx.deserialize_from_base64(this.app, tweets[z]);
 	newtx.deserialize_from_web(this.app, tweets[z]);
-console.log("D: " + z);
         this.addTweet(newtx);
-console.log("E: " + z);
       }
       this.app.connection.emit("redsquare-home-render-request");
     } catch (err) {
-console.log("error in initial processing: " + err);
+      console.log("error in initial redsquare post fetch: " + err);
     }
 
   }
@@ -404,6 +397,76 @@ console.log("error in initial processing: " + err);
     }
   }
 
+  loadChildrenOfTweet(sig, mycallback=null) {
+
+    if (this.peers_for_tweets.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let x = [];
+    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}'`;
+    this.loadTweetsFromPeerAndReturn(this.peers_for_tweets[0], sql, (txs) => {
+      for (let z = 0; z < txs.length; z++) {
+        let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+        x.push(tweet);
+      }
+      mycallback(x);
+      return;
+    });
+
+  }
+  loadTweetWithSig(sig, mycallback=null) {
+
+    if (this.peers_for_tweets.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let t = this.returnTweet(sig);
+    if (t != null) { mycallback(t); return; }
+
+    let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
+    this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+      this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+        for (let z = 0; z < txs.length; z++) {
+          let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+          mycallback(tweet);
+        }
+      }, false, false);
+      return;
+    });
+
+  }
+
+  loadTweetsWithParentId(sig, mycallback=null) {
+
+    if (this.peers_for_tweets.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let t = this.returnTweet(sig);
+    if (t != null) { 
+      let x = [];
+      for (let z = 0; z < t.children.length; z++) {
+	x.push(t.children[z]);
+      }
+      mycallback(x);
+      return;
+    }
+
+    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}'`;
+    this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+      let x = [];
+      this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+        for (let z = 0; z < txs.length; z++) {
+	  let tweet = new Tweet(app, mod, ".redsquare-appspace-body", txs[z]);
+          x.push(tweet);
+	}
+	mycallback(x);
+      }, false, false);
+      return;
+    });
+
+  }
+
+
+
   loadMoreTweets(post_load_tweet_callback = null) {
     this.increment_for_tweets++;
     for (let i = 0; i < this.peers_for_tweets.length; i++) {
@@ -411,7 +474,11 @@ console.log("error in initial processing: " + err);
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
         if (txs.length > 0) {
-          this.app.connection.emit("redsquare-home-load-more-tweets-request",);
+          let x = [];
+	  for (let z = 0; z < txs.length; z++) {
+	    let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
+            this.app.connection.emit("redsquare-home-tweet-append-render-request", (tweet));
+	  }
         }
         if (post_load_tweet_callback) {
           post_load_tweet_callback()
@@ -1118,7 +1185,6 @@ console.log("error in initial processing: " + err);
       // create the transaction
       //
       let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
-      //let hexstring = tx.serialize_to_base64(this.app);      
       let hexstring = tx.serialize_to_web(this.app);      
       hex_entries.push(hexstring);
 

@@ -44,21 +44,13 @@ class RedSquareMenu {
 
     document.querySelector(".redsquare-menu-home").onclick = (e) => {
       this.setHash('home')
-      this.mod.main.render_component = "home"
-      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.mod.results_per_page}'`;
-      this.mod.tweets = [];
-      this.mod.loadTweetsFromPeer(this.mod.peers_for_tweets[0], sql, (txs) => {
-        this.app.connection.emit("redsquare-home-render-request");
-      }, true);
+      this.app.connection.emit("redsquare-home-render-request");
     }
 
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       this.setHash('notifications')
-      this.mod.main.render_component = "notifications"
-      this.mod.viewing = "notifications";
       this.app.connection.emit("redsquare-notifications-render-request");
-
     }
 
 //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
