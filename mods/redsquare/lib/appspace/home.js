@@ -1,5 +1,6 @@
 const AppspaceHomeTemplate = require("./home.template");
 const Post = require("./../post");
+const Tweet = require("./../tweet");
 const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
 
 
@@ -40,6 +41,30 @@ class AppspaceHome {
 
   }
 
+
+  renderTweetsWithSig(sig) {
+
+alert("container: " + this.container);
+
+    if (document.querySelector(".redsquare-appspace-body")) {
+      this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
+    } else {
+      this.container.innerHTML = "";
+      this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);    
+    }
+
+    //this.saito_loader.render();
+
+    let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+    this.mod.loadTweetsFromPeerAndReturn(this.mod.peers_for_tweets[0], sql, (txs) => {
+      //this.saito_loader.hide();
+      for (let z = 0; z < txs.length; z++) {
+        let tweet = new Tweet(this.app, this.mod, ".redsquare-appspace-body", txs[z]);
+        tweet.render();
+      }
+    }, false, false);
+
+  }
 
   renderMoreTweets() {
     for (let i = 0; i < this.mod.tweets.length; i++) {
@@ -83,7 +108,6 @@ class AppspaceHome {
     } else {
       this.container.innerHTML = "";
       this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
-
     }
 
     // render all top-level tweets, possibly with critical children
@@ -106,7 +130,7 @@ class AppspaceHome {
     this.thread_id = tweet.tx.transaction.sig;
     this.parent_id = tweet.tx.transaction.sig;
 
-    if (document.querySelector(".redsquare-home")) {
+    if (document.querySelector(".redsquare-appspace-body")) {
       this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
       document.querySelector(".redsquare-home").dataset.thread_id = this.thread_id;
     } else {

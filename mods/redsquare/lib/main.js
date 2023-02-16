@@ -24,6 +24,19 @@ class RedSquareMain {
     this.render_component = 'home';
 
 
+
+
+    this.app.connection.on("redsquare-tweet-sig-render-request", (sig) => {
+      document.querySelector(".saito-main").innerHTML = "";
+      this.mod.viewing = "home";
+      this.render_component = 'home';
+      this.components[this.render_component].renderTweetsWithSig(sig);
+      document.querySelector(".saito-sidebar.right").innerHTML = "";
+      this.mod.sidebar.render();
+    });
+
+
+
     this.app.connection.on("redsquare-profile-render-request", (publickey) => {
       document.querySelector(".saito-main").innerHTML = "";
       this.render_component = 'profile';
