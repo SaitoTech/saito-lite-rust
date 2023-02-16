@@ -152,8 +152,6 @@ class AppspaceHome {
 
   attachEvents() {
 
-return;
-
     this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
 
     document.getElementById("redsquare-tweet").onclick = (e) => {
@@ -163,10 +161,6 @@ return;
 
     document.getElementById("redsquare-profile").onclick = (e) => {
       this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.returnPublicKey());
-    }
-
-    document.querySelector('.redsquare-new-tweets-banner').onclick = (e) => {
-      this.renderNewTweets();
     }
 
   }
@@ -198,7 +192,7 @@ return;
 
 
 
-
+/****
   renderTweetsWithSig(sig) {
 
     if (document.querySelector(".redsquare-appspace-body")) {
@@ -246,7 +240,7 @@ return;
     this.attachEvents();
 
   }
-
+****/
 
 }
 
