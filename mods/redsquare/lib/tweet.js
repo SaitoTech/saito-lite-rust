@@ -38,6 +38,7 @@ class Tweet {
     this.link = null;
     this.link_properties = null;
     this.show_controls = 1;
+    this.force_long_tweet = false;
     this.is_long_tweet = false;
     this.is_retweet = false;
     try {
@@ -268,16 +269,17 @@ class Tweet {
       //
       let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-text`);
       if (!el) { return; }
-      let cobj = document.querySelector(this.container);     
-      if (this.is_long_tweet == false) {
+      if (!this.force_long_tweet) {
+        let cobj = document.querySelector(this.container);     
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
           this.is_long_tweet = true;
+        } else {
+          el.classList.add("full");
         }
       } else {
         el.classList.add("full");
       }
-
 
       /////////////////
       // view thread //
@@ -289,12 +291,18 @@ class Tweet {
         this_tweet.onclick =  (e) => {
 
           let tweet_text = document.querySelector(`.tweet-${this.tx.transaction.sig} > .tweet-body > .tweet-main > .tweet-text`);
+
           if (this.is_long_tweet) {
             if (!tweet_text.classList.contains('full')) {
               tweet_text.classList.remove('preview');
               tweet_text.classList.add('full');
+              this.force_long_tweet = true;
             } else {
               if (e.target.tagName != "IMG") {
+	        if (this.force_long_tweet) {
+                  tweet_text.classList.remove('preview');
+                  tweet_text.classList.add('full');
+	        }
                 window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
                 let sig = this.tx.transaction.sig;
                 app.connection.emit('redsquare-home-tweet-render-request', (this));
@@ -337,7 +345,6 @@ class Tweet {
           e.stopImmediatePropagation();
           let sig =  item.getAttribute('data-id');
           if (e.target.tagName != "IMG" && sig) {  
-alert("TESETING D");
             window.location.href = `/redsquare/?tweet_id=${sig}`
           }
         });
