@@ -1,4 +1,4 @@
-module.exports = MixinWithdrawTemplate = (app, withdraw_this) => {
+module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
 
   let html = `
 

@@ -11,6 +11,13 @@ class MixinHistory {
     this.ticker = null;
     this.his_exists = false;
     this.his_asset_id = null;
+
+    this.app.connection.on("mixin-history-overlay-render-request", (obj) => {
+      this.ticker = obj.ticker;
+      this.his_exists = obj.his_exists;
+      this.his_asset_id = obj.his_asset_id;
+      this.render();
+    });
   }
 
   render() {

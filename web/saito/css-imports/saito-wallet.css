@@ -105,11 +105,11 @@
   }
 
   .add-input-box {
-    width: 70%;
+    width: 100%;
   }
 
   .email-appspace-deposit-overlay {
-    max-width: 80vw;
+    max-width: 32vw;
   }
   .deposit_title {
     font-size: 2em;
@@ -479,6 +479,7 @@
   .email-appspace-withdraw-overlay {
     width: 95vw;
   }
+
 }
 
 

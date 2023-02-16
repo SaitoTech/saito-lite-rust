@@ -11,6 +11,14 @@ class MixinDeposit {
     this.address = null;
     this.confs = null;
     this.ticker = null;
+
+    this.app.connection.on("mixin-deposit-overlay-render-request", (obj) => {
+      
+      this.address = obj.address;
+      this.confs = obj.confs;
+      this.ticker = obj.ticker;      
+      this.render();
+    });
   }
 
   render() {
@@ -30,11 +38,11 @@ class MixinDeposit {
       }, 400);
     };
 
-    const QRCode = require('../../../../lib/helpers/qrcode');
-    return new QRCode(
-      document.getElementById("qrcode"),
-      this.address
-    );
+    // const QRCode = require('../../../../lib/helpers/qrcode');
+    // return new QRCode(
+    //   document.getElementById("deposit-qrcode"),
+    //   this.address
+    // );
   }
 
 }

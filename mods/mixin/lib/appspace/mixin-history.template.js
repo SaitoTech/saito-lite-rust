@@ -1,4 +1,4 @@
-module.exports = MixinHistoryTemplate = (app, this_history) => {
+module.exports = MixinHistoryTemplate = (app, mod, this_history) => {
 
   let html = `
     <div class="mixin-overlay-history">

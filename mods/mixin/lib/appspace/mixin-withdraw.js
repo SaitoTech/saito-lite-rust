@@ -10,6 +10,12 @@ class MixinWithdraw {
     this.overlay = new SaitoOverlay(this.app, this.mod);
     this.deposit_ticker = null;
     this.withdraw_balance = null;
+
+    this.app.connection.on("mixin-withdraw-overlay-render-request", (obj) => {
+      this.deposit_ticker = obj.deposit_ticker;
+      this.withdraw_balance = obj.withdraw_balance;
+      this.render();
+    });
   }
 
   render() {
