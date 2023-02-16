@@ -333,6 +333,23 @@ class Browser {
     return `${protocol}://${host}:${port}/r?i=${url_payload}`;
   }
 
+  returnHashAndParameters() {
+
+    var hash = new URL(document.URL).hash.split('#')[1];
+    let component = "";
+    let params = ""
+    if (hash) {
+      if (hash?.split("").includes("?")) {
+        component = hash.split("?")[0];
+        params = hash.split("?")[1];
+      } else {
+        component = hash;
+      }
+    }
+    return { hash : component , params : params };
+
+  }
+
   returnURLParameter(name) {
     try {
       this.urlParams = new URLSearchParams(window.location.search);
@@ -776,6 +793,7 @@ class Browser {
   }
 
   addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true, read_as_array_buffer = false) {
+
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>

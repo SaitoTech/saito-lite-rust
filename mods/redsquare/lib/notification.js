@@ -7,7 +7,6 @@ const Tweet = require("./tweet");
 
 
 
-
 class RedSquareNotification {
 
   constructor(app, mod, tx = null) {
@@ -22,10 +21,9 @@ class RedSquareNotification {
     let mod = this.mod;
 
     if (this.tx == null) { 
-         document.querySelector(selector).innerHTML = `<div class="notifications-empty"><span> <i class="far fa-folder-open" aria-hidden="true"></i> </span> <p>No new notifications </p> </div>`
-     }
-    else {
-      console.log('rendering tx', this.tx, this.tx.returnMessage())
+      document.querySelector(selector).innerHTML = `<div class="notifications-empty"><span> <i class="far fa-folder-open" aria-hidden="true"></i> </span> <p>No new notifications </p> </div>`
+    } else {
+
       let html = '';
       let txmsg = this.tx.returnMessage();
   
@@ -60,8 +58,16 @@ class RedSquareNotification {
         mod.last_viewed_notifications_ts = this.tx.transaction.ts;
         mod.save();
       }
-  
-      app.browser.addElementToSelector(html, ".redsquare-notifications");
+ 
+      //
+      //
+      //
+      let nqs = ".notification-item-"+this.tx.transaction.sig;
+      if (document.querySelector(nqs)) {
+        app.browser.replaceElementBySelector(html, ".redsquare-notifications");
+      } else {
+        app.browser.addElementToSelector(html, ".redsquare-notifications");
+      }
       this.attachEvents();
     }
   
@@ -77,17 +83,35 @@ class RedSquareNotification {
 
     if (obj) {
       obj.onclick = (e) => {
-          let sig = e.currentTarget.getAttribute("data-id");
-          let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
-          mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
-            for (let z = 0; z < txs.length; z++) {
-              let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-              app.connection.emit('redsquare-thread-render-request', tweet);
-            }
-          }, false, false);
-          return;
+        let sig = e.currentTarget.getAttribute("data-id");
+	let tweet = this.mod.returnTweet(sig);
+	if (tweet) {
+
+          app.connection.emit('redsquare-home-tweet-render-request', (tweet));
+          app.connection.emit('redsquare-home-loader-render-request');
+          mod.loadChildrenOfTweet(sig, (tweets) => {
+            app.connection.emit('redsquare-home-loader-hide-request');
+	    for (let i = 0; i < tweets.length; i++) {
+              app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
+	    }
+          });
+
+	} else {
+
+          mod.loadTweetWithSig(sig, (tweet) => {
+            app.connection.emit('redsquare-home-tweet-append-render-request', (tweet));
+            mod.loadChildrenOfTweet(tweet.tx.transaction.sig, (tweets) => {
+	      for (let i = 0; i < tweets.length; i++) {
+                app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
+              }
+            });
+          });
+
+	}
       }
     }
+
+
   }
 }
 

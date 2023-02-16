@@ -840,7 +840,7 @@ no status atm, but this is to update the hud
     return card.substring(1);
   }
 
-  resignGame(game_id = null, reason = "forfeit") {
+  quitGame(game_id = null, reason = "forfeit") {
     console.log("Mark game as closed");
     this.loadGame(game_id);
     this.game.over = 2;

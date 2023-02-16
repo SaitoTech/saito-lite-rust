@@ -1,4 +1,4 @@
-module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmations, deposit_ticker) => {
+module.exports = MixinDepositTemplate = (app, mod, deposit_self) => {
 
   let html = `
 
@@ -8,17 +8,17 @@ module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmat
     <div class="add-item-cont add-input-box">
       <div class="input-cont">
         <div class="input-heading">Token</div>
-        <p>${deposit_ticker}</p>
+        <p>${deposit_self.ticker}</p>
       </div>
 
       <div class="input-cont">
         <div class="input-heading">Deposit Address</div>
-        <input class="input-elem public-address" value="${deposit_address}">
+        <input class="input-elem public-address" value="${deposit_self.address}">
         <i class="fas fa-copy fa-regular" id="copy-deposit-add"></i>
       </div>
     </div>
     
-    <div class="add-item-cont qrcode" id="qrcode">
+    <div class="add-item-cont qrcode" id="deposit-qrcode">
       
     </div>
     
@@ -30,7 +30,7 @@ module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmat
           Minimum Deposit
        </div>
        <div class="info-item-detail">
-          0.01 ${deposit_ticker}   
+          0.01 ${deposit_self.ticker}   
        </div>
      </div>
 
@@ -39,7 +39,7 @@ module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmat
           Maximum Deposit
        </div>
        <div class="info-item-detail">
-          10.00 ${deposit_ticker}   
+          10.00 ${deposit_self.ticker}   
        </div>
      </div>
 
@@ -48,14 +48,14 @@ module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmat
           Expected Arrival
        </div>
        <div class="info-item-detail">
-          ${deposit_confirmations} network confirmations   
+          ${deposit_self.confs} network confirmations   
        </div>
      </div>
   </div>
   
   <div class="note">
     * Please do not deposit large amounts while Saito is under development due to risk of wallet compromise. <br >
-    * To see your deposit address, please <b>activate ${deposit_ticker}</b> on the sidebar and refresh the page.
+    * To see your deposit address, please <b>activate ${deposit_self.ticker}</b> on the sidebar and refresh the page.
   </div>
   
 </div>
