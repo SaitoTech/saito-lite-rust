@@ -316,8 +316,6 @@ class VideoChatManager {
         } else {
 
             this.localStream.getVideoTracks()[0].enabled = true;
-
-
             this.videoEnabled = true;
             document.querySelector('.video_control').classList.remove('fa-video-slash')
             document.querySelector('.video_control').classList.add('fa-video')
@@ -377,7 +375,7 @@ class VideoChatManager {
                 if(this.waitSeconds === 120){
                     this.updateConnectionState(peer, 'two_minutes')
                 }  
-                if(this.waitSeconds === 180){
+                if(this.waitSeconds === (180*7)){
                     this.updateConnectionState(peer, 'failed')
                     clearInterval(this.waitTimer)
                 }  
