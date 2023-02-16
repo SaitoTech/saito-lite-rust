@@ -10,8 +10,10 @@ const axios = require('axios');
 const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
 const JSON = require("json-bigint");
-
 const MixinAppspaceSidebar = require('./lib/appspace-sidebar/main');
+const MixinDeposit = require('./lib/appspace/mixin-deposit');
+const MixinWithdraw = require('./lib/appspace/mixin-withdraw.js');
+const MixinHistory = require('./lib/appspace/mixin-history');
 
 class Mixin extends ModTemplate {
 
@@ -73,6 +75,19 @@ class Mixin extends ModTemplate {
         this.renderIntos[qs].forEach((comp) => { 
           comp.render(); 
         });
+      }
+    }
+
+    if (qs == ".saito-header") {
+      if (!this.renderIntos[qs]) {
+
+        this.renderIntos[qs] = [];
+
+        this.renderIntos[qs].push(new MixinDeposit(this.app, this));
+        this.renderIntos[qs].push(new MixinWithdraw(this.app, this));
+        this.renderIntos[qs].push(new MixinHistory(this.app, this));
+      
+        this.attachStyleSheets();
       }
     }
   }
