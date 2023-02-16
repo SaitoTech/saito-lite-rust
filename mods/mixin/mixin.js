@@ -59,24 +59,29 @@ class Mixin extends ModTemplate {
 
   
   canRenderInto(qs) {
-    if (qs === ".saito-main") { return true; }
+//
+// FEB 16
+//    
+//    if (qs === ".saito-main") { return true; }
     return false;
   }
 
   renderInto(qs) {
-    
-    if (qs == ".saito-main") {
-      if (!this.renderIntos[qs]) {
-
-        this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
-      
-        this.attachStyleSheets();
-        this.renderIntos[qs].forEach((comp) => { 
-          comp.render(); 
-        });
-      }
-    }
+//
+// FEB 16
+//    
+//    if (qs == ".saito-main") {
+//      if (!this.renderIntos[qs]) {
+//
+//        this.renderIntos[qs] = [];
+//        this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
+//      
+//        this.attachStyleSheets();
+//        this.renderIntos[qs].forEach((comp) => { 
+//          comp.render(); 
+//        });
+//      }
+//    }
 
     if (qs == ".saito-header") {
       if (!this.renderIntos[qs]) {
