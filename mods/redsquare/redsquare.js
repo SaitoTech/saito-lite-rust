@@ -11,8 +11,6 @@ const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
 const redsquareHome = require("./index");
 
-const SaitoLoginOverlay = require('../../lib/saito/ui/saito-login-overlay/saito-login-overlay');
-
 
 class RedSquare extends ModTemplate {
 
@@ -337,21 +335,14 @@ class RedSquare extends ModTemplate {
     // this runs after components are rendered or it breaks/fails
     //
     try {
-      this.app.connection.emit("redsquare-home-render-request");
-console.log("A");
       for (let z = 0; z < tweets.length; z++) {
-console.log("B: " + z);
 	let newtx = new saito.default.transaction();
-console.log("C: " + z);
-	//newtx.deserialize_from_base64(this.app, tweets[z]);
 	newtx.deserialize_from_web(this.app, tweets[z]);
-console.log("D: " + z);
         this.addTweet(newtx);
-console.log("E: " + z);
       }
       this.app.connection.emit("redsquare-home-render-request");
     } catch (err) {
-console.log("error in initial processing: " + err);
+      console.log("error in initial redsquare post fetch: " + err);
     }
 
   }
@@ -403,6 +394,76 @@ console.log("error in initial processing: " + err);
       });
     }
   }
+
+  loadChildrenOfTweet(sig, mycallback=null) {
+
+    if (this.peers_for_tweets.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let x = [];
+    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}'`;
+    this.loadTweetsFromPeerAndReturn(this.peers_for_tweets[0], sql, (txs) => {
+      for (let z = 0; z < txs.length; z++) {
+        let tweet = new Tweet(this.app, this, ".redsquare-home", txs[z]);
+        x.push(tweet);
+      }
+      mycallback(x);
+      return;
+    });
+
+  }
+  loadTweetWithSig(sig, mycallback=null) {
+
+    if (this.peers_for_tweets.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let t = this.returnTweet(sig);
+    if (t != null) { mycallback(t); return; }
+
+    let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
+    this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+      this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+        for (let z = 0; z < txs.length; z++) {
+          let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+          mycallback(tweet);
+        }
+      }, false, false);
+      return;
+    });
+
+  }
+
+  loadTweetsWithParentId(sig, mycallback=null) {
+
+    if (this.peers_for_tweets.length == 0) { return; }
+    if (mycallback == null) { return; }
+
+    let t = this.returnTweet(sig);
+    if (t != null) { 
+      let x = [];
+      for (let z = 0; z < t.children.length; z++) {
+	x.push(t.children[z]);
+      }
+      mycallback(x);
+      return;
+    }
+
+    let sql = `SELECT * FROM tweets WHERE parent_id = '${sig}'`;
+    this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+      let x = [];
+      this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+        for (let z = 0; z < txs.length; z++) {
+	  let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+          x.push(tweet);
+	}
+	mycallback(x);
+      }, false, false);
+      return;
+    });
+
+  }
+
+
 
   loadMoreTweets(post_load_tweet_callback = null) {
     this.increment_for_tweets++;
@@ -1118,7 +1179,6 @@ console.log("error in initial processing: " + err);
       // create the transaction
       //
       let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
-      //let hexstring = tx.serialize_to_base64(this.app);      
       let hexstring = tx.serialize_to_web(this.app);      
       hex_entries.push(hexstring);
 

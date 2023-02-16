@@ -32,14 +32,141 @@ class AppspaceHome {
     });
   }
 
-  render() {
+  render(include_tweets=true) {
 
-    //
-    // render main feed by default
-    //
-    this.renderMain();
+    if (document.querySelector(".redsquare-home")) {
+      this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
+    } else {
+      this.container.innerHTML = "";
+      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+    }
 
   }
+
+  renderLoader() {
+
+    //
+    // ensure redsquare home exists
+    //
+    if (!document.querySelector(".redsquare-home")) {
+      this.container.innerHTML = "";
+      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+    }
+
+    this.loader.render();
+    this.attachEvents();
+
+  }
+
+  renderTweets() {
+
+    //
+    // ensure redsquare home exists
+    //
+    if (!document.querySelector(".redsquare-home")) {
+      this.container.innerHTML = "";
+      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
+    }
+
+    //
+    // loop and render tweets
+    //
+    for (let i = 0; i < this.mod.tweets.length; i++) {
+      this.appendTweetWithCriticalChild(this.mod.tweets[i]);
+    }
+
+    this.attachEvents();
+
+  }
+
+  appendTweetWithCriticalChild(tweet) {
+
+    tweet.container = ".redsquare-appspace-body";
+    if (tweet.updated_at > this.mod.tweets_last_viewed_ts) {
+      this.mod.tweets_last_viewed_ts = tweet.updated_at;
+    }
+    tweet.renderWithCriticalChild();
+
+  }
+
+  prependTweetWithCriticalChild(tweet) {
+
+    tweet.container = ".redsquare-appspace-body";
+    if (tweet.updated_at > this.mod.tweets_last_viewed_ts) {
+      this.mod.tweets_last_viewed_ts = tweet.updated_at;
+    }
+    tweet.renderWithCriticalChild(true);
+
+  }
+
+  appendTweet(tweet) {
+
+    tweet.container = ".redsquare-appspace-body";
+    if (tweet.updated_at > this.mod.tweets_last_viewed_ts) {
+      this.mod.tweets_last_viewed_ts = tweet.updated_at;
+    }
+    tweet.render();
+
+  }
+
+  prependTweet(tweet) {
+
+    tweet.container = ".redsquare-appspace-body";
+    if (tweet.updated_at > this.mod.tweets_last_viewed_ts) {
+      this.mod.tweets_last_viewed_ts = tweet.updated_at;
+    }
+    tweet.render(true);
+
+  }
+
+
+
+
+  attachEvents() {
+
+    this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
+
+    document.getElementById("redsquare-tweet").onclick = (e) => {
+      let post = new Post(this.app, this.mod);
+      post.render();
+    }
+
+    document.getElementById("redsquare-profile").onclick = (e) => {
+      this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.returnPublicKey());
+    }
+
+    document.querySelector('.redsquare-new-tweets-banner').onclick = (e) => {
+      this.renderNewTweets();
+    }
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   renderTweetsWithSig(sig) {
@@ -98,32 +225,6 @@ alert("container: " + this.container);
 
 
 
-  renderMain() {
-
-    this.thread_id = "";
-    this.parent_id = "";
-
-    if (document.querySelector(".redsquare-home")) {
-      this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
-    } else {
-      this.container.innerHTML = "";
-      this.app.browser.addElementToSelectorOrDom(AppspaceHomeTemplate(), this.container);
-    }
-
-    // render all top-level tweets, possibly with critical children
-
-    for (let i = 0; i < this.mod.tweets.length; i++) {
-      // if any tweets remove loader
-      if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
-        this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
-      }
-      this.mod.tweets[i].container = ".redsquare-appspace-body";
-      this.mod.tweets[i].renderWithCriticalChild();
-    }
-
-    this.attachEvents();
-
-  }
 
   renderThread(tweet) {
 
@@ -149,26 +250,6 @@ alert("container: " + this.container);
     document.querySelectorAll(".tweet")[0].scrollIntoView({behavior: "smooth", block: "start"});
 
     this.attachEvents();
-
-  }
-
-  attachEvents() {
-
-    this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
-
-    document.getElementById("redsquare-tweet").onclick = (e) => {
-      let post = new Post(this.app, this.mod);
-      post.render();
-    }
-
-    document.getElementById("redsquare-profile").onclick = (e) => {
-      this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.returnPublicKey());
-    }
-
-    document.querySelector('.redsquare-new-tweets-banner').onclick = (e) => {
-      this.renderNewTweets();
-    }
-
 
   }
 

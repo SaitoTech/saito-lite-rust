@@ -40,12 +40,12 @@ class Tweet {
     this.show_controls = 1;
     this.is_long_tweet = false;
     this.is_retweet = false;
-try {
-    this.setKeys(txmsg.data);
-} catch (err) {}
-try {
-    this.setKeys(tx.optional);
-} catch (err) {}
+    try {
+      this.setKeys(txmsg.data);
+    } catch (err) {}
+    try {
+      this.setKeys(tx.optional);
+    } catch (err) {}
 
     this.generateTweetProperties(app, mod, 1);
 
@@ -256,6 +256,11 @@ try {
   }
 
 
+
+
+
+
+
   attachEvents() {
     let mod  = this.mod;
     let app = this.app;
@@ -287,6 +292,7 @@ try {
       /////////////////
       let this_tweet = document.querySelector(`.tweet-${this.tx.transaction.sig}`);
       if (!this_tweet.dataset.hasClickEvent) {
+
         this_tweet.dataset.hasClickEvent = true;
         this_tweet.onclick =  (e) => {
 
@@ -299,13 +305,12 @@ try {
               if (e.target.tagName != "IMG") {
                 window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
                 let sig = this.tx.transaction.sig;
-                let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
-                mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
-                  for (let z = 0; z < txs.length; z++) {
-                    let tweet = new Tweet(app, mod, ".redsquare-appspace-body", txs[z]);
-                    app.connection.emit('redsquare-thread-render-request', tweet);
-                  }
-                }, false, false);
+                app.connection.emit('redsquare-home-tweet-render-request', (this));
+		mod.loadChildrenOfTweet(sig, (tweets) => {
+		  for (let i = 0; i < tweets.length; i++) {
+                    app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
+		  }
+	        });
               }
             }
             return;
@@ -314,36 +319,33 @@ try {
           //
           // if we are asking to see a tweet, load from parent if exists
           //
-          if (e.target.tagName != "IMG") {  window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
-          let sig = this.tx.transaction.sig;
-          let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
-           mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
-            for (let z = 0; z < txs.length; z++) {
-              let tweet = new Tweet(app, mod, ".redsquare-appspace-body", txs[z]);
-              app.connection.emit('redsquare-thread-render-request', tweet);
-            }
-          }, false, false);
+          if (e.target.tagName != "IMG") {  
+	    window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
+            let sig = this.tx.transaction.sig;
+            app.connection.emit('redsquare-home-tweet-render-request', (this));
+	    mod.loadChildrenOfTweet(sig, (tweets) => {
+	      for (let i = 0; i < tweets.length; i++) {
+                app.connection.emit('redsquare-home-tweet-append-render-request', (tweets[i]));
+	      }
+	    });
           }
         }
       }
 
 
-
-      
-        /////////////////
-      // view preview//
-      /////////////////
-
+      //////////////////
+      // view preview //
+      //////////////////
       document.querySelectorAll(`.tweet-${this.tx.transaction.sig} .tweet`).forEach(item => {
         item.addEventListener('click', (e)=> {
-        e.stopImmediatePropagation();
-         let sig =  item.getAttribute('data-id');
-         if (e.target.tagName != "IMG" && sig) {  
+          e.stopImmediatePropagation();
+          let sig =  item.getAttribute('data-id');
+          if (e.target.tagName != "IMG" && sig) {  
+alert("TESETING D");
             window.location.href = `/redsquare/?tweet_id=${sig}`
-        }
-      } 
-        )
-      }) 
+          }
+        });
+      });
 
 
       ///////////
@@ -371,9 +373,6 @@ try {
 
         }
       };
-
-
-
 
       /////////////
       // retweet //
@@ -408,48 +407,36 @@ try {
       //////////
       // like //
       //////////
-      document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like`).onclick = (e) => {
-
-
-
-
-      };
-
-      
-     const heartIcon = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-like-button .heart-icon`);
-
-
-     heartIcon.onclick =  (e) => {
-      if (heartIcon.classList.contains("liked")) {
-        heartIcon.classList.remove("liked");
-        setTimeout(()=> {
+      const heartIcon = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-like-button .heart-icon`);
+      heartIcon.onclick =  (e) => {
+        if (heartIcon.classList.contains("liked")) {
+          heartIcon.classList.remove("liked");
+          setTimeout(()=> {
+            heartIcon.classList.add("liked");
+          })
+        }else {
           heartIcon.classList.add("liked");
-        })
+        }
 
-      }else {
-        heartIcon.classList.add("liked");
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+        if (tweet_sig != null) {
+
+          this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
+
+          //
+          // increase num likes
+          //
+          let obj = document.querySelector(`.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`);
+          obj.innerHTML = parseInt(obj.innerHTML) + 1;
+          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+            obj.parentNode.classList.remove("saito-tweet-no-activity");
+            obj.parentNode.classList.add("saito-tweet-activity");
+          };
+        }
       }
-
-      
-      e.preventDefault();
-      e.stopImmediatePropagation();
-
-      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-      if (tweet_sig != null) {
-
-        this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
-
-        //
-        // increase num likes
-        //
-        let obj = document.querySelector(`.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`);
-        obj.innerHTML = parseInt(obj.innerHTML) + 1;
-        if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-          obj.parentNode.classList.remove("saito-tweet-no-activity");
-          obj.parentNode.classList.add("saito-tweet-activity");
-        };
-      }
-    }
 
 
       ///////////
