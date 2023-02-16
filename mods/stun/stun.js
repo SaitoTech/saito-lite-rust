@@ -135,9 +135,8 @@ class Stun extends ModTemplate {
         }
         if (type === 'saito-header') {
           return {
-            text: this.appname,
+            text: "Video Call",
             icon: this.icon,
-            allowed_mods: ["redsquare"],
             callback: function (app, id) {
 	      let stun_self = app.modules.returnModule("Stun");
 	      stun_self.renderInto(".saito-main"); 

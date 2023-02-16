@@ -60,6 +60,8 @@ class Chat extends ModTemplate {
 
     respondTo(type) {
 
+	let chat_self = this;
+
         switch (type) {
             case 'chat-manager':
                 if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
@@ -67,6 +69,18 @@ class Chat extends ModTemplate {
             case 'chat-manager-overlay':
                 if (this.chat_manager_overlay == null) { this.chat_manager_overlay = new ChatManagerOverlay(this.app, this); }
                 return this.chat_manager_overlay;
+            case 'saito-header':
+      	        if (this.app.browser.isMobileBrowser()) {
+		  return [{
+	            text: "Chat",
+        	    icon: "fas fa-comments",
+     	            callback: function (app, id) {
+	              let cmo = chat_self.respondTo("chat-manager-overlay");
+          	      cmo.render();
+        	    }
+     		  }];
+	        }
+		return null;
             default:
                 return super.respondTo(type);
         }

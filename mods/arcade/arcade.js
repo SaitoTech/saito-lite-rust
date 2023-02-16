@@ -338,16 +338,7 @@ class Arcade extends ModTemplate {
       return [
         {
           text: "Games",
-          icon: "fas fa-gamepad",
-          allowed_mods: ["redsquare"],
-          callback: function (app, id) {
-            window.location = "/arcade";
-          }
-        },
-        {
-          text: "Create Game",
           icon: this.icon || "fas fa-gamepad",
-          allowed_mods: ["arcade"],
           callback: function (app, id) {
             app.connection.emit("arcade-launch-game-selector", {});
           }
