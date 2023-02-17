@@ -1231,6 +1231,9 @@ select {
 
 }
 
+.saito-header-hamburger-contents {
+  overflow-x: hidden;
+}
 
 .saito-header-profile-address p {
 
@@ -1253,8 +1256,8 @@ select {
 .saito-header-menu-section {
   padding: 1.5rem 0;
   font-size: 1.1rem;
-  overflow: hidden;
   padding-bottom: 0.5rem;
+  position: relative;
 }
 
 .saito-header-menu-section li i {
@@ -1278,6 +1281,7 @@ select {
 .header-wallet {
   position:relative;
   padding: 0rem;
+  height: fit-content;
 }
 
 .saito-header-profile-address {
@@ -1291,7 +1295,7 @@ select {
   border: 2px solid;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  margin: 3rem auto;
+  margin: 3rem auto !important;
   background: #fff;
 }
 
@@ -1412,6 +1416,8 @@ select {
 
 .slidein-panel.show {
   left: 0vw;
+  top: 0rem;
+  z-index: 2;
 }
 
 .panel-nav {
@@ -1475,7 +1481,7 @@ select {
   padding: 0rem;
   margin: 0rem;
   display: block;
-  margin: auto;
+  margin: unset;
 }
 
 .wallet-qrcode {
@@ -1519,10 +1525,9 @@ select {
   }
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 768px) {
   .saito-header-hamburger-contents {
     width: 80vw;
-    overflow: hidden;
   }
 
   .slidein-panel {
@@ -1531,6 +1536,12 @@ select {
 
   #qrcode img {
     width: 50vw;
+    height: auto;
+    border: 2px solid;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin: 3rem auto !important;
+    background: #fff;
   }
 
   .profile-public-key {
@@ -1548,7 +1559,8 @@ select {
   }
 
   .slidein-panel {
-    top: 48vh;
+    top: 0rem;
+    z-index: 2;
   }
 
 }

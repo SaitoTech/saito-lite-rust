@@ -65,18 +65,18 @@ class Mixin extends ModTemplate {
 
   renderInto(qs) {
     
-    if (qs == ".saito-main") {
-      if (!this.renderIntos[qs]) {
+    // if (qs == ".saito-main") {
+    //   if (!this.renderIntos[qs]) {
 
-        this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
+    //     this.renderIntos[qs] = [];
+    //     this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
       
-        this.attachStyleSheets();
-        this.renderIntos[qs].forEach((comp) => { 
-          comp.render(); 
-        });
-      }
-    }
+    //     this.attachStyleSheets();
+    //     this.renderIntos[qs].forEach((comp) => { 
+    //       comp.render(); 
+    //     });
+    //   }
+    // }
 
     if (qs == ".saito-header") {
       if (!this.renderIntos[qs]) {
@@ -97,16 +97,16 @@ class Mixin extends ModTemplate {
   // flexible inter-module-communications
   //
   respondTo(type = "") {
-    if (type === 'saito-header') {
-      return [{
-        text: "Wallet",
-        icon: this.icon,
-        allowed_mods: ["redsquare"],
-        callback: function (app, id) {
-          window.location = "/redsquare#wallet";
-        }
-      }]
-    }
+    // if (type === 'saito-header') {
+    //   return [{
+    //     text: "Wallet",
+    //     icon: this.icon,
+    //     allowed_mods: ["redsquare"],
+    //     callback: function (app, id) {
+    //       window.location = "/redsquare#wallet";
+    //     }
+    //   }]
+    // }
     return null;
   }
 

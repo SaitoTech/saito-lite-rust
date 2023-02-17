@@ -143,6 +143,9 @@
 
 }
 
+.saito-header-hamburger-contents {
+  overflow-x: hidden;
+}
 
 .saito-header-profile-address p {
 
@@ -165,8 +168,8 @@
 .saito-header-menu-section {
   padding: 1.5rem 0;
   font-size: 1.1rem;
-  overflow: hidden;
   padding-bottom: 0.5rem;
+  position: relative;
 }
 
 .saito-header-menu-section li i {
@@ -190,6 +193,7 @@
 .header-wallet {
   position:relative;
   padding: 0rem;
+  height: fit-content;
 }
 
 .saito-header-profile-address {
@@ -324,6 +328,8 @@
 
 .slidein-panel.show {
   left: 0vw;
+  top: 0rem;
+  z-index: 2;
 }
 
 .panel-nav {
@@ -434,7 +440,6 @@
 @media screen and (max-width: 768px) {
   .saito-header-hamburger-contents {
     width: 80vw;
-    overflow: hidden;
   }
 
   .slidein-panel {
@@ -466,7 +471,8 @@
   }
 
   .slidein-panel {
-    top: 48vh;
+    top: 0rem;
+    z-index: 2;
   }
 
 }
