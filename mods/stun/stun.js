@@ -221,25 +221,26 @@ class Stun extends ModTemplate {
         }
 
         if (type === 'saito-header') {
-        let m = [{
-            text: "Video Call",
-            icon: this.icon,
-            allowed_mods: ["redsquare"],
-            callback: function (app, id) {
-              app.connection.emit('game-start-video-call', public_key);
-            }
-          },
-          {
-            text: "Video Call",
-            icon: this.icon,
-            type: "external-links",
-            allowed_mods: ["arcade"],
-            callback: function (app, id) {
-              app.connection.emit('game-start-video-call', public_key);
-            }
-        }];
-      return m;
-    }
+            let pub_key = app.wallet.returnPublicKey();
+            let m = [{
+                text: "Video Call",
+                icon: this.icon,
+                allowed_mods: ["redsquare"],
+                callback: function (app, id) {
+                  app.connection.emit('game-start-video-call', pub_key);
+                }
+              },
+              {
+                text: "Video Call",
+                icon: this.icon,
+                type: "external-links",
+                allowed_mods: ["arcade"],
+                callback: function (app, id) {
+                  app.connection.emit('game-start-video-call', pub_key);
+                }
+            }];
+          return m;
+        }
         return null;
     }
 

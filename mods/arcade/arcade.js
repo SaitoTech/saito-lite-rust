@@ -350,7 +350,7 @@ class Arcade extends ModTemplate {
           type: "external-links",
           allowed_mods: ["redsquare"],
           callback: function (app, id) {
-            app.connection.emit("arcade-launch-game-selector", {});
+            window.location = "/arcade";
           }
         },
         {
