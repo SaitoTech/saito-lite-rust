@@ -14,36 +14,45 @@ class RedSquareAppspaceNotifications {
     this.container  = container;
   }
 
+
   render() {
 
-    let app = this.app;
-    let mod = this.mod;
-
     if (document.querySelector(".redsquare-notifications")) {
-      this.app.browser.replaceElementBySelector(RedSquareAppspaceNotificationsTemplate(app, mod), ".redsquare-notifications");
+      this.app.browser.replaceElementBySelector(RedSquareAppspaceNotificationsTemplate(this.app, this.mod), ".redsquare-notifications");
     } else {
       if (this.container) {
-        this.app.browser.addElementToSelector(RedSquareAppspaceNotificationsTemplate(app, mod), this.container);
+        this.app.browser.addElementToSelector(RedSquareAppspaceNotificationsTemplate(this.app, this.mod), this.container);
       } else {
-        this.app.browser.addElementToDom(RedSquareAppspaceNotificationsTemplate(app, mod));
+        this.app.browser.addElementToDom(RedSquareAppspaceNotificationsTemplate(this.app, this.mod));
       }
     }
 
-    for (let i = 0; i < mod.notifications.length; i++) {
-      let notification = new Notification(app, mod, mod.notifications[i].tx);
-      notification.render(".redsquare-notifications");
-    }
-
-    if(mod.notifications.length === 0){
-      let notification = new Notification(app, mod, null);
-      notification.render(".redsquare-notifications");
-    }
-    
-    this.attachEvents(app, mod);
+    this.attachEvents();
 
   }
 
+  renderNotifications() {
+
+    if (!document.querySelector(".redsquare-notifications")) {
+      this.render();
+    }
+
+    for (let i = 0; i < this.mod.notifications.length; i++) {
+      let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
+      notification.render(".redsquare-notifications");
+    }
+
+    if (this.mod.notifications.length === 0){
+      let notification = new Notification(this.app, this.mod, null);
+      notification.render(".redsquare-notifications");
+    }
+
+    this.attachEvents();    
+  }
+
+
   attachEvents() {
+
     let app = this.app;
     let mod = this.mod
     

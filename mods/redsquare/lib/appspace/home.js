@@ -135,7 +135,7 @@ class AppspaceHome {
     //
     // do not compress parent
     //
-    tweets[0].is_long_tweet = true;
+    tweets[0].force_long_tweet = true;
     tweets[0].renderWithChildren();
 
 
@@ -168,83 +168,6 @@ class AppspaceHome {
     }
 
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/****
-  renderTweetsWithSig(sig) {
-
-    if (document.querySelector(".redsquare-appspace-body")) {
-      this.app.browser.replaceElementBySelector(AppspaceHomeTemplate(), ".redsquare-home");
-    } else {
-      this.container.innerHTML = "";
-      this.app.browser.addElementToSelector(AppspaceHomeTemplate(), this.container);    
-    }
-
-    let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
-    this.mod.loadTweetsFromPeerAndReturn(this.mod.peers_for_tweets[0], sql, (txs) => {
-      for (let z = 0; z < txs.length; z++) {
-        let tweet = new Tweet(this.app, this.mod, ".redsquare-appspace-body", txs[z]);
-        tweet.render();
-      }
-    }, false, false);
-
-  }
-
-  renderMoreTweets() {
-    for (let i = 0; i < this.mod.tweets.length; i++) {
-      if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
-        this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
-      }
-      this.mod.tweets[i].container = ".redsquare-appspace-body";
-      this.mod.tweets[i].renderWithCriticalChild();
-
-    }
-
-
-    this.attachEvents();
-  }
-
-
-  renderNewTweets() {
-    for (let i = 0; i < this.mod.tweets.length; i++) {
-      if (this.mod.tweets[i].updated_at > this.mod.tweets_last_viewed_ts) {
-        this.mod.tweets_last_viewed_ts = this.mod.tweets[i].updated_at;
-      }
-      this.mod.tweets[i].container = ".redsquare-appspace-body";
-      this.mod.tweets[i].renderWithCriticalChild();
-
-    }
-
-    this.attachEvents();
-
-  }
-****/
 
 }
 
