@@ -127,8 +127,8 @@ class Mixin extends ModTemplate {
 
       if (app.BROWSER == 0) {
 
-        m = JSON.parse(process.env.MIXIN);
- 
+       m = JSON.parse(process.env.MIXIN);
+        
         if (m.appId) {
 
           let method = "POST";
@@ -351,6 +351,7 @@ console.log(res.data);
       );
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
+      callback(false);
     }
   }
 

@@ -145,7 +145,16 @@ class RedSquare extends ModTemplate {
         callback: function (app, id) {
           window.location = "/redsquare#notifications";
         }
-      }];
+      },
+      {
+        text: "RedSquare",
+        icon: this.icon_fa,
+        type: "external-links",
+        allowed_mods: ["arcade"],
+        callback: function (app, id) {
+          window.location = "/redsquare";
+        }
+      },];
       return m;
     }
 

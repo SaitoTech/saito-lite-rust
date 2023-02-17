@@ -3529,6 +3529,8 @@ html[data-theme="arcade"] {
     height: 45px;
     padding: 10px 10px !important;
     font-size: 16px !important;
+    background: var(--saito-white);
+    color: var(--saito-font-color);
   }
 
   .info-cont {
@@ -3608,6 +3610,7 @@ html[data-theme="arcade"] {
 
   .mixin-txn-his-container .saito-table-body {
     height: auto;
+    margin-top: 1rem;
   }
 
   .mixin-txn-his-container .saito-table-header {
@@ -3630,10 +3633,11 @@ html[data-theme="arcade"] {
 
 .mixin-items-container .saito-table-header,
 .mixin-txn-his-container .saito-table-header {
-  background: #e9e9e9;
   padding: 1rem 0rem;
   border-radius: 0.5rem;
   text-align: center;
+  background: var(--saito-white);
+  color: var(--saito-gray-mid);
 }
 
 
@@ -3762,6 +3766,8 @@ html[data-theme="arcade"] {
   min-height: 20rem;
   padding: 1.5rem;
   border-radius: 0.5rem;
+  background: var(--dreamscape);
+  color: var(--saito-white);
 }
 
 
