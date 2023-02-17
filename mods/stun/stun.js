@@ -230,6 +230,21 @@ class Stun extends ModTemplate {
                 }
             }];
         }
+
+        if (type === 'saito-header') {
+            
+            let m = [{
+                text: "Video Call",
+                icon: this.icon,
+                allowed_mods: ["redsquare", 'arcade'],
+                callback: function (app, id) {
+                  let pub_key = app.wallet.returnPublicKey();
+                  app.connection.emit('game-start-video-call', pub_key);
+                }
+              }
+             ];
+          return m;
+        }
         return null;
     }
 
