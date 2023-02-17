@@ -1174,8 +1174,6 @@ select {
   overflow: auto;
 }
 
-
-
 .saito-header-profile {
   padding: 1.4rem 0.5rem;
   display: flex;
@@ -1184,20 +1182,20 @@ select {
 
 .saito-header-profile-details {
   display: grid;
-    grid-template-columns: 5rem auto;
-    border: 1px solid var(--saito-primary);
-    border-radius: 0 1.2rem 1.2rem 0;
+  grid-template-columns: 5rem auto;
+  border: 1px solid var(--saito-primary);
+  border-radius: 0 1.2rem 1.2rem 0;
 }
 
 .saito-header-profile-details .saito-identicon {
   margin: auto;
   border: none;
- }
+}
 
- .saito-header-profile-balance.saito-select::after {
+.saito-header-profile-balance.saito-select::after {
   background-color: var(--saito-primary);
   border: none;
- }
+}
 
 .saito-header-profile-balance .saito-select-crypto {
   font-size: 2rem;
@@ -1213,41 +1211,8 @@ select {
   outline: none;
 }
 
-.saito-header-profile-balance > .saito-select-wrapper > div {
+.saito-header-profile-balance>.saito-select-wrapper>div {
   width: 28rem;
-}
-
-.saito-header-profile-address {
-  /*grid-column-start: 1;
-  grid-column-end: 3;
-  grid-row-start: 2;
-  grid-row-end: 3;
-  display: flex;
-  width: 99%;
-  justify-content: center;
-  justify-self: center;
-  padding-top: 1rem;
-  cursor: pointer;*/
-
-}
-
-
-.saito-header-profile-address p {
-
-      white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 1.7rem;
-    margin: 0rem 1rem;
-    float: left;
-    display: inline-block;
-    width: 30%;
-}
-
-.saito-header-profile-address:hover i {
-  transform: scale(1.05);
-  color: var(--saito-primary);
-      display: inline-block;
 }
 
 .saito-header-menu-section {
@@ -1276,52 +1241,42 @@ select {
 }
 
 .header-wallet {
-  position:relative;
-  padding: 0rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
-
-.saito-header-profile-address {
-  margin-bottom: -0.5rem;
-}
-
 
 #qrcode img {
   height: auto;
   width: 50%;
-  border: 2px solid;
+  border: 2px solid var(--saito-black);
   padding: 0.5rem;
   border-radius: 0.5rem;
-  margin: 3rem auto;
-  background: #fff;
+  margin: 2rem 0 0;
+  background: var(--saito-white);
 }
 
 .wallet-btn-container {
-  white-space: nowrap;
-  width: fit-content;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  border: none;
   grid-column-gap: 3.3rem;
   background: var(--saito-font-color);
   border-radius: 0.7rem;
   padding: 0.75rem;
   margin: auto;
   width: 95%;
-  margin-bottom: 1.5rem;
 }
 
 .wallet-btn {
   text-align: center;
   color: var(--saito-background-color);
-  display:inline-block;
+  display: inline-block;
   cursor: pointer;
 }
 
-
-.wallet-btn:hover .wallet-btn > i {
+.wallet-btn:hover .wallet-btn>i {
   margin-bottom: 1.3rem;
 }
-
 
 .wallet-btn i {
   display: block;
@@ -1330,38 +1285,14 @@ select {
   transition: all 0.2s ease-in-out;
 }
 
-.wallet-balance {
-  display: block;
-  position: relative;
-  padding: 0rem;
-  width: fit-content;
-  margin: 1rem auto;
-  margin-top: 0rem;
-  height: 4rem;
-}
-
 .balance-amount {
-  display: inline-block;
-  float: left;
-  font-weight: bold;
   font-size: 5rem;
-  height: min-content;
-  padding-left: 1rem;
-  line-height: 4rem;
+  margin-right: -2.5rem;
 }
 
 .wallet-balance select {
   border: none;
   background: none;
-  display: inline-block;
-  float: left;
-  width: 7rem;
-  margin: 0rem;
-  padding: 0rem;
-  margin-top: 1.2rem;
-  margin-left: 0.5rem;
-  margin-top: 1.2rem;
-  text-align: center;
   width: auto;
   font-size: 2.2rem;
   color: var(--saito-font-color);
@@ -1377,29 +1308,13 @@ select {
   justify-content: center;
   align-items: flex-end;
 }
-  
 
 .wallet-qrcode {
   width: 28rem;
 }
 
-.header-wallet .saito-header-profile-address {
-  display: block;
-  padding: 0rem;
-  max-width: 100%;
-  margin: 0rem;
-  position: relative;
-}
-
-.header-wallet .saito-header-profile-address i {
-  float: left;
-  line-height: 3.5rem;
-  display: inline-block;
-}
-
 .slidein-panel {
-  position: absolute;
-  top: 46vh;
+  position: relative;
   background: var(--saito-background-color);
   width: 100%;
   height: 99vh;
@@ -1442,26 +1357,13 @@ select {
 .wallet-idenicon {
   width: 3.5rem;
   height: 3.5rem;
-  display: inline-block !important;
-  float: left;
-}
-
-.saito-header-profile-address {
-  line-height: 3.5rem;
 }
 
 .pubkey-containter {
-  position: relative;
-  max-width: 82%;
-  margin: auto;
-  margin-bottom: 2rem;
-  height: 3rem;
-}
-
-.pubkey-containter i {
-  display: inline-block;
-  float: left;
-  line-height: 2.5rem;
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  align-items: center;
 }
 
 .wallet-info-container {
@@ -1474,8 +1376,18 @@ select {
 .wallet-infoo {
   padding: 0rem;
   margin: 0rem;
-  display: block;
-  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-around;
+}
+
+#qrcode {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .wallet-qrcode {
@@ -1487,15 +1399,16 @@ select {
   border-radius: 0.5rem;
 }
 
+.wallet-balance {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: baseline;
+}
+
 .profile-public-key {
   width: 95%;
-  display: inline-block;
-  float: left;
   font-size: 1.7rem;
-  margin-top: 0.5rem;
-  font-weight: bold;
-  white-space: break-spaces;
-  overflow: hidden;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1524,39 +1437,18 @@ select {
     width: 80vw;
     overflow: hidden;
   }
-
   .slidein-panel {
-    width: 100vw;
+    width: 80vw;
   }
-
-  #qrcode img {
-    width: 50vw;
-  }
-
-  .profile-public-key {
-    width: 95%;
-    display: inline-block;
-    float: left;
-    font-size: 1.7rem;
-    margin-top: 0.5rem;
-    font-weight: bold;
-    white-space: break-spaces;
-    overflow: hidden;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .slidein-panel {
-    top: 48vh;
-  }
-
 }
 
 @media screen and (max-width: 500px) {
   .saito-header-hamburger-contents {
     width: 100vw;
     padding: 0rem;
+  }
+  .slidein-panel {
+    width: 80vw;
   }
   #saito-header {
     padding: 1.3rem 1rem;
@@ -1571,7 +1463,6 @@ select {
     max-width: 12rem;
   }
 }
-
 .saito-img-arrow-box {
   position: absolute;
   top: 50%;
@@ -3246,6 +3137,7 @@ font imports
   --saito-secondary: #ff8235;
   --saito-tertiary: rgb(234, 234, 239);
   --saito-white: #fff;
+  --saito-black: #000;
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%),
     linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000),
     linear-gradient(180deg, #e9ce93, #f71f3d);
