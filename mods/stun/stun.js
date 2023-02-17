@@ -221,12 +221,13 @@ class Stun extends ModTemplate {
         }
 
         if (type === 'saito-header') {
-            let pub_key = app.wallet.returnPublicKey();
+            
             let m = [{
                 text: "Video Call",
                 icon: this.icon,
                 allowed_mods: ["redsquare"],
                 callback: function (app, id) {
+                  let pub_key = app.wallet.returnPublicKey();
                   app.connection.emit('game-start-video-call', pub_key);
                 }
               },
@@ -236,6 +237,7 @@ class Stun extends ModTemplate {
                 type: "external-links",
                 allowed_mods: ["arcade"],
                 callback: function (app, id) {
+                  let pub_key = app.wallet.returnPublicKey();
                   app.connection.emit('game-start-video-call', pub_key);
                 }
             }];
