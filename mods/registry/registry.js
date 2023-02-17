@@ -2,7 +2,7 @@ const path = require('path');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const RegistryModal = require('./lib/modal/registry-modal');
-
+const RegisterUsernameModal = require("../../lib/saito/ui/modals/register-username/register-username.js");
 
 class Registry extends ModTemplate {
 
@@ -58,6 +58,9 @@ class Registry extends ModTemplate {
 
     return this;
   }
+
+
+
 
 
   returnServices() {
@@ -222,6 +225,9 @@ class Registry extends ModTemplate {
 
 
   respondTo(type = "") {
+
+    let registry_self = this;
+
     if (type == "do-registry-prompt") {
       return {
         doRegistryPrompt: async () => {
@@ -243,6 +249,20 @@ class Registry extends ModTemplate {
         }
       }
     }
+
+    if (type === 'saito-header') {
+      let m = [{
+        text: "Register Username",
+        icon: "fa-regular fa-address-card",
+        callback: function (app, id) {
+         let m = new RegisterUsernameModal(app, registry_self); //No callback
+         m.render();
+         return;
+        }
+      }];
+      return m;
+    }
+
     return null;
   }
 
