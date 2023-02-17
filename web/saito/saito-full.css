@@ -1528,6 +1528,8 @@ select {
 @media screen and (max-width: 768px) {
   .saito-header-hamburger-contents {
     width: 80vw;
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 
   .slidein-panel {
