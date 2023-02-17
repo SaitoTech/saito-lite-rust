@@ -15,6 +15,8 @@ const adapter = require('webrtc-adapter')
 
 
 
+
+
 class Stun extends ModTemplate {
     constructor(app, mod) {
         super(app);
@@ -134,15 +136,15 @@ class Stun extends ModTemplate {
             return new StunxAppspace(this.app, this);
         }
         if (type === 'saito-header') {
-          return {
+          return [{
             text: "Video Call",
             icon: this.icon,
             callback: function (app, id) {
 	      let stun_self = app.modules.returnModule("Stun");
 	      stun_self.renderInto(".saito-main"); 
             }
+          }];
         }
-
         if (type == "game-menu") {
             this.styles = [`/${this.returnSlug()}/css/style.css`,];
             super.render(this.app, this);
@@ -229,7 +231,6 @@ class Stun extends ModTemplate {
             }];
         }
         return null;
-    }
     }
 
 

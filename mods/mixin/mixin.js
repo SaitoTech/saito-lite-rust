@@ -10,8 +10,10 @@ const axios = require('axios');
 const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
 const JSON = require("json-bigint");
-
 const MixinAppspaceSidebar = require('./lib/appspace-sidebar/main');
+const MixinDeposit = require('./lib/appspace/mixin-deposit');
+const MixinWithdraw = require('./lib/appspace/mixin-withdraw.js');
+const MixinHistory = require('./lib/appspace/mixin-history');
 
 class Mixin extends ModTemplate {
 
@@ -57,43 +59,25 @@ class Mixin extends ModTemplate {
 
   
   canRenderInto(qs) {
-    if (qs === ".saito-main") { return true; }
+//
+// FEB 16
+//    
+//    if (qs === ".saito-main") { return true; }
     return false;
   }
 
   renderInto(qs) {
-    
-    if (qs == ".saito-main") {
+    if (qs == ".saito-header") {
       if (!this.renderIntos[qs]) {
 
         this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new MixinAppspace(this.app, this, qs));
+        this.renderIntos[qs].push(new MixinDeposit(this.app, this));
+        this.renderIntos[qs].push(new MixinWithdraw(this.app, this));
+        this.renderIntos[qs].push(new MixinHistory(this.app, this));
       
         this.attachStyleSheets();
-        this.renderIntos[qs].forEach((comp) => { 
-          comp.render(); 
-        });
       }
     }
-  }
-
-
-  //
-  // flexible inter-module-communications
-  //
-  respondTo(type = "") {
-    if (type === 'saito-header') {
-      return [{
-        text: "Wallet",
-        icon: this.icon,
-        allowed_mods: ["redsquare"],
-        callback: function (app, id) {
-          window.location = "/redsquare#wallet";
-        }
-      }]
-    }
-
-    return null;
   }
 
 

@@ -81,17 +81,16 @@
   transition: all 0.2s;
   opacity: 0;
   z-index: 10;
-  padding: 2rem;
   width: 20rem;
   height: 100vh;
   overflow: auto;
 }
 
+
+
 .saito-header-profile {
   padding: 1.4rem 0.5rem;
   display: flex;
-  row-gap: 1rem;
-  border-bottom: 1px solid var(--saito-border-color);
   flex-direction: column;
 }
 
@@ -131,7 +130,7 @@
 }
 
 .saito-header-profile-address {
-  grid-column-start: 1;
+  /*grid-column-start: 1;
   grid-column-end: 3;
   grid-row-start: 2;
   grid-row-end: 3;
@@ -140,20 +139,27 @@
   justify-content: center;
   justify-self: center;
   padding-top: 1rem;
-  cursor: pointer;
+  cursor: pointer;*/
+
 }
 
+
 .saito-header-profile-address p {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 1.7rem;
-  margin-right: 0.5rem;
+
+      white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.7rem;
+    margin: 0rem 1rem;
+    float: left;
+    display: inline-block;
+    width: 30%;
 }
 
 .saito-header-profile-address:hover i {
   transform: scale(1.05);
   color: var(--saito-primary);
+      display: inline-block;
 }
 
 .saito-header-menu-section {
@@ -181,6 +187,232 @@
   pointer-events: auto;
 }
 
+.header-wallet {
+  position:relative;
+  padding: 0rem;
+}
+
+.saito-header-profile-address {
+  margin-bottom: -0.5rem;
+}
+
+
+#qrcode img {
+  height: auto;
+  width: 50%;
+  border: 2px solid;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin: 3rem auto;
+  background: #fff;
+}
+
+.wallet-btn-container {
+  white-space: nowrap;
+  width: fit-content;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border: none;
+  grid-column-gap: 3.3rem;
+  background: var(--saito-font-color);
+  border-radius: 0.7rem;
+  padding: 0.75rem;
+  margin: auto;
+  width: 95%;
+  margin-bottom: 1.5rem;
+}
+
+.wallet-btn {
+  text-align: center;
+  color: var(--saito-background-color);
+  display:inline-block;
+  cursor: pointer;
+}
+
+
+.wallet-btn:hover .wallet-btn > i {
+  margin-bottom: 1.3rem;
+}
+
+
+.wallet-btn i {
+  display: block;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.wallet-balance {
+  display: block;
+  position: relative;
+  padding: 0rem;
+  width: fit-content;
+  margin: 1rem auto;
+  margin-top: 0rem;
+  height: 4rem;
+}
+
+.balance-amount {
+  display: inline-block;
+  float: left;
+  font-weight: bold;
+  font-size: 5rem;
+  height: min-content;
+  padding-left: 1rem;
+  line-height: 4rem;
+}
+
+.wallet-balance select {
+  border: none;
+  background: none;
+  display: inline-block;
+  float: left;
+  width: 7rem;
+  margin: 0rem;
+  padding: 0rem;
+  margin-top: 1.2rem;
+  margin-left: 0.5rem;
+  margin-top: 1.2rem;
+  text-align: center;
+  width: auto;
+  font-size: 2.2rem;
+  color: var(--saito-font-color);
+}
+
+.balance-ticker {
+  display: inline-block;
+  font-size: 1.5rem;
+  padding-left: 0.5rem;
+  vertical-align: -webkit-baseline-middle;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+  
+
+.wallet-qrcode {
+  width: 28rem;
+}
+
+.header-wallet .saito-header-profile-address {
+  display: block;
+  padding: 0rem;
+  max-width: 100%;
+  margin: 0rem;
+  position: relative;
+}
+
+.header-wallet .saito-header-profile-address i {
+  float: left;
+  line-height: 3.5rem;
+  display: inline-block;
+}
+
+.slidein-panel {
+  position: absolute;
+  top: 46vh;
+  background: var(--saito-background-color);
+  width: 100%;
+  height: 99vh;
+  overflow: hidden;
+  z-index: 2;
+  transition: all 0.2s ease-in-out;
+  padding: 1.5rem 0rem;
+  left: 100vw;
+}
+
+.slidein-panel.show {
+  left: 0vw;
+}
+
+.panel-nav {
+  color: var(--saito-primary);
+  margin-left: 4rem;
+}
+
+.menu-back {
+  font-size: 2rem;
+}
+
+.panel-nav .seperator {
+  font-size: 2rem;
+  color: var(--saito-gray-mid);
+  padding: 0rem 1rem;
+}
+
+.nav-option {
+  font-size: 2rem;
+  color: var(--saito-gray-mid);
+}
+
+.more-options i.active {
+  transform: rotate(45deg);
+  transition: all 0.2s ease-in-out;
+}
+
+.wallet-idenicon {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: inline-block !important;
+  float: left;
+}
+
+.saito-header-profile-address {
+  line-height: 3.5rem;
+}
+
+.pubkey-containter {
+  position: relative;
+  max-width: 82%;
+  margin: auto;
+  margin-bottom: 2rem;
+  height: 3rem;
+}
+
+.pubkey-containter i {
+  display: inline-block;
+  float: left;
+  line-height: 2.5rem;
+}
+
+.wallet-info-container {
+  display: grid;
+  grid-template-columns: 57% 43%;
+  width: 100%;
+  margin: 1rem 0rem;
+}
+
+.wallet-infoo {
+  padding: 0rem;
+  margin: 0rem;
+  display: block;
+  margin: auto;
+}
+
+.wallet-qrcode {
+  margin: auto;
+  display: block;
+  margin: 3rem auto;
+  padding: 0.5rem;
+  border: 2px solid #000;
+  border-radius: 0.5rem;
+}
+
+.profile-public-key {
+  width: 95%;
+  display: inline-block;
+  float: left;
+  font-size: 1.7rem;
+  margin-top: 0.5rem;
+  font-weight: bold;
+  white-space: break-spaces;
+  overflow: hidden;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @media screen and (max-width: 1600px) {
   #saito-header {
     padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
@@ -202,12 +434,41 @@
 @media screen and (max-width: 700px) {
   .saito-header-hamburger-contents {
     width: 80vw;
+    overflow: hidden;
   }
+
+  .slidein-panel {
+    width: 100vw;
+  }
+
+  #qrcode img {
+    width: 50vw;
+  }
+
+  .profile-public-key {
+    width: 95%;
+    display: inline-block;
+    float: left;
+    font-size: 1.7rem;
+    margin-top: 0.5rem;
+    font-weight: bold;
+    white-space: break-spaces;
+    overflow: hidden;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .slidein-panel {
+    top: 48vh;
+  }
+
 }
 
 @media screen and (max-width: 500px) {
   .saito-header-hamburger-contents {
     width: 100vw;
+    padding: 0rem;
   }
   #saito-header {
     padding: 1.3rem 1rem;

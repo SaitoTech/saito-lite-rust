@@ -36,7 +36,6 @@ class Recovery extends ModTemplate {
       return [{
         text: "Backup",
         icon: "fa-sharp fa-solid fa-cloud-arrow-up",
-        allowed_mods: ["redsquare"],
         callback: function (app) {
           app.connection.emit("recovery-backup-overlay-render-request");
         }
@@ -44,7 +43,6 @@ class Recovery extends ModTemplate {
       {
         text: "Recover",
         icon: "fa-sharp fa-solid fa-cloud-arrow-down",
-        allowed_mods: ["redsquare"],
         callback: function (app) {
 	  app.connection.emit("recovery-recover-overlay-render-request");
         }

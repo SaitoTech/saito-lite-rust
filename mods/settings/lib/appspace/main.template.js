@@ -61,12 +61,13 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
 
   let html = `
-
   
   <div class="settings-appspace">
-    <div class="setting-appspace-header">
-      <div class="saito-redsquare-actions-buttons">
-        <div class="redsquare-page-header-title">SETTINGS</div>
+
+    <div class="redsquare-appspace-header">
+      <div class="redsquare-actions-buttons">
+        <div class="redsquare-actions-buttons-icon"></div>
+        <div id="redsquare-page-header-title" class="redsquare-page-header-title">SETTINGS</div>
         <div class="redsquare-actions-container">
           <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
           <div class="saito-button-secondary small"id="restore-account-btn">Restore Wallet</div>
@@ -74,6 +75,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         </div>
       </div>
     </div>
+
     <div class="settings-appspace-body">
       <div class="settings-appspace-user-details-container">
         <h6>Wallet</h6>

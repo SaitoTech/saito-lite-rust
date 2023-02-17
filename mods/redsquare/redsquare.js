@@ -132,7 +132,7 @@ class RedSquare extends ModTemplate {
     if (type === 'saito-header') {
       let m = [{
         text: "Tweets",
-        icon: "fa-solid fa-bird",
+        icon: "fa-solid fa-retweet",
         callback: function (app, id) {
           window.location = "/redsquare";
         }
