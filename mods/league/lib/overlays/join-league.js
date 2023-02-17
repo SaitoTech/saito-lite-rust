@@ -43,20 +43,43 @@ class JoinLeague {
       let league_id = e.target.getAttribute("data-league-id");
       let email = document.getElementById("join-league-user-email").value;
 
-      let co = document.querySelector(".league-join-overlay-box");
-      if (co) {
-        co.style.display = "none";
-      }
+      //
+      // before 
+      //
+      app.browser.requestLogin(
 
-      let newtx = this.mod.createJoinTransaction(league_id, {"email": email});
-      this.app.network.propagateTransaction(newtx);
+	//
+	// successful login / backup
+	//
+	() => {
 
-      this.mod.addLeaguePlayer(league_id, this.app.wallet.returnPublicKey(), 0, 0, 0, 0); 
-      this.mod.saveLeagues();
+          let co = document.querySelector(".league-join-overlay-box");
+          if (co) {
+            co.style.display = "none";
+          }
 
-      setTimeout(function(){
-        window.location = window.location.origin+"/arcade";
-      }, 1500);
+          let newtx = this.mod.createJoinTransaction(league_id, {"email": email});
+          this.app.network.propagateTransaction(newtx);
+
+          this.mod.addLeaguePlayer(league_id, this.app.wallet.returnPublicKey(), 0, 0, 0, 0); 
+          this.mod.saveLeagues();
+
+          setTimeout(function(){
+            window.location = window.location.origin+"/arcade";
+          }, 1500);
+
+	},
+
+	//
+	// failed login / backup
+	//
+	() => {
+	  salert("Account Recovery Required to Join Leagues -- you need a way to login to play!");
+	  location.reload();
+	}
+
+      )
+
     });  
 
   }

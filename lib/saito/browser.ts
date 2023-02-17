@@ -274,6 +274,20 @@ class Browser {
     );
   }
 
+  //
+  // asks the user to login if they are using an anonymous account
+  //
+  requestLogin(success_callback=null, failure_callback=null) {
+    let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+    if (key.recoverable === true) { return true; }
+    if (key.identifier != "") { return true; }
+    if (key.email != "") { return true; }
+    app.connection.emit("recovery-recover-overlay-render-request", (success_callback, failure_callback));
+    return false;
+  }
+
+
+
   extractKeys(text = "") {
     let keys = [];
 

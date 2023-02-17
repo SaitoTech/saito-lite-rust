@@ -37,14 +37,18 @@ class Recovery extends ModTemplate {
         text: "Backup",
         icon: "fa-sharp fa-solid fa-cloud-arrow-up",
         callback: function (app) {
-          app.connection.emit("recovery-backup-overlay-render-request");
+	  let success_callback = function(res) {};
+	  let failure_callback = function(res) {};
+          app.connection.emit("recovery-backup-overlay-render-request", (success_callback, failure_callback));
         }
       },
       {
         text: "Recover",
         icon: "fa-sharp fa-solid fa-cloud-arrow-down",
         callback: function (app) {
-	  app.connection.emit("recovery-recover-overlay-render-request");
+	  let success_callback = function(res) {};
+	  let failure_callback = function(res) {};
+	  app.connection.emit("recovery-recover-overlay-render-request", (success_callback, failure_callback));
         }
       }];
     }
