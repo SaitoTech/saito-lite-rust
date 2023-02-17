@@ -130,32 +130,13 @@ class RedSquare extends ModTemplate {
       }
     }
     if (type === 'saito-header') {
-      let m = [{
-        text: "Home",
-        icon: "fa-solid fa-house",
-        allowed_mods: ["redsquare"],
+      return [{
+        text: "Tweets",
+        icon: "fa-solid fa-retweet",
         callback: function (app, id) {
           window.location = "/redsquare";
         }
-      },
-      {
-        text: "Notifications",
-        icon: "fas fa-bell",
-        allowed_mods: ["redsquare"],
-        callback: function (app, id) {
-          window.location = "/redsquare#notifications";
-        }
-      },
-      {
-        text: "RedSquare",
-        icon: this.icon_fa,
-        type: "external-links",
-        allowed_mods: ["arcade"],
-        callback: function (app, id) {
-          window.location = "/redsquare";
-        }
-      },];
-      return m;
+      }]
     }
 
     return null;

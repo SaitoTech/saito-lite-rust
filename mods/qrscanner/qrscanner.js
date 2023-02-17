@@ -51,6 +51,31 @@ class QRScanner extends ModTemplate {
 
     this.events = ['encrypt-key-exchange-confirm'];
 
+    //
+    // and scan when asked
+    //
+    this.app.connection.on("scanner-start-scanner", () => {
+      this.startScanner();
+    });
+
+  }
+
+  respondTo(type="") {
+
+    let scanner_self = this;
+
+    if (type === 'saito-header') {
+      return [
+        {
+          text: "Scan",
+          icon: this.icon || "fas fa-expand",
+          callback: function (app, id) {
+            app.connection.emit("scanner-start-scanner", {});
+          }
+        }
+      ];
+    }
+    return null;
   }
 
   initialize(app) {

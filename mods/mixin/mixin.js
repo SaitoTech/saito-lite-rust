@@ -67,12 +67,10 @@ class Mixin extends ModTemplate {
   }
 
   renderInto(qs) {
-
     if (qs == ".saito-header") {
       if (!this.renderIntos[qs]) {
 
         this.renderIntos[qs] = [];
-
         this.renderIntos[qs].push(new MixinDeposit(this.app, this));
         this.renderIntos[qs].push(new MixinWithdraw(this.app, this));
         this.renderIntos[qs].push(new MixinHistory(this.app, this));
@@ -99,7 +97,6 @@ class Mixin extends ModTemplate {
     // }
     return null;
   }
-
 
 
   async handlePeerTransaction(app, tx=null, peer, mycallback) {

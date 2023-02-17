@@ -337,26 +337,9 @@ class Arcade extends ModTemplate {
     if (type === 'saito-header') {
       return [
         {
-          text: "Create Games",
-          icon: "fas fa-gamepad",
-          allowed_mods: ["redsquare"],
-          callback: function (app, id) {
-            app.connection.emit("arcade-launch-game-selector", {});
-          }
-        },
-        {
-          text: "Arcade",
-          icon: "fas fa-gamepad",
-          type: "external-links",
-          allowed_mods: ["redsquare"],
-          callback: function (app, id) {
-            window.location = "/arcade";
-          }
-        },
-        {
-          text: "Create Game",
+          text: "Games",
           icon: this.icon || "fas fa-gamepad",
-          allowed_mods: ["arcade"],
+          allowed_mods: ["arcade", "redsquare"],
           callback: function (app, id) {
             app.connection.emit("arcade-launch-game-selector", {});
           }

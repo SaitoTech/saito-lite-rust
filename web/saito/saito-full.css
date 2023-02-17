@@ -1338,13 +1338,17 @@ select {
   }
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 768px) {
   .saito-header-hamburger-contents {
     width: 80vw;
     overflow-x: hidden;
   }
   .slidein-panel {
     width: 80vw;
+  }
+
+  .external-links {
+    padding-bottom: 10rem;
   }
 }
 
@@ -1686,10 +1690,6 @@ select {
   -webkit-text-stroke: var(--saito-background-color) 1px;
 }
 
-.appspace-menu {
-  display: none;
-}
-
 @media screen and (max-width: 768px) {
   .saito-menu>ul {
     padding: 0;
@@ -1716,9 +1716,6 @@ select {
 }
 
 @media screen and (max-width: 1200px) {
-  .appspace-menu {
-    display: block;
-  }
   .saito-menu>ul {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -1746,7 +1743,8 @@ select {
     font-size: 1.33rem;
     margin: 0;
   }
-}/* generic modal look and feel */
+}
+/* generic modal look and feel */
 /*
 NOTE: the .saito-model class is a grid with two sectiions
 This alows for a header with a header with title to be added without extra CSS

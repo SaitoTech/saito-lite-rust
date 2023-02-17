@@ -48,7 +48,7 @@ class Recovery extends ModTemplate {
         type: "settings",
         allowed_mods: ["redsquare"],
         callback: function (app) {
-	  app.connection.emit("recovery-recover-overlay-render-request");
+	         app.connection.emit("recovery-recover-overlay-render-request");
         }
       }];
     }

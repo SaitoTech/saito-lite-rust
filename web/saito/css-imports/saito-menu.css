@@ -103,10 +103,6 @@
   -webkit-text-stroke: var(--saito-background-color) 1px;
 }
 
-.appspace-menu {
-  display: none;
-}
-
 @media screen and (max-width: 768px) {
   .saito-menu>ul {
     padding: 0;
@@ -133,9 +129,6 @@
 }
 
 @media screen and (max-width: 1200px) {
-  .appspace-menu {
-    display: block;
-  }
   .saito-menu>ul {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
