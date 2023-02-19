@@ -6,6 +6,14 @@
   border-radius: 0.5rem;
 }
 
+.league-join-email-note {
+  width: 50rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 2rem;
+  line-height: 2.8rem;
+}
+
 .league-overlay {
   padding: 2rem 1rem;
   display: flex;

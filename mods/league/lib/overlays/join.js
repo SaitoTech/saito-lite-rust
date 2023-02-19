@@ -1,5 +1,6 @@
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
-const JoinLeagueTemplate = require("./join-league.template");
+const JoinLeagueTemplate = require("./join.template");
+const SaitoLoader = require("./../../../../lib/saito/ui/saito-loader/saito-loader");
 
 
 class JoinLeague {
@@ -9,6 +10,7 @@ class JoinLeague {
     this.mod = mod;
     this.league_id = league_id;
     this.overlay = new SaitoOverlay(app, mod, false, true);
+    this.loader = new SaitoLoader(app, mod, ".league-join-controls");
   }
 
   async render(league_id="") {
@@ -41,17 +43,24 @@ class JoinLeague {
       e.preventDefault();
 
       let league_id = e.target.getAttribute("data-league-id");
-      let email = document.getElementById("join-league-user-email").value;
+      let email = document.getElementById("saito-login-email").value;
+      let pass = document.getElementById("saito-login-password").value;
+
+      //
+      // show loader
+      //
+      document.querySelector(".league-join-controls").innerHTML = "";
+      this.loader.render();
 
       //
       // before 
       //
-      app.browser.requestLogin(
+      app.browser.requestBackup(
 
 	//
 	// successful login / backup
 	//
-	() => {
+	(res) => {
 
           let co = document.querySelector(".league-join-overlay-box");
           if (co) {
@@ -64,21 +73,24 @@ class JoinLeague {
           this.mod.addLeaguePlayer(league_id, this.app.wallet.returnPublicKey(), 0, 0, 0, 0); 
           this.mod.saveLeagues();
 
-          setTimeout(function(){
-            window.location = window.location.origin+"/arcade";
-          }, 1500);
+          //setTimeout(function(){
+          //  window.location = window.location.origin+"/arcade";
+          //}, 1500);
 
 	},
 
 	//
 	// failed login / backup
 	//
-	() => {
-	  salert("Account Recovery Required to Join Leagues -- you need a way to login to play!");
-	  location.reload();
-	}
+	(res) => {
+	  alert("Account Recovery required for League Membership!");
+	}, 
 
-      )
+	email ,
+
+	pass ,
+
+      );
 
     });  
 

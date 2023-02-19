@@ -130,14 +130,13 @@ class RedSquare extends ModTemplate {
       }
     }
     if (type === 'saito-header') {
-      let m = [{
+      return [{
         text: "Tweets",
         icon: "fa-solid fa-retweet",
         callback: function (app, id) {
           window.location = "/redsquare";
         }
-      }];
-      return m;
+      }]
     }
 
     return null;

@@ -19,7 +19,6 @@ class ThemeBtn {
   attachEvents(){
     this_btn = this;
     document.querySelector('.saito-header-themes').addEventListener('click', function(e) {
-      
       let theme_switcher = new ThemeSwitcherOverlay(this_btn.app, this_btn.mod);
       theme_switcher.render();
 
