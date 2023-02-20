@@ -15,6 +15,13 @@ class Tweet {
     this.name = "Tweet";
 
     this.tx = tx;
+
+    if (!this.tx.optional) {
+      this.tx.optional = {};
+      this.tx.optional.num_replies = 0;
+      this.tx.optional.num_retweets = 0;
+      this.tx.optional.num_likes = 0;
+    }
     let txmsg = tx.returnMessage();
 
     this.text = "";
@@ -43,13 +50,16 @@ class Tweet {
     this.is_retweet = false;
     try {
       this.setKeys(txmsg.data);
-    } catch (err) {}
+    } catch (err) {
+console.log("ERROR 1: " + err);
+    }
     try {
       this.setKeys(tx.optional);
-    } catch (err) {}
+    } catch (err) {
+console.log("ERROR 2: " + err);
+    }
 
     this.generateTweetProperties(app, mod, 1);
-
 
     //
     // create retweet if exists
@@ -81,6 +91,17 @@ class Tweet {
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
     let replace_existing_element = true;
+
+    //
+    // if prepend = true, remove existing element
+    //
+    if (prepend == true) {
+      let eqs = ".tweet-"+this.tx.transaction.sig;
+      if (document.querySelector(eqs)) {
+	document.querySelector(eqs).remove();
+      }
+    }
+
 
     //
     // retweets displayed in container even if master exists elsewhere on page
@@ -359,11 +380,13 @@ class Tweet {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+        let tweet_sig = this.tx.transaction.sig;
         if (tweet_sig != null) {
 
           let post = new Post(this.app, this.mod, this);
           post.parent_id = tweet_sig;
+          post.thread_id = this.thread_id;
+	  if (this.thread_id == "") { post.thread_id = tweet_sig; }
           post.source = 'Reply';
           post.render();
           this.app.browser.prependElementToSelector(`<div id="post-tweet-preview-${tweet_sig}" class="post-tweet-preview" data-id="${tweet_sig}"></div>`, ".tweet-overlay");
@@ -616,18 +639,34 @@ class Tweet {
   // query children  //
   /////////////////////
   hasChildTweet(tweet_sig) {
-    if (this.tx.transaction.sig == tweet_sig) { return 1; }
-    for (let i = 0; i < this.children.length; i++) {
-      if (this.children[i].hasChildTweet(tweet_sig)) { return 1; }
+console.log(" asked if we have tweet: " + tweet_sig.substring(0, 10));
+console.log(" but we are which tweet: " + this.tx.transaction.sig.substring(0, 10));
+    if (this.tx.transaction.sig == tweet_sig) { 
+console.log("found it!");
+      return 1; 
     }
+console.log(" we did not return... checking CHILDREN");
+    for (let i = 0; i < this.children.length; i++) {
+console.log(i + " of child " + this.children.length);
+      if (this.children[i].hasChildTweet(tweet_sig)) { 
+console.log("found in child, returning 1");
+	return 1;
+      }
+console.log(i + " done");
+    }
+console.log("returning with NO");
     return 0;
   }
   returnChildTweet(tweet_sig) {
-    if (this.tx.transaction.sig == tweet_sig) { return this; }
+    if (this.tx.transaction.sig == tweet_sig) { 
+console.log("returning me!");
+      return this;
+    }
     for (let i = 0; i < this.children.length; i++) {
+console.log("RETURN CHILD TWEET: loop " + i);
       if (this.children[i].hasChildTweet(tweet_sig)) {
-        let x = this.returnChildTweet(tweet_sig);
-        if (!x) { return x; }
+console.log("RETURN CHILD TWEET 2: loop " + i);
+        return this.children[i].returnChildTweet(tweet_sig);
       }
     }
     return null;

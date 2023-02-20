@@ -364,13 +364,9 @@ class RedSquare extends ModTemplate {
     // this runs after components are rendered or it breaks/fails
     //
     try {
-console.log("TWEETS LOADED FROM MAIN PAGE:");
       for (let z = 0; z < tweets.length; z++) {
 	let newtx = new saito.default.transaction();
 	newtx.deserialize_from_web(this.app, tweets[z]);
-
-console.log("NEWTX: " + JSON.stringify(newtx.transaction));
-
         this.addTweet(newtx);
       }
       this.app.connection.emit("redsquare-home-render-request");
@@ -508,9 +504,6 @@ console.log("NEWTX: " + JSON.stringify(newtx.transaction));
       let peer = this.peers_for_tweets[i];
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
-
-console.log("LOAD TWEETS FROM PEER: ");
-
         if (txs.length > 0) {
           let x = [];
 	  for (let z = 0; z < txs.length; z++) {
@@ -540,7 +533,6 @@ console.log("LOAD TWEETS FROM PEER: ");
       if (!this.peers_for_notifications.includes(peer)) {
         this.peers_for_notifications.push(peer);
       }
-console.log("ADDING NOTIFICATIONS FROM PEER:");
       for (let i = 0; i < txs.length; i++) {
         txs[i].decryptMessage(this.app);
         this.addTweet(txs[i]);
@@ -630,10 +622,6 @@ console.log("ADDING NOTIFICATIONS FROM PEER:");
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, "", tx);
-
-console.log("tweet is: " + tweet.text);
-
-
     tweet.updated_at = tx.transaction.ts;
 
     let is_notification = 0;
@@ -815,7 +803,9 @@ console.log("tweet is: " + tweet.text);
   returnTweet(tweet_sig = null) {
 
     if (tweet_sig == null) { return null; }
-    if (!this.tweets_sigs_hmap[tweet_sig]) { return null; }
+    if (!this.tweets_sigs_hmap[tweet_sig]) {
+      return null;
+    }
 
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].tx.transaction.sig === tweet_sig) {
