@@ -1,5 +1,6 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
 const RegisterUsernameModal = require('./../../../../lib/saito/ui/modals/register-username/register-username.js');
+const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 const jsonTree = require('json-tree-viewer');
 
@@ -9,15 +10,18 @@ class SettingsAppspace {
     this.app = app;
     this.mod = mod;
     this.container = container;
+
+    this.overlay = new SaitoOverlay(app, mod);
+
+    this.app.connection.on("settings-overlay-render-request", () => {
+      this.render();
+    });
+
   }
 
   render() {
 
-    if (document.querySelector(".settings-appspace")) {
-      this.app.browser.replaceElementBySelector(SettingsAppspaceTemplate(this.app, this.mod), ".settings-appspace");
-    } else {
-      this.app.browser.addElementToSelectorOrDom(SettingsAppspaceTemplate(this.app, this.mod), this.container);
-    }
+    this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod));
 
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
