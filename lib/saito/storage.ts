@@ -82,8 +82,6 @@ class Storage {
     data.num = num;
     data.publickey = this.app.wallet.returnPublicKey();
 
-console.log("archive load!");
-
     peer.sendRequestWithCallback(message, data, (obj) => {
       let txs = [];
       if (obj) {
@@ -117,8 +115,6 @@ console.log("archive load!");
     data.type = type;
     data.num = num;
     data.publickey = this.app.wallet.returnPublicKey();
-
-console.log("archive load!");
 
     let newtx = new Transaction();
     newtx.msg.request = message;
