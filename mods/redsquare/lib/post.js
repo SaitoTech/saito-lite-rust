@@ -1,7 +1,6 @@
 const PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 const SaitoEmoji = require("./../../../lib/saito/ui/saito-emoji/saito-emoji");
-
 const JSON = require('json-bigint');
 
 class Post {
@@ -53,10 +52,6 @@ class Post {
           if (post_self.images.length >= 4) {
             salert("Maximum 4 images allowed per tweet.");
           } else {
-console.log(" > ");
-console.log(" > ");
-console.log(" > ");
-console.log("file: " + file);
             let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
             if (post_self.mod.allowed_upload_types.includes(type)) {
               post_self.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
@@ -64,7 +59,6 @@ console.log("file: " + file);
               salert("allowed file types: " + post_self.mod.allowed_upload_types.join(', ') + " - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.");
             }
           }
-
           post_self.file_event_added = true;
         },
         false);
@@ -81,7 +75,7 @@ console.log("file: " + file);
       document.querySelector(".my-form").style.display = "none";
     }
 
-    document.getElementById('post-tweet-button').addEventListener('click', function(e) {
+    document.getElementById('post-tweet-button').addEventListener('click', (e) => {
       let text = document.getElementById('post-tweet-textarea').value;
       let parent_id = document.getElementById("parent_id").value;
       let thread_id = document.getElementById("thread_id").value;
@@ -162,16 +156,23 @@ console.log("file: " + file);
         data['images'] = post_self.images;
       }
 
+      let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
- 
+      var TweetClass = require("./tweet");
+      let tweet = new TweetClass(this.app, this.mod, ".redsquare-appspace-body", newtx);
+      this.app.connection.emit("redsquare-home-tweet-prepend-render-request", (tweet));
 
       setTimeout(() => {
-        let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
-        if (post_self.render_after_submit == 1) {
+       if (post_self.render_after_submit == 1) {
+
+	  //
+	  // scroll to top
+	  //
           document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
+
         }
         post_self.overlay.hide();
-      }, 1000);
+      }, 500);
     });
  
   }
