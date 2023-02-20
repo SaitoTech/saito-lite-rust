@@ -15,9 +15,7 @@ class Tweet {
     this.name = "Tweet";
 
     this.tx = tx;
-console.log("TESTING A");
     let txmsg = tx.returnMessage();
-console.log("TESTING B");
 
     this.text = "";
     this.parent_id = "";
@@ -31,8 +29,6 @@ console.log("TESTING B");
     this.unknown_children_sigs_hmap = {};
     this.critical_child = null;
     this.render_after_selector = "";
-
-console.log("TESTING C");
 
     this.retweet = null;
     this.retweeters = [];
@@ -52,9 +48,7 @@ console.log("TESTING C");
       this.setKeys(tx.optional);
     } catch (err) {}
 
-console.log("TESTING D");
     this.generateTweetProperties(app, mod, 1);
-console.log("TESTING E");
 
 
     //

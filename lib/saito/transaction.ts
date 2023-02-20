@@ -776,11 +776,13 @@ try {
   }
   serialize_to_web(app) {
     let m = this.transaction.m;
+    let opt = JSON.stringify(this.optional);
     this.transaction.m = Buffer.alloc(0);
     let b = Buffer.from(this.serialize(app));
     let web_obj = {
       t : this.serialize_to_base64(app) ,
-      m : m.toString('base64')
+      m : m.toString('base64') ,
+      opt : app.crypto.stringToBase64(opt)
     }
     return JSON.stringify(web_obj);
   }
@@ -789,6 +791,7 @@ try {
       let web_obj = JSON.parse(webstring);
       this.deserialize_from_base64(app, web_obj.t); 
       this.transaction.m = Buffer.from(web_obj.m, 'base64');
+      this.optional = JSON.parse(app.crypto.base64ToString(web_obj.opt));
     } catch (err) {}
   }
 // seems buggy

@@ -364,9 +364,13 @@ class RedSquare extends ModTemplate {
     // this runs after components are rendered or it breaks/fails
     //
     try {
+console.log("TWEETS LOADED FROM MAIN PAGE:");
       for (let z = 0; z < tweets.length; z++) {
 	let newtx = new saito.default.transaction();
 	newtx.deserialize_from_web(this.app, tweets[z]);
+
+console.log("NEWTX: " + JSON.stringify(newtx.transaction));
+
         this.addTweet(newtx);
       }
       this.app.connection.emit("redsquare-home-render-request");
@@ -504,6 +508,9 @@ class RedSquare extends ModTemplate {
       let peer = this.peers_for_tweets[i];
       let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT '${this.results_per_page * this.increment_for_tweets - 1}','${this.results_per_page}'`;
       this.loadTweetsFromPeer(peer, sql, (txs) => {
+
+console.log("LOAD TWEETS FROM PEER: ");
+
         if (txs.length > 0) {
           let x = [];
 	  for (let z = 0; z < txs.length; z++) {
@@ -533,6 +540,7 @@ class RedSquare extends ModTemplate {
       if (!this.peers_for_notifications.includes(peer)) {
         this.peers_for_notifications.push(peer);
       }
+console.log("ADDING NOTIFICATIONS FROM PEER:");
       for (let i = 0; i < txs.length; i++) {
         txs[i].decryptMessage(this.app);
         this.addTweet(txs[i]);
@@ -622,6 +630,10 @@ class RedSquare extends ModTemplate {
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, "", tx);
+
+console.log("tweet is: " + tweet.text);
+
+
     tweet.updated_at = tx.transaction.ts;
 
     let is_notification = 0;
@@ -1222,6 +1234,11 @@ class RedSquare extends ModTemplate {
       // create the transaction
       //
       let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+      tx.optional.num_replies = rows[i].num_replies;
+      tx.optional.num_retweets = rows[i].num_retweets;
+      tx.optional.num_likes = rows[i].num_likes;
+      tx.optional.flagged = rows[i].flagged;
+
       let hexstring = tx.serialize_to_web(this.app);      
       hex_entries.push(hexstring);
 
