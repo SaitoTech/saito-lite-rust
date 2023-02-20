@@ -639,33 +639,22 @@ console.log("ERROR 2: " + err);
   // query children  //
   /////////////////////
   hasChildTweet(tweet_sig) {
-console.log(" asked if we have tweet: " + tweet_sig.substring(0, 10));
-console.log(" but we are which tweet: " + this.tx.transaction.sig.substring(0, 10));
     if (this.tx.transaction.sig == tweet_sig) { 
-console.log("found it!");
       return 1; 
     }
-console.log(" we did not return... checking CHILDREN");
     for (let i = 0; i < this.children.length; i++) {
-console.log(i + " of child " + this.children.length);
       if (this.children[i].hasChildTweet(tweet_sig)) { 
-console.log("found in child, returning 1");
 	return 1;
       }
-console.log(i + " done");
     }
-console.log("returning with NO");
     return 0;
   }
   returnChildTweet(tweet_sig) {
     if (this.tx.transaction.sig == tweet_sig) { 
-console.log("returning me!");
       return this;
     }
     for (let i = 0; i < this.children.length; i++) {
-console.log("RETURN CHILD TWEET: loop " + i);
       if (this.children[i].hasChildTweet(tweet_sig)) {
-console.log("RETURN CHILD TWEET 2: loop " + i);
         return this.children[i].returnChildTweet(tweet_sig);
       }
     }
