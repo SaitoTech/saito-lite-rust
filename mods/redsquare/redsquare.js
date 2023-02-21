@@ -346,8 +346,10 @@ class RedSquare extends ModTemplate {
     //
     let hash = this.app.browser.returnHashAndParameters();
     if (hash.hash) {
-      this.app.connection.emit("redsquare-component-render-request", (hash));
-      return;
+      if (hash.hash != "home") {
+        this.app.connection.emit("redsquare-component-render-request", (hash));
+        return;
+      }
     }
 
 
@@ -793,8 +795,6 @@ class RedSquare extends ModTemplate {
     this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
 
   }
-
-
 
 
 

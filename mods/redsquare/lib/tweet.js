@@ -87,6 +87,13 @@ console.log("ERROR 2: " + err);
   }
 
 
+  remove() {
+    let eqs = `.tweet-${this.tx.transaction.sig}`;
+    if (document.querySelector(eqs)) {
+      document.querySelector(eqs).remove();
+    }
+  }
+
   render(prepend = false) {
 
     let myqs = `.tweet-${this.tx.transaction.sig}`;
