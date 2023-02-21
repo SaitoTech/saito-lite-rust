@@ -148,6 +148,7 @@ class RedSquare extends ModTemplate {
       return [{
         text: "Tweets",
         icon: "fa-solid fa-retweet",
+	rank: 20 ,
         callback: function (app, id) {
           window.location = "/redsquare";
         }

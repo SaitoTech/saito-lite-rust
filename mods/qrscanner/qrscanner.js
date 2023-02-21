@@ -69,6 +69,7 @@ class QRScanner extends ModTemplate {
         {
           text: "Scan",
           icon: this.icon || "fas fa-expand",
+	  rank: 30 ,
           callback: function (app, id) {
             app.connection.emit("scanner-start-scanner", {});
           }
