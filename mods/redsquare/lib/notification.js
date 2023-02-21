@@ -1,4 +1,3 @@
-const NotificationTemplate = require("./notification.template");
 const LikeNotificationTemplate = require("./like-notification.template");
 const ReplyNotificationTemplate = require("./reply-notification.template");
 const RetweetNotificationTemplate = require("./retweet-notification.template");

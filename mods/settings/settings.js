@@ -19,6 +19,7 @@ class Settings extends ModTemplate {
     this.description = "User settings module.";
     this.categories = "Admin Users";
     this.styles = ['/settings/style.css','/saito/lib/jsonTree/jsonTree.css','/settings/theme-switcher.css'];
+    this.main = null;
 
     return this;
   }
@@ -36,11 +37,13 @@ class Settings extends ModTemplate {
         }
       }
     });
+
+    this.main = new SettingsAppspace(this.app, this);
   }
 
 
   canRenderInto(qs) {
-    if (qs === ".saito-main") { return true; }
+    //if (qs === ".saito-main") { return true; }
     if (qs === ".saito-sidebar.right") { return true; }
     if (qs === ".saito-header-themes") { return true; }
     return false;
@@ -48,14 +51,14 @@ class Settings extends ModTemplate {
 
   renderInto(qs) {
 
-    if (qs == ".saito-main") {
-      if (!this.renderIntos[qs]) {
-        this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new SettingsAppspace(this.app, this, qs));
-      }
-      this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => { comp.render(); });
-    }
+    //if (qs == ".saito-main") {
+    //  if (!this.renderIntos[qs]) {
+    //    this.renderIntos[qs] = [];
+    //    this.renderIntos[qs].push(new SettingsAppspace(this.app, this, qs));
+    //  }
+    //  this.attachStyleSheets();
+    //  this.renderIntos[qs].forEach((comp) => { comp.render(); });
+    //}
     if (qs == ".saito-sidebar.right") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];

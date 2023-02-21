@@ -56,11 +56,17 @@ class Registry extends ModTemplate {
       }
     });
 
+    this.username_modal = null;
+
     return this;
   }
 
 
+  initialize(app) {
+    super.initialize(app);
 
+    this.username_modal = new RegisterUsernameModal(app, this);
+  }
 
 
   returnServices() {
@@ -252,8 +258,9 @@ class Registry extends ModTemplate {
 
     if (type === 'saito-header') {
       let m = [{
-        text: "Register Username",
+        text: "Register",
         icon: "fa-regular fa-address-card",
+	rank: 40 ,
         callback: function (app, id) {
          let m = new RegisterUsernameModal(app, registry_self); //No callback
          m.render();

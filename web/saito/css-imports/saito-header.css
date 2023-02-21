@@ -238,6 +238,18 @@
   display: none !important;
 }
 
+.hamburger-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#header-username {
+  color: var(--saito-white);
+  cursor: pointer;
+}
+
+
 @media screen and (max-width: 1600px) {
   #saito-header {
     padding: 1.3rem calc((100vw - var(--saito-width)) / 2);

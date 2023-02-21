@@ -1326,6 +1326,18 @@ select {
   display: none !important;
 }
 
+.hamburger-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#header-username {
+  color: var(--saito-white);
+  cursor: pointer;
+}
+
+
 @media screen and (max-width: 1600px) {
   #saito-header {
     padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
@@ -2111,10 +2123,8 @@ This alows for a header with a header with title to be added without extra CSS
 
 .notification-tweet {
   cursor: pointer;
-  padding: 1rem 2rem;
+  padding-top: 1.5rem;
   padding-bottom: 2rem;
-  border-top: 1px solid transparent;
-  border-bottom: 1px solid var(--saito-border-color-dark);
   position: relative;
 }
 
