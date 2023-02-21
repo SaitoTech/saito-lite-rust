@@ -146,8 +146,9 @@ class RedSquare extends ModTemplate {
     }
     if (type === 'saito-header') {
       return [{
-        text: "Tweets",
-        icon: "fa-solid fa-retweet",
+        text: "RedSquare",
+        icon: "fa-solid fa-square",
+	rank: 20 ,
         callback: function (app, id) {
           window.location = "/redsquare";
         }
@@ -346,8 +347,10 @@ class RedSquare extends ModTemplate {
     //
     let hash = this.app.browser.returnHashAndParameters();
     if (hash.hash) {
-      this.app.connection.emit("redsquare-component-render-request", (hash));
-      return;
+      if (hash.hash != "home") {
+        this.app.connection.emit("redsquare-component-render-request", (hash));
+        return;
+      }
     }
 
 
@@ -793,8 +796,6 @@ class RedSquare extends ModTemplate {
     this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
 
   }
-
-
 
 
 

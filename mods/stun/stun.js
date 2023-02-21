@@ -1,6 +1,3 @@
-
-
-
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
@@ -13,7 +10,6 @@ const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxInvite = require("./lib/invite/main");
 const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
-
 const adapter = require('webrtc-adapter')
 
 
@@ -24,7 +20,6 @@ class Stun extends ModTemplate {
     constructor(app, mod) {
         super(app);
 
-        this.appname = "Video Call";
         this.name = "Stun";
         this.slug = this.returnSlug();
         this.description = "Dedicated Video Chat Module";
@@ -110,22 +105,6 @@ class Stun extends ModTemplate {
         });
     }
 
-    canRenderInto(qs) {
-        if (qs === ".saito-main") { return true; }
-        return false;
-    }
-
-    renderInto(qs) {
-        if (qs == ".saito-main") {
-            if (!this.renderIntos[qs]) {
-                this.renderIntos[qs] = [];
-                this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
-            }
-            this.styles = [`/${this.returnSlug()}/style.css`];
-            this.attachStyleSheets();
-            this.renderIntos[qs].forEach((comp) => { comp.render(); });
-        }
-    }
 
     respondTo(type) {
         if (type === 'invite') {
@@ -133,20 +112,20 @@ class Stun extends ModTemplate {
             super.render(this.app, this);
             return new StunxInvite(this.app, this);
         }
-        if (type === 'appspace') {
-            this.styles = [`/${this.returnSlug()}/css/style.css`,];
-            super.render(this.app, this);
-            return new StunxAppspace(this.app, this);
-        }
         if (type === 'saito-header') {
-          return [{
-            text: "Video Call",
-            icon: this.icon,
-            callback: function (app, id) {
-          let stun_self = app.modules.returnModule("Stun");
-          stun_self.renderInto(".saito-main"); 
-            }
-          }];
+            let m = [{
+                text: "Video Call",
+                icon: this.icon,
+		rank: 60 ,
+                callback: function (app, id) {
+                  let stun_self = app.modules.returnModule("Stun");
+                  stun_self.renderInto(".saito-overlay"); 
+                  //let pub_key = app.wallet.returnPublicKey();
+                  //app.connection.emit('game-start-video-call', pub_key);
+                }
+              }
+             ];
+          return m;
         }
         if (type == "game-menu") {
             this.styles = [`/${this.returnSlug()}/css/style.css`,];
@@ -172,55 +151,7 @@ class Stun extends ModTemplate {
                     }
                 ],
             };
-
-
-            /*
-            return {
-                init: (app, game_mod) => {
-                    game_mod.menu.addMenuOption({
-                        text: "Video Chat",
-                        id: "game-video-chat",
-                        class: "game-video-chat",
-                        callback: function (app, game_mod) {
-                            game_mod.menu.showSubMenu("game-video-chat");
-                        },
-                    });
-                    let shortNames = null;
-                    let longNames = null;
-                    for (let i = 0; i < game_mod.game.players.length; i++) {
-                        if (game_mod.game.players[i] != app.wallet.returnPublicKey()) {
-                            let nickname = shortNames ? shortNames[i] : "Player " + (i + 1);
-                            game_mod.menu.addSubMenuOption("game-video-chat", {
-                                text: nickname,
-                                id: "game-video-chat-" + (i + 1),
-                                class: "game-video-chat-" + (i + 1),
-                                callback: function (app, game_mod) {
-                                    const stunx = app.modules.returnModule('Stun');
-                                    console.log('player ', game_mod.game.players[i]);
-                                    app.connection.emit('game-start-video-call', [game_mod.game.players[i]]);
-                                },
-                            });
-                        }
-                    }
-                    game_mod.menu.addSubMenuOption("game-video-chat", {
-                        text: "All players",
-                        id: "game-video-chat",
-                        class: "game-video-chat",
-                        callback: function (app, game_mod) {
-                            const stunx = app.modules.returnModule('Stun');
-                            console.log('all players ', game_mod.game.players);
-                            app.connection.emit('game-start-video-call', [...game_mod.game.players]);
-                        },
-                    });
-
-
-                },
-                menus: []
-            
-            }
-            */
         }
-
         if (type === 'user-menu') {
             this.styles = [`/${this.returnSlug()}/style.css`,];
             this.attachStyleSheets();
@@ -228,30 +159,33 @@ class Stun extends ModTemplate {
             return [{
                 text: "Video/Audio Call",
                 icon: "fas fa-video",
+                rank: 60,
                 callback: function (app, public_key) {
                     app.connection.emit('game-start-video-call', public_key);
                 }
             }];
         }
-
-        if (type === 'saito-header') {
-            
-            let m = [{
-                text: "Video Call",
-                icon: this.icon,
-                allowed_mods: ["redsquare", 'arcade'],
-                callback: function (app, id) {
-                  let pub_key = app.wallet.returnPublicKey();
-                  app.connection.emit('game-start-video-call', pub_key);
-                }
-              }
-             ];
-          return m;
-        }
         return null;
     }
 
 
+
+    canRenderInto(qs) {
+        if (qs === ".saito-overlay") { return true; }
+        return false;
+    }
+
+    renderInto(qs) {
+        if (qs == ".saito-overlay") {
+            if (!this.renderIntos[qs]) {
+                this.renderIntos[qs] = [];
+                this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+            }
+            this.styles = [`/stun/style.css`];
+            this.attachStyleSheets();
+            this.renderIntos[qs].forEach((comp) => { comp.render(); });
+        }
+    }
 
 
 

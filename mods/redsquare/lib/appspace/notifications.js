@@ -48,6 +48,7 @@ class RedSquareAppspaceNotifications {
     }
 
     this.attachEvents();    
+
   }
 
 
