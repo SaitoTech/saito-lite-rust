@@ -723,7 +723,6 @@ i.link_icon.private {
 .league_recent_players_list_item {
   display: flex;
   flex-direction: row;
-  width: 48%;
 }
 
 .league-overlay-league-body-games-list .saito-table {
