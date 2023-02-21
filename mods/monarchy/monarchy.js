@@ -32,15 +32,12 @@ class Monarchy extends GameTemplate {
     this.attackOverlay = new SaitoOverlay(app, this, true, false);
     
     this.cards_in_play = [];
-    this.is_testing = true;
-
-    this.animationSequence = [];
+    this.is_testing = false;
     
-    this.turn_count = 1;
+    this.newDeal = 0;
     this.card_img_dir = `/${this.name.toLowerCase()}/img/cards`;
     
     this.card_back = "blank.jpg";
-    this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
     this.menu_backup_callback = ()=>{this.endTurn();} //Default behavior
   }
@@ -114,6 +111,17 @@ class Monarchy extends GameTemplate {
          game_mod.overlay.show(game_mod.returnGameRulesHTML()); 
       }
     });
+
+    this.menu.addSubMenuOption("game-info", {
+      text : "Score",
+      id : "game-score",
+      class : "game-score",
+      callback : function(app, game_mod) {
+         game_mod.menu.hideSubMenus();
+         game_mod.overlay.show(game_mod.updateScore()); 
+      }
+    });
+
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -202,9 +210,10 @@ initializeGame(game_id) {
 
   }
 
+  this.augmentQueueCommands();
+
   if (this.browser_active){
      this.displayBoard();
-     this.updateScore();
   }
  
 }
@@ -220,19 +229,17 @@ initializeGame(game_id) {
 
     let we_self = this;
     
-    ///////////
-    // QUEUE //
-    ///////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // QUEUE *** NOTE: We will pause execution unless the command explicitly returns 1. ****
+    //////////////////////////////////////////////////////////////////////////////////////////
     if (this.game.queue.length > 0) {
 
-      //if (this.browser_active){
-      //   this.displayBoard();
-     // }
       //console.log("LOOP DECK:",JSON.parse(JSON.stringify(this.game.deck)));
       //console.log("LOOP POOL:",JSON.parse(JSON.stringify(this.game.pool)));
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
+
 
 
       if (mv[0] == "init") {
@@ -333,8 +340,6 @@ initializeGame(game_id) {
       if (mv[0] == "turn"){
         if (!this.browser_active) {return 0;}
 
-        this.turn_count++;
-
         //For the beginning of the game only...
         if (this.game.state.welcome == 0) {
           try {
@@ -344,23 +349,92 @@ initializeGame(game_id) {
           this.game.state.welcome = 1;
         }
 
+        this.displayBoard();
+
         let player = parseInt(mv[1]);
         if (this.game.player == player){
           this.playerTurn();
         }else{
-          $(".cardstacks").css("opacity", "1");
-          this.displayBoard();
-          this.sortHand();
-          if (this.turn_count === 1){
-            this.updateStatusWithNewDeal(`Waiting for Player ${player} to take their turn`, this.game.player - 1);
-          }else{
-            this.updateStatusAndListCards(`Waiting for Player ${player} to take their turn`);
+          if (this.game.state.players[this.game.player-1].turns > 2){
+            this.hideBank();            
           }
+          
+          this.updateStatusAndListCards(`Waiting for Player ${player} to take their turn`);
+          this.attachCardboxEvents();
           
         }
 
         return 0;
       }
+
+
+      /*
+      Wrap the deal function so we can animate new cards being added to the hand
+      */
+      if (mv[0] == "draw"){
+        this.game.queue.splice(qe, 1);
+        let player = parseInt(mv[1]);
+        let number = parseInt(mv[2]);
+        if (number > 0){
+            
+          this.game.queue.push(`update_hand\t${player}\t${number}`);
+
+          this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t${number}`);  
+
+          if (this.game.player == player){
+            
+            let cardarray = [];
+            for (let i = 0; i < this.game.deck[player-1].hand.length; i++){
+             cardarray.push(this.game.deck[player-1].cards[this.game.deck[player-1].hand[i]]);
+            }
+            for (let i = 1; i <= number; i++){
+              cardarray.push(`slot${i}`);
+            }
+            this.updateStatusAndListCards(`Dealing ${number} cards...`, cardarray);  
+          }
+
+        }
+        return 1;
+      }
+
+      if (mv[0] == "update_hand"){
+        this.game.queue.splice(qe, 1);
+        let player = parseInt(mv[1]);
+        let number = parseInt(mv[2]);
+        
+        if (this.game.player == player){
+          this.newDeal = 0;
+          let did = this.game.player - 1;
+
+          //Make sure incoming moves from opponent are queued until the animation finishes
+          this.game.halted = 1;
+
+          this.displayDecks();
+          $(".animation_helper").remove();
+
+          console.log("Replacing cards in HUD");
+          let displayedCards = document.querySelector("#status-cardbox").children;
+          let slot = 1;
+          let width = displayedCards[0].style.width;
+          let height = displayedCards[0].style.height;
+          for (let i = 0; i <= this.game.deck[did].hand.length; i++){
+            if (displayedCards[i]?.id == `slot${slot}`){
+              displayedCards[i].outerHTML = this.flipCardHTML(this.game.deck[did].cards[this.game.deck[did].hand[i]]);
+              //Keep hud sizing!
+              displayedCards[i].style.width = width;
+              displayedCards[i].style.height = height;
+              slot++;
+            }
+          }
+          console.log("Flipping cards in HUD");
+          this.flipCardAnimation();
+
+          return 0;
+        }
+
+        return 1;
+      }
+
 
       if (mv[0] == "DISCARD"){
         let deckidx = parseInt(mv[1]);
@@ -371,9 +445,6 @@ initializeGame(game_id) {
           this.game.deck[deckidx-1].hand.splice(handidx,1);
         }
         this.game.deck[deckidx-1].discards[card] = this.game.deck[deckidx-1].cards[card];
-        if (deckidx == this.game.player){
-          this.last_discard = this.game.deck[deckidx-1].cards[card];
-        }
         this.game.queue.splice(qe, 1);
         return 1;
       }
@@ -399,7 +470,7 @@ initializeGame(game_id) {
           }else{
             this.game.state.players[player-1].vp -= parseInt(cobj.text);
           }
-          this.updateScore();
+          //this.updateScore();
         }
 
         return 1;        
@@ -417,9 +488,9 @@ initializeGame(game_id) {
         this.game.state.merchant = false;
         this.game.state.throneroom = false;
 
-        this.clearActiveCards();
+
+        //console.log(this.game.player,player,JSON.parse(JSON.stringify(this.game.deck[player-1])));
         
-        console.log(this.game.player,player,JSON.parse(JSON.stringify(this.game.deck[player-1])));
         //Check for end game
         if (this.gameOver()){
           this.game.queue.push("gameover");
@@ -430,28 +501,39 @@ initializeGame(game_id) {
           this.updateStatus("Game over, determining winner...");
           return 1;
         }else{
+
+          //Will add animation(s) to sequence
+          this.clearActiveCards(player);
+
           if (this.game.player == player){
-            this.hud.updateStatusHeaderOnly(this.formatStatusHeader("Drawing a new hand..."));
+            this.hud.updateStatusHeaderOnly(this.formatStatusHeader("Clearing the table..."));
             this.addMove("turn\t"+this.returnNextPlayer(player));
-            this.turn_count = 0;
-            //Deal 5 New Cards
-            this.addMove(`SAFEDEAL\t${player}\t${player}\t5`);
-                 
-            //Discard all cards in hand
+            
+            this.addMove(`draw\t${player}\t5`);
+
+            //Discard all cards in play
             for (let c of this.cards_in_play){
               this.addMove(`DISCARD\t${player}\t${c}`);
             }
-            
+            this.cards_in_play = [];
+
+            //Discard remaining cards in hand
             for (let j = this.game.deck[player-1].hand.length - 1; j >= 0; j--){
-              this.removeCardFromHand(this.game.deck[player-1].cards[this.game.deck[player-1].hand[j]], "#discardpile", true);
+              //Will add animation(s) to sequence
+              this.discardCard(this.game.deck[player-1].cards[this.game.deck[player-1].hand[j]]);
               this.addMove(`DISCARD\t${player}\t${this.lastCardKey}`);
             }
+
             if (this.game.deck[player-1].hand.length > 0){
               console.error("Cards left in hand");
               console.log(JSON.parse(JSON.stringify(this.game.deck[player-1])));
             }
-            this.cards_in_play = [];
-            this.endTurn();  
+
+
+            this.runAnimationQueue(150);  
+            
+            //We submit the move while the animations are running...
+            this.endTurn();
           }
           return 0;
           
@@ -508,16 +590,22 @@ initializeGame(game_id) {
         let card_to_buy = mv[2];
         let direct_to_hand = (mv[3] == "hand");
         let add_to_deck = (mv[3] == "deck");
+        let animationDestination = "#discardpile";
 
         let code = this.getNextCardCode(player);
-        //Manuall insert card into players discard pile
+        //Manually insert card into players discard pile
         this.game.deck[player-1].cards[code.toString()] = card_to_buy;
         if (direct_to_hand){
           this.game.deck[player-1].hand.push(code);
+          animationDestination = "#slot00";
+          if (player == this.game.player){
+            this.hud.insertCard(`<div id="slot00" class="card hud-card"></div>`);
+          }
         }else if (add_to_deck){
           let cobj = {};
           cobj[code] = card_to_buy;
           this.game.queue.push(`PUSHONDECK\t${mv[1]}\t${JSON.stringify(cobj)}`);
+          animationDestination = "#drawpile";
         }else{
           this.game.deck[player-1].discards[code.toString()] = card_to_buy;
         }
@@ -534,7 +622,7 @@ initializeGame(game_id) {
           }else{
             this.game.state.players[player-1].vp += parseInt(cobj.text);
           }
-          this.updateScore();
+          //this.updateScore();
         }
 
         if (!this.browser_active){return 1;}  
@@ -546,32 +634,29 @@ initializeGame(game_id) {
         const game_self = this;
        
         if (player !== this.game.player){
-            $(`.cardstacks #${card_to_buy}.passivecard`).animate({bottom: '500px', left:"300px", opacity: '0.4'}, 1200, function(){
-              $(this).remove();
-              game_self.finishAnimation();
-            });    
-        }else{
-
-          if (card_to_buy === "curse" || !document.querySelector(`.cardstacks #${card_to_buy}.passivecard`)){
-            this.displayCardInDiscard(card_to_buy);  
-            return 1;
-          }
-
           this.game.halted = 1;
-          let callback = () => { this.finishAnimation(); };
-          if (direct_to_hand){
-            callback = () => {
-              $("#discardpile:last-child").fadeOut();
-              this.hud.insertCard(html, () => { this.finishAnimation(); });
-            }
+          let animator;
+          if (document.querySelector(`.cardstacks #${card_to_buy}`)){
+            animator = this.copyGameElement(`.cardstacks #${card_to_buy} img`);
+          }else{
+            animator = this.createGameElement(this.returnCardImage(card_to_buy), "#active_card_zone", ".purchase_zone");
           }
-          /*if (add_to_deck){
-            $("#discardpile:last-child").remove();
-            $("#discardpile").append(this.flipCardHTML(card_to_buy));
-            $(`#discardpile .flippable-card#${card_to_buy}`).addClass
-          }*/
-          this.animateGameElementMove(`.cardstacks #${card_to_buy}.passivecard`, "#discardpile", callback);
-          
+          this.moveGameElement(animator, ".purchase_zone", {insert: 1}, 
+            ()=>{ 
+              $(".purchase_zone img").fadeOut(1800); 
+              this.finishAnimation();
+            });
+        }else{
+          let animationOrigin = (card_to_buy === "curse" || !document.querySelector(`.cardstacks #${card_to_buy}`)) ? `.cardstacks .cardpile` : `.cardstacks #${card_to_buy}`;
+
+            this.animationSequence.push({callback: this.moveGameElement, 
+                                        params: [this.createGameElement(this.returnCardImage(card_to_buy), animationOrigin, animationDestination),  
+                                                  animationDestination, 
+                                                  {},
+                                                  ()=>{ this.finishAnimation();}
+                                                ]});
+            
+          this.runAnimationQueue(500);
         }
 
         return 0;
@@ -585,50 +670,12 @@ initializeGame(game_id) {
 
         if (this.game.player !== player){
           msg = `Player ${player}`;
-          this.displayCardInZone(card_to_play);
+          $(this.returnCardImage(card_to_play)).hide().appendTo("#active_card_zone").fadeIn();
         }
 
         this.updateLog(`${msg} played ${this.cardToText(card_to_play)}`);
 
         return this.playCard(player, card_to_play);
-      }
-
-      /*
-      Wrap the deal function so we can animate new cards being added to the hand
-      */
-      if (mv[0] == "draw"){
-        this.game.queue.splice(qe, 1);
-        let player = parseInt(mv[1]);
-        let number = parseInt(mv[2]);
-        if (number > 0){
-          this.game.queue.push(`update_hand\t${player}\t${number}`);
-          this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t${number}`);  
-        }
-        return 1;
-      }
-
-      if (mv[0] == "update_hand"){
-        this.game.queue.splice(qe, 1);
-        let player = parseInt(mv[1]);
-        let number = parseInt(mv[2]);
-        
-        if (this.game.player == player){
-          let did = this.game.player - 1;
-
-          //Make sure incoming moves from opponent are queued until the animation finishes
-          this.game.halted = 1;
-
-          for (let i = this.game.deck[did].hand.length - number; i < this.game.deck[did].hand.length; i++){
-            let card_html = this.flipCardHTML(this.game.deck[did].cards[this.game.deck[did].hand[i]]);
-            this.hud.insertCard(card_html, () => { 
-              this.restartQueue();
-            });
-          }
-        
-          return 0;
-        }
-
-        return 1;
       }
 
       if (mv[0] == "hand"){
@@ -644,7 +691,10 @@ initializeGame(game_id) {
             this.endTurn();
             return 0;
           }
-          this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,[],optional);
+          this.hud.updateStatusHeaderOnly(`<div class="status-header">${optional ? this.back_button_html : ""}
+                                              <span id="status-content">Select (${number}) cards to move to ${target}:</span>
+                                           </div>`);
+          //this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,[],optional);
           if (optional){
             this.bindBackButtonFunction(()=>{
               if (card_list.length > 0){
@@ -657,12 +707,22 @@ initializeGame(game_id) {
           this.attachCardboxEvents(function(card){
             number--;
             card_list.push(card);
-            we_self.removeCardFromHand(card);
 
             switch(target){
-              case "deck": we_self.addMove(`PUSHONDECK\t${mv[1]}\t${JSON.stringify(we_self.returnLastCard())}`); break;
-              case "trash": we_self.addMove(`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}\t1`); break;
-              case "discards": we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`); break;
+              case "deck":  we_self.putCardOnDeck(card)
+                            we_self.addMove(`PUSHONDECK\t${mv[1]}\t${JSON.stringify(we_self.returnLastCard())}`); 
+                            
+                            break;
+              case "trash": 
+                            we_self.trashCard(card);
+                            we_self.addMove(`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}\t1`); 
+                            
+                            break;
+              case "discards": 
+                            we_self.discardCard(card);
+                            we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`); 
+                            
+                            break;
             }     
             if (number <= 0){
               we_self.addMove(`NOTIFY\tPlayer ${player} moved ${we_self.cardsToText(card_list)} to the their ${target}.`);
@@ -695,7 +755,7 @@ initializeGame(game_id) {
           if (victim != player){
             if (this.hasCardInHand("moat")){
               this.addMove(`augment\tAttack nullified by Moat\tmoat`);
-              this.removeCardFromHand("moat");
+              this.discardCard("moat");
               this.addMove(`DISCARD\t${victim}\t${this.lastCardKey}`);
               this.addMove(`NOTIFY\tPlayer ${victim} is protected from ${this.cardToText(card_to_play)} by a ${this.cardToText("moat")}.`);
             }else{
@@ -821,7 +881,7 @@ initializeGame(game_id) {
           }
         }
         if (vpcards.length > 0){
-          this.removeCardFromHand(vpcards[0]);
+          this.putCardOnDeck(vpcards[0]);
           this.addMove(`PUSHONDECK\t${mv[2]}\t${JSON.stringify(this.returnLastCard())}`)
           this.addMove(`augment\tPlayer ${victim}\t${vpcards[0]}`);
           this.addMove(`NOTIFY\t${this.cardToText("bureaucrat")}: Player ${victim} puts a ${this.cardToText(vpcards[0])} back on top of the deck.`);
@@ -873,6 +933,17 @@ initializeGame(game_id) {
 
         this.updateStatusAndListCards(`${this.cardToText("library")}: Drawing to seven cards: `);
 
+        //Stop Condition, draw to seven or until deck empty (with 1 reshuffle)
+        if (this.game.deck[player-1].hand.length == 7 || (this.game.state.shuffled && this.game.deck[player-1].crypt.length == 0)){
+          this.game.queue.splice(qe, 1);
+          for (let c of this.game.pool[player-1].hand){
+            this.addMove(`DISCARD\t${mv[1]}\t${c}`);
+          }
+          this.endTurn();
+          return 0;
+        }
+
+        //Process the last drawn card
         if (this.game.pool[player-1].hand.length > 0){
           let c = this.game.pool[player-1].hand.pop();
           let cardname = this.game.pool[player-1].cards[c];
@@ -881,7 +952,7 @@ initializeGame(game_id) {
             this.attachCardboxEvents(function (action){
               if (action == "keep"){
                 this.game.deck[player-1].hand.push(c);  
-                this.restartQueue();
+                this.hud.insertCard(this.flipCardHTML(cardname), () => { this.restartQueue();});
               }else{
                 this.game.pool[player-1].hand.unshift(c);  
                 this.addMove(`POOLDEAL\t${mv[1]}\t1\t${mv[1]}`);
@@ -892,23 +963,19 @@ initializeGame(game_id) {
           }else{
             this.game.deck[player-1].hand.push(c);
             this.hud.insertCard(this.flipCardHTML(cardname), () => { this.restartQueue();});
+            return 0;
           }
         }
 
-        if (this.game.deck[player-1].hand.length == 7 || (this.game.state.shuffled && this.game.deck[player-1].crypt.length == 0)){
-          this.game.queue.splice(qe, 1);
-          for (let c of this.game.pool[player-1].hand){
-            this.addMove(`DISCARD\t${mv[1]}\t${c}`);
-          }
-          this.endTurn();
-          return 0;
-        }
-
+        //Draw a card
         this.addMove(`POOLDEAL\t${mv[1]}\t1\t${mv[1]}`);
+
+        //Shuffle (once)
         if (this.game.deck[player-1].crypt.length == 0){
           this.addMove(`SHUFFLEDISCARDS\t${player}`);
           this.game.state.shuffled = true;
         }
+
         this.endTurn();
         return 0;
       }
@@ -1081,8 +1148,6 @@ initializeGame(game_id) {
               we_self.endTurn();
             });
           }
-        }else{
-          this.displayDecks();
         }
         return 0;
       }
@@ -1095,7 +1160,7 @@ initializeGame(game_id) {
           let c = this.game.pool[player-1].hand[0];
           let cname = this.game.pool[player-1].cards[c];
 
-          this.displayCardInDiscard(cname);
+          //this.displayCardInDiscard(cname);
 
           if (this.deck[cname].type.includes("action")){
             let html = `<ul><li class="card nocard" id="play">play</li><li class="card nocard" id="discards">discard</li></ul>`;
@@ -1141,22 +1206,26 @@ initializeGame(game_id) {
 
   }
 
+  hideBank(){
+    this.cardbox.detachCardEvents();
+    $(".cardstacks").css("opacity", "0");
+    $(".showcard").removeClass("showcard");
+  }
 
   playerTurn(){
     let we_self = this;
-    this.sortHand();
+    
+    //this.game.deck[this.game.player - 1].hand = this.sortHand(this.game.deck[this.game.player - 1].hand);
 
     if ((this.game.state.throneroom || this.game.state.actions > 0) && this.hasActionCard()){
-      this.cardbox.detachCardEvents();
-      $(".cardstacks").css("opacity", "0");
-      $(".showcard").removeClass("showcard");
+      this.hideBank();
       this.updateStatusAndListCards(`Pick a card to play${this.game.state.throneroom?" twice":""}`,[],true);
       this.attachCardboxEvents(function(action){
         if (we_self.deck[action].type.includes("action")){
-          we_self.removeCardFromHand(action, "#active_card_zone"); 
+
           we_self.cards_in_play.push(we_self.lastCardKey); //In lieau of discard
           we_self.updateStatusAndListCards(`Playing ${we_self.cardToText(action)}...`);
-          //we_self.addMove(`DISCARD\t${we_self.game.player}\t${we_self.lastCardKey}`);
+          we_self.putCardInPlay(action);
           we_self.addMove(`play\t${we_self.game.player}\t${action}`);
 
           if (this.game.state.throneroom){
@@ -1165,6 +1234,7 @@ initializeGame(game_id) {
           }else{
             we_self.game.state.actions--;            
           }
+
           we_self.endTurn();
         }
       });
@@ -1194,7 +1264,9 @@ initializeGame(game_id) {
           we_self.game.state.buys--;
           available_coins -= we_self.deck[newcard].cost;
           we_self.spendMoney(we_self.deck[newcard].cost);
-          we_self.endTurn();
+          
+          return;
+          //we_self.endTurn();
         }
       });
       this.attachCardboxEvents();
@@ -1205,6 +1277,10 @@ initializeGame(game_id) {
       });
 
       return;
+    }
+
+    if (this.game.state.players[this.game.player-1].turns > 2){
+      this.hideBank();
     }
 
     this.addMove(`cleanup\t${this.game.player}`);
@@ -1268,29 +1344,43 @@ initializeGame(game_id) {
     this.attackOverlay.show();
   }
 
-  displayCardInZone(card){
-    $(this.returnCardImage(card)).hide().appendTo("#active_card_zone").fadeIn();
-  }
 
-  clearActiveCards(){
+  clearActiveCards(player){
     if (!this.browser_active){return;}
 
-    $("#active_card_zone").children().fadeOut("slow", function() {
-            $("#active_card_zone").html("") ;
-          });
+    console.log("Clearing Active Card Zone");
+
+    const resetHTML = () => {
+      $("#active_card_zone").html("");
+      this.finishAnimation();
+    }
+
+    
+    if (this.game.player === player){
+      Array.from(document.querySelectorAll("#active_card_zone div.card")).forEach(card => {
+        this.animationSequence.push({callback: this.moveGameElement,
+                                     params: [this.copyGameElement(card), "#discardpile", {resize: 1}, resetHTML]});
+      });
+      
+    }else{
+      $("#active_card_zone").children().fadeOut("slow", resetHTML); 
+    }
+
   }
 
-  displayCardInDiscard(c){
+  /*
+    displayCardInDiscard(c){
 
     //Show temporary discard
     let shift = Object.keys(this.game.deck[this.game.player-1].discards) + 1;
     $(`<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;right:${shift}px;">`).hide().appendTo("#discardpile").slideDown();
 
-  }
+  }*/
 
 
   displayBoard(){
     console.log("Redrawing board");
+
     let html = "";
     for (let c in this.game.state.supply){
       if (c !== "curse"){
@@ -1306,10 +1396,10 @@ initializeGame(game_id) {
             */
 
           html += `<div class="card_count">${this.game.state.supply[c]}</div>
-                  <img class="passivecard" id="${c}" src="/${this.name.toLowerCase()}/img/minicards/${this.deck[c].img}">
+                  ${this.returnCardImage(c, false)}
                   </div>`;
         }else{
-          html += `<div class="tiptext">No more ${this.cardToText(c,true)}</div>`;
+          html += `<div class="card_count">No more ${this.cardToText(c,true)}</div>`;
         }
         html += "</div>";  
       }
@@ -1323,7 +1413,6 @@ initializeGame(game_id) {
       this.app.browser.addElementToId(`<div class="cardstacks">${html}</div>`, "main");
       $(".cardstacks").draggable();
     }
-    this.attachCardboxEvents();
 
     //Toggle card pile configuration
 
@@ -1344,17 +1433,22 @@ initializeGame(game_id) {
 
   displayDecks(){
     //Show Discard/DrawPiles
-    $(".animation_helper").remove();
-    $(".animated_elem").remove();
+    console.log("Update decks");
+    $(".animation_helper.done").remove();
+    $(".animated_elem.done").remove();
+
 
     try{
-      let html = ""; //`<div class="player_decks tip">`;
-      html += `<div id="drawpile" class="cardpile">`;
+      let html = `<div id="drawpile" class="cardpile">
+                    <div>Draw: ${this.game.deck[this.game.player-1].crypt.length}</div>`;
       for (let i = 0; i < this.game.deck[this.game.player-1].crypt.length; i++){
-        html += `<img src="${this.card_img_dir}/blank.jpg" style="bottom:${i}px;right:${i}px;">`;
+        if (this.game.deck[this.game.player-1].crypt.length - i <= 5){
+          html +=   `<img id="draw${this.game.deck[this.game.player-1].crypt.length - i}" src="${this.card_img_dir}/blank.jpg" >`;  
+        }else{
+          html +=   `<img src="${this.card_img_dir}/blank.jpg" >`;  
+        }
       }
-      html +=   `<div>Draw: ${this.game.deck[this.game.player-1].crypt.length}</div>
-               </div>`;
+      html +=   `</div>`;
 
       if (document.getElementById("drawpile")){
         this.app.browser.replaceElementBySelector(html, "#drawpile");
@@ -1362,16 +1456,16 @@ initializeGame(game_id) {
         this.app.browser.addElementToId(html, "hud-body");
       }
 
-      html = `<div id="discardpile" class="cardpile">`;
+      html = `<div id="discardpile" class="cardpile">
+                <div>Discards: ${Object.keys(this.game.deck[this.game.player-1].discards).length}</div>`;
       let shift = 0;
       for (let card in this.game.deck[this.game.player-1].discards){
         let c = this.game.deck[this.game.player-1].discards[card];
-        html += `<img src="${this.card_img_dir}/${this.deck[c].img}" style="bottom:${shift}px;left:${shift}px;">`;
+        html += `<img src="${this.card_img_dir}/${this.deck[c].img}">`;
         shift++;
       }
 
-      html += `<div>Discards: ${this.game.deck[this.game.player-1].crypt.length}</div>
-               </div>`;
+      html += `</div>`;
       
       if (document.getElementById("discardpile")){
         this.app.browser.replaceElementBySelector(html, "#discardpile");
@@ -1386,7 +1480,6 @@ initializeGame(game_id) {
 
 
   filterBoardDisplay(max){
-    this.displayBoard();
     this.cardbox.detachCardEvents();
     $(".cardstacks").css("opacity", "1");
     $(".showcard").removeClass("showcard");
@@ -1414,7 +1507,9 @@ initializeGame(game_id) {
     for (let i = 1; i <= this.game.players.length; i++){
       html += `<div class="score">${(i==this.game.player)?"Me":`Player ${i}`}: ${this.returnPlayerVP(i)}</div>`;
     }
-    this.scoreboard.update(html);
+    //this.scoreboard.update(html);
+    return `<div class="game-scoreboard">${html}</div>`;
+    
   }
 
   gameOver(){
@@ -1474,8 +1569,10 @@ initializeGame(game_id) {
   async spendMoney(price){
     let pi = this.game.player-1;
     let used = [];
-    for (let i = this.game.deck[pi].hand.length - 1; i >= 0; i--){
-      let cardname = this.game.deck[pi].cards[this.game.deck[pi].hand[i]];
+    let available_money = this.sortHand(Array.from(this.game.deck[pi].hand));
+
+    for (let i = available_money.length - 1; i >= 0; i--){
+      let cardname = this.game.deck[pi].cards[available_money[i]];
       if (this.deck[cardname].type == "treasure"){
         if (parseInt(this.deck[cardname].text) <= price){
           used.push(cardname);
@@ -1491,17 +1588,12 @@ initializeGame(game_id) {
       }
     }
 
-    const timeout = ms => new Promise(res => setTimeout(res, ms));
-
     for (let bill of used){
-      this.removeCardFromHand(bill);
-
-      //We need a little pause in execution so that the Jquery animation on the card removal
-      //can complete before we loop around again and accidentally select the same card
-      await timeout(150);
-
-      this.cards_in_play.push(this.lastCardKey);
+      this.discardCard(bill);
+      this.addMove(`DISCARD\t${this.game.player}\t${this.lastCardKey}`);
+      await this.timeout(250);
     }
+    this.endTurn();
   }
 
   cardToText(card, textonly = false){
@@ -1534,7 +1626,38 @@ initializeGame(game_id) {
   /*
   Get the card out of the hand (but don't add it to the discards ...yet)
   */
-  removeCardFromHand(card, target = "#discardpile", pause = false) {
+  discardCard(card, pause){
+    this.removeCardFromHand(card);
+
+    if (pause) {
+      this.animationSequence.push({callback: this.moveGameElement, 
+                                   params: [this.copyGameElement(`#status-cardbox #${card}:not(.hidden)`), "#discardpile", {}, () => {this.finishAnimation();}]});
+    }else{
+      this.moveGameElement(this.copyGameElement(`#status-cardbox #${card}:not(.hidden)`), "#discardpile", {});
+    }  
+  }
+
+  trashCard(card){
+    this.removeCardFromHand(card);
+    this.moveGameElement(this.copyGameElement(`#status-cardbox #${card}:not(.hidden)`), "#trash_can", {resize: 1, insert: 1}, () => { $("#trash_can").html("");});
+  }
+
+  putCardInPlay(card){
+    this.removeCardFromHand(card);
+    this.moveGameElement(this.copyGameElement(`#status-cardbox #${card}:not(.hidden)`), "#active_card_zone", {insert: 1});
+  }
+
+  putCardOnDeck(card){
+    let we_self = this;
+    this.removeCardFromHand(card);
+    this.moveGameElement(this.copyGameElement(`#status-cardbox #${card}:not(.hidden)`), "#drawpile", {}, 
+                       (elem)=>{
+                          $(elem).remove();
+                          $(we_self.flipCardHTML(card, false)).appendTo("#drawpile").toggleClass("flipped");
+                        }); 
+  }
+
+  removeCardFromHand(card) {
     if (this.game.player === 0) { return; }
     let pi = this.game.player-1;
 
@@ -1543,20 +1666,6 @@ initializeGame(game_id) {
         this.lastCardKey = this.game.deck[pi].hand[i];
         this.lastCardValue = card;
         this.game.deck[pi].hand.splice(i, 1);
-
-        let callback = null;
-        if (pause) {
-          this.game.halted = 1;
-          this.gaming_active = 1;
-          this.animation_queue.push("remove");
-
-          callback = ()=> {
-              this.gaming_active = 0;
-              this.finishAnimation();
-            }
-        }  
-
-        this.animateGameElementMove(`#status #${card}`, target, callback);
 
         return 1; //Only remove one copy
       }
@@ -1654,7 +1763,7 @@ initializeGame(game_id) {
         });
         this.attachCardboxEvents(function(card){
           number++;
-          we_self.removeCardFromHand(card);
+          we_self.discardCard(card);
           we_self.addMove(`DISCARD\t${player}\t${we_self.lastCardKey}`);
         });
       }
@@ -1666,7 +1775,7 @@ initializeGame(game_id) {
       this.game.state.coins += 2;
       if (this.game.player == player){
         let html = `<ul><li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li></ul>`;
-        this.updateStatusWithOptions("Would you like to discard your deck (for an immediate reshuffle)?", html);
+        this.updateStatusWithOptions("Would you like to discard your deck (for an immediate shuffle)?", html);
         this.attachCardboxEvents(function(card){
           if (card == "yes"){
             we_self.addMove(`SHUFFLEDISCARDS\t${player}`);
@@ -1763,12 +1872,12 @@ initializeGame(game_id) {
         }else{
           this.updateStatusAndListCards(`You may trash a treasure to acquire one costing 3 more than it. (X to skip)`, tcards, true);
           this.attachCardboxEvents(function(tc){
-            we_self.removeCardFromHand(tc);
             if (tc == "copper"){
               we_self.addMove(`buy\t${player}\tsilver\thand`);
             }else{
               we_self.addMove(`buy\t${player}\tgold\thand`);
             }
+            we_self.trashCard(tc);
             we_self.addMove(`trash\t${player}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
             we_self.endTurn();
           });
@@ -1790,14 +1899,15 @@ initializeGame(game_id) {
            this.updateStatusWithOptions("Would you like to trash a copper for +3 coin this turn?", html);
            this.attachCardboxEvents(function(card){
               if (card == "yes"){
+                we_self.updateStatusAndListCards("Trashing a copper card...");
                 we_self.game.state.coins += 3;
-                we_self.removeCardFromHand("copper");
+                we_self.trashCard("copper");
                 we_self.addMove(`trash\t${player}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
               }
               we_self.endTurn();
             });
         }else{
-          this.endTurn();
+          return 1;
         }
       }
       return 0;
@@ -1822,7 +1932,7 @@ initializeGame(game_id) {
       if (this.game.player == player){
         this.updateStatusAndListCards(`Pick a card to trash in exchange for a new card worth up to 2 more`);
         this.attachCardboxEvents(function(card){
-          we_self.removeCardFromHand(card);
+          we_self.trashCard(card);
           we_self.addMove(`trash\t${player}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
           we_self.acquireCard(we_self.deck[card].cost + 2);
         });
@@ -1879,7 +1989,40 @@ initializeGame(game_id) {
  
     return 1;
  }
-       
+  
+
+  //!!!!!!!!!!!     
+  reshuffleNotification(playerDeck, discards){
+    this.updateLog("Shuffling discards back into the deck..." + playerDeck);
+    if (this.game.player == playerDeck){
+      $("#drawpile div").html("");
+      
+
+      console.log("RESHUFFLE~");
+      
+      // IMPORTANT STEP!!!!
+      discards = JSON.parse(discards);
+      //================
+
+      for (let card in discards){
+        this.animationSequence.push({callback: this.moveGameElement,
+                                      params: [this.createGameElement(this.flipCardHTML(discards[card], false), "#discardpile"), "#drawpile", 
+                                      {
+                                        callback: (id) => { $(`#${id} .flippable-card`).toggleClass("flipped");}, 
+                                      },
+                                      () => { this.finishAnimation(); 
+                                              this.animationSpeed = 1500; },
+                                      ]});    
+      }
+
+      this.animationSpeed = 500;
+      this.runAnimationQueue(50);
+      $("#discardpile").html("");
+      return 0;
+    }
+    return 1;
+  }
+
 
   returnDoubleSidedCardList(cardarray = [], deckid = 0){
     if (cardarray.length === 0) {
@@ -1919,18 +2062,31 @@ initializeGame(game_id) {
         cardarray.push(this.game.deck[did].cards[this.game.deck[did].hand[i]]);
       }  
     }
-    return super.returnCardList(cardarray, did);
+    return super.returnCardList(cardarray, 1);
   }
 
-  returnCardImage(cardname){
+  returnCardImage(cardname, fullSize = true){
     if (this.deck[cardname]?.img){
-      return `<img class="cardimg" src="${this.card_img_dir}/${this.deck[cardname].img}" />`;
+      if (fullSize){
+        return `<img class="cardimg" src="${this.card_img_dir}/${this.deck[cardname].img}" />`;  
+      }else{
+        return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/minicards/${this.deck[cardname].img}" />`;  
+      }
     }else{
       return ""
     }
   }
 
 
+  async flipCardAnimation(){
+    
+    for (card of $("#status-cardbox").children()) {
+      $(card).addClass("flipped");
+      await this.timeout(300);
+    }
+    
+    this.finishAnimation();    
+  }
 
   ////////////////////
   // Core Game Data //
@@ -1959,7 +2115,7 @@ initializeGame(game_id) {
       let stats = {vp:3, gardens:0, curses:0, turns:0};
       state.players.push(stats);
     }
-  
+
     return state;
 
   }
@@ -2044,9 +2200,9 @@ initializeGame(game_id) {
 
   }
 
-  sortHand(){
+  sortHand(hand){
     if (this.game.player == 0){ return; }
-    this.game.deck[this.game.player-1].hand.sort((a,b) =>{
+    hand.sort((a,b) =>{
       let c_a = this.deck[this.game.deck[this.game.player-1].cards[a]];
       let c_b = this.deck[this.game.deck[this.game.player-1].cards[b]];
 
@@ -2061,14 +2217,16 @@ initializeGame(game_id) {
       if (c_a.type > c_b.type){
         return 1;
       }
-      if (c_a.cost < c_b.cost){
+      if (c_a.cost > c_b.cost){
         return -1;
       }
-      if (c_a.cost > c_b.cost){
+      if (c_a.cost < c_b.cost){
         return 1;
       }
       return 0;
     });
+
+    return hand;
     
   }
 
@@ -2083,67 +2241,59 @@ initializeGame(game_id) {
 
   //Animation functions
 
-  async runAnimationQueue(){
-    console.log(`Sequencing ${this.animationSequence.length} Animations`);
-    this.game.halted = 1;
-    while (this.animationSequence.length > 0){
-      let {callback, params} = this.animationSequence.shift();
-      await this.timeout(500);
-      callback.apply(this, params);
-    }
 
-  }
-
-  async finishAnimation(delay = 0){
-    console.log("Kickstarting the queue:", this.animation_queue.length, this.animationSequence.length);
+  async finishAnimation(delay = 0, cont = true){
+    console.info("Animation finished? Queues:", this.animation_queue.length, this.animationSequence.length);
     if (this.animation_queue.length + this.animationSequence.length === 0){
+  
       if (delay){
         await this.timeout(delay);
       }
-      this.restartQueue();  
+      //Tighten up display
+      this.displayDecks();
+
+      if (cont){
+        this.restartQueue();    
+      }else{
+        this.endTurn();
+      }
+      
     }else{
       console.log("Nevermind, let's wait a bit");
     }
     
   }
 
-  createAndMove(html, start, end, callback1 = null, callback2 = null){
-
-    let source_stats = document.querySelector(start).getBoundingClientRect();
-    let destination_stats = document.querySelector(end).getBoundingClientRect();
-
-    //console.log(start, `${source_stats.top}px`, `${source_stats.left}px`);
-    //console.log(end, `${destination_stats.top}px`, `${destination_stats.left}px`);
-
-    let as = `${this.animationSpeed/1000}s`;
 
 
-    this.animation_queue.push(0);
-    let divid = `ae${this.animation_queue.length}`;
+  augmentQueueCommands(){
 
-    this.app.browser.addElementToSelector(`<div id="${divid}" class="animated_elem fresh" style="top: ${source_stats.top}px; left: ${source_stats.left}px; width: fit-content;">${html}</div>`, ".gameboard");
+    //We double define DEAL so we can attach an animation while the players are communicating
+    this.commands.push((game_self, gmv) => {
+      if (gmv[0] === "DEAL") {
+        let deckidx = parseInt(gmv[1]);
+        let recipient = parseInt(gmv[2]);
+        let cards = parseInt(gmv[3]);
 
-    let game_self = this;
+        if (recipient == game_self.game.player && game_self.browser_active){
+          console.log("ANIMATE CARD DEALING");
 
-    $(".animated_elem.fresh").css("transition", `left ${as}, top ${as}, transform ${as} ease`);
-
-    $(".animated_elem.fresh").delay(50).queue(function(){
-        $(this).removeClass("fresh");
-        if (callback1){
-          callback1(divid);
-        }
-        $(this).css("top",`${destination_stats.top}px`).css("left", `${destination_stats.left}px`).dequeue();
-      }).delay(game_self.animationSpeed).queue(function(){
-          console.log("CreateAndMove finsihed");
-          game_self.animation_queue.shift();
-          if (game_self.animation_queue.length == 0 && callback2){
-            console.log("Running callback");
-            callback2();
+          for (let i = 0; i < cards; i++){
+            let target = `#drawpile #draw${i+1}`;
+            let destination = `#slot${++this.newDeal}`;
+            game_self.animationSequence.push({callback: game_self.moveGameElement,
+                                  params: [game_self.copyGameElement(target), destination, {insert:1}, () => {game_self.restartQueue(); }]});
           }
-      });
+          game_self.runAnimationQueue(200);
+
+          return 0;
+        }
+      }
+      return 1;
+    });
+
+
   }
-
-
 
 
 } // end Monarchy class

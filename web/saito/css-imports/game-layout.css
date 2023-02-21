@@ -82,8 +82,8 @@ div.h3{
 @media screen and (orientation:portrait) and (max-width: 400px) {
 
   .hud-card {
-    width: calc(18vw * 0.811);
-    /*height: 18vw;*/
+    /*width: calc(18vw * 0.811);
+    height: 18vw;*/
   }
 
   .hud-long .status-cardbox {
@@ -100,8 +100,8 @@ div.h3{
 @media screen and (orientation:portrait) and (min-width: 400px) and (max-width: 600px) {
 
   .hud-card {
-    width: calc(13vw * 0.811);
-    /*height: 13vw;*/
+    /*width: calc(13vw * 0.811);
+    height: 13vw;*/
   }
   .hud-long .status-cardbox {
     grid-template-columns: repeat( auto-fit, minmax(15vw, 1fr) );
@@ -117,8 +117,8 @@ div.h3{
 @media screen and (orientation:portrait) and (min-width: 600px) {
 
   .hud-card {
-    width: calc(10vw * 0.811);
-    /*height: 10vw;*/
+    /*width: calc(10vw * 0.811);
+    height: 10vw;*/
   }
   .status-cardbox {
     /*grid-template-columns: repeat( auto-fit, minmax(11vw, 1fr) );*/

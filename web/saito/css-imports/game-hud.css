@@ -348,13 +348,13 @@ i.menu_icon_icon{
     width: 0px;
     background: transparent;
 }
-.hud-card {
+/*.hud-card {
   display: block;
+  z-index: 2;
   width: 10vw;
   height: fit-content;
-  z-index: 2;
   justify-self: center;
-}
+}*/
 /* This probably shouldn't be here */ 
 .card {
   position: relative;
