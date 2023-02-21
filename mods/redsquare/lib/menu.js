@@ -87,7 +87,6 @@ class RedSquareMenu {
 
   incrementNotifications(menu_item, notifications = -1) {
 
-    console.log('notifications number ', notifications)
     let qs = `.redsquare-menu-${menu_item}`;
 
     if (document.querySelector(qs)) {
@@ -103,7 +102,8 @@ class RedSquareMenu {
           obj.style.display = "none";
 	}
       } else {
-        let existing_notifications = parseInt(obj.innerHTML);
+        let existing_notifications = 0;
+	if (obj.innerHTML) { existing_notificaitons = parseInt(obj.innerHTML); }
         if (notifications <= 0) {
           obj.style.display = "none";
           obj.innerHTML = 0;

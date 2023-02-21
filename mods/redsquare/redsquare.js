@@ -218,7 +218,13 @@ class RedSquare extends ModTemplate {
     // archive -- load our own tweets
     //
     if (service.service === "archive") {
-      this.loadNotificationsFromPeer(peer);
+      this.loadNotificationsFromPeer(peer, 1, function(res) {
+        let hash = app.browser.returnHashAndParameters();
+        if (hash.hash === "notifications") {
+          app.connection.emit("redsquare-notifications-render-request");
+          //app.browser.addIdentifiersToDom();
+	}
+      });
     }
 
     //
@@ -454,9 +460,8 @@ class RedSquare extends ModTemplate {
     if (t != null) { mycallback(t); return; }
 
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}' ORDER BY created_at DESC`;
-    //this.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
-    this.loadTweetsFromPeer(mod.peers_for_tweets[0], sql, (txs) => {
-      this.loadTweetsFromPeerAndReturn(peer, sql, (txs) => {
+    this.loadTweetsFromPeer(this.peers_for_tweets[0], sql, (txs) => {
+      this.loadTweetsFromPeerAndReturn(this.peers_for_tweets[0], sql, (txs) => {
         for (let z = 0; z < txs.length; z++) {
           let tweet = new Tweet(this.app, this, ".redsquare-appspace-body", txs[z]);
           mycallback(tweet);
@@ -526,7 +531,13 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.peers_for_notifications.length; i++) {
       let peer = this.peers_for_notifications[i];
       this.loadNotificationsFromPeer(peer, this.increment_for_notifications, () => {
-        this.app.connection.emit("redsquare-notifications-render-request");
+        let hash = app.browser.returnHashAndParameters();
+        if (hash) {
+	  if (hash.hash === "notifications") {
+            this.app.connection.emit("redsquare-home-notifications-render-request");
+            this.app.browser.addIdentifiersToDom();
+	  }
+	}
       });
     }
   }
@@ -540,7 +551,6 @@ class RedSquare extends ModTemplate {
         txs[i].decryptMessage(this.app);
         this.addTweet(txs[i]);
       }
-      console.log('notificatoins added', this.notifications, this.tweets)
       if (post_load_callback != null) { post_load_callback(); }
     });
   }
