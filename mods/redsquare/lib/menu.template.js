@@ -3,7 +3,7 @@ module.exports = () => {
    return `
       <div class="saito-menu redsquare-menu">
 
-        <div id="new-tweet" class="saito-button-primary">New Tweet</div>
+        <div id="new-tweet" class="saito-button-primary">New Post</div>
 
         <ul class="saito-menu-list">
           <li class="redsquare-menu-home">
