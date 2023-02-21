@@ -120,13 +120,13 @@ export default class Blockring {
   onChainReorganization(block_id:bigint, block_hash, lc) {
     const insert_pos = Number(block_id % BigInt(this.ring_buffer_length));
     if (!this.ring[insert_pos]) {
-      console.trace(
+      /*console.trace(
         "block id : " +
           block_id +
           " insert_pos : " +
           insert_pos +
           " doesn't have an entry in block ring"
-      );
+      );*/
       return;
     }
 
