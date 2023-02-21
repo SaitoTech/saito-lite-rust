@@ -47,6 +47,11 @@ class RedSquareMenu {
       this.app.connection.emit("redsquare-home-render-request");
     }
 
+    document.getElementById("new-tweet").onclick = (e) => {
+      let post = new Post(this.app, this.mod);
+      post.render();
+    }
+
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       this.setHash('notifications')
       this.app.connection.emit("redsquare-notifications-render-request");
