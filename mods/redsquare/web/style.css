@@ -9,6 +9,15 @@
   white-space: nowrap;
 }
 
+.redsquare-appspace-profile {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 2rem;
+  margin-top:1rem;
+  margin-bottom: 1rem; 
+  padding-left: 2rem;
+}
+
 .redsquare-actions-buttons {
   position: relative;
   display: flex;

@@ -1,4 +1,5 @@
 const RedSquareMenuTemplate = require("./menu.template");
+const Post = require("./post");
 
 class RedSquareMenu {
 
