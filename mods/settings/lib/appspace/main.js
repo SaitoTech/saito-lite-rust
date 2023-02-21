@@ -14,12 +14,15 @@ class SettingsAppspace {
     this.overlay = new SaitoOverlay(app, mod);
 
     this.app.connection.on("settings-overlay-render-request", () => {
+      this.mod.attachStyleSheets();
       this.render();
     });
 
   }
 
   render() {
+
+
 
     this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod));
 
@@ -144,26 +147,6 @@ class SettingsAppspace {
         navigator.clipboard.writeText(app.wallet.returnPublicKey());
         salert("Public key copied");
       }
-      /*
-          document.getElementById('reset-account-btn').onclick = async (e) => {
-      
-            confirmation = await sconfirm('This will reset your account, do you wish to proceed?');
-            if (confirmation) {
-              app.wallet.resetWallet();
-              app.modules.returnModule('Arcade').onResetWallet();
-              app.storage.resetOptions();
-      
-              mod.emails.inbox = [];
-              mod.emails.sent = [];
-              mod.emails.trash = [];
-      
-              mod.render(app, mod);
-              mod.attachEvents(app, mod);
-      
-              app.blockchain.resetBlockchain();
-            }
-          };
-      */
 
       document.getElementById('restore-privatekey-btn').onclick = async (e) => {
 
