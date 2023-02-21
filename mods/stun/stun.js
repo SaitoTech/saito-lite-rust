@@ -111,20 +111,20 @@ class Stun extends ModTemplate {
     }
 
     canRenderInto(qs) {
-        if (qs === ".saito-main") { return true; }
+        //if (qs === ".saito-main") { return true; }
         return false;
     }
 
     renderInto(qs) {
-        if (qs == ".saito-main") {
-            if (!this.renderIntos[qs]) {
-                this.renderIntos[qs] = [];
-                this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
-            }
-            this.styles = [`/${this.returnSlug()}/style.css`];
-            this.attachStyleSheets();
-            this.renderIntos[qs].forEach((comp) => { comp.render(); });
-        }
+        //if (qs == ".saito-main") {
+        //    if (!this.renderIntos[qs]) {
+        //        this.renderIntos[qs] = [];
+        //        this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
+        //    }
+        //    this.styles = [`/${this.returnSlug()}/style.css`];
+        //    this.attachStyleSheets();
+        //    this.renderIntos[qs].forEach((comp) => { comp.render(); });
+        //}
     }
 
     respondTo(type) {
@@ -133,11 +133,11 @@ class Stun extends ModTemplate {
             super.render(this.app, this);
             return new StunxInvite(this.app, this);
         }
-        if (type === 'appspace') {
-            this.styles = [`/${this.returnSlug()}/css/style.css`,];
-            super.render(this.app, this);
-            return new StunxAppspace(this.app, this);
-        }
+        //if (type === 'appspace') {
+        //    this.styles = [`/${this.returnSlug()}/css/style.css`,];
+        //    super.render(this.app, this);
+        //    return new StunxAppspace(this.app, this);
+        //}
         if (type === 'saito-header') {
           return [{
             text: "Video Call",
