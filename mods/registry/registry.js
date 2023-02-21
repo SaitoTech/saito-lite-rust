@@ -56,11 +56,17 @@ class Registry extends ModTemplate {
       }
     });
 
+    this.username_modal = null;
+
     return this;
   }
 
 
+  initialize(app) {
+    super.initialize(app);
 
+    this.username_modal = new RegisterUsernameModal(app, this);
+  }
 
 
   returnServices() {

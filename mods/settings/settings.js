@@ -19,6 +19,7 @@ class Settings extends ModTemplate {
     this.description = "User settings module.";
     this.categories = "Admin Users";
     this.styles = ['/settings/style.css','/saito/lib/jsonTree/jsonTree.css','/settings/theme-switcher.css'];
+    this.main = null;
 
     return this;
   }
@@ -36,6 +37,8 @@ class Settings extends ModTemplate {
         }
       }
     });
+
+    this.main = new SettingsAppspace(this.app, this);
   }
 
 

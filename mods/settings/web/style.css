@@ -2,6 +2,14 @@
   display: flex;
   flex-direction: column;
   row-gap: 3rem;
+  background: ;
+  width: 95vw;
+  height: 95vh;
+  overflow: scroll;
+  padding: 1rem;
+  background: var(--saito-background-color);
+  color: var(--saito-font-color);
+  padding: 2rem;
 }
 
 .settings-appspace-user-details {
@@ -49,6 +57,7 @@
   overflow-x: hidden;
   text-overflow: ellipsis;
   align-items: center;
+  width: 68vw;
 }
 
 .settings-appspace-privatekey>div {
@@ -138,6 +147,10 @@ label.treated {
 
 
 @media only screen and (max-width: 768px) {
+
+  .settings-appspace {
+    padding: 1rem;
+  }
 
   .settings-appspace-user-details .saito-address {
     
