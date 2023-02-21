@@ -29,8 +29,7 @@ class Steamed extends GameTemplate {
     this.card_img_dir = `/${this.slug}/img/cards/`;
     this.categories 	 = "Games Boardgame Cardgame";
     this.factory  = this.returnFactoryRules();
-    this.animationSequence = [];
-    //this.animationSpeed = 1500;
+
   }
 
 
@@ -153,10 +152,12 @@ initializeGame(game_id) {
             let card = this.game.deck[0].hand.pop();
             card = this.game.deck[0].cards[card].type;
             this.game.state.hand.unshift(card);
-            this.animationSequence.push({callback: this.createAndMove, 
-                                params: [this.twoSidedCard(card), "#draw_deck", `#cardfan`, 
-                                            (id)=>{ $(`#${id} .flipped`).removeClass("flipped"); $(`#${id}`).css("z-index", `${i}`).css("transform", `rotate(${10*i-40}deg) translateX(${50*i-150}px)`);}, 
+            if (this.browser_active){
+              this.animationSequence.push({callback: this.moveGameElement, 
+                                params: [this.createGameElement(this.twoSidedCard(card), "#draw_deck"), `#cardfan`, 
+                                            {callback: (id)=>{ $(`#${id} .flipped`).removeClass("flipped"); $(`#${id}`).css("z-index", `${i}`).css("transform", `rotate(${10*i-40}deg) translateX(${50*i-150}px)`);}}, 
                                             ()=>{ console.log("Next card"); this.finishAnimation(500);}]});
+            }
 
         }
         
@@ -164,8 +165,6 @@ initializeGame(game_id) {
         if (this.browser_active && this.animationSequence.length > 0){
           this.runAnimationQueue();
           return 0;
-        }else{
-          this.animationSequence = [];
         }
 
         return 1;
@@ -298,9 +297,9 @@ initializeGame(game_id) {
           message = message.substring(0, message.length-2);
           this.updateLog(message + " are discarded from the offers.");
           Array.from(document.querySelectorAll(".offer img")).forEach(async c => {
-            this.animateGameElementMove(c, "#discards", ()=>{this.finishAnimation();});
-            await this.timeout(250);
+            this.animationSequence.push({callback: this.moveGameElement, params: [this.copyGameElement(c), "#discards", {}, ()=>{this.finishAnimation();}]});
           });
+          this.runAnimationQueue(250);
         }else{
           return 1;
         }
@@ -348,7 +347,7 @@ initializeGame(game_id) {
         this.game.state.opponent[slot].push(card);
 
         if (source === "market"){
-          this.animateGameElementMove(`.offer .card[data-id="${card}"]`, `#o${slot+1}`, ()=>{this.finishAnimation();});
+          this.moveGameElement(this.copyGameElement(`.offer .card[data-id="${card}"]`), `#o${slot+1}`, {insert: 1}, ()=>{this.finishAnimation();});
           for (let i = 0; i < this.game.state.market.length; i++){
             if (this.game.state.market[i] == card){
               this.game.state.market.splice(i,1);
@@ -432,9 +431,9 @@ initializeGame(game_id) {
         children[i].id = `c${i}`; 
         console.log(JSON.stringify(children[i]));
         if (i < gold){
-          this.animationSequence.unshift({callback: this.animateGameElementMove, params: [`#c${i}`, destination, ()=>{console.log("Discard2"); this.finishAnimation();}]});            
+          this.animationSequence.unshift({callback: this.moveGameElement, params: [this.copyGameElement(`#c${i}`), destination, {}, ()=>{console.log("Discard2"); this.finishAnimation();}]});            
         }else{
-          this.animationSequence.unshift({callback: this.animateGameElementMove, params: [`#c${i}`, `#discards`, ()=>{console.log("Discard1"); this.finishAnimation();}]});            
+          this.animationSequence.unshift({callback: this.moveGameElement, params: [this.copyGameElement(`#c${i}`), `#discards`, {}, ()=>{console.log("Discard1"); this.finishAnimation();}]});            
         }
       }
 
@@ -452,16 +451,7 @@ initializeGame(game_id) {
 
   }
 
-  async runAnimationQueue(){
-    console.log(`Sequencing ${this.animationSequence.length} Animations`);
-    this.game.halted = 1;
-    while (this.animationSequence.length > 0){
-      let {callback, params} = this.animationSequence.shift();
-      await this.timeout(500);
-      callback.apply(this, params);
-    }
 
-  }
   async finishAnimation(delay = 0){
     //this.displayAll();
     console.log("Kickstarting the queue:", this.animation_queue.length, this.animationSequence.length);
@@ -491,49 +481,17 @@ initializeGame(game_id) {
 
     $(`<div class="slot_holder" id="sh${this.game.state.market.length}"></div>`).appendTo(".offer");
 
-    this.animationSequence.push({callback: this.createAndMove, 
-                                 params: [this.twoSidedCard(newCard), "#draw_deck", `#sh${this.game.state.market.length}`, (id)=>{ $(`#${id} .flipped`).removeClass("flipped"); }, ()=>{ console.log("Hello"); this.finishAnimation();}]});
+    this.animationSequence.push({callback: this.moveGameElement, 
+                                 params: [this.createGameElement(this.twoSidedCard(newCard), "#draw_deck"), 
+                                          `#sh${this.game.state.market.length}`, 
+                                          {callback: (id)=>{ $(`#${id} .flipped`).removeClass("flipped"); }}, 
+                                          ()=>{ console.log("Hello"); this.finishAnimation();}]});
 
     this.checkNextDiscard();
 
     return 0;
   }
 
-  createAndMove(html, start, end, callback1 = null, callback2 = null){
-
-    let source_stats = document.querySelector(start).getBoundingClientRect();
-    let destination_stats = document.querySelector(end).getBoundingClientRect();
-
-    //console.log(start, `${source_stats.top}px`, `${source_stats.left}px`);
-    //console.log(end, `${destination_stats.top}px`, `${destination_stats.left}px`);
-
-    let as = `${this.animationSpeed/1000}s`;
-
-
-    this.animation_queue.push(0);
-    let divid = `ae${this.animation_queue.length}`;
-
-    this.app.browser.addElementToSelector(`<div id="${divid}" class="animated_elem fresh" style="top: ${source_stats.top}px; left: ${source_stats.left}px; width: fit-content;">${html}</div>`, ".gameboard");
-
-    let game_self = this;
-
-    $(".animated_elem.fresh").css("transition", `left ${as}, top ${as}, transform ${as} ease`);
-
-    $(".animated_elem.fresh").delay(50).queue(function(){
-        $(this).removeClass("fresh");
-        if (callback1){
-          callback1(divid);
-        }
-        $(this).css("top",`${destination_stats.top}px`).css("left", `${destination_stats.left}px`).dequeue();
-      }).delay(game_self.animationSpeed).queue(function(){
-          console.log("CreateAndMove finsihed");
-          game_self.animation_queue.shift();
-          if (game_self.animation_queue.length == 0 && callback2){
-            console.log("Running callback");
-            callback2();
-          }
-      });
-  }
 
   checkNextDiscard(){
     if (this.game.state.discards.length > 0){
@@ -551,7 +509,11 @@ initializeGame(game_id) {
         this.game.state.market.push(discardedCard);
         
         $(`<div class="slot_holder" id="sh${this.game.state.market.length}"></div>`).appendTo(".offer");
-        this.animationSequence.push({callback: this.animateGameElementMove, params: ["#discards img:last-child", `sh${this.game.state.market.length}`, ()=>{console.log("Hello2"); this.finishAnimation();}]});
+        this.animationSequence.push({callback: this.moveGameElement, 
+                                    params: [this.copyGameElement("#discards img:last-child"), 
+                                            `#sh${this.game.state.market.length}`, 
+                                            {insert: 1, resize: 1},
+                                            ()=>{console.log("Hello2"); this.finishAnimation();}]});
 
         this.checkNextDiscard();
         return;
@@ -686,7 +648,7 @@ initializeGame(game_id) {
 
       this.game.state.self[openSlot].push(card);
       this.addMove(`plant\t${this.game.player}\t${card}\t${openSlot}\t${source}`);
-      this.animateGameElementMove(div, `#s${openSlot+1}`, ()=>{
+      this.moveGameElement(this.copyGameElement(div), `#s${openSlot+1}`, {resize: 1, insert: 1}, ()=>{
         console.log("Sending move(s) to plant");
         this.endTurn();
       });
@@ -787,7 +749,7 @@ initializeGame(game_id) {
 
         steamSelf.addMove(`discard\t${steamSelf.game.player}\t${card}`);
 
-        steamSelf.animateGameElementMove(this, `#discards`, ()=>{
+        steamSelf.moveGameElement(this.copyGameElement(this), `#discards`, {insert: 1, resize: 1}, ()=>{
           console.log("Sending move to discard card");
           steamSelf.endTurn();
         });
