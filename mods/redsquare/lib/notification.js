@@ -1,4 +1,3 @@
-const NotificationTemplate = require("./notification.template");
 const LikeNotificationTemplate = require("./like-notification.template");
 const ReplyNotificationTemplate = require("./reply-notification.template");
 const RetweetNotificationTemplate = require("./retweet-notification.template");
@@ -45,16 +44,12 @@ class RedSquareNotification {
         if (txmsg.data.retweet_tx) {
           let retweet_tx = new saito.default.transaction(JSON.parse(txmsg.data.retweet_tx));
           let retweet_txmsg = retweet_tx.returnMessage();
-console.log("testing a");
           html = RetweetNotificationTemplate(app, mod, this.tx, retweet_tx, retweet_txmsg);
-console.log("testing b");
           //
           // or reply
           //
         } else {
-console.log("testing c");
           html = ReplyNotificationTemplate(app, mod, this.tx, txmsg);
-console.log("testing d");
         }
       }
   

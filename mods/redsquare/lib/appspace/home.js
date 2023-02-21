@@ -163,10 +163,6 @@ class AppspaceHome {
       post.render();
     }
 
-    document.getElementById("redsquare-profile").onclick = (e) => {
-      this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.returnPublicKey());
-    }
-
   }
 
 }

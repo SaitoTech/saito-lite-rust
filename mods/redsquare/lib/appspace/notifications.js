@@ -36,22 +36,19 @@ class RedSquareAppspaceNotifications {
     if (!document.querySelector(".redsquare-notifications")) {
       this.render();
     }
-alert("3-1");
 
     for (let i = 0; i < this.mod.notifications.length; i++) {
       let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
       notification.render(".redsquare-notifications");
     }
-alert("3-2");
 
     if (this.mod.notifications.length === 0){
       let notification = new Notification(this.app, this.mod, null);
       notification.render(".redsquare-notifications");
     }
-alert("3-3");
 
     this.attachEvents();    
-alert(3);
+
   }
 
 

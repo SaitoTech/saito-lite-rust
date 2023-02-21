@@ -47,10 +47,13 @@ class RedSquareMenu {
       this.app.connection.emit("redsquare-home-render-request");
     }
 
-
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       this.setHash('notifications')
       this.app.connection.emit("redsquare-notifications-render-request");
+    }
+
+    document.querySelector(".redsquare-menu-profile").onclick = (e) => {
+      this.app.connection.emit("redsquare-profile-render-request");
     }
 
 //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
