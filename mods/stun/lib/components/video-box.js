@@ -49,7 +49,8 @@ class VideoBox {
 
     renderStream({ muted }) {
         if (!this.stream) {
-            this.renderPlaceholder();
+            // this.renderPlaceholder();
+            return;
         } else {
             if (!document.querySelector(`#stream${this.stream_id}`)) {
                 if (this.containerClass) {
@@ -86,9 +87,8 @@ class VideoBox {
             // makeDraggable(id_to_move, id_to_drag = "", mycallback = null
         }
         const videoBox = document.querySelector(`#stream${this.stream_id}`);
-        if (this.placeholderRendered) return;
+        console.log('rendering placeholder')
         videoBox.insertAdjacentHTML('beforeend', `<div id="connection-message"> <p> ${placeholder_info} </p> <span class="lds-dual-ring"> </span></div> `);
-        this.placeholderRendered = true
     }
 
 
@@ -111,13 +111,19 @@ class VideoBox {
                 break;
             case "disconnected":
                 console.log(`#stream${this.stream_id}`, "stream id")
-                document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
+                let videoBox =  document.querySelector(`#stream${this.stream_id}`)
+                this.stream = null
+                videoBox.firstElementChild.srcObject = this.stream
+                // document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                 siteMessage("User Disconnected", 5000);
                 break;
             case "failed":
                 if (document.querySelector(`#stream${this.stream_id}`)) {
                     console.log(`#stream${this.stream_id}`, "stream id")
-                    document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
+                    let videoBox =  document.querySelector(`#stream${this.stream_id}`)
+                    this.stream = null
+                    videoBox.firstElementChild.srcObject = this.stream
+                    // document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                     siteMessage("Connection failed", 5000);
                 }
                 break;

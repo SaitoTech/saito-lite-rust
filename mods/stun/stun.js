@@ -729,9 +729,9 @@ class Stun extends ModTemplate {
 
         try {
             let time = Date.now()
-            console.log('before promise')
+            // console.log('before promise')
             peerConnectionOffers = await Promise.all(peerConnectionOffers);
-            console.log('after promise', Date.now() - time)
+            // console.log('after promise', Date.now() - time)
             if (peerConnectionOffers.length > 0) {
                 const offers = [];
                 peerConnectionOffers.forEach((offer) => {
