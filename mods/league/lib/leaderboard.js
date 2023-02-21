@@ -72,6 +72,7 @@ class Leaderboard {
         this.app.browser.addElementToSelector(html, ".league-leaderboard .saito-table-body");
       }
     }
+    this.app.browser.addIdentifiersToDom();
   }
 
 }
