@@ -146,8 +146,8 @@ class RedSquare extends ModTemplate {
     }
     if (type === 'saito-header') {
       return [{
-        text: "Tweets",
-        icon: "fa-solid fa-retweet",
+        text: "RedSquare",
+        icon: "fa-solid fa-square",
 	rank: 20 ,
         callback: function (app, id) {
           window.location = "/redsquare";

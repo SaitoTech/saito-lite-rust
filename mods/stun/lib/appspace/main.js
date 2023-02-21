@@ -32,11 +32,6 @@ class StunAppspace {
         let stun_mod = app.modules.returnModule("Stun");
         stun_mod.addListeners(listeners);
       }
-// legacy room codes
-//      if (e.target.id === "joinInvite") {
-//        const inviteCode = document.querySelector("#inviteCode").value;
-//          this.joinVideoInvite(app, mod, inviteCode.trim());
-//      }
       if (e.target.id === "createRoom") {
         this.mod.sendCreateRoomTransaction((app, mod, roomCode) => {
           this.app.connection.emit('join-room-with-code', roomCode);
@@ -44,13 +39,6 @@ class StunAppspace {
       }
     })
 
-//    document.querySelector('#inviteCode').addEventListener('keyup', (e) => {
-//      let button = document.querySelector('.stunx-appspace-join .saito-button-secondary');
-//      button.style.display = "flex"
-//      setTimeout(() => {
-//        button.style.display = "none"
-//      }, 10000)
-//    })
   }
 
 

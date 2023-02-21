@@ -25,7 +25,7 @@ class AppspaceProfile {
     for (let i = 0; i < this.mod.peers_for_tweets.length; i++) {   
       this.mod.loadTweetsFromPeerAndReturn(this.mod.peers_for_tweets[i], sql, (txs) => {
         for (let z = 0; z < txs.length; z++) {
-	  let tweet = new Tweet(this.app, this.mod, ".redsquare-profile", txs[z]);
+	  let tweet = new Tweet(this.app, this.mod, ".redsquare-profile-tweets", txs[z]);
   	  tweet.render();
         }
         this.attachEvents();
