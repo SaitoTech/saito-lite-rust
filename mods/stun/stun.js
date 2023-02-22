@@ -84,7 +84,11 @@ class Stun extends ModTemplate {
                 // JOIN THE ROOM
                 this.styles = [`/${this.returnSlug()}/style.css`,];
                 this.attachStyleSheets();
-                super.render(this.app, this);
+                let stun_self = app.modules.returnModule("Stun");
+                stun_self.renderInto(".saito-overlay"); 
+                app.connection.emit("stun-show-loader");
+                // super.render(this.app, this);
+
                     let interval = setInterval(()=> {
                         if(document.readyState === "complete"){
                             app.connection.emit('join-direct-room-with-link', room_obj); 

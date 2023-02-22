@@ -1479,11 +1479,11 @@ select {
   height: 100vh; 
   width: 100vw; 
   position: fixed;  
-  z-index: 20;  
+  z-index: 150;  
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
+  background: none;
 }
 
 .saito-loader-container.non-blocker {

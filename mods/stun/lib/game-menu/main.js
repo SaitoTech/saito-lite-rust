@@ -79,6 +79,7 @@ class StunxGameMenu {
             // filter my public key
             peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
             this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
+            this.app.connection.emit('stun-remove-loader');
             this.app.connection.emit('render-local-stream-request', localStream, 'large');
             this.app.connection.emit('remove-overlay-request')
     
