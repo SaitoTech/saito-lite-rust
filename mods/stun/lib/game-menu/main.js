@@ -83,6 +83,7 @@ class StunxGameMenu {
             this.app.connection.emit('render-local-stream-request', localStream, 'large');
             this.app.connection.emit('remove-overlay-request')
     
+            
             // peers_in_room.forEach(peer => {
             //   this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
             // });
