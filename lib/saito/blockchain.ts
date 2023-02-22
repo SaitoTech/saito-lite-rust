@@ -80,7 +80,7 @@ class Blockchain {
     this.run_callbacks = true;
     this.callback_limit = 2; // 2 blocks
 
-    this.debugging = true;
+    this.debugging = false;
   }
 
   addGhostToBlockchain(
@@ -135,7 +135,7 @@ class Blockchain {
   }
 
   async addBlockToBlockchain(block: Block, force = false) {
-    console.log("adding block : " + block.hash + " to blockchain");
+    if (this.debugging) console.log("adding block : " + block.hash + " to blockchain");
     //
     //
     //
@@ -426,7 +426,7 @@ class Blockchain {
   }
 
   async addBlockSuccess(block: Block) {
-    console.log("blockchain.addBlockSuccess : ", block.returnHash());
+    if (this.debugging) console.log("blockchain.addBlockSuccess : ", block.returnHash());
     // this.app.blockring.print();
 
     // console.log("ADD BLOCK SUCCESS : " + block.returnHash());
@@ -562,7 +562,7 @@ class Blockchain {
         }
       }
 
-      console.log("moving into onNewBlock : " + block.hash + " -- id : " + block.returnId());
+      if (this.debugging) console.log("moving into onNewBlock : " + block.hash + " -- id : " + block.returnId());
 
       //
       // callback
@@ -1071,11 +1071,12 @@ class Blockchain {
     this.app.options.blockchain = this.blockchain;
     this.app.storage.saveOptions();
 
-console.log("%%%%%%%%%%%%%%%%%");
-console.log("SAVING BLOCKCHAIN");
-console.log("%%%%%%%%%%%%%%%%%");
-//console.log(JSON.stringify(this.app.options.blockchain));
-
+    if (this.debugging){
+      console.log("%%%%%%%%%%%%%%%%%");
+      console.log("SAVING BLOCKCHAIN");
+      console.log("%%%%%%%%%%%%%%%%%");
+      //console.log(JSON.stringify(this.app.options.blockchain));
+    }
   }
 
   async unwindChain(

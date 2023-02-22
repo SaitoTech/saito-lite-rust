@@ -6,6 +6,14 @@
   border-radius: 0.5rem;
 }
 
+.league-join-email-note {
+  width: 50rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 2rem;
+  line-height: 2.8rem;
+}
+
 .league-overlay {
   padding: 2rem 1rem;
   display: flex;
@@ -48,6 +56,7 @@
   display: grid;
   grid-template-columns: 1fr 0.5fr;
   grid-gap: 2rem;
+  min-height: 25rem;
 }
 
 .league-error {
@@ -82,8 +91,14 @@
   row-gap: 1rem;
 }
 
+.league_recent_game {
+  display: grid;
+  grid-template-columns: 12rem auto;
+  grid-gap: 1rem;
+}
+
 .league_recent_player {
-  width: 20rem;
+  max-width: 27rem;
   overflow: hidden;
   display: inline-block;
   white-space: nowrap;
@@ -92,13 +107,23 @@
   vertical-align: bottom;
 }
 
+.league_recent_players_list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.league_recent_players_list_item {
+  display: flex;
+  flex-direction: row;
+}
+
 .league-overlay-league-body-games-list .saito-table {
   overflow-y: scroll;
   max-height: 25vh;
-
 }
 
-@media screen and (max-width: 1000px) { 
+@media screen and (max-width: 1000px) {
   .league-overlay-body {
     display: flex;
     flex-direction: column;
@@ -108,7 +133,6 @@
     margin: 0 !important;
     padding: 1px 1rem;
   }
-
   .league-overlay-body>div {
     max-height: unset;
     overflow-y: unset;

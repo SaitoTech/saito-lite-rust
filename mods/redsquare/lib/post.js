@@ -1,7 +1,6 @@
 const PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/ui/saito-overlay/saito-overlay");
 const SaitoEmoji = require("./../../../lib/saito/ui/saito-emoji/saito-emoji");
-
 const JSON = require('json-bigint');
 
 class Post {
@@ -14,6 +13,12 @@ class Post {
     this.thread_id = "";
     this.images = [];
     this.tweet = tweet;
+    if (tweet != null) {
+      if (tweet.parent_id) {
+	this.parent_id = tweet.parent_id;
+	if (tweet.thread_id) { this.thread_id = tweet.thread_id; } else { this.thread_id = this.parent_id; }
+      }
+    }
     this.render_after_submit = 1;
     this.file_event_added = false;
     this.publickey = app.wallet.returnPublicKey();
@@ -53,10 +58,6 @@ class Post {
           if (post_self.images.length >= 4) {
             salert("Maximum 4 images allowed per tweet.");
           } else {
-console.log(" > ");
-console.log(" > ");
-console.log(" > ");
-console.log("file: " + file);
             let type = file.substring(file.indexOf(":") + 1, file.indexOf(";"));
             if (post_self.mod.allowed_upload_types.includes(type)) {
               post_self.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
@@ -64,7 +65,6 @@ console.log("file: " + file);
               salert("allowed file types: " + post_self.mod.allowed_upload_types.join(', ') + " - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.");
             }
           }
-
           post_self.file_event_added = true;
         },
         false);
@@ -81,38 +81,26 @@ console.log("file: " + file);
       document.querySelector(".my-form").style.display = "none";
     }
 
-    document.getElementById('post-tweet-button').addEventListener('click', function(e) {
+    document.getElementById('post-tweet-button').addEventListener('click', (e) => {
+
       let text = document.getElementById('post-tweet-textarea').value;
       let parent_id = document.getElementById("parent_id").value;
       let thread_id = document.getElementById("thread_id").value;
       let source = document.getElementById("source").value;
       let keys = []
 
- 
       //
       // extract keys from text AND then tweet
       //
-     keys = post_self.app.browser.extractKeys(text);
+      keys = post_self.app.browser.extractKeys(text);
 
-     if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
+      if (this.tweet != null) {
+        for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
+          if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
+            keys.push(this.tweet.tx.transaction.to[i].add);
+          }
         }
       }
-    }
-
-      // try {
-
-      //  const dataId =   document.querySelector('.post-tweet-textarea').parentElement.parentElement.parentElement.querySelector('.saito-user').getAttribute('data-id');
-      //  keys.push(dataId);
-      //       }
-      //  catch(error){
-      //   console.log('error ', error);
-      //  }
-
-      console.log(keys, 'keys')
-
 
       //
       // any previous recipients get added to "to"
@@ -128,8 +116,6 @@ console.log("file: " + file);
 	  }
         }
       }
-
-      console.log(keys, 'keys')
 
       if (this.tweet != null) {
         for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
@@ -162,16 +148,59 @@ console.log("file: " + file);
         data['images'] = post_self.images;
       }
 
+      let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
 
- 
+      //
+      // move to the top
+      //
+      var TweetClass = require("./tweet");
+      let tweet = new TweetClass(this.app, this.mod, ".redsquare-appspace-body", newtx);
+      //
+      //
+      //
+      let rparent_id = parent_id;
+
+      let rparent = this.mod.returnTweet(rparent_id);
+
+      if (rparent) {
+
+        //
+	// loop to remove anything we will hide
+	//
+        let rparent2 = rparent;
+	while (this.mod.returnTweet(rparent2.parent_id)) {
+	  let x = this.mod.returnTweet(rparent2.parent_id);
+	  let qs = '.tweet-'+x.tx.transaction.sig;
+	  if (document.querySelector(qs)) {
+	    document.querySelector(qs).remove();
+	  }
+	  rparent2 = x;
+	}
+
+        rparent.addTweet(tweet);
+	this.mod.addTweet(tweet.tx);
+	rparent.updated_at = new Date().getTime();
+	rparent.critical_child = tweet;
+	if (tweet.retweet_tx) {
+	  rparent.tx.optional.num_retweets++;
+	} else {
+	  rparent.tx.optional.num_replies++;
+	}
+        this.app.connection.emit("redsquare-home-tweet-and-critical-child-prepend-render-request", (rparent));
+      } else {
+	this.mod.addTweet(tweet.tx);
+        this.app.connection.emit("redsquare-home-tweet-prepend-render-request", (tweet));
+      }
 
       setTimeout(() => {
-        let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
-        if (post_self.render_after_submit == 1) {
+       if (post_self.render_after_submit == 1) {
+	  //
+	  // scroll to top
+	  //
           document.querySelector('.saito-container').scroll({ top: 0, left: 0, behavior: 'smooth' });
         }
         post_self.overlay.hide();
-      }, 1000);
+      }, 500);
     });
  
   }

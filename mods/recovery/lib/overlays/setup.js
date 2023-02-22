@@ -1,4 +1,4 @@
-const SaitoLoginOverlayTemplate = require("./backup-overlay.template");
+const RecoverySetupTemplate = require("./setup.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
 /**
@@ -14,7 +14,7 @@ const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-ove
  * we can put backup functionality in this module as well / or in browser.js
  *
  */
-class BackupOverlay {
+class RecoverySetup {
   /**
    * @constructor
    * @param app - the Saito Application
@@ -23,6 +23,8 @@ class BackupOverlay {
     this.app = app;
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod, false, true); // false to close-button, true to delete-when-closed
+    this.success_callback = function() { console.log("success"); };
+    this.failure_callback = function() { console.log("failure"); };
   }
 
   /**
@@ -30,7 +32,8 @@ class BackupOverlay {
    * @param app - the Saito Application
    * @param mod - the calling module
    */
-  render() {
+  render(mycallback=null) {
+    if (mycallback != null) { this.callback = mycallback; }
     this.overlay.show(SaitoLoginOverlayTemplate(this.app, this.mod));
     document.getElementById("saito-login-email").focus();
     this.attachEvents();
@@ -49,7 +52,7 @@ class BackupOverlay {
       }
     }
 
-    document.querySelector(".saito-backup-button").onclick = (e) => {
+    document.querySelector(".saito-backup-button-yes").onclick = (e) => {
 
       let email = document.getElementById("saito-login-email").value;
       let pass  = document.getElementById("saito-login-password").value;
@@ -60,11 +63,20 @@ class BackupOverlay {
       let newtx = this.mod.createBackupTransaction(decryption_secret, retrieval_hash);
       this.app.network.propagateTransaction(newtx);
       this.overlay.hide();
+      this.success_callback(true);
 
     }
+
+    try {
+      document.querySelector(".saito-backup-button-no").onclick = (e) => {
+        this.overlay.hide();
+        this.failure_callback(false);
+      }
+    } catch (err) {}
+
   }
 
 }
 
-module.exports = BackupOverlay;
+module.exports = RecoverySetup;
 

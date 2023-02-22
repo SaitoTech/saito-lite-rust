@@ -15,7 +15,7 @@ class Relay extends ModTemplate {
         this.categories = "Utilities Core";
         this.description = "Simple Message Relay for Saito";
         this.categories = "Utilities Communications";
-
+        this.debug = false;
         this.busy = false;
 
         app.connection.on("relay-send-message", (obj)=>{
@@ -54,6 +54,12 @@ class Relay extends ModTemplate {
             let recipient = recipients;
             recipients = [];
             recipients.push(recipient);
+        }
+
+        if (this.debug){
+            console.log("RECIPIENTS: " + JSON.stringify(recipients));
+            console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
+            console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
         }
 
         //
@@ -131,7 +137,7 @@ class Relay extends ModTemplate {
                         } else {
                             app.connection.emit("relay-is-online", inner_tx.transaction.from[0].add);
                         }
-			return;
+			             return;
                     }
 
                     app.modules.handlePeerTransaction(inner_tx, peer, mycallback);

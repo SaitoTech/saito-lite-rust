@@ -1,3 +1,6 @@
+
+
+
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
@@ -40,6 +43,7 @@ class Stun extends ModTemplate {
         this.hasRendered = true
         this.chatType = null;
         this.peer_connections = {}
+        this.peer_connection_states={}
         this.stunGameMenu = new StunxGameMenu(app, mod);
         this.current_step = 0;
 
@@ -60,9 +64,9 @@ class Stun extends ModTemplate {
                 username: "guest",
                 credential: "somepassword",
             },
-            // {
-            //     urls: "stun:stun-de.saito.io:3478"
-            // },
+            {
+                urls: "stun:stun-de.saito.io:3478"
+            },
             {
                 urls: "turn:stun-de.saito.io:3478",
                 username: "guest",
@@ -73,7 +77,6 @@ class Stun extends ModTemplate {
 
 
     onPeerHandshakeComplete(app, peer) {
-
         if (!this.video_chat_loaded) {
             if (app.browser.returnURLParameter("stun_video_chat")) {
                 let room_obj = JSON.parse(app.crypto.base64ToString(app.browser.returnURLParameter("stun_video_chat")));
@@ -108,12 +111,12 @@ class Stun extends ModTemplate {
     }
 
     canRenderInto(qs) {
-        if (qs === ".saito-main") { return true; }
+        if (qs === ".saito-overlay") { return true; }
         return false;
     }
 
     renderInto(qs) {
-        if (qs == ".saito-main") {
+        if (qs == ".saito-overlay") {
             if (!this.renderIntos[qs]) {
                 this.renderIntos[qs] = [];
                 this.renderIntos[qs].push(new StunAppspace(this.app, this, qs));
@@ -130,18 +133,18 @@ class Stun extends ModTemplate {
             super.render(this.app, this);
             return new StunxInvite(this.app, this);
         }
-        if (type === 'appspace') {
-            this.styles = [`/${this.returnSlug()}/css/style.css`,];
-            super.render(this.app, this);
-            return new StunxAppspace(this.app, this);
-        }
+        // if (type === 'appspace') {
+        //     this.styles = [`/${this.returnSlug()}/css/style.css`,];
+        //     super.render(this.app, this);
+        //     return new StunxAppspace(this.app, this);
+        // }
         if (type === 'saito-header') {
           return [{
             text: "Video Call",
             icon: this.icon,
             callback: function (app, id) {
-	      let stun_self = app.modules.returnModule("Stun");
-	      stun_self.renderInto(".saito-main"); 
+          let stun_self = app.modules.returnModule("Stun");
+          stun_self.renderInto(".saito-overlay"); 
             }
           }];
         }
@@ -171,51 +174,7 @@ class Stun extends ModTemplate {
             };
 
 
-            /*
-            return {
-                init: (app, game_mod) => {
-                    game_mod.menu.addMenuOption({
-                        text: "Video Chat",
-                        id: "game-video-chat",
-                        class: "game-video-chat",
-                        callback: function (app, game_mod) {
-                            game_mod.menu.showSubMenu("game-video-chat");
-                        },
-                    });
-                    let shortNames = null;
-                    let longNames = null;
-                    for (let i = 0; i < game_mod.game.players.length; i++) {
-                        if (game_mod.game.players[i] != app.wallet.returnPublicKey()) {
-                            let nickname = shortNames ? shortNames[i] : "Player " + (i + 1);
-                            game_mod.menu.addSubMenuOption("game-video-chat", {
-                                text: nickname,
-                                id: "game-video-chat-" + (i + 1),
-                                class: "game-video-chat-" + (i + 1),
-                                callback: function (app, game_mod) {
-                                    const stunx = app.modules.returnModule('Stun');
-                                    console.log('player ', game_mod.game.players[i]);
-                                    app.connection.emit('game-start-video-call', [game_mod.game.players[i]]);
-                                },
-                            });
-                        }
-                    }
-                    game_mod.menu.addSubMenuOption("game-video-chat", {
-                        text: "All players",
-                        id: "game-video-chat",
-                        class: "game-video-chat",
-                        callback: function (app, game_mod) {
-                            const stunx = app.modules.returnModule('Stun');
-                            console.log('all players ', game_mod.game.players);
-                            app.connection.emit('game-start-video-call', [...game_mod.game.players]);
-                        },
-                    });
-
-
-                },
-                menus: []
-            
-            }
-            */
+      
         }
 
         if (type === 'user-menu') {
@@ -229,6 +188,20 @@ class Stun extends ModTemplate {
                     app.connection.emit('game-start-video-call', public_key);
                 }
             }];
+        }
+
+        if (type === 'saito-header') {
+            let m = [{
+                text: "Video Call",
+                icon: this.icon,
+                allowed_mods: ["redsquare", 'arcade'],
+                callback: function (app, id) {
+                  let pub_key = app.wallet.returnPublicKey();
+                  app.connection.emit('game-start-video-call', pub_key);
+                }
+              }
+             ];
+          return m;
         }
         return null;
     }
@@ -265,7 +238,7 @@ class Stun extends ModTemplate {
 
     async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-	if (tx == null) { return; }
+    if (tx == null) { return; }
         let txmsg = tx.returnMessage();
 
         if (txmsg.request === "stun media channel offer") {
@@ -396,9 +369,10 @@ class Stun extends ModTemplate {
             let ice_candidates = [];
             const execute = async () => {
                 try {
-                    const pc = new RTCPeerConnection({
-                        iceServers: this.servers,
-                    });
+                    let pc = new RTCPeerConnection({
+                            iceServers: this.servers,
+                        });
+           
 
                     pc.onicecandidate = (ice) => {
                         if (!ice || !ice.candidate || !ice.candidate.candidate) {
@@ -421,14 +395,21 @@ class Stun extends ModTemplate {
                                 break;
                             case "connected":
                                 this.resetStep()
+                                this.peer_connection_states[publicKey] = "connected"
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             case "disconnected":
-                                this.resetStep()
+                                console.log(this.peer_connection_states, 'peer connection states');
+                                this.resetStep();
+                                if(this.peer_connection_states[publicKey] === "connecting"){
+                                    return;
+                                }
+                                this.peer_connection_states[publicKey] = "disconnected";
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             case "failed":
-                                this.resetStep()
+                                this.resetStep();
+                                this.peer_connection_states[publicKey] = "failed";
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             default:
@@ -552,14 +533,19 @@ class Stun extends ModTemplate {
                 answer: "",
                 ice_candidates: []
             }
-            const pc = new RTCPeerConnection({
-                iceServers: this.servers,
-            });
+
+            let stunx_mod = app.modules.returnModule("Stun");
+            let pc = new RTCPeerConnection({
+                    iceServers: this.servers,
+                });
+            
+
+          
             try {
                 pc.onicecandidate = (ice) => {
                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
                         console.log('ice candidate check closed');
-                        let stunx_mod = app.modules.returnModule("Stun");
+                       
                         stunx_mod.peer_connections[offer_creator] = pc;
                         stunx_mod.sendMediaChannelAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
                         return;
@@ -567,24 +553,33 @@ class Stun extends ModTemplate {
                     reply.ice_candidates.push(ice.candidate);
                 }
                 pc.addEventListener('connectionstatechange',e => {
-                    console.log("connection state ", pc.connectionState)
+               
+                    console.log('peer connections', this.peer_connections[offer_creator].connectionState)
                     switch (pc.connectionState) {
-
+                        
                         case "connecting":
+                            console.log("connection state ", pc.connectionState)
                             this.resetStep()
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "connected":
+                            console.log("connection state ", pc.connectionState)
                             this.resetStep()
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         case "disconnected":
-                            this.resetStep()
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
+                            if(this.peer_connections[offer_creator].connectionState === "disconnected"){
+                                console.log("connection state ", pc.connectionState)
+                                this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
+                            }
+                            this.resetStep()                       
                             break;
                         case "failed":
+                            if(this.peer_connections[offer_creator].connectionState === "failed"){
+                                console.log("connection state ", pc.connectionState)
+                                this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
+                            }
                             this.resetStep()
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
                             break;
                         default:
                             ""
@@ -646,9 +641,16 @@ class Stun extends ModTemplate {
                 answer: "",
                 ice_candidates: []
             }
-            const pc = new RTCPeerConnection({
-                iceServers: this.servers,
-            });
+            let pc;
+            if( stunx_mod.peer_connections[offer_creator]){
+                pc =  stunx_mod.peer_connections[offer_creator]
+            }else {
+
+                pc = new RTCPeerConnection({
+                    iceServers: this.servers,
+                });
+            }
+        
             try {
                 pc.onicecandidate = (ice) => {
                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
@@ -726,7 +728,10 @@ class Stun extends ModTemplate {
 
 
         try {
+            let time = Date.now()
+            // console.log('before promise')
             peerConnectionOffers = await Promise.all(peerConnectionOffers);
+            // console.log('after promise', Date.now() - time)
             if (peerConnectionOffers.length > 0) {
                 const offers = [];
                 peerConnectionOffers.forEach((offer) => {
@@ -901,19 +906,15 @@ class Stun extends ModTemplate {
         const room_code = tx.msg.data.offer.room_code
         const recipient = tx.msg.data.offer.recipient;
 
-        // if(!this.ChatManagerLarge.isActive || this.ChatManagerLarge.room_code !== room_code) return;
-        // app.connection.emit('stun-receive-media-offer', {
-        //     room_code,
-        //     offer_creator,
-        //     recipient
-        // })
-
-
         // offer creator should not respond
-        if (my_pubkey === offer_creator) return;
+        if (my_pubkey === offer_creator){
+            this.peer_connection_states[recipient] = "connecting"
+            return 
+        }
         console.log("offer received from ", offer_creator);
         // check if current instance is a recipent
         if (my_pubkey === recipient) {
+            this.peer_connection_states[offer_creator] = "connecting"
             stunx_self.acceptMediaChannelOfferAndBroadcastAnswer(app, offer_creator, tx.msg.data.offer);
         }
 
@@ -1203,4 +1204,5 @@ class Stun extends ModTemplate {
 }
 
 module.exports = Stun;
+
 

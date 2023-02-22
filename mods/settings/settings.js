@@ -1,8 +1,8 @@
-const SettingsAppspace = require('./lib/appspace/main');
-const SettingsAppspaceSidebar = require('./lib/appspace-sidebar/main');
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
-const ThemeBtn = require("./lib/theme-btn");
+const SettingsAppspace = require('./lib/appspace/main');
+const SettingsAppspaceSidebar = require('./lib/appspace-sidebar/main');
+const SettingsThemeSwitcherOverlay = require('./lib/theme-switcher-overlay');
 
 class Settings extends ModTemplate {
 
@@ -19,6 +19,7 @@ class Settings extends ModTemplate {
     this.description = "User settings module.";
     this.categories = "Admin Users";
     this.styles = ['/settings/style.css','/saito/lib/jsonTree/jsonTree.css','/settings/theme-switcher.css'];
+    this.main = null;
 
     return this;
   }
@@ -36,11 +37,13 @@ class Settings extends ModTemplate {
         }
       }
     });
+
+    this.main = new SettingsAppspace(this.app, this);
   }
 
 
   canRenderInto(qs) {
-    if (qs === ".saito-main") { return true; }
+    //if (qs === ".saito-main") { return true; }
     if (qs === ".saito-sidebar.right") { return true; }
     if (qs === ".saito-header-themes") { return true; }
     return false;
@@ -48,14 +51,6 @@ class Settings extends ModTemplate {
 
   renderInto(qs) {
 
-    if (qs == ".saito-main") {
-      if (!this.renderIntos[qs]) {
-        this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new SettingsAppspace(this.app, this, qs));
-      }
-      this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => { comp.render(); });
-    }
     if (qs == ".saito-sidebar.right") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
@@ -65,35 +60,30 @@ class Settings extends ModTemplate {
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
 
-     if (qs == ".saito-header-themes") {
-        if (!this.renderIntos[qs]) {
-          this.renderIntos[qs] = [];
-
-          let obj = new ThemeBtn(this.app, this, ".saito-header-themes");
-          this.renderIntos[qs].push(obj);
-          this.attachStyleSheets();
-          this.renderIntos[qs].forEach((comp) => { comp.render(); });
-        }
+    if (qs == ".saito-overlay") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new SettingsThemeSwitcherOverlay(this.app, this, ""));
       }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+    }
   }
 
-  // respondTo(type = "") {
-  //   if (type === 'saito-header') {
-      
-  //     return [{
-  //       text: "Settings",
-  //       icon: this.icon,
-  //       allowed_mods: ["redsquare"],
-  //       callback: function (app, id) {
-          
-  //       }
-  //     }]
-  //   }
 
-  //   return null;
-  // }
-
-
+  respondTo(type = "") {
+    if (type === 'saito-header') {      
+      return [{
+        text: "Theme",
+        icon: "fa-solid fa-moon",
+        callback: function (app, id) {
+          let settings_self = app.modules.returnModule("Settings");
+	  settings_self.renderInto(".saito-overlay");
+        }
+      }]
+    }
+    return null;
+  }
 
 }
 

@@ -48,7 +48,7 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    this.debug = true;
+    this.debug = false;
   }
 
 
@@ -339,6 +339,7 @@ class Arcade extends ModTemplate {
         {
           text: "Games",
           icon: this.icon || "fas fa-gamepad",
+	  rank: 10,
           callback: function (app, id) {
             app.connection.emit("arcade-launch-game-selector", {});
           }

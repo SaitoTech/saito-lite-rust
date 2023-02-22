@@ -1,4 +1,5 @@
 const RedSquareMenuTemplate = require("./menu.template");
+const Post = require("./post");
 
 class RedSquareMenu {
 
@@ -47,10 +48,18 @@ class RedSquareMenu {
       this.app.connection.emit("redsquare-home-render-request");
     }
 
+    document.getElementById("new-tweet").onclick = (e) => {
+      let post = new Post(this.app, this.mod);
+      post.render();
+    }
 
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       this.setHash('notifications')
       this.app.connection.emit("redsquare-notifications-render-request");
+    }
+
+    document.querySelector(".redsquare-menu-profile").onclick = (e) => {
+      this.app.connection.emit("redsquare-profile-render-request");
     }
 
 //    document.querySelector(".redsquare-menu-contacts").onclick = (e) => {
@@ -78,7 +87,6 @@ class RedSquareMenu {
 
   incrementNotifications(menu_item, notifications = -1) {
 
-    console.log('notifications number ', notifications)
     let qs = `.redsquare-menu-${menu_item}`;
 
     if (document.querySelector(qs)) {
@@ -94,7 +102,8 @@ class RedSquareMenu {
           obj.style.display = "none";
 	}
       } else {
-        let existing_notifications = parseInt(obj.innerHTML);
+        let existing_notifications = 0;
+	if (obj.innerHTML) { existing_notificaitons = parseInt(obj.innerHTML); }
         if (notifications <= 0) {
           obj.style.display = "none";
           obj.innerHTML = 0;

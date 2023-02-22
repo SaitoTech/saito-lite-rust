@@ -6,7 +6,7 @@ const LeagueMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const InvitationLink = require("./lib/overlays/league-invitation-link");
-const JoinLeagueOverlay = require('./lib/overlays/join-league');
+const JoinLeagueOverlay = require('./lib/overlays/join');
 
 class League extends ModTemplate {
 

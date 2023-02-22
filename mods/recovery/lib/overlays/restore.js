@@ -1,5 +1,5 @@
 const saito = require("./../../../../lib/saito/saito");
-const SaitoLoginOverlayTemplate = require("./recover-overlay.template");
+const RecoveryRestoreTemplate = require("./restore.template");
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const SaitoLoader = require("./../../../../lib/saito/ui/saito-loader/saito-loader");
 
@@ -16,7 +16,7 @@ const SaitoLoader = require("./../../../../lib/saito/ui/saito-loader/saito-loade
  * we can put backup functionality in this module as well / or in browser.js
  *
  */
-class RecoverOverlay {
+class RecoveryRestore {
   /**
    * @constructor
    * @param app - the Saito Application
@@ -25,6 +25,8 @@ class RecoverOverlay {
     this.app = app;
     this.mod = mod;
     this.overlay = new SaitoOverlay(this.app, this.mod, false, true); // false to close-button, true to delete-when-closed
+    this.success_callback = function(res) { console.log("success"); }
+    this.failure_callback = function(res) { console.log("failure"); }
   }
 
   /**
@@ -77,16 +79,31 @@ class RecoverOverlay {
           if (res.rows) {
             if (res.rows[0]) {
 
-              let tx = JSON.parse(res.rows[0].tx);
-              let newtx = new saito.default.transaction(tx);
-              let txmsg = newtx.returnMessage();
+	      try {
+                let tx = JSON.parse(res.rows[0].tx);
+                let newtx = new saito.default.transaction(tx);
+                let txmsg = newtx.returnMessage();
 
-              let encrypted_wallet = txmsg.wallet;
-              let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
+                let encrypted_wallet = txmsg.wallet;
+                let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
 
-	      this.app.wallet.wallet = JSON.parse(decrypted_wallet);
-	      this.app.wallet.saveWallet();
+	        this.app.wallet.wallet = JSON.parse(decrypted_wallet);
+
+	        if (!this.app.wallet.wallet.publickey) {
+	   	  this.failure_callback(true);
+		  return;
+	        }
+
+	        this.app.wallet.saveWallet();
+
+	      } catch (err) {
+	        this.overlay.hide();
+	   	this.failure_callback(true);
+		return;
+	      }
+
 	      this.overlay.hide();
+	      this.success_callback(true);
 
             } 
           } 
@@ -98,5 +115,5 @@ class RecoverOverlay {
 
 }
 
-module.exports = RecoverOverlay;
+module.exports = RecoveryRestore;
 

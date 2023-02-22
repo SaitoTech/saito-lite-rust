@@ -79,16 +79,22 @@ class LeagueOverlay {
       let players = g.players_array.split("_");
       let datetime = this.app.browser.formatDate(g.time_finished);
       let date = datetime.month + ' ' + datetime.day + ', ' + datetime.year; 
-      let players_html = "";
+      let players_html = `<div class="league_recent_players_list">`;
 
       players.forEach( (player, key) => {
-        players_html += (key == (players.length-1))  ? `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` 
-          : `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` + ' vs ';
+        players_html += `<div class="league_recent_players_list_item"><div class='league_recent_player saito-address' data-id='${player}'>${player}</div>`;
+        if (g.winner == player) {
+          players_html += `<div class="league_recent_player_winner">(w)</i></div>`;
+        } else {
+          players_html += `<div></div>`;
+        }
+        players_html += `</div>`;
       });
+      players_html += "</div>";
 
       html += `
         <div class="saito-table-row league_recent_game">
-          <div> <span>${date}</span> ( ${players_html}) </div>
+          <div class="league_recent_date">${date}</div>${players_html}
         </div>
       `;
     }
