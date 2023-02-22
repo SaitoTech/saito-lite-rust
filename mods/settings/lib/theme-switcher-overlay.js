@@ -16,7 +16,6 @@ class ThemeSwitcherOverlay {
     if (this.app.options.theme) {
       selected_theme = this.app.options.theme[mod_obj.returnSlug()];
     }
-alert("redering overlay");
     this.overlay.show(ThemeSwitcherOverlayTemplate(this.app, this.mod, mod_obj.theme_options, selected_theme));
     this.attachEvents();
   }
