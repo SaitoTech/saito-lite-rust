@@ -18,9 +18,13 @@ class Recovery extends ModTemplate {
     app.connection.on("recovery-backup-overlay-render-request", (obj) => {
       if (obj.success_callback != null) {
         this.backup_overlay.success_callback = obj.success_callback;
+      } else {
+	this.backup_overlay.success_callback = (e) => {};
       }
       if (obj.failure_callback != null) {
         this.backup_overlay.failure_callback = obj.failure_callback;
+      } else {
+	this.backup_overlay.failure_callback = (e) => {};
       }
 
       //
@@ -39,8 +43,10 @@ class Recovery extends ModTemplate {
 
         let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
         this.app.network.propagateTransaction(newtx);
-        this.success_callback(true);
+        if (this.backup_overlay.success_callback) { this.backup_overlay.success_callback(true); }
 	return;
+      } else {
+        if (this.backup_overlay.failure_callback) { this.backup_overlay.failure_callback(true); }
       }
 
       this.backup_overlay.render();
