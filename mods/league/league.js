@@ -24,7 +24,6 @@ class League extends ModTemplate {
 
     this.leagues = [];
     this.league_idx = -1; // if a league is active, this will be idx
-    this.leagueCount = 0;
 
     //
     // UI components
@@ -68,7 +67,7 @@ class League extends ModTemplate {
        this.addLeague({
         	id     			: 	app.crypto.hash(mod.returnName()) ,	// id
     	   	game   			: 	mod.name , 				// game - name of game mod
-    	   	name   			: 	mod.name , 				// name - name of league
+    	   	name   			: 	mod.returnName() , 				// name - name of league
     	   	admin  			: 	"" ,					// admin - publickey (if exists)
 		status 			: 	"public" ,				// status - public or private
 		description 		: 	mod.description ,			// 
@@ -102,16 +101,7 @@ class League extends ModTemplate {
   }
 
   renderInto(qs) {
-    if (qs == ".redsquare-sidebar") {
-      if (!this.renderIntos[qs]) {
-        this.renderIntos[qs] = [];
-        this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
-      }
-      this.styles = ['/league/css/league-leaderboard.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
-      this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => { comp.render(); });
-    }
-    if (qs == ".arcade-leagues") {
+    if (qs == ".redsquare-sidebar" || qs == ".arcade-leagues") {
       if (!this.renderIntos[qs]) {
         this.renderIntos[qs] = [];
         this.renderIntos[qs].push(new LeagueRankings(this.app, this, qs));
@@ -121,8 +111,6 @@ class League extends ModTemplate {
       this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
   }
-
-
 
 
 
@@ -819,6 +807,7 @@ class League extends ModTemplate {
   async receiveLaunchSinglePlayerTransaction(blk, tx, conf, app) {
     return this.receiveAcceptTransaction(blk, tx, conf, app);
   }
+
   async receiveAcceptTransaction(blk, tx, conf, app){
 
     let txmsg = tx.returnMessage();
