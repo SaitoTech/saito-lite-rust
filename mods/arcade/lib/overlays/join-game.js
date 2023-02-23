@@ -60,7 +60,7 @@ class JoinGameOverlay {
     if (document.getElementById("arcade-game-controls-cancel-game")){
       document.getElementById("arcade-game-controls-cancel-game").onclick = (e) => {
           this.mod.sendCloseTransaction(this.invite.game_id);
-          this.mod.removeGame(this.invite.game_id);
+          //this.mod.removeGame(this.invite.game_id);
           this.overlay.remove();
       }
     }
@@ -76,7 +76,7 @@ class JoinGameOverlay {
     //
     if (document.getElementById("arcade-game-controls-forfeit-game")){
       document.getElementById("arcade-game-controls-forfeit-game").onclick = (e) => {
-          this.mod.removeGame(this.invite.game_id);
+          //this.mod.removeGame(this.invite.game_id);
           this.overlay.remove();
 
           for (let i = 0; i < this.app.options?.games.length; i++) {
@@ -95,7 +95,8 @@ class JoinGameOverlay {
 
           this.mod.sendCloseTransaction(this.invite.game_id); 
       }
-    }
+    }    
+
     if (document.getElementById("arcade-game-controls-cancel-join")){
       document.getElementById("arcade-game-controls-cancel-join").onclick = (e) => {
           this.mod.sendCancelTransaction(this.invite.game_id);

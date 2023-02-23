@@ -11,6 +11,7 @@ class LeagueRankings {
     this.overlay = new LeagueOverlay(this.app, this.mod);
 
     app.connection.on('league-rankings-render-request', () => {
+      console.log('league-rankings-render-request');
       this.render();
     });
 
@@ -42,8 +43,14 @@ class LeagueRankings {
               <div class="saito-table-rank">${l.rank}</div>
             </div>
                   `;
+        
+          console.log(JSON.parse(JSON.stringify(l)));   
         }
+      
       });
+      
+
+
       leagues.forEach(l => {
         if (l.rank <= 0) {
           html += `
@@ -65,13 +72,8 @@ class LeagueRankings {
 
     document.querySelectorAll(".league-leaderboard-ranking").forEach((el) => {
       el.onclick = (e) => {
-	let lid = e.currentTarget.getAttribute("data-id");
-	for (let i = 0; i < this.mod.leagues.length; i++) {
-	  if (this.mod.leagues[i].id === lid) {
-	    this.mod.league_idx = i;
-	  }
-        }
-	this.overlay.render();
+	      let lid = e.currentTarget.getAttribute("data-id");
+	      this.app.connection.emit("league-overlay-render-request", lid);
       }
     });
 

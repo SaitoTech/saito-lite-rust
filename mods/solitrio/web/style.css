@@ -53,15 +53,16 @@ body {
 }
 
 .logobox {
-position: relative;
-    margin-top: 50px;
-    font-size: 20px;
-    order: 1;
-    max-width: 200px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 80px;
+  position: relative;
+  margin-top: 50px;
+  font-size: 20px;
+  order: 1;
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 80px;
 }
+
 .logobox div{
   border-radius: 5px;
 }
@@ -74,6 +75,10 @@ position: relative;
 .status-header{
   padding: 10px 5px;
   margin-top: 20px;
+}
+
+.logobox .status-header, .logobox .status-text-menu{
+  background-color: #fffe
 }
 
 .selected .empty:hover{
