@@ -49,7 +49,7 @@
 
 .saito-overlay-form {
     width: 60rem;
-    min-width: 500px;
+    min-width: 300px;
     max-width: 90vw;
     padding: 2rem;
     background-color: var(--saito-background-light);
@@ -100,7 +100,7 @@
 .saito-overlay-form-input[type="text"] {
     margin-top: 1rem;
 }
-.saito-overlay-form > button[type="button"] {
+.saito-overlay-form > button[type="button"] , .saito-overlay-form-submitline > button[type="button"] {
     height: 7rem;
     font-size: 2.5rem;
     display: block;
@@ -119,7 +119,23 @@
 .saito-overlay-subform-text {
     font-size: 2rem;
 }
-
+.saito-overlay-form-alt-opt {
+    margin-left: 2rem;
+    font-size: 1.8rem;
+    color: var(--saito-font-color);
+    width: min-content;
+    white-space: nowrap;
+    padding-bottom: 0px;
+    margin-top: auto;
+    margin-bottom: auto;
+    border-bottom: 1px dashed var(--saito-font-color);
+    cursor: pointer;
+}
+.saito-overlay-form-submitline {
+    width: 100%;
+    display: grid;
+    grid-template-columns: min-content 1fr;
+}
 
 
 

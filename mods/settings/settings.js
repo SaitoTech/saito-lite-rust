@@ -77,6 +77,7 @@ class Settings extends ModTemplate {
 	{
           text: "Theme",
           icon: "fa-solid fa-moon",
+	  rank: 110 ,
           callback: function (app, id) {
             let settings_self = app.modules.returnModule("Settings");
 	    settings_self.renderInto(".saito-overlay");
@@ -84,7 +85,8 @@ class Settings extends ModTemplate {
         },
 	{
           text: "Nuke",
-          icon: "fa-solid fa-heart",
+          icon: "fa-solid fa-radiation",
+	  rank: 120 ,
           callback: function (app, id) {
             app.wallet.resetWallet();
           }
