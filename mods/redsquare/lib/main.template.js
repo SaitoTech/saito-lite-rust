@@ -3,7 +3,7 @@ module.exports = () => {
 
   return `
     <div id="saito-container" class="saito-container">
-      <div id="new-tweet" class="saito-button-primary">+</div>
+      <div id="new-tweet" class="saito-button-primary post-tweet">+</div>
       <div class="saito-sidebar left">
       </div>
       
