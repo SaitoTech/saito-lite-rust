@@ -604,7 +604,9 @@ i.link_icon.private {
   padding-top: 0px;
 }
 
-
+.my-leaderboard-position{
+  color: blue;
+}
 .league-overlay-container {
   background: var(--saito-arcade-background);
   width: 90vw;

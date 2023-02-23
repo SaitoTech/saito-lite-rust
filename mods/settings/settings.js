@@ -73,14 +73,25 @@ class Settings extends ModTemplate {
 
   respondTo(type = "") {
     if (type === 'saito-header') {      
-      return [{
-        text: "Theme",
-        icon: "fa-solid fa-moon",
-        callback: function (app, id) {
-          let settings_self = app.modules.returnModule("Settings");
-	  settings_self.renderInto(".saito-overlay");
-        }
-      }]
+      return [
+	{
+          text: "Theme",
+          icon: "fa-solid fa-moon",
+	  rank: 110 ,
+          callback: function (app, id) {
+            let settings_self = app.modules.returnModule("Settings");
+	    settings_self.renderInto(".saito-overlay");
+          }
+        },
+	{
+          text: "Nuke",
+          icon: "fa-solid fa-radiation",
+	  rank: 120 ,
+          callback: function (app, id) {
+            app.wallet.resetWallet();
+          }
+        },
+      ]
     }
     return null;
   }

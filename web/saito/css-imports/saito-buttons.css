@@ -53,9 +53,10 @@ button.small,
   min-width: 4rem;
 }
 button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-gradient.fat {
-  height: 7rem;
-  font-size: 2rem;
-  padding: 2rem !important;
-  width: 30rem;
+    height: 7rem;
+    font-size: 2rem;
+    padding: 2.4rem !important;
+    min-width: 30rem;
+    text-align: center;
 }
 

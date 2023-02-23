@@ -1,6 +1,8 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SetupOverlay = require('./lib/overlays/setup');
 const RestoreOverlay = require('./lib/overlays/restore');
+const SaitoLogin = require("./../../lib/saito/ui/modals/login/login");
+const SaitoBackup = require("./../../lib/saito/ui/modals/setup-recovery/setup-recovery");
 
 
 class Recovery extends ModTemplate {
@@ -12,15 +14,22 @@ class Recovery extends ModTemplate {
     this.description = "Secure and anonymous account backup and recovery";
     this.categories = "Utilities Core";
 
-    this.backup_overlay = new SetupOverlay(app, this);
-    this.recover_overlay = new RestoreOverlay(app, this);
+    //this.backup_overlay = new SetupOverlay(app, this);
+    //this.recover_overlay = new RestoreOverlay(app, this);
+    this.backup_overlay = new SaitoBackup(app, this);
+    this.recover_overlay = new SaitoLogin(app, this);
 
     app.connection.on("recovery-backup-overlay-render-request", (obj) => {
+alert("backup overlay");
       if (obj.success_callback != null) {
         this.backup_overlay.success_callback = obj.success_callback;
+      } else {
+	this.backup_overlay.success_callback = (e) => {};
       }
       if (obj.failure_callback != null) {
         this.backup_overlay.failure_callback = obj.failure_callback;
+      } else {
+	this.backup_overlay.failure_callback = (e) => {};
       }
 
       //
@@ -39,19 +48,51 @@ class Recovery extends ModTemplate {
 
         let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
         this.app.network.propagateTransaction(newtx);
-        this.success_callback(true);
+        if (this.backup_overlay.success_callback) { this.backup_overlay.success_callback(true); }
 	return;
       }
 
       this.backup_overlay.render();
     });
+
     app.connection.on("recovery-recover-overlay-render-request", (obj) => {
+alert("recovery overlay");
+
       if (obj.success_callback != null) {
-        this.backup_overlay.success_callback = obj.success_callback;
+	this.backup_overlay.callback = obj.success_callback;
+      }
+/**
+      if (obj.success_callback != null) {
+        this.recover_overlay.success_callback = obj.success_callback;
+      } else {
+	this.recover_overlay.success_callback = (e) => {};
       }
       if (obj.failure_callback != null) {
-        this.backup_overlay.failure_callback = obj.failure_callback;
+        this.recover_overlay.failure_callback = obj.failure_callback;
+      } else {
+	this.recover_overlay.failure_callback = (e) => {};
       }
+***/
+      //
+      // if submitted with email / pass, auto-backup
+      //
+      if (obj.email && obj.pass) {
+
+        let hash1 = "WHENINDISGRACEWITHFORTUNEANDMENSEYESIALLALONEBEWEEPMYOUTCASTSTATE";
+        let hash2 = "ANDTROUBLEDEAFHEAVENWITHMYBOOTLESSCRIESANDLOOKUPONMYSELFANDCURSEMYFATE";
+
+	let email = obj.email;
+	let pass = obj.pass;
+
+        let decryption_secret = this.app.crypto.hash(this.app.crypto.hash(email+pass)+hash1);
+        let retrieval_hash    = this.app.crypto.hash(this.app.crypto.hash(hash2+email)+pass);
+
+        let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
+        this.app.network.propagateTransaction(newtx);
+        if (this.recover_overlay.success_callback) { this.recover_overlay.success_callback(true); }
+	return;
+      }
+
       this.recover_overlay.render();
     });
 
@@ -63,42 +104,53 @@ class Recovery extends ModTemplate {
       return services;
   }
 
-
   respondTo(type) {
     if (type == "saito-header") {
-      return [{
-        text: "Backup",
-        icon: "fa-sharp fa-solid fa-cloud-arrow-up",
-        type: "settings",
-        allowed_mods: ["redsquare"],
-        callback: function (app) {
-	  let success_callback = function(res) {};
-	  let failure_callback = function(res) {};
-          app.connection.emit("recovery-backup-overlay-render-request", (success_callback, failure_callback));
+      let x = [];
+      if (this.app.browser.isMobileBrowser()) {
+	if (this.app.keychain.returnIdenticon(this.app.wallet.returnPublicKey())) {
+	  x.push({
+            text: "Login",
+            icon: "fa fa-sign-in",
+            allowed_mods: ["redsquare"],
+            callback: function (app) {
+  	      let success_callback = function(res) {};
+	      let failure_callback = function(res) {};
+	      app.connection.emit("recovery-recover-overlay-render-request", (success_callback, failure_callback));
+            }
+	  });
+        } else {
+	  x.push({
+            text: "Backup",
+            icon: "fa-sharp fa-solid fa-cloud-arrow-up",
+            rank: 130,
+            callback: function (app) {
+  	      let success_callback = function(res) {};
+	      let failure_callback = function(res) {};
+	      app.connection.emit("recovery-backup-overlay-render-request", (success_callback, failure_callback));
+            }
+	  });
         }
-      },
-      {
-        text: "Recover",
-        icon: "fa-sharp fa-solid fa-cloud-arrow-down",
-        type: "settings",
-        allowed_mods: ["redsquare"],
-        callback: function (app) {
-	  let success_callback = function(res) {};
-	  let failure_callback = function(res) {};
-	  app.connection.emit("recovery-recover-overlay-render-request", (success_callback, failure_callback));
-        }
-      }];
+      } else {
+	x.push({
+          text: "Backup",
+          icon: "fa-sharp fa-solid fa-cloud-arrow-up",
+          rank: 130,
+          callback: function (app) {
+  	    let success_callback = function(res) {};
+	    let failure_callback = function(res) {};
+	    app.connection.emit("recovery-backup-overlay-render-request", (success_callback, failure_callback));
+          }
+	});
+      }
+      return x;
     }
     return null;
   }
 
-
   onConfirmation(blk, tx, conf, app) {
-
     if (conf == 0) {
-
       let txmsg = tx.returnMessage();
-
       if (txmsg.request == "recovery backup") {
 	this.receiveBackupTransaction(tx);
       }

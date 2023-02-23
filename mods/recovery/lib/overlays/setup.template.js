@@ -7,9 +7,9 @@ module.exports = RecoverySetupTemplate = (app) => {
     let html = `  
       <div id="saito-login-overlay" class="saito-modal saito-login-overlay">
 
-	<div class="saito-modal-title">Account Recovery</div>
+	<div class="saito-modal-title">Setup Account Recovery</div>
 
-	<div class="saito-modal-subtitle">add email/password for account recovery</div>
+	<div class="saito-modal-subtitle">provide email/password for account recovery</div>
 
 	<div class="saito-login-overlay-field">
 	  <label for="saito-login-email">Email:</label>

@@ -59,14 +59,14 @@ class LeagueWizard {
           game: this.game_mod.name ,
           name: title ,
           admin: this.app.wallet.returnPublicKey() ,
-	  status: status ,
+	        status: status ,
           description: desc ,
           ranking_algorithm: "ELO" ,
           default_score: 1500 ,
         };
 
         let newtx = this.mod.createCreateTransaction(obj);
-	this.app.network.propagateTransaction(newtx);
+	      this.app.network.propagateTransaction(newtx);
 
 	//
 	// and add the league

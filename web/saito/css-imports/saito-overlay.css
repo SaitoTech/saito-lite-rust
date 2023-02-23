@@ -44,3 +44,99 @@
   color: var(--saito-primary);
   font-size: 3.1rem;
 }
+
+
+
+.saito-overlay-form {
+    width: 60rem;
+    min-width: 300px;
+    max-width: 90vw;
+    padding: 2rem;
+    background-color: var(--saito-background-light);
+}
+.saito-overlay-form-header {
+    height: 6rem;
+    width: 100%;
+    position: relative;
+}
+.saito-overlay-form-header-title {
+    position: absolute;
+    height: 6rem;
+    background-color: #000A;
+    color: white;
+    width: 100%;
+    padding: 1.6rem;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    display:block;
+}
+.saito-overlay-form-header-image {
+    height: 6rem;
+    width: 100%;
+    display:block;
+}
+.saito-overlay-form-text {
+    font-size: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    line-height: 3rem;
+    color: var(--saito-font-color);
+    font-family: sans-serif;
+    font-weight: 100;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.saito-overlay-form-inputs > input[type="text"] {
+    height: 6rem;
+    font-size: 2.3rem;
+}
+.saito-overlay-form > input[type="text"] , .saito-overlay-form-input[type="text"] {
+    height: 6rem;
+    font-size: 2.3rem;
+}
+.saito-overlay-form-input[type="text"] {
+    margin-top: 1rem;
+}
+.saito-overlay-form > button[type="button"] , .saito-overlay-form-submitline > button[type="button"] {
+    height: 7rem;
+    font-size: 2.1rem;
+    display: block;
+    margin-left: auto;
+    margin-top: 2rem;
+    margin-right: 0;
+}
+.saito-overlay-subform {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    column-gap: 0.5rem;
+    border: 1px dashed var(--saito-border-color-dark);
+    border-radius: var(--saito-border-radius);
+    padding: 1.4rem;
+}
+.saito-overlay-subform-text {
+    font-size: 2rem;
+}
+.saito-overlay-form-alt-opt {
+    margin-left: 2rem;
+    font-size: 1.8rem;
+    color: var(--saito-font-color);
+    width: min-content;
+    white-space: nowrap;
+    padding-bottom: 0px;
+    margin-top: auto;
+    margin-bottom: auto;
+    border-bottom: 1px dashed var(--saito-font-color);
+    cursor: pointer;
+}
+.saito-overlay-form-submitline {
+    width: 100%;
+    display: grid;
+    grid-template-columns: min-content 1fr;
+}
+
+
+
+
