@@ -43,10 +43,14 @@ class LeagueRankings {
               <div class="saito-table-rank">${l.rank}</div>
             </div>
                   `;
+        
+          console.log(JSON.parse(JSON.stringify(l)));   
         }
-
-        console.log(JSON.parse(JSON.stringify(l)));
+      
       });
+      
+
+
       leagues.forEach(l => {
         if (l.rank <= 0) {
           html += `

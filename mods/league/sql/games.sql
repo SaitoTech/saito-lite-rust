@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS games (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   league_id CHAR(128),
   game_id CHAR(128),
-  module VARCHAR(50),
+  game VARCHAR(50),
   winner TEXT,
   players_array TEXT,
   rank INTEGER DEFAULT 0,

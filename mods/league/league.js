@@ -8,6 +8,9 @@ const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const InvitationLink = require("./lib/overlays/league-invitation-link");
 const JoinLeagueOverlay = require('./lib/overlays/join');
 
+//Trial -- So that we can display league results in game page
+//const LeagueOverlay = require("./lib/overlays/league");
+
 class League extends ModTemplate {
 
   constructor(app) {
@@ -51,31 +54,27 @@ class League extends ModTemplate {
 
     super.initialize(app);
 
+    //Trial -- So that we can display league results in game page
+    //this.overlay = new LeagueOverlay(app, this);
+
     //
     // create initial leagues
     //
-    // id TEXT PRIMARY KEY,
-    // game TEXT,
-    // name TEXT,
-    // admin TEXT,
-    // status TEXT,
-    // description TEXT,
-    // ranking_algorithm TEXT,
-    // default_score INTEGER,
-    //
-    this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
+    this.app.modules.getRespondTos("default-league").forEach((modResponse) => {
        this.addLeague({
-        	id     			: 	app.crypto.hash(mod.returnName()) ,	// id
-    	   	game   			: 	mod.name , 				// game - name of game mod
-    	   	name   			: 	mod.returnName() , 				// name - name of league
-    	   	admin  			: 	"" ,					// admin - publickey (if exists)
-		status 			: 	"public" ,				// status - public or private
-		description 		: 	mod.description ,			// 
-		ranking_algorithm 	: 	"ELO" ,					//
-		default_score 		:	1500 					// default ranking for newbies
+        	id     			: 	  app.crypto.hash(modResponse.modname) ,	// id
+    	   	game   			: 	  modResponse.game , 				// game - name of game mod
+    	   	name   			: 	  modResponse.name , 				// name - name of league
+    	   	admin  			: 	  "" ,					// admin - publickey (if exists)
+      		status 			: 	  "public" ,				// status - public or private
+		      description 		: modResponse.description ,			// 
+		      ranking_algorithm : 	modResponse.ranking_algorithm ,					//
+		      default_score 		:	modResponse.default_score 					// default ranking for newbies
        });
     });
   }
+
+    
 
 
   //////////////////////////
@@ -126,146 +125,121 @@ class League extends ModTemplate {
 
   removeLeague(league_id) {
     for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) { this.leagues.splice(i, 1); }
+      if (this.leagues[i].id === league_id) { 
+        this.leagues.splice(i, 1); 
+        return;
+      }
     }
     return null;
   }
 
   addLeague(obj) {
 
-    //
-    // default values
-    //
     if (!obj)                   { return; }
     if (!obj.id)                { return; }
-    if (!obj.game)              { obj.game = "Unknown"; }
-    if (!obj.name)              { obj.name = "Unknown"; }
-    if (!obj.admin)             { obj.admin = ""; }
-    if (!obj.status)	 	{ obj.status = ""; }
-    if (!obj.description)	{ obj.description = ""; }
-    if (!obj.ranking_algorithm)	{ obj.ranking_algorithm = "ELO"; }
-    if (!obj.default_score)	{ obj.default_score = 1500; }
 
-    //
-    // dynamic data-storage
-    //
-    if (!obj.players)           { obj.players = []; }
-		//
-		// {
-		//    publickey TEXT ,
-		//    score INT ,
-		// }
-		//
-    if (!obj.games)             { obj.games = []; }
-    if (!obj.rank)		{ obj.rank = 0; } // my rank in this league
-
+    console.log("Add League");
     if (!this.returnLeague(obj.id)) {
-      this.leagues.push(obj);
-      this.app.connection.emit("league-add-league", (this.leagues[(this.leagues.length-1)]));
+      let newLeague = this.validateLeague(obj);
+
+      //
+      // dynamic data-storage
+      //
+      newLeague.players = [];
+      newLeague.games = [];
+      newLeague.rank = 0; //My rank in the league
+    
+      this.leagues.push(newLeague);
+
+      if (!this.app.BROWSER){
+        console.log("Insert League");
+        this.leagueInsert(newLeague);        
+      }
     }
 
   }
+
 
   addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method) {
 
     let game_idx = -1;
-    let league_idx = -1;
 
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === league_id) {
-	league_idx = i;
         for (let z = 0; z < this.leagues[i].games.length; z++) {
-	  if (this.leagues[i].games[z].game_id === game_id) {
-	    game_idx = z;
-	    z = this.leagues[i].games.length+1;
-	    i = this.leagues.length+1;
-	    break;
-	  }
-	}
-      }
-    }
+    	    if (this.leagues[i].games[z].game_id === game_id) {
+            this.leagues[i].games[z].game_id = game_id;
+            this.leagues[i].games[z].winner = winner;
+            this.leagues[i].games[z].players_array = players_array;
+            this.leagues[i].games[z].rank = rank;
+            this.leagues[i].games[z].time_started = time_started;
+            this.leagues[i].games[z].time_finished = time_finished;
+            this.leagues[i].games[z].method = method;
+    	      return;
+          }
+    	  }
+        
+        this.leagues[i].games.push({ 
+          game_id : game_id ,
+          winner : winner ,
+          players_array : players_array ,
+          rank : rank ,
+          time_started : time_started ,
+          time_finished : time_finished ,
+          method : method 
+        });
 
-    if (game_idx == -1 && league_idx > -1) {
-      this.leagues[league_idx].games.push({ 
-	    game_id : game_id ,
-	    winner : winner ,
-	    players_array : players_array ,
-	    rank : rank ,
-	    time_started : time_started ,
-	    time_finished : time_finished ,
-	    method : method 
-      });
-    } else {
-      if (league_idx > -1 && game_idx > -1) {
-        this.leagues[league_idx].games[game_idx].game_id = game_id;
-        this.leagues[league_idx].games[game_idx].winner = winner;
-        this.leagues[league_idx].games[game_idx].players_array = players_array;
-        this.leagues[league_idx].games[game_idx].rank = rank;
-        this.leagues[league_idx].games[game_idx].time_started = time_started;
-        this.leagues[league_idx].games[game_idx].time_finished = time_finished;
-        this.leagues[league_idx].games[game_idx].method = method;
+        return;
       }
     }
   }
 
-
+  //
+  // Update Player-League data in our live data structure
+  //
   addLeaguePlayer(league_id, publickey, score, games_won, games_tied, games_finished) {
 
-    let league_idx = -1;
-    let player_idx = -1;
-    for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) {
-	league_idx = i;
-        for (let z = 0; z < this.leagues[i].players.length; z++) {
-	  if (this.leagues[i].players[z].publickey === publickey) {
-	    player_idx = z;
-	    z = this.leagues[i].players.length+1;
-	    i = this.leagues.length+1;
-	    break;
-	  }
-	}
-	if (player_idx == -1) {
-	  this.leagues[league_idx].players.push({ 
+    let league = this.returnLeague(league_id);
+  
+    if (!league) { 
+      console.error("League not found"); 
+      return; 
+    }
+
+    for (let z = 0; z < league.players.length; z++) {
+  	  if (league.players[z].publickey === publickey) {
+        league.players[z].score = score;
+        league.players[z].games_won = games_won;
+        league.players[z].games_tied = games_tied;
+        league.players[z].games_finished = games_finished;
+        return;
+  	  }
+  	}
+      	
+    league.players.push({ 
 	    publickey : publickey ,
 	    score : score ,
 	    games_won : games_won ,
 	    games_tied : games_tied ,
 	    games_finished : games_finished
-	  });
-	  player_idx = this.leagues[league_idx].players.length-1;
-	} else {
-	  if (player_idx != -1) {
-	    this.leagues[league_idx].players[player_idx].score = score;
-	    this.leagues[league_idx].players[player_idx].games_won = games_won;
-	    this.leagues[league_idx].players[player_idx].games_tied = games_tied;
-	    this.leagues[league_idx].players[player_idx].games_finished = games_finished;
-	  }
-	}
-      }
-    }
+	  }); 	 
+      	
   }
 
   fetchLeagueGames(league_id, mycallback=null) {
 
-    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league_id}' LIMIT 10` ,
+    let league = this.returnLeague(league_id);
+    league.games = [];
+
+    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league_id}' ORDER BY time_finished DESC LIMIT 10` ,
       (res) => {
-        if (res.rows) {
+        if (res?.rows) {
           for (let g of res.rows) {
-
-  	    let game_id 	= g.game_id;
-  	    let winner		= g.winner;
-  	    let players_array   = g.players_array;
-	    let rank		= g.rank;
-	    let time_started	= g.time_started;
-	    let time_finished	= g.time_finished;
-	    let method		= g.method;
-
-            this.addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method);
-
+            this.addLeagueGame(league_id, g.game_id, g.winner, g.players_array, g.rank, g.time_started, g.time_finished, g.method);
           }
         }
         if (mycallback != null) {
-	  mycallback(res);
+      	  mycallback(res);
         }
       }
     );
@@ -275,38 +249,43 @@ class League extends ModTemplate {
   fetchLeagueLeaderboard(league_id, mycallback=null) {
 
     let league = this.returnLeague(league_id);
+    let rank = 0;
+
+    //We need to reset this because this should be an ordered array
+    //and if the scores have changed, we need to resort the players
+    league.players = [];
 
     this.sendPeerDatabaseRequestWithFilter(
       "League" ,
       `SELECT * FROM players WHERE league_id = '${league_id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
       (res) => {
-	if (res) {
-        if (res.rows) {
+      	  if (res?.rows) {
 
-          for (let p of res.rows){
+            for (let p of res.rows){
+              //
+              // Count how many people are ranked above me in the leaderboard
+              //
+              rank++;
+              
+              if (p.publickey == this.app.wallet.returnPublicKey()) {
+        	      league.rank = rank;
+              }
 
-	    let publickey 	= p.publickey;
-	    let score 		= p.score;
-	    let games_won 	= p.games_won;
-	    let games_tied 	= p.games_tied;
-	    let games_finished 	= p.games_finished;
-
-            if (publickey == this.app.wallet.returnPublicKey()) {
-              let league = this.returnLeague(league_id);
-	      league.rank = score;
+              //
+              // Update player-league data in our live data structure
+              //
+              this.addLeaguePlayer(league.id, p.publickey, p.score, p.games_won, p.games_tied, p.games_finished);
             }
-
-            this.addLeaguePlayer(league.id, publickey, score, games_won, games_tied, games_finished);
-
-          }
-	}
-	}
-	if (mycallback != null) { mycallback(res); }
+      	}
+      	
+      	if (mycallback != null) { mycallback(res); }
       },
       (p) => {
-	if (p.hasService("league")) { return 1; }
-	return 0;
-      }
+	        if (p.hasService("league")) { 
+            return 1; 
+          }
+            return 0;
+        }
     );
   }
 
@@ -317,29 +296,27 @@ class League extends ModTemplate {
     // add remote leagues
     //
     if (service.service === "league") {
-
-      let league_self = this;
+      console.log("=============");
+      console.log("Pseudo PeerHandShake Complete");
+      console.log("=============");
+      
 
       //
       // fetch updated rankings
       //
+      let helper_array = [];
       for (let i = 0; i < this.leagues.length; i++) {
-        this.sendPeerDatabaseRequestWithFilter(
-          "League" ,
-	  `SELECT league_id, publickey, score, games_won, games_tied, games_finished FROM players WHERE league_id = "${league_self.leagues[i].id}"` ,
-          (res) => {
-            let rows = res.rows || [];
-            if (rows.length > 0) {
-	      for (let z = 0; z < rows.length; z++) {
-		league_self.addLeaguePlayer(rows[z].league_id, rows[z].publickey, rows[z].score, rows[z].games_won, rows[z].games_tied, rows[z].games_finished);
-	      }
-            }
-          },
-          (p) => {
-	    if (p == peer) { return 1; }
-	    return 0;
-  	  }
-        );
+        //To avoid calling rending 15 times in a row, we use an array to see when
+        //the last async database query finishes and only update the UI then
+        helper_array.push(0);
+        
+        this.fetchLeagueLeaderboard(this.leagues[i].id, 
+          ()=>{
+            helper_array.pop();
+            if (helper_array.length == 0){
+              app.connection.emit("league-rankings-render-request");   
+            } 
+          });
       }
 
       //    
@@ -354,10 +331,10 @@ class League extends ModTemplate {
             let rows = res.rows || [];
             if (rows.length > 0) {
               rows.forEach(function(league, key) {
-                league_self.addLeague(league);
+                this.addLeague(league);
               }); 
-	      league_self.app.connection.emit("leagues-render-request");
-	      league_self.app.connection.emit("league-rankings-render-request");
+    	      app.connection.emit("leagues-render-request");
+    	      app.connection.emit("league-rankings-render-request");
             }
 
             //
@@ -369,9 +346,11 @@ class League extends ModTemplate {
 
           },
           (p) => {
-  	    if (p == peer) { return 1; }
- 	    return 0;
-	  }
+  	          if (p == peer) { 
+                return 1; 
+              }
+ 	            return 0;
+	        }
         );
       }
 
@@ -387,6 +366,8 @@ class League extends ModTemplate {
     try {
 
       let txmsg = tx.returnMessage();
+
+      console.log("LEAGUE onConfirmation: " + txmsg.request);
 
       if (txmsg.request === "league create") {
         this.receiveCreateTransaction(blk, tx, conf, app);
@@ -441,6 +422,7 @@ class League extends ModTemplate {
 
   loadLeagues() {
     if (this.app.options.leagues) {
+      console.log("Locally stored leagues:", JSON.parse(JSON.stringify(this.app.options.leagues)));
       this.leagues = this.app.options.leagues;
       return;
     }
@@ -453,6 +435,23 @@ class League extends ModTemplate {
   }
 
 
+  validateLeague(obj){
+    let newObj = {};
+    //
+    // default values
+    //
+    newObj.id = obj.id || "";
+    newObj.game = obj.game || "Unknown";
+    newObj.name = obj.name || "Unknown";
+    newObj.admin = obj.admin || "";
+    newObj.status = obj.status || "public";
+    newObj.description = obj.description || "";
+    newObj.ranking_algorithm = obj.ranking_algorithm || "EXP";
+    newObj.default_score = obj.default_score || 0;
+        
+    return newObj;
+  }
+
 
   /////////////////////
   // create a league //
@@ -461,87 +460,24 @@ class League extends ModTemplate {
 
     if (obj == null) { return null; }
 
-    //
-    // id TEXT PRIMARY KEY,
-    // game TEXT,
-    // name TEXT,
-    // admin TEXT,
-    // status TEXT,
-    // description TEXT,
-    // ranking_algorithm TEXT,
-    // default_score INTEGER,
-    //
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    newtx.msg = {
-      module			:		"League" ,
-      request			:		"league create" ,
-      game			:		obj.game || "" ,
-      name			:		obj.name || "" ,
-      admin			:		obj.admin || "" ,
-      status			:		obj.status || "" ,
-      description		:		obj.description || "" ,
-      ranking_algorithm		:		obj.ranking_algorithm || "" ,
-      default_score		:		obj.default_score || 1500 ,
-    };
+    newtx.msg = this.validateLeague(obj);
+    newtx.msg.module = "League";
+    newtx.msg.request = "league create";
+
     return this.app.wallet.signTransaction(newtx);
 
   }
+
   async receiveCreateTransaction(blk, tx, conf, app) {
 
-    //
-    // id TEXT PRIMARY KEY,
-    // game TEXT,
-    // name TEXT,
-    // admin TEXT,
-    // status TEXT,
-    // description TEXT,
-    // ranking_algorithm TEXT,
-    // default_score INTEGER,
-    //
-
     let txmsg = tx.returnMessage();
-    let sql = `INSERT INTO leagues (
-	id, 
-	game, 
-	name, 
-	admin, 
-	status, 
-	description, 
-	ranking_algorithm, 
-	default_score
-      ) VALUES (
-	$id, 
-	$game, 
-	$name, 
-	$admin, 
-	$status, 
-	$description, 
-	$ranking_algorithm, 
-	$default_score
-      )`;
-    let params = {
-	$id			:		tx.transaction.sig ,
-	$game			:		txmsg.game || "" ,
-	$name			:		txmsg.name || "" ,
-	$admin			:		txmsg.admin || "" ,
-	$status			:		txmsg.status || "" ,
-	$description		:		txmsg.description || "" ,
-	$ranking_algorithm	:		txmsg.ranking_algorithm || "" ,
-	$default_score		:		1500
-    };
-    await app.storage.executeDatabase(sql, params, "league");
 
-    let obj = {
-	id			:		tx.transaction.sig ,
-	game			:		txmsg.game || "" ,
-	name			:		txmsg.name || "" ,
-	admin			:		txmsg.admin || "" ,
-	status			:		txmsg.status || "" ,
-	escription		:		txmsg.description || "" ,
-	ranking_algorithm	:		txmsg.ranking_algorithm || "" ,
-	default_score		:		1500
-    };
+    let obj = this.validateLeague(txmsg);
+    obj.id = tx.transaction.sig;
+
     this.addLeague(obj);
+
     return;
 
   }
@@ -554,18 +490,6 @@ class League extends ModTemplate {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
 
-    //
-    // id INTEGER PRIMARY KEY AUTOINCREMENT,
-    // league_id TEXT,
-    // publickey TEXT,
-    // email TEXT,
-    // score INTEGER,
-    // games_started INTEGER DEFAULT 0,
-    // games_finished INTEGER DEFAULT 0,
-    // games_won INTEGER DEFAULT 0,
-    // games_tied INTEGER DEFAULT 0,
-    // ts INTEGER,
-    //
     newtx.msg = {
       module:    "League",
       league_id: league_id,
@@ -574,28 +498,34 @@ class League extends ModTemplate {
 
     if (data != null && typeof data == "object"){
       if (data.email) {
-	newtx.msg.email = data.email;
+      	newtx.msg.email = data.email;
       }
     }
 
     return this.app.wallet.signTransaction(newtx);
 
   }
+
+
   async receiveJoinTransaction(blk, tx, conf, app) {
 
     let txmsg = tx.returnMessage();
     let league_id  = txmsg.league_id;
-    let email = txmsg.email;
-    let publickey  = tx.transaction.from[0].add;
-    let base_score = 0;
-    if (this.returnLeague(league_id)) { base_score = this.returnLeague(league_id).default_score; }
+    let league = this.returnLeague(league_id);
+
+    if (!league){
+      console.warn("Invalid League");
+      return;
+    }
 
     let params = {
       league_id: league_id,
-      publickey: publickey,
-      score: base_score,
+      publickey: tx.transaction.from[0].add,
+      email: txmsg.email || "",
+      score: league.default_score,
       ts: parseInt(tx.transaction.ts)
     };
+
     await this.playerInsert(params);
     return;
   }
@@ -613,6 +543,7 @@ class League extends ModTemplate {
     };
     return this.app.wallet.signTransaction(newtx);
   }
+
   async receiveQuitTransaction(blk, tx, conf, app){
 
     let txmsg = tx.returnMessage();
@@ -690,61 +621,9 @@ class League extends ModTemplate {
     //
     // fetch leagues
     //
-    let sql = `SELECT * FROM leagues WHERE game = $game OR id='Saito'`;
+    let sql = `SELECT * FROM leagues WHERE game = $game`;
     let params = { $game : game };   
     let relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
-
-    //
-    // if there are no game-specific leagues, add one (-1 is because Saito is default)
-    //
-    if (relevantLeagues.length <= 1) {
-      for (let i = 0; i < this.leagues.length; i++) {
-	if (this.leagues[i].name === game) {
-
-	  let league = this.leagues[i];
-
-          //
-          // insert into DB if not exists
-          //
-          let sql = `INSERT INTO leagues (
-            id,
-            game,
-            name,
-            admin,
-            status,
-            description,
-            ranking_algorithm,
-            default_score
-          ) VALUES (
-            $id,
-            $game,
-            $name,
-            $admin,
-            $status,
-            $description,
-            $ranking_algorithm,
-            $default_score
-          )`;
-          let params = {
-            $id                     :               league.id ,
-            $game                   :               league.game || "" ,
-            $name                   :               league.name || "" ,
-            $admin                  :               league.admin || "" ,
-            $status                 :               league.status || "" ,
-            $description            :               league.description || "" ,
-            $ranking_algorithm      :               league.ranking_algorithm || "" ,
-            $default_score          :               league.default_score
-          };
-
-          await app.storage.executeDatabase(sql, params, "league");
-          sql = `SELECT * FROM leagues WHERE game = $game OR id='Saito'`;
-          params = { $game : game };   
-          relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
-
-        }
-      }
-
-    }
 
     //
     // update database
@@ -761,7 +640,7 @@ class League extends ModTemplate {
         obj = {
           league_id: leag.id,
           game_id: txmsg.game_id,
-          module: game,
+          game: game,
           winner: (Array.isArray(txmsg.winner))? txmsg.winner.join("_") : txmsg.winner,
           players_array: txmsg.players,
           time_started: 0,
@@ -783,14 +662,14 @@ class League extends ModTemplate {
               ts: new Date().getTime()
         };
 
-	await this.playerInsert(obj);
+      	await this.playerInsert(obj);
       }
 
       //
       // update rankings (ELO)
       //
       if (leag.ranking_algorithm === "ELO"){
-	this.updateELORanking(publickeys, leag, txmsg);
+	      this.updateELORanking(publickeys, leag, txmsg);
       }
       if (leag.ranking_algorithm === "EXP"){
         this.updateEXPRanking(publickeys, leag, txmsg);
@@ -810,12 +689,13 @@ class League extends ModTemplate {
 
   async receiveAcceptTransaction(blk, tx, conf, app){
 
+    
     let txmsg = tx.returnMessage();
-    let game = txmsg.module;
 
-    let sql = `SELECT * FROM leagues WHERE game = $gamename OR id='SAITOLICIOUS'`;
-    let params = { $gamename : game };
-    const relevantLeagues = await this.app.storage.queryDatabase(sql, params, "league");
+    console.log(`League processing game start of ${txmsg.game}!`);
+
+    let sql = `SELECT * FROM leagues WHERE game = ?`;
+    const relevantLeagues = await this.app.storage.queryDatabase(sql, [txmsg.game], "league");
 
     //
     // who are the players ?
@@ -827,16 +707,17 @@ class League extends ModTemplate {
       }
     }
 
+    console.log(relevantLeagues, publickeys);
+
     //
     // and insert if needed
     //
     for (let leag of relevantLeagues){
-      if (leag.admin === "saito") {
+      if (leag.admin === "") {
         for (let player of publickeys){
 
-          let sql2 = `SELECT * from players WHERE publickey="$publickey" AND league_id="$league_id"`;
-          let params2 = { $publickey : player , $league_id : leag.id };
-          let rows = await this.app.storage.queryDatabase(sql, params, "league");
+          let sql2 = `SELECT * from players WHERE publickey = ? AND league_id = ?`;
+          let rows = await this.app.storage.queryDatabase(sql2, [player, leag.id], "league");
 
           if (!rows || !rows.length || rows.length == 0){
             let obj = {
@@ -845,9 +726,11 @@ class League extends ModTemplate {
               score: leag.default_score,
               ts: new Date().getTime(),
             };
-	    await this.playerInsert(obj);
-	    return;
+      	    await this.playerInsert(obj);
           }
+
+          //Update Player's game started count
+          await this.incrementPlayer(player, leag.id, "games_started");
         }
       }
     }
@@ -958,14 +841,30 @@ class League extends ModTemplate {
 
   }
 
+
+  async incrementPlayer(publickey, league_id, field){
+    if (!(field === "games_finished" || field === "games_won" || field === "games_tied" || field === "games_started")){
+      return 0;
+    }
+
+    let sql = `UPDATE players SET ${field} = (${field} + 1), ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
+    let params = {
+      $ts: new Date().getTime() ,
+      $publickey: publickey ,
+      $league_id: league_id
+    }
+    await this.app.storage.executeDatabase(sql, params, "league");
+    return 1;
+  }
+
   async addEXP(publickey, league_id, points, game_status = null) {
 
     let sql = `UPDATE players SET score = (score + $points), games_finished = (games_finished + 1), ts = $ts`;
     if (game_status) { sql += `, ${game_status} = (${game_status} + 1)`; }
 
-    sql += ` WHERE publickey = $publickey AND league_id = $lid`;
+    sql += ` WHERE publickey = $publickey AND league_id = $league_id`;
     let params = {
-      $amount : points ,
+      $points : points ,
       $ts: new Date().getTime() ,
       $publickey: publickey ,
       $league_id: league_id
@@ -1000,13 +899,35 @@ class League extends ModTemplate {
   ////////////////////////////////////////////////
   // convenience functions for database inserts //
   ////////////////////////////////////////////////
+  async leagueInsert(obj) {
+
+    let sql = `INSERT OR REPLACE INTO leagues (id, game, name, admin, status, description, ranking_algorithm, default_score) 
+                    VALUES ( $id, $game, $name, $admin, $status, $description, $ranking_algorithm, $default_score )`;
+    let params = {
+      $id         :   obj.id ,
+      $game       :   obj.game,
+      $name       :   obj.name,
+      $admin      :   obj.admin,
+      $status     :   obj.status,
+      $description        :   obj.description,
+      $ranking_algorithm  :   obj.ranking_algorithm,
+      $default_score      :   obj.default_score,
+    };
+
+    await this.app.storage.executeDatabase(sql, params, "league");
+
+    return;
+  }
+
+
   async gameInsert(obj) {
 
-        let sql = `INSERT INTO games (league_id, game_id, module, winner, players_array, time_started, time_finished, method) VALUES ($league_id, $game_id, $module, $winner, $players_array, $time_started, $time_finished, $method)`;
+        let sql = `INSERT OR IGNORE INTO games (league_id, game_id, game, winner, players_array, time_started, time_finished, method) 
+                                VALUES ($league_id, $game_id, $game, $winner, $players_array, $time_started, $time_finished, $method)`;
         let params = {
           $league_id: obj.league_id,
           $game_id: obj.game_id,
-          $module: obj.module,
+          $game: obj.game,
           $winner: obj.winner ,
           $players_array: obj.players_array,
           $time_started: obj.time_started,
@@ -1024,25 +945,16 @@ class League extends ModTemplate {
 
   async playerInsert(obj) {
 
-        let sql = `INSERT INTO players (
-                league_id,
-                publickey,
-                score,
-                ts
-              ) VALUES (
-                $league_id,
-                $publickey,
-                $score,
-                $ts
-              )`;
-        let params = {
-              $league_id: obj.league_id,
-              $publickey: obj.publickey,
-              $score: obj.score,
-              $ts: obj.ts
-            };
-        await this.app.storage.executeDatabase(sql, params, "league");
-	return;
+    let sql = `INSERT OR IGNORE INTO players (league_id, publickey, score, ts) 
+                                VALUES ( $league_id, $publickey, $score, $ts)`;
+    let params = {
+          $league_id: obj.league_id,
+          $publickey: obj.publickey,
+          $score: obj.score,
+          $ts: obj.ts
+        };
+    await this.app.storage.executeDatabase(sql, params, "league");
+	  return;
   }
 
 }

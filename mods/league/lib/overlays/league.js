@@ -20,6 +20,9 @@ class LeagueOverlay {
 
   }
 
+  // --------------------------------------------
+  // Do not directly call render -- emit an event
+  // --------------------------------------------
   async render() {
     
     if (!this.league) { return; }

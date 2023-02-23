@@ -1313,7 +1313,8 @@ console.log("onConfirmation: receive gameover transaction");
 
       tx.msg = {};
       tx.msg.request = "launch singleplayer";
-      tx.msg.module = gameobj.name;
+      tx.msg.module = "Arcade";
+      tx.msg.game = gameobj.name;
       tx = this.app.wallet.signTransaction(tx);
       this.app.network.propagateTransaction(tx);
 
