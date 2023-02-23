@@ -20,7 +20,6 @@ class Recovery extends ModTemplate {
     this.recover_overlay = new SaitoLogin(app, this);
 
     app.connection.on("recovery-backup-overlay-render-request", (obj) => {
-alert("backup overlay");
       if (obj.success_callback != null) {
         this.backup_overlay.success_callback = obj.success_callback;
       } else {
@@ -56,8 +55,6 @@ alert("backup overlay");
     });
 
     app.connection.on("recovery-recover-overlay-render-request", (obj) => {
-alert("recovery overlay");
-
       if (obj.success_callback != null) {
 	this.backup_overlay.callback = obj.success_callback;
       }

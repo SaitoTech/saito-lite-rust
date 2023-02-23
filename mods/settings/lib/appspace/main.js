@@ -14,6 +14,7 @@ class SettingsAppspace {
     this.overlay = new SaitoOverlay(app, mod);
 
     this.app.connection.on("settings-overlay-render-request", () => {
+      this.mod.attachStyleSheets();
       this.render();
     });
 
