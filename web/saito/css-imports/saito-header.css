@@ -247,6 +247,7 @@
 #header-username {
   color: var(--saito-white);
   cursor: pointer;
+  font-size: 2rem;
 }
 
 
