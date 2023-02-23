@@ -1,12 +1,13 @@
 module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 
+    console.log(league.game);
     let game_mod = app.modules.returnModuleByName(league.game);
 
     let html = `
     <div class="league-overlay-container">
         <div class="league-overlay">
             <div class="league-overlay-header">
-                <div class="league-overlay-header-image" style="background-image: url('${game_mod.returnArcadeImg()}')">
+                <div class="league-overlay-header-image" style="background-image: url('${game_mod?.returnArcadeImg()}')">
                 </div>
                 <div class="league-overlay-header-title-box">
                     <div class="league-overlay-header-title-box-title">${league.name}</div>

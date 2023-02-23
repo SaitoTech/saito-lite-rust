@@ -63,7 +63,7 @@ class League extends ModTemplate {
     this.app.modules.getRespondTos("default-league").forEach((modResponse) => {
        this.addLeague({
         	id     			: 	  app.crypto.hash(modResponse.modname) ,	// id
-    	   	game   			: 	  modResponse.game , 				// game - name of game mod
+    	   	game   			: 	  modResponse.modname , 				// game - name of game mod
     	   	name   			: 	  modResponse.name , 				// name - name of league
     	   	admin  			: 	  "" ,					// admin - publickey (if exists)
       		status 			: 	  "public" ,				// status - public or private
@@ -138,7 +138,6 @@ class League extends ModTemplate {
     if (!obj)                   { return; }
     if (!obj.id)                { return; }
 
-    console.log("Add League");
     if (!this.returnLeague(obj.id)) {
       let newLeague = this.validateLeague(obj);
 
@@ -152,7 +151,6 @@ class League extends ModTemplate {
       this.leagues.push(newLeague);
 
       if (!this.app.BROWSER){
-        console.log("Insert League");
         this.leagueInsert(newLeague);        
       }
     }
@@ -296,10 +294,6 @@ class League extends ModTemplate {
     // add remote leagues
     //
     if (service.service === "league") {
-      console.log("=============");
-      console.log("Pseudo PeerHandShake Complete");
-      console.log("=============");
-      
 
       //
       // fetch updated rankings
@@ -367,7 +361,7 @@ class League extends ModTemplate {
 
       let txmsg = tx.returnMessage();
 
-      console.log("LEAGUE onConfirmation: " + txmsg.request);
+      //console.log("LEAGUE onConfirmation: " + txmsg.request);
 
       if (txmsg.request === "league create") {
         this.receiveCreateTransaction(blk, tx, conf, app);
@@ -692,7 +686,7 @@ class League extends ModTemplate {
     
     let txmsg = tx.returnMessage();
 
-    console.log(`League processing game start of ${txmsg.game}!`);
+    //console.log(`League processing game start of ${txmsg.game}!`);
 
     let sql = `SELECT * FROM leagues WHERE game = ?`;
     const relevantLeagues = await this.app.storage.queryDatabase(sql, [txmsg.game], "league");
@@ -707,7 +701,7 @@ class League extends ModTemplate {
       }
     }
 
-    console.log(relevantLeagues, publickeys);
+    //console.log(relevantLeagues, publickeys);
 
     //
     // and insert if needed

@@ -433,7 +433,8 @@ class Arcade extends ModTemplate {
           // We listen to game module txs for gameover
           //
           if (txmsg.request === "gameover") {
-console.log("onConfirmation: receive gameover transaction");
+            
+            console.log("onConfirmation: receive gameover transaction");
             if (txmsg.reason == "cancellation") {
               arcade_self.receiveCloseTransaction(tx);
             } else {
@@ -827,6 +828,9 @@ console.log("onConfirmation: receive gameover transaction");
     let id = txmsg.game_id;
     
     let game = this.returnGame(id);
+
+    if (!game){ return; }
+
     this.removeGame(id);  
     this.addGame(game, "close");
 
@@ -867,10 +871,13 @@ console.log("onConfirmation: receive gameover transaction");
   //
   async receiveGameoverTransaction(tx) {
     let txmsg = tx.returnMessage();
-    let id = txmsg.sig || txmsg.game_id;
+    let id = txmsg.game_id;
 
     //Reclassify game as gameover (will be separately displayed when Observer is back)
     let game = this.returnGame(id);
+
+    if (!game){ return; }
+
     this.removeGame(id);
     this.addGame(game, "over");
 
@@ -1352,7 +1359,7 @@ console.log("onConfirmation: receive gameover transaction");
     // Sanity check the tx and make sure we don't already have it
     //
     if (!tx || !tx.msg || !tx.transaction || !tx.transaction.sig) {
-      console.error("Invalid Game TX, won't add to list");
+      console.error("Invalid Game TX, won't add to list", tx);
       return false;
     }
 

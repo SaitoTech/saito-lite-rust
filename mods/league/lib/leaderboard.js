@@ -60,6 +60,7 @@ class Leaderboard {
           <div class="center-align">${i+1}</div>
           <div class="saito-address saito-address-${publickey}" data-id="${publickey}">${publickey}</div>
           <div class="right-align">${Math.round(player.score)}</div>
+          <div class="right-align">${Math.round(player.games_finished)}</div>
         </div>
       `;
 
