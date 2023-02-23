@@ -34,7 +34,7 @@ class RecoverySetup {
    */
   render(mycallback=null) {
     if (mycallback != null) { this.callback = mycallback; }
-    this.overlay.show(SaitoLoginOverlayTemplate(this.app, this.mod));
+    this.overlay.show(RecoverySetupTemplate(this.app));
     document.getElementById("saito-login-email").focus();
     this.attachEvents();
   }

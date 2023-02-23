@@ -1,8 +1,6 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SetupOverlay = require('./lib/overlays/setup');
 const RestoreOverlay = require('./lib/overlays/restore');
-const SaitoLogin = require("./../../lib/saito/ui/modals/login/login");
-const SaitoBackup = require("./../../lib/saito/ui/modals/setup-recovery/setup-recovery");
 
 
 class Recovery extends ModTemplate {
@@ -14,10 +12,8 @@ class Recovery extends ModTemplate {
     this.description = "Secure and anonymous account backup and recovery";
     this.categories = "Utilities Core";
 
-    //this.backup_overlay = new SetupOverlay(app, this);
-    //this.recover_overlay = new RestoreOverlay(app, this);
-    this.backup_overlay = new SaitoBackup(app, this);
-    this.recover_overlay = new SaitoLogin(app, this);
+    this.backup_overlay = new SetupOverlay(app, this);
+    this.recover_overlay = new RestoreOverlay(app, this);
 
     app.connection.on("recovery-backup-overlay-render-request", (obj) => {
 alert("backup overlay");
@@ -59,10 +55,6 @@ alert("backup overlay");
 alert("recovery overlay");
 
       if (obj.success_callback != null) {
-	this.backup_overlay.callback = obj.success_callback;
-      }
-/**
-      if (obj.success_callback != null) {
         this.recover_overlay.success_callback = obj.success_callback;
       } else {
 	this.recover_overlay.success_callback = (e) => {};
@@ -72,7 +64,7 @@ alert("recovery overlay");
       } else {
 	this.recover_overlay.failure_callback = (e) => {};
       }
-***/
+
       //
       // if submitted with email / pass, auto-backup
       //

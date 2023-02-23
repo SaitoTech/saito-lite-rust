@@ -398,10 +398,11 @@ button.small,
   min-width: 4rem;
 }
 button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-gradient.fat {
-  height: 7rem;
-  font-size: 2rem;
-  padding: 2rem !important;
-  width: 30rem;
+    height: 7rem;
+    font-size: 2rem;
+    padding: 2.4rem !important;
+    min-width: 30rem;
+    text-align: center;
 }
 
 :root {
@@ -2227,7 +2228,7 @@ This alows for a header with a header with title to be added without extra CSS
     display:block;
 }
 .saito-overlay-form-text {
-    font-size: 2.3rem;
+    font-size: 2rem;
     padding-top: 1rem;
     padding-bottom: 1rem;
     line-height: 3rem;
@@ -2241,18 +2242,18 @@ This alows for a header with a header with title to be added without extra CSS
 }
 .saito-overlay-form-inputs > input[type="text"] {
     height: 6rem;
-    font-size: 2.5rem;
+    font-size: 2.3rem;
 }
 .saito-overlay-form > input[type="text"] , .saito-overlay-form-input[type="text"] {
     height: 6rem;
-    font-size: 2.5rem;
+    font-size: 2.3rem;
 }
 .saito-overlay-form-input[type="text"] {
     margin-top: 1rem;
 }
 .saito-overlay-form > button[type="button"] , .saito-overlay-form-submitline > button[type="button"] {
     height: 7rem;
-    font-size: 2.5rem;
+    font-size: 2.1rem;
     display: block;
     margin-left: auto;
     margin-top: 2rem;
