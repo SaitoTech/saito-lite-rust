@@ -1,6 +1,4 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
-const SetupOverlay = require('./lib/overlays/setup');
-const RestoreOverlay = require('./lib/overlays/restore');
 const SaitoLogin = require("./../../lib/saito/ui/modals/login/login");
 const SaitoBackup = require("./../../lib/saito/ui/modals/setup-recovery/setup-recovery");
 
@@ -14,13 +12,10 @@ class Recovery extends ModTemplate {
     this.description = "Secure and anonymous account backup and recovery";
     this.categories = "Utilities Core";
 
-    //this.backup_overlay = new SetupOverlay(app, this);
-    //this.recover_overlay = new RestoreOverlay(app, this);
     this.backup_overlay = new SaitoBackup(app, this);
     this.recover_overlay = new SaitoLogin(app, this);
 
     app.connection.on("recovery-backup-overlay-render-request", (obj) => {
-alert("backup overlay");
       if (obj.success_callback != null) {
         this.backup_overlay.success_callback = obj.success_callback;
       } else {
@@ -46,6 +41,21 @@ alert("backup overlay");
         let decryption_secret = this.app.crypto.hash(this.app.crypto.hash(email+pass)+hash1);
         let retrieval_hash    = this.app.crypto.hash(this.app.crypto.hash(hash2+email)+pass);
 
+	//
+	// save this stuff in my wallet
+	//
+	this.recovery.decryption_secret = decryption_secret;
+	this.recovery.retrieval_hash = retrieval_hash;
+	this.save();
+
+	//
+	// save my email
+	//
+	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : email });
+
+	//
+	// and send the transaction
+	//
         let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
         this.app.network.propagateTransaction(newtx);
         if (this.backup_overlay.success_callback) { this.backup_overlay.success_callback(true); }
@@ -56,23 +66,11 @@ alert("backup overlay");
     });
 
     app.connection.on("recovery-recover-overlay-render-request", (obj) => {
-alert("recovery overlay");
 
       if (obj.success_callback != null) {
 	this.backup_overlay.callback = obj.success_callback;
       }
-/**
-      if (obj.success_callback != null) {
-        this.recover_overlay.success_callback = obj.success_callback;
-      } else {
-	this.recover_overlay.success_callback = (e) => {};
-      }
-      if (obj.failure_callback != null) {
-        this.recover_overlay.failure_callback = obj.failure_callback;
-      } else {
-	this.recover_overlay.failure_callback = (e) => {};
-      }
-***/
+
       //
       // if submitted with email / pass, auto-backup
       //
@@ -96,6 +94,11 @@ alert("recovery overlay");
       this.recover_overlay.render();
     });
 
+    //
+    // save on init function
+    //
+    this.load();
+
   }
 
   returnServices() {
@@ -107,8 +110,11 @@ alert("recovery overlay");
   respondTo(type) {
     if (type == "saito-header") {
       let x = [];
+      let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+      let has_registered_username = false;
+      if (key) { if (key.registered_username) { has_registered_username = true; } }
       if (this.app.browser.isMobileBrowser()) {
-	if (this.app.keychain.returnIdenticon(this.app.wallet.returnPublicKey())) {
+	if (has_registered_username) {
 	  x.push({
             text: "Login",
             icon: "fa fa-sign-in",
@@ -132,16 +138,18 @@ alert("recovery overlay");
 	  });
         }
       } else {
-	x.push({
-          text: "Backup",
-          icon: "fa-sharp fa-solid fa-cloud-arrow-up",
-          rank: 130,
-          callback: function (app) {
-  	    let success_callback = function(res) {};
-	    let failure_callback = function(res) {};
-	    app.connection.emit("recovery-backup-overlay-render-request", (success_callback, failure_callback));
-          }
-	});
+	if (has_registered_username) {
+	  x.push({
+            text: "Backup",
+            icon: "fa-sharp fa-solid fa-cloud-arrow-up",
+            rank: 130,
+            callback: function (app) {
+  	      let success_callback = function(res) {};
+	      let failure_callback = function(res) {};
+	      app.connection.emit("recovery-backup-overlay-render-request", (success_callback, failure_callback));
+            }
+	  });
+        }
       }
       return x;
     }
@@ -247,6 +255,21 @@ alert("recovery overlay");
 
   }
 
+
+  load() {
+    if (this.app.options.recovery) {
+      this.recovery = this.app.options.recovery;
+    } else {
+      this.recovery = {};
+      this.save();
+    }
+  } 
+    
+  save() {
+    this.app.options.recovery = this.recovery;
+    this.app.storage.saveOptions();
+  } 
+    
 }
 
 

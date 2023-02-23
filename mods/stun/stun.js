@@ -137,18 +137,14 @@ class Stun extends ModTemplate {
             super.render(this.app, this);
             return new StunxInvite(this.app, this);
         }
-        // if (type === 'appspace') {
-        //     this.styles = [`/${this.returnSlug()}/css/style.css`,];
-        //     super.render(this.app, this);
-        //     return new StunxAppspace(this.app, this);
-        // }
         if (type === 'saito-header') {
           return [{
             text: "Video Call",
             icon: this.icon,
+	    rank: 50,
             callback: function (app, id) {
-          let stun_self = app.modules.returnModule("Stun");
-          stun_self.renderInto(".saito-overlay"); 
+              let stun_self = app.modules.returnModule("Stun");
+              stun_self.renderInto(".saito-overlay"); 
             }
           }];
         }
@@ -176,9 +172,6 @@ class Stun extends ModTemplate {
                     }
                 ],
             };
-
-
-      
         }
 
         if (type === 'user-menu') {
@@ -194,19 +187,6 @@ class Stun extends ModTemplate {
             }];
         }
 
-        if (type === 'saito-header') {
-            let m = [{
-                text: "Video Call",
-                icon: this.icon,
-                allowed_mods: ["redsquare", 'arcade'],
-                callback: function (app, id) {
-                  let pub_key = app.wallet.returnPublicKey();
-                  app.connection.emit('game-start-video-call', pub_key);
-                }
-              }
-             ];
-          return m;
-        }
         return null;
     }
 

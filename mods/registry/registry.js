@@ -257,17 +257,22 @@ class Registry extends ModTemplate {
     }
 
     if (type === 'saito-header') {
-      let m = [{
-        text: "Register",
-        icon: "fa-regular fa-address-card",
-	rank: 40 ,
-        callback: function (app, id) {
-         let m = new RegisterUsernameModal(app, registry_self); //No callback
-         m.render();
-         return;
-        }
-      }];
-      return m;
+      let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+      let has_registered_username = false;
+      if (key) { if (key.has_registered_username) { has_registered_username = true; } }
+      if (!has_registered_username) {
+        let m = [{
+          text: "Username",
+          icon: "fa-solid fa-user",
+  	  rank: 80 ,
+          callback: function (app, id) {
+           let m = new RegisterUsernameModal(app, registry_self); //No callback
+           m.render();
+           return;
+          }
+        }];
+        return m;
+      }
     }
 
     return null;
