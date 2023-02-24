@@ -1,6 +1,6 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoLogin = require("./../../lib/saito/ui/modals/login/login");
-const SaitoBackup = require("./../../lib/saito/ui/modals/setup-recovery/setup-recovery");
+const SaitoBackup = require("./../../lib/saito/ui/modals/backup/backup");
 
 
 class Recovery extends ModTemplate {
@@ -9,22 +9,22 @@ class Recovery extends ModTemplate {
 
     super(app);
     this.name = "Recovery";
-    this.description = "Secure and anonymous account backup and recovery";
+    this.description = "Secure wallet backup and recovery";
     this.categories = "Utilities Core";
 
     this.backup_overlay = new SaitoBackup(app, this);
     this.recover_overlay = new SaitoLogin(app, this);
 
     app.connection.on("recovery-backup-overlay-render-request", (obj) => {
+
+      //
+      // update callbacks
+      //
       if (obj.success_callback != null) {
         this.backup_overlay.success_callback = obj.success_callback;
-      } else {
-	this.backup_overlay.success_callback = (e) => {};
       }
       if (obj.failure_callback != null) {
         this.backup_overlay.failure_callback = obj.failure_callback;
-      } else {
-	this.backup_overlay.failure_callback = (e) => {};
       }
 
       //
@@ -32,29 +32,16 @@ class Recovery extends ModTemplate {
       //
       if (obj.email && obj.pass) {
 
-        let hash1 = "WHENINDISGRACEWITHFORTUNEANDMENSEYESIALLALONEBEWEEPMYOUTCASTSTATE";
-        let hash2 = "ANDTROUBLEDEAFHEAVENWITHMYBOOTLESSCRIESANDLOOKUPONMYSELFANDCURSEMYFATE";
-
-	let email = obj.email;
-	let pass = obj.pass;
-
-        let decryption_secret = this.app.crypto.hash(this.app.crypto.hash(email+pass)+hash1);
-        let retrieval_hash    = this.app.crypto.hash(this.app.crypto.hash(hash2+email)+pass);
+        let decryption_secret = this.returnDecryptionSecret(obj.email, obj.pass);
+        let retrieval_hash    = this.returnRetrievalHash(obj.email, obj.pass);
 
 	//
-	// save this stuff in my wallet
-	//
-	this.recovery.decryption_secret = decryption_secret;
-	this.recovery.retrieval_hash = retrieval_hash;
-	this.save();
-
-	//
-	// save my email
+	// save email
 	//
 	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : email });
 
 	//
-	// and send the transaction
+	// and send transaction
 	//
         let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
         this.app.network.propagateTransaction(newtx);
@@ -67,6 +54,9 @@ class Recovery extends ModTemplate {
 
     app.connection.on("recovery-recover-overlay-render-request", (obj) => {
 
+      //
+      // update callbacks
+      //
       if (obj.success_callback != null) {
 	this.backup_overlay.callback = obj.success_callback;
       }
@@ -76,14 +66,8 @@ class Recovery extends ModTemplate {
       //
       if (obj.email && obj.pass) {
 
-        let hash1 = "WHENINDISGRACEWITHFORTUNEANDMENSEYESIALLALONEBEWEEPMYOUTCASTSTATE";
-        let hash2 = "ANDTROUBLEDEAFHEAVENWITHMYBOOTLESSCRIESANDLOOKUPONMYSELFANDCURSEMYFATE";
-
-	let email = obj.email;
-	let pass = obj.pass;
-
-        let decryption_secret = this.app.crypto.hash(this.app.crypto.hash(email+pass)+hash1);
-        let retrieval_hash    = this.app.crypto.hash(this.app.crypto.hash(hash2+email)+pass);
+        let decryption_secret = this.returnDecryptionSecret(obj.email, obj.pass);
+        let retrieval_hash    = this.returnRetrievalHash(obj.email, obj.pass);
 
         let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
         this.app.network.propagateTransaction(newtx);
@@ -94,11 +78,18 @@ class Recovery extends ModTemplate {
       this.recover_overlay.render();
     });
 
-    //
-    // save on init function
-    //
-    this.load();
+  }
 
+  returnDecryptionSecret(email = "", pass = "") {
+    let hash1 = "WHENINDISGRACEWITHFORTUNEANDMENSEYESIALLALONEBEWEEPMYOUTCASTSTATE";
+    let hash2 = "ANDTROUBLEDEAFHEAVENWITHMYBOOTLESSCRIESANDLOOKUPONMYSELFANDCURSEMYFATE";
+    return this.app.crypto.hash(this.app.crypto.hash(email+pass)+hash1);
+  }
+
+  returnRetrievalHash(email = "", pass = "") {
+    let hash1 = "WHENINDISGRACEWITHFORTUNEANDMENSEYESIALLALONEBEWEEPMYOUTCASTSTATE";
+    let hash2 = "ANDTROUBLEDEAFHEAVENWITHMYBOOTLESSCRIESANDLOOKUPONMYSELFANDCURSEMYFATE";
+    return this.app.crypto.hash(this.app.crypto.hash(hash2+email)+pass);
   }
 
   returnServices() {
@@ -255,21 +246,6 @@ class Recovery extends ModTemplate {
 
   }
 
-
-  load() {
-    if (this.app.options.recovery) {
-      this.recovery = this.app.options.recovery;
-    } else {
-      this.recovery = {};
-      this.save();
-    }
-  } 
-    
-  save() {
-    this.app.options.recovery = this.recovery;
-    this.app.storage.saveOptions();
-  } 
-    
 }
 
 

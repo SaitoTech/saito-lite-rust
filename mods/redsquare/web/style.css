@@ -55,6 +55,21 @@
   margin-top: 15vh;
 }
 
+.post-tweet {
+  display: none;
+  min-width: 5rem;
+  height: 5rem;
+  width: 5rem;
+  border-radius: 50%;
+  line-height: 5rem;
+  padding: 0rem;
+  font-size: 4rem;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 3;
+}
+
 @media screen and (max-width: 768px) {
 
   .redsquare-page-header-title {
@@ -99,6 +114,10 @@
 
   .redsquare-appspace-body {
     margin-top: -1rem;
+  }
+
+  .post-tweet {
+    display: inline-block;
   }
 }
 

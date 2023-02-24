@@ -48,7 +48,9 @@
   border-radius: 0px;
 }
 
-.status-header {}
+.status-header {
+  background-color: whitesmoke;
+}
 
 /* General overlays */
 .rules-overlay {
