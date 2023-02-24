@@ -1,9 +1,9 @@
-import SaitoFactory from "saito-js/dist/lib/factory";
+import SaitoFactory from "saito-js/lib/factory";
 import Block from "./block";
 import Slip from "./slip";
 import Transaction from "./transaction";
 
-export default class Factory implements SaitoFactory {
+export default class Factory extends SaitoFactory {
   public createBlock(data: any): Block {
     return new Block(data);
   }

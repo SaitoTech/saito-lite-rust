@@ -1,14 +1,23 @@
 // import "source-map-support/register";
 
-import Server from "./lib/saito/core/server";
+import Server, { NodeSharedMethods } from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
 import { Saito } from "./apps/core";
-
+import SharedMethods from "saito-js/shared_methods";
+import S, { initialize as initS } from "saito-js/index.node";
 import mods_config from "./config/modules.config";
+import fs from "fs";
+import process from "process";
+import { WebSocket, WebSocketServer } from "ws";
+import configs from "./config/configs.json";
 
 async function initSaito() {
+
   const app = new Saito({
     mod_paths: mods_config.core,
+  });
+  await initS(configs, new NodeSharedMethods(app)).then(() => {
+    console.log("zzzzzzzzzzzzzzz");
   });
 
   app.server = new Server(app);
@@ -66,8 +75,8 @@ async function initSaito() {
 
     Welcome to Saito
 
-    address: ${app.wallet.returnPublicKey()}
-    balance: ${app.wallet.returnBalance()}
+    address: ${await app.wallet.getPublicKey()}
+    balance: ${await app.wallet.getBalance()}
     local module server: ${localServer}
 
     ################################################################
@@ -89,12 +98,12 @@ async function initSaito() {
   /////////////////////
   // Cntl-C to Close //
   /////////////////////
-  process.on("SIGTERM", function () {
+  process.on("SIGTERM", function() {
     shutdownSaito();
     console.log("Network Shutdown");
     process.exit(0);
   });
-  process.on("SIGINT", function () {
+  process.on("SIGINT", function() {
     shutdownSaito();
     console.log("Network Shutdown");
     process.exit(0);

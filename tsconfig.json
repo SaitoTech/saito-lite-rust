@@ -11,6 +11,7 @@
 //    "declaration": true,
 //    "declarationMap": true,
 //    "inlineSourceMap": true,
+    "resolveJsonModule": true,
     "downlevelIteration": true,
     "lib": [
       "dom",

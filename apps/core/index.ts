@@ -2,24 +2,17 @@ import saito_lib from "../../lib/saito/saito";
 import Binary from "../../lib/saito/binary";
 import Mods from "../../lib/saito/modules";
 import Crypto from "../../lib/saito/crypto";
-import UtxoSet from "../../lib/saito/utxoset";
 import Blockchain from "../../lib/saito/blockchain";
-import Blockring from "../../lib/saito/blockring";
 import Server from "../../lib/saito/core/server";
 import Connection from "../../lib/saito/connection";
 import Browser from "../../lib/saito/browser";
-import GoldenTicket from "../../lib/saito/goldenticket";
-import Mempool from "../../lib/saito/mempool";
 import Wallet from "../../lib/saito/wallet";
-import Miner from "../../lib/saito/miner";
 import Keychain from "../../lib/saito/keychain";
-import BurnFee from "../../lib/saito/burnfee";
 import Storage from "../../lib/saito/storage";
-import NetworkAPI from "../../lib/saito/networkapi";
+// import NetworkAPI from "../../lib/saito/networkapi";
 import Network from "../../lib/saito/network";
 
 import hash_loader from "./hash-loader";
-import Handshake from "../../lib/saito/handshake";
 
 const path = require("path");
 
@@ -34,18 +27,11 @@ class Saito {
   connection: Connection;
   browser: Browser;
   storage: Storage;
-  goldenticket: GoldenTicket;
-  utxoset: UtxoSet;
-  mempool: Mempool;
   wallet: Wallet;
-  miner: Miner;
   keychain: Keychain;
   network: Network;
-  networkApi: NetworkAPI;
-  burnfee: BurnFee;
+  // networkApi: NetworkAPI;
   blockchain: Blockchain;
-  blockring: Blockring;
-  handshake: Handshake;
   hash: (data: Uint8Array) => string;
   server: Server;
 
@@ -67,27 +53,20 @@ class Saito {
 
   newSaito() {
     this.binary = new Binary(this);
-    this.crypto = new Crypto(this);
+    this.crypto = new Crypto();
     this.connection = new Connection();
     this.browser = new Browser(this);
     this.storage = new Storage(this);
-    this.goldenticket = new GoldenTicket(this);
-    this.utxoset = new UtxoSet();
-    this.mempool = new Mempool(this);
     this.wallet = new Wallet(this);
-    this.miner = new Miner(this);
     this.keychain = new Keychain(this);
-    this.network = new Network(this);
-    this.networkApi = new NetworkAPI(this);
-    this.burnfee = new BurnFee();
-    this.blockchain = new Blockchain(this);
-    this.blockring = new Blockring(this, this.blockchain.returnGenesisPeriod());
-    this.handshake = new Handshake(this);
+    this.network = new Network();
+    // this.networkApi = new NetworkAPI(this);
+    this.blockchain = new Blockchain();
   }
 
   async init() {
     try {
-      await this.storage.initialize();
+      // await this.storage.initialize();
 
       //
       // import hashing library here because of complications with both
@@ -97,9 +76,7 @@ class Saito {
       await hash_loader(this);
 
       await this.wallet.initialize();
-      this.mempool.initialize();
-      this.miner.initialize();
-      this.keychain.initialize();
+      await this.keychain.initialize();
 
       this.modules.mods = this.modules.mods_list.map((mod_path) => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
