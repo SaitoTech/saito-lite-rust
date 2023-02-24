@@ -16,7 +16,7 @@ class Spider extends GameTemplate {
     this.name            = "Spider";
     this.game_length     = 10; //Estimated number of minutes to complete a game
     this.description     = 'Two deck solitaire card game that traps you in a web of addiction';
-    this.categories       = "Games Cardgame one-player";
+    this.categories       = "Games Cardgame One-player";
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;

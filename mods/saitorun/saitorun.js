@@ -15,7 +15,7 @@ class SaitoRun extends GameTemplate {
     this.gamename        = "SaitoRun";
     this.slug            = "saitorun";
     this.description     = 'Collect cubes and navigate through obstacles to get highest possible score!';
-    this.categories      = "action games";
+    this.categories      = "Games Arcadegame One-player";
     this.request_no_interrupts = true; // don't popup chat
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
