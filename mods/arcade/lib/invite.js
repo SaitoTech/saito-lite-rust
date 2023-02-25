@@ -30,9 +30,11 @@ class Invite {
       game_type: "standard game",
     };
 
-    //If we have a valid tx, parse the data, so that the UI components have easy access to info to render
-
+    //
+    // if we have a valid tx, parse the data, so that the UI components have easy access to info to render
+    //
     if (tx) {
+
       let txmsg = tx.returnMessage();
 
       this.invite_data.game_id = tx.transaction.sig;
@@ -51,11 +53,11 @@ class Invite {
       this.invite_data.options = txmsg.options;
 
       let game_mod = app.modules.returnModule(txmsg.game);
-      if (game_mod){
+      if (game_mod) {
         this.invite_data.game_mod = game_mod;
         this.invite_data.game_slug = game_mod.returnSlug();  
-      }else{
-        this.invite_data.game_slug = this.game_name.toLowerCase();
+      } else {
+        this.invite_data.game_slug = this.invite_data.game_name.toLowerCase();
       }
       
       //

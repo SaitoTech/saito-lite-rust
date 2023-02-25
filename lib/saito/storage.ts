@@ -331,6 +331,9 @@ class Storage {
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
   saveTransaction(tx: Transaction) {
+
+console.log("SAVE TRANSACTION");
+
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = {
       request: "archive save",

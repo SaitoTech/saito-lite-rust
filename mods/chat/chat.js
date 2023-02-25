@@ -11,6 +11,8 @@ class Chat extends ModTemplate {
 
     constructor(app) {
 
+console.log("start chat constructor...");
+
         super(app);
 
         this.name = "Chat";
@@ -43,6 +45,9 @@ class Chat extends ModTemplate {
         ];
 
 
+console.log("start chat constructor...");
+
+        return;
     }
 
 
@@ -193,8 +198,10 @@ class Chat extends ModTemplate {
                 let group = this.returnGroupByMemberPublickey(peer.returnPublicKey());
                 if (group) {
                     let active_module = app.modules.returnActiveModule();
-                    if (active_module.request_no_interrupts != true) {
+		    if (active_module) {
+                      if (active_module.request_no_interrupts != true) {
                         this.app.connection.emit('chat-popup-render-request', group);
+                      }
                     }
                 }
             } else {
