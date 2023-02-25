@@ -47,20 +47,14 @@ class Nwasm extends GameTemplate {
 
     this.uploaded_rom = false;
 
-console.log("NWASM constructor!");
-
     return this;
   }
 
 
   initialize(app) {
 
-console.log("nwasm init 0");
     if (app.BROWSER == 0) { return; }
-console.log("nwasm init 1");
     super.initialize(app);
-
-console.log("nwasm init 2");
 
     //
     // monitor log if browser
@@ -78,9 +72,7 @@ console.log("nwasm init 2");
         }
       }
     }
-console.log("nwasm init 3");
   }
-
 
   respondTo(type="") {
     if (type === "library-collection") {
@@ -89,7 +81,7 @@ console.log("nwasm init 3");
 	mod : this ,
 	collection : "Nwasm" , 
 	key : this.nwasm.random ,
-	shouldArchive : (request) => {
+	shouldArchive : (request="", subrequest="") => {
 	  if (request === "archive rom" || subrequest === "archive rom") { return true; }
 	  return false;
 	},
@@ -100,8 +92,6 @@ console.log("nwasm init 3");
 
 
   async handlePeerTransaction(app, tx=null, peer, mycallback) {
-
-console.log("HPT in nwasm...");
 
     if (tx == null) { return; }
     let message = tx.returnMessage();
@@ -123,16 +113,14 @@ console.log("HPT in nwasm...");
     this.active_game_load_ts = ts;
     this.active_game_save_ts = ts;
   }
+
   stopPlaying(ts=null) {
     if (ts == null) { ts = new Date().getTime(); }
     this.active_game_time_played += (ts - this.active_game_load_ts);
     this.active_game_load_ts = ts;
   }
 
-
   initializeGame(game_id) {
-
-console.log("initialize game");
 
     let nwasm_self = this;
 
@@ -154,8 +142,6 @@ console.log("initialize game");
   }
 
   initializeHTML(app) {
-
-console.log("done render 0");
 
     let game_mod = this;
     if (!this.browser_active) { return; }
@@ -265,11 +251,8 @@ console.log("done render 0");
       }
     });
 
-console.log("done render 1");
-
     this.menu.addChatMenu();
     this.menu.render();
-console.log("done render 2");
   }
 
   deleteRoms() {
@@ -304,9 +287,6 @@ console.log("done render 2");
   returnGameOptionsHTML() {
     return NwasmGameOptionsTemplate(this.app, this);
   }
-
-
-
 
   hideSplashScreen() {
 
@@ -499,7 +479,14 @@ alert("SAVING ROM");
 
     if (iobj) { iobj.innerHTML = "uploading archive file: "+newtx.transaction.m.length+" bytes"; }
 
+//
+//
+//
+console.log("sending transaction with callback!");
+
     this.app.network.sendTransactionWithCallback(newtx, async function (res) {
+
+alert("DONE UPLOADING: " + JSON.stringify(res));
 
       if (iobj) { iobj.innerHTML = "archive upload completed..."; }
 

@@ -4,14 +4,11 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatManager = require('./lib/chat-manager/main');
 const ChatManagerOverlay = require('./lib/overlays/chat-manager');
 const ChatPopup = require("./lib/chat-manager/popup");
-
 const JSON = require('json-bigint');
 
 class Chat extends ModTemplate {
 
     constructor(app) {
-
-console.log("start chat constructor...");
 
         super(app);
 
@@ -43,9 +40,6 @@ console.log("start chat constructor...");
         this.postScripts = [
             '/saito/lib/emoji-picker/emoji-picker.js'
         ];
-
-
-console.log("start chat constructor...");
 
         return;
     }

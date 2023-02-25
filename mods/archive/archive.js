@@ -28,14 +28,11 @@ class Archive extends ModTemplate {
 
   }
 
-
-
   returnServices() {
       let services = [];
       if (this.app.BROWSER == 0) { services.push({ service: "archive" }); }
       return services;
   }
-
 
   onConfirmation(blk, tx, conf, app) {
 
@@ -53,7 +50,6 @@ class Archive extends ModTemplate {
     }
   }
 
-
   async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
     if (tx == null) { return; }
@@ -68,6 +64,21 @@ class Archive extends ModTemplate {
     //
     // only handle archive request 
     //
+    if (req.request === "archive save") {
+
+      // module: this.name,
+      // id: this.app.crypto.hash(this.active_rom_name) ,
+      // title: this.active_rom_name.trim() ,
+      // request: "archive save",
+      // subrequest: "archive rom",
+      // data: base64data,
+
+console.log("saving transactiona and sending result...");
+      this.saveTransaction(tx, "");
+      mycallback(true);
+console.log("done saving transaction and sending result...");
+      return;
+    }
     if (req.request === "archive") {
 
       if (req.data.request === "delete") {

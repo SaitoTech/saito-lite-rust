@@ -82,8 +82,8 @@ console.log("---------------------");
       let id = txmsg.id;
       let title = txmsg.title;
       let module = txmsg.module;
-      let request = txmsg.request;
-      let subrequest = txmsg.subrequest;
+      let request = txmsg.request || "";
+      let subrequest = txmsg.subrequest || "";
       let sig = tx.transaction.sig;
 
       if (this.library[module]) {
@@ -104,20 +104,21 @@ console.log("---------------------");
 	// add ROM or update library
 	//
 	for (let i = 0; i < this.monitor.length; i++) {
-	  if (this.monitor[i].shouldArchive(request)) {
+
+	  if (this.monitor[i].shouldArchive(request, subrequest)) {
 
 	    if (contains_item == false) {
-	      this.library[module].local.push(
-	        {
+	        let item = {
   		  id : id ,
 		  title : txmsg.title ,
 		  description : "" ,
 		  num : 1 ,			// total
-		  available : 1 ,			// total available
+		  available : 1 ,		// total available
 		  checkout : [] ,
 		  sig : sig ,
 	        }
-	      );
+console.log("ITEM TO ARCHIVE: " + JSON.stringify(item));
+	      this.library[module].local.push(item);
 	      this.save();
 	    } else {
 	      try {
@@ -147,7 +148,8 @@ console.log("---------------------");
     //
     app.modules.getRespondTos("library-collection").forEach((m) => {
 
-      this.monitor.push(m.collection);
+      this.monitor.push(m);
+
       if (!this.library[m.collection]) {
 
 console.log(" > ");
@@ -203,15 +205,15 @@ console.log(" > ");
       //
       // fetch
       //
-      for (let collection of library_self.monitor) {
+      for (let m of library_self.monitor) {
 
         let message = {};
             message.request = "library collection";
             message.data = {};
-            message.data.collection = collection
+            message.data.collection = m.collection
 
 console.log(" >> ");
-console.log(" >> requesting: " + collection);
+console.log(" >> requesting: " + m.collection);
 console.log(" >> ");
 
         app.network.sendRequestAsTransactionWithCallback(message.request, message.data, (res) => {
@@ -221,7 +223,7 @@ console.log(" >>> ");
 console.log(" >>> response: " + JSON.stringify(res));
 console.log(" >>> ");
 
-	    library_self.library[collection].peers[peer.returnPublicKey()] = res;  // res = collection
+	    library_self.library[m.collection].peers[peer.returnPublicKey()] = res;  // res = collection
 	  }
         }, peer);
       }
