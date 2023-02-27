@@ -1,1 +1,167 @@
 
+.redsquare-page-header-title {
+  color: var(--saito-red);
+  font-size: 2.5rem;
+  padding: 1px;
+  text-transform: uppercase;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.redsquare-redsquare::before {
+  -webkit-text-stroke: var(--saito-red) 1px;
+  color: transparent;
+}
+
+.redsquare-appspace-profile {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.redsquare-actions-buttons {
+  position: relative;
+  display: flex;
+}
+
+.redsquare-actions-container {
+  display: flex;
+  flex-flow: row-reverse;
+  right: 1rem;
+  margin-left: auto;
+}
+
+.redsquare-actions-container .saito-button-secondary {
+  margin-top: 0;
+  padding: 0.5rem 0.7rem 0.4rem 0.7rem;
+}
+
+.redsquare-sidebar {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+}
+
+.redsquare-appspace-body {
+  /* min-height: 100vh; */
+}
+
+#redsquare-intersection {
+  opacity: 1;
+  height: 1rem;
+}
+
+.saito-main>.saito-loader {
+  margin-top: 15vh;
+}
+
+.post-tweet {
+  display: none;
+  min-width: 5rem;
+  height: 5rem;
+  width: 5rem;
+  border-radius: 50%;
+  line-height: 5rem;
+  padding: 0rem;
+  font-size: 4rem;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 3;
+}
+
+@media screen and (max-width: 768px) {
+  .redsquare-page-header-title {
+    font-size: 2rem;
+  }
+  div#redsquare-tweet {
+    content: "\002B";
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+    background: var(--saito-primary);
+    position: fixed;
+    z-index: 1;
+    bottom: 2rem;
+    right: 2rem;
+  }
+  div#redsquare-tweet:hover {
+    color: transparent;
+  }
+  div#redsquare-tweet::after {
+    content: "\002B";
+    position: absolute;
+    color: var(--saito-white);
+    font-size: 5rem;
+    text-align: center;
+    top: 0;
+    left: 0;
+    line-height: 5rem;
+    width: 5rem;
+  }
+  div#redsquare-profile {
+    display: none;
+  }
+  .redsquare-appspace-header .redsquare-page-header-title {
+    display: none;
+  }
+  .redsquare-appspace-body {
+    margin-top: -1rem;
+  }
+  .post-tweet {
+    display: inline-block;
+  }
+}
+
+.tweet-like-button .heart-icon {
+  background: url("/redsquare/images/heart.png");
+  cursor: pointer;
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-size: cover;
+  /* margin-right: .5rem; */
+}
+
+.tweet-like-button .heart-icon.liked {
+  animation: like-anim 0.7s steps(28) forwards;
+}
+
+@keyframes like-anim {
+  to {
+    background-position: right;
+  }
+}
+
+.tweet-like-button .heart-bg {
+  background: rgba(255, 192, 200, 0);
+  border-radius: 50%;
+  width: 60px;
+  display: flex;
+  margin-left: -8px;
+  align-items: center;
+  justify-content: center;
+  transition: all 100ms ease;
+}
+
+.tweet-like-button .heart-bg:hover {
+  background: rgba(255, 192, 200, 0.7);
+}
+
+.tweet-like-button {
+  display: flex;
+  align-items: center;
+}
+
+.tweet-like-button .likes-amount {
+  font-size: 20px;
+  font-family: "Roboto", sans-serif;
+  color: #888;
+  font-weight: 900;
+  margin-left: 6px;
+}
