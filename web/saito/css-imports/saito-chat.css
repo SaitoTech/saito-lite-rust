@@ -194,7 +194,7 @@
   .chat-container {
     margin: 0;
     width: 100vw;
-    height: calc(100vh - var(--saito-header-height));
+    height: calc(100% - var(--saito-header-height));
     max-height: none;
     border-radius: 0;
   }
