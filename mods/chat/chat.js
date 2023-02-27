@@ -22,7 +22,10 @@ class Chat extends ModTemplate {
 
         this.added_identifiers_post_load = 0;
 
+        this.communityGroup = null;
         this.communityGroupName = "Saito Community Chat";
+        this.communityGroupHash = "";
+        this.communityGroupMessages = [];
 
         this.debug = false;
 
@@ -45,6 +48,64 @@ class Chat extends ModTemplate {
     }
 
 
+    onPeerServiceUp(app, peer, service = {}) {
+
+      if (service.service === "chat") {
+
+console.log("THIS PEER SUPPORTS CHAT!");
+
+        //
+        // fetch chat content from community server
+        //
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community Chat");
+        if (local_group) {
+
+console.log("added chat group!");
+
+          newtx.msg = {
+            request : "chat history" ,
+            group_id : local_group.id ,
+          }
+          newtx = this.app.wallet.signTransaction(newtx);
+
+          this.app.network.sendTransactionWithCallback(newtx, (txs) => {
+
+console.log("received results 2.5: " + (typeof txs));
+console.log("pre parse");
+	    let txs2 = JSON.parse(txs);
+console.log("post parse");
+	    txs = txs2;
+console.log("received results: " + JSON.stringify(txs));
+console.log("received results 3: " + txs.length);
+
+            if (!txs) { 
+		console.log("EXITING BECAUSE: " + txs);
+		console.log("EXITING BECAUSE: " + txs.length);
+		return; 
+	    }
+
+console.log("how many TXS did we receive? " + txs.length); 
+
+	    for (let i = 0; i < txs.length; i++) {
+console.log(" in the txs length");
+		// is already an object
+	      let newtx = new saito.default.transaction(txs[i]);
+console.log("adding tx: " + newtx.returnMessage());
+              this.addTransactionToGroup(local_group, newtx);
+console.log("added!");
+	    }
+
+console.log("updating cmm");
+            this.app.connection.emit("chat-manager-render-request");
+console.log("updating cmm done");
+
+          });
+        }
+
+      }
+    }
+
 
     returnServices() {
 
@@ -55,6 +116,7 @@ class Chat extends ModTemplate {
 
         return services;
     }
+
 
 
     respondTo(type) {
@@ -87,11 +149,10 @@ class Chat extends ModTemplate {
 
 
 
+
     initialize(app) {
 
         super.initialize(app);
-
-        if (!app.BROWSER) { return; }
 
         //
         // create chatgroups from keychain -- friends only
@@ -111,8 +172,18 @@ class Chat extends ModTemplate {
             this.createChatGroup(g[i].members, g[i].name);
         }
 
-        this.attachPostScripts();
+	//
+	// if I run a chat service, create it
+	//
+        if (app.BROWSER == 0) {
+console.log("CREATE CHAT GROUP FOR COMMUNITY!");
+	  let group = this.createChatGroup([this.app.wallet.returnPublicKey()], "Saito Community Chat");
+console.log("ID is: " + group.id);
+	}
 
+	if (app.BROWSER) {
+          this.attachPostScripts();
+	}
     }
 
 
@@ -133,7 +204,10 @@ class Chat extends ModTemplate {
             // Now that we have all the chat groups from our wallet + peer
             // We can load the previously messages from our local storage
             //
-            this.createChatGroup([peer.peer.publickey], this.communityGroupName);
+	    this.communityGroup = this.createChatGroup([peer.peer.publickey], this.communityGroupName);
+	    if (this.communityGroup) {
+	      this.communityGroupHash = this.communityGroup.id; 
+	    }
 
             this.app.connection.emit("chat-manager-render-request");
 
@@ -252,6 +326,24 @@ class Chat extends ModTemplate {
         let txmsg = tx.returnMessage();
 
         if (!txmsg.request) { return; }
+
+
+	if (txmsg.request === "chat history") {
+
+console.log("check history A");
+
+	  let group_id = txmsg.group_id;
+console.log("check history B");
+	  if (!group_id) { return; }
+console.log("check history C: " + group_id);
+	  let group = this.returnGroup(group_id);
+console.log("check history D");
+	  if (!group) { return; }
+console.log("check history E");
+console.log("sending list of txs: " + group.txs.length);
+	  mycallback(group.txs);
+
+	}
 
         if (txmsg.request === "chat message") {
 
@@ -380,8 +472,6 @@ class Chat extends ModTemplate {
      */
     receiveChatTransaction(app, tx) {
 
-        if (!app.BROWSER) { return; }
-
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
         }
@@ -402,6 +492,9 @@ class Chat extends ModTemplate {
         let group = this.returnGroup(txmsg.group_id);
 
         if (group) {
+
+console.log("RECEIVED CHAT MESSAGE: ");
+console.log(JSON.stringify(txmsg));
 
             //Have we already inserted this message into the chat?
             for (let z = 0; z < group.txs.length; z++) {
@@ -543,6 +636,10 @@ class Chat extends ModTemplate {
     // createChatGroup will find and return it, otherwise
     // it makes a new group
     //
+    returnGroupIdFromMembers(members = null) {
+      if (members == null) { return ""; }
+      return this.app.crypto.hash(`${members.join('_')}`);
+    }
     createChatGroup(members = null, name = null) {
 
         if (!members) {
@@ -552,7 +649,8 @@ class Chat extends ModTemplate {
         //So the David + Richard == Richard + David
         members.sort();
 
-        let id = this.app.crypto.hash(`${members.join('_')}`);
+	// be careful changing this, other components
+        let id = this.returnGroupIdFromMembers(members);
 
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i].id == id) {
@@ -633,6 +731,14 @@ class Chat extends ModTemplate {
     //
     addTransactionToGroup(group, tx) {
 
+console.log("ADDING TX TO GROUP");
+
+	while (group.txs.length > 200) {
+console.log("shrinking group txs...: " + group.txs.length);
+	  group.txs.shift();
+console.log("shrinking group txs 2...: " + group.txs.length);
+	}
+
         for (let i = 0; i < group.txs.length; i++) {
             if (group.txs[i].transaction.sig === tx.transaction.sig) {
                 return;
@@ -644,6 +750,7 @@ class Chat extends ModTemplate {
             }
         }
 
+console.log("and pushing into group: " + group.id);
         group.txs.push(tx);
         //We mark "new/unread" messages as we add them to the group
         //and clear them when we render them in the popup
@@ -655,6 +762,14 @@ class Chat extends ModTemplate {
     ///////////////////
     // CHAT UTILITIES //
     ///////////////////
+    returnGroupOrCreateFromMembers(members = null) {
+      if (!members) { return null; }
+      let group = this.returnGroup(this.returnGroupIdFromMembers(members));
+      if (group) {
+        return group; 
+      }
+      return this.createChatGroup(members);
+    }
 
     returnGroup(group_id) {
 
@@ -787,6 +902,7 @@ class Chat extends ModTemplate {
         this.app.storage.saveOptions();
     }
 
+
     ///////////////////
     // CHAT DEBUGGING //
     ///////////////////
@@ -812,3 +928,4 @@ class Chat extends ModTemplate {
 
 
 module.exports = Chat;
+

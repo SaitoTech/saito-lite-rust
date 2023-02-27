@@ -1,5 +1,4 @@
 import saito from "./saito";
-
 import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
 import Hop from "./hop";

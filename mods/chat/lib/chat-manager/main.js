@@ -147,9 +147,6 @@ class ChatManager {
         last_ts = txmsg.timestamp;
       }
 
-      //
-      // TODO -- lets turn this into a CHAT COMPONENT
-      //
       let html = ChatTeaser(this.app, group.name, last_msg, last_ts, group.id, group.unread);
       let divid = "saito-user-" + group.id;
 
