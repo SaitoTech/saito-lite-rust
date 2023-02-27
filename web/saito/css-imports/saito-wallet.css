@@ -499,6 +499,11 @@
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 
+
+  .mixin_crypto_overlay {
+    width:99vw;
+  }
+
 }
 
 

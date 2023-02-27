@@ -1290,7 +1290,7 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem 0 0;
+  padding: 0rem 0 0;
 }
 
 .wallet-balance {
