@@ -351,9 +351,15 @@ class Peer {
           .sendAPICall(data_channel, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {
             if (callback) {
+
               let newtx = new Transaction();
               newtx.deserialize(this.app, response, 0);
 	      let txmsg = newtx.returnMessage();
+console.log(">");
+console.log(">");
+console.log(">");
+console.log(" 1 RESPONDING WITH: " + JSON.stringify(txmsg));
+
               callback(txmsg.response);
 
               //let content = Buffer.from(response).toString("utf-8");
@@ -383,9 +389,13 @@ class Peer {
           .sendAPICall(this.socket, MessageType.ApplicationTransaction, buffer)
           .then((response: Buffer) => {
             if (callback) {
+console.log(">");
+console.log(">");
+console.log(">");
               let newtx = new Transaction();
               newtx.deserialize(this.app, response, 0);
 	      let txmsg = newtx.returnMessage();
+console.log(" 2 RESPONDING WITH: " + JSON.stringify(txmsg));
               callback(txmsg.response);
             }
           })

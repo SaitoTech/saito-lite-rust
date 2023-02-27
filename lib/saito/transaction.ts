@@ -1,5 +1,4 @@
 import saito from "./saito";
-
 import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
 import Hop from "./hop";
@@ -73,6 +72,7 @@ class Transaction {
 try {
     if (jsonobj != null) {
 
+console.log("in with jsonobj: " + JSON.stringify(jsonobj));
 
       //
       // if the jsonobj has been provided, we have JSON.parsed something
@@ -87,6 +87,7 @@ try {
       // type: TransactionType.Normal,
       // m: Buffer.alloc(0),
       //
+console.log("about to test from!");
       for (let i = 0; i < jsonobj.from.length; i++) {
         const fslip = jsonobj.from[i];
         this.transaction.from.push(new Slip(
@@ -99,6 +100,7 @@ try {
         ));
       }
 
+console.log("about to test to!");
       for (let i = 0; i < jsonobj.to.length; i++) {
         const fslip = jsonobj.to[i];
         this.transaction.to.push(new Slip(
@@ -110,6 +112,7 @@ try {
           fslip.tx_ordinal
         ));
       }
+console.log("done and out!");
 
       if (jsonobj.ts) { this.transaction.ts = jsonobj.ts; }
       if (jsonobj.sig) { this.transaction.sig = jsonobj.sig; }

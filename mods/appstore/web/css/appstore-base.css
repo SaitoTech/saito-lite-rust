@@ -1,4 +1,3 @@
-
 body {
     font-family: arial, helvetica, sans-serif;
     font-size: 13px;
@@ -21,7 +20,6 @@ h1 {
     text-align: left;
     color: #ff8844;
 }
-
 .submit {
     text-align: center;
     min-width: 200px;
@@ -61,7 +59,7 @@ h1 {
 }
 
 .loader {
-    padding: 40px;
+    padding: 20px;
 }
 
 .label {
@@ -116,4 +114,25 @@ input {
     .logo {
         margin-left: 0.6em;
     }
+}
+
+.appstore-app-install-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #0009;
+  width: 100%;
+  height: 100%;
+}
+
+.appstore-app-install-content {
+  width: 75%;
+  max-width: 700px;
+  min-width: 400px;
+  padding: 1em;
+  color: var(--saito-white);
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  line-height: 1.5em;
+  background-color: var(--saito-cyber-black);
+  margin: auto;
 }
