@@ -1290,7 +1290,7 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem 0 0;
+  padding: 0rem 0 0;
 }
 
 .wallet-balance {
@@ -3717,6 +3717,11 @@ html[data-theme="arcade"] {
 
   .mixin-txn-his-container .saito-table-header  {
     grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
+
+  .mixin_crypto_overlay {
+    width:99vw;
   }
 
 }

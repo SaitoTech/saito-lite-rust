@@ -84,13 +84,15 @@ class Keychain {
     //
     if (data.publickey === "") { return; }
 
+console.log("UPDATE: " + data.publickey + " with " + JSON.stringify(data));
+
     //
     // update existing entry
     //
     for (let i = 0; i < this.keys.length; i++) {
       if (this.keys[i].publickey === data.publickey) {
         let newkey = {};
-        for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
+        for (let key in data) { if (key !== "publickey") { this.keys[i][key] = data[key]; } }
         this.saveKeys();
         return;
       }
@@ -394,19 +396,13 @@ class Keychain {
 
   returnUsername(publickey: string): string {
     const name = this.returnIdentifierByPublicKey(publickey, true);
-    if (name != publickey) {
+    if (name != publickey && name != "") { return name; }
+    if (name == publickey) {
       if (name.length > 12) {
         return name.substring(0, 12) + "...";
       }
-      if (name[0]) {
-        if (name[0].length > 12) {
-          return name[0].substring(0, 12) + "...";
-        }
-      }
     }
-    else {
-      return publickey;
-    }
+    return publickey;
   }
 
   returnWatchedPublicKeys() {

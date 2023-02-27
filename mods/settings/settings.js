@@ -29,9 +29,10 @@ class Settings extends ModTemplate {
     super.initialize(app);
 
     let settings_self = this;
-    this.app.connection.on("update_identifier", (tmpkey) => {
+    this.app.connection.on("update_identifier", (publickey) => {
+console.log("testing update identifier event");
       if (document.getElementById("register-identifier-btn")) {
-        if (tmpkey.publickey === settings_self.app.wallet.returnPublicKey()) {
+        if (publickey === settings_self.app.wallet.returnPublicKey()) {
           let username = settings_self.app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
           document.getElementById("register-identifier-btn").innerHTML = username;
         }
