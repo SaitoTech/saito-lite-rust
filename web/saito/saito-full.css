@@ -2136,53 +2136,51 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-overlay-backdrop {
-  position: fixed !important;
-  display: none;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--saito-dark-shim);
-  z-index: 100;
+    position: fixed !important;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--saito-dark-shim);
+    z-index: 100;
 }
 
 .saito-overlay {
-  position: fixed;
-  display: inline-block;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0 auto;
-  z-index: 1000;
-  height: min-content;
-  width: min-content;
-  min-height: 10%;
-  min-height: 10%;
-  max-height: 100vh;
-  max-width: 100vw;
+    position: fixed;
+    display: inline-block;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+    z-index: 1000;
+    height: min-content;
+    width: min-content;
+    min-height: 10%;
+    min-height: 10%;
+    max-height: 100vh;
+    max-width: 100vw;
 }
 
 .saito-overlay-closebox {
-  position: absolute;
-  width: 3rem;
-  height: 3rem;
-  right: -1.3rem;
-  border-radius: 50%;
-  top: -1.5rem;
-  background-color: var(--saito-white);
-  z-index: 100;
+    position: absolute;
+    width: 3rem;
+    height: 3rem;
+    right: -1.3rem;
+    border-radius: 50%;
+    top: -1.5rem;
+    background-color: var(--saito-white);
+    z-index: 100;
 }
 
 .saito-overlay-closebox-btn {
-  cursor: pointer;
-  display: block;
-  height: 3.2rem;
-  width: 3.2rem;
-  color: var(--saito-primary);
-  font-size: 3.1rem;
+    cursor: pointer;
+    display: block;
+    height: 3.2rem;
+    width: 3.2rem;
+    color: var(--saito-primary);
+    font-size: 3.1rem;
 }
-
-
 
 .saito-overlay-form {
     width: 60rem;
@@ -2194,10 +2192,12 @@ This alows for a header with a header with title to be added without extra CSS
     flex-direction: column;
     gap: 2rem;
 }
+
 .saito-overlay-form-header {
     height: 6rem;
     background: var(--dreamscape);
 }
+
 .saito-overlay-form-header-title {
     position: absolute;
     height: 6rem;
@@ -2207,7 +2207,7 @@ This alows for a header with a header with title to be added without extra CSS
     font-size: 2.5rem;
     text-transform: uppercase;
     white-space: nowrap;
-    display:block;
+    display: block;
 }
 
 .saito-overlay-form-text {
@@ -2216,25 +2216,24 @@ This alows for a header with a header with title to be added without extra CSS
     color: var(--saito-font-color);
     padding: 0 1rem;
 }
-.saito-overlay-form-inputs > input[type="text"] {
+
+.saito-overlay-form-inputs>input[type="text"] {
     height: 6rem;
     font-size: 2.3rem;
 }
-.saito-overlay-form > input[type="text"] , .saito-overlay-form-input[type="text"] {
+
+.saito-overlay-form>input[type="text"], .saito-overlay-form-input[type="text"] {
     height: 6rem;
     font-size: 2.3rem;
 }
-.saito-overlay-form-input[type="text"] {
-    margin-top: 1rem;
-}
-.saito-overlay-form > button[type="button"] , .saito-overlay-form-submitline > button[type="button"] {
+
+.saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
     height: 7rem;
     font-size: 2.1rem;
-    display: block;
-    margin-left: auto;
-    margin-top: 2rem;
-    margin-right: 0;
+    width: 20rem;
+    margin: 0;
 }
+
 .saito-overlay-subform {
     display: grid;
     grid-template-columns: min-content 1fr;
@@ -2243,31 +2242,40 @@ This alows for a header with a header with title to be added without extra CSS
     border-radius: var(--saito-border-radius);
     padding: 1.4rem;
 }
+
 .saito-overlay-subform-text {
     font-size: 2rem;
+    flex-grow: 1;
 }
+
 .saito-overlay-form-alt-opt {
     margin-left: 2rem;
     font-size: 1.8rem;
     color: var(--saito-font-color);
     width: min-content;
     white-space: nowrap;
-    padding-bottom: 0px;
-    margin-top: auto;
-    margin-bottom: auto;
-    border-bottom: 1px dashed var(--saito-font-color);
     cursor: pointer;
+    flex-grow: 1;
+    text-decoration: underline dashed 1px;
 }
+
 .saito-overlay-form-submitline {
-    width: 100%;
-    display: grid;
-    grid-template-columns: min-content 1fr;
+   display: flex;
+   flex-direction: row;
+   justify-content: flex-end;
+   flex-grow: 1;
+   align-items: center;
+   gap: 1rem;
 }
 
-
-
-
-.saito-container {
+@media screen and (max-width: 768px) {
+    .saito-overlay-form-submitline {
+        flex-direction: column;   
+    }
+    .saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
+        width: 100%;
+    }
+}.saito-container {
   width: 100vw;
   height: calc(100vh - var(--saito-header-height));
   display: grid;

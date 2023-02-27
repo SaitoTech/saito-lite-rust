@@ -70,6 +70,10 @@ class Leaderboard {
     }
     
     this.app.browser.addIdentifiersToDom();
+    let myListing = document.querySelector('.my-leaderboard-position');
+    if (myListing) {
+      myListing.scrollIntoView();
+    }
   }
 
 }
