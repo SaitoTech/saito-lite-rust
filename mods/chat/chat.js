@@ -467,9 +467,6 @@ try {
 
         if (group) {
 
-console.log("RECEIVED CHAT MESSAGE: ");
-console.log(JSON.stringify(txmsg));
-
             //Have we already inserted this message into the chat?
             for (let z = 0; z < group.txs.length; z++) {
                 if (group.txs[z].transaction.sig === tx.transaction.sig) {
@@ -705,12 +702,8 @@ console.log(JSON.stringify(txmsg));
     //
     addTransactionToGroup(group, tx) {
 
-console.log("ADDING TX TO GROUP");
-
 	while (group.txs.length > 200) {
-console.log("shrinking group txs...: " + group.txs.length);
 	  group.txs.shift();
-console.log("shrinking group txs 2...: " + group.txs.length);
 	}
 
         for (let i = 0; i < group.txs.length; i++) {
@@ -724,7 +717,6 @@ console.log("shrinking group txs 2...: " + group.txs.length);
             }
         }
 
-console.log("and pushing into group: " + group.id);
         group.txs.push(tx);
         //We mark "new/unread" messages as we add them to the group
         //and clear them when we render them in the popup
