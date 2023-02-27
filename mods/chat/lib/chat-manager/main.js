@@ -36,8 +36,8 @@ class ChatManager {
 
     app.connection.on("chat-manager-and-popup-render-request", (group) => {
       if (this.render_manager_to_screen) {
-        this.render();
 	group.unread = 0;
+        this.render();
         app.connection.emit("chat-popup-render-request", (group));
       }
     });

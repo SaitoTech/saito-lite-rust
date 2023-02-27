@@ -52,8 +52,6 @@ class Chat extends ModTemplate {
 
       if (service.service === "chat") {
 
-console.log("THIS PEER SUPPORTS CHAT!");
-
         //
         // fetch chat content from community server
         //
@@ -69,13 +67,11 @@ console.log("THIS PEER SUPPORTS CHAT!");
 
           this.app.network.sendTransactionWithCallback(newtx, (txs) => {
 try {
-
 	    for (let i = 0; i < txs.length; i++) {
 	      let newtx = new saito.default.transaction(txs[i].transaction);
 	      let txmsg = newtx.returnMessage();
               this.addTransactionToGroup(local_group, newtx);
 	    }
-
 } catch (err) {
   console.log("chat history adding: " + err);
 }
@@ -311,18 +307,17 @@ console.log("ID is: " + group.id);
 
 	if (txmsg.request === "chat history") {
 
-console.log("check history A");
-
 	  let group_id = txmsg.group_id;
-console.log("check history B");
 	  if (!group_id) { return; }
-console.log("check history C: " + group_id);
 	  let group = this.returnGroup(group_id);
-console.log("check history D");
 	  if (!group) { return; }
-console.log("check history E");
+	  let chat_msgs_to_load = group.txs;
+	  if (chat_msgs_to_load.length > 20) {
+	    chat_msgs_to_load = chat_msgs_to_load.splice(chat_msgs_to_load.length-20);
+	  }
 
-	  mycallback(group.txs);
+	  //mycallback(group.txs);
+	  mycallback(chat_msgs_to_load);
 
 	}
 
