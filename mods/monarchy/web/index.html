@@ -6,7 +6,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Dominion</title>
+  <title>Shogun</title>
 
   <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
   <link rel="stylesheet" href="/saito/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
@@ -15,19 +15,20 @@
   <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/fontawesome.min.css" type="text/css" media="screen" />
   <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/all.css" type="text/css" media="screen" />
 
-  <link rel="stylesheet" type="text/css" href="/saito/style.css" />
-  <link rel="stylesheet" type="text/css" href="/saito/lib/templates/game.css" />
-  <link rel="stylesheet" type="text/css" href="/dominion/style.css" />
+  <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
+  <link rel="stylesheet" type="text/css" href="/saito/game.css" />
+  <link rel="stylesheet" type="text/css" href="/shogun/style.css" />
   
-  <link rel="stylesheet" type="text/css" href="/saito/lib/templates/email-chat.css">
-
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
 
 </head>
 <body>
 
-  <div id="main" class="main" style="display:all">
-    <div class="gameboard" id="gameboard"></div>
+  <div class="main" id="main">
+    <div class="active_card_zone" id="active_card_zone"></div>
+    <div class="cardstacks"></div>
+    <div class="purchase_zone"></div>
+    <div id="trash_can" class="trash_can"></div>
   </div>
 
   <script id="saito" src="/saito/saito.js"></script>

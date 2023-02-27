@@ -1,21 +1,40 @@
 module.exports = SettingsAppspaceTemplate = (app) => {
 
-  let email_registered = app.keys.returnEmail(app.wallet.returnPublicKey());
-  let identifier_registered = app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
-  if (email_registered == "") { email_registered = `<span id="register-email-btn" style="cursor:pointer" class="register-email-btn">register an email address</span>`; }
-  if (identifier_registered == "") { identifier_registered = `<span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn">register a username</span>`; }
+  let key = app.keychain.returnKey({ publickey : app.wallet.returnPublicKey()});
+  let email_registered = key.email || "";
+  let identifier_registered = key.identifier || "";
+  if (email_registered == "") { email_registered = `<span id="register-email-btn" style="cursor:pointer" class="register-email-btn settings-appspace-link">Register an email address</span>`; }
+  if (identifier_registered == "") {
+    identifier_registered = `
+    <span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>
+    `;
+  }
 
   let modules_html = "Wallet Outdated - module selection not supported";
+  let modules_html_active = "Wallet Outdated - module selection not supported";
   try {
     modules_html = app.options.modules
       .map((mod, i) => {
         let CHECKED = mod.active ? 'CHECKED' : '';
         return `
         <div class="settings-appspace-app">
-        <input
-        type="checkbox"
-        value="modules_mods_${i}"
-        name="modules_mods_${i}" id="${i}" ${CHECKED}/>
+        <label class="saito-switch">
+          <input type="checkbox"  id="${i}"  value="modules_mods_${i}" name="modules_mods_${i}" ${CHECKED}>
+          <span class="saito-switch-slider"></span>
+        </label>
+          <label>${mod.name}
+            <span></span>
+          </label>
+         </div>
+      `;
+      })
+      .join('');
+
+    modules_html_active = app.options.modules
+      .map((mod, i) => {
+        let CHECKED = mod.active ? 'CHECKED' : '';
+        return `
+        <div class="settings-appspace-installed-app">
           <label>${mod.name}
             <span></span>
           </label>
@@ -42,73 +61,55 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
 
   let html = `
+  
   <div class="settings-appspace">
 
-    <div>
-
-      <div>
-
-        <div class="saito-grid-1-1-1">
-          <div class="saito-button-primary">Backup Wallet</div>
-          <div class="saito-button-primary">Restore Wallet</div>
-          <div class="saito-button-primary">Import Private Key</div>
-          <input type="file" style="display:none;" />
+    <div class="redsquare-appspace-header">
+      <div class="redsquare-actions-buttons">
+        <div class="redsquare-actions-buttons-icon"></div>
+        <div id="redsquare-page-header-title" class="redsquare-page-header-title">SETTINGS</div>
+        <div class="redsquare-actions-container">
+          <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
+          <div class="saito-button-secondary small"id="restore-account-btn">Restore Wallet</div>
+          <div class="saito-button-secondary small"id="backup-account-btn">Backup Wallet</div>
         </div>
-        ${balance_link}
+      </div>
+    </div>
 
-	<h6>Wallet Information:</h6>
-        <div class="settings-appspace-user-details">
-          
-          <p class="large">Email:</p>
-          <div>${email_registered}</div>
-
-          <p class="large">Username:</p>
-         <div>${identifier_registered}</div>
-
-          <p class="large">Public Key:</p>
-          <div class="saito-username">${app.wallet.returnPublicKey()}</div>
-
-          <p class="large">Private Key:</p>
-          <div class="settings-appspace-privatekey">
-            <input type="text" value="${app.wallet.returnPrivateKey()}" class="settings-appspace-password" />
-            <i class="settings-appspace-see-password fas fa-eye"></i>
+    <div class="settings-appspace-body">
+      <div class="settings-appspace-user-details-container">
+        <h6>Wallet</h6>
+          <div class="settings-appspace-user-details">
+            <div  class="saito-black">Email:</div>
+            <div>${email_registered}</div>
+            <div id="register-identifier-btn-label" class="saito-black">Username:</div>
+            <div>${identifier_registered}</div>
+            <div class="saito-black">Public Key:</div>
+            <div class="saito-address">${app.wallet.returnPublicKey()} <span style="margin-left: .5rem;" class="copy-public-key">  <i class="fas fa-copy"></i></span></div>
+            <div class="saito-black">Private Key:</div>
+            <div class="settings-appspace-privatekey saito-password">
+              ${app.wallet.returnPrivateKey()}
+              <i class="settings-appspace-see-privatekey fas fa-eye" id="settings-appspace-see-privatekey"></i>
+            </div>
           </div>
-
-	</div>
-
-      </div>
-
-      <div class="settings-appspace-modules-container">
-
-        <h6>Installed Modules: </h6> `;
-
-  if (app.modules.returnModule("AppStore") != null) {
-    html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
-  }
-
-  html += `</h2>
-        <div class="settings-appspace-modules">
-        ${modules_html}
         </div>
       </div>
-      <hr />
-      <div class="settings-appspace-versions">
-        <p class="large">Code Version:</p>
-        <p>${app.wallet.wallet.version}</p>
-        <p class="large">Wallet Version:</p>
-        <p>${app.options.wallet.version}</p>
+      <div class="settings-appspace-modules-container">
+          <h6> Installed Modules </h6>
+          <div class="settings-appspace-modules">
+              ${modules_html}
+          </div>
       </div>
-
-      <p  style="padding-bottom:40px;">
-        Having trouble? Try clearing your browser cache or <span style="cursor:pointer; border-bottom: 1px dashed" >resetting your account</span>. If that doesn't fix things, write to us at info@saito.tech.
-      </p>
-
+      <div class="settings-appspace-debug">
+        <h6>Debug Info</h6>
+        <div class="settings-appspace-debug-content"></div>
+      </div>
     </div>
   </div>
-</div>
+  <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />
+
   `;
 
   return html;
 
 }
-

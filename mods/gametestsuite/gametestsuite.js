@@ -1,5 +1,4 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-const GameScoreboard = require("../../lib/saito/ui/game-scoreboard/game-scoreboard");
 const saito = require('../../lib/saito/saito');
 const JSON = require('json-bigint');
 
@@ -26,7 +25,6 @@ class GameTestSuite extends GameTemplate {
     this.minPlayers = 1; //2;
     this.maxPlayers = 1; //6;
 
-    this.scoreboard = new GameScoreboard(app);
     this.game_cardfan_visible = 0;
     this.game_menu_visible = 1;
     this.game_hud_visible = 0;
@@ -148,14 +146,6 @@ class GameTestSuite extends GameTemplate {
       });
 
 
-    this.menu.addSubMenuOption("game-game", {
-          text : "Exit",
-          id : "game-exit",
-          class : "game-exit",
-          callback : function(app, game_mod) {
-            window.location.href = "/arcade";
-          },
-      });
 
     /* Simulate different numbers of players*/
     this.menu.addMenuOption({
@@ -340,11 +330,9 @@ class GameTestSuite extends GameTemplate {
     */
 
 
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
+    this.menu.render();
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
     this.updateMenuCheck();
 
@@ -400,7 +388,7 @@ class GameTestSuite extends GameTemplate {
       }
       if (mv[0] === "welcome"){
         if (this.browser_active){
-          this.overlay.show(this.app, this, this.returnWelcomeMessage());
+          this.overlay.show(this.returnWelcomeMessage());
           this.game.queue.splice(qe, 1);
         }
         return 0; //Stops the game engine from cycling through the game loop
@@ -446,7 +434,6 @@ class GameTestSuite extends GameTemplate {
     options_html += `
         </select>
       </div>
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
 
     return options_html;
@@ -631,12 +618,9 @@ class GameTestSuite extends GameTemplate {
   //
   add_player_boxes_test(app) {
     if (this.game_playerboxes_visible == 0) {
-      this.playerbox.render(app, this);
+      this.playerbox.render();
       this.playerbox.addClassAll("poker-seat-",true); //Have to manually add a class for positioning
-      this.playerbox.attachEvents(app, this);
-      for (let i = 0; i < this.game.players.length; i++) {
-        this.playerbox.refreshName(i+1);
-      }
+
       this.game_playerboxes_visible = 1;
     } else {
       this.game_playerboxes_visible = 0;
@@ -758,7 +742,7 @@ class GameTestSuite extends GameTemplate {
       </div>
     `;
 
-    this.overlay.show(this.app, this, overlay_html, function() {
+    this.overlay.show(overlay_html, function() {
       alert("Callback Optional on Close!");
     });
 
@@ -777,7 +761,7 @@ class GameTestSuite extends GameTemplate {
       </div>
     `;
 
-    this.overlay.show(this.app, this, overlay_html);
+    this.overlay.show(overlay_html);
     this.overlay.blockClose();
     document.getElementById("close_overlay_button").onclick = (e) => { game_self.overlay.hide(); }
 
@@ -785,15 +769,12 @@ class GameTestSuite extends GameTemplate {
 
 
   display_scoreboard_test(app){
-    this.scoreboard.render(app, this);
-    this.scoreboard.attachEvents(app, this);
     this.scoreboard.update(`<div>Num Players: ${this.game.players.length}</div>`);
   }
 
 
   display_game_clock_test(app){
-    this.clock.render(app, this);
-    this.clock.attachEvents(app, this);
+    this.clock.render();
   }
 
   deal_cards_to_player_test(app) {
@@ -957,8 +938,8 @@ class GameTestSuite extends GameTemplate {
 
   display_boardsizer_test(app){
     if (this.game_boardsizer_visible == 0){
-      this.sizer.render(this.app, this);
-      this.sizer.attachEvents(this.app, this);
+      this.sizer.render();
+      this.sizer.attachEvents();
       this.game_boardsizer_visible = 1;
     }else{
       //this.sizer.hide();
@@ -968,8 +949,7 @@ class GameTestSuite extends GameTemplate {
 
   display_cardfan_test(app) {
     if (this.game_cardfan_visible == 0) {
-      this.cardfan.render(this.app, this);
-      this.cardfan.attachEvents(this.app, this);
+      this.cardfan.render();
       this.game_cardfan_visible = 1;
     } else {
       this.cardfan.hide();
@@ -980,8 +960,7 @@ class GameTestSuite extends GameTemplate {
   display_cardhud_test(app) {
     let game_self = this;
     if (this.game_hud_visible == 0) {
-      this.hud.render(this.app, this);
-      this.hud.attachEvents(this.app, this);
+      this.hud.render();
       if (this.game.deck[0].hand){
         this.updateStatusAndListCards('Here is my hand', this.game.deck[0].hand);
       }else{
@@ -1009,10 +988,8 @@ class GameTestSuite extends GameTemplate {
   }
 
   toggle_cardbox_test(app) {
-    this.hud.render(this.app, this);
-    this.hud.attachEvents(this.app, this);
-    this.cardbox.render(this.app, this);
-    this.cardbox.attachEvents(this.app,this);
+    this.hud.render();
+    this.cardbox.render();
 
     if (this.game_cardbox_visible == 1) {
       this.game_cardbox_visible = 0;

@@ -7,9 +7,21 @@
 }*/
 
 
+.cancel_x {
+  opacity: 0.5;
+}
+
+.card {
+  position: relative;
+}
+
 .noncard {
   color: black;
   padding: 10px;
+}
+
+.card {
+  position: relative;
 }
 
 .hud-header {
@@ -509,6 +521,7 @@ body {
 .event_tile {
   display: none;
   float: right;
+  width: unset;
 }
 
 

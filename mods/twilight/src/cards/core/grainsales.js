@@ -8,15 +8,6 @@
       let twilight_self = this;
 
       //
-      // US has to wait for Soviets to execute
-      // burn 1 roll
-      //
-      if (this.game.player == 2) {
-        let burnrand = this.rollDice();
-        return 0;
-      }
-
-      //
       // Soviets self-report - TODO provide proof
       // of randomness
       //
@@ -54,6 +45,8 @@
             twilight_self.updateStatus(`<div class='status-message' id='status-message'>Sending ${twilight_self.cardToText(newcard)} to US</div>`);
           });
         }
+      }else{
+        let burnrand = this.rollDice();
       }
       return 0;
     }

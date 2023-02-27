@@ -8,11 +8,11 @@
 
       first_time_running = 1;
       this.game.state = this.returnState();
+      this.game.state.players_info = this.returnPlayers(this.game.players.length);
       this.game.spaces = this.returnSpaces();
       this.game.navalspaces = this.returnNavalSpaces();
-      this.game.players_info = this.returnPlayers(this.game.players.length);
 
-console.log("PLAYERS INFO: " + JSON.stringify(this.game.players_info));
+console.log("PLAYERS INFO: " + JSON.stringify(this.game.state.players_info));
 
 
 console.log("\n\n\n\n");
@@ -67,8 +67,8 @@ console.log("is first tiem running: " + this.game.state.scenario);
 console.log("adding stuff!");
 
 	// OTTOMAN
-        this.addPersonage("ottoman", "istanbul", "suleiman");
-        this.addPersonage("ottoman", "istanbul", "ibrahim-pasha");
+        this.addArmyLeader("ottoman", "istanbul", "suleiman");
+        this.addArmyLeader("ottoman", "istanbul", "ibrahim-pasha");
         this.addRegular("ottoman", "istanbul", 7);
         this.addCavalry("ottoman", "istanbul", 1);
         this.addNavalSquadron("ottoman", "istanbul", 1);
@@ -79,8 +79,8 @@ console.log("adding stuff!");
         this.addNavalSquadron("ottoman", "athens", 1);
 
 	// HAPSBURG
-	this.addPersonage("hapsburg", "valladolid", "charles-v");
-	this.addPersonage("hapsburg", "valladolid", "duke-of-alva");
+	this.addArmyLeader("hapsburg", "valladolid", "charles-v");
+	this.addArmyLeader("hapsburg", "valladolid", "duke-of-alva");
         this.addRegular("hapsburg", "seville", 1);
         this.addNavalSquadron("hapsburg", "seville", 1);
         this.addRegular("hapsburg", "barcelona", 1);
@@ -91,13 +91,13 @@ console.log("adding stuff!");
         this.addNavalSquadron("hapsburg", "naples", 2);
         this.addRegular("hapsburg", "besancon", 1);
         this.addRegular("hapsburg", "brussels", 1);
-	this.addPersonage("hapsburg", "vienna", "ferdinand");
+	this.addArmyLeader("hapsburg", "vienna", "ferdinand");
         this.addRegular("hapsburg", "vienna", 4);
         this.addRegular("hapsburg", "antwerp", 3);
 
 	// ENGLAND
-        this.addPersonage("england", "london", "henry-viii");
-        this.addPersonage("england", "london", "charles-brandon");
+        this.addArmyLeader("england", "london", "henry-viii");
+        this.addArmyLeader("england", "london", "charles-brandon");
         this.addRegular("england", "london", 3);
         this.addNavalSquadron("england", "london", 1);
         this.addNavalSquadron("england", "portsmouth", 1);
@@ -106,8 +106,8 @@ console.log("adding stuff!");
         this.addRegular("england", "bristol", 1);
 
 	// FRANCE
-        this.addPersonage("france", "paris", "francis-i");
-        this.addPersonage("france", "paris", "montmorency");
+        this.addArmyLeader("france", "paris", "francis-i");
+        this.addArmyLeader("france", "paris", "montmorency");
         this.addRegular("france", "paris", 4);
         this.addRegular("france", "rouen", 1);
         this.addNavalSquadron("france", "rouen", 1);
@@ -134,7 +134,7 @@ console.log("adding stuff!");
         this.addRegular("venice", "candia", 1);
 	
 	// GENOA
-        this.addPersonage("genoa", "genoa", "andrea-doria");
+        this.addNavyLeader("genoa", "genoa", "andrea-doria");
         this.addNavalSquadron("genoa", "genoa", 1);
         this.addRegular("genoa", "genoa", 2);
 	
@@ -147,10 +147,20 @@ console.log("adding stuff!");
         this.addRegular("independent", "metz", 1);
         this.addRegular("independent", "florence", 1);
 	
+	// DEBATERS
+	this.addDebater("papacy", "eck-debater");
+	this.addDebater("papacy", "campeggio-debater");
+	this.addDebater("papacy", "aleander-debater");
+	this.addDebater("papacy", "tetzel-debater");
+	this.addDebater("papacy", "cajetan-debater");
+
+	this.addDebater("protestant", "luther-debater");
+	this.addDebater("protestant", "melanchthon-debater");
+	this.addDebater("protestant", "bucer-debater");
+	this.addDebater("protestant", "carlstadt-debater");
       }
 
-
-
+      
       if (this.game.state.scenario === "1532") {
 
       }
@@ -158,6 +168,7 @@ console.log("adding stuff!");
       if (this.game.state.scenario === "tournament") {
 
       }
+
     }
 
     //

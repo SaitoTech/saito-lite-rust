@@ -8,13 +8,7 @@
       this.game.state.events.unintervention = 1;
       this.game.state.cancel_back_button = 1;
 
-      let me = "ussr";
-      let opponent = "us";
-      if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
-
-      if (player != me) {
-        return 0;
-      } else {
+      if (player === this.playerRoles[this.game.player]) {
 
         let twilight_self = this;
 
@@ -34,8 +28,8 @@
         //this.addMove("setvar\tgame\tstate\tback_button_cancelled\t1");
 
         this.playerTurn();
-        return 0;
       }
+      return 0;
 
     }
 

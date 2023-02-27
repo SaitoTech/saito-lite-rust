@@ -1,5 +1,7 @@
 var saito = require('../../lib/saito/saito');
 var GameTemplate = require('../../lib/templates/gametemplate');
+const SolitrioGameRulesTemplate = require("./lib/solitrio-game-rules.template");
+const SolitrioGameOptionsTemplate = require("./lib/solitrio-game-options.template");
 
 
 //////////////////
@@ -14,12 +16,13 @@ class Solitrio extends GameTemplate {
     this.name            = "Solitrio";
     this.gamename        = "Solitrio";
     this.slug            = "solitrio";
+    this.game_length     = 5; //Estimated number of minutes to complete a game
     this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
     this.categories      = "Games Cardgame one-player";
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
-    
+    this.app = app;
   }
 
 
@@ -35,36 +38,14 @@ class Solitrio extends GameTemplate {
 
 
   returnGameRulesHTML(){
-    return `<div class="rules-overlay">
-            <h1>Solitrio</h1>
-            <ul>
-            <li>Cards (2-10 in each suit) are randomly arranged in four rows of ten with four blank spaces.</li>
-            <li>The goal is to arrange the cards in sequential order with one suit per row.</li>
-            <li>The 2 of any suit may be placed in the leftmost space of any row (if empty).</li>
-            <li>All other cards must match the suit of its left neighbor and be the next in sequence, e.g. the 8&spades; may be placed after (to the right of) the 7&spades;.</li>
-            <li>If you get stuck, you may reshuffle the board. Reshuffling will not move a 2 (or any connected sequence of cards) from its target position.</li>
-            <li>You only have two chances to reshuffle the board and you lose if you cannot order the cards.</li>
-            </ul>
-            </div>
-            `;
-
+    return SolitrioGameRulesTemplate(this.app, this);
   }
 
 
   
   //Single player games don't allow game-creation and options prior to join
   returnGameOptionsHTML() {
-    return `
-        <div class="overlay-input">
-            <p>Play Mode:</p>
-            <div><input type="radio" id="auto" value="auto" name="play_mode" checked>
-            <label for="auto">Cards move to available slots</label></div>
-            <div><input type="radio" id="manual" value="manual" name="play_mode">
-            <label for="manual">Click empty slot to move card</label></div>
-        </div>
-        <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
-    `;
+    return SolitrioGameOptionsTemplate(this.app, this);
   }
 
 
@@ -112,14 +93,9 @@ class Solitrio extends GameTemplate {
     //
     // ADD MENU
     //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
     this.menu.addSubMenuOption("game-game",{
       text : "Start New Game",
       id : "game-new",
@@ -139,6 +115,7 @@ class Solitrio extends GameTemplate {
         game_mod.menu.showSubSubMenu("game-play"); 
       }
     });
+
 
     this.menu.addSubMenuOption("game-play",{
       text: `Auto ${(this.game.options.play_mode=="auto")?"✔":""}`,
@@ -169,47 +146,28 @@ class Solitrio extends GameTemplate {
     });
 
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "How to Play",
       id : "game-intro",
       class : "game-intro",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
     });
 
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnStatsHTML());
+        game_mod.overlay.show(game_mod.returnStatsHTML());
       }
     });
 
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        game_mod.updateStatusWithOptions("Saving game to the blockchain...");
-        game_mod.prependMove("exit_game\t"+game_mod.game.player);
-        game_mod.endTurn();
-      }
-    });
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
-    this.menu.addChatMenu(app, this);
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
 
   }
@@ -227,6 +185,11 @@ class Solitrio extends GameTemplate {
 
   }
 
+  exitGame(){
+    this.updateStatusWithOptions("Saving game to the blockchain...");
+    this.prependMove("exit_game\t"+this.game.player);
+    this.endTurn();
+  }
 
   returnStatsHTML(){
     let html = `<div class="rules-overlay">
@@ -247,12 +210,13 @@ class Solitrio extends GameTemplate {
     this.displayUserInterface();
 
     if (this.scanBoard(false)) {
-      salert("Congratulations! You win!");
+      this.displayModal("Congratulations!", "You win the deal!");
       this.prependMove("win");
       this.endTurn();
     }else if (!this.hasAvailableMoves()){
       if (this.game.state.recycles_remaining == 0){
-        salert("No More Available Moves, you lose!");
+        this.displayWarning("Game over", "There are no more available moves to make.", 9000);
+        //salert("No More Available Moves, you lose!");
       }else{
         this.shuffleFlash();
       }
@@ -276,7 +240,10 @@ class Solitrio extends GameTemplate {
 
       let card = $(this).attr("id");
 
-      if (card[0] === 'E') { return; } 
+      if (solitrio_self.game.board[card][0] === "E") {
+        solitrio_self.displayWarning("Invalid Move", "You need to select a card");
+        return;
+      }
 
       solitrio_self.toggleCard(card);
       let slot = solitrio_self.dynamicColoring(card);
@@ -301,7 +268,8 @@ class Solitrio extends GameTemplate {
         solitrio_self.checkBoardStatus();
 
         } else {
-          salert("<p>Sorry, You can't move that card anywhere");
+          solitrio_self.displayWarning("Invalid Move", "There is nowhere to move that card");
+          //salert("<p>Sorry, You can't move that card anywhere");
           solitrio_self.untoggleCard(card);
         }
       
@@ -319,7 +287,6 @@ class Solitrio extends GameTemplate {
 
       let card = $(this).attr("id");
 
-      if (card[0] === 'E') { return; } 
       if (selected === card) { //Selecting same card again
         solitrio_self.untoggleCard(card);
         selected = "";
@@ -370,12 +337,14 @@ class Solitrio extends GameTemplate {
           solitrio_self.displayUserInterface();
 
           if (solitrio_self.scanBoard(false)) {
-            salert("Congratulations! You win!");
+            //salert("Congratulations! You win!");
+            solitrio_self.displayModal("Congratulations!", "You win the deal!");
             solitrio_self.prependMove("win");
             solitrio_self.endTurn();
           }else if (!solitrio_self.hasAvailableMoves()){
             if (solitrio_self.game.state.recycles_remaining == 0){
-              salert("No More Available Moves, you lose!");
+              solitrio_self.displayWarning("Game over", "There are no more available moves to make.", 9000);
+              //salert("No More Available Moves, you lose!");
             }else{
               solitrio_self.shuffleFlash();
             }
@@ -395,7 +364,8 @@ class Solitrio extends GameTemplate {
             smartTip = "Hint: Try a 2 of any suit";
           }
           //Feedback
-          salert("<p>Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
+          solitrio_self.displayWarning("Invalid Move", "Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... ");
+          //salert("Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
           solitrio_self.untoggleCard(selected);
           selected = "";
           $("#rowbox").removeClass("selected");
@@ -563,7 +533,6 @@ class Solitrio extends GameTemplate {
   }
 
   handleGameLoop(msg=null) {
-    let solitrio_self = this;
 
     this.saveGame(this.game.id);
     ///////////
@@ -603,7 +572,8 @@ class Solitrio extends GameTemplate {
         this.saveGame(this.game.id);
 
         if (this.game.player === player){
-          window.location.href = "/arcade";
+          super.exitGame();
+          //window.location.href = "/arcade";
         }else{
           this.updateStatus("Player has exited the building");
         }
@@ -870,17 +840,12 @@ no status atm, but this is to update the hud
     return card.substring(1);
   }
 
-  resignGame(game_id = null, reason = "forfeit") {
+  quitGame(game_id = null, reason = "forfeit") {
     console.log("Mark game as closed");
     this.loadGame(game_id);
     this.game.over = 2;
     this.saveGame(game_id);
-    //Refresh Arcade if in it
-    let arcade = this.app.modules.returnModule("Arcade");
-    if (arcade){
-      //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
-      arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
-    }
+    this.app.connection.emit("arcade-remove-game", game_id);
   }
 
   receiveGameoverRequest(blk, tx, conf, app) {

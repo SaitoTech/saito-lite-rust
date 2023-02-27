@@ -3,6 +3,8 @@
  */
 import { Saito } from "../../apps/core";
 import Peer from "./peer";
+import { MessageType } from "./networkapi";
+import { randomBytes } from "crypto";
 
 class Handshake {
   public app: Saito;
@@ -13,87 +15,197 @@ class Handshake {
     return this;
   }
 
-  newHandshake() {
+  newHandshakeChallenge() {
     return {
-      publickey: this.app.wallet.returnPublicKey(),
-      challenge: Math.floor(Math.random() * 100_000_000_000_000),
-      lite: this.app.BROWSER,
-      server_port: this.app.BROWSER ? 0 : this.app.server.server.endpoint.port,
-      server_ip: this.app.BROWSER ? "" : this.app.server.server.endpoint.host,
-      server_protocol: this.app.BROWSER ? "" : this.app.server.server.endpoint.protocol,
+      //publickey: this.app.wallet.returnPublicKey(),
+      challenge: randomBytes(32),
+      //lite: this.app.BROWSER,
+      //block_fetch_url: this.app.BROWSER ? "" : this.app.server.server.block_fetch_url,
     };
   }
 
   //
   // TODO - base58 conversion through app.crypto
   //
-  serializeHandshake(h) {
+  serializeHandshakeChallenge(h) {
     return Buffer.concat([
-      Buffer.from(this.app.crypto.fromBase58(h.publickey), "hex"),
-      this.app.binary.u64AsBytes(h.challenge),
-      this.app.binary.u64AsBytes(h.lite),
-      Buffer.from(this.app.binary.u32AsBytes(h.server_port)),
-      Buffer.from(this.app.binary.u32AsBytes(h.server_ip.length)),
-      Buffer.from(h.server_ip, "utf-8"),
-      Buffer.from(this.app.binary.u32AsBytes(h.server_protocol.length)),
-      Buffer.from(h.server_protocol),
+      //Buffer.from(this.app.crypto.fromBase58(h.publickey), "hex"),
+      h.challenge,
+      //this.app.binary.u64AsBytes(h.lite),
+      //Buffer.from(this.app.binary.u32AsBytes(h.block_fetch_url.length)),
+      //Buffer.from(h.block_fetch_url, "utf-8"),
     ]);
   }
 
-  deserializeHandshake(buffer) {
-    const h2 = this.newHandshake();
+  deserializeHandshakeChallenge(buffer) {
+    const h2 = this.newHandshakeChallenge();
 
-    h2.publickey = this.app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
-    h2.challenge = Number(this.app.binary.u64FromBytes(buffer.slice(33, 41)));
-    h2.lite = Number(this.app.binary.u64FromBytes(buffer.slice(41, 49)));
-
-    h2.server_port = this.app.binary.u32FromBytes(buffer.slice(49, 53));
-    let length = Number(this.app.binary.u32FromBytes(buffer.slice(53, 57)));
-
-    h2.server_ip = Buffer.from(buffer.slice(57, 57 + length)).toString("utf-8");
-
-    const offset = 57 + length;
-    length = Number(this.app.binary.u32FromBytes(buffer.slice(offset, offset + 4)));
-    h2.server_protocol = Buffer.from(buffer.slice(offset + 4, offset + 4 + length)).toString(
-      "utf-8"
-    );
+    //h2.publickey = this.app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
+    h2.challenge = Buffer.from(buffer.slice(0, 32));
+    //h2.lite = Number(this.app.binary.u64FromBytes(buffer.slice(65, 73)));
+    //let length = Number(this.app.binary.u32FromBytes(buffer.slice(73, 77)));
+    //h2.block_fetch_url = Buffer.from(buffer.slice(77, 77 + length)).toString("utf-8");
 
     return h2;
   }
 
+  newHandshakeResponse() {
+    return {
+      publickey: this.app.wallet.returnPublicKey(),
+      signature: randomBytes(64),
+      challenge: randomBytes(32),
+      lite: this.app.BROWSER,
+      block_fetch_url: this.app.BROWSER ? "" : this.app.server.server.block_fetch_url,
+    };
+  }
+
+  serializeHandshakeResponse(r) {
+    return Buffer.concat([
+      Buffer.from(this.app.crypto.fromBase58(r.publickey), "hex"),
+      r.signature,
+      r.challenge,
+      this.app.binary.u64AsBytes(r.lite),
+      Buffer.from(this.app.binary.u32AsBytes(r.block_fetch_url.length)),
+      Buffer.from(r.block_fetch_url, "utf-8"),
+    ]);
+  }
+
+  deserializeHandshakeResponse(buffer) {
+    const r = this.newHandshakeResponse();
+
+    r.publickey = this.app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
+    r.signature = Buffer.from(buffer.slice(33, 97));
+    r.challenge = Buffer.from(buffer.slice(97, 129));
+    r.lite = Number(this.app.binary.u64FromBytes(buffer.slice(129, 137)));
+    let length = Number(this.app.binary.u32FromBytes(buffer.slice(137, 141)));
+    r.block_fetch_url = Buffer.from(buffer.slice(141, 141 + length)).toString("utf-8");
+
+    return r;
+  }
+
+  // newHandshakeCompletion() {
+  //     return {
+  //         signature: randomBytes(64),
+  //     }
+  // }
+  //
+  // serializeHandshakeCompletion(c) {
+  //     return Buffer.concat([
+  //         c.signature,
+  //     ]);
+  // }
+  //
+  // deserializeHandshakeCompletion(buffer) {
+  //     const c = this.newHandshakeCompletion();
+  //     c.signature = Buffer.from(buffer.slice(0, 64))
+  //     return c;
+  // }
+
   async initiateHandshake(socket) {
-    const h = this.newHandshake();
-
-    const peer_response = await this.app.networkApi.sendAPICall(
+    const h = this.newHandshakeChallenge();
+    socket.peer.challenge = h.challenge;
+    socket.peer.initiated_handshake = true;
+    this.app.networkApi.send(
       socket,
-      "SHAKINIT",
-      this.serializeHandshake(h)
+      MessageType.HandshakeChallenge,
+      this.serializeHandshakeChallenge(h)
     );
-    const h2 = this.deserializeHandshake(peer_response);
+  }
 
-    socket.peer.peer.publickey = h2.publickey;
-    if (h2.lite === 1) {
-      socket.peer.peer.synctype = "lite";
+  async handleIncomingHandshakeChallenge(peer: Peer, buffer: Buffer) {
+    //console.log("handling handshake challenge from : " + peer.peer.host + ":" + peer.peer.port);
+    const h2 = this.deserializeHandshakeChallenge(buffer);
+    //this.app.network.requestBlockchain(peer);
+
+    // peer.peer.publickey = h2.publickey;
+    // if (h2.lite === 1) {
+    //     peer.peer.synctype = "lite";
+    // } else {
+    //     peer.peer.block_fetch_url = h2.block_fetch_url;
+    //     console.log("block fetch url received = " + h2.block_fetch_url);
+    // }
+
+    if (!peer.initiated_handshake) {
+      const r = this.newHandshakeResponse();
+      peer.challenge = r.challenge;
+      r.signature = Buffer.from(
+        this.app.crypto.signBuffer(h2.challenge, this.app.wallet.returnPrivateKey()),
+        "hex"
+      );
+      this.app.networkApi.send(
+        peer.socket,
+        MessageType.HandshakeResponse,
+        this.serializeHandshakeResponse(r)
+      );
     }
   }
 
-  async handleIncomingHandshakeRequest(peer: Peer, buffer: Buffer) {
-    const h2 = this.deserializeHandshake(buffer);
+  async handleHandshakeResponse(peer: Peer, buffer: Buffer) {
+    const r = this.deserializeHandshakeResponse(buffer);
+    //console.log(
+    //  "handling handshake response from : " +
+    //    peer.peer.host +
+    //    ":" +
+    //    peer.peer.port +
+    //    ", public key : " +
+    //    r.publickey +
+    //    " lite = " +
+    //    r.lite
+    //);
 
-    peer.peer.publickey = h2.publickey;
-    if (h2.lite === 1) {
-      peer.peer.synctype = "lite";
-    } else {
-      peer.peer.host = h2.server_ip;
-      peer.peer.port = h2.server_port;
-      peer.peer.protocol = h2.server_protocol;
+    if (
+      peer.challenge &&
+      this.app.crypto.verifyHash(peer.challenge, r.signature.toString("hex"), r.publickey)
+    ) {
+      peer.peer.publickey = r.publickey;
+      //console.log(
+      //  "Setting public key for peer " +
+      //    peer.peer.host +
+      //    ":" +
+      //    peer.peer.port +
+      //    ", public key : " +
+      //    r.publickey
+      //);
+      if (r.lite === 1) {
+        peer.peer.synctype = "lite";
+      } else {
+        peer.peer.block_fetch_url = r.block_fetch_url;
+        console.log("block fetch url received = " + r.block_fetch_url);
+      }
+
+      this.app.connection.emit("handshake_complete", peer);
+      this.app.network.requestBlockchain(peer);
+
+      if (peer.initiated_handshake) {
+        const c = this.newHandshakeResponse();
+        c.signature = Buffer.from(
+          this.app.crypto.signBuffer(r.challenge, this.app.wallet.returnPrivateKey()),
+          "hex"
+        );
+        //console.log("sending handshake response!");
+        this.app.networkApi.send(
+          peer.socket,
+          MessageType.HandshakeResponse,
+          this.serializeHandshakeResponse(c)
+        );
+      }
     }
 
-    this.app.connection.emit("handshake_complete", peer);
-
-    const h = this.newHandshake();
-    return this.serializeHandshake(h);
+    peer.challenge = null;
+    peer.initiated_handshake = false;
   }
+
+  // async handleHandshakeCompletion(peer: Peer, buffer: Buffer) {
+  //     console.log("handling handshake completion from : " + peer.peer.host + ":" + peer.peer.port);
+  //     const c = this.deserializeHandshakeCompletion(buffer);
+  //
+  //     if (this.app.crypto.verifyHash(peer.challenge, c.signature.toString("hex"), peer.peer.publickey)) {
+  //         console.log("handshake completed with ",  peer.returnPublicKey());
+  //         this.app.connection.emit("handshake_complete", peer);
+  //     } else {
+  //         console.log("handshake completion failed");
+  //     }
+  // }
 }
 
 export default Handshake;

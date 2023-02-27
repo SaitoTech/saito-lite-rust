@@ -46,6 +46,9 @@ class StorageCore extends Storage {
     }
   }
 
+  returnPath() {
+    return path;
+  }
   returnFileSystem() {
     return fs;
   }
@@ -120,17 +123,17 @@ class StorageCore extends Storage {
     }
 
     files.sort(function (a, b) {
-      const compres = fs.statSync(dir + a).mtime.getTime() - fs.statSync(dir + b).mtime.getTime();
-      if (compres == 0) {
-        return parseInt(a) - parseInt(b);
-      }
-      return compres;
+      // const compres = fs.statSync(dir + a).mtime.getTime() - fs.statSync(dir + b).mtime.getTime();
+      // if (compres == 0) {
+      return parseInt(a.split("-")[0]) - parseInt(b.split("-")[0]);
+      // }
+      // return compres;
     });
 
     for (let i = 0; i < files.length; i++) {
       try {
         const fileID = files[i];
-        if (fileID !== "empty") {
+        if (fileID !== "empty" && fileID.includes(".sai")) {
           const blk = await this.loadBlockByFilename(dir + fileID);
           if (blk == null) {
             console.log("block is null: " + fileID);
@@ -141,7 +144,7 @@ class StorageCore extends Storage {
             return null;
           }
 
-          await this.app.blockchain.addBlockToBlockchain(blk, 1);
+          await this.app.blockchain.addBlockToBlockchain(blk, true);
           console.log("Loaded block " + i + " of " + files.length);
         }
       } catch (err) {
@@ -213,10 +216,10 @@ class StorageCore extends Storage {
   }
 
   async loadBlockByHash(bsh) {
-    if (!this.app.blockchain.blocks[bsh]) {
+    if (!this.app.blockchain.blocks.get(bsh)) {
       return null;
     }
-    const blk = this.app.blockchain.blocks[bsh];
+    const blk = this.app.blockchain.blocks.get(bsh);
     const filename = blk.returnFilename();
     const block = await this.loadBlockByFilename(filename);
     return block;
@@ -364,22 +367,16 @@ class StorageCore extends Storage {
 
   convertIssuanceIntoSlip(line = "") {
     let entries = line.split("\t");
-
-    console.log(JSON.stringify(entries));
-
     let amount = BigInt(entries[0]);
     let publickey = entries[1];
     let type = entries[2];
-
     let slip = new Slip(publickey, amount);
-
     if (type === "VipOutput") {
       slip.type = SlipType.VipOutput;
     }
     if (type === "Normal") {
       slip.type = SlipType.Normal;
     }
-
     return slip;
   }
 
@@ -431,9 +428,7 @@ class StorageCore extends Storage {
     try {
       fs.writeFileSync(`${__dirname}/web/client.options`, JSON.stringify(t));
     } catch (err) {
-      console.log(err);
       console.error(err);
-      // this.app.logger.logError("Error thrown in storage.saveBlock", {message: "", stack: err});
     }
   }
 
@@ -477,7 +472,7 @@ class StorageCore extends Storage {
   /**
    * TODO: uses a callback and should be moved to await / async promise
    **/
-  async returnBlockFilenameByHash(block_hash, mycallback) {
+  async returnBlockFilenameByHash(block_hash: string, mycallback) {
     const sql = "SELECT id, ts, block_id FROM blocks WHERE hash = $block_hash";
     const params = { $block_hash: block_hash };
 
@@ -495,7 +490,7 @@ class StorageCore extends Storage {
     }
   }
 
-  returnBlockFilenameByHashPromise(block_hash) {
+  returnBlockFilenameByHashPromise(block_hash: string) {
     return new Promise((resolve, reject) => {
       this.returnBlockFilenameByHash(block_hash, (filename, err) => {
         if (err) {
@@ -521,6 +516,7 @@ class StorageCore extends Storage {
         return await db.run(sql, params, mycallback);
       }
     } catch (err) {
+      console.log("sql : ", sql);
       console.log(err);
     }
   }
@@ -534,7 +530,8 @@ class StorageCore extends Storage {
       }
       return rows;
     } catch (err) {
-      console.log(err);
+      console.log("failed executing sql : ", sql);
+      console.error(err);
       return [];
     }
   }

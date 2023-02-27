@@ -4,11 +4,6 @@
       this.game.state.events.marshall = 1;
       var twilight_self = this;
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Marshall Plan</div>");
-        return 0;
-
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -48,9 +43,9 @@
             twilight_self.displayModal("you already place one there...");
           }
         });
-
-        return 0;
       }
+      return 0;
+
     }
 
 

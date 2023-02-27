@@ -1,4 +1,293 @@
 
+img {
+  width: unset;
+}
+
+.saito-overlay-backdrop {
+  opacity: 0.8;
+}
+
+.cancel_x {
+  opacity: 0.3;
+}
+.cardimg {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  top: 0px;
+  left: 0px;
+}
+
+.revolt_in_egypt {
+    background-color: transparent;
+    width: 350px;
+    height: 500px;
+    top: 2700px;
+    left: 4600px;
+    position: absolute;
+    transform: rotate(15deg);
+    background-image: url(/his/img/cards/HIS-092.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.revolt_in_ireland {
+    background-color: transparent;
+    width: 350px;
+    height: 500px;
+    top: 800px;
+    left: 900px;
+    position: absolute;
+    transform: rotate(15deg);
+    background-image: url(/his/img/cards/HIS-093.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.war_in_persia {
+    background-color: transparent;
+    width: 350px;
+    height: 500px;
+    top: 2000px;
+    left: 4650px;
+    position: absolute;
+    transform: rotate(15deg);
+    background-image: url(/his/img/cards/HIS-110.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.navalspace {
+  width: 190px;
+  height: 100px;
+  position: absolute;
+}
+#channel {
+  top: 1025px;
+  left: 1420px;
+}
+#north {
+  top: 80px;
+  left: 2250px;
+}
+#baltic {
+  top: 40px;
+  left: 3140px;
+}
+#biscay {
+  top: 1500px;
+  left: 1400px;
+}
+#atlantic {
+  top: 2880px;
+  left: 1100px;
+}
+#gulflyon {
+  top: 2150px;
+  left: 2600px;
+}
+#barbary {
+  top: 2550px;
+  left: 2450px;
+}
+#tyrrhenian {
+  top: 2100px;
+  left: 3050px
+}
+#africa {
+  top: 2775px;
+  left: 4200px
+}
+#adriatic {
+  top: 1800px;
+  left: 3450px;
+}
+#ionian {
+  top: 2385px;
+  left: 3750px;
+}
+#aegean {
+  top: 2500px;
+  left: 4450px;
+}
+#black {
+  top: 1465px;
+  left: 4750px;
+}
+
+
+.personage_tile {
+  height: 25rem;
+  width: 25rem;
+  background-size: cover;
+}
+
+.personage_overlay {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    display: grid;
+}
+
+.theological_debate_sheet {
+  background-image: url('/his/img/backgrounds/theological-debate2.jpg');
+  background-size: cover;
+  width: 80vw;
+  min-height: 800px;
+  height: auto;
+
+  overflow-y: auto;
+}
+.theological_debate_sheet .status {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    background-color: whitesmoke;
+    height: 80px;
+    margin-top: 4rem;
+    border-radius: 1rem;
+}
+
+.attacker_debater {
+    height: 300px;
+    width: 300px;
+    position: absolute;
+    left: 10vw;
+    bottom: 0px;
+    left: 0px;
+    /* background-image: url(/his/img/tiles/debaters/AleanderDebater.svg); */
+    background-size: cover;
+}
+
+.defender_debater {
+    height: 300px;
+    width: 300px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    /* background-image: url(/his/img/tiles/debaters/AleanderDebater.svg); */
+    background-size: cover;
+}
+
+
+
+.protestant_debaters {
+    left: 68px;
+    top: 295px;
+    position: absolute;
+    width: 240px;
+    height: 140px;
+    display: grid;
+}
+.calvinist_debaters {
+    left: 305px;
+    top: 295px;
+    position: absolute;
+    width: 240px;
+    height: 140px;
+    display: grid;
+}
+.anglican_debaters {
+    left: 542px;
+    top: 295px;
+    position: absolute;
+    width: 240px;
+    height: 140px;
+    display: grid;
+}
+.papal_debaters {
+    left: 195px;
+    top: 120px;
+    position: absolute;
+    border: 1px solid black;
+    width: 490px;
+    height: 140px;
+    display: grid;
+}
+
+.vp_tile {
+  position: absolute;
+  z-index: 200;
+  height: 100px;
+  width: 100px;
+  top: 100px;
+  left: 100px;
+  display: none;
+}
+
+.new_testament_german_tile {
+  background-image: url('/his/img/factions/NewTestament_German.svg');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  margin-top: 0rem; 
+}
+.new_testament_french_tile {
+  background-image: url('/his/img/factions/NewTestament_French.svg');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  margin-top: 1rem; 
+}
+.new_testament_english_tile {
+  background-image: url('/his/img/factions/NewTestament_English.svg');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  margin-top: 2rem; 
+}
+
+.bible_german_tile {
+  background-image: url('/his/img/factions/BibleGerman.svg');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  margin-top: 0rem; 
+}
+.bible_french_tile {
+  background-image: url('/his/img/factions/BibleFrench.svg');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  margin-top: 1rem; 
+}
+.bible_english_tile {
+  background-image: url('/his/img/factions/BibleEnglish.svg');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  margin-top: 2rem; 
+}
+
+
+#hapsburg_vp_tile {
+  background-image: url('/his/img/vp/VP_Hapsburg.svg');
+  background-size: cover;
+}
+#protestant_vp_tile {
+  background-image: url('/his/img/vp/VP_Hapsburg.svg');
+  background-size: cover;
+}
+#france_vp_tile {
+  background-image: url('/his/img/vp/VP_France.svg');
+  background-size: cover;
+}
+#england_vp_tile {
+  background-image: url('/his/img/vp/VP_England.svg');
+  background-size: cover;
+}
+#ottoman_vp_tile {
+  background-image: url('/his/img/vp/VP_Ottoman.svg');
+  background-size: cover;
+}
+#papacy_vp_tile {
+  background-image: url('/his/img/vp/VP_Papacy.svg');
+  background-size: cover;
+}
+
+
 .hud-header {
   opacity: 0.5;
   background-color: #0005;
@@ -6,9 +295,62 @@
   margin-right: auto;
   max-width: 500px;
 }
+,hud-body {
+  overflow: scroll;
+}
+.hud-body .status .message {
+  padding: 15px;
+  background-color: whitesmoke;
+}
+.status-message {
+  min-height: 50px;
+  background-color: whitesmoke;
+}
+.hud-body .status ul {
+  width: 100%;
+  background-color: whitesmoke;
+}
+.hud-body .status ul li , .hud-body .status .status-text-menu li {
+  cursor: pointer;
+  padding: 15px;
+  list-style: none;
+  background-color: whitesmoke;
+}
+.hud-body .status ul li:hover , .hud-body .status .status-text-menu li:hover {
+  background-color: #E7E7E7;
+}
+
+.unrest {
+  position: absolute;
+  display: block;
+  height: 130px;
+  width: 130px;
+  top: -10px;
+  left: -10px;
+  z-index: 999;
+}
+
+.option {
+  min-height: 40px;
+}
 
 .cardimg {
   width: 100%;
+}
+
+.religious_conflict_sheet {
+  width: 1110px;
+  height: 820px;
+  background-size: auto;
+}
+
+.religious_conflict_sheet_tile {
+  position: absolute;
+  height: 75px;
+  width: 75px;
+  background-image: url('/his/img/tiles/independent/Independent_key.svg');
+  background-color: yellow;
+  background-size: contain;
 }
 
 .faction_sheet {
@@ -21,7 +363,6 @@
   position: absolute;
   height: 100px;
   width: 100px;
-  background-color: green;
 }
 .faction_sheet_england_keytile1 {
   top: 568px;
@@ -631,6 +972,15 @@
   background-color: whitesmoke;
   border-radius: 10px;
   font-size: 2em;
+  padding: 1.5rem;
+}
+
+.space_faction {
+  font-size: 2rem;
+}
+
+.space_unit {
+  margin-left: 1rem;
 }
 
 

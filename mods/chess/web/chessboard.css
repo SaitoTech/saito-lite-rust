@@ -15,10 +15,10 @@
 
 /* board */
 .board-b72b1 {
-  border: 30px solid #222;
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
+  border: 30px solid #222;
   box-shadow: 10px 10px 20px #222;
 }
 
@@ -75,15 +75,3 @@
   font-size: 16px;
 }
 
-.chessboard-63f37::before {
-  content: "";
-  width: 587px;
-  height: 587px;
-  /* border: 1px solid red; */
-  background-color: #333;
-  position: absolute;
-  top: -4px;
-  left: 9px;
-  z-index: -1;
-  display: none;
-}

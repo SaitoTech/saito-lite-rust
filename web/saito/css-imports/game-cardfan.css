@@ -1,0 +1,167 @@
+
+.cardfan {
+  position: absolute;
+  top: 70vh;
+  left: 15vw;
+  height: 100%;
+  width: auto;
+  padding-left: 0px;
+  padding-top: 0px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cardfan .card {
+  position: absolute;
+  width: min(17.5vh,20vw);
+  height: auto;
+}
+.cardfan .cardimg {
+  width: 100%;
+  height: auto;
+}
+
+.cardfan>.card:nth-child(1) {
+  transform: rotate(-20deg);
+  left: 0px;
+}
+
+.cardfan>.card:first-child:last-child {
+  transform: rotate(0deg);
+  left: 0px;
+}
+.cardfan>.card:only-child {
+  transform: rotate(0deg);
+  left: 0px;
+}
+
+.cardfan>.card:nth-child(2) {
+  transform: rotate(-10deg);
+  left: 3vh;
+}
+
+.cardfan>.card:nth-child(3) {
+  transform: rotate(0deg);
+  left: 6vh;
+}
+
+.cardfan>.card:nth-child(4) {
+  transform: rotate(10deg);
+  left: 9vh;
+}
+
+.cardfan>.card:nth-child(5) {
+  transform: rotate(20deg);
+  left: 12vh;
+}
+
+.hand>.card:nth-child(1) {
+  transform: rotate(-20deg);
+  left: 0px;
+}
+
+.hand>.card:nth-child(2) {
+  transform: rotate(-10deg);
+  left: 2vh;
+}
+
+.hand>.card:nth-child(3) {
+  transform: rotate(0deg);
+  left: 4vh;
+}
+
+.hand>.card:nth-child(4) {
+  transform: rotate(10deg);
+  left: 6vh;
+}
+
+.hand>.card:nth-child(5) {
+  transform: rotate(20deg);
+  left: 8vh;
+}
+
+.bighand>.card:nth-child(7n+1) {
+  transform: rotate(-30deg);
+  left: 0px;
+}
+
+.bighand>.card:nth-child(7n+2) {
+  transform: rotate(-20deg);
+  left: 2vh;
+}
+
+.bighand>.card:nth-child(7n+3) {
+  transform: rotate(-10deg);
+  left: 4vh;
+}
+
+.bighand>.card:nth-child(7n+4) {
+  transform: rotate(0deg);
+  left: 6vh;
+}
+
+.bighand>.card:nth-child(7n+5) {
+  transform: rotate(10deg);
+  left: 8vh;
+}
+
+.bighand>.card:nth-child(7n+6) {
+  transform: rotate(20deg);
+  left: 10vh;
+}
+
+.bighand>.card:nth-child(7n+7) {
+  transform: rotate(30deg);
+  left: 12vh;
+}
+
+.bighand>.card:nth-child(n+8) {
+  top: 5vh;
+}
+.bighand>.card:nth-child(n+15) {
+  top: 9vh;
+}
+.bighand>.card:nth-child(n+22) {
+  top: 13vh;
+}
+
+.staggered-hand>.card:nth-child(2){
+  top: 4vh;
+}
+.staggered-hand>.card:nth-child(3){
+  top: 8vh;
+}
+.staggered-hand>.card:nth-child(4){
+  top: 12vh;
+}
+.staggered-hand>.card:nth-child(5){
+  top: 16vh;
+}
+.staggered-hand>.card:nth-child(6){
+  top: 20vh;
+}
+.staggered-hand>.card:nth-child(7){
+  top: 24vh;
+}
+
+
+/** MOBILE STYLING FOR CARDFAN**/
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .cardfan{
+    left: 10vw;
+  }
+  /* .cardfan .card {
+    width: min(100px,25vw);
+  }*/
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .cardfan {
+    left: 5vw;
+  }
+  /*Have minimum size of my cards
+  .cardfan .card {
+    width: min(100px,25vw);
+  }*/
+}
+

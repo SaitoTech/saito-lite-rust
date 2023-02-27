@@ -9,7 +9,7 @@
         return 0; 
       },
       spaceCombatRoundEnd :	function(imperium_self, attacker, defender, sector) {
-        if (imperium_self.game.players_info[imperium_self.game.player-1].units_i_destroyed_this_combat_round.includes("flagship")) {
+        if (imperium_self.game.state.players_info[imperium_self.game.player-1].units_i_destroyed_this_combat_round.includes("flagship")) {
 	  imperium_self.game.state.secret_objective_military_catastrophe = 1;
 	}
         return 0; 
@@ -506,7 +506,7 @@
       type		: 	"secret" ,
       canPlayerScoreVictoryPoints	: function(imperium_self, player) {
 
-        let techlist = imperium_self.game.players_info[player-1].tech;
+        let techlist = imperium_self.game.state.players_info[player-1].tech;
 
         let greentech = 0;
         let bluetech = 0;
@@ -569,7 +569,7 @@
       text		:	"Research 2 faction technologies" ,
       type		: 	"secret" ,
       canPlayerScoreVictoryPoints	: function(imperium_self, player) {
-        let techlist = imperium_self.game.players_info[player-1].tech;
+        let techlist = imperium_self.game.state.players_info[player-1].tech;
         let factiontech = 0;
         for (let i = 0; i < techlist.length; i++) {
           if (imperium_self.tech[techlist[i]].prereqs.length > 0 && imperium_self.tech[techlist[i]].type == "special" && techlist[i].indexOf("faction") == 0) { factiontech++; }
@@ -602,11 +602,11 @@
       canPlayerScoreVictoryPoints	: function(imperium_self, player) {
 
  	// 1_1, 4_7, etc.
-	let homeworlds = imperium_self.returnHomeworldSectors(imperium_self.game.players_info.length);
+	let homeworlds = imperium_self.returnHomeworldSectors(imperium_self.game.state.players_info.length);
 	let sectors = [];
 
 	for (let i = 0; i < homeworlds.length; i++) {
-	  if (imperium_self.game.board[homeworlds[i]].tile != imperium_self.game.board[imperium_self.game.players_info[player-1].homeworld].tile) {
+	  if (imperium_self.game.board[homeworlds[i]].tile != imperium_self.game.board[imperium_self.game.state.players_info[player-1].homeworld].tile) {
 	    sectors.push(imperium_self.game.board[homeworlds[i]].tile);
 	  }
 	}

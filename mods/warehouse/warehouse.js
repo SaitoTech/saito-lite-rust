@@ -22,10 +22,10 @@ class Warehouse extends ModTemplate {
 
   async addTransactionsToDatabase(blk) {
     try {
+      console.log("adding block to warehous : " + blk.returnHash());
       for (let i = 0; i < blk.transactions.length; i++) {
         if (blk.transactions[i].transaction.type >= -999) {
           for (let ii = 0; ii < blk.transactions[i].transaction.to.length; ii++) {
-            if (blk.transactions[i].transaction.type >= -999) {
               let sql = `INSERT OR IGNORE INTO transactions (
                                 address, 
                                 amt, 
@@ -74,6 +74,10 @@ class Warehouse extends ModTemplate {
               if (blk.transactions[i].msg.module) {
                 tmodule = blk.transactions[i].msg.module;
               }
+              let tx_from = "";
+              if (blk.transactions[i].transaction.from.length > 0){
+                tx_from = blk.transactions[i].transaction.from[0].add;
+              }
               let params = {
                 $address: blk.transactions[i].transaction.to[ii].add,
                 $amt: blk.transactions[i].transaction.to[ii].amt,
@@ -87,13 +91,12 @@ class Warehouse extends ModTemplate {
                 $ts: blk.transactions[i].transaction.ts,
                 $block_ts: blk.block.ts,
                 $type: ttype,
-                $tx_from: blk.transactions[i].transaction.from[0].add,
+                $tx_from: tx_from,
                 $tx_to: blk.transactions[i].transaction.to[ii].add,
                 $name: tname,
                 $module: tmodule
               }
               await this.app.storage.executeDatabase(sql, params, "warehouse");
-            }
           }
         }
       }

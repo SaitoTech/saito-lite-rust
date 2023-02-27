@@ -9,7 +9,7 @@ class Screenshot extends ModTemplate {
 
     this.appname = "Screenshot";
     this.name = "Screenshot";
-    this.description = "Games gain the ability to take screenshots and post to forum";
+    this.description = "Games gain the ability to take screenshots and tweet them";
     this.categories = "Utility Entertainment";
 
   }
@@ -19,20 +19,21 @@ class Screenshot extends ModTemplate {
       return {
 	menus : [ {
           menu_option: {
-	    text: "Screenshot",
+	    text: "Tweet",
 	    id: "game-screenshot",
-            class : "game-screenshot",
-            callback : async function(app, game_mod) {
+	    class : "game-screenshot",
+      	    callback : async function(app, game_mod) {
 	      game_mod.menu.showSubMenu("game-screenshot");
 	    }
           },
 	  sub_menu_option: {
-            text : "Screenshot Magic",
+            text : "Screenshot & Tweet",
             id : "game-screenshot-snap",
             class : "game-screenshot-snap",
             callback : async function(app, game_mod) {
               await app.browser.captureScreenshot(function(image) {
-                game_mod.app.modules.returnModule("Post").postImage(image, game_mod.returnSlug());
+                let m = game_mod.app.modules.returnModule("RedSquare");
+	        if (m) { m.tweetImage(image); }
               });
             }
 	  },

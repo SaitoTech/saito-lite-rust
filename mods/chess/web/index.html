@@ -11,12 +11,10 @@
     <script type="text/javascript" src="/saito/lib/jquery/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="/saito/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
 
-    <link rel="stylesheet" type="text/css" href="/saito/style.css" />
-    <link rel="stylesheet" type="text/css" href="/saito/lib/templates/game.css" />
+    <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
+    <link rel="stylesheet" type="text/css" href="/saito/game.css" />
     <link rel="stylesheet" href="/chess/chessboard.css" type="text/css" media="screen" />
     <link rel="stylesheet" type="text/css" href="/chess/style.css" />
-
-    <link rel="stylesheet" type="text/css" href="/saito/lib/templates/email-chat.css">
 
     <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/fontawesome.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/all.min.css" type="text/css" media="screen" />
@@ -27,53 +25,37 @@
 </head>
 
 <body>
+        <div class="main">
 
-    <div id="Chess_browser_active"></div>
+            <div id="board"></div>
 
-    <div class="container" id="container">
-        <div class="module_container">
+            <div class="controls-space">
 
-            <div class="board-space column">
-                <div id="board"></div>
-            </div>
-
-            <div class="controls column player-data-hud">
-
-                <div class="tool-cont" id="identicon-cont">
-                    <div class="tool-item item-name">OPPONENT</div>
+                <div class="tool-cont hide_in_observer" id="identicon-cont">
+                    <div class="tool-item item-name">VS</div>
                     <div id="opponent_identicon"></div>
                     <div class="tool-item item-detail" id="opponent_id"></div>
-                    <i id="copy-btn" class="fas fa-copy fa-regular"></i>
+                    <i id="chat-btn" class="fas fa-comments fa-regular"></i>
                 </div>
 
-                <div class="tool-cont">
-                    <div class="tool-item item-name">TURN</div>
-                    <div class="tool-item item-detail turn-shape" id="turn-shape"></div>
-                    <div class="tool-item item-name" >RESIGN</div>
-                    <div class="tool-item item-detail">
-                        <i id="resign_icon" class="fas fa-solid fa-flag"></i>
-                    </div>
+                <div class="tool-cont" id="commands-cont">
+                    <div class="tool-item item-name">DRAW</div>
+                    <i id="draw_icon" class="fas fa-handshake hide_in_observer"></i>
+                    <div class="tool-item item-name hide_in_observer" >RESIGN</div>
+                    <i id="resign_icon" class="fas fa-solid fa-flag hide_in_observer"></i>
                 </div>
                 
                 <div class="tool-cont" id="status-cont">
-                    <div class="tool-item item-name">STATUS</div>
+                    <div class="tool-item item-detail turn-shape" id="turn-shape"></div>
                     <div class="tool-item item-detail" id="status"></div>
                 </div>
-                <div class="tool-cont" id="captured-cont">
+                <div class="tool-cont hidden" id="captured-cont">
                     <div class="tool-item item-name">CAPTURED</div>
                     <div class="tool-item item-detail" id="captured"></div>
-                </div>
-                <div id="promotion" class="promotion-holder">
-                    <span id="promotion-choices"></span>
-                </div>
-                <div id="buttons" class="button_row">
-                    <button id="move_reject" class="chess_button" disabled>✘</button>
-                    <button id="move_accept" class="chess_button " disabled>✔</button>
-                </div>
-                
+                </div>                
             </div>
         </div>
-    </div>
+
     <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 </body>
 

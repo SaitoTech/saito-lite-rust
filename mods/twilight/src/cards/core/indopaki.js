@@ -4,15 +4,10 @@
     ////////////////////////
     if (card == "indopaki") {
       let target = 4;
-      let me = "ussr";
       let opponent = "us";
-      if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
+      if (this.game.player == 2) { opponent = "ussr";  }
 
-      if (me != player) {
-        let burned = this.rollDice(6);
-        return 0;
-      }
-      if (me == player) {
+      if (this.playerRoles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -53,7 +48,7 @@
             twilight_self.addMove(`vp\t${player}\t2`);
 
           } else { //India fails invasion
-            winner = (invaded == "pakistan")? "Pakistan repels Indians aggression!": "India repels Pakistani aggression!";
+            winner = (invaded == "pakistan")? "Pakistan repels India!": "India repels Pakistan!";
             if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
             } else {
@@ -64,6 +59,8 @@
           twilight_self.endTurn();
             
         });
+      }else{
+        let burned = this.rollDice(6);
       }
       return 0;
     }

@@ -1,0 +1,146 @@
+::-webkit-scrollbar { width: 8px; height: 3px;}
+::-webkit-scrollbar-button {  background-color: #c9c9c9; }
+::-webkit-scrollbar-track {  background-color: #c9c9c9;}
+::-webkit-scrollbar-track-piece { background-color: #ddd;}
+::-webkit-scrollbar-thumb { height: 50px; background-color: #c9c9c9; border-radius: 3px;}
+::-webkit-scrollbar-corner { background-color: #c9c9c9;}
+::-webkit-resizer { background-color: #ddd;}
+
+
+body {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
+  background-color: #4e4e4e !important;
+
+  overflow: hidden;
+  position: fixed;
+  width: 100vw;
+
+  height: 100vh;
+}
+
+.main {
+  margin-top: unset;
+  padding: unset;
+}
+
+.gameboard {
+  /*transform-origin: left top; /* For resizing game boards */
+  user-select: none;
+ }
+
+
+/*********************/
+/*  SIZING ISSUES    */
+/*********************/
+div.h1{
+  font-size: 32px;
+  margin: 12px 0;
+}
+div.h2{
+  font-size: 24px;
+  margin: 10px 0;
+}
+div.h3{
+  font-size: 18px;
+  margin: 8px 0;
+}
+
+
+/***********************/
+/* MOUSE HOVER TIPS    */
+/***********************/
+
+.tip{
+  position: relative;
+}
+
+.tip .tiptext {
+  visibility: hidden;
+  color: #444 !important;
+  position: absolute;
+  width: 90%;
+  min-width: 400px;
+  max-width: 750px;
+  border:  1px solid var(--saito-primary);
+  background-color: var(--saito-background-color);
+  font-size: 1.6rem;
+  font-style: italic;
+  line-height: 2rem;
+}
+
+.tip:hover .tiptext {
+  visibility: visible;
+}
+
+
+/*********************/
+/*** PORTRAIT MODE ***/
+/*********************/
+@media screen and (orientation:portrait) and (max-width: 400px) {
+
+  .hud-card {
+    /*width: calc(18vw * 0.811);
+    height: 18vw;*/
+  }
+
+  .hud-long .status-cardbox {
+    grid-template-columns: repeat( auto-fit, minmax(18vw, 1fr) );
+  }
+
+  .game-menu ul li {
+    max-width: 75px;
+    font-size: 1.3rem;
+  }
+
+}
+
+@media screen and (orientation:portrait) and (min-width: 400px) and (max-width: 600px) {
+
+  .hud-card {
+    /*width: calc(13vw * 0.811);
+    height: 13vw;*/
+  }
+  .hud-long .status-cardbox {
+    grid-template-columns: repeat( auto-fit, minmax(15vw, 1fr) );
+  }
+  .game-menu ul li {
+    max-width: 100px;
+    width: 100px;
+    font-size: 1.4rem;
+
+  }
+}
+
+@media screen and (orientation:portrait) and (min-width: 600px) {
+
+  .hud-card {
+    /*width: calc(10vw * 0.811);
+    height: 10vw;*/
+  }
+  .status-cardbox {
+    /*grid-template-columns: repeat( auto-fit, minmax(11vw, 1fr) );*/
+    /*grid-template-rows: repeat(auto-fit, 14vw);*/
+  }
+  .game-menu ul li {
+    max-width: 125px;
+    font-size: 1.5rem;
+  }
+
+}
+
+
+/*****************/
+/*** LANDSCAPE ***/
+/*****************/
+@media screen and (orientation: landscape) and (max-height: 650px) {
+
+  .game-overlay-menu {
+    font-size: 1.4em;
+  }
+
+}
+
+

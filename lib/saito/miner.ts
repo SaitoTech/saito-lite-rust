@@ -13,7 +13,7 @@ class Miner {
     this.app = app;
 
     this.mining_active = false;
-    this.mining_speed = 1000;
+    this.mining_speed = 10;
     this.mining_timer = null;
 
     this.target = "";
@@ -32,6 +32,7 @@ class Miner {
   }
 
   startMining(previous_block_hash = null, difficulty = null) {
+    // console.log("starting mining");
     if (this.isMining()) {
       this.stopMining();
     }
@@ -52,6 +53,7 @@ class Miner {
 
     this.target = previous_block_hash;
     this.difficulty = difficulty;
+    // console.log("target : " + this.target + ", difficulty : " + this.difficulty);
 
     if (this.mining_active) {
       clearInterval(this.mining_timer);
@@ -70,28 +72,32 @@ class Miner {
   stopMining() {
     this.mining_active = false;
     clearInterval(this.mining_timer);
+    // console.log("mining stopped");
   }
 
   async mine() {
     if (this.mining_active) {
-      console.log("mining loop...");
-      const random_hash = this.app.crypto.generateRandomNumber();
-      if (
-        this.app.goldenticket.validate(
-          this.target,
-          random_hash,
-          this.app.wallet.returnPublicKey(),
-          this.difficulty
-        )
-      ) {
-        const transaction = this.app.wallet.createUnsignedTransaction();
-        transaction.transaction.type = TransactionType.GoldenTicket;
-        transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash);
-        transaction.sign(this.app);
-        this.app.network.propagateTransaction(transaction);
+      // console.debug("mining loop...");
+      for (let i = 0; i < 100; ++i) {
+        const random_hash = this.app.crypto.generateRandomNumber();
+        if (
+          this.app.goldenticket.validate(
+            this.target,
+            random_hash,
+            this.app.wallet.returnPublicKey(),
+            this.difficulty
+          )
+        ) {
+          const transaction = this.app.wallet.createUnsignedTransaction();
+          transaction.transaction.type = TransactionType.GoldenTicket;
+          transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash);
+          transaction.sign(this.app);
+          this.app.network.propagateTransaction(transaction);
+          this.stopMining();
+          return;
+        }
       }
     }
-    return;
   }
 }
 

@@ -6,24 +6,18 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
   
     <div id="withdrawl-form-cont" class="decision-cont">
       
-      <div class="no-margin">
+      <div class="mixin-withdraw-token-wrapper">
         <div class="input-heading">Token</div>
         <p>${deposit_ticker}</p>
       </div>
-
-        <div class="note withdrawl">
-          Please enter an ${deposit_ticker} address and amount for withdrawal. You will next confirm the 
-          network withdrawal fee, which will be deducted from the total withdrawn. Please note withdrawal 
-          functionality is in BETA and cross-chain token deposits are not supported
-        </div>
         
         <form class="withdrawal-form" id="withdrawal-form" action="/" method="POST">
-          <div class="input-cont">
+          <div class="mixin-withdraw-input">
             <div class="input-heading">Receiving Address</div>
             <input type="text" class="input-elem withdraw_address" value="" required>
           </div>
 
-          <div class="input-cont">
+          <div class="mixin-withdraw-input">
             <div class="amount-cont">
               <div class="input-heading amount-item">Amount</div>
               <div class="amount-item" id="amount-avl" data-amount-avl="${withdraw_balance}">
@@ -37,7 +31,7 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
 
            <div class="info-cont">
              <div class="info-item">
-                <input type="submit" class="withdraw_submit" value="WITHDRAW">
+                <button type="submit" class="withdraw_submit">WITHDRAW</button>
              </div>
             </div>
         </form>
@@ -62,6 +56,15 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
 
 
 <style>
+
+  .mixin-withdraw-token-wrapper {
+    margin-bottom: 2rem;
+  }
+
+  .mixin-withdraw-token-wrapper p {
+    color: #fff;
+  }
+
   #withdrawl-confirm-cont, #withdrawl-sent-cont {
     display: none;
   }
@@ -76,17 +79,28 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
   }
 
   .email-appspace-withdraw-overlay {
-    width: 45vw;
-    padding: 50px 30px;
+    width: 38vw;
+    padding: 2rem;
     background-image: linear-gradient(to bottom right, #EA4843, #f78754);
     color: #fff;
-    text-shadow: 1px 1px 1px #444;
+    background-image: url(/saito/img/dreamscape.png);
+    background-position: 0em;
+    background-size: 120% 100%;
+    color: white;
+    border-radius: 1rem;
   }
 
-  .input-cont {
-    margin-bottom: 40px;
-    postion: relative;
-    border-bottom: 1px solid #fff;
+  .mixin-withdraw-token-wrapper {
+    margin-bottom: 2rem;
+  }
+
+  .mixin-withdraw-token-wrapper p {
+    color: #fff;
+  }
+
+  .mixin-withdraw-input {
+    margin-bottom: 1rem;
+    position: relative;
     padding-bottom: 20px;
   }
 
@@ -149,12 +163,10 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
   }
 
   .withdraw_submit {
-    border: 1px solid #fff;
-    padding: 12px 20px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
-     background-color: #fff;
-    color: #000;
+    background-color: #fff;
+    color: var(--saito-primary);
+    font-size: 1.5rem;
   }
 
   .amount-cont {
@@ -163,21 +175,17 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
   }
 
   .max-amount-btn {
-    padding: 9px 15px;
-    border: 2px solid #333;
     display: inline-block;
     background-color: #fff;
     color: #222;
     position: absolute;
-    right: 25px;
+    right: 1rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    top: 50%;
+    transform: translateY(-10%);
   }
 
-  .max-amount-btn:hover {
-    background-color: #222;
-    color: #fff;
-  }
 </style>
 
   `;
@@ -185,4 +193,3 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
   return html;
 
 }
-

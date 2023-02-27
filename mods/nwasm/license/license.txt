@@ -1,0 +1,7 @@
+
+In order to prevent abuse and circumvention of rights-protection code, this module is
+provided under an open source license that does not permit modification.
+
+Please propose changes / updates to the developers if you wish to see modifications 
+to the source code.
+

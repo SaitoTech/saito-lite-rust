@@ -7,24 +7,16 @@
 
       let twilight_self = this;
 
-      let instigator = 1;
       let respondant = 2;
       let opponent = "us";
-      if (player == "us") { respondant = 1; instigator = 2; opponent = "ussr"; }
+      if (player == "us") { respondant = 1; opponent = "ussr"; }
       this.game.state.events.missileenvy = 1;
 
-      //
-      //
-      //
-      if (this.game.player == instigator) {
-        this.updateStatus("<div class='status-message' id='status-message'>Opponent is returning card for Missile Envy</div>");
-        return 0;
-      }
 
       //
       // targeted player provided list if multiple options available
       //
-      if (this.game.player != instigator && this.game.player != 0) {
+      if (this.game.player == respondant) {
 
         this.addMove("resolve\tmissileenvy");
 
@@ -56,7 +48,7 @@
 
           let card = this.game.deck[0].cards[available_cards[i]];
 
-          if (this.modifyOps(card.ops) == selected_ops) {
+          if (this.modifyOps(card.ops, available_cards[i], opponent) == selected_ops) {
             multiple_cards = 1;
           }
 
@@ -83,7 +75,8 @@
           //
           let html = "<ul>";
           for (let i = 0; i < available_cards.length; i++) {
-            if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops) == selected_ops && available_cards[i] != "china") {
+console.log("OPS: " + this.game.deck[0].cards[available_cards[i]].ops + " -- " + this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], opponent));
+            if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops, available_cards[i], opponent) == selected_ops && available_cards[i] != "china") {
               html += `<li class="card" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
             }
           }
@@ -99,6 +92,8 @@
 
           });
         }
+      }else{
+        this.updateStatus(`<div class='status-message' id='status-message'>${this.playerRoles[respondant].toUpperCase()} is returning card for ${this.cardToText(card)}</div>`);
       }
       return 0;
     }

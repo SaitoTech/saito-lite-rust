@@ -1,36 +1,32 @@
+module.exports = () => {
 
-module.exports = RedSquareMenuTemplate = (app, mod) => {
+   return `
+      <div class="saito-menu redsquare-menu">
 
-  return `
-    <div class="redsquare-menu">
-          <div>
-            <div class="saito-menu  ">
-              <ul>
-                <li>
-                  <i class="fas fa-home"></i>
-                  <span> Home </span>
-                </li>
-                <li class="redsquare-menu-arcade">
-                  <i class="fas fa-gamepad"></i>
-                  <span> Games</span>
-                </li>
-                <li class="redsquare-menu-invites">
-                  <i class="far fa-id-card"></i>
-                  <span> Notifications</span>
-                </li>
-                <li class="redsquare-menu-settings">
-                  <i class="fas fa-calendar"></i>
-                  <span> Settings</span>
-                </li>
-                <li class="redsquare-menu-invites">
-                  <i class="far fa-id-card"></i>
-                  <span> Friends</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-    </div>
+        <div id="new-tweet" class="saito-button-primary">New Post</div>
+
+        <ul class="saito-menu-list">
+          <li class="redsquare-menu-home">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+          </li>
+          <li class="redsquare-menu-notifications">
+            <i class="fas fa-bell"></i>
+            <span>Notifications</span>
+          </li>
+          <li class="redsquare-menu-profile">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </li>
+<!---
+          <li class="redsquare-menu-contacts">
+            <i class="fas fa-user"></i>
+            <span>Contacts</span>
+          </li>
+--->
+        </ul>
+
+      </div>
   `;
-
 }
 

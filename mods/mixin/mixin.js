@@ -1,8 +1,7 @@
 const saito = require('./../../lib/saito/saito');
 const MixinModule = require('./lib/mixinmodule');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const MixinAppspace = require('./lib/email-appspace/mixin-appspace');
-const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const MixinAppspace = require('./lib/appspace/main');
 const fetch = require('node-fetch');
 const forge = require('node-forge');
 const { v4: uuidv4 } = require('uuid');
@@ -11,6 +10,10 @@ const axios = require('axios');
 const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
 const JSON = require("json-bigint");
+const MixinAppspaceSidebar = require('./lib/appspace-sidebar/main');
+const MixinDeposit = require('./lib/appspace/mixin-deposit');
+const MixinWithdraw = require('./lib/appspace/mixin-withdraw.js');
+const MixinHistory = require('./lib/appspace/mixin-history');
 
 class Mixin extends ModTemplate {
 
@@ -18,10 +21,14 @@ class Mixin extends ModTemplate {
 
     super(app);
 
-    this.name = "Mixin";
+    this.name = "Crypto Wallet";
+    this.slug = "wallet";
     this.appname = "Crypto";
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";
+    this.icon = "fas fa-wallet";
+
+    this.stylesheets = ['/mixin/css/appspace.css'];
 
     this.mixin = {};
     this.mixin.app_id 		= "";    
@@ -41,6 +48,7 @@ class Mixin extends ModTemplate {
     this.withdrawals    = [];
     this.deposits       = [];
 
+    this.styles = ['/mixin/css/appspace.css'];
   }
 
 
@@ -50,28 +58,51 @@ class Mixin extends ModTemplate {
   }
 
   
-  respondTo(type = "") {
+  canRenderInto(qs) {
+//
+// FEB 16
+//    
+//    if (qs === ".saito-main") { return true; }
+    return false;
+  }
 
-    let mixin_self = this;
+  renderInto(qs) {
+    if (qs == ".saito-header") {
+      if (!this.renderIntos[qs]) {
 
-    if (type == 'email-appspace') {
-      let obj = {};
-      obj.render = function (app, mixin_self) {
-        MixinAppspace.render(app, mixin_self);
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new MixinDeposit(this.app, this));
+        this.renderIntos[qs].push(new MixinWithdraw(this.app, this));
+        this.renderIntos[qs].push(new MixinHistory(this.app, this));
+      
+        this.attachStyleSheets();
       }
-      obj.attachEvents = function (app, mixin_self) {
-        MixinAppspace.attachEvents(app, mixin_self);
-      }
-      return obj;
     }
+  }
 
+
+  //
+  // flexible inter-module-communications
+  //
+  respondTo(type = "") {
+    // if (type === 'saito-header') {
+    //   return [{
+    //     text: "Wallet",
+    //     icon: this.icon,
+    //     allowed_mods: ["redsquare"],
+    //     callback: function (app, id) {
+    //       window.location = "/redsquare#wallet";
+    //     }
+    //   }]
+    // }
     return null;
   }
 
 
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-
-  async handlePeerRequest(app, message, peer, mycallback = null) {
+    if (tx == null) { return; }
+    let message = tx.returnMessage();
 
     //
     // we receive requests to create accounts here
@@ -83,8 +114,9 @@ class Mixin extends ModTemplate {
 
       if (app.BROWSER == 0) {
 
-        m = JSON.parse(process.env.MIXIN);
-	if (m.appId) {
+       m = JSON.parse(process.env.MIXIN);
+        
+        if (m.appId) {
 
           let method = "POST";
           let uri = '/users';
@@ -112,7 +144,6 @@ class Mixin extends ModTemplate {
       }
     }
   }
-
 
 
 
@@ -171,8 +202,6 @@ class Mixin extends ModTemplate {
     try {
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
-console.log("SNAPSHOT HISTORY: ");
-console.log(res.data);
           let d = res.data;
           for (let i = 0; i < d.data.length; i++) {
             /********************************************
@@ -309,6 +338,7 @@ console.log(res.data);
       );
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
+      callback(false);
     }
   }
 
@@ -571,6 +601,13 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
 
     let mixin_self = this;
 
+    // check we do not already have an account
+    if (this.app.options?.mixin?.user_id) {
+      console.log("skipping mixin account creation as exists");
+      return;
+    }
+
+
     let d = res;
     mixin_self.mixin.session_id = d.data.session_id;
     mixin_self.mixin.user_id = d.data.user_id;
@@ -697,8 +734,9 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
 	mixin_publickey :	user_public_key 
       };
 
-      mixin_self.app.network.peers[0].sendRequestWithCallback("mixin create account", data, function(res) {
-console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+//console.log("PRE IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+      mixin_self.app.network.peers[0].sendRequestAsTransactionWithCallback("mixin create account", data, function(res) {
+//console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
 	mixin_self.createAccountCallback(res, callback);
       });
 

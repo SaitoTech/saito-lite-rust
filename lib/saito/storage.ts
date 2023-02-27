@@ -37,6 +37,10 @@ class Storage {
   returnClientOptions(): string {
     throw new Error("Method not implemented.");
   }
+
+  //
+  // hit up all peers
+  //
   loadTransactions(type = "all", num = 50, mycallback) {
     const message = "archive";
     const data: any = {};
@@ -49,8 +53,146 @@ class Storage {
       let txs = [];
       if (obj) {
         if (obj.txs) {
-          if (obj.txs.length > 0) {
-            txs = obj.txs.map((tx) => new Transaction(JSON.parse(tx)));
+          for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+            tx.optional = {};
+            if (obj.txs[i].optional) {
+              try {
+                tx.optional = JSON.parse(obj.txs[i].optional);
+              } catch (err) {
+                console.log("error loading optional data into tx");
+              }
+            }
+            txs.push(tx);
+          }
+        }
+      }
+      mycallback(txs);
+    });
+  }
+
+  //
+  // hit up specific peer
+  //
+  loadTransactionsFromPeer(type = "all", num = 50, peer, mycallback) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "load";
+    data.type = type;
+    data.num = num;
+    data.publickey = this.app.wallet.returnPublicKey();
+
+    peer.sendRequestWithCallback(message, data, (obj) => {
+      let txs = [];
+      if (obj) {
+        if (obj.txs) {
+          for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+            tx.optional = {};
+            if (obj.txs[i].optional) {
+              try {
+                tx.optional = JSON.parse(obj.txs[i].optional);
+              } catch (err) {
+                console.log("error loading optional data into tx");
+              }
+            }
+            txs.push(tx);
+          }
+        }
+      }
+      mycallback(txs);
+    });
+  }
+
+
+  //
+  // check local archive if exists
+  //
+  loadTransactionsFromLocal(type = "all", num = 50, mycallback) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "load";
+    data.type = type;
+    data.num = num;
+    data.publickey = this.app.wallet.returnPublicKey();
+
+    let newtx = new Transaction();
+    newtx.msg.request = message;
+    newtx.msg.data = data;
+    newtx.presign(this.app);
+
+    let archive_mod = this.app.modules.returnModule("Archive");
+    if (archive_mod) {
+
+      let res = archive_mod.handlePeerTransaction(this.app, newtx, null, (obj) => {
+        let txs = [];
+        if (obj) {
+          if (obj.txs) {
+            for (let i = 0; i < obj.txs.length; i++) {
+              let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+              tx.optional = {};
+              if (obj.txs[i].optional) {
+                try {
+                  tx.optional = JSON.parse(obj.txs[i].optional);
+                } catch (err) {
+                  console.log("error loading optional data into tx");
+                }
+              }
+              txs.push(tx);
+            }
+          }
+        }
+        mycallback(txs);
+      });
+    }
+  }
+
+  deleteTransactions(type = "all", publickey = "", mycallback = null) {
+
+    const message = "archive";
+    const data: any = {};
+    data.request = "delete";
+    data.type = type;
+    data.publickey = publickey;
+
+    this.app.network.sendRequestWithCallback(message, data, function (obj) {
+      mycallback();
+    });
+  }
+
+  loadTransactionBySig(sig, mycallback) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "load_sig";
+    data.sig = sig;
+
+    this.app.network.sendRequestWithCallback(message, data, function (obj) {
+      if (obj == undefined) {
+        mycallback([]);
+        return;
+      }
+      if (obj.txs == undefined) {
+        mycallback([]);
+        return;
+      }
+      if (obj.txs.length == 0) {
+        mycallback([]);
+        return;
+      }
+      let txs = [];
+      if (obj) {
+        if (obj.txs) {
+          for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+            tx.optional = {};
+            if (obj.txs[i].optional) {
+              try {
+                tx.optional = JSON.parse(obj.txs[i].optional);
+              } catch (err) {
+                console.log("error loading optional data into tx");
+              }
+            }
+            txs.push(tx);
           }
         }
       }
@@ -82,8 +224,17 @@ class Storage {
       let txs = [];
       if (obj) {
         if (obj.txs) {
-          if (obj.txs.length > 0) {
-            txs = obj.txs.map((tx) => new Transaction(JSON.parse(tx)));
+          for (let i = 0; i < obj.txs.length; i++) {
+            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+            tx.optional = {};
+            if (obj.txs[i].optional) {
+              try {
+                tx.optional = JSON.parse(obj.txs[i].optional);
+              } catch (err) {
+                console.log("error loading optional data into tx");
+              }
+            }
+            txs.push(tx);
           }
         }
       }
@@ -143,30 +294,74 @@ class Storage {
   /**
    * FUNCTIONS OVERWRITTEN BY STORAGE-CORE WHICH HANDLES ITS OWN DATA STORAGE IN ./core/storage-core.js
    **/
-
-  saveTransaction(tx) {
+  updateTransaction(tx) {
     const txmsg = tx.returnMessage();
-
     const message = "archive";
     const data: any = {};
-    data.request = "save";
+    data.request = "update";
     data.tx = tx;
-    data.type = txmsg.module;
-
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
   }
+  incrementTransactionOptionalValue(sig, optional_key) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "increment_optional_value";
+    data.sig = sig;
+    data.publickey = this.app.wallet.returnPublicKey();
+    data.optional_key = optional_key;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
+  updateTransactionOptionalValue(sig, optional_key, optional_value) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "update_optional_value";
+    data.sig = sig;
+    data.publickey = this.app.wallet.returnPublicKey();
+    data.optional_value = optional_value;
+    data.optional_key = optional_key;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
+  updateTransactionOptional(sig, optional) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "update_optional";
+    data.sig = sig;
+    data.publickey = this.app.wallet.returnPublicKey();
+    data.optional = optional;
+    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+  }
+  saveTransaction(tx: Transaction) {
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx.msg = {
+      request: "archive save",
+      data: tx.serialize(this.app),
+    };
+    newtx = this.app.wallet.signTransaction(newtx);
+    this.app.network.sendTransactionWithCallback(newtx, function (res) {});
 
+    //    const txmsg = tx.returnMessage();
+    //    const message = "archive";
+    //    const data: any = {};
+    //    data.request = "save";
+    //    data.tx = tx;
+    //    data.type = txmsg.module;
+    console.log("=============");
+    console.log("SAVING THE TX");
+    console.log("=============");
+    //    this.app.network.sendRequestWithCallback(message, data, function (res) {});
+    this.app.connection.emit("save-transaction", tx);
+  }
   saveTransactionByKey(key, tx) {
     const txmsg = tx.returnMessage();
-
     const message = "archive";
     const data: any = {};
     data.request = "save_key";
     data.tx = tx;
     data.key = key;
     data.type = txmsg.module;
-
     this.app.network.sendRequestWithCallback(message, data, function (res) {});
+
+    this.app.connection.emit("save-transaction", tx);
   }
 
   /**
@@ -194,6 +389,10 @@ class Storage {
     return null;
   }
 
+  returnPath() {
+    return null;
+  }
+
   returnFileSystem() {
     return null;
   }
@@ -214,7 +413,7 @@ class Storage {
     return [];
   }
 
-  returnBlockFilenameByHashPromise(block_hash) {}
+  returnBlockFilenameByHashPromise(block_hash: string) {}
 
   async queryDatabase(sql, params, database) {}
 

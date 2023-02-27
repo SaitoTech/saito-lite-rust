@@ -27,13 +27,13 @@
       type      :         "ability" ,
       text        :       "Discard an Action Card to stall one turn" ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].stall_tactics == undefined) {
-          imperium_self.game.players_info[player-1].stall_tactics = 0;
+        if (imperium_self.game.state.players_info[player-1].stall_tactics == undefined) {
+          imperium_self.game.state.players_info[player-1].stall_tactics = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction6-stall-tactics") {
-          imperium_self.game.players_info[gainer-1].stall_tactics = 1;
+          imperium_self.game.state.players_info[gainer-1].stall_tactics = 1;
         }
       },
       menuOption  :       function(imperium_self, menu, player) {
@@ -82,7 +82,7 @@
       text        :       "Unlimited action cards. Game effects cannot change." ,
       onNewRound     :    function(imperium_self, player) {
         if (imperium_self.doesPlayerHaveTech(player, "faction6-crafty")) {
-          imperium_self.game.players_info[player-1].action_card_limit = 1000;
+          imperium_self.game.state.players_info[player-1].action_card_limit = 1000;
         }
       },
     });
@@ -99,13 +99,13 @@
       type        :       "ability" ,
       text        :       "Receive bonus card when gaining action cards, then discard one" ,
       initialize  :       function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction6_scheming == null) {
-          imperium_self.game.players_info[player-1].faction6_scheming = 0;
+        if (imperium_self.game.state.players_info[player-1].faction6_scheming == null) {
+          imperium_self.game.state.players_info[player-1].faction6_scheming = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction6-scheming") {
-          imperium_self.game.players_info[gainer-1].faction6_scheming = 1;
+          imperium_self.game.state.players_info[gainer-1].faction6_scheming = 1;
         }
       },
       gainActionCards : function(imperium_self, player, amount) {
@@ -155,18 +155,18 @@
       type        :       "special" ,
       text        :       "Selectively terminate action cards from players who have passed on your turn" ,
       initialize  :       function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].transparasteel_plating == null) {
-          imperium_self.game.players_info[player-1].transparasteel_plating = 0;
+        if (imperium_self.game.state.players_info[player-1].transparasteel_plating == null) {
+          imperium_self.game.state.players_info[player-1].transparasteel_plating = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction6-transparasteel-plating") {
-          imperium_self.game.players_info[gainer-1].transparasteel_plating = 1;
+          imperium_self.game.state.players_info[gainer-1].transparasteel_plating = 1;
         }
       },
       playActionCardTriggers : function(imperium_self, player, action_card_player, card) {
-        if (imperium_self.game.players_info[player-1].transparasteel_plating == 1) {
-	  if (imperium_self.game.player == player && action_card_player != player && imperium_self.game.players_info[action_card_player-1].passed == 1) {
+        if (imperium_self.game.state.players_info[player-1].transparasteel_plating == 1) {
+	  if (imperium_self.game.player == player && action_card_player != player && imperium_self.game.state.players_info[action_card_player-1].passed == 1) {
 	    return 1;
 	  }
 	}
@@ -195,21 +195,21 @@
       type        :       "special" ,
       text        :       "Exhaust to look at other players action cards and take one." ,
       initialize : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].mageon_implants == undefined) {
-          imperium_self.game.players_info[player-1].mageon_implants = 0;
-          imperium_self.game.players_info[player-1].mageon_implants_exhausted = 0;
+        if (imperium_self.game.state.players_info[player-1].mageon_implants == undefined) {
+          imperium_self.game.state.players_info[player-1].mageon_implants = 0;
+          imperium_self.game.state.players_info[player-1].mageon_implants_exhausted = 0;
         }
       },
       onNewRound : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].mageon_implants == 1) {
-          imperium_self.game.players_info[player-1].mageon_implants = 1;
-          imperium_self.game.players_info[player-1].mageon_implants_exhausted = 0;
+        if (imperium_self.game.state.players_info[player-1].mageon_implants == 1) {
+          imperium_self.game.state.players_info[player-1].mageon_implants = 1;
+          imperium_self.game.state.players_info[player-1].mageon_implants_exhausted = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction6-mageon-implants") {
-          imperium_self.game.players_info[gainer-1].mageon_implants = 1;
-          imperium_self.game.players_info[gainer-1].mageon_implants_exhausted = 0;
+          imperium_self.game.state.players_info[gainer-1].mageon_implants = 1;
+          imperium_self.game.state.players_info[gainer-1].mageon_implants_exhausted = 0;
         }
       },
       menuOption  :       function(imperium_self, menu, player) {
@@ -219,7 +219,7 @@
         return {};
       },
       menuOptionTriggers:  function(imperium_self, menu, player) {
-        if (menu == "main" && imperium_self.game.players_info[player-1].mageon_implants_exhausted == 0 && imperium_self.game.players_info[player-1].mageon_implants == 1) {
+        if (menu == "main" && imperium_self.game.state.players_info[player-1].mageon_implants_exhausted == 0 && imperium_self.game.state.players_info[player-1].mageon_implants == 1) {
           return 1;
         }
         return 0;
@@ -439,10 +439,10 @@
   	    );
 	  }
 
+          return 0;
 	}
 
-        return 0;
-
+	return 1;
       },
 
     });

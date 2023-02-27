@@ -1,0 +1,26 @@
+
+rm ../../web/saito/saito.js
+
+#
+# class constructor
+#
+cat ./src/labyrinth-init.js > ./labyrinth.js
+
+for file in ./src/cards/*
+do
+  cat $file >> ./labyrinth.js
+done
+
+#
+# and initialize
+#
+cat ./src/labyrinth-state.js >> ./labyrinth.js
+cat ./src/labyrinth-events.js >> ./labyrinth.js
+cat ./src/labyrinth-display.js >> ./labyrinth.js
+cat ./src/labyrinth-events.js >> ./labyrinth.js
+cat ./src/labyrinth-gameloop.js >> ./labyrinth.js
+cat ./src/labyrinth-player.js >> ./labyrinth.js
+cat ./src/labyrinth-end.js >> ./labyrinth.js
+
+npm run compile $1
+

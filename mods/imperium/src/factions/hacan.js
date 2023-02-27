@@ -31,7 +31,7 @@
               }
 	      if (costs_per_hit.length > 0) {
 	        costs_per_hit.sort((a,b)=>a-b);
-	        if (imperium_self.game.players_info[attacker-1].goods >= costs_per_hit[0]) {
+	        if (imperium_self.game.state.players_info[attacker-1].goods >= costs_per_hit[0]) {
 	          return 1;
 	        }
               }
@@ -49,7 +49,7 @@
               }
 	      if (costs_per_hit.length > 0) {
 	        costs_per_hit.sort((a,b)=>a-b);
-	        if (imperium_self.game.players_info[defender-1].goods >= costs_per_hit[0]) {
+	        if (imperium_self.game.state.players_info[defender-1].goods >= costs_per_hit[0]) {
 	          return 1;
 	        }
               }
@@ -70,14 +70,15 @@
 	    }
 	  }
 	  costs_per_hit.sort((a,b)=>a-b);
-          let html = '<p>Do you wish to boost hits with Flagship Ability?"';
+          let html = '<div class="status-message">Do you wish to boost hits with Flagship Ability?</div><ul>';
 	  let cumulative_cost = 0;
-	  let available_trade_goods = imperium_self.game.players_info[player - 1].goods;
+	  let available_trade_goods = imperium_self.game.state.players_info[player - 1].goods;
 	  for (let i = 0; i < costs_per_hit.length && cumulative_cost <= available_trade_goods; i++) {
 	    cumulative_cost += costs_per_hit[i];
             html += '<li class="option" id="'+i+'">'+(i+1)+' extra hits - '+cumulative_cost+' trade goods</li>';
 	  }
           html += '<li class="option" id="no">skip ability</li>';
+	  html += '</ul>';
 
           imperium_self.updateStatus(html);
 
@@ -146,7 +147,7 @@
 	      //
 	      // skip if we are full commodities
 	      //
-	      if (imperium_self.game.players_info[player-1].commodities === imperium_self.game.players_info[player-1].commodity_limit) {
+	      if (imperium_self.game.state.players_info[player-1].commodities === imperium_self.game.state.players_info[player-1].commodity_limit) {
                 imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
                 imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
                 imperium_self.endTurn();
@@ -154,9 +155,10 @@
                 return 0;
 	      }
 
-              let html = '<p>Do you wish to refresh your commodities free-of-charge?"';
+              let html = '<div class="status-message">Do you wish to refresh your commodities free-of-charge?</div><ul>';
                   html += '<li class="option" id="yes">yes, of course</li>';
                   html += '<li class="option" id="no">no, perhaps not</li>';
+	          html += '</ul>';
 
               imperium_self.updateStatus(html);
 
@@ -167,7 +169,7 @@
                 if (id != "yes") {
 		  imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
             	  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-                  imperium_self.addMove("purchase\t"+imperium_self.game.player+"\t"+"commodities"+"\t"+imperium_self.game.players_info[imperium_self.game.player-1].commodity_limit);
+                  imperium_self.addMove("purchase\t"+imperium_self.game.player+"\t"+"commodities"+"\t"+imperium_self.game.state.players_info[imperium_self.game.player-1].commodity_limit);
 		  imperium_self.endTurn();
 		  return;
                 } else {
@@ -194,7 +196,7 @@
       text	  :	  "May trade with non-neighbours" ,
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction8-guild-ships") {
-          imperium_self.game.players_info[gainer-1].may_trade_with_non_neighbours = 1;
+          imperium_self.game.state.players_info[gainer-1].may_trade_with_non_neighbours = 1;
         }
       },
     });
@@ -207,7 +209,7 @@
       text	  :	  "May trade in action cards" ,
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction8-arbiters") {
-          imperium_self.game.players_info[gainer-1].may_trade_action_cards = 1;
+          imperium_self.game.state.players_info[gainer-1].may_trade_action_cards = 1;
         }
       },
     });
@@ -222,26 +224,26 @@
       prereqs	:	["green","green"],
       text	:	"Spend strategy token to gain 4 trade goods. Pick a player to earn 2 trade goods." ,
       initialize  : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].production_biomes == undefined) {
-          imperium_self.game.players_info[player-1].production_biomes = 0;
-          imperium_self.game.players_info[player-1].production_biomes_exhausted = 0;
+        if (imperium_self.game.state.players_info[player-1].production_biomes == undefined) {
+          imperium_self.game.state.players_info[player-1].production_biomes = 0;
+          imperium_self.game.state.players_info[player-1].production_biomes_exhausted = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction8-production-biomes") {
-          imperium_self.game.players_info[gainer-1].production_biomes = 1;
-          imperium_self.game.players_info[gainer-1].production_biomes_exhausted = 0;
+          imperium_self.game.state.players_info[gainer-1].production_biomes = 1;
+          imperium_self.game.state.players_info[gainer-1].production_biomes_exhausted = 0;
         }
       },
       onNewRound     :    function(imperium_self, player) {
         if (imperium_self.doesPlayerHaveTech(player, "faction8-production-biomes")) {
-          imperium_self.game.players_info[player-1].production_biomes_exhausted = 0;
+          imperium_self.game.state.players_info[player-1].production_biomes_exhausted = 0;
         }
       },
       menuOption  :       function(imperium_self, menu, player) {
         let x = {};
         if (menu === "main") {
-	  if (imperium_self.game.players_info[player-1].production_biomes === 1) {
+	  if (imperium_self.game.state.players_info[player-1].production_biomes === 1) {
             x.event = 'production_biomes';
             x.html = '<li class="option" id="production_biomes">production biomes</li>';
 	  }
@@ -250,7 +252,7 @@
       },
       menuOptionTriggers:  function(imperium_self, menu, player) {
         if (imperium_self.doesPlayerHaveTech(player, "faction8-production-biomes") && menu === "main") {
-          if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
+          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
             if (imperium_self.game.state.active_player_moved == 0) {
               return 1;
             }
@@ -294,26 +296,26 @@
       prereqs	:	["yellow","yellow", "yellow"],
       text	:	"Spend strategy token to swap strategy cards with one player. Give them 3 trade goods." ,
       initialize  : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction8_quantum_datahub_node == undefined) {
-          imperium_self.game.players_info[player-1].faction8_quantum_datahub_node = 0;
-          imperium_self.game.players_info[player-1].faction8_quantum_datahub_node_exhausted = 0;
+        if (imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node == undefined) {
+          imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node = 0;
+          imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node_exhausted = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction8-quantum-datahub-node") {
-          imperium_self.game.players_info[gainer-1].faction8_quantum_datahub_node = 1;
-          imperium_self.game.players_info[gainer-1].faction8_quantum_datahub_node_exhausted = 0;
+          imperium_self.game.state.players_info[gainer-1].faction8_quantum_datahub_node = 1;
+          imperium_self.game.state.players_info[gainer-1].faction8_quantum_datahub_node_exhausted = 0;
         }
       },
       onNewRound     :    function(imperium_self, player) {
         if (imperium_self.doesPlayerHaveTech(player, "faction8-quantum-datahub-node")) {
-          imperium_self.game.players_info[player-1].faction8_quantum_datahub_node_exhausted = 0;
+          imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node_exhausted = 0;
         }
       },
       menuOption  :       function(imperium_self, menu, player) {
         let x = {};
         if (menu === "main") {
-	  if (imperium_self.game.players_info[player-1].faction8_quantum_datahub_node === 1) {
+	  if (imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node === 1) {
             x.event = 'quantum_datahub_node';
             x.html = '<li class="option" id="quantum_datahub_node">quantum datahub node</li>';
 	  }
@@ -322,8 +324,8 @@
       },
       menuOptionTriggers:  function(imperium_self, menu, player) {
         if (imperium_self.doesPlayerHaveTech(player, "faction8-quantum-datahub-node") && menu === "main") {
-          if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
-            if (imperium_self.game.players_info[player-1].faction8_quantum_datahub_node_exhausted == 0) {
+          if (imperium_self.game.state.players_info[player-1].strategy_tokens > 0) {
+            if (imperium_self.game.state.players_info[player-1].faction8_quantum_datahub_node_exhausted == 0) {
               if (imperium_self.game.state.active_player_moved == 0) {
                  return 1;
               }
@@ -344,8 +346,8 @@
 	      let strategy_cards = imperium_self.returnStrategyCards();
 
               let html = '<div>Select Strategy Card to Steal: </div><ul>"';
-	      for (let i = 0; i < imperium_self.game.players_info[pnum-1].strategy.length; i++) {
-		let s = imperium_self.game.players_info[pnum-1].strategy[i];
+	      for (let i = 0; i < imperium_self.game.state.players_info[pnum-1].strategy.length; i++) {
+		let s = imperium_self.game.state.players_info[pnum-1].strategy[i];
                 html += `<li class="option" id="${i}">${strategy_cards[s].name}</li>`;
 	      }
               html += '<li class="option" id="skip">skip</li>';
@@ -364,12 +366,12 @@
                   return;
 		}
 
-		let pull_strategy_card = imperium_self.game.players_info[pnum-1].strategy[id];
+		let pull_strategy_card = imperium_self.game.state.players_info[pnum-1].strategy[id];
 		let pull_strategy_card_from = pnum;
 
 	        let html = '<div>Select Your Strategy Card to Return: </div><ul>"';
-	        for (let i = 0; i < imperium_self.game.players_info[imperium_self.game.player-1].strategy.length; i++) {
-	   	  let s = imperium_self.game.players_info[imperium_self.game.player-1].strategy[i];
+	        for (let i = 0; i < imperium_self.game.state.players_info[imperium_self.game.player-1].strategy.length; i++) {
+	   	  let s = imperium_self.game.state.players_info[imperium_self.game.player-1].strategy[i];
                   html += `<li class="option" id="${i}">${strategy_cards[s].name}</li>`;
 	        }
                 html += '<li class="option" id="skip">skip</li>';
@@ -382,7 +384,7 @@
                   let id = parseInt($(this).attr("id"));
                   $(this).hide();
 
-		  let push_strategy_card = imperium_self.game.players_info[imperium_self.game.player-1].strategy[id];
+		  let push_strategy_card = imperium_self.game.state.players_info[imperium_self.game.player-1].strategy[id];
 
 	  	  if (id == "skip") {
 		    imperium_self.updateLog("Hacan skips Quantum Datahub Node");
@@ -439,7 +441,7 @@
       gainPromissary : function(imperium_self, gainer, promissary) {
 	if (promissary.indexOf("faction8-promissary") >= 0) {
           if (imperium_self.doesPlayerHavePromissary(gainer, "faction8-promissary")) {
-            imperium_self.game.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
+            imperium_self.game.state.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
 	  }
 	}
 	return 1;
@@ -448,7 +450,7 @@
 	if (promissary.indexOf("faction8-promissary") >= 0) {
           if (!imperium_self.doesPlayerHavePromissary(loser, "faction8-promissary")) {
 	    if (loser !== imperium_self.returnPlayerOfFaction("faction8")) {
-              imperium_self.game.players_info[loser - 1].may_trade_with_non_neighbours = 0;
+              imperium_self.game.state.players_info[loser - 1].may_trade_with_non_neighbours = 0;
 	    }
 	  }
 	}

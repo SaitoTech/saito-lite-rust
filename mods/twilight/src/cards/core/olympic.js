@@ -9,11 +9,7 @@
       let opponent = "us";
       if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
 
-      if (player == me) {
-        this.updateStatus(`<div class='status-message' id='status-message'>${opponent.toUpperCase()} is deciding whether to boycott the ${this.cardToText(card)}</div>`);
-        this.attachCardboxEvents();
-        return 0;
-      } else {
+      if (player == opponent) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -69,6 +65,9 @@
             }
           }
         });
+      }else{
+        this.updateStatus(`<div class='status-message' id='status-message'>${opponent.toUpperCase()} is deciding whether to boycott the ${this.cardToText(card)}</div>`);
+        this.attachCardboxEvents();
       }
 
       return 0;

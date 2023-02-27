@@ -1,7 +1,17 @@
 // @ts-nocheck
 
-import screenfull from "screenfull";
+import screenfull, { element } from "screenfull";
 import html2canvas from "html2canvas";
+import { getDiffieHellman } from "crypto";
+
+var marked = require("marked");
+var sanitizeHtml = require("sanitize-html");
+const linkifyHtml = require("markdown-linkify");
+const emoji = require("node-emoji");
+const UserMenu = require("./ui/modals/user-menu/user-menu");
+const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
+
+
 
 class Browser {
   public app: any;
@@ -15,6 +25,7 @@ class Browser {
   public host: any;
   public port: any;
   public protocol: any;
+  public identifiers_added_to_dom: any;
 
   constructor(app) {
     this.app = app || {};
@@ -26,6 +37,8 @@ class Browser {
     this.host = "";
     this.port = "";
     this.protocol = "";
+
+    this.identifiers_added_to_dom = false;
 
     //
     // tells us the browser window is visible, as opposed to
@@ -51,6 +64,9 @@ class Browser {
       // up instead and showed it to them and they understood.
       //
       try {
+
+        this.attachWindowFunctions();
+
         const channel = new BroadcastChannel("saito");
         if (!document.hidden) {
           channel.postMessage({
@@ -59,39 +75,40 @@ class Browser {
           });
         }
 
-        channel.onmessage = (e) => {
-          console.log("document onmessage change");
-          if (!document.hidden) {
-            channel.postMessage({
-              active: 1,
-              publickey: this.app.wallet.returnPublicKey(),
-            });
-            this.setActiveTab(1);
-          } else {
-            //
-            // only disable if someone else active w/ same key
-            //
-            if (e.data) {
-              if (e.data.active == 1) {
-                if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
-                  this.setActiveTab(0);
-                }
-              }
-            }
-          }
-        };
+
+        /******
+                channel.onmessage = (e) => {
+                  console.log("document onmessage change");
+                  if (!document.hidden) {
+                    channel.postMessage({
+                      active: 1,
+                      publickey: this.app.wallet.returnPublicKey(),
+                    });
+                    this.setActiveTab(1);
+                  } else {
+                    //
+                    // only disable if someone else active w/ same key
+                    //
+                    if (e.data) {
+                      if (e.data.active == 1) {
+                        if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
+                          this.setActiveTab(0);
+                        }
+                      }
+                    }
+                  }
+                };
+        *****/
 
         document.addEventListener(
           "visibilitychange",
           () => {
-            //console.log("document event listener visibility change");
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
                 publickey: this.app.wallet.returnPublicKey(),
               });
             } else {
-              //console.log("document event listener visibility change");
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,
@@ -118,10 +135,8 @@ class Browser {
       // Abercrombie's rule.
       //
       if (typeof window == "undefined") {
-        //console.log("Initializing Saito Node");
         return;
       } else {
-        //console.info("Initializing Saito Light Client");
       }
       const current_url = window.location.toString();
       const myurl = new URL(current_url);
@@ -221,6 +236,154 @@ class Browser {
         siteMessage("Websocket Connection Lost");
       });
     }
+
+    // listen with mutation observer
+    this.activatePublicKeyObserver(app);
+
+    // attach listening events
+    document.querySelector("body").addEventListener(
+      "click",
+      (e) => {
+        if (
+          e.target?.classList?.contains("saito-identicon") || e.target?.classList?.contains("saito-address")
+        ) {
+
+          let publickey = e.target.getAttribute("data-id");
+          if (!publickey || !app.crypto.isPublicKey(publickey)) {
+            return;
+          }
+          if (publickey !== app.wallet.returnPublicKey()) {
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            let userMenu = new UserMenu(app, publickey);
+            userMenu.render(app);
+
+          } else {
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            let myUserMenu = new MyUserMenu(app, publickey);
+            myUserMenu.render(app);
+	  }
+        }
+      },
+      {
+        capture: true,
+      }
+    );
+  }
+
+  //
+  // asks the user to login if they are using an anonymous account
+  //
+  requestBackup(success_callback=null, failure_callback=null, email="", pass="") {
+
+    let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+    if (key.recoverable === true) { success_callback(true); return; }
+
+    let obj = {};
+    obj.success_callback = success_callback;
+    obj.failure_callback = failure_callback;
+    obj.email = email;
+    obj.pass = pass;
+    this.app.connection.emit("recovery-backup-overlay-render-request", (obj));
+
+  }
+  requestLogin(success_callback=null, failure_callback=null, email="", pass="") {
+    let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
+    if (key.recoverable === true) { success_callback(true); return; }
+    if (key.identifier) { success_callback(true); return; }
+    if (key.email) { success_callback(true); return; }
+
+    let obj = {};
+    obj.success_callback = success_callback;
+    obj.failure_callback = failure_callback;
+    obj.email = email;
+    obj.pass = pass;
+    this.app.connection.emit("recovery-backup-overlay-render-request", (obj));
+
+  }
+
+
+
+
+  extractKeys(text = "") {
+    let keys = [];
+
+    let w = text.split(/(\s+)/);
+
+    for (let i = 0; i < w.length; i++) {
+      if (w[i].length > 0) {
+        if (w[i][0] === "@") {
+          if (w.length > 1) {
+            let cleaner = w[i].substring(1);
+	    let key = this.app.keychain.returnKey({ identifier : cleaner });
+	    if (key) {
+              let add = key.publickey;
+	    }
+            if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
+              add = cleaner;
+	    }
+            if (!keys.includes(add) && (add != "" && add != null)) {
+              keys.push(add);
+            }
+          }
+        }
+      }
+    }
+
+    let identifiers = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
+    let adds = text.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
+
+    if (adds) {
+      adds.forEach(add => {
+        if (this.app.crypto.isPublicKey(add) && !keys.includes(add)) {
+          keys.push(add);
+        }
+      });
+    }
+    if (identifiers) {
+      identifiers.forEach(id => {
+        let key = this.app.keychain.returnKey({ identifier : id });
+	if (key.publickey) {
+        let add = key.publickey;
+          if (this.app.crypto.isPublicKey(add)) {
+            if (!keys.includes(add)) {
+              keys.push(add);
+            }
+          }
+        }
+      });
+    }
+    return keys;
+  }
+
+  returnInviteLink(email = "") {
+    let { protocol, host, port } = this.app.options.peers[0];
+    let url_payload = encodeURIComponent(
+      this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email)))
+    );
+    return `${protocol}://${host}:${port}/r?i=${url_payload}`;
+  }
+
+  returnHashAndParameters() {
+
+    var hash = new URL(document.URL).hash.split('#')[1];
+    let component = "";
+    let params = ""
+    if (hash) {
+      if (hash?.split("").includes("?")) {
+        component = hash.split("?")[0];
+        params = hash.split("?")[1];
+      } else {
+        component = hash;
+      }
+    }
+    return { hash : component , params : params };
+
   }
 
   returnURLParameter(name) {
@@ -232,9 +395,7 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) {
-      //console.log("error in urlparams: " + err);
-    }
+    } catch (err) { }
     return "";
   }
 
@@ -245,11 +406,12 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) {}
+    } catch (err) { }
     return "en";
   }
 
-  isMobileBrowser(user_agent) {
+
+  isMobileBrowser(user_agent = navigator.userAgent) {
     let check = false;
     (function (user_agent) {
       if (
@@ -259,8 +421,9 @@ class Browser {
         /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
           user_agent.substr(0, 4)
         )
-      )
+      ) {
         check = true;
+      }
     })(user_agent);
     return check;
   }
@@ -377,6 +540,10 @@ class Browser {
   //////////////////////////////////
   // Browser and Helper Functions //
   //////////////////////////////////
+  generateQRCode(data) {
+    const QRCode = require("./../helpers/qrcode");
+    return new QRCode(document.getElementById("qrcode"), data);
+  }
 
   // https://github.com/sindresorhus/screenfull.js
   requestFullscreen() {
@@ -385,49 +552,15 @@ class Browser {
     }
   }
 
-  addElementToDom(html, id = null) {
+  addElementToDom(html, elemWhere = null) {
     const el = document.createElement("div");
-    if (id == null) {
+    if (elemWhere == null) {
       document.body.appendChild(el);
+      el.outerHTML = html;
     } else {
-      if (!document.getElementById(id)) {
-        document.body.appendChild(el);
-      } else {
-        document.getElementById(id).appendChild(el);
-      }
+      elemWhere.insertAdjacentElement("beforeend", el);
+      el.outerHTML = html;
     }
-    el.outerHTML = html;
-  }
-
-  // adds HTML element to class, or DOM if class does not exist
-  addElementToClass(html, classname="") {
-
-    if (classname === "") {
-      this.app.browser.addElementToDom(html);
-    } else {
-      let container = document.querySelector(classname);
-      if (container) {
-        this.app.browser.addElementToElement(html, container);
-      } else {
-        this.app.browser.addElementToDom(html);
-      }
-    }
-
-  }
-
-  prependElementToClass(html, classname="") {
-
-    if (classname === "") {
-      this.app.browser.prependElementToDom(html);
-    } else {
-      let container = document.querySelector(classname);
-      if (container) {
-        this.app.browser.prependElementToDom(html, container);
-      } else {
-        this.app.browser.prependElementToDom(html);
-      }
-    }
-
   }
 
   prependElementToDom(html, elemWhere = document.body) {
@@ -436,7 +569,161 @@ class Browser {
       elemWhere.insertAdjacentElement("afterbegin", elem);
       elem.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582343: error in prependElementToDom");
+      console.log("ERROR 582341: error in prependElementToDom");
+    }
+  }
+
+  replaceElementById(html, id = null) {
+    if (id == null) {
+      console.warn("no id provided to replace, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+        obj.outerHTML = html;
+      }
+    }
+  }
+
+  addElementToId(html, id = null) {
+    if (id == null) {
+      console.warn(`no id provided to add to, so adding to DOM`);
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+        this.app.browser.addElementToDom(html, obj);
+      }
+    }
+  }
+
+  addElementAfterId(html, id = null) {
+    if (id == null) {
+      console.warn(`no id provided to add to, so adding to DOM`);
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementAfterId(id);
+      if (obj) {
+        this.app.browser.addElementToDom(html, obj);
+      }
+    }
+  }
+
+  prependElementToId(html, id = null) {
+    if (id == null) {
+      console.warn(`no id provided to prepend to, so adding to DOM`);
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+        this.app.browser.prependElementToDom(html, obj);
+      }
+    }
+  }
+
+  removeElementBySelector(selector = "") {
+    let obj = document.querySelector(selector);
+    if (obj) {
+      obj.remove();
+    }
+  }
+
+  replaceElementBySelector(html, selector = "") {
+    if (selector === "") {
+      console.warn("no selector provided to replace, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.querySelector(selector);
+      if (obj) {
+        obj.outerHTML = html;
+      }
+    }
+  }
+
+  addElementToSelectorOrDom(html, selector = "") {
+    if (selector === "") {
+      console.warn("no selector provided to add to, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
+      }
+    }
+  }
+
+  addElementToSelector(html, selector = "") {
+    if (selector === "") {
+      console.warn("no selector provided to add to, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
+      }
+    }
+  }
+
+  addElementAfterSelector(html, selector = "") {
+    if (selector === "") {
+      console.warn("no selector provided to add to, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.addElementAfterElement(html, container);
+      }
+    }
+  }
+
+  prependElementToSelector(html, selector = "") {
+    if (selector === "") {
+      console.warn("no selector provided to prepend to, so adding direct to DOM");
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.prependElementToDom(html, container);
+      }
+    }
+  }
+
+  replaceElementByClass(html, classname = "") {
+    if (classname === "") {
+      console.warn("no classname provided to replace, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      let classname = "." + classname;
+      let obj = document.querySelector(classname);
+      if (obj) {
+        obj.outerHTML = html;
+      }
+    }
+  }
+
+  addElementToClass(html, classname = "") {
+    if (classname === "") {
+      console.warn("no classname provided to add to, so adding direct to DOM");
+      this.app.browser.addElementToDom(html);
+    } else {
+      classname = "." + classname;
+      let container = document.querySelector(classname);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
+      }
+    }
+  }
+
+  prependElementToClass(html, classname = "") {
+    if (classname === "") {
+      console.warn("no classname provided to prepend to, so adding direct to DOM");
+      this.app.browser.prependElementToDom(html);
+    } else {
+      classname = "." + classname;
+      let container = document.querySelector(classname);
+      if (container) {
+        this.app.browser.prependElementToDom(html, container);
+      }
     }
   }
 
@@ -446,9 +733,26 @@ class Browser {
       elem.appendChild(el);
       el.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582343: error in addElementToElement");
+      console.log("ERROR 582342: error in addElementToElement. Does " + elem + " exist?");
+      console.log(html);
     }
   }
+
+  addElementAfterElement(html, elem = document.body) {
+    try {
+      const el = document.createElement("div");
+      if (elem.nextSibling) {
+        elem.parentNode.insertBefore(el, elem.nextSibling);
+      } else {
+        elem.parentNode.appendChild(el);
+      }
+      el.outerHTML = html;
+    } catch (err) {
+      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : "  + err);
+      console.log(html);
+    }
+  }
+
 
   makeElement(elemType, elemId, elemClass) {
     const headerDiv = document.createElement(elemType);
@@ -473,8 +777,32 @@ class Browser {
     wrapper.append(tip);
   }
 
+  formatTime(milliseconds = 0) {
+
+    let hours = parseInt(milliseconds / 3600000);
+    milliseconds = milliseconds % 3600000;
+
+    let minutes = parseInt(milliseconds / 60000);
+    milliseconds = milliseconds % 60000;
+
+    let seconds = parseInt(milliseconds / 1000);
+
+    return { hours: hours, minutes: minutes, seconds: seconds };
+
+  }
+
+  returnTime(timestamp) {
+    let d = this.formatDate(timestamp);
+    let h = d.hours;
+    let m = d.minutes;
+    let x = '';
+    if (h < 10) { x = `0${h}`; } else { x = `${h}`; }
+    if (m < 10) { x += `:${m}`; } else { x += `:${m}`; }
+    return x;
+  }
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
+
     const hours = datetime.getHours();
     let minutes = datetime.getMinutes();
     const months = [12];
@@ -491,25 +819,27 @@ class Browser {
     months[10] = "November";
     months[11] = "December";
     const month = months[datetime.getMonth()];
-
-    const day = datetime.getDay();
+    //getDay = Day of the Week, getDate = day of the month
+    const day = datetime.getDate();
     const year = datetime.getFullYear();
 
     minutes = minutes.toString().length == 1 ? `0${minutes}` : `${minutes}`;
+
     return { year, month, day, hours, minutes };
   }
 
-  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true) {
+  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true, read_as_array_buffer = false) {
+
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
-        <input type="file" id="hidden_file_element_${id}" multiple accept="*">
-        <label class="button" for="fileElem">Select some files</label>
+        <input type="file" id="hidden_file_element_${id}" multiple accept="*" class="treated hidden_file_element_${id}">
+        <label class="button" class="hidden_file_element_button_${id}" id="hidden_file_element_button_${id}" for="hidden_file_element_${id}">Select some files</label>
       </form>
     `;
 
     if (!document.getElementById(`hidden_file_element_${id}`)) {
-      this.addElementToDom(hidden_upload_form, id);
+      this.addElementToId(hidden_upload_form, id);
       const dropArea = document.getElementById(id);
       if (!dropArea) {
         console.error("Undefined id in browser", id);
@@ -534,7 +864,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-            reader.readAsDataURL(file);
+            if (read_as_array_buffer) {
+              reader.readAsArrayBuffer(file);
+            } else {
+              reader.readAsDataURL(file);
+            }
           });
         },
         false
@@ -548,7 +882,11 @@ class Browser {
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
             });
-            reader.readAsDataURL(file);
+            if (read_as_array_buffer) {
+              reader.readAsArrayBuffer(file);
+            } else {
+              reader.readAsDataURL(file);
+            }
           });
         },
         false
@@ -571,7 +909,11 @@ class Browser {
               reader.addEventListener("load", (event) => {
                 handleFileDrop(event.target.result);
               });
-              reader.readAsDataURL(file);
+              if (read_as_array_buffer) {
+                reader.readAsArrayBuffer(file);
+              } else {
+                reader.readAsDataURL(file);
+              }
             });
           }
         },
@@ -590,13 +932,18 @@ class Browser {
   }
 
   preventDefaults(e) {
+    console.log("preventing the defaults");
     e.preventDefault();
     e.stopPropagation();
   }
 
-  makeDraggable(id_to_move, id_to_drag = "", mycallback = null) {
+  makeDraggable(id_to_move, id_to_drag = "", dockable = false, mycallback = null) {
+    //console.log("make draggable: " + id_to_drag);
+    //console.log(" and move? " + id_to_move);
+
     try {
       const element_to_move = document.getElementById(id_to_move);
+      let timeout = null;
       let element_to_drag = element_to_move;
       if (id_to_drag) {
         element_to_drag = document.getElementById(id_to_drag);
@@ -612,7 +959,26 @@ class Browser {
       let element_start_top = 0;
 
       element_to_drag.onmousedown = function (e) {
+        if (timeout) {
+          clearTimeout(timeout);
+        }
+        let resizeable = ["both", "vertical", "horizontal"];
+        //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
+
+        if (
+          resizeable.indexOf(getComputedStyle(e.target).resize) > -1 ||
+          resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1
+        ) {
+          if (e.offsetX > e.target.offsetWidth - 20 && e.offsetY > e.target.offsetHeight - 20) {
+            return;
+          }
+        }
+
         e = e || window.event;
+
+        //console.log("DRAG MOUSEDOWN");
+        //console.log(e.clientX);
+        //console.log(e.offsetX);
 
         if (
           !e.currentTarget.id ||
@@ -635,6 +1001,33 @@ class Browser {
         element_moved = false;
 
         document.onmouseup = function (e) {
+          if (dockable) {
+            if (element_to_move.classList.contains("dockedLeft")) {
+              element_to_move.style.left = 0;
+            }
+
+            if (element_to_move.classList.contains("dockedTop")) {
+              element_to_move.style.top = 0;
+            }
+
+            if (element_to_move.classList.contains("dockedRight")) {
+              element_to_move.style.left =
+                window.innerWidth - element_to_move.getBoundingClientRect().width + "px";
+            }
+
+            if (element_to_move.classList.contains("dockedBottom")) {
+              element_to_move.style.top =
+                window.innerHeight - element_to_move.getBoundingClientRect().height + "px";
+            }
+
+            timeout = setTimeout(() => {
+              element_to_move.classList.remove("dockedBottom");
+              element_to_move.classList.remove("dockedTop");
+              element_to_move.classList.remove("dockedRight");
+              element_to_move.classList.remove("dockedLeft");
+            }, 1200);
+          }
+
           document.onmouseup = null;
           document.onmousemove = null;
 
@@ -647,6 +1040,7 @@ class Browser {
         document.onmousemove = function (e) {
           e = e || window.event;
           e.preventDefault();
+          const threshold = 25;
 
           mouse_current_left = e.clientX;
           mouse_current_top = e.clientY;
@@ -657,9 +1051,63 @@ class Browser {
             element_moved = true;
           }
 
-          // set the element's new position:
-          element_to_move.style.left = element_start_left + adjustmentX + "px";
-          element_to_move.style.top = element_start_top + adjustmentY + "px";
+          let newPosX = element_start_left + adjustmentX;
+          let newPosY = element_start_top + adjustmentY;
+
+          //if dockable show docking edge
+          if (dockable) {
+            if (Math.abs(element_to_move.getBoundingClientRect().x) < threshold) {
+              element_to_move.classList.add("dockedLeft");
+            } else {
+              element_to_move.classList.remove("dockedLeft");
+            }
+
+            if (Math.abs(element_to_move.getBoundingClientRect().y < threshold)) {
+              element_to_move.classList.add("dockedTop");
+            } else {
+              element_to_move.classList.remove("dockedTop");
+            }
+
+            if (
+              Math.abs(element_to_move.getBoundingClientRect().x +
+                element_to_move.getBoundingClientRect().width -
+                window.innerWidth) < threshold
+            ) {
+              element_to_move.classList.add("dockedRight");
+            } else {
+              element_to_move.classList.remove("dockedRight");
+            }
+
+            if (
+              Math.abs(element_to_move.getBoundingClientRect().y +
+                element_to_move.getBoundingClientRect().height -
+                window.innerHeight) < threshold
+            ) {
+              element_to_move.classList.add("dockedBottom");
+            } else {
+              element_to_move.classList.remove("dockedBottom");
+            }
+
+            // set the element's new position:
+
+            if (Math.abs(newPosX) < threshold) {
+              newPosX = 0;
+            }
+            if (Math.abs(newPosX + element_to_move.getBoundingClientRect().width - window.innerWidth) < threshold) {
+              newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
+            }
+
+            if (Math.abs(newPosY) < threshold) {
+              newPosY = 0;
+            }
+            if (Math.abs(newPosY + element_to_move.getBoundingClientRect().height - window.innerHeight) < threshold) {
+              newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
+            }
+
+          }
+
+          element_to_move.style.left = newPosX + "px";
+          element_to_move.style.top = newPosY + "px";
 
           //We are changing to Top/Left so get rid of bottom/right
           element_to_move.style.bottom = "unset";
@@ -745,40 +1193,72 @@ class Browser {
     }
   }
 
+
+  /**
+  * Fetches publickeys visible in application HTML
+  * 
+  **/
+  returnArrayOfPublicKeysInDom() {
+    let keys = [];
+    const addresses = document.getElementsByClassName(`saito-address`);
+    Array.from(addresses).forEach((add) => {
+      const pubkey = add.getAttribute("data-id");
+      if (pubkey) {
+        keys.push(pubkey);
+      }
+    });
+    return keys;
+  }
+
+
   /**
    * Fetchs identifiers from a set of keys
    *
    * @param {Array} keys
    */
   async addIdentifiersToDom(keys = []) {
-    if (keys.length == 0) {
-      const addresses = document.getElementsByClassName(`saito-address`);
-      Array.from(addresses).forEach((add) => {
-        const pubkey = add.getAttribute("data-id");
-        if (pubkey) {
-          keys.push(pubkey);
-        }
-      });
-    }
 
+    let keys = this.returnArrayOfPublicKeysInDom();
+    let unidentified_keys = [];
+    for (let i = 0; i < keys.length; i++) {
+      if (this.app.keychain.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
+	unidentified_keys.push(keys[i]);
+      } else {
+        this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
+      }
+    }
+    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  }
+
+
+  addModalIdentifierAddPublickey(app, mod) {
     try {
-      const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
-      Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
+      const identifiers = document.getElementsByClassName(`saito-identicon`);
+      Array.from(identifiers).forEach((identifier) => {
+        // identifier.addEventListener("click", (e) => {
+        //   console.log("preventing default 444");
+        //   e.preventDefault();
+        //   e.stopImmediatePropagation();
+        //   let identiconUri = e.target.getAttribute("src");
+        //   let publickey = e.target.getAttribute("data-id");
+        //   let addPublicKeyModal = new ModalAddPublicKey(app, mod, identiconUri, publickey);
+        //   addPublicKeyModal.render(app, mod);
+        // });
+      });
     } catch (err) {
-      console.error(err);
+      console.error("Error while adding event to identifiers: " + err);
     }
   }
 
   returnAddressHTML(key) {
-    const identifier = this.app.keys.returnIdentifierByPublicKey(key);
+    const identifier = this.app.keychain.returnIdentifierByPublicKey(key);
     const id = !identifier ? key : identifier;
-    return `<span data-id="${key}" class="saito-address saito-address-${key}">${id}</span>`;
+    return `<div class="saito-address saito-address-${key}" data-id="${key}">${id}</div>`;
   }
 
   async returnAddressHTMLPromise(key) {
     const identifier = await this.returnIdentifier(key);
     const id = !identifier ? key : identifier;
-    return `<span class="saito-address saito-address-${key}">${id}</span>`;
+    return `<span data-id="${key}" id="saito-address-${key}" class="saito-address saito-address-${key}">${id}</span>`;
   }
 
   updateAddressHTML(key, id) {
@@ -788,7 +1268,7 @@ class Browser {
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) {}
+    } catch (err) { }
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -798,7 +1278,6 @@ class Browser {
         .push(category, action, name, value);
     } catch (err) {
       if (err.startsWith("Module responding to")) {
-        //console.log("Matomo module not present, cannot push event");
       } else {
         console.log(err);
       }
@@ -839,24 +1318,6 @@ class Browser {
     return "#" + hashString.substr(1);
   }
 
-  // Make a new hash and mix in keys from another hash.
-  // usage: buildHashAndPreserve("#foo=1&bar=2","#foo=3&bar=4&baz=5","baz") --> "#foo=1&bar=2&baz=5"
-  buildHashAndPreserve(newHash, oldHash, ...preservedKeys) {
-    return this.buildHash(
-      Object.assign(this.getSubsetOfHash(oldHash, preservedKeys), this.parseHash(newHash))
-    );
-  }
-
-  // Get a subset of key-value pairs from a url-hash string as an object.
-  // usage: getSubsetOfHash("#foo=1&bar=2","bar") --> {bar: 2}
-  getSubsetOfHash(hash, ...keys) {
-    const hashObj = this.parseHash(hash);
-    return keys.reduce(function (o, k) {
-      o[k] = hashObj[k];
-      return o;
-    }, {});
-  }
-
   // Remove a subset of key-value pairs from a url-hash string.
   // usage: removeFromHash("#foo=1&bar=2","bar") --> "#foo=1"
   removeFromHash(hash, ...keys) {
@@ -891,27 +1352,20 @@ class Browser {
     return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
   }
 
-  // TODO: implement htis function
-  getValueFromHashAsBoolean() {}
-
-  getValueFromHashAsNumber(hash, key) {
-    try {
-      const subsetHashObj = this.getSubsetOfHash(hash, key);
-      if (subsetHashObj[key]) {
-        return Number(subsetHashObj[key]);
-      } else {
-        throw "key not found in hash";
-      }
-    } catch (err) {
-      return Number(0);
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   async captureScreenshot(callback = null) {
+    // svg needs converstion
+    var svgElements = document.body.querySelectorAll("svg");
+    svgElements.forEach(function (item) {
+      item.setAttribute("width", item.getBoundingClientRect().width);
+      item.setAttribute("height", item.getBoundingClientRect().height);
+      item.style.width = null;
+      item.style.height = null;
+    });
+
     html2canvas(document.body).then(function (canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
       if (callback != null) {
@@ -919,6 +1373,534 @@ class Browser {
       }
     });
   }
-}
 
+  async screenshotCanvasElementBySelector(selector = "", callback = null) {
+    let canvas = document.querySelector(selector);
+    if (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      if (callback != null) {
+        callback(img);
+      }
+    }
+  }
+
+  async screenshotCanvasElementById(id = "", callback = null) {
+    let canvas = document.getElementById(id);
+    if (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      if (callback != null) {
+        callback(img);
+      }
+    }
+  }
+
+  sanitize(text) {
+    try {
+      if (text !== "") {
+        text = marked.parseInline(text);
+        //trim trailing line breaks - 
+        // commenting it out because no need for this now
+        // because of above marked parsing
+        //text = text.replace(/[\r<br>]+$/, ""); 
+      }
+
+      text = sanitizeHtml(text, {
+        allowedTags: [
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "blockquote",
+          "p",
+          "ul",
+          "ol",
+          "nl",
+          "li",
+          "b",
+          "i",
+          "strong",
+          "em",
+          "strike",
+          "code",
+          "hr",
+          "br",
+          "div",
+          "table",
+          "thead",
+          "caption",
+          "tbody",
+          "tr",
+          "th",
+          "td",
+          "pre",
+          "img",
+          "marquee",
+          "pre",
+        ],
+        allowedAttributes: {
+          div: ["class", "id"],
+          a: ["href", "name", "target", "class", "id"],
+          img: ["src", "class"],
+        },
+        selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
+        allowedSchemes: ["http", "https", "ftp", "mailto"],
+        allowedSchemesByTag: {},
+        allowedSchemesAppliedToAttributes: ["href", "cite"],
+        allowProtocolRelative: true,
+        transformTags: {
+          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
+        },
+      });
+
+      /* wrap link in <a> tag */
+      let urlPattern =
+        /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
+      text = text.replace(urlPattern, function (url) {
+        return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
+      });
+
+      text = emoji.emojify(text);
+
+      return text;
+    } catch (err) {
+      console.log("Err in sanitizing: " + err);
+      return text;
+    }
+  }
+
+  async linkifyKeys(app, mod, element) {
+    if (typeof element == "undefined") { return; }
+    //console.log("linkifyin' " + element.id)
+    if (element.id == "") { return; }
+    let elements = element.childNodes;
+    elements.forEach(async el => {
+      const new_el = document.createElement("span");
+      if (el.childNodes.length > 0) {
+        const tags = ['P', 'SPAN', 'DIV', 'BLOCKQUOTE'];
+        if (tags.includes(el.tagName)) {
+          app.browser.linkifyKeys(el);
+        }
+      } else {
+        let html = el.textContent;
+        let identifiers = html.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]*)/gi);
+        let keys = html.match(/([a-zA-Z0-9._-]{44}|[a-zA-Z0-9._-]{45})/gi);
+        let mappedKeyIdentifiers = [];
+        //remove duplcates
+
+        if (!identifiers) { identifiers = [] };
+        if (!keys) { keys = [] }
+
+        if (identifiers.length + keys.length > 0) {
+          //deduplicate identifier list
+          identifiers = [...new Set(identifiers)];
+
+          try {
+
+            identifiers.forEach(async (identifier) => {
+              let answer = this.app.keychain.returnKey({ identifier : identifier });
+              console.log(answer + " - " + identifier);
+              if (answer != identifier && answer != null) {
+                //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
+                html = html.replaceAll(identifier, answer);
+                mappedKeyIdentifiers[answer] = identifier;
+              }
+            });
+            //deduplicate keys list
+            keys = [...new Set(keys)];
+
+            const answer = await this.app.keychain.fetchManyIdentifiersPromise(keys);
+            mappedKeyIdentifiers = Object.assign({}, mappedKeyIdentifiers, answer);
+
+            keys.forEach(k => {
+              let matched = false;
+              Object.entries(mappedKeyIdentifiers).forEach(([key, value]) => {
+                if (key == k) {
+                  html = html.replaceAll(key, `<span data-id="${key}" class="saito-active-key saito-address">${value}</span>`);
+                  matched = true;
+                }
+              });
+              if (!matched) {
+                html = html.replaceAll(k, `<span data-id="${k}" class="saito-active-key saito-address">${k}</span>`);
+              }
+            });
+            if (typeof el.tagName == "undefined") {
+              new_el.innerHTML = html;
+              el.replaceWith(new_el);
+            } else {
+              el.innerHTML = html;
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        };
+      }
+    })
+  };
+
+
+  activatePublicKeyObserver(app) {
+
+return;
+
+    let mutationObserver = new MutationObserver((entries) => {
+
+      entries.forEach((entry) => {
+        entry.addedNodes.forEach((node) => {
+          recursive_search(app, node);
+        });
+      });
+
+      function recursive_search(app, node) {
+        if (node?.classList?.contains("saito-user")) {
+          if (node.children && node.children.length > 0) {
+            let address = node.getAttribute("data-id");
+
+            //Replace identifier from Registry -- there should just be one child
+            Array.from(node.children).forEach((child_node) => {
+              if (child_node?.classList?.contains("saito-address")) {
+
+console.log("FOUND PUBLIC KEY!: " + address);
+
+                let identifier = app.keychain.returnIdentifierByPublicKey(address, true);
+                if (identifier) {
+
+console.log("IDENTIFIER: " + identifier);
+
+                  try {
+                    document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
+                      item.innerHTML = identifier;
+                    });
+                  } catch (err) {
+                    console.log("An error occurred with adding identifiers ", err);
+                  }
+                }
+              }
+            });
+          }
+
+        } else {
+          if (node && node.children && Array.from(node.children).length > 0) {
+            Array.from(node.children).forEach((child_node) => {
+              recursive_search(app, child_node);
+            });
+          }
+        }
+      }
+    });
+
+    mutationObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  async resizeImg(img, targetSize = 512, maxDimensions = { w: 1920, h: 1024 }) {
+    let self = this;
+    var dimensions = await this.getImageDimensions(img);
+    var new_img = "";
+    let canvas = document.createElement("canvas");
+    let oImg = document.createElement("img");
+
+    let w = dimensions.w;
+    let h = dimensions.h;
+    let aspect = w / h;
+
+    if (w > maxDimensions.w) {
+      w = maxDimensions.w;
+      h = maxDimensions.w / aspect;
+    }
+    if (h > maxDimensions.h) {
+      h = maxDimensions.h;
+      w = maxDimensions.h * aspect;
+    }
+
+    canvas.width = w;
+    canvas.height = h;
+
+    function resizeLoop(img, quality = 1) {
+      console.log("resizing");
+      oImg.setAttribute("src", img);
+      canvas.getContext("2d").drawImage(oImg, 0, 0, w, h);
+      new_img = canvas.toDataURL("image/jpeg", quality);
+      let imgSize = new_img.length / 1024; // in KB
+
+      if (imgSize > targetSize) {
+        resizeLoop(new_img, quality * 0.9);
+      } else {
+        return;
+      }
+    }
+
+    resizeLoop(img);
+
+    oImg.remove();
+    canvas.remove();
+
+    console.log("Resized to: " + new_img.length / 1024);
+
+    return new_img;
+  }
+
+
+  getImageDimensions(file) {
+    return new Promise(function (resolved, rejected) {
+      var i = new Image();
+      i.onload = function () {
+        resolved({ w: i.width, h: i.height });
+      };
+      i.src = file;
+    });
+  }
+
+  stripHtml(html) {
+    let tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  }
+
+  attachWindowFunctions() {
+
+    if (typeof window !== "undefined") {
+
+      let browser_self = this;
+
+      var mutationObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.addedNodes.length > 0) {
+            browser_self.treatElements(mutation.addedNodes);
+          }
+        });
+      });
+
+      mutationObserver.observe(document.documentElement, {
+        attributes: true,
+        characterData: true,
+        childList: true,
+        subtree: true,
+        attributeOldValue: true,
+      });
+
+      window.sanitize = function (msg) {
+        let result = browser_self.sanitize(msg);
+        return result;
+      };
+
+      window.salert = function (message) {
+        if (document.getElementById("saito-alert")) {
+          return;
+        }
+        var wrapper = document.createElement("div");
+        wrapper.id = "saito-alert";
+        var html = '<div id="saito-alert-shim">';
+        html += '<div id="saito-alert-box">';
+        html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+        html += '<div id="saito-alert-buttons"><button id="alert-ok">OK</button>';
+        html += "</div></div></div>";
+        wrapper.innerHTML = html;
+        document.body.appendChild(wrapper);
+        setTimeout(() => {
+          document.querySelector("#saito-alert-box").style.top = "0";
+        }, 100);
+        document.querySelector("#alert-ok").focus();
+        document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
+          if (event.keyCode === 13) {
+            event.preventDefault();
+            document.querySelector("#alert-ok").click();
+          }
+        });
+        document.querySelector("#alert-ok").addEventListener(
+          "click",
+          function () {
+            wrapper.remove();
+          },
+          false
+        );
+      };
+
+      window.sconfirm = function (message) {
+        if (document.getElementById("saito-alert")) {
+          return;
+        }
+        return new Promise((resolve, reject) => {
+          var wrapper = document.createElement("div");
+          wrapper.id = "saito-alert";
+          var html = '<div id="saito-alert-shim">';
+          html += '<div id="saito-alert-box">';
+          html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+          html +=
+            '<div id="saito-alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
+          html += "</div></div></div>";
+          wrapper.innerHTML = html;
+          document.body.appendChild(wrapper);
+          setTimeout(() => {
+            document.getElementById("saito-alert-box").style.top = "0";
+          }, 100);
+          document.getElementById("alert-ok").focus();
+          //document.getElementById('alert-ok').select();
+          document.getElementById("saito-alert-shim").onclick = (event) => {
+            if (event.keyCode === 13) {
+              event.preventDefault();
+              document.getElementById("alert-ok").click();
+            }
+          };
+          document.getElementById("alert-ok").onclick = () => {
+            wrapper.remove();
+            resolve(true);
+            // }, false;
+          };
+          document.getElementById("alert-cancel").onclick = () => {
+            wrapper.remove();
+            resolve(false);
+            // }, false);
+          };
+        });
+      };
+
+      window.sprompt = function (message) {
+        if (document.getElementById("saito-alert")) {
+          return;
+        }
+        return new Promise((resolve, reject) => {
+          var wrapper = document.createElement("div");
+          wrapper.id = "saito-alert";
+          var html = '<div id="saito-alert-shim">';
+          html += '<div id="saito-alert-box">';
+          html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+          html +=
+            '<div class="alert-prompt"><input type="text" id="promptval" class="promptval" /></div>';
+          html +=
+            '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
+          html += "</div></div></div>";
+          wrapper.innerHTML = html;
+          document.body.appendChild(wrapper);
+          document.querySelector("#promptval").focus();
+          document.querySelector("#promptval").select();
+          setTimeout(() => {
+            document.querySelector("#alert-box").style.top = "0";
+          }, 100);
+          document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
+            if (event.keyCode === 13) {
+              event.preventDefault();
+              document.querySelector("#alert-ok").click();
+            }
+          });
+          document.querySelector("#alert-ok").addEventListener(
+            "click",
+            function () {
+              var val = document.querySelector("#promptval").value;
+              wrapper.remove();
+              resolve(val);
+            },
+            false
+          );
+          document.querySelector("#alert-cancel").addEventListener(
+            "click",
+            function () {
+              wrapper.remove();
+              resolve(false);
+            },
+            false
+          );
+        });
+      };
+
+      window.siteMessage = function (message, killtime = 9999999) {
+        if (document.getElementById("message-wrapper")) {
+          document.getElementById("message-wrapper").remove();
+        }
+        var wrapper = document.createElement("div");
+        wrapper.id = "message-wrapper";
+        var html = '<div id="message-box">';
+        html += '<p class="message-message">' + browser_self.sanitize(message) + "</p>";
+        html += "</div>";
+        wrapper.innerHTML = html;
+        document.body.appendChild(wrapper);
+        setTimeout(() => {
+          wrapper.remove();
+        }, killtime);
+        document.querySelector("#message-wrapper").addEventListener(
+          "click",
+          function () {
+            wrapper.remove();
+          },
+          false
+        );
+      };
+
+      HTMLElement.prototype.destroy = function destroy() {
+        try {
+          this.parentNode.removeChild(this);
+        } catch (err) {
+          console.err(err);
+        }
+      };
+
+    }
+
+  
+  }
+
+
+  treatElements(nodeList) {
+    for (var i = 0; i < nodeList.length; i++) {
+      if (nodeList[i].files) {
+        this.treatFiles(nodeList[i]);
+      }
+      if (nodeList[i].childNodes.length >= 1) {
+        this.treatElements(nodeList[i].childNodes);
+      }
+    }
+  }
+
+  treatFiles(input) {
+    if (input.classList.contains("treated")) {
+      return;
+    } else {
+      input.addEventListener("change", function (e) {
+        var fileName = "";
+        if (this.files && this.files.length > 1) {
+          fileName = this.files.length + " files selected.";
+        } else {
+          fileName = e.target.value.split("\\").pop();
+        }
+        if (fileName) {
+          filelabel.style.border = "none";
+          filelabel.innerHTML = browser_self.sanitize(fileName);
+        } else {
+          filelabel.innerHTML = browser_self.sanitize(labelVal);
+        }
+      });
+      input.classList.add("treated");
+      var filelabel = document.createElement("label");
+      filelabel.classList.add("treated");
+      filelabel.innerHTML = "Choose File";
+      filelabel.htmlFor = input.id;
+      filelabel.id = input.id + "-label";
+      var parent = input.parentNode;
+      parent.appendChild(filelabel);
+    }
+  }
+
+  switchTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+
+    if (this.app.BROWSER == 1) {
+      let mod_obj = this.app.modules.returnActiveModule();
+
+      if (!this.app.options.theme) {
+        this.app.options.theme = {};
+      }
+
+      if (mod_obj.slug != null) {
+          this.app.options.theme[mod_obj.slug] = theme;
+          this.app.storage.saveOptions();
+      }
+      console.log(this.app.options);
+    }
+  }
+
+}
 export default Browser;
+

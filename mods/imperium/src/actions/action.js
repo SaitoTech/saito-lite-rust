@@ -25,7 +25,7 @@ ACTION CARD - types
   	type : "instant" ,
   	text : "The next time you invade a planet, you may takeover any existing PDS units or Space Docks" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.players_info[action_card_player-1].temporary_infiltrate_infrastructure_on_invasion = 1;
+	  imperium_self.game.state.players_info[action_card_player-1].temporary_infiltrate_infrastructure_on_invasion = 1;
 	  return 1;
 	},
     });
@@ -38,7 +38,7 @@ ACTION CARD - types
   	text : "If you have lost a planet this round, refresh one of your planets" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
-	  if (imperium_self.game.players_info[action_card_player-1].lost_planet_this_round != -1 && action_card_player == imperium_self.game.player) {
+	  if (imperium_self.game.state.players_info[action_card_player-1].lost_planet_this_round != -1 && action_card_player == imperium_self.game.player) {
 
 	    let my_planets = imperium_self.returnPlayerExhaustedPlanetCards(imperium_self.game.player);
 
@@ -72,13 +72,13 @@ ACTION CARD - types
 	  if (imperium_self.game.player == action_card_player) {
 
 	    let html = '<div class="sf-readable">Pick a Strategy Card to keep for next round: </div><ul>';
-	    for (let i = 0; i < imperium_self.game.players_info[action_card_player-1].strategy_cards_played.length; i++) {
-	      let card = imperium_self.game.players_info[action_card_player-1].strategy_cards_played[i];
+	    for (let i = 0; i < imperium_self.game.state.players_info[action_card_player-1].strategy_cards_played.length; i++) {
+	      let card = imperium_self.game.state.players_info[action_card_player-1].strategy_cards_played[i];
               html += '<li class="option" id="'+card+'">' + imperium_self.strategy_cards[card].name + '</li>';
 	    }
-	    for (let i = 0; i < imperium_self.game.players_info[action_card_player-1].strategy.length; i++) {
-    	      if (!imperium_self.game.players_info[imperium_self.game.player - 1].strategy_cards_played.includes(imperium_self.game.players_info[action_card_player-1].strategy[i])) {
-	        let card = imperium_self.game.players_info[action_card_player-1].strategy[i];
+	    for (let i = 0; i < imperium_self.game.state.players_info[action_card_player-1].strategy.length; i++) {
+    	      if (!imperium_self.game.state.players_info[imperium_self.game.player - 1].strategy_cards_played.includes(imperium_self.game.state.players_info[action_card_player-1].strategy[i])) {
+	        let card = imperium_self.game.state.players_info[action_card_player-1].strategy[i];
 	     
                 html += '<li class="option" id="'+card+'">' + imperium_self.strategy_cards[card].name + '</li>';
 	      }
@@ -101,12 +101,18 @@ ACTION CARD - types
 	},
         handleGameLoop : function(imperium_self, qe, mv) {
 
+console.log("hgl: " + mv[0]);
+
           if (mv[0] == "strategy_card_retained") {
+
+console.log("strategy card is retained!");
 
             let player = parseInt(mv[1]);
             let card = mv[2];
+console.log("queue length: " + imperium_self.game.queue.length);
+console.log("qe: " + qe);
             imperium_self.game.queue.splice(qe, 1);
-	    imperium_self.game.players_info[player-1].strategy_cards_retained.push(card);
+	    imperium_self.game.state.players_info[player-1].strategy_cards_retained.push(card);
 
             return 1;
           }
@@ -299,7 +305,7 @@ ACTION CARD - types
   	type : "instant" ,
   	text : "Gain +1 movement on all ships moved this turn" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.players_info[action_card_player-1].temporary_fleet_move_bonus = 1;
+	  imperium_self.game.state.players_info[action_card_player-1].temporary_fleet_move_bonus = 1;
 	  return 1;
 	}
     });
@@ -308,7 +314,7 @@ ACTION CARD - types
   	type : "instant" ,
   	text : "Gain +1 movement on all ships moved this turn" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.players_info[action_card_player-1].temporary_fleet_move_bonus = 1;
+	  imperium_self.game.state.players_info[action_card_player-1].temporary_fleet_move_bonus = 1;
 	  return 1;
 	}
     });
@@ -317,7 +323,7 @@ ACTION CARD - types
   	type : "instant" ,
   	text : "Gain +1 movement on all ships moved this turn" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.players_info[action_card_player-1].temporary_fleet_move_bonus = 1;
+	  imperium_self.game.state.players_info[action_card_player-1].temporary_fleet_move_bonus = 1;
 	  return 1;
 	}
     });
@@ -326,7 +332,7 @@ ACTION CARD - types
   	type : "instant" ,
   	text : "Gain +1 movement on all ships moved this turn" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.players_info[action_card_player-1].temporary_fleet_move_bonus = 1;
+	  imperium_self.game.state.players_info[action_card_player-1].temporary_fleet_move_bonus = 1;
 	  return 1;
 	}
     });
@@ -340,7 +346,7 @@ ACTION CARD - types
   	type : "instant" ,
   	text : "Gain +1 movement on a single ship moved this turn" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.players_info[action_card_player-1].temporary_ship_move_bonus = 1;
+	  imperium_self.game.state.players_info[action_card_player-1].temporary_ship_move_bonus = 1;
 	  return 1;
 	}
     });
@@ -618,7 +624,7 @@ ACTION CARD - types
   	text : "ACTION: Spend 4 Trade Goods to Research 1 Technology" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
-	  let p = imperium_self.game.players_info[imperium_self.game.player-1];
+	  let p = imperium_self.game.state.players_info[imperium_self.game.player-1];
 
 	  if (p.goods < 4) {
 	    imperium_self.updateLog("Player does not have enough trade goods to research a technology");
@@ -765,7 +771,7 @@ ACTION CARD - types
 
 
 
-    this.importActionCard('Insubordination', {
+    this.importActionCard('insubordination', {
   	name : "Insubordination" ,
   	type : "action" ,
   	text : "ACTION: Select a player and remove 1 token from their command pool" ,
@@ -796,7 +802,7 @@ ACTION CARD - types
 
 
 
-    this.importActionCard('Lucky Shot', {
+    this.importActionCard('lucky-shot', {
   	name : "Lucky Shot" ,
   	type : "action" ,
   	text : "ACTION: Destroy a destroyer, cruiser or dreadnaught in a sector with a planet you control" ,
@@ -1113,7 +1119,7 @@ ACTION CARD - types
   	type : "instant" ,
   	text : "Your ships may move through sectors with other player ships this turn: " ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
-	  imperium_self.game.players_info[action_card_player-1].temporary_move_through_sectors_with_opponent_ships = 1;
+	  imperium_self.game.state.players_info[action_card_player-1].temporary_move_through_sectors_with_opponent_ships = 1;
 	  return 1;
 	}
     });

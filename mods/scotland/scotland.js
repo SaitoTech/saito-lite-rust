@@ -1,6 +1,5 @@
-const GameHud = require("../../lib/saito/ui/game-hud/game-hud");
 const GameTemplate = require("../../lib/templates/gametemplate");
-
+const ScotlandGameRulesTemplate = require("./lib/scotland-game-rules.template");
 
     const endHover = function(){
       const lookingGlass = $(".zoom-container img");
@@ -60,7 +59,7 @@ class Scotland extends GameTemplate {
 
     this.name = "Scotland";
     this.gamename = "Scotland Yard";
-    this.description = `Scotland Yard is a cat-and-mouse detective game set in London, England. Criminal mastermind Mister X must wind his way through the city while hiding from Scotland Yard.<p></p>The Saito edition of Scotland Yard is modified slightly to improve the balance of gameplay over the traditional version. If played with less than six players, the players controlling the detectives will control multiple detectives to increase the effectiveness of surround-and-capture strategies.`;
+    this.description = `Scotland Yard is a cat-and-mouse detective game set in London, England. Criminal mastermind Mister X must wind his way through the city while hiding from Scotland Yard.`;
     this.categories = "Games Boardgame Strategy";
     //
     // this sets the ratio used for determining
@@ -79,36 +78,36 @@ class Scotland extends GameTemplate {
 
 
   returnGameRulesHTML(){
-    let html = `<div class="rules-overlay">
-                <h1>Scotland Yard</h1>
-                <p>A team of detectives is on the hunt for international terrorist Mr. X. Can London's finest trap him before their Oyster cards run out of credit?</p>     
-               <h2>Players</h2>
-               <p>One player controls Mr. X and competes against the rest of the players, who must work together as a team. Depending on the number of players, each player on the detective team may be responsible for moving one or more pawns on the board.</p>
-               <h2>How to Win</h2>
-               <p>Mr X wins if he can elude capture for 24 moves. The detectives win if they either land on a space occupied by Mr. X, or block him from being able to move to another space.</p>
-               <h2>How to Move</h2>
-               <p>Players trade tickets to move by taxi, bus, or underground. Detectives begin the game with a limited number of tickets and if they run out of tickets, they are no longer able to use that method of transportation.</p>
-               <p>Mr. X also begins with a limited number of tickets, but he gains the tickets discarded by the Detectives throughout the game. Mr. X also has two kinds of special tickets:</p>
-               <ul>
-                <li><em>Mystery Ticket:</em> Allows Mr. X to move by any means of transportation (including the ferry) without notifying the Detectives of how he moved.</li>
-                <li><em>Double Ticket:</em> Played in conjunction with regular tickets, Mr. X can move twice in a single turn.</li>
-               </ul>
-               <h2>Game Play</h2>
-               <p>Mr. X's pawn is invisible to the detectives, but Mr. X can see where the detectives are. However, with each move (excepting the Mystery ticket), the detectives know what means of transportation Mr. X uses on his turn. Furthermore, there are a limited number of starting positions in which the pawns can be placed. Those starting positions are highlighted in the early turns of the game.</p>
-               <p>After Mr X's third move, his position will be revealed to all the players and the race begins! Similarly, after moves 8, 13, 18, and 24, Mr. X will briefly surface to let the detectives know where he is.</p>
-               <p>Mr X should have an escape route planned after each of those special turns, while the detectives should coordinate to be near bus routes or underground stations in case the need to cover a lot of distance.</p>
-               <p>The detectives need to rely on logic and teamwork in order to track and capture Mr. X.</p>
-               `;
-    return html;
+    return ScotlandGameRulesTemplate(this.app, this);
   }
 
+//>>>>>>>>>>
   handleCluesMenuItem() {
-    let html = `<div id="game-clues" class="rules-overlay">`;
-    for (let i = 0; i < this.game.state.clues.length; i++) {
-      html += '<div class="game-clues-row">' + this.game.state.clues[i] + "</div>";
+    let html = `<div id="game-clues" class="clues-overlay">`;
+    if (this.game.state.clues.length > 0){
+      for (let i = 0; i < this.game.state.clues.length; i++) {
+        html += '<div class="game-clues-row">' + this.game.state.clues[i] + "</div>";
+      }
+    }else{
+      if (this.game.player == this.game.state.x){
+        html +=   `<div class="my_pawns">${this.returnPawn(this.game.state.numDetectives)}</div>`;
+        html +=  `<div class="overlay_header">You are Mr X</div>`;
+        html += `<div>The detectives don't know where you are, but you will be visible after your third move. Try to distance yourself from them and have a ready escape available.</div>`;
+      }else{
+        html += `<div class="my_pawns">`;
+        for (let j = 0; j< this.game.state.numDetectives; j++){
+          if (this.game.state.detectives[j] == this.game.player){
+            html += this.returnPawn(j);
+          }
+        }
+        html += "</div>";
+        html +=  `<div class="overlay_header">You are a Detective</div>`; 
+        html += `<div>Mister X starts the game at one of the highlighted spaces and will be briefly visible after his third move. Start laying a trap now</div>`;
+      }
+      html += `<div>Click a ticket type to see where you can move, then click on the board to move there.</div>`;
     }
     html += `</div>`;
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
   // Opt out of letting League create a default
@@ -126,24 +125,19 @@ class Scotland extends GameTemplate {
 
     super.initializeHTML(app);
     
-    this.menu.addMenuOption({
-      text: "Game",
-      id: "game-game",
-      class: "game-game",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
+    this.menu.addSubMenuOption("game-info", {
       text: "How to Play",
       id: "game-rules",
       class: "game-rules",
       callback: function(app, game_mod){
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Log",
       id: "game-log",
       class: "game-log",
@@ -152,23 +146,9 @@ class Scotland extends GameTemplate {
         game_mod.log.toggleLog();
       },
     });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Exit",
-      id: "game-exit",
-      class: "game-exit",
-      callback: function (app, game_mod) {
-        window.location.href = "/arcade";
-      },
-    });
- 
-    this.menu.addMenuOption({
-      text: "Clues",
-      id: "game-clues",
-      callback: function(app, game_mod){
-        game_mod.menu.showSubMenu("game-clues");
-      }
-    });
 
+    this.menu.addMenuOption("game-clues", "Clues");
+    
     this.menu.addSubMenuOption("game-clues",{
       text: "Clues",
       id: "game-clue-list",
@@ -215,35 +195,42 @@ class Scotland extends GameTemplate {
       }
     });
 
-    this.menu.addMenuIcon({
-      text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id: "game-menu-fullscreen",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      },
-    });
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.menu.addChatMenu(app, this);
-    
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
+    this.log.render();
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.hud.render();
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    let hh = document.querySelector(".hud-header");
+    if (!hh.querySelector(".handy-help")){
+      this.app.browser.addElementToElement(`<i id="hud_zoom" class="handy-help hud-controls fas fa-search" aria-hidden="true"" title="Turn mouse into a magnifying glass"></i>`, hh);
+      this.app.browser.addElementToElement(`<i id="hud_clues" class="handy-help hud-controls fas fa-shoe-prints" aria-hidden="true" title="Check logbook of clues"></i>`, hh);  
+      this.app.browser.addElementToElement(`<i id="hud_bus" class="handy-help hud-controls fas fa-bus" aria-hidden="true"" title="Display bus routes"></i>`, hh);
+      this.app.browser.addElementToElement(`<i id="hud_underground" class="handy-help hud-controls fas fa-subway" aria-hidden="true" title="Display Underground routes"></i>`, hh);  
+      this.app.browser.addElementToElement(`<i id="hud_clear" class="handy-help hud-controls far fa-map" aria-hidden="true" title="Clear map"></i>`, hh);  
+    }
+    try{
+      document.getElementById("hud_zoom").onclick = this.magnifyingGlass.bind(this);
+      document.getElementById("hud_clues").onclick = this.handleCluesMenuItem.bind(this);
+      document.getElementById("hud_bus").onclick = this.drawBusMap.bind(this);
+      document.getElementById("hud_underground").onclick = this.drawUndergroundMap.bind(this);
+      document.getElementById("hud_clear").onclick = this.clearMap.bind(this);
+    }catch(err){
+      console.error(err);
+    }
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, ".gameboard");
       } else {
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, ".gameboard");
+        this.sizer.render();
+        this.sizer.attachEvents(".gameboard");
       }
     } catch (err) {}
+
+    this.handleCluesMenuItem();
   }
 
   ////////////////
@@ -281,8 +268,6 @@ class Scotland extends GameTemplate {
     }
 
     console.log(JSON.parse(JSON.stringify(this.game.state)));
-
-    this.restoreLog();
 
     if (!this.browser_active) {
       this.saveGame(this.game.id)
@@ -395,6 +380,7 @@ class Scotland extends GameTemplate {
         this.game.state.tickets[this.game.state.numDetectives]["double"]--;
         this.game.queue.push("play\t" + this.game.state.x + "\t" + this.game.state.numDetectives);
         this.game.queue.push("play\t" + this.game.state.x + "\t" + this.game.state.numDetectives);
+        this.updateLog(`Mister X uses one of his double tickets, he has ${this.game.state.tickets[this.game.state.numDetectives]["double"]} remaining.`);
         this.game.state.double_in_action = 1;
         this.game.queue.splice(qe, 1);
         return 1;
@@ -418,7 +404,6 @@ class Scotland extends GameTemplate {
           this.updateLog(`The detectives encircled Mister X forcing him to surrender`);
         }
         if (this.game.player == this.game.state.x){
-          this.game.over = 1;
           this.resignGame(this.game.id, "arrest");
         }
         return 0;
@@ -429,7 +414,7 @@ class Scotland extends GameTemplate {
       */
       if (mv[0] === "move") {
         let player = parseInt(mv[1]);
-        let pawn = mv[2];
+        let pawn = parseInt(mv[2]);
         let target_id = mv[3];
         let ticket = mv[4];
         
@@ -444,7 +429,7 @@ class Scotland extends GameTemplate {
             case "taxi": hint = "Mr. X was spotted in a taxi..."; break;
             case "bus": hint = "Mr. X was spotted in a bus..."; break;
             case "underground": hint = "Mr. X was spotted on the underground..."; break;
-            default: hint = "Mr. X evaded detection this turn...";
+            default: hint = `Mr. X evaded detection this turn by playing a mystery ticket, he has ${scotland_self.game.state.tickets[pawn]["x"]} remaining.`;
           }
           
           if (this.game.state.xmoves == 3 || this.game.state.xmoves == 8 || this.game.state.xmoves == 13 || this.game.state.xmoves == 18 || this.game.state.xmoves == 24 ) {
@@ -619,8 +604,8 @@ class Scotland extends GameTemplate {
       html += `<div class="menu_icon ${(this.game.state.tickets[pawn]["x"] == 0)? "unavailable":""}" id="mystery">
                 <i class="menu_icon_icon fas fa-mask fa-border"></i>
                 <div class="menu-text">X: ${this.game.state.tickets[pawn]["x"]}</div>
-              </div>
-              <div class="menu_icon ${(this.game.state.tickets[pawn]["double"] == 0)? "unavailable":""}" id="double">
+              </div> 
+              <div class="menu_icon ${(this.game.state.tickets[pawn]["double"] == 0 || this.game.state.double_in_action )? "unavailable":""}" id="double">
                 <i class="menu_icon_icon fas fa-angle-double-right fa-border" style="background-color: #062E03;"></i>
                 <div class="menu-text">Double: ${this.game.state.tickets[pawn]["double"]}</div>
               </div>`;      
@@ -676,7 +661,7 @@ class Scotland extends GameTemplate {
       scotland_self.disableBoardClicks();
       
       let action = $(this).attr("id");
-      if (action == "double"){
+      if (action == "double" && scotland_self.game.state.double_in_action === 0){
         scotland_self.addMove("double");
         scotland_self.endTurn();
         return;
@@ -724,7 +709,6 @@ class Scotland extends GameTemplate {
         }
       }
       if (action == "mystery"){
-        $(".highlight-available-move").css("border-color", "black");
         useMysteryTicket = true;
         if (scotland_self.game.state.tickets[pawn]["x"] > 0) {
         let mot = ["bus", "taxi", "underground", "ferry"];
@@ -1037,6 +1021,9 @@ class Scotland extends GameTemplate {
 
     let ctx = c.getContext("2d");
     ctx.clearRect(0, 0, 5135, 3829);
+
+    $(".highlight-available-move").css("border-color", "transparent");
+    $(".highlight-available-move").removeClass("highlight-available-move");
   }
 
   returnLocations() {
@@ -2035,7 +2022,7 @@ class Scotland extends GameTemplate {
       left: 1175,
       taxi: ["122", "124", "137", "148", "149"],
       underground: [],
-      bus: ["124", "122", "185", "144"],
+      bus: ["124", "122", "165", "144"],
       ferry: [],
     };
     locations["124"] = {

@@ -5,7 +5,10 @@ font imports
 @font-face {
   font-family: "visuelt-black";
   src: url("/saito/fonts/visuelt-black.eot");
-  src: url("/saito/fonts/visuelt-black.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-black.woff2") format("woff2"), url("/saito/fonts/visuelt-black.woff") format("woff"), url("/saito/fonts/visuelt-black.ttf") format("truetype");
+  src: url("/saito/fonts/visuelt-black.eot?#iefix") format("embedded-opentype"),
+    url("/saito/fonts/visuelt-black.woff2") format("woff2"),
+    url("/saito/fonts/visuelt-black.woff") format("woff"),
+    url("/saito/fonts/visuelt-black.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -13,7 +16,10 @@ font imports
 @font-face {
   font-family: "visuelt-light";
   src: url("/saito/fonts/visuelt-light.eot");
-  src: url("/saito/fonts/visuelt-light.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-light.woff2") format("woff2"), url("/saito/fonts/visuelt-light.woff") format("woff"), url("/saito/fonts/visuelt-light.ttf") format("truetype");
+  src: url("/saito/fonts/visuelt-light.eot?#iefix") format("embedded-opentype"),
+    url("/saito/fonts/visuelt-light.woff2") format("woff2"),
+    url("/saito/fonts/visuelt-light.woff") format("woff"),
+    url("/saito/fonts/visuelt-light.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -21,7 +27,10 @@ font imports
 @font-face {
   font-family: "visuelt-medium";
   src: url("/saito/fonts/visuelt-medium.eot");
-  src: url("/saito/fonts/visuelt-medium.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-medium.woff2") format("woff2"), url("/saito/fonts/visuelt-medium.woff") format("woff"), url("/saito/fonts/visuelt-medium.ttf") format("truetype");
+  src: url("/saito/fonts/visuelt-medium.eot?#iefix") format("embedded-opentype"),
+    url("/saito/fonts/visuelt-medium.woff2") format("woff2"),
+    url("/saito/fonts/visuelt-medium.woff") format("woff"),
+    url("/saito/fonts/visuelt-medium.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -32,25 +41,96 @@ font imports
 }
 
 :root {
-  --saito-font: 'visuelt-light';
-  --saito-gray: #eaeaef45;
-  --saito-primary: #f71f3d;
-  --saito-secondary: #ff8235;
-  --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
-  --saito-tertiary: rgb(234, 234, 239);
-  --saito-blue: #35b2ff;
-  --saito-default-font-color: #555;
-  --saito-paper: #f2f0f0;
-  --saito-white: #fff;
-  --saito-black: #1c1c23;
-  --saito-black-faded: #1c1c23b5;
-  --saito-box-shadow: 4px 4px 20px #a5a5a5f5;
-  --saito-menu-background: #fff;
-  --saito-profile-background: #fff;
-  --saito-border: #a5a5a5bb;
-  --saito-chat-background: #fff;
-  --saito-box-padding: 3rem 2rem;
+  --saito-font: "visuelt-light";
+
   --saito-header-height: 5em;
   --saito-width: 1500px;
-  --saito-default-border-radius: .5rem;
+
+  --saito-left-sidebar-width: 26rem;
+  --saito-main-appspace-width: 70rem;
+
+  /* static colors for all themes */
+
+  --saito-gray: #eaeaef45;
+  --saito-gray-mid: #444;
+  --saito-primary: #f71f3d;
+  --saito-secondary: #ff8235;
+  --saito-tertiary: rgb(234, 234, 239);
+  --saito-white: #fff;
+  --saito-black: #000;
+  --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%),
+    linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000),
+    linear-gradient(180deg, #e9ce93, #f71f3d);
+
+  /* variable colors overridden in themes */
+
+  --saito-font-color: #3d3d3d;
+  --saito-font-color-heavy: #222;
+  --saito-font-color-light: #888;
+  --saito-font-color-inverse: #efefef;
+  --saito-profile-background: #fff;
+  --saito-border-color: #c5c5c5bb;
+  --saito-border-color-dark: #a5a5a5bb;
+  --saito-border: 1px solid #c5c5c5bb;
+  --saito-border-radius: 0.5rem;
+  --saito-background-color: #fff;
+  --saito-background-light: #f4f4f4;
+  --saito-gray-transparent: #5555550a;
+  --saito-hover-background: #00000045;
+  --saito-black-faded: #1c1c23b5;
+  --saito-dark-shim: #0009;
+  --saito-light-shim: #0001;
+  --saito-arcade-overlay-background: #11101ed1;
+  --saito-box-shadow: -1px 1px 0.5rem 1px;
+  --saito-arcade-background: var(--saito-background-color);
+  --saito-button-background: var(--saito-primary);
+  --saito-arcade-header-background: var(--dreamscape);
+  --saito-modal-background: var(--dreamscape);
+  --saito-font-color-dark-modal: #efefef;
+}
+
+html[data-theme="dark"] {
+  --saito-primary: #e05b08;
+  --saito-secondary: #060606;
+  --saito-font-color: #dedede;
+  --saito-font-color-heavy: #ddd;
+  --saito-font-color-light: #aaa;
+  --saito-font-color-inverse: #010101;
+  --saito-profile-background: #222;
+  --saito-border-color: #343434;
+  --saito-border-color-dark: #454545;
+  --saito-border: 1px solid #c5c5c5bb;
+  --saito-background-color: #211f25;
+  --saito-background-light: #181a29;
+  --saito-gray-transparent: #88888818;
+  --saito-box-shadow: 0 0 0 1px;
+  --saito-arcade-header-background: transparent;
+  --saito-button-background: var(--saito-primary);
+  --saito-modal-background: #2e2636;
+  --saito-font-color-dark-modal: #efefef;
+}
+
+html[data-theme="arcade"] {
+  --saito-arcade-background: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
+  --saito-primary: #84a;
+  /* --dreamscape: #84a; */
+  --saito-secondary: #060606;
+  --saito-font-color: #dedede;
+  --saito-font-color-heavy: #ddd;
+  --saito-font-color-light: #aaa;
+  --saito-font-color-inverse: #010101;
+  --saito-profile-background: #22222269;
+  --saito-border: 1px solid #c5c5c5bb;
+  --saito-border-color: #639;
+  --saito-background-color: #3b1b5b;
+  --saito-background-light: #2e2636;
+  --saito-gray-transparent: #88888818;
+  --saito-background-shim: #0008;
+  --saito-dark-shim: #0009;
+  --saito-light-shim: #0001;
+  --saito-box-shadow: 0 0 0 1px;
+  --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
+  --saito-arcade-header-background: transparent;
+  --saito-modal-background: var(--saito-background-light);
+  --saito-font-color-dark-modal: #efefef;
 }

@@ -6,6 +6,7 @@
     if (card == "campdavid") {
 
       this.game.state.events.campdavid = 1; //Prevents Arab-Isreali War
+      this.cancelEvent("arabisraeli");
 
       this.updateLog("US gets 1 VP for Camp David Accords");
 

@@ -14,55 +14,20 @@
 
     <link rel="stylesheet" href="/saito/lib/font-awesome-5/css/all.css" type="text/css" media="screen" />
 
-    <link rel="stylesheet" type="text/css" href="/saito/style.css" />
-    <link rel="stylesheet" type="text/css" href="/saito/lib/templates/game.css" />
+    <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
+    <link rel="stylesheet" type="text/css" href="/saito/game.css" />
     <link rel="stylesheet" type="text/css" href="/poker/style.css" />
-
-    <link rel="stylesheet" type="text/css" href="/saito/lib/templates/email-chat.css">
 
     <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
 
   </head>
 
   <body>
-    <div class="main" id="main" style="display:all">
-      <div class="gameheader">
-          <div class="round" id="round"></div>
-          <div class="dealer" id="dealer"></div>
-      </div>
-      <div class="gameboard" id="gameboard">
-        
-        <div class="deal" id="deal"></div>
-        <div class="pot tip" id="pot"></div>
-      </div>
+    <div class="gameboard" id="gameboard">
+      <div class="pot tip" id="pot"></div>
+      <div class="deal" id="deal"></div>
     </div>
 
-    <svg>
-      <pattern id="stripes1" patternUnits="userSpaceOnUse" width="16" height="8">
-          <rect width="16" height="8" />
-          <rect width="9" height="8" fill="black"/>
-      </pattern>
-      <pattern id="stripes2" patternUnits="userSpaceOnUse" width="16" height="8">
-          <rect width="16" height="8" />
-          <rect width="9" height="8" fill="black"/>
-      </pattern>
-      <pattern id="stripes3" patternUnits="userSpaceOnUse" width="16" height="8">
-          <rect width="16" height="8" />
-          <rect width="9" height="8" fill="black"/>
-      </pattern>
-      <pattern id="stripes4" patternUnits="userSpaceOnUse" width="16" height="8">
-          <rect width="16" height="8" />
-          <rect width="9" height="8" fill="black"/>
-      </pattern>
-      <pattern id="stripes5" patternUnits="userSpaceOnUse" width="16" height="8">
-          <rect width="16" height="8" />
-          <rect width="9" height="8" fill="black"/>
-      </pattern>
-      <pattern id="stripes6" patternUnits="userSpaceOnUse" width="16" height="8">
-          <rect width="16" height="8" />
-          <rect width="9" height="8" fill="black"/>
-      </pattern>
-    </svg>
     <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
   </body>
 </html>

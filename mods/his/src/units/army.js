@@ -1,5 +1,5 @@
 
-    this.importUnit('suleiman', {
+    this.importArmyLeader('suleiman', {
       type		:	"suleiman" ,
       name		: 	"Suleiman",
       personage		:	true,
@@ -9,7 +9,7 @@
       command_value	:	10,
     });
  
-    this.importUnit('ibrahim-pasha', {
+    this.importArmyLeader('ibrahim-pasha', {
       type		:	"ibrahim-pasha" ,
       name		: 	"Ibrahim Pasha",
       personage		:	true,
@@ -20,7 +20,7 @@
     });
  
   
-    this.importUnit('charles-v', {
+    this.importArmyLeader('charles-v', {
       type		:	"charles-v" ,
       name		: 	"Charles V",
       personage		:	true,
@@ -30,7 +30,7 @@
       command_value	:	10,
     });
  
-    this.importUnit('duke-of-alva', {
+    this.importArmyLeader('duke-of-alva', {
       type		:	"duke-of-alva" ,
       name		: 	"Duke of Alva",
       personage		:	true,
@@ -40,7 +40,7 @@
       command_value	:	6,
     });
  
-    this.importUnit('ferdinand', {
+    this.importArmyLeader('ferdinand', {
       type		:	"ferdinand" ,
       name		: 	"Ferdinand",
       personage		:	true,
@@ -50,7 +50,7 @@
       command_value	:	6,
     });
  
-    this.importUnit('henry-viii', {
+    this.importArmyLeader('henry-viii', {
       type		:	"henry-viii" ,
       name		: 	"Henry VIII",
       personage		:	true,
@@ -60,7 +60,7 @@
       command_value	:	8,
     });
  
-    this.importUnit('charles-brandon', {
+    this.importArmyLeader('charles-brandon', {
       type		:	"charles-brandon" ,
       name		: 	"Charles Brandon",
       personage		:	true,
@@ -70,7 +70,7 @@
       command_value	:	6,
     });
  
-    this.importUnit('francis-i', {
+    this.importArmyLeader('francis-i', {
       type		:	"francis-i" ,
       name		: 	"Francis I",
       personage		:	true,
@@ -79,8 +79,18 @@
       battle_rating	:	1,
       command_value	:	8,
     });
+
+    this.importArmyLeader('henry-ii', {
+      type		:	"henry-ii" ,
+      name		: 	"Henry II",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Henry_II.svg",
+      battle_rating	:	0,
+      command_value	:	8,
+    });
  
-    this.importUnit('montmorency', {
+    this.importArmyLeader('montmorency', {
       type		:	"montmorency" ,
       name		: 	"Montmorency",
       personage		:	true,
@@ -90,7 +100,7 @@
       command_value	:	6,
     });
  
-    this.importUnit('andrea-doria', {
+    this.importArmyLeader('andrea-doria', {
       type		:	"andrea-doria" ,
       name		: 	"Andrea Doria",
       personage		:	true,
@@ -100,7 +110,7 @@
       command_value	:	0,
     });
 
-    this.importUnit('maurice-of-saxony', {
+    this.importArmyLeader('maurice-of-saxony', {
       type		:	"maurice-of-saxony" ,
       name		: 	"Maurice of Saxony",
       personage		:	true,
@@ -108,6 +118,56 @@
       img		:	"Maurice_Protestant.svg",
       battle_rating	:	1,
       command_value	:	6,
+    });
+
+    this.importArmyLeader('maurice-of-saxony', {
+      type              :       "maurice-of-saxony" ,
+      name              :       "Maurice of Saxony",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "Maurice_Hapsburg.svg",
+      battle_rating     :       1,
+      command_value     :       6,
+    });
+
+    this.importArmyLeader('dudley', {
+      type              :       "dudley" ,
+      name              :       "Dudley",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "Dudley.svg",
+      battle_rating     :       0,
+      command_value     :       6,
+    });
+
+    this.importArmyLeader('john-frederick', {
+      type              :       "john-frederick" ,
+      name              :       "John Frederick",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "John_Frederick.svg",
+      battle_rating     :       0,
+      command_value     :       6,
+    });
+
+    this.importArmyLeader('philip-hesse', {
+      type              :       "philip-hesse" ,
+      name              :       "Philip Hesse",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "Philip_Hesse.svg",
+      battle_rating     :       0,
+      command_value     :       6,
+    });
+
+    this.importArmyLeader('renegade', {
+      type              :       "renegade" ,
+      name              :       "Renegade Leader",
+      personage         :       true,
+      army_leader       :       true,
+      img               :       "Renegade.svg",
+      battle_rating     :       1,
+      command_value     :       6,
     });
 
 

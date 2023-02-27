@@ -9,13 +9,60 @@
 }
 
 .saito-calendar {
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     width: 100%;
-    border: 1px solid #00000052;
     display: grid;
     grid-template-rows: min-content min-content min-content;
     flex-direction: column;
-    padding: 1rem 0;
+}
+
+
+.saito-modal.saito-modal-calendar {
+    display: grid;
+    grid-template-columns: 30rem 1fr;
+    width: 100%;
+    padding: 4rem;
+    grid-gap: 0;
+    margin: 0;
+}
+
+.saito-modal-calendar-content {
+    padding-right: 3rem;
+}
+
+.saito-modal-calendar-title {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+.saito-modal-calendar-note {
+    font-size: 2rem;
+    line-height: 2.8rem;
+    display: block;
+}
+
+.saito-calendar-events {
+    background-color: var(--saito-background-color);
+    width: 40rem;
+    height: 35rem;
+    padding: 0px;
+    margin: 0px;
+    border: 1px solid var(--saito-background-color);
+}
+
+.saito-calendar-events-date {
+  float: right;
+  padding: 0.5rem;
+  color: #777;
+  font-size: 2rem;
+  font-style: italic;
+}
+
+.saito-calendar-events-details {
+  clear: both;
+  font-size: 2rem;
+  color: var(--saito-font-color);
+  font-weight: bold;
+  padding-left: 2rem;
 }
 
 .saito-calendar-month {
@@ -49,30 +96,42 @@
     font-size: 2.3rem;
 }
 
-.saito-calendar-weekdays {
+.x {
     display: flex;
     justify-content: center;
     padding: .5rem .5rem;
 }
 
 .saito-calendar-weekdays div {
-    width: calc((var(--calendar-width) - 2rem)/7);
     font-size: 1.6rem;
     text-align: center;
 }
 
-.saito-calendar-days {
-    display: flex;
-    flex-wrap: wrap;
+.saito-calendar-days, .saito-calendar-weekdays  {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 3px;
+}
+.saito-calendar-day {
+    min-height: 3rem;
+    font-size: 1.2rem;
+    padding: 3px;
     cursor: pointer;
-    padding: 1rem .5rem;
-    text-align: center;
+    display: flex;
+    align-items:  center;
 }
 
-.saito-calendar-days div {
-    font-size: 1.2rem;
-    margin: .3rem .5rem;
-    width: calc((var(--calendar-width) - (14 * .5rem) - 2rem) /7);
+.saito-calendar-day-date {
+    margin-right: auto;
+}
+
+.saito-calendar-day-icon {
+    font-size: 2.3rem;
+    padding-right: 0.75rem;
+}
+
+.saito-calendar-day > span {
+    margin-left: .5rem;
 }
 
 .saito-calendar-days div:hover {

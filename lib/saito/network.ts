@@ -5,6 +5,7 @@ import WSWebSocket from "ws";
 import fetch from "node-fetch";
 import Transaction from "./transaction";
 import Block from "./block";
+import { MessageType } from "./networkapi";
 
 class Network {
   public app: Saito;
@@ -27,6 +28,13 @@ class Network {
   public peer_monitor_connection_timeout = 2000;
   public peer_monitor_timer: any;
   public debugging: boolean;
+  public blocks_to_fetch: Array<{ id: bigint; hash: string; peer: Peer }> = new Array<{
+    id: bigint;
+    hash: string;
+    peer: Peer;
+  }>();
+
+  public block_fetch_running = false;
 
   constructor(app: Saito) {
     this.app = app;
@@ -50,7 +58,7 @@ class Network {
     //
     this.downloads = {};
     this.downloads_hmap = {};
-    this.downloading_active = 0;
+    this.downloading_active = false;
     this.block_sample_size = 15;
 
     //
@@ -59,7 +67,7 @@ class Network {
     // reconnect to a rebooted peer
     //
     this.dead_peers = [];
-    this.debugging = true;
+    this.debugging = false;
   }
 
   //
@@ -68,6 +76,7 @@ class Network {
   // we initiate an outgoing connection
   //
   addPeer(peerjson) {
+
     let peerhost = "";
     let peerport = "";
 
@@ -143,12 +152,81 @@ class Network {
     peer.keepAlive();
   }
 
+  addStunPeer(stun_object) {
+    const peer = new Peer(this.app);
+    this.initializeStun(peer, stun_object);
+  }
+
+  initializeStun(peer, stun_object) {
+    let pc = stun_object.peer_connection;
+    let publickey = stun_object.publickey;
+    let data_channel = stun_object.data_channel;
+
+    peer.stun = { peer_connection: pc, data_channel, publickey };
+    peer.peer.publickey = publickey;
+    peer.stun.data_channel.peer = peer;
+    peer.uses_stun = true;
+
+    peer.stun.data_channel.onmessage = async (e) => {
+      const data = await e.data;
+      const api_message = this.app.networkApi.deserializeAPIMessage(data);
+      if (api_message.message_type === MessageType.Result) {
+        this.app.networkApi.receiveAPIResponse(api_message);
+      } else if (api_message.message_type === MessageType.Error) {
+        this.app.networkApi.receiveAPIError(api_message);
+      } else {
+        await this.receiveRequest(peer, api_message);
+      }
+    };
+
+    peer.stun.data_channel.onopen = (e) => {
+      // console.log('stun connection opened with '+publickey, "opened ");
+      if (this.debugging) {
+        console.log("direct data channel created with ", peer.peer.publickey);
+      }
+      this.app.handshake.initiateHandshake(peer.stun.data_channel);
+      this.app.network.requestBlockchain(peer);
+      this.app.connection.emit("peer_connect", peer);
+      this.app.connection.emit("connection_up", peer);
+      this.app.network.propagateServices(peer);
+    };
+
+    peer.stun.data_channel.onclose = (event) => {
+      if (this.debugging) {
+        console.log(
+          `[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`
+        );
+      }
+      this.app.connection.emit("connection_dropped", peer);
+      this.app.connection.emit("peer_disconnect", peer);
+    };
+
+    peer.stun.data_channel.onerror = (event) => {
+      if (this.debugging) {
+        console.log(`Peer Datachannel Error: [error] `);
+      }
+    };
+
+    let index = this.peers.findIndex((peer) => peer.stun.publickey === publickey);
+    if (index === -1) {
+      this.peers.push(peer);
+    } else {
+      this.peers[index] = peer;
+    }
+    this.peers.push(peer);
+    this.peers_connected++;
+    if (this.debugging) {
+      console.log("adding stun peer", peer);
+    }
+  }
+
   //
   // addRemotePeer
   //
   // server sends us a websocket
   //
-  addRemotePeer(socket) {
+  async addRemotePeer(socket) {
+
     // deny excessive connections
     if (this.peers_connected >= this.peers_connected_limit) {
       if (this.debugging) {
@@ -193,10 +271,10 @@ class Network {
     //
     // initiate the handshake (verifying peers)
     // - this is normally done in initializeWebSocket, but it is not
-    // done for remote-sockets created int he server, so we manually
+    // done for remote-sockets created in the server, so we manually
     // do it here. this adds the message emission events to the socket
     //
-    this.app.handshake.initiateHandshake(socket);
+    await this.app.handshake.initiateHandshake(socket);
 
     return peer;
   }
@@ -206,7 +284,6 @@ class Network {
    * @param peer
    */
   async fetchBlock(block_hash: string, peer: Peer = null) {
-    console.debug("network.fetchBlock : " + block_hash);
     if (!block_hash) {
       console.trace("block hash is empty");
     }
@@ -217,36 +294,60 @@ class Network {
       peer = this.peers[0];
     }
 
+    let url = "";
     try {
-      let url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/block/${block_hash}`;
-      if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+      if (!peer.peer.block_fetch_url) {
+        console.error("peer block fetch url is not set");
+      }
+      let base_url = peer.peer.block_fetch_url.endsWith("/")
+        ? peer.peer.block_fetch_url
+        : peer.peer.block_fetch_url + "/";
+      url = `${base_url}${block_hash}`;
+      if (this.app.SPVMODE == 1) {
         url = `${peer.peer.protocol}://${peer.peer.host}:${
           peer.peer.port
         }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
       }
+      if (this.debugging) {
+        console.log("fetching url : " + url);
+      }
       const res = await fetch(url);
       if (res.ok) {
-        const base64Buffer = await res.arrayBuffer();
-        const buffer = Buffer.from(Buffer.from(base64Buffer).toString("utf-8"), "base64");
+        const blob = await res.blob(); //arrayBuffer();
+        // const buffer = Buffer.from(Buffer.from(base64Buffer).toString("utf-8"), "base64");
+        const buffer = Buffer.from(await blob.arrayBuffer());
+        if (this.debugging) {
+          console.log("block fetched : " + block_hash + " size = " + buffer.length);
+        }
+
         const block = new Block(this.app);
         block.deserialize(buffer);
-        await block.generateConsensusValues();
+        // console.debug("block deserialized : " + block_hash);
+        block.generateMetadata();
+        // await block.generateConsensusValues();
+        if (this.debugging)
+          {
+              console.assert(
+            block_hash === block.hash,
+            `generated block hash : ${block.hash} not matching with requested : ${block_hash}`
+          );
+          }
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;
-        this.app.mempool.addBlock(block);
+        await this.app.mempool.addBlock(block);
       } else {
-        if (this.debugging) {
-          console.error(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
-        }
+         if (this.debugging) {
+        console.error(
+          `Error fetching block from :${url}: Status ${res.status} -- ${res.statusText}`
+        );
+         }
       }
     } catch (err) {
-      if (this.debugging) {
-        console.log(`Error fetching block:`);
-      }
-      if (this.debugging) {
+       if (this.debugging) {
+        console.error(`Error fetching block: ${url}`);
         console.error(err);
-      }
+       }
     }
     return;
   }
@@ -262,7 +363,6 @@ class Network {
           wsProtocol = "wss";
         }
       }
-      //console.log("attempting to connect 1 to: " + `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
@@ -270,11 +370,13 @@ class Network {
         if (this.debugging) {
           console.log("connected to network", event);
         }
-        this.app.handshake.initiateHandshake(peer.socket);
-        this.app.network.requestBlockchain(peer);
-        this.app.connection.emit("peer_connect", peer);
-        this.app.connection.emit("connection_up", peer);
-        this.app.network.propagateServices(peer);
+        try {
+          this.app.connection.emit("peer_connect", peer);
+          this.app.connection.emit("connection_up", peer);
+          this.app.network.propagateServices(peer);
+        } catch (error) {
+          console.error(error);
+        }
       };
       peer.socket.onclose = (event) => {
         if (this.debugging) {
@@ -284,6 +386,8 @@ class Network {
         }
         this.app.connection.emit("connection_dropped", peer);
         this.app.connection.emit("peer_disconnect", peer);
+        peer.initiated_handshake = false;
+        peer.peer.publickey = "";
       };
       peer.socket.onerror = (event) => {
         if (this.debugging) {
@@ -291,14 +395,18 @@ class Network {
         }
       };
       peer.socket.onmessage = async (event) => {
-        const data = await event.data.arrayBuffer();
-        const api_message = this.app.networkApi.deserializeAPIMessage(data);
-        if (api_message.message_name === "RESULT__") {
-          this.app.networkApi.receiveAPIResponse(api_message);
-        } else if (api_message.message_name === "ERROR___") {
-          this.app.networkApi.receiveAPIError(api_message);
-        } else {
-          await this.receiveRequest(peer, api_message);
+        try {
+          const data = new Uint8Array(await event.data.arrayBuffer());
+          const api_message = this.app.networkApi.deserializeAPIMessage(data);
+          if (api_message.message_type == MessageType.Result) {
+            this.app.networkApi.receiveAPIResponse(api_message);
+          } else if (api_message.message_type == MessageType.Error) {
+            this.app.networkApi.receiveAPIError(api_message);
+          } else {
+            await this.receiveRequest(peer, api_message);
+          }
+        } catch (error) {
+          console.error(error);
         }
       };
 
@@ -314,9 +422,7 @@ class Network {
       if (peer.peer.protocol === "https") {
         wsProtocol = "wss";
       } else {
-        //console.log("non secure peer : ", peer.peer);
       }
-      //console.log("attempting to connect 2 to: " +`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket = new WSWebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
@@ -324,9 +430,11 @@ class Network {
       // default ws websocket
       //
       peer.socket.on("open", async (event) => {
-        await this.app.handshake.initiateHandshake(peer.socket);
-        this.app.network.requestBlockchain(peer);
-        this.app.network.propagateServices(peer);
+        try {
+          this.app.network.propagateServices(peer);
+        } catch (error) {
+          console.error(error);
+        }
       });
       peer.socket.on("close", (event) => {
         if (this.debugging) {
@@ -346,14 +454,22 @@ class Network {
     }
 
     peer.socket.on("message", async (data) => {
-      const api_message = this.app.networkApi.deserializeAPIMessage(data);
-      if (api_message.message_name === "RESULT__") {
-        this.app.networkApi.receiveAPIResponse(api_message);
-      } else if (api_message.message_name === "ERROR___") {
-        this.app.networkApi.receiveAPIError(api_message);
-      } else {
-        //console.debug("handling peer command - receiving peer id " + peer.socket.peer.id, api_message);
-        await this.receiveRequest(peer, api_message);
+      // if (data.length === 0) {
+      //   console.log("received message buffer with 0 length");
+      //   return;
+      // }
+      // console.log("data buffer 1 first: ", data[0]);
+      try {
+        const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
+        if (api_message.message_type == MessageType.Result) {
+          this.app.networkApi.receiveAPIResponse(api_message);
+        } else if (api_message.message_type == MessageType.Error) {
+          this.app.networkApi.receiveAPIError(api_message);
+        } else {
+          await this.receiveRequest(peer, api_message);
+        }
+      } catch (error) {
+        console.error(error);
       }
     });
 
@@ -361,7 +477,24 @@ class Network {
   }
 
   cleanupDisconnectedPeer(peer, force = 0) {
-    console.debug("cleanupDisconnectedPeer : peer count = " + this.peers.length);
+    if (peer.uses_stun) {
+      // clean up peer
+      let publickey = peer.peer.publickey;
+      for (let i = 0; i < this.peers.length; i++) {
+        if (this.peers[i].peer.publickey === publickey) {
+          if (this.peers[i].stun.data_channel.readyState === "closed") {
+            try {
+              this.peers[i].stun.data_channel.close();
+              this.peers.splice(i, 1);
+            } catch (error) {
+              console.log("ERROR : error closing datachannel: " + error);
+            }
+          }
+        }
+      }
+      return;
+    }
+
     for (let c = 0; c < this.peers.length; c++) {
       // it has to be this peer, and the socket must be closed
       if (
@@ -429,7 +562,7 @@ class Network {
           this.dead_peers.push(peer);
         }
 
-        console.debug("keep_peer = " + keep_peer);
+        //console.debug("keep_peer = " + keep_peer);
         //
         // close and destroy socket, and stop timers
         //
@@ -457,6 +590,8 @@ class Network {
   }
 
   initialize() {
+    if (this.debugging) console.debug("[DEBUG] initialize network");
+
     if (this.app.options) {
       if (this.app.options.server) {
         if (
@@ -499,9 +634,12 @@ class Network {
     }
 
     if (this.app.options.peers != null) {
+      if (this.debugging) console.debug("[DEBUG] peers length " + this.app.options.peers.length);
       for (let i = 0; i < this.app.options.peers.length; i++) {
         this.addPeer(JSON.stringify(this.app.options.peers[i]));
       }
+    } else {
+      if (this.debugging) console.debug("[DEBUG] no peers defined");
     }
 
     this.app.connection.on("peer_disconnect", (peer) => {
@@ -511,6 +649,15 @@ class Network {
     this.peer_monitor_timer = setInterval(() => {
       this.pollPeers();
     }, this.peer_monitor_timer_speed);
+  }
+
+  isNetworkUp() {
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].isConnected()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   isPrivateNetwork() {
@@ -540,25 +687,25 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    //console.debug("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
     let fork_id;
-    let block_id;
+    let block_id: bigint;
     let bytes;
-    let challenge;
+    let response;
     let is_block_indexed;
     let tx;
     let publickey;
 
-    switch (message.message_name) {
-      case "SHAKINIT": {
-        challenge = await this.app.handshake.handleIncomingHandshakeRequest(
-          peer,
-          message.message_data
-        );
-        await peer.sendResponse(message.message_id, challenge);
+    switch (message.message_type) {
+      case MessageType.HandshakeChallenge: {
+        await this.app.handshake.handleIncomingHandshakeChallenge(peer, message.message_data);
+        break;
+      }
+
+      case MessageType.HandshakeResponse: {
+        await this.app.handshake.handleHandshakeResponse(peer, message.message_data);
 
         //
         // prune older peers
@@ -574,23 +721,40 @@ class Network {
             i--;
           }
         }
-
         break;
       }
-      case "PINGPING":
-        // console.log("received ping...");
+      // case MessageType.HandshakeCompletion: {
+      //   await this.app.handshake.handleHandshakeCompletion(peer, message.message_data);
+      //
+      //   //
+      //   // prune older peers
+      //   //
+      //   const publickey = peer.peer.publickey;
+      //   let count = 0;
+      //   for (let i = this.peers.length - 1; i >= 0; i--) {
+      //     if (this.peers[i].peer.publickey === publickey) {
+      //       count++;
+      //     }
+      //     if (count > 1) {
+      //       this.cleanupDisconnectedPeer(this.peers[i], 1);
+      //       i--;
+      //     }
+      //   }
+      //   break;
+      // }
+      case MessageType.Ping:
         // job already done!
         break;
 
-      case "REQBLOCK":
-        // NOT YET IMPLEMENTED -- send FULL block
-        break;
+      // case "REQBLOCK":
+      //   // NOT YET IMPLEMENTED -- send FULL block
+      //   break;
+      //
+      // case "REQBLKHD":
+      //   // NOT YET IMPLEMENTED -- send HEADER block
+      //   break;
 
-      case "REQBLKHD":
-        // NOT YET IMPLEMENTED -- send HEADER block
-        break;
-
-      case "SPVCHAIN": {
+      case MessageType.SPVChain: {
         //if (this.debugging) { console.log("RECEIVED SPVCHAIN"); }
 
         const buffer = Buffer.from(message.message_data, "utf8");
@@ -600,42 +764,55 @@ class Network {
         break;
       }
 
-      case "SERVICES": {
+      case MessageType.Services: {
         const buffer = Buffer.from(message.message_data, "utf8");
 
         try {
           peer.peer.services = JSON.parse(buffer.toString("utf8"));
+          //console.log("services : ", peer.peer.services);
         } catch (err) {
-          console.log("ERROR parsing peer services list or setting services in peer");
+          console.error("ERROR parsing peer services list or setting services in peer");
         }
 
         break;
       }
 
-      case "GSTCHAIN": {
+      case MessageType.GhostChain: {
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
-        //if (this.debugging) { console.log("RECEIVED GSTCHAIN 1: " + JSON.stringify(syncobj)); }
+        if (this.debugging) {
+          console.log("RECEIVED GSTCHAIN 1: ", syncobj);
+        }
 
         let previous_block_hash = syncobj.start;
 
         for (let i = 0; i < syncobj.prehash.length; i++) {
-          let block_hash = this.app.crypto.hash(syncobj.prehash[i] + previous_block_hash);
+          let buf = Buffer.concat([
+            this.app.binary.hexToSizedArray(previous_block_hash, 32),
+            this.app.binary.hexToSizedArray(syncobj.prehash[i], 32),
+          ]);
+          let block_hash = this.app.crypto.hash(buf);
 
-          //if (this.debugging) { console.log("block hash as: " + block_hash); }
+          if (this.debugging) {
+            console.log("block hash as: " + block_hash);
+          }
 
           if (parseInt(syncobj.txs[i]) > 0) {
-            //if (this.debugging) { console.log("fetching blcok! " + block_hash); }
+            if (this.debugging) {
+              console.log("fetching block! " + block_hash);
+            }
             await this.fetchBlock(block_hash);
-            //if (this.debugging) { console.log("done fetch block!"); }
+            if (this.debugging) {
+              //console.log("done fetch block!");
+            }
           } else {
             // ghost block
             if (this.debugging) {
-              //              console.log("adding ghostchain blcok! " + block_hash);
+              //console.log("adding ghostchain block! " + block_hash);
             }
             this.app.blockchain.addGhostToBlockchain(
-              syncobj.block_ids[i],
+              BigInt(syncobj.block_ids[i]),
               previous_block_hash,
               syncobj.block_ts[i],
               syncobj.prehash[i],
@@ -650,19 +827,19 @@ class Network {
         break;
       }
 
-      case "REQCHAIN": {
-        block_id = 0;
+      case MessageType.BlockchainRequest: {
+        block_id = BigInt(0);
         block_hash = "";
         fork_id = "";
         publickey = "";
         bytes = message.message_data;
 
-        block_id = Number(this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8))));
+        block_id = this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8)));
         block_hash = Buffer.from(bytes.slice(8, 40), "hex").toString("hex");
         fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         if (this.debugging) {
-          console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
+          //console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
         }
 
         const last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
@@ -671,38 +848,50 @@ class Network {
         );
 
         if (this.debugging) {
-          console.log("last shared ancestor generated at: " + last_shared_ancestor);
+          //console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
+        let obj: any = {
+          last_id: last_shared_ancestor,
+        };
+        obj.timer = setInterval(() => {
+          let count = 100;
+          // notify peer of longest-chain after this amount
+          for (let i = obj.last_id; i <= this.app.blockring.returnLatestBlockId(); i++) {
+            --count;
+            block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+            if (block_hash !== "") {
+              // block = await this.app.blockchain.loadBlockAsync(block_hash);
+              // if (block) {
+              this.propagateBlock(block_hash, i, peer);
+              obj.last_id = i;
+              // }
+            }
 
-        //
-        // notify peer of longest-chain after this amount
-        //
-        for (let i = last_shared_ancestor; i <= this.app.blockring.returnLatestBlockId(); i++) {
-          block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-          if (block_hash !== "") {
-            block = await this.app.blockchain.loadBlockAsync(block_hash);
-            if (block) {
-              this.propagateBlock(block, peer);
+            if (count === 0) {
+              break;
             }
           }
-        }
+
+          if (obj.last_id === this.app.blockring.returnLatestBlockId()) {
+            clearInterval(obj.timer);
+          }
+        }, 1000);
 
         break;
       }
 
-      case "REQGSTCN": {
-        block_id = 0;
+      case MessageType.GhostChainRequest: {
         block_hash = "";
         fork_id = "";
         publickey = peer.peer.publickey;
         bytes = message.message_data;
 
-        block_id = Number(this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8))));
+        block_id = this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8)));
         block_hash = Buffer.from(bytes.slice(8, 40), "hex").toString("hex");
         fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         if (this.debugging) {
-          console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
+          //console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
         }
 
         let last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
@@ -711,49 +900,51 @@ class Network {
         );
 
         if (this.debugging) {
-          console.log("last shared ancestor generated at: " + last_shared_ancestor);
+          //console.log("last shared ancestor generated at: " + last_shared_ancestor);
         }
 
         if (last_shared_ancestor <= 0) {
-          if (this.app.blockchain.returnLatestBlockId() > 10) {
-            last_shared_ancestor = this.app.blockchain.returnLatestBlockId() - 10;
+          if (this.app.blockchain.returnLatestBlockId() > BigInt(10)) {
+            last_shared_ancestor = this.app.blockchain.returnLatestBlockId() - BigInt(10);
           }
         }
 
         let syncobj = {
           start: "",
-          prehash: [],
-          previous_block_hash: [],
-          block_ids: [],
-          block_ts: [],
-          txs: [],
-          gts: [],
+          prehash: new Array<string>(),
+          previous_block_hash: new Array<string>(),
+          block_ids: new Array<bigint>(),
+          block_ts: new Array<number>(),
+          txs: new Array<number>(),
+          gts: new Array<boolean>(),
         };
         syncobj.start =
           this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
 
-        for (let i = last_shared_ancestor + 1; i <= this.app.blockring.returnLatestBlockId(); i++) {
+        for (
+          let i = last_shared_ancestor + BigInt(1);
+          i <= this.app.blockring.returnLatestBlockId();
+          i++
+        ) {
           block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
           if (block_hash !== "") {
-            if (this.app.blockchain.blocks[block_hash]) {
-              let block = this.app.blockchain.blocks[block_hash];
+            if (this.app.blockchain.blocks.get(block_hash)) {
+              let block = this.app.blockchain.blocks.get(block_hash);
               syncobj.gts.push(block.hasGoldenTicket());
               syncobj.block_ts.push(block.returnTimestamp());
               syncobj.prehash.push(block.prehash);
               syncobj.previous_block_hash.push(block.returnPreviousBlockHash());
               syncobj.block_ids.push(block.returnId());
-              //console.log("checking if " + block.returnHash() + " has txs for " + publickey);
               if (block.hasKeylistTransactions([publickey])) {
-                //console.log("yes");
                 syncobj.txs.push(1);
               } else {
-                //console.log("no");
                 syncobj.txs.push(0);
               }
             }
           }
         }
-        //console.log("ABOUT TO SEND GSTCHAIN");
+
+        //console.log("sync obj for gst chain : ", syncobj);
 
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
@@ -762,7 +953,7 @@ class Network {
       //
       // this delivers the block as BlockType.Header
       //
-      case "SNDBLOCK":
+      case MessageType.Block:
         block = new Block(this.app);
         block.deserialize(message.message_data);
         block_hash = block.returnHash();
@@ -778,34 +969,66 @@ class Network {
       //
       // this delivers the block as block_hash
       //
-      case "SNDBLKHH":
-        block_hash = Buffer.from(message.message_data, "hex").toString("hex");
-
+      case MessageType.BlockHeaderHash:
+        block_hash = Buffer.from(message.message_data.slice(0, 32), "hex").toString("hex");
+        block_id = this.app.binary.u64FromBytes(message.message_data.slice(32, 40));
+        console.log("BlockHeaderHash received : " + block_hash + " - " + block_id);
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
-          await this.fetchBlock(block_hash, peer);
+          this.blocks_to_fetch.push({ id: block_id, hash: block_hash, peer: peer });
+          await this.fetchBlocks();
         }
         break;
 
-      case "SNDTRANS":
+      case MessageType.Transaction:
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
-        await this.app.mempool.addTransaction(tx);
+        //
+        // adding TX done in propagate TX
+        //
+        // await this.app.mempool.addTransaction(tx);
+        this.propagateTransaction(tx);
         break;
 
-      case "SNDKYLST":
-        //await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
-        break;
+      // case "SNDKYLST":
+      //   //await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
+      //   break;
 
-      case "SENDMESG": {
+      case MessageType.ApplicationTransaction: {
+
+        tx = new Transaction();
+        tx.deserialize(this.app, message.message_data, 0);
+
+        let app = this.app;
+
+        const mycallback = function (response_object) {
+
+	  let newtx = new Transaction();
+	  newtx.msg.response = response_object;
+	  newtx.presign(app);
+
+          peer.sendTransactionResponse(
+            message.message_id,
+            newtx.serialize(app)
+          );
+
+        };
+
+        await this.app.modules.handlePeerTransaction(tx, peer, mycallback);
+        break;
+      }
+
+      case MessageType.ApplicationMessage: {
         let mdata;
         let reconstructed_obj;
         let reconstructed_message = "";
         let reconstructed_data: any = {};
 
         try {
-          mdata = message.message_data.toString();
+          mdata = Buffer.from(message.message_data).toString("utf-8");
+          // console.log("mdata = ",mdata);
           reconstructed_obj = JSON.parse(mdata);
+          // console.log("obj = ",reconstructed_obj);
           reconstructed_message = reconstructed_obj.message;
           reconstructed_data = reconstructed_obj.data;
         } catch (err) {
@@ -824,37 +1047,45 @@ class Network {
         if (reconstructed_data) {
           msg.data = reconstructed_data;
         }
-        const mycallback = function (response_object) {
+        const mycallback = (response_object) => {
           peer.sendResponse(
             message.message_id,
             Buffer.from(JSON.stringify(response_object), "utf-8")
           );
         };
 
-        switch (message.message_name) {
+        switch (message.message_type) {
           default:
             if (reconstructed_data) {
               if (reconstructed_data.transaction) {
                 if (reconstructed_data.transaction.m) {
                   // backwards compatible - in case modules try the old fashioned way
-                  msg.data.transaction.msg = JSON.parse(
-                    this.app.crypto.base64ToString(msg.data.transaction.m)
-                  );
+                  if (msg.data.transaction.m.byteLength === 0) {
+                    msg.data.transaction.msg = {};
+                  } else {
+                    msg.data.transaction.msg = JSON.parse(
+                      this.app.crypto.base64ToString(
+                        Buffer.from(msg.data.transaction.m).toString("base64")
+                      )
+                    );
+                  }
                   msg.data.msg = msg.data.transaction.msg;
                 }
               }
             }
-            await this.app.modules.handlePeerRequest(msg, peer, mycallback);
+	    let newtx = new Transaction();
+	    newtx.msg = msg.data;
+            await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
         }
         break;
       }
       default:
         if (this.debugging) {
-          console.error("Unhandled command received by client... " + message.message_name);
+          console.error("Unhandled command received by client... " + message.message_type);
         }
         await this.app.networkApi.sendAPIResponse(
-          this.socket,
-          "ERROR___",
+          peer.socket,
+          MessageType.Error,
           message.message_id,
           Buffer.from("NO SUCH", "utf-8")
         );
@@ -872,19 +1103,21 @@ class Network {
     // loop through peers to see if disconnected
     //
     this.app.network.peers.forEach((peer) => {
+      if (peer.uses_stun) {
+        return;
+      }
       //
       // if disconnected, cleanupDisconnectedSocket
       // or reconnect if they're in our list of peers
       // to which to connect.
       //
-      if (peer.socket.readyState === peer.socket.CLOSED) {
+      if (peer.socket.readyState === peer?.socket?.CLOSED) {
         if (!this.dead_peers.includes(peer)) {
           this.cleanupDisconnectedPeer(peer);
         }
       }
     });
 
-    //console.log('dead peers to add: ' + this.dead_peers.length);
     // limit amount of time nodes spend trying to reconnect to
     // prevent ddos issues.
     const peer_add_delay = this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;
@@ -922,22 +1155,22 @@ class Network {
   //
   // propagate block
   //
-  propagateBlock(blk, peer = null) {
+  propagateBlock(hash: string, id: bigint, peer = null) {
     if (this.app.BROWSER) {
       return;
     }
-    console.debug("network.propagateBlock", blk.returnHash());
-    if (!blk) {
+    //console.debug("network.propagateBlock", blk.returnHash());
+    if (!hash) {
       return;
     }
-    if (!blk.is_valid) {
+    if (!id) {
       return;
     }
 
-    const data = { bhash: blk.returnHash(), bid: blk.block.id };
     for (let i = 0; i < this.peers.length; i++) {
       if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
-        this.sendRequest("SNDBLKHH", Buffer.from(blk.returnHash(), "hex"), this.peers[i]);
+        let blockheader = Buffer.concat([Buffer.from(hash, "hex"), this.app.binary.u64AsBytes(id)]);
+        this.sendRequest("SNDBLKHH", blockheader, this.peers[i]);
       }
     }
   }
@@ -984,12 +1217,12 @@ class Network {
     if (peer == null) {
       for (let i = 0; i < this.peers.length; i++) {
         if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
-          console.log("sending services request: " + JSON.stringify(my_services));
+          if (this.debugging) console.log("sending services request: " + JSON.stringify(my_services));
           this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), this.peers[i]);
         }
       }
     } else {
-      console.log("sending services request: " + JSON.stringify(my_services));
+      if (this.debugging) console.log("sending services request: " + JSON.stringify(my_services));
       this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), peer);
     }
   }
@@ -1001,15 +1234,30 @@ class Network {
     if (tx === null) {
       return;
     }
-    if (!tx.is_valid) {
+    if (!tx.transaction) {
+      if (this.debugging) console.log("TX not found in propagate transaction");
       return;
+    }
+    if (!tx.transaction.from) {
+      if (this.debugging) console.log("TX FROM not found in propagate transaction");
+      return;
+    }
+    if (!tx.is_valid) {
+      if (this.debugging) console.warn("tx is not valid. not propagating", tx);
+      return;
+    }
+
+    for (let i = 0; i < tx.transaction.from.length; ++i) {
+      tx.transaction.from[i].generateKey(this.app);
     }
 
     //
     // if this is our (normal) transaction, add to pending
     //
     if (tx.transaction.from[0].add === this.app.wallet.returnPublicKey()) {
-      this.app.wallet.addTransactionToPending(tx);
+      if (!tx.isGoldenTicket()) {
+        this.app.wallet.addTransactionToPending(tx);
+      }
       this.app.connection.emit("update_balance", this.app.wallet);
     }
 
@@ -1026,33 +1274,39 @@ class Network {
             console.error("ERROR 810299: balking at propagating bad transaction");
           }
           if (this.debugging) {
-            console.error("BAD TX: " + JSON.stringify(tx.transaction));
+            console.error("BAD TX: ", tx.transaction);
           }
           return;
         } else {
           if (this.debugging) {
-            console.log(" ... added transaction");
+            console.log(" ... added transaction : " + tx.transaction.sig);
           }
         }
         if (this.app.mempool.canBundleBlock()) {
-          return 1;
+          return;
         }
       }
     }
+
+    if (this.debugging) console.log("propagating tx with sig: ", tx.transaction.sig);
 
     //
     // now send the transaction out with the appropriate routing hop
     //
     let fees = tx.returnFeesTotal();
-    for (let i = 0; i < tx.transaction.path.length; i++) {
+    for (let i = 0; i < tx.path.length; i++) {
       fees = fees / BigInt(2);
     }
     this.peers.forEach((peer) => {
+      if (peer.uses_stun) {
+        return;
+      }
       //&& fees >= peer.peer.minfee
+      // console.log('peer ', pe)
       if (peer.peer.receivetxs === 0) {
         return;
       }
-      if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
+      if (!!tx.path && !peer.inTransactionPath(tx) && !!peer.returnPublicKey()) {
         const tmptx = peer.addPathToTransaction(tx);
         if (peer.socket && peer.socket.readyState === peer.socket.OPEN) {
           // 1 = WebSocket Open
@@ -1072,10 +1326,16 @@ class Network {
     });
   }
 
-  requestBlockchain(peer = null) {
+  requestBlockchain(peer: Peer | null = null) {
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;
+
+    if (this.debugging){
+      console.log(
+        `requesting blockchain from peer : latest block id= ${latest_block_id} latest block hash = ${latest_block_hash} fork id = ${fork_id}`
+      );
+    }
 
     if (this.app.BROWSER == 1) {
       if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {
@@ -1084,10 +1344,10 @@ class Network {
       }
     }
     if (!latest_block_id) {
-      latest_block_hash = "";
+      latest_block_hash = "0000000000000000000000000000000000000000000000000000000000000000";
     }
     if (!fork_id) {
-      fork_id = "";
+      fork_id = "0000000000000000000000000000000000000000000000000000000000000000";
     }
 
     if (this.debugging) {
@@ -1104,9 +1364,11 @@ class Network {
 
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
-        if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+        if (this.app.SPVMODE == 1) {
+          if (this.debugging) console.log("requesting ghost chain from peer : " + peer.id);
           this.sendRequest("REQGSTCN", buffer_to_send, peer);
         } else {
+          if (this.debugging) console.log("requesting full chain from peer : " + peer.id);
           this.sendRequest("REQCHAIN", buffer_to_send, peer);
         }
         return;
@@ -1114,15 +1376,32 @@ class Network {
     }
 
     if (this.peers.length > 0) {
-      if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+      if (this.app.SPVMODE == 1) {
+        if (this.debugging) console.log("requesting ghost chain from first peer");
         this.sendRequest("REQGSTCN", buffer_to_send, this.peers[0]);
       } else {
+        if (this.debugging) console.log("requesting full chain from first peer");
         this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);
       }
     }
   }
 
-  sendRequest(message, data: any = "", peer: Peer = null) {
+  returnPeersWithService(service) {
+    let peers = [];
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].hasService(service)) { peers.push(this.peers[i]); }
+    }
+    return peers;
+  }
+  returnPeerPublicKeysWithService(service) {
+    let peers = [];
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].hasService(service)) { peers.push(this.peers[i].returnPublicKey()); }
+    }
+    return peers;
+  }
+
+  sendRequest(message: string, data: any = "", peer: Peer = null) {
     if (peer !== null) {
       peer.sendRequest(message, data);
     } else {
@@ -1132,7 +1411,65 @@ class Network {
     }
   }
 
-  sendRequestWithCallback(message, data = "", callback, peer = null) {
+  sendRequestAsTransaction(message: string, data: any = "", peer: Peer = null) {
+    if (peer !== null) {
+      peer.sendRequestAsTransaction(message, data);
+    } else {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        this.peers[x].sendRequestAsTransaction(message, data);
+      }
+    }
+  }
+
+  sendTransaction(tx: any = "", peer: Peer = null) {
+    if (peer !== null) {
+      peer.sendTransactionWithCallback(tx);
+    } else {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        this.peers[x].sendTransactionWithCallback(tx);
+      }
+    }
+  }
+
+  //
+  // a request formatted as a transaction with request / data (tx)
+  //
+  sendTransactionWithCallback(tx: any = "", callback, peer = null) {
+    if (peer !== null) {
+      for (let x = this.peers.length - 1; x >= 0; x--) {
+        if (this.peers[x] === peer) {
+          this.peers[x].sendTransactionWithCallback(tx, callback);
+        }
+      }
+      return;
+    }
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendTransactionWithCallback(tx, callback);
+    }
+  }
+
+  
+  //
+  //
+  //
+  sendRequestAsTransactionWithCallback(message: string, data = "", callback, peer = null) {
+
+    //
+    // convert request to zero-fee transaction, send that
+    //
+    let newtx = this.app.wallet.createUnsignedTransaction(this.app.wallet.returnPublicKey(), BigInt(0), BigInt(0));
+        newtx.msg.request = message;
+        newtx.msg.data = data;
+    //
+    // everything but time-intensive sig
+    //
+    newtx.presign(this.app);
+    this.sendTransactionWithCallback(newtx, callback, peer);
+
+  }
+
+  sendRequestWithCallback(message: string, data = "", callback, peer = null) {
+
     if (peer !== null) {
       for (let x = this.peers.length - 1; x >= 0; x--) {
         if (this.peers[x] === peer) {
@@ -1154,6 +1491,25 @@ class Network {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   close() {}
+
+  async fetchBlocks() {
+    if (this.block_fetch_running) {
+      return;
+    }
+    this.block_fetch_running = true;
+    do {
+      let promises = [];
+      this.blocks_to_fetch.sort((a, b) => Number(b.id - a.id));
+      for (let i = 0; i < 1 && this.blocks_to_fetch.length > 0; ++i) {
+        let entry = this.blocks_to_fetch.pop();
+        if (this.debugging) console.debug("fetching : " + entry.hash + " - " + entry.id);
+        promises.push(this.fetchBlock(entry.hash, entry.peer));
+        // await this.fetchBlock(entry.hash, entry.peer);
+      }
+      await Promise.all(promises);
+    } while (this.blocks_to_fetch.length > 0);
+    this.block_fetch_running = false;
+  }
 }
 
 export default Network;

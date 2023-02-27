@@ -1,3 +1,22 @@
+export enum MessageType {
+  HandshakeChallenge = 1,
+  HandshakeResponse,
+  //HandshakeCompletion,
+  ApplicationMessage = 4,
+  Block,
+  Transaction,
+  BlockchainRequest,
+  BlockHeaderHash,
+  Ping,
+  SPVChain,
+  Services,
+  GhostChain,
+  GhostChainRequest,
+  Result,
+  Error,
+  ApplicationTransaction,
+}
+
 /**
  * An APIMessage
  * @typedef {Object} APIMessage
@@ -6,12 +25,12 @@
  * @property {array} message_data - the data being send to the remote procedure
  */
 export class APIMessage {
-  message_name: string;
+  message_type: MessageType;
   message_id = 0;
   message_data = [];
 
-  constructor(message_name, message_id, message_data) {
-    this.message_name = message_name;
+  constructor(message_type, message_id, message_data) {
+    this.message_type = message_type;
     this.message_id = message_id;
     this.message_data = message_data;
   }
@@ -61,7 +80,7 @@ class NetworkAPI {
    * @param {array} message_bytes - byte Vector - the message to be passed to the procedure.
    * @returns
    */
-  send(ws, command, message_bytes) {
+  send(ws, command: MessageType, message_bytes) {
     const serialized_api_message = this.serializeAPIMessage(
       command,
       this.api_call_index,
@@ -85,8 +104,8 @@ class NetworkAPI {
    * @param {array} message_bytes - byte Vector - the message to be passed to the procedure.
    * @returns
    */
-  sendAPICall(ws, command, message_bytes) {
-    //console.debug("sendAPICall : " + command);
+  sendAPICall(ws, command: MessageType, message_bytes: Buffer) {
+    console.debug("sendAPICall : " + command);
     return new Promise((resolve, reject) => {
       this.api_callbacks[this.api_call_index] = {
         resolve: resolve,
@@ -103,8 +122,7 @@ class NetworkAPI {
     });
   }
 
-  sendAPIResponse(ws, command, message_id, message_bytes) {
-    //console.debug("sendAPIResponse : " + command + " : " + message_id);
+  sendAPIResponse(ws, command: MessageType, message_id, message_bytes) {
     const serialized_api_message = this.serializeAPIMessage(command, message_id, message_bytes);
     ws.send(serialized_api_message);
   }
@@ -117,10 +135,7 @@ class NetworkAPI {
    * @param {array} bytes
    */
   receiveAPIResponse(api_message) {
-    //console.log("receiveAPIResponse : " + api_message.message_id);
-
     if (this.api_callbacks[api_message.message_id]) {
-      //console.log("resolving callback : " + api_message.message_name, api_message.message_data)
       this.api_callbacks[api_message.message_id].resolve(Buffer.from(api_message.message_data));
     } else {
       console.error(
@@ -150,17 +165,18 @@ class NetworkAPI {
 
   /**
    * Creates a bytes array ready for the wire representing an API call.
-   * @param {string} command - the remote prodecure to call
+   * @param {MessageType} command - the remote prodecure to call
    * @param {number} index - the index of this call, similar to JSON RPC's "id"
    * @param {array} data - data to be sent
    * @returns array - bytes for the wire
    */
-  serializeAPIMessage(command, index, data) {
+  serializeAPIMessage(command: MessageType, index, data: Buffer) {
     const enc = new TextEncoder();
-    const command_bytes = enc.encode(command);
+    /*const command_bytes = enc.encode(command);*/
+    const command_byte = this.app.binary.u8AsByte(command);
     const data_bytes = new Uint8Array(data);
     const index_as_bytes = this.app.binary.u32AsBytes(index);
-    return new Uint8Array([...command_bytes, ...index_as_bytes, ...data_bytes]);
+    return new Uint8Array([command_byte, ...index_as_bytes, ...data_bytes]);
   }
 
   /**
@@ -169,11 +185,15 @@ class NetworkAPI {
    * @param {Uint8Array} bytes - raw bytes from the wire
    * @returns APIMessage
    */
-  deserializeAPIMessage(bytes) {
+  deserializeAPIMessage(bytes: Uint8Array) {
+    // if (bytes.length === 0) {
+    //     console.warn("API message cannot be deserialized from empty buffer");
+    // }
     return new APIMessage(
-      Buffer.from(bytes.slice(0, 8)).toString("utf-8"),
-      this.app.binary.u32FromBytes(Array.from(new Uint8Array(bytes.slice(8, 12)))),
-      Buffer.from(bytes.slice(12))
+      /*Buffer.from(bytes.slice(0, 8)).toString("utf-8"),*/
+      this.app.binary.u8FromByte(bytes[0]),
+      this.app.binary.u32FromBytes(Array.from(bytes.slice(1, 5))),
+      new Uint8Array(bytes.slice(5))
     );
   }
 

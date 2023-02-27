@@ -120,17 +120,17 @@
       type        :       "special" ,
       text        :       "Place additional infantry on planet after producing in sector",
       initialize  :       function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction5_yin_spinner == null) {
-          imperium_self.game.players_info[player-1].faction5_yin_spinner = 0;
+        if (imperium_self.game.state.players_info[player-1].faction5_yin_spinner == null) {
+          imperium_self.game.state.players_info[player-1].faction5_yin_spinner = 0;
         }
       },
       gainTechnology : function(imperium_self, gainer, tech) {
         if (tech == "faction5-yin-spinner") {
-          imperium_self.game.players_info[gainer-1].faction5_yin_spinner = 1;
+          imperium_self.game.state.players_info[gainer-1].faction5_yin_spinner = 1;
         }
       },
       playerEndTurnTriggers : function(imperium_self, player) {
-        if (imperium_self.game.players_info[player-1].faction5_yin_spinner == 1) {
+        if (imperium_self.game.state.players_info[player-1].faction5_yin_spinner == 1) {
 	  if (imperium_self.game.player == player) {
             if (imperium_self.game.state.active_player_has_produced == 1) {
 	      return 1;
@@ -426,7 +426,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       groundCombatEvent : function(imperium_self, player, sector, planet_idx) {
         if (imperium_self.game.player == player) {
 
-          let html = `<p>Do you wish to return your Yin Promissary to convert 1 opponent infantry?</p><ul>`;
+          let html = `<div class="status-message">Do you wish to return your Yin Promissary to convert 1 opponent infantry?</div><ul>`;
               html += '<li class="option" id="yes">Yes</li>';
               html += '<li class="option" id="no">No</li>';
               html += '</ul>';

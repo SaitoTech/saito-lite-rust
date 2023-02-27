@@ -1,4 +1,214 @@
 
+
+
+
+  displayDebaters() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${this.game.state.debaters[i].img}')"></div>`;
+    }
+    html += `</div>`;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      let tile_f = "/his/img/tiles/debaters/" + this.game.state.debaters[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.debaters[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
+      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+    }
+  }
+
+  displayExplorers() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      html += `	<div class="personage_tile${i}" data-id="${this.game.state.explorers[i].img}" style="background-image:url('/his/img/tiles/explorers/${this.game.state.explorers[i].img}')"></div>`;
+    }
+    html += `</div>`;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    for (let i = 0; i < this.game.state.explorers.length; i++) {
+      let tile_f = "/his/img/tiles/explorers/" + this.game.state.explorers[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.explorers[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
+      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+    }
+
+  }
+
+  displayConquistadors() {
+
+    let html = `<div class="personage_overlay" id="personage_overlay">`;
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      html += `	<div class="personage_tile personage_tile${i}" data-id="${this.game.state.conquistadors[i].img}" style="background-image:url('/his/img/tiles/conquistadors/${this.game.state.conquistadors[i].img}')"></div>`;
+    }
+    html += `</div>`;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    for (let i = 0; i < this.game.state.conquistadors.length; i++) {
+      let tile_f = "/his/img/tiles/conquistadors/" + this.game.state.conquistadors[i].img;
+      let tile_b = tile_f.replace('.svg', '_back.svg');
+      if (this.game.state.conquistadors[i].committed == 1) {
+	let x = tile_f;
+	tile_f = tile_b;
+	tile_b = x;
+      }
+      let divsq = `.personage_tile${i}`;
+      $(divsq).mouseover(function() {
+	$(this).css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$(this).css('background-image', `url('${tile_f}')`);
+      });
+    }
+  }
+
+  displayTheologicalDebater(debater, attacker=true) {
+
+    let tile_f = "/his/img/tiles/debaters/" + this.debaters[debater].img;
+    let tile_b = tile_f.replace('.svg', '_back.svg');
+
+    if (attacker) {
+      $('.attacker_debater').css('background-image', `url('${tile_f}')`);
+      $('.attacker_debater').mouseover(function() { 
+	$('.attacker_debater').css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$('.attacker_debater').css('background-image', `url('${tile_f}')`);
+      });
+    } else {
+      $('.defender_debater').css('background-image', `url('${tile_f}')`);
+      $('.defender_debater').mouseover(function() { 
+	$('.defender_debater').css('background-image', `url('${tile_b}')`);
+      }).mouseout(function() {
+	$('.defender_debater').css('background-image', `url('${tile_f}')`);
+      });
+    }
+  }
+
+  displayTheologicalDebate() {
+
+    let html = `
+      <div class="theological_debate_sheet" id="theological_debate_sheet">
+	<div class=".status"></div>
+	<div class="attacker_debater"></div>
+	<div class="defender_debater"></div>
+      </div>
+    `;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+  }
+
+
+  displayReligiousConflictSheet() {
+
+    let num_protestant_spaces = 0;
+    let rcc = this.returnReligiousConflictChart();
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion === "protestant") {
+        num_protestant_spaces++;
+      }
+    }
+    if (num_protestant_spaces > 50) { num_protestant_spaces = 50; }
+    let cid = "s" + num_protestant_spaces;
+
+    let html = `
+      <div class="religious_conflict_sheet" id="religious_conflict_sheet" style="background-image: url('/his/img/reference/religious.jpg')">
+	<div class="religious_conflict_sheet_tile" id="religious_conflict_sheet_tile"></div>
+	<div class="papal_debaters"></div>
+	<div class="lutheran_debaters"></div>
+	<div class="calvinist_debaters"></div>
+	<div class="anglican_debaters"></div>
+	<div class="protestant_debaters"></div>
+      </div>
+    `;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    //
+    // list all debaters
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      let d = this.game.state.debaters[i];
+      let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
+      if (d.owner === "papacy") {
+	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
+      }
+      if (d.owner === "england") {
+	this.app.browser.addElementToSelector(dtile, '.anglican_debaters');
+      }
+      if (d.owner === "hapsburg") {
+	this.app.browser.addElementToSelector(dtile, '.calvinist_debaters');
+      }
+      if (d.owner === "protestant") {
+	this.app.browser.addElementToSelector(dtile, '.protestant_debaters');
+      }
+    }
+
+    let obj = document.getElementById("religious_conflict_sheet_tile");
+    obj.style.top = rcc[cid].top;
+    obj.style.left = rcc[cid].left;
+
+  }
+
+  returnProtestantSpacesTrackVictoryPoints() {
+
+    let num_protestant_spaces = 0;
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion === "protestant") {
+        num_protestant_spaces++;
+      }
+    }
+    if (num_protestant_spaces > 50) { num_protestant_spaces = 50; }
+
+    let x = [];
+    for (let i = 0; i < 51; i++) { 
+
+      x[i] = {}; x[i].protestant = 0; x[i].papacy = 15;
+
+      if (i >= 4) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 7) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 10) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 14) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 17) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 20) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 24) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 27) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 30) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 34) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 37) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 40) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 44) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 47) { x[i].protestant++; x[i].papacy--; }
+      if (i >= 50) { x[i].protestant+=100; x[i].papacy--; }
+    }
+
+    return x[num_protestant_spaces];
+
+  }
+
+
   displayFactionSheet(faction) {
 
     this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));
@@ -67,13 +277,25 @@
     }
     // PROTESTANTS
     if (this.factions[faction].key === "protestant") {
+
       let total_keys = 11;
       let remaining_keys = total_keys - controlled_keys;
       for (let i = 0; i <= 6; i++) {
-          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}"></div>`;
+	  let box_inserts = "";
+	  if (this.game.state.translations['new']['german'] == i) {
+            box_inserts += `<div class="new_testament_german_tile" id="new_testament_german_tile"></div>`;
+	  }
+	  if (this.game.state.translations['new']['french'] == i) {
+            box_inserts += `<div class="new_testament_french_tile" id="new_testament_french_tile"></div>`;
+	  }
+	  if (this.game.state.translations['new']['english'] == i) {
+            box_inserts += `<div class="new_testament_english_tile" id="new_testament_english_tile"></div>`;
+	  }
+          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}">${box_inserts}</div>`;
       }
       for (let i = 1; i <= 11; i++) {
         if (i > (11-remaining_keys)) {
+	  let box_inserts = "";
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
         }
       }
@@ -82,8 +304,16 @@
     if (this.factions[faction].key === "hapsburg") {
       let total_keys = 14;
       let remaining_keys = total_keys - controlled_keys;
-console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + controlled_keys);
       for (let i = 1; i <= 14; i++) {
+	if (this.game.state.translations['german']['full'] == i) {
+          box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
+	}
+	if (this.game.state.translations['french']['full'] == i) {
+          box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
+	}
+	if (this.game.state.translations['english']['full'] == i) {
+          box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
+	}
         if (i > (14-remaining_keys)) {
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
         }
@@ -146,19 +376,17 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   displaySpaceDetailedView(name) {
     // function is attached to this.spaces not this.game.spaces
     let html = this.spaces[name].returnView();    
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
   displayElectorateDisplay() {
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
-console.log("key: " + key);
       let obj = document.getElementById(`ed_${key}`);
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
-console.log("about to add electoral bonus");
       if (this.returnElectoralBonus(key)) {
-        obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-2.svg" />`;
+        obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-${this.returnElectoralBonus(key)}.svg" />`;
       }
     }
   }
@@ -168,7 +396,7 @@ console.log("about to add electoral bonus");
   returnElectoralBonus(space) {
 
     if (space === "augsburg" && this.game.state.augsburg_electoral_bonus == 0) {
-      return 1;
+      return 2;
     }
     if (space === "mainz" && this.game.state.augsburg_electoral_bonus == 0) {
       return 1;
@@ -180,7 +408,7 @@ console.log("about to add electoral bonus");
       return 1;
     }
     if (space === "wittenberg" && this.game.state.wittenberg_electoral_bonus == 0) {
-      return 1;
+      return 2;
     }
     if (space === "brandenburg" && this.game.state.brandenburg_electoral_bonus == 0) {
       return 1;
@@ -325,7 +553,7 @@ console.log("about to add electoral bonus");
         if (z === "england") {
           tile = "/his/img/tiles/england/";	  
 	  if (squadrons >= 2) {
-            tile += `England_squadron.svg`;
+            tile += `English_squadron.svg`;
 	    squadrons -= 2;
           }
         }
@@ -355,6 +583,7 @@ console.log("about to add electoral bonus");
           }
         }
         if (z === "venice") {
+          tile = "/his/img/tiles/venice/";	  
 	  if (squadrons >= 2) {
             tile += `Venice_squadron.svg`;
 	    squadrons -= 2;
@@ -749,6 +978,8 @@ console.log("about to add electoral bonus");
 
   displaySpace(key) {
 
+    if (!this.game.spaces[key]) { return; }
+
     let obj = document.getElementById(key);
     let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
@@ -784,12 +1015,10 @@ console.log("about to add electoral bonus");
       }
     }
 
-
     //
     // sanity check
     //
     if (tile === "") { show_tile = 0; }
-
 
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
@@ -799,12 +1028,20 @@ console.log("about to add electoral bonus");
       obj.innerHTML += this.returnPersonages(space);
     }
 
+
+    // add unrest if needed
+    if (this.isSpaceInUnrest(space)) {
+      obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
+    }
+
   }
 
   displayNavalSpace(key) {
 
+    if (!this.game.navalspaces[key]) { return; }
+
     let obj = document.getElementById(key);
-    let space = this.navalspaces[key];
+    let space = this.game.navalspaces[key];
 
     //
     // should we show the tile?
@@ -827,8 +1064,8 @@ console.log("about to add electoral bonus");
     //
     // add tiles
     //
-    for (let key in this.navalspaces) {
-      if (this.navalspaces.hasOwnProperty(key)) {
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key]) {
 	this.displayNavalSpace(key);
         document.getElementById(key).onclick = (e) => {
 	  this.displayNavalSpaceDetailedView(key);
@@ -856,7 +1093,68 @@ console.log("about to add electoral bonus");
 
 
   displayVictoryTrack() {
+
+    let factions_and_scores = this.calculateVictoryPoints();
+
+    let x = this.returnVictoryPointTrack();
+
+    for (f in factions_and_scores) {
+      let total_vp = factions_and_scores[f].vp;
+      let ftile = f + "_vp_tile";
+      obj = document.getElementById(ftile);
+      obj.style.left = x[total_vp.toString()].left + "px";
+      obj.style.top = x[total_vp.toString()].top + "px";
+      obj.style.display = "block";
+    }
+
   }
+
+
+
+  returnCardImage(cardname) {
+
+    let cardclass = "cardimg";
+    let deckidx = -1;
+    let card;
+
+    for (let i = 0; i < this.game.deck.length; i++) {
+      var c = this.game.deck[i].cards[cardname];
+      if (c == undefined) { c = this.game.deck[i].discards[cardname]; }
+      if (c == undefined) { c = this.game.deck[i].removed[cardname]; }
+      if (c !== undefined) { 
+	deckidx = i;
+        card = c;
+      }
+    }
+
+    if (deckidx === -1) {
+      //
+      // this is not a card, it is something like "skip turn" or cancel
+      //
+      return `<div class="noncard" id="${cardname.replaceAll(" ","")}">${cardname}</div>`;
+    }
+
+    var html = `<img class="${cardclass}" src="/his/img/${card.img}" />`;
+
+    //
+    // add cancel button to uneventable cards
+    //
+    if (deckidx == 0) { 
+console.log("card: " + cardname);
+      if (!this.deck[cardname].canEvent(this, "")) {
+        html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+      }
+    }
+    if (deckidx == 1) { 
+      if (!this.diplomatic_deck[cardname].canEvent(this, "")) {
+        html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
+      }
+    }
+
+    return html
+
+  }
+
 
 
 

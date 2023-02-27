@@ -44,7 +44,11 @@ class MailRelay extends ModTemplate {
         
     }
 
-    async handlePeerRequest(app, message, peer, callback) {
+    async handlePeerTransaction(app, tx, peer, callback) {
+
+	if (tx == null) { return; }
+	let message = tx.returnMessage();
+
         if (message.request == "send email") {
             let email = { to : "" , from : "", bcc : "", subject : "", text : "", html : "" , ishtml : false , attachments : "" };
             email.to = message.data.to;         //email address as string
@@ -73,6 +77,7 @@ class MailRelay extends ModTemplate {
             }
         }
     }
+
 
     sendMail (email){
         let transporter = nodemailer.createTransport(credentials);

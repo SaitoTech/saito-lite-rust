@@ -3,14 +3,18 @@ const SendTokensOverlayTemplate = require('./send-tokens-overlay.template');
 
 module.exports = SendTokensOverlay = {
 
-  render(app, mod) {
-
-    mod.overlay = new SaitoOverlay(app);
-    mod.overlay.show(app, mod, SendTokensOverlayTemplate());
+  render(app, mod, container) {
+    this.app = app;
+    this.mod = mod;
+    if (!mod.overlay){ mod.overlay = new SaitoOverlay(app, mod); }
+    mod.overlay.show(SendTokensOverlayTemplate());
 
   },
 
-  attachEvents(app, mod) {
+  attachEvents() {
+
+    let app = this.app;
+    let mod = this.mod;
 
     document.getElementById("wallet-send-tokens-form").onsubmit = (e) => {
       e.preventDefault();
@@ -27,14 +31,12 @@ module.exports = SendTokensOverlay = {
 	}
       }
 
-alert("PREFERRED CRYPTO: " + app.wallet.wallet.preferred_crypto);
-
       let c = confirm(`Do you wish to send ${amount} ${app.wallet.wallet.preferred_crypto}/${ticker} to ${recipient}`);
       if (c) {
 	let sender = cryptomod.returnAddress();
 	let hash = app.wallet.sendPayment([sender], [recipient], [amount], (new Date().getTime()), btoa(sender+recipient+amount+Date.now()), function() {
-	  mod.overlay.hide();
-    salert("Transfer successful");
+	  mod.overlay.remove();
+          salert("Transfer successful");
 	}, ticker);
       } else {
         salert("Transfer cancelled");

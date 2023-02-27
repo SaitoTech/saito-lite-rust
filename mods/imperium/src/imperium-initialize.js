@@ -20,14 +20,10 @@
     //
     // menu
     //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
+
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
     this.menu.addSubMenuOption("game-game", {
       text : "Save",
       id : "game-save",
@@ -38,7 +34,7 @@
 	game_mod.endTurn();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -47,7 +43,10 @@
         game_mod.log.toggleLog();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+
+
+
+    this.menu.addSubMenuOption("game-info", {
       text : "Rules",
       id : "game-rules",
       class : "game-rules",
@@ -67,7 +66,7 @@
           </div>
         `;
 
-        game_mod.overlay.show(game_mod.app, game_mod, html);
+        game_mod.overlay.show(html);
 
         $('.menu-item').on('click', function() {
 
@@ -78,10 +77,10 @@
 	      game_mod.handleHowToPlayMenuItem();
               break;
             case "movement":
-              game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
+              game_mod.overlay.show(game_mod.returnUnitsOverlay());
               break;
             case "production":
-	      game_mod.overlay.show(game_mod.app, game_mod, '<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
+	      game_mod.overlay.show('<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
               break;
             case "combat":
 	      game_mod.handleCombatMenuItem();
@@ -95,28 +94,14 @@
         });
       }
     });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        window.location.href = "/arcade";
-      }
-    });
 
 
 
     //
     // factions
     //
-    this.menu.addMenuOption({
-      text : "Factions",
-      id : "game-factions",
-      class : "game-factions",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-factions");
-      }
-    });
+    this.menu.addMenuOption("game-factions", "Factions");
+
     for (let i = 0; i < this.game.players.length; i++) {
       this.menu.addSubMenuOption("game-factions", {
         text : this.returnFactionNickname(i+1),
@@ -132,14 +117,8 @@
 
 
 
-    this.menu.addMenuOption({
-      text : "Cards",
-      id : "game-cards",
-      class : "game-cards",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-cards");
-      }
-    });
+    this.menu.addMenuOption("game-cards", "Cards");
+
     this.menu.addSubMenuOption("game-cards", {
       text : "Strategy",
       id : "game-strategy-cardlist",
@@ -172,7 +151,7 @@
 	  salert("There are currently no Active Laws");
 	  return;
 	}
-        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnLawsOverlay());
+        game_mod.overlay.show(game_mod.returnLawsOverlay());
       }
     });
     this.menu.addSubMenuOption("game-cards", {
@@ -192,14 +171,8 @@
 
 
 
-    this.menu.addMenuOption({
-      text : "Reference",
-      id : "game-reference",
-      class : "game-reference",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-reference");
-      }
-    });
+    this.menu.addMenuOption("game-reference", "Reference");
+    
     this.menu.addSubMenuOption("game-reference", {
       text : "Action",
       id : "game-action-cardlist",
@@ -227,7 +200,7 @@
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
+        game_mod.overlay.show(game_mod.returnUnitsOverlay());
       }
     });
     this.menu.addSubMenuOption("game-reference", {
@@ -262,7 +235,7 @@
         fullname.push(imperium_self.returnFaction((ii+1)));
         nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
-      this.menu.addChatMenu(app, this, nickname, fullname);
+      this.menu.addChatMenu(nickname, fullname);
     } catch (err) {
       console.log("error initing chat: " + err);
     }
@@ -272,29 +245,15 @@
     //
     if (this.browser_active == 0) { return; }
 
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        app.browser.requestFullscreen();
-      }
-    });
 
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
+    this.menu.render();
 
     this.hud.auto_sizing = 0;
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
-
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.cardbox.render();
 
     try {
 
@@ -305,8 +264,8 @@
 
       } else {
 
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '#hexGrid'); // gameboard is hexgrid
+        this.sizer.render();
+        this.sizer.attachEvents('#hexGrid'); // gameboard is hexgrid
 
       }
     } catch (err) {}
@@ -332,7 +291,6 @@
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.restoreLog();
   
     //
     // specify players
@@ -379,7 +337,8 @@
       //
       // players first
       //
-      this.game.players_info = this.returnPlayers(this.totalPlayers); // factions and player info
+      this.game.state   = this.returnState();
+      this.game.state.players_info = this.returnPlayers(this.totalPlayers); // factions and player info
 
 
       //
@@ -389,7 +348,6 @@
       // this.game.planets
       // this.game.sectors
       //
-      this.game.state   = this.returnState();
       this.game.sectors = this.returnSectors();
       this.game.planets = this.returnPlanets();
 
@@ -529,9 +487,9 @@
       //
       // set homeworlds
       //
-      for (let i = 0; i < this.game.players_info.length; i++) {
-        this.game.players_info[i].homeworld = hwsectors[i];
-        this.game.board[hwsectors[i]].tile = this.factions[this.game.players_info[i].faction].homeworld;
+      for (let i = 0; i < this.game.state.players_info.length; i++) {
+        this.game.state.players_info[i].homeworld = hwsectors[i];
+        this.game.board[hwsectors[i]].tile = this.factions[this.game.state.players_info[i].faction].homeworld;
       }
   
 
@@ -557,11 +515,11 @@
 	//
 	// assign starting units
 	//
-	for (let k = 0; k < this.factions[this.game.players_info[i].faction].space_units.length; k++) {
-          this.addSpaceUnit(i + 1, hwsectors[i], this.factions[this.game.players_info[i].faction].space_units[k]);
+	for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].space_units.length; k++) {
+          this.addSpaceUnit(i + 1, hwsectors[i], this.factions[this.game.state.players_info[i].faction].space_units[k]);
 	}
-	for (let k = 0; k < this.factions[this.game.players_info[i].faction].ground_units.length; k++) {
-          this.loadUnitOntoPlanet(i + 1, hwsectors[i], strongest_planet, this.factions[this.game.players_info[i].faction].ground_units[k]);
+	for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].ground_units.length; k++) {
+          this.loadUnitOntoPlanet(i + 1, hwsectors[i], strongest_planet, this.factions[this.game.state.players_info[i].faction].ground_units[k]);
 	}
 
 	let technologies = this.returnTechnology();
@@ -569,18 +527,18 @@
 	//
 	// assign starting technology
 	//
-	for (let k = 0; k < this.factions[this.game.players_info[i].faction].tech.length; k++) {
-	  let free_tech = this.factions[this.game.players_info[i].faction].tech[k];
+	for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].tech.length; k++) {
+	  let free_tech = this.factions[this.game.state.players_info[i].faction].tech[k];
 	  let player = i+1;
-          this.game.players_info[i].tech.push(free_tech);
+          this.game.state.players_info[i].tech.push(free_tech);
         }
 	//
 	// assign starting promissary notes
 	//
-	for (let k = 0; k < this.factions[this.game.players_info[i].faction].promissary_notes.length; k++) {
-	  let promissary = this.factions[this.game.players_info[i].faction].id + "-" + this.factions[this.game.players_info[i].faction].promissary_notes[k];
+	for (let k = 0; k < this.factions[this.game.state.players_info[i].faction].promissary_notes.length; k++) {
+	  let promissary = this.factions[this.game.state.players_info[i].faction].id + "-" + this.factions[this.game.state.players_info[i].faction].promissary_notes[k];
 	  let player = i+1;
-          this.game.players_info[i].promissary_notes.push(promissary);
+          this.game.state.players_info[i].promissary_notes.push(promissary);
         }
 
 
@@ -620,7 +578,7 @@
         //
         // add cards to deck and shuffle as needed
         //
-        for (let i = 0; i < this.game.players_info.length; i++) {
+        for (let i = 0; i < this.game.state.players_info.length; i++) {
 	  // everyone gets 1 secret objective to start
           this.game.queue.push("gain\t"+(i+1)+"\tsecret_objectives\t1");
           this.game.queue.push("DEAL\t6\t"+(i+1)+"\t1");
@@ -651,7 +609,7 @@
     //
     let z = this.returnEventObjects();
     for (let i = 0; i < z.length; i++) {
-      for (let k = 0; k < this.game.players_info.length; k++) {
+      for (let k = 0; k < this.game.state.players_info.length; k++) {
         z[i].initialize(this, (k+1));
       }
     }
@@ -661,12 +619,12 @@
     // if this is a new game, gainTechnology that we start with
     //
     if (is_this_a_new_game == 1) {
-      for (let k = 0; k < this.game.players_info.length; k++) {
-        for (let kk = 0; kk < this.game.players_info[k].tech.length; kk++) {
-          this.tech[this.game.players_info[k].tech[kk]].gainTechnology(this, (k+1), this.game.players_info[k].tech[kk]);
+      for (let k = 0; k < this.game.state.players_info.length; k++) {
+        for (let kk = 0; kk < this.game.state.players_info[k].tech.length; kk++) {
+          this.tech[this.game.state.players_info[k].tech[kk]].gainTechnology(this, (k+1), this.game.state.players_info[k].tech[kk]);
         }
       }
-      for (let k = 0; k < this.game.players_info.length; k++) {
+      for (let k = 0; k < this.game.state.players_info.length; k++) {
         this.upgradePlayerUnitsOnBoard((k+1));
       }
     }

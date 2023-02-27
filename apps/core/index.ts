@@ -39,14 +39,14 @@ class Saito {
   mempool: Mempool;
   wallet: Wallet;
   miner: Miner;
-  keys: Keychain;
+  keychain: Keychain;
   network: Network;
   networkApi: NetworkAPI;
   burnfee: BurnFee;
   blockchain: Blockchain;
   blockring: Blockring;
   handshake: Handshake;
-  hash: (data: string) => string;
+  hash: (data: Uint8Array) => string;
   server: Server;
 
   constructor(config = {}) {
@@ -76,7 +76,7 @@ class Saito {
     this.mempool = new Mempool(this);
     this.wallet = new Wallet(this);
     this.miner = new Miner(this);
-    this.keys = new Keychain(this);
+    this.keychain = new Keychain(this);
     this.network = new Network(this);
     this.networkApi = new NetworkAPI(this);
     this.burnfee = new BurnFee();
@@ -99,7 +99,7 @@ class Saito {
       await this.wallet.initialize();
       this.mempool.initialize();
       this.miner.initialize();
-      this.keys.initialize();
+      this.keychain.initialize();
 
       this.modules.mods = this.modules.mods_list.map((mod_path) => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -119,17 +119,16 @@ class Saito {
       // blockchain after modules create dbs
       //
       await this.blockchain.initialize();
-
       this.network.initialize();
 
       if (this.server) {
         this.server.initialize();
       }
     } catch (err) {
-      console.log(
+      console.error(
         "Error occured initializing your Saito install. The most likely cause of this is a module that is throwing an error on initialization. You can debug this by removing modules from your config file to test which ones are causing the problem and restarting."
       );
-      console.log(err);
+      console.error(err);
     }
   }
 

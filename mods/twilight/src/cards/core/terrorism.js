@@ -5,7 +5,9 @@
       let cards_to_discard = 1;
       let target = (player == "ussr")? "us": "ussr";
       
-      if (target == "us") { if (this.game.state.events.iranianhostage == 1) { cards_to_discard = 2; } }
+      if (target == "us" && this.game.state.events.iranianhostage == 1) { 
+        cards_to_discard = 2; 
+      } 
 
       this.addMove("resolve\tterrorism");
 

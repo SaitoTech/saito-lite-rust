@@ -1,15 +1,9 @@
 
     if (card == "iraniraq") {
 
-      let me = "ussr";
-      let opponent = "us";
-      if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
+      let opponent = (this.game.player == 2)? "ussr" : "us";
 
-      if (me != player) {
-        let burned = this.rollDice(6);
-        return 0;
-      }
-      if (me == player) {
+      if (this.playerRoles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -64,6 +58,8 @@
 
 
         });
+      }else{
+        let burned = this.rollDice(6);
       }
       return 0;
     }

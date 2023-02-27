@@ -5,6 +5,7 @@
     //
     if (card == "ironlady") {
 
+      this.updateLog("US gains 1 VP from The Iron Lady");
       this.game.state.vp += 1;
       this.updateVictoryPoints();
 
@@ -15,6 +16,7 @@
       // country..
       //
       this.game.state.ironlady_before_ops = 1;
+      this.cancelEvent("socgov");
 
       this.placeInfluence("argentina", 1, "ussr");
       if (this.countries["uk"].ussr > 0) { this.removeInfluence("uk", this.countries["uk"].ussr, "ussr"); }

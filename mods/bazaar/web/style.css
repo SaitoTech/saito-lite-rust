@@ -1,0 +1,430 @@
+
+body {
+  font-family: cursive;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden; 
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+.poker-seat-4{
+  top: 40px;
+}
+
+.gameboard{
+  /* Default fill the background with image */
+  position: absolute;
+  background-image: url("img/gameboard.jpg");
+  background-size: cover;
+  background-position: top right;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.jaipur_board{
+ /* display: grid;
+  grid-template-columns: min-content auto;
+  align-items: center;
+  grid-gap: 210px;*/
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  max-height: 60vh;
+  width: 100vw;
+
+  padding: 30px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+}
+
+ .invisible_item{
+    width: 150px;
+  }
+
+.pb_sub_info{
+  font-size: 0.8em;
+}
+
+.tbd{
+  font-size: 1.2em;
+  font-style: italic;
+}
+.bonus_tokens{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-gap: min(5px,0.4vw);
+  min-width: 225px;
+  min-height: 225px;
+  padding: min(10px,1vw);
+  background-color: #652A0E99;
+  border-radius: 10px; 
+  position: relative;
+}
+
+.bonus_tokens::before{
+  content:  "Bonus Tokens";
+  font-size: 3rem;
+  position: absolute;
+  color: whitesmoke;
+  text-shadow: 2px 2px black;
+  top: calc(-4px - 3rem);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.token{
+  width: 70px;
+  height: 70px;
+  /*filter: drop-shadow(5px -5px 5px maroon);*/
+  background-size: cover;
+  text-align: center;
+  font-size: 36px;
+  text-shadow: 1px 1px black;
+  color: limegreen;
+  line-height: 166%;
+}
+
+.token.empty{
+  filter: grayscale(1) brightness(0.35) opacity(50%);
+}
+
+.card_count.disabled{
+  filter: brightness(0.35);  
+}
+
+.player-box-tokens{
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-wrap: wrap;
+}
+.player-box-tokens .token{
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+}
+
+.market{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px,1fr));
+  grid-gap: 10px;
+  background-color: #3F1651cc;
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 830px;
+  position: relative;
+}
+
+.market::before{
+  content:  "Market";
+  font-size: 3rem;
+  position: absolute;
+  color: whitesmoke;
+  text-shadow: 2px 2px black;
+  top: calc(-4px - 3rem);
+  left: 50%;
+  transform: translateX(-50%);
+
+}
+
+.player-box-graphic{
+  position: absolute;
+  right: 100%;
+}
+
+#player-box-graphic-4{
+  left: 100%;
+}
+
+.score{
+  margin: 0.25em 0.5em;
+}
+
+
+.camel_bonus{
+  position: absolute;
+  bottom: -15px;
+  right: -15px;
+  width: 60px;
+  filter: drop-shadow(5px 5px 5px black);
+}
+
+.tip .tiptext{
+  min-width: 100px;
+  z-index: 100;
+  text-shadow: none;
+}
+
+.player-box-info, .plog{
+  font-size: 24px;
+  text-align: center;
+  padding: unset;
+}
+
+
+.trade_overlay{
+  width: fit-content;
+  min-width: 600px;
+  width: 80vw;
+  max-height: 1000px;
+  background-color: 372512;
+  color: ghostwhite;
+  border: 2px #c9945c solid;
+  border-radius: 5px;
+  cursor: default;
+}
+
+.grid_display{
+  width: 100%;
+  height: 500px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.trade_overlay_buttons{
+  width: 100%;
+  background-color: #c9945c;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.saito-button-primary{
+  background-color: #24180c;
+  color: white;
+  border-color: black;
+}
+
+.saito-button-primary.disabled{
+  opacity: 30%;
+  cursor: default;
+}
+.saito-button-primary.disabled:hover{
+  background-color: #24180c;
+  color: white;
+  border-color: black;
+}
+
+.take_overlay .card_group, .give_overlay .card_group{
+  justify-content: flex-end;
+}
+
+
+
+.card, .card_count{
+  width: 100%;
+  max-width: 150px;
+  cursor: pointer;
+  border-radius: 10%;
+  border: solid whitesmoke 3px;
+  /*transition: opacity 1s;*/
+}
+
+.market .card, .market .card_count{
+  /*box-shadow: 10px -5px 20px tan;*/
+}
+
+
+.card_count{
+  height: auto;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-size: min(6vw,80px);
+  line-height: 2em;
+  text-align: center;
+  text-shadow: 2px 2px black;
+}
+
+
+.camel_train{
+  width: 75px;
+  color: cadetblue;
+  position:relative; 
+  left:-5px;
+}
+.camel_train .card_count{
+  line-height: 105px;
+}
+
+#draw{
+  color: maroon;
+  cursor: default;
+  /*background-image:url('${this.card_img_dir}card_back.png');*/
+  background-color: #ffffffaa;
+}
+
+#discard .card{
+  cursor: default;
+  filter: grayscale(1) brightness(0.4);
+}
+
+
+.card_group{
+  display: flex;
+  flex-direction: row;
+}
+
+.card_group .card_count, .card_group img.card{
+  width: 120px;
+  height: 177px;
+}
+
+.rules-overlay{
+  line-height: 21px;
+}
+
+.rules-overlay ol{
+  color: black;
+  font-size: 15px;
+  margin: 18px;
+
+}
+
+
+
+/*********** WORDBLOCKS STYLE HUD *********/
+
+
+
+/* Undo HUD styling for Acknowledge */
+ .status-header,  .status-text-menu,  .status-text-menu ul,  .status-text-menu ul li,  .textchoice, .status-message{
+  background: unset;
+  font-size: unset;
+}
+ .textchoice:hover{
+  color: black;
+}
+
+.hud {
+  display: block;
+  width: 900px;
+  max-height: initial;
+  height: 400px;
+  height: -moz-fit-content;
+  background: rgba(43,29,14, 0.8);
+  border: 2px solid rgb(230,206,180);
+  border-radius: 5px;
+  color: rgb(250,244,239);
+  padding: 0;
+  font-size: 1.6em;
+  font-family: cursive;
+}
+
+.hud-body {
+  min-height: fit-content;
+  height: fit-content;
+  height: -moz-fit-content;
+  overflow-y: visible;
+  cursor: initial;
+  width: auto;
+}
+
+.hud-header {
+  width: initial;
+  margin: 0;
+  background: linear-gradient( 45deg, rgb(43,29,14), #999);
+}
+
+
+
+.link {
+  border-bottom: 1px dashed;
+  cursor: pointer;
+}
+
+.user_dragged .hud-body .status{
+  align-items: center; 
+}
+
+.rack {
+  align-self: center;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 100px;
+  height: unset;
+  margin: unset;
+}
+
+.rack div.card_count {
+  width: 100px;
+  height: 150px;
+  line-height: 150px;
+}
+
+/**** AND PLAYER BOXES *****/
+
+
+.player-box{
+  height: fit-content;
+  background-color: rgba(43,29,14,0.7);
+  margin: 0.5em;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  box-shadow: -5px 3px 4px black;
+  width: unset;
+}
+
+.player-box.poker-seat-7{
+  max-width: 25vw;
+}
+
+.player-box.active{
+  background-color: red;
+}
+
+#rules{
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 10px;
+  padding: 10px 5px 10px 30px;
+  font-size: 1.8rem;
+  max-width: 400px;
+  background-color: rgba(235,235,235,0.2);
+}
+
+#rules > div{
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+#rules li{
+  margin-bottom: 3px;
+}
+
+@media screen and (max-width: 1260px){
+  .invisible_item{
+    width: 0;
+  }
+}
+
+@media screen and (max-width:1120px){
+  .jaipur_board{
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width:1100px){
+  .bonus_tokens{
+    padding: max(2px, 0.6vw);
+    grid-gap: max(1px, 0.3vw);
+    min-width: 155px;
+    min-height: 155px;
+  }
+  .token{
+    width: max(50px, 6.3vw);
+    height: max(50px, 6.3vw);
+  }
+}

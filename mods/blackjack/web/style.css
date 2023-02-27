@@ -133,5 +133,59 @@ body {
  .poker-seat-2 .hand{
     left: 4vh;
  }
+
+   .game-scoreboard{
+    top: unset;
+    left: unset;
+    transform: unset;
+    bottom: 0;
+    right: 0;
+    flex-direction: column;
+    padding: 4px;
+    max-width: 20vw;
+  }
+  .scoreitem{
+    width: calc(100% - 8px);
+    padding: unset;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   
+}
+
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+
+  .poker-seat-4 .hand{
+    top: 3vh;
+    left: -50%;
+  }
+
+  .poker-seat-1{
+    max-height: 45vh;
+  }
+
+  .menu-player{
+    font-size: 0.9em;
+    font-weight: normal;
+    margin: 0.3vh auto;
+  }
+  
+  .game-scoreboard{
+    top: unset;
+    left: unset;
+    transform: unset;
+    bottom: 0;
+    right: 0;
+    flex-direction: column;
+    padding: 4px;
+    max-width: 30vw;
+  }
+  .scoreitem{
+    width: calc(100% - 8px);
+    padding: unset;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
 }

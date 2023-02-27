@@ -18,8 +18,23 @@ class Archive extends ModTemplate {
     this.last_clean_on = Date.now();
     this.cleaning_period_in_ms = 1000000;
 
+    app.connection.on("archive-save-transaction", (data)=>{
+      if (data.key){
+        this.saveTransactionByKey(data.key, data.tx, data?.type);
+      }else{
+        this.saveTransaction(data.tx, data?.type);
+      }
+    });
+
   }
 
+
+
+  returnServices() {
+      let services = [];
+      if (this.app.BROWSER == 0) { services.push({ service: "archive" }); }
+      return services;
+  }
 
 
   onConfirmation(blk, tx, conf, app) {
@@ -29,6 +44,8 @@ class Archive extends ModTemplate {
     //
     // by default we just save everything that is an application
     //
+    // *** only if we turn on the listeners, no? ***
+    //
     if (conf == 0) {
       if (tx.msg.module != "") {
         this.saveTransaction(tx);
@@ -37,17 +54,19 @@ class Archive extends ModTemplate {
   }
 
 
+  async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
-
-  async handlePeerRequest(app, req, peer, mycallback) {
+    if (tx == null) { return; }
+    let req = tx.returnMessage();
 
     if (req.request == null) { return; }
     if (req.data == null) { return; }
 
     var txs;
     var response = {};
+
     //
-    // only handle archive request
+    // only handle archive request 
     //
     if (req.request === "archive") {
 
@@ -57,9 +76,32 @@ class Archive extends ModTemplate {
       if (req.data.request === "save") {
         this.saveTransaction(req.data.tx, req.data.type);
       }
+      if (req.data.request === "update") {
+        this.updateTransaction(req.data.tx);
+      }
       if (req.data.request === "save_key") {
         if (!req.data.key) { return; }
         this.saveTransactionByKey(req.data.key, req.data.tx, req.data.type);
+      }
+      if (req.data.request === "update_optional") {
+        if (!req.data.optional) { return; }
+        this.updateTransactionOptional(req.data.sig, req.data.publickey, req.data.optional);
+      }
+      if (req.data.request === "update_optional_value") {
+        if (!req.data.optional) { return; }
+        this.updateTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key, req.data.optional_value);
+      }
+      if (req.data.request === "increment_optional_value") {
+        if (!req.data.optional) { return; }
+        this.incrementTransactionOptionalValue(req.data.sig, req.data.publickey, req.data.optional_key);
+      }
+      if (req.data.request === "delete") {
+        if (!req.data.publickey) { return; }
+        await this.deleteTransactions(req.data.type, req.data.publickey);
+        response.err = "";
+        response.txs = [];
+        mycallback(response);
+	return;
       }
       if (req.data.request === "load") {
         let type = "";
@@ -69,7 +111,9 @@ class Archive extends ModTemplate {
         txs = await this.loadTransactions(req.data.publickey, req.data.sig, type, num);
         response.err = "";
         response.txs = txs;
+
         mycallback(response);
+	return;
       }
       if (req.data.request === "load_keys") {
         if (!req.data.keys) { return; }
@@ -77,16 +121,41 @@ class Archive extends ModTemplate {
         response.err = "";
         response.txs = txs;
         mycallback(response);
+	return;
+      }
+      if (req.data.request === "load_sig") {
+        if (!req.data.sig) { return; }
+        txs = await this.loadTransactionBySig(req.data.sig);
+        response.err = "";
+        response.txs = txs;
+        mycallback(response);
+	return;
       }
     }
 
-    super.handlePeerRequest(app, req, peer, mycallback);
+    super.handlePeerTransaction(app, tx, peer, mycallback);
 
 
   }
 
 
 
+  async updateTransactionOptional(sig="", publickey="", optional="") {
+
+    if (sig === "" || publickey === "" || optional === "") { return; }
+
+    let sql = "";
+    let params = {};
+
+    sql = "UPDATE txs SET optional = $optional WHERE sig = $sig AND publickey = $publickey";
+    params = {
+      $sig		:	sig ,
+      $publickey	:	publickey ,
+      $optional		:	JSON.stringify(optional) ,
+    };
+    await this.app.storage.executeDatabase(sql, params, "archive");
+
+  }
 
 
   async saveTransaction(tx=null, msgtype="") {
@@ -95,14 +164,18 @@ class Archive extends ModTemplate {
 
     let sql = "";
     let params = {};
+    let optional = {};
+    if (tx.optional) { optional = tx.optional; }
 
     for (let i = 0; i < tx.transaction.to.length; i++) {
-      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, ts, type) VALUES ($sig, $publickey, $tx, $ts, $type)";
+      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.to[i].add ,
         $tx		:	JSON.stringify(tx.transaction) ,
+        $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
+        $preserve	:	0 ,
         $type		:	msgtype
       };
       await this.app.storage.executeDatabase(sql, params, "archive");
@@ -114,12 +187,14 @@ class Archive extends ModTemplate {
     // sanity check that we want to be saving this for the FROM fields
     //
     for (let i = 0; i < tx.transaction.from.length; i++) {
-      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, ts, type) VALUES ($sig, $publickey, $tx, $ts, $type)";
+      sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.from[i].add ,
         $tx		:	JSON.stringify(tx.transaction) ,
+        $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
+        $preserve	:	0 ,
         $type		:	msgtype
       };
       await this.app.storage.executeDatabase(sql, params, "archive");
@@ -132,12 +207,46 @@ class Archive extends ModTemplate {
   }
 
 
+
+  async updateTransaction(tx=null) {
+
+    if (tx == null) { return; }
+
+    let sql = "";
+    let params = {};
+    let optional = {};
+    if (tx.optional) { optional = tx.optional; }
+
+    for (let i = 0; i < tx.transaction.to.length; i++) {
+      sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
+      params = {
+        $tx		:	JSON.stringify(tx.transaction) ,
+        $sig		:	tx.transaction.sig ,
+        $publickey	:	tx.transaction.to[i].add ,
+        $optional	:	JSON.stringify(optional) ,
+      };
+      await this.app.storage.executeDatabase(sql, params, "archive");
+    }
+    for (let i = 0; i < tx.transaction.from.length; i++) {
+      sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
+      params = {
+        $tx		:	JSON.stringify(tx.transaction) ,
+        $sig		:	tx.transaction.sig ,
+        $publickey	:	tx.transaction.from[i].add ,
+        $optional	:	JSON.stringify(optional) ,
+      };
+      await this.app.storage.executeDatabase(sql, params, "archive");
+    }
+  }
+
+
+
   async pruneOldTransactions() {
     console.debug("archive.pruneOldTransactions");
     this.last_clean_on = Date.now();
 
     let ts = (new Date().getTime()) - 100000000;
-    let sql = "DELETE FROM txs WHERE ts < $ts AND type = $type";
+    let sql = "DELETE FROM txs WHERE ts < $ts AND type = $type AND preserve = 0";
     let params = {
         $ts		:	ts ,
         $type		:	"Chat"
@@ -146,18 +255,22 @@ class Archive extends ModTemplate {
   }
 
 
-  async saveTransactionByKey(key="", tx=null, msgtype="") {
+  async saveTransactionByKey(key="", tx=null, type="") {
 
     if (tx == null) { return; }
+    let optional = (tx.optional) ? tx.optional : {};
 
-    let sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, ts, type) VALUES ($sig, $publickey, $tx, $ts, $type)";
+    let sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, optional, ts, preserve, type) VALUES ($sig, $publickey, $tx, $optional, $ts, $preserve, $type)";
     let params = {
-      $sig:	tx.transaction.sig ,
+      $sig:		tx.transaction.sig,
       $publickey:	key,
-      $tx:	JSON.stringify(tx.transaction),
-      $ts:	tx.transaction.ts,
-      $type:	msgtype
+      $tx:		JSON.stringify(tx.transaction),
+      $optional: 	optional,
+      $ts:		tx.transaction.ts,
+      $preserve	:	0 ,
+      $type:		type
     };
+
     await this.app.storage.executeDatabase(sql, params, "archive");
 
     //
@@ -209,10 +322,32 @@ class Archive extends ModTemplate {
 
     if (rows != undefined) {
       if (rows.length > 0) {
-        txs = rows.map(row => row.tx);
+	for (let i = 0; i < rows.length; i++) {
+          txs.push({ tx : rows[i].tx , optional : rows[i].optional });
+        }
       }
     }
     return txs;
+
+  }
+
+  async deleteTransactions(type="all", publickey = null) {
+
+    if (publickey == null) { return; }
+
+    let sql = "";
+    let params = {};
+
+    if (type === "all") {
+      sql = "DELETE FROM txs WHERE publickey = $publickey";
+      params = { $publickey : publickey };
+    } else {
+      sql = "DELETE FROM txs WHERE publickey = $publickey AND type = $type";
+      params = { $publickey : publickey , $type : type };
+    }
+
+    this.app.storage.executeDatabase(sql, params, "archive");
+    return;
 
   }
 
@@ -241,21 +376,47 @@ class Archive extends ModTemplate {
         sql = `SELECT * FROM txs WHERE publickey IN ( ${where_statement_array.join(',')} ) AND type = $type ORDER BY id DESC LIMIT $num`;
         params = Object.assign(params, { $type : type , $num : num});
       }
-    } catch(err) {
-      console.log(err);
-    }
 
-    try {
       let rows = await this.app.storage.queryDatabase(sql, params, "archive");
       let txs = [];
-      if (rows != undefined) {
-	if (rows.length > 0) {
-          txs = rows.map(row => row.tx);
+      if (rows?.length > 0) {
+	      for (let row of rows){
+          txs.push({ tx : row.tx , optional : row.optional });
         }
       }
       return txs;
     } catch (err) {
       console.log(err);
+      return [];
+    }
+
+  }
+
+  async loadTransactionBySig(sig="") {
+
+    let sql = "";
+    let params = {};
+
+    let count = 0;
+    let paramkey = '';
+    let where_statement_array = [];
+
+    try {
+
+      sql = `SELECT * FROM txs WHERE sig = $sig`;
+      params = Object.assign(params, { $sig : sig });
+      let rows = await this.app.storage.queryDatabase(sql, params, "archive");
+      let txs = [];
+
+      if (rows?.length > 0) {
+        for (let row of rows){
+          txs.push({ tx : row.tx , optional : row.optional });
+        }
+      }
+      return txs;
+    } catch (err) {
+      console.log(err);
+      return [];
     }
 
   }

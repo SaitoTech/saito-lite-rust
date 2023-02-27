@@ -22,9 +22,9 @@
             let card   = mv[3];
             imperium_self.game.queue.splice(qe, 1);
 
-	    for (let i = 0; i < imperium_self.game.players_info[target-1].strategy.length; i++) {
-	      if (imperium_self.game.players_info[target-1].strategy[i] == card) {
-		imperium_self.game.players_info[target-1].strategy.splice(i, 1);
+	    for (let i = 0; i < imperium_self.game.state.players_info[target-1].strategy.length; i++) {
+	      if (imperium_self.game.state.players_info[target-1].strategy[i] == card) {
+		imperium_self.game.state.players_info[target-1].strategy.splice(i, 1);
 	      }
 	    }
 

@@ -8,7 +8,7 @@ import Transaction, { TransactionType } from "./transaction";
 import Block from "./block";
 
 const CryptoModule = require("../templates/cryptomodule");
-const ModalSelectCrypto = require("./ui/modal-select-crypto/modal-select-crypto");
+const ModalSelectCrypto = require("./ui/modals/select-crypto/select-crypto");
 
 /**
  * A Saito-lite wallet.
@@ -24,12 +24,12 @@ export default class Wallet {
     preferred_crypto: "SAITO",
     preferred_txs: [],
 
-    inputs: [], // slips available
-    outputs: [], // slips spenr
+    inputs: new Array<Slip>(), // slips available
+    outputs: new Array<Slip>(), // slips spenr
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.210,
+    version: 4.743,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -58,7 +58,7 @@ export default class Wallet {
     this.recreate_pending_transactions = 0;
   }
 
-  addInput(x) {
+  addInput(x: Slip) {
     //////////////
     // add slip //
     //////////////
@@ -68,7 +68,7 @@ export default class Wallet {
     // and (2) simplify deleting expired slips
     //
     let pos = this.wallet.inputs.length;
-    while (pos > 0 && this.wallet.inputs[pos - 1].bid > x.bid) {
+    while (pos > 0 && this.wallet.inputs[pos - 1].block_id > x.block_id) {
       pos--;
     }
     if (pos == -1) {
@@ -110,7 +110,7 @@ export default class Wallet {
     return;
   }
 
-  addOutput(x) {
+  addOutput(x: Slip) {
     //////////////
     // add slip //
     //////////////
@@ -132,23 +132,25 @@ export default class Wallet {
     return;
   }
 
-  addTransactionToPending(tx) {
+  addTransactionToPending(tx: Transaction) {
+return;
     const txjson = JSON.stringify(tx.transaction);
     if (txjson.length > 100000) {
       return;
     }
+console.log("ADDING TX TO PENDING: " + txjson);
     if (!this.wallet.pending.includes(txjson)) {
       this.wallet.pending.push(txjson);
       this.saveWallet();
     }
   }
 
-  containsInput(s) {
+  containsInput(s: Slip): boolean {
     const hmi = s.returnKey();
     return this.inputs_hmap.get(hmi);
   }
 
-  containsOutput(s) {
+  containsOutput(s: Slip): boolean {
     const hmi = s.returnKey();
     return this.outputs_hmap.get(hmi);
   }
@@ -282,7 +284,7 @@ console.log("---------------------");
       if (force_merge > 7) { slips_to_merge = force_merge; }
       let slips_merged = 0;
       let output_amount = BigInt(0);
-      let lowest_block = this.app.blockchain.last_bid - this.app.blockchain.genesis_period + 2;
+      let lowest_block = this.app.blockchain.last_bid - this.app.blockchain.returnGenesisPeriod() + 2;
 
       //
       // check pending txs to avoid slip reuse
@@ -485,31 +487,34 @@ console.log("---------------------");
     // new wallet //
     ////////////////
     if (this.wallet.privatekey == "") {
-      this.resetWallet();
+      await this.resetWallet();
     }
   }
 
-  isSlipValid(slip, index) {
+  isSlipValid(slip: Slip, index: number) {
     const isSlipSpent = this.wallet.spends[index];
-    const isSlipLC = slip.lc == 1;
-    const isSlipGtLVB = slip.bid >= this.app.blockchain.returnLowestSpendableBlock();
-    const isSlipinTX = this.app.mempool.transactions_inputs_hmap[slip.returnKey()] != 1;
+    const isSlipLC = slip.lc;
+    const isSlipGtLVB = slip.block_id >= this.app.blockchain.returnLowestSpendableBlock();
+    const isSlipinTX = this.app.mempool.transactions_inputs_hmap.get(slip.returnKey()) !== 1;
     const valid = !isSlipSpent && isSlipLC && isSlipGtLVB && isSlipinTX;
     return valid;
   }
 
-  onChainReorganization(block, lc) {
-    const block_id = block.returnId();
-    const block_hash = block.returnHash();
+  onChainReorganization(block: Block, lc: boolean) {
+    const block_id: bigint = block.returnId();
+    const block_hash: string = block.returnHash();
 
     //
     // flag inputs as on/off-chain
     //
     for (let m = this.wallet.inputs.length - 1; m >= 0; m--) {
-      if (this.wallet.inputs[m].bid == block_id && this.wallet.inputs[m].bsh === block_hash) {
+      if (
+        this.wallet.inputs[m].block_id == block_id &&
+        this.wallet.inputs[m].block_hash === block_hash
+      ) {
         this.wallet.inputs[m].lc = lc;
       } else {
-        if (this.wallet.inputs[m].bid < block_id) {
+        if (this.wallet.inputs[m].block_id < block_id) {
           break;
         }
       }
@@ -519,7 +524,7 @@ console.log("---------------------");
       //
       // refresh inputs (allow respending)
       //
-      if (block_id == 0) {
+      if (block_id == BigInt(0)) {
         for (let i = 0; i < this.wallet.inputs.length; i++) {
           if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
             this.wallet.spends[i] = 0;
@@ -528,7 +533,7 @@ console.log("---------------------");
       } else {
         const target_block_id = this.app.blockchain.returnLatestBlockId() - block_id;
         for (let i = 0; i < this.wallet.inputs.length; i++) {
-          if (this.wallet.inputs[i].bid <= target_block_id) {
+          if (this.wallet.inputs[i].block_id <= target_block_id) {
             if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
               this.wallet.spends[i] = 0;
             }
@@ -541,13 +546,13 @@ console.log("---------------------");
       //
       const gid = this.app.blockchain.blockchain.genesis_block_id;
       for (let m = this.wallet.inputs.length - 1; m >= 0; m--) {
-        if (this.wallet.inputs[m].bid < gid) {
+        if (this.wallet.inputs[m].block_id < gid) {
           this.wallet.inputs.splice(m, 1);
           this.wallet.spends.splice(m, 1);
         }
       }
       for (let m = this.wallet.outputs.length - 1; m >= 0; m--) {
-        if (this.wallet.outputs[m].bid < gid) {
+        if (this.wallet.outputs[m].block_id < gid) {
           this.wallet.outputs.splice(m, 1);
         }
       }
@@ -558,8 +563,8 @@ console.log("---------------------");
       for (let i = 0; i < block.transactions.length; i++) {
         const tx = block.transactions[i];
         const slips = tx.returnSlipsToAndFrom(this.returnPublicKey());
-        const to_slips = [];
-        const from_slips = [];
+        const to_slips = new Array<Slip>();
+        const from_slips = new Array<Slip>();
         for (let m = 0; m < slips.to.length; m++) {
           to_slips.push(slips.to[m].clone());
         }
@@ -571,14 +576,13 @@ console.log("---------------------");
         // update slips prior to insert
         //
         for (let ii = 0; ii < to_slips.length; ii++) {
-          to_slips[ii].uuid = block.returnHash();
           to_slips[ii].lc = lc; // longest-chain
-          to_slips[ii].ts = block.returnTimestamp(); // timestamp
+          to_slips[ii].timestamp = block.returnTimestamp(); // timestamp
           to_slips[ii].from = JSON.parse(JSON.stringify(tx.transaction.from)); // from slips
         }
 
         for (let ii = 0; ii < from_slips.length; ii++) {
-          from_slips[ii].ts = block.returnTimestamp();
+          from_slips[ii].timestamp = block.returnTimestamp();
         }
 
         //
@@ -599,7 +603,7 @@ console.log("---------------------");
             } else {
               if (ptx.transaction.type == TransactionType.GoldenTicket) {
                 this.wallet.pending.splice(i, 1);
-                this.unspendInputSlips(ptx);
+                this.unspendInputSlips(this.app, ptx);
                 i--;
                 removed_pending_slips = 1;
               } else {
@@ -608,11 +612,11 @@ console.log("---------------------");
                 //
                 if (Math.random() <= 0.1) {
                   const ptx_ts = ptx.transaction.ts;
-                  const blk_ts = block.block.ts;
+                  const blk_ts = block.block.timestamp;
 
                   if (ptx_ts + 12000000 < blk_ts) {
                     this.wallet.pending.splice(i, 1);
-                    this.unspendInputSlips(ptx);
+                    this.unspendInputSlips(this.app, ptx);
                     removed_pending_slips = 1;
                     i--;
                   }
@@ -656,12 +660,8 @@ console.log("---------------------");
             const s = from_slips[m];
             for (let c = 0; c < this.wallet.inputs.length; c++) {
               const qs = this.wallet.inputs[c];
-              if (
-                s.uuid == qs.uuid &&
-                s.sid == qs.sid &&
-                s.amt.toString() == qs.amt.toString() &&
-                s.add == qs.add
-              ) {
+              console.assert(s.returnKey().length > 0 && qs.returnKey().length > 0, "sss");
+              if (s.returnKey() === qs.returnKey()) {
                 if (!this.containsOutput(s)) {
                   this.addOutput(s);
                 }
@@ -683,18 +683,18 @@ console.log("---------------------");
     this.app.storage.saveOptions();
   }
 
-  returnAdequateInputs(amt) {
-    const utxiset = [];
+  returnAdequateInputs(amt: bigint) {
+    const utxiset = new Array<Slip>();
     let value = BigInt(0);
     const bigamt = BigInt(amt) * BigInt(100_000_000);
 
     //
     // this adds a 1 block buffer so that inputs are valid in the future block included
     //
-    const lowest_block =
+    const lowest_block: bigint =
       this.app.blockchain.blockchain.last_block_id -
-      this.app.blockchain.blockchain.genesis_period +
-      2;
+      this.app.blockchain.returnGenesisPeriod() +
+      BigInt(2);
 
     //
     // check pending txs to avoid slip reuse if necessary
@@ -723,8 +723,8 @@ console.log("---------------------");
     for (let i = 0; i < this.wallet.inputs.length; i++) {
       if (this.wallet.spends[i] == 0 || i >= this.wallet.spends.length) {
         const slip = this.wallet.inputs[i];
-        if (slip.lc == 1 && slip.bid >= lowest_block) {
-          if (this.app.mempool.transactions_inputs_hmap[slip.returnKey()] != 1) {
+        if (slip.lc && slip.block_id >= lowest_block) {
+          if (this.app.mempool.transactions_inputs_hmap.get(slip.returnKey()) != 1) {
             slipIndexes.push(i);
             utxiset.push(slip);
             value += slip.returnAmount();
@@ -746,11 +746,11 @@ console.log("---------------------");
     }
   }
 
-  returnPublicKey() {
+  returnPublicKey(): string {
     return this.wallet.publickey;
   }
 
-  returnPrivateKey() {
+  returnPrivateKey(): string {
     return this.wallet.privatekey;
   }
 
@@ -791,6 +791,7 @@ console.log("---------------------");
 
     this.saveWallet();
 
+    this.app.options.invites = [];
     this.app.options.games = [];
     this.app.storage.saveOptions();
 
@@ -818,14 +819,11 @@ console.log("---------------------");
    * @param {Transaction}
    * @return {Transaction}
    */
-  signTransaction(tx) {
+  signTransaction(tx: Transaction | null): Transaction | null {
     if (tx == null) {
       return null;
     }
 
-    //
-    // convert tx.msg to base64 tx.transaction.m
-    //
     try {
       tx.sign(this.app);
     } catch (err) {
@@ -869,11 +867,19 @@ console.log("---------------------");
     // limits in NodeJS!
     //
     try {
-      if (this.app.keys.hasSharedSecret(tx.transaction.to[0].add)) {
-        tx.msg = this.app.keys.encryptMessage(tx.transaction.to[0].add, tx.msg);
+
+      if (this.app.keychain.hasSharedSecret(tx.transaction.to[0].add)) {
+        tx.msg = this.app.keychain.encryptMessage(tx.transaction.to[0].add, tx.msg);
       }
-      // nov 30 - set in tx.sign() now
-      tx.transaction.m = this.app.crypto.stringToBase64(JSON.stringify(tx.msg));
+      //
+      // nov 25 2022 - eliminate base64 formatting for TXS
+      //
+      //tx.transaction.m = Buffer.from(
+      //  this.app.crypto.stringToBase64(JSON.stringify(tx.msg)),
+      //  "base64"
+      //);
+      tx.transaction.m = Buffer.from(JSON.stringify(tx.msg), "utf-8");
+
     } catch (err) {
       console.log("####################");
       console.log("### OVERSIZED TX ###");
@@ -888,11 +894,12 @@ console.log("---------------------");
     return tx;
   }
 
-  unspendInputSlips(tmptx = null) {
+  unspendInputSlips(app: Saito, tmptx = null) {
     if (tmptx == null) {
       return;
     }
     for (let i = 0; i < tmptx.transaction.from.length; i++) {
+      tmptx.transaction.from[i].generateKey(app);
       const fsidx = tmptx.transaction.from[i].returnKey();
       for (let z = 0; z < this.wallet.inputs.length; z++) {
         if (fsidx == this.wallet.inputs[z].returnKey()) {
@@ -936,11 +943,14 @@ console.log("---------------------");
   returnActivatedCryptos() {
     const allMods = this.returnInstalledCryptos();
     const activeMods = [];
+    console.log("HOW MANY INSTALLED CRYPTOS: " + allMods.length);
     for (let i = 0; i < allMods.length; i++) {
+      console.log("checking if activated: " + allMods[i].name);
       if (allMods[i].returnIsActivated()) {
         activeMods.push(allMods[i]);
       }
     }
+    console.log("returning activated cryptos num: " + activeMods.length);
     return activeMods;
   }
 
@@ -963,6 +973,10 @@ console.log("---------------------");
         console.log("setting cryptomod");
         cryptomod = mods[i];
         can_we_do_this = 1;
+
+        if (mods[i].options.isActivated == true) {
+          show_overlay = 0;
+        }
       }
     }
 
@@ -983,11 +997,13 @@ console.log("---------------------");
 
     if (cryptomod != null && show_overlay == 1) {
       if (cryptomod.renderModalSelectCrypto() != null) {
-        const modal_select_crypto = new ModalSelectCrypto(this.app, cryptomod);
-        modal_select_crypto.render(this.app, cryptomod);
-        modal_select_crypto.attachEvents(this.app, cryptomod);
+        const modal_select_crypto = new ModalSelectCrypto(this.app, null, cryptomod);
+        modal_select_crypto.render(this.app, null, cryptomod);
+        modal_select_crypto.attachEvents(this.app, null, cryptomod);
       }
     }
+
+    console.log("done in setPreferredCrypto");
 
     return;
   }
@@ -1066,8 +1082,8 @@ console.log("---------------------");
   /**
    * Sends payments to the addresses provided if this user is the corresponding
    * sender. Will not send if similar payment was found after the given timestamp.
-   * @param {Array} senders - Array of addresses
-   * @param {Array} receivers - Array of addresses
+   * @param {Array} senders - Array of addresses -- in web3 currency
+   * @param {Array} receivers - Array of addresses -- in web3 curreny
    * @param {Array} amounts - Array of amounts to send
    * @param {Int} timestamp - Timestamp of time after which payment should be made
    * @param {Function} mycallback - ({hash: {String}}) -> {...}
@@ -1082,6 +1098,8 @@ console.log("---------------------");
     mycallback = null,
     ticker
   ) {
+    console.log("IN SEND PAYMENT IN WALLET!");
+
     console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
@@ -1091,7 +1109,7 @@ console.log("---------------------");
     }
     if (senders.length !== 1) {
       // We have no code which exercises multiple senders/receivers so can't implement it yet.
-      console.log("sendPayment ERROR: Only supports one transaction");
+      console.error("sendPayment ERROR: Only supports one transaction");
       //mycallback({err: "Only supports one transaction"});
       return;
     }
@@ -1106,11 +1124,18 @@ console.log("---------------------");
     if (
       !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
     ) {
+      console.log("preferred transaction does not exist, so...");
+
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
         console.log(
           "senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress()
         );
+
+        //
+        // DEBUGGING - sender is address to which we send the crypto
+        // 	     - not our own publickey
+        //
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
@@ -1293,11 +1318,14 @@ console.log("---------------------");
     ticker
   ) {
     return this.app.crypto.hash(
-      JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        unique_hash +
-        ticker
+      Buffer.from(
+        JSON.stringify(senders) +
+          JSON.stringify(receivers) +
+          JSON.stringify(amounts) +
+          unique_hash +
+          ticker,
+        "utf-8"
+      )
     );
   }
   savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {

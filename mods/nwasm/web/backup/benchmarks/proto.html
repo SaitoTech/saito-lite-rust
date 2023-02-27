@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script type="text/javascript" src="./probe.js"></script>
+	<script>
+		"use strict";
+		var TIMES = 1000000000;
+		function Klass(){
+			this.state = 0;
+			this.method = function(){
+				this.state += 1;
+			};
+		}
+		function Klass2(){
+			this.state = 0;
+		}
+		Klass2.prototype.method = function(){
+			this.state += 1;
+		};
+		function doBench() {
+			log("direct injecting: "+cycloa.probe.measure(function(){
+				var obj = new Klass();
+				var i = TIMES;
+				while(--i){
+					obj.method();
+				}
+			}));
+			log("using prototype: "+cycloa.probe.measure(function(){
+				var obj = new Klass2();
+				var i = TIMES;
+				while(--i){
+					obj.method();
+				}
+			}));
+		}
+	</script>
+	<title>benchmark</title>
+</head>
+<body>
+	<input id="start" onclick="doBench();" type="button" value="start" />
+	<div id="console"></div>
+</body>
+</html>

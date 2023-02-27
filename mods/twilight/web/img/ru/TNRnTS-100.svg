@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   width="388"
+   height="538"
+   id="svg2"
+   sodipodi:docname="TNRnTS-100.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview60"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="1.5557621"
+     inkscape:cx="277.35603"
+     inkscape:cy="268.67861"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1358"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <defs
+     id="defs6">
+    <rect
+       width="1235"
+       height="50"
+       x="0"
+       y="0"
+       id="stripe"
+       style="fill:#bb133e" />
+    <g
+       id="abcu">
+      <use
+         id="use44"
+         x="0"
+         y="-0.21600001"
+         width="1235"
+         height="650"
+         xlink:href="#abx4" />
+      <use
+         id="use46"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#abx4" />
+      <use
+         id="use48"
+         x="0"
+         y="0.21600001"
+         width="1235"
+         height="650"
+         xlink:href="#abs6" />
+    </g>
+    <g
+       id="abx4">
+      <use
+         id="use35"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#abs6" />
+      <use
+         id="use37"
+         x="0"
+         y="0.054000001"
+         width="1235"
+         height="650"
+         xlink:href="#abs5" />
+      <use
+         id="use39"
+         x="0"
+         y="0.108"
+         width="1235"
+         height="650"
+         xlink:href="#abs6" />
+      <use
+         id="use41"
+         x="0"
+         y="0.162"
+         width="1235"
+         height="650"
+         xlink:href="#abs5" />
+    </g>
+    <g
+       id="abs6">
+      <use
+         id="use30"
+         x="-0.063000001"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#abs5" />
+      <use
+         id="use32"
+         x="0.315"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#star" />
+    </g>
+    <g
+       id="abs5">
+      <use
+         id="use19"
+         x="-0.252"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#star" />
+      <use
+         id="use21"
+         x="-0.126"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#star" />
+      <use
+         id="use23"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#star" />
+      <use
+         id="use25"
+         x="0.126"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#star" />
+      <use
+         id="use27"
+         x="0.252"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#star" />
+    </g>
+    <g
+       id="star">
+      <use
+         transform="matrix(-0.80901699,-0.58778525,0.58778525,-0.80901699,0,0)"
+         id="use8"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#abpt" />
+      <use
+         transform="matrix(0.30901699,-0.95105652,0.95105652,0.30901699,0,0)"
+         id="use10"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#abpt" />
+      <use
+         id="use12"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#abpt" />
+      <use
+         transform="matrix(0.30901699,0.95105652,-0.95105652,0.30901699,0,0)"
+         id="use14"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#abpt" />
+      <use
+         transform="matrix(-0.80901699,0.58778525,-0.58778525,-0.80901699,0,0)"
+         id="use16"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#abpt" />
+    </g>
+    <polygon
+       points="-0.16246,0 0,-0.5 0.16246,0 "
+       transform="scale(0.0616,0.0616)"
+       id="abpt"
+       style="fill:#ffffff" />
+  </defs>
+  <text
+     x="187.67149"
+     y="298.79514"
+     id="text2975"
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:120%;font-family:Georgia;-inkscape-font-specification:Georgia;text-align:center;writing-mode:lr-tb;text-anchor:middle;white-space:pre;inline-size:376.745;fill:#000000;fill-opacity:1;stroke:none"
+     transform="translate(5.7849462,-6.427718)"><tspan
+       x="187.67149"
+       y="298.79514"
+       id="tspan500">Если уровень DEFCON равен 2, вы<tspan
+   y="298.79514"
+   id="tspan502"> </tspan></tspan><tspan
+       x="187.67149"
+       y="322.79514"
+       id="tspan504">можете немедленно закончить игру<tspan
+   y="322.79514"
+   id="tspan506"> </tspan></tspan><tspan
+       x="187.67149"
+       y="346.79514"
+       id="tspan508">( пропустив фазу финального подсчёта<tspan
+   y="346.79514"
+   id="tspan510"> </tspan></tspan><tspan
+       x="187.67149"
+       y="370.79514"
+       id="tspan512">очков),  если дадите своему сопернику 6<tspan
+   y="370.79514"
+   id="tspan514"> </tspan></tspan><tspan
+       x="187.67149"
+       y="394.79514"
+       id="tspan516">ПО.<tspan
+   y="394.79514"
+   id="tspan518"> </tspan></tspan></text>
+  <text
+     x="199.19875"
+     y="246.65343"
+     transform="scale(0.96954344,1.0314133)"
+     id="text4245"
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:28px;line-height:120%;font-family:Georgia;-inkscape-font-specification:'Georgia Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"><tspan
+       x="199.19875"
+       y="246.65343"
+       id="tspan4567"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:28px;line-height:120%;font-family:Georgia;-inkscape-font-specification:'Georgia Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle">Балансирование на грани</tspan></text>
+  <text
+     x="187.73854"
+     y="415.6875"
+     id="text3851"
+     xml:space="preserve"
+     style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18px;line-height:125%;font-family:Georgia;-inkscape-font-specification:'Georgia Italic';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#000000"><tspan
+       x="187.73854"
+       y="415.6875"
+       id="tspan2882">Может теперь партию в шахматы?</tspan></text>
+  <g
+     id="g6618">
+    <g
+       transform="matrix(0.11384615,0,0,0.11384615,41,125)"
+       id="g5713">
+      <rect
+         width="1098.8513"
+         height="650"
+         x="0"
+         y="0"
+         id="rect51"
+         style="fill:#ffffff" />
+      <use
+         transform="scale(0.86130867,1)"
+         id="use53"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#stripe" />
+      <use
+         id="use55"
+         x="0"
+         y="100"
+         width="1235"
+         height="650"
+         xlink:href="#stripe" />
+      <use
+         id="use57"
+         x="0"
+         y="200"
+         width="1235"
+         height="650"
+         xlink:href="#stripe" />
+      <use
+         id="use59"
+         x="0"
+         y="300"
+         width="1235"
+         height="650"
+         xlink:href="#stripe" />
+      <use
+         id="use61"
+         x="0"
+         y="400"
+         width="1235"
+         height="650"
+         xlink:href="#stripe" />
+      <use
+         id="use63"
+         x="0"
+         y="500"
+         width="1235"
+         height="650"
+         xlink:href="#stripe" />
+      <use
+         id="use65"
+         x="0"
+         y="600"
+         width="1235"
+         height="650"
+         xlink:href="#stripe" />
+      <rect
+         width="494"
+         height="350"
+         x="0"
+         y="0"
+         id="rect67"
+         style="fill:#002664" />
+      <use
+         transform="matrix(650,0,0,650,247,175)"
+         id="use69"
+         x="0"
+         y="0"
+         width="1235"
+         height="650"
+         xlink:href="#abcu" />
+    </g>
+    <rect
+       width="124"
+       height="73"
+       x="41.5"
+       y="125.5"
+       id="rect5795"
+       style="opacity:0.83739833;fill:none;stroke:#000000;stroke-width:1;stroke-opacity:1" />
+  </g>
+  <g
+     id="g6610">
+    <g
+       transform="matrix(0.24666667,0,0,0.24666667,208.5,124.5)"
+       id="g5789">
+      <rect
+         width="506.75674"
+         height="300"
+         x="-2.0270269"
+         y="2.0270228"
+         id="rect4"
+         style="fill:#cc0000;stroke:none" />
+      <path
+         d="m 67.8,79.9 8.7,8.7 7.1,-7.3 c 15.8,16.3 31.6,32.7 47.4,49 3.5,-0.8 5.4,-2.2 6.5,-6.2 L 88.8,76.2 98.6,67.4 84.3,63.5 67.8,79.9 l 0,0 z"
+         id="hammer"
+         style="fill:#ffd700" />
+      <path
+         d="m 95.8,30.7 -13.5,0 10.9,8 -4.1,12.8 10.9,-7.9 10.9,7.9 -4.1,-12.9 10.9,-7.9 -13.5,0 -4.2,-12.8992 0,-8e-4 -4.2,12.9 z m 4.2,-4.9 2.4,7.4 7.7,0 -6.2,4.5 2.36115,7.355357 L 99.99998,40.501778 93.73881,45.1 96.1,37.7 l -6.2,-4.53 7.72,0 2.38,-7.37 0,0 z"
+         id="star-9"
+         style="fill:#ffd700" />
+      <path
+         d="m 100.1,55.3 c 21,7.7 34.2,25.3 34.28,38.3 0.22,28.7 -31.08,42.5 -51.28,19.4 l -1.4,1 0.3,2.5 c -6.1,-0.6 -11.6,18.1 -18.2,12.9 -6,-7.6 10.6,-11.1 12.3,-18.8 l 2.4,0.2 2,-2.1 1.9,0.3 2.4,-2.5 c 19.7,20.8 44.6,4.7 41.1,-16 -2.5,-15.9 -12.5,-25 -25.9,-35.2 l 0.1,0 0,0 0,0 0,0 0,0 0,0 z"
+         id="sichel"
+         style="fill:#ffd700" />
+    </g>
+    <rect
+       width="124"
+       height="73"
+       x="208.5"
+       y="125.5"
+       id="rect6608"
+       style="opacity:0.83739833;fill:none;stroke:#000000;stroke-width:1;stroke-opacity:1" />
+  </g>
+  <path
+     d="m 151.68129,201.5 71.31871,0 0,-6.75 -6.75,-5.75 0,-4.5 -6.52332,-5.34359 0,-38.65641 7.76166,-7.76166 0,-9.23834 -10.66075,-3.85654 0,7.85654 -12.82759,0 0,-9.25 -13.25,0 0,9.25 -14,0 0,-7.85654 -9.74431,3.85654 0,9.23834 8.24715,7.76166 0,38.65641 c 0,0 -7.03068,5.8273 -6.75142,5.34359 0.27927,-0.4837 0,4.5 0,4.5 l -6.82013,5.75 0,6.75 z"
+     id="path6654"
+     style="fill:#211f20;fill-opacity:1;stroke:#211f20;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+</svg>

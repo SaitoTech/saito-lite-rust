@@ -1,0 +1,77 @@
+
+.game_warning_overlay{
+  background: #222b;
+  color: #fff;
+  padding: min(2vh,2vw);
+  min-width: min(400px,85vw);
+  max-width: 95vw;
+  min-height: min(240px, 50vh);
+  max-height: 70vh;
+  border-radius: min(2vh,2vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.game_warning_header{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.game_warning_header i{
+  font-size: 2em;
+  color: yellow;
+}
+
+.game_warning_overlay h2{
+  font-size: 1.6em;
+  width: 100%;
+  flex: 1;
+}
+
+.game_warning_overlay p{
+  font-size: 1.5em;
+}
+
+.popup-confirm-menu{
+  padding: 10px;
+  font-size: 1.5rem;
+  background-color: #a9a9a9a9;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 9999999;
+}
+
+.popup-confirm-menu div{
+  background-color: whitesmoke;
+  margin-bottom: 10px;
+  box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+  padding: 5px;
+  width: 100%;
+  border-radius: 5px; 
+}
+
+.popup-confirm-menu .confirm_check{
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.popup-confirm-menu .action{
+  border: 1px black solid;
+  cursor: pointer;
+}
+.popup-confirm-menu .action:hover{
+  background-color: lightgrey;
+  font-weight: bold;
+}
+
+

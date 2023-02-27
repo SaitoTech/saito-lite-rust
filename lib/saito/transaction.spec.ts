@@ -3,11 +3,11 @@ import NetworkAPI from "./networkapi";
 import Crypto from "./crypto";
 import Binary from "./binary";
 import Wallet from "./wallet";
-import * as blake3 from "blake3";
 import Transaction, { TransactionType } from "./transaction";
 import Slip, { SlipType } from "./slip";
+import hashLoader from "../../apps/core/hash-loader";
 
-test("tx serialize deserialze", () => {
+test("tx serialize deserialze", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const mockApp: Saito = {};
@@ -22,9 +22,7 @@ test("tx serialize deserialze", () => {
   wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
   wallet.wallet.publickey = "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
 
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const tx = new Transaction();
   tx.transaction.ts = 1637034582666;
@@ -124,7 +122,7 @@ describe("serializeForSignature", () => {
      ***/
 });
 
-test("sign", () => {
+test("sign", async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const mockApp: Saito = {};
@@ -139,23 +137,21 @@ test("sign", () => {
   wallet.wallet.privatekey = "4a16ffa08e5fc440772ee962c1d730041f12c7008a6e5c704d13dfd3d1905e0d";
   wallet.wallet.publickey = "28Mh8nEhxymH9bFMhSKU51pnSQAnqURuPYkXTUqY2ueDM";
 
-  mockApp.hash = (data) => {
-    return blake3.hash(data).toString("hex");
-  };
+  await hashLoader(mockApp);
 
   const tx = new Transaction();
   tx.transaction.ts = 1637034582666;
   tx.transaction.type = TransactionType.ATR;
-  tx.msg = { test: "test" };
+  tx.transaction.m = Buffer.from("abc", "hex");
 
   const input_slip = new Slip(wallet.wallet.publickey);
-  input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
+  //input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
   input_slip.amt = BigInt(123);
   input_slip.sid = 10;
   input_slip.type = SlipType.ATR;
 
   const output_slip = new Slip(wallet.wallet.publickey);
-  output_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
+  //output_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
   output_slip.amt = BigInt(345);
   output_slip.sid = 23;
   output_slip.type = SlipType.Normal;
@@ -164,7 +160,31 @@ test("sign", () => {
   tx.transaction.to.push(output_slip);
 
   tx.sign(mockApp);
+
+  let tx1_buffer = tx.serialize(mockApp);
+
+  console.log(Buffer.from(tx1_buffer).toString("hex"));
+
+  //TODO : FIX THIS
   expect(tx.transaction.sig).toEqual(
-    "190738f6085516ca669935bb6baf33ce5682acdb0f3b21f930cb0ac8a02198632f1947e6b557f99e704040b4e104aeb4ebf38d9fc92ec02a0ee82fae67a6e728"
+    "56f604952f5b325b445bd31e6fd62746532e5a568393315e661d0f944239cad845e402ffe8ff0a413d6835bae88efd7a8bb6313d72fa91c7af4cc18515578d7c"
   );
+
+  expect(tx.validateSignature(mockApp)).toBeTruthy();
+
+  // let buffer = Buffer.from("000000010000000100000014000000009e49d33a16f8a7a7dd9507511b3ab102ca6fa509d28ee9c10d89f13ce1233e4f7ef2681b2bab8a9a3b8eb2d7786c5c1d4373d8803132af1e3b4aa026ac312b920000017d26dd628a000000010303cb14a56ddc769932baba62c22773aaf6d26d799b548c8b8f654fb92d25ce7610dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b000000000000007b0a0003cb14a56ddc769932baba62c22773aaf6d26d799b548c8b8f654fb92d25ce7610dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b0000000000000159000065794a305a584e30496a6f696447567a64434a39","hex");
+  let tx2 = new Transaction();
+  tx2.deserialize(mockApp, tx1_buffer, 0);
+
+  expect(tx).toEqual(tx2);
+
+  console.log("tx = ", tx);
+  console.log("slip = ", tx.transaction.from[0]);
+
+  console.log("ser = " + tx.serializeForSignature(mockApp).toString("hex"));
+  let tx2_buffer = tx2.serialize(mockApp);
+  tx2.generateMetadata(mockApp, BigInt(1), BigInt(2), "");
+  expect(tx1_buffer).toEqual(tx2_buffer);
+  expect(tx.serializeForSignature(mockApp)).toEqual(tx2.serializeForSignature(mockApp));
+  expect(tx2.validateSignature(mockApp)).toBeTruthy();
 });

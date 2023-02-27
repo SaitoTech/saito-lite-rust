@@ -13,11 +13,24 @@ class Relay extends ModTemplate {
         this.name = "Relay";
         this.description = "Adds support for off-chain, realtime communications channels through relay servers, for mobile users and real-time gaming needs.";
         this.categories = "Utilities Core";
-
-
         this.description = "Simple Message Relay for Saito";
         this.categories = "Utilities Communications";
-        return this;
+        this.debug = false;
+        this.busy = false;
+
+        app.connection.on("relay-send-message", (obj)=>{
+            if (obj.recipient === "PEERS"){
+                let peers = [];
+                for (let i = 0; i < app.network.peers.length; i++) {
+                  peers.push(app.network.peers[i].returnPublicKey());
+                }
+                obj.recipient = peers;
+            }
+            this.sendRelayMessage(obj.recipient, obj.request, obj.data);
+        })
+        app.connection.on("set-relay-status-to-busy", ()=>{
+            this.busy = true;
+        });
     }
 
 
@@ -43,6 +56,12 @@ class Relay extends ModTemplate {
             recipients.push(recipient);
         }
 
+        if (this.debug){
+            console.log("RECIPIENTS: " + JSON.stringify(recipients));
+            console.log("MESSAGE_REQUEST: " + JSON.stringify(message_request));
+            console.log("MESSAGE_DATA: " + JSON.stringify(message_data));
+        }
+
         //
         // transaction to end-user, containing msg.request / msg.data is
         //
@@ -55,33 +74,20 @@ class Relay extends ModTemplate {
         tx.transaction.ts = new Date().getTime();
         tx.msg.request = message_request;
         tx.msg.data = message_data;
+
         tx.presign(this.app);
 
         //
         // ... wrapped in transaction to relaying peer
         //
         for (let i = 0; i < this.app.network.peers.length; i++) {
-
             if (this.app.network.peers[i].peer) {
-
-                //if (this.app.network.peers[i].peer.modules) {
-                //if (this.app.network.peers[i].peer.modules.length > 0) {
-                //if (this.app.network.peers[i].peer.modules.includes(this.name)) {
-
-                let peer = this.app.network.peers[i];
-
-                //
-                // forward to peer
-                //
-
-                //console.log("relay peer message");
-
-                peer.sendRequest("relay peer message", tx.transaction);
-
+              //
+              // forward to peer
+              //
+              let peer = this.app.network.peers[i];
+              peer.sendRequestAsTransaction("relay peer message", tx.transaction);
             }
-            //}
-            //}
-            //}
         }
 
         return;
@@ -89,7 +95,11 @@ class Relay extends ModTemplate {
     }
 
 
-    async handlePeerRequest(app, message, peer, mycallback = null) {
+
+    async handlePeerTransaction(app, tx=null, peer, mycallback) {
+  
+      if (tx == null) { return; }
+      let message = tx.returnMessage();
 
         try {
 
@@ -101,33 +111,41 @@ class Relay extends ModTemplate {
                 // sanity check on tx
                 //
                 let txjson = message.data;
-                let tx = new saito.default.transaction(txjson);
-                if (tx.transaction.to.length <= 0) {
+                let inner_tx = new saito.default.transaction(txjson);
+                if (inner_tx.transaction.to.length <= 0) {
                     return;
                 }
-                if (tx.transaction.to[0].add == undefined) {
+                if (inner_tx.transaction.to[0].add == undefined) {
                     return;
                 }
-                tx.decryptMessage(this.app);
-                let txmsg = tx.returnMessage();
-
-                //
-                // the embedded message to examine is txmsg
-                //
+                inner_tx.decryptMessage(this.app);
+                let inner_txmsg = inner_tx.returnMessage();
 
                 //
                 // if interior transaction is intended for me, I process regardless
                 //
-                if (tx.isTo(app.wallet.returnPublicKey())) {
-                    // && !tx.isFrom(app.wallet.returnPublicKey())) {
+                if (inner_tx.isTo(app.wallet.returnPublicKey())) {
 
-                    //console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
-                    app.modules.handlePeerRequest(txmsg, peer, mycallback);
+                    if (inner_txmsg.request === "ping"){
+                        this.sendRelayMessage(inner_tx.transaction.from[0].add, "echo", {status:this.busy});
+                        return;
+                    }
+
+                    if (inner_txmsg.request === "echo"){
+                        if (inner_txmsg.data.status){
+                            app.connection.emit("relay-is-busy", inner_tx.transaction.from[0].add);
+                        } else {
+                            app.connection.emit("relay-is-online", inner_tx.transaction.from[0].add);
+                        }
+			             return;
+                    }
+
+                    app.modules.handlePeerTransaction(inner_tx, peer, mycallback);
                     return;
 
-                    //
-                    // otherwise relay
-                    //
+                //
+                // otherwise relay
+                //
                 } else {
 
                     //
@@ -135,22 +153,20 @@ class Relay extends ModTemplate {
                     //
                     let peer_found = 0;
 
-                    //console.log("number of peers: " + app.network.peers.length);
-
                     for (let i = 0; i < app.network.peers.length; i++) {
 
-                        //if (!tx.isFrom(app.network.peers[i].peer.publickey)) {
-                        if (tx.isTo(app.network.peers[i].peer.publickey)) {
+                        if (inner_tx.isTo(app.network.peers[i].peer.publickey)) {
 
                             peer_found = 1;
 
-                            app.network.peers[i].sendRequest("relay peer message", message.data, function () {
+			    if (this.app.BROWSER == 0) {
+                              app.network.peers[i].sendTransactionWithCallback(inner_tx, function () {
                                 if (mycallback != null) {
                                     mycallback({ err: "", success: 1 });
                                 }
-                            });
+                              });
+			    }
                         }
-                        //}
                     }
                     if (peer_found == 0) {
                         if (mycallback != null) {
@@ -160,10 +176,11 @@ class Relay extends ModTemplate {
                 }
             }
         } catch (err) {
-            console.log(err);
+          console.log(err);
         }
+
     }
+
 }
 
 module.exports = Relay;
-

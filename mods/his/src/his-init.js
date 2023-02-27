@@ -63,14 +63,22 @@ class HereIStand extends GameTemplate {
     // re-fill status and log
     //
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.restoreLog();
 
     //
     // initialize game objects
     //
     this.factions = {};
-    this.units = {};
-    this.deck = this.returnDeck();
 
+    this.units = {};
+    this.army = {};
+    this.navy = {};
+    this.reformers = {};
+    this.debaters = {};
+    this.explorers = {};
+    this.conquistadors = {};
+    this.wives = {};
+
+    this.deck = this.returnDeck();
+    this.diplomatic_deck = this.returnDiplomaticDeck();
 
 

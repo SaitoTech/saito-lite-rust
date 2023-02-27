@@ -1,7 +1,8 @@
-const SettingsAppspace = require('./lib/appspace/main');
-const SettingsEmailAppspace = require('./lib/email-appspace/email-appspace');
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
+const SettingsAppspace = require('./lib/appspace/main');
+const SettingsAppspaceSidebar = require('./lib/appspace-sidebar/main');
+const SettingsThemeSwitcherOverlay = require('./lib/theme-switcher-overlay');
 
 class Settings extends ModTemplate {
 
@@ -9,44 +10,77 @@ class Settings extends ModTemplate {
     super(app);
     this.app = app;
     this.name = "Settings";
+    this.appname = "Settings";
+    this.slug = "settings";
     this.description = "Convenient Email plugin for managing Saito account settings";
     this.utilities = "Core Utilities";
     this.link = "/email?module=settings";
+    this.icon = "fas fa-cog";
     this.description = "User settings module.";
     this.categories = "Admin Users";
+    this.styles = ['/settings/style.css','/saito/lib/jsonTree/jsonTree.css','/settings/theme-switcher.css'];
+    this.main = null;
+
     return this;
   }
 
 
   initialize(app) {
+    super.initialize(app);
+
     let settings_self = this;
     this.app.connection.on("update_identifier", (tmpkey) => {
       if (document.getElementById("register-identifier-btn")) {
         if (tmpkey.publickey === settings_self.app.wallet.returnPublicKey()) {
-          let username = settings_self.app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
+          let username = settings_self.app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
           document.getElementById("register-identifier-btn").innerHTML = username;
         }
       }
     });
+
+    this.main = new SettingsAppspace(this.app, this);
   }
 
 
-  respondTo(type) {
-    if (type == 'appspace') {
-      console.log("RENDERING SETTINGS EMAIL APPSPACE!");
-      this.scripts['/settings/new-style.css'];
-      super.render(this.app, this); // for scripts + styles
-      return new SettingsAppspace(this.app, this);
+  canRenderInto(qs) {
+    //if (qs === ".saito-main") { return true; }
+    if (qs === ".saito-sidebar.right") { return true; }
+    if (qs === ".saito-header-themes") { return true; }
+    return false;
+  }
+
+  renderInto(qs) {
+
+    if (qs == ".saito-sidebar.right") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new SettingsAppspaceSidebar(this.app, this, qs));
+      }
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
     }
-    if (type == 'email-appspace') {
-      let obj = {};
-      obj.render = function (app, data) {
-        SettingsEmailAppspace.render(app, data);
+
+    if (qs == ".saito-overlay") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
+        this.renderIntos[qs].push(new SettingsThemeSwitcherOverlay(this.app, this, ""));
       }
-      obj.attachEvents = function (app, data) {
-        SettingsEmailAppspace.attachEvents(app, data);
-      }
-      return obj;
+      this.attachStyleSheets();
+      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+    }
+  }
+
+
+  respondTo(type = "") {
+    if (type === 'saito-header') {      
+      return [{
+        text: "Theme",
+        icon: "fa-solid fa-moon",
+        callback: function (app, id) {
+          let settings_self = app.modules.returnModule("Settings");
+	  settings_self.renderInto(".saito-overlay");
+        }
+      }]
     }
     return null;
   }

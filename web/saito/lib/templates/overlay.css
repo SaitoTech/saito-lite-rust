@@ -53,29 +53,6 @@
 }
 
 
-.saito-overlay-menu {
-  padding: 10px;
-  background-color: whitesmoke;
-  opacity: 0.8;
-  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-}
-
-.saito-overlay-menu ul li {
-  width: 100%;
-  line-height: 3.5em;
-  border-top: 1px solid var(--saito-skyline-grey);
-  cursor: pointer;
-  text-align: -webkit-match-parent;
-  display: list-item;
-  list-style: none;
-  padding: 0 1em;
-}
-
-.saito-overlay-menu ul li:hover {
-  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75), -2px -2px 5px #eee;
-  background: #0001;
-}
-
 
 @media only screen and (max-width: 600px) {
   .saito-overlay {
@@ -133,7 +110,7 @@
 }
 
 .welcome-modal-header {
-  font-size: 2em;
+  font-size: 3rem;
 }
 
 .welcome-modal-main {}

@@ -8,12 +8,12 @@
     //
     // player techs
     //
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let j = 0; j < this.game.players_info[i].tech.length; j++) {
-	if (this.tech[this.game.players_info[i].tech[j]] != undefined) {
-	  if (!zz.includes(this.game.players_info[i].tech[j])) {
-            z.push(this.tech[this.game.players_info[i].tech[j]]);
-            zz.push(this.game.players_info[i].tech[j]);
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      for (let j = 0; j < this.game.state.players_info[i].tech.length; j++) {
+	if (this.tech[this.game.state.players_info[i].tech[j]] != undefined) {
+	  if (!zz.includes(this.game.state.players_info[i].tech[j])) {
+            z.push(this.tech[this.game.state.players_info[i].tech[j]]);
+            zz.push(this.game.state.players_info[i].tech[j]);
 	  }
 	}
       }
@@ -30,9 +30,9 @@
     //
     // factions in-play
     //
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      if (this.factions[this.game.players_info[i].faction] != undefined) {
-        z.push(this.factions[this.game.players_info[i].faction]);
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      if (this.factions[this.game.state.players_info[i].faction] != undefined) {
+        z.push(this.factions[this.game.state.players_info[i].faction]);
       }
     }
 
@@ -78,7 +78,7 @@
     // on a new turn. they should be asynchronous (not require user input) and thus do not
     // require a trigger - every function is run every time the game reaches this state..
     //
-    // by convention "player" means the player in the players_info. if you mean "the player 
+    // by convention "player" means the player in the state.players_info. if you mean "the player 
     // that has this tech" you should do a secondary check in the logic of the card to 
     // ensure that "player" has the right to execute the logic being coded, either by 
     // adding gainTechnology() or doesPlayerHaveTech()

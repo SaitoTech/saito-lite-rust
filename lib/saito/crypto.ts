@@ -41,10 +41,11 @@ class Crypto {
    * initialization.
    */
 
-  hash(data: string) {
-    //
+  hash(data: string | Uint8Array) {
+    if (typeof data === "string") {
+      return this.app.hash(Buffer.from(data));
+    }
     // 64-bit hash
-    //
     return this.app.hash(data);
   }
 
@@ -207,7 +208,7 @@ class Crypto {
   }
 
   /**
-   * Signs a message buffer
+   * Signs a message buffer after generating a hash value of the buffer
    * @param {Buffer} buffer
    * @param {String} privatekey
    * @returns {string}
@@ -216,19 +217,20 @@ class Crypto {
     // prettier-ignore
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return secp256k1.sign(Buffer.from(this.hash(buffer.toString("hex")), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
+    return secp256k1.sign(Buffer.from(this.hash(buffer), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
   }
 
   /**
    * Confirms that a message was signed by the private
-   * key associated with a providded public key
+   * key associated with a provided public key
    * @param hash
    * @param {string} sig
    * @param {string} pubkey
    * @returns {boolean} is signature valid?
    */
-  verifyHash(hash: string, sig: string, pubkey: string) {
+  verifyHash(buffer: Buffer, sig: string, pubkey: string) {
     try {
+      let hash = this.hash(buffer);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return secp256k1.verify(
@@ -237,6 +239,8 @@ class Crypto {
         Buffer.from(this.fromBase58(pubkey), "hex")
       );
     } catch (err) {
+      console.log("sig : ", sig);
+      console.log("key : ", pubkey);
       console.error(err);
       return false;
     }
@@ -252,9 +256,12 @@ class Crypto {
    */
   verifyMessage(msg: string, sig: string, pubkey: string) {
     try {
-      const hash = this.hash(Buffer.from(msg, "utf-8").toString("hex"));
-      return this.verifyHash(hash, sig, pubkey);
+      // const hash = this.hash(Buffer.from(msg, "utf-8").toString("hex"));
+      return this.verifyHash(Buffer.from(msg, "utf-8"), sig, pubkey);
     } catch (err) {
+      console.log("msg : ", msg);
+      console.log("sig : ", sig);
+      console.log("key : ", pubkey);
       console.log(err);
       return false;
     }
@@ -282,11 +289,19 @@ class Crypto {
   isPublicKey(publickey: string) {
     if (publickey.length == 44 || publickey.length == 45) {
       if (publickey.indexOf("@") <= 0) {
-        return 1;
+	if (this.isBase58(publickey)) {
+          return 1;
+	}
       }
     }
     return 0;
   }
+
+  isBase58(t: string) { 
+    return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);
+  }
+
+ 
 
   //////////////////
   // MERKLE TREES //
@@ -395,8 +410,15 @@ class Crypto {
   // until it makes sense to create a dedicated helper class.
   //
   fastSerialize(jsobj) {
-    return stringify(jsobj);
+    return JSON.stringify(jsobj);
+//    return stringify(jsobj);
   }
+
+  convertStringToDecimalPrecision(stringx, p=8) {
+    stringx = parseFloat(stringx);
+    return stringx.toFixed(p).replace(/0+$/,'').replace(/\.$/,'\.0').replace(/\.0$/, '');
+  }
+
 }
 
 export default Crypto;

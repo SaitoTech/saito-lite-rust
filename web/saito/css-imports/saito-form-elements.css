@@ -1,50 +1,97 @@
-form {}
-
-/* ----------------------------------------------------------------
-Fieldset
------------------------------------------------------------------*/
-
-/* ----------------------------------------------------------------
-form label
------------------------------------------------------------------*/
-
-label {
-  margin: 0.5rem 0;
-  display: inline-block;
+select {
+  width: 100%;
   cursor: pointer;
-  font-size: 1.2rem;
-  text-transform: uppercase;
-  font-weight: 1000;
 }
 
 /* ----------------------------------------------------------------
-date inputs
+Selects
 -----------------------------------------------------------------*/
+.saito-select {
+  position: relative;
+  display: flex;
+  width: 20em;
+  height: 3em;
+  line-height: 3;
+  background-color: transparent;
+  overflow: hidden;
+  width: 100.01%;
+  border-radius: 0 1rem 1rem 0;
+  outline: none;
+  background-color: none;
+}
 
-/* ------->  refer to /saito/lib/datepicker/css/datepicker.css */
+.saito-select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 1em;
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-transition: 0.25s all ease;
+  -o-transition: 0.25s all ease;
+  transition: 0.25s all ease;
+  border-radius: 0 1rem 1rem 0;
+}
+
+.saito-select:hover::after {
+  color: var(--saito-white) !important;
+}
+
+.saito-select .saito-slct {
+  font-size: 2rem;
+}
+
+.saito-slct {
+  appearance: none;
+  background-color: var(--saito-white);
+  border-radius: 1rem;
+  padding: 0 1rem;
+}
+
+textarea,
+input {
+  background-color: var(--saito-background-color);
+  color: var(--saito-font-color);
+  border: 1px solid var(--saito-border-color);
+}
+
+
+textarea:focus, input:focus, select:focus {
+  outline: none;
+}
+
+option {
+  background: var(--saito-background-color);
+  color: var(--saito-font-color);
+}
 
 /* ----------------------------------------------------------------
 text and password inputs
 -----------------------------------------------------------------*/
 
 input[type="text"],
-input[type="password"] {
-  border: 1px solid var(--saito-border);
+input[type="password"],
+input[type="date"],
+input[type="datetime-local"] {
   padding: 1rem 1.5rem;
   font-size: 1.6rem;
   width: 20rem;
-  color: var(--saito-default);
+  color: var(--saito-font-color);
   border-radius: .5rem;
 }
 
 input[type="text"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="datetime-local"] {
   outline: none;
 }
 
 input[type="text"]::placeholder,
 input[type="password"]::placeholder {
-  color: var(--saito-border);
+  color: var(--saito-border-color);
 }
 
 /* ----------------------------------------------------------------
@@ -146,12 +193,12 @@ input[type="range"]::-webkit-slider-runnable-track {
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
   border-radius: .5rempx;
-  border: var(--saito-border);
+  border: var(--saito-border-color);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   box-shadow: var(--saito-box-shadow);
-  border: 1px solid #000000;
+  border: 1px solid var(--saito-black-faded);
   height: 3rem;
   width: 2rem;
   border-radius: .5rem;
@@ -168,12 +215,12 @@ input[type="range"]::-moz-range-track {
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
   border-radius: .5rempx;
-  border: var(--saito-border);
+  border: var(--saito-border-color);
 }
 
 input[type="range"]::-moz-range-thumb {
   box-shadow: var(--saito-box-shadow);
-  border: 1px solid #000000;
+  border: 1px solid var(--saito-black-faded);
   height: 3rem;
   width: 2rem;
   border-radius: .5rem;
@@ -200,25 +247,25 @@ input[type="range"]::-ms-track {
 
 input[type="range"]::-ms-fill-lower {
   background: var(--saito-primary);
-  border: var(--saito-border);
+  border: var(--saito-border-color);
   border-radius: .5rempx;
   box-shadow: var(--saito-box-shadow);
 }
 
 input[type="range"]::-ms-fill-upper {
-  background: #3071a9;
-  border: var(--saito-border);
+  /* background: #3071a9; */
+  border: var(--saito-border-color);
   border-radius: .5rempx;
   box-shadow: var(--saito-box-shadow);
 }
 
 input[type="range"]::-ms-thumb {
   box-shadow: var(--saito-box-shadow);
-  border: 1px solid #000000;
+  border: 1px solid var(--saito-black-faded);
   height: 3.6rem;
   width: 1.6rem;
   border-radius: .5rem;
-  background: #ffffff;
+  background: var(--saito-white);
   cursor: pointer;
 }
 
@@ -234,152 +281,4 @@ input[type="text"],
 input[type="password"],
 select {
   width: 100%;
-}
-
-/* ----------------------------------------------------------------
-Text area
------------------------------------------------------------------*/
-
-textarea {
-  background-color: white;
-  border: 1px solid var(--saito-border);
-  display: block;
-  padding: 1rem;
-  border-radius: .5rem;
-  width: 100%;
-  outline: none;
-  font-size: 1.6rem;
-}
-
-textarea::placeholder {
-  color: var(--saito-border);
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: var(--saito-primary);
-  color: var(--saito-white);
-  min-width: 16rem;
-  padding: 1.2rem 1.6rem;
-  z-index: 1;
-  border-radius: .5rem 2rem 2rem;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.dropdown-content>p {
-  font-size: 1.4rem;
-  cursor: pointer;
-}
-
-.dropdown:hover .dropdown-content {
-  display: flex;
-}
-
-/* ----------------------------------------------------------------
-Selects
------------------------------------------------------------------*/
-
-.saito-select-wrapper {
-  width: 100%;
-  position: relative;
-  cursor: pointer;
-}
-
-.saito-select-btn {
-  background-color: var(--saito-white);
-  display: flex;
-  align-items: center;
-  height: 4.5rem;
-  position: relative;
-  border: 1px solid var(--saito-border);
-  border-radius: .5rem;
-  border-bottom-left-radius: 0;
-  font-size: 1.6rem;
-  padding: 0 0 0 1.5rem;
-}
-
-.saito-select-btn span {
-  color: var(--saito-black);
-  width: calc(100% - 5rem);
-  display: flex;
-  justify-content: flex-start;
-}
-
-.saito-select-btn>div {
-  cursor: pointer;
-  margin-left: auto;
-  background-color: var(--saito-primary);
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 5rem;
-  border-left: 1px solid var(--saito-white);
-  border-top-right-radius: .5rem;
-  border-bottom-right-radius: .5rem;
-}
-
-.saito-select-btn>div>i {
-  font-size: 2rem;
-  color: var(--saito-white);
-}
-
-.saito-select-content {
-  position: absolute;
-  width: calc(100% - 5rem);
-  background-color: var(--saito-white);
-  justify-content: start;
-  display: none;
-  border: 1px solid var(--saito-border);
-  border-top-left-radius: 0;
-  border-bottom-left-radius: .5rem;
-  border-bottom-right-radius: .5rem;
-  border-top: none;
-  z-index: 12;
-}
-
-.saito-select-content li {
-  list-style: none;
-  cursor: pointer;
-  width: 100%;
-  /* padding: .5rem 1.5rem; */
-  color: var(--saito-black);
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
-  align-items: center;
-  height: 4rem;
-  font-size: 1.6rem;
-  border-bottom: 1px solid #a5a5a545;
-}
-
-.saito-select-content li:hover {
-  background-color: var(--saito-primary);
-  color: white;
-}
-
-.saito-select-content li:last-child {
-  border-bottom-left-radius: .5rem;
-  border-bottom-right-radius: .5rem;
-}
-
-.saito-select-content li:last-child {
-  border-bottom-left-radius: .5rem;
-  border-bottom-right-radius: .5rem;
-}
-
-.show-content {
-  display: block;
-}
-
-.flip-carret {
-  transition: all 0.3s;
-  transform: rotateX(180deg);
 }

@@ -1,8 +1,4 @@
 
-
-
-
-
   initializeHTML(app) {
 
     if (this.browser_active == 0) { return; }
@@ -29,16 +25,10 @@
       }
     } catch (err) {}
 
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
 
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-	game_mod.menu.showSubMenu("game-game");
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -68,7 +58,7 @@
 	}
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
@@ -77,32 +67,47 @@
         game_mod.handleStatsMenu();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
-      text : "Exit",
-      id : "game-exit",
-      class : "game-exit",
-      callback : function(app, game_mod) {
-        window.location.href = "/arcade";
-      }
-    });
-    this.menu.addMenuOption({
-      text : "Cards",
-      id : "game-cards",
-      class : "game-cards",
+    this.menu.addMenuOption("game-cards", "Cards");
+    
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Religion",
+      id : "game-religious-conflict",
+      class : "game-religious-conflict",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-        game_mod.handleCardsMenu();
+        game_mod.displayReligiousConflictSheet();
       }
     });
-    this.menu.addMenuOption({
-      text : "Factions",
-      id : "game-factions",
-      class : "game-factions",
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Debaters",
+      id : "game-debaters",
+      class : "game-debaters",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-	game_mod.menu.showSubMenu("game-factions");
+        game_mod.displayDebaters();
       }
     });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Explorers",
+      id : "game-explorers",
+      class : "game-explorers",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayExplorers();
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Conquistadors",
+      id : "game-conquistadors",
+      class : "game-conquistadors",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayConquistadors();
+      }
+    });
+
+    this.menu.addMenuOption("game-factions", "Factions");
+    
     this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburgs",
@@ -152,25 +157,12 @@
       }
     });
 
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.menu.addChatMenu(app, this);
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
+    this.log.render();
 
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
-
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
-
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
 
     //
     // add card events -- text shown and callback run if there
@@ -259,8 +251,8 @@
         this.hammer.attachEvents(this.app, this, '.gameboard');
       } else {
 	let his_self = this;
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render();
+        this.sizer.attachEvents('.gameboard');
         $('#gameboard').draggable({
 	  stop : function(event, ui) {
 	    his_self.saveGamePreference((his_self.returnSlug()+"-board-offset"), ui.offset);
@@ -270,8 +262,7 @@
 
     } catch (err) {}
 
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     this.displayBoard();
 
@@ -299,8 +290,6 @@
               <option value="1532">1532 - shorter game</option>
               <option value="tournament">1532 - tournament</option>
             </select>
-
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 
 	</div>
     </div>

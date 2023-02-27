@@ -57,7 +57,8 @@ body {
   text-align: center;
   display: flex;
   justify-content: space-around;
-  width: 112.5%;
+  width: 105%;
+  margin: 3rem 0 0 0;
 }
 
 .content>img {
@@ -143,10 +144,12 @@ video {
 }
 
 .links a button {
-  border-width: 2px;
-  border-color: var(--saito-orange);
-  color: var(--saito-orange);
-  font-weight: bolder;
+  border: 2px solid #fff;
+  background: var(--saito-orange);
+  background-size: cover;
+  background-position: bottom;
+  text-shadow: none;
+  color: #fff;
 }
 
 .links a button:hover {

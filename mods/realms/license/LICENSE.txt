@@ -1,0 +1,12 @@
+
+Forge is an open source implementation of an enchantment card game.
+
+All source code and graphics are released under the Saito License where not separately licensed.
+
+Please do not push copyrighted text or images into this directory.
+
+Splash page image used in the Arcade (Walker of the Apocalypse) is courtesy of Oliver Wetter (fantasio)
+
+https://www.deviantart.com/fantasio/art/Walker-of-the-Apocalypse-910476858
+
+

@@ -6,6 +6,7 @@
     if (card == "johnpaul") {
 
       this.game.state.events.johnpaul = 1;
+      this.uncancelEvent("solidarity");
 
       this.removeInfluence("poland", 2, "ussr");
       this.placeInfluence("poland", 1, "us");

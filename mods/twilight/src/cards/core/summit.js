@@ -7,33 +7,67 @@
 
       let us_roll = this.rollDice(6);
       let ussr_roll = this.rollDice(6);
+
+      this.updateLog(`${this.cardToText(card)}: US rolls ${us_roll}`);
+      this.updateLog(`${this.cardToText(card)}: USSR rolls ${ussr_roll}`); 
+
       let usbase = us_roll;
       let ussrbase = ussr_roll;
 
-      if (this.doesPlayerDominateRegion("ussr", "europe") == 1)   { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "mideast") == 1)  { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "asia") == 1)     { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "africa") == 1)   { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "camerica") == 1) { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "samerica") == 1) { ussr_roll++; }
-      if (this.doesPlayerDominateRegion("ussr", "seasia") == 1) { ussr_roll++; }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "europe") == 1)   { 
+	this.updateLog("Europe: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "mideast") == 1)  {
+	this.updateLog("Middle-East: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "asia") == 1)     {
+	this.updateLog("Asia: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "africa") == 1)   {
+	this.updateLog("Africa: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "camerica") == 1) {
+	this.updateLog("Central America: USSR +1 bonus");
+	ussr_roll++; 
+      }
+      if (this.doesPlayerDominateRegionForSummit("ussr", "samerica") == 1) {
+	this.updateLog("South America: USSR +1 bonus");
+	ussr_roll++; 
+      }
 
-      if (this.doesPlayerDominateRegion("us", "europe") == 1)   { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "mideast") == 1)  { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "asia") == 1)     { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "africa") == 1)   { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "camerica") == 1) { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "samerica") == 1) { us_roll++; }
-      if (this.doesPlayerDominateRegion("us", "seasia") == 1)   { us_roll++; }
+      if (this.doesPlayerDominateRegionForSummit("us", "europe") == 1)   { 
+	this.updateLog("Europe: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "mideast") == 1)  {
+	this.updateLog("Middle-East: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "asia") == 1)     {
+	this.updateLog("Asia: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "africa") == 1)   {
+	this.updateLog("Africa: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "camerica") == 1) {
+	this.updateLog("Central America: US +1 bonus");
+	us_roll++;
+      }
+      if (this.doesPlayerDominateRegionForSummit("us", "samerica") == 1) {
+	this.updateLog("South America: US +1 bonus");
+	us_roll++;
+      }
 
-      this.updateLog(`${this.cardToText(card)}: US rolls ${usbase} (${(us_roll - usbase)}) and USSR rolls ${ussrbase} (${(ussr_roll-ussrbase)})`);
+      this.updateLog(`${this.cardToText(card)}: US result ${us_roll} (+${(us_roll - usbase)} bonus)`);
+      this.updateLog(`${this.cardToText(card)}: USSR result ${ussr_roll} (+${(ussr_roll - ussrbase)} bonus)`);
 
-      let is_winner = 0;
-
-      if (us_roll > ussr_roll) { is_winner = 1; }
-      if (ussr_roll > us_roll) { is_winner = 1; }
-
-      if (is_winner == 0) {
+      if (us_roll === ussr_roll) {
         this.updateLog(`${this.cardToText(card)}: no winner`);
         this.displayModal(`${this.cardToText(card)}: no winner`);
         return 1;
@@ -42,13 +76,13 @@
         //
         // winner
         //
-        let my_go = 0;
-        if (us_roll > ussr_roll && this.game.player == 2) { my_go = 1; }
-        if (ussr_roll > us_roll && this.game.player == 1) { my_go = 1; }
+        let winner = 1;
+        if (us_roll > ussr_roll){
+          winner = 2;
+        }
 
-        if (my_go == 1) {
+        if (this.game.player === winner) {
 
-          //If the event card has a UI component, run the clock for the player we are waiting on
           this.startClock();
 
           let twilight_self = this;
@@ -87,7 +121,12 @@
 
           });
         }else{
-          this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);
+          if (this.game.player == 0){
+            this.updateStatus(`${this.playerRoles[winner].toUpperCase()} won the ${this.cardToText(card)}`);
+          }else{
+            this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);            
+          }
+
         }
         return 0;
       }

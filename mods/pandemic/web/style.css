@@ -1,4 +1,17 @@
+body{
+  font-family: arial, helvetica, sans-serif;
+  padding:0px;
+  margin:0px;
 
+  background: -webkit-linear-gradient(top, #0a2942, #010204);
+  background: -moz-linear-gradient(top, #0a2942, #010204);
+  background: linear-gradient(to top, #0a2942, #010204);
+  background-attachment: fixed;
+}
+
+img {
+  width: unset;
+}
 
 .status-message {
   padding-left: 0;
@@ -28,8 +41,13 @@
 }
 
 .epidemic_overlay .epidemic-card{
-  margin: 2em;
+  margin: 2em auto;
 }
+
+.epidemic-card img{
+  max-height: 40vh;
+}
+
 .close_epidemic_overlay{
   background-color: var(--saito-red);
   color: #fefefe;
@@ -40,6 +58,7 @@
   background-color: #444A;
 }
 
+/* Original */
 .hud-header.scientist{
   background-color: #ffffff;
 }
@@ -55,10 +74,31 @@
 .hud-header.operations{
   background-color: #6cb24f;
 }
-
 .scientist .hud-controls{
   color: hsl(0,0%,20%);
 }
+
+/* Retro */
+
+.hud-header.pantologist{
+  background-color: #8e51a0;
+}
+.hud-header.experimenter{
+  background-color: #00bac8;
+}
+.hud-header.physician{
+  background-color: #49575b;
+}
+.hud-header.field{
+  background-color: #c57a28;
+}
+.hud-header.contamination{
+  background-color: #49575b;
+}
+.hud-header.investigator{
+  background-color: #48555a;
+}
+
 
 /* have to override default tip without fucking up hud sizing */
 .tip.menu_icon{
@@ -86,9 +126,14 @@
   padding: 0.26em 0.14em;
   width: 100px;
   height: 100px;
+  transition: all 0.25s; /* to match the embedded icons*/
 }
 
-.status-icon-menu i.menu_icon_icon:hover{
+.fake-border:hover{
+  background-color: whitesmoke;
+  
+}
+.fake-border:hover i.menu_icon_icon, .status-icon-menu i.menu_icon_icon:hover{
   transform: unset;
   background-color: whitesmoke;
   color: black;
@@ -101,6 +146,7 @@
   padding: 0.5em 1em;
   box-sizing: content-box;
   white-space: nowrap;
+  top: 120%;
   z-index: 300;
   pointer-events: none;
 }
@@ -230,19 +276,31 @@
   font-size: 24px;
 }
 
-.virus-count+img.cube{
-  margin-left: 10px;
+.scoreboard_virus_group{
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-right: 6px;
+}
+
+.scoreboard_virus_group.i{
+  font-size: 20px;
+  width: 30px;
 }
 
 .virus-count{
-  margin: 0 2px;
+  margin-left: 2px;
+  text-shadow: 0 0 2px whitesmoke;
+  width: 2em;
 }
 
 .safe{
   color: darkgreen;
 }
 .caution{
-  color: darkorange; 
+  color: orange;
+  text-shadow: 0 0 2px black;
 }
 .danger{
   color: darkred;
@@ -252,12 +310,6 @@
   cursor: pointer;
 }
 
-body {
- font-family: arial, helvetica, sans-serif;
- font-size: 1.1em;
- padding:0px;
- margin:0px;
-}
 .link {
  border-bottom: 1px dashed;
 }
@@ -273,6 +325,7 @@ body {
   width: 32px;
   height: 60px;
   z-index: 42;
+  pointer-events: none;
   /*width: 72px;
   height: 100px;
   background-size: cover;*/
@@ -287,10 +340,17 @@ body {
   left: -25%;
 }
 
+.player img.scotland_pawn{
+  top: -50px;
+  left: 0px;
+  transform: translateX(-18%);
+}
+
 .player.active_player img{
-  border-radius: 20px;
+  animation: wiggle 4s ease-in-out infinite;
+  /*border-radius: 20px;
   background-color: #f5f5f5c0;
-  box-shadow: 0 0 10px 10px #f5f5f5f5;
+  box-shadow: 0 0 10px 10px #f5f5f5f5;*/
 }
 
 .move_counter{
@@ -300,12 +360,14 @@ body {
 .player.active_player .move_counter{
   display: block;
   position: absolute;
-  top: -20px;
-  right: -30px;
+  top: -43px;
+  right: -9px;
   font-size: 2em;
   color: black;
-  text-shadow: 0 5px 15px whitesmoke;
+  text-shadow: 2px 4px 8px silver;
 }
+
+/* For displaying an image */
 .research_station {
   position: absolute;
   background-image: url("/pandemic/img/Marker%20Research%20Station.png");
@@ -314,6 +376,12 @@ body {
   height: 102px;
   z-index: 29;
   display: none;
+}
+
+/* For marking up a city with background */
+.research_station_city{
+  border-radius: 100%;
+  background-color: ghostwhite;
 }
 
 .marker_infection_rate {
@@ -370,12 +438,12 @@ body {
   top: 75px;
   left: 2055px;
 }
+
 .gameboard {
-  background-image: url("/pandemic/img/Board.jpg");
-  background-size: cover;
-  width: 2602px;
-  height: 1812px;
+  position: relative; /* sizer turns this to absolute */
+  margin: 50px 5px;
 }
+
 .city {
   position: absolute;
   cursor: pointer;
@@ -384,6 +452,12 @@ body {
   z-index: 40;
 }
 
+.dyanmic_city{
+  background-size: 60px;
+  background-repeat: no-repeat;
+  background-position: center;
+ /* box-shadow: 0 0 5px 5px whitesmoke;*/
+}
 
 /*** Player Cards ***/
 
@@ -424,5 +498,73 @@ body {
   text-align: center;
 }
 .close_welcome_overlay{
-  margin: 40px;
+  margin: 40px auto;
+  max-width: 300px;
+}
+
+
+/* Keyframes */
+@keyframes wiggle {
+  0%, 7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-15deg);
+  }
+  20% {
+    transform: rotateZ(10deg);
+  }
+  25% {
+    transform: rotateZ(-10deg);
+  }
+  30% {
+    transform: rotateZ(6deg);
+  }
+  35% {
+    transform: rotateZ(-4deg);
+  }
+  40%, 100% {
+    transform: rotateZ(0);
+  }
+}
+
+.infection_highlight{
+  position: absolute;
+  border-radius: 100%;
+  background-color: rgba(0, 0, 0);
+  opacity: 0.9;
+  width: 300px;
+  height: 300px;
+  transition: width 2s, height 2s, opacity 2s;
+  transform: translate(-50%,-50%);
+}
+
+.infection_highlight.blocked{
+  background-color: rgb(100,100,100);
+}
+
+.infection_highlight.animateit{
+  width: 50px;
+  height: 50px;
+  opacity: 0.1;
+}
+
+.city .name{
+ position: relative; 
+ top: -10px;
+ left: -10px;
+ color: whitesmoke;
+ text-shadow: 2px 2px 3px black;
+ max-width: 150%;
+ white-space: nowrap;
+ overflow-x: visible;
+ font-size: 2rem;
+}
+
+.status ul li.card{
+  color: var(--saito-skyline-grey);
+}
+
+ul#status-cardbox{
+  overflow-y: scroll;
 }

@@ -10,13 +10,16 @@ saitolitedocs
 
 logs
 logs/*
-
+config/modules*
 config/options
 config/options.*
 config/modules.config.js
 config/runtime.config.js
 config/mixin-credentials.js
 
+
+.gitignore
+compile-e
 
 .DS_Store
 node_modules
@@ -28,10 +31,13 @@ test/
 
 data/*.sq3
 data/*/*.blk
-data/blocks/*.blkgit 
+data/backup/*
+data/blocks/*.blk
 data/blocks/*.sai
 data/blocks/empty
 data/shashmaps/*.smap
+data/backup/*
+data/backup
 
 bundler
 bundler/*
@@ -45,6 +51,7 @@ lib/saito/0.saito.js
 lib/modules/mods/*
 
 web/client.options
+web/saito/*saito.js
 web/saito/saito.js
 web/saito/saito.js.map
 web/saito/*.wasm
@@ -58,10 +65,11 @@ mods/appstore/bundler
 mods/appstore/bundler/*
 mods/appstore/modules
 mods/appstore/modules/*
-mods/stun-new
-mods/stun-new/*
-mods/stun-works
-mods/stun-works/*
+mods/stunx-staging
+mods/stunx-staging/*
+#mods/stunx
+#mods/stunx/*
+
 mods/forge
 mods/forge/*
 mods/citysim
@@ -81,7 +89,9 @@ mods/fcm-notification/*.json
 mods/registry/web/addresses.txt
 mods/reddit/web
 mods/reddit/web/*
+mods/redsquare/web/tweets.js
 mods/mailrelay/lib/template-credentials.js
 mods/tutorial4/web/txid
+mods/redsquare/web/tweets.js
 
 extras/shashmap/build

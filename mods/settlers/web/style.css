@@ -99,17 +99,18 @@ dt{
 
 
 /*My Background*/
-body {
+.gameboard {
   background-color: #369 !important;
   background: radial-gradient(circle farthest-corner at 50% 0%, #369 40%, lightseagreen 45%, #369 50%);
   background-size: 25px 25px;
-  position: unset; /* fixed from game.css does weird stuff*/
+  position: absolute; /* fixed from game.css does weird stuff*/
+  width: 100vw;
+  height: 100vh;
   z-index: 0;
-  font-size: 16px;
 }
 
 /*Richard background*/
-body {
+.gameboard {
   background: linear-gradient(-75deg, #369, #58b, #58b, #369);
   background-size: 100% 100%;
   /*animation: gradient 20s ease infinite;*/
@@ -571,15 +572,6 @@ input[type="checkbox"]{
   width: 3em;
 }
 
-.splash_overlay {
-  padding: 2px;
-  width: auto;
-  height: auto;
-  max-height: 90vh;
-  max-width: 95%;
-  min-width: 800px;
-}
-
 .noselect .icon{
   filter: grayscale(100%);
 }
@@ -687,6 +679,7 @@ ul.horizontal_list li.iconoption{
 
 /* Dice display (position handled by playerbox-graphic) */
 .diceroll{
+  position: relative;
   display: flex;
   margin: 0 auto;
   border: 2px solid black;
@@ -868,6 +861,13 @@ ul.horizontal_list li.iconoption{
   bottom: 1px;
 }
 
+.player-box-graphic .hand{
+  position: absolute;
+  top: 0;
+  left: -7vw;
+  z-index: -1;
+}
+
 /*Stats overlay table*/
 .rules-overlay{
   overflow-x: hidden;
@@ -931,6 +931,11 @@ ul.horizontal_list li.iconoption{
 }
 
 
+#game-post{
+  color: grey;
+  text-decoration: line-through;
+}
+
 /*
     Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
 */
@@ -974,25 +979,6 @@ ul.horizontal_list li.iconoption{
   }
 }
 
-@media screen and (orientation: landscape) and (max-width: 800px) {
-  .splash_overlay {
-    padding: 2px;
-    width: auto;
-    height: auto;
-    max-height: 90vh;
-    max-width: 95%;
-    min-width: 600px;
-  }
-}
-@media screen and (orientation: portrait) and (max-width: 800px) {
-  .splash_overlay {
-    padding: 2px;
-    width: auto;
-    height: auto;
-    max-height: 90vh;
-    max-width: 95%;
-    min-width: 400px;
-  }
-}
+
 
 

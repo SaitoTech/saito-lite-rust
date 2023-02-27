@@ -20,6 +20,7 @@ class Hearts extends GameTemplate {
 
     this.minPlayers = 4;
     this.maxPlayers = 4;
+    this.app = app;
 
     return this;
 
@@ -92,15 +93,10 @@ class Hearts extends GameTemplate {
     //
     // ADD MENU
     //
-    this.menu.addMenuOption({
-      text : "Game",
-      id : "game-game",
-      class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
+    this.menu.addSubMenuOption("game-info", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -109,7 +105,8 @@ class Hearts extends GameTemplate {
         game_mod.log.toggleLog();
       }
     });
-    this.menu.addSubMenuOption("game-game", {
+
+    this.menu.addSubMenuOption("game-info", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
@@ -118,27 +115,16 @@ class Hearts extends GameTemplate {
         game_mod.handleStatsMenu();
       }
     });
-    this.menu.addMenuIcon({
-      text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id : "game-menu-fullscreen",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      }
-    });
-    this.menu.addChatMenu(app, this);
 
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.cardbox.render(app, this);
-    this.cardbox.attachEvents(app, this);
+    this.cardbox.render();
 
     //
     // we want hud to support cardbox, so re-render
     //
-    this.hud.render(app, this);
-    this.hud.attachEvents(app, this);
+    this.hud.render();
 
     //
     // add card events -- for special hud treatment
@@ -169,8 +155,8 @@ class Hearts extends GameTemplate {
 
       } else {
 
-        this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render();
+        this.sizer.attachEvents('.gameboard');
 
       }
 

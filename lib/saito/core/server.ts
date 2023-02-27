@@ -30,6 +30,7 @@ class Server {
     publickey: "",
     protocol: "",
     name: "",
+    block_fetch_url: "",
     endpoint: {
       host: "",
       port: 0,
@@ -72,7 +73,10 @@ class Server {
 
     server.on("connection", (wsocket, request) => {
       //console.log("new connection received by server", request);
-      this.app.network.addRemotePeer(wsocket);
+      this.app.network.addRemotePeer(wsocket).catch((error) => {
+        console.log("failed adding remote peer");
+        console.error(error);
+      });
     });
   }
 
@@ -138,6 +142,15 @@ class Server {
       this.app.storage.saveOptions();
     }
 
+    let url = this.server.endpoint.protocol;
+    url += "://";
+    url += this.server.endpoint.host;
+    url += ":";
+    url += this.server.endpoint.port;
+    url += "/block/";
+
+    this.server.block_fetch_url = url;
+
     //
     // save options
     //
@@ -167,11 +180,12 @@ class Server {
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const blk = this.app.blockchain.blocks[bhash];
+        const blk = this.app.blockchain.blocks.get(bhash);
         if (!blk) {
           return;
         }
         const filename = blk.returnFilename();
+        console.info('### write from line 188 of server.ts.')
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
@@ -185,8 +199,9 @@ class Server {
         //let blk = await this.app.blockchain.returnBlockByHash(bsh);
 
         console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+        console.info('### write from line 202 of server.ts.')
         res.status(400);
-        res.send({
+        res.end({
           error: {
             message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
           },
@@ -206,7 +221,7 @@ class Server {
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const blk = server_self.app.blockchain.blocks[bhash];
+        const blk = server_self.app.blockchain.blocks.get(bhash);
         if (!blk) {
           return;
         }
@@ -215,12 +230,12 @@ class Server {
         blkwtx.transactions = blk.transactions;
         blkwtx.app = null;
 
+        console.info('### write from line 232 of server.ts.')
         res.writeHead(200, {
           "Content-Type": "text/plain",
           "Content-Transfer-Encoding": "utf8",
         });
-        res.write(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
-        res.end();
+        res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
       } catch (err) {
         //
         // file does not exist on disk, check in memory
@@ -228,8 +243,9 @@ class Server {
         //let blk = await this.app.blockchain.returnBlockByHash(bsh);
 
         console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+        console.info('### write from line 188 of server.ts.')
         res.status(400);
-        res.send({
+        res.end({
           error: {
             message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
           },
@@ -282,62 +298,54 @@ class Server {
       //
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const block = this.app.blockchain.blocks[bsh];
+      const block = this.app.blockchain.blocks.get(bsh);
 
-      if (block) {
-        if (block.hasKeylistTransactions(bsh, keylist) === 0) {
-          res.writeHead(200, {
-            "Content-Type": "text/plain",
-            "Content-Transfer-Encoding": "utf8",
-          });
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
-
-          //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
-          res.write(buffer, "utf8");
-          res.end();
+      if (!block) {
+        console.log(`block : ${bsh} doesn't exist...`);
+        res.sendStatus(404);
+        return;
+      }
+      if (!block.hasKeylistTransactions(keylist)) {
+        console.info('### write from line 307 of server.ts.')
+        res.writeHead(200, {
+          "Content-Type": "text/plain",
+          "Content-Transfer-Encoding": "utf8",
+        });
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const liteblock = block.returnLiteBlock(keylist);
+        const buffer = Buffer.from(liteblock.serialize());
+          res.end(buffer, "utf8");
           return;
         }
 
-        //
-        // TODO - load from disk to ensure we have txs -- slow.
-        //
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const blk = await this.app.storage.loadBlockByHash(bsh);
+      //
+      // TODO - load from disk to ensure we have txs -- slow.
+      //
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const blk = await this.app.storage.loadBlockByHash(bsh);
 
         if (blk == null) {
-          res.writeHead(200, {
-            "Content-Type": "text/plain",
-            "Content-Transfer-Encoding": "utf8",
-          });
-          res.send("{}");
-          res.end();
+          res.sendStatus(404);
           return;
         } else {
           const newblk = blk.returnLiteBlock(keylist);
 
+          console.info('### write from line 333 of server.ts.')
           res.writeHead(200, {
             "Content-Type": "text/plain",
             "Content-Transfer-Encoding": "utf8",
           });
-
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
-          res.write(buffer, "utf8");
-          //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
-          res.end();
+          const buffer = Buffer.from(liteblock.serialize()); //, "binary").toString("base64");
+          res.end(buffer);
           return;
         }
 
         console.log("hit end...");
         return;
-      }
 
-      console.log("block doesn't exist...");
-      return;
     });
 
     app.get("/block/:hash", async (req, res) => {
@@ -355,10 +363,19 @@ class Server {
           return res.sendStatus(404); // Not Found
         }
         let buffer = block.serialize();
-        let bufferString = Buffer.from(buffer).toString("base64");
+        // let bufferString = Buffer.from(buffer); //.toString("base64");
 
         res.status(200);
-        res.end(bufferString);
+        console.info('### write from line 369 of server.ts.')
+        console.log("serving block . : " + hash + " , buffer size : " + buffer.length);
+        res.end(buffer);
+
+        // let block1 = new Block(this.app);
+        // block1.deserialize(buffer);
+        // block1.generateMetadata();
+        // if (block1.returnHash() !== hash) {
+        //   console.log("error in buffer");
+        // }
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
       }
@@ -392,41 +409,11 @@ class Server {
         buffer = Buffer.from(buffer, "utf-8");
 
         res.status(200);
+        console.info('### write from line 412 of server.ts.')
+        console.log("serving block .. : " + hash + " , buffer size : " + buffer.length);
         res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
-      }
-    });
-
-    app.get("/json-block/:hash", async (req, res) => {
-      try {
-        const hash = req.params.hash;
-        console.debug("server giving out block : " + hash);
-
-        if (!hash) {
-          console.warn("hash not provided");
-          return res.sendStatus(400); // Bad request
-        }
-
-        const block = await this.app.blockchain.loadBlockAsync(hash);
-        if (!block) {
-          console.warn("block not found for : " + hash);
-          return res.sendStatus(404); // Not Found
-        }
-
-        let block_to_return = { block: null, transactions: null };
-
-        block_to_return.block = JSON.parse(JSON.stringify(block.block));
-        block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
-
-        let buffer = JSON.stringify(block_to_return).toString("utf-8");
-        console.log("buffer is created!");
-        buffer = Buffer.from(buffer, "utf-8");
-
-        res.status(200);
-        res.end(buffer);
-      } catch (err) {
-        console.log("ERROR: server cannot feed out block ");
       }
     });
 
@@ -449,15 +436,6 @@ class Server {
       res.sendFile(client_options_file);
       //res.send(this.app.storage.returnClientOptions());
       return;
-    });
-
-    app.get("/runtime", (req, res) => {
-      res.writeHead(200, {
-        "Content-Type": "text/json",
-        "Content-Transfer-Encoding": "utf8",
-      });
-      res.write(Buffer.from(JSON.stringify(this.app.options.runtime)), "utf8");
-      res.end();
     });
 
     app.get("/r", (req, res) => {
@@ -504,6 +482,10 @@ class Server {
     /////////////
     // modules //
     /////////////
+    //
+    // res.write -- have to use res.end()
+    // res.send --- is combination of res.write() and res.end()
+    //
     this.app.modules.webServer(app, express);
 
     app.get("*", (req, res) => {

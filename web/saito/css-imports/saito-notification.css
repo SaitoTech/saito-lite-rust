@@ -1,0 +1,30 @@
+.notification-item {
+    padding-top: 1rem;
+}
+
+.notification-tweet {
+  cursor: pointer;
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  position: relative;
+}
+
+.notification-item:hover {
+  background-color: var(--saito-background-light);
+}
+
+.notifications-empty {
+  margin-left: 1rem;
+  display: flex;
+  margin-left: 40%;
+}
+
+.notifications-empty p {
+  font-size: 1.8rem;
+}
+
+.notifications-empty span {
+  margin-right: 1rem;
+  font-size: 1.8rem;
+}
+

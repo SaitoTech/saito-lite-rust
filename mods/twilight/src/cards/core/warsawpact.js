@@ -6,10 +6,6 @@
 
       this.game.state.events.warsawpact = 1;
 
-      if (this.game.player == 2) {
-        //this.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play ${this.cardToText(card)}</div>`);
-        return 0;
-      }
       if (this.game.player == 1) {
 
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -130,10 +126,9 @@
 
           }
         });
-        return 0;
       }
 
-      return 1;
+      return 0;
     }
 
 

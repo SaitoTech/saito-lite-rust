@@ -1,10 +1,12 @@
-const GameTemplate = require("../../lib/templates/gametemplate");
+const GameTableTemplate = require("../../lib/templates/gametabletemplate");
 const JSON = require("json-bigint");
+const PokerGameRulesTemplate = require("./lib/poker-game-rules.template");
+const PokerGameOptionsTemplate = require("./lib/poker-game-options.template");
 
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
-class Poker extends GameTemplate {
+class Poker extends GameTableTemplate {
   constructor(app) {
     super(app);
 
@@ -15,52 +17,133 @@ class Poker extends GameTemplate {
       "Texas Hold'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory?";
     this.categories = "Games Cardgame Casino";
     this.card_img_dir = "/poker/img/cards";
+    this.icon = "fa-solid fa-diamond";
 
     this.minPlayers = 2;
     this.maxPlayers = 6;
-    this.decimal_precision = 0; /*Default, since default is 15/30 blinds*/
+    this.crypto_msg = "settles round-by-round";
     this.settlement = [];
+
+    /********************
+    *********************
+    *********************
+    ***
+    *** prior to any refactor, we will simply store all crypto values in string format and do
+    *** sanity checks to prevent division errors. all conversions should be handled via the 
+    *** functions provided at the top of this file.
+    ***
+    *** addToString
+    *** subtractFromString
+    ***
+    this.game.crypto;    		// (STRING) TICKER of crypto or "CHIPS" in standard game
+    this.game.stake;     		// (STRING) TOTAL crypto buy-in OR 100 (if chips)
+    this.game.chips;     		// (STRING) TOTAL CHIPS per buy-in, 
+    this.game.blind_mode; 		// (STRING) "static" or "increase"
+
+
+    this.game.state.round; 		// (INT) round in game
+    this.game.state.big_blind;		// (STRING) value of big-blind
+    this.game.state.small_blind;	// (STRING) value of small-blind
+    this.game.state.last_raise; 	// (STRING) value of last raise
+    this.game.state.required_pot;	// (STRING) value players need in pot to keep playing
+    this.game.state.pot;		// (STRING) current pot
+
+    this.game.state.passed[i];		// (INT) 1 = has passed
+    this.game.state.player_pot[i];	// (STRING) value contributed to pot
+    this.game.state.debt[i];		// (STRING) amount due
+    this.game.state.player_credit[i];	// (STRING) bankroll
+    *********************
+    *********************
+    ********************/
+
     this.updateHTML = "";
-    this.useGraphics = true;
-    return this;
+
+//    this.useGraphics = true;
+    this.useGraphics = false;
+
   }
 
-  // Opt out of letting League create a default
-  respondTo(type){
-    if (type == "default-league") {
-      return null;
-    }
-    return super.respondTo(type);
+
+  //
+  // float to string
+  //
+  fts(val) {
+    try { if (val.toFixed(8) ) { val = val.toFixed(8); } } catch (err) {}
+    return this.app.crypto.convertStringToDecimalPrecision(val);
   }
+
+  //
+  // string to float
+  //
+  stf(val) {
+    if (!isNaN(val) && val.toString().indexOf('.') != -1) { 
+      return parseFloat(parseFloat(val).toFixed(8)); 
+    }
+    val = parseFloat(val);
+    val = parseFloat(val.toFixed(8));
+    return val;
+  }
+
+  //
+  // add to string
+  //
+  addToString(x, add_me) {
+    let y = this.stf(x) + this.stf(add_me)
+    y = this.fts(y);
+    return this.app.crypto.convertStringToDecimalPrecision(y, 8);
+  }
+
+  //
+  // subtract from string
+  //
+  subtractFromString(x, subtract_me) {
+    let y = this.stf(x) - this.stf(subtract_me)
+    if (y < 0) { y = 0; }
+    return this.app.crypto.convertStringToDecimalPrecision(y, 8);
+  }
+
+  //
+  // returns "1 CHIP" or "2.412 SAITO" or "1.423 CHIPS" etc.
+  //
+  formatWager(x, includeTicker=true) {
+    let numChips = x.toString();
+    if (includeTicker) {
+      if (numChips === "1" || this.stf(numChips) == 1) {
+	if (this.game.crypto === "CHIPS") { chips = "CHIP"; }
+      }
+      return `${this.app.crypto.convertStringToDecimalPrecision(numChips)} ${this.game.crypto}`;
+    } else {
+      return `${this.app.crypto.convertStringToDecimalPrecision(numChips)}`;
+    }
+
+  }
+
+
 
 
   initializeHTML(app) {
 
     if (!this.browser_active) { return; }
-    
+    if (this.initialize_game_run) { return; }
+
     super.initializeHTML(app);
 
     //
     // ADD MENU
     //
-    this.menu.addMenuOption({
-      text: "Game",
-      id: "game-game",
-      class: "game-game",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addMenuOption("game-game", "Game");
+    this.menu.addMenuOption("game-info", "Info");
+
+    this.menu.addSubMenuOption("game-info", {
       text: "Rules",
       id: "game-rules",
       class: "game-rules",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Log",
       id: "game-log",
       class: "game-log",
@@ -69,7 +152,7 @@ class Poker extends GameTemplate {
         game_mod.log.toggleLog();
       },
     });
-    this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-info", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
@@ -78,38 +161,29 @@ class Poker extends GameTemplate {
         game_mod.handleStatsMenu();
       },
     });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Exit",
-      id: "game-exit",
-      class: "game-exit",
-      callback: function (app, game_mod) {
-        window.location.href = "/arcade";
-      },
-    });
-    this.menu.addMenuIcon({
-      text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
-      id: "game-menu-fullscreen",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        app.browser.requestFullscreen();
-      },
-    });
 
-    this.menu.addChatMenu(app, this);
-    this.menu.render(app, this);
-    this.menu.attachEvents(app, this);
+    this.menu.addChatMenu();
+    this.menu.render();
 
-    this.restoreLog();
-    this.log.render(app, this);
-    this.log.attachEvents(app, this);
+    this.log.render();
 
-    this.playerbox.render(app, this);
-    this.playerbox.attachEvents(app, this); //empty function
+    this.playerbox.render();
     this.playerbox.addClassAll("poker-seat-", true);
     this.playerbox.addStatus(); //enable update Status to display in playerbox
- 
-    if (this.game.crypto){
-      if (this.game.crypto == "TRX"){
+
+    try{
+      document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
+      if (this.game.state.button_player <= this.game.players.length && this.game.state.button_player > 0){
+        document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+      }
+    } catch(err) {
+      console.log("Error initializing scoreboard",err);
+    }
+
+
+    if (this.game?.options?.crypto){
+
+      if (this.game.options.crypto == "TRX"){
         try{
           if (!document.querySelector(".crypto_logo")){
             $(".gameboard").append(app.browser.htmlToElement(`
@@ -156,226 +230,206 @@ class Poker extends GameTemplate {
     }
   }
 
-  initializeGame(game_id) { 
-  
-    // initialize game state
-    if (this.game.deck.length == 0) {
-      this.game.state = this.returnState(this.game.players.length);
-      this.game.stats = this.returnStats();
-      this.startRound(); //Does some DOM stuff
-    }
 
-    //Parse game options
-    this.game.crypto = (this.game.options.crypto)? this.game.options.crypto: "";
-    this.game.stake =  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 0;
-    this.game.chipValue = this.game.stake / parseInt(this.game.options.num_chips);
-    this.game.tournamentBlinds = (this.game.options.blind_mode === "increase");
-    this.useGraphics = (this.game.options.chip_graphics == 1);
-    let chipValueStr = this.game.chipValue.toString();
-    this.decimal_precision = (chipValueStr.includes(".")) ? chipValueStr.split(".")[1].length : chipValueStr.length;
-    console.log("INITIALIZE GAME WITH CRYPTO: " + this.game.crypto);
-    console.log(chipValueStr, this.decimal_precision);
-    if (this.browser_active) {
-      this.displayBoard();
-    }
-  }
+  //
+  // initializes chips / pools / pots information
+  //
+  initializeGameStake(crypto, stake) {
 
+    this.game.crypto			= "CHIPS";
+    this.game.stake                     = "100";
+    this.game.chips                     = "100";
+    this.game.blind_mode                = "static";
 
-  /*
-  Call be "turn", "reveal", "fold" if any of them lead to end of round conditions
-  */
-  startNextRound() {
+    if (this.game.options.num_chips > 0) { this.game.stake = this.game.options.num_chips.toString(); }
+    if (this.game.options.crypto)        { this.game.crypto = this.game.options.crypto; }
+    if (this.game.options.stake)         { this.game.stake = this.game.options.stake; }
+    if (this.game.options.blind_mod)     { this.game.blind_mod = this.game.options.blind_mode; }
 
-    console.log("--------- SNR ---------");
-
-    this.game.state.round++;
-    this.game.state.preflop = true;
-    
-    //Shift dealer, small blind, and big blind
-    this.game.state.big_blind_player--;
-    this.game.state.small_blind_player--;
-    this.game.state.button_player--; //dealer
-    
-    if (this.game.state.big_blind_player < 1) {
-      this.game.state.big_blind_player = this.game.players.length;
-    }
-    if (this.game.state.small_blind_player < 1) {
-      this.game.state.small_blind_player = this.game.players.length;
-    }
-    if (this.game.state.button_player < 1) {
-      this.game.state.button_player = this.game.players.length;
-    }
-
-    //Adjust blind levels if necessary
-    if (this.game.tournamentBlinds && this.game.state.round % 5 == 0) { //TODO: parameterize num_rounds between increases
-      this.game.state.small_blind++;
-      this.game.state.big_blind = 2 * this.game.state.big_blind;
-      this.updateLog(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);
-      salert(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);  
-    }
-
-    this.game.state.flipped = 0;
-    this.game.state.plays_since_last_raise = 0;
-    this.game.state.pot = 0.0;
-    this.game.state.last_raise = this.game.state.big_blind;
-    this.game.state.required_pot = this.game.state.big_blind;
+    this.game.state.round		= 1;
+    this.game.state.big_blind		= this.fts(((this.stf(this.game.stake) * 2) / this.stf(this.game.chips)));
+    this.game.state.small_blind		= this.fts((this.stf(this.game.stake) / this.stf(this.game.chips)));
+    this.game.state.last_raise          = this.game.state.big_blind;
+    this.game.state.required_pot        = this.game.state.big_blind;    
 
     for (let i = 0; i < this.game.players.length; i++) {
       this.game.state.passed[i] = 0;
-      this.game.state.player_pot[i] = 0;
-      this.game.stats[this.game.players[i]].handsPlayed++;
+      this.game.state.player_pot[i] = "0";
+      this.game.state.debt[i] = "0";
+      this.game.state.player_credit[i] = this.game.stake;
     }
 
-    //Check for end of game -- everyone except 1 player has zero credit...
-    let alive_players = 0;
-    let winner = -1;
-     for (let i = 0; i < this.game.state.player_credit.length; i++) {
-        if (this.game.state.player_credit[i] > 0) {
-            alive_players++;
-            winner = i;
-        } 
-     }
-
-    if (this.browser_active){
-      this.displayPlayers(true); //to update chips before game_over
-    }
-    this.game.state.all_in = false; //we are stupidly testing for all_in on the display players
-     
-
-    //Catch that only one player is standing at the start of the new round
-    if (alive_players == 1) {
-      this.game.queue = [];
-      this.game.queue.push("winner\t" + winner);
-      this.settleLastRound();
-      return 1;
-    }
-
+    this.game.queue = ["newround"];
 
     //
-    // only remove if there are more than two players
-    // if two players - let victory play out.
+    // and redisplay board
     //
-    let removal = false;
+    this.displayBoard();
 
-    if (alive_players < this.game.state.player_credit.length) {
-      console.log("Need to remove a player");
-      console.log(JSON.parse(JSON.stringify(this.game.players)));
-      for (let i = this.game.state.player_credit.length-1; i >= 0 ; i--) {
-        if (this.game.state.player_credit[i] <= 0) {
-          this.updateLog(`Player ${i+1} has been removed from the game.`);
-          removal = true;
-          //
-          // remove any players who are missing
-          this.game.state.player_names.splice(i, 1);
-          this.game.state.player_pot.splice(i, 1);
-          this.game.state.player_credit.splice(i, 1);
-          this.game.state.passed.splice(i, 1);
-          this.removePlayer(this.game.players[i]);
+  }
 
-          //Adjust dealer for each removed player
-          if (i < this.game.state.button_player){
-            this.game.state.button_player--;
+  
+  initializeGame() { 
+  
+    super.initializeGame(); //Update max players
+
+    //
+    // CHIPS or CRYPTO ?
+    //
+    // initializeGameStake will use this info
+    //
+    this.game.crypto 		= (this.game.options.crypto)? this.game.options.crypto: "CHIPS";
+    this.game.stake 		=  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 100;
+    this.settleNow 		= (this.game.options.settle_by_round == 1);
+
+    //
+    // initialize game state
+    //
+    if (this.game.deck.length == 0) {
+      this.game.state = this.returnState(this.game.players.length);
+      this.initializeGameStake(this.game.crypto, this.game.stake);
+      this.game.stats = this.returnStats();
+      this.startRound(); // DOM update on new round
+    }
+
+    //
+    // browsers display UI
+    //
+    if (this.browser_active) {
+      this.displayBoard();
+    }
+
+    //
+    // if reloading, make sure we can refresh the queue operations
+    //
+    this.game.halted = 0;
+
+  }
+
+  //
+  // returns "true" or "false" based on need to settle
+  //
+  needToSettleDebt(){
+
+    if (!this.game.crypto || this.settleNow) { return false; }
+
+    if (this.toLeave.length > 0){
+      return true;
+    }
+    for (let i = 0; i < this.game.state.player_credit.length; i++) {
+      if (this.stf(this.game.state.player_credit[i]) <= 0){
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  //
+  // adds settlement instructions to queue for processing
+  //
+  settleDebt(){
+    for (let i = 0; i < this.game.state.debt.length; i++){
+      //Player i+1 owes money
+      if (this.game.state.debt[i] > 0){
+        //But to whom
+        for (let j = 0; j < this.game.state.debt.length; j++){
+          if (this.game.state.debt[j] < 0){
+            let amount_to_send = Math.min(this.stf(this.game.state.debt[j]),this.stf(this.game.state.debt[i]));
+            if (amount_to_send > 0){
+              this.settleNow = true;
+              this.game.state.debt[i] = this.subtractFromString(this.game.state.debt[i], this.fts(amount_to_send));
+              this.game.state.debt[j] = this.addToString(this.game.state.debt[j], this.fts(amount_to_send));
+              let ts = new Date().getTime();
+              this.rollDice();
+              let uh = this.game.dice;
+              this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[j]}\t${this.fts(amount_to_send)}\t${ts}\t${uh}\t${this.game.crypto}`);
+              this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[j]}\t${this.fts(amount_to_send)}\t${ts}\t${uh}\t${this.game.crypto}`);
+            }
           }
         }
       }
     }
-
-    if (removal){
-      this.cardfan.hide(); //hide everyone's cards at first
-      
-      //Update DOM -- re-render the playerboxes
-      try{
-        let boxes = document.querySelectorAll(".player-box");
-        for (let box of boxes){
-          box.remove();
-        }
-        this.playerbox.render(this.app,this);
-        this.playerbox.addClassAll("poker-seat-", true);
-        this.playerbox.addStatus(); //enable update Status to display in playerbox
-
-      } catch(err) {
-        console.log("ERROR reRendering Playerboxes",err);
-      }
-
-      //Fix dealer and blinds Dealer -> Small -> Big
-      if (this.game.state.button_player < 1) {
-        this.game.state.button_player = this.game.players.length;
-      } 
-      this.game.state.small_blind_player = this.game.state.button_player - 1;     
-      if (this.game.state.small_blind_player < 1) {
-        this.game.state.small_blind_player = this.game.players.length;
-      }
-      this.game.state.big_blind_player = this.game.state.small_blind_player - 1;     
-      if (this.game.state.big_blind_player < 1) {
-        this.game.state.big_blind_player = this.game.players.length;
-      }
-    }
-
-    this.startRound();
   }
 
+
+  
   settleLastRound() {
     /*
     We want these at the end of the queue so they get processed first, but if 
     any players got removed, there will be some issues....
     */
-    if (this.game.crypto) {
-      console.log("PROCESSING THE SETTLEMENT NOW!");
-      console.log(JSON.stringify(this.settlement));
+    let msg = "Clearing the table";
+    this.game.queue.push("newround");   
+    //Have to do twice because want to add players before checking for end of game condition,
+    //but if too many players want to join they may want to take the seat of an eliminated player
+    this.game.queue.push("PLAYERS");
+    this.game.queue.push("checkplayers");     
+    this.game.queue.push("PLAYERS");
+
+    if (this.needToSettleDebt()){ this.settleDebt(); }
+
+    if (this.game.crypto && this.settleNow) {
+
+      msg += " and settling bets...";
+
       for (let i = 0; i < this.settlement.length; i++) {
         this.game.queue.push(this.settlement[i]);
       }
-      console.log("new queue: " + JSON.stringify(this.game.queue));    
+
+      this.settleNow = (this.game.options.settle_by_round == 1);
+    } else {
+      msg += "...";
     }
+
+    this.cardfan.hide();
+
+    this.updateStatus(msg);
+   
     this.settlement = [];
+
+
   }
 
 
   startRound(){
 
-    console.log("START ROUND");
-    
-    
+    this.updateLog("===============");
     this.updateLog("Round: " + this.game.state.round);
-    this.updateLog(`Table ${this.game.id.substring(0, 10)}, Player ${this.game.state.button_player} is the button`);
 
     for (let i = 0; i < this.game.players.length; i++) {
-      this.updateLog(`Player ${(i + 1)}: ${this.game.state.player_names[i]} (${this.game.state.player_credit[i]})`);
+      this.updateLog(`Player ${(i + 1)}${i+1 == this.game.state.button_player ? " (dealer)":""}: ${this.game.state.player_names[i]} (${this.formatWager(this.game.state.player_credit[i], true)})`);
     }
-    
-    /*
-    //this.displayBoard();  
-    document.querySelector(".round").innerHTML = `Round : ${this.game.state.round}`;
-    document.querySelector(".dealer").innerHTML = `Button : Player ${this.game.state.button_player}`;
-    */
+ 
+    try {   
+      if (this.browser_active){
+        document.querySelector("#game-scoreboard #round").innerHTML = `Round: ${this.game.state.round}`;
+        document.querySelector("#game-scoreboard #dealer").innerHTML = `Button: ${this.getShortNames(this.game.players[this.game.state.button_player-1],6)}`;
+      }
+    } catch (err) {}
+
     this.initializeQueue();
 
   }
 
    /*
-  Called by initializeGame and startNextRound
+  Called by initializeGame 
   */
   initializeQueue() {
 
     this.game.queue = [];
 
-    this.game.queue.push("round");
+    this.game.queue.push("ante");
     this.game.queue.push("READY");
-    this.game.queue.push("POOL\t1"); // CREATE pool for cards on table
+    this.game.queue.push("POOL\t1"); // CREATE or RESET pool for cards on table
 
     //Deal two cards to everyone
     this.game.queue.push(`SIMPLEDEAL\t2\t1\t`+ JSON.stringify(this.returnDeck()));
-
-    // adds any outstanding settlement to queue (if not already processed)
-    this.settleLastRound();
-    let msg = "Clearing the table";
-        msg += (this.game.crypto)? " and settling bets..." : "...";
-    this.updateStatus(msg);
-
-
   }
 
+
   handleGameLoop() {
+
     ///////////
     // QUEUE //
     ///////////
@@ -384,33 +438,153 @@ class Poker extends GameTemplate {
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-      this.displayTable(); //to update pot
+      if (this.browser_active){
+        this.updatePot(); //to update pot  
+      }
 
       console.log("QUEUE: " + JSON.stringify(this.game.queue));
       //this.outputState();
 
-      if (mv[0] == "notify") {
-        this.updateLog(mv[1]);
-        this.game.queue.splice(qe, 1);
-      }
-
       if (mv[0] === "winner") {
+        this.displayPlayers(true); //to update chips before game_over
         this.game.queue = [];
         this.game.crypto = null;
         this.endGame(this.game.players[parseInt(mv[1])], "elimination"); 
         return 0;
       }
 
+      if (mv[0] === "newround"){
+
+        this.game.state.round++;
+
+        //Shift dealer, small blind, and big blind
+
+        this.game.state.button_player--; //dealer
+        if (this.game.state.button_player < 1) {
+          this.game.state.button_player = this.game.players.length;
+        }
+
+        this.game.state.small_blind_player = this.game.state.button_player - 1;
+        if (this.game.state.small_blind_player < 1) {
+          this.game.state.small_blind_player = this.game.players.length;
+        }
+        
+        this.game.state.big_blind_player = this.game.state.small_blind_player - 1;
+        if (this.game.state.big_blind_player < 1) {
+          this.game.state.big_blind_player = this.game.players.length;
+        }
+
+        //Adjust blind levels if necessary
+        if (this.game.blind_mode == "increase" && this.game.state.round % 5 == 0) { //TODO: parameterize num_rounds between increases
+          this.game.state.small_blind = this.addToString(this.game.state.small_blind, this.game.state.small_blind);
+          this.game.state.big_blind = this.addToString(this.game.state.big_blind, this.game.state.big_blind);
+          this.updateLog(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);
+          salert(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);  
+        }
+
+        this.game.state.flipped = 0;
+        this.game.state.plays_since_last_raise = 0;
+        this.game.state.pot = "0.0";
+        this.game.state.last_raise = this.game.state.big_blind;
+        this.game.state.required_pot = this.game.state.big_blind;
+        this.game.state.all_in = false; //we are stupidly testing for all_in on the display players
+
+        for (let i = 0; i < this.game.players.length; i++) {
+          this.game.state.passed[i] = 0;
+          this.game.state.player_pot[i] = "0";
+          this.game.stats[this.game.players[i]].handsPlayed++;
+        }
+
+        this.startRound();
+        return 1;
+      }
+
       //
       // turns "resolve"
       //
       if (mv[0] === "resolve") {
-        this.game.queue.splice(qe - 1, 2);
+        let last_mv = this.game.queue[qe-1].split("\t");
+        if (mv[1] === last_mv[0]){
+          this.game.queue.splice(qe - 1, 2);
+        } else {
+          console.error("Unexpected resolve in queue");
+          this.game.queue.splice(qe, 1);
+        }
         return 1;
       }
 
+
+      if (mv[0] === "checkplayers"){
+
+        this.game.queue.splice(qe, 1);
+
+        //Check for end of game -- everyone except 1 player has zero credit...
+        let alive_players = 0;
+        let winner = -1;
+         for (let i = 0; i < this.game.state.player_credit.length; i++) {
+            if (this.stf(this.game.state.player_credit[i]) > 0) {
+                alive_players++;
+                winner = i;
+            } 
+         }
+     
+        //Catch that only one player is standing at the start of the new round
+        if (alive_players == 1) {
+          this.game.queue = [];
+          this.game.queue.push("winner\t" + winner);
+          return 1;
+        }
+
+
+        //
+        // only remove if there are more than two players
+        // if two players - let victory play out.
+        //
+        let removal = false;
+
+        if (alive_players < this.game.state.player_credit.length) {
+          for (let i = this.game.state.player_credit.length-1; i >= 0 ; i--) {
+            if (this.stf(this.game.state.player_credit[i]) <= 0) {
+              this.updateLog(`Player ${i+1} (${this.game.state.player_names[i]}) has been eliminated from the game.`);
+              removal = true;
+              //
+              // remove any players who are missing
+              this.removePlayerFromState(i);
+              this.removePlayer(this.game.players[i]);
+
+              //Adjust dealer for each removed player
+              if (i < this.game.state.button_player){
+                this.game.state.button_player--;
+                if (this.game.state.button_player < 1) {
+                  this.game.state.button_player = this.game.players.length;
+                }
+
+              }
+            }
+          }
+        }
+
+        if (removal){
+          this.game.halted = 1;
+          //Save game with fewer players
+          this.saveGame(this.game.id);
+          //Reload game to rebuild the html
+          setTimeout(()=>{
+            this.initialize_game_run = 0;
+            this.initializeGameFeeder(this.game.id);
+          }, 1000);
+          return 0;
+        }
+
+
+          return 1;
+      }
+
+      //
       //Player's turn to fold,check,call,raise
+      //
       if (mv[0] === "turn") {
+
         let player_to_go = parseInt(mv[1]);
         this.game.target = player_to_go;
         //
@@ -418,6 +592,7 @@ class Poker extends GameTemplate {
         //
         let active_players = 0;
         let player_left_idx = 0;
+console.log("passed array: " + JSON.stringify(this.game.state.passed));
         for (let i = 0; i < this.game.state.passed.length; i++) {
           if (this.game.state.passed[i] == 0) {
             active_players++;
@@ -425,35 +600,45 @@ class Poker extends GameTemplate {
           }
         }
 
+console.log("players total: " + this.game.players.length);
+console.log("active players: " + active_players);
+
+        /***********************/
         /*PLAYER WINS HAND HERE*/
+        /***********************/
         if (active_players === 1) {
-          let winnings = this.game.state.pot - this.game.state.player_pot[player_left_idx];
-          this.updateLog(`${this.game.state.player_names[player_left_idx]} wins ${this.game.state.pot} (${winnings} net)`);
-          console.log(`${this.game.state.player_credit[player_left_idx]} + ${this.game.state.pot} = `);
-          this.game.state.player_credit[player_left_idx] += this.game.state.pot;
-          console.log(this.game.state.player_credit[player_left_idx]);
+          let winnings = this.subtractFromString(this.game.state.pot, this.game.state.player_pot[player_left_idx]);
+          let logMsg = `${this.game.state.player_names[player_left_idx]} wins ${this.game.state.pot} chips (${winnings} net)`;
+          if (this.game.crypto){
+            logMsg += ` ~ ${this.formatWager(this.game.state.pot, false)} ( ${this.formatWager(winnings)} net)`;
+          }
+          this.updateLog(logMsg);
+          this.game.state.player_credit[player_left_idx] = this.addToString(this.game.state.player_credit[player_left_idx], this.game.state.pot);
           this.game.stats[this.game.players[player_left_idx]].handsWon++;
+
           //
           // everyone settles with winner if needed
           //
           if (this.game.crypto) {
             for (let i = 0; i < this.game.players.length; i++) {
               if (i != player_left_idx) {
-                //Only losers
-                if (this.game.state.player_pot[i] > 0) {
-                  let amount_to_send = this.game.state.player_pot[i]*this.game.chipValue;
-                  amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+		//
+                // only losers
+		//
+                if (this.stf(this.game.state.player_pot[i]) > 0) {
 
-                  let ts = new Date().getTime();
-                  this.rollDice();
-                  let uh = this.game.dice;
-                  //if (this.game.player - 1 == player_left_idx) {
-              // do not reformat -- adding whitespace screws with API
-                  //  this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
-                  //} else {
-                     this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
-                     this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
-                  //}
+                  let amount_to_send = this.game.state.player_pot[i];
+
+                  if (this.settleNow){
+                    let ts = new Date().getTime();
+                    this.rollDice();
+                    let uh = this.game.dice;
+                    this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                    this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  } else {
+                    this.game.state.debt[i] = this.addToString(this.game.state.debt[i], this.game.state.player_pot[i]);
+		    this.game.state.debt[player_left_idx] = this.subtractFromString(this.game.state.debt[player_left_idx], this.game.state.player_pot[i]);
+                  }
                 }
               }
             }
@@ -461,7 +646,9 @@ class Poker extends GameTemplate {
 
           // if everyone has folded - start a new round
           console.log("everyone has folded... start next round");
-          this.startNextRound();
+          this.settleLastRound();
+          this.clearTable();
+          this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.game.players[player_left_idx]])}`);
 
           return 1;
         }
@@ -473,23 +660,20 @@ class Poker extends GameTemplate {
           //Is this the end of the hand?
           if (this.game.state.flipped == 5) {
             console.log("GO TO SHOWDOWN");
-            this.game.state.player_cards = {};
-            this.game.state.player_cards_reported = 0;
-            this.game.state.player_cards_required = 0;
-            this.game.queue = [];
-            let first_scorer = -1;
+            $(".player-box.active").removeClass("active");
 
-            for (let i = 0; i < this.game.state.passed.length; i++) {
-              if (this.game.state.passed[i] == 0) {
-                if (first_scorer == -1) {
-                  first_scorer = i;
-                }
+            this.game.queue = [];
+            let first_scorer = 0;
+
+            for (let i = 1; i <= this.game.state.passed.length; i++) {
+              if (this.game.state.passed[i-1] == 0) {
+                first_scorer = first_scorer || i;
                 this.game.state.player_cards_required++;
                 this.game.state.player_cards[i] = [];
               }
             }
 
-            if (first_scorer == this.game.player - 1) {
+            if (first_scorer == this.game.player) {
               this.addMove(`reveal\t${this.game.player}\t${this.game.deck[0].hand[0]}\t${this.game.deck[0].hand[1]}`);
               this.endTurn();
             }
@@ -502,21 +686,7 @@ class Poker extends GameTemplate {
 
             //We can't just push "announce", have to reset queue to clear out any remaining turns
             this.game.queue = ["round", "announce"];
-            //this.game.queue.push("announce");
             this.game.queue.push(`POOLDEAL\t1\t${cards_to_flip}\t1`);
-            /*for (let z = 0; z < cards_to_flip; z++) {
-              for (let i = this.game.players.length - 1; i >= 0; i--) {
-                this.game.queue.push("FLIPCARD\t1\t1\t1\t" + (i + 1));
-              }
-              this.game.queue.push("FLIPRESET\t1");
-            }*/
-
-            //
-            // observer mode
-            //
-            //if (this.game.player == 0) {
-              //this.game.queue.push("OBSERVER_CHECKPOINT");
-            //}
 
             this.game.state.plays_since_last_raise = 0;
             return 1;
@@ -530,7 +700,7 @@ class Poker extends GameTemplate {
           //
           this.game.queue.splice(qe, 1);
           return 1;
-        } else if (this.game.state.player_credit[player_to_go - 1] == 0){
+        } else if (this.stf(this.game.state.player_credit[player_to_go - 1]) == 0){
           console.log("THIS PLAYER IS ALL IN " + player_to_go);
           //
           // we auto-clear without need for player to broadcast
@@ -560,13 +730,18 @@ class Poker extends GameTemplate {
 
 
       if (mv[0] === "announce") {
-        console.log("ANNOUNCE");
-        this.displayBoard();
+
         this.game.queue.splice(qe, 1);
 
         if (this.game.state.flipped === 0) {
-          this.updateLog(`*** HOLE CARDS *** [${this.cardToHuman(this.game.deck[0].hand[0])} ${this.cardToHuman(this.game.deck[0].hand[1])}]`);
+          if (this.game.player > 0){
+            this.updateLog(`*** HOLE CARDS *** [${this.cardToHuman(this.game.deck[0].hand[0])} ${this.cardToHuman(this.game.deck[0].hand[1])}]`);  
+          }
+          return 1;
         }
+
+        this.animateRiver();
+
         if (this.game.state.flipped === 3) {
           this.updateLog(`*** FLOP *** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(this.game.pool[0].hand[1])} ${this.cardToHuman(this.game.pool[0].hand[2])}]`);
         }
@@ -589,172 +764,274 @@ class Poker extends GameTemplate {
         this.game.queue.splice(qe,1);
 
         //Pocket
-        this.game.state.player_cards[scorer - 1].push(
+        this.game.state.player_cards[scorer].push(
           this.returnCardFromDeck(card1)
         );
-        this.game.state.player_cards[scorer - 1].push(
+        this.game.state.player_cards[scorer].push(
           this.returnCardFromDeck(card2)
         );
 
-        //Pool
+        let playercards = `
+          <div class="other-player-hand hand tinyhand">
+            <img class="card" src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}">
+            <img class="card" src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}">
+          </div>
+        `;
+        this.playerbox.refreshGraphic(playercards, scorer);
+   
+
+        //Everyone can use the pool
         for (let i = 0; i < 5; i ++){
-          this.game.state.player_cards[scorer - 1].push(this.returnCardFromDeck(this.game.pool[0].hand[i]));  
+          this.game.state.player_cards[scorer].push(this.returnCardFromDeck(this.game.pool[0].hand[i]));  
         }
         
-        let winners = [];
 
         this.game.state.player_cards_reported++;
 
+        if (this.game.state.player_cards_reported !== this.game.state.player_cards_required) {
+
+          //If not everyone has reported there hand yet, find the next in sequence from this scorer
+          let next_scorer = 0;
+          for (let i = scorer; i < this.game.state.passed.length; i++) {
+            if (this.game.state.passed[i] == 0) {
+              next_scorer = i + 1;
+              break;
+            }
+          }
+
+          if (this.game.player == next_scorer) {
+            this.addMove(`reveal\t${this.game.player}\t${this.game.deck[0].hand[0]}\t${this.game.deck[0].hand[1]}`);
+            this.endTurn();
+          }
+
+          return 0;
+        }
+
         //
         // we have all of the hands, and can pick a winner
-        ///*PLAYER WINS HAND HERE*/
-        if (this.game.state.player_cards_reported == this.game.state.player_cards_required) {
-          let deck = null;
-          var updateHTML = "";
-          var winlist = [];
+        //
+        // PLAYER WINS HAND HERE
+        //
+        let winners = [];
+        let winner_keys = [];
 
-          for (var key in this.game.state.player_cards) {
-            deck = this.game.state.player_cards[key];
 
-            if (winlist.length == 0) {
-              winlist.splice(0, 0, {
-                player: parseInt(key) + 1,
-                player_hand: this.scoreHand(deck),
-              });
-            } else {
-              let winlist_length = winlist.length;
-              let place = 0;
-              for (let k = 0; k < winlist_length; k++) {
-                let w = this.pickWinner(winlist[k].player_hand, this.scoreHand(deck));
-                if (w > 1) {
-                  place = k + 1;
-                }
-              }
-              winlist.splice(place, 0, {
-                player: parseInt(key) + 1,
-                player_hand: this.scoreHand(deck),
-              });
-            }
+        var updateHTML = "";
+        var winlist = [];
 
-            //need to specify two winners differently not just on identical hands.
-          }
-          // Populate winners with winning players
-          winners.push(winlist[winlist.length - 1].player - 1);
-          for (let p = winlist.length - 1; p > 0; p--) {
-            if (this.pickWinner(winlist[winlist.length - 1].player_hand, winlist[p - 1].player_hand) == 3) {
-              winners.push(winlist[p - 1].player - 1);
-            }
-          }
+        //Sort hands from low to high
+        console.log(JSON.parse(JSON.stringify(this.game.state.player_cards)));
+        for (var key in this.game.state.player_cards) {
+          let deck = this.game.state.player_cards[key];
 
-          // split winnings among winners ***TO DO: examine possibility of fractional chips
-          let pot_size = Math.floor(this.game.state.pot / winners.length);
-          let winnerStr = "";
-          for (let i = 0; i < winners.length; i++) {
-            this.game.stats[this.game.players[winners[i]]].handsWon++;
-            winnerStr += this.game.state.player_names[winners[i]] + ", ";
-            //Award in game winnings
-            this.game.state.player_credit[winners[i]] += pot_size;
-          }
-          winnerStr = this.prettifyList(winnerStr); //works with one player
-          console.log(winners.length+ " WINNERS: ",winners);
-
-          // update logs and splash!
-          let winner_html = "<h2>" + winnerStr;
-
-          if (winners.length == 1) {
-            winner_html += " takes the pot!</h2>";
+          if (winlist.length == 0) {
+            winlist.splice(0, 0, {
+              player: parseInt(key),
+              player_hand: this.scoreHand(deck),
+            });
           } else {
-            winner_html += " split the pot!</h2>";
-          }
-
-          winlist.forEach((pl) => {
-            this.updateLog(`${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description} <br>${ this.toHuman(pl.player_hand.cards_to_score)}`);
-            updateHTML = this.handToHTML(pl.player_hand.cards_to_score) + updateHTML;
-            updateHTML = `<h3>${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</h3>${updateHTML}`;
-          });
-
-          this.updateHTML = updateHTML;
-
-          if (winners.length > 1) {
-            this.updateLog(`${winnerStr} split the pot for ${pot_size} each`);
-
-            //
-            // send wagers to winner
-            let chips_to_send = this.game.state.player_pot[this.game.player - 1] / winners.length;
-            if (chips_to_send !== Math.round(chips_to_send)){
-              salert("Uneven pot split. House keeps difference");
-              chips_to_send = Math.floor(chips_to_send);
+            let score = this.scoreHand(deck);
+            let winlist_length = winlist.length;
+            let place = 0;
+            
+            for (let k = 0; k < winlist_length; k++) {
+              let w = this.pickWinner(winlist[k].player_hand, score);
+              if (w > 1) {
+                place = k + 1;
+              }
             }
+            winlist.splice(place, 0, {
+              player: parseInt(key),
+              player_hand: score,
+            });
+          }
+          console.log("*** Low-high ranking: " + JSON.stringify(winlist));
+        }
 
-            for (let i = 0; i < winners.length; i++) {
-              //
-              // non-winners send wagers to winner
-              if (this.game.crypto) {
-                for (let ii = 0; ii < this.game.players.length; ii++) {
-                  if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-                    let amount_to_send = this.game.chipValue * this.game.state.player_pot[ii] / winners.length ;
-                    amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+        // Populate winners with winning players
+        let topPlayer = winlist[winlist.length-1];
 
+        // ... and anyone else who ties
+        for (let p = 0; p < winlist.length; p++) {
+          if (this.pickWinner(topPlayer.player_hand, winlist[p].player_hand) == 3) {
+            winners.push(winlist[p].player - 1);
+            winner_keys.push(this.game.players[winlist[p].player - 1]);
+          }
+        }
+
+        console.log(" * Winners (0-index): " + JSON.stringify(winners));
+        // split winnings among winners ***TO DO: examine possibility of fractional chips
+        let pot_size = Math.floor(this.stf(this.game.state.pot) / winners.length);
+        let winnerStr = "";
+        for (let i = 0; i < winners.length; i++) {
+          this.playerbox.addClass("winner", winners[i]+1);  
+          this.game.stats[this.game.players[winners[i]]].handsWon++;
+          winnerStr += this.game.state.player_names[winners[i]] + ", ";
+          //Award in game winnings
+
+console.log("POT SIZE: " + pot_size);
+console.log("POT SIZE: " + this.fts(pot_size));
+
+console.log("WINNER CREDIT: " + this.game.state.player_credit[winners[i]]);
+	  this.game.state.player_credit[winners[i]] = this.addToString(this.game.state.player_credit[winners[i]], this.fts(pot_size));
+console.log("WINNER CREDIT: " + this.game.state.player_credit[winners[i]]);
+
+        }
+        winnerStr = this.prettifyList(winnerStr); //works with one player
+
+        // update logs and splash!
+        let winner_html = `<div class="h2">` + winnerStr;
+
+        if (winners.length == 1) {
+          winner_html += " takes the pot!</div>";
+        } else {
+          winner_html += " split the pot!</div>";
+        }
+
+        winlist.forEach((pl) => {
+          this.updateLog(`${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description} <br>${ this.toHuman(pl.player_hand.cards_to_score)}`);
+          updateHTML = this.handToHTML(pl.player_hand.cards_to_score) + updateHTML;
+          updateHTML = `<div class="h3">${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</div>${updateHTML}`;
+        });
+
+        this.updateHTML = updateHTML;
+
+        if (winners.length > 1) {
+
+          this.updateLog(`${winnerStr} split the pot for ${this.formatWager(pot_size)}`);
+
+          for (let i = 0; i < winners.length; i++) {
+            //
+            // non-winners send wagers to winner
+            //
+            if (this.game.crypto) {
+              for (let ii = 0; ii < this.game.players.length; ii++) {
+                if (!winners.includes(ii) && this.stf(this.game.state.player_pot[ii]) > 0) {
+                  let amount_to_send = this.stf(this.game.state.player_pot[ii]) / winners.length;
+                  amount_to_send = amount_to_send.toFixed(8);
+
+console.log("AMOUNT TO SEND: " + amount_to_send);
+
+                  if (this.settleNow){
                     // do not reformat -- adding whitespace screws with API
                     let ts = new Date().getTime();
                     this.rollDice();
                     let uh = this.game.dice;
                     this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
                     this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  } else {
+		    let share_of_winnings_str = this.fts(this.stf(this.game.state.player_pot[ii]) / winners.length);
+		    this.game.state.debt[ii] = this.addToString(this.game.state.debt[ii], share_of_winnings_str);
+                    this.game.state.debt[winners[i]] = this.subtractFromString(this.game.state.debt[winners[i]], share_of_winnings_str);
                   }
                 }
               }
             }
-          } else {// single winner gets everything
-            this.updateLog(`${winnerStr} wins ${this.game.state.pot} (${this.game.state.pot-this.game.state.player_pot[winners[0]]} net)`);
+          }
+        } else {// single winner gets everything
+          let logMsg = `${winnerStr} wins ${this.game.state.pot} (${this.game.state.pot-this.game.state.player_pot[winners[0]]} net) chips`;
+          if (this.game.crypto){
+            logMsg += ` ~ ${this.formatWager(this.game.state.pot, false)} (${this.formatWager(this.game.state.pot-this.game.state.player_pot[winners[0]], false)} net)`;
+          }
+          this.updateLog(logMsg);
 
-            if (this.game.crypto) {
-              for (let ii = 0; ii < this.game.players.length; ii++) {
-                if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-                  let amount_to_send = this.game.state.player_pot[ii] * this.game.chipValue;
-                  amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+          if (this.game.crypto) {
+            for (let ii = 0; ii < this.game.players.length; ii++) {
+              if (!winners.includes(ii) && this.stf(this.game.state.player_pot[ii]) > 0) {
+                let amount_to_send = this.game.state.player_pot[ii];
 
+                if (this.settleNow) {
                   let ts = new Date().getTime();
                   this.rollDice();
                   let uh = this.game.dice;
                   // do not reformat -- adding whitespace screws with API
                   this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
                   this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                } else {
+                  this.game.state.debt[ii] = this.addToString(this.game.state.debt[ii], this.game.state.player_pot[ii]);
+                  this.game.state.debt[winners[0]] = this.subtractFromString(this.game.state.debt[winners[0]], this.game.state.player_pot[ii]);
                 }
               }
             }
           }
-
-          if (this.browser_active){
-            this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`, ()=>{
-              this.restartQueue();
-            });
-            this.game.halted = 1;
-          }
-          this.startNextRound();
-
-          return 0;
         }
 
-        //If not everyone has reported there hand yet, find the next in sequence from this scorer
-        let next_scorer = -1;
-        for (let i = scorer; i < this.game.state.passed.length; i++) {
-          if (this.game.state.passed[i] == 0) {
-            if (next_scorer == -1) {
-              next_scorer = i;
-            }
-          }
-        }
+console.log("HERE AT END OF TURN");
+console.log(JSON.stringify(this.game.state));
 
-        if (this.game.player - 1 == next_scorer) {
-          this.addMove(`reveal\t${this.game.player}\t${this.game.deck[0].hand[0]}\t${this.game.deck[0].hand[1]}`);
-          this.endTurn();
+        if (this.browser_active){
+          this.overlay.closebox = true;
+          this.overlay.show(`<div class="shim-notice">${winner_html}${updateHTML}</div>`, ()=>{
+            this.overlay.closebox = false;
+            this.clearTable();
+            this.restartQueue();
+          });
+          this.app.browser.makeDraggable(`saito-overlay${this.overlay.ordinal}`);
+          $(".shim-notice").disableSelection();
+
+          this.game.halted = 1;
         }
+        this.settleLastRound();
+        this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_keys)}`);
 
         return 0;
+
       }
 
-      /* Set up a round of betting 
+      //Set up bets for beginning of round (new deal)
+      if (mv[0] == "ante"){
+
+        this.game.queue.splice(qe,1);
+
+        this.displayBoard(); //Clean HTML
+
+        let bbpi = this.game.state.big_blind_player - 1;
+        //
+        // Big Blind
+        //
+        if (this.stf(this.game.state.player_credit[bbpi]) <= this.stf(this.game.state.big_blind)) {
+          this.updateLog(this.game.state.player_names[bbpi] + ` posts remaining ${this.game.state.player_credit[bbpi]} chips for big blind and is removed from game`);
+          //Put all the player tokens in the pot and have them pass / remove
+          this.game.state.player_pot[bbpi] = this.addToString(this.game.state.player_pot[bbpi], this.game.state.player_credit[bbpi]);
+          this.game.state.pot = this.addToString(this.game.state.pot, this.game.state.player_credit[bbpi]);
+          this.game.state.player_credit[bbpi] = "0";
+          this.game.state.passed[bbpi] = 1;
+        } else {
+          this.updateLog(`${this.game.state.player_names[bbpi]} posts big blind: ${this.game.state.big_blind} chips${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.big_blind, false)}`:""}`);
+	  this.game.state.player_pot[bbpi] = this.addToString(this.game.state.player_pot[bbpi], this.game.state.big_blind);
+	  this.game.state.pot = this.addToString(this.game.state.pot, this.game.state.big_blind);
+	  this.game.state.player_credit[bbpi] = this.subtractFromString(this.game.state.player_credit[bbpi], this.game.state.big_blind);
+        }
+
+        this.playerbox.refreshLog(`<div class="plog-update">Big Blind: ${this.formatWager(this.game.state.big_blind)}</div>`,this.game.state.big_blind_player);
+        //
+        // Small Blind
+        //
+        let sbpi = this.game.state.small_blind_player - 1;
+        if (this.stf(this.game.state.player_credit[sbpi]) <= this.stf(this.game.state.small_blind)) {
+          this.updateLog(this.game.state.player_names[sbpi] + 
+              ` posts remaining ${this.game.state.player_credit[sbpi]} chips as small blind and is removed from the game`);
+	  this.game.state.player_pot[sbpi] = this.addToString(this.game.state.player_pot[sbpi], this.game.state.player_credit[sbpi]);
+	  this.game.state.pot = this.addToString(this.game.state.pot, this.game.state.player_credit[sbpi]);
+          this.game.state.player_credit[sbpi] = "0";
+          this.game.state.passed[sbpi] = 1;
+        } else {
+          this.updateLog(`${this.game.state.player_names[sbpi]} posts small blind: ${this.game.state.small_blind}${(this.game.crypto)?` ~ ${this.formatWager(this.game.state.big_blind, false)}`:""}`);
+	  this.game.state.player_pot[sbpi] = this.addToString(this.game.state.player_pot[sbpi], this.game.state.small_blind);
+	  this.game.state.pot = this.addToString(this.game.state.pot, this.game.state.small_blind);
+	  this.game.state.player_credit[sbpi] = this.subtractFromString(this.game.state.player_credit[sbpi], this.game.state.small_blind);
+        }
+
+        this.outputState();
+
+        this.playerbox.refreshLog(`<div class="plog-update">Small Blind: ${this.formatWager(this.game.state.small_blind)}</div>`,this.game.state.small_blind_player);
+        this.displayPlayers(true);        //Update Chip stacks after betting
+        this.game.queue.push("round");    //Start
+        this.game.queue.push("announce"); //Print Hole cards to Log
+
+      }
+
+      /* Set up a round
          We don't splice it, so we keep coming back here after each player has taken their turn
          until we reach an endgame state which runs startNextRound and clears to queue
       */
@@ -770,75 +1047,18 @@ class Poker extends GameTemplate {
           this.game.queue.push("turn\t" + player_to_go);
         }
 
-        //Set up bets for beginning of round (new deal)
-        if (this.game.state.preflop) {
-
-          let bbpi = this.game.state.big_blind_player - 1;
-          //
-          // Big Blind
-          //
-          if (this.game.state.player_credit[bbpi] <= this.game.state.big_blind) {
-            if (
-              this.game.state.player_credit[bbpi] == this.game.state.big_blind) {
-              this.updateLog(this.game.state.player_names[bbpi] + " posts big blind " + this.game.state.big_blind);
-            } else {
-              this.updateLog(this.game.state.player_names[bbpi] + " posts remaining tokens as big blind and is removed from game");
-            }
-
-            //Put all the player tokens in the pot and have them pass / remove
-            this.game.state.player_pot[bbpi] += this.game.state.player_credit[bbpi];
-            this.game.state.pot += this.game.state.player_credit[bbpi];
-            this.game.state.player_credit[bbpi] = 0;
-            this.game.state.passed[bbpi] = 1;
-          } else {
-            this.updateLog(this.game.state.player_names[bbpi] + " posts big blind " + this.game.state.big_blind);
-            this.game.state.player_pot[bbpi] += this.game.state.big_blind;
-            this.game.state.pot += this.game.state.big_blind;
-            this.game.state.player_credit[bbpi] -= this.game.state.big_blind;
-          }
-
-          this.playerbox.refreshLog(`<div class="plog-update">Big Blind: ${this.game.state.big_blind}</div>`,this.game.state.big_blind_player);
-          //
-          // Small Blind
-          //
-          let sbpi = this.game.state.small_blind_player - 1;
-          if (this.game.state.player_credit[sbpi] <= this.game.state.small_blind) {
-            if (this.game.state.player_credit[sbpi] === this.game.state.small_blind) {
-              this.updateLog(this.game.state.player_names[sbpi] + " posts small blind " + this.game.state.small_blind);
-            } else {
-              this.updateLog(this.game.state.player_names[sbpi] + 
-                " posts remaining tokens as small blind and is removed from the game");
-            }
-            this.game.state.player_pot[sbpi] += this.game.state.player_credit[sbpi];
-            this.game.state.pot += this.game.state.player_credit[sbpi];
-            this.game.state.player_credit[sbpi] = 0;
-            this.game.state.passed[sbpi] = 1;
-          } else {
-            this.updateLog(this.game.state.player_names[sbpi] + " posts small blind " + this.game.state.small_blind);
-            this.game.state.player_pot[sbpi] += this.game.state.small_blind;
-            this.game.state.pot += this.game.state.small_blind;
-            this.game.state.player_credit[sbpi] -= this.game.state.small_blind;
-          }
-
-          this.outputState();
-
-          this.playerbox.refreshLog(`<div class="plog-update">Small Blind: ${this.game.state.small_blind}</div>`,this.game.state.small_blind_player);
-
-          this.game.queue.push("announce");        
-          this.game.state.preflop = false;
-
-          this.displayPlayers(true); //To refresh the stacks of the small and big blind player
-        }   
-
       }
 
 
 
       /* WE programmatically determine here how much the call is*/
       if (mv[0] === "call") {
+
         let player = parseInt(mv[1]);
 
-        let amount_to_call = this.game.state.required_pot - this.game.state.player_pot[player - 1];
+        let amount_to_call = this.stf(this.subtractFromString(this.game.state.required_pot, this.game.state.player_pot[player - 1]));
+
+console.log("amount to call: " + amount_to_call);
 
         if (amount_to_call <= 0) {
           console.error("Zero/Negative Call");
@@ -849,9 +1069,9 @@ class Poker extends GameTemplate {
         //
         // reset plays since last raise
         //
-        this.game.state.player_credit[player - 1] -= amount_to_call;
-        this.game.state.player_pot[player - 1] += amount_to_call;
-        this.game.state.pot += amount_to_call;
+	this.game.state.player_credit[player-1] = this.subtractFromString(this.game.state.player_credit[player-1], this.fts(amount_to_call));
+	this.game.state.player_pot[player-1] = this.addToString(this.game.state.player_pot[player-1], this.fts(amount_to_call));
+        this.game.state.pot = this.addToString(this.game.state.pot, this.fts(amount_to_call));
 
         this.game.queue.splice(qe, 1);
 
@@ -901,14 +1121,14 @@ class Poker extends GameTemplate {
       if (mv[0] === "raise") {
 
         let player = parseInt(mv[1]);
-        let raise = parseInt(mv[2]); //Includes call portion (if any)
-        let call_portion = this.game.state.required_pot - this.game.state.player_pot[player - 1];
+        let raise = parseFloat(mv[2]); // raise is a float now
+        let call_portion = this.stf(this.subtractFromString(this.game.state.required_pot, this.game.state.player_pot[player - 1]));
         let raise_portion = raise - call_portion;
 
-        /*console.log("raise is: " + raise);
+        console.log("raise is: " + raise);
         console.log("raise portion: "  + raise_portion);
-        console.log("call portion: "  + call_portion);*/
-  
+        console.log("call portion: "  + call_portion);  
+
         if (raise_portion <= 0){
           salert("Insufficient raise");
           console.error("Call process in raise/Insufficient Raise",mv);
@@ -917,26 +1137,27 @@ class Poker extends GameTemplate {
         
         this.game.state.plays_since_last_raise = 1;
 
-        this.game.state.player_credit[player - 1] -= raise;
-        this.game.state.player_pot[player - 1] += raise;
-        this.game.state.pot += raise;
-        this.game.state.last_raise = raise_portion;
-        this.game.state.required_pot += raise_portion;
-        let raise_message = `raises ${raise_portion} `;
-        if (this.game.state.player_credit[player -1 ] === 0){
+        this.game.state.player_credit[player - 1]  = this.subtractFromString(this.game.state.player_credit[player-1], this.fts(raise));
+        this.game.state.player_pot[player-1] = this.addToString(this.game.state.player_pot[player-1], this.fts(raise));
+        this.game.state.pot = this.addToString(this.game.state.pot, this.fts(raise));
+        this.game.state.last_raise = this.fts(raise_portion);
+	this.game.state.required_pot = this.addToString(this.game.state.required_pot, this.fts(raise_portion));
+
+        let raise_message = `raises ${this.formatWager(raise_portion)} `;
+        if (this.stf(this.game.state.player_credit[player-1]) === 0){
           this.game.state.all_in = 1;
           raise_message = `goes all in `;
         }      
         if (call_portion > 0) {  
           if (raise_portion > 0) {
-            this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.game.state.player_pot[player - 1]}`);
-            if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${raise_portion}</div>`, player);}
+            this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.formatWager(this.game.state.player_pot[player - 1])}`);
+            if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${this.formatWager(raise_portion)}</div>`, player);}
           } else {
-            this.updateLog(`${this.game.state.player_names[player - 1]} calls ${call_portion}`);
+            this.updateLog(`${this.game.state.player_names[player - 1]} calls ${this.formatWager(call_portion)}`);
           }
         } else {
-          this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.game.state.player_pot[player - 1]}`);
-          if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${raise}</div>`, player);}
+          this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.formatWager(this.game.state.player_pot[player - 1])}`);
+          if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${this.formatWager(raise)}</div>`, player);}
         }
         this.game.queue.splice(qe, 1);
 
@@ -958,20 +1179,26 @@ class Poker extends GameTemplate {
     return 1;
   }
 
-  
+
   outputState(){
     console.log("######################");
     console.log(JSON.parse(JSON.stringify(this.game.state)));
   }
 
-
   playerTurn() {
     if (this.browser_active == 0) {
       return;
     }
+    if (this.game.player == 0 ){
+      salert("How the fuck did we call player turn??");
+      return;
+    }
+
+console.log("PLAYER STATE: " + JSON.stringify(this.game.state));
 
     let poker_self = this;
     let html = "";
+    let mobileToggle = (window.matchMedia("(orientation: landscape)").matches && window.innerHeight <= 600);
 
     //
     // cancel raise kicks us back
@@ -984,28 +1211,33 @@ class Poker extends GameTemplate {
     console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
     console.log("all in: "+this.game.state.all_in);
 
-    let match_required = this.game.state.required_pot - this.game.state.player_pot[this.game.player - 1];
+    let match_required = this.subtractFromString(this.game.state.required_pot, this.game.state.player_pot[this.game.player - 1]);
 
-    if (match_required === 0 && this.game.state.all_in){
+    if (this.stf(match_required) === 0 && this.game.state.all_in){
       poker_self.endTurn();
       return;
     }
 
     //These would be a strange edge case
-    this.game.state.last_raise = Math.max(this.game.state.last_raise,this.game.state.big_blind);
-    match_required = Math.max(0,match_required); 
+    this.game.state.last_raise = this.fts(Math.max(this.stf(this.game.state.last_raise),this.stf(this.game.state.big_blind)));
+    match_required = this.fts(Math.max(0,this.stf(match_required))); 
 
-    let can_call = (this.game.state.player_credit[this.game.player - 1] >= match_required);
-    let can_raise = !this.game.state.all_in; //(this.game.state.player_credit[this.game.player - 1] > match_required /*+ this.game.state.last_raise*/);
+    let can_call = (this.stf(this.game.state.player_credit[this.game.player - 1]) >= this.stf(match_required));
+    let can_raise = (!this.game.state.all_in && this.stf(this.game.state.player_credit[this.game.player-1]) > this.stf(match_required));
 
     //cannot raise more than everyone can call.
-    let smallest_stack = poker_self.game.options.num_chips * poker_self.game.players.length; //Start with total amount of money in the game
+    //
+    // TODO - buy-ins will change this smallest stack calculation
+    //
+    let smallest_stack = this.stf(this.game.stake) * poker_self.game.players.length; //Start with total amount of money in the game
+    smallest_stack = this.fts(smallest_stack);
     let smallest_stack_player = 0;
 
     poker_self.game.state.player_credit.forEach((stack, index) => {
       if (poker_self.game.state.passed[index] == 0) {
-        stack += this.game.state.player_pot[index] - this.game.state.required_pot; //adjust for their potential need to also match current pot
-        if (stack < smallest_stack){
+	stack = this.addToString(stack, this.game.state.player_pot[index]);
+	stack = this.subtractFromString(stack, this.game.state.required_pot);
+        if (this.stf(stack) < this.stf(smallest_stack)) {
           smallest_stack = stack;
           smallest_stack_player = index;   
         } 
@@ -1024,7 +1256,8 @@ class Poker extends GameTemplate {
     }
 
     html += '<div class="menu-player" style="text-align:left;width:100%">';
-    
+ 
+
     if (this.game.state.flipped == 0 && this.game.player == this.game.state.big_blind_player) {
       html += "big blind:";
     }else if (this.game.state.flipped == 0 && this.game.player == this.game.state.small_blind_player) {
@@ -1033,13 +1266,13 @@ class Poker extends GameTemplate {
       html += "your move:";
     }
     
-    html += `<div style="float:right;" class="saito-balance">${this.game.state.player_credit[this.game.player - 1]}</div></div>`;
+    html += `<div style="float:right;" class="saito-balance">${this.formatWager(this.game.state.player_credit[this.game.player - 1])}</div></div>`;
     html += "<ul>";
 
     html += '<li class="menu_option" id="fold">fold</li>';
     
-    if (match_required > 0) {
-      html += `<li class="menu_option" id="call">call (${match_required})</li>`;
+    if (this.stf(match_required) > 0) {
+      html += `<li class="menu_option" id="call">call (${this.formatWager(match_required)})</li>`;
     } else { // we don't NEED to match
       html += '<li class="menu_option" id="check">check</li>';
     }
@@ -1052,38 +1285,37 @@ class Poker extends GameTemplate {
 
     $(".menu_option").off();
     $(".menu_option").on("click", function () {
+
       let choice = $(this).attr("id");
    
       if (choice === "raise") {
-        let credit_remaining = poker_self.game.state.player_credit[poker_self.game.player - 1] - match_required;
+
+        let credit_remaining = poker_self.subtractFromString(poker_self.game.state.player_credit[poker_self.game.player-1], match_required);
 
         html = `<div class="menu-player">`;
-        if (match_required > 0) {
-          html += `Match ${match_required} and raise: `;
+        if (poker_self.stf(match_required) > 0) {
+          html += `Match ${poker_self.formatWager(match_required)} and raise: `;
         } else {
           html += "Please select an option below: ";
         }
-
-        html += `</div><ul><li class="menu_option" id="0">cancel raise</li>`;
-        let max_raise = Math.min(credit_remaining, smallest_stack);
-
-        console.log("last raise: " + poker_self.game.state.last_raise);
-        console.log("match required: " + match_required); 
+        html += `</div><ul><li class="menu_option" id="0">${(mobileToggle)? "nope":"cancel raise"}</li>`;
+        let max_raise = Math.min(poker_self.stf(credit_remaining), poker_self.stf(smallest_stack));
 
         for (let i = 0; i < 5; i++) {
 
-          let this_raise = poker_self.game.state.last_raise + i * poker_self.game.state.last_raise;
+          let this_raise = poker_self.stf(poker_self.game.state.last_raise) + (i * poker_self.stf(poker_self.game.state.last_raise));
 
           console.log("this raise: " + this_raise);
-          console.log("id is: " + (this_raise + match_required));
+          console.log("id is: " + (this_raise + poker_self.stf(match_required)));
 
           if (max_raise > this_raise) {
-            html += `<li class="menu_option" id="${this_raise + match_required}">raise ${this_raise}</li>`;
+          console.log("this raise 2: " + this_raise);
+            html += `<li class="menu_option" id="${this_raise + poker_self.stf(match_required)}">${(mobileToggle)? " ":"raise "}${poker_self.formatWager(this_raise)}</li>`;
           } else {
             i = 6; //Stop for-loop
-            html += `<li class="menu_option" id="${max_raise + match_required}">
-                      raise ${max_raise} 
-                      (all in for ${poker_self.game.state.player_names[smallest_stack_player]})</li>`;
+            html += `<li class="menu_option" id="${poker_self.addToString(max_raise, match_required)}">
+                      raise ${poker_self.formatWager(max_raise)} 
+                      (all in${(smallest_stack_player !== poker_self.game.player - 1)?` for ${poker_self.game.state.player_names[smallest_stack_player]}`:""})</li>`;
           }
         }
 
@@ -1104,7 +1336,6 @@ class Poker extends GameTemplate {
           }
         });
       }else{
-        /* choice = fold, check or call, so just directly insert in Move*/
         console.log("Player choice: "+choice);
         poker_self.addMove(`${choice}\t${poker_self.game.player}`);
         poker_self.endTurn();
@@ -1112,18 +1343,14 @@ class Poker extends GameTemplate {
     });
   }
 
-  /* To fix float operations*/
-  sizeNumber(x) {
-    return parseFloat(x.toFixed(8));
-  }
 
 
   returnState(num_of_players) {
+
     let state = {};
 
     state.round = 1;
     state.flipped = 0;
-    state.preflop = true;
 
     state.player_cards = {};
     state.player_cards_reported = 0;
@@ -1131,7 +1358,7 @@ class Poker extends GameTemplate {
 
     state.plays_since_last_raise = 0;
 
-    state.pot = 0.0;
+    state.pot = "0.0";
    
     state.big_blind_player = 1;
     state.small_blind_player = 2;
@@ -1143,47 +1370,55 @@ class Poker extends GameTemplate {
       state.small_blind_player = 1;
     }
   
-    //Player Arrays
     state.player_names = [];
     state.player_pot = [];
     state.player_credit = [];
     state.passed = [];
+    state.debt = [];
 
+    //
+    // initializeGameStake should flesh this out
+    //
     for (let i = 0; i < num_of_players; i++) {
       state.passed[i] = 0;
-      state.player_pot[i] = 0;
-      //Initial stake
-      state.player_credit[i] = this.game.options.num_chips;
-      
-      //Assign names
+      state.player_pot[i] = "0";
+      state.player_credit[i] = "0";
+      state.debt[i] = "0";      
       state.player_names[i] = this.getShortNames(this.game.players[i]);
     }
 
-    state.big_blind = 2;
-    state.small_blind = 1;
-    state.last_raise = state.big_blind;
-    state.required_pot = state.big_blind;
+    state.big_blind = "2";
+    state.small_blind = "1";
+    state.last_raise = "2";
+    state.required_pot = "2";
     state.all_in = false;
-    //console.log("STATE: " + JSON.stringify(state));
 
     return state;
   }
 
-  getShortNames(publicKey){
-    let name = this.app.keys.returnUsername(publicKey);
-      if (name.indexOf("@") > 0) {
-        name = name.substring(0, name.indexOf("@"));
-      }
-      if (name === publicKey) {
-        name = publicKey.substring(0, 10) + "...";
-      } 
-    return name;
+  returnStats(){
+    let stats = {};
+    for (let i = 0; i < this.game.players.length; i++){
+      stats[this.game.players[i]] = {};
+      stats[this.game.players[i]].handsPlayed = 0;
+      stats[this.game.players[i]].handsWon = 0;
+      stats[this.game.players[i]].handsFolded = 0;
+    }
+    return stats;
   }
+
+  removePlayerFromState(index){
+    this.game.state.player_names.splice(index, 1);
+    this.game.state.player_pot.splice(index, 1);
+    this.game.state.player_credit.splice(index, 1);
+    this.game.state.passed.splice(index, 1);
+    this.game.state.debt.splice(index, 1);
+  }
+
 
   returnCardFromDeck(idx) {
     let deck = this.returnDeck();
     let card = deck[idx];
-
     return card.name.substring(0, card.name.indexOf("."));
   }
 
@@ -1271,110 +1506,165 @@ class Poker extends GameTemplate {
     if (!this.browser_active){
       return;
     }
-  try {
-    /*let player_box = "";
-    var prank = "";
-    if (!this.game.players.includes(this.app.wallet.returnPublicKey())) {
-      document.querySelector('.status').innerHTML = "You are out of the game.<br />Feel free to hang out and chat.";
-      this.cardfan.addClass("hidden");
-      player_box = this.returnViewBoxArray();
-    }*/
-
-    for (let i = 1; i <= this.game.players.length; i++) {
-      this.playerbox.refreshName(i);
-      this.refreshPlayerStack(i, true);  
-
-      if (!preserveLog){
-        this.playerbox.refreshLog("",i);
+    try {
+      for (let i = 1; i <= this.game.players.length; i++) {
+        this.playerbox.refreshName(i);
+        this.refreshPlayerStack(i, true);  
+        if (!preserveLog){
+          this.playerbox.refreshLog("", i);
+        }
       }
-    }
 
-    let elem;
+      let elem;
     
-    elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)}`);
-    if (elem){
-      let newButton = this.app.browser.makeElement("div","dealerbutton","dealerbutton");
-      newButton.classList.add("dealer");
-      newButton.textContent = "⬤";
-      elem.firstChild.after(newButton);
-      this.app.browser.addToolTip(newButton, "Dealer");  
+      elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)}`);
+      if (elem){
+        let newButton = this.app.browser.makeElement("div","dealerbutton","dealerbutton");
+        newButton.classList.add("dealer");
+        newButton.textContent = "⬤";
+        elem.firstChild.after(newButton);
+        this.app.browser.addToolTip(newButton, "Dealer");  
+      }
+    } catch (err) {
+      console.log("error displaying player box",err);
     }
-  } catch (err) {
-    console.log("error displaying player box",err);
   }
-  }
+
+
 
   displayHand() {
+    if (this.game.player == 0){ 
+      this.playerbox.refreshInfo(`<div>You are observing the game</div>`, -1);
+      return; 
+    }
+
     if (this.game.state.passed[this.game.player-1]){
       this.cardfan.hide();
     }else{
-      this.cardfan.render(this.app, this);
-      this.cardfan.attachEvents(this.app, this);  
+      this.cardfan.render();
     }
+  }
+
+  returnTicker() {
+    if (this.game.crypto) { return this.game.crypto; }
+    return "CHIPS";
+  }
+
+  updatePot() {
+
+      let poker_self = this;
+console.log("update pot...: " + this.game.state.pot);
+      let html = `<div class="pot-counter">${this.formatWager(this.game.state.pot, true)}</div>`;
+
+      if (this.useGraphics){
+        for (let i = 0; i < this.game.state.player_pot.length; i++){
+          html += this.returnPlayerStackHTML(i+1, this.game.state.player_pot[i]);
+        }
+      }
+
+      $("#pot").css("display", "flex");
+
+      html += "</div>";
+      
+      if (document.querySelector(".pot")){
+        document.querySelector(".pot").innerHTML = sanitize(html);
+      }
   }
 
   displayTable() {
     if (!this.browser_active){
       return;
     }
-    try {
-      if (document.querySelector("#deal")){
+    try{
+
+      if (document.getElementById("deal")){
         let newHTML = "";
         for (let i = 0; i < 5 || i < this.game.pool[0].hand.length; i++) {
           let card = {};
 
           if (i < this.game.pool[0].hand.length) {
             card = this.game.pool[0].cards[this.game.pool[0].hand[i]];
+            newHTML += `<img class="card" src="${this.card_img_dir}/${card.name}">`;
           } else {
-            card.name = "red_back.png";
+            newHTML += `<div class="flip-card"><img class="card cardBack" src="${this.card_img_dir}/red_back.png"></div>`;
           }
-          newHTML += `<img class="card" src="${this.card_img_dir}/${card.name}">`;
-        }
-        document.querySelector("#deal").innerHTML = newHTML;
-      }
-      // update pot
-      let html = `<div class="pot-counter">${this.game.state.pot}</div>`;
-      if (this.useGraphics){
-        for (let i = 0; i < this.game.state.player_pot.length; i++){
-          html += this.returnPlayerStackHTML(i+1, this.game.state.player_pot[i]);
-        }
-      }
-        html += `<div class="tiptext">${this.game.state.pot} chips in the pot`;
-        if (this.game.crypto){
-          html += `, worth ${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
-        }
-        html += "</div>";
-      
-      document.querySelector(".pot").innerHTML = sanitize(html);
 
-    } catch (err) { console.log("error displaying table",err);}
+        }
+        document.getElementById("deal").innerHTML = newHTML;
+      }
+    }catch(err){
+      console.warn("Card error displaying table:",err);
+    }
+    this.updatePot();
+  }
+
+  async animateRiver(){
+    if (!this.browser_active || !document.getElementById("deal")){
+      return;
+    }
+
+    const timeout = ms => new Promise(res => setTimeout(res, ms));
+
+    for (let i = 0; i < this.game.pool[0].hand.length; i++) {
+      let card = this.game.pool[0].cards[this.game.pool[0].hand[i]];
+      let nthSlot = $("#deal").children().get(i);
+
+      if (nthSlot.classList.contains("flipped") || !nthSlot.classList.contains("flip-card")){
+        continue;
+      }
+      $(nthSlot).append(`<img class="card cardFront" src="${this.card_img_dir}/${card.name}">`)
+      await timeout(250);
+      $(nthSlot).addClass("flipped");
+    }
+  }
+
+  async clearTable(){
+    if (!this.browser_active){
+      return;
+    }
+
+    $(".winner").removeClass("winner");
+    $("#pot").fadeOut();
+    if (document.querySelector(".flipped")){
+      $(".flipped").removeClass("flipped").delay(200).queue(function(){
+        $("#deal").children().animate({left: "1000px"}, 1200, "swing", function(){$(this).remove();}).dequeue();  
+      });      
+    }else{
+       $("#deal").children().animate({left: "1000px"}, 1200, "swing", function(){$(this).remove();});
+    }
+    $(".player-box-graphic .hand").animate({left: "1000px"}, 1200, "swing", function(){
+      $(this).remove();
+    });
+
   }
 
   refreshPlayerStack(player, includeCards = true){
     if (!this.browser_active){
       return;
     }
-    //Update numerical stack
+    console.log("Drawing player stack");
+
+console.log("> > >");
+console.log("> > > > > " + player);
+console.log("> > > > > " + this.game.state.player_credit[player-1]);
+
     let html = "";
-    if (this.game.state.player_credit[player - 1] === 0 && this.game.state.all_in){
+    if (this.stf(this.game.state.player_credit[player-1]) === 0 && this.game.state.all_in){
         html = `<div class="player-info-chips">All in!</div>`;
-    }else{
-        html = `<div class="player-info-chips">${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+    } else {
+        html = `<div class="player-info-chips">${this.formatWager(this.game.state.player_credit[player-1], true)}</div>`;
     }
-    if (this.game.crypto){
-      html = `<div class="tip">${html}<div class="tiptext">${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div></div>`;
-    }
+
     this.playerbox.refreshInfo(html, player);
    
     if (this.useGraphics){
       //Draw literal stack
       html = this.returnPlayerStackHTML(player, this.game.state.player_credit[player - 1]);
       html = html.substring(0,html.length - 6); //remove final </div> tag
-      let bonusExplainer = `<div>${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+      let bonusExplainer = `<div>${this.formatWager(this.game.state.player_credit[player - 1], true)}</div>`;
       if (this.game.crypto){
-        bonusExplainer += `<div>${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div>`;
+        bonusExplainer += `<div>${this.formatWager(this.game.state.player_credit[player - 1], true)}</div>`;
       }
-
       this.playerbox.refreshGraphic(`${html}<div class="tiptext">${bonusExplainer}</div></div>`,player);
     } 
     
@@ -1401,31 +1691,43 @@ class Poker extends GameTemplate {
   }
   
   returnPlayerStackHTML(player,numChips){
-    let html = `<div class="chip_stack pstack${player} tip">`;
+    let html = `<div class="chip_stack tip">`;
+    let identicon = this.app.keychain.returnIdenticon(this.app.keychain.returnUsername(this.game.players[player-1]));
 
-    let numBigChips = Math.floor(numChips/10);
-    let numSmallChips = numChips - numBigChips*10;
+    let chipSizes = [100, 25, 5, 1];
+    let idx = 0;
+    for (size of chipSizes){
+      let numChipsToRender = Math.floor(numChips/size);
+      numChips -= numChipsToRender * size;
+      for (let i = 0; i < numChipsToRender; i++){
+        html += this.returnChipHTML(size, idx*8);
+        idx++;
+      }
+    }
 
-    if (numSmallChips == 0 && numBigChips > 0){
-      numSmallChips += 10;
-      numBigChips --;
-    }
-    //console.log(`${numChips} represented as ${numBigChips} large chips and ${numSmallChips} small chips`);
-    for (let i = 0; i < numBigChips; i++){
-      html += this.returnChipHTML(false, player, i*8);
-    }
-    for (let i = numBigChips; i < numBigChips+numSmallChips; i++){
-      html += this.returnChipHTML(true, player, i*8);
-    }
-    
+   html += `<img class="chipstack-identicon" src="${identicon}" style="bottom:${(idx-3)*8 - 2}px;">`;
+
    html += "</div>";
    return html;
   }
 
 
-  returnChipHTML(single = true, player = 1, offset = 0){
-    if (single){
-     return `<svg class="poker_chip" style="bottom:${offset}px; " viewbox="0 0 100 35">
+  returnChipHTML(value, offset = 0){
+    let color = "#ffffff";
+    let stroke_color = "black";
+    if (value == 5){
+      color = "#fd403f";
+    }
+    if (value == 25){
+      color = "#2a8072"; 
+    }
+    if (value == 100){
+      color = "#090909";
+      stroke_color = "white";
+    }
+
+   // if (single){
+     return `<svg class="poker_chip" style="bottom:${offset}px; fill:${color}; stroke: ${stroke_color}" viewbox="0 0 100 35">
             <path d="
                 M 2 13
                 A 41 10 0 0 0 98 13
@@ -1436,7 +1738,7 @@ class Poker extends GameTemplate {
               " 
               stroke-width="1">
             </svg>`;
-    }else{
+    /*}else{
       return `<svg class="poker_chip" style="bottom:${offset}px; " viewbox="0 0 100 35">
               <path d="
                 M 2 13
@@ -1453,30 +1755,41 @@ class Poker extends GameTemplate {
               " 
               stroke-width="1" stroke="black" />
             </svg>`;
-    }
+    }*/
   }
 
   payWinners(winner){
-    return 0;
-  }
-
-  processResignation(resigning_player, txmsg){
-    //if (this.game.players.length == 2){
-      super.processResignation(resigning_player, txmsg);
-      return;
-   // }
-   
-    if (!this.game.players.includes(resigning_player)){ 
-      console.log(resigning_player+" not in "+ JSON.stringify(this.game.players));
-    //Player already not an active player, make sure they are also removed from accepted to stop receiving messages
-      for (let i = this.game.accepted.length; i>=0; i--){
-        if (this.game.accepted[i] == player_key){
-          this.game.accepted.splice(i,1);
+    if (this.needToSettleDebt()){
+      for (let i = 0; i < this.game.state.debt.length; i++){
+        //Player i+1 owes money
+        if (this.game.state.debt[i] > 0){
+          //But to whom
+          for (let j = 0; j < this.game.state.debt.length; j++){
+            if (this.game.state.debt[j] < 0){
+              let amount_to_send = Math.min(Math.abs(this.game.state.debt[j]),this.game.state.debt[i]);
+              if (amount_to_send > 0){
+                this.settleNow = true;
+                this.game.state.debt[i] -= amount_to_send;
+                this.game.state.debt[j] += amount_to_send;
+                //Convert (whole) Chips to crypto
+                amount_to_send = amount_to_send * this.game.chipValue
+                amount_to_send = amount_to_send.toFixed(8+1);
+                this.payWinner(this.game.players[i], this.game.players[j], amount_to_send);
+              }
+            }
+          }
         }
       }
-      return;
     }
     
+  }
+
+
+
+  processResignation(resigning_player, txmsg){
+
+    super.processResignation(resigning_player, txmsg);
+
     if (this.browser_active){
       if (this.app.wallet.returnPublicKey() !== resigning_player) {
         this.refreshPlayerStack(txmsg.loser, false); //Here we want to hide cards
@@ -1488,14 +1801,13 @@ class Poker extends GameTemplate {
 
     this.game.stats[resigning_player].handsFolded++;
     this.game.state.passed[txmsg.loser - 1] = 1;
-    this.game.state.player_credit[txmsg.loser - 1] = 0;
-    
+    this.game.state.player_credit[txmsg.loser - 1] = "0";   
+ 
     if (this.game.target == txmsg.loser){
       this.game.state.plays_since_last_raise--;
       this.startQueue();
     }
   }
-
 
   endTurn(nextTarget = 0) {
     if (this.browser_active){
@@ -1521,16 +1833,16 @@ class Poker extends GameTemplate {
 /* Functions to analyze hands and compare them*/
 
   pickWinner(score1, score2) {
-    let hands_differ = 0;
+    let hands_differ = false;
 
     //Check if hands are different
     for (let i = 0; i < score1.cards_to_score.length; i++) {
       if (score1.cards_to_score[i] !== score2.cards_to_score[i]) {
-        hands_differ = 1;
+        hands_differ = true;
       }
     }
-    if (hands_differ == 0) {
-      return 3;
+    if (!hands_differ) {
+      return 3; // == tie
     }
 
     if (score1.hand_description == "royal flush" &&  score2.hand_description == "royal flush") {
@@ -2374,7 +2686,7 @@ class Poker extends GameTemplate {
     for (let i = 0; i < val.length; i++) {
       if (noval.includes(suite[i] + val[i])) {
         //if the case id not in the exclude list
-        console.log("you are barred from the pub");
+        //console.log("you are barred from the pub");
       } else {
         if (val[i] == 1) {
           //if the candidate is an ace
@@ -2589,104 +2901,11 @@ class Poker extends GameTemplate {
   
 
   returnGameRulesHTML(){
-    return `<div class="rules-overlay">
-    <h1>Texas Hold'em</h1>
-    <p>This is a standard implementation of the popular poker game.</p>
-    <p>Each player attempts to form the best hand with their two private cards (called "the hole") and the five public cards.</p>
-    <p>Players are initially dealt their two secret cards and betting begins. The player to the left (clockwise) of the dealer is called the small blind and must bet the small blind, the player to his/her left (clockwise) is the big blind and must also bet. Any other players must fold, call the big blind, or raise the pot. Once all bets are called, the three public cards are flipped over (the "flop").</p>
-    <p>Another round of betting then commences from the player to the left of the dealer. Players can fold, check (i.e. not increase the pot), raise, or call (i.e. match a raise). Another card (the "turn") is revealed followed by another round of betting, and the final card (the "river") is revealed with another round of betting. </p> 
-    <p>Any remaining players after the final round of betting go into the showdown and the highest hand wins the pot.</p>
-    <h2>Poker Hands</h2>
-    <ul>
-    <li><em>Straight Flush</em> is the best possible hand, where all the cards are of the same suit and continuous, with Ace high. A straight flush of A, K, Q, J, 10 is called a royal flush.</li>
-    <li><em>Four of a Kind</em></li>
-    <li><em>Full House</em>--three of a kind and a pair.</li>
-    <li><em>Flush</em>--All five cards of of the same suit</li>
-    <li><em>Straight</em>--the five cards are sequential in order (but not of the same suit)</li>
-    <li><em>Three of a Kind</em></li>
-    <li><em>Two Pair</em></li>
-    <li><em>One Pair</em></li>
-    <li><em>No Pair</em></li>
-    </ul>
-    </div>`;
+    return PokerGameRulesTemplate(this.app, this);
   }
 
-  /**
-   * Casinos generally have a minimum buyin of 20 x big blind and maximum buyin of 100 x big blind
-   * We can't let users independently select starting blinds and stakes
-   */ 
   returnGameOptionsHTML() {
-    let options_html = `
-      <h1 class="overlay-title">Poker Options</h1>
-          <div class="overlay-input">
-            <label for="blind_mode">Mode:</label>
-            <select id="blind_mode" name="blind_mode">
-              <option value="static">static blinds</option>
-              <option value="increase">increasing blinds</option>
-            </select>
-          </div>
-          <div class="options_notice" id="blind_explainer">Small blind is one chip, big blind is two chips throughout the game</div>
-          <div class="overlay-input">
-            <label for="num_chips">Num chips:</label>
-            <select id="num_chips" name="num_chips">
-              <option value="40">40</option>
-              <option value="100" selected>100</option>
-              <option value="250">250</option>
-            </select>
-          </div>
-          <div class="overlay-input">
-            <input type="checkbox" name="chip_graphics" />
-            <label for="chip_graphics">Use visual chips</label>
-          </div>
-          <div class="overlay-input">
-            <label for="crypto">Crypto:</label>
-            <select id="crypto" name="crypto">
-              <option value="" selected>None</option>
-    `;
-
-    let listed = [];
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (
-        this.app.modules.mods[i].ticker != "" &&
-        this.app.modules.mods[i].ticker != undefined &&
-  !listed.includes(this.app.modules.mods[i].ticker)
-      ) {
-        options_html += `<option value="${this.app.modules.mods[i].ticker}">${this.app.modules.mods[i].ticker}</option>`;
-  listed.push(this.app.modules.mods[i].ticker);
-      }
-    }
-
-    options_html += `
-            </select>
-          </div>
-          <div id="chip_wrapper" class="overlay-input" style="display:none;">
-            <label for="stake">Game stake:</label>
-            
-            <input type="number" id="stake" list="suggestedChipValues" name="stake" min="0" value="0" step="1">
-          </div>
-          <datalist id="suggestedChipValues">
-            <option value="0.01">
-            <option value="0.1">
-            <option value="1">
-            <option value="5">
-            <option value="20">
-            <option value="50">
-            <option value="100">
-          </datalist>
-   
-          <div class="overlay-input">
-            <label for="observer_mode">Observer Mode:</label>
-            <select name="observer">
-              <option value="enable" >enable</option>
-              <option value="disable" selected>disable</option>
-            </select>
-          </div>
-          <!--input type="hidden" id="stake" name="stake" value="0"-->
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
-    `;
-
-    return options_html;
+    return PokerGameOptionsTemplate(this.app, this);
   }
 
   attachAdvancedOptionsEventListeners(){
@@ -2731,35 +2950,6 @@ class Poker extends GameTemplate {
     if (numChips){
       numChips.onchange = updateChips;
     }
-  }
-
-  /*
-    Only use the following options when creating the game invite TX
-   */
-  returnFormattedGameOptions(options) {
-    let new_options = {};
-    for (var index in options) {
-      if (index == "crypto") {
-        new_options[index] = options[index];
-      }
-      if (index == "chip") {
-        new_options[index] = options[index];
-      }
-      if (index == "stake"){
-        new_options[index] = options[index]; 
-      }
-      if (index == "num_chips") {
-        new_options[index] = options[index];
-      }
-      if (index == "blind_mode") {
-        new_options[index] = options[index];
-      }
-      if (index == "chip_graphics"){
-        new_options[index] = options[index]; 
-      }
-    }
- 
-    return new_options;
   }
 
   returnShortGameOptionsArray(options) {
@@ -2832,8 +3022,9 @@ class Poker extends GameTemplate {
           this.playerbox.hideInfo();
         }
         
+        console.log("STATUS UPDATE: ", str);
         let status_obj = document.querySelector(".status");
-        if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
+        if (status_obj) {
           status_obj.innerHTML = str;
         }
       
@@ -2845,16 +3036,6 @@ class Poker extends GameTemplate {
 
 
 
-  returnStats(){
-    let stats = {};
-    for (let i = 0; i < this.game.players.length; i++){
-      stats[this.game.players[i]] = {};
-      stats[this.game.players[i]].handsPlayed = 0;
-      stats[this.game.players[i]].handsWon = 0;
-      stats[this.game.players[i]].handsFolded = 0;
-    }
-    return stats;
-  }
 
 
   handleStatsMenu() {
@@ -2863,7 +3044,7 @@ class Poker extends GameTemplate {
     let stats = ["handsPlayed", "handsWon","handsFolded"];
     let html = `
       <div class="rules-overlay" id="game-stats-overlay">
-        <h1>Game Statistics:</h1>
+        <div class="h1">Game Statistics:</div>
         <table><thead><tr><th></th>
        `; 
     for (let p in this.game.stats){
@@ -2881,7 +3062,7 @@ class Poker extends GameTemplate {
 
     html+=`</div>`;
 
-    this.overlay.show(this.app, this, html);
+    this.overlay.show(html);
   }
 
 
