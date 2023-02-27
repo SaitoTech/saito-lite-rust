@@ -387,7 +387,7 @@ class Stun extends ModTemplate {
                             iceServers: this.servers,
                         });
            
-
+                    this.peer_connections[publicKey] = pc;
                     pc.onicecandidate = (ice) => {
                         if (!ice || !ice.candidate || !ice.candidate.candidate) {
                             let offer_sdp = pc.localDescription;
@@ -400,11 +400,12 @@ class Stun extends ModTemplate {
                     };
 
                     pc.addEventListener('connectionstatechange', e => {
-                        console.log("connection state ", pc.connectionState);
-                        if(pc.currentLocalDescription != this.peer_connections[publicKey].currentLocalDescription) return;
+                       
+                        if(pc.currentLocalDescription !== this.peer_connections[publicKey].currentLocalDescription) return;
+                        
                         switch (pc.connectionState) {
                             case "connecting":
-                                this.resetStep()
+                                this.resetStep();
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             case "connected":
@@ -412,9 +413,7 @@ class Stun extends ModTemplate {
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             case "disconnected":
-                                console.log(this.peer_connection_states, 'peer connection states');
                                 this.resetStep();
-                                this.peer_connection_states[publicKey] = "disconnected";
                                 this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, ui_type, call_type, room_code);
                                 break;
                             case "failed":
@@ -565,6 +564,8 @@ class Stun extends ModTemplate {
 
 
                 pc.addEventListener('connectionstatechange', () => {
+
+
                     console.log('')
                     if(pc.currentLocalDescription != this.peer_connections[offer_creator].currentLocalDescription) return;
                     try {
