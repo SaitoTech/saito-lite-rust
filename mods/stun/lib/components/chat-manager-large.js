@@ -18,24 +18,25 @@ class VideoChatManager {
     isActive = false;
     waitSeconds=0;
     waitTimer= null;
-
+    central;
 
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
         this.effectsMenu = new Effects(app, mod)
 
-        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code) => {
+        this.app.connection.on('show-video-chat-request', (app, mod, ui_type, call_type = "Video", room_code, central) => {
             if (ui_type !== "large") return
             this.call_type = "video"
             this.room_code = room_code
             this.ui_type = "large";
+            this.central = central
             this.show(app, mod);
         })
         this.app.connection.on('render-local-stream-request', (localStream, ui_type) => {
             if(!this.isActive) return;
             if (ui_type !== "large") return
-            this.renderLocalStream(localStream)
+            this.renderLocalStream(localStream);
             // this.updateRoomLink()
         })
         this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, ui_type) => {
@@ -98,12 +99,7 @@ class VideoChatManager {
         let add_users = document.querySelector('.add_users')
         if (add_users) {
             add_users.addEventListener('click', (e) => {
-              let public_keys =   this.updateRoomLink();
-            //     if(public_keys.length === 1){
-            //         this.chatInvitationOverlay.render()
-            //     }else{
-            //         salert("Room filled up");
-            //     }
+               this.updateRoomLink();
 
                 this.chatInvitationOverlay.render()
                
@@ -143,13 +139,14 @@ class VideoChatManager {
 
     updateRoomLink() {
         let public_keys = []
-        for (let i in this.video_boxes) {
-            if (i === "local") {
-                public_keys.push(this.app.wallet.returnPublicKey())
-            } else {
-                public_keys.push(i);
-            }
-        }
+        // for (let i in this.video_boxes) {
+        //     if (i === "local") {
+        //         public_keys.push(this.app.wallet.returnPublicKey())
+        //     } else {
+        //         public_keys.push(i);
+        //     }
+        // }
+        public_keys.push(this.central);
         let obj = {
             room_id: this.room_code,
             public_keys,
@@ -224,8 +221,11 @@ class VideoChatManager {
 
 
     addRemoteStream(peer, remoteStream, pc) {
+        this.createVideoBox(peer);
         this.video_boxes[peer].video_box.addStream(remoteStream);
         this.video_boxes[peer].peer_connection = pc;
+        
+        console.log('adding remote stream to ', this.video_boxes[peer])
     }
 
     renderLocalStream(localStream) {
@@ -253,7 +253,9 @@ class VideoChatManager {
     }
 
 
-    updateConnectionState(peer, state) {
+    updateConnectionState(peer, state) { 
+        // if(this.mod.peer_connections[peer].connectionState !== state)
+        // return;
         this.createVideoBox(peer)
         this.video_boxes[peer].video_box.handleConnectionStateChange(state);
         switch (state) {
@@ -261,11 +263,12 @@ class VideoChatManager {
                 clearInterval(this.waitTimer)
             break;
             case "disconnected":
-                delete this.video_boxes[peer];
+                // delete this.video_boxes[peer];
                 this.stopTimer();
                 this.updateImages();
                 this.mod.closeMediaConnections(peer)
                 console.log("video boxes: after ", this.video_boxes);
+        
                 break;
             case "connected":
                 this.startTimer();
@@ -273,11 +276,12 @@ class VideoChatManager {
                 break;
 
             case "failed":
-                delete this.video_boxes[peer];
-                this.stopTimer();
-                this.updateImages();
-                this.mod.closeMediaConnections(peer)
-                console.log("video boxes: after ", this.video_boxes);
+                    delete this.video_boxes[peer];
+                    this.stopTimer();
+                    this.updateImages();
+                    this.mod.closeMediaConnections(peer)
+                    console.log("video boxes: after ", this.video_boxes);
+    
                 break;
 
             default:

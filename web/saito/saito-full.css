@@ -59,9 +59,8 @@
 @custom-media --breakpoint-md (max-width: 768px);
 @custom-media --breakpoint-md (max-width: 590px);
 @custom-media --breakpoint-sm (max-width: 375px); */
-*,
-*::before,
-*::after {
+
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -103,12 +102,7 @@ a:hover {
 	Headings
 -----------------------------------------------------------------*/
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
 }
 
@@ -149,13 +143,13 @@ iframe {
 /* ----------------------------------------------------------------
  Paragraph
 -----------------------------------------------------------------*/
+
 p.large {
   font-size: 2rem;
   font-weight: bold;
 }
 
-p,
-p.middle {
+p, p.middle {
   color: var(--saito-font-color);
   font-size: 1.5rem;
   overflow: auto;
@@ -173,10 +167,7 @@ p.small {
 QR Code
 -----------------------------------------------------------------*/
 
-
-@media screen and (max-width: 600px) {
-  
-}
+@media screen and (max-width: 600px) {}
 
 /* ----------------------------------------------------------------
 Password Font
@@ -198,6 +189,7 @@ hr {
 /*-----------------------------------------------------------------
 Scrollbars
 -----------------------------------------------------------------*/
+
 ::-webkit-scrollbar {
   width: 0.6rem;
 }
@@ -295,55 +287,49 @@ Media Queries
   body {
     font-size: 1.45rem;
   }
-
   .saito-container {
     padding: 0 1rem;
   }
-
   h1 {
     font-size: 4.5rem;
   }
-
   h2 {
     font-size: 4rem;
   }
-
   h3 {
     font-size: 3.5rem;
   }
-
   h4 {
     font-size: 3rem;
   }
-
   h5 {
     font-size: 2.5rem;
   }
-
   h6 {
     font-size: 2rem;
   }
-
   p.large {
     font-size: 1.8rem;
   }
-
-  p,
-  p.middle {
+  p, p.middle {
     font-size: 1.4rem;
   }
-
   p.small {
     font-size: 1.1rem;
   }
+  #message-wrapper {
+    width: 100vw;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
 }
+
 @media screen and (max-width: 375px) {
   body {
     font-size: 1.4rem;
   }
-}
-
-/* ----------------------------------------------------------------
+}/* ----------------------------------------------------------------
 buttons
 -----------------------------------------------------------------*/
 

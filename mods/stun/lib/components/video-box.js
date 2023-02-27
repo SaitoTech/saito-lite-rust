@@ -1,4 +1,5 @@
 
+const { forEach } = require("jszip");
 const videoBoxTemplate = require("./video-box.template");
 // import {applyVideoBackground, } from 'virtual-bg';
 
@@ -9,6 +10,7 @@ class VideoBox {
     stream_id = null;
     stream = null;
     placeholderRendered = false;
+
     constructor(app, mod, ui_type, call_type) {
         this.app = app;
         this.mod = mod;
@@ -94,7 +96,9 @@ class VideoBox {
 
 
     handleConnectionStateChange(connectionState) {
+        console.log('');
         let video_box = document.querySelector(`#stream${this.stream_id}`);
+        console.log('video box handle connection state ', video_box, this);
         let connection_message = document.querySelector('#connection-message');
         if (!video_box) return;
         switch (connectionState) {
@@ -102,9 +106,12 @@ class VideoBox {
                 document.querySelector('#connection-message').innerHTML = `<p>Starting ${this.call_type.toUpperCase()} Chat </p> <span class='lds-dual-ring'>`
                 break;
             case "connected":
+                console.log('connected i got here')
                 if (this.stream) {
                     if (document.querySelector('#connection-message')) {
-                        document.querySelector('#connection-message').parentElement.removeChild(document.querySelector('#connection-message'));
+                        document.querySelectorAll('#connection-message').forEach(item => {
+                            item.parentElement.removeChild(document.querySelector('#connection-message'));
+                        })
                     }
                     this.renderStream({ muted: false });
                 }
