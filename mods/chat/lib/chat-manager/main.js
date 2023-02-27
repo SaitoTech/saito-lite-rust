@@ -34,6 +34,14 @@ class ChatManager {
       }
     });
 
+    app.connection.on("chat-manager-and-popup-render-request", (group) => {
+      if (this.render_manager_to_screen) {
+        this.render();
+	group.unread = 0;
+        app.connection.emit("chat-popup-render-request", (group));
+      }
+    });
+
     app.connection.on("chat-manager-request-no-interrupts", () => {
       this.render_popups_to_screen = 0;
     });

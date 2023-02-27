@@ -61,8 +61,6 @@ console.log("THIS PEER SUPPORTS CHAT!");
         let local_group = this.returnGroupOrCreateFromMembers([peer.returnPublicKey()], "Saito Community Chat");
         if (local_group) {
 
-console.log("added chat group!");
-
           newtx.msg = {
             request : "chat history" ,
             group_id : local_group.id ,
@@ -70,36 +68,19 @@ console.log("added chat group!");
           newtx = this.app.wallet.signTransaction(newtx);
 
           this.app.network.sendTransactionWithCallback(newtx, (txs) => {
-
-console.log("received results 2.5: " + (typeof txs));
-console.log("pre parse");
-	    let txs2 = JSON.parse(txs);
-console.log("post parse");
-	    txs = txs2;
-console.log("received results: " + JSON.stringify(txs));
-console.log("received results 3: " + txs.length);
-
-            if (!txs) { 
-		console.log("EXITING BECAUSE: " + txs);
-		console.log("EXITING BECAUSE: " + txs.length);
-		return; 
-	    }
-
-console.log("how many TXS did we receive? " + txs.length); 
+try {
 
 	    for (let i = 0; i < txs.length; i++) {
-console.log(" in the txs length");
-		// is already an object
-	      let newtx = new saito.default.transaction(txs[i]);
-console.log("adding tx: " + newtx.returnMessage());
+	      let newtx = new saito.default.transaction(txs[i].transaction);
+	      let txmsg = newtx.returnMessage();
               this.addTransactionToGroup(local_group, newtx);
-console.log("added!");
 	    }
 
-console.log("updating cmm");
-            this.app.connection.emit("chat-manager-render-request");
-console.log("updating cmm done");
+} catch (err) {
+  console.log("chat history adding: " + err);
+}
 
+            this.app.connection.emit("chat-manager-and-popup-render-request", (local_group));
           });
         }
 
@@ -340,7 +321,7 @@ console.log("check history C: " + group_id);
 console.log("check history D");
 	  if (!group) { return; }
 console.log("check history E");
-console.log("sending list of txs: " + group.txs.length);
+
 	  mycallback(group.txs);
 
 	}
