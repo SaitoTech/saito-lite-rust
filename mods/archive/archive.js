@@ -73,10 +73,8 @@ class Archive extends ModTemplate {
       // subrequest: "archive rom",
       // data: base64data,
 
-console.log("saving transactiona and sending result...");
-      this.saveTransaction(tx, "");
+      this.saveTransaction(tx, req.data.id);
       mycallback(true);
-console.log("done saving transaction and sending result...");
       return;
     }
     if (req.request === "archive") {
@@ -183,7 +181,7 @@ console.log("done saving transaction and sending result...");
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.to[i].add ,
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
         $preserve	:	0 ,
@@ -202,7 +200,7 @@ console.log("done saving transaction and sending result...");
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.from[i].add ,
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
         $preserve	:	0 ,
@@ -231,7 +229,7 @@ console.log("done saving transaction and sending result...");
     for (let i = 0; i < tx.transaction.to.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.to[i].add ,
         $optional	:	JSON.stringify(optional) ,
@@ -241,7 +239,7 @@ console.log("done saving transaction and sending result...");
     for (let i = 0; i < tx.transaction.from.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.from[i].add ,
         $optional	:	JSON.stringify(optional) ,
@@ -275,7 +273,7 @@ console.log("done saving transaction and sending result...");
     let params = {
       $sig:		tx.transaction.sig,
       $publickey:	key,
-      $tx:		JSON.stringify(tx.transaction),
+      $tx:		tx.serialize_to_web(this.app) ,
       $optional: 	optional,
       $ts:		tx.transaction.ts,
       $preserve	:	0 ,

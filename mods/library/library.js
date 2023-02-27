@@ -64,6 +64,11 @@ class Library extends ModTemplate {
     //
     this.load();
 
+console.log(" - ");
+console.log(" - loaded library...");
+console.log(" - ");
+console.log(JSON.stringify(this.library));
+
     //
     // index transactions that are saved
     //
@@ -115,9 +120,11 @@ console.log("---------------------");
 		  num : 1 ,			// total
 		  available : 1 ,		// total available
 		  checkout : [] ,
-		  sig : sig ,
+		  sig : sig
 	        }
-console.log("ITEM TO ARCHIVE: " + JSON.stringify(item));
+	      if (!this.library[module])       { this.library[module] = {}; }
+	      if (!this.library[module].local) { this.library[module].local = []; }
+	      if (!this.library[module].peers) { this.library[module].peers = {}; }
 	      this.library[module].local.push(item);
 	      this.save();
 	    } else {
@@ -160,16 +167,13 @@ console.log(" > ");
 	this.library[m.collection].local = [];
 	this.library[m.collection].peers = {};
 
-
-	this.library[m.collection].local.push({
-  		  id : "id" ,
-		  title : "title" ,
-		  description : "description" ,
-		  num : 1 ,				// total
-		  available : 1 ,			// total available
-		  checkout : [] ,
-		  sig : "sig"
-        });
+//  		  id : "id" ,
+//		  title : "title" ,
+//		  description : "description" ,
+//		  num : 1 ,				// total
+//		  available : 1 ,			// total available
+//		  checkout : [] ,
+//		  sig : "sig"
 
         this.save();
       } else {
@@ -186,7 +190,7 @@ console.log(" > ");
     if (this.app.BROWSER == 0) { services.push({ service: "library", name: "Multimedia Library" }); }
     return services;
   }
-  
+ 
 
  
   //
@@ -270,6 +274,90 @@ console.log(" >>> ");
   }
 
 
+
+
+  checkout(key, sig, publickey, mycallback) {
+
+    if (!this.library[key]) { return; }
+    let collection = this.library[key];
+
+    let local = false;
+    let idx = -1;
+
+    if (publickey === this.app.wallet.returnPublicKey()) {
+      for (let i = 0; i < collection.local.length; i++) {
+        if (collection.local[i].sig === sig) {
+          idx = i;
+	  local = true;
+          break;
+        }
+      }
+    } else {
+      for (let key in collection.peers) {
+	//
+      }
+    }
+
+    if (idx != -1) {
+
+      let item = this.library[collection].local[idx];
+
+      //
+      // current user may checkout again, but we need to 
+      // update the time they checked it out
+      //
+      let is_already_borrowed = 0;
+      for (let i = 0; i < item.checkout.length; i++) {
+        if (item.checkout[i].publickey === publickey) {
+	  item.checkout[i].ts = new Date().getTime();
+          is_already_borrowed = 1;
+	}
+      }
+
+      //
+      // the one condition we permit re-borrowing is if this user is the 
+      // one who has borrowed the item previously and has it in their
+      // possession. in that case they have simply rebooted their 
+      // machine and should be provided with the data under the previous
+      // or existing loan agreement. this is a roll-over loan.
+      //
+      // this "unsets" the loan so that it can be reset with the passing
+      // through of control to the !is_already_borrowed sanity check.
+      //
+      //
+      if (is_already_borrowed) {
+        for (let i = 0; i < item.checkout.length; i++) {
+          if (item.checkout[i].publickey === publickey) {
+	    item.checkout.splice(i, 1);
+	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+	    // be careful that item.available //
+	    // is not removed below for legal //
+	    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+	    item.available++;
+            this.save();
+            is_already_borrowed = 0;
+	  }	
+        }
+      }
+
+      if (!is_already_borrowed) {
+
+        if (item.available < 1) { return; }
+        if (item.checkout.length > item.num) { return; }
+        //
+        // record the checkout
+        //
+        item.checkout.push({ publickey : publickey , ts : new Date().getTime() });
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+	// be careful that item.available //
+	// is not removed above for legal //
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+        item.available--;
+        this.save();
+        this.app.storage.loadTransactionBySig(sig, mycallback);
+      }
+    }
+  }
 
 }
 

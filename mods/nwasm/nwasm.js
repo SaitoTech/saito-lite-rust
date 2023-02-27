@@ -30,6 +30,8 @@ class Nwasm extends GameTemplate {
 
     this.uploader        = null;
 
+    this.library_ui = new NwasmLibrary(this.app, this);
+
     this.load();
 
     this.libraries = {}; // ANY available libraries of games. 
@@ -107,38 +109,8 @@ class Nwasm extends GameTemplate {
   }
 
 
-
-  startPlaying(ts=null) {
-    if (ts == null) { ts = new Date().getTime(); }
-    this.active_game_load_ts = ts;
-    this.active_game_save_ts = ts;
-  }
-
-  stopPlaying(ts=null) {
-    if (ts == null) { ts = new Date().getTime(); }
-    this.active_game_time_played += (ts - this.active_game_load_ts);
-    this.active_game_load_ts = ts;
-  }
-
-  initializeGame(game_id) {
-
-    let nwasm_self = this;
-
-    if (!this.game.state) {
-      this.game.state = {};
-      this.game.queue = [];
-      this.game.queue.push("round");
-      this.game.queue.push("READY");
-    }
-
-    //
-    // when games are saved in the emulator
-    //
-    this.app.connection.on("nwasm-export-game-save", (savegame) => {
-      nwasm_self.active_game = savegame;
-      nwasm_self.saveGameFile(savegame);
-    });
-
+  render() {
+    this.library_ui.render();
   }
 
   initializeHTML(app) {
@@ -255,6 +227,49 @@ class Nwasm extends GameTemplate {
     this.menu.render();
   }
 
+  initializeGame(game_id) {
+
+    let nwasm_self = this;
+
+    if (!this.game.state) {
+      this.game.state = {};
+      this.game.queue = [];
+      this.game.queue.push("round");
+      this.game.queue.push("READY");
+    }
+
+    //
+    // when games are saved in the emulator
+    //
+    this.app.connection.on("nwasm-export-game-save", (savegame) => {
+      nwasm_self.active_game = savegame;
+      nwasm_self.saveGameFile(savegame);
+    });
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+  startPlaying(ts=null) {
+    if (ts == null) { ts = new Date().getTime(); }
+    this.active_game_load_ts = ts;
+    this.active_game_save_ts = ts;
+  }
+
+  stopPlaying(ts=null) {
+    if (ts == null) { ts = new Date().getTime(); }
+    this.active_game_time_played += (ts - this.active_game_load_ts);
+    this.active_game_load_ts = ts;
+  }
+
   deleteRoms() {
 
     let message = {};
@@ -278,6 +293,10 @@ class Nwasm extends GameTemplate {
 	}
   }
 
+  hideLibrary() {
+    this.library_ui.hide();
+  }
+
   initializeRom(bytearray) {
     this.active_game_saves = [];
     myApp.initializeRom(bytearray);
@@ -288,6 +307,7 @@ class Nwasm extends GameTemplate {
     return NwasmGameOptionsTemplate(this.app, this);
   }
 
+/****
   hideSplashScreen() {
 
     let obj = null;
@@ -300,15 +320,6 @@ class Nwasm extends GameTemplate {
     
   }
 
-  hideLibrary() {
-
-    this.hideSplashScreen();
-
-    let obj = document.getElementById("nwasm-libraries");
-    if (obj) { obj.style.display = "none"; }
-
-  }
-
   updateVisibleLibrary() {
     this.hideSplashScreen();
     let nlib = new NwasmLibrary(this.app, this);
@@ -319,6 +330,7 @@ class Nwasm extends GameTemplate {
     this.libraries[publickey] = collection;
     this.updateVisibleLibrary();
   }
+****/
 
   //
   // for the love of God don't add console.logs within this function
@@ -470,8 +482,6 @@ class Nwasm extends GameTemplate {
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
 
-alert("SAVING ROM");
-    
     document.querySelector('.loader').classList.add("steptwo");
 
     if (iobj) { iobj.innerHTML = "cryptographically signing archive file..."; }
@@ -486,8 +496,6 @@ console.log("sending transaction with callback!");
 
     this.app.network.sendTransactionWithCallback(newtx, async function (res) {
 
-alert("DONE UPLOADING: " + JSON.stringify(res));
-
       if (iobj) { iobj.innerHTML = "archive upload completed..."; }
 
       if (added_to_library == 1) { return; }
@@ -499,7 +507,6 @@ alert("DONE UPLOADING: " + JSON.stringify(res));
     });
 
   }
-
 
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));

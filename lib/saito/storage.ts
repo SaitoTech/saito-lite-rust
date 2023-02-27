@@ -54,15 +54,8 @@ class Storage {
       if (obj) {
         if (obj.txs) {
           for (let i = 0; i < obj.txs.length; i++) {
-            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
-            tx.optional = {};
-            if (obj.txs[i].optional) {
-              try {
-                tx.optional = JSON.parse(obj.txs[i].optional);
-              } catch (err) {
-                console.log("error loading optional data into tx");
-              }
-            }
+            let tx = new Transaction();
+	    tx.deserialize_from_web(this.app, obj.txs[i].tx);
             txs.push(tx);
           }
         }
@@ -87,15 +80,8 @@ class Storage {
       if (obj) {
         if (obj.txs) {
           for (let i = 0; i < obj.txs.length; i++) {
-            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
-            tx.optional = {};
-            if (obj.txs[i].optional) {
-              try {
-                tx.optional = JSON.parse(obj.txs[i].optional);
-              } catch (err) {
-                console.log("error loading optional data into tx");
-              }
-            }
+            let tx = new Transaction();
+	    tx.deserialize_from_web(this.app, obj.txs[i].tx);
             txs.push(tx);
           }
         }
@@ -129,15 +115,8 @@ class Storage {
         if (obj) {
           if (obj.txs) {
             for (let i = 0; i < obj.txs.length; i++) {
-              let tx = new Transaction(JSON.parse(obj.txs[i].tx));
-              tx.optional = {};
-              if (obj.txs[i].optional) {
-                try {
-                  tx.optional = JSON.parse(obj.txs[i].optional);
-                } catch (err) {
-                  console.log("error loading optional data into tx");
-                }
-              }
+              let tx = new Transaction();
+	      tx.deserialize_from_web(this.app, obj.txs[i].tx);
               txs.push(tx);
             }
           }
@@ -183,15 +162,8 @@ class Storage {
       if (obj) {
         if (obj.txs) {
           for (let i = 0; i < obj.txs.length; i++) {
-            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
-            tx.optional = {};
-            if (obj.txs[i].optional) {
-              try {
-                tx.optional = JSON.parse(obj.txs[i].optional);
-              } catch (err) {
-                console.log("error loading optional data into tx");
-              }
-            }
+            let tx = new Transaction();
+	    tx.deserialize_from_web(this.app, obj.txs[i].tx);
             txs.push(tx);
           }
         }
@@ -225,15 +197,8 @@ class Storage {
       if (obj) {
         if (obj.txs) {
           for (let i = 0; i < obj.txs.length; i++) {
-            let tx = new Transaction(JSON.parse(obj.txs[i].tx));
-            tx.optional = {};
-            if (obj.txs[i].optional) {
-              try {
-                tx.optional = JSON.parse(obj.txs[i].optional);
-              } catch (err) {
-                console.log("error loading optional data into tx");
-              }
-            }
+            let tx = new Transaction();
+	    tx.deserialize_from_web(this.app, obj.txs[i].tx);
             txs.push(tx);
           }
         }
