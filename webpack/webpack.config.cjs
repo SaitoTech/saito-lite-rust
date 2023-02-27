@@ -24,7 +24,7 @@ webpack({
   optimization: {
     //set the appropriate value for minimisation
     //dev => false, prod => true
-    minimize: false,
+    minimize: minimize,
     minimizer: [
       new TerserPlugin({
         parallel: true,
