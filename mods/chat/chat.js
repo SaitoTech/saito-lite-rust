@@ -153,9 +153,7 @@ try {
 	// if I run a chat service, create it
 	//
         if (app.BROWSER == 0) {
-console.log("CREATE CHAT GROUP FOR COMMUNITY!");
 	  let group = this.createChatGroup([this.app.wallet.returnPublicKey()], "Saito Community Chat");
-console.log("ID is: " + group.id);
 	}
 
 	if (app.BROWSER) {
