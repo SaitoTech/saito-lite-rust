@@ -68,10 +68,10 @@ class VideoChatManager {
 
             let my_public_key = this.app.wallet.returnPublicKey()
             if (my_public_key === offer_creator) {
-                this.renderRemoteStreamPlaceholder(offer_recipient, "Sending Offer tx");
+                this.renderRemoteStreamPlaceholder(offer_recipient, "Attempting to connect");
                 this.startWaitTimer(offer_recipient)
             } else {
-                this.renderRemoteStreamPlaceholder(offer_creator, "Receiving Offer tx");
+                this.renderRemoteStreamPlaceholder(offer_creator, "Attempting to connect");
                 this.startWaitTimer(offer_creator)
             }
 
