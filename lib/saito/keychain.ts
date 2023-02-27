@@ -84,13 +84,15 @@ class Keychain {
     //
     if (data.publickey === "") { return; }
 
+console.log("UPDATE: " + data.publickey + " with " + JSON.stringify(data));
+
     //
     // update existing entry
     //
     for (let i = 0; i < this.keys.length; i++) {
       if (this.keys[i].publickey === data.publickey) {
         let newkey = {};
-        for (let key in data) { if (key !== "publickey") { newkey[key] = data[key]; } }
+        for (let key in data) { if (key !== "publickey") { this.keys[i][key] = data[key]; } }
         this.saveKeys();
         return;
       }
