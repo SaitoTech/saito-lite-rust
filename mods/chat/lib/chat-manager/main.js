@@ -34,6 +34,14 @@ class ChatManager {
       }
     });
 
+    app.connection.on("chat-manager-and-popup-render-request", (group) => {
+      if (this.render_manager_to_screen) {
+	group.unread = 0;
+        this.render();
+        app.connection.emit("chat-popup-render-request", (group));
+      }
+    });
+
     app.connection.on("chat-manager-request-no-interrupts", () => {
       this.render_popups_to_screen = 0;
     });
@@ -147,9 +155,6 @@ class ChatManager {
         last_ts = txmsg.timestamp;
       }
 
-      //
-      // TODO -- lets turn this into a CHAT COMPONENT
-      //
       let html = ChatTeaser(this.app, group.name, last_msg, last_ts, group.id, group.unread);
       let divid = "saito-user-" + group.id;
 

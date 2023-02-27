@@ -1,19 +1,29 @@
 const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 const StunAppspaceTemplate = require('./main.template.js');
-
+const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
 class StunAppspace {
+
+  
 
   constructor(app, mod, container = "") {
     this.app = app;
     this.mod = mod;
     this.container = container;
     this.overlay = new SaitoOverlay(app, mod);
-
+    this.loader = new SaitoLoader(app, mod);
     app.connection.on('join-room-with-code', (code) => {
       this.joinVideoInvite(app, mod, code)
     })
     app.connection.on('remove-overlay-request', () => {
       this.overlay.remove();
+    })
+
+    app.connection.on('stun-show-loader', ()=> {
+      this.loader.render(true);
+    })
+    app.connection.on('stun-remove-loader', ()=> {
+      console.log('removing loader')
+      this.loader.remove()
     })
 
   }
@@ -87,6 +97,7 @@ class StunAppspace {
         }
         mod.sendUpdateRoomTransaction(room_code, data);
         this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
+        this.app.connection.emit('stun-remove-loader')
         this.app.connection.emit('render-local-stream-request', localStream, 'large', 'video');
         this.app.connection.emit('remove-overlay-request')
         siteMessage("You are the only participant in this room", 3000);
@@ -112,6 +123,7 @@ class StunAppspace {
         // filter my public key
         peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
         this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
+        this.app.connection.emit('stun-remove-loader')
         this.app.connection.emit('render-local-stream-request', localStream, 'large');
       
         this.app.connection.emit('remove-overlay-request')

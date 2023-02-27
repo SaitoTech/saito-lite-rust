@@ -78,6 +78,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  if (mod.isAcceptedGame(invite.game_id)){
 	  	html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">continue game</div>
 	    				 <div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-primary">forfeit game</div>
+	    				 <div id="arcade-game-controls-cancel-game" class="saito-button saito-button-primary">close game</div>
 							`;
 	  }else{
 	  	if (invite.players.includes(app.wallet.returnPublicKey())) {

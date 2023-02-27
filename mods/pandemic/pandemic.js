@@ -49,7 +49,8 @@ class Pandemic extends GameTemplate {
   respondTo(type){
     if (type == "default-league") {
       let obj = super.respondTo(type);
-      obj.type = "exp";
+      obj.ranking_algorithm = "EXP";
+      obj.default_score = 0;
       return obj;
     }
     return super.respondTo(type);

@@ -595,16 +595,29 @@ i.link_icon.private {
   padding: 0 1rem;
 }
 .league-leaderboard .saito-table .saito-table-body .saito-table-row {
-  grid-template-columns: 4rem auto 5rem;
+  grid-template-columns: 4rem auto 5rem 5rem;
 }
 
 .league-leaderboard .saito-table .saito-table-header {
-  grid-template-columns: 4rem auto 5rem;
+  grid-template-columns: 4rem auto 5rem 5rem;
   text-align: center;
   padding-top: 0px;
 }
 
 
+
+.my-leaderboard-position{
+  border: 1px solid var(--saito-primary);
+}
+
+.my-leaderboard-position>div:first-child {
+  font-size: 0;
+}
+
+.my-leaderboard-position>div:first-child::before {
+  content: "\22B3";
+  font-size: 1.5rem;
+}
 .league-overlay-container {
   background: var(--saito-arcade-background);
   width: 90vw;

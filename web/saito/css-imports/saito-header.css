@@ -115,7 +115,6 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  height: 42rem;
   align-items: center;
 }
 
@@ -217,6 +216,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 1rem 0 0;
 }
 
 .wallet-balance {
@@ -247,6 +247,7 @@
 #header-username {
   color: var(--saito-white);
   cursor: pointer;
+  font-size: 2rem;
 }
 
 

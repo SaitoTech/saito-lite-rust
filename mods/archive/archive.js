@@ -28,14 +28,11 @@ class Archive extends ModTemplate {
 
   }
 
-
-
   returnServices() {
       let services = [];
       if (this.app.BROWSER == 0) { services.push({ service: "archive" }); }
       return services;
   }
-
 
   onConfirmation(blk, tx, conf, app) {
 
@@ -53,7 +50,6 @@ class Archive extends ModTemplate {
     }
   }
 
-
   async handlePeerTransaction(app, tx=null, peer, mycallback) {
 
     if (tx == null) { return; }
@@ -68,6 +64,19 @@ class Archive extends ModTemplate {
     //
     // only handle archive request 
     //
+    if (req.request === "archive save") {
+
+      // module: this.name,
+      // id: this.app.crypto.hash(this.active_rom_name) ,
+      // title: this.active_rom_name.trim() ,
+      // request: "archive save",
+      // subrequest: "archive rom",
+      // data: base64data,
+
+      this.saveTransaction(tx, req.data.id);
+      mycallback(true);
+      return;
+    }
     if (req.request === "archive") {
 
       if (req.data.request === "delete") {
@@ -172,7 +181,7 @@ class Archive extends ModTemplate {
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.to[i].add ,
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
         $preserve	:	0 ,
@@ -191,7 +200,7 @@ class Archive extends ModTemplate {
       params = {
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.from[i].add ,
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $optional	:	JSON.stringify(optional) ,
         $ts		:	tx.transaction.ts ,
         $preserve	:	0 ,
@@ -220,7 +229,7 @@ class Archive extends ModTemplate {
     for (let i = 0; i < tx.transaction.to.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.to[i].add ,
         $optional	:	JSON.stringify(optional) ,
@@ -230,7 +239,7 @@ class Archive extends ModTemplate {
     for (let i = 0; i < tx.transaction.from.length; i++) {
       sql = "UPDATE txs SET tx = $tx WHERE sig = $sig AND publickey = $publickey";
       params = {
-        $tx		:	JSON.stringify(tx.transaction) ,
+        $tx		:	tx.serialize_to_web(this.app) ,
         $sig		:	tx.transaction.sig ,
         $publickey	:	tx.transaction.from[i].add ,
         $optional	:	JSON.stringify(optional) ,
@@ -264,7 +273,7 @@ class Archive extends ModTemplate {
     let params = {
       $sig:		tx.transaction.sig,
       $publickey:	key,
-      $tx:		JSON.stringify(tx.transaction),
+      $tx:		tx.serialize_to_web(this.app) ,
       $optional: 	optional,
       $ts:		tx.transaction.ts,
       $preserve	:	0 ,

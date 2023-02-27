@@ -1,5 +1,4 @@
 import saito from "./saito";
-
 import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
 import Hop from "./hop";
@@ -72,7 +71,6 @@ class Transaction {
 
 try {
     if (jsonobj != null) {
-
 
       //
       // if the jsonobj has been provided, we have JSON.parsed something

@@ -59,9 +59,8 @@
 @custom-media --breakpoint-md (max-width: 768px);
 @custom-media --breakpoint-md (max-width: 590px);
 @custom-media --breakpoint-sm (max-width: 375px); */
-*,
-*::before,
-*::after {
+
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -103,12 +102,7 @@ a:hover {
 	Headings
 -----------------------------------------------------------------*/
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
 }
 
@@ -149,13 +143,13 @@ iframe {
 /* ----------------------------------------------------------------
  Paragraph
 -----------------------------------------------------------------*/
+
 p.large {
   font-size: 2rem;
   font-weight: bold;
 }
 
-p,
-p.middle {
+p, p.middle {
   color: var(--saito-font-color);
   font-size: 1.5rem;
   overflow: auto;
@@ -173,10 +167,7 @@ p.small {
 QR Code
 -----------------------------------------------------------------*/
 
-
-@media screen and (max-width: 600px) {
-  
-}
+@media screen and (max-width: 600px) {}
 
 /* ----------------------------------------------------------------
 Password Font
@@ -198,6 +189,7 @@ hr {
 /*-----------------------------------------------------------------
 Scrollbars
 -----------------------------------------------------------------*/
+
 ::-webkit-scrollbar {
   width: 0.6rem;
 }
@@ -295,55 +287,49 @@ Media Queries
   body {
     font-size: 1.45rem;
   }
-
   .saito-container {
     padding: 0 1rem;
   }
-
   h1 {
     font-size: 4.5rem;
   }
-
   h2 {
     font-size: 4rem;
   }
-
   h3 {
     font-size: 3.5rem;
   }
-
   h4 {
     font-size: 3rem;
   }
-
   h5 {
     font-size: 2.5rem;
   }
-
   h6 {
     font-size: 2rem;
   }
-
   p.large {
     font-size: 1.8rem;
   }
-
-  p,
-  p.middle {
+  p, p.middle {
     font-size: 1.4rem;
   }
-
   p.small {
     font-size: 1.1rem;
   }
+  #message-wrapper {
+    width: 100vw;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
 }
+
 @media screen and (max-width: 375px) {
   body {
     font-size: 1.4rem;
   }
-}
-
-/* ----------------------------------------------------------------
+}/* ----------------------------------------------------------------
 buttons
 -----------------------------------------------------------------*/
 
@@ -398,10 +384,11 @@ button.small,
   min-width: 4rem;
 }
 button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-gradient.fat {
-  height: 7rem;
-  font-size: 2rem;
-  padding: 2rem !important;
-  width: 30rem;
+    height: 7rem;
+    font-size: 2rem;
+    padding: 2.4rem !important;
+    min-width: 30rem;
+    text-align: center;
 }
 
 :root {
@@ -753,7 +740,7 @@ button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-
   .chat-container {
     margin: 0;
     width: 100vw;
-    height: calc(100vh - var(--saito-header-height));
+    height: calc(100% - var(--saito-header-height));
     max-height: none;
     border-radius: 0;
   }
@@ -1202,7 +1189,6 @@ select {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  height: 42rem;
   align-items: center;
 }
 
@@ -1304,6 +1290,7 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 1rem 0 0;
 }
 
 .wallet-balance {
@@ -1334,6 +1321,7 @@ select {
 #header-username {
   color: var(--saito-white);
   cursor: pointer;
+  font-size: 2rem;
 }
 
 
@@ -1381,6 +1369,7 @@ select {
     max-width: 12rem;
   }
 }
+
 .saito-img-arrow-box {
   position: absolute;
   top: 50%;
@@ -1479,11 +1468,11 @@ select {
   height: 100vh; 
   width: 100vw; 
   position: fixed;  
-  z-index: 20;  
+  z-index: 150;  
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
+  background: none;
 }
 
 .saito-loader-container.non-blocker {
@@ -2147,52 +2136,146 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-overlay-backdrop {
-  position: fixed !important;
-  display: none;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--saito-dark-shim);
-  z-index: 100;
+    position: fixed !important;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--saito-dark-shim);
+    z-index: 100;
 }
 
 .saito-overlay {
-  position: fixed;
-  display: inline-block;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0 auto;
-  z-index: 1000;
-  height: min-content;
-  width: min-content;
-  min-height: 10%;
-  min-height: 10%;
-  max-height: 100vh;
-  max-width: 100vw;
+    position: fixed;
+    display: inline-block;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+    z-index: 1000;
+    height: min-content;
+    width: min-content;
+    min-height: 10%;
+    min-height: 10%;
+    max-height: 100vh;
+    max-width: 100vw;
 }
 
 .saito-overlay-closebox {
-  position: absolute;
-  width: 3rem;
-  height: 3rem;
-  right: -1.3rem;
-  border-radius: 50%;
-  top: -1.5rem;
-  background-color: var(--saito-white);
-  z-index: 100;
+    position: absolute;
+    width: 3rem;
+    height: 3rem;
+    right: -1.3rem;
+    border-radius: 50%;
+    top: -1.5rem;
+    background-color: var(--saito-white);
+    z-index: 100;
 }
 
 .saito-overlay-closebox-btn {
-  cursor: pointer;
-  display: block;
-  height: 3.2rem;
-  width: 3.2rem;
-  color: var(--saito-primary);
-  font-size: 3.1rem;
+    cursor: pointer;
+    display: block;
+    height: 3.2rem;
+    width: 3.2rem;
+    color: var(--saito-primary);
+    font-size: 3.1rem;
 }
-.saito-container {
+
+.saito-overlay-form {
+    width: 60rem;
+    min-width: 300px;
+    max-width: 90vw;
+    padding: 2rem;
+    background-color: var(--saito-background-light);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.saito-overlay-form-header {
+    height: 6rem;
+    background: var(--dreamscape);
+}
+
+.saito-overlay-form-header-title {
+    position: absolute;
+    height: 6rem;
+    color: var(--saito-white);
+    width: 100%;
+    padding: 1.6rem;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    display: block;
+}
+
+.saito-overlay-form-text {
+    font-size: 2rem;
+    line-height: 3rem;
+    color: var(--saito-font-color);
+    padding: 0 1rem;
+}
+
+.saito-overlay-form-inputs>input[type="text"] {
+    height: 6rem;
+    font-size: 2.3rem;
+}
+
+.saito-overlay-form>input[type="text"], .saito-overlay-form-input[type="text"] {
+    height: 6rem;
+    font-size: 2.3rem;
+}
+
+.saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
+    height: 7rem;
+    font-size: 2.1rem;
+    width: 20rem;
+    margin: 0;
+}
+
+.saito-overlay-subform {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    column-gap: 0.5rem;
+    border: 1px dashed var(--saito-border-color-dark);
+    border-radius: var(--saito-border-radius);
+    padding: 1.4rem;
+}
+
+.saito-overlay-subform-text {
+    font-size: 2rem;
+    flex-grow: 1;
+}
+
+.saito-overlay-form-alt-opt {
+    margin-left: 2rem;
+    font-size: 1.8rem;
+    color: var(--saito-font-color);
+    width: min-content;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-grow: 1;
+    text-decoration: underline dashed 1px;
+}
+
+.saito-overlay-form-submitline {
+   display: flex;
+   flex-direction: row;
+   justify-content: flex-end;
+   flex-grow: 1;
+   align-items: center;
+   gap: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+    .saito-overlay-form-submitline {
+        flex-direction: column;   
+    }
+    .saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
+        width: 100%;
+    }
+}.saito-container {
   width: 100vw;
   height: calc(100vh - var(--saito-header-height));
   display: grid;
@@ -3054,6 +3137,7 @@ font imports
   --saito-gray: #eaeaef45;
   --saito-gray-mid: #444;
   --saito-primary: #f71f3d;
+  --saito-red: #f71f3d;
   --saito-secondary: #ff8235;
   --saito-tertiary: rgb(234, 234, 239);
   --saito-white: #fff;
