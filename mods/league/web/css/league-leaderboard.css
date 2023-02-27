@@ -14,6 +14,11 @@
   border: 1px solid var(--saito-primary);
 }
 
-.my-leaderboard-position .saito-address::before {
-  content: "Me: ";
+.my-leaderboard-position>div:first-child {
+  font-size: 0;
+}
+
+.my-leaderboard-position>div:first-child::before {
+  content: "\22B3";
+  font-size: 1.5rem;
 }
