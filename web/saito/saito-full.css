@@ -740,7 +740,7 @@ button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-
   .chat-container {
     margin: 0;
     width: 100vw;
-    height: calc(100vh - var(--saito-header-height));
+    height: calc(100% - var(--saito-header-height));
     max-height: none;
     border-radius: 0;
   }
@@ -1189,7 +1189,6 @@ select {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  height: 42rem;
   align-items: center;
 }
 
@@ -1291,6 +1290,7 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 1rem 0 0;
 }
 
 .wallet-balance {
@@ -2190,17 +2190,18 @@ This alows for a header with a header with title to be added without extra CSS
     max-width: 90vw;
     padding: 2rem;
     background-color: var(--saito-background-light);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 .saito-overlay-form-header {
     height: 6rem;
-    width: 100%;
-    position: relative;
+    background: var(--dreamscape);
 }
 .saito-overlay-form-header-title {
     position: absolute;
     height: 6rem;
-    background-color: #000A;
-    color: white;
+    color: var(--saito-white);
     width: 100%;
     padding: 1.6rem;
     font-size: 2.5rem;
@@ -2208,23 +2209,12 @@ This alows for a header with a header with title to be added without extra CSS
     white-space: nowrap;
     display:block;
 }
-.saito-overlay-form-header-image {
-    height: 6rem;
-    width: 100%;
-    display:block;
-}
+
 .saito-overlay-form-text {
     font-size: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
     line-height: 3rem;
     color: var(--saito-font-color);
-    font-family: sans-serif;
-    font-weight: 100;
-    margin-left: 1rem;
-    margin-right: 1rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    padding: 0 1rem;
 }
 .saito-overlay-form-inputs > input[type="text"] {
     height: 6rem;
