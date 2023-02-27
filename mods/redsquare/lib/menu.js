@@ -53,6 +53,13 @@ class RedSquareMenu {
       post.render();
     }
 
+    if (document.getElementById("mobile-new-tweet") != null) {
+      document.getElementById("mobile-new-tweet").onclick = (e) => {
+        let post = new Post(this.app, this.mod);
+        post.render();
+      }
+    }
+
     document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
       this.setHash('notifications')
       this.app.connection.emit("redsquare-notifications-render-request");
