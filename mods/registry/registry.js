@@ -421,8 +421,6 @@ console.log("WE ARE NOW LOCAL SERVER");
 
     if (conf == 0) {
 
-console.log("0-th confirmation in Registry...");
-
       if (!!txmsg && txmsg.module === "Registry") {
 
         //
@@ -482,15 +480,10 @@ console.log("0-th confirmation in Registry...");
       }
 
 
-console.log("2 0-th confirmation in Registry...");
       if (!!txmsg && txmsg.module == "Email") {
-console.log("3 0-th confirmation in Registry...");
         if (tx.transaction.from[0].add == registry_self.publickey) {
-console.log("4 0-th confirmation in Registry...");
           if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
-console.log("5 0-th confirmation in Registry...");
             if (tx.msg.identifier != undefined && tx.msg.signed_message != undefined && tx.msg.sig != undefined) {
-console.log("6 0-th confirmation in Registry...");
 
               //
               // am email? for us? from the DNS registrar?
@@ -500,14 +493,10 @@ console.log("6 0-th confirmation in Registry...");
               let sig = tx.msg.sig;
 
               try {
-console.log("7 0-th confirmation in Registry...");
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-console.log("8 0-th confirmation in Registry...");
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
-console.log("9 0-th confirmation in Registry...");
 		  registry_self.app.connection.emit("update_identifier", (tx.transaction.to[0].add));
-console.log("10 0-th confirmation in Registry...");
-                }else{
+                } else {
                   console.debug("verification failed for sig : ", tx);
                 }
               } catch (err) {
