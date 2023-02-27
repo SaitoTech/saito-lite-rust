@@ -29,7 +29,7 @@ class League extends ModTemplate {
     //
     // used in onPeerHandshakeComplete
     //
-    this.services = [{ service : "league" , domain : "saito" }];
+    this.services = [{ service: "league", domain: "saito" }];
 
     //
     // UI components
@@ -49,20 +49,20 @@ class League extends ModTemplate {
     // create initial leagues
     //
     this.app.modules.returnModulesRespondingTo("arcade-games").forEach((mod) => {
-       this.addLeague({
-        	id     : app.crypto.hash(mod.returnName()) ,	// id
-		default: 1,					// default league
-    	   	name   : mod.returnName() , 			// name - name of league
-    	   	game   : mod.returnName() , 			// game - name of game mod
-    	 	rank   : 0 					// rank
-       });
+      this.addLeague({
+        id: app.crypto.hash(mod.returnName()),	// id
+        default: 1,					// default league
+        name: mod.returnName(), 			// name - name of league
+        game: mod.returnName(), 			// game - name of game mod
+        rank: 0 					// rank
+      });
     });
     league_self = this;
-    app.connection.on("league-update", ()=>{
-      if (this.browser_active){
-        
+    app.connection.on("league-update", () => {
+      if (this.browser_active) {
+
         league_self.renderArcadeTab(app, league_self);
-        
+
       }
     });
 
@@ -71,8 +71,10 @@ class League extends ModTemplate {
 
   returnLeague(league_id) {
     for (let i = 0; i < this.leagues.length; i++) {
-console.log("comparing: " + this.leagues[i].id + " - " + league_id);
-      if (this.leagues[i].id === league_id) { return this.leagues[i]; }
+      console.log("comparing: " + this.leagues[i].id + " - " + league_id);
+      if (this.leagues[i].id === league_id) {
+        return this.leagues[i];
+      }
     }
     return null;
   }
@@ -93,7 +95,9 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
       let backdrop_image = `/saito/img/dreamscape.png`;
       let game = this.app.browser.returnURLParameter("game");
       let game_mod = this.app.modules.returnModuleByName(game);
-      if (game_mod != null) { backdrop_image = game_mod.returnArcadeImg(); }
+      if (game_mod != null) {
+        backdrop_image = game_mod.returnArcadeImg();
+      }
       so.setBackground(backdrop_image);
       so.render(' ');
     }
@@ -119,7 +123,9 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
       }
       this.styles = ['/league/css/league-leaderboard.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
       this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+      this.renderIntos[qs].forEach((comp) => {
+        comp.render();
+      });
     }
     if (qs == ".arcade-leagues") {
       if (!this.renderIntos[qs]) {
@@ -128,53 +134,59 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
       }
       this.styles = ['/league/css/league-leaderboard.css', '/league/css/league-overlay.css', '/arcade/css/arcade-wizard.css'];
       this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+      this.renderIntos[qs].forEach((comp) => {
+        comp.render();
+      });
     }
   }
 
 
   /**
-    Create the html for an arcade-style list of my leagues and open leagues,
-    inserted into elem
-  */
-  renderArcadeTab(app, mod){
-    if (!app.BROWSER) { return; }
+   Create the html for an arcade-style list of my leagues and open leagues,
+   inserted into elem
+   */
+  renderArcadeTab(app, mod) {
+    if (!app.BROWSER) {
+      return;
+    }
 
     let tab = document.getElementById("league-hero");
 
-    if (tab){
+    if (tab) {
       tab.innerHTML = "";
 
       let leagues_to_display = this.filterLeagues(app);
-      for (let le of leagues_to_display){
-        if (le.admin === "saito"){
+      for (let le of leagues_to_display) {
+        if (le.admin === "saito") {
           let altElm = document.getElementById(`forum-topic-${le.id.toLowerCase()}`);
           let al = new ForumLeague(app, this, le);
           al.render(app, this, altElm);
         }
 
-        if (le.myRank > 0 || le.admin !== "saito"){
+        if (le.myRank > 0 || le.admin !== "saito") {
           let al = new ArcadeLeague(app, this, le);
           al.render(app, this, tab);
         }
       }
-    }else{
+    } else {
       //Probably on initialization screen
       //console.error("League cannot render in Arcade");
     }
   }
 
-  renderLeagues(app, mod){
-    if (this.app.BROWSER == 0){return;}
+  renderLeagues(app, mod) {
+    if (this.app.BROWSER == 0) {
+      return;
+    }
 
-    if (this.browser_active){
+    if (this.browser_active) {
       this.main.render(app, this);
     } else {
       app.connection.emit("league-update", {});
     }
   }
 
-  resetLeagues(){
+  resetLeagues() {
     this.leagues = [];
     this.leagueCount = 0;
   }
@@ -184,7 +196,7 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   //
   // {
   //   id   	: $LEAGUE_ID ,
-  //   default  : 0 , 
+  //   default  : 0 ,
   //   name 	: $LEAGUE_NAME ,
   //   rank 	: $MY_RANK_IN_LEAGUE ,
   //   players 	: [player_array] ,
@@ -196,27 +208,43 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     //
     // default values
     //
-    if (!obj)                   { return; }
-    if (!obj.name)              { obj.name = "Unknown"; }
-    if (!obj.rank)              { obj.rank = 0; }
-    if (!obj.players)           { obj.players = []; }
-    if (!obj.games)             { obj.games = []; }
-    if (!obj.mod)               { obj.mod = this.app.modules.returnModuleByName(obj.name); }
-    if (!obj.default)		{ obj.default = 0; }
-    if (!obj.module && obj.mod) { obj.module = obj.mod.name; }
+    if (!obj) {
+      return;
+    }
+    if (!obj.name) {
+      obj.name = "Unknown";
+    }
+    if (!obj.rank) {
+      obj.rank = 0;
+    }
+    if (!obj.players) {
+      obj.players = [];
+    }
+    if (!obj.games) {
+      obj.games = [];
+    }
+    if (!obj.mod) {
+      obj.mod = this.app.modules.returnModuleByName(obj.name);
+    }
+    if (!obj.default) {
+      obj.default = 0;
+    }
+    if (!obj.module && obj.mod) {
+      obj.module = obj.mod.name;
+    }
 
 
     let league_idx = -1;
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].id === obj.id) {
-       	league_idx = i;
-       	break;
+        league_idx = i;
+        break;
       }
     }
 
     if (league_idx == -1) {
       this.leagues.push(obj);
-      league_idx = this.leagues.length-1;
+      league_idx = this.leagues.length - 1;
       this.app.connection.emit("league-add-league", (this.leagues[league_idx]));
     }
 
@@ -227,22 +255,22 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
 
     let league_self = this;
 
-    //    
-    // fetch any leagues    
-    //    
+    //
+    // fetch any leagues
+    //
     this.sendPeerDatabaseRequestWithFilter(
-      "League" , 
-      `SELECT * FROM league` ,
+      "League",
+      `SELECT * FROM league`,
       (res) => {
         let rows = res.rows || [];
         if (rows.length > 0) {
           rows.forEach(function(league, key) {
             league_self.addLeague(league);
-          }); 
+          });
 
-	  //
-	  // league join league
-	  //
+          //
+          // league join league
+          //
           if (this.app.browser.returnURLParameter("league_join_league")) {
             let league_id = this.app.browser.returnURLParameter("league_join_league");
             let jlo = new JoinLeagueOverlay(app, this, league_id);
@@ -254,29 +282,39 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
 
   }
 
-  filterLeagues(app, include_default = true){
+  filterLeagues(app, include_default = true) {
     let leagues_to_display = [];
     //filter leagues to display
-    for (let le of this.leagues){
-      if (!include_default && le.admin === "saito"){
+    for (let le of this.leagues) {
+      if (!include_default && le.admin === "saito") {
         continue;
       }
-      if (le.admin == app.wallet.returnPublicKey() || le.myRank > 0){
+      if (le.admin == app.wallet.getPublicKey() || le.myRank > 0) {
         leagues_to_display.push(le);
-      }else if (le.type == "public"){
+      } else if (le.type == "public") {
         //Only show public leagues if there are available slots or I am a member
-        if (le.max_players == 0 || le?.playerCnt < le.max_players){
+        if (le.max_players == 0 || le?.playerCnt < le.max_players) {
           leagues_to_display.push(le);
         }
       }
     }
 
     //sort leagues
-    leagues_to_display.sort((a, b) =>{
-      if (a.id === "SAITOLICIOUS") { return -1};
-      if (b.id === "SAITOLICIOUS") { return 1};
-      if (a.myRank < 0) {return 1;}
-      if (b.myRank < 0) {return -1;}
+    leagues_to_display.sort((a, b) => {
+      if (a.id === "SAITOLICIOUS") {
+        return -1
+      }
+      ;
+      if (b.id === "SAITOLICIOUS") {
+        return 1
+      }
+      ;
+      if (a.myRank < 0) {
+        return 1;
+      }
+      if (b.myRank < 0) {
+        return -1;
+      }
       return a.myRank - b.myRank
     });
     return leagues_to_display;
@@ -288,10 +326,10 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
       let txmsg = tx.returnMessage();
 
       if (conf == 0) {
-      //if (app.BROWSER == 0 && txmsg.module == "League") {
-      //  console.log("SERVER NOTIFY PEERS");
-      //    this.notifyPeers(app, tx);
-      //}
+        //if (app.BROWSER == 0 && txmsg.module == "League") {
+        //  console.log("SERVER NOTIFY PEERS");
+        //    this.notifyPeers(app, tx);
+        //}
 
         if (txmsg.request === "create league") {
           this.receiveCreateLeagueTransaction(blk, tx, conf, app);
@@ -301,7 +339,7 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
           //Perform db ops
           this.receiveJoinLeagueTransaction(blk, tx, conf, app);
           //Update saito-lite, refresh UI
-          if (app.BROWSER){
+          if (app.BROWSER) {
             console.log("Receive League Join Request");
             this.addPlayer(tx);
           }
@@ -312,7 +350,7 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
           //Perform db ops
           this.receiveDisbandLeagueTransaction(blk, tx, conf, app);
           //Update saito-lite, refresh UI
-          if (app.BROWSER){
+          if (app.BROWSER) {
             console.log("Receive League Removal Request");
             this.removeLeague(txmsg.request.league);
           }
@@ -323,24 +361,24 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
           //Perform db ops
           this.receiveQuitLeagueTransaction(blk, tx, conf, app);
           //Update saito-lite, refresh UI
-          if (app.BROWSER){
+          if (app.BROWSER) {
             console.log("Receive Quit Request");
             this.removePlayer(tx);
           }
         }
 
         //Listen for gameovers
-        if (txmsg.request === "gameover"){
+        if (txmsg.request === "gameover") {
           this.processUpdateTransaction(app, txmsg, true);
         }
 
-        if (txmsg.request === "roundover"){
+        if (txmsg.request === "roundover") {
           console.log("On Confirm Receive Round Over TX");
           this.processUpdateTransaction(app, txmsg, false);
         }
 
         //Keep track of how many games a player starts
-        if (txmsg.request === "accept" || txmsg.request === "launch singleplayer"){
+        if (txmsg.request === "accept" || txmsg.request === "launch singleplayer") {
           //console.log("On Confirm Receive Game Accept TX");
           this.receiveAcceptTransaction(blk, tx, conf, app);
         }
@@ -358,18 +396,18 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   // -- game should be game_module, i imagine
   //
   sendCreateLeagueTransaction(leagueObj = null) {
-    if (leagueObj == null){
+    if (leagueObj == null) {
       return;
     }
 
     console.log(leagueObj);
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    tx.transaction.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
     tx.msg = {
-      module:  "League",
+      module: "League",
       request: "create league",
-      league:    leagueObj,
+      league: leagueObj,
     };
 
     let newtx = this.app.wallet.signTransaction(tx);
@@ -388,7 +426,7 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     //
     // extract league from tx
     //
-    let league = Object.assign({id: tx.transaction.sig}, tx.returnMessage().league);
+    let league = Object.assign({ id: tx.transaction.sig }, tx.returnMessage().league);
 
     //
     // add league
@@ -398,58 +436,62 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     let sql = `INSERT INTO league (id, game, type, admin, name, description, ranking, starting_score, max_players, options, startdate, enddate, allowlate)
                         VALUES ($id, $game, $type, $admin, $name, $description, $ranking, $starting_score, $max_players, $options, $startdate, $enddate, $allowlate)`;
     let params = {};
-    for (let i in league){ params[`$${i}`] = league[i]; }
+    for (let i in league) {
+      params[`$${i}`] = league[i];
+    }
     await app.storage.executeDatabase(sql, params, "league");
     return;
 
   }
 
 
-  removeLeague(league_id){
-    if (!league_id){return;}
+  removeLeague(league_id) {
+    if (!league_id) {
+      return;
+    }
 
-    for (let i = this.leagues.length-1; i>=0; i--){
-      if (this.leagues[i].id === league_id){
-        this.leagues.splice(i,1);
+    for (let i = this.leagues.length - 1; i >= 0; i--) {
+      if (this.leagues[i].id === league_id) {
+        this.leagues.splice(i, 1);
       }
     }
     this.renderLeagues(this.app, this);
   }
 
-  addPlayer(tx){
+  addPlayer(tx) {
     let txmsg = tx.returnMessage();
-    for (let league of this.leagues){
-      if (txmsg.league_id == league.id){
+    for (let league of this.leagues) {
+      if (txmsg.league_id == league.id) {
         this.updateLeague(league);
       }
     }
-   setTimeout(()=>{
-     this.renderLeagues(this.app, this);
-   },1000);
+    setTimeout(() => {
+      this.renderLeagues(this.app, this);
+    }, 1000);
   }
 
-  removePlayer(tx){
+  removePlayer(tx) {
     let txmsg = tx.returnMessage();
-    for (let league of this.leagues){
-      if (txmsg.league_id == league.id){
+    for (let league of this.leagues) {
+      if (txmsg.league_id == league.id) {
         this.updateLeague(league);
       }
     }
-   // setTimeout(()=>{
-   //   this.renderLeagues(this.app, this);
-   // },1000);
+    // setTimeout(()=>{
+    //   this.renderLeagues(this.app, this);
+    // },1000);
 
   }
 
-  createPingTX(recipients){
+  createPingTX(recipients) {
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    for (let player of recipients){
+    for (let player of recipients) {
       newtx.transaction.to.push(new saito.default.slip(player, 0.0));
     }
 
     newtx.msg = {
-      module:    "League",
-      request:   "ping",
+      module: "League",
+      request: "ping",
       ts: new Date().getTime()
     };
 
@@ -459,18 +501,18 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
 
-  sendJoinLeagueTransaction(league_id="", data = null) {
+  sendJoinLeagueTransaction(league_id = "", data = null) {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     let tx_obj = {
-      module:    "League",
+      module: "League",
       league_id: league_id,
-      request:   "join league",
+      request: "join league",
       timestamp: new Date().getTime()
     };
 
-    if (data != null && typeof data == "object"){
+    if (data != null && typeof data == "object") {
       tx_obj = Object.assign(tx_obj, data);
     }
 
@@ -478,19 +520,21 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
 
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
-    setTimeout(()=>{
+    setTimeout(() => {
       this.addPlayer(newtx);
-    },1500);
+    }, 1500);
 
   }
 
   async receiveJoinLeagueTransaction(blk, tx, conf, app) {
-    if (this.app.BROWSER) { return; }
+    if (this.app.BROWSER) {
+      return;
+    }
 
     let txmsg = tx.returnMessage();
-    let league_id  = txmsg.league_id;
+    let league_id = txmsg.league_id;
     let email = txmsg.email;
-    let publickey  = tx.transaction.from[0].add;
+    let publickey = tx.transaction.from[0].add;
 
     let base_score = await this.getLeagueData(league_id, "starting_score");
 
@@ -517,38 +561,40 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     };
 
     await app.storage.executeDatabase(sql, params, "league");
-    
+
     this.app.connection.emit("league-rankings-render-request");
     return;
   }
 
-  sendQuitLeagueTransaction(pkey, league_id){
+  sendQuitLeagueTransaction(pkey, league_id) {
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     newtx.msg = {
-      module:    "League",
+      module: "League",
       league_id: league_id,
       player_key: pkey,
-      request:   "quit league",
+      request: "quit league",
       timestamp: new Date().getTime()
     };
 
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
 
-    setTimeout(()=>{
+    setTimeout(() => {
       this.removePlayer(newtx);
-    },2500);
+    }, 2500);
 
   }
 
-  async receiveQuitLeagueTransaction(blk, tx, conf, app){
-    if (this.app.BROWSER) { return; }
+  async receiveQuitLeagueTransaction(blk, tx, conf, app) {
+    if (this.app.BROWSER) {
+      return;
+    }
 
     let txmsg = tx.returnMessage();
 
     let params = {
-      $league : txmsg.league_id,
+      $league: txmsg.league_id,
       $player: txmsg.player_key,
     }
 
@@ -557,13 +603,13 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     this.app.connection.emit("league-rankings-render-request");
   }
 
-  sendDisbandLeagueTransaction(league_id){
+  sendDisbandLeagueTransaction(league_id) {
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
-    tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    tx.transaction.to.push(new saito.default.slip(this.app.wallet.getPublicKey(), 0.0));
     tx.msg = {
-      module:  "League",
+      module: "League",
       request: "remove league",
-      league:   league_id,
+      league: league_id,
     };
 
     let newtx = this.app.wallet.signTransaction(tx);
@@ -575,8 +621,10 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
 
-  async receiveDisbandLeagueTransaction(blk, tx, conf, app){
-    if (this.app.BROWSER) { return; }
+  async receiveDisbandLeagueTransaction(blk, tx, conf, app) {
+    if (this.app.BROWSER) {
+      return;
+    }
 
     let txmsg = tx.returnMessage();
 
@@ -589,8 +637,10 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
 
-  async receiveAcceptTransaction(blk, tx, conf, app){
-    if (this.app.BROWSER) { return; }
+  async receiveAcceptTransaction(blk, tx, conf, app) {
+    if (this.app.BROWSER) {
+      return;
+    }
 
     let txmsg = tx.returnMessage();
     let game = txmsg.module;
@@ -610,41 +660,41 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     let today = new Date().getTime();
 
     //CHECK EVERY LEAGUE TO SEE IF WE WANT TO UPDATE START_GAME STATS
-    for (let leag of relevantLeagues){
+    for (let leag of relevantLeagues) {
       //console.log(leag);
 
-      if (leag.options){
-       if (!txmsg?.options?.league || leag.id !== txmsg.options.league){
-        //console.log("Exclusive league, skip");
-        continue;
+      if (leag.options) {
+        if (!txmsg?.options?.league || leag.id !== txmsg.options.league) {
+          //console.log("Exclusive league, skip");
+          continue;
         }
       }
-      if (leag.startdate){
+      if (leag.startdate) {
         let sd = Date.parse(leag.startdate);
-        if (today < sd){
+        if (today < sd) {
           //console.log("League hasn't begun yet.");
           continue;
         }
       }
-      if (leag.enddate){
+      if (leag.enddate) {
         let ed = Date.parse(leag.enddate);
-        if (today > ed){
+        if (today > ed) {
           //console.log("League already finished.");
           continue;
         }
       }
 
 
-      if (leag.admin !== "saito"){
-        if (leag.ranking == "elo"){
+      if (leag.admin !== "saito") {
+        if (leag.ranking == "elo") {
           //Is this a game we can rank?
-          if (!await this.isELOeligible(publickeys, leag)){
+          if (!await this.isELOeligible(publickeys, leag)) {
             //console.log("Not ELO Eligible");
             continue;
           }
         }
-      }else{
-        for (let player of publickeys){
+      } else {
+        for (let player of publickeys) {
           await this.autoJoinPublicLeague(player, leag);
         }
       }
@@ -653,11 +703,11 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     }
   }
 
-  async autoJoinPublicLeague(player_key, league){
+  async autoJoinPublicLeague(player_key, league) {
     let sql = `SELECT * from players WHERE pkey="${player_key}" AND league_id="${league.id}"`;
     let rows = await this.app.storage.queryDatabase(sql, {}, "league");
     //Add player if not found
-    if (!rows || !rows.length || rows.length == 0){
+    if (!rows || !rows.length || rows.length == 0) {
       sql = `INSERT INTO players (
                 league_id,
                 pkey,
@@ -681,22 +731,22 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     return 1;
   }
 
-  async isELOeligible(players, league){
-    if (players.length < 2){
+  async isELOeligible(players, league) {
+    if (players.length < 2) {
       console.log(`This game will not be ELO rated because there are not at least 2 players`);
       return false;
     }
 
     let sql2 = `SELECT * FROM players WHERE league_id = ? AND pkey IN (`;
-    for (let pk of players){
-       sql2 += `'${pk}', `;
+    for (let pk of players) {
+      sql2 += `'${pk}', `;
     }
     sql2 = sql2.substr(0, sql2.length - 2);
     sql2 += `)`;
 
     let playerStats = await this.app.storage.queryDatabase(sql2, [league.id], "league");
 
-    if (playerStats.length !== players.length){
+    if (playerStats.length !== players.length) {
       console.log(`This game will not be rated because not all the players are League members: ${league.id}`);
       console.log(playerStats);
       console.log(players);
@@ -705,8 +755,10 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     return playerStats;
   }
 
-  async receiveRoundOverTransaction(blk, tx, conf, app){
-    if (app.BROWSER == 1) { return; }
+  async receiveRoundOverTransaction(blk, tx, conf, app) {
+    if (app.BROWSER == 1) {
+      return;
+    }
 
     let txmsg = tx.returnMessage();
     let game = txmsg.module;
@@ -714,53 +766,55 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
   /* Let's try this function as a service node only */
-  async processUpdateTransaction(app, txmsg, gameover){
-    if (app.BROWSER == 1) { return; }
+  async processUpdateTransaction(app, txmsg, gameover) {
+    if (app.BROWSER == 1) {
+      return;
+    }
 
     //All games have a grace window where if a player "quits" within X moves
     //it won't count as a win or loss for anyone
     if ((txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose")
-      && gameover){
+      && gameover) {
       return;
     }
 
     let game = txmsg.module;
 
     //Which leagues may this gameover affect?
-    let sql = `SELECT * FROM league WHERE game = ?${(gameover)? ` OR id='SAITOLICIOUS'`:''}`;
+    let sql = `SELECT * FROM league WHERE game = ?${(gameover) ? ` OR id='SAITOLICIOUS'` : ''}`;
     const relevantLeagues = await app.storage.queryDatabase(sql, [game], "league");
 
     //Who are all the players in the game?
     let publickeys = txmsg.players.split("_");
 
-    if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1){
+    if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1) {
       txmsg.winner = txmsg.winner[0];
     }
 
     let today = new Date().getTime();
     //Let's check each league
-    for (let leag of relevantLeagues){
-      if (leag.options && leag.id !== txmsg.league){
-        console.log("Specified League ID:",txmsg.league);
+    for (let leag of relevantLeagues) {
+      if (leag.options && leag.id !== txmsg.league) {
+        console.log("Specified League ID:", txmsg.league);
         console.log(leag);
         continue;
       }
-      if (leag.startdate){
+      if (leag.startdate) {
         let sd = Date.parse(leag.startdate);
-        if (today < sd){
+        if (today < sd) {
           console.log("League hasn't begun yet.");
           continue;
         }
       }
-      if (leag.enddate){
+      if (leag.enddate) {
         let ed = Date.parse(leag.enddate);
-        if (today > ed){
+        if (today > ed) {
           console.log("League already finished.");
           continue;
         }
       }
 
-      if (gameover){
+      if (gameover) {
         //Make a record of the game
         sql = `INSERT INTO games (league_id, game_id, module, winner, players_array, time_started, time_finished, method) VALUES ($league_id, $game_id, $module, $winner, $players_array, $time_started, $time_finished, $method)`;
 
@@ -768,7 +822,7 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
           $league_id: leag.id,
           $game_id: txmsg.game_id,
           $module: game,
-          $winner: (Array.isArray(txmsg.winner))? txmsg.winner.join("_") : txmsg.winner,
+          $winner: (Array.isArray(txmsg.winner)) ? txmsg.winner.join("_") : txmsg.winner,
           $players_array: txmsg.players,
           $time_started: 0,
           $time_finished: new Date().getTime(),
@@ -782,73 +836,73 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
       }
 
       //Update players in the league based on results
-      if (leag.ranking == "elo"){
+      if (leag.ranking == "elo") {
         //All players must belong to ELO league for points to change
 
         let playerStats = await this.isELOeligible(publickeys, leag);
 
-        if (!playerStats){
+        if (!playerStats) {
           continue;
         }
 
         let winner = [], loser = [];
         let qsum = 0;
-        for (let player of playerStats){
+        for (let player of playerStats) {
           //Convert each players ELO rating into a logistic function
-          player.q = Math.pow(10, (player.score/400));
+          player.q = Math.pow(10, (player.score / 400));
           //Sum the denominator so that the Expected values add to 1
           qsum += player.q;
           //Dynamically calculate each player's K-factor
           player.k = this.calculateK(player);
 
           //Sort into winners and losers
-          if (player.pkey == txmsg.winner || txmsg.winner.includes(player.pkey)){
+          if (player.pkey == txmsg.winner || txmsg.winner.includes(player.pkey)) {
             winner.push(player);
-          }else{
+          } else {
             loser.push(player);
           }
         }
 
         console.log(winner, loser);
-        for (let p of winner){
+        for (let p of winner) {
           let outcome = (winner.length == 1) ? "games_won" : "games_tied";
-          p.score += p.k * ( (1/winner.length) - (p.q / qsum));
+          p.score += p.k * ((1 / winner.length) - (p.q / qsum));
           await this.updatePlayerScore(p, outcome);
         }
-        for (let p of loser){
+        for (let p of loser) {
           p.score -= (p.k * p.q / qsum);
           await this.updatePlayerScore(p);
         }
 
-      }else if (leag.ranking == "exp"){
+      } else if (leag.ranking == "exp") {
         let players = [...publickeys]; //Need to refresh this each loop (since we splice below)
 
         //Winner(s) get 5 points, true ties get 3 pts, losers get 1 pt
         //as long as player is in the league
 
-        if (Array.isArray(txmsg.winner)){
-          let numPoints = (txmsg.reason == "tie") ? 3: 4;
+        if (Array.isArray(txmsg.winner)) {
+          let numPoints = (txmsg.reason == "tie") ? 3 : 4;
           let gamekey = (txmsg.reason == "tie") ? "games_tied" : "games_won";
 
-          for (let i = players.length-1; i>=0; i--){
-            if (txmsg.winner.includes(players[i])){
+          for (let i = players.length - 1; i >= 0; i--) {
+            if (txmsg.winner.includes(players[i])) {
               await this.incrementPlayer(players[i], leag.id, numPoints, gamekey);
-              players.splice(i,1);
+              players.splice(i, 1);
             }
           }
-        }else{
-          for (let i = players.length-1; i>=0; i--){
-            if (txmsg.winner == players[i]){
+        } else {
+          for (let i = players.length - 1; i >= 0; i--) {
+            if (txmsg.winner == players[i]) {
               await this.incrementPlayer(players[i], leag.id, 5, "games_won");
-              players.splice(i,1);
+              players.splice(i, 1);
             }
           }
         }
         //Everyone left gets a point for playing
-        for (let i = 0; i < players.length; i++){
+        for (let i = 0; i < players.length; i++) {
           await this.incrementPlayer(players[i], leag.id, 1);
         }
-      }else{
+      } else {
         //No idea what to do here, but should call a function of the game module/game engine
       }
     }
@@ -856,11 +910,11 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
   //Our native ELO system
-  calculateK(playerObj){
-    if (playerObj?.games_finished < 30 && playerObj?.score < 2300){
+  calculateK(playerObj) {
+    if (playerObj?.games_finished < 30 && playerObj?.score < 2300) {
       return 40;
     }
-    if (playerObj?.score < 2400){
+    if (playerObj?.score < 2400) {
       return 20;
     }
     return 10;
@@ -869,20 +923,22 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   /*
   * Some wrapper functions to query individual stats of the league
   */
-  async getLeagueData(league_id, data_field = null){
-    if (!data_field){return null;}
+  async getLeagueData(league_id, data_field = null) {
+    if (!data_field) {
+      return null;
+    }
 
-    if (this.app.BROWSER == 1){
-      for (let l of this.leagues){
-        if (l.id == league_id){
+    if (this.app.BROWSER == 1) {
+      for (let l of this.leagues) {
+        if (l.id == league_id) {
           return l[data_field];
         }
       }
-    }else{
+    } else {
 
       let row = await this.app.storage.queryDatabase(`SELECT * FROM league WHERE id = ?`, [league_id], "league");
 
-      if (row?.length > 0){
+      if (row?.length > 0) {
         return row[0][data_field];
       }
     }
@@ -893,20 +949,22 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   /*
   *  Get league data from league id
   */
-  async getAllLeagueData(league_id){
+  async getAllLeagueData(league_id) {
 
-    if (!league_id){ return null;}
+    if (!league_id) {
+      return null;
+    }
 
-    if (this.app.BROWSER == 1){
-      for (let l of this.leagues){
-        if (l.id == league_id){
+    if (this.app.BROWSER == 1) {
+      for (let l of this.leagues) {
+        if (l.id == league_id) {
           return l;
         }
       }
-    } else{
+    } else {
 
       let row = await this.app.storage.queryDatabase(`SELECT * FROM league WHERE id = ?`, [league_id], "league");
-      if (row?.length > 0){
+      if (row?.length > 0) {
         return row[0];
       }
     }
@@ -917,14 +975,14 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   /**
    *
    */
-  updateLeague(league, invitation = false){
+  updateLeague(league, invitation = false) {
     let lid = league.id;
-    let pid = this.app.wallet.returnPublicKey();
+    let pid = this.app.wallet.getPublicKey();
     league.myRank = -1;
     let league_self = this;
     league.players = [];
     league.top3 = [];
-    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
+    this.sendPeerDatabaseRequestWithFilter("League", `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
 
       async (res) => {
         //A little trick to use league.playerCnt == undefined to flag that the database query hasn't come back yet
@@ -934,47 +992,49 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
 
         if (res.rows) {
           let cnt = 0;
-          for (let p of res.rows){
+          for (let p of res.rows) {
             league.players.push(p.pkey); //Keep a list of who is in each league
             cnt++; //Count number of players
-            if (p.pkey == pid){
+            if (p.pkey == pid) {
               league.myRank = cnt; //I am the cnt player in the leaderboard
             }
-            if (cnt <= 3){
+            if (cnt <= 3) {
               league.top3.push(p.pkey);
             }
           }
           league.playerCnt = cnt;
         }
 
-        if (invitation){
+        if (invitation) {
           let myLocation = window.location.href;
-          myLocation = myLocation.substring(0, myLocation.indexOf("?")-1);
-          myLocation = myLocation.replace("league","arcade");
+          myLocation = myLocation.substring(0, myLocation.indexOf("?") - 1);
+          myLocation = myLocation.replace("league", "arcade");
 
-          if (league.myRank < 0){
-            if (league_self.checkDate(league.startdate) || league.allowlate){
-              if (league.playerCnt < league.max_players || league.max_players == 0){
+          if (league.myRank < 0) {
+            if (league_self.checkDate(league.startdate) || league.allowlate) {
+              if (league.playerCnt < league.max_players || league.max_players == 0) {
                 league_self.sendJoinLeagueTransaction(lid);
-                setTimeout(()=>{ window.location = myLocation; },1500);
-              }else{
+                setTimeout(() => {
+                  window.location = myLocation;
+                }, 1500);
+              } else {
                 if (document.getElementById("alert-wrapper")) {
                   document.getElementById("alert-wrapper").remove();
                 }
                 let c = await sconfirm("League full, cannot join");
                 window.location = myLocation;
               }
-            }else{
+            } else {
               let c = await sconfirm("We are past the signup phase for the league");
               window.location = myLocation;
             }
-          }else{
+          } else {
             let c = await sconfirm("You are already a member of the league");
           }
         }
 
         //console.log(`League updated: ${league.myRank} / ${league.playerCnt}`);
-        if (league_self.leagueCount >= league_self.leagues.length){
+        if (league_self.leagueCount >= league_self.leagues.length) {
           league_self.renderLeagues(league_self.app, league_self);
         }
 
@@ -986,11 +1046,11 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
 
-  async countGameStart(players, league){
+  async countGameStart(players, league) {
     let now = new Date().getTime();
     let sql = `UPDATE players SET games_started = (games_started + 1), ts = $ts WHERE pkey IN (`;
-    for (let pk of players){
-       sql += `'${pk}', `;
+    for (let pk of players) {
+      sql += `'${pk}', `;
     }
     sql = sql.substr(0, sql.length - 2);
     sql += `) AND league_id = $lid`;
@@ -1005,14 +1065,14 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     return 1;
   }
 
-  async incrementPlayer(pkey, lid, amount, game_status = null){
-    //if (this.app.wallet.returnPublicKey() !== pkey){ return; }
+  async incrementPlayer(pkey, lid, amount, game_status = null) {
+    //if (this.app.wallet.getPublicKey() !== pkey){ return; }
     let now = new Date().getTime();
     let sql = `UPDATE players SET score = (score + ${amount}), games_finished = (games_finished + 1), ts = $ts`;
-    if (game_status){
+    if (game_status) {
       sql += `, ${game_status} = (${game_status} + 1)`;
     }
-    sql+= ` WHERE pkey = $pkey AND league_id = $lid`;
+    sql += ` WHERE pkey = $pkey AND league_id = $lid`;
     console.log(sql);
     let params = {
       $ts: now,
@@ -1025,13 +1085,13 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     return 1;
   }
 
-  async updatePlayerScore(playerObj, game_status = null){
+  async updatePlayerScore(playerObj, game_status = null) {
     let now = new Date().getTime();
     let sql = `UPDATE players SET score = $score, games_finished = ${playerObj.games_finished + 1}, ts = $ts`;
-    if (game_status){
+    if (game_status) {
       sql += `, ${game_status} = ${playerObj[game_status] + 1}`;
     }
-    sql+= ` WHERE pkey = $pkey AND league_id = $lid`;
+    sql += ` WHERE pkey = $pkey AND league_id = $lid`;
     console.log(sql);
     let params = {
       $score: playerObj.score,
@@ -1046,23 +1106,23 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
 
-  showShareLink(league_id){
+  showShareLink(league_id) {
 
     let data = {};
 
     //Add more information about the game
     let league = this.leagues.find((g) => g.id === league_id);
 
-    if (league){
+    if (league) {
       data.game = league.name;
-    }else{
+    } else {
       console.log("League not found!");
       return;
     }
 
     //Create invite link from the game_sig
     let inviteLink = window.location.href;
-    if (inviteLink.includes("arcade")){
+    if (inviteLink.includes("arcade")) {
       inviteLink = inviteLink.replace("arcade", "league");
     }
     if (!inviteLink.includes("#")) {
@@ -1085,15 +1145,17 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   /**
    * Wrapper function to help us launch a League specific game!
    */
-  async createLeagueGame(league){
+  async createLeagueGame(league) {
 
     let arcade_mod = this.app.modules.returnModule("Arcade");
-    if (!arcade_mod) { return; }
+    if (!arcade_mod) {
+      return;
+    }
 
     console.log(JSON.parse(JSON.stringify(league)));
 
     //Check League Membership
-    if (!this.isLeagueMember(league.id)){
+    if (!this.isLeagueMember(league.id)) {
       alert("You need to be a member of the League to create a League-only game invite");
       return;
     }
@@ -1101,10 +1163,10 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     let options = (league.options) ? JSON.parse(league.options) : null;
 
     //Get options if needed through the normal interface
-    if (!options){
+    if (!options) {
       let tx = new saito.default.transaction();
       tx.msg.game = league.game;
-      if (league.admin !== "saito"){
+      if (league.admin !== "saito") {
         tx.msg.league = league.id;
       }
       arcade_mod.createGameWizard(league.game, tx);
@@ -1113,7 +1175,7 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
 
     //Check options
     let c = await arcade_mod.verifyOptions("public", options);
-    if (!c){
+    if (!c) {
       return;
     }
 
@@ -1126,7 +1188,7 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
 
-  async createLeagueChallenge(league, player_id){
+  async createLeagueChallenge(league, player_id) {
     /*
     let arcade_mod = this.app.modules.returnModule("Arcade");
     if (!arcade_mod) { return; }
@@ -1155,7 +1217,7 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
     options.game = league.game;
     //Issue Challenge
     let challenge_overlay = new SaitoOverlay(this.app);
-    let players = [this.app.wallet.returnPublicKey(), player_id];
+    let players = [this.app.wallet.getPublicKey(), player_id];
     this.app.connection.emit("arcade-issue-challenge", {
       game: league.game,
       players: players,
@@ -1183,8 +1245,12 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
    */
   shouldAffixCallbackToModule(modname, tx = null) {
 
-    if (modname == "League") { return 1; }
-    if (modname == "Arcade") { return 1; }
+    if (modname == "League") {
+      return 1;
+    }
+    if (modname == "Arcade") {
+      return 1;
+    }
 
     for (let i = 0; i < this.leagues.length; i++) {
       if (this.leagues[i].module == modname) {
@@ -1195,12 +1261,12 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
   //API Function
-  isLeagueMember(league_id){
-    for (let leag of this.leagues){
-      if (leag.id == league_id){
-        if (leag.myRank > 0){
+  isLeagueMember(league_id) {
+    for (let leag of this.leagues) {
+      if (leag.id == league_id) {
+        if (leag.myRank > 0) {
           return true;
-        }else{
+        } else {
           return false;
         }
       }
@@ -1229,16 +1295,16 @@ console.log("comparing: " + this.leagues[i].id + " - " + league_id);
   }
 
 
-  checkDate(date_as_string, after = false){
-    if (date_as_string == ""){
+  checkDate(date_as_string, after = false) {
+    if (date_as_string == "") {
       return true;
     }
 
     let now = new Date().getTime();
     let cutoff = Date.parse(date_as_string);
-    if (after){
+    if (after) {
       return cutoff > now;
-    }else{
+    } else {
       return now < cutoff;
     }
   }

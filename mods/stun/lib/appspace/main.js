@@ -81,9 +81,7 @@ class StunAppspace {
       // }
       const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       mod.setLocalStream(localStream);
-      let my_public_key = this.app.wallet.returnPublicKey();
-
-
+      let my_public_key = this.app.wallet.getPublicKey();
 
 
       // first to join the room?
@@ -126,15 +124,15 @@ class StunAppspace {
         peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
         this.app.connection.emit('show-video-chat-request', app, this, 'large', 'video', room_code);
         this.app.connection.emit('render-local-stream-request', localStream, 'large');
-      
+
         this.app.connection.emit('remove-overlay-request')
 
         // peers_in_room.forEach(peer => {
         //   this.app.connection.emit('render-remote-stream-placeholder-request', peer, 'large');
         // });
         mod.createMediaConnectionWithPeers(peers_in_room, 'large', "Video", room_code);
-        
-    
+
+
       }
     }
 

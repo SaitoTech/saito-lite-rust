@@ -1,4 +1,5 @@
 import { Saito } from "../../apps/core";
+import Transaction from "./transaction";
 
 export default class Storage {
   public app: Saito;
@@ -46,6 +47,49 @@ export default class Storage {
       }
     } catch (err) {
       console.log(err);
+    }
+  }
+
+  //
+  // check local archive if exists
+  //
+  loadTransactionsFromLocal(type = "all", num = 50, mycallback) {
+    const message = "archive";
+    const data: any = {};
+    data.request = "load";
+    data.type = type;
+    data.num = num;
+    data.publickey = this.app.wallet.getPublicKey();
+
+    console.log("archive load!");
+
+    let newtx = new Transaction();
+    newtx.msg.request = message;
+    newtx.msg.data = data;
+    // newtx.presign(this.app);
+
+    let archive_mod = this.app.modules.returnModule("Archive");
+    if (archive_mod) {
+      let res = archive_mod.handlePeerTransaction(this.app, newtx, null, (obj) => {
+        let txs = [];
+        if (obj) {
+          if (obj.txs) {
+            for (let i = 0; i < obj.txs.length; i++) {
+              let tx = new Transaction(JSON.parse(obj.txs[i].tx));
+              tx.optional = {};
+              if (obj.txs[i].optional) {
+                try {
+                  tx.optional = JSON.parse(obj.txs[i].optional);
+                } catch (err) {
+                  console.log("error loading optional data into tx");
+                }
+              }
+              txs.push(tx);
+            }
+          }
+        }
+        mycallback(txs);
+      });
     }
   }
 }

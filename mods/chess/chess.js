@@ -19,15 +19,15 @@ class Chessgame extends GameTemplate {
     this.board = null;
     this.engine = null;
     this_chess = this;
-    this.publickey = app.wallet.returnPublicKey();
+    this.publickey = app.wallet.getPublicKey();
     this.icon = "fa-sharp fa-solid fa-chess";
 
     this.minPlayers = 2;
     this.maxPlayers = 2;
 
     this.description = "An implementation of Chess for the Saito Blockchain";
-    this.categories  = "Games Boardgame Classic";
-    
+    this.categories = "Games Boardgame Classic";
+
     this.player_roles = ["Observer", "White", "Black"];
     this.app = app;
     return this;
@@ -37,11 +37,13 @@ class Chessgame extends GameTemplate {
 
   initializeHTML(app) {
 
-    if (!this.browser_active) { return; }
+    if (!this.browser_active) {
+      return;
+    }
     super.initializeHTML(app);
 
-    this.confirm_moves = this.loadGamePreference("chess_expert_mode"); 
-    if (this.confirm_moves == null || this.confirm_moves == undefined){
+    this.confirm_moves = this.loadGamePreference("chess_expert_mode");
+    if (this.confirm_moves == null || this.confirm_moves == undefined) {
       this.confirm_moves = 1;
       console.log("Default to move confirmations");
     }
@@ -54,37 +56,41 @@ class Chessgame extends GameTemplate {
     this.menu.addMenuOption("game-info", "Info");
 
     this.menu.addSubMenuOption("game-game", {
-      text : "Play Mode",
-      id : "game-confirm",
-      class : "game-confirm",
-      callback : function(app, game_mod) {
-         game_mod.menu.showSubSubMenu("game-confirm"); 
+      text: "Play Mode",
+      id: "game-confirm",
+      class: "game-confirm",
+      callback: function(app, game_mod) {
+        game_mod.menu.showSubSubMenu("game-confirm");
       }
     });
 
-    this.menu.addSubMenuOption("game-confirm",{
-      text: `Newbie ${(this.confirm_moves==1)?"✔":""}`,
-      id:"game-confirm-newbie",
-      class:"game-confirm-newbie",
-      callback: function(app,game_mod){
-        if (game_mod.confirm_moves == 0){
+    this.menu.addSubMenuOption("game-confirm", {
+      text: `Newbie ${(this.confirm_moves == 1) ? "✔" : ""}`,
+      id: "game-confirm-newbie",
+      class: "game-confirm-newbie",
+      callback: function(app, game_mod) {
+        if (game_mod.confirm_moves == 0) {
           game_mod.saveGamePreference('chess_expert_mode', 1);
-          setTimeout(function() { window.location.reload(); }, 1000);
-        }else{
+          setTimeout(function() {
+            window.location.reload();
+          }, 1000);
+        } else {
           game_mod.menu.hideSubMenus();
         }
       }
     });
-   
-    this.menu.addSubMenuOption("game-confirm",{
-      text: `Expert ${(this.confirm_moves==1)?"":"✔"}`,
-      id:"game-confirm-expert",
-      class:"game-confirm-expert",
-      callback: function(app,game_mod){
-        if (game_mod.confirm_moves == 1){
+
+    this.menu.addSubMenuOption("game-confirm", {
+      text: `Expert ${(this.confirm_moves == 1) ? "" : "✔"}`,
+      id: "game-confirm-expert",
+      class: "game-confirm-expert",
+      callback: function(app, game_mod) {
+        if (game_mod.confirm_moves == 1) {
           game_mod.saveGamePreference('chess_expert_mode', 0);
-          setTimeout(function() { window.location.reload(); }, 1000);
-        }else{
+          setTimeout(function() {
+            window.location.reload();
+          }, 1000);
+        } else {
           game_mod.menu.hideSubMenus();
         }
       }
@@ -93,7 +99,7 @@ class Chessgame extends GameTemplate {
       text: "Rules",
       id: "game-rules",
       class: "game-rules",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       },
@@ -102,7 +108,7 @@ class Chessgame extends GameTemplate {
       text: "Log",
       id: "game-log",
       class: "game-log",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.log.toggleLog();
       },
@@ -113,43 +119,43 @@ class Chessgame extends GameTemplate {
 
     this.log.render();
 
-    if (!this.confirm_moves){
+    if (!this.confirm_moves) {
       let confirm_btn = document.getElementById("buttons");
-      if (confirm_btn){
+      if (confirm_btn) {
         confirm_btn.style.display = "none";
       }
     }
   }
 
-  switchColors(){
+  switchColors() {
     // observer skips
-    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
-          return 1;
-      } 
+    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.getPublicKey())) {
+      return 1;
+    }
 
-      //Game engine automatically randomizes player order, so we are good to go
-      if (!this.game.options.player1 || this.game.options.player1 == "random"){
-        return 1;
+    //Game engine automatically randomizes player order, so we are good to go
+    if (!this.game.options.player1 || this.game.options.player1 == "random") {
+      return 1;
+    }
+
+    //Reordeer the players so that originator can be the correct role
+    if (this.game.options.player1 === "white") {
+      if (this.game.players[0] !== this.game.originator) {
+        let p = this.game.players.shift();
+        this.game.players.push(p);
       }
-      
-      //Reordeer the players so that originator can be the correct role
-      if (this.game.options.player1 === "white"){
-        if (this.game.players[0] !== this.game.originator){
-          let p = this.game.players.shift();
-          this.game.players.push(p);
-        }
-      }else{
-        if (this.game.players[1] !== this.game.originator){
-          let p = this.game.players.shift();
-          this.game.players.push(p);
-        }
+    } else {
+      if (this.game.players[1] !== this.game.originator) {
+        let p = this.game.players.shift();
+        this.game.players.push(p);
       }
-      //Fix game.player so that it corresponds to the indices of game.players[]
-      for (let i = 0; i < this.game.players.length; i++){
-        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
-          this.game.player = i+1;
-        }
+    }
+    //Fix game.player so that it corresponds to the indices of game.players[]
+    for (let i = 0; i < this.game.players.length; i++) {
+      if (this.game.players[i] === this.app.wallet.getPublicKey()) {
+        this.game.player = i + 1;
       }
+    }
 
   }
 
@@ -174,7 +180,7 @@ class Chessgame extends GameTemplate {
     }
 
 
-    if (!this.browser_active){
+    if (!this.browser_active) {
       return;
     }
 
@@ -187,28 +193,29 @@ class Chessgame extends GameTemplate {
       this.game.position = this.engine.fen();
     }
 
-    if (this.game.over){
+    if (this.game.over) {
       this.lockBoard(this.engine.fen());
-    }else{
-      this.setBoard(this.engine.fen());      
+    } else {
+      this.setBoard(this.engine.fen());
     }
-    
+
     //
     //game.target is initialized to 1, which is white (switched above if "player 1" wanted to be black)
     //
     if (this.game.target == this.game.player) {
-      if (this.useClock) { this.startClock(); }
+      if (this.useClock) {
+        this.startClock();
+      }
     }
 
-    //Plug Opponent Information into the Controls 
-    if (this.game.player){
+    //Plug Opponent Information into the Controls
+    if (this.game.player) {
       var opponent = this.game.opponents[0];
 
       if (this.app.crypto.isPublicKey(opponent)) {
         if (this.app.keychain.returnIdentifierByPublicKey(opponent).length >= 6) {
           opponent = this.app.keychain.returnIdentifierByPublicKey(opponent);
-        }
-        else {
+        } else {
         }
       }
 
@@ -223,7 +230,7 @@ class Chessgame extends GameTemplate {
       name = this.game.players[0];
       name = this.app.keychain.returnUsername(opponent);
       identicon = this.app.keychain.returnIdenticon(name);
-      
+
       if (name != "") {
         if (name.indexOf("@") > 0) {
           name = name.substring(0, name.indexOf("@"));
@@ -233,7 +240,7 @@ class Chessgame extends GameTemplate {
       let html = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
       document.getElementById("opponent_identicon").innerHTML = html;
 
-    }else{
+    } else {
       //Hide some controls in Observer Mode
       $(".hide_in_observer").remove();
     }
@@ -247,7 +254,7 @@ class Chessgame extends GameTemplate {
   ////////////////
   // handleGame //
   ////////////////
-  handleGameLoop(msg={}) {
+  handleGameLoop(msg = {}) {
 
 
     msg = {};
@@ -256,11 +263,11 @@ class Chessgame extends GameTemplate {
       //  return;
       //}
 
-      msg.extra = JSON.parse(this.app.crypto.base64ToString(this.game.queue[this.game.queue.length-1]));
+      msg.extra = JSON.parse(this.app.crypto.base64ToString(this.game.queue[this.game.queue.length - 1]));
     } else {
       msg.extra = {};
     }
-    this.game.queue.splice(this.game.queue.length-1, 1);
+    this.game.queue.splice(this.game.queue.length - 1, 1);
 
     console.log("QUEUE IN CHESS: " + JSON.stringify(this.game.queue));
     console.log(JSON.parse(JSON.stringify(msg.extra)));
@@ -287,17 +294,19 @@ class Chessgame extends GameTemplate {
     this.updateLog(data.move);
 
     if (this.browser_active == 1) {
-      
+
       this.updateBoard(this.game.position);
       //this.setBoard(this.game.position);
 
       if (msg.extra.target == this.game.player) {
-        if (this.useClock) { this.startClock(); }
+        if (this.useClock) {
+          this.startClock();
+        }
         if (this.engine.in_checkmate() === true) {
           this.game.over = 1;
           this.resignGame(this.game.id, "checkmate");
           return 0;
-        }else if (this.engine.in_draw() === true) {
+        } else if (this.engine.in_draw() === true) {
           this.tieGame(this.game.id, "draw");
           return 0;
         }
@@ -318,7 +327,7 @@ class Chessgame extends GameTemplate {
 
   }
 
-  removeEvents(){
+  removeEvents() {
     this.lockBoard(this.game.position);
   }
 
@@ -337,7 +346,7 @@ class Chessgame extends GameTemplate {
   }
 
   attachGameEvents() {
-    if (this.game?.player == 0 || !this.browser_active){
+    if (this.game?.player == 0 || !this.browser_active) {
       return;
     }
 
@@ -348,35 +357,34 @@ class Chessgame extends GameTemplate {
     if (!move_accept) return;
 
 
-
     if (resign_icon) {
       resign_icon.onclick = async () => {
         let c = await sconfirm("Do you really want to resign?");
         if (c) {
           this.game.over = 1;
-        	this.resignGame(this.game.id, "resignation");
-        	//window.location.href = '/arcade';
-        	return;
+          this.resignGame(this.game.id, "resignation");
+          //window.location.href = '/arcade';
+          return;
         }
       }
     }
 
-    if (copy_btn){
+    if (copy_btn) {
       copy_btn.onclick = () => {
-            let public_key = document.getElementById('opponent_id').getAttribute('data-add');
+        let public_key = document.getElementById('opponent_id').getAttribute('data-add');
 
-            navigator.clipboard.writeText(public_key).then(function(x) {
-              copy_btn.classList.add("copy-check");
-            });
-             copy_btn.classList.add("copy-check");
+        navigator.clipboard.writeText(public_key).then(function(x) {
+          copy_btn.classList.add("copy-check");
+        });
+        copy_btn.classList.add("copy-check");
 
-            setTimeout(() => {
-              copy_btn.classList.remove("copy-check");            
-            }, 400);
-          
+        setTimeout(() => {
+          copy_btn.classList.remove("copy-check");
+        }, 400);
+
       }
     }
-    if (move_accept){
+    if (move_accept) {
       move_accept.onclick = () => {
         console.log('send move transaction and wait for reply.');
 
@@ -393,7 +401,7 @@ class Chessgame extends GameTemplate {
       };
     }
 
-    if (move_reject){
+    if (move_reject) {
       move_reject.onclick = () => {
         document.getElementById('buttons').style.display = "none";
         this.setBoard(this.game.position);
@@ -410,7 +418,9 @@ class Chessgame extends GameTemplate {
 
   updateStatusMessage(str = "") {
 
-    if (this.browser_active != 1) { return; }
+    if (this.browser_active != 1) {
+      return;
+    }
 
     let statusEl = document.getElementById('status');
 
@@ -439,14 +449,14 @@ class Chessgame extends GameTemplate {
     // check?
     if (this.engine.in_check() === true) {
       status = moveColor + ' is in check';
-    }else{
-      if (this.player_roles[this.game.player] == moveColor){
+    } else {
+      if (this.player_roles[this.game.player] == moveColor) {
         status = "It's your move, " + moveColor;
-      }else{
+      } else {
         status = "Waiting for " + moveColor;
       }
     }
-    
+
     document.getElementById('buttons').style.display = "none";
 
     statusEl.innerHTML = sanitize(status);
@@ -456,10 +466,10 @@ class Chessgame extends GameTemplate {
     //console.log(this.engine.fen());
     //console.log(this.returnCaptured(this.engine.fen()));
     //console.log(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
-    
+
   };
 
-  updateBoard(position){
+  updateBoard(position) {
     console.log("MOVING PIECE");
 
     this.engine.load(position);
@@ -532,7 +542,7 @@ class Chessgame extends GameTemplate {
   //////////////////
   onDragStart(source, piece, position, orientation) {
 
-    if (this_chess.game.target !== this_chess.game.player){
+    if (this_chess.game.target !== this_chess.game.player) {
       return false;
     }
     if (this_chess.engine.game_over() === true || this_chess.game.over ||
@@ -550,7 +560,7 @@ class Chessgame extends GameTemplate {
 
     //was a pawn moved to the last rank
     if ((source.charAt(1) == 7 && target.charAt(1) == 8 && piece == 'wP')
-        || (source.charAt(1) == 2 && target.charAt(1) == 1 && piece == 'bP')) {
+      || (source.charAt(1) == 2 && target.charAt(1) == 1 && piece == 'bP')) {
       // check with user on desired piece to promote.
       this_chess.checkPromotion(source, target, piece.charAt(0));
     } else {
@@ -579,8 +589,8 @@ class Chessgame extends GameTemplate {
 
     // legal move - make it
     this_chess.game.move += `${this_chess.pieces(move.piece)} - ${move.san}`;
-  
-    if (this_chess.confirm_moves == 0){
+
+    if (this_chess.confirm_moves == 0) {
       var data = {};
       data.white = this.game.white;
       data.black = this.game.black;
@@ -589,7 +599,7 @@ class Chessgame extends GameTemplate {
       data.move = this.game.move;
       this.endTurn(data);
       this_chess.updateStatusMessage('Pawn promoted to ' + this_chess.pieces(piece) + '.');
-    }else{
+    } else {
       document.getElementById('buttons').style.display = "flex";
       this_chess.updateStatusMessage("Confirm Move to Send!");
     }
@@ -624,7 +634,9 @@ class Chessgame extends GameTemplate {
     });
 
     // exit if there are no moves available for this square
-    if (moves.length === 0) { return; }
+    if (moves.length === 0) {
+      return;
+    }
 
     // highlight the square they moused over
     this_chess.greySquare(square);
@@ -658,20 +670,20 @@ class Chessgame extends GameTemplate {
   };
 
   onChange(oldPos, newPos) {
-    if (this_chess.game.target !== this_chess.game.player){
+    if (this_chess.game.target !== this_chess.game.player) {
       //This gets called when I update my board for my opponents move
       //Don't want to accidentally trigger a Send Move
       return;
     }
 
-    if (this_chess.confirm_moves){
+    if (this_chess.confirm_moves) {
       document.getElementById('buttons').style.display = "flex";
       let move_accept = document.getElementById('move_accept');
       let move_reject = document.getElementById('move_reject');
 
       move_accept.disabled = false;
       move_reject.disabled = false;
-    }else{
+    } else {
       var data = {};
       data.white = this_chess.game.white;
       data.black = this_chess.game.black;
@@ -680,14 +692,16 @@ class Chessgame extends GameTemplate {
       data.move = this_chess.game.move;
       this_chess.endTurn(data);
     }
-    
+
   };
 
   colours(x) {
 
     switch (x) {
-      case "w": return ("White");
-      case "b": return ("Black");
+      case "w":
+        return ("White");
+      case "b":
+        return ("Black");
     }
 
     return;
@@ -697,12 +711,18 @@ class Chessgame extends GameTemplate {
   pieces(x) {
 
     switch (x) {
-      case "p": return ("Pawn");
-      case "r": return ("Rook");
-      case "n": return ("Knight");
-      case "b": return ("Bishop");
-      case "q": return ("Queen");
-      case "k": return ("King");
+      case "p":
+        return ("Pawn");
+      case "r":
+        return ("Rook");
+      case "n":
+        return ("Knight");
+      case "b":
+        return ("Bishop");
+      case "q":
+        return ("Queen");
+      case "k":
+        return ("King");
     }
 
     return;
@@ -740,11 +760,11 @@ class Chessgame extends GameTemplate {
     return `<img class="captured" alt="${p}" src = "img/pieces/${c}${p.toUpperCase()}.png">`;
   }
 
-  returnGameRulesHTML(){
+  returnGameRulesHTML() {
     return ChessGameRulesTemplate(this.app, this);
   }
 
-  returnSingularGameOption(){
+  returnSingularGameOption() {
     return ChessSingularGameOptions(this.app, this);
   }
 
@@ -757,7 +777,7 @@ class Chessgame extends GameTemplate {
     let sgoa = super.returnShortGameOptionsArray(options);
     let ngoa = {};
     for (let i in sgoa) {
-      if (!(i == "player1" && sgoa[i] == "random")){
+      if (!(i == "player1" && sgoa[i] == "random")) {
         ngoa[i] = sgoa[i];
       }
     }

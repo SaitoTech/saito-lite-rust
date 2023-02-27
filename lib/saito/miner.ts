@@ -84,7 +84,7 @@
 //           this.app.goldenticket.validate(
 //             this.target,
 //             random_hash,
-//             this.app.wallet.returnPublicKey(),
+//             this.app.wallet.getPublicKey(),
 //             this.difficulty
 //           )
 //         ) {

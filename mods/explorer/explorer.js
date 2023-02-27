@@ -19,19 +19,19 @@ class ExplorerCore extends ModTemplate {
     ///////////////////
     // web resources //
     ///////////////////
-    expressapp.get("/explorer/", function (req, res) {
+    expressapp.get("/explorer/", function(req, res) {
       res.set("Content-type", "text/html");
       res.charset = "UTF-8";
       res.send(explorer_self.returnIndexHTML(app));
       return;
     });
 
-    expressapp.get("/explorer/style.css", function (req, res) {
+    expressapp.get("/explorer/style.css", function(req, res) {
       res.sendFile(__dirname + "/web/style.css");
       return;
     });
 
-    expressapp.get("/explorer/utils.js", function (req, res) {
+    expressapp.get("/explorer/utils.js", function(req, res) {
       res.sendFile(__dirname + "/web/utils.js");
       return;
     });
@@ -39,7 +39,7 @@ class ExplorerCore extends ModTemplate {
     ///////////////////
     // web requests //
     ///////////////////
-    expressapp.get("/explorer/block", function (req, res) {
+    expressapp.get("/explorer/block", function(req, res) {
 
       var hash = sanitizer.sanitize(req.query.hash);
 
@@ -60,7 +60,7 @@ class ExplorerCore extends ModTemplate {
       }
     });
 
-    expressapp.get("/explorer/mempool", function (req, res) {
+    expressapp.get("/explorer/mempool", function(req, res) {
 
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
@@ -69,7 +69,7 @@ class ExplorerCore extends ModTemplate {
 
     });
 
-    expressapp.get("/explorer/blocksource", function (req, res) {
+    expressapp.get("/explorer/blocksource", function(req, res) {
 
       var hash = sanitizer.sanitize(req.query.hash);
 
@@ -128,15 +128,15 @@ class ExplorerCore extends ModTemplate {
   returnIndexMain() {
     return '<div class="explorer-main"> \
         <div class="block-table"> \
-          <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">'+ this.app.wallet.returnPublicKey() + '</div> \
-          <div class="explorer-data"><h4>Balance:</h4> </div><div>'+ this.app.wallet.returnBalance() + '</div> \
-          <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">'+ this.app.mempool.mempool.transactions.length + ' txs</a></div> \
+          <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">' + this.app.wallet.getPublicKey() + '</div> \
+          <div class="explorer-data"><h4>Balance:</h4> </div><div>' + this.app.wallet.returnBalance() + '</div> \
+          <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' + this.app.mempool.mempool.transactions.length + ' txs</a></div> \
         </div>' + '\
         <div class="explorer-data"><h4>Search for Block (by hash):</h4> \
         <form method="get" action="/explorer/block"><div class="one-line-form"><input type="text" name="hash" class="hash-search-input" /> \
         <input type="submit" id="explorer-button" class="button" value="search" /></div></form> </div> \
         <div class="explorer-data"><h3>Recent Blocks:</h3></div> \
-        <div id="block-list">'+ this.listBlocks() + '</div> \
+        <div id="block-list">' + this.listBlocks() + '</div> \
       </div> ';
   }
 

@@ -46,7 +46,7 @@
 //   serialize(target_hash: string, random_hash: string): Buffer {
 //     const th = this.app.binary.hexToSizedArray(target_hash, 32);
 //     const rh = this.app.binary.hexToSizedArray(random_hash, 32);
-//     const cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()), "hex");
+//     const cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.getPublicKey()), "hex");
 //
 //     let result = Buffer.concat([th, rh, cr]);
 //

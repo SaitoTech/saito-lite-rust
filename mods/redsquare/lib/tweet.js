@@ -117,7 +117,7 @@ class Tweet {
       this.img_preview.render();
     }
     if (this.link_preview != null) {
-      
+
       if (this.link_properties != null) {
         if (Object.keys(this.link_properties).length > 0) {
           this.link_preview.render();
@@ -152,7 +152,6 @@ class Tweet {
     }
 
   }
-
 
 
   renderWithChildren() {
@@ -249,9 +248,11 @@ class Tweet {
 
 
   attachEvents() {
-    let mod  = this.mod;
+    let mod = this.mod;
     let app = this.app;
-    if (this.show_controls == 0) { return; }
+    if (this.show_controls == 0) {
+      return;
+    }
 
     try {
 
@@ -260,13 +261,15 @@ class Tweet {
       /////////////////////////////
       let el = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-text`);
       // skip tweets that aren't on the page -- like comments
-      if (!el) { return; }
-      let cobj = document.querySelector(this.container);     
+      if (!el) {
+        return;
+      }
+      let cobj = document.querySelector(this.container);
       let is_full = false;
 
       if (is_full) {
-          el.classList.add('full');
-      } else { 
+        el.classList.add('full');
+      } else {
         if (el.clientHeight < el.scrollHeight) {
           el.classList.add("preview");
           this.is_long_tweet = true;
@@ -281,7 +284,7 @@ class Tweet {
       console.log('sig ', this.tx.transaction.sig)
       if (!this_tweet.dataset.hasClickEvent) {
         this_tweet.dataset.hasClickEvent = true;
-        this_tweet.onclick =  (e) => {
+        this_tweet.onclick = (e) => {
 
           let tweet_text = document.querySelector(`.tweet-${this.tx.transaction.sig} > .tweet-body > .tweet-main > .tweet-text`);
           if (this.is_long_tweet) {
@@ -308,38 +311,37 @@ class Tweet {
           //
           // if we are asking to see a tweet, load from parent if exists
           //
-          if (e.target.tagName != "IMG") {  window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
-          let sig = this.tx.transaction.sig;
-          let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
-           mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
-            for (let z = 0; z < txs.length; z++) {
-              let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
-              console.log('a tweet ', tweet)
-              app.connection.emit('redsquare-thread-render-request', tweet);
-            }
-          }, false, false);
+          if (e.target.tagName != "IMG") {
+            window.history.pushState(null, "", `/redsquare/?tweet_id=${this.tx.transaction.sig}`)
+            let sig = this.tx.transaction.sig;
+            let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+            mod.loadTweetsFromPeerAndReturn(mod.peers_for_tweets[0], sql, (txs) => {
+              for (let z = 0; z < txs.length; z++) {
+                let tweet = new Tweet(app, mod, ".redsquare-home", txs[z]);
+                console.log('a tweet ', tweet)
+                app.connection.emit('redsquare-thread-render-request', tweet);
+              }
+            }, false, false);
           }
         }
       }
 
 
-
-      
-        /////////////////
+      /////////////////
       // view preview//
       /////////////////
 
       document.querySelectorAll(`.tweet-${this.tx.transaction.sig} .tweet`).forEach(item => {
-        item.addEventListener('click', (e)=> {
-        e.stopImmediatePropagation();
-         let sig =  item.getAttribute('data-id');
-         console.log('sig', sig);
-         if (e.target.tagName != "IMG" && sig) {  
-            window.location.href = `/redsquare/?tweet_id=${sig}`
-        }
-      } 
+        item.addEventListener('click', (e) => {
+            e.stopImmediatePropagation();
+            let sig = item.getAttribute('data-id');
+            console.log('sig', sig);
+            if (e.target.tagName != "IMG" && sig) {
+              window.location.href = `/redsquare/?tweet_id=${sig}`
+            }
+          }
         )
-      }) 
+      })
 
 
       ///////////
@@ -367,8 +369,6 @@ class Tweet {
 
         }
       };
-
-
 
 
       /////////////
@@ -407,45 +407,44 @@ class Tweet {
       document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like`).onclick = (e) => {
 
 
-
-
       };
 
-      
-     const heartIcon = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-like-button .heart-icon`);
+
+      const heartIcon = document.querySelector(`.tweet-${this.tx.transaction.sig} .tweet-like-button .heart-icon`);
 
 
-     heartIcon.onclick =  (e) => {
-      if (heartIcon.classList.contains("liked")) {
-        heartIcon.classList.remove("liked");
-        setTimeout(()=> {
+      heartIcon.onclick = (e) => {
+        if (heartIcon.classList.contains("liked")) {
+          heartIcon.classList.remove("liked");
+          setTimeout(() => {
+            heartIcon.classList.add("liked");
+          })
+
+        } else {
           heartIcon.classList.add("liked");
-        })
+        }
 
-      }else {
-        heartIcon.classList.add("liked");
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+        if (tweet_sig != null) {
+
+          this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
+
+          //
+          // increase num likes
+          //
+          let obj = document.querySelector(`.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`);
+          obj.innerHTML = parseInt(obj.innerHTML) + 1;
+          if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
+            obj.parentNode.classList.remove("saito-tweet-no-activity");
+            obj.parentNode.classList.add("saito-tweet-activity");
+          }
+          ;
+        }
       }
-
-      
-      e.preventDefault();
-      e.stopImmediatePropagation();
-
-      let tweet_sig = e.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-      if (tweet_sig != null) {
-
-        this.mod.sendLikeTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
-
-        //
-        // increase num likes
-        //
-        let obj = document.querySelector(`.tweet-${tweet_sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`);
-        obj.innerHTML = parseInt(obj.innerHTML) + 1;
-        if (obj.parentNode.classList.contains("saito-tweet-no-activity")) {
-          obj.parentNode.classList.remove("saito-tweet-no-activity");
-          obj.parentNode.classList.add("saito-tweet-activity");
-        };
-      }
-    }
 
 
       ///////////
@@ -480,9 +479,13 @@ class Tweet {
 
           this.mod.sendFlagTransaction(this.app, this.mod, { sig: tweet_sig }, this.tx);
           let obj = document.querySelector(`.tweet-flag-${tweet_sig}`);
-          if (obj) { obj.classList.add("saito-tweet-activity"); }
+          if (obj) {
+            obj.classList.add("saito-tweet-activity");
+          }
           obj = document.querySelector(`.tweet-${tweet_sig}`);
-          if (obj) { obj.style.display = 'none'; }
+          if (obj) {
+            obj.style.display = 'none';
+          }
           salert("Tweet reported to moderators successfully.");
 
         }
@@ -505,7 +508,6 @@ class Tweet {
       }
     }
   }
-
 
 
   addTweet(tweet, levels_deep = 0) {
@@ -622,18 +624,27 @@ class Tweet {
   // query children  //
   /////////////////////
   hasChildTweet(tweet_sig) {
-    if (this.tx.transaction.sig == tweet_sig) { return 1; }
+    if (this.tx.transaction.sig == tweet_sig) {
+      return 1;
+    }
     for (let i = 0; i < this.children.length; i++) {
-      if (this.children[i].hasChildTweet(tweet_sig)) { return 1; }
+      if (this.children[i].hasChildTweet(tweet_sig)) {
+        return 1;
+      }
     }
     return 0;
   }
+
   returnChildTweet(tweet_sig) {
-    if (this.tx.transaction.sig == tweet_sig) { return this; }
+    if (this.tx.transaction.sig == tweet_sig) {
+      return this;
+    }
     for (let i = 0; i < this.children.length; i++) {
       if (this.children[i].hasChildTweet(tweet_sig)) {
         let x = this.returnChildTweet(tweet_sig);
-        if (!x) { return x; }
+        if (!x) {
+          return x;
+        }
       }
     }
     return null;
@@ -641,10 +652,14 @@ class Tweet {
 
 
   isCriticalChild(tweet) {
-    if (tweet.thread_id === this.thread_id) { return false; }
+    if (tweet.thread_id === this.thread_id) {
+      return false;
+    }
     for (let i = 0; i < tweet.tx.transaction.to.length; i++) {
-      if (tweet.tx.transaction.to[i].add === this.app.wallet.returnPublicKey()) {
-        if (this.critical_child == null) { return true; }
+      if (tweet.tx.transaction.to[i].add === this.app.wallet.getPublicKey()) {
+        if (this.critical_child == null) {
+          return true;
+        }
         if (tweet.tx.transaction.ts > this.critical_child.tx.transaction.tx) {
           return true;
         }
@@ -656,7 +671,9 @@ class Tweet {
 
   async generateTweetProperties(app, mod, fetch_open_graph = 0) {
 
-    if (this.text == null) { return this; }
+    if (this.text == null) {
+      return this;
+    }
 
     let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
     let links = this.text.match(expression);
@@ -713,32 +730,43 @@ class Tweet {
       let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-like .tweet-tool-like-count`;
       let obj = document.querySelector(qs);
       if (obj) {
-        if (!this.tx?.optional?.num_likes) { return; }
+        if (!this.tx?.optional?.num_likes) {
+          return;
+        }
         obj.innerHTML = this.tx.optional.num_likes;
       }
-    } catch (err) { }
+    } catch (err) {
+    }
   }
+
   renderRetweets() {
     // some edge cases where tweet won't have rendered
     try {
       let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-retweet .tweet-tool-retweet-count`;
       let obj = document.querySelector(qs);
       if (obj) {
-        if (!this.tx?.optional?.num_retweets) { return; }
+        if (!this.tx?.optional?.num_retweets) {
+          return;
+        }
         obj.innerHTML = this.tx.optional.num_retweets;
       }
-    } catch (err) { }
+    } catch (err) {
+    }
   }
+
   renderReplies() {
     // some edge cases where tweet won't have rendered
     try {
       let qs = `.tweet-${this.tx.transaction.sig} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`;
       let obj = document.querySelector(qs);
       if (obj) {
-        if (!this.tx?.optional?.num_replies) { return; }
+        if (!this.tx?.optional?.num_replies) {
+          return;
+        }
         obj.innerHTML = this.tx.optional.num_replies;
       }
-    } catch (err) { }
+    } catch (err) {
+    }
   }
 
 

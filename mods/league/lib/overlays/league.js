@@ -17,15 +17,15 @@ class LeagueOverlay {
   async render() {
 
     let league = this.mod.leagues[this.mod.league_idx];
-    
 
-    let game_mod = this.app.modules.returnModuleByName(league.game);    
+
+    let game_mod = this.app.modules.returnModuleByName(league.game);
     this.overlay.show(LeagueOverlayTemplate(this.app, this.mod, this));
     this.overlay.setBackground(`/${game_mod.returnSlug()}/img/arcade/arcade.jpg`);
-    
+
     this.leaderboard.league = league;
     this.leaderboard.render();
-    
+
     await this.loadRecentGames(league);
 
     this.attachEvents();
@@ -38,58 +38,57 @@ class LeagueOverlay {
       game.onclick = (e) => {
         let modname = e.currentTarget.getAttribute("data-id");
         let league = this.mod.leagues[this.mod.league_idx];
-	this.overlay.remove();
-	if (league.default == 0) {
-	  // private leagues get league provided
-          this.app.connection.emit("arcade-launch-game-wizard", ({ game: modname , league : league }));
-	} else {
-	  // default games skip as invites are open
+        this.overlay.remove();
+        if (league.default == 0) {
+          // private leagues get league provided
+          this.app.connection.emit("arcade-launch-game-wizard", ({ game: modname, league: league }));
+        } else {
+          // default games skip as invites are open
           this.app.connection.emit("arcade-launch-game-wizard", ({ game: modname }));
-	}
+        }
       };
     });
   }
 
 
-  async loadRecentGames(league){
+  async loadRecentGames(league) {
     this_obj = this;
 
-    this.mod.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league.id}' LIMIT 10` ,
+    this.mod.sendPeerDatabaseRequestWithFilter("League", `SELECT * FROM games WHERE league_id = '${league.id}' LIMIT 10`,
       (res) => {
-        let pid = this_obj.app.wallet.returnPublicKey();
+        let pid = this_obj.app.wallet.getPublicKey();
         let html = ``;
-        if (res.rows){
-          for (let g of res.rows){
+        if (res.rows) {
+          for (let g of res.rows) {
 
-            let players =  g.players_array.split("_");            
+            let players = g.players_array.split("_");
 
-            if (players.includes(pid)) {              
-              this.games['mine'].push(g);  
+            if (players.includes(pid)) {
+              this.games['mine'].push(g);
             } else {
               this.games['others'].push(g);
-            } 
+            }
           }
         }
 
         let html_mine = ``;
-        if (this_obj.games['mine'].length > 0)  {
+        if (this_obj.games['mine'].length > 0) {
           html_mine = this.create_games_html(this_obj.games['mine']);
           this_obj.app.browser.addElementToSelector(html_mine, ".league_recent_mine .saito-table-body");
         } else {
           document.querySelector(".league_recent_parent_mine").style.display = "none";
         }
 
-        
 
         let html_others = ``;
-        if (this_obj.games['others'].length > 0)  {
+        if (this_obj.games['others'].length > 0) {
           html_others = this.create_games_html(this_obj.games['others']);
           this_obj.app.browser.addElementToSelector(html_others, ".league_recent_others .saito-table-body");
         } else {
-          document.querySelector(".league_recent_parent_others").style.display = "none";  
+          document.querySelector(".league_recent_parent_others").style.display = "none";
         }
-          
-      });    
+
+      });
   }
 
   create_games_html(games) {
@@ -100,11 +99,11 @@ class LeagueOverlay {
 
       let dt = this_obj.app.browser.formatDate(game.time_finished);
       let players_html = ``;
-      let players =  game.players_array.split("_");
-      let date = dt.month + ' ' + dt.day + ', ' + dt.year; 
+      let players = game.players_array.split("_");
+      let date = dt.month + ' ' + dt.day + ', ' + dt.year;
 
       players.forEach(function(player, key) {
-          players_html += (key == (players.length-1))  ? `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` 
+        players_html += (key == (players.length - 1)) ? `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>`
           : `<span class='league_recent_player saito-address' data-id='${player}'>${player}</span>` + ' vs ';
       });
 

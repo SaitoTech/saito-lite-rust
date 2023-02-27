@@ -1409,7 +1409,7 @@ console.log(JSON.stringify(mv));
 	if (mv[0] === "counter_or_acknowledge") {
 
 //	  if (this.game.state.skip_counter_or_acknowledge == 1) {
-//            this.addMove("RESOLVE\t"+this.app.wallet.returnPublicKey());
+//            this.addMove("RESOLVE\t"+this.app.wallet.getPublicKey());
 //	    this.endTurn();
 //	    return;
 // 	  }
@@ -1465,7 +1465,7 @@ console.log(JSON.stringify(mv));
 	    //
 	    // this ensures we clear regardless of choice
 	    //
-            his_self.addMove("RESOLVE\t"+his_self.app.wallet.returnPublicKey());
+            his_self.addMove("RESOLVE\t"+his_self.app.wallet.getPublicKey());
 
             //
             // events in play

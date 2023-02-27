@@ -76,7 +76,9 @@ class Beleaguered extends GameTemplate {
 
   initializeHTML(app) {
     //console.trace("Initialize HTML");
-    if (!this.browser_active) { return; }
+    if (!this.browser_active) {
+      return;
+    }
 
     super.initializeHTML(app);
 
@@ -89,7 +91,7 @@ class Beleaguered extends GameTemplate {
       text: "Start New Game",
       id: "game-new",
       class: "game-new",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.endGame();
         game_mod.newRound();
@@ -100,7 +102,7 @@ class Beleaguered extends GameTemplate {
       text: "Play Mode",
       id: "game-play",
       class: "game-play",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.showSubSubMenu("game-play");
       }
     });
@@ -111,7 +113,7 @@ class Beleaguered extends GameTemplate {
       text: "How to Play",
       id: "game-intro",
       class: "game-intro",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnGameRulesHTML());
       }
@@ -121,7 +123,7 @@ class Beleaguered extends GameTemplate {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
-      callback: function (app, game_mod) {
+      callback: function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(game_mod.returnStatsHTML());
       }
@@ -167,7 +169,7 @@ class Beleaguered extends GameTemplate {
     if (id.length === 6) {
       return "m";
     } else {
-      return id.substring(10,11);
+      return id.substring(10, 11);
     }
   }
 
@@ -178,14 +180,14 @@ class Beleaguered extends GameTemplate {
   }
 
   getSlotRow(id) {
-    return parseInt(id.substring(3,4))
+    return parseInt(id.substring(3, 4))
   }
 
   attachEventsToBoard() {
     let beleaguered_self = this;
 
     $('.slot').off();
-    $('.slot').on('click', function () {
+    $('.slot').on('click', function() {
 
       let slot = $(this).attr("id");
 
@@ -218,7 +220,7 @@ class Beleaguered extends GameTemplate {
             if (moveToSide !== "m") {
               beleaguered_self.game.outerMost[`${moveToSide}${moveToRow}`] = beleaguered_self.game.outerMost[`${moveToSide}${moveToRow}`] + 1;
             }
-            
+
             beleaguered_self.game.outerMost[`${moveFromSide}${moveFromRow}`] = beleaguered_self.game.outerMost[`${moveFromSide}${moveFromRow}`] - 1;
 
             beleaguered_self.game.selected = "";
@@ -282,7 +284,7 @@ class Beleaguered extends GameTemplate {
           continue;
         }
 
-        // if another outermost card is one greater than currently checked other outermost card, 
+        // if another outermost card is one greater than currently checked other outermost card,
         // add current card to available moves
         for (let j = 0; j < outerMost.length; j++) {
           let comparedCardSide = outerMost[j][0];
@@ -356,7 +358,7 @@ class Beleaguered extends GameTemplate {
       }
     }
     if (index > -1) {
-      this.game.availableMoves.splice(index,1);
+      this.game.availableMoves.splice(index, 1);
     }
   }
 
@@ -426,10 +428,10 @@ class Beleaguered extends GameTemplate {
       this.game.outerMost = []
       for (let i = 1; i <= 4; i++) {
         for (let s = 0; s < this.sides.length; s++) {
-          for (let j = 0; j <= 17; j++) { 
+          for (let j = 0; j <= 17; j++) {
             let position = `row${i}_slot_${this.sides[s]}${j}`;
             if (this.game.board[position] === "E") {
-              this.game.outerMost[`${this.sides[s]}${i}`] = j-1;
+              this.game.outerMost[`${this.sides[s]}${i}`] = j - 1;
               j = 18; // break the innermost loop
             }
           }
@@ -470,7 +472,7 @@ class Beleaguered extends GameTemplate {
 
       if (mv[0] === "win") {
         this.game.state.wins++;
-        this.endGame(this.app.wallet.returnPublicKey());
+        this.endGame(this.app.wallet.getPublicKey());
         this.newRound();
       }
 
@@ -526,7 +528,9 @@ class Beleaguered extends GameTemplate {
 
   displayBoard() {
 
-    if (this.browser_active == 0) { return; }
+    if (this.browser_active == 0) {
+      return;
+    }
     for (let i in this.game.board) {
       let divname = '#' + i;
       $(divname).html(this.returnCardImageHTML(this.game.board[i]));
@@ -552,8 +556,8 @@ class Beleaguered extends GameTemplate {
   no status atm, but this is to update the hud
   */
   displayUserInterface() {
-    let html = '<span class="hidable">Place all cards ascending by number on their suit stacks to win the game.<br>' + 
-    'Cards can be moved around on higher cards on the side stacks regardless of their suit. Any card can be placed on the empty side stack</span>';
+    let html = '<span class="hidable">Place all cards ascending by number on their suit stacks to win the game.<br>' +
+      'Cards can be moved around on higher cards on the side stacks regardless of their suit. Any card can be placed on the empty side stack</span>';
 
     this.updateStatusWithOptions(html, '');
   }
@@ -561,10 +565,10 @@ class Beleaguered extends GameTemplate {
 
   returnCardImageHTML(name) {
     // return '<img src="/beleaguered/img/cards/C1.png"/>'
-    if (name[0] == 'E') { 
+    if (name[0] == 'E') {
       return "";
-    } else { 
-      return '<img src="/beleaguered/img/cards/' + name + '.png" />'; 
+    } else {
+      return '<img src="/beleaguered/img/cards/' + name + '.png" />';
     }
   }
 
@@ -588,11 +592,16 @@ class Beleaguered extends GameTemplate {
 
   cardSuitHTML(suit) {
     switch (suit) {
-      case "D": return "&diams;"
-      case "H": return "&hearts;"
-      case "S": return "&spades;"
-      case "C": return "&clubs;"
-      default: return "";
+      case "D":
+        return "&diams;"
+      case "H":
+        return "&hearts;"
+      case "S":
+        return "&spades;"
+      case "C":
+        return "&clubs;"
+      default:
+        return "";
     }
   }
 

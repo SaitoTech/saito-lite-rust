@@ -7,9 +7,9 @@ module.exports = (app, tweet) => {
   let userline = "replied to your tweet...";
   let txmsg = tx.returnMessage();
   let text = "content of notification box";
-  
+
   for (let i = 0; i < tx.transaction.to.length; i++) {
-    if (tx.transaction.to[i].add == app.wallet.returnPublicKey()) {
+    if (tx.transaction.to[i].add == app.wallet.getPublicKey()) {
       activity = "mentioned you...";
     }
   }

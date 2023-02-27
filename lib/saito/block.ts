@@ -947,7 +947,7 @@ export default class Block extends SaitoBlock {
   //   //
   //   // sign the block
   //   //
-  //   this.sign(this.app.wallet.returnPublicKey(), this.app.wallet.returnPrivateKey());
+  //   this.sign(this.app.wallet.getPublicKey(), this.app.wallet.returnPrivateKey());
   //
   //   //
   //   // and return to normal

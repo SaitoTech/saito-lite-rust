@@ -2,23 +2,31 @@
 
 ## Introduction
 
-Saito makes it possible to write applications that use other blockchains. You can code a game that requires a payment to be made in another cryptocurrency, for instance, or a wallet-plugin that lets you send and receive transactions. Saito does this by supprting third-party "cryptocurrency modules" that provides a bridge to other networks.
+Saito makes it possible to write applications that use other blockchains. You can code a game that requires a payment to
+be made in another cryptocurrency, for instance, or a wallet-plugin that lets you send and receive transactions. Saito
+does this by supprting third-party "cryptocurrency modules" that provides a bridge to other networks.
 
-In order to use another cryptocurrency with Saito applications, users need to have the appropriate module installed in their Saito wallet. As a member of the Polkadot community, Saito comes by default with bundles that provide support for Polkadot (DOT), Kusama (KSM) and other substrate-based networks. Modules can easily be built that support for other networks too -- if you are a developer interested in getting your favourite cryptocurrency supported get in touch!
-
+In order to use another cryptocurrency with Saito applications, users need to have the appropriate module installed in
+their Saito wallet. As a member of the Polkadot community, Saito comes by default with bundles that provide support for
+Polkadot (DOT), Kusama (KSM) and other substrate-based networks. Modules can easily be built that support for other
+networks too -- if you are a developer interested in getting your favourite cryptocurrency supported get in touch!
 
 ## What Can You Build
 
 There are two basic types of applications you can build:
 
-Applications that require a specific cryptocurrency. See an example of our Polkadot application tutorial (we build a simple application that sends and receives DOT transactions) for sample code showing how to do this.
+Applications that require a specific cryptocurrency. See an example of our Polkadot application tutorial (we build a
+simple application that sends and receives DOT transactions) for sample code showing how to do this.
 
-Applications that work with whatever cryptocurrency users prefer to use. An example of this is the Poker game that runs in the Saito Arcade. Our Saito Game Engine is also written to be cryptocurrency-agnostic: as soon as a module is available for some cryptocurrency all of the games in the Arcade will instantly support it.
-
+Applications that work with whatever cryptocurrency users prefer to use. An example of this is the Poker game that runs
+in the Saito Arcade. Our Saito Game Engine is also written to be cryptocurrency-agnostic: as soon as a module is
+available for some cryptocurrency all of the games in the Arcade will instantly support it.
 
 ## Using Cryptocurrencies within Saito Applications
 
-The Saito Wallet provides the core interface for dealing with Cryptocurrency Modules. It allows users to set a "preferred cryptocurrency" and fetch that module. Requests to the other network can then be sent through a standard set of functions which are defined in all cryptocurrency modules.
+The Saito Wallet provides the core interface for dealing with Cryptocurrency Modules. It allows users to set a "
+preferred cryptocurrency" and fetch that module. Requests to the other network can then be sent through a standard set
+of functions which are defined in all cryptocurrency modules.
 
 ```
 let cryptoMod = app.wallet.returnPreferredCrypto();
@@ -28,11 +36,13 @@ cryptoMod.returnAddress();
 cryptoMod.transfer(howMuch, toAddress);
 ```
 
-Documentation on the functions available within each Cryptocurrency Module is available here. It is not necessary to deal directly with cryptocurrency modules in order to send-or-receive transactions. Requests can also be made directly through the Saito wallet, which provides several functions that simplify interactions with external blockchains:
+Documentation on the functions available within each Cryptocurrency Module is available here. It is not necessary to
+deal directly with cryptocurrency modules in order to send-or-receive transactions. Requests can also be made directly
+through the Saito wallet, which provides several functions that simplify interactions with external blockchains:
 
 ```
 app.wallet.returnBalance();
-app.wallet.returnPublicKey();
+app.wallet.getPublicKey();
 async app.wallet.sendPayment(senders=[], receivers=[], amounts=[], timestamp, mycallback, ticker);
 async app.wallet.receivePayment(senders=[], receivers=[], amounts=[], timestamp, mycallback, ticker, tries=36, pollWaitTime=5000);
 async app.wallet.returnPreferredCryptoBalances(addresses=[], mycallback=null, ticker="") {
@@ -58,14 +68,19 @@ How to interact with DOT, Kusama, or Westend
 
 1) Get the crypto mod:
 ```
+
 let cryptoMod = app.modules.returnModule(subPage);
+
 ```
 OR
 ```
+
 let cryptoMod = app.wallet.returnPreferredCrypto();
+
 ```
 2) Do stuff:
 ```
+
 cryptoMod.transfer(howMuch, toAddress);
 ...
 cryptoMod.returnBalance();
@@ -73,6 +88,7 @@ cryptoMod.returnBalance();
 cryptoMod.returnAddress();
 ...
 cryptoMod.hasPayment(howMuch, from, to, timestamp)
+
 ```
 
 ## Architecture
@@ -94,10 +110,12 @@ Wraps a request to an endpoint. This can simply hit an endpoint directly, but wi
 
 For example, a Saito Endpoint might implement calls like these:
 ```
+
 Call(“GetBalance”, pubkey, callback)
 Call(“BuildSignable”, {rawdata: ...}, callback)
 Call(“BuildSignableBasicTx”, {to: …, amount: ...}, callback)
 Call(“BroadcastTransaction”, {rawtx: …}, callback);
+
 ```
 
 The Callable method names are at the discretion of the Saito Endpoint author and can wrap multiple calls to an endpoint. For example, to build a basic transfer transaction a Saito Endpoint Module may need to get both the balance and nonce for the sender, which may represent multiple calls to the actual endpoint.

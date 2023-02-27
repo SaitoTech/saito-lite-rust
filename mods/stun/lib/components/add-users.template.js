@@ -6,7 +6,7 @@ const AddUsersTemplate = (app, mod, code) => {
      <div class="add-users-container">
       <h4 class="add-users-header"> Share this call link with others you want in the call </h4>
       <div class="add-users-code-container"> <span> ${code.slice(0, 30)}... </span> <i class="fas fa-copy"> </i> </div>
-      <p class="add-users-footer-text"> Joined as ${app.wallet.returnPublicKey()} </p>
+      <p class="add-users-footer-text"> Joined as ${app.wallet.getPublicKey()} </p>
       </div>
     </div>
   </div>

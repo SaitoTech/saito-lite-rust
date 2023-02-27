@@ -1121,7 +1121,7 @@ console.log("LATEST MOVE: " + mv);
       this.game.queue.splice(qe, 1);
   	    
       // observer skips
-      if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+      if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.getPublicKey())) { 
         return 1;
       } 
 
@@ -1143,7 +1143,7 @@ console.log("LATEST MOVE: " + mv);
       }
       //Fix game.player so that it corresponds to the indices of game.players[]
       for (let i = 0; i < this.game.players.length; i++){
-        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+        if (this.game.players[i] === this.app.wallet.getPublicKey()){
           this.game.player = i+1;
         }
       }

@@ -3,7 +3,6 @@ const Post = require("./../post");
 const SaitoLoader = require("../../../../lib/saito/ui/saito-loader/saito-loader");
 
 
-
 class AppspaceHome {
 
   constructor(app, mod, container = "") {
@@ -18,7 +17,9 @@ class AppspaceHome {
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          if (mod.viewing !== "home") { return; }
+          if (mod.viewing !== "home") {
+            return;
+          }
           let saito_loader = new SaitoLoader(app, mod, '#redsquare-intersection');
           saito_loader.render();
           mod.loadMoreTweets(() => saito_loader.remove());
@@ -71,8 +72,6 @@ class AppspaceHome {
   }
 
 
-
-
   renderMain() {
 
     this.thread_id = "";
@@ -122,7 +121,7 @@ class AppspaceHome {
       }
     })
 
-    document.querySelectorAll(".tweet")[0].scrollIntoView({behavior: "smooth", block: "start"});
+    document.querySelectorAll(".tweet")[0].scrollIntoView({ behavior: "smooth", block: "start" });
 
     this.attachEvents();
 
@@ -138,7 +137,7 @@ class AppspaceHome {
     }
 
     document.getElementById("redsquare-profile").onclick = (e) => {
-      this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.returnPublicKey());
+      this.app.connection.emit('redsquare-profile-render-request', this.app.wallet.getPublicKey());
     }
 
     document.querySelector('.redsquare-new-tweets-banner').onclick = (e) => {

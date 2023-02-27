@@ -4,13 +4,12 @@ import screenfull, { element } from "screenfull";
 import html2canvas from "html2canvas";
 import { getDiffieHellman } from "crypto";
 
-var marked = require("marked");
-var sanitizeHtml = require("sanitize-html");
+let marked = require("marked");
+let sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
 const emoji = require("node-emoji");
 const UserMenu = require("./ui/modals/user-menu/user-menu");
 const MyUserMenu = require("./ui/modals/my-user-menu/my-user-menu");
-
 
 
 class Browser {
@@ -71,18 +70,18 @@ class Browser {
         if (!document.hidden) {
           channel.postMessage({
             active: 1,
-            publickey: this.app.wallet.returnPublicKey(),
+            publickey: this.app.wallet.getPublicKey()
           });
         }
 
 
         /******
-                channel.onmessage = (e) => {
+         channel.onmessage = (e) => {
                   console.log("document onmessage change");
                   if (!document.hidden) {
                     channel.postMessage({
                       active: 1,
-                      publickey: this.app.wallet.returnPublicKey(),
+                      publickey: this.app.wallet.getPublicKey(),
                     });
                     this.setActiveTab(1);
                   } else {
@@ -91,14 +90,14 @@ class Browser {
                     //
                     if (e.data) {
                       if (e.data.active == 1) {
-                        if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
+                        if (e.data.active == 1 && e.data.publickey === this.app.wallet.getPublicKey()) {
                           this.setActiveTab(0);
                         }
                       }
                     }
                   }
                 };
-        *****/
+         *****/
 
         document.addEventListener(
           "visibilitychange",
@@ -106,13 +105,13 @@ class Browser {
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
-                publickey: this.app.wallet.returnPublicKey(),
+                publickey: this.app.wallet.getPublicKey()
               });
             } else {
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,
-                publickey: this.app.wallet.returnPublicKey(),
+                publickey: this.app.wallet.getPublicKey()
               });
             }
           },
@@ -223,12 +222,12 @@ class Browser {
       //
       // Add Connection Monitors
       //
-      this.app.connection.on("connection_up", function (peer) {
+      this.app.connection.on("connection_up", function(peer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         siteMessage("Websocket Connection Established", 1000);
       });
-      this.app.connection.on("connection_down", function (peer) {
+      this.app.connection.on("connection_down", function(peer) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         siteMessage("Websocket Connection Lost");
@@ -250,7 +249,7 @@ class Browser {
           if (!publickey || !app.crypto.isPublicKey(publickey)) {
             return;
           }
-          if (publickey !== app.wallet.returnPublicKey()) {
+          if (publickey !== app.wallet.getPublicKey()) {
 
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -265,11 +264,11 @@ class Browser {
 
             let myUserMenu = new MyUserMenu(app, publickey);
             myUserMenu.render(app);
-	  }
+          }
         }
       },
       {
-        capture: true,
+        capture: true
       }
     );
   }
@@ -284,13 +283,13 @@ class Browser {
         if (w[i][0] === "@") {
           if (w.length > 1) {
             let cleaner = w[i].substring(1);
-	    let key = this.app.keychain.returnKey({ identifier : cleaner });
-	    if (key) {
+            let key = this.app.keychain.returnKey({ identifier: cleaner });
+            if (key) {
               let add = key.publickey;
-	    }
+            }
             if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
               add = cleaner;
-	    }
+            }
             if (!keys.includes(add) && (add != "" && add != null)) {
               keys.push(add);
             }
@@ -311,9 +310,9 @@ class Browser {
     }
     if (identifiers) {
       identifiers.forEach(id => {
-        let key = this.app.keychain.returnKey({ identifier : id });
-	if (key.publickey) {
-        let add = key.publickey;
+        let key = this.app.keychain.returnKey({ identifier: id });
+        if (key.publickey) {
+          let add = key.publickey;
           if (this.app.crypto.isPublicKey(add)) {
             if (!keys.includes(add)) {
               keys.push(add);
@@ -342,7 +341,8 @@ class Browser {
           return pair[1];
         }
       }
-    } catch (err) { }
+    } catch (err) {
+    }
     return "";
   }
 
@@ -353,14 +353,15 @@ class Browser {
         return x.substring(0, 2);
       }
       return x;
-    } catch (err) { }
+    } catch (err) {
+    }
     return "en";
   }
 
 
   isMobileBrowser(user_agent = navigator.userAgent) {
     let check = false;
-    (function (user_agent) {
+    (function(user_agent) {
       if (
         /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(
           user_agent
@@ -402,11 +403,11 @@ class Browser {
 
   async sendNotification(title, message, event) {
     /***
-        if (this.app.BROWSER == 0) {
+     if (this.app.BROWSER == 0) {
             return;
         }
 
-        if (!this.isMobileBrowser(navigator.userAgent)) {
+     if (!this.isMobileBrowser(navigator.userAgent)) {
             if (Notification.permission === 'default') {
                 Notification.requestPermission();
             }
@@ -432,7 +433,7 @@ class Browser {
                     }
                 });
         }
-***/
+     ***/
   }
 
   checkForMultipleWindows() {
@@ -460,7 +461,7 @@ class Browser {
     // to their friends.
     //
     const obj = {};
-    obj.publickey = this.app.wallet.returnPublicKey();
+    obj.publickey = this.app.wallet.getPublicKey();
     obj.bundle = "";
     obj.email = email;
     if (this.app.options.bundle != "") {
@@ -695,7 +696,7 @@ class Browser {
       }
       el.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : "  + err);
+      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : " + err);
       console.log(html);
     }
   }
@@ -742,11 +743,20 @@ class Browser {
     let d = this.formatDate(timestamp);
     let h = d.hours;
     let m = d.minutes;
-    let x = '';
-    if (h < 10) { x = `0${h}`; } else { x = `${h}`; }
-    if (m < 10) { x += `:${m}`; } else { x += `:${m}`; }
+    let x = "";
+    if (h < 10) {
+      x = `0${h}`;
+    } else {
+      x = `${h}`;
+    }
+    if (m < 10) {
+      x += `:${m}`;
+    } else {
+      x += `:${m}`;
+    }
     return x;
   }
+
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
 
@@ -802,10 +812,10 @@ class Browser {
       });
       dropArea.addEventListener(
         "drop",
-        function (e) {
+        function(e) {
           const dt = e.dataTransfer;
           const files = dt.files;
-          [...files].forEach(function (file) {
+          [...files].forEach(function(file) {
             const reader = new FileReader();
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
@@ -821,9 +831,9 @@ class Browser {
       );
       dropArea.parentNode.parentNode.addEventListener(
         "paste",
-        function (e) {
+        function(e) {
           const files = e.clipboardData.files;
-          [...files].forEach(function (file) {
+          [...files].forEach(function(file) {
             const reader = new FileReader();
             reader.addEventListener("load", (event) => {
               handleFileDrop(event.target.result);
@@ -839,18 +849,18 @@ class Browser {
       );
       const input = document.getElementById(`hidden_file_element_${id}`);
       if (click_to_upload == true) {
-        dropArea.addEventListener("click", function (e) {
+        dropArea.addEventListener("click", function(e) {
           input.click();
         });
       }
 
       input.addEventListener(
         "change",
-        function (e) {
+        function(e) {
           const fileName = "";
           if (this.files && this.files.length > 0) {
             const files = this.files;
-            [...files].forEach(function (file) {
+            [...files].forEach(function(file) {
               const reader = new FileReader();
               reader.addEventListener("load", (event) => {
                 handleFileDrop(event.target.result);
@@ -904,7 +914,7 @@ class Browser {
       let element_start_left = 0;
       let element_start_top = 0;
 
-      element_to_drag.onmousedown = function (e) {
+      element_to_drag.onmousedown = function(e) {
         if (timeout) {
           clearTimeout(timeout);
         }
@@ -946,7 +956,7 @@ class Browser {
 
         element_moved = false;
 
-        document.onmouseup = function (e) {
+        document.onmouseup = function(e) {
           if (dockable) {
             if (element_to_move.classList.contains("dockedLeft")) {
               element_to_move.style.left = 0;
@@ -983,7 +993,7 @@ class Browser {
           }
         };
 
-        document.onmousemove = function (e) {
+        document.onmousemove = function(e) {
           e = e || window.event;
           e.preventDefault();
           const threshold = 25;
@@ -1067,7 +1077,7 @@ class Browser {
         return false;
       };
 
-      element_to_drag.ontouchstart = function (e) {
+      element_to_drag.ontouchstart = function(e) {
         e = e || window.event;
 
         if (
@@ -1099,7 +1109,7 @@ class Browser {
         mouse_current_left = mouse_down_left;
         mouse_current_top = mouse_down_top;
 
-        document.ontouchend = function (e) {
+        document.ontouchend = function(e) {
           document.ontouchend = null;
           document.ontouchmove = null;
           if (mycallback && element_moved) {
@@ -1107,7 +1117,7 @@ class Browser {
           }
         };
 
-        document.ontouchmove = function (e) {
+        document.ontouchmove = function(e) {
           e = e || window.event;
           //e.preventDefault();
 
@@ -1141,9 +1151,9 @@ class Browser {
 
 
   /**
-  * Fetches publickeys visible in application HTML
-  * 
-  **/
+   * Fetches publickeys visible in application HTML
+   *
+   **/
   returnArrayOfPublicKeysInDom() {
     let keys = [];
     const addresses = document.getElementsByClassName(`saito-address`);
@@ -1161,14 +1171,13 @@ class Browser {
     let unidentified_keys = [];
     for (let i = 0; i < keys.length; i++) {
       if (this.app.keychain.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
-	unidentified_keys.push(keys[i]);
+        unidentified_keys.push(keys[i]);
       } else {
         this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
       }
     }
     return unidentified_keys;
   }
-
 
 
   /**
@@ -1218,7 +1227,8 @@ class Browser {
     try {
       const addresses = document.getElementsByClassName(`saito-address-${key}`);
       Array.from(addresses).forEach((add) => (add.innerHTML = id));
-    } catch (err) { }
+    } catch (err) {
+    }
   }
 
   logMatomoEvent(category, action, name, value) {
@@ -1251,7 +1261,7 @@ class Browser {
     return hash
       .substr(1)
       .split("&")
-      .reduce(function (result, item) {
+      .reduce(function(result, item) {
         const parts = item.split("=");
         result[parts[0]] = parts[1];
         return result;
@@ -1308,15 +1318,15 @@ class Browser {
 
   async captureScreenshot(callback = null) {
     // svg needs converstion
-    var svgElements = document.body.querySelectorAll("svg");
-    svgElements.forEach(function (item) {
+    let svgElements = document.body.querySelectorAll("svg");
+    svgElements.forEach(function(item) {
       item.setAttribute("width", item.getBoundingClientRect().width);
       item.setAttribute("height", item.getBoundingClientRect().height);
       item.style.width = null;
       item.style.height = null;
     });
 
-    html2canvas(document.body).then(function (canvas) {
+    html2canvas(document.body).then(function(canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
       if (callback != null) {
         callback(img);
@@ -1348,10 +1358,10 @@ class Browser {
     try {
       if (text !== "") {
         text = marked.parseInline(text);
-        //trim trailing line breaks - 
+        //trim trailing line breaks -
         // commenting it out because no need for this now
         // because of above marked parsing
-        //text = text.replace(/[\r<br>]+$/, ""); 
+        //text = text.replace(/[\r<br>]+$/, "");
       }
 
       text = sanitizeHtml(text, {
@@ -1387,12 +1397,12 @@ class Browser {
           "pre",
           "img",
           "marquee",
-          "pre",
+          "pre"
         ],
         allowedAttributes: {
           div: ["class", "id"],
           a: ["href", "name", "target", "class", "id"],
-          img: ["src", "class"],
+          img: ["src", "class"]
         },
         selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
         allowedSchemes: ["http", "https", "ftp", "mailto"],
@@ -1400,14 +1410,14 @@ class Browser {
         allowedSchemesAppliedToAttributes: ["href", "cite"],
         allowProtocolRelative: true,
         transformTags: {
-          a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
-        },
+          a: sanitizeHtml.simpleTransform("a", { target: "_blank" })
+        }
       });
 
       /* wrap link in <a> tag */
       let urlPattern =
         /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
-      text = text.replace(urlPattern, function (url) {
+      text = text.replace(urlPattern, function(url) {
         return `<a target="_blank" class="saito-treated-link" href="${url.trim()}">${url.trim()}</a>`;
       });
 
@@ -1421,14 +1431,18 @@ class Browser {
   }
 
   async linkifyKeys(app, mod, element) {
-    if (typeof element == "undefined") { return; }
+    if (typeof element == "undefined") {
+      return;
+    }
     //console.log("linkifyin' " + element.id)
-    if (element.id == "") { return; }
+    if (element.id == "") {
+      return;
+    }
     let elements = element.childNodes;
     elements.forEach(async el => {
       const new_el = document.createElement("span");
       if (el.childNodes.length > 0) {
-        const tags = ['P', 'SPAN', 'DIV', 'BLOCKQUOTE'];
+        const tags = ["P", "SPAN", "DIV", "BLOCKQUOTE"];
         if (tags.includes(el.tagName)) {
           app.browser.linkifyKeys(el);
         }
@@ -1439,8 +1453,13 @@ class Browser {
         let mappedKeyIdentifiers = [];
         //remove duplcates
 
-        if (!identifiers) { identifiers = [] };
-        if (!keys) { keys = [] }
+        if (!identifiers) {
+          identifiers = [];
+        }
+        ;
+        if (!keys) {
+          keys = [];
+        }
 
         if (identifiers.length + keys.length > 0) {
           //deduplicate identifier list
@@ -1449,7 +1468,7 @@ class Browser {
           try {
 
             identifiers.forEach(async (identifier) => {
-              let answer = this.app.keychain.returnKey({ identifier : identifier });
+              let answer = this.app.keychain.returnKey({ identifier: identifier });
               console.log(answer + " - " + identifier);
               if (answer != identifier && answer != null) {
                 //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
@@ -1484,15 +1503,16 @@ class Browser {
           } catch (err) {
             console.error(err);
           }
-        };
+        }
+        ;
       }
-    })
+    });
   };
 
 
   activatePublicKeyObserver(app) {
 
-return;
+    return;
 
     let mutationObserver = new MutationObserver((entries) => {
 
@@ -1511,12 +1531,12 @@ return;
             Array.from(node.children).forEach((child_node) => {
               if (child_node?.classList?.contains("saito-address")) {
 
-console.log("FOUND PUBLIC KEY!: " + address);
+                console.log("FOUND PUBLIC KEY!: " + address);
 
                 let identifier = app.keychain.returnIdentifierByPublicKey(address, true);
                 if (identifier) {
 
-console.log("IDENTIFIER: " + identifier);
+                  console.log("IDENTIFIER: " + identifier);
 
                   try {
                     document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
@@ -1542,14 +1562,14 @@ console.log("IDENTIFIER: " + identifier);
 
     mutationObserver.observe(document.documentElement, {
       childList: true,
-      subtree: true,
+      subtree: true
     });
   }
 
   async resizeImg(img, targetSize = 512, maxDimensions = { w: 1920, h: 1024 }) {
     let self = this;
-    var dimensions = await this.getImageDimensions(img);
-    var new_img = "";
+    let dimensions = await this.getImageDimensions(img);
+    let new_img = "";
     let canvas = document.createElement("canvas");
     let oImg = document.createElement("img");
 
@@ -1595,9 +1615,9 @@ console.log("IDENTIFIER: " + identifier);
 
 
   getImageDimensions(file) {
-    return new Promise(function (resolved, rejected) {
-      var i = new Image();
-      i.onload = function () {
+    return new Promise(function(resolved, rejected) {
+      let i = new Image();
+      i.onload = function() {
         resolved({ w: i.width, h: i.height });
       };
       i.src = file;
@@ -1616,8 +1636,8 @@ console.log("IDENTIFIER: " + identifier);
 
       let browser_self = this;
 
-      var mutationObserver = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
+      let mutationObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
           if (mutation.addedNodes.length > 0) {
             browser_self.treatElements(mutation.addedNodes);
           }
@@ -1629,24 +1649,24 @@ console.log("IDENTIFIER: " + identifier);
         characterData: true,
         childList: true,
         subtree: true,
-        attributeOldValue: true,
+        attributeOldValue: true
       });
 
-      window.sanitize = function (msg) {
+      window.sanitize = function(msg) {
         let result = browser_self.sanitize(msg);
         return result;
       };
 
-      window.salert = function (message) {
+      window.salert = function(message) {
         if (document.getElementById("saito-alert")) {
           return;
         }
-        var wrapper = document.createElement("div");
+        let wrapper = document.createElement("div");
         wrapper.id = "saito-alert";
-        var html = '<div id="saito-alert-shim">';
-        html += '<div id="saito-alert-box">';
-        html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
-        html += '<div id="saito-alert-buttons"><button id="alert-ok">OK</button>';
+        let html = "<div id=\"saito-alert-shim\">";
+        html += "<div id=\"saito-alert-box\">";
+        html += "<p class=\"saito-alert-message\">" + browser_self.sanitize(message) + "</p>";
+        html += "<div id=\"saito-alert-buttons\"><button id=\"alert-ok\">OK</button>";
         html += "</div></div></div>";
         wrapper.innerHTML = html;
         document.body.appendChild(wrapper);
@@ -1654,7 +1674,7 @@ console.log("IDENTIFIER: " + identifier);
           document.querySelector("#saito-alert-box").style.top = "0";
         }, 100);
         document.querySelector("#alert-ok").focus();
-        document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
+        document.querySelector("#saito-alert-shim").addEventListener("keyup", function(event) {
           if (event.keyCode === 13) {
             event.preventDefault();
             document.querySelector("#alert-ok").click();
@@ -1662,25 +1682,25 @@ console.log("IDENTIFIER: " + identifier);
         });
         document.querySelector("#alert-ok").addEventListener(
           "click",
-          function () {
+          function() {
             wrapper.remove();
           },
           false
         );
       };
 
-      window.sconfirm = function (message) {
+      window.sconfirm = function(message) {
         if (document.getElementById("saito-alert")) {
           return;
         }
         return new Promise((resolve, reject) => {
-          var wrapper = document.createElement("div");
+          let wrapper = document.createElement("div");
           wrapper.id = "saito-alert";
-          var html = '<div id="saito-alert-shim">';
-          html += '<div id="saito-alert-box">';
-          html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+          let html = "<div id=\"saito-alert-shim\">";
+          html += "<div id=\"saito-alert-box\">";
+          html += "<p class=\"saito-alert-message\">" + browser_self.sanitize(message) + "</p>";
           html +=
-            '<div id="saito-alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
+            "<div id=\"saito-alert-buttons\"><button id=\"alert-cancel\">Cancel</button><button id=\"alert-ok\">OK</button>";
           html += "</div></div></div>";
           wrapper.innerHTML = html;
           document.body.appendChild(wrapper);
@@ -1708,20 +1728,20 @@ console.log("IDENTIFIER: " + identifier);
         });
       };
 
-      window.sprompt = function (message) {
+      window.sprompt = function(message) {
         if (document.getElementById("saito-alert")) {
           return;
         }
         return new Promise((resolve, reject) => {
-          var wrapper = document.createElement("div");
+          let wrapper = document.createElement("div");
           wrapper.id = "saito-alert";
-          var html = '<div id="saito-alert-shim">';
-          html += '<div id="saito-alert-box">';
-          html += '<p class="saito-alert-message">' + browser_self.sanitize(message) + "</p>";
+          let html = "<div id=\"saito-alert-shim\">";
+          html += "<div id=\"saito-alert-box\">";
+          html += "<p class=\"saito-alert-message\">" + browser_self.sanitize(message) + "</p>";
           html +=
-            '<div class="alert-prompt"><input type="text" id="promptval" class="promptval" /></div>';
+            "<div class=\"alert-prompt\"><input type=\"text\" id=\"promptval\" class=\"promptval\" /></div>";
           html +=
-            '<div id="alert-buttons"><button id="alert-cancel">Cancel</button><button id="alert-ok">OK</button>';
+            "<div id=\"alert-buttons\"><button id=\"alert-cancel\">Cancel</button><button id=\"alert-ok\">OK</button>";
           html += "</div></div></div>";
           wrapper.innerHTML = html;
           document.body.appendChild(wrapper);
@@ -1730,7 +1750,7 @@ console.log("IDENTIFIER: " + identifier);
           setTimeout(() => {
             document.querySelector("#alert-box").style.top = "0";
           }, 100);
-          document.querySelector("#saito-alert-shim").addEventListener("keyup", function (event) {
+          document.querySelector("#saito-alert-shim").addEventListener("keyup", function(event) {
             if (event.keyCode === 13) {
               event.preventDefault();
               document.querySelector("#alert-ok").click();
@@ -1738,8 +1758,8 @@ console.log("IDENTIFIER: " + identifier);
           });
           document.querySelector("#alert-ok").addEventListener(
             "click",
-            function () {
-              var val = document.querySelector("#promptval").value;
+            function() {
+              let val = document.querySelector("#promptval").value;
               wrapper.remove();
               resolve(val);
             },
@@ -1747,7 +1767,7 @@ console.log("IDENTIFIER: " + identifier);
           );
           document.querySelector("#alert-cancel").addEventListener(
             "click",
-            function () {
+            function() {
               wrapper.remove();
               resolve(false);
             },
@@ -1756,14 +1776,14 @@ console.log("IDENTIFIER: " + identifier);
         });
       };
 
-      window.siteMessage = function (message, killtime = 9999999) {
+      window.siteMessage = function(message, killtime = 9999999) {
         if (document.getElementById("message-wrapper")) {
           document.getElementById("message-wrapper").remove();
         }
-        var wrapper = document.createElement("div");
+        let wrapper = document.createElement("div");
         wrapper.id = "message-wrapper";
-        var html = '<div id="message-box">';
-        html += '<p class="message-message">' + browser_self.sanitize(message) + "</p>";
+        let html = "<div id=\"message-box\">";
+        html += "<p class=\"message-message\">" + browser_self.sanitize(message) + "</p>";
         html += "</div>";
         wrapper.innerHTML = html;
         document.body.appendChild(wrapper);
@@ -1772,7 +1792,7 @@ console.log("IDENTIFIER: " + identifier);
         }, killtime);
         document.querySelector("#message-wrapper").addEventListener(
           "click",
-          function () {
+          function() {
             wrapper.remove();
           },
           false
@@ -1789,12 +1809,12 @@ console.log("IDENTIFIER: " + identifier);
 
     }
 
-  
+
   }
 
 
   treatElements(nodeList) {
-    for (var i = 0; i < nodeList.length; i++) {
+    for (let i = 0; i < nodeList.length; i++) {
       if (nodeList[i].files) {
         this.treatFiles(nodeList[i]);
       }
@@ -1808,8 +1828,8 @@ console.log("IDENTIFIER: " + identifier);
     if (input.classList.contains("treated")) {
       return;
     } else {
-      input.addEventListener("change", function (e) {
-        var fileName = "";
+      input.addEventListener("change", function(e) {
+        let fileName = "";
         if (this.files && this.files.length > 1) {
           fileName = this.files.length + " files selected.";
         } else {
@@ -1828,13 +1848,13 @@ console.log("IDENTIFIER: " + identifier);
       filelabel.innerHTML = "Choose File";
       filelabel.htmlFor = input.id;
       filelabel.id = input.id + "-label";
-      var parent = input.parentNode;
+      let parent = input.parentNode;
       parent.appendChild(filelabel);
     }
   }
 
   switchTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute("data-theme", theme);
 
     if (this.app.BROWSER == 1) {
       let mod_obj = this.app.modules.returnActiveModule();
@@ -1844,13 +1864,14 @@ console.log("IDENTIFIER: " + identifier);
       }
 
       if (mod_obj.slug != null) {
-          this.app.options.theme[mod_obj.slug] = theme;
-          this.app.storage.saveOptions();
+        this.app.options.theme[mod_obj.slug] = theme;
+        this.app.storage.saveOptions();
       }
       console.log(this.app.options);
     }
   }
 
 }
+
 export default Browser;
 

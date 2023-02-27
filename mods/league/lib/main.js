@@ -1,5 +1,5 @@
 const LeagueWizard = require("./components/league-wizard");
-const LeagueMainTemplate    = require("./main.template");
+const LeagueMainTemplate = require("./main.template");
 const LeagueComponentExistingLeague = require("./components/existing-league");
 
 class LeagueMain {
@@ -29,12 +29,11 @@ class LeagueMain {
     }
 
 
-
     let leagues = this.mod.filterLeagues(this.app, false);
 
-    let filter1 = leagues.filter(l => l.admin == this.app.wallet.returnPublicKey());
-    let filter2 = leagues.filter(l => l.myRank > 0 && l.admin != this.app.wallet.returnPublicKey());
-    let filter3 = leagues.filter(l => l.myRank <= 0 && l.admin != this.app.wallet.returnPublicKey());
+    let filter1 = leagues.filter(l => l.admin == this.app.wallet.getPublicKey());
+    let filter2 = leagues.filter(l => l.myRank > 0 && l.admin != this.app.wallet.getPublicKey());
+    let filter3 = leagues.filter(l => l.myRank <= 0 && l.admin != this.app.wallet.getPublicKey());
 
     if (filter1.length > 0) {
       filter1.forEach((game) => {
@@ -64,19 +63,20 @@ class LeagueMain {
     if (document.getElementById('create-new-league')) {
       document.getElementById('create-new-league').onclick = () => {
 
-        this.app.connection.emit("arcade-launch-game-selector", { 
-	  callback : (obj) => {
-    	    if (this.wizard != null) { delete this.wizard; }
-	    let game_mod = this.app.modules.returnModuleByName(obj.game);
-	    this.wizard = new LeagueWizard(this.app, this.mod, game_mod);
+        this.app.connection.emit("arcade-launch-game-selector", {
+          callback: (obj) => {
+            if (this.wizard != null) {
+              delete this.wizard;
+            }
+            let game_mod = this.app.modules.returnModuleByName(obj.game);
+            this.wizard = new LeagueWizard(this.app, this.mod, game_mod);
             this.wizard.render();
-	  }
-	});
+          }
+        });
 
       }
     }
   }
-
 
 
 }

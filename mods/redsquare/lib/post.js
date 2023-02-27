@@ -16,7 +16,7 @@ class Post {
     this.tweet = tweet;
     this.render_after_submit = 1;
     this.file_event_added = false;
-    this.publickey = app.wallet.returnPublicKey();
+    this.publickey = app.wallet.getPublicKey();
     this.source = 'Tweet';
   }
 
@@ -31,15 +31,17 @@ class Post {
       try {
         if (mod.name == "Giphy") {
           const SaitoGif = require("./../../giphy/giphy");
-          post_self.gif = new SaitoGif(post_self.app, post_self.mod, "post-tweet-textarea", function (img) { post_self.addImg(img) });
+          post_self.gif = new SaitoGif(post_self.app, post_self.mod, "post-tweet-textarea", function(img) {
+            post_self.addImg(img)
+          });
           post_self.gif.render(this.app, this.mod);
         }
       } catch (err) {
         console.log(err);
       }
     });
-  
-    this.attachEvents(); 
+
+    this.attachEvents();
   }
 
   attachEvents() {
@@ -72,7 +74,7 @@ class Post {
       return;
     });
 
-    
+
     if (typeof document.querySelector(".my-form") != "undefined" && document.querySelector(".my-form")) {
       document.querySelector(".my-form").style.display = "none";
     }
@@ -84,19 +86,19 @@ class Post {
       let source = document.getElementById("source").value;
       let keys = []
 
- 
+
       //
       // extract keys from text AND then tweet
       //
-     keys = post_self.app.browser.extractKeys(text);
+      keys = post_self.app.browser.extractKeys(text);
 
-     if (this.tweet != null) {
-      for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
-        if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
-          keys.push(this.tweet.tx.transaction.to[i].add);
+      if (this.tweet != null) {
+        for (let i = 0; i < this.tweet.tx.transaction.to.length; i++) {
+          if (!keys.includes(this.tweet.tx.transaction.to[i].add)) {
+            keys.push(this.tweet.tx.transaction.to[i].add);
+          }
         }
       }
-    }
 
       // try {
 
@@ -117,11 +119,11 @@ class Post {
         if (post_self.tweet.tx) {
           if (post_self.tweet.tx.transaction) {
             for (let i = 0; i < post_self.tweet.tx.transaction.to.length; i++) {
-	      if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
-	        keys.push(post_self.tweet.tx.transaction.to[i].add);
-	      }
-	    }
-	  }
+              if (!keys.includes(post_self.tweet.tx.transaction.to[i].add)) {
+                keys.push(post_self.tweet.tx.transaction.to[i].add);
+              }
+            }
+          }
         }
       }
 
@@ -159,8 +161,6 @@ class Post {
       }
 
 
- 
-
       setTimeout(() => {
         let newtx = post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
         if (post_self.render_after_submit == 1) {
@@ -169,7 +169,7 @@ class Post {
         post_self.overlay.hide();
       }, 1000);
     });
- 
+
   }
 
   addImg(img) {
@@ -178,12 +178,12 @@ class Post {
            /><i data-id="${this.images.length - 1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
            </div>`, document.getElementById("post-tweet-img-preview-container"));
     this.images.push(img);
-    
+
     // attach img preview event
-    // event added here because img-prievew is added dynamically 
+    // event added here because img-prievew is added dynamically
     let sel = ".post-tweet-img-preview-close";
-    document.querySelectorAll(sel).forEach(elem => { 
-      elem.addEventListener('click', function(e){
+    document.querySelectorAll(sel).forEach(elem => {
+      elem.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
 

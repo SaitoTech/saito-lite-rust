@@ -24,7 +24,7 @@
     //
     document.getElementById("end-turn").onclick = (e) => {
       this.updateStatusAndListCards("Opponent Turn", this.game.deck[this.game.player-1].hand, function() {});
-      this.prependMove("RESOLVE\t"+this.app.wallet.returnPublicKey());
+      this.prependMove("RESOLVE\t"+this.app.wallet.getPublicKey());
       this.endTurn();
     }
 

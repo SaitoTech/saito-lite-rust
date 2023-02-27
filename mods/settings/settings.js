@@ -18,7 +18,7 @@ class Settings extends ModTemplate {
     this.icon = "fas fa-cog";
     this.description = "User settings module.";
     this.categories = "Admin Users";
-    this.styles = ['/settings/style.css','/saito/lib/jsonTree/jsonTree.css','/settings/theme-switcher.css'];
+    this.styles = ['/settings/style.css', '/saito/lib/jsonTree/jsonTree.css', '/settings/theme-switcher.css'];
 
     return this;
   }
@@ -30,8 +30,8 @@ class Settings extends ModTemplate {
     let settings_self = this;
     this.app.connection.on("update_identifier", (tmpkey) => {
       if (document.getElementById("register-identifier-btn")) {
-        if (tmpkey.publickey === settings_self.app.wallet.returnPublicKey()) {
-          let username = settings_self.app.keychain.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
+        if (tmpkey.publickey === settings_self.app.wallet.getPublicKey()) {
+          let username = settings_self.app.keychain.returnIdentifierByPublicKey(app.wallet.getPublicKey());
           document.getElementById("register-identifier-btn").innerHTML = username;
         }
       }
@@ -40,9 +40,15 @@ class Settings extends ModTemplate {
 
 
   canRenderInto(qs) {
-    if (qs === ".saito-main") { return true; }
-    if (qs === ".saito-sidebar.right") { return true; }
-    if (qs === ".saito-header-themes") { return true; }
+    if (qs === ".saito-main") {
+      return true;
+    }
+    if (qs === ".saito-sidebar.right") {
+      return true;
+    }
+    if (qs === ".saito-header-themes") {
+      return true;
+    }
     return false;
   }
 
@@ -54,7 +60,9 @@ class Settings extends ModTemplate {
         this.renderIntos[qs].push(new SettingsAppspace(this.app, this, qs));
       }
       this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+      this.renderIntos[qs].forEach((comp) => {
+        comp.render();
+      });
     }
     if (qs == ".saito-sidebar.right") {
       if (!this.renderIntos[qs]) {
@@ -62,28 +70,27 @@ class Settings extends ModTemplate {
         this.renderIntos[qs].push(new SettingsAppspaceSidebar(this.app, this, qs));
       }
       this.attachStyleSheets();
-      this.renderIntos[qs].forEach((comp) => { comp.render(); });
+      this.renderIntos[qs].forEach((comp) => {
+        comp.render();
+      });
     }
 
-     if (qs == ".saito-header-themes") {
-        if (!this.renderIntos[qs]) {
-          this.renderIntos[qs] = [];
+    if (qs == ".saito-header-themes") {
+      if (!this.renderIntos[qs]) {
+        this.renderIntos[qs] = [];
 
-          let obj = new ThemeBtn(this.app, this, ".saito-header-themes");
-          this.renderIntos[qs].push(obj);
-          this.attachStyleSheets();
-          this.renderIntos[qs].forEach((comp) => { comp.render(); });
-        }
+        let obj = new ThemeBtn(this.app, this, ".saito-header-themes");
+        this.renderIntos[qs].push(obj);
+        this.attachStyleSheets();
+        this.renderIntos[qs].forEach((comp) => {
+          comp.render();
+        });
       }
+    }
   }
 
 
 }
-
-
-
-
-
 
 
 module.exports = Settings;

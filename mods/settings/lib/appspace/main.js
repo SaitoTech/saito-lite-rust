@@ -5,7 +5,7 @@ const jsonTree = require('json-tree-viewer');
 
 class SettingsAppspace {
 
-  constructor(app, mod, container="") {
+  constructor(app, mod, container = "") {
     this.app = app;
     this.mod = mod;
     this.container = container;
@@ -34,10 +34,10 @@ class SettingsAppspace {
 
     try {
       let optjson = JSON.parse(JSON.stringify(this.app.options, (key, value) =>
-            typeof value === 'bigint'
-                ? value.toString()
-                : value // return everything else unchanged
-        ));
+        typeof value === 'bigint'
+          ? value.toString()
+          : value // return everything else unchanged
+      ));
       var tree = jsonTree.create(optjson, el);
     } catch (err) {
       console.log("error creating jsonTree: " + err);
@@ -64,26 +64,26 @@ class SettingsAppspace {
         }
       }
 
-      document.getElementById("register-email-btn").onclick = function (e) {
-        mod.modal_register_username = new RegisterUsernameModal(app, mod, function () {
+      document.getElementById("register-email-btn").onclick = function(e) {
+        mod.modal_register_username = new RegisterUsernameModal(app, mod, function() {
         });
         mod.modal_register_username.render(app, mod, RegisterUsernameModal.MODES.REGISTEREMAIL);
         mod.modal_register_username.attachEvents(app, mod);
       }
 
-      document.getElementById("register-identifier-btn").onclick = function (e) {
-       mod.modal_register_username = new RegisterUsernameModal(app, mod);
-       mod.modal_register_username.render(app, mod);
-       mod.modal_register_username.attachEvents(app, mod);
+      document.getElementById("register-identifier-btn").onclick = function(e) {
+        mod.modal_register_username = new RegisterUsernameModal(app, mod);
+        mod.modal_register_username.render(app, mod);
+        mod.modal_register_username.attachEvents(app, mod);
       }
 
-      document.querySelector(".settings-appspace-privatekey").onclick = function (e) {
+      document.querySelector(".settings-appspace-privatekey").onclick = function(e) {
         document.querySelector(".settings-appspace-privatekey").classList.toggle("saito-password");
       }
 
 
       if (document.getElementById("trigger-appstore-btn")) {
-        document.getElementById("trigger-appstore-btn").onclick = function (e) {
+        document.getElementById("trigger-appstore-btn").onclick = function(e) {
           let appstore_mod = app.modules.returnModule("AppStore");
           if (appstore_mod) {
             appstore_mod.openAppstoreOverlay(app, appstore_mod);
@@ -129,33 +129,33 @@ class SettingsAppspace {
       });
 
       document.getElementById('restore-account-btn').onclick = async (e) => {
-        document.getElementById('file-input').addEventListener('change', function (e) {
+        document.getElementById('file-input').addEventListener('change', function(e) {
           var file = e.target.files[0];
           app.wallet.restoreWallet(file);
         });
         document.querySelector('#file-input').click();
       }
 
-      document.querySelector('.copy-public-key').onclick = (e) =>{
-        navigator.clipboard.writeText(app.wallet.returnPublicKey());
+      document.querySelector('.copy-public-key').onclick = (e) => {
+        navigator.clipboard.writeText(app.wallet.getPublicKey());
         salert("Public key copied");
       }
       /*
           document.getElementById('reset-account-btn').onclick = async (e) => {
-      
+
             confirmation = await sconfirm('This will reset your account, do you wish to proceed?');
             if (confirmation) {
               app.wallet.resetWallet();
               app.modules.returnModule('Arcade').onResetWallet();
               app.storage.resetOptions();
-      
+
               mod.emails.inbox = [];
               mod.emails.sent = [];
               mod.emails.trash = [];
-      
+
               mod.render(app, mod);
               mod.attachEvents(app, mod);
-      
+
               app.blockchain.resetBlockchain();
             }
           };

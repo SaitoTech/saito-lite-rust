@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import Saito from "saito-js/saito";
 import node_cryptojs from "node-cryptojs-aes";
 import crypto from "crypto-browserify";
@@ -104,5 +105,15 @@ export default class Crypto {
 
   generatePublicKey(privateKey: string): string {
     return Saito.getInstance().generatePublicKey(privateKey);
+  }
+
+  /**
+   * Creates a random number, but not a privatekey. used for
+   * XOR encryption in the game engine among other uses. public/private keypair. returns the string
+   * @returns {string} private key
+   */
+  generateRandomNumber() {
+    const randomNumber = randomBytes(32);
+    return randomNumber.toString("hex");
   }
 }

@@ -13,64 +13,62 @@ class TST extends CryptoModule {
   }
 
 
+  //
+  // returns the web3 crypto address
+  //
+  returnAddress() {
+    // just given them our Saito publickey - easy to test
+    return this.app.wallet.getPublicKey();
+  }
 
-   //
-   // returns the web3 crypto address
-   //
-   returnAddress() {
-     // just given them our Saito publickey - easy to test
-     return this.app.wallet.returnPublicKey();
-   }
+  //
+  // returns the web3 crypto private key
+  //
+  returnPrivateKey() {
+    // just give them our Saito privatekey - easy to test
+    return this.app.wallet.returnPrivateKey();
+  }
 
-   //
-   // returns the web3 crypto private key
-   //
-   returnPrivateKey() {
-     // just give them our Saito privatekey - easy to test
-     return this.app.wallet.returnPrivateKey();
-   }
+  //
+  // fetches and returns the balance at the web3 crypto addresses
+  //
+  // @param {String} address in which to check balance
+  // @return {Array} Array of {address: {String}, balance: {Int}}
+  //
+  async returnBalance(address = "") {
+    return "100.00000000";
+  }
 
-   //
-   // fetches and returns the balance at the web3 crypto addresses
-   //
-   // @param {String} address in which to check balance
-   // @return {Array} Array of {address: {String}, balance: {Int}}
-   //
-   async returnBalance(address = "") {
-     return "100.00000000";
-   }
+  //
+  // sends a payment in amount requested to the specified address if possible
+  //
+  // @param {String} amount of tokens to send
+  // @param {String} address of recipient
+  // @return {Array} Array of {hash: {String}} where hash is the transaction_id
+  //        of the transaction that makes this transfer on the external web3
+  //        crypto.
+  //
+  async sendPayment(amounts = "", recipient = "", unique_hash = "") {
+    return this.app.crypto.hash(Math.random().toString());
+  }
 
-   //
-   // sends a payment in amount requested to the specified address if possible
-   //
-   // @param {String} amount of tokens to send
-   // @param {String} address of recipient
-   // @return {Array} Array of {hash: {String}} where hash is the transaction_id
-   //        of the transaction that makes this transfer on the external web3
-   //        crypto.
-   //
-   async sendPayment(amounts="", recipient="", unique_hash="") {
-     return this.app.crypto.hash(Math.random().toString());
-   }
-
-   //
-   // checks if a payment has been received at the web3 crypto address
-   //
-   // @param {String} amount of tokens to send
-   // @param {String} sender of transfer
-   // @param {String} recipient of transfer
-   // @param {timestamp} timestamp after which transfer must have been made
-   // @return {Array} Array of {hash: {String}} where hash is the transaction_id
-   //
-   async receivePayment(amount="", sender="", receiver="", timestamp, unique_hash="") {
-     if (Math.random() > 0.5) {
-       console.log("received payment...");
-       return 1;
-     }
-console.log("not received payment...");
-     return 0;
-   }
-
+  //
+  // checks if a payment has been received at the web3 crypto address
+  //
+  // @param {String} amount of tokens to send
+  // @param {String} sender of transfer
+  // @param {String} recipient of transfer
+  // @param {timestamp} timestamp after which transfer must have been made
+  // @return {Array} Array of {hash: {String}} where hash is the transaction_id
+  //
+  async receivePayment(amount = "", sender = "", receiver = "", timestamp, unique_hash = "") {
+    if (Math.random() > 0.5) {
+      console.log("received payment...");
+      return 1;
+    }
+    console.log("not received payment...");
+    return 0;
+  }
 
 
   renderModalSelectCrypto(app, mod, cryptomod) {
@@ -120,6 +118,7 @@ This shows how to make the Select Crypto module show up.
       </style>
     `;
   }
+
   attachEventsModalSelectCrypto(app, mod, cryptomod) {
     try {
       let dotgo = document.getElementById("dot-warning-confirm");
@@ -130,7 +129,7 @@ This shows how to make the Select Crypto module show up.
         }
       }
     } catch (err) {
-console.log("ERROR ACTIVATING: " + err);
+      console.log("ERROR ACTIVATING: " + err);
     }
     return;
   }

@@ -17,7 +17,7 @@
 //
 //   newHandshakeChallenge() {
 //     return {
-//       //publickey: this.app.wallet.returnPublicKey(),
+//       //publickey: this.app.wallet.getPublicKey(),
 //       challenge: randomBytes(32),
 //       //lite: this.app.BROWSER,
 //       //block_fetch_url: this.app.BROWSER ? "" : this.app.server.server.block_fetch_url,
@@ -51,7 +51,7 @@
 //
 //   newHandshakeResponse() {
 //     return {
-//       publickey: this.app.wallet.returnPublicKey(),
+//       publickey: this.app.wallet.getPublicKey(),
 //       signature: randomBytes(64),
 //       challenge: randomBytes(32),
 //       lite: this.app.BROWSER,

@@ -384,7 +384,8 @@ class StorageCore extends Storage {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  resetOptions() {}
+  resetOptions() {
+  }
 
   ///////////////////////
   // saveClientOptions //
@@ -460,7 +461,7 @@ class StorageCore extends Storage {
     t.wallet = {};
     t.registry = this.app.options.registry;
     //t.appstore             = {};
-    //t.appstore.default     = this.app.wallet.returnPublicKey();
+    //t.appstore.default     = this.app.wallet.getPublicKey();
     t.peers.push(client_peer);
 
     //
