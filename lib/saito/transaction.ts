@@ -770,12 +770,14 @@ try {
     this.deserialize(app, b, 0); 
   }
   serialize_to_web(app) {
-    let m = this.transaction.m;
+    // we clone so that we don't modify the tx itself
+    let newtx = this.clone();
+    let m = newtx.transaction.m;
     let opt = JSON.stringify(this.optional);
-    this.transaction.m = Buffer.alloc(0);
+    newtx.transaction.m = Buffer.alloc(0);
     let b = Buffer.from(this.serialize(app));
     let web_obj = {
-      t : this.serialize_to_base64(app) ,
+      t : newtx.serialize_to_base64(app) ,
       m : m.toString('base64') ,
       opt : app.crypto.stringToBase64(opt)
     }

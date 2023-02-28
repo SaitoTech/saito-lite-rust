@@ -194,7 +194,7 @@ class Keychain {
   hasSharedSecret(publickey: string) {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey === publickey || this.keys[x].identifier === publickey) {
-        if (this.keys[x].hasSharedSecret()) {
+        if (this.keys[x].aes_secret) {
           return true;
         }
       }
