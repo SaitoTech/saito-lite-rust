@@ -1070,7 +1070,7 @@ input[type="range"]:focus::-ms-fill-upper {
 input[type="text"],
 input[type="password"],
 select {
-  width: 100%;
+  width: 99%;
 }
 #saito-header {
   position: fixed;
@@ -2191,7 +2191,7 @@ This alows for a header with a header with title to be added without extra CSS
     background-color: var(--saito-background-color);
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 3rem;
 }
 
 .saito-overlay-form-header {
@@ -2209,6 +2209,10 @@ This alows for a header with a header with title to be added without extra CSS
     text-transform: uppercase;
     white-space: nowrap;
     display: block;
+}
+
+.saito-overlay-form-input {
+    margin: 0 3px;
 }
 
 .saito-overlay-form-text {
@@ -2270,7 +2274,7 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-overlay-form textarea, .saito-overlay-form input {
-    border: 1px solid var(--saito-font-color);
+    border: 1px solid var(--saito-font-color-light);
 }
 
 @media screen and (max-width: 768px) {
@@ -3416,7 +3420,6 @@ html[data-theme="arcade"] {
   height: 45px;
   padding: 10px 10px !important;
   font-size: 16px !important;
-  background: var(--saito-white);
   color: var(--saito-font-color);
 }
 
@@ -3455,6 +3458,7 @@ html[data-theme="arcade"] {
 .amount-cont {
   display: flex;
   justify-content: space-between;
+  gap: 2rem;
 }
 
 #mixin-warning-note {
@@ -3474,6 +3478,10 @@ html[data-theme="arcade"] {
 .mixin-txn-his-container .saito-table-body {
   height: auto;
   margin-top: 1rem;
+}
+
+.amount-item-amount {
+  flex-grow: 1;
 }
 
 .mixin-txn-his-container .saito-table-header {

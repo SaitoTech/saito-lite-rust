@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.759,
+    version: 4.761,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -133,12 +133,10 @@ export default class Wallet {
   }
 
   addTransactionToPending(tx: Transaction) {
-return;
-    const txjson = JSON.stringify(tx.transaction);
+    const txjson = tx.serialize_to_web(this.app);
     if (txjson.length > 100000) {
       return;
     }
-console.log("ADDING TX TO PENDING: " + txjson);
     if (!this.wallet.pending.includes(txjson)) {
       this.wallet.pending.push(txjson);
       this.saveWallet();
@@ -291,7 +289,8 @@ console.log("---------------------");
       //
       if (this.wallet.pending.length > 0) {
         for (let i = 0; i < this.wallet.pending.length; i++) {
-          let ptx = new saito.default.transaction(JSON.parse(this.wallet.pending[i]));
+          let ptx = new saito.default.transaction();
+	  ptx.deserialize_from_web(this.app, this.wallet.pending[i]);
           for (let k = 0; k < ptx.transaction.from.length; k++) {
             let slipIndex = ptx.transaction.from[k].returnSignatureSource();
             for (let m = 0; m < this.wallet.inputs; m++) {
@@ -594,8 +593,8 @@ console.log("---------------------");
 
         if (this.wallet.pending.length > 0) {
           for (let i = 0; i < this.wallet.pending.length; i++) {
-            const ptx = new Transaction(JSON.parse(this.wallet.pending[i]));
-
+            let ptx = new Transaction();
+	    ptx.deserialize_from_web(this.app, this.wallet.pending[i]);
             if (this.wallet.pending[i].indexOf(tx.transaction.sig) > 0) {
               this.wallet.pending.splice(i, 1);
               i--;
@@ -701,7 +700,8 @@ console.log("---------------------");
     //
     if (this.wallet.pending.length > 0) {
       for (let i = 0; i < this.wallet.pending.length; i++) {
-        const pendingtx = new Transaction(JSON.parse(this.wallet.pending[i]));
+        let pendingtx = new Transaction();
+	pendingtx.deserialize_from_web(this.app, this.wallet.pending[i]);
         for (let k = 0; k < pendingtx.transaction.from.length; k++) {
           const slipIndex = pendingtx.transaction.from[k].returnKey();
           for (let m = 0; m < this.wallet.inputs.length; m++) {
@@ -1384,7 +1384,8 @@ console.log("---------------------");
 
   private isSlipInPendingTransactions(input: Slip): boolean {
     for (let i = 0; i < this.wallet.pending.length; i++) {
-      let ptx = new saito.transaction(JSON.parse(this.wallet.pending[i]));
+      let ptx = new saito.transaction();
+      ptx.deserialize_from_web(this.app, this.wallet.pending[i]);
       for (let ii = 0; ii < ptx.transaction.from.length; ii++) {
         if (input.returnKey() === ptx.transaction.from[ii].returnKey()) {
           return true;

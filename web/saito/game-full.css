@@ -52,6 +52,9 @@
   }
 }
 
+.animated_elem{
+  position: absolute;
+}
 
 #game_board_sizer{
   position: absolute;
