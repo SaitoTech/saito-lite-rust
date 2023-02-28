@@ -48,7 +48,7 @@ class Arcade extends ModTemplate {
       'arcade': 'fa-solid fa-gamepad'
     };
 
-    this.debug = true;
+    this.debug = false;
   }
 
 

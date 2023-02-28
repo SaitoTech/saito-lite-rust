@@ -2260,7 +2260,7 @@ class Settlers extends GameTemplate {
   }
 
   removeEvents(){
-    console.trace("remove events");
+    //console.trace("remove events");
     this.displayBoard();
     $(".cardselector").off();
     $(".trade").off();
