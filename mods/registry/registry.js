@@ -233,6 +233,35 @@ class Registry extends ModTemplate {
 
     let registry_self = this;
 
+    if (type == "saito-return-key") {
+      return {
+        returnKey : (data = null) => {
+  
+          // 
+          // data might be a publickey, permit flexibility
+          // in how this is called by pushing it into a
+          // suitable object for searching
+          //
+          if (typeof data === 'string') {
+            let d = { publickey: "" };
+            d.publickey = data;
+            data = d;
+          }
+
+          // 
+          // if keys exist
+          // 
+          for (let key in this.cached_keys) {
+	    if (key === data.publickey) { data.identifier = this.cached_keys[key]; return data; }
+	    if (key === data.identifier) { data.publickey = key; return data; }
+	  }
+
+	  return null;
+
+        }
+      }
+    }
+
     if (type == "do-registry-prompt") {
       return {
         doRegistryPrompt: async () => {

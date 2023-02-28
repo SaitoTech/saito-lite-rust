@@ -1253,18 +1253,16 @@ class RedSquare extends ModTemplate {
       const filename = path.join(__dirname, 'web/tweets.js');
       let fs = this.app.storage.returnFileSystem();
       if (fs != null) {
-        if (fs.existsSync(filename)) {
-          const fd = fs.openSync(filename, "w");
-          let html = `
-            var tweets = [];
-          `;
-          for (let i = 0; i < hex_entries.length; i++) {
-            html += `  tweets.push(\`${hex_entries[i]}\`);   `; 
-          }
-          fs.writeSync(fd, html);
-          fs.fsyncSync(fd);
-          fs.closeSync(fd);
+        const fd = fs.openSync(filename, "w");
+        let html = `
+          var tweets = [];
+        `;
+        for (let i = 0; i < hex_entries.length; i++) {
+          html += `  tweets.push(\`${hex_entries[i]}\`);   `; 
         }
+        fs.writeSync(fd, html);
+        fs.fsyncSync(fd);
+        fs.closeSync(fd);
       }
     } catch (err) {
       console.error("ERROR 285029: error saving block to disk ", err);
