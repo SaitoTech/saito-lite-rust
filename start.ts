@@ -12,7 +12,6 @@ import { WebSocket, WebSocketServer } from "ws";
 import configs from "./config/configs.json";
 
 async function initSaito() {
-
   const app = new Saito({
     mod_paths: mods_config.core,
   });
@@ -75,7 +74,7 @@ async function initSaito() {
 
     Welcome to Saito
 
-    address: ${await app.wallet.getPublicKey()}
+    address: ${app.wallet.getPublicKey()}
     balance: ${await app.wallet.getBalance()}
     local module server: ${localServer}
 
@@ -98,12 +97,12 @@ async function initSaito() {
   /////////////////////
   // Cntl-C to Close //
   /////////////////////
-  process.on("SIGTERM", function() {
+  process.on("SIGTERM", function () {
     shutdownSaito();
     console.log("Network Shutdown");
     process.exit(0);
   });
-  process.on("SIGINT", function() {
+  process.on("SIGINT", function () {
     shutdownSaito();
     console.log("Network Shutdown");
     process.exit(0);

@@ -66,7 +66,7 @@ class Saito {
 
   async init() {
     try {
-      // await this.storage.initialize();
+      await this.storage.initialize();
 
       //
       // import hashing library here because of complications with both

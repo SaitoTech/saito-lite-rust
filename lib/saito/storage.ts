@@ -92,4 +92,27 @@ export default class Storage {
       });
     }
   }
+
+  async initialize() {
+    await this.loadOptions();
+    this.saveOptions();
+    return;
+  }
+
+  async loadOptions() {
+    if (typeof Storage !== "undefined") {
+      const data = localStorage.getItem("options");
+      if (data != "null" && data != null) {
+        this.app.options = JSON.parse(data);
+      } else {
+        try {
+          const response = await fetch(`/options`);
+          this.app.options = await response.json();
+          this.saveOptions();
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    }
+  }
 }
