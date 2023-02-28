@@ -84,8 +84,6 @@ class Keychain {
     //
     if (data.publickey === "") { return; }
 
-console.log("UPDATE: " + data.publickey + " with " + JSON.stringify(data));
-
     //
     // update existing entry
     //
