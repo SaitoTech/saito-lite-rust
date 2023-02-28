@@ -50,7 +50,7 @@
     min-width: 300px;
     max-width: 90vw;
     padding: 2rem;
-    background-color: var(--saito-background-light);
+    background-color: var(--saito-background-color);
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -129,6 +129,10 @@
    flex-grow: 1;
    align-items: center;
    gap: 1rem;
+}
+
+.saito-overlay-form textarea, .saito-overlay-form input {
+    border: 1px solid var(--saito-font-color);
 }
 
 @media screen and (max-width: 768px) {

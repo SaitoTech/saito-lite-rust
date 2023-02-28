@@ -567,7 +567,7 @@ button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-
   height: 66rem;
   width: 44rem;
   border-radius: 0.5rem;
-  z-index: 90;
+  z-index: 9;
   position: fixed;
   bottom: 0px;
   right: 0px;
@@ -1194,7 +1194,8 @@ select {
 
 #qrcode img {
   height: auto;
-  width: 20rem;
+  max-width: 20rem;
+  width: 20vh;
   border: 2px solid var(--saito-black);
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -1203,8 +1204,8 @@ select {
 }
 
 .balance-amount {
-  font-size: 5rem;
-  margin-right: -2.0rem;
+  font-size: 4.2rem;
+  margin-right: -1.5rem;
 }
 
 .wallet-balance select {
@@ -1263,8 +1264,8 @@ select {
 }
 
 .wallet-idenicon {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 3rem;
+  height: 3rem;
 }
 
 .pubkey-containter {
