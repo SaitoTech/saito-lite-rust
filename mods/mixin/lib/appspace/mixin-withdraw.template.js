@@ -2,35 +2,36 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
 
   let html = `
 
-  <div class="email-appspace-withdraw-overlay" id="email-appspace-withdraw-overlay">
-  
-    <div id="withdrawl-form-cont" class="decision-cont">
+  <form class="withdrawal-form" id="withdrawal-form" action="/" method="POST">
+  <div class="saito-overlay-form" id="saito-withdraw-overlay">
+
+  <div class="saito-overlay-form-header">
+    <div class="saito-overlay-form-header-title">Send ${withdraw_this.deposit_ticker}</div>
+  </div>
       
         
-        <form class="withdrawal-form" id="withdrawal-form" action="/" method="POST">
-          <div class="mixin-withdraw-input">
-            <div class="input-heading">Receiving Address (${withdraw_this.deposit_ticker})</div>
+          <div class="saito-overlay-form-input">
+            <div class="">Receiving Address (${withdraw_this.deposit_ticker})</div>
             <input type="text" class="input-elem withdraw_address" value="" required>
           </div>
 
-          <div class="mixin-withdraw-input">
+          <div class="saito-overlay-form-input">
             <div class="amount-cont">
-              <div class="input-heading amount-item">Amount</div>
-              <div class="amount-item" id="amount-avl" data-amount-avl="${withdraw_this.withdraw_balance}">
+              <div class="amount-item-amount">Amount</div>
+              <div class="amount-item-balance" id="amount-avl" data-amount-avl="${withdraw_this.withdraw_balance}">
                 Available Balance &nbsp; ${withdraw_this.withdraw_balance} ${withdraw_this.deposit_ticker}
               </div>
+              <div class="max-amount-btn" id="max-amount-btn">MAX</div>
             </div>
             <div class="max-amount-error error-msg"></div>
             <input type="number" min="0" step="0.00000001" id="withdraw_amount" class="input-elem withdraw_amount" value="" required>
-            <div class="max-amount-btn" id="max-amount-btn">MAX</div>
+
           </div>
 
-           <div class="info-cont">
-             <div class="info-item">
-                <button type="submit" class="withdraw_submit">WITHDRAW</button>
-             </div>
-            </div>
-        </form>
+          <div class="saito-overlay-form-submitline">
+            <button type="submit" class="withdraw-submit saito-button-primary fat saito-overlay-form-submit" id="saito-overlay-submit">Send</button>
+          </div>
+
       
     </div>
 
@@ -47,6 +48,7 @@ module.exports = MixinWithdrawTemplate = (app, mod, withdraw_this) => {
     </div>
     
   </div>
+  </form>
 
   `;
 

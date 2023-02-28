@@ -52,7 +52,7 @@ class MixinWithdraw {
                         }, ticker);
                         overlay.hide();
               
-              document.querySelector("#email-appspace-withdraw-overlay").innerHTML = 'Withdrawal Successful!';
+              document.querySelector("#saito-withdraw-overlay").innerHTML = 'Withdrawal Successful!';
               setTimeout(function(){
                 location.reload();
               }, 1500);
