@@ -69,10 +69,93 @@
   padding: 0rem;
   font-size: 4rem;
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: 1.5rem;
+  right: 1.5rem;
   z-index: 3;
 }
+
+
+.fab {
+  background-color: transparent;
+  height: 64px;
+  width: 64px;
+  border-radius: 32px;
+  transition: height 300ms;
+  transition-timing-function: ease;
+  position: absolute;
+  right: 50px;
+  bottom: 50px;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.fab.activated {
+  height: auto;
+  min-height: 23rem;
+}
+
+.fab.activated .mainop {
+  transform: rotate(180deg);
+}
+
+.mainop {
+  margin: auto;
+  width: 64px;
+  height: 64px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transition: transform 300ms;
+  background-color: #f44336;
+  border-radius: 32px;
+  z-index: 6;
+}
+
+.mainopShadow {
+  width: 64px;
+  height: 64px;
+  border-radius: 32px;
+  position: absolute;
+  right: 50px;
+  bottom: 50px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.mainop i {
+  font-size: 4rem;
+  color: #fff;
+  line-height: 64px;
+}
+
+.minifab {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  z-index: 5;
+  float: left;
+  margin-bottom: 8px;
+  margin-left: 8px;
+  margin-right: 8px;
+  background-color: blue;
+  transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  line-height: 48px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.minifab:hover {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.minifabIcon {
+  height: 24px;
+  width: 24px;
+  margin-top: 12px;
+}
+
 
 @media screen and (max-width: 768px) {
   .redsquare-page-header-title {

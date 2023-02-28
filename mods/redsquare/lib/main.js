@@ -179,6 +179,13 @@ try {
       }
       scrollTop = scrollableElement.scrollTop;
     });
+
+
+
+    document.getElementById('fab').addEventListener('click', (e) => { 
+      alert("clicked");
+    });
+
   }
 
 }
