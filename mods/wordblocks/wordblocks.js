@@ -15,7 +15,7 @@ class Wordblocks extends GameTemplate {
 
     this.name = "Wordblocks";
     this.description = `A crossword puzzle game, spell out words on the board to earn points.`;
-    this.categories = "Games Boardgame Classic Wordgame";
+    this.categories = "Games Boardgame Classic";
     //
     // Game Class VARS
     //

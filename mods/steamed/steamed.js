@@ -27,7 +27,7 @@ class Steamed extends GameTemplate {
 
     this.slug   = this.name.toLowerCase();
     this.card_img_dir = `/${this.slug}/img/cards/`;
-    this.categories 	 = "Games Boardgame Cardgame";
+    this.categories 	 = "Games Cardgame Tactical";
     this.factory  = this.returnFactoryRules();
 
   }

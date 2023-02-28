@@ -1914,7 +1914,7 @@ console.log("IDENTIFIER: " + identifier);
           this.app.options.theme[mod_obj.slug] = theme;
           this.app.storage.saveOptions();
       }
-      console.log(this.app.options);
+      console.debug(this.app.options);
     }
   }
 

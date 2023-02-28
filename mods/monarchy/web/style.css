@@ -18,10 +18,6 @@ body {
   display: none;
 }
 
-.animated_elem{
-  position: absolute;
-  z-index: 100;
-}
 
 img.animated_elem{
   left: 0;

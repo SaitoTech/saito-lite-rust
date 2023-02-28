@@ -15,7 +15,7 @@ class InviteManager {
     	// For filtering which games get displayed
 		// We may want to only display one type of game invite, so overwrite this before render()
 		this.list = "all";
-		this.lists = ["mine","open"];
+		this.lists = ["mine","open","active"];
 		
 
 		this.loader_overlay = new SaitoOverlay(app, mod, false, true);
@@ -62,9 +62,10 @@ class InviteManager {
 				if (this.mod.games[list].length > 0) {
 					if (list === "mine") {
 						this.app.browser.addElementToSelector(`<h5>My Games</h5>`, ".invite-manager");
-					}
-					if (list === "open") {
+					}else if (list == "open"){
 						this.app.browser.addElementToSelector(`<h5>Open Invites</h5>`, ".invite-manager");
+					}else{
+						this.app.browser.addElementToSelector(`<h5>${list.charAt(0).toUpperCase() + list.slice(1)} Games</h5>`, ".invite-manager");
 					}
 				}
 

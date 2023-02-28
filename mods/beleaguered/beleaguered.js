@@ -16,7 +16,7 @@ class Beleaguered extends GameTemplate {
     this.gamename = "Beleaguered Castle";
     this.slug = "beleaguered";
     this.description = 'Stack all cards by suit from aces to kings to win this game';
-    this.categories = "Games Cardgame one-player";
+    this.categories = "Games Cardgame One-player";
 
     this.maxPlayers = 1;
     this.minPlayers = 1;
@@ -602,14 +602,6 @@ class Beleaguered extends GameTemplate {
     if (card[0] === "E") //empty slot
       return 0;
     return card.substring(1);
-  }
-
-  quitGame(game_id = null, reason = "forfeit") {
-    console.log("Mark game as closed");
-    this.loadGame(game_id);
-    this.game.over = 2;
-    this.saveGame(game_id);
-    this.app.connection.emit("arcade-remove-game", game_id);
   }
 
   receiveGameoverRequest(blk, tx, conf, app) {

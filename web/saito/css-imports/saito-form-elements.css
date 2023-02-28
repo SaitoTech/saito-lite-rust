@@ -73,6 +73,7 @@ text and password inputs
 -----------------------------------------------------------------*/
 
 input[type="text"],
+input[type="number"],
 input[type="password"],
 input[type="date"],
 input[type="datetime-local"] {
@@ -280,5 +281,5 @@ input[type="range"]:focus::-ms-fill-upper {
 input[type="text"],
 input[type="password"],
 select {
-  width: 100%;
+  width: 99%;
 }

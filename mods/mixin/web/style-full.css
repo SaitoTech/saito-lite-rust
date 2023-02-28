@@ -128,7 +128,7 @@
     color: #333;
   }
 
-  .email-appspace-withdraw-overlay {
+  .saito-withdraw-overlay {
     width: 38vw;
     padding: 2rem;
     background-image: linear-gradient(to bottom right, #EA4843, #f78754);
@@ -212,7 +212,7 @@
   .add-input-box {
   }
 
-  .withdraw_submit {
+  .withdraw-submit {
     cursor: pointer;
     background-color: #fff;
     color: var(--saito-primary);

@@ -14,6 +14,12 @@ body {
   top: 40px;
 }
 
+.status-message{
+  min-height: 60px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 .gameboard{
   /* Default fill the background with image */
   position: absolute;
@@ -23,6 +29,13 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+}
+
+.purchase_zone{
+  position: absolute;
+  right: 40px;
+  top: 20px;
+  width: 120px;
 }
 
 .jaipur_board{
@@ -80,6 +93,11 @@ body {
   white-space: nowrap;
 }
 
+.bonus_tokens .tip{
+  width: 70px;
+  height: 70px;
+}
+
 .token{
   width: 70px;
   height: 70px;
@@ -90,6 +108,10 @@ body {
   text-shadow: 1px 1px black;
   color: limegreen;
   line-height: 166%;
+}
+
+.tip .token{
+  position: absolute;
 }
 
 .token.empty{
@@ -423,7 +445,7 @@ body {
     min-width: 155px;
     min-height: 155px;
   }
-  .token{
+  .bonus_tokens .tip, .token{
     width: max(50px, 6.3vw);
     height: max(50px, 6.3vw);
   }

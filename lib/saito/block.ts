@@ -716,7 +716,7 @@ class Block {
 
       cv.fee_transaction = transaction;
     } else {
-      console.log("no GTs in block");
+      console.debug("no GTs in block");
     }
 
     //
