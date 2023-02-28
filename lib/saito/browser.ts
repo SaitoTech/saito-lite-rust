@@ -306,6 +306,25 @@ class Browser {
   }
 
 
+  extractIdentifiers(text = "") {
+    let identifiers = [];
+
+    let w = text.split(/(\s+)/);
+
+    for (let i = 0; i < w.length; i++) {
+      if (w[i].length > 0) {
+        if (w[i][0] === "@") {
+          if (w.length > 1) {
+            let cleaner = w[i].substring(1);
+	    identifiers.push(cleaner);
+          }
+        }
+      }
+    }
+
+    return identifiers;
+
+  }
 
 
   extractKeys(text = "") {
