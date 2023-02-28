@@ -1,7 +1,4 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
-// This header was deprecated, use the new one in lib/saito/ui
-// const Header = require('../../lib/ui/header/header');
-const AddContact = require('./lib/add-contact');
 
 const HeaderDropdownTemplate = (dropdownmods) => {
   html = dropdownmods.map(mod => {
@@ -29,6 +26,7 @@ class QRScanner extends ModTemplate {
     this.canvas_context = null;
     this.isStreamInit = false;
 
+    this.styles = ['/qrscanner/style.css'];
     this.scanner_callback = null;
 
     this.description = "Helper module with QR code scanning functionality."
@@ -64,7 +62,7 @@ class QRScanner extends ModTemplate {
 
     let scanner_self = this;
 
-/*** moved to wallet bar ***
+    /*** moved to wallet bar ***
     if (type === 'saito-header') {
       return [
         {
@@ -77,15 +75,13 @@ class QRScanner extends ModTemplate {
         }
       ];
     }
-***/
+    ***/
     return null;
   }
 
   initialize(app) {
     super.initialize(app);
-  }
-
-  initializeHTML(app) {
+    if (app.BROWSER == 1) { this.attachStyleSheets(); }
   }
 
   attachEvents(app) {
@@ -276,8 +272,6 @@ class QRScanner extends ModTemplate {
   //
   handleDecodedMessage(msg) {
 
-console.log("HANDLE DECODED MESSAGE");
-
     if (this.scanner_callback != null) {
       this.decoder.terminate();
       this.scanner_callback(msg);
@@ -295,10 +289,6 @@ console.log("HANDLE DECODED MESSAGE");
       // alert(`Initiating Key Exchange with ${msg}`);
 
       this.decoder.terminate();
-
-      // This header was deprecated
-      // AddContact.render(this.app, {publickey: msg, header: Header});
-      // AddContact.attachEvents(this.app, {publickey: msg, header: Header});
 
     } else {
       this.sendEvent('qrcode', msg);
