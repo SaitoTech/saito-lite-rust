@@ -284,6 +284,7 @@ class Registry extends ModTemplate {
       }
     }
 
+/**** part of profile now
     if (type === 'saito-header') {
       let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
       let has_registered_username = false;
@@ -302,7 +303,7 @@ class Registry extends ModTemplate {
         return m;
       }
     }
-
+****/
     return null;
   }
 

@@ -64,6 +64,7 @@ class QRScanner extends ModTemplate {
 
     let scanner_self = this;
 
+/*** moved to wallet bar ***
     if (type === 'saito-header') {
       return [
         {
@@ -76,6 +77,7 @@ class QRScanner extends ModTemplate {
         }
       ];
     }
+***/
     return null;
   }
 

@@ -145,14 +145,34 @@ class RedSquare extends ModTemplate {
       }
     }
     if (type === 'saito-header') {
-      return [{
+      let x = [];
+      x.push({
         text: "RedSquare",
         icon: "fa-solid fa-square",
-	rank: 20 ,
+  	rank: 20 ,
         callback: function (app, id) {
           window.location = "/redsquare";
         }
-      }]
+      });
+      if (this.app.browser.isMobileBrowser()) {
+	x.push({
+          text: "Notifications",
+          icon: "fas fa-bell",
+  	  rank: 23 ,
+          callback: function (app, id) {
+            window.location = "/redsquare#notifications";
+          }
+        });
+	x.push({
+          text: "Profile",
+          icon: "fas fa-user",
+  	  rank: 26 ,
+          callback: function (app, id) {
+            window.location = "/redsquare#profile";
+          }
+        });
+      }
+      return x;
     }
 
     return null;
