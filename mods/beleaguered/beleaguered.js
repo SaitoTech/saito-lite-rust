@@ -604,14 +604,6 @@ class Beleaguered extends GameTemplate {
     return card.substring(1);
   }
 
-  quitGame(game_id = null, reason = "forfeit") {
-    console.log("Mark game as closed");
-    this.loadGame(game_id);
-    this.game.over = 2;
-    this.saveGame(game_id);
-    this.app.connection.emit("arcade-remove-game", game_id);
-  }
-
   receiveGameoverRequest(blk, tx, conf, app) {
     console.log("The game never ends in Beleaguered");
     return;

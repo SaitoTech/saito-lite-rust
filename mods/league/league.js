@@ -26,7 +26,6 @@ class League extends ModTemplate {
     this.styles = ['/league/style.css'];
 
     this.leagues = [];
-    this.league_idx = -1; // if a league is active, this will be idx
 
     //
     // UI components
@@ -35,7 +34,7 @@ class League extends ModTemplate {
     this.header = null;
 
     this.icon_fa = "fas fa-user-friends";
-    this.debug = true;
+    this.debug = false;
   }
 
 
@@ -63,7 +62,7 @@ class League extends ModTemplate {
     this.app.modules.getRespondTos("default-league").forEach((modResponse) => {
        this.addLeague({
         	id     			: 	  app.crypto.hash(modResponse.modname) ,	// id
-    	   	game   			: 	  modResponse.modname , 				// game - name of game mod
+    	   	game   			: 	  modResponse.module , 				// game - name of game mod
     	   	name   			: 	  modResponse.name , 				// name - name of league
     	   	admin  			: 	  "" ,					// admin - publickey (if exists)
       		status 			: 	  "public" ,				// status - public or private
@@ -87,8 +86,6 @@ class League extends ModTemplate {
         superArray.push([l.admin, gm.categories, l]);
       });
 
-      console.log(JSON.parse(JSON.stringify(superArray)));
-
       superArray.sort((a,b) => {
         //Push community leagues to the bottom
         if (a[0] && !b[0]){ return 1;}
@@ -101,8 +98,6 @@ class League extends ModTemplate {
         return 0;
       });
 
-      console.log(JSON.parse(JSON.stringify(superArray)));
-      
       this.leagues = [];
       for (let i = 0; i < superArray.length; i++){
         this.leagues.push(superArray[i][2]);
@@ -736,10 +731,11 @@ class League extends ModTemplate {
 
   async receiveAcceptTransaction(blk, tx, conf, app){
 
-    
     let txmsg = tx.returnMessage();
 
     if (this.debug){console.log(`League processing game start of ${txmsg.game}!`);}
+
+    if (this.app.BROWSER){ return; }
 
     let sql = `SELECT * FROM leagues WHERE game = ?`;
     const relevantLeagues = await this.app.storage.queryDatabase(sql, [txmsg.game], "league");

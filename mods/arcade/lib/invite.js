@@ -56,6 +56,7 @@ class Invite {
       if (game_mod) {
         this.invite_data.game_mod = game_mod;
         this.invite_data.game_slug = game_mod.returnSlug();  
+        this.invite_data.game_name = game_mod.returnName();  
       } else {
         this.invite_data.game_slug = this.invite_data.game_name.toLowerCase();
       }
