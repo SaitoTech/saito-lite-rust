@@ -13,10 +13,7 @@ const StunxGameMenu = require("./lib/game-menu/main");
 // const StunxInvite = require("./lib/invite/main");
 const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
-
-const adapter = require('webrtc-adapter')
-
-
+const adapter = require('webrtc-adapter');
 
 
 
@@ -400,6 +397,8 @@ class Stun extends ModTemplate {
                     };
 
                     pc.addEventListener('connectionstatechange', e => {
+                        console.log(pc.connectonState, e);
+                        console.log(pc.currentLocalDescription, this.peer_connections[publicKey].currentLocalDescription,  'current local description')
                        
                         if(pc.currentLocalDescription !== this.peer_connections[publicKey].currentLocalDescription) return;
                         
@@ -564,8 +563,6 @@ class Stun extends ModTemplate {
 
 
                 pc.addEventListener('connectionstatechange', () => {
-
-
                     console.log('')
                     if(pc.currentLocalDescription != this.peer_connections[offer_creator].currentLocalDescription) return;
                     try {

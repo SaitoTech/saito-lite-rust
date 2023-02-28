@@ -89,14 +89,20 @@ class VideoBox {
             // makeDraggable(id_to_move, id_to_drag = "", mycallback = null
         }
         const videoBox = document.querySelector(`#stream${this.stream_id}`);
-        console.log('rendering placeholder')
-        videoBox.insertAdjacentHTML('beforeend', `<div id="connection-message"> <p> ${placeholder_info} </p> <span class="lds-dual-ring"> </span></div> `);
+        console.log('rendering placeholder');
+        if(videoBox.querySelector('#connection-message')){
+            videoBox.querySelector('#connection-message').innerHTML =  `<p>${placeholder_info}</p> <span class="lds-dual-ring"> </span> `
+        }else {
+            videoBox.insertAdjacentHTML('beforeend', `<div id="connection-message"> <p> ${placeholder_info} </p> <span class="lds-dual-ring"> </span></div> `);
+        }
+        
     }
 
 
 
     handleConnectionStateChange(connectionState) {
-        console.log('');
+        // console.log('');
+        // const videoBox = document.querySelector(`#stream${this.stream_id}`);
         let video_box = document.querySelector(`#stream${this.stream_id}`);
         console.log('video box handle connection state ', video_box, this);
         let connection_message = document.querySelector('#connection-message');
@@ -106,11 +112,10 @@ class VideoBox {
                 document.querySelector('#connection-message').innerHTML = `<p>Starting ${this.call_type.toUpperCase()} Chat </p> <span class='lds-dual-ring'>`
                 break;
             case "connected":
-                console.log('connected i got here')
                 if (this.stream) {
-                    if (document.querySelector('#connection-message')) {
-                        document.querySelectorAll('#connection-message').forEach(item => {
-                            item.parentElement.removeChild(document.querySelector('#connection-message'));
+                    if (video_box.querySelector('#connection-message')) {
+                        video_box.querySelectorAll('#connection-message').forEach(item => {
+                            item.parentElement.removeChild(video_box.querySelector('#connection-message'));
                         })
                     }
                     this.renderStream({ muted: false });
@@ -118,37 +123,35 @@ class VideoBox {
                 break;
             case "disconnected":
                 console.log(`#stream${this.stream_id}`, "stream id")
-                let videoBox =  document.querySelector(`#stream${this.stream_id}`)
                 this.stream = null
-                videoBox.firstElementChild.srcObject = this.stream
+                video_box.firstElementChild.srcObject = this.stream
                 // document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                 siteMessage("User Disconnected", 5000);
                 break;
             case "failed":
                 if (document.querySelector(`#stream${this.stream_id}`)) {
                     console.log(`#stream${this.stream_id}`, "stream id")
-                    let videoBox =  document.querySelector(`#stream${this.stream_id}`)
                     this.stream = null
-                    videoBox.firstElementChild.srcObject = this.stream
+                    video_box.firstElementChild.srcObject = this.stream
                     // document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
                     siteMessage("Connection failed", 5000);
                 }
                 break;
             case "ten_seconds":
-                if (document.querySelector('#connection-message')) {
-                    document.querySelector('#connection-message').innerHTML = `<p>Negotiating Peer Connection</p> <span class='lds-dual-ring'>`
+                if (video_box.querySelector('#connection-message')) {
+                    video_box.querySelector('#connection-message').innerHTML = `<p>Negotiating Peer Connection</p> <span class='lds-dual-ring'>`
                 }
 
                 break
             case "twenty_seconds":
-                if (document.querySelector('#connection-message')) {
-                    document.querySelector('#connection-message').innerHTML = `<p>Trying Alternative Route</p> <span class='lds-dual-ring'>`
+                if (video_box.querySelector('#connection-message')) {
+                    video_box.querySelector('#connection-message').innerHTML = `<p>Trying Alternative Route</p> <span class='lds-dual-ring'>`
                 }
 
                 break
             case "two_minutes":
-                if (document.querySelector('#connection-message')) {
-                    document.querySelector('#connection-message').innerHTML = `<p>Retrying Connection</p> <span class='lds-dual-ring'>`
+                if (video_box.querySelector('#connection-message')) {
+                    video_box.querySelector('#connection-message').innerHTML = `<p>Retrying Connection</p> <span class='lds-dual-ring'>`
                 }
                 break
 
