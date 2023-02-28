@@ -2732,6 +2732,7 @@ Saito Table
   position: relative;
   font-size: 1.4rem;
   white-space: nowrap;
+  margin: 0 0 0 4.5rem;
 }
 
 .tweet-notice .saito-address {
