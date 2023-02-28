@@ -133,7 +133,9 @@ export default class Wallet {
   }
 
   addTransactionToPending(tx: Transaction) {
-    const txjson = tx.serialize_to_web(this.app);
+console.log("1. TXJSON: " + JSON.stringify(tx.transaction));
+    let txjson = tx.serialize_to_web(this.app);
+console.log("2. TXJSON: " + JSON.stringify(tx.transaction));
     if (txjson.length > 100000) {
       return;
     }
@@ -595,7 +597,7 @@ console.log("---------------------");
           for (let i = 0; i < this.wallet.pending.length; i++) {
             let ptx = new Transaction();
 	    ptx.deserialize_from_web(this.app, this.wallet.pending[i]);
-            if (this.wallet.pending[i].indexOf(tx.transaction.sig) > 0) {
+            if (ptx.transaction.sig === tx.transaction.sig) {
               this.wallet.pending.splice(i, 1);
               i--;
               removed_pending_slips = 1;
