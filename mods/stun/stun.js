@@ -14,7 +14,7 @@ const StunxGameMenu = require("./lib/game-menu/main");
 const ChatInvitationLink = require("./lib/overlays/chat-invitation-link");
 const Relay = require("../relay/relay");
 
-const adapter = require('webrtc-adapter')
+const adapter = require('webrtc-adapter');
 
 
 
