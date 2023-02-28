@@ -17,7 +17,8 @@
     "test": "jest",
     "analyze": " --config ./webpack/old/webpack.analyze.js",
     "jsdoc": "jsdoc --destination saitolitedocs lib/templates/abstractcryptomodule.js lib/templates/substratebasedcrypto.js lib/saito/wallet.js README.md",
-    "pretty": "npx prettier --write ."
+    "pretty": "npx prettier --write .",
+    "go": "npm run compile dev && npm start"
   },
   "author": "Team Saito",
   "license": "SAITO",

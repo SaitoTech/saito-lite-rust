@@ -2358,7 +2358,7 @@ This alows for a header with a header with title to be added without extra CSS
   }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 900px) {
   .saito-main {
     min-width: 0;
     width: 100vw !important;
@@ -3128,7 +3128,7 @@ font imports
   --saito-font: "visuelt-light";
 
   --saito-header-height: 5em;
-  --saito-width: 1500px;
+  --saito-width: 1250px;
 
   --saito-left-sidebar-width: 26rem;
   --saito-main-appspace-width: 70rem;
