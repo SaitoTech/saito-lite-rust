@@ -130,6 +130,15 @@ class RedSquare extends ModTemplate {
 
   }
 
+   
+    returnServices() {
+        let services = [];
+        services.push({ service: "redsquare", name: "RedSquare Tweet Archive" });
+        return services;
+    }
+
+
+
   /////////////////////////////////
   // inter-module communications //
   /////////////////////////////////
@@ -235,16 +244,43 @@ class RedSquare extends ModTemplate {
     if (!this.browser_active) { return; }
 
     //
+    // redsquare -- fetch community tweets
+    //
+    if (service.service === "redsquare") {
+      if (this.app.browser.returnURLParameter('tweet_id')) { return; }
+      if (this.app.browser.returnURLParameter('user_id')) { return; }
+      let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
+      this.loadTweetsFromPeer(peer, sql, (txs) => {
+console.log("LOAD REDSQUARE TWEETS");
+        let hash = this.app.browser.returnHashAndParameters();
+        if (!hash.hash) {
+          this.app.connection.emit("redsquare-home-render-request");
+          this.app.browser.addIdentifiersToDom();
+          this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
+        }
+      }, true);
+    }
+
+
+
+    //
     // archive -- load our own tweets
     //
     if (service.service === "archive") {
-      this.loadNotificationsFromPeer(peer, 1, function(res) {
-        let hash = app.browser.returnHashAndParameters();
-        if (hash.hash === "notifications") {
-          app.connection.emit("redsquare-notifications-render-request");
-          //app.browser.addIdentifiersToDom();
-	}
-      });
+      //
+      // minor delay so community content loads first
+      //
+      setTimeout(() => {
+        this.loadNotificationsFromPeer(peer, 1, function(res) {
+console.log("LOAD REDSQUARE NOTIFICATIONS");
+          let hash = app.browser.returnHashAndParameters();
+          if (hash.hash === "notifications") {
+            app.connection.emit("redsquare-notifications-render-request");
+            app.browser.addIdentifiersToDom();
+	  }
+        });
+      }, 1500);
+
     }
 
     //
@@ -305,19 +341,6 @@ class RedSquare extends ModTemplate {
         if (user_id != "" || tweet_id != "") { return; }
       }
     }
-
-    //
-    // check peer for any tweets they want to send us
-    //
-    let sql = `SELECT * FROM tweets WHERE flagged IS NOT 1 AND moderated IS NOT 1 AND tx_size < 10000000 ORDER BY updated_at DESC LIMIT 0,'${this.results_per_page}'`;
-    this.loadTweetsFromPeer(peer, sql, (txs) => {
-      let hash = this.app.browser.returnHashAndParameters();
-      if (!hash.hash) {
-        this.app.connection.emit("redsquare-home-render-request");
-        this.app.browser.addIdentifiersToDom();
-        this.app.connection.emit("registry-fetch-identifiers-and-update-dom", {});
-      }
-    }, true);
 
   }
 
@@ -1055,6 +1078,8 @@ class RedSquare extends ModTemplate {
 
   async receiveTweetTransaction(blk, tx, conf, app) {
 
+try {
+
     let tweet = new Tweet(app, this, "", tx);
     let txmsg = tx.returnMessage();
  
@@ -1182,6 +1207,7 @@ class RedSquare extends ModTemplate {
 
     let has_images = 0;
     if (typeof (tweet.images) != "undefined") { has_images = 1; }
+    let txjson = tx.serialize_to_web(this.app);
     let tx_size = txjson.length;
 
     let params = {
@@ -1236,6 +1262,10 @@ class RedSquare extends ModTemplate {
     this.sqlcache = [];
 
     return;
+
+} catch (err) {
+  console.log("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
+}
 
   }
 
@@ -1479,6 +1509,11 @@ class RedSquare extends ModTemplate {
     expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
   }
 
+
+
+//  returnFirstNonVisibleTweet() {
+//    
+//  }
 }
 
 module.exports = RedSquare;

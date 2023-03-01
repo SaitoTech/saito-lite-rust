@@ -516,7 +516,6 @@ console.log(res.data);
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
 	  let d = res.data.data;
-console.log("RETURNED DATA: " + JSON.stringify(d));
 	  for (let i = 0; i < this.mods.length; i++) {
 	    if (this.mods[i].asset_id === asset_id) {
 	      let initial_balance = this.mods[i].balance;
@@ -585,7 +584,6 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
     try {
       this.request(user_id, session_id, privatekey, method, uri, body).then(
         (res) => {
-          console.log("RETURNED PIN DATA: " + JSON.stringify(res.data));
 	  mixin_self.mixin.pin = new_pin;
 	  mixin_self.save();
 	  if (callback != null) { callback(res.data); }
@@ -615,7 +613,6 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
     mixin_self.mixin.pin_token = d.data.pin_token;
     mixin_self.mixin.pin_token_base64 = d.data.pin_token_base64;
 
-    console.log("RETURNED DATA: " + JSON.stringify(d.data));
     mixin_self.save();
 
     //
