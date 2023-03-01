@@ -69,9 +69,33 @@ class Recovery extends ModTemplate {
         let decryption_secret = this.returnDecryptionSecret(obj.email, obj.pass);
         let retrieval_hash    = this.returnRetrievalHash(obj.email, obj.pass);
 
-        let newtx = this.createBackupTransaction(decryption_secret, retrieval_hash);
-        this.app.network.propagateTransaction(newtx);
-        if (this.recover_overlay.success_callback) { this.recover_overlay.success_callback(true); }
+        let newtx = this.createRecoveryTransaction(retrieval_hash);
+	let peers = this.returnPeersWithService("recovery");
+
+	if (peers.length > 0) {
+          this.app.network.sendTransactionWithCallback(newtx, function(res) {
+
+              let tx = JSON.parse(res.rows[0].tx);
+              let newtx2 = new saito.default.transaction(tx);
+              let txmsg = newtx2.returnMessage();
+
+              let encrypted_wallet = txmsg.wallet;
+              let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
+
+	      this.app.wallet.wallet = JSON.parse(decrypted_wallet);
+	      this.app.wallet.saveWallet();
+	      this.overlay.hide();
+
+              if (this.recover_overlay.success_callback) { this.recover_overlay.success_callback(true); }
+
+	  }, peers[0]);
+        } else {
+	  if (document.querySelector(".saito-overlay-form-text")) {
+	    document.querySelector(".saito-overlay-form-text").innerHTML = "<center>Unable to download encrypted wallet from network...</center>";
+	  }
+          if (this.recover_overlay.failure_callback) { this.recover_overlay.failure_callback(true); }
+	}
+
 	return;
       }
 
