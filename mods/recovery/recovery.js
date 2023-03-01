@@ -73,7 +73,7 @@ console.log("called to render recovery request 3");
         let decryption_secret = this.returnDecryptionSecret(obj.email, obj.pass);
         let retrieval_hash    = this.returnRetrievalHash(obj.email, obj.pass);
 
-        let newtx = this.createRecoveryTransaction(retrieval_hash);
+        let newtx = this.createRecoverTransaction(retrieval_hash);
 	let peers = this.returnPeersWithService("recovery");
 
 console.log("peers supporting? " + peers.length);
