@@ -76,6 +76,19 @@ class VideoChatManager {
             }
 
         })
+
+        this.app.connection.on('stun-stream-mute-event', (kind, public_key)=> {
+            if(kind == "audio"){
+                if(this.video_boxes[public_key]){
+                    this.video_boxes[public_key].updateConnectionMessage("Muted Audio");
+                }  
+            }
+            if(kind== 'video'){
+                if(this.video_boxes[public_key]){
+                    this.video_boxes[public_key].updateConnectionMessage("Muted Video");
+                }  
+            }
+        })
     }
 
 
@@ -296,13 +309,17 @@ class VideoChatManager {
         console.log('toggling audio');
         if (this.audioEnabled === true) {
             this.localStream.getAudioTracks()[0].enabled = false;
+            for(let i in this.mod.peer_connections){
+                this.mod.peer_connections[i].dc.send(JSON.stringify({event:"mute", kind:'audio'}))
+            }
             this.audioEnabled = false
             document.querySelector('.audio_control').classList.remove('fa-microphone')
             document.querySelector('.audio_control').classList.add('fa-microphone-slash')
         } else {
-
             this.localStream.getAudioTracks()[0].enabled = true;
-
+            for(let i in this.mod.peer_connections){
+                this.mod.peer_connections[i].dc.send(JSON.stringify({event:"unmute", kind:'audio'}))
+            }
             this.audioEnabled = true;
             document.querySelector('.audio_control').classList.remove('fa-microphone-slash')
             document.querySelector('.audio_control').classList.add('fa-microphone')
@@ -313,14 +330,32 @@ class VideoChatManager {
     toggleVideo() {
         console.log('toggling video');
         if (this.videoEnabled === true) {
+            console.log(this.localStream.getVideoTracks()[0], 'video track');
             this.localStream.getVideoTracks()[0].enabled = false;
+            // this.mod.peer_connections[].dc.send({event:"mute", kind:'video'});
+            try {
+                for(let i in this.mod.peer_connections){
+                    this.mod.peer_connections[i].dc.send(JSON.stringify({event:"mute", kind:'video'}))
+                }
+            } catch (error) {
+                
+            }
+           
             this.videoEnabled = false
             document.querySelector('.video_control').classList.remove('fa-video')
             document.querySelector('.video_control').classList.add('fa-video-slash')
         } else {
 
             this.localStream.getVideoTracks()[0].enabled = true;
-            this.videoEnabled = true;
+            try {
+                for(let i in this.mod.peer_connections){
+                    this.mod.peer_connections[i].dc.send(JSON.stringify({event:"unmute", kind:'video'}))
+                }   
+            } catch (error) {
+                
+            }
+            
+            this.videoEnabled = true;    
             document.querySelector('.video_control').classList.remove('fa-video-slash')
             document.querySelector('.video_control').classList.add('fa-video')
         }
