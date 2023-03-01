@@ -38,7 +38,7 @@ class Recovery extends ModTemplate {
 	//
 	// save email
 	//
-	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : email });
+	this.app.keychain.addKey(this.app.wallet.returnPublicKey(), { email : obj.email });
 
 	//
 	// and send transaction

@@ -145,14 +145,34 @@ class RedSquare extends ModTemplate {
       }
     }
     if (type === 'saito-header') {
-      return [{
+      let x = [];
+      x.push({
         text: "RedSquare",
         icon: "fa-solid fa-square",
-	rank: 20 ,
+  	rank: 20 ,
         callback: function (app, id) {
           window.location = "/redsquare";
         }
-      }]
+      });
+      if (this.app.browser.isMobileBrowser()) {
+	x.push({
+          text: "Notifications",
+          icon: "fas fa-bell",
+  	  rank: 23 ,
+          callback: function (app, id) {
+            window.location = "/redsquare#notifications";
+          }
+        });
+	x.push({
+          text: "Profile",
+          icon: "fas fa-user",
+  	  rank: 26 ,
+          callback: function (app, id) {
+            window.location = "/redsquare#profile";
+          }
+        });
+      }
+      return x;
     }
 
     return null;
@@ -1253,18 +1273,16 @@ class RedSquare extends ModTemplate {
       const filename = path.join(__dirname, 'web/tweets.js');
       let fs = this.app.storage.returnFileSystem();
       if (fs != null) {
-        if (fs.existsSync(filename)) {
-          const fd = fs.openSync(filename, "w");
-          let html = `
-            var tweets = [];
-          `;
-          for (let i = 0; i < hex_entries.length; i++) {
-            html += `  tweets.push(\`${hex_entries[i]}\`);   `; 
-          }
-          fs.writeSync(fd, html);
-          fs.fsyncSync(fd);
-          fs.closeSync(fd);
+        const fd = fs.openSync(filename, "w");
+        let html = `
+          var tweets = [];
+        `;
+        for (let i = 0; i < hex_entries.length; i++) {
+          html += `  tweets.push(\`${hex_entries[i]}\`);   `; 
         }
+        fs.writeSync(fd, html);
+        fs.fsyncSync(fd);
+        fs.closeSync(fd);
       }
     } catch (err) {
       console.error("ERROR 285029: error saving block to disk ", err);

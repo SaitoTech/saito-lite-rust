@@ -287,6 +287,7 @@ li.slide[data-active-slide] {
   background: var(--saito-arcade-background);
   width: 60vw;
   max-width: 140rem;
+  min-width: 66rem;
   height: max-content;
   max-height: 90vh;
   padding: 2rem;
@@ -428,12 +429,17 @@ li.slide[data-active-slide] {
 @media screen and (max-width: 1000px) {
   .arcade-game-overlay {
     width: 90vw;
+    min-width: 60rem;
+  }
+  .arcade-game-controls .saito-button{
+    min-width: 18rem;
   }
 }
 
 @media screen and (max-width: 615px) {
   .arcade-game-overlay {
     width: 95vw;
+    min-width: unset;
   }
   .arcade-game-controls {
     display: flex;
@@ -856,9 +862,9 @@ li.slide[data-active-slide] {
   grid-template-columns: 0.25fr 1fr;
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1000px) {
   .arcade-wizard-overlay {
-    width: 95vw;
+    width: 90vw;
   }
   .game-wizard-advanced-box ul li {
     width: 15rem;

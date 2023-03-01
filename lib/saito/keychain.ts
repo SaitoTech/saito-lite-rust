@@ -84,8 +84,6 @@ class Keychain {
     //
     if (data.publickey === "") { return; }
 
-console.log("UPDATE: " + data.publickey + " with " + JSON.stringify(data));
-
     //
     // update existing entry
     //
@@ -196,7 +194,7 @@ console.log("UPDATE: " + data.publickey + " with " + JSON.stringify(data));
   hasSharedSecret(publickey: string) {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey === publickey || this.keys[x].identifier === publickey) {
-        if (this.keys[x].hasSharedSecret()) {
+        if (this.keys[x].aes_secret) {
           return true;
         }
       }
@@ -251,6 +249,7 @@ console.log("UPDATE: " + data.publickey + " with " + JSON.stringify(data));
       data = d;
     }
 
+
     //
     // if keys exist
     //
@@ -264,6 +263,16 @@ console.log("UPDATE: " + data.publickey + " with " + JSON.stringify(data));
       if (match == true) {
         return this.keys[x];
       }
+    }
+
+    //
+    // no match - maybe we have a module that has cached this information?
+    //
+    if (data.identifier && !data.publickey) {
+      this.app.modules.getRespondTos("saito-return-key").forEach((modResponse) => {
+	let key = modResponse.returnKey(data);
+	if (key) { return key; }
+      });
     }
 
     return null;

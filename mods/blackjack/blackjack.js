@@ -1325,7 +1325,10 @@ console.log("PLAYER STATE: " + JSON.stringify(this.game.state.player));
   processResignation(resigning_player, txmsg){
     super.processResignation(resigning_player, txmsg);
 
+    if (!txmsg.loser) { return; }
+
     let player = parseInt(txmsg.loser);
+
     if (player != this.game.state.dealer){ //Player, not dealer
       let wager = this.game.state.player[player-1].wager; 
       if (wager > 0 ){

@@ -81,7 +81,7 @@
   }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 900px) {
   .saito-main {
     min-width: 0;
     width: 100vw !important;

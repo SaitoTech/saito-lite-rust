@@ -57,11 +57,10 @@ class JoinGameOverlay {
       }
     }
     
-    if (document.getElementById("arcade-game-controls-cancel-game")){
-      document.getElementById("arcade-game-controls-cancel-game").onclick = (e) => {
-          this.mod.sendCloseTransaction(this.invite.game_id);
-          //this.mod.removeGame(this.invite.game_id);
+    if (document.getElementById("arcade-game-controls-close-game")){
+      document.getElementById("arcade-game-controls-close-game").onclick = (e) => {
           this.overlay.remove();
+          this.mod.sendQuitTransaction(this.invite.game_id);
       }
     }
 
@@ -76,24 +75,8 @@ class JoinGameOverlay {
     //
     if (document.getElementById("arcade-game-controls-forfeit-game")){
       document.getElementById("arcade-game-controls-forfeit-game").onclick = (e) => {
-          //this.mod.removeGame(this.invite.game_id);
           this.overlay.remove();
-
-          for (let i = 0; i < this.app.options?.games.length; i++) {
-            if (this.app.options.games[i].id == this.invite.game_id) { 
-              let gamemod = this.app.modules.returnModule(this.app.options.games[i].module);
-              if (gamemod) {
-                gamemod.quitGame(this.invite.game_id, "cancellation");
-                setTimeout(()=>{ 
-                  gamemod.removeGameFromOptions(this.invite.game_id);
-                  this.mod.sendCloseTransaction(this.invite.game_id); 
-                }, 3000);
-                return;
-              }
-            }
-          }
-
-          this.mod.sendCloseTransaction(this.invite.game_id); 
+          this.mod.sendQuitTransaction(this.invite.game_id, "forfeit"); 
       }
     }    
 

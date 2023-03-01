@@ -392,9 +392,9 @@
   grid-template-columns: 0.25fr 1fr;
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1000px) {
   .arcade-wizard-overlay {
-    width: 95vw;
+    width: 90vw;
   }
   .game-wizard-advanced-box ul li {
     width: 15rem;

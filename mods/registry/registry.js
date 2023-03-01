@@ -82,6 +82,78 @@ class Registry extends ModTemplate {
     return services;
   }
 
+  //
+  // fetching identifiers
+  //
+  fetchManyPublicKeys(identifiers = [], peer = null, mycallback = null) {
+
+    if (mycallback == null) { return; }
+
+    const found_keys = [];
+    const missing_keys = [];
+
+    identifiers.forEach((identifier) => {
+      let publickey = this.app.browser.returnPublicKeyByIdentifier(identifier);
+      if (publickey != "" && publickey != identifier) {
+        found_keys.push[publickey] = identifier;
+      } else {
+        missing_keys.push(identifier);
+      }
+    });
+
+    if (missing_keys.length == 0) {
+      mycallback(found_keys);
+      return;
+    }
+
+    const where_statement = `identifier in (${missing_keys.join(",")})`;
+    const sql = `select * from records where ${where_statement}`;
+
+    this.sendPeerDatabaseRequestWithFilter(
+
+      "Registry",
+
+      sql,
+
+      (res) => {
+        try {
+          let rows = [];
+          if (typeof res.rows != "undefined") {
+            if (!res.err) {
+              if (res.rows.length > 0) {
+                rows = res.rows.map((row) => {
+                  const { publickey, identifier, bid, bsh, lc } = row;
+                  if (!found_keys.includes(publickey)) {
+                    found_keys[publickey] = identifier;
+                  }
+                });
+              }
+            }
+          }
+          mycallback(found_keys);
+        } catch (err) {
+          console.log(err);
+        }
+      },
+
+      (p) => {
+	if (peer == null) {
+          if (peer.peer.services) {
+            for (let z = 0; z < peer.peer.services.length; z++) {
+              if (peer.peer.services[z].service === "registry") {
+                return 1;
+              }
+            }
+          }
+        } else {
+          if (p == peer) {
+	    return 1;
+	  }
+	}
+      }
+    );
+  }
+
 
 
   //
@@ -125,13 +197,6 @@ class Registry extends ModTemplate {
               if (res.rows.length > 0) {
                 rows = res.rows.map((row) => {
                   const { publickey, identifier, bid, bsh, lc } = row;
-                  this.app.keychain.addKey(publickey, {
-                    identifier: identifier,
-                    watched: false,
-                    block_id: bid,
-                    block_hash: bsh,
-                    lc: lc,
-                  });
                   if (!found_keys.includes(publickey)) {
                     found_keys[publickey] = identifier;
                   }
@@ -193,14 +258,7 @@ class Registry extends ModTemplate {
           const { publickey, identifier, bid, bsh, lc } = row;
       
           // keep track that we fetched this already
-          this.cached_keys[publickey] = 1;
-          this.addKey(publickey, {
-            identifier: identifier,
-            watched: false,
-            block_id: bid, 
-            block_hash: bsh,
-            lc: lc,
-          });
+          this.cached_keys[publickey] = identifier;
           if (!found_keys.includes(publickey)) {
             found_keys[publickey] = identifier;
           }
@@ -233,6 +291,35 @@ class Registry extends ModTemplate {
 
     let registry_self = this;
 
+    if (type == "saito-return-key") {
+      return {
+        returnKey : (data = null) => {
+  
+          // 
+          // data might be a publickey, permit flexibility
+          // in how this is called by pushing it into a
+          // suitable object for searching
+          //
+          if (typeof data === 'string') {
+            let d = { publickey: "" };
+            d.publickey = data;
+            data = d;
+          }
+
+          // 
+          // if keys exist
+          // 
+          for (let key in this.cached_keys) {
+	    if (key === data.publickey) { data.identifier = this.cached_keys[key]; return data; }
+	    if (key === data.identifier) { data.publickey = key; return data; }
+	  }
+
+	  return null;
+
+        }
+      }
+    }
+
     if (type == "do-registry-prompt") {
       return {
         doRegistryPrompt: async () => {
@@ -255,6 +342,7 @@ class Registry extends ModTemplate {
       }
     }
 
+/**** part of profile now
     if (type === 'saito-header') {
       let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
       let has_registered_username = false;
@@ -273,7 +361,7 @@ class Registry extends ModTemplate {
         return m;
       }
     }
-
+****/
     return null;
   }
 
@@ -421,8 +509,6 @@ console.log("WE ARE NOW LOCAL SERVER");
 
     if (conf == 0) {
 
-console.log("0-th confirmation in Registry...");
-
       if (!!txmsg && txmsg.module === "Registry") {
 
         //
@@ -482,15 +568,10 @@ console.log("0-th confirmation in Registry...");
       }
 
 
-console.log("2 0-th confirmation in Registry...");
       if (!!txmsg && txmsg.module == "Email") {
-console.log("3 0-th confirmation in Registry...");
         if (tx.transaction.from[0].add == registry_self.publickey) {
-console.log("4 0-th confirmation in Registry...");
           if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
-console.log("5 0-th confirmation in Registry...");
             if (tx.msg.identifier != undefined && tx.msg.signed_message != undefined && tx.msg.sig != undefined) {
-console.log("6 0-th confirmation in Registry...");
 
               //
               // am email? for us? from the DNS registrar?
@@ -500,14 +581,10 @@ console.log("6 0-th confirmation in Registry...");
               let sig = tx.msg.sig;
 
               try {
-console.log("7 0-th confirmation in Registry...");
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-console.log("8 0-th confirmation in Registry...");
                   registry_self.app.keychain.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
-console.log("9 0-th confirmation in Registry...");
 		  registry_self.app.connection.emit("update_identifier", (tx.transaction.to[0].add));
-console.log("10 0-th confirmation in Registry...");
-                }else{
+                } else {
                   console.debug("verification failed for sig : ", tx);
                 }
               } catch (err) {

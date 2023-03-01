@@ -50,10 +50,10 @@
     min-width: 300px;
     max-width: 90vw;
     padding: 2rem;
-    background-color: var(--saito-background-light);
+    background-color: var(--saito-background-color);
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 3rem;
 }
 
 .saito-overlay-form-header {
@@ -71,6 +71,10 @@
     text-transform: uppercase;
     white-space: nowrap;
     display: block;
+}
+
+.saito-overlay-form-input {
+    margin: 0 3px;
 }
 
 .saito-overlay-form-text {
@@ -129,6 +133,10 @@
    flex-grow: 1;
    align-items: center;
    gap: 1rem;
+}
+
+.saito-overlay-form textarea, .saito-overlay-form input {
+    border: 1px solid var(--saito-font-color-light);
 }
 
 @media screen and (max-width: 768px) {

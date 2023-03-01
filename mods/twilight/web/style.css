@@ -48,6 +48,10 @@
   border-radius: 0px;
 }
 
+.status-text-message {
+  background-color: whitesmoke;
+}
+
 .status-header {
   background-color: whitesmoke;
 }

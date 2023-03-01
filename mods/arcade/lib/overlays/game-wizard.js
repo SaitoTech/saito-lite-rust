@@ -23,14 +23,14 @@ class GameWizard {
 
       if (obj?.game) {
 
-        let game_mod = this.app.modules.returnModule(obj.game);
+        let game_mod = this.app.modules.returnModuleByName(obj.game);
 
         if (game_mod) {
           this.game_mod = game_mod;
           this.obj = obj;
           this.render();
         } else {
-          salert("Module not found: " + game_mod);
+          salert("Module not found: " + obj.game);
         }
 
       }
