@@ -133,9 +133,7 @@ export default class Wallet {
   }
 
   addTransactionToPending(tx: Transaction) {
-console.log("1. TXJSON: " + JSON.stringify(tx.transaction));
     let txjson = tx.serialize_to_web(this.app);
-console.log("2. TXJSON: " + JSON.stringify(tx.transaction));
     if (txjson.length > 100000) {
       return;
     }
@@ -341,6 +339,9 @@ console.log("---------------------");
   }
 
   async initialize() {
+
+console.log("initializing wallet... 1");
+
     //
     // add ghost crypto module so Saito interface available
     //
@@ -416,6 +417,8 @@ console.log("---------------------");
     }
     this.saitoCrypto = new SaitoCrypto(this.app);
 
+console.log("initializing wallet... 2");
+
     if (this.wallet.privatekey === "") {
       if (this.app.options.wallet != null) {
         /////////////
@@ -489,6 +492,9 @@ console.log("---------------------");
         this.wallet = Object.assign(this.wallet, this.app.options.wallet);
       }
     }
+
+console.log("initializing wallet... 3");
+
     ////////////////
     // new wallet //
     ////////////////

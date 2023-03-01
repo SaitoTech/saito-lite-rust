@@ -282,9 +282,6 @@ console.log("test a6");
     };
     let res = {};
     res.rows = await this.app.storage.queryDatabase(sql, params, "recovery");
-
-console.log("RETURNING ROWS: " + JSON.stringify(res.rows));
-
     mycallback(res);
 
   }
