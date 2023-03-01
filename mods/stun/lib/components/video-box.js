@@ -12,16 +12,16 @@ class VideoBox {
     placeholderRendered = false;
     stream_rendered = false;
 
-    constructor(app, mod, ui_type, call_type) {
+    constructor(app, mod, ui_type, call_type, central) {
         this.app = app;
         this.mod = mod;
         this.ui_type = ui_type
         this.call_type = call_type;
+        this.central = central;
 
         app.connection.on('mute', (kind, public_key) => {
-            if(public_key!== this.stream_id) return;
+            if(public_key !== this.stream_id) return;
             console.log('receiving event');
-
             if(kind === "video"){
                 let name = app.keychain.returnUsername(public_key);
                 if(name.length > 10){
@@ -30,10 +30,29 @@ class VideoBox {
                 this.updateVideoMuteStatus(name);
             }
         })
-        app.connection.on('unmute', (kind) => {
+        app.connection.on('unmute', (kind, public_key) => {
+            if(public_key !== this.stream_id) return;
             if(kind === "video"){
                 this.removeVideoMuteStatus();
             }
+        })
+
+        app.connection.on('disconnect', (kind, public_key) => {
+            if(public_key !== this.stream_id) return;
+            if(kind === "all"){
+                app.connection.emit('stun-disconnect');
+                siteMessage("Call ended", 5000);
+                return;
+            }else {
+                document.querySelector(`#stream${this.stream_id}`).parentElement.removeChild(document.querySelector(`#stream${this.stream_id}`));
+                mod.closeMediaConnections(public_key);
+                siteMessage("User Disconnected", 5000);
+                if(mod.central === true){
+                   mod.room.peers =  mod.room.peers.filter(key => public_key !== key);
+                }
+            }
+
+            
         })
     }
 
@@ -42,7 +61,6 @@ class VideoBox {
         this.containerClass = containerClass;
         this.stream = stream
         console.log(this);
-
         if (this.stream === null) {
             console.log('placeholder ', placeholder_info)
             this.renderPlaceholder(placeholder_info);
@@ -147,7 +165,7 @@ class VideoBox {
 
 
 
-    handleConnectionStateChange(connectionState) {
+    handleConnectionStateChange(peer, connectionState) {
         // console.log('');
         // const videoBox = document.querySelector(`#stream${this.stream_id}`);
         let video_box = document.querySelector(`#stream${this.stream_id}`);
@@ -170,6 +188,12 @@ class VideoBox {
                 }
                 break;
             case "disconnected":
+                if(this.central === peer){
+                    this.app.connection.emit('stun-disconnect');
+                    siteMessage("Call ended", 5000);
+                    return;
+                }
+
                 console.log(`#stream${this.stream_id}`, "stream id")
                 this.stream = null
                 this.stream_rendered = false;

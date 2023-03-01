@@ -430,7 +430,7 @@ class Stun extends ModTemplate {
 
                     pc.dc = data_channel;
                     pc.dc.onmessage = (event) => {
-                        // if(pc !== this.peer_connections[offer_creator]) return
+                        if(pc !== this.peer_connections[publicKey]) return
                         console.log("Received message:", event.data);
                         let data = JSON.parse(event.data);
                         this.app.connection.emit(data.event, data.kind, publicKey);
@@ -624,6 +624,7 @@ class Stun extends ModTemplate {
                         case "failed":
                             console.log("connection state ", pc.connectionState)
                             this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, offer.ui_type, offer.call_type, room_code);
+                            this.createMediaChannelConnectionWithPeers([publicKey]);
                             break;
                         default:
                             ""
@@ -639,6 +640,7 @@ class Stun extends ModTemplate {
                     let dataChannel = event.channel;
                     pc.dc = dataChannel;
                     dataChannel.onmessage = function (event) {
+                        if(pc !== stunx_mod.peer_connections[offer_creator]) return
                         let data = JSON.parse(event.data);
                         app.connection.emit(data.event, data.kind, offer_creator);
                         console.log("Received message:", event.data);

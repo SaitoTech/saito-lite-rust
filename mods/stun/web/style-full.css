@@ -486,6 +486,12 @@
   justify-content: center;
   z-index: 0;
 }
+
+.video-box-container-large > #connection-message > p {
+  color: var(--saito-white);
+  font-size: 2.8rem;
+}
+
 .video-box-container-large > #video-mute-message {
   color: var(--saito-white);
   width: 50%;
@@ -497,10 +503,11 @@
   z-index: 1;
 }
 
-.video-box-container-large > #connection-message > p {
+.video-box-container-large > #video-mute-message > p {
   color: var(--saito-white);
   font-size: 2.8rem;
 }
+
 
 .video-box-container-large canvas {
   position: absolute;
