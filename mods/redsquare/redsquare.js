@@ -585,14 +585,14 @@ console.log("LOAD REDSQUARE NOTIFICATIONS");
     }
   }
   loadNotificationsFromPeer(peer, increment = 1, post_load_callback = null) {
-    this.app.storage.loadTransactionsFromPeer("RedSquare", (50 * increment), peer, (txs) => {
+    this.app.storage.loadTransactionsFromPeer("RedSquare", (10 * increment), peer, (txs) => {
 
       if (!this.peers_for_notifications.includes(peer)) {
         this.peers_for_notifications.push(peer);
       }
       for (let i = 0; i < txs.length; i++) {
         txs[i].decryptMessage(this.app);
-        this.addTweet(txs[i]);
+        this.addTweet(txs[i], false, false);
       }
       if (post_load_callback != null) { post_load_callback(); }
     });
@@ -673,7 +673,7 @@ console.log("LOAD REDSQUARE NOTIFICATIONS");
   //
   // notifications are added through this function. 
   //
-  addTweet(tx, prepend = 0) {
+  addTweet(tx, prepend = false, render = true) {
 
     //
     // create the tweet
@@ -703,7 +703,7 @@ console.log("LOAD REDSQUARE NOTIFICATIONS");
       if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
 
         let insertion_index = 0;
-        if (prepend == 0) {
+        if (prepend == false) {
           for (let i = 0; i < this.notifications.length; i++) {
             if (this.notifications[i].updated_at > tweet.updated_at) {
               insertion_index++;
@@ -774,7 +774,7 @@ console.log("LOAD REDSQUARE NOTIFICATIONS");
         // check where we insert the tweet
         //
         let insertion_index = 0;
-        if (prepend == 0) {
+        if (prepend == false) {
           for (let i = 0; i < this.tweets.length; i++) {
             if (this.tweets[i].updated_at > tweet.updated_at) {
               insertion_index++;
@@ -836,7 +836,7 @@ console.log("LOAD REDSQUARE NOTIFICATIONS");
     }
 
     //
-    // this is a tweet, so update our 
+    // this is a tweet, so update our info
     //
     if (is_notification == 0) {
       if (tx.transaction.ts > this.tweets_newest_ts) {
@@ -847,7 +847,12 @@ console.log("LOAD REDSQUARE NOTIFICATIONS");
       }
     }
 
-    this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
+    //
+    // only render if asked
+    //
+    if (render == true) {
+      this.app.connection.emit("redsquare-tweet-added-render-request", (tweet));
+    }
 
   }
 
