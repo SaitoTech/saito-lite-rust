@@ -83,8 +83,16 @@ console.log("peers supporting? " + peers.length);
 
 console.log("we got info back!");
 	      if (!res) { console.log("empty response!"); return; }
-	      if (!res.rows) { console.log("no rows returned!"); return; }
-	      if (!res.rows[0].tx) { console.log("no transaction in row returned"); return; }
+	      if (!res.rows) { console.log("no rows returned!");
+                if (this.recover_overlay.failure_callback) { this.recover_overlay.failure_callback(true); }
+		return;
+	      }
+	      if (!res.rows[0].tx) { console.log("no transaction in row returned");
+                if (this.recover_overlay.failure_callback) { this.recover_overlay.failure_callback(true); }
+		return;
+	      }
+
+console.log("got a response!");
 
               let tx = JSON.parse(res.rows[0].tx);
               let newtx2 = new saito.default.transaction(tx);
