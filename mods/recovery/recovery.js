@@ -54,8 +54,6 @@ class Recovery extends ModTemplate {
 
     app.connection.on("recovery-recover-overlay-render-request", (obj) => {
 
-console.log("called to render recovery request 1");
-
       //
       // update callbacks
       //
@@ -63,12 +61,10 @@ console.log("called to render recovery request 1");
 	this.backup_overlay.callback = obj.success_callback;
       }
 
-console.log("called to render recovery request 2");
       //
       // if submitted with email / pass, auto-backup
       //
       if (obj.email && obj.pass) {
-console.log("called to render recovery request 3");
 
         let decryption_secret = this.returnDecryptionSecret(obj.email, obj.pass);
         let retrieval_hash    = this.returnRetrievalHash(obj.email, obj.pass);
@@ -76,15 +72,11 @@ console.log("called to render recovery request 3");
         let newtx = this.createRecoverTransaction(retrieval_hash);
 	let peers = this.app.network.returnPeersWithService("recovery");
 
-console.log("peers supporting? " + peers.length);
-
 	if (peers.length > 0) {
           this.app.network.sendTransactionWithCallback(newtx, (res) => {
 
-console.log("we got info back!");
 	      if (!res) { 
 		console.log("empty response!"); return; }
-console.log("RES: " + JSON.stringify(res));
 	      if (!res.rows) { 
 		console.log("no rows returned!");
                 if (this.recover_overlay.failure_callback) { this.recover_overlay.failure_callback(true); }
@@ -95,27 +87,20 @@ console.log("RES: " + JSON.stringify(res));
 		return;
 	      }
 
-console.log("got a response 1!");
-
               let tx = JSON.parse(res.rows[0].tx);
-console.log("got a response 2!");
               let newtx2 = new saito.default.transaction(tx);
-console.log("got a response 3!");
               let txmsg = newtx2.returnMessage();
-console.log("got a response 4!");
-
-console.log("test a1");
 
               let encrypted_wallet = txmsg.wallet;
-console.log("test a2");
               let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
 console.log("test a3");
-
 	      this.app.wallet.wallet = JSON.parse(decrypted_wallet);
+console.log("RESTORED: " + JSON.stringify(this.app.wallet.wallet));
 console.log("test a4");
 	      this.app.wallet.saveWallet();
 console.log("test a5");
-	      this.overlay.remove();
+	      this.recover_overlay.remove();
+console.log("test a6");
 
               if (this.recover_overlay.success_callback) { this.recover_overlay.success_callback(true); }
 
