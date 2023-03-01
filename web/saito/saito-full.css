@@ -2125,6 +2125,7 @@ This alows for a header with a header with title to be added without extra CSS
   margin-left: 1rem;
   display: flex;
   margin-left: 40%;
+  margin-top: 4rem;
 }
 
 .notifications-empty p {
