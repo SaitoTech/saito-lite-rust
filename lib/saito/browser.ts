@@ -562,6 +562,19 @@ class Browser {
     return new QRCode(document.getElementById("qrcode"), data);
   }
 
+  isElementVisible(elem=null) {
+    if (!elem) { return false; }
+    return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+  }
+
+  isSelectorVisible(c) {
+    return this.isElementVisible(document.querySelector(c));
+  }
+
+  isIdVisible(id) {
+    return this.isElementVisible(document.getElementById(id));
+  }
+
   // https://github.com/sindresorhus/screenfull.js
   requestFullscreen() {
     if (screenfull.isEnabled) {

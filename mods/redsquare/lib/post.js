@@ -141,7 +141,7 @@ class Post {
       }
 
       if (source == 'Retweet') {
-        data.retweet_tx = JSON.stringify(post_self.tweet.tx.transaction);
+        data.retweet_tx = post_self.tweet.tx.serialize_to_web(this.app);
       }
 
       if (post_self.images.length > 0) {
