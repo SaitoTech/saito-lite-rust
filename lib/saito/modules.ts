@@ -183,9 +183,7 @@ class Mods {
     // initialize the modules
     //
     for (let i = 0; i < this.mods.length; i++) {
-console.log("INITIALIZE MOD 1: " + this.mods[i].name);
       await this.mods[i].initialize(this.app);
-console.log("INITIALIZE MOD 2: " + this.mods[i].name);
     }
 
     const onPeerHandshakeComplete = this.onPeerHandshakeComplete.bind(this);

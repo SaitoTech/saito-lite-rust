@@ -340,8 +340,6 @@ console.log("---------------------");
 
   async initialize() {
 
-console.log("initializing wallet... 1");
-
     //
     // add ghost crypto module so Saito interface available
     //
@@ -417,8 +415,6 @@ console.log("initializing wallet... 1");
     }
     this.saitoCrypto = new SaitoCrypto(this.app);
 
-console.log("initializing wallet... 2");
-
     if (this.wallet.privatekey === "") {
       if (this.app.options.wallet != null) {
         /////////////
@@ -492,8 +488,6 @@ console.log("initializing wallet... 2");
         this.wallet = Object.assign(this.wallet, this.app.options.wallet);
       }
     }
-
-console.log("initializing wallet... 3");
 
     ////////////////
     // new wallet //
