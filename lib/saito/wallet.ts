@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.761,
+    version: 4.762,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -429,6 +429,8 @@ console.log("---------------------");
             let mixin = this.app.options.mixin;
             let crypto = this.app.options.crypto;
 
+            let theme = this.app.options.theme;
+
             // specify before reset to avoid archives reset problem
             this.wallet.publickey = tmppubkey;
             this.wallet.privatekey = tmpprivkey;
@@ -460,6 +462,9 @@ console.log("---------------------");
             // keep mixin
             this.app.options.mixin = mixin;
             this.app.options.crypto = crypto;
+
+            // keep theme
+            this.app.options.theme = theme;
 
             this.saveWallet();
 
