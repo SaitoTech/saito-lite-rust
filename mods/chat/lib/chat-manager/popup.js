@@ -81,7 +81,7 @@ class ChatPopup {
       let obj = document.querySelector(popup_qs);
       var rect = obj.getBoundingClientRect();
       this.app.browser.replaceElementBySelector(ChatPopupTemplate(this.app, this.mod, this.group), popup_qs);
-      this.app.browser.addIdentifiersToDom();
+      //this.app.browser.addIdentifiersToDom();
       this.x_pos = rect.left;
       this.y_pos = rect.top;
       obj = document.querySelector(popup_qs);

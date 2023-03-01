@@ -265,7 +265,7 @@ class Browser {
 
             let myUserMenu = new MyUserMenu(app, publickey);
             myUserMenu.render(app);
-	  }
+          }
         }
       },
       {
@@ -277,7 +277,7 @@ class Browser {
   //
   // asks the user to login if they are using an anonymous account
   //
-  requestBackup(success_callback=null, failure_callback=null, email="", pass="") {
+  requestBackup(success_callback = null, failure_callback = null, email = "", pass = "") {
 
     let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
     if (key.recoverable === true) { success_callback(true); return; }
@@ -290,7 +290,7 @@ class Browser {
     this.app.connection.emit("recovery-backup-overlay-render-request", (obj));
 
   }
-  requestLogin(success_callback=null, failure_callback=null, email="", pass="") {
+  requestLogin(success_callback = null, failure_callback = null, email = "", pass = "") {
     let key = this.app.keychain.returnKey(this.app.wallet.returnPublicKey());
     if (key.recoverable === true) { success_callback(true); return; }
     if (key.identifier) { success_callback(true); return; }
@@ -316,7 +316,7 @@ class Browser {
         if (w[i][0] === "@") {
           if (w.length > 1) {
             let cleaner = w[i].substring(1);
-	    identifiers.push(cleaner);
+            identifiers.push(cleaner);
           }
         }
       }
@@ -337,13 +337,13 @@ class Browser {
         if (w[i][0] === "@") {
           if (w.length > 1) {
             let cleaner = w[i].substring(1);
-	    let key = this.app.keychain.returnKey({ identifier : cleaner });
-	    if (key) {
+            let key = this.app.keychain.returnKey({ identifier: cleaner });
+            if (key) {
               let add = key.publickey;
-	    }
+            }
             if (this.app.crypto.isPublicKey(cleaner) && (add == "" || add == null)) {
               add = cleaner;
-	    }
+            }
             if (!keys.includes(add) && (add != "" && add != null)) {
               keys.push(add);
             }
@@ -364,9 +364,9 @@ class Browser {
     }
     if (identifiers) {
       identifiers.forEach(id => {
-        let key = this.app.keychain.returnKey({ identifier : id });
-	if (key.publickey) {
-        let add = key.publickey;
+        let key = this.app.keychain.returnKey({ identifier: id });
+        if (key.publickey) {
+          let add = key.publickey;
           if (this.app.crypto.isPublicKey(add)) {
             if (!keys.includes(add)) {
               keys.push(add);
@@ -399,7 +399,7 @@ class Browser {
         component = hash;
       }
     }
-    return { hash : component , params : params };
+    return { hash: component, params: params };
 
   }
 
@@ -562,9 +562,9 @@ class Browser {
     return new QRCode(document.getElementById("qrcode"), data);
   }
 
-  isElementVisible(elem=null) {
+  isElementVisible(elem = null) {
     if (!elem) { return false; }
-    return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+    return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
   }
 
   isSelectorVisible(c) {
@@ -778,7 +778,7 @@ class Browser {
       }
       el.outerHTML = html;
     } catch (err) {
-      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : "  + err);
+      console.log("ERROR 582346: error in addElementToElement. Does " + elem + " exist? : " + err);
       console.log(html);
     }
   }
@@ -1252,12 +1252,13 @@ class Browser {
     let unidentified_keys = [];
     for (let i = 0; i < keys.length; i++) {
       if (this.app.keychain.returnIdentifierByPublicKey(keys[i], true) === keys[i]) {
-	unidentified_keys.push(keys[i]);
+        unidentified_keys.push(keys[i]);
       } else {
         this.updateAddressHTML(keys[i], this.app.keychain.returnIdentifierByPublicKey(keys[i]));
       }
     }
-    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);  }
+    this.app.connection.emit("registry-fetch-identifiers-and-update-dom", unidentified_keys);
+  }
 
 
   addModalIdentifierAddPublickey(app, mod) {
@@ -1529,7 +1530,7 @@ class Browser {
           try {
 
             identifiers.forEach(async (identifier) => {
-              let answer = this.app.keychain.returnKey({ identifier : identifier });
+              let answer = this.app.keychain.returnKey({ identifier: identifier });
               console.log(answer + " - " + identifier);
               if (answer != identifier && answer != null) {
                 //html = html.replaceAll(identifier, `<span data-id="${answer}" class="saito-active-key saito-address">${identifier}</span>`);
@@ -1572,7 +1573,7 @@ class Browser {
 
   activatePublicKeyObserver(app) {
 
-return;
+    return;
 
     let mutationObserver = new MutationObserver((entries) => {
 
@@ -1591,12 +1592,12 @@ return;
             Array.from(node.children).forEach((child_node) => {
               if (child_node?.classList?.contains("saito-address")) {
 
-console.log("FOUND PUBLIC KEY!: " + address);
+                console.log("FOUND PUBLIC KEY!: " + address);
 
                 let identifier = app.keychain.returnIdentifierByPublicKey(address, true);
                 if (identifier) {
 
-console.log("IDENTIFIER: " + identifier);
+                  console.log("IDENTIFIER: " + identifier);
 
                   try {
                     document.querySelectorAll(`.saito-address-${address}`).forEach((item) => {
@@ -1869,67 +1870,83 @@ console.log("IDENTIFIER: " + identifier);
 
     }
 
-  
+
   }
 
 
   treatElements(nodeList) {
-    for (var i = 0; i < nodeList.length; i++) {
-      if (nodeList[i].files) {
-        this.treatFiles(nodeList[i]);
+    nodeList.forEach((el) => {
+      if (el.files) {
+        this.treatFiles(el);
       }
-      if (nodeList[i].childNodes.length >= 1) {
-        this.treatElements(nodeList[i].childNodes);
-      }
-    }
-  }
-
-  treatFiles(input) {
-    if (input.classList.contains("treated")) {
-      return;
-    } else {
-      input.addEventListener("change", function (e) {
-        var fileName = "";
-        if (this.files && this.files.length > 1) {
-          fileName = this.files.length + " files selected.";
-        } else {
-          fileName = e.target.value.split("\\").pop();
+      if (el.classList) {
+        if (el.classList.contains('saito-username') || el.classList.contains('saito-address')) {
+          if (!el.classList.contains('treated')) {
+            let key = el.innerText;
+            if (key.length == 43 || key.length == 44) {
+              if (this.app.keychain.returnIdentifierByPublicKey(key, true) != key) {
+                el.innerText = this.app.keychain.returnIdentifierByPublicKey(key);
+                el.classList.add('saito-address-' + this.app.keychain.returnIdentifierByPublicKey(key))
+                el.classList.add('treated');
+                console.info('upated ' + key + " to " + this.app.keychain.returnIdentifierByPublicKey(key));
+              }
+            }
+          }
         }
-        if (fileName) {
-          filelabel.style.border = "none";
-          filelabel.innerHTML = browser_self.sanitize(fileName);
-        } else {
-          filelabel.innerHTML = browser_self.sanitize(labelVal);
-        }
-      });
-      input.classList.add("treated");
-      var filelabel = document.createElement("label");
-      filelabel.classList.add("treated");
-      filelabel.innerHTML = "Choose File";
-      filelabel.htmlFor = input.id;
-      filelabel.id = input.id + "-label";
-      var parent = input.parentNode;
-      parent.appendChild(filelabel);
-    }
+        if (el.childNodes.length >= 1) {
+          this.treatElements(el.childNodes);
+        } 
+      }
+    });
   }
 
-  switchTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
 
-    if (this.app.BROWSER == 1) {
-      let mod_obj = this.app.modules.returnActiveModule();
-
-      if (!this.app.options.theme) {
-        this.app.options.theme = {};
+treatFiles(input) {
+  if (input.classList.contains("treated")) {
+    return;
+  } else {
+    input.addEventListener("change", function (e) {
+      var fileName = "";
+      if (this.files && this.files.length > 1) {
+        fileName = this.files.length + " files selected.";
+      } else {
+        fileName = e.target.value.split("\\").pop();
       }
-
-      if (mod_obj.slug != null) {
-          this.app.options.theme[mod_obj.slug] = theme;
-          this.app.storage.saveOptions();
+      if (fileName) {
+        filelabel.style.border = "none";
+        filelabel.innerHTML = browser_self.sanitize(fileName);
+      } else {
+        filelabel.innerHTML = browser_self.sanitize(labelVal);
       }
-      console.debug(this.app.options);
-    }
+    });
+    input.classList.add("treated");
+    var filelabel = document.createElement("label");
+    filelabel.classList.add("treated");
+    filelabel.innerHTML = "Choose File";
+    filelabel.htmlFor = input.id;
+    filelabel.id = input.id + "-label";
+    var parent = input.parentNode;
+    parent.appendChild(filelabel);
   }
+}
+
+switchTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+
+  if (this.app.BROWSER == 1) {
+    let mod_obj = this.app.modules.returnActiveModule();
+
+    if (!this.app.options.theme) {
+      this.app.options.theme = {};
+    }
+
+    if (mod_obj.slug != null) {
+      this.app.options.theme[mod_obj.slug] = theme;
+      this.app.storage.saveOptions();
+    }
+    console.debug(this.app.options);
+  }
+}
 
 }
 export default Browser;

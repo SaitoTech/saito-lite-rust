@@ -218,7 +218,7 @@ try {
                             //
                             // add identifiers
                             //
-                            app.browser.addIdentifiersToDom();
+                            // app.browser.addIdentifiersToDom();
                         }
                     },
 

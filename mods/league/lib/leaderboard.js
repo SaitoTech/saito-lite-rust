@@ -69,7 +69,7 @@ class Leaderboard {
       this.app.browser.addElementToSelector(html, ".league-leaderboard .saito-table-body");
     }
     
-    this.app.browser.addIdentifiersToDom();
+    //this.app.browser.addIdentifiersToDom();
     let myListing = document.querySelector('.my-leaderboard-position');
     if (myListing) {
       myListing.scrollIntoView();
