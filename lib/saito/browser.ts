@@ -306,6 +306,25 @@ class Browser {
   }
 
 
+  extractIdentifiers(text = "") {
+    let identifiers = [];
+
+    let w = text.split(/(\s+)/);
+
+    for (let i = 0; i < w.length; i++) {
+      if (w[i].length > 0) {
+        if (w[i][0] === "@") {
+          if (w.length > 1) {
+            let cleaner = w[i].substring(1);
+	    identifiers.push(cleaner);
+          }
+        }
+      }
+    }
+
+    return identifiers;
+
+  }
 
 
   extractKeys(text = "") {
@@ -541,6 +560,19 @@ class Browser {
   generateQRCode(data) {
     const QRCode = require("./../helpers/qrcode");
     return new QRCode(document.getElementById("qrcode"), data);
+  }
+
+  isElementVisible(elem=null) {
+    if (!elem) { return false; }
+    return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+  }
+
+  isSelectorVisible(c) {
+    return this.isElementVisible(document.querySelector(c));
+  }
+
+  isIdVisible(id) {
+    return this.isElementVisible(document.getElementById(id));
   }
 
   // https://github.com/sindresorhus/screenfull.js
@@ -1895,7 +1927,7 @@ console.log("IDENTIFIER: " + identifier);
           this.app.options.theme[mod_obj.slug] = theme;
           this.app.storage.saveOptions();
       }
-      console.log(this.app.options);
+      console.debug(this.app.options);
     }
   }
 

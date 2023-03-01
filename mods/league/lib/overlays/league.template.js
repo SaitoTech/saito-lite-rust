@@ -11,7 +11,7 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
                 </div>
                 <div class="league-overlay-header-title-box">
                     <div class="league-overlay-header-title-box-title">${league.name}</div>
-                    <div class="league-overlay-header-title-box-desc">${league.status} league</div>
+                    <div class="league-overlay-header-title-box-desc">${(league.admin) ? `${league.status} league` : game_mod.returnGameType() }</div>
                 </div>
             </div>
             <div class="league-overlay-body">

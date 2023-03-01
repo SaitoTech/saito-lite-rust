@@ -29,7 +29,7 @@ class Jaipur extends GameTemplate {
     this.slug   = this.name.toLowerCase();
     this.card_img_dir = `/${this.slug}/img/cards/`;
     this.token_img_dir = `/${this.slug}/img/tokens/`;
-    this.categories 	 = "Games Boardgame Cardgame";
+    this.categories 	 = "Games Cardgame Tactical";
 
   }
 
@@ -116,7 +116,7 @@ initializeGame(game_id) {
      $(".jaipur_board").attr("style","");
      this.updateTokens();
      this.updateMarket();
-     this.displayPlayers();
+     this.updatePlayers();
   }
  
 }
@@ -160,7 +160,7 @@ initializeQueue(first_player = 1){
     if (this.game.queue.length > 0) {
 
       if (this.browser_active){
-         this.displayPlayers();
+         this.updatePlayers();
       }
 
       let qe = this.game.queue.length-1;
@@ -188,7 +188,7 @@ initializeQueue(first_player = 1){
            $(".jaipur_board").attr("style","");
            this.updateTokens();
            this.updateMarket();
-           this.displayPlayers();
+           this.updatePlayers();
         }
       }
 
@@ -224,6 +224,8 @@ initializeQueue(first_player = 1){
             $(this.cardToHTML(this.game.deck[0].cards[card].type)).hide().appendTo(".market").fadeIn("slow");
           }
         }
+
+        this.updateStatusWithCards("Dealing new cards to the market...");
 
         this.updateLog(`There are ${this.game.deck[0].crypt.length} cards left`);
       }
@@ -302,7 +304,7 @@ initializeQueue(first_player = 1){
           return 0;
         }else{
           this.game.state[`winner${winner}`] = 1;
-          this.displayPlayers();
+          this.updatePlayers();
           this.initializeQueue(3-winner);
         }
 
@@ -342,7 +344,7 @@ initializeQueue(first_player = 1){
         if (this.game.player == player){
           this.playerTurn();
         }else{
-          //this.sortHand();
+
           this.updateStatusWithCards(`Waiting for opponent to play`);
         }
         return 0;
@@ -362,12 +364,24 @@ initializeQueue(first_player = 1){
           }
         }
 
+        let moving_card = this.copyGameElement(`.market .card[data-id="${card}"]`);
+
         if (this.game.player == player){
           this.game.state.hand.push(card);
+
+          let dest = document.querySelector(`#status .hud-card[data-id="${card}"]`);
+          if (!dest){
+            this.hud.insertCard(`<div id="slot00" class="card hud-card"></div>`);
+            dest = "#slot00";
+          }
+          this.moveGameElement(moving_card, dest, {resize: 1}, ()=>{ this.restartQueue(); });
+
         }else{
           this.game.state.enemyhand++;
-          $(`.market .card[data-id="${card}"]`).first().fadeOut("slow", function() {
-            $(this).remove();
+          
+          this.moveGameElement(moving_card, "#purchase_zone", {insert: 1}, ()=>{
+            $("#purchase_zone").children().fadeOut(1000, function(){ $(this).remove(); });
+            this.restartQueue();
           });
 
         }
@@ -378,6 +392,7 @@ initializeQueue(first_player = 1){
         this.game.queue.push("marketdeal");
         this.game.queue.push(`POOLDEAL\t1\t1\t1`);
 
+        return 0;
       }
 
       if (mv[0] == "sell"){
@@ -390,19 +405,26 @@ initializeQueue(first_player = 1){
 
         this.game.state.last_discard = card;
 
+        let destination = "#player-box-7 .player-box-tokens";
+
         if (this.game.player == player){
           this.game.state.hand = this.game.state.hand.filter( c => c !== card);
         }else{
           this.game.state.enemyhand -= count;
+          destination = "#player-box-4 .player-box-tokens";        
         }
 
         let good_token = 0;
+        let num_tokens = $(`.bonus_tokens .tip.${card} .token`).length - 1;
         for (let i = 0; i < count; i++){
           if (this.game.state.tokens[card].length > 0){
             good_token++;
             let profit = this.game.state.tokens[card].pop();
             this.game.state.vp[player-1] += profit;
             this.game.state.goodtokens[player-1].push({"type": card, "value":profit});
+
+            this.animationSequence.push({callback: this.moveGameElement, 
+                                         params: [this.copyGameElement($(`.bonus_tokens .tip.${card} .token`)[num_tokens - i]), destination, {insert:1}, ()=>{this.updateTokens(); this.restartQueue();}]});
           }
         }
 
@@ -413,12 +435,16 @@ initializeQueue(first_player = 1){
           if (this.game.player !== player){
             this.game.state.enemybonus.push(bonus_deck);
           }
+         this.animationSequence.push({callback: this.moveGameElement, 
+                             params: [this.copyGameElement($(`.bonus_tokens .tip.bonus${bonus_deck+1} .token`).last()[0]), destination, {insert:1}, ()=>{this.updateTokens(); this.restartQueue(); }]});
+
         }
 
         let my_name = (this.game.player == player) ? "You" : "Your opponent";
-        this.updateTokens();
         this.updateLog(`${my_name} sold ${count} ${card}${(count>1)?"s":""}, gaining ${good_token} goods token${(good_token>1)?"s":""}${(bonus_deck>0)?" and a bonus token":""}.`);
 
+        this.runAnimationQueue();
+        return 0;
       }
 
       if (mv[0] == "trade"){
@@ -443,6 +469,12 @@ initializeQueue(first_player = 1){
               break;
             }
           }
+
+//          this.moveGameElement(moving_card, "#purchase_zone", {insert: 1}, ()=>{
+//            $("#purchase_zone").children().fadeOut(1000, function(){ $(this).remove(); });
+//            this.restartQueue();
+//          });
+
           $(`.market .card[data-id="${from_market[i]}"]`).first().attr("data-id","").fadeOut("slow", function() {
             $(this).remove();
           });
@@ -491,23 +523,27 @@ initializeQueue(first_player = 1){
 
         let numCamels = 5-this.game.state.market.length;
 
+        let destination = "#player-box-7 .camel_train";
+
         if (this.game.player === player){
           this.game.state.herd += numCamels;
           this.updateLog(`You added ${numCamels} camels to your herd.`);
         }else{
           this.game.state.enemyherd += numCamels;
           this.updateLog(`Your opponent added ${numCamels} camels to their herd.`);
+          destination = "#player-box-4 .camel_train";
         }
 
-        $(`.market .card[data-id="camel"]`).fadeOut("slow", function() {
-          $(this).remove();
+        Array.from(document.querySelectorAll(`.market .card[data-id="camel"]`)).forEach(card => {
+          this.moveGameElement(this.copyGameElement(card), destination, {insert: 1, resize: 1}, ()=>{
+            this.restartQueue();
+          });
         });
-
-
+ 
         this.game.queue.push("marketdeal");
         this.game.queue.push(`POOLDEAL\t1\t${numCamels}\t1`);
 
-
+        return 0;
       }
 
       return 1;
@@ -556,9 +592,6 @@ initializeQueue(first_player = 1){
         game_self.endTurn();
       }else{
         if (game_self.game.state.hand.length < 7 ){
-           $(this).fadeOut("slow", function() {
-              $(this).remove();
-           });
           game_self.addMove(`take\t${game_self.game.player}\t${card}`);
           game_self.endTurn();
         }else{
@@ -577,6 +610,7 @@ initializeQueue(first_player = 1){
       if (expensive.includes(card) && count < 2){
         salert(`You have to have at least 2 ${card} in order to make a sale`);
       }else{
+        game_self.moveGameElement(game_self.copyGameElement(`.hud-card[data-id="${card}"]`), ".invisible_item", {}, (item)=>{$(item).remove();});
         game_self.addMove(`sell\t${game_self.game.player}\t${card}\t${count}`);
         game_self.endTurn();
       }
@@ -749,7 +783,7 @@ initializeQueue(first_player = 1){
     if (herd1 > 0){
       return `<div class="camel_train"><div class="card_count" style="background-image: url('${this.card_img_dir}camel.png');">${herd1}</div>${camel_bonus}</div>`;
     }else{
-      return "";
+      return `<div class="camel_train" style="visibility=hidden;"></div>`;
     }
   }
 
@@ -802,7 +836,7 @@ initializeQueue(first_player = 1){
     return bonus;
   }
 
-  displayPlayers(){
+  updatePlayers(){
 
     let crown = `<i class="fas fa-crown"></i>`;
 
@@ -849,6 +883,8 @@ initializeQueue(first_player = 1){
       return;
     }
 
+    $(".animated_elem").fadeOut(1000, function(){ $(this).remove(); });
+
     let available_resources = {};
     for (let card of this.game.state.hand){
       if (!available_resources[card]){
@@ -883,22 +919,25 @@ initializeQueue(first_player = 1){
     let html = `<div class="bonus_tokens">`;
     for (let token in this.game.state.tokens){
       if (this.game.state.tokens[token].length > 0){
-        let value = this.game.state.tokens[token].pop();
-        html += `<div class="tip">
-                    <div class="token" style="background-image:url('${this.token_img_dir}${token}_token.png');">${value}</div>
-                    <div class="tiptext">${this.game.state.tokens[token].length + 1} ${token} token(s) left</div>
-                 </div>`;
-        this.game.state.tokens[token].push(value);      
+        html += `<div class="tip ${token}">`;
+        for (let i = 0; i < this.game.state.tokens[token].length; i++){
+          let value = this.game.state.tokens[token][i];
+          html +=  `<div class="token" style="background-image:url('${this.token_img_dir}${token}_token.png');">${value}</div>`;
+        }
+        html += `<div class="tiptext">${this.game.state.tokens[token].length + 1} ${token} token(s) left</div>
+              </div>`;
       }else{
         html += `<img class="token empty" src="${this.token_img_dir}${token}_token.png"/>`;
       }
     }
     for (let i = 3; i <= 5; i++){
       if (this.game.deck[i-2].crypt.length > 0){
-        html +=   `<div class="tip">
-                    <div class="token" style='background-image:url("${this.token_img_dir}${i}_card_token.png");'></div>
-                    <div class="tiptext">${this.game.deck[i-2].crypt.length} ${i} bonus token(s) left</div>
-                  </div>`;
+        html +=   `<div class="tip bonus${i}">`;
+        for (let j = 0; j < this.game.deck[i-2].crypt.length; j++){
+          html += `<div class="token" style='background-image:url("${this.token_img_dir}${i}_card_token.png");'></div>`;
+        }
+        html +=  `<div class="tiptext">${this.game.deck[i-2].crypt.length} ${i} bonus token(s) left</div>
+                </div>`;
       }else{
         html += `<img class="token empty" src="${this.token_img_dir}${i}_card_token.png"/>`;
       }

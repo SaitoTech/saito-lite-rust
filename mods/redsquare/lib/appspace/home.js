@@ -158,13 +158,6 @@ class AppspaceHome {
 
     this.intersectionObserver.observe(document.querySelector('#redsquare-intersection'));
 
-/****
-    document.getElementById("redsquare-tweet").onclick = (e) => {
-      let post = new Post(this.app, this.mod);
-      post.render();
-    }
-****/
-
   }
 
 }

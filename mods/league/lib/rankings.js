@@ -11,7 +11,7 @@ class LeagueRankings {
     this.overlay = new LeagueOverlay(this.app, this.mod);
 
     app.connection.on('league-rankings-render-request', () => {
-      console.log('league-rankings-render-request');
+      if (this.mod.debug) { console.log('league-rankings-render-request'); }
       this.render();
     });
 
@@ -44,7 +44,7 @@ class LeagueRankings {
             </div>
                   `;
         
-          console.log(JSON.parse(JSON.stringify(l)));   
+          if (this.mod.debug) { console.log(JSON.parse(JSON.stringify(l))); }
         }
       
       });

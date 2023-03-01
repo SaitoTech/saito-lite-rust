@@ -17,10 +17,10 @@ module.exports = (app, mod, tweet) => {
   let show_controls = tweet.show_controls;
   let sig_class = "tweet-"+tweet.tx.transaction.sig;
  
-  if (text == "" && tweet.retweet_tx != "" && notice == "") {
+  if (text == "" && tweet.retweet_tx != null && tweet.retweet_tx != "" && notice == "") {
     //
     // set notice
-    // 
+    //
     notice = "retweeted by " + app.browser.returnAddressHTML(tweet.tx.transaction.from[0].add);
   }
 

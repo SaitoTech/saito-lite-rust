@@ -1790,6 +1790,8 @@ console.log("> > > > > " + this.game.state.player_credit[player-1]);
 
     super.processResignation(resigning_player, txmsg);
 
+    if (!txmsg.loser) { return; }
+
     if (this.browser_active){
       if (this.app.wallet.returnPublicKey() !== resigning_player) {
         this.refreshPlayerStack(txmsg.loser, false); //Here we want to hide cards

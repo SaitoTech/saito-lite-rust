@@ -265,11 +265,6 @@ body {
   max-height: 233px;  
 }
 
-.animated_elem{
-  position: absolute;
-  /*width: fit-content;*/
-  z-index: 100;
-}
 
 .flip-card{
   width: var(--steamed-card-width);
