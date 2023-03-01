@@ -1,7 +1,7 @@
+const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoLogin = require("./../../lib/saito/ui/modals/login/login");
 const SaitoBackup = require("./../../lib/saito/ui/modals/backup/backup");
-
 
 class Recovery extends ModTemplate {
 
@@ -92,11 +92,14 @@ console.log("we got info back!");
 		return;
 	      }
 
-console.log("got a response!");
+console.log("got a response 1!");
 
               let tx = JSON.parse(res.rows[0].tx);
+console.log("got a response 2!");
               let newtx2 = new saito.default.transaction(tx);
+console.log("got a response 3!");
               let txmsg = newtx2.returnMessage();
+console.log("got a response 4!");
 
 console.log("test a1");
 
