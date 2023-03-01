@@ -54,6 +54,8 @@ class Recovery extends ModTemplate {
 
     app.connection.on("recovery-recover-overlay-render-request", (obj) => {
 
+console.log("called to render recovery request 1");
+
       //
       // update callbacks
       //
@@ -61,10 +63,12 @@ class Recovery extends ModTemplate {
 	this.backup_overlay.callback = obj.success_callback;
       }
 
+console.log("called to render recovery request 2");
       //
       // if submitted with email / pass, auto-backup
       //
       if (obj.email && obj.pass) {
+console.log("called to render recovery request 3");
 
         let decryption_secret = this.returnDecryptionSecret(obj.email, obj.pass);
         let retrieval_hash    = this.returnRetrievalHash(obj.email, obj.pass);
@@ -72,19 +76,32 @@ class Recovery extends ModTemplate {
         let newtx = this.createRecoveryTransaction(retrieval_hash);
 	let peers = this.returnPeersWithService("recovery");
 
+console.log("peers supporting? " + peers.length);
+
 	if (peers.length > 0) {
-          this.app.network.sendTransactionWithCallback(newtx, function(res) {
+          this.app.network.sendTransactionWithCallback(newtx, (res) => {
+
+console.log("we got info back!");
+	      if (!res) { console.log("empty response!"); return; }
+	      if (!res.rows) { console.log("no rows returned!"); return; }
+	      if (!res.rows[0].tx) { console.log("no transaction in row returned"); return; }
 
               let tx = JSON.parse(res.rows[0].tx);
               let newtx2 = new saito.default.transaction(tx);
               let txmsg = newtx2.returnMessage();
 
+console.log("test a1");
+
               let encrypted_wallet = txmsg.wallet;
+console.log("test a2");
               let decrypted_wallet = this.app.crypto.aesDecrypt(encrypted_wallet, decryption_secret);
+console.log("test a3");
 
 	      this.app.wallet.wallet = JSON.parse(decrypted_wallet);
+console.log("test a4");
 	      this.app.wallet.saveWallet();
-	      this.overlay.hide();
+console.log("test a5");
+	      this.overlay.remove();
 
               if (this.recover_overlay.success_callback) { this.recover_overlay.success_callback(true); }
 
