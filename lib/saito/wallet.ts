@@ -429,10 +429,12 @@ console.log("---------------------");
             let mixin = this.app.options.mixin;
             let crypto = this.app.options.crypto;
 
+            let theme = this.app.options.theme;
+
             // specify before reset to avoid archives reset problem
             this.wallet.publickey = tmppubkey;
             this.wallet.privatekey = tmpprivkey;
-
+            
             // let modules purge stuff
             this.app.modules.onWalletReset();
 
@@ -460,6 +462,9 @@ console.log("---------------------");
             // keep mixin
             this.app.options.mixin = mixin;
             this.app.options.crypto = crypto;
+
+            // keep theme
+            this.app.options.theme = theme;
 
             this.saveWallet();
 
