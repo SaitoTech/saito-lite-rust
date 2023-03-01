@@ -82,8 +82,11 @@ console.log("peers supporting? " + peers.length);
           this.app.network.sendTransactionWithCallback(newtx, (res) => {
 
 console.log("we got info back!");
-	      if (!res) { console.log("empty response!"); return; }
-	      if (!res.rows) { console.log("no rows returned!");
+	      if (!res) { 
+		console.log("empty response!"); return; }
+console.log("RES: " + JSON.stringify(res));
+	      if (!res.rows) { 
+		console.log("no rows returned!");
                 if (this.recover_overlay.failure_callback) { this.recover_overlay.failure_callback(true); }
 		return;
 	      }
@@ -294,6 +297,9 @@ console.log("test a5");
     };
     let res = {};
     res.rows = await this.app.storage.queryDatabase(sql, params, "recovery");
+
+console.log("RETURNING ROWS: " + JSON.stringify(rows));
+
     mycallback(res);
 
   }
