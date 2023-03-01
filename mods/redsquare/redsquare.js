@@ -597,7 +597,8 @@ class RedSquare extends ModTemplate {
             this.peers_for_tweets.push(peer);
           }
           res.rows.forEach(row => {
-            let tx = new saito.default.transaction(JSON.parse(row.tx));
+            let tx = new saito.default.transaction();
+	    tx.deserialize_from_web(this.app, row.tx);
             if (!tx.optional) { tx.optional = {}; }
             tx.optional.parent_id = tx.msg.parent_id;
             tx.optional.thread_id = tx.msg.thread_id;
@@ -1091,7 +1092,8 @@ class RedSquare extends ModTemplate {
         //
         if (txmsg.data?.retweet_tx) {
           if (txmsg.data?.retweet_tx) {
-            let rtxobj = JSON.parse(txmsg.data.retweet_tx);
+            let rtx = new saito.default.transaction();
+	    rtx.deserialize_from_web(this.app, txmsg.data.retweet_tx);
             let rtxsig = rtxobj.sig;
 
             if (this.tweets_sigs_hmap[rtxsig]) {
@@ -1180,7 +1182,6 @@ class RedSquare extends ModTemplate {
 
     let has_images = 0;
     if (typeof (tweet.images) != "undefined") { has_images = 1; }
-    let txjson = JSON.stringify(tx.transaction);
     let tx_size = txjson.length;
 
     let params = {
@@ -1254,7 +1255,8 @@ class RedSquare extends ModTemplate {
       //
       // create the transaction
       //
-      let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+      let tx = new saito.default.transaction();
+      tx.deserialize_from_web(this.app, rows[i].tx);
       tx.optional.num_replies = rows[i].num_replies;
       tx.optional.num_retweets = rows[i].num_retweets;
       tx.optional.num_likes = rows[i].num_likes;
@@ -1394,7 +1396,8 @@ class RedSquare extends ModTemplate {
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
 
             for (let i = 0; i < rows.length; i++) {
-              let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+              let tx = new saito.default.transaction();
+	      tx.deserialize_from_web(app, rows[i].tx);
               let txmsg = tx.returnMessage();
               let text = tx.msg.data.text;
               let publickey = tx.transaction.from[0].add;
@@ -1430,7 +1433,8 @@ class RedSquare extends ModTemplate {
             let rows = await app.storage.queryDatabase(sql, {}, "redsquare");
 
             for (let i = 0; i < rows.length; i++) {
-              let tx = new saito.default.transaction(JSON.parse(rows[i].tx));
+              let tx = new saito.default.transaction();
+	      tx.deserialize_from_web(this.app, rows[i].tx);
               let txmsg = tx.returnMessage();
 
               if (typeof tx.msg.data.images != "undefined") {
