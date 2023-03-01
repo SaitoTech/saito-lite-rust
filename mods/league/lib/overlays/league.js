@@ -79,7 +79,7 @@ class LeagueOverlay {
     //
     if (league.games.length > 0) {
       html += `
-        <h5>Recent League Matches</h5>
+        <h5>Recent${league.admin?" League":""} Matches</h5>
         <div class="saito-table league_recent_others">
           <div class="saito-table-body">
       `;

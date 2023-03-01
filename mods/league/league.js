@@ -33,8 +33,16 @@ class League extends ModTemplate {
     this.main = null;
     this.header = null;
 
+    /* Not fully implemented
+    Only keep the last N recent games 
+    You don't play a game for 30 days, you get dropped from leaderboard
+     (should prune data from SQL table or just filter from UI???)
+    */
+    this.recent_game_cutoff = 10;
+    this.inactive_player_cutoff = 30 * 24 * 60 * 60 * 1000; 
+
     this.icon_fa = "fas fa-user-friends";
-    this.debug = false;
+    this.debug = true;
   }
 
 
@@ -144,185 +152,6 @@ class League extends ModTemplate {
 
 
 
-  /////////////////////////////
-  // League Array Management //
-  /////////////////////////////
-  returnLeague(league_id) {
-    for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) { return this.leagues[i]; }
-    }
-    return null;
-  }
-
-  removeLeague(league_id) {
-    for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) { 
-        this.leagues.splice(i, 1); 
-        return;
-      }
-    }
-    return null;
-  }
-
-  addLeague(obj) {
-    
-    if (!obj)                   { return; }
-    if (!obj.id)                { return; }
-
-      if (this.debug) { console.log("Add League with ID: " + obj.id); }
-    
-    if (!this.returnLeague(obj.id)) {
-      let newLeague = this.validateLeague(obj);
-
-      //
-      // dynamic data-storage
-      //
-      newLeague.players = [];
-      newLeague.games = [];
-      newLeague.rank = 0; //My rank in the league
-    
-
-      if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
-
-      this.leagues.push(newLeague);
-
-      if (!this.app.BROWSER){
-        this.leagueInsert(newLeague);        
-      }
-    }
-
-  }
-
-
-  addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method) {
-
-    let game_idx = -1;
-
-    for (let i = 0; i < this.leagues.length; i++) {
-      if (this.leagues[i].id === league_id) {
-        for (let z = 0; z < this.leagues[i].games.length; z++) {
-    	    if (this.leagues[i].games[z].game_id === game_id) {
-            this.leagues[i].games[z].game_id = game_id;
-            this.leagues[i].games[z].winner = winner;
-            this.leagues[i].games[z].players_array = players_array;
-            this.leagues[i].games[z].rank = rank;
-            this.leagues[i].games[z].time_started = time_started;
-            this.leagues[i].games[z].time_finished = time_finished;
-            this.leagues[i].games[z].method = method;
-    	      return;
-          }
-    	  }
-        
-        this.leagues[i].games.push({ 
-          game_id : game_id ,
-          winner : winner ,
-          players_array : players_array ,
-          rank : rank ,
-          time_started : time_started ,
-          time_finished : time_finished ,
-          method : method 
-        });
-
-        return;
-      }
-    }
-  }
-
-  //
-  // Update Player-League data in our live data structure
-  //
-  addLeaguePlayer(league_id, publickey, score, games_won, games_tied, games_finished) {
-
-    let league = this.returnLeague(league_id);
-  
-    if (!league) { 
-      console.error("League not found"); 
-      return; 
-    }
-
-    for (let z = 0; z < league.players.length; z++) {
-  	  if (league.players[z].publickey === publickey) {
-        league.players[z].score = score;
-        league.players[z].games_won = games_won;
-        league.players[z].games_tied = games_tied;
-        league.players[z].games_finished = games_finished;
-        return;
-  	  }
-  	}
-      	
-    league.players.push({ 
-	    publickey : publickey ,
-	    score : score ,
-	    games_won : games_won ,
-	    games_tied : games_tied ,
-	    games_finished : games_finished
-	  }); 	 
-      	
-  }
-
-  fetchLeagueGames(league_id, mycallback=null) {
-
-    let league = this.returnLeague(league_id);
-    league.games = [];
-
-    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league_id}' ORDER BY time_finished DESC LIMIT 10` ,
-      (res) => {
-        if (res?.rows) {
-          for (let g of res.rows) {
-            this.addLeagueGame(league_id, g.game_id, g.winner, g.players_array, g.rank, g.time_started, g.time_finished, g.method);
-          }
-        }
-        if (mycallback != null) {
-      	  mycallback(res);
-        }
-      }
-    );
-
-  }
-
-  fetchLeagueLeaderboard(league_id, mycallback=null) {
-
-    let league = this.returnLeague(league_id);
-    let rank = 0;
-
-    //We need to reset this because this should be an ordered array
-    //and if the scores have changed, we need to resort the players
-    league.players = [];
-
-    this.sendPeerDatabaseRequestWithFilter(
-      "League" ,
-      `SELECT * FROM players WHERE league_id = '${league_id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
-      (res) => {
-      	  if (res?.rows) {
-
-            for (let p of res.rows){
-              //
-              // Count how many people are ranked above me in the leaderboard
-              //
-              rank++;
-              
-              if (p.publickey == this.app.wallet.returnPublicKey()) {
-        	      league.rank = rank;
-              }
-
-              //
-              // Update player-league data in our live data structure
-              //
-              this.addLeaguePlayer(league.id, p.publickey, p.score, p.games_won, p.games_tied, p.games_finished);
-            }
-      	}
-      	
-      	if (mycallback != null) { mycallback(res); }
-      },
-      (p) => {
-	        if (p.hasService("league")) { 
-            return 1; 
-          }
-            return 0;
-        }
-    );
-  }
-
 
   async onPeerServiceUp(app, peer, service) {
 
@@ -369,8 +198,10 @@ class League extends ModTemplate {
               rows.forEach(function(league, key) {
                 this.addLeague(league);
               }); 
-    	      app.connection.emit("leagues-render-request");
-    	      app.connection.emit("league-rankings-render-request");
+              //Main module
+      	      app.connection.emit("leagues-render-request");
+              //Sidebar component
+      	      app.connection.emit("league-rankings-render-request");
             }
 
             //
@@ -477,23 +308,6 @@ class League extends ModTemplate {
   }
 
 
-  validateLeague(obj){
-    let newObj = {};
-    //
-    // default values
-    //
-    newObj.id = obj.id || "";
-    newObj.game = obj.game || "Unknown";
-    newObj.name = obj.name || "Unknown";
-    newObj.admin = obj.admin || "";
-    newObj.status = obj.status || "public";
-    newObj.description = obj.description || "";
-    newObj.ranking_algorithm = obj.ranking_algorithm || "EXP";
-    newObj.default_score = obj.default_score || 0;
-        
-    return newObj;
-  }
-
 
   /////////////////////
   // create a league //
@@ -552,23 +366,16 @@ class League extends ModTemplate {
   async receiveJoinTransaction(blk, tx, conf, app) {
 
     let txmsg = tx.returnMessage();
-    let league_id  = txmsg.league_id;
-    let league = this.returnLeague(league_id);
-
-    if (!league){
-      console.warn("Invalid League");
-      return;
-    }
 
     let params = {
-      league_id: league_id,
+      league_id: txmsg.league_id,
       publickey: tx.transaction.from[0].add,
       email: txmsg.email || "",
-      score: league.default_score,
       ts: parseInt(tx.transaction.ts)
     };
 
-    await this.playerInsert(params);
+    this.addLeaguePlayer(params);
+
     return;
   }
 
@@ -643,14 +450,17 @@ class League extends ModTemplate {
   //////////////////////////
   async receiveGameoverTransaction(app, txmsg, is_gameover=false){
 
-    if (app.BROWSER == 1) { return; }
+    //if (app.BROWSER == 1) { return; }
 
     let game = txmsg.module;
 
     //
     // small grace period
     //
-    if ((txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose") && is_gameover) { return; }
+    if ((txmsg.reason == "cancellation" || txmsg.reason == "arcadeclose") && is_gameover) { 
+      console.log(txmsg.reason);
+      return; 
+    }
 
     //
     // fetch players
@@ -663,9 +473,9 @@ class League extends ModTemplate {
     //
     // fetch leagues
     //
-    let sql = `SELECT * FROM leagues WHERE game = $game`;
-    let params = { $game : game };   
-    let relevantLeagues = await app.storage.queryDatabase(sql, params, "league");
+    let relevantLeagues = await this.getRelevantLeagues(game);
+
+    if (this.debug){console.log(relevantLeagues, publickeys);}
 
     //
     // update database
@@ -694,28 +504,18 @@ class League extends ModTemplate {
       }
 
       //
-      // insert players if not in league
-      //
-      for (let i = 0; i < publickeys.length; i++) {
-        let obj = {
-              league_id: leag.id,
-              publickey: publickeys[i] ,
-              score: leag.default_score ,
-              ts: new Date().getTime()
-        };
-
-      	await this.playerInsert(obj);
-      }
-
-      //
       // update rankings (ELO)
       //
       if (leag.ranking_algorithm === "ELO"){
-	      this.updateELORanking(publickeys, leag, txmsg);
+	      await this.updateELORanking(publickeys, leag, txmsg);
       }
       if (leag.ranking_algorithm === "EXP"){
-        this.updateEXPRanking(publickeys, leag, txmsg);
+        await this.updateEXPRanking(publickeys, leag, txmsg);
       }
+      //Main module
+      this.app.connection.emit("leagues-render-request");
+      //Sidebar component
+      this.app.connection.emit("league-rankings-render-request");    
     }
   }
 
@@ -735,10 +535,9 @@ class League extends ModTemplate {
 
     if (this.debug){console.log(`League processing game start of ${txmsg.game}!`);}
 
-    if (this.app.BROWSER){ return; }
+    //if (this.app.BROWSER){ return; }
 
-    let sql = `SELECT * FROM leagues WHERE game = ?`;
-    const relevantLeagues = await this.app.storage.queryDatabase(sql, [txmsg.game], "league");
+    const relevantLeagues = await this.getRelevantLeagues(txmsg.game);
 
     //
     // who are the players ?
@@ -757,33 +556,48 @@ class League extends ModTemplate {
     //
     for (let leag of relevantLeagues){
       if (leag.admin === "") {
-        for (let player of publickeys){
+        let league_id = leag.id;
 
-          let sql2 = `SELECT * from players WHERE publickey = ? AND league_id = ?`;
-          let rows = await this.app.storage.queryDatabase(sql2, [player, leag.id], "league");
-
-          if (!rows || !rows.length || rows.length == 0){
-            let obj = {
-              league_id: leag.id,
-              publickey: player,
-              score: leag.default_score,
-              ts: new Date().getTime(),
-            };
-      	    await this.playerInsert(obj);
-          }
+        for (let publickey of publickeys){
+    	    await this.addLeaguePlayer({ league_id, publickey });
 
           //Update Player's game started count
-          await this.incrementPlayer(player, leag.id, "games_started");
+          await this.incrementPlayer(publickey, leag.id, "games_started");
         }
       }
     }
   }
 
+  /////////////////////
+  /////////////////////
 
+  async getRelevantLeagues(game){
 
+    let sql = `SELECT * FROM leagues WHERE game = $game`;
+    let params = { $game : game };   
+    let sqlResults = await this.app.storage.queryDatabase(sql, params, "league");
 
+    let localLeagues = this.leagues.filter(l => l.game === game);
 
+    return sqlResults || localLeagues;
+  } 
 
+  /////////////////////
+  /////////////////////
+
+  async getPlayersFromLeague(league_id, players){
+
+    let sql2 = `SELECT * FROM players WHERE league_id = ? AND publickey IN (`;
+    for (let pk of players) { sql2 += `'${pk}', `; }
+    sql2 = sql2.substr(0, sql2.length - 2) + `)`;
+
+    let sqlResults = await this.app.storage.queryDatabase(sql2, [league_id], "league");
+
+    let league = this.returnLeague(league_id);
+    let localStats = league.players.filter(p => players.includes(p.publickey));
+
+    return localStats || sqlResults;
+  }
 
   /////////////////////
   // update rankings //
@@ -797,32 +611,22 @@ class League extends ModTemplate {
     // ties    += 3 points
     // losing  += 1 point
     //
-    if (Array.isArray(txmsg.winner)) {
 
-      let numPoints = (txmsg.reason == "tie") ? 3: 4;
-      let gamekey = (txmsg.reason == "tie") ? "games_tied" : "games_won";
-
-      for (let i = players.length-1; i>=0; i--){
-        if (txmsg.winner.includes(players[i])){
-          await this.addEXP(players[i], league.id, numPoints, gamekey);
-          players.splice(i,1);
-        }
-      }
-
-    } else {
-      for (let i = players.length-1; i>=0; i--){
-        if (txmsg.winner == players[i]){
-          await this.addEXP(players[i], league.id, 5, "games_won");
-          players.splice(i,1);
-        }
-      }
-    }
-
-    // everyone left gets a point for playing
+    // everyone gets a point for playing
     for (let i = 0; i < players.length; i++){
-      this.addEXP(players[i], league.id, 1);
+      await this.incrementPlayer(players[i], league.id, "score", 1);
+      await this.incrementPlayer(players[i], league.id, "games_finished", 1);
     }
 
+    let numPoints = (txmsg.reason == "tie") ? 2: 3;
+    let gamekey = (txmsg.reason == "tie") ? "games_tied" : "games_won";
+
+    for (let i = 0; i < players.length; i++){
+      if (txmsg.winner === players[i] || txmsg.winner.includes(players[i])){
+        await this.incrementPlayer(players[i], league.id, "score", numPoints);
+        await this.incrementPlayer(players[i], league.id, gamekey, 1);
+      }
+    }
   }
 
   async updateELORanking(players, league, txmsg){
@@ -832,12 +636,8 @@ class League extends ModTemplate {
     //
     if (players.length < 2) { return; }
 
+    let playerStats = await this.getPlayersFromLeague(league.id, players);
 
-    let sql2 = `SELECT * FROM players WHERE league_id = ? AND publickey IN (`;
-    for (let pk of players) { sql2 += `'${pk}', `; }
-    sql2 = sql2.substr(0, sql2.length - 2) + `)`;
-
-    let playerStats = await this.app.storage.queryDatabase(sql2, [league.id], "league");
     if (playerStats.length !== players.length){
       // skip out - not all players are league members
       return; 
@@ -862,6 +662,8 @@ class League extends ModTemplate {
         player.k = 40;
       }
 
+      await this.incrementPlayer(player.publickey, league.id, "games_finished");
+
       //
       //Sort into winners and losers
       //
@@ -874,8 +676,10 @@ class League extends ModTemplate {
 
     for (let p of winner){
       let outcome = (winner.length == 1) ? "games_won" : "games_tied";
+      await this.incrementPlayer(p.publickey, league.id, outcome);
+      
       p.score += p.k * ( (1/winner.length) - (p.q / qsum));
-      await this.updatePlayerScore(p, outcome);
+      await this.updatePlayerScore(p);
     }
     for (let p of loser){
       p.score -= (p.k * p.q / qsum);
@@ -885,47 +689,58 @@ class League extends ModTemplate {
   }
 
 
-  async incrementPlayer(publickey, league_id, field){
-    if (!(field === "games_finished" || field === "games_won" || field === "games_tied" || field === "games_started")){
+  async incrementPlayer(publickey, league_id, field, amount = 1){
+    if (!(field === "score" || field === "games_finished" || field === "games_won" || field === "games_tied" || field === "games_started")){
       return 0;
     }
 
-    let sql = `UPDATE players SET ${field} = (${field} + 1), ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
+    let success = false;
+
+    let league = this.returnLeague(league_id);
+    if (league?.players){
+      for (let i = 0; i < league.players.length; i++){
+        if (league.players[i].publickey === publickey){
+          league.players[i][field]++;
+          console.log("Incremented:");
+          console.log(JSON.parse(JSON.stringify(league.players[i])));
+          success = true;
+        }
+      }
+    }
+
+    if (!success){
+      return;
+    }
+
+    let sql = `UPDATE players SET ${field} = (${field} + ${amount}), ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
     let params = {
       $ts: new Date().getTime() ,
       $publickey: publickey ,
       $league_id: league_id
     }
-    await this.app.storage.executeDatabase(sql, params, "league");
-    return 1;
-  }
+    
+    //if (this.debug) { console.log(sql); }
 
-  async addEXP(publickey, league_id, points, game_status = null) {
-
-    let sql = `UPDATE players SET score = (score + $points), games_finished = (games_finished + 1), ts = $ts`;
-    if (game_status) { sql += `, ${game_status} = (${game_status} + 1)`; }
-
-    sql += ` WHERE publickey = $publickey AND league_id = $league_id`;
-    let params = {
-      $points : points ,
-      $ts: new Date().getTime() ,
-      $publickey: publickey ,
-      $league_id: league_id
-    }
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
   }
 
 
 
+  async updatePlayerScore(playerObj) {
 
-  async updatePlayerScore(playerObj, game_status = null) {
-
-    let sql = `UPDATE players SET score = $score, games_finished = ${playerObj.games_finished + 1}, ts = $ts`;
-    if (game_status){
-      sql += `, ${game_status} = ${playerObj[game_status] + 1}`;
+    let league = this.returnLeague(playerObj.league_id);
+    if (league?.players){
+      for (let i = 0; i < league.players.length; i++){
+        if (league.players[i].publickey === playerObj.publickey){
+          league.players[i]["score"] = playerObj.score;
+          console.log("New Score:");
+          console.log(JSON.parse(JSON.stringify(league.players[i])));
+        }
+      }
     }
-    sql+= ` WHERE publickey = $publickey AND league_id = $league_id`;
+
+    let sql = `UPDATE players SET score = $score, ts = $ts WHERE publickey = $publickey AND league_id = $league_id`;
     let params = {
       $score: playerObj.score,
       $ts: new Date().getTime() ,
@@ -935,6 +750,230 @@ class League extends ModTemplate {
 
     await this.app.storage.executeDatabase(sql, params, "league");
     return 1;
+  }
+
+  ////////////////////////////////////////////////
+  // convenience functions for local data inserts //
+  ////////////////////////////////////////////////
+
+  /////////////////////////////
+  // League Array Management //
+  /////////////////////////////
+  returnLeague(league_id) {
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].id === league_id) { return this.leagues[i]; }
+    }
+    return null;
+  }
+
+  removeLeague(league_id) {
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].id === league_id) { 
+        this.leagues.splice(i, 1); 
+        return;
+      }
+    }
+    return null;
+  }
+
+
+  validateLeague(obj){
+    let newObj = {};
+    //
+    // default values
+    //
+    newObj.id = obj.id || "";
+    newObj.game = obj.game || "Unknown";
+    newObj.name = obj.name || "Unknown";
+    newObj.admin = obj.admin || "";
+    newObj.status = obj.status || "public";
+    newObj.description = obj.description || "";
+    newObj.ranking_algorithm = obj.ranking_algorithm || "EXP";
+    newObj.default_score = obj.default_score || 0;
+        
+    return newObj;
+  }
+
+
+  addLeague(obj) {
+    
+    if (!obj)                   { return; }
+    if (!obj.id)                { return; }
+
+    if (!this.returnLeague(obj.id)) {
+      
+      if (this.debug) { console.log("Add League with ID: " + obj.id); }
+
+      let newLeague = this.validateLeague(obj);
+
+      //
+      // dynamic data-storage
+      //
+      newLeague.players = [];
+      newLeague.games = [];
+      newLeague.rank = 0; //My rank in the league
+    
+
+      if (this.debug) { console.log("New League", JSON.parse(JSON.stringify(newLeague))); }
+
+      this.leagues.push(newLeague);
+
+      //if (!this.app.BROWSER){
+        this.leagueInsert(newLeague);        
+      //}
+    }
+
+  }
+
+
+  addLeagueGame(league_id, game_id, winner, players_array, rank, time_started, time_finished, method) {
+
+    let game_idx = -1;
+
+    for (let i = 0; i < this.leagues.length; i++) {
+      if (this.leagues[i].id === league_id) {
+        for (let z = 0; z < this.leagues[i].games.length; z++) {
+          if (this.leagues[i].games[z].game_id === game_id) {
+            this.leagues[i].games[z].game_id = game_id;
+            this.leagues[i].games[z].winner = winner;
+            this.leagues[i].games[z].players_array = players_array;
+            this.leagues[i].games[z].rank = rank;
+            this.leagues[i].games[z].time_started = time_started;
+            this.leagues[i].games[z].time_finished = time_finished;
+            this.leagues[i].games[z].method = method;
+            return;
+          }
+        }
+        
+        this.leagues[i].games.push({ 
+          game_id : game_id ,
+          winner : winner ,
+          players_array : players_array ,
+          rank : rank ,
+          time_started : time_started ,
+          time_finished : time_finished ,
+          method : method 
+        });
+
+        return;
+      }
+    }
+  }
+
+
+  validatePlayer(obj){
+
+    let newObj = {};
+    
+    newObj.league_id      = obj.league_id || "";
+    newObj.publickey      = obj.publickey || "";
+    newObj.email          = obj.email || "";
+    newObj.score          = obj.score || 0;
+    newObj.games_started  = obj.games_started || 0;
+    newObj.games_finished = obj.games_finished || 0;
+    newObj.games_won      = obj.games_won || 0;
+    newObj.games_tied     = obj.games_tied || 0; 
+
+    return newObj;
+  }
+
+  async addLeaguePlayer(obj) {
+
+    let league = this.returnLeague(obj.league_id);
+  
+    if (!league) { 
+      console.error("League not found"); 
+      return; 
+    }
+
+    let newPlayer = this.validatePlayer(obj);
+    if (!newPlayer.score) { 
+      newPlayer.score = league.default_score; 
+    } 
+
+    //If we have the player already, just update the stats
+    for (let z = 0; z < league.players.length; z++) {
+      if (league.players[z].publickey === newPlayer.publickey) {
+        console.log("BEFORE:");
+        console.log(JSON.parse(JSON.stringify(league.players[z])));
+        league.players[z].score = newPlayer.score || league.players[z].score;
+        league.players[z].games_started = newPlayer.games_started || league.players[z].games_started;
+        league.players[z].games_won = newPlayer.games_won || league.players[z].games_won;
+        league.players[z].games_tied = newPlayer.games_tied || league.players[z].games_tied;
+        league.players[z].games_finished = newPlayer.games_finished || league.players[z].games_finished;
+        console.log("AFTER:");
+        console.log(JSON.parse(JSON.stringify(league.players[z])));
+        return;
+      }
+    }
+        
+    league.players.push(newPlayer);    
+
+    await this.playerInsert(newPlayer); 
+
+  }
+
+  fetchLeagueGames(league_id, mycallback=null) {
+
+    let league = this.returnLeague(league_id);
+    league.games = [];
+
+    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM games WHERE league_id = '${league_id}' ORDER BY time_finished DESC LIMIT 10` ,
+      (res) => {
+        if (res?.rows) {
+          for (let g of res.rows) {
+            this.addLeagueGame(league_id, g.game_id, g.winner, g.players_array, g.rank, g.time_started, g.time_finished, g.method);
+          }
+        }
+        if (mycallback != null) {
+          mycallback(res);
+        }
+      }
+    );
+
+  }
+
+  fetchLeagueLeaderboard(league_id, mycallback=null) {
+
+    let league = this.returnLeague(league_id);
+    let rank = 0;
+
+    //We need to reset this because this should be an ordered array
+    //and if the scores have changed, we need to resort the players
+    league.players = [];
+
+    this.sendPeerDatabaseRequestWithFilter(
+      "League" ,
+      `SELECT * FROM players WHERE league_id = '${league_id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
+      (res) => {
+          if (res?.rows) {
+
+            for (let p of res.rows){
+              //
+              // Count how many people are ranked above me in the leaderboard
+              //
+              rank++;
+              
+              if (p.publickey == this.app.wallet.returnPublicKey()) {
+                league.rank = rank;
+              }
+
+              //
+              // Update player-league data in our live data structure
+              //
+              this.addLeaguePlayer(p);
+            }
+        }
+        
+        if (mycallback != null) { mycallback(res); }
+      },
+      (p) => {
+          if (p.hasService("league")) { 
+            return 1; 
+          }
+            return 0;
+        }
+    );
   }
 
 
@@ -965,24 +1004,24 @@ class League extends ModTemplate {
 
   async gameInsert(obj) {
 
-        let sql = `INSERT OR IGNORE INTO games (league_id, game_id, game, winner, players_array, time_started, time_finished, method) 
-                                VALUES ($league_id, $game_id, $game, $winner, $players_array, $time_started, $time_finished, $method)`;
-        let params = {
-          $league_id: obj.league_id,
-          $game_id: obj.game_id,
-          $game: obj.game,
-          $winner: obj.winner ,
-          $players_array: obj.players_array,
-          $time_started: obj.time_started,
-          $time_finished: obj.time_finished,
-          $method: obj.reason,
-        };
-        await this.app.storage.executeDatabase(sql, params, "league");
+    let sql = `INSERT OR IGNORE INTO games (league_id, game_id, game, winner, players_array, time_started, time_finished, method) 
+                            VALUES ($league_id, $game_id, $game, $winner, $players_array, $time_started, $time_finished, $method)`;
+    let params = {
+      $league_id: obj.league_id,
+      $game_id: obj.game_id,
+      $game: obj.game,
+      $winner: obj.winner ,
+      $players_array: obj.players_array,
+      $time_started: obj.time_started,
+      $time_finished: obj.time_finished,
+      $method: obj.reason,
+    };
+    await this.app.storage.executeDatabase(sql, params, "league");
 
-        sql = `UPDATE games SET rank=rank+1 WHERE league_id = $league_id`;
-        params = { $league_id : obj.league_id };
-        await this.app.storage.executeDatabase(sql, params, "league");
-	return;
+    sql = `UPDATE games SET rank=rank+1 WHERE league_id = $league_id`;
+    params = { $league_id : obj.league_id };
+    await this.app.storage.executeDatabase(sql, params, "league");
+	  return;
 
   }
 
@@ -998,6 +1037,17 @@ class League extends ModTemplate {
         };
     await this.app.storage.executeDatabase(sql, params, "league");
 	  return;
+  }
+
+
+  async pruneOldGames(){
+    let sql = `DELETE FROM games WHERE rank > ?`;
+    await this.app.storage.executeDatabase(sql, [this.recent_game_cutoff], "league");
+  }
+  async pruneOldPlayers(){
+   let sql = `DELETE FROM players WHERE ts < ?`;
+   let cutoff = new Date().getTime() - this.inactive_player_cutoff;
+   await this.app.storage.executeDatabase(sql, [cutoff], "league"); 
   }
 
 }
